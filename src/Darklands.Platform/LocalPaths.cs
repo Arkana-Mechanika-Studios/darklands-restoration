@@ -10,9 +10,14 @@ namespace Darklands.Platform;
 ///   sdl        DARKLANDS_SDL2_PATH   the SDL2 library (SDL host)
 ///   mt32roms   DARKLANDS_MT32_ROMS   the MT-32 / CM-32L ROM folder
 ///   textfont   DARKLANDS_TEXT_FONT   the 8x16 font of the text screen
+/// A relative path in local/paths.json is relative to the project root: DARKLANDS_ROOT, else the folder
+/// that holds the repository. Moving the whole project folder then needs no change.
 /// </summary>
 public static class LocalPaths
 {
+    /// <summary>The environment variable naming the project root (the folder that holds the repository, the reference, the game copy …).</summary>
+    public const string RootVariable = "DARKLANDS_ROOT";
+
     public static string? Get(string key, string variable)
     {
         var value = Environment.GetEnvironmentVariable(variable);
@@ -32,7 +37,7 @@ public static class LocalPaths
                         using var json = JsonDocument.Parse(File.ReadAllText(file));
                         if (json.RootElement.TryGetProperty(key, out var entry) && entry.GetString() is { Length: > 0 } path)
                         {
-                            return path;
+                            return Resolve(path, dir.FullName, Environment.GetEnvironmentVariable(RootVariable));
                         }
                     }
                     catch (JsonException)
@@ -48,5 +53,19 @@ public static class LocalPaths
             }
         }
         return null;
+    }
+
+    /// <summary>
+    /// A path of local/paths.json as given when absolute; else relative to <paramref name="root"/> (DARKLANDS_ROOT)
+    /// when set, else to the folder holding the repository at <paramref name="repository"/>.
+    /// </summary>
+    public static string Resolve(string path, string repository, string? root)
+    {
+        if (Path.IsPathRooted(path))
+        {
+            return path;
+        }
+        var basis = !string.IsNullOrWhiteSpace(root) ? root : Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(repository)) ?? repository;
+        return Path.GetFullPath(Path.Combine(basis, path));
     }
 }

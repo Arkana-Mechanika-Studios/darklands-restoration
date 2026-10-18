@@ -8,7 +8,11 @@ repository root (git-ignored), else a clear error.
   python     DARKLANDS_PYTHON      Python interpreter with the reference's dependencies
   audit      DARKLANDS_AUDIT       folder of the compiler audit results
 
-local/paths.json example: {"reference": "/path/to/reference", "python": "/path/to/python", "audit": "/path/to/audit"}
+A relative path in local/paths.json is relative to the project root: DARKLANDS_ROOT, else the folder that holds
+the repository, so the whole project folder can move without changes.
+
+local/paths.json example: {"reference": "reference/checkout", "python": "tools/python/Scripts/python.exe",
+                           "audit": "reference/audit"}
 """
 import json
 import os
@@ -33,8 +37,18 @@ def get(key):
     except (OSError, ValueError) as e:
         sys.exit('cannot read %s: %s' % (JSON_FILE, e))
     if value:
-        return value
+        return resolve(value)
     sys.exit('%s is not set: set the environment variable %s or the key "%s" in %s' % (key, var, key, JSON_FILE))
+
+
+def root():
+    """The project root: DARKLANDS_ROOT, else the folder that holds the repository."""
+    return os.environ.get('DARKLANDS_ROOT') or os.path.dirname(REPO)
+
+
+def resolve(path):
+    """A path of local/paths.json as given when absolute, else relative to the project root."""
+    return path if os.path.isabs(path) else os.path.normpath(os.path.join(root(), path))
 
 
 def reference():
