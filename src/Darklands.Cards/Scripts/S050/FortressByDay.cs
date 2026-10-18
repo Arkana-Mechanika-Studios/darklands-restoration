@@ -105,9 +105,9 @@ public sealed class FortressByDay : Card
         var here = c.State.Locations[c.Here];
         c.Variables.Location = c.NearestLocationOfType(here.X, here.Y, 2);
         // orig: R050+0x21F8; R050+0x24E0
-        // BUG: the commission is recorded for owner 0x0A, which only the town hall pays (CouncilHall, R054+0x1D08), and the fortress
-        // gives commissions only where the city has no town hall (location query 0x18 = 0): a fortress commission is never paid in
-        // money (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own.
+        // BUG: a fortress commission is never paid in money: it is recorded for owner 0x0A, which only the town hall
+        // pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall
+        // (location query 0x18 = 0) (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own.
         c.StartQuest3(0x0A, c.Variables.Location, c.City.Ordinal + 0x62, 0x0F, 2, 0);
         c.PassHours(1);
         // C: the street is chosen after the hour has passed.
@@ -214,8 +214,8 @@ public sealed class FortressByDay : Card
                 }
                 c.PassHours(2);
                 // orig: R050+0x2298
-                // BUG: the "come back" event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler
-                // never runs (R029+0x3F30): no appointment is kept (R050+0x2298).
+                // BUG: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome,
+                // event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
                 c.Events.Create(-2, c.Here, 0x5A, Shut, 0, 0x63, 4, TimeOfDay.HoursUntil(c.State.Date.Hour, 5), 0, 0);
                 c.Screen.Text(7);
                 // The party stays at the fortress gate.

@@ -353,7 +353,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R023+0x0E30` (1EF8:0E30, draft)  
   divergence: an odd direction leaves the line's globals as the last test left them in the original.  
   recommendation: **keep** - missile_trap (R014 19CD 3258): the direction comes from the trap record written by the generators, which use the even directions 0/2/4/6 only; an odd one would reuse the line globals of the last line_blocked call (deterministic in principle, but it needs a corrupt record). Kept as a guard.
-- **D-d89a90** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:897` `EffectField.LineCrossesCloud`  
+- **D-d89a90** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:898` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   divergence: a ninth cloud slot (the bytes after the array, DS:A33B) reads as an empty cloud at (0, 0).  
   recommendation: **keep** (checked against the original) - cloud_blocks_line reads one cloud past the array at DS:A33B, which is the far pointer of COMMONSP's lit panel edge (DS:A33B, a DOS segment from alloc_buffer): heap layout, not reproducible. The slot is read as an empty cloud; the residue of the missed box test (bug 0029) is reproduced separately.
@@ -460,7 +460,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R029+0x06DE` (0E76:06DE, draft)  
   divergence: the original does not resolve -1 for the Agility byte (DS:9CB4[-1] reads the bytes before the records; only the band resolves it); callers pass a slot (CardContext resolves -1 first).  
   deterministic: **n/a** (checked against the original); action: **document** - member_eff_attr2 (06de) reads DS:9CB4[who] unresolved; every caller (R047 seg 1974/1a44, R058, R068, R073, R074 [EE6C], R085, R090 [EE8C], R105, R107) passes a loop member or menu_member/best_member (0..4); none pushes -1. party[-1]+0x4B would be DS:9C34, unrelated UI/combat memory. Nothing to do.
-- **D-7a8af3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:338` `MemberRules.RaiseSkillTemporarily`  
+- **D-7a8af3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:339` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
   divergence: member -2's skill is a byte before the records in the original (undefined); here 0.  
   deterministic: **n/a** (checked against the original); action: **document** - lower_skill_temp (4b08) has a -2 branch (member_skill(-2,k) = DS:9BC0+k, BSS bytes before the combatant area, effectively 0), but its only callers are the saint functions in R039 seg 165C with who = DS:89EA (-1 for a normal prayer, or a chosen member 0..4, see R034); nobody passes -2 (raise_attr_temp(-2) is used by R130, a different function). Unreachable; the C# 0 matches the BSS value anyway.
@@ -516,7 +516,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R136+0xC02B` (290E:399B, data)  
   divergence: rows below −1 (a negative city size word, never in DARKLAND.CTY) read further before the table in the original; taken as row 0 here.  
   deterministic: **n/a** (checked against the original); action: **document** - Row = city size word; sizes come from DARKLAND.CTY (>=0). Row -1 is the 12 static bytes before R136+0xC02B (ff fe fe ff ff fe fe ff ff ff 00 00, already in the C#); below that the data is also static EXE data (row -2 = fe fe ff ff fe fe ff ff 00 00 00 ff at 290e:3983..398E, continuing into the previous table). Deterministic, but a negative size cannot occur.
-- **D-857176** `undefined-memory` - `src/Darklands.Core/Rules/Trading.cs:352` `Trading.Sell`  
+- **D-857176** `undefined-memory` - `src/Darklands.Core/Rules/Trading.cs:353` `Trading.Sell`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   divergence: the original tests the 0x80 flag and prices item_defs[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item_defs[data_file[..].id] with the raw 16-bit id; item_defs is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
@@ -599,7 +599,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R060+0x0FF4` (18CF:0684, matched)  
   divergence: the original returns the uninitialised r.a (a stack leftover) as the chance when not everybody rides; here the effective Agility that party_min_eff_attr2() returns is used.  
   deterministic: **partly** (checked against the original); action: **keep** - Asm 18CF:0684: the not-all-mounted branch calls party_min_eff_attr2 and returns AX=[bp-4], never stored (enter 4,0). This is a real gameplay value: the main loop passes l_8.a to the action (R060 18CF:055C), which rolls rand_mod(100) <= p_6, so for a party on foot the outrun chance is that stack word. It is the slot S-10 below the caller's SP, last written during the preceding card_menu call (its saved BP = the card main's BP, a DGROUP stack address >= 0x8000, i.e. a NEGATIVE chance => always fails, hint shows garbage) unless the mouse_hide chain (root 12C3 -> overlay thunk 052E) overwrites it; the exact word needs a trace of the whole call chain from the startup code, so it is deterministic but unconfirmed. Do not change the C# without such a trace; high impact (walking parties).
-- **D-e12eea** `undefined-memory` - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:102` `AffairsElsewhere.NearestCityTo`  
+- **D-e12eea** `undefined-memory` - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:103` `AffairsElsewhere.NearestCityTo`  
   original: `R071+0x1BC4` (1992:0624, matched)  
   divergence: a location number outside the table reads garbage in the original; here it is position 0, 0.  
   deterministic: **no** (checked against the original); action: **keep** - The cited 0624 is the init helper; the read is nearest_city(*(long far*)(locations[var_loc]+4)) in the card main with var_loc = event_find_loc(0x1C,...,0xC,..), which is -1 only if the kind-8 quest 0xC exists without its kind-0x1C fact; then locations[-1] is normally null and (x,y) are the INT 1 vector offset/segment words from the IVT, so the 'nearest city' depends on the machine. The cur_loc branch is guarded by cur_loc != -1 and the wilderness branch uses party_x/y. Normal play creates both events together; keep (0,0).
@@ -829,7 +829,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R016+0x0DA6` (1EF8:0DA6, draft), `R016+0x0E2E` (1EF8:0E2E, draft)  
   divergence: an entry past the thirteen combatant records (a saved game's bytes) reads past the records; here it makes the order rebuilt.  
   deterministic: **n/a** (checked against the original); action: **justify** - Entries are slot numbers 0..4: R022+0x07AA takes F1..F5 (0..4) or a party row or hot spot (0..4), R016+0x0E2E takes slots 0..4. An entry of 13 or more needs a saved game edited by hand (header +0x9B); the original would read the status byte of memory past the combatant records.
-- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1265` `EffectField.LayOutCloud`  
+- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1266` `EffectField.LayOutCloud`  
   original: `R014+0x9E92` (14F7:3682, draft)  
   divergence: a size above 4 (the trap kinds 10..15 have sizes 6 and 9: the low nibble) writes past the 16-puff arrays on the original's stack; the random numbers are drawn, the extra puffs are not kept.  
   deterministic: **no** (checked against the original); action: **keep** - effect_layout with a size above 4 writes past its 16-puff locals on the stack (return address and saved registers of its caller); the outcome depends on the stack frame (a crash or corrupted locals), not a state that can be modelled. The random numbers are drawn as in the original.

@@ -680,7 +680,8 @@ public sealed class EffectField : IEffectClouds
         {
             if ((byte)items[k].Type == code && (byte)items[k].Quality == quality)
             {
-                // BUG: the whole stack loses the quality, not one piece: identical spare pieces stacked with the worn armour wear down with it.
+                // BUG: armour wear hits the whole stack: the stack loses the quality, not one piece, so identical spare
+                // pieces stacked with the worn armour wear down with it.
                 items[k] = items[k] with { Quality = (byte)(items[k].Quality - amount) };
                 return;
             }

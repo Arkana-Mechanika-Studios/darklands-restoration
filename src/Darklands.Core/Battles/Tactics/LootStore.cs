@@ -151,7 +151,8 @@ public sealed class LootStore
             var k = work.FindIndex(q => q.Code == p.Code && q.Type == p.Type && q.Quality == p.Quality);
             if (k >= 0)
             {
-                // BUG: the counts are added in a byte with no limit test: equal items totalling more than 255 wrap and the excess is lost.
+                // BUG: loot counts wrap at 255: the counts are added in a byte with no limit test, so equal items
+                // totalling more than 255 wrap and the excess is lost.
                 work[k] = work[k] with { Count = (work[k].Count + p.Count) & 0xFF };
             }
             else

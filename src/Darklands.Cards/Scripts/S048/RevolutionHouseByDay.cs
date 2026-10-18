@@ -160,7 +160,8 @@ public sealed class RevolutionHouseByDay : Card
                 c.Screen.Text(2, TextFrame.BlankPage);
                 c.Screen.Text(0x0C, TextFrame.BlankPage);
             }
-            // BUG: no else: the second house's text 2 is then shown a second time, as in the original.
+            // BUG: gossip at the second house shows text 2 twice: there is no else, so text 2 comes again after texts 2
+            // and 12, as in the original.
             if (c.HereQuery(0x29) == 2)
             {
                 c.Screen.Text(2, TextFrame.BlankPage);

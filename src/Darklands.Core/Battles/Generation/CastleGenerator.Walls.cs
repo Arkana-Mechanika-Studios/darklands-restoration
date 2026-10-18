@@ -152,8 +152,9 @@ internal sealed partial class CastleGenerator
             {
                 if (o0 < o1)
                 {
-                    // BUG: the spot is counted from the corridor's far end (o1, and o3 below) rather than from o0 (o2): only a roll of 1 falls
-                    // on the corridor; larger rolls test, and may mark, the cells past its end.
+                    // BUG: a corridor's decoration spot can fall past its end: it is counted from the far end (o1, and
+                    // o3 below) rather than from o0 (o2), so only a roll of 1 falls on the corridor; larger rolls test,
+                    // and may mark, the cells past its end.
                     var x = o1 + Roll(o1 - o0 + 1) - 1;
                     var y = o2;
                     if ((_w.Walls(CellIndex(l, x, y)) & 1) != 0)

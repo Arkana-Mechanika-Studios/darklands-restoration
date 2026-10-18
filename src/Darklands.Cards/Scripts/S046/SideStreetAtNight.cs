@@ -97,8 +97,9 @@ public sealed class SideStreetAtNight : Card
                     c.PassHours(1);
                     if (trouble)
                     {
-                        // BUG: after the hour has passed the encounter always returns to the night grove (0x22, named OtherGateAtNight here), even
-                        // by day; the clear way and the day side street choose 0x21/0x22 by daylight.
+                        // BUG: by day, trouble on the way to the grove still leads back to the night grove: after the
+                        // hour has passed the encounter always returns to card 0x22 (named OtherGateAtNight here),
+                        // while the clear way and the day side street choose 0x21/0x22 by daylight.
                         MeetTrouble(c, OtherGateAtNight);
                         return;
                     }

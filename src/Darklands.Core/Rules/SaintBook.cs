@@ -630,9 +630,10 @@ public static class SaintBook
             Boost(SpeakLatin, 15, 29), Boost(ReadWrite, 15, 29), Boost(Charisma, 15, 24), Boost(Strength, 12, 19), AddCharm(2)]),
         // 105 St.Paul
         // orig: R039+0x7C6A; R039+0x7D0C
-        // BUG: St.Paul gets R039+0x7C6A, whose feast day (66) and help are those DARKLAND.SNT gives St.Paul the Simple; St.Paul the
-        // Simple (106) gets R039+0x7D0C, a copy of St.Thomas Aquinas's help (R039+0x8B58); the help described for St.Paul is
-        // R039+0x9578, which no saint number reaches (Z-9318d7).
+        // BUG: the helps of the two Pauls are mixed up: St.Paul gets R039+0x7C6A, whose feast day (66) and help are
+        // those DARKLAND.SNT gives St.Paul the Simple; St.Paul the Simple (106) gets R039+0x7D0C, a copy of St.Thomas
+        // Aquinas's help (R039+0x8B58); the help described for St.Paul is R039+0x9578, which no saint number reaches
+        // (Z-9318d7).
         new("R039+0x7C6A", [Heal(Endurance, 100), Heal(Strength, 100), LowerByHalf(Intelligence)]),
         // 106 St.Paul the Simple
         new("R039+0x7D0C", [Boost(SpeakCommon, 12, 26), Boost(SpeakLatin, 12, 26), Boost(ReadWrite, 15, 29), Boost(Healing, 10, 19),
@@ -647,8 +648,8 @@ public static class SaintBook
             Boost(Perception, 6, 11), Standing(-1, -5)]),
         // 110 St.Polycarp
         // orig: R039+0x80C2
-        // BUG: FirewallForAll, like SetCharm and AddCharm, sets the charm byte (+0x41) and its strength (+0x10) with no
-        // event, and nothing takes them back: the saints' charms last for good.
+        // BUG: the saints' charms never wear off: FirewallForAll, like SetCharm and AddCharm, sets the charm byte
+        // (+0x41) and its strength (+0x10) with no event, and nothing takes them back.
         new("R039+0x80C2", [FirewallForAll]),
         // 111 St.Raphael
         new("R039+0x814A", [Heal(Endurance, 100), Heal(Strength, 100), Boost(Healing, 50, 139), Boost(Agility, 8, 15), Boost(Perception, 6, 11)]),
@@ -678,8 +679,9 @@ public static class SaintBook
         new("R039+0x89EA", [Heal(Endurance, 40), Heal(Strength, 20), Boost(Healing, 30, 59)]),
         // 123 St.Theodore Tiro
         // orig: R039+0x8A88
-        // BUG: WeaponSkills already raises Flail Weapons for a member holding a flail, and the saint then raises it again (two
-        // boosts); the help does not match DARKLAND.SNT (all weapon skills, Charisma, Riding): no Riding, Endurance instead.
+        // BUG: St.Theodore Tiro raises Flail Weapons twice for a flail wielder: WeaponSkills already raises it for a
+        // member holding a flail, and the saint then raises it again; his help also does not match DARKLAND.SNT (all
+        // weapon skills, Charisma, Riding): no Riding, Endurance instead.
         new("R039+0x8A88", [WeaponSkills(15, 24), Boost(FlailWeapons, 15, 29), Boost(Charisma, 6, 11), Boost(Endurance, 4, 8)]),
         // 124 St.Thomas the Apostle
         new("R039+0x986A", [Boost(SpeakCommon, 4, 7), Boost(Healing, 10, 19), Boost(Artifice, 12, 23), Boost(Woodwise, 4, 7), Boost(Strength, 4, 8),

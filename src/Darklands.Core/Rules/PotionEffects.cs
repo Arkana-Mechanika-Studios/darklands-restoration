@@ -92,8 +92,8 @@ public static class PotionEffects
                 break;
             case Hardarmor:
                 t = Band(1, 2, 3, 5);
-                // BUG: Hardarmor and Firewall (below) raise the armour byte (+0x41) and the Firewall strength (+0x10) with no event, and
-                // nothing lowers them again: the effect is permanent (the manual gives it a day).
+                // BUG: Hardarmor and Firewall never wear off: they raise the armour byte (+0x41) and the Firewall
+                // strength (+0x10, below) with no event, and nothing lowers them again (the manual gives them a day).
                 m.ArmourPotions = (byte)((m.ArmourPotions >> 4 << 4) + t + (m.ArmourPotions & 0xF));
                 break;
             // C: party_money++ increments the florin word alone (16-bit, no normalisation).

@@ -76,9 +76,9 @@ public sealed class EventLog
     /// Returns its slot, or −1 when all 300 slots are in use ("EVENT Failure").
     /// </summary>
     // orig: event_new R029+0x2C4E (0E76:2C4E) draft; R029+0x3034 (0E76:3034) matched; tests: EventLogTests
-    // BUG: "forever" (9999 hours) is the fixed end 23:00 31.12.1499, not an open end: on 1 January 1500 every such event
-    // expires (a quest clears its facts), and one created later expires at the next expiry pass; the witches' sabbat quest
-    // and its planned sabbat end for good.
+    // BUG: "forever" events end on 31 December 1499: 9999 hours is the fixed end 23:00 31.12.1499, not an open end, so
+    // on 1 January 1500 every such event expires (a quest clears its facts) and one created later expires at the next
+    // expiry pass; the witches' sabbat quest and its planned sabbat end for good.
     // C: checked against the asm: 9999 hours = end 23:00 31.12.1499 (month 12), any other count is added to the end with date_add_hours.
     public int Create(int owner, int location, int extra, int kind, int type, int value, int handler, int hours,
         int flags, int tag)

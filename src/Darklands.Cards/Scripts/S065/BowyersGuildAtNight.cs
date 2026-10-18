@@ -82,8 +82,8 @@ public sealed class BowyersGuildAtNight : Card
         if (c.Succeeds(chance))
         {
             c.Screen.Text(1);
-            // BUG: the night shop passes the smiths' categories (0xFF, 0x400) where the day shop passes the bowyers' (0x30, 0x83C):
-            // woken at night, the bowyers sell the smiths' goods.
+            // BUG: woken at night, the bowyers sell the smiths' goods: the night shop passes the smiths' categories
+            // (0xFF, 0x400) where the day shop passes the bowyers' (0x30, 0x83C).
             c.OpenShop(5, null, 0xFF, 0x400);
             ShowPicture(c, Picture);
             c.PassHours(1);

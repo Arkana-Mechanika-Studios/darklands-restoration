@@ -181,7 +181,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-b609a7** `uncertain` - `src/Darklands.Cards/Scripts/S057/ChurchAtNight_CityC01.cs:159` `ChurchAtNight_CityC01.AskAboutMass`  
   original: `R057+0x0D32` (18D7:0342, matched)  
   why: bands 4 and 5 (and any above 7) assign nothing in the original, which then names a stale stack word as the hour; the no-Mass hour stands in for it.
-- **U-ecbac4** `uncertain` - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:172` `CityChurchByDay.AskForTheNextMass`  
+- **U-ecbac4** `uncertain` - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:173` `CityChurchByDay.AskForTheNextMass`  
   original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
   why: in the small and late hours (band 0 and 1) the original names the hour of an uninitialised local (whatever its stack slot held); the C# names hour 0.
 - **U-488022** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:25` `HandbillThugs_Polit01.PoliticsTag`  
@@ -847,10 +847,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-95aa32** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:266` `EffectField.private`  
   original: `R017+0x0000` (1EF8:0000, draft)  
   why: the lists are made anew each frame here; the original makes them when it redraws the whole view (the camera moved, a door or wall changed), which shows the same cells.
-- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:878` `EffectField.public`  
+- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:879` `EffectField.public`  
   original: `root 06A1:29B6` (06A1:29B6, asm), `R014+0xA738` (18BF:02A8, draft)  
   why: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
-- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1038` `EffectField.Drawn`  
+- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1039` `EffectField.Drawn`  
   original: `R014+0x6818` (14F7:0008, draft), `R014+0x7BBE` (14F7:13AE, draft)  
   why: an entry whose box the view clips to nothing gives its place back in the original; here every piece, edge and number of a combatant in view counts (the boxes are not clipped), and the cloud edges count for the clouds of the shown level with a puff in view.
 - **U-8dfdd7** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Party.cs:123` `TacticalBattle.StopEverything`  

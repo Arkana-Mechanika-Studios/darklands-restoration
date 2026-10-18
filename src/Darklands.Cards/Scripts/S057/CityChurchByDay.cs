@@ -145,8 +145,9 @@ public sealed class CityChurchByDay : Card
     {
         var standing = c.StandingSeen;
         // C: signed divisions: standing / −10 + 11 in good standing, standing / 20 + 12 in bad.
-        // BUG: standing / -10 + 11 is 0 at standing 110..119 and negative from 120 (reachable: a quest's resolution adds
-        // standing without a limit, R029+0x3E06); PassHours then turns the clock back, and the hour can become negative (R057+0x03CC).
+        // BUG: confession can take no time or negative time: standing / -10 + 11 hours is 0 at standing 110..119 and
+        // negative from 120 (reachable: a quest's resolution adds standing without a limit, R029+0x3E06); PassHours
+        // then turns the clock back, and the hour can become negative (R057+0x03CC).
         var hours = standing >= 0 ? standing / -10 + 11 : standing / 20 + 12;
         c.Variables.Numbers[0] = hours;
         ShowPicture(c, AltarPicture);

@@ -68,7 +68,8 @@ public static class Storing
     {
         var entry = store[index];
         var d = s.Item(entry.Code);
-        // BUG: the store entry gives up its item whatever AddStack did: with 64 stacks and none that the item joins, the item is lost.
+        // BUG: taking from an inn store into a full pack loses the item: the store entry gives it up whatever AddStack
+        // did, and with 64 stacks and none that the item joins, AddStack adds nothing.
         var count = Inventory.AddStack(s, member, new ItemStack(entry.Code, (byte)d.Type, entry.Quality, 1, (byte)d.Weight));
         TakeOne(store, index);
         return count;
