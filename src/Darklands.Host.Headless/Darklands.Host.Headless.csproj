@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Darklands.Presentation\Darklands.Presentation.csproj" />
+    <ProjectReference Include="..\Darklands.Platform\Darklands.Platform.csproj" />
+    <ProjectReference Include="..\Darklands.DevConsole\Darklands.DevConsole.csproj" />
+    <ProjectReference Include="..\Darklands.Audio.Mt32\Darklands.Audio.Mt32.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,477 @@
+using System.IO.Compression;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Darklands.Core.Randomness;
+
+namespace Darklands.Cards.Tests.Oracle;
+
+/// <summary>
+/// Every card against the ORIGINAL program: Oracle/cards-oracle.json.gz holds, per card and run
+/// (options 0..9, location 3 and 120, plain and probing), what the original card function did when
+/// tools/oracle/card_oracle.py ran it from DARKLAND.EXE on the same start state (the C#'s own state,
+/// loaded by the original's saved-game loader): the trace (pictures, expanded texts, menus with their
+/// option states, hints, messages, time), the next card, the random generator, and the bytes of the
+/// saved game the original's writer makes afterwards that differ from the start. The C# card runs on
+/// that state with <see cref="OracleScreen"/> and must agree.
+/// </summary>
+/// <remarks>
+/// Known differences that are not bugs are listed in Oracle/card-divergences.json (card, run or "*",
+/// what, why); everything else fails. DARKLANDS_CARD_ORACLE_REPORT=file writes the per-card agreement
+/// (docs/faithfulness/CARDS.md is made from it).
+/// </remarks>
+public sealed class CardOracleTests
+{
+    /// <summary>Saved-game bytes the C# does not model and the original's writer changes on the way.</summary>
+    // orig: +0x84 DS:E898, the card-text state the text drawer sets (R043+0x0F54: mode, then 2 after an option list); SaveFile keeps it raw
+    private static readonly string[] UnmodelledHeadOffsets = [(0x84 - 0x64).ToString("X"), (0x85 - 0x64).ToString("X")];
+
+    private static string Folder([CallerFilePath] string here = "") => Path.GetDirectoryName(here)!;
+
+    public static JsonDocument? Corpus()
+    {
+        var path = Path.Combine(Folder(), "cards-oracle.json.gz");
+        if (!File.Exists(path))
+        {
+            return null;
+        }
+        using var file = File.OpenRead(path);
+        using var zip = new GZipStream(file, CompressionMode.Decompress);
+        return JsonDocument.Parse(zip);
+    }
+
+    [Fact]
+    public void EveryCardAgreesWithTheOriginal()
+    {
+        if (!CardHarness.Available || Corpus() is not { } corpus)
+        {
+            return;
+        }
+        var divergences = Divergences();
+        var cards = typeof(Card).Assembly.GetTypes()
+            .Where(t => t.IsSubclassOf(typeof(Card)) && !t.IsAbstract && t.GetConstructor(Type.EmptyTypes) is not null)
+            .Select(t => (Card)Activator.CreateInstance(t)!)
+            .ToDictionary(c => c.Number);
+        var report = new System.Collections.Concurrent.ConcurrentBag<string>();
+        var failures = new System.Collections.Concurrent.ConcurrentBag<string>();
+        var entries = corpus.RootElement.GetProperty("cards").EnumerateObject().ToList();
+        var clock = Convert.ToUInt32(corpus.RootElement.GetProperty("clock").GetString()!, 16);
+        var dump = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_DUMP");
+        Parallel.ForEach(entries, entry =>
+        {
+            var number = Convert.ToInt32(entry.Name, 16);
+            var runs = entry.Value.GetProperty("runs").EnumerateObject().ToList();
+            var texts = entry.Value.TryGetProperty("texts", out var t) ? t.EnumerateArray().Select(x => x.GetString()!).ToArray() : [];
+            int agree = 0, justified = 0, differ = 0, stray = 0;
+            var first = "";
+            var differing = new List<string>();
+            foreach (var run in runs)
+            {
+                if (!cards.TryGetValue(number, out var card))
+                {
+                    if (Justified(divergences, entry.Name, run.Name, "no C# card"))
+                    {
+                        justified++;
+                    }
+                    else
+                    {
+                        differ++;
+                        first = "no C# card";
+                    }
+                    continue;
+                }
+                var drop = divergences.Where(d => (d.Card == "*" || d.Card == entry.Name) && d.DropCSharp is { Length: > 0 })
+                    .Select(d => d.DropCSharp!).ToList();
+                var blind = divergences.Any(d => (d.Card == "*" || d.Card == entry.Name) && d.IgnoreTexts);
+                var difference = Compare((Card)Activator.CreateInstance(card.GetType())!, run.Name, run.Value, clock, dump, texts, drop, blind);
+                if (difference is null && blind)
+                {
+                    justified++;
+                    continue;
+                }
+                if (difference is null && drop.Count > 0)
+                {
+                    justified++;
+                    continue;
+                }
+                if (difference is null)
+                {
+                    agree++;
+                }
+                else if (run.Value.TryGetProperty("stray", out _))
+                {
+                    // the original read through index -1 of the location or event table (the card ran without its quest):
+                    // memory that holds something else; the C# reads an empty entry (TextVariables, CardContext.Events: DIVERGENCE)
+                    justified++;
+                    stray++;
+                }
+                else if (Justified(divergences, entry.Name, run.Name, difference))
+                {
+                    justified++;
+                }
+                else
+                {
+                    differ++;
+                    differing.Add(run.Name);
+                    if (first.Length == 0)
+                    {
+                        first = $"{run.Name}: {difference}";
+                    }
+                }
+            }
+            report.Add($"{entry.Name}\t{entry.Value.GetProperty("function").GetString()}\t{agree}\t{justified}\t{differ}\t{first.Replace('\t', ' ').Replace('\n', ' ')}\t{stray}\t{string.Join(",", differing)}");
+            if (differ > 0)
+            {
+                failures.Add($"{entry.Name}: {differ} run(s) differ, first {first}");
+            }
+        });
+        if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_REPORT") is { Length: > 0 } reportFile)
+        {
+            File.WriteAllLines(reportFile, report.OrderBy(l => l, StringComparer.Ordinal));
+        }
+        Assert.True(failures.IsEmpty, $"{failures.Count} card(s) differ from the original:\n" +
+            string.Join("\n", failures.OrderBy(f => f, StringComparer.Ordinal).Take(40)));
+    }
+
+    /// <summary>The first difference of one run, or null when the C# agrees.</summary>
+    public static string? Compare(Card card, string runName, JsonElement expected, uint clock, string? dump = null, string[]? texts = null,
+        IReadOnlyList<string>? dropCSharp = null, bool ignoreTexts = false)
+    {
+        var parts = runName.Split(' ');
+        var probe = parts[0] == "probe";
+        var key = parts[1];
+        var location = int.Parse(key[1..key.IndexOf('-')]);
+        var option = int.Parse(key[(key.IndexOf("-O") + 2)..]);
+        var (actual, end, random, sav) = Run(card, location, option, probe, clock);
+        foreach (var prefix in dropCSharp ?? [])
+        {
+            // a C# line the original has no counterpart for, listed in card-divergences.json
+            var at = actual.FindIndex(l => l.StartsWith(prefix, StringComparison.Ordinal));
+            if (at >= 0)
+            {
+                var dropped = actual[at];
+                actual.RemoveAt(at);
+                // without that show the card's next picture is where the original first loads the card
+                var next = actual.FindIndex(at, l => l.StartsWith("show ", StringComparison.Ordinal) || l.StartsWith("picture ", StringComparison.Ordinal));
+                if (dropped.StartsWith("show ", StringComparison.Ordinal) && next >= 0 && actual[next].StartsWith("picture ", StringComparison.Ordinal))
+                {
+                    actual[next] = $"show {dropped.Split(' ')[1]} {actual[next]["picture ".Length..]}";
+                }
+            }
+        }
+        return CompareResult(expected, actual, end, random, sav, dump is { Length: > 0 } ? Path.Combine(dump, $"{card.Number:X3} {runName}.txt") : null, texts, ignoreTexts);
+    }
+
+    /// <summary>A run's trace, end, random state and saved game against the original's (null: they agree).</summary>
+    public static string? CompareResult(JsonElement expected, List<string> actual, string end, string random,
+        (string Place, JsonObject Sections)? sav, string? dumpFile = null, string[]? texts = null, bool ignoreTexts = false)
+    {
+        // the rules redraw the card after a full screen, a prayer or a battle (card_load through thunk 09C0:1EA5, "redraw" in the
+        // original's trace); the C# card shows its picture again itself: a "picture" right after one of those is that redraw
+        actual = Pictures(actual);
+        var want = expected.GetProperty("trace").EnumerateArray().Select(e => Resolve(e.GetString()!, texts))
+            .ToList();
+        want = Pictures(want);
+        if (ignoreTexts)
+        {
+            // listed: the card shows texts the original reads from outside its .MSG (or an option list it never drew)
+            static string Bare(string l) => l.Split(' ')[0] is "text" or "menu" ? l[..Math.Max(l.LastIndexOf(' '), 0)] : l;
+            want = want.Select(Bare).ToList();
+            actual = actual.Select(Bare).ToList();
+        }
+        if (dumpFile is not null)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(dumpFile)!);
+            var text = new StringBuilder("== original" + "\n");
+            want.ForEach(l => text.Append(l).Append("\n"));
+            text.Append($"{expected.GetProperty("end").GetString()} random {expected.GetProperty("random").GetString()}" + "\n");
+            text.Append(expected.TryGetProperty("sav", out var sv) ? sv.ToString() : "").Append("\n").Append("== C#" + "\n");
+            actual.ForEach(l => text.Append(l).Append("\n"));
+            text.Append($"{end} random {random}" + "\n");
+            text.Append(sav is { } cs ? SaveSections.Canonical(cs.Sections) : "").Append("\n");
+            File.WriteAllText(dumpFile, text.ToString());
+        }
+        for (var i = 0; i < Math.Max(want.Count, actual.Count); i++)
+        {
+            var w = i < want.Count ? want[i] : "<end>";
+            var a = i < actual.Count ? actual[i] : "<end>";
+            if (w != a)
+            {
+                return $"line {i}: original '{Short(w)}', C# '{Short(a)}'";
+            }
+        }
+        var wantEnd = expected.GetProperty("end").GetString()!;
+        // the menu policy gives up the same way on both sides (no choosable option, or more than 50 menus)
+        const string PolicyStop = "throws InvalidOperationException: ";
+        if (end.StartsWith(PolicyStop, StringComparison.Ordinal) && end[PolicyStop.Length..] is var reason
+            && (reason.StartsWith("Menu ", StringComparison.Ordinal) || reason.StartsWith("The card keeps asking", StringComparison.Ordinal)))
+        {
+            end = "stops " + reason;
+        }
+        if (wantEnd != end)
+        {
+            return $"end: original '{Short(wantEnd)}', C# '{end}'";
+        }
+        var wantRandom = expected.GetProperty("random").GetString()!;
+        if (wantRandom != random)
+        {
+            return $"random: original {wantRandom}, C# {random}";
+        }
+        if (expected.TryGetProperty("sav", out var s) && sav is not null)
+        {
+            if (s.TryGetProperty("error", out var err))
+            {
+                return $"saved game: the original's writer stopped ({err.GetString()})";
+            }
+            var place = s.GetProperty("place").GetString();
+            if (place != sav.Value.Place)
+            {
+                return $"saved game place: original '{place}', C# '{sav.Value.Place}'";
+            }
+            var want2 = Without((JsonObject)JsonNode.Parse(s.GetProperty("sections").GetRawText())!);
+            var got = Without((JsonObject)JsonNode.Parse(sav.Value.Sections.ToJsonString())!);
+            if (SaveSections.Canonical(want2) != SaveSections.Canonical(got))
+            {
+                return $"saved game: {SaveSections.FirstDifference(want2, got)}";
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// The pictures as the player sees them, the same for both traces: after a full screen the card's main picture is back
+    /// (the original's rules redraw the card, "redraw" in its trace; the C# screen does it itself, the picture its card last
+    /// gave Show, "main" in its trace); after a battle or a prayer the next picture is kept whatever it is; and a "picture"
+    /// of the picture already shown is left out.
+    /// </summary>
+    private static List<string> Pictures(List<string> trace)
+    {
+        var result = new List<string>();
+        string shown = "", main = "";
+        var afterFight = false;
+        foreach (var line in trace)
+        {
+            var p = line.Split(' ');
+            switch (p[0])
+            {
+                case "redraw" when p.Length > 2:
+                    main = p[2];
+                    // after a battle or a prayer the rules redraw pic_buf, which the C# does not know (a card picture
+                    // may sit in pic_buf or pic_buf2): the next picture is compared whatever it is
+                    shown = afterFight ? "" : p[2];
+                    continue;
+                case "main" when p.Length > 1:
+                    main = p[1];
+                    continue;
+                case "show" when p.Length > 2:
+                    shown = main = p[2];
+                    break;
+                case "picture" when p.Length > 1:
+                    if (p[1] == shown)
+                    {
+                        continue;
+                    }
+                    shown = p[1];
+                    break;
+                case "screen":
+                    shown = main;
+                    break;
+                case "battle" or "prayer":
+                    shown = "";
+                    afterFight = true;
+                    result.Add(line);
+                    continue;
+            }
+            afterFight = false;
+            result.Add(line);
+        }
+        return result;
+    }
+
+    /// <summary>A "#k" at the end of a text or menu line is the card's texts[k].</summary>
+    private static string Resolve(string line, string[]? texts)
+    {
+        var at = line.LastIndexOf(" #", StringComparison.Ordinal);
+        if (texts is null || at < 0 || !int.TryParse(line[(at + 2)..], out var k) || k >= texts.Length)
+        {
+            return line;
+        }
+        return line[..(at + 1)] + texts[k];
+    }
+
+    /// <summary>The sections without the bytes the C# does not model.</summary>
+    private static JsonObject Without(JsonObject sections)
+    {
+        if (sections["head"] is JsonObject head && head["0"] is JsonObject record)
+        {
+            foreach (var o in UnmodelledHeadOffsets)
+            {
+                record.Remove(o);
+            }
+            if (record.Count == 0)
+            {
+                head.Remove("0");
+            }
+            if (head.Count == 0)
+            {
+                sections.Remove("head");
+            }
+        }
+        if (sections["chars"] is JsonObject chars)
+        {
+            // a character whose item count changed: the item records past the new count are not items any more (the
+            // original's item_delete leaves what it shifted there, the C# keeps what the record held)
+            foreach (var (id, node) in chars.ToList())
+            {
+                if (node is JsonObject bytes && bytes["7E"] is { } countByte)
+                {
+                    var count = (sbyte)Convert.ToByte(countByte.GetValue<string>(), 16);
+                    var end = 0xAA + 6 * Math.Max((int)count, 0);
+                    foreach (var key in bytes.Select(p => p.Key).Where(k => Convert.ToInt32(k, 16) >= end).ToList())
+                    {
+                        bytes.Remove(key);
+                    }
+                    if (bytes.Count == 0)
+                    {
+                        chars.Remove(id);
+                    }
+                }
+            }
+            if (chars.Count == 0)
+            {
+                sections.Remove("chars");
+            }
+        }
+        else if (sections["chars"] is JsonArray records)
+        {
+            // the whole records (their number changed): the same, the bytes past the item count as zeros
+            for (var k = 0; k < records.Count; k++)
+            {
+                var r = Convert.FromHexString(records[k]!.GetValue<string>());
+                if (r.Length > 0x7E)
+                {
+                    var end = 0xAA + 6 * Math.Max((int)(sbyte)r[0x7E], 0);
+                    if (end < r.Length)
+                    {
+                        r.AsSpan(end).Clear();
+                    }
+                    records[k] = Convert.ToHexString(r);
+                }
+            }
+        }
+        return sections;
+    }
+
+    private static string Short(string s) => s.Length > 160 ? s[..160] + "…" : s;
+
+    /// <summary>Runs the C# card on a start state as the oracle did.</summary>
+    public static (List<string> Trace, string End, string Random, (string Place, JsonObject Sections)? Sav) Run(
+        Card card, int location, int option, bool probe, uint clock)
+    {
+        var state = CardOracleStates.New(location, option);
+        // C: srand((unsigned)time(0)) of the oracle's machine: its DOS clock is fixed, time(0) gives the corpus's "clock"
+        state.ClockSeed = () => clock;
+        var (start, _) = Persistence.OriginalSaves.Write(state);
+        // the original runs on that saved game as loaded: its character records keep the bytes the model does not
+        // (the item records past the count, which keep_items_pct reads), as a loaded game's do
+        foreach (var character in state.Party.Members.Concat(state.Roster.Characters))
+        {
+            character.OriginalRecord ??= Persistence.CharacterRecords.Write(character);
+        }
+        var screen = new OracleScreen(option, probe);
+        var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames };
+        c.Screens = new OracleScreens(screen.Log);
+        // the oracle stubs the battle (result 0, as here without one) and the prayer screen (0, the prayer fails)
+        c.Battle = (side, seed, parameters) =>
+        {
+            screen.Log.Add($"battle {side} {(short)seed} {string.Join(" ", parameters)}");
+            return 0;
+        };
+        // the films (root 030B:0004 plays each animation; the oracle records them)
+        c.PlayFilm = steps =>
+        {
+            foreach (var step in steps.Where(s => s.Animation is not null))
+            {
+                screen.Log.Add($"film {step.Animation!.ToLowerInvariant()}");
+            }
+            return true;
+        };
+        c.SaintPrayer = (who, saint) =>
+        {
+            screen.Log.Add($"prayer {who} {saint}");
+            return 0;
+        };
+        screen.Context = c;
+        state.CurrentCard = card.Number;
+        string end;
+        var ok = false;
+        try
+        {
+            var next = card.Run(c);
+            end = $"next {next}";
+            ok = true;
+            if (next is > -2 or < -6)
+            {
+                // the main loop's step after a card that does not start a battle (as CardDispatcher.RunCard; the oracle runs the original's)
+                if (state.CurrentCard != Simulation.CardDispatcher.OverlandMap)
+                {
+                    state.MapLeaveMode = 0;
+                }
+                state.PreviousCard = state.CurrentCard;
+                state.CurrentCard = next;
+                Core.Rules.TimePassage.Advance(state, 0);
+            }
+        }
+        catch (Exception e)
+        {
+            end = $"throws {e.GetType().Name}: {e.Message}";
+        }
+        var random = state.Random is MscRandom msc ? msc.State.ToString("X8") : "?";
+        var sav = ok ? SaveDiff(start, state) : ((string, JsonObject)?)null;
+        return (screen.Log, end, random, sav);
+    }
+
+    /// <summary>The saved game of the state against the start (from +0x64: the texts are compared as texts).</summary>
+    public static (string Place, JsonObject Sections) SaveDiff(byte[] start, Core.GameState state)
+    {
+        var (bytes, _) = Persistence.OriginalSaves.Write(state);
+        return (Encoding.Latin1.GetString(bytes, 0, 0x15).Split((char)0)[0], SaveSections.Diff(start, bytes));
+    }
+
+    /// <summary>Which part of the saved game an offset is (for the messages).</summary>
+    public static string SaveField(int offset)
+    {
+        if (offset < 0x189)
+        {
+            return offset switch
+            {
+                < 0x68 => "seed",
+                < 0x70 => "date",
+                < 0x76 => "purse",
+                < 0x7C => "fame",
+                < 0x7E => "cur_loc",
+                < 0x82 => "map position",
+                < 0x8C => "cards",
+                < 0x96 => "bank notes/stone/hirelings",
+                < 0xA6 => "difficulty/battle/leader/options",
+                < 0xF3 => "party size/count",
+                _ => "slots/images/palettes",
+            };
+        }
+        return "records (character 0x22A each, then events 0x30, places 0x3A, cache)";
+    }
+
+    /// <summary>A listed difference: the runs whose first difference contains <see cref="Contains"/>, or a C# line to leave out (<see cref="DropCSharp"/>).</summary>
+    private sealed record Divergence(string Card, string Run, string Contains, string Why, string? DropCSharp = null, bool IgnoreTexts = false);
+
+    private static List<Divergence> Divergences()
+    {
+        var path = Path.Combine(Folder(), "card-divergences.json");
+        return File.Exists(path) ? JsonSerializer.Deserialize<List<Divergence>>(File.ReadAllText(path), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [] : [];
+    }
+
+    private static bool Justified(List<Divergence> list, string card, string run, string difference) =>
+        list.Any(d => d.DropCSharp is null && (d.Card == "*" || d.Card == card) && (d.Run == "*" || d.Run == run)
+            && difference.Contains(d.Contains, StringComparison.Ordinal));
+}

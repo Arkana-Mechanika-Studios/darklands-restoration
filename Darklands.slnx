@@ -1,0 +1,30 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Darklands.Audio.Mt32/Darklands.Audio.Mt32.csproj" />
+    <Project Path="src/Darklands.Audio/Darklands.Audio.csproj" />
+    <Project Path="src/Darklands.Cards/Darklands.Cards.csproj" />
+    <Project Path="src/Darklands.Content/Darklands.Content.csproj" />
+    <Project Path="src/Darklands.Core/Darklands.Core.csproj" />
+    <Project Path="src/Darklands.DevConsole/Darklands.DevConsole.csproj" />
+    <Project Path="src/Darklands.Host.Headless/Darklands.Host.Headless.csproj" />
+    <Project Path="src/Darklands.Host.Sdl/Darklands.Host.Sdl.csproj" />
+    <Project Path="src/Darklands.Persistence/Darklands.Persistence.csproj" />
+    <Project Path="src/Darklands.Platform/Darklands.Platform.csproj" />
+    <Project Path="src/Darklands.Presentation/Darklands.Presentation.csproj" />
+    <Project Path="src/Darklands.Simulation/Darklands.Simulation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Darklands.Battles.Tests/Darklands.Battles.Tests.csproj" />
+    <Project Path="tests/Darklands.Audio.Tests/Darklands.Audio.Tests.csproj" />
+    <Project Path="tests/Darklands.Cards.Tests/Darklands.Cards.Tests.csproj" />
+    <Project Path="tests/Darklands.Core.Tests/Darklands.Core.Tests.csproj" />
+    <Project Path="tests/Darklands.DevConsole.Tests/Darklands.DevConsole.Tests.csproj" />
+    <Project Path="tests/Darklands.Host.Sdl.Tests/Darklands.Host.Sdl.Tests.csproj" />
+    <Project Path="tests/Darklands.Oracle.Tests/Darklands.Oracle.Tests.csproj" />
+    <Project Path="tests/Darklands.Persistence.Tests/Darklands.Persistence.Tests.csproj" />
+    <Project Path="tests/Darklands.Platform.Tests/Darklands.Platform.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/tune/tune.csproj" />
+  </Folder>
+</Solution>

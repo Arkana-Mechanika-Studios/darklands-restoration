@@ -1,0 +1,130 @@
+{
+ "ALL": {
+  "blocks": 12681,
+  "blocks_hit": 11236,
+  "functions": 479,
+  "outcomes": 11698,
+  "outcomes_hit": 9503,
+  "runs": null
+ },
+ "battle": {
+  "blocks": 302,
+  "blocks_hit": 243,
+  "functions": 16,
+  "outcomes": 252,
+  "outcomes_hit": 210,
+  "runs": 860
+ },
+ "castle": {
+  "blocks": 4462,
+  "blocks_hit": 3840,
+  "functions": 102,
+  "outcomes": 4278,
+  "outcomes_hit": 3396,
+  "runs": 116
+ },
+ "chargen": {
+  "blocks": 972,
+  "blocks_hit": 951,
+  "functions": 8,
+  "outcomes": 940,
+  "outcomes_hit": 909,
+  "runs": 2500
+ },
+ "city": {
+  "blocks": 1654,
+  "blocks_hit": 1195,
+  "functions": 48,
+  "outcomes": 1382,
+  "outcomes_hit": 850,
+  "runs": 42
+ },
+ "core": {
+  "blocks": 92,
+  "blocks_hit": 90,
+  "functions": 16,
+  "outcomes": 86,
+  "outcomes_hit": 78,
+  "runs": 948
+ },
+ "enemy": {
+  "blocks": 412,
+  "blocks_hit": 392,
+  "functions": 9,
+  "outcomes": 364,
+  "outcomes_hit": 321,
+  "runs": 738
+ },
+ "mine": {
+  "blocks": 2954,
+  "blocks_hit": 2500,
+  "functions": 76,
+  "outcomes": 2500,
+  "outcomes_hit": 1919,
+  "runs": 416
+ },
+ "names": {
+  "blocks": 43,
+  "blocks_hit": 32,
+  "functions": 8,
+  "outcomes": 12,
+  "outcomes_hit": 7,
+  "runs": 550
+ },
+ "path": {
+  "blocks": 386,
+  "blocks_hit": 345,
+  "functions": 22,
+  "outcomes": 428,
+  "outcomes_hit": 365,
+  "runs": 60
+ },
+ "rules": {
+  "blocks": 396,
+  "blocks_hit": 323,
+  "functions": 37,
+  "outcomes": 292,
+  "outcomes_hit": 241,
+  "runs": 2075
+ },
+ "saints": {
+  "blocks": 1017,
+  "blocks_hit": 781,
+  "functions": 162,
+  "outcomes": 832,
+  "outcomes_hit": 599,
+  "runs": 1792
+ },
+ "special": {
+  "blocks": 1099,
+  "blocks_hit": 886,
+  "functions": 49,
+  "outcomes": 852,
+  "outcomes_hit": 599,
+  "runs": 161
+ },
+ "tactics": {
+  "blocks": 319,
+  "blocks_hit": 270,
+  "functions": 11,
+  "outcomes": 412,
+  "outcomes_hit": 333,
+  "runs": 1200
+ },
+ "trading": {
+  "blocks": 603,
+  "blocks_hit": 410,
+  "functions": 27,
+  "outcomes": 374,
+  "outcomes_hit": 205,
+  "runs": 1040
+ },
+ "wild": {
+  "blocks": 1442,
+  "blocks_hit": 1192,
+  "functions": 30,
+  "outcomes": 1076,
+  "outcomes_hit": 761,
+  "runs": 112
+ }
+}

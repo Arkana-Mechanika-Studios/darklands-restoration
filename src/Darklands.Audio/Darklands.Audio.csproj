@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Darklands.Platform\Darklands.Platform.csproj" />
+    <ProjectReference Include="..\Darklands.Content\Darklands.Content.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Darklands.Audio.Tests" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Darklands.Simulation\Darklands.Simulation.csproj" />
+    <ProjectReference Include="..\Darklands.Platform\Darklands.Platform.csproj" />
+    <ProjectReference Include="..\Darklands.Content\Darklands.Content.csproj" />
+    <ProjectReference Include="..\Darklands.Cards\Darklands.Cards.csproj" />
+    <ProjectReference Include="..\Darklands.Persistence\Darklands.Persistence.csproj" />
+    <ProjectReference Include="..\Darklands.Audio\Darklands.Audio.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\OpeningTimer.txt" LogicalName="Darklands.Presentation.Resources.OpeningTimer.txt" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

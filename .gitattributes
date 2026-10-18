@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.json text eol=lf
+docs/source-map/map.csv merge=union
+*.dll binary
+*.ttf binary
+*.png binary
+*.gz binary

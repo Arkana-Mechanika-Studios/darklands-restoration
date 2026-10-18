@@ -1,0 +1,555 @@
+using Darklands.Cards;
+using Darklands.Content;
+using Darklands.Content.Formats.Battles;
+using Darklands.Core;
+using Darklands.Core.Battles;
+using Darklands.Core.Battles.Tactics;
+using Darklands.Core.Characters;
+using Darklands.Core.Economy;
+using Darklands.Platform;
+using Darklands.Presentation;
+using Darklands.Presentation.Battles;
+
+namespace Darklands.Battles.Tests;
+
+/// <summary>
+/// The battle screen driven like the player drives it (the real-time loop, the pointer, the keys): the move order's ghost under the click,
+/// an enemy targeted by a click, and the frames between a won fight's loot screen and the next screen.
+/// </summary>
+public sealed class BattleUiTests
+{
+    /// <summary>The fight of the BATTLES.md example: the party walks into three enemies (member 1 walks first).</summary>
+    private static readonly BattleRequest Corridor = new(40, 1234, [(34, 4, 3), (-1, 0, 0), (-1, 0, 0)]);
+
+    /// <summary>A click on the floor in order mode: the spot is the pixel's ground point and the ghost stands on it.</summary>
+    [Fact]
+    public void TheMoveGhostAppearsUnderTheClick()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:3", "key:space", "wait:5", "key:1", "click:180,140", "wait:2");
+        var tb = run.Screen.Tactics!;
+        Assert.Equal(0, tb.Selected);
+        Assert.True(tb.CursorTarget is -2 or -3);
+        // the view's origin is the one the screen drew with
+        var view = new BattlefieldView { CentreColumn = run.Screen.CameraX / 32, CentreRow = run.Screen.CameraY / 16 };
+        Assert.Equal(view.ToMap(180, 140), (tb.CursorPoint.X, tb.CursorPoint.Y));
+        // the ghost (11 × 26) is drawn centred on x 180 with its bottom row at y 140, and its pixels are those on the screen
+        var (left, top) = view.CursorTopLeft(tb.CursorPoint.X, tb.CursorPoint.Y, 0x0B, 0x1A);
+        Assert.Equal((180 - 0x0B / 2, 140 - 0x1A), (left, top));
+        var ghost = run.Assets.Images[tb.Cursor == OrderCursor.Ground ? BattleImages.GroundFree : BattleImages.GroundBlocked];
+        var a = new Presentation.Graphics.Canvas(new Screen());
+        var b = new Presentation.Graphics.Canvas(new Screen());
+        a.Clear(0x11);
+        b.Clear(0x22);
+        Presentation.Graphics.SpriteDrawing.Draw(a, ghost, left, top);
+        Presentation.Graphics.SpriteDrawing.Draw(b, ghost, left, top);
+        var painted = 0;
+        for (var i = 0; i < 64000; i++)
+        {
+            if (a.Screen.Pixels[i] == b.Screen.Pixels[i])
+            {
+                painted++;
+                Assert.Equal(a.Screen.Pixels[i], run.LastFrame![i]);
+            }
+        }
+        Assert.True(painted > 20, $"{painted} ghost pixels");
+    }
+
+    /// <summary>
+    /// With an attack chosen (A), a click on an enemy's hot spot makes it the target, and leaving order mode gives the order; with no
+    /// order chosen and the member idle or walking, the original reads the same click as a spot on the floor (R014 19CD:0DCC).
+    /// </summary>
+    [Fact]
+    public void AClickOnAnEnemyTargetsIt()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:3", "key:space", "wait:5", "key:1", "click:234,180", "key:space", "wait:150", "key:1", "wait:3");
+        var tb = run.Screen.Tactics!;
+        var enemy = Enumerable.Range(Combatant.PartySlots, 8).First(i => tb.Battle[i].IsAble && run.Screen.HotSpot(i) is not null);
+        var (ex, ey) = run.Screen.HotSpotCentre(enemy)!.Value;
+
+        // member 1 walks (action 1), no order chosen: the click is a spot on the floor under the pointer
+        run.Play($"click:{ex},{ey}", "wait:2");
+        Assert.Equal(0, tb.Selected);
+        Assert.NotEqual(enemy, tb.CursorTarget);
+        Assert.True(tb.CursorTarget is -2 or -3);
+
+        run.Play("key:a", "wait:2", $"click:{ex},{ey}", "wait:2");
+        Assert.Equal(0x12, tb.OrderAction);
+        Assert.Equal(enemy, tb.CursorTarget);
+        Assert.Equal(OrderCursor.Target, tb.Cursor);
+
+        run.Play("key:enter", "wait:2");
+        Assert.Equal(-1, tb.Selected);
+        Assert.Equal(enemy, tb.Battle[0].Target);
+    }
+
+    /// <summary>
+    /// A won fight: the loot screen, then the battle view again in the battle's colours (palette_restore, floor_view_draw, combat_draw), the
+    /// "BattleResults - victory" box over it, the box taken away. The picture of before the battle never comes back in the battle's colours.
+    /// </summary>
+    [Fact]
+    public void AfterAVictoryTheResultsBoxIsShownOverTheBattleInItsColours()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var steps = new List<string> { "wait:5", "key:space" };
+        for (var k = 0; k < 30; k++)
+        {
+            steps.Add("wait:600");
+            steps.Add("key:esc");
+        }
+        uint[]? battlePalette = null;
+        var lootEnd = -1;
+        Session? session = null;
+        session = new Session(files, new BattleRequest(0x11, 60256, [(18, 0, 1), (-1, 0, 0), (-1, 0, 0)]), picture: "APROCH1", loot: (screens, items, money) =>
+        {
+            battlePalette = (uint[])session!.Ui.Canvas.Screen.Palette.Clone();
+            screens.Loot(items, money);
+            lootEnd = session.Frames.Count;
+        });
+        var picture = (byte[])session.LastFrame!.Clone();
+        var result = session.Fight(steps);
+        Assert.Equal(0, result);
+        Assert.NotNull(battlePalette);
+        var after = session.Frames.Skip(lootEnd).ToList();
+        Assert.True(after.Count >= 2, $"{after.Count} frames after the loot screen");
+        foreach (var (pixels, palette) in after)
+        {
+            Assert.Equal(battlePalette, palette);
+            var same = 0;
+            for (var i = 0; i < pixels.Length; i++)
+            {
+                same += pixels[i] == picture[i] ? 1 : 0;
+            }
+            Assert.True(same < pixels.Length / 2, "the picture of before the battle is not shown again");
+        }
+        // the last frame is the battle view; the one before it differs only inside the results box, mid-view
+        var last = after[^1].Pixels;
+        var boxed = after[^2].Pixels;
+        int x0 = 320, y0 = 200, x1 = -1, y1 = -1;
+        for (var y = 0; y < 200; y++)
+        {
+            for (var x = 0; x < 320; x++)
+            {
+                if (last[y * 320 + x] != boxed[y * 320 + x])
+                {
+                    (x0, y0, x1, y1) = (Math.Min(x0, x), Math.Min(y0, y), Math.Max(x1, x), Math.Max(y1, y));
+                }
+            }
+        }
+        Assert.True(x1 >= 0, "the results box was shown");
+        Assert.InRange(x0, 60, 190);
+        Assert.InRange(x1, 190, 319);
+        Assert.InRange(y0, 80, 100);
+        Assert.InRange(y1, 100, 120);
+        // the box's ground is colour 0xFF (show_message's f0e)
+        var ground = 0;
+        for (var y = y0; y <= y1; y++)
+        {
+            for (var x = x0; x <= x1; x++)
+            {
+                ground += boxed[y * 320 + x] == 0xFF ? 1 : 0;
+            }
+        }
+        Assert.True(ground * 2 > (x1 - x0 + 1) * (y1 - y0 + 1), $"box ({x0}, {y0})-({x1}, {y1}): {ground} pixels of colour 0xFF");
+    }
+
+    /// <summary>
+    /// The click is the release: the button pressed on one member and let go on another, the member under the release enters order
+    /// mode (while it is held, the member under the pointer is the selected one, order mode not yet entered).
+    /// </summary>
+    [Fact]
+    public void TheReleaseNotThePressIsTheClick()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:3", "key:space", "wait:5", "ldown:cbt:0", "wait:3");
+        var tb = run.Screen.Tactics!;
+        Assert.Equal(0, tb.Selected);
+        Assert.False(tb.InOrderMode);
+        // members 0 and 2 stand close together: member 3's hot spot is apart from member 0's
+        run.Play("move:cbt:3", "wait:3");
+        Assert.Equal(3, tb.Selected);
+        Assert.False(tb.InOrderMode);
+        run.Play("lup", "wait:3");
+        Assert.True(tb.InOrderMode);
+        Assert.Equal(3, tb.Selected);
+    }
+
+    /// <summary>
+    /// In order mode a held direction key moves the pointer once a combat tick (1 pixel at first), the hover following it; letting the
+    /// key go is a click at the pointer, which there picks a spot on the floor.
+    /// </summary>
+    [Fact]
+    public void TheCursorKeysMoveThePointerAndLettingGoClicks()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:3", "key:space", "wait:5", "key:1", "move:180,140", "wait:3");
+        var tb = run.Screen.Tactics!;
+        Assert.True(tb.InOrderMode);
+        Assert.True(tb.CursorKeysOn);
+        var x0 = run.Ui.Mouse.X;
+        run.Play("kdown:4D", "wait:40");
+        var x1 = run.Ui.Mouse.X;
+        Assert.True(x1 > x0, $"the pointer stayed at x {x0}");
+        Assert.True(x1 - x0 <= 41, $"the pointer moved {x1 - x0} pixels in 41 frames");
+        run.Play("kup:4D", "wait:3");
+        Assert.True(tb.CursorTarget is -2 or -3);
+        var view = new BattlefieldView { CentreColumn = run.Screen.CameraX / 32, CentreRow = run.Screen.CameraY / 16 };
+        Assert.Equal(view.ToMap(run.Ui.Mouse.X, run.Ui.Mouse.Y), (tb.CursorPoint.X, tb.CursorPoint.Y));
+    }
+
+    /// <summary>F10 opens the menu bar from the keyboard: the battle stands still while it is up; Esc closes it with nothing chosen.</summary>
+    [Fact]
+    public void F10OpensTheKeyboardMenuAndTheBattleWaits()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        // the battle starts paused (order mode's pause): Space lets the clock run
+        run.Play("wait:3", "key:space", "wait:5", "key:f10", "wait:2");
+        var tb = run.Screen.Tactics!;
+        var clock = tb.Battle.Clock;
+        run.Play("wait:30", "key:right", "wait:2", "key:down", "wait:30");
+        Assert.Equal(clock, tb.Battle.Clock);
+        run.Play("key:esc", "wait:30");
+        Assert.True(clock != tb.Battle.Clock, $"clock {clock}, paused {tb.Paused}");
+        Assert.False(tb.InOrderMode);
+    }
+
+    /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
+    private sealed class Session : IDisposable
+    {
+        private readonly StepHost _host;
+        private readonly BattleScreens _screens;
+        private readonly BattleRequest _request;
+        private readonly GameState _state;
+
+        public Session(GameFiles files, BattleRequest request, string? picture = null,
+            Action<GameScreens, IList<ItemStack>, Money>? loot = null)
+        {
+            _host = new StepHost();
+            Ui = new GameUi(_host, new GameAssets(files));
+            _state = Simulation.NewGame.Quickstart(WorldData.Load(files), 1, () => 1);
+            var world = WorldData.Load(files);
+            _state.Data = world;
+            var lootScreens = new GameScreens(Ui, new PartyPanel(Ui.Assets), _state, new NoScreens());
+            _screens = new BattleScreens(Ui, () => _state, loot is null ? null : (items, money) => loot(lootScreens, items, money));
+            Assets = new BattleAssets(files);
+            _host.Locate = who => _screens.Current?.HotSpotCentre(who);
+            _request = request;
+            if (picture is not null)
+            {
+                Ui.Canvas.DrawPicture(Ui.Assets.Picture(picture));
+            }
+            Ui.Present();
+        }
+
+        /// <summary>Ends a battle left waiting for steps.</summary>
+        public void Dispose() => _host.Stop();
+
+        public GameUi Ui { get; }
+
+        public BattleAssets Assets { get; }
+
+        public BattleScreen Screen => _screens.Current!;
+
+        public byte[]? LastFrame => _host.Last?.Pixels;
+
+        public List<(byte[] Pixels, uint[] Palette)> Frames => _host.Frames;
+
+        private bool _started;
+
+        /// <summary>Plays steps in the battle (starting it the first time) and stops it afterwards; the battle can go on with more steps.</summary>
+        public void Play(params string[] steps)
+        {
+            _host.Queue(steps);
+            if (_started)
+            {
+                _host.Resume();
+                Rethrow();
+                return;
+            }
+            _started = true;
+            _host.Active = true;
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    _screens.Battle(_request);
+                }
+                catch (QuitGameException)
+                {
+                }
+                catch (Exception e)
+                {
+                    _error = e;
+                }
+                finally
+                {
+                    _host.Finished();
+                }
+            }, 16 * 1024 * 1024) { IsBackground = true };
+            thread.Start();
+            _host.WaitIdle();
+            Rethrow();
+        }
+
+        private Exception? _error;
+
+        private void Rethrow()
+        {
+            if (_error is not null)
+            {
+                throw new InvalidOperationException("the battle failed", _error);
+            }
+        }
+
+        /// <summary>Plays the steps until the battle ends; returns battle_result.</summary>
+        public int Fight(IEnumerable<string> steps)
+        {
+            _host.Queue(steps);
+            _host.Recording = true;
+            _host.EndWhenDone = true;
+            _host.Active = true;
+            return _screens.Battle(_request);
+        }
+    }
+
+    /// <summary>
+    /// The headless host's step semantics (key, click, wait; a click is held over two frames; cbt:i points at a combatant's hot spot). Run on
+    /// its own thread by <see cref="Session.Play"/>, it pauses when its steps are done until more are queued.
+    /// </summary>
+    private sealed class StepHost : IHost, IVideo, IInput, IClock, IAudio
+    {
+        private readonly Queue<string> _steps = new();
+        private readonly Queue<int> _keys = new();
+        private readonly Queue<(int, bool)> _transitions = new();
+        private bool _held;
+        private readonly SemaphoreSlim _idle = new(0), _go = new(0);
+        private int _idleFrames, _clickPumps;
+        private long _now;
+        private bool _finished;
+
+        public Func<int, (int X, int Y)?>? Locate { get; set; }
+        public Screen? Last { get; private set; }
+        public List<(byte[] Pixels, uint[] Palette)> Frames { get; } = [];
+        public bool Recording { get; set; }
+        public bool EndWhenDone { get; set; }
+
+        /// <summary>A battle is being played (before it, a frame with no steps left just passes).</summary>
+        public bool Active { get; set; }
+
+        public IVideo Video => this;
+        public IInput Input => this;
+        public IAudio Audio => this;
+        public IClock Clock => this;
+        public bool QuitRequested { get; private set; }
+        public MouseState Mouse { get; private set; } = new(160, 100, MouseButtons.None);
+        public bool ShiftHeld => false;
+        public long Milliseconds => _now;
+
+        public void MovePointer(int x, int y) => Mouse = Mouse with { X = x, Y = y };
+
+        public bool TryReadKeyTransition(out int scanCode, out bool released)
+        {
+            if (_transitions.TryDequeue(out var t))
+            {
+                (scanCode, released) = t;
+                return true;
+            }
+            (scanCode, released) = (0, false);
+            return false;
+        }
+
+        public void Queue(IEnumerable<string> steps)
+        {
+            foreach (var s in steps)
+            {
+                _steps.Enqueue(s);
+            }
+        }
+
+        public void Resume()
+        {
+            _go.Release();
+            WaitIdle();
+        }
+
+        public void WaitIdle() => _idle.Wait();
+
+        public void Stop()
+        {
+            EndWhenDone = true;
+            _go.Release();
+        }
+
+        public void Finished()
+        {
+            _finished = true;
+            _idle.Release();
+        }
+
+        public void Present(Screen screen)
+        {
+            Last = screen;
+            if (Recording)
+            {
+                Frames.Add(((byte[])screen.Pixels.Clone(), (uint[])screen.Palette.Clone()));
+            }
+        }
+
+        public void Pump()
+        {
+            _now += 16;
+            if (Mouse.Buttons != MouseButtons.None && !_held)
+            {
+                if (++_clickPumps < 2)
+                {
+                    return;
+                }
+                _clickPumps = 0;
+                Mouse = Mouse with { Buttons = MouseButtons.None };
+                return;
+            }
+            if (_idleFrames > 0)
+            {
+                _idleFrames--;
+                return;
+            }
+            if (!_steps.TryDequeue(out var step))
+            {
+                if (!Active)
+                {
+                    return;
+                }
+                if (EndWhenDone || _finished)
+                {
+                    QuitRequested = true;
+                    return;
+                }
+                // the steps are done: let the test look, then go on with the next ones
+                _idle.Release();
+                _go.Wait();
+                if (!_steps.TryDequeue(out step))
+                {
+                    QuitRequested = true;
+                    return;
+                }
+            }
+            var (kind, value) = (step.Split(':', 2)[0], step.Contains(':') ? step.Split(':', 2)[1] : "");
+            switch (kind)
+            {
+                case "key":
+                    _keys.Enqueue(value switch
+                    {
+                        "space" => Keys.Space,
+                        "enter" => Keys.Enter,
+                        "esc" => Keys.Escape,
+                        "f10" => Keys.F10,
+                        "down" => Keys.Down,
+                        "up" => Keys.Up,
+                        "right" => Keys.Right,
+                        "left" => Keys.Left,
+                        _ => Keys.ForCharacter(value[0]),
+                    });
+                    _idleFrames = 2;
+                    break;
+                case "click":
+                    var (x, y) = Point(value);
+                    Mouse = new MouseState(x, y, MouseButtons.Left);
+                    _idleFrames = 2;
+                    break;
+                case "wait":
+                    _idleFrames = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "ldown":
+                case "rdown":
+                    // a button held until lup / rup (move: the pointer moves with it held)
+                    var (hx, hy) = Point(value);
+                    _held = true;
+                    Mouse = new MouseState(hx, hy, kind == "rdown" ? MouseButtons.Right : MouseButtons.Left);
+                    _idleFrames = 2;
+                    break;
+                case "move":
+                    var (mx, my) = Point(value);
+                    Mouse = Mouse with { X = mx, Y = my };
+                    _idleFrames = 2;
+                    break;
+                case "lup":
+                case "rup":
+                    _held = false;
+                    Mouse = Mouse with { Buttons = MouseButtons.None };
+                    _idleFrames = 2;
+                    break;
+                case "kdown":
+                case "kup":
+                    _transitions.Enqueue((Convert.ToInt32(value, 16), kind == "kup"));
+                    _idleFrames = 1;
+                    break;
+            }
+        }
+
+        private (int, int) Point(string value)
+        {
+            if (value.StartsWith("cbt:", StringComparison.Ordinal))
+            {
+                return Locate?.Invoke(int.Parse(value[4..], System.Globalization.CultureInfo.InvariantCulture)) ?? (0, 0);
+            }
+            var parts = value.Split(',');
+            return (int.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture));
+        }
+
+        public bool TryReadKey(out int key) => _keys.TryDequeue(out key);
+
+        public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
+
+        public void PresentText(TextScreen screen)
+        {
+        }
+
+        public void PlayMusic(int tune)
+        {
+        }
+
+        public void StopMusic()
+        {
+        }
+
+        public void PlaySound(int effect)
+        {
+        }
+    }
+
+    private sealed class NoScreens : IGameScreens
+    {
+        public void Barter(int shop, string name, long categories) { }
+        public void Camp(int mode) { }
+        public void Alchemy(int member, int place) { }
+        public void ItemStore() { }
+        public void CharacterSheet(int member) { }
+        public void PartyInfo() { }
+        public void Loot(IList<ItemStack> items, Money money) { }
+        public int Battle(BattleRequest request) => 0;
+    }
+}

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The MT-32 / CM-32L emulation (Munt's mt32emu, LGPL-2.1-or-later) is used as a separate library
+       through its NuGet binding; none of its source is part of this repository. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Darklands.Audio\Darklands.Audio.csproj" />
+    <PackageReference Include="Mt32emu.net" Version="1.0.0-rc.1" />
+  </ItemGroup>
+
+</Project>

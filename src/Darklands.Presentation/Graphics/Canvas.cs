@@ -1,0 +1,193 @@
+using Darklands.Content.Formats.Graphics;
+using Darklands.Platform;
+
+namespace Darklands.Presentation.Graphics;
+
+/// <summary>
+/// Drawing on the game screen: pictures, filled rectangles, saved regions and the palette.
+/// All coordinates are screen pixels; drawing is clipped to the screen.
+/// </summary>
+public sealed class Canvas(Screen screen)
+{
+    public const int Width = Screen.Width;
+    public const int Height = Screen.Height;
+
+    private readonly byte[] _pixels = screen.Pixels;
+
+    public Screen Screen => screen;
+
+    public byte this[int x, int y]
+    {
+        get => (uint)x < Width && (uint)y < Height ? _pixels[y * Width + x] : (byte)0;
+        set
+        {
+            if ((uint)x < Width && (uint)y < Height)
+            {
+                _pixels[y * Width + x] = value;
+            }
+        }
+    }
+
+    public void Clear(byte color) => Array.Fill(_pixels, color);
+
+    public void Fill(int x, int y, int width, int height, byte color)
+    {
+        for (var row = Math.Max(0, y); row < Math.Min(Height, y + height); row++)
+        {
+            var from = Math.Max(0, x);
+            var to = Math.Min(Width, x + width);
+            if (to > from)
+            {
+                _pixels.AsSpan(row * Width + from, to - from).Fill(color);
+            }
+        }
+    }
+
+    /// <summary>The four lines of a frame from (x, y) to (x + width, y + height), both corners included.</summary>
+    public void Outline(int x, int y, int width, int height, byte color)
+    {
+        Fill(x, y, width + 1, 1, color);
+        Fill(x, y + height, width + 1, 1, color);
+        Fill(x, y, 1, height + 1, color);
+        Fill(x + width, y, 1, height + 1, color);
+    }
+
+    /// <summary>Copies a rectangle of a saved screen (the game's back page) onto the screen.</summary>
+    public void CopyFrom(SavedScreen page, int x, int y, int width, int height)
+    {
+        for (var row = Math.Max(0, y); row < Math.Min(Height, y + height); row++)
+        {
+            var from = Math.Max(0, x);
+            var to = Math.Min(Width, x + width);
+            if (to > from)
+            {
+                Array.Copy(page.Pixels, row * Width + from, _pixels, row * Width + from, to - from);
+            }
+        }
+    }
+
+    /// <summary>Draws an image; colour 0 is transparent when <paramref name="transparent"/> is set.</summary>
+    public void Draw(IndexedImage image, int x, int y, bool transparent = false) =>
+        Draw(image.Pixels, image.Width, image.Height, x, y, transparent);
+
+    public void Draw(ReadOnlySpan<byte> pixels, int width, int height, int x, int y, bool transparent = false)
+    {
+        for (var row = 0; row < height; row++)
+        {
+            var sy = y + row;
+            if ((uint)sy >= Height)
+            {
+                continue;
+            }
+            for (var column = 0; column < width; column++)
+            {
+                var sx = x + column;
+                var color = pixels[row * width + column];
+                if ((uint)sx < Width && !(transparent && color == 0))
+                {
+                    _pixels[sy * Width + sx] = color;
+                }
+            }
+        }
+    }
+
+    /// <summary>Draws an image turned over left to right and/or top to bottom; colour 0 is transparent.</summary>
+    public void DrawMirrored(IndexedImage image, int x, int y, bool flipX, bool flipY)
+    {
+        for (var row = 0; row < image.Height; row++)
+        {
+            for (var column = 0; column < image.Width; column++)
+            {
+                var color = image.Pixels[(flipY ? image.Height - 1 - row : row) * image.Width + (flipX ? image.Width - 1 - column : column)];
+                if (color != 0)
+                {
+                    this[x + column, y + row] = color;
+                }
+            }
+        }
+    }
+
+    /// <summary>Draws a picture and takes over its palette entries (the colours it defines).</summary>
+    public void DrawPicture(Pic picture, int x = 0, int y = 0, bool transparent = false)
+    {
+        UsePalette(picture);
+        Draw(picture.Image, x, y, transparent);
+    }
+
+    /// <summary>Copies the colours a picture defines into the current palette.</summary>
+    public void UsePalette(Pic picture)
+    {
+        if (picture.EmbeddedPalette is { } chunk)
+        {
+            for (var i = chunk.StartIndex; i <= chunk.EndIndex && i < chunk.Entries.Count; i++)
+            {
+                if (chunk.Entries[i] is { } rgb)
+                {
+                    SetColor(i, rgb);
+                }
+            }
+        }
+    }
+
+    public void UsePalette(Palette256 palette)
+    {
+        for (var i = 0; i < Palette256.ColorCount; i++)
+        {
+            SetColor(i, palette[i]);
+        }
+    }
+
+    public void SetColor(int index, Rgb24 rgb) =>
+        screen.Palette[index] = 0xFF000000u | (uint)rgb.R << 16 | (uint)rgb.G << 8 | rgb.B;
+
+    /// <summary>Replaces one colour by another inside a rectangle (used to grey or highlight text).</summary>
+    public void Recolor(int x, int y, int width, int height, byte from, byte to)
+    {
+        for (var row = Math.Max(0, y); row < Math.Min(Height, y + height); row++)
+        {
+            for (var column = Math.Max(0, x); column < Math.Min(Width, x + width); column++)
+            {
+                ref var p = ref _pixels[row * Width + column];
+                if (p == from)
+                {
+                    p = to;
+                }
+            }
+        }
+    }
+
+    /// <summary>A copy of a screen region, to restore later.</summary>
+    public SavedRegion Save(int x, int y, int width, int height)
+    {
+        var copy = new byte[width * height];
+        for (var row = 0; row < height; row++)
+        {
+            for (var column = 0; column < width; column++)
+            {
+                copy[row * width + column] = this[x + column, y + row];
+            }
+        }
+        return new SavedRegion(x, y, width, height, copy);
+    }
+
+    public void Restore(SavedRegion region) => Draw(region.Pixels, region.Width, region.Height, region.X, region.Y);
+
+    /// <summary>Puts back a rectangle the way the driver draws a saved picture: its colour-0 pixels are transparent.</summary>
+    // orig: gfx_save_rect drv+0x0BB7 (root 047C:04D5) keeps a rectangle as rows of [count, skip, pixels] without the zeros at the ends of
+    //   each row (drv+0x0B15); gfx_draw_pic drv+0x0D7D / drv+0x0D9E (root 047C:05A5) draws such a picture skipping every colour-0 pixel;
+    //   the callers that save under a box recolour 0 to 5 around the save to keep their black. checked against asm
+    public void RestoreTransparent(SavedRegion region) => Draw(region.Pixels, region.Width, region.Height, region.X, region.Y, transparent: true);
+
+    /// <summary>A copy of the whole screen and palette.</summary>
+    public SavedScreen SaveScreen() => new((byte[])_pixels.Clone(), (uint[])screen.Palette.Clone());
+
+    public void Restore(SavedScreen saved)
+    {
+        saved.Pixels.CopyTo(_pixels, 0);
+        saved.Palette.CopyTo(screen.Palette, 0);
+    }
+}
+
+public sealed record SavedRegion(int X, int Y, int Width, int Height, byte[] Pixels);
+
+public sealed record SavedScreen(byte[] Pixels, uint[] Palette);

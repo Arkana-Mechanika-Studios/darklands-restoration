@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Darklands.Audio\Darklands.Audio.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Audio.Mt32\Darklands.Audio.Mt32.csproj" />
+  </ItemGroup>
+</Project>

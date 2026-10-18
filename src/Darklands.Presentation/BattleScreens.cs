@@ -1,0 +1,140 @@
+using Darklands.Cards;
+using Darklands.Core;
+using Darklands.Core.Characters;
+using Darklands.Core.Economy;
+using Darklands.Presentation.Battles;
+
+namespace Darklands.Presentation;
+
+/// <summary>
+/// The battle the game opens for a card (<see cref="IGameScreens.Battle"/>): builds the
+/// battlefield for the request, runs the tactical screen until the battle ends, hands the loot
+/// over and returns the result code (0 won, 2 fled, 3 lost, 4 surrendered, 5 all down …).
+/// </summary>
+// orig: battle_run R002+0x0000 (0E76:0000) draft
+public sealed class BattleScreens
+{
+    private readonly GameUi _ui;
+    private readonly Func<GameState> _state;
+    private readonly Action<IList<ItemStack>, Money>? _loot;
+    private BattleAssets? _assets;
+
+    /// <param name="ui">The screen and the player.</param>
+    /// <param name="state">The game in progress (party, random generator, place, date, difficulty).</param>
+    /// <param name="loot">Called with the loot of a won battle (the game's loot screen, <see cref="IGameScreens.Loot"/>); null keeps it in <see cref="LastLoot"/>.</param>
+    public BattleScreens(GameUi ui, Func<GameState> state, Action<IList<ItemStack>, Money>? loot = null)
+    {
+        _ui = ui;
+        _state = state;
+        _loot = loot;
+    }
+
+    /// <summary>The battle screen of the battle running (or of the last one); for tests and the headless host.</summary>
+    public BattleScreen? Current { get; private set; }
+
+    /// <summary>A battle is running.</summary>
+    public bool Fighting { get; private set; }
+
+    /// <summary>The terrain code under the party on the world map (DS:D843); by default the game state's PartyTerrain.</summary>
+    public Func<int>? WorldTerrain { get; set; }
+
+    /// <summary>What the last battle left as loot (items and money).</summary>
+    public (IList<ItemStack> Items, Money Money)? LastLoot { get; private set; }
+
+    /// <summary>The cleared-level memory persists between battles at one place (it is the game state's, saved with the game).</summary>
+    public Core.Battles.Generation.BattlefieldMemory Memory => _state().Battlefield;
+
+    /// <summary>
+    /// Runs one battle. <see cref="BattleRequest.Battlefield"/> is the battlefield type (the
+    /// card's <c>battle_enemy</c>, or <c>run_battle</c>'s first argument), <see cref="BattleRequest.Seed"/>
+    /// the battle seed, the groups the three (enemy type, quality, number) specs.
+    /// </summary>
+    public int Battle(BattleRequest request)
+    {
+        var screen = new BattleScreen(_ui, Assets, _state(), this);
+        Current = screen;
+        Memory.BattlesFought++;
+        Fighting = true;
+        int result;
+        try
+        {
+            result = screen.Run(request);
+        }
+        finally
+        {
+            Fighting = false;
+        }
+        LastResultCard = screen.ResultCard;
+        // orig: R002+0x0000 at its end: `combat_flags &= 0xFE10` (bits 1, 2, 4, 8, 0x20, 0x40 and 0x80 cleared after every battle); tests: RevisitTests
+        _state().BattleOrders.Flags &= 0xFE10;
+        return result;
+    }
+
+    /// <summary>The character sheet of a member (F1..F5 and the portraits during a battle); null: none.</summary>
+    public Action<int>? CharacterSheet { get; set; }
+
+    /// <summary>The party information screen (Party, Party Info / F6 during a battle); null: none.</summary>
+    public Action? PartyInfo { get; set; }
+
+    /// <summary>Save Game inside a battle (Alt-S and the Game menu while the battle offers it): the game's save of the battle running.</summary>
+    public Action<Core.Battles.Tactics.TacticalBattle>? Save { get; set; }
+
+    /// <summary>Load Saved Game inside a battle (Alt-L and the Game menu): the game's load; a loaded game leaves the battle.</summary>
+    public Action? Load { get; set; }
+
+    /// <summary>DS:0FD8 " finished" (DS:11F2): the Orders entry "&lt;name&gt; finished".</summary>
+    public const int FinishedText = 0x0FD8;
+
+    /// <summary>"You can't view &lt;name&gt; at this time." (R136+0x7E72 + name + R136+0x7E82, R022 04E4).</summary>
+    internal string CannotView(string name) => FarText(0x0212) + name + FarText(0x0222);
+
+    /// <summary>"Do you really want to surrender?" (a literal of R022 03E4, DS:23B2).</summary>
+    internal string SurrenderQuestion => Assets.Executable.String(0x23B2);
+
+    /// <summary>"Select first" … "Select fourth" (R022 051C: "Select %Fs" with the ordinals R136+0x7EC7[k]).</summary>
+    internal string SelectOrdinal(int k)
+    {
+        var p = Assets.Executable.Far(0x286B, 0x0267 + 4 * k, 4);
+        return "Select " + FarText(p[0] | p[1] << 8);
+    }
+
+    /// <summary>"BattleResults - victory" … (battle_run, the box after the battle; result 8 "leave").</summary>
+    // orig: battle_run R002+0x0000 (0E76:0000) draft (the switch on DS:A893)
+    internal static string ResultText(int result) => "BattleResults - " + result switch
+    {
+        0 => "victory",
+        2 => "retreat",
+        3 => "defeat",
+        4 => "surrender",
+        5 => "all dead",
+        8 => "leave",
+        _ => "",
+    };
+
+    private string FarText(int offset)
+    {
+        var bytes = Assets.Executable.Far(0x286B, offset, 60);
+        var end = bytes.IndexOf((byte)0);
+        return System.Text.Encoding.Latin1.GetString(end < 0 ? bytes : bytes[..end]);
+    }
+
+    internal BattleAssets Assets => _assets ??= new BattleAssets(_ui.Assets.Files);
+
+    /// <summary>The last battlefield and the place it belongs to (modes 1..3 go back onto it).</summary>
+    public Core.Battles.Generation.GeneratedBattlefield? LastField { get; internal set; }
+
+    /// <summary>The generator globals of the whole program (DS:E051 …), kept across battles and loads.</summary>
+    public Core.Battles.Generation.GenerationProcessMemory GenerationMemory { get; } = new();
+
+    public int LastFieldLocation { get; internal set; } = -1;
+
+    /// <summary>The card the last battle left for (battle_args: the level's card for its result).</summary>
+    public int LastResultCard { get; private set; }
+
+    /// <summary>The loot of a pile or of the victory: to the loot screen, or kept in <see cref="LastLoot"/>.</summary>
+    internal void TakeLoot(IList<ItemStack> items, Money money)
+    {
+        LastLoot = (items, money);
+        _loot?.Invoke(items, money);
+    }
+}

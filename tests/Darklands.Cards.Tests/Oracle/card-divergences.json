@@ -1,0 +1,156 @@
+[
+  {
+    "card": "005",
+    "run": "*",
+    "contains": "end: original 'next 0', C# 'next ",
+    "why": "BattleStandIn (R045 188B:01E4) DIVERGENCE: the original goes to screen 0, whose table entry points into data (the game would crash); the C# goes back to the card before."
+  },
+  {
+    "card": "05F",
+    "run": "*",
+    "contains": "",
+    "dropCSharp": "show $Sneak00 common",
+    "why": "SneakingThroughTheHall DIVERGENCE: the original never calls card_load (it keeps the previous card's picture until the engine redraws); the C# shows the card at once. The oracle loads the card's own texts first, so everything after the C#'s show is compared."
+  },
+  {
+    "card": "062",
+    "run": "*",
+    "contains": "",
+    "why": "Card 0x62 is the end of the game: the main loop (root 03A1:000A) stops when a card returns 0x62 and never runs this table entry; run directly, the original loads \"$NoGo00.msg.msg\", which does not exist, and its catalog code jumps into data."
+  },
+  {
+    "card": "02F",
+    "run": "*",
+    "contains": "",
+    "why": "CityWallSallyPort BUG/DIVERGENCE: the force-the-door chance reads the Strength of member number <highest Strength value> (DS:8DFC used as an index): the original reads memory past the party table, the C# an empty member (0). Every run whose hint or action uses that chance differs."
+  },
+  {
+    "card": "00C",
+    "run": "*",
+    "contains": "no C# card",
+    "why": "Card 0x0C is the overland map (R030 1462, the travel screen): it is ported as DarklandsGame.Travel, not as a card script, and its input is the map's, which the card policy does not drive."
+  },
+  {
+    "card": "02A",
+    "run": "*",
+    "contains": "hint 0: ",
+    "why": "VillageGraveyard UNCERTAIN: the hint handlers return a struct res they never fill in (only msg_buf gets \"Success is assured.\"): the chance and member are stack leftovers (-558 and 2 here; the display shows the text for a negative chance); the C# says the text for the whole party."
+  },
+  {
+    "card": "07D",
+    "run": "*",
+    "contains": "",
+    "ignoreTexts": true,
+    "why": "CloakedKidnapperOnTheRoad DIVERGENCE: the original never calls card_options (the menu works on whatever option list the screen last drew) and shows text blocks its .MSG may not have; the C# offers its first block. The texts are compared without their words, everything else in full."
+  },
+  {
+    "card": "109",
+    "run": "*",
+    "contains": "",
+    "ignoreTexts": true,
+    "why": "UnfinishedBanditEncounter_MeetB03 DIVERGENCE: the original never calls card_options (the menu works on whatever option list the screen last drew) and shows text blocks its .MSG may not have; the C# offers its first block. The texts are compared without their words, everything else in full."
+  },
+  {
+    "card": "10B",
+    "run": "*",
+    "contains": "",
+    "ignoreTexts": true,
+    "why": "UnfinishedArmyScouts_Meeta03 DIVERGENCE: the original never calls card_options (the menu works on whatever option list the screen last drew) and shows text blocks its .MSG may not have; the C# offers its first block. The texts are compared without their words, everything else in full."
+  },
+  {
+    "card": "10C",
+    "run": "*",
+    "contains": "",
+    "ignoreTexts": true,
+    "why": "NorthSeaVoyage DIVERGENCE: the original never calls card_options (the menu works on whatever option list the screen last drew) and shows text blocks its .MSG may not have; the C# offers its first block. The texts are compared without their words, everything else in full."
+  },
+  {
+    "card": "10E",
+    "run": "*",
+    "contains": "",
+    "ignoreTexts": true,
+    "why": "EasternBalticVoyage DIVERGENCE: the original never calls card_options (the menu works on whatever option list the screen last drew) and shows text blocks its .MSG may not have; the C# offers its first block. The texts are compared without their words, everything else in full."
+  },
+  {
+    "card": "110",
+    "run": "*",
+    "contains": "",
+    "ignoreTexts": true,
+    "why": "RiverboatLanding DIVERGENCE: the original never calls card_options (the menu works on whatever option list the screen last drew) and shows text blocks its .MSG may not have; the C# offers its first block. The texts are compared without their words, everything else in full."
+  },
+  {
+    "card": "0E9",
+    "run": "*",
+    "contains": "",
+    "ignoreTexts": true,
+    "why": "SourceOfTheHorrors_MineH01 DIVERGENCE: without the horror's quest (a negative detail) the original draws no option block (the menu keeps what was shown); the C# uses the block the last card left. Texts compared without their words."
+  },
+  {
+    "card": "073",
+    "run": "*",
+    "contains": "",
+    "dropCSharp": "show $CityE00 ",
+    "why": "BeforeTheCityWalls DIVERGENCE: the original only fills the card name and picture buffers (no card_load; the engine draws them later); the C# shows the card at once. The oracle loads the card's own texts first, so everything after the C#'s show is compared."
+  },
+  {
+    "card": "037",
+    "run": "*",
+    "contains": "C# 'text 15 0 ",
+    "why": "HandbillThugs_Polit01 UNCERTAIN: the potion pop-up handlers never set the chance (struct res left unset): the action rolls against a stack leftover. Under the oracle the leftover lets the potion work (texts 11..14); the C# takes it as negative (StalePopupChance), so the potion always fails (text 15)."
+  },
+  {
+    "card": "0B8",
+    "run": "*",
+    "contains": "hint 0: ",
+    "why": "RebelsBeforeTheCouncilHall UNCERTAIN: the first line's hint handler (R090 1838:046C) sets only r.a; the member (r.b) is a stack leftover (2 under the oracle); the C# names the speaker it chose."
+  },
+  {
+    "card": "06C",
+    "run": "*",
+    "contains": "hint 9: ",
+    "why": "The leave line's hint handler fills only msg_buf (\"Success is assured.\") and returns a struct res it never sets: the chance is a stack leftover (-558 under the oracle, which the display shows as the text); the C# says the text."
+  },
+  {
+    "card": "073",
+    "run": "*",
+    "contains": "text 9 1 ",
+    "why": "BeforeTheCityWalls DIVERGENCE: examining the walls at night shows block 9, which $CityE00.msg does not have: the original prints the bytes after the last block, the C# an empty text."
+  },
+  {
+    "card": "0C2",
+    "run": "*",
+    "contains": "",
+    "why": "Card 0xC2 (\"$Forei03\") has no message file in MSGFILES: the original's msg_load (R043 150B) takes the size of an entry catalog_find did not find and file_load_far runs off into memory outside the loaded code; the C# finds no texts and shows empty blocks. No other card script sets next_card to 0xC2."
+  },
+  {
+    "card": "*",
+    "run": "*",
+    "contains": "\"7E\":\"FF\"}, C#",
+    "why": "Inventory.KeepEach DIVERGENCE: when every roll of keep_items_pct fails the original removes one stack more than the pack holds and leaves the item count at -1 (the next item added is lost); the C# pack ends empty (count 0). The record's other bytes are compared."
+  },
+  {
+    "card": "16B",
+    "run": "*",
+    "contains": "",
+    "dropCSharp": "text 0 0 ",
+    "why": "EmptyPrisonCell DIVERGENCE: the original draws block 0 as an option list (card_options) and returns at once, with no menu (the oracle records texts and menus as they are read); the C# shows the block as a text and waits. Everything else is compared."
+  },
+  {
+    "card": "151",
+    "run": "*",
+    "contains": "",
+    "why": "CollectorsCommission runs on the quest event saved_card names; the oracle's start state has none (saved_card 0, no event in slot 0): the original reads the type byte of the unused record events[0] points to (a value no case has: default text 0), the C# an absent event (type 0, text 1). Without its quest the card cannot be compared."
+  },
+  {
+    "card": "119",
+    "run": "*",
+    "contains": "original '<end>'",
+    "why": "Card 0x119 ($MeetH01) UNCERTAIN: its registration (R114 18D3:08B0) sets the saint pop-up handlers but not the item ones (DS:EB0A), so a potion chosen in the pop-up calls an earlier card's handler; the oracle starts with none (a null pointer: the original jumps to 0000:0000). The C# uses the default pop-up hint."
+  },
+  {
+    "card": "0AB",
+    "run": "*",
+    "contains": "original 'menu 0 [1111]",
+    "why": "CityLeavingDirection DIVERGENCE: no line changes next_card, so the original offers the menu again for ever (its loop runs while next_card is 0x0C); the C# ends the card after one choice, with the same next card. The first menu and choice are compared."
+  }
+]

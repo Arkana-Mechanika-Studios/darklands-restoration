@@ -1,0 +1,447 @@
+using Darklands.Content;
+using Darklands.Platform;
+using Darklands.Presentation.Graphics;
+
+namespace Darklands.Presentation;
+
+/// <summary>The player asked to leave the game (window closed or Alt-Q confirmed).</summary>
+// orig: quit_to_dos root 0000:13A0 draft (matches the bytes in the file's matching group): after "Quit to DOS? y/n" -> yes: shutdown, delete the temporary save "dk.tmp", exit(0); also exit_if_requested root 0000:1338 when the exit flag is set
+// DIVERGENCE: the game leaves through an exception that unwinds to DarklandsGame.Run (nothing to shut down on a PC host, no dk.tmp)
+public sealed class QuitGameException : Exception
+{
+    public QuitGameException() : base("The player quit the game.") { }
+}
+
+/// <summary>Nobody is left in the party: the death film has been shown and the game is over.</summary>
+// orig: hours_pass R029+0x255A and run_battle R029+0x2278 end the program with exit_ after the death film
+// DIVERGENCE: the original exits to DOS (exit_) after the death film; here the player comes back to the start screen.
+public sealed class GameOverException : Exception
+{
+    public GameOverException() : base("The party has perished.") { }
+}
+
+/// <summary>One thing the player did: a key press, or a mouse click at a screen position.</summary>
+// orig: key_pressed()/get_key() of the graphics driver (root 047C:073D / root 047C:0744, root 047C:073D and 047C:0744, asm, BIOS scan code in the high byte and the character in the low) and the mouse driver's click record (struct mouse { f0, click, x, y } returned by root 047C:1320(6, 0, 0, 0)); status asm
+// DIVERGENCE: the original polls: a loop tests key_pressed(), mouse_buttons (bit 1 left, 2 right, held) and the click counter itself; this record is one event of an edge-triggered queue, so a button held across screens produces one PlayerAction, not many.
+public readonly record struct PlayerAction(int Key, int X, int Y, MouseButtons Click)
+{
+    public bool IsKey => Key != Keys.None;
+
+    public bool IsLeftClick => (Click & MouseButtons.Left) != 0;
+
+    public bool IsRightClick => (Click & MouseButtons.Right) != 0;
+}
+
+/// <summary>
+/// The screen and the player, for code that runs step by step like the original: draw,
+/// then wait for the player. Every wait keeps the window responsive and shows the pointer.
+/// </summary>
+// orig: the screen/key/mouse/timing calls the C screens use directly: gfx_* (root 047c, asm), key_pressed/get_key, menu_bar_run root 0000:0000 (which calls hot_keys on every poll, see HotKeys), delay_ticks R030+0x3096 (1767:0046) matched; tests: none (needs a host)
+// DIVERGENCE: waits sleep 16 ms per frame instead of spinning; the pointer (the COMMONSP.IMG gauntlet) is drawn into a copy of the screen (the original draws the mouse cursor through the driver); F12 saves a screenshot (host feature).
+public sealed class GameUi
+{
+    private const int FrameMilliseconds = 16;
+
+    private readonly IHost _host;
+    private readonly Screen _screen = new();
+    private readonly Screen _shown = new();
+    private MouseButtons _previousButtons;
+    private bool _leftWasDown;
+    private int _leftReleases;
+    private int _lastReleaseX;
+    private int _lastReleaseY;
+
+    public GameUi(IHost host, GameAssets assets)
+    {
+        _host = host;
+        Assets = assets;
+        Canvas = new Canvas(_screen);
+        // C: 16..255 keep the VGA mode's colours until a picture sets them; 0..15 are the game's start-up colours
+        //   (set here too so screens shown without the start-up sequence, e.g. the headless host's, have them).
+        Canvas.UsePalette(Content.Formats.Graphics.Palette256.DefaultVga);
+        UseStartupColors();
+    }
+
+    /// <summary>Sets colours 0..15 to the game's start-up colours (colour 5 black, 6 brown); pictures only define 16..255.</summary>
+    // orig: root 03A1:000A, right after the opening: the driver's EGA palette entry (root thunk 047C:0584) with the list at DS:01C0
+    //   (see Palette.StartupColors); the graphics mode switch and the opening's animations had set all 256 colours before.
+    public void UseStartupColors()
+    {
+        for (var i = 0; i < Palette.StartupColors.Count; i++)
+        {
+            Canvas.SetColor(i, Palette.StartupColors[i]);
+        }
+    }
+
+    public Canvas Canvas { get; }
+
+    public GameAssets Assets { get; }
+
+    /// <summary>The font of slot 1 (font 0 of FONTS.FNT, 6 pixels high): the side window, the screen pages, the party panel's pages, the menu bar.</summary>
+    // orig: the window records in DGROUP (page, x, y, last column, last row, mode, colour, background, font at +0x10): DS:00F2 (the
+    //   side window, pointer DS:0104), DS:0106 (DS:0118), DS:0156 (DS:0168, the panel's page), DS:017E (DS:0190), DS:0192 (DS:01A4)
+    //   have font 1; the menu bar loop root 0000:0000 sets the card window's font to 1 while the bar runs. checked against the DS bytes
+    // C: read on first use: the program start checks FONTS.FNT where the original loads it (with the graphics driver).
+    public TextPainter Text => _text ??= new TextPainter(Assets.Font(1));
+
+    private TextPainter? _text;
+
+    /// <summary>The font of slot 3 (font 2 of FONTS.FNT, 7 pixels high): the card window (card texts, the hourglass, the message boxes).</summary>
+    // orig: the card window (pointer DS:017C -> the record DS:016A: page 0, x 0x3C, last column 0x103, colours 15 / 7, font 3);
+    //   DS:012E and DS:0142 (pointer DS:0154) have font 3 too; the load-game screen R037+0x8B76 (1C7D:09C6) sets the card window's font
+    //   to 3 again. The driver's font slot n is font n - 1 of FONTS.FNT (drv+0x13A4: the slot indexes the offset table at the start of
+    //   the file the loader root 047C:07CE reads behind the driver). checked against asm and the DS bytes; tests: tools/visuals/compare.py
+    public TextPainter CardText => _cardText ??= new TextPainter(Assets.Font(3));
+
+    private TextPainter? _cardText;
+
+    public IAudio Audio => _host.Audio;
+
+    /// <summary>The host's clock (real-time screens such as the battle).</summary>
+    public IClock Clock => _host.Clock;
+
+    /// <summary>The game's timer: the clock of the music and the animations.</summary>
+    public IGameTimer Timer => _host.Timer;
+
+    /// <summary>Receives a line for each step of a timed sequence (the animations' cels); hosts write it to a trace.</summary>
+    public Action<string>? Trace { get; set; }
+
+    /// <summary>Options toggled by the hot keys (sound effects, music).</summary>
+    // orig: opt_sound / opt_music (DGROUP bytes 01BF / 01BE, saved with the game)
+    public GameOptions Options { get; set; } = new();
+
+    /// <summary>Plays a music cue unless music is off; then it silences instead.</summary>
+    // orig: music_play = thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) `if (opt_music) sound_play(x); else sound_play(1);` (sound_play(1) stops the music)
+    public void PlayMusic(int tune)
+    {
+        Audio.PlayMusic(Darklands.Audio.GameSounds.MusicNumber(tune, Options.Music));
+    }
+
+    /// <summary>music_play(5): the number of the piece playing (with music off the stop is played instead and its AX given).</summary>
+    // orig: thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) matched; its callers keep the AX the driver left (GameSounds.CurrentPiece)
+    public int MusicPlaying() => Darklands.Audio.GameSounds.RequestCurrentPiece(Audio, Options.Music);
+
+    /// <summary>The piece kept to be played back (the prayer screen, the camp, the map and the shell game share it).</summary>
+    // orig: DS:9C3D (an int of the game's data, zero at start: past the data image's initialised bytes)
+    public System.Runtime.CompilerServices.StrongBox<int> SavedMusic { get; } = new(0);
+
+    /// <summary>DS:9C3D = music_play(5): the piece playing is kept.</summary>
+    // orig: thunk 09C0:18F1(5) with its result stored to DS:9C3D (R034+0x0000, R034+0x0102, R036+0x0082, R030+0x00A8)
+    public void SaveMusic() => SavedMusic.Value = MusicPlaying();
+
+    /// <summary>music_play(DS:9C3D): the kept piece again.</summary>
+    // orig: thunk 09C0:18F1(DS:9C3D) (R034+0x0000, R034+0x0102, R036+0x082C)
+    public void RestoreMusic() => PlayMusic(SavedMusic.Value);
+
+    /// <summary>As <see cref="PlayMusic"/>, carried out at a tick of the game timer (the animations' tunes).</summary>
+    public void PlayMusicAt(int tune, long tick)
+    {
+        Audio.PlayMusicAt(Darklands.Audio.GameSounds.MusicNumber(tune, Options.Music), tick);
+    }
+
+    /// <summary>Redraws the current screen after a full screen (a character sheet, the party information) has been shown over it; the screen that is waiting sets this.</summary>
+    // orig: the redraw that follows member_sheet_vec / party_info_screen_vec in card_global_keys, R043+0x1E30 and 0c44: R043+0x1E82 (card) or the label `redraw` of R030+0x0C44 (map)
+    public Action? Redraw { get; set; }
+
+    /// <summary>Throws away the keys waiting.</summary>
+    // orig: flush_keys root 0000:1384: `while (key_pressed()) get_key();`
+    public void FlushKeys()
+    {
+        while (ReadHostKey(out _))
+        {
+        }
+    }
+
+    public MouseState Mouse => _host.Input.Mouse;
+
+    public bool ShiftHeld => _host.Input.ShiftHeld;
+
+    /// <summary>True while a Ctrl key is held (the BIOS keyboard flags' bit 2).</summary>
+    public bool CtrlHeld => _host.Input.CtrlHeld;
+
+    /// <summary>The mouse driver's function 4: the pointer is put at (x, y).</summary>
+    // orig: root 047C:1266 (root 047C, INT 33h AX = 4)
+    public void MovePointer(int x, int y) => _host.Input.MovePointer(x, y);
+
+    public bool PointerVisible { get; set; } = true;
+
+    /// <summary>Game-wide keys (saving, the character sheets): returns true when it took the key.</summary>
+    public Func<int, bool>? GameKey { get; set; }
+
+    /// <summary>The menu bar the right button and F10 open while playing (null: none, e.g. in a battle).</summary>
+    public MenuBar? MenuBar { get; set; }
+
+    /// <summary>Takes a waiting key without the hot keys (for the menu bar's keyboard mode).</summary>
+    public bool TryReadKey(out int key) => ReadHostKey(out key);
+
+    /// <summary>True when a key is waiting (it stays waiting: the next read takes it).</summary>
+    // orig: root 047C:073D() (root): looks at the BIOS buffer without taking the key
+    public bool KeyWaiting
+    {
+        get
+        {
+            if (_peeked == 0 && _host.Input.TryReadKey(out var key))
+            {
+                _peeked = key;
+            }
+            return _peeked != 0;
+        }
+    }
+
+    /// <summary>Puts a key taken back in front of the waiting keys (a hot-key test that did not want it).</summary>
+    public void PushBackKey(int key) => _peeked = key;
+
+    /// <summary>The key looked at by <see cref="KeyWaiting"/> (0: none).</summary>
+    private int _peeked;
+
+    private bool ReadHostKey(out int key)
+    {
+        if (_peeked != 0)
+        {
+            key = _peeked;
+            _peeked = 0;
+            return true;
+        }
+        return _host.Input.TryReadKey(out key);
+    }
+
+    /// <summary>Optional folder where F12 saves screenshots.</summary>
+    public string? ScreenshotFolder { get; set; }
+
+    /// <summary>Shows the screen (with the pointer on top) and processes window events.</summary>
+    // orig: nothing: the original draws straight into video memory; exit_if_requested root 0000:1338 is the check for a quit request that the loops call
+    public void Present()
+    {
+        _host.Input.Pump();
+        CountReleases();
+        if (_host.Input.QuitRequested)
+        {
+            throw new QuitGameException();
+        }
+        _screen.Pixels.CopyTo(_shown.Pixels, 0);
+        _screen.Palette.CopyTo(_shown.Palette, 0);
+        if (PointerVisible)
+        {
+            // orig: mouse_set_cursor(0, 0, cursor_default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left corner
+            SpriteDrawing.Draw(new Canvas(_shown), Assets.CommonSprites.Pointer, Mouse.X, Mouse.Y);
+        }
+        _host.Video.Present(_shown);
+    }
+
+    /// <summary>Shows the 80×25 text screen (the program start) and processes window events; keys stay waiting.</summary>
+    // orig: nothing: the program start writes through the BIOS and DOS, see TextConsole
+    public void PresentText(TextScreen screen)
+    {
+        _host.Input.Pump();
+        CountReleases();
+        if (_host.Input.QuitRequested)
+        {
+            throw new QuitGameException();
+        }
+        _host.Video.PresentText(screen);
+    }
+
+    /// <summary>The next key press or click, or null if the player did nothing this frame.</summary>
+    // orig: one pass of the usual wait loop: menu_bar_run(DS:9419, 0) (hot_keys when a key is waiting) then key_pressed() / mouse_buttons; GameKey stands for hot_keys
+    // C: hot_keys only takes the keys it knows (Alt-Q ... F10) and leaves every other key in the buffer for the screen; GameKey returning false does the same. Keys the hot keys take never reach the screen, as here.
+    public PlayerAction? Poll()
+    {
+        Present();
+        if (ReadHostKey(out var key))
+        {
+            if (key == Keys.F12 && ScreenshotFolder is not null)
+            {
+                SaveScreenshot();
+                return null;
+            }
+            if (key == Keys.F10 && MenuBar is not null)
+            {
+                // orig: hot_keys case 0x4400: menu mode DS:9C26 = 1, then menu_bar_run's loop drives the bar
+                MenuBar.Run(keyboard: true);
+                return null;
+            }
+            if (GameKey?.Invoke(key) == true)
+            {
+                return null;
+            }
+            return new PlayerAction(key, Mouse.X, Mouse.Y, MouseButtons.None);
+        }
+        var buttons = Mouse.Buttons;
+        var pressed = buttons & ~_previousButtons;
+        _previousButtons = buttons;
+        if ((buttons & MouseButtons.Right) != 0 && MenuBar is not null)
+        {
+            // orig: root 0000:0000 root 0000:0063: `if (mouse_buttons & 2)` (the button held, not pressed) the bar runs while it is held;
+            // a left button still held afterwards is seen by the screen's own test (here: as a press at the next poll)
+            MenuBar.Run(keyboard: false);
+            _previousButtons = Mouse.Buttons & ~MouseButtons.Left;
+            return null;
+        }
+        if (pressed != MouseButtons.None)
+        {
+            return new PlayerAction(Keys.None, Mouse.X, Mouse.Y, pressed);
+        }
+        return null;
+    }
+
+    /// <summary>One frame of a screen's loop: the player's action, or null after waiting a frame.</summary>
+    public PlayerAction? PollFrame()
+    {
+        if (Poll() is { } action)
+        {
+            return action;
+        }
+        _host.Clock.Sleep(FrameMilliseconds);
+        return null;
+    }
+
+    /// <summary>Lets one frame of time pass without reading the player (for loops that poll and animate).</summary>
+    public void Idle() => _host.Clock.Sleep(FrameMilliseconds);
+
+    /// <summary>Waits for the next key press or click.</summary>
+    // orig: loops like `for (;;) { menu_bar_run(...); if (mouse_buttons & 1) ...; if (key_pressed()) ... }` in wait_continue R043+0x32B6 (150B:2826) and R043+0x29D0
+    public PlayerAction WaitForAction()
+    {
+        while (true)
+        {
+            if (Poll() is { } action)
+            {
+                return action;
+            }
+            _host.Clock.Sleep(FrameMilliseconds);
+        }
+    }
+
+    /// <summary>Waits a while, showing the screen; a key or click ends the wait early when allowed.</summary>
+    // orig: delay_ticks(n) (R030+0x3096): spins until clock() has advanced by n, no input checks at all; show_message waits root 0410:0302(ticks) (a timer-driver wait, see MessageBox)
+    // UNCERTAIN: a clock() tick as one millisecond (MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit, see MessageBox and Cinematics.
+    public void Wait(int milliseconds, bool skippable = true)
+    {
+        var end = _host.Clock.Milliseconds + milliseconds;
+        while (_host.Clock.Milliseconds < end)
+        {
+            if (Poll() is not null && skippable)
+            {
+                return;
+            }
+            _host.Clock.Sleep(FrameMilliseconds);
+        }
+    }
+
+    /// <summary>
+    /// The mouse driver's left-button release count and the pointer's place at the last release (INT 33h function 6 for the
+    /// left button): the releases since the last call (the count is then reset) and where the last one was.
+    /// </summary>
+    // orig: root 047C:1320 called with (6, 0, ...): INT 33h AX = 6, BX = 0; the count and place of the releases the driver latched
+    // C: the count goes on while the game waits elsewhere (a modal box, a delay): a release made then is reported at the next call.
+    // DIVERGENCE: the host reports the buttons once a frame; a release is counted when a frame sees the button up after one that saw
+    // it down, at the pointer's place in that frame (the hosts keep a click within one frame for a frame).
+    public (int Count, int X, int Y) TakeLeftReleases()
+    {
+        var result = (_leftReleases, _lastReleaseX, _lastReleaseY);
+        _leftReleases = 0;
+        return result;
+    }
+
+    /// <summary>The direction keys held, as the game's keyboard interrupt keeps them (DS:0880 / DS:0881).</summary>
+    public KeyboardDirections Directions { get; } = new();
+
+    private void CountReleases()
+    {
+        while (_host.Input.TryReadKeyTransition(out var scanCode, out var released))
+        {
+            Directions.Feed(scanCode, released, _host.Clock.Milliseconds);
+        }
+        var mouse = _host.Input.Mouse;
+        if (_leftWasDown && !mouse.Left)
+        {
+            _leftReleases++;
+            _lastReleaseX = mouse.X;
+            _lastReleaseY = mouse.Y;
+        }
+        _leftWasDown = mouse.Left;
+    }
+
+    /// <summary>
+    /// The end of one pass of a screen's loop that reads the mouse itself: root 0000:0000 (the menu bar and the hot keys of
+    /// <see cref="Poll"/>), then a waiting key, which replaces the key the mouse gave in this pass; a frame passes when no key is
+    /// waiting. A left click is not taken here: the loop's own tests read the button.
+    /// </summary>
+    // orig: `root 0000:0000(DS:9419, 0); if (root 047C:073D()) key = root 047C:0744();` at the end of the screens' loops
+    public int KeyAfterTheMouse(int mouseKey)
+    {
+        if (Poll() is { IsKey: true } action)
+        {
+            return action.Key;
+        }
+        _host.Clock.Sleep(FrameMilliseconds);
+        return mouseKey;
+    }
+
+    /// <summary>
+    /// One pass of a loop that reads the keyboard itself (no menu bar, no hot keys): the screen is shown and a waiting key
+    /// taken (0: none, and a frame passes).
+    /// </summary>
+    // orig: `if (root 047C:073D()) key = root 047C:0744();` in loops without root 0000:0000 (R034+0x0EE6, ...)
+    public int PollKeyOnly()
+    {
+        Present();
+        if (ReadHostKey(out var key))
+        {
+            return key;
+        }
+        _host.Clock.Sleep(FrameMilliseconds);
+        return 0;
+    }
+
+    /// <summary>Lets <paramref name="milliseconds"/> pass, showing the screen, without reading the keyboard or the mouse (the keys stay waiting).</summary>
+    // orig: R030+0x3096 (1767:0046) matched: spins on clock(), no input test
+    public void Delay(int milliseconds)
+    {
+        var end = _host.Clock.Milliseconds + milliseconds;
+        do
+        {
+            Present();
+            _host.Clock.Sleep(Math.Min(FrameMilliseconds, milliseconds));
+        }
+        while (_host.Clock.Milliseconds < end);
+    }
+
+    /// <summary>Waits until the left mouse button is let go (the original's `do {} while (mouse_buttons & 1)` after a click it acts on).</summary>
+    // orig: R043+0x2A3C wait_continue's tail and the card engine's click handling (R043 150B) wait the button out before going on;
+    //   without it the next screen sees the button still held (the world map then steers the party toward the pointer).
+    public void WaitForButtonRelease()
+    {
+        while (Mouse.Left)
+        {
+            Present();
+            _host.Clock.Sleep(FrameMilliseconds);
+        }
+        _previousButtons = Mouse.Buttons;
+    }
+
+    /// <summary>Waits a while, showing the screen; true as soon as a key is pressed.</summary>
+    // orig: loops that test key_pressed() while the PAN player or a delay runs (e.g. `if (kbhit()) return;` in root 030B:0150, `!key_pressed() && !(mouse_buttons & 1)` in R043+0x3494)
+    // C: the key stays in the buffer in the original (kbhit/key_pressed only look); here it is read, so the caller that skips must act as if the key were still waiting.
+    public bool WaitForKey(int milliseconds)
+    {
+        var end = _host.Clock.Milliseconds + milliseconds;
+        do
+        {
+            if (Poll() is { IsKey: true })
+            {
+                return true;
+            }
+            _host.Clock.Sleep(Math.Min(FrameMilliseconds, milliseconds));
+        }
+        while (_host.Clock.Milliseconds < end);
+        return false;
+    }
+
+    /// <summary>Saves the current screen as a PNG file.</summary>
+    public void SaveScreenshot(string? path = null)
+    {
+        path ??= Path.Combine(ScreenshotFolder ?? ".", $"darklands-{DateTime.Now:yyyyMMdd-HHmmss-fff}.png");
+        PngWriter.Write(_screen, path);
+    }
+}

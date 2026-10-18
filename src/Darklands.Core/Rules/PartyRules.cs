@@ -1,0 +1,282 @@
+using Darklands.Core.Characters;
+using Darklands.Core.Events;
+
+namespace Darklands.Core.Rules;
+
+/// <summary>Members joining and leaving: hirelings, members who went away, and the aftermath of a battle.</summary>
+public static class PartyRules
+{
+    /// <summary>
+    /// A hireling joins in the first free slot (<c>add_member</c>): the standard attributes
+    /// 37/34/31/29/32/34/99 and skills, age 25, a random shield picture 'A'..'O', three standard
+    /// items, and a <see cref="EventKinds.MemberTerm"/> event of <paramref name="hours"/> whose
+    /// end makes the member leave. Returns the slot, or −1 when the party is full. (The
+    /// original also writes the member into CHARACTR.TMP and loads the shield picture.)
+    /// </summary>
+    // orig: add_member R029+0x4650 (0E76:4650) matched; tests: PracticeAndItemsTests
+    // C: the shield letter rand_mod(15) is the only draw, before the three items; the weapon and missile qualities (+44/+46) are left as they were.
+    // DIVERGENCE: CHARACTR.TMP, the shield picture, party_size and the redraw are the host's.
+    public static int AddMember(GameState s, string name, string shortName, int hours, int term)
+    {
+        var party = s.Party;
+        var slot = Enumerable.Range(0, Party.MaxMembers).FirstOrDefault(i => !party.Slot(i).IsPresent, -1);
+        if (slot == -1)
+        {
+            return -1;
+        }
+        var m = new Character { Name = name, ShortName = shortName, Status = CharacterStatus.Able, Age = 25 };
+        int[] maxima = [37, 34, 31, 29, 32, 34, 99];
+        maxima.CopyTo(m.AttributeMaximums, 0);
+        maxima.CopyTo(m.Attributes, 0);
+        int[] skills = [59, 21, 0, 57, 23, 0, 46, 11, 15, 36, 51, 0, 0, 16, 59, 52, 48, 40, 31];
+        skills.CopyTo(m.Skills, 0);
+        m.ShieldLetter = (char)('A' + s.Random.Below(15));
+        m.Encumbrance = 10;
+        m.VitalArmor = new EquippedItem(-1, 25);
+        m.LimbArmor = new EquippedItem(-1, 25);
+        m.Shield = new EquippedItem(-1, 25);
+        m.Weapon = EquippedItem.None;
+        m.MissileWeapon = EquippedItem.None;
+        while (party.Members.Count <= slot)
+        {
+            // C: a slot between keeps the record a departed member left there (only its status byte is 0)
+            party.Members.Add(party.DepartedRecords[party.Members.Count] ?? new Character { Status = CharacterStatus.Empty });
+            party.DepartedRecords[party.Members.Count - 1] = null;
+        }
+        party.Members[slot] = m;
+        Inventory.AddWithQuality(s, slot, 0x2C, 10);
+        Inventory.AddWithQuality(s, slot, 0x33, 15);
+        Inventory.AddWithQuality(s, slot, 3, 15);
+        s.Events.Create(-2, s.CurrentLocation, 0, EventKinds.MemberTerm, slot, term, (int)ExpiryHandler.MemberTermEnds, hours,
+            (int)EventFlags.CallExpiryHandler, 0);
+        // C: DS:A67C = event_count(0x43), the cached hireling count (GameState.HirelingCount).
+        s.HirelingCount = s.Events.Count(EventKinds.MemberTerm);
+        return slot;
+    }
+
+    /// <summary>
+    /// Ends the term of every hireling whose term value is <paramref name="term"/>: a
+    /// <see cref="EventKinds.MemberLeft"/> note each, and the term events are removed.
+    /// </summary>
+    // orig: R029+0x4AA4 (0E76:4AA4) matched; tests: PracticeAndItemsTests
+    public static void EndTerms(GameState s, int term)
+    {
+        var log = s.Events;
+        for (var i = log.Next(EventKinds.MemberTerm, 0); i != -1; i = log.Next(EventKinds.MemberTerm, i + 1))
+        {
+            var e = log[i]!;
+            if (e.Value == term)
+            {
+                log.Create(-2, s.CurrentLocation, 0, EventKinds.MemberLeft, e.Type, e.Type, 0, EventLog.Forever, 0, 0);
+                log.Free(i);
+            }
+        }
+    }
+
+    private static IEnumerable<int> Away(GameState s) =>
+        Enumerable.Range(0, s.Party.Members.Count).Where(i => s.Party.Members[i].Status == CharacterStatus.Away).ToList();
+
+    /// <summary>
+    /// Members who went away are told of and leave (<c>party_report_away</c>): a
+    /// <see cref="EventKinds.MemberAway"/> note here for a year each, naming the character's
+    /// roster entry, then the member leaves the party for the roster. Returns how many.
+    /// </summary>
+    // orig: party_report_away R029+0x23E2 (0E76:23E2) matched:
+    //   for each slot of status 5: event_here_type(0x4D, char_in_slot_vec(i), 0x2238), party_remove_vec(i); then party_panel_rows(0x100)
+    public static int ReportAway(GameState s)
+    {
+        var n = 0;
+        for (var i = 0; i < Party.MaxMembers; i++)
+        {
+            if (s.Party.Slot(i).Status != CharacterStatus.Away)
+            {
+                continue;
+            }
+            s.Events.CreateHere(EventKinds.MemberAway, CharacterInSlot(s, i), EventLog.OneYear);
+            RemoveFromParty(s, i);
+            n++;
+        }
+        return n;
+    }
+
+    /// <summary>The roster entry in a party slot (<c>char_in_slot</c>: ids[p] of CHARACTR.TMP), −1 for none.</summary>
+    // orig: char_in_slot R037+0x3A8A (1462:3A8A) draft (fn matched): reads ids[5] from charactr.tmp
+    // C: CHARACTR.TMP is in step with the party at every change in the original; the roster is brought in step first (Reconcile).
+    public static int CharacterInSlot(GameState s, int slot)
+    {
+        s.Roster.Reconcile(s.Party);
+        return slot >= 0 && slot < s.Roster.PartySlots.Length ? s.Roster.PartySlots[slot] : -1;
+    }
+
+    /// <summary>The party slot of roster entry <paramref name="character"/> (<c>slot_of_char</c>), −1 if not in the party.</summary>
+    // orig: slot_of_char R037+0x3AE2 (1462:3AE2) draft (fn matched): the first i < 5 with ids[i] == c
+    public static int SlotOfCharacter(GameState s, int character)
+    {
+        s.Roster.Reconcile(s.Party);
+        return Array.IndexOf(s.Roster.PartySlots, character);
+    }
+
+    /// <summary>
+    /// A member leaves the party but stays on the roster (<c>party_remove</c>): the leader passes
+    /// to the first other able member, the character is left here, and the slot is emptied.
+    /// </summary>
+    // orig: party_remove R037+0x3B58 (1462:3B58) draft (fn matched); tests: MemberRulesTests
+    // C: if (leader == p) the first i != p of status 1 leads; ids[p] = -1; if (party[p][0] != 5) party[p][0] = 0; the record's first word
+    //   = cur_loc; the record goes back to charactr.tmp (status 0, or 5 for a member who went away); then party[p][0] = 0 and party_size =
+    //   one past the last occupied slot. The roster keeps the record (Character.RosterLocation, its status); the slot keeps a copy of
+    //   its bytes with status 0 (Party.TrimToSize keeps a dropped slot's).
+    // DIVERGENCE: the shield picture is the party panel's (loaded on demand).
+    public static void RemoveFromParty(GameState s, int slot)
+    {
+        var party = s.Party;
+        slot = party.Resolve(slot);
+        if (party.LeaderIndex == slot)
+        {
+            for (var i = 0; i < party.Members.Count; i++)
+            {
+                if (party.Members[i].Status == CharacterStatus.Able && i != slot)
+                {
+                    party.LeaderIndex = i;
+                    break;
+                }
+            }
+        }
+        s.Roster.Reconcile(party);
+        s.Roster.LeaveParty(slot);
+        if (slot >= 0 && slot < party.Members.Count)
+        {
+            var record = party.Members[slot];
+            if (record.Status != CharacterStatus.Away)
+            {
+                record.Status = CharacterStatus.Empty;
+            }
+            record.RosterLocation = s.CurrentLocation;
+            // C: the slot's memory keeps the record's bytes (name, pack, formulas, saints) with status 0: a copy, apart from the roster's record.
+            var residue = record.Copy();
+            residue.Status = CharacterStatus.Empty;
+            party.Members[slot] = residue;
+        }
+        party.TrimToSize();
+    }
+
+    /// <summary>
+    /// A character of the roster joins the party (<c>party_add</c>) in the first free slot, able;
+    /// returns the slot, or −1 when all five are taken.
+    /// </summary>
+    // orig: party_add R037+0x3CD6 (1462:3CD6) draft (fn matched); tests: MemberRulesTests
+    // C: the first slot with ids[slot] == -1 (of five); ids[slot] = c; the record (member, saints, formulas, pack) is read into the slot,
+    //   party[slot][0] = 1, its shield picture loaded and the panel drawn; ids written back; party_size = one past the last occupied slot.
+    // DIVERGENCE: an entry past the roster's end makes the original read past the file's records (stale bytes); here nobody joins.
+    public static int AddFromRoster(GameState s, int character)
+    {
+        var party = s.Party;
+        s.Roster.Reconcile(party);
+        var slot = Array.IndexOf(s.Roster.PartySlots, -1);
+        if (slot < 0 || character < 0 || character >= s.Roster.Characters.Count)
+        {
+            return -1;
+        }
+        s.Roster.PartySlots[slot] = character;
+        var member = s.Roster.Characters[character];
+        // C: the file keeps the record as it was read (CharacterRoster.StoredRecord).
+        s.Roster.KeepStored(member, member.Copy());
+        member.Status = CharacterStatus.Able;
+        while (party.Members.Count <= slot)
+        {
+            party.Members.Add(new Character { Status = CharacterStatus.Empty });
+        }
+        party.Members[slot] = member;
+        party.TrimToSize();
+        return slot;
+    }
+
+    /// <summary>Members who went away leave the party (<c>party_drop_away</c>); returns how many.</summary>
+    // orig: party_drop_away R029+0x2434 (0E76:2434) matched
+    public static int DropAway(GameState s)
+    {
+        var n = 0;
+        foreach (var i in Away(s))
+        {
+            s.Party.Members[i].Status = CharacterStatus.Empty;
+            n++;
+        }
+        return n;
+    }
+
+    /// <summary>
+    /// Of the members who went away one leaves (the first or, at random, the last) and the
+    /// others return; the one who left is <see cref="PartyQueryResult.Member"/>. Returns how many were away.
+    /// </summary>
+    // orig: R029+0x2474 (0E76:2474) matched
+    // C: rand_mod(2) != 0 scans forward (the first leaves), else from slot 4 down (the last leaves).
+    public static int OneOfTheAwayLeaves(GameState s)
+    {
+        var away = Away(s).ToList();
+        if (s.Random.Below(2) == 0)
+        {
+            away.Reverse();
+        }
+        for (var k = 0; k < away.Count; k++)
+        {
+            s.Party.Members[away[k]].Status = k == 0 ? CharacterStatus.Empty : CharacterStatus.Able;
+        }
+        if (away.Count > 0)
+        {
+            s.Party.Last.Member = away[0];
+        }
+        return away.Count;
+    }
+
+    /// <summary>Members who went away come back, having lost things (<c>party_rejoin_away</c>); returns how many.</summary>
+    // orig: party_rejoin_away R029+0x251A (0E76:251A) matched
+    public static int RejoinAway(GameState s)
+    {
+        var n = 0;
+        foreach (var i in Away(s))
+        {
+            s.Party.Members[i].Status = CharacterStatus.Able;
+            Inventory.Lose(s, i);
+            n++;
+        }
+        return n;
+    }
+
+    /// <summary>
+    /// The encounter seed of a battle (<c>run_battle</c>): −2 = this location (party seed +
+    /// location), −1 = random 0..999; then the party seed is added again (an original bug for
+    /// the location seed, which so gets it twice).
+    /// </summary>
+    // orig: run_battle R029+0x2278 (0E76:2278) matched
+    // C: run_battle draws the side (rand_mod(2)) before the seed (rand_mod(1000)): CardContext.RunBattle keeps that order.
+    // BUG: seed -2 gets party_seed twice (FixBattleSeed).
+    public static int BattleSeed(GameState s, int seed)
+    {
+        if (seed == -2)
+        {
+            seed = s.Behaviour.FixBattleSeed ? s.CurrentLocation : s.Party.Seed + s.CurrentLocation;
+        }
+        else if (seed == -1)
+        {
+            seed = s.Random.Below(1000);
+        }
+        return (short)(seed + s.Party.Seed);
+    }
+
+    /// <summary>After a battle: the dead leave the party, everybody else (but those away) is able again.</summary>
+    // orig: run_battle R029+0x2278 (0E76:2278) matched
+    // C: status 3 -> 0 (party_delete_vec) first, then every status but 0 and 5 -> 1.
+    public static void AfterBattle(GameState s)
+    {
+        foreach (var m in s.Party.Members)
+        {
+            if (m.Status == CharacterStatus.Dead)
+            {
+                m.Status = CharacterStatus.Empty;
+            }
+            else if (m.Status is not CharacterStatus.Empty and not CharacterStatus.Away)
+            {
+                m.Status = CharacterStatus.Able;
+            }
+        }
+    }
+}

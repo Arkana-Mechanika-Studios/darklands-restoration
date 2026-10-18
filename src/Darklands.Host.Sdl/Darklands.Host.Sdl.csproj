@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Darklands.Platform\Darklands.Platform.csproj" />
+    <ProjectReference Include="..\Darklands.Presentation\Darklands.Presentation.csproj" />
+    <ProjectReference Include="..\Darklands.Audio\Darklands.Audio.csproj" />
+    <ProjectReference Include="..\Darklands.Audio.Mt32\Darklands.Audio.Mt32.csproj" />
+    <ProjectReference Include="..\Darklands.DevConsole\Darklands.DevConsole.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Darklands.Host.Sdl.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- the developer console's text (public domain renderer; DejaVu Sans Mono 2.37, see THIRD_PARTY_NOTICES.md) -->
+    <PackageReference Include="StbTrueTypeSharp" Version="1.26.12" />
+    <EmbeddedResource Include="Resources/DejaVuSansMono.ttf" LogicalName="Darklands.Host.Sdl.DejaVuSansMono.ttf" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == '' or $(RuntimeIdentifier.StartsWith('win'))">
+    <!-- SDL 2.32.10, the official Windows x64 release (zlib licence, see THIRD_PARTY_NOTICES.md), next to the program -->
+    <None Include="Native/win-x64/SDL2.dll" Link="SDL2.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- the program players start: DarklandsRP.exe, with the Darklands Restoration Project badge as its icon -->
+    <AssemblyName>DarklandsRP</AssemblyName>
+    <RootNamespace>Darklands.Host.Sdl</RootNamespace>
+    <ApplicationIcon>Resources/DarklandsRP.ico</ApplicationIcon>
+    <Product>Darklands Restoration Project</Product>
+    <AssemblyTitle>Darklands Restoration Project</AssemblyTitle>
+    <Company>Arkana Mechanika Studios</Company>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!-- a release carries an empty MT32_ROMS folder beside the program, where the player puts MT-32 / CM-32L ROM files -->
+  <Target Name="CreateMt32RomFolder" AfterTargets="Publish">
+    <MakeDir Directories="$(PublishDir)MT32_ROMS" />
+  </Target>
+
+</Project>

@@ -1,0 +1,181 @@
+using Darklands.Cards;
+using Darklands.Core.Battles;
+using Darklands.Core.Battles.Tactics;
+using Darklands.Core.Characters;
+
+namespace Darklands.Battles.Tests;
+
+/// <summary>Doors, secret doors, chests, locks and stairs of generated battlefields, driven through the battle's own rules.</summary>
+public sealed class DungeonTests
+{
+    private const int DoorsAt = 0x1F54, DoorOpenAt = 0x33D3, TriggersAt = 0x2186, RegionsAt = 0x300E, StairsAt = 0x2FB8;
+
+    private static (Presentation.Battles.BattleScreen Screen, TacticalBattle Tactics) Start(int battlefield, int seed)
+    {
+        var (screen, tactics) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(battlefield, seed, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]));
+        if (tactics.Paused)
+        {
+            tactics.TogglePause();
+        }
+        // The first frame drawn would open the leader's order mode (and pause): these tests give their orders themselves.
+        tactics.PendingOrderMember = -1;
+        return (screen, tactics);
+    }
+
+    private static void Run(TacticalBattle tactics, int ticks)
+    {
+        for (var t = 0; t < ticks; t++)
+        {
+            tactics.Battle.Clock++;
+            tactics.Iterate();
+        }
+    }
+
+    /// <summary>With DUNGEON_SHOTS set to a folder, the screen as it stands is saved there (to look at the doors, chests and stairs).</summary>
+    private static void Shot(Presentation.Battles.BattleScreen screen, string name)
+    {
+        if (Environment.GetEnvironmentVariable("DUNGEON_SHOTS") is { Length: > 0 } folder)
+        {
+            Directory.CreateDirectory(folder);
+            var p = screen.Tactics!.Battle[screen.Tactics.Battle.Leader].Position;
+            screen.Tactics.ViewOrigin = (p.Column, p.Row);
+            screen.Draw();
+            screen.SaveScreen(Path.Combine(folder, name + ".png"));
+        }
+    }
+
+    private static MapPoint Centre(BattlefieldLevel level, int at) =>
+        new(level.GetWord(at) + level.GetByte(at + 4) / 2, level.GetWord(at + 2) + level.GetByte(at + 5) / 2);
+
+    /// <summary>The level's wall lists were relocated: each starts with a cell word (x &lt;&lt; 8 | y) and ends with −1.</summary>
+    [Fact]
+    public void TheWallListsAreRelocated()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, tactics) = Start(0x0A, 777);
+        var level = tactics.Level;
+        Assert.True(level.GetByte(0x2488) > 0);
+        for (var k = 0; k < level.GetByte(0x2488); k++)
+        {
+            var at = (ushort)level.GetWord(0x248A + 2 * k);
+            Assert.InRange(at, 0x24C6, 0x2FB6);
+            var w = (ushort)level.GetWord(at);
+            Assert.True(w == 0xFFFF || (w >> 8) < 40 && (w & 0xFF) < 40, $"list {k} starts with {w:X4}");
+        }
+    }
+
+    /// <summary>A member at a shut door: Use Door is offered in order mode; ordered, the door opens (its flag and the wall's door bit).</summary>
+    [Fact]
+    public void AMemberOpensADoor()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (screen, tactics) = Start(0x00, 1234);
+        var b = tactics.Battle;
+        var level = tactics.Level;
+        var k = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => level.GetWord(DoorsAt + 14 * d) > 0 && level.GetByte(DoorsAt + 14 * d + 7) == 0);
+        var leader = b.Leader;
+        b[leader].Position = Centre(level, DoorsAt + 14 * k);
+        Run(tactics, 16);
+        Assert.True((b[leader].Flags & TacticalFlags.InDoorway) != 0, "stands in the doorway");
+        Assert.Equal(k, b[leader].Door);
+        tactics.EnterOrderMode(leader);
+        Assert.True(tactics.Menus.On(OrdersItem.UseDoor));
+        Shot(screen, "door-shut");
+        var opens = b[leader].DoorOpens;
+        tactics.OrderPlace(leader, PlaceAction.UseDoor);
+        tactics.TogglePause();
+        Run(tactics, 16);
+        Shot(screen, "door-open");
+        Assert.Equal(opens ? 1 : 0, level.GetByte(DoorOpenAt + k));
+    }
+
+    /// <summary>A perceptive member steps on a secret door's trigger: the trigger goes off and the door's wall is cleared.</summary>
+    [Fact]
+    public void ASecretDoorIsFound()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (screen, tactics) = Start(0x0A, 777);
+        var b = tactics.Battle;
+        var level = tactics.Level;
+        var t = Enumerable.Range(0, level.GetByte(0x2184)).First(k => level.GetWord(TriggersAt + 14 * k + 6) == 0 && level.GetWord(TriggersAt + 14 * k) > 0);
+        var leader = b.Leader;
+        b[leader].Attributes[3] = 99;
+        b[leader].Position = Centre(level, TriggersAt + 14 * t);
+        var door = level.GetWord(TriggersAt + 14 * t + 10) & 0xFF;
+        Assert.True(level.GetWord(DoorsAt + 14 * door) < 0, "the secret door is hidden");
+        Shot(screen, "secret-before");
+        Run(tactics, 16);
+        Shot(screen, "secret-found");
+        Assert.True(level.GetWord(TriggersAt + 14 * t) < 0, "the trigger went off");
+    }
+
+    /// <summary>A member with lock picks at a locked chest picks it (with enough skill) and the chest opens to the loot screen.</summary>
+    [Fact]
+    public void AChestIsPickedAndOpened()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (screen, tactics) = Start(0x0A, 777);
+        var b = tactics.Battle;
+        var level = tactics.Level;
+        var r = Enumerable.Range(0, level.GetByte(0x300C)).First(k => (level.GetByte(RegionsAt + 0x2C * k + 8) & 0x7F) != 0);
+        var leader = b.Leader;
+        b[leader].Skills[14] = 99;
+        b[leader].Items.Add(new ItemStack(0x40, 0x69, 40, 1, 1));
+        b[leader].Position = Centre(level, RegionsAt + 0x2C * r);
+        Run(tactics, 16);
+        Assert.True((b[leader].Flags & TacticalFlags.AtChest) != 0);
+        tactics.EnterOrderMode(leader);
+        Assert.True(tactics.Menus.On(OrdersItem.PickLock));
+        Shot(screen, "chest");
+        tactics.OrderPlace(leader, PlaceAction.PickChestLock);
+        tactics.TogglePause();
+        Run(tactics, 16);
+        Assert.Equal(0, level.GetByte(RegionsAt + 0x2C * r + 8));
+        Assert.True((b[leader].SkillsUsed & SkillUse.ArtificeSucceeded) != 0);
+    }
+
+    /// <summary>The whole party on stairs takes them: the party is on the other level, the level shown.</summary>
+    [Fact]
+    public void ThePartyTakesTheStairs()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (screen, tactics) = Start(0x0B, 4242);
+        var b = tactics.Battle;
+        var level = tactics.Level;
+        Assert.True(level.GetByte(0x2FB6) > 0, "level 0 has stairs");
+        var to = (sbyte)level.GetByte(StairsAt + 6);
+        var spot = Centre(level, StairsAt);
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            if (b[i].IsAble)
+            {
+                b[i].Position = spot;
+            }
+        }
+        Run(tactics, 16);
+        Shot(screen, "stairs");
+        Assert.True(tactics.Menus.On(OrdersItem.UseStairs));
+        tactics.ToggleGroup();
+        tactics.UseKey(-1);
+        Run(tactics, 4);
+        Shot(screen, "stairs-taken");
+        Assert.Equal(to, b.FloorShown);
+        Assert.Equal(to, b.PartyFloor);
+        Assert.All(Enumerable.Range(0, Combatant.PartySlots).Where(i => b[i].IsAble), i => Assert.Equal(to, b[i].Floor));
+    }
+}
