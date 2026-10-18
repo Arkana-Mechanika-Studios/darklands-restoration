@@ -54,7 +54,7 @@ public sealed class OriginalSaveGameTests
         {
             return null;
         }
-        var copy = Directory.CreateTempSubdirectory("darklands-play-").FullName;
+        var copy = TempCopies.Create("darklands-play-");
         foreach (var f in Directory.GetFiles(saves))
         {
             File.Copy(f, Path.Combine(copy, Path.GetFileName(f)));

@@ -427,7 +427,7 @@ internal static class SaveFolderCopy
         {
             return null;
         }
-        var copy = Directory.CreateTempSubdirectory("darklands-saves-").FullName;
+        var copy = TempCopies.Create("darklands-saves-");
         foreach (var f in Directory.GetFiles(saves))
         {
             File.Copy(f, Path.Combine(copy, Path.GetFileName(f)));

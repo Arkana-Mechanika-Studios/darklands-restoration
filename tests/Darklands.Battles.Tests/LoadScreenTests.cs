@@ -101,7 +101,7 @@ public sealed class LoadScreenTests
         {
             return null;
         }
-        var copy = Directory.CreateTempSubdirectory("darklands-load-screen-").FullName;
+        var copy = TempCopies.Create("darklands-load-screen-");
         foreach (var n in names)
         {
             File.Copy(Path.Combine(saves, n), Path.Combine(copy, n));

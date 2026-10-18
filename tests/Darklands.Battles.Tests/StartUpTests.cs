@@ -171,7 +171,7 @@ public sealed class StartUpTests
         {
             return null;
         }
-        var path = Directory.CreateTempSubdirectory("darklands-startup-").FullName;
+        var path = TempCopies.Create("darklands-startup-");
         File.WriteAllBytes(Path.Combine(path, "BANNER.DAT"), game.Read("BANNER.DAT"));
         foreach (var name in Drivers)
         {
