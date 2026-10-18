@@ -142,6 +142,7 @@ public sealed class CouncilHall : Card
             {
                 value = 1;
             }
+            // DORMANT: nothing creates the welcome event (0x3B): the "come back" event that would start it never runs its handler, so the 99 chance is never given.
             if (c.EventAtHere(Welcome))
             {
                 value = 99;
@@ -171,6 +172,7 @@ public sealed class CouncilHall : Card
             {
                 value = 1;
             }
+            // DORMANT: nothing creates the welcome event (0x3B): the "come back" event that would start it never runs its handler, so the 99 chance is never given.
             if (c.EventAtHere(Welcome))
             {
                 value = 99;
@@ -386,6 +388,8 @@ public sealed class CouncilHall : Card
                     return;
                 }
                 c.PassHours(2);
+                // BUG: the "come back" event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler
+                // never runs (R029+0x3F30): no appointment is kept (R054+0x22F8).
                 c.Events.Create(-2, c.Here, 0x5A, Shut, 0, 0x63, 4, TimeOfDay.HoursUntil(c.State.Date.Hour, 18), 0, 0);
                 ShowPicture(c, DeskPicture);
                 c.Screen.Text(7);

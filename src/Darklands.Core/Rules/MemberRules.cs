@@ -307,6 +307,10 @@ public static class MemberRules
             }
             return;
         }
+        // BUG: the boost is cut only by the excess over the maximum and then recorded in full, but AddAttribute keeps the
+        // attribute within 1..99 and under the maximum plus the largest single boost (R029+0x4E0C); the expiry takes back the
+        // recorded amount, so a boost that was not wholly applied (an attribute near 99, or a second boost overlapping a larger
+        // one, in either order) leaves the attribute lower than before. The whole-party path above does the same.
         var gap = Attribute(s, who, attribute) - AttributeMaximum(s, who, attribute);
         if (gap > 0 && points < gap)
         {

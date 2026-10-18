@@ -70,7 +70,7 @@ public sealed class AffairsElsewhere : Card
             {
                 TellOfTheUnrest(c);
             }
-            // C: unlike the branch above, this one tests the mine quest without the negation, so the
+            // BUG: unlike the branch above, this one tests the mine quest without the negation, so the
             // "nothing of interest" text appears here only while the mine quest runs (and not the robber knight's).
             else if (!events.QuestExists(RobberKnightQuest) && events.QuestExists(MineQuest))
             {

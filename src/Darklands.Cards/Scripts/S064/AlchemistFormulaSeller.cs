@@ -70,6 +70,9 @@ public sealed class AlchemistFormulaSeller : Card
     /// 100, 103, 106 or 109, modulo 22. The potion is the formula divided by three.
     /// </summary>
     // C: cur_loc_query returns unsigned: the sum and the modulo are unsigned 16-bit.
+    // orig: R064+0x2D38
+    // BUG: the offer is taken modulo 22 (the number of potions) but used as a formula number (potion = n / 3, grade = n % 3):
+    // only formulas 0..21, the first eight potions, are ever for sale.
     private static int FormulaOnOffer(CardContext c, int slot) => (ushort)((ushort)c.HereQuery(0x21) + slot * 3 + 100) % FormulaGroups;
 
     // C: R136+0xF066 (virtue_names) is filled with the full formula names of DARKLAND.LST by world_load (see CardContext.NameToSlot), so the LST names are the table.

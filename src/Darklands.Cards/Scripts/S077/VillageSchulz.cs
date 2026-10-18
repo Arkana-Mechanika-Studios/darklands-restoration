@@ -111,7 +111,7 @@ public sealed class VillageSchulz : Card
             }
             else
             {
-                // C: a full party gets the florin text but no florin (as in the original).
+                // BUG: a full party gets text 6 ("Please accept this florin") but no florin; the low-standing branch adds it.
                 c.Screen.Text(6);
             }
         }

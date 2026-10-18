@@ -103,6 +103,9 @@ public sealed class CharacterCreationScreen
         var random = new MscRandom(seed);
         random.Below(NewGame.StartingCities);
         // orig: R037+0x0000: thunk 09C0:18F1(0x14) (music), R037+0x4562, load_saved_game("default"), party[k][0] = 0
+        // DIVERGENCE (host): the original reads SAVES\DEFAULT here too (R037+0x4184, the open not checked; see D-66e575 for
+        // Quickstart); without the file it reads through an unset handle, and the 483.07 notes say characters can then not be
+        // created. Here the ready-made characters come with the game (DefaultParty), so the file is not needed.
         _ui.PlayMusic(0x14);
         if (Shared.Image >= _images.Count)
         {

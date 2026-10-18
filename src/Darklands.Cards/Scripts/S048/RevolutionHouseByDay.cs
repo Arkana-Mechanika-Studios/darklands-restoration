@@ -160,7 +160,7 @@ public sealed class RevolutionHouseByDay : Card
                 c.Screen.Text(2, TextFrame.BlankPage);
                 c.Screen.Text(0x0C, TextFrame.BlankPage);
             }
-            // C: no else: the second house's text 2 is then shown a second time, as in the original.
+            // BUG: no else: the second house's text 2 is then shown a second time, as in the original.
             if (c.HereQuery(0x29) == 2)
             {
                 c.Screen.Text(2, TextFrame.BlankPage);

@@ -761,6 +761,8 @@ public static class FortressBattlefield
             SetLootGroup(lv, 0, GroupIds++);
             lv[LootGroupAt(0) + 8] = 0x2D;
             lv[LootGroupAt(0) + 8] |= 0x80;
+            // BUG: the three relics get quality 0x23 (35) and type 0x9F whatever DARKLAND.LST gives them (the relic weapons have
+            // qualities 50..85 and weapon types).
             AddLootEntry(lv, 0, a, 0x9F, 0x23, 1);
             SetLootGroup(lv, 1, GroupIds++);
             lv[LootGroupAt(1) + 8] = 0xAD;
