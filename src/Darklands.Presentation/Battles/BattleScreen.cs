@@ -351,12 +351,7 @@ public sealed class BattleScreen : ITacticalView
         var party = new byte[120];
         for (var i = 0; i < _state.Party.Members.Count && i < 5; i++)
         {
-            // A member without colours of its own (the Quickstart party) has its slot's start-up colours (member_palette).
-            var colours = _state.Party.Members[i].ImagePalette;
-            if (colours.All(b => b == 0) && i < _assets.SlotPalettes.Count)
-            {
-                colours = _assets.SlotPalettes[i];
-            }
+            var colours = PartyColours(_state.Party.Members[i].ImagePalette, i);
             colours.AsSpan(0, Math.Min(24, colours.Length)).CopyTo(party.AsSpan(24 * i));
         }
         // Colours 0..15 come from MGRAPHIC's 16 EGA colours through the index list {0, 1, 2, 3, 4, 0, 6, …, 15}: colour 5 is black,
@@ -367,6 +362,15 @@ public sealed class BattleScreen : ITacticalView
             _ui.Canvas.SetColor(index, rgb);
         }
     }
+
+    /// <summary>A party slot's figure colours (member_palette[slot]) as the battle palette takes them.</summary>
+    // orig: battle_run R002+0x0000 R002+0x037B (0E76:037B) draft (member_palette copied into the party colours)
+    // DIVERGENCE: a member whose 24 colour bytes are all zero is drawn with the Quickstart party's colours of its slot
+    // (DefaultParty.Colours), where the original draws it black. Only saved games written by release 0.9.0 from a
+    // Quickstart party have such members (that release left the four without colours); the original never writes them.
+    // tests: QuickstartColoursTests
+    public static byte[] PartyColours(byte[] colours, int slot) =>
+        colours.All(b => b == 0) && slot < DefaultParty.Colours.Count ? DefaultParty.Colours[slot] : colours;
 
     /// <summary>The 60 Hz clock advances while the battle is not paused.</summary>
     // orig: the timer callback root 047C:000A (spec D §1.1): combat_clock stops while DS:07D3 != 0

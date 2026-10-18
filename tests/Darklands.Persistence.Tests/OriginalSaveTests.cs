@@ -124,6 +124,21 @@ public sealed class OriginalSaveTests
     }
 
     [Fact]
+    public void TheQuickstartColoursAreThoseOfSavesDefault()
+    {
+        // The program's own colours (R001+0x0797) and the block SAVES\DEFAULT keeps at 0x111 are the same 120 bytes.
+        if (!SaveFolderCopy.Exists("DEFAULT"))
+        {
+            return;
+        }
+        var file = SaveFile.Parse(SaveFolderCopy.Read("DEFAULT"));
+        for (var slot = 0; slot < SaveFile.PartySlots; slot++)
+        {
+            Assert.Equal(DefaultParty.Colours[slot], file.Palettes[(slot * SaveFile.PaletteSize)..((slot + 1) * SaveFile.PaletteSize)]);
+        }
+    }
+
+    [Fact]
     public void TheHeaderFieldsLandInTheGame()
     {
         if (!SaveFolderCopy.Exists("DKSAVE12.SAV"))

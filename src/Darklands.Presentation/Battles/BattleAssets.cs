@@ -26,20 +26,6 @@ public sealed class BattleAssets
         CommonColors = files.Read("COMNCLRS.DAT");
         BackgroundPalettes = files.Read("BKGNDPAL.DAT");
         Items = WorldData.Load(files).ItemDefinitions;
-        SlotPalettes = DefaultPalettes(files);
-    }
-
-    /// <summary>
-    /// The five party slots' figure colours of the ready-made party, for members that have none of
-    /// their own: member_palette is empty in the program and filled from SAVES\DEFAULT (the colour
-    /// block at offset 0x111, 5 × 24 bytes) when a Quickstart game begins.
-    /// </summary>
-    public IReadOnlyList<byte[]> SlotPalettes { get; }
-
-    private static IReadOnlyList<byte[]> DefaultPalettes(GameFiles files)
-    {
-        var save = files.Exists(@"SAVES\DEFAULT") ? files.Read(@"SAVES\DEFAULT") : [];
-        return [.. Enumerable.Range(0, 5).Select(i => save.Length >= 0x111 + 24 * (i + 1) ? save.AsSpan(0x111 + 24 * i, 24).ToArray() : new byte[24])];
     }
 
     /// <summary>The item definitions (DARKLAND.LST), for the enemies' equipment.</summary>

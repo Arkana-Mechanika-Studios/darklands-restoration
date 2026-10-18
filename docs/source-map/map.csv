@@ -219,6 +219,7 @@ Darklands.Presentation.Battles.AnimationLibrary.ReadSizes(),R025+0x0D3C,R025+0x0
 Darklands.Presentation.Battles.BattleScreen,combat_main;combat_draw;combat_input;combat_mouse;combat_keys;R014+0x0000;R014+0x6818;R014+0x3166;R014+0xB576;R016+0x0000,R014+0x0000;R014+0x6818;R014+0x3166;R014+0xB576;R016+0x0000,draft,BattleScreenTests,"divergence: messages drawn without blocking; whole view redrawn each frame; no keyboard pointer (cursor_keys)"
 Darklands.Presentation.Battles.BattleScreen.Run(),battle_run;R002+0x0000,R002+0x0000,draft,BattleUiTests,the results box over the battle view with the pointer hidden; the screen of before the battle is not put back
 Darklands.Presentation.Battles.BattleScreen.SetPalette(),battle_run;R002+0x0000,R002+0x037B,draft,,
+Darklands.Presentation.Battles.BattleScreen.PartyColours(),battle_run;R002+0x0000,R002+0x037B,draft,QuickstartColoursTests,divergence: a member with all-zero colours (0.9.0 Quickstart saves) takes DefaultParty.Colours of its slot
 Darklands.Presentation.Battles.BattleScreen.Advance(),timer callback,root 047C:000A,asm,,
 Darklands.Presentation.Battles.BattleScreen.Click(),combat_mouse;R014+0xB576;R014+0x3166,R014+0xB576;R014+0x3166,draft,,divergence: no Ctrl-click
 Darklands.Presentation.Battles.BattleScreen.Follow(),combat_tick;R014+0x0F58,R014+0x0F58,draft,,

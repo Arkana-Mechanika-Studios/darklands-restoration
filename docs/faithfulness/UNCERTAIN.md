@@ -11,7 +11,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 
 | area | kind | uncertain |
 |---|---|---|
-| rules | core | 18 |
+| rules | core | 19 |
 | cards | core | 218 |
 | events | core | 1 |
 | travel | core | 6 |
@@ -19,11 +19,11 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | persistence | core | 5 |
 | screens/presentation | other | 24 |
 | host/audio | other | 4 |
-| total |  | 306 |
+| total |  | 307 |
 
-## Core logic (278)
+## Core logic (279)
 
-### rules (18)
+### rules (19)
 
 - **U-0599b0** `uncertain` - `src/Darklands.Core/Characters/Character.cs:62` `Character`  
   original: `R136+0x33FC` (20A5:33FC, data)  
@@ -43,7 +43,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-833e1d** `uncertain` - `src/Darklands.Core/Characters/Creation/Occupation.cs:14` `Occupation`  
   original: `R136+0xB1F5` (290E:2B65, data), `R136+0xB351` (290E:2CC1, data)  
   why: Savings is the word at +0x38 of the 0x0C bytes the draft calls _p2e; its meaning is a guess from the unused text "accumulated savings were".
-- **U-dcfad6** `uncertain` - `src/Darklands.Core/Characters/DefaultParty.cs:13` `DefaultParty.Create`  
+- **U-9285b2** `uncertain` - `src/Darklands.Core/Characters/DefaultParty.cs:13` `DefaultParty`  
+  original: `R001+0x0000` (0E76:0000, draft)  
+  why: what the original then does is read from the code, not run: the battle builds the figure's file name from member_shield (R002, "pics\short.pic"), finds no such picture and stops.
+- **U-dcfad6** `uncertain` - `src/Darklands.Core/Characters/DefaultParty.cs:18` `DefaultParty.Create`  
   original: `R001+0x0000` (0E76:0000, draft)  
   why: the four records are taken from the original's Quickstart party (R001 party_default).
 - **U-4471e9** `uncertain` - `src/Darklands.Core/Economy/Money.cs:144` `Money.ToString`  
@@ -885,7 +888,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-e6062e** `uncertain` - `src/Darklands.Content/Formats/Battles/RowRunSprite.cs:10` `RowRunSprite`  
   original: unresolved (none)  
   why: the format is read from the data (every BC tile parses exactly within its record size, IMC frames as the old engine's CleanCombatPreparedPresentation does); whether the first byte is width − 1 or a hot spot for IMC frames is not settled, so nothing relies on Width for frames.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1358` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1362` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:52` `BuySellPage.DrawParty`  
