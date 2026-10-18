@@ -26,6 +26,15 @@ new cases or listed in `unreachable.csv` with a justification.
 thresholds —, 4 compiled forms, 153 in the run-time library). About 3,000 never-exercised items
 remain open, mostly in the battle, castle and mine generators.
 
+## Structure of the C# against the original (static)
+
+`STRUCTURE.md` / `structure.csv` (`tools/faithfulness/structure.py`): without running anything, every
+original function the C# cites is compared with the C# that implements it: the calls with their constant
+arguments, the random draws, the call order, the constants tested and written, and the number of
+branches, read from the EXE bytes and from the C# (Roslyn). It covers every cited function at once,
+including paths no oracle case reaches. Its findings are leads to review; a reviewed lead goes to
+`structure-reviewed.csv` with the reason.
+
 ## Card oracle
 
 `CARDS.md`: every one of the 365 original card functions runs in the emulator with a scripted

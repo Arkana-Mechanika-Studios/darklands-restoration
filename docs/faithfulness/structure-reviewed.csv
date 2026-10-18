@@ -1,0 +1,4 @@
+coordinate,check,detail,reason
+R029+0x2C4E,draws,"original 0 call sites, C# 1","RecordBoost (MemberRules) cites event_new and draws the expiry jitter rand_mod(3) that the original draws in its caller R029+0x4D24 as an argument of event_new: one draw per event, in the same place of the sequence."
+R029+0x5654,consts,0x9 0xC 0xF 0x12,"TimeOfDay.Band writes the original's if-chain of hour bounds as hour / 3 - 1 between 3 and 20; every hour is checked against the original by CoreValuesOracleTests (hour_band)."
+R133+0x11DC,draws,"original 1 call sites, C# 0","The trace of R133+0x11DC is on the class GateOfTheSixKeys: its Run() draws the battle seed rand_mod(1000) as the original does; HasAllSixKeys is only the key test of the same function."

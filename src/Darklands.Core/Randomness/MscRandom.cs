@@ -34,6 +34,7 @@ public sealed class MscRandom(uint seed = 1) : IRandomSource
 
     public void Seed(uint seed) => State = _previous = seed;
 
+    // orig: _rand root 06A1:29B6 (MSC 6 run-time library) asm; tests: CoreValuesOracleTests (Oracle:core.json)
     public int NextRaw()
     {
         _previous = State;
