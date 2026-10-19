@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 45 entries; recommendations: document: 1, implement-later: 1, justify: 38, keep: 5.
+- Part A (not-modelled, deliberate-fix, other in core logic): 45 entries; recommendations: document: 1, justify: 39, keep: 5.
 - Part B (undefined-memory in core logic): 118 entries; determinism: n/a: 79, no: 26, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -38,11 +38,10 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### implement (0)
 
 
-### implement-later (1)
+### implement-later (0)
 
-- **D-98f65a** `src/Darklands.Cards/CardContext.Party.cs:381` `CardContext.RunBattle` - original `R029+0x2278` (cards) - Checked against the asm: cards_shutdown (R043 1462:054E) writes the count and every non-empty event (0x30 bytes) to events.tmp, frees it and empties its slot (1462:0665-06F5); run_battle (R029 0E76:2281) and the main loop's battle (root 0000:3D0B) call it before the battle, and cards_startup (0000:3E40, 0E76:23BC) has world_load (1462:0100) read the file back into slots 0..n-1 with new records (1462:04E3-053F). So the battle runs on an empty table, and what the battle adds in slots below n is lost (a saint's 0x48/0x49 boost or price called in a battle is never undone), and the table comes back compacted. Modelling it touches every battle-time event query and the save in a battle (which writes the table as events.tmp holds it).
 
-## Done (58)
+## Done (59)
 
 Entries made faithful (the marker was replaced by the original behaviour, or reworded where a part stays out of reach): what changed, then the review's analysis.
 
@@ -122,6 +121,8 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
   analysis: The original does not use event_renew's return value: it writes through R136+0xF458[last_event+1] = events[last_event], i.e. the global last_event (DS:E3CE), and event_renew returns -1 without setting last_event when the table is full - but its scan (event_next) leaves last_event at the last kind-0x1d event it visited, else at the previous value. So the write (f2a=place, f2c=risk) lands in that other event's record, not in 'slot 0'. The C# EventLog already models Last (Scan/Next set it), so reproduce by writing to log[log.Last] instead of log[slot]; if Last is -1/300 the pointer is events[-1]/[300] (garbage, ignore). Reachable only with all 300 slots used.
 - **D-97e4f8** (was `reproduce-later`) - StoreTable models R136+0x11124 (100 entries + count, kept in GameState across loads): cache_load leaves the tail, cache_take copies the entry after the last down, Storing.Get hands out a stale entry past the end; test TradingAndLootTests.  
   analysis: Same for G: it checks only DS:89F0!=0; the row can be past the store end, so it reads R136+0x11124[row] (4-byte entries, 100-entry table at 2e38:37F4) beyond the loaded count: add_item_rec gets {id, item_defs[id]->type, qual, weight} of that stale entry (zero slot: item 0, quality 0, one per press) and cache_take decrements its cnt (0 -> 255, no removal). The table is a shared scratch area refilled by every cache_load without clearing the tail, so the stale entries are the leftovers of the previously opened stores in this run (zero before any store was opened). Needs that 100-entry scratch table modelled.
+- **D-98f65a** (was `implement-later`) - EventLog.Shutdown (cards_shutdown 1462:0665-06F5: the events in use to the work file in slot order, every slot emptied) and EventLog.Reload (world_load 1462:048A-053F: the file's n records as new records into slots 0..n-1, slots n and up kept) around both battles: CardContext.RunBattle (run_battle 0E76:2281, reload at cards_startup 0E76:23BC after AfterBattle) and DarklandsGame.FightTheBattle (root 0000:3D0B, reload at 0000:3E40 after party_delete_vec; a load in the battle jumps out with no reload). The save in a battle (R037+0x2ACE 1462:2C57-2D0E, 37C8-3832) reads the file back over the battle's table, saves it, then frees every event (OriginalSaves.Write, EventLog.ReleaseAfterSave). BUG markers: the lost battle-time events (EventLog.Reload) and the dead member's term/has-left events that party_delete misses (FightTheBattle). Checked against the original bytes: Oracle:eventsfile.json (tools/oracle/build_eventsfile_corpus.py, EventsFileOracleTests); tests EventLogTests, BattleEventTableTests, BattleEventTableSaveTests.  
+  analysis: Checked against the asm: cards_shutdown (R043 1462:054E) writes the count and every non-empty event (0x30 bytes) to events.tmp, frees it and empties its slot (1462:0665-06F5); run_battle (R029 0E76:2281) and the main loop's battle (root 0000:3D0B) call it before the battle, and cards_startup (0000:3E40, 0E76:23BC) has world_load (1462:0100) read the file back into slots 0..n-1 with new records (1462:04E3-053F). So the battle runs on an empty table, and what the battle adds in slots below n is lost (a saint's 0x48/0x49 boost or price called in a battle is never undone), and the table comes back compacted. Modelling it touches every battle-time event query and the save in a battle (which writes the table as events.tmp holds it).
 - **D-98f8f7** (was `reproduce`) - CityPoliticsGossip no longer enables line 0: opt_flag_0 is never assigned and shows what the card before left (golden: line 0 hidden in the fresh harness).  
   analysis: opt_flag_0 (DS:EE76, declared char) is the only flag the card does not assign, yet $Revol04 block 0 has 10 option markers, so the first line (guild attitudes) is shown with whatever the previous card left in EE76 (0 hidden, 1 offered, 2 greyed); the card is entered via the city building table, so the predecessor is normally a city hub card, which sets opt_flag_0 to 1 or 2 (R044 hubs), making 'offered' the common case. Deterministic: keep opt_flag[0..9] as persistent engine state (see D-71377f); no extra tracing needed.
 - **D-9df2db** (was `reproduce-later`) - Storing.Put and the store screen test only nitems != 0: a row past the end stores the stale Pack entry and takes one off it; the screen's D (drop from the leader) also acts past the end; test TradingAndLootTests.  
@@ -226,10 +227,10 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R037+0x3F30` (1462:3F30, draft)  
   divergence: the shield picture is the party panel's; no able member left keeps the old leader slot.  
   recommendation: **justify** - The shield picture is a presentation resource (the party panel loads it on demand). The second clause (no able member left keeps the old leader slot) was not compared with the asm of R037+0x3F30; check it, and implement the original's choice if it differs.
-- **D-98f65a** `not-modelled` - `src/Darklands.Cards/CardContext.Party.cs:381` `CardContext.RunBattle`  
+- **D-9a94d4** `not-modelled` - `src/Darklands.Cards/CardContext.Party.cs:381` `CardContext.RunBattle`  
   original: `R029+0x2278` (0E76:2278, draft)  
-  divergence: cards_shutdown's files and frees and cards_startup's reloads are not modelled (only the shutdown's sound_play(1) is played), and the "after battle" log is not written; the death film and the end of the game are the host's (AllDead). They are not neutral for the events: cards_shutdown writes the non-empty events to events.tmp in order, frees them and empties every slot (1462:0665-06F5), so the battle runs on an empty table; world_load reads the file back into slots 0..n-1 with new records (1462:04E3-053F), over what the battle put there (from slot 0 on), and the table is compacted. Here the table is kept as it was: battle-time queries see the events, a saint's boost or price called in a battle is undone when it runs out (the original loses its event, so the boost stays), and later events fill the old gaps.  
-  recommendation: **implement-later** (checked against the original) - Checked against the asm: cards_shutdown (R043 1462:054E) writes the count and every non-empty event (0x30 bytes) to events.tmp, frees it and empties its slot (1462:0665-06F5); run_battle (R029 0E76:2281) and the main loop's battle (root 0000:3D0B) call it before the battle, and cards_startup (0000:3E40, 0E76:23BC) has world_load (1462:0100) read the file back into slots 0..n-1 with new records (1462:04E3-053F). So the battle runs on an empty table, and what the battle adds in slots below n is lost (a saint's 0x48/0x49 boost or price called in a battle is never undone), and the table comes back compacted. Modelling it touches every battle-time event query and the save in a battle (which writes the table as events.tmp holds it).
+  divergence: cards_shutdown's and cards_startup's other work files, frees and reloads (charactr.tmp's header read into DS:A668, locs.tmp, card pictures, shields) are not modelled, and the "after battle" log is not written; the death film and the end of the game are the host's (AllDead).  
+  recommendation: **justify** - What is left of cards_shutdown/cards_startup around a card's battle after the event table was modelled (the event part is D-98f65a, done): locs.tmp is written and read back (the locations the battle saw, kept in memory here), the shields, card frames, timer pictures and order menus are freed and loaded again (presentation resources), and the "after battle" log line is debug output. Not analysed: cards_shutdown first reads charactr.tmp's header (2 + 10 bytes and 0x14 bytes into DS:A668) and copies the strings DS:1166[i] of the slots whose word is not -1 into DS:A668 + 4i (1462:0554-05EE); check what DS:A668 is and whether it is read after the battle.
 - **D-920e47** `not-modelled` - `src/Darklands.Cards/Scripts/PartyAtTheInn.cs:34` `PartyAtTheInn.Run`  
   original: `R054+0x09B8` (18D3:0008, matched)  
   divergence: the card also sets DS:EE72 = 7 and DS:EE70 = 0 (flags of the pop-up boxes the menu draws: with DS:EE72 >= 0 a bordered box is filled behind a pop-up, R043+0x2ACA); nothing here uses pop-ups on this card.  
@@ -369,7 +370,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### deliberate-fix (1)
 
-- **D-72509c** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:270` `OriginalSaves.static`  
+- **D-72509c** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:272` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: a party slot whose status is 0 (a loaded file can have one: DKSAVE40) is skipped by the original, which then copies the following roster records one place late and leaves the file a record short; its record is written here.  
   recommendation: **justify** - Deliberate fix of an original defect: a party slot with status 0 (possible in DKSAVE40) makes the original shift the roster records and write a short file. Reproducing it would corrupt the file; a fidelity flag could cover it if a bug-compatible save is ever wanted.
@@ -388,7 +389,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.
-- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:378` `OriginalSaves.static`  
+- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:388` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the original always writes 414 records; a state with another number of places (tests) writes what it has.  
   recommendation: **justify** - Only tests use a state with another number of places; the game always has 414.
@@ -879,7 +880,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: more than 300 events would overrun the original's table; the rest are dropped.  
   deterministic: **n/a** (checked against the original); action: **document** - R037+0x8ED4 reads nevents from the save and does events[id]=alloc_buffer(0x30)+read for id<n with no bound; the game itself writes only non-empty slots (at most 300), so only a hand-edited or corrupt .sav can exceed 300, and then events[300..] would run on into 2E38:1FDC.. (the data before the R136+0xF92C icon table). Cannot occur with the game's own saves; keep the C# truncation.
-- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:275` `OriginalSaves.static`  
+- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:277` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but save_game's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.

@@ -314,14 +314,17 @@ public sealed class DarklandsGame
     //   combat_flags |= 4 (−3) / 8 (−5) / 0x80 (−6) / 0xC (−4), |= 1, battle_run(battle_mode, battle_enemy, battle_seed,
     //   −1, A76C, 0, −1, A76E, 0, −1, A770, 0), status 3 → 0 with party_delete_vec, others but 0 and 5 → 1,
     //   none left or battle_result == 5 → music 0x12, "death", exit; else cards_startup_vec and the result is the next screen.
-    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; cards_shutdown and cards_startup's reloads are not
-    //   modelled, so the event table is not emptied for the battle, read back over it and compacted (see CardContext.RunBattle).
-    // orig: cards_startup R043+0x078E (1462:078E) matched begins with srand((unsigned)time(0)): TimePassage.Reseed.
+    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; cards_shutdown and cards_startup's reloads of the
+    //   other work files are kept in memory (see CardContext.RunBattle).
+    // orig: cards_shutdown R043+0x054E writes the events to events.tmp and empties the table (EventLog.Shutdown); cards_startup
+    //   R043+0x078E (1462:078E) matched begins with srand((unsigned)time(0)): TimePassage.Reseed, and its world_load reads the events
+    //   back (EventLog.Reload). A load in the battle leaves it by the jump (LoadGameRequestedException): no cards_startup.
     // C: with DS:9081 bit 0 (GameState.ResumeBattle: a game saved in a battle) the card was skipped and the code is the DS:A764 the loop
     // holds (not a battle code after a load); R002+0x0000 takes the battle up from the battle file and clears the bit at its end.
     private int FightTheBattle(GameState state, CardContext context, BattleScreens battles, int code)
     {
         // orig: root 03A1:000A calls cards_shutdown_vec (R043+0x054E) before the battle; it ends with sound_play(1) (root 047C:078A)
+        state.Events.Shutdown();
         _ui.Audio.PlayMusic(Darklands.Audio.GameSounds.Stop);
         var orders = state.BattleOrders;
         orders.Flags |= code switch { -3 => 4, -5 => 8, -6 => 0x80, -4 => 0xC, _ => 0 };
@@ -339,7 +342,10 @@ public sealed class DarklandsGame
             orders.Flags &= 0xFE10;
         }
         var members = state.Party.Members;
+        // orig: root 03A1:000A (matched per the byte match): party_delete_vec for each slot of status 3, before cards_startup
         // C: the dead are deleted first (slot by slot, highest first here because DeleteMember trims empty slots at the end).
+        // BUG: party_delete_vec runs while the events are in events.tmp, so a member who died in the battle keeps the term and
+        //   "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
         for (var i = members.Count - 1; i >= 0; i--)
         {
             if (members[i].Status == Core.Characters.CharacterStatus.Dead)
@@ -361,6 +367,7 @@ public sealed class DarklandsGame
         }
         state.Party.EnsureAbleLeader();
         Core.Rules.TimePassage.Reseed(state);
+        state.Events.Reload();
         return battles.LastResultCard;
     }
 

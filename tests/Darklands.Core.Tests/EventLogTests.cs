@@ -189,4 +189,62 @@ public sealed class EventLogTests
         Assert.False(s.Events.Fact(9, 1, 5));
         Assert.True(s.Events.Fact(9, 1, 6));
     }
+
+    /// <summary>
+    /// cards_shutdown / world_load around a battle: the battle runs on an empty table, what it adds below the file's
+    /// count is lost (a boost called in the battle is never undone), the rest stays, and the table comes back compacted.
+    /// </summary>
+    [Fact]
+    public void ABattleRunsOnAnEmptyTableAndTheEventsComeBackCompactedOverItsOwn()
+    {
+        var s = TestGame.Create();
+        s.Events.Create(-2, 5, 0, 0x0A, 0, 1, 0, 100, 0, 0);
+        s.Events.Create(-2, 5, 0, 0x0B, 0, 2, 0, 100, 0, 0);
+        s.Events.Create(-2, 5, 0, 0x0C, 0, 3, 0, 100, 0, 0);
+        s.Events.Free(0);
+        var last = s.Events.Last;
+
+        s.Events.Shutdown();
+        Assert.Empty(s.Events.All());
+        Assert.False(s.Events.Exists(0x0B));
+        Assert.Equal(last, s.Events.Last);
+        // The battle: a boost (slot 0, below the file's two) and two more (slots 1 and 2).
+        s.Events.Create(0, -1, 0, EventKinds.AttributeBoost, 1, 5, 0, 24, 0, 0);
+        s.Events.Create(-2, 5, 0, 0x0D, 0, 4, 0, 100, 0, 0);
+        s.Events.Create(-2, 5, 0, 0x0E, 0, 5, 0, 100, 0, 0);
+        s.Events.Reload();
+
+        Assert.Equal([(0, 0x0B), (1, 0x0C), (2, 0x0E)], s.Events.All().Select(x => (x.Slot, x.Event.Kind)));
+        Assert.Equal(0, s.Events.Count(EventKinds.AttributeBoost));
+    }
+
+    [Fact]
+    public void TheWorkFileHoldsWordsAndEachReloadMakesNewRecords()
+    {
+        var s = TestGame.Create();
+        var i = s.Events.Create(-2, 5, 0, 0x0A, 0, 0, 0, 100, 0, 0);
+        s.Events[i]!.Value = 0x12345;
+        s.Events.Shutdown();
+
+        s.Events.Reload();
+        var first = s.Events[0]!;
+        first.Value = 7;
+        s.Events.ReleaseAfterSave();
+        Assert.Empty(s.Events.All());
+        s.Events.Reload();
+
+        Assert.NotSame(first, s.Events[0]);
+        Assert.Equal(0x2345, s.Events[0]!.Value);
+    }
+
+    [Fact]
+    public void AReloadBeforeAnyShutdownChangesNothing()
+    {
+        var s = TestGame.Create();
+        s.Events.Create(-2, 5, 0, 0x0A, 0, 0, 0, 100, 0, 0);
+
+        s.Events.Reload();
+
+        Assert.Single(s.Events.All());
+    }
 }

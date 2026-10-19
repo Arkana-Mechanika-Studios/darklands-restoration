@@ -263,7 +263,9 @@ public static class OriginalSaves
     /// <param name="comment">The comment typed in the save dialog; null keeps the one the game was read with.</param>
     // orig: R037+0x2ACE (1462:2ACE) draft (unmatched: the `nel > ixn` loop test's operand order)
     // C: `if (DS:907A == 1)` (saving in a battle): the members' readied items are put away (thunk 09C0:1CCF/1cc5/1cbb), game_difficulty |= 0x80,
-    // locs.tmp and events.tmp are read back into memory first, and the box is drawn in colour 9.
+    // locs.tmp and events.tmp are read back into memory first (the events into slots 0..n-1 over the battle's: EventLog.Reload), and the
+    // box is drawn in colour 9; after the file is written every event is freed again (EventLog.ReleaseAfterSave): the battle goes on with an
+    // empty table, and what it had added is lost (in slots n and up it was saved with the game).
     // C: in a battle the party's records are its combatant records (PartyRecordInBattle) and the battle file is written from the battle.
     // C: party_size is recomputed from the slots of charactr.tmp; nd records follow in roster order: a party member's from memory
     // (combatants, saints, formulas, pack), skipped when `party[je][0]` is 0, any other copied from charactr.tmp.
@@ -278,6 +280,10 @@ public static class OriginalSaves
     public static (byte[] Sav, byte[] Bsv) Write(GameState state, string? comment = null, bool music = true, bool soundEffects = true,
         Core.Battles.Battle? inBattle = null)
     {
+        if (inBattle is not null)
+        {
+            state.Events.Reload();
+        }
         var image = state.OriginalSave as SaveImage;
         var file = new SaveFile { Header = image is null ? new byte[SaveFile.HeaderSize] : (byte[])image.Header.Clone() };
         var h = file.Header;
@@ -374,6 +380,10 @@ public static class OriginalSaves
         foreach (var (_, e) in state.Events.All())
         {
             file.Events.Add(EventRecords.Write(e));
+        }
+        if (inBattle is not null)
+        {
+            state.Events.ReleaseAfterSave();
         }
         // DIVERGENCE: the original always writes 414 records; a state with another number of places (tests) writes what it has.
         foreach (var l in state.Locations)

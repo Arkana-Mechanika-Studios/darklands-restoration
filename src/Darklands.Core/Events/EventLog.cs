@@ -68,6 +68,63 @@ public sealed class EventLog
 
     public void Clear() => Array.Clear(_slots);
 
+    // ---- the work file around a battle (EVENTS.TMP) ---------------------------------
+
+    /// <summary>The records of EVENTS.TMP as <see cref="Shutdown"/> last wrote them (null: not written yet).</summary>
+    private TimedEvent[]? _workFile;
+
+    /// <summary>
+    /// Before a battle (<c>cards_shutdown</c>): the events in use are written to the work file
+    /// in slot order and every slot is emptied, so the battle runs on an empty table.
+    /// </summary>
+    // orig: cards_shutdown R043+0x054E (1462:054E) matched: 1462:0665-0693 writes the count of the non-empty slots, 1462:069B-06F5
+    //   each non-empty event's 0x30 bytes (slot order), frees it and empties its slot; last_event is not touched; tests: EventsFileOracleTests
+    public void Shutdown()
+    {
+        _workFile = All().Select(x => Record(x.Event)).ToArray();
+        Array.Clear(_slots);
+    }
+
+    /// <summary>
+    /// After a battle (<c>world_load</c> of <c>cards_startup</c>), and in a save made in a battle:
+    /// the work file's n events are read back into slots 0..n−1 as new records; slots n and up
+    /// keep what is in them.
+    /// </summary>
+    // C: the save in a battle (R037+0x2ACE) reads it back the same way (1462:2C57-2D0E).
+    // orig: world_load R043+0x0100 (1462:0100) matched: 1462:048A-053F, only when EVENTS.TMP exists (_dos_findfirst): the count word, then
+    //   for i < count (unsigned) events[i] = a new 0x30-byte record read from the file; the record that was in the slot is not freed;
+    //   tests: EventsFileOracleTests, EventLogTests
+    // BUG: the table comes back compacted, and what a battle put into the slots below the count is lost: a saint's boost
+    //   (kind 0x48/0x49) or a price called in a battle is never undone, as its event, which would end it, is gone.
+    public void Reload()
+    {
+        if (_workFile is null)
+        {
+            return;
+        }
+        for (var i = 0; i < _workFile.Length; i++)
+        {
+            _slots[i] = Record(_workFile[i]);
+        }
+    }
+
+    /// <summary>
+    /// The end of a save made in a battle: every event is freed and every slot emptied (the work
+    /// file stays as it is), so the battle goes on with an empty table again.
+    /// </summary>
+    // orig: R037+0x2ACE (1462:2ACE) draft, 1462:37C8-3832: with DS:907A == 1, after the file is written, the 300 slots are freed and
+    //   emptied (also those the battle filled at slot n and up, which were just saved with the game).
+    public void ReleaseAfterSave() => Array.Clear(_slots);
+
+    /// <summary>An event as its 0x30-byte record holds it: every field a 16-bit word.</summary>
+    private static TimedEvent Record(TimedEvent e) => new()
+    {
+        Type = (short)e.Type, Created = e.Created, Start = e.Start, End = e.End, Owner = (short)e.Owner,
+        Location = (short)e.Location, Value = (short)e.Value, Extra = (short)e.Extra, Kind = (short)e.Kind,
+        Flags = (EventFlags)(short)e.Flags, ExpiryHandler = (ExpiryHandler)(short)e.ExpiryHandler, Tag = (short)e.Tag,
+        Data1 = (short)e.Data1, Data2 = (short)e.Data2, Data3 = (short)e.Data3,
+    };
+
     // ---- creating -------------------------------------------------------------------
 
     /// <summary>

@@ -378,20 +378,19 @@ public sealed partial class CardContext
     /// </summary>
     // orig: run_battle R029+0x2278 (0E76:2278) matched
     // C: the side is drawn (rand_mod(2)) before the seed (rand_mod(1000)); the battle gets seed + party_seed.
-    // DIVERGENCE: cards_shutdown's files and frees and cards_startup's reloads are not modelled (only the shutdown's sound_play(1) is played),
-    //   and the "after battle" log is not written; the death film and the end of the game are the host's (AllDead).
-    //   They are not neutral for the events: cards_shutdown writes the non-empty events to events.tmp in order, frees them and empties
-    //   every slot (1462:0665-06F5), so the battle runs on an empty table; world_load reads the file back into slots 0..n-1 with new
-    //   records (1462:04E3-053F), over what the battle put there (from slot 0 on), and the table is compacted. Here the table is kept as
-    //   it was: battle-time queries see the events, a saint's boost or price called in a battle is undone when it runs out (the original
-    //   loses its event, so the boost stays), and later events fill the old gaps.
+    // DIVERGENCE: cards_shutdown's and cards_startup's other work files, frees and reloads (charactr.tmp's header read into DS:A668,
+    //   locs.tmp, card pictures, shields) are not modelled, and the "after battle" log is not written; the death film and the end of
+    //   the game are the host's (AllDead).
     // orig: cards_startup R043+0x078E (1462:078E) matched, called when somebody is left: srand((unsigned)time(0)),
     //   then the shields, card frames and timer pictures are loaded again, order_menu_reset_vec and world_load("locs.tmp") (the locations the
-    //   battle saw), party_panel_frames/rows; the C# keeps all of that in memory, the reseed is TimePassage.Reseed (before advance_hours(0)).
-    // orig: run_battle begins with cards_shutdown_vec (R043+0x054E), which ends with sound_play(1) (root 047C:078A): the music stops
-    //   before the battle driver is loaded; with nobody left after the battle: music_play(0x12), the death film and exit_(0) (AllDead).
+    //   battle saw, and the events: EventLog.Reload), party_panel_frames/rows; the reseed is TimePassage.Reseed (before advance_hours(0)).
+    // orig: run_battle begins with cards_shutdown_vec (R043+0x054E), which writes the events to events.tmp and empties the table
+    //   (EventLog.Shutdown: the battle and party_delete_vec after it run on an empty table) and ends with sound_play(1) (root 047C:078A):
+    //   the music stops before the battle driver is loaded; with nobody left after the battle: music_play(0x12), the death film and
+    //   exit_(0) (AllDead).
     public int RunBattle(int side, int seed, params int[] parameters)
     {
+        Events.Shutdown();
         PlaySound(1);
         if (side == -1)
         {
@@ -405,6 +404,7 @@ public sealed partial class CardContext
             AllDead?.Invoke();
         }
         TimePassage.Reseed(State);
+        Events.Reload();
         TimePassage.Advance(State, 0);
         return result;
     }

@@ -13,12 +13,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 |---|---|---|---|
 | rules | 39 | 16 | 23 |
 | cards | 49 | 0 | 49 |
-| events | 6 | 4 | 2 |
+| events | 7 | 4 | 3 |
 | battles | 13 | 3 | 10 |
-| screens/presentation | 1 | 1 | 0 |
-| total | 108 | 24 | 84 |
+| screens/presentation | 2 | 1 | 1 |
+| total | 110 | 24 | 86 |
 
-## Core logic (107)
+## Core logic (108)
 
 ### rules (39)
 
@@ -290,7 +290,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R134+0x0550` (1838:0550, matched), `R134+0x0692` (1838:0692, matched)  
   why: the original adds rand(10) Endurance although text 9 says many were bitten; kept as it is (no OriginalBehaviour flag for it).
 
-### events (6)
+### events (7)
 
 - **B-ace31b** `bug`, no fix flag - `src/Darklands.Core/Events/EventExpiry.cs:104` `EventExpiry.AlchemyResult`  
   original: `R029+0x3FB2` (0E76:3FB2, draft)  
@@ -304,10 +304,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-dcf1be** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:137` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: the recorded amount is taken off whatever the attribute is by then (add_attr(owner, type, -value)): a boost that a night's rest (Endurance back to its maximum) or wounds (Strength) have already used up is taken off again and leaves the attribute below where it was; a saint's lowering (a negative value) is given back the same way.
-- **B-8f44e7** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:79` `EventLog.Create`  
+- **B-e1b48f** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:97` `EventLog.Reload`  
+  original: `R043+0x0100` (1462:0100, matched)  
+  why: the table comes back compacted, and what a battle put into the slots below the count is lost: a saint's boost (kind 0x48/0x49) or a price called in a battle is never undone, as its event, which would end it, is gone.
+- **B-8f44e7** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:136` `EventLog.Create`  
   original: `R029+0x2C4E` (0E76:2C4E, draft), `R029+0x3034` (0E76:3034, draft)  
   why: "forever" events end on 31 December 1499: 9999 hours is the fixed end 23:00 31.12.1499, not an open end, so on 1 January 1500 every such event expires (a quest clears its facts) and one created later expires at the next expiry pass; the witches' sabbat quest and its planned sabbat end for good.
-- **B-8d31a1** `bug`, flag `FixNewEventAddDoubles` - `src/Darklands.Core/Events/EventLog.cs:164` `EventLog.Update`  
+- **B-8d31a1** `bug`, flag `FixNewEventAddDoubles` - `src/Darklands.Core/Events/EventLog.cs:221` `EventLog.Update`  
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
 
@@ -353,13 +356,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
 
-## Presentation and host (1)
+## Presentation and host (2)
 
-### screens/presentation (1)
+### screens/presentation (2)
 
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:232` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:347` `DarklandsGame.FightTheBattle`  
+  original: `root 03A1:000A` (03A1:000A, matched)  
+  why: party_delete_vec runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 
 ## Fix flags without a BUG marker nearby
 
