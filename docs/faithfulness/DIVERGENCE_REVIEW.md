@@ -510,9 +510,9 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R039+0x1AB0` (1462:1AB0, matched)  
   divergence: without a quest about the target the original gives events[-1]->f2e (undefined); here no item.  
   deterministic: **n/a** (checked against the original); action: **document** - FinishQuest10 first requires ev8_at(10,cur_loc) (a started kind-8 event with f28==10 and f1c==cur_loc) and then event_find(8,-1,b,-1,10,-1) with b the caller's argument; every caller of thunk 09C0:214D (R106*, R107*, R108*) pushes DS:907E = cur_loc, so the find matches the same event and never returns -1. events[-1] is not reachable in play.
-- **D-a8e74a** `undefined-memory` - `src/Darklands.Core/Rules/SaintBook.cs:184` `SaintBook.PragueStanding`  
+- **D-ed4cb2** `undefined-memory` - `src/Darklands.Core/Rules/SaintBook.cs:192` `SaintBook.PragueStanding`  
   original: `R039+0x619A` (165C:41FA, matched)  
-  divergence: u is an uninitialised local in the original (whatever the stack slot holds, normally not a valid location: a wild far-pointer write); here Prague's own standing changes.  
+  divergence: u is whatever the stack slot holds: for a prayer for the party (R034+0x0000) the return offset 0x0C84 that rand_mod's call of rand left there, so loc_reputation_adj reads the far pointer at locations + 4 * 0x0C84, past the 414 places, draws its chance and may write a word through it (memory not modelled); here Prague's own standing changes.  
   deterministic: **no** (checked against the original); action: **keep** - `u` is the local at [bp-2] of R039+0x619A's frame (enter 10h; t[7] fills [bp-10h..bp-4]) and is never assigned; loc_reputation_adj(u,15,0x19) in Prague (cur_loc==0x46) indexes locations[u] (2e38:10BE+4u, 16-bit wrap) with whatever word the earlier prayer call chain left on that stack slot (a random rep/standing write somewhere, possibly outside the table). Not derivable from game state. Keep the sensible Prague change.
 - **D-c6cb2f** `undefined-memory` - `src/Darklands.Core/Rules/Saints.cs:35` `Saints.Knows`  
   original: `R029+0x1260` (0E76:1260, draft)  

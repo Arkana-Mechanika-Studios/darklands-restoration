@@ -166,11 +166,17 @@ public static class SaintBook
     /// <summary>The standing here changes when the member carries an item of the kinds <paramref name="mask"/> (St.Cecilia).</summary>
     // orig: if (count_items_flags(who, 0x20000000L)) loc_reputation_adj(cur_loc, 0x14, 0x3c)
     // C: in the open country cur_loc is -1: loc_reputation_adj reads the null record locations[-1], draws its chance and writes nothing.
+    // orig: R039+0x2FC4
+    // BUG: so St.Cecilia called on in the open country raises no town's standing: the other saints' standing goes to the nearest
+    //   city there (R039+0x2FC4 passes cur_loc as it is) (FixSaintStandingInOpenCountry).
     private static Boon StandingHereIfCarrying(uint mask, int a, int b) => (s, who, _) =>
     {
         if (Inventory.CountWithFlags(s, who, mask) != 0)
         {
-            LocationRules.AdjustReputation(s, s.CurrentLocation, a, b);
+            var where = s.CurrentLocation == GameState.Wilderness && s.Behaviour.FixSaintStandingInOpenCountry
+                ? LocationRules.NearestCity(s, s.MapPosition.X, s.MapPosition.Y)
+                : s.CurrentLocation;
+            LocationRules.AdjustReputation(s, where, a, b);
         }
     };
 
@@ -181,8 +187,11 @@ public static class SaintBook
     /// </summary>
     // orig: if (cur_loc == 0x46) loc_reputation_adj(u, 15, 0x19); else { what = ...; switch (what) { case 0x44..0x47,
     //   0x49, 0x4a: loc_reputation_adj(what, 10, 0x14); } } (R039+0x619A)
-    // DIVERGENCE: u is an uninitialised local in the original (whatever the stack slot holds, normally not
-    //   a valid location: a wild far-pointer write); here Prague's own standing changes.
+    // BUG: in Prague the standing goes to u, a local the function never sets (165C:42D4 pushes [bp-2]; its frame's other words
+    //   are the what-table), not to Prague: Prague's own standing never changes by this saint.
+    // DIVERGENCE: u is whatever the stack slot holds: for a prayer for the party (R034+0x0000) the return offset 0x0C84 that
+    //   rand_mod's call of rand left there, so loc_reputation_adj reads the far pointer at locations + 4 * 0x0C84, past the
+    //   414 places, draws its chance and may write a word through it (memory not modelled); here Prague's own standing changes.
     private static readonly Boon PragueStanding = (s, who, _) =>
     {
         const int prague = 0x46;
@@ -240,6 +249,11 @@ public static class SaintBook
     // orig: party[who].f41 = (party[who].f41 & 0xf) - 0x60
     // C: computed as int and stored into a char: (low nibble − 0x60) mod 256 = low nibble + 0xA0.
     // C: who as given: party[-1].f41 is DS:9C2A, the high byte of the UI word DS:9C29 (not modelled): no member changes.
+    // orig: R039+0x31FA; R039+0x45C8; R039+0x7A24
+    // BUG: St.Charity, St.Erasmus and St.Pantaleon (R039+0x31FA, R039+0x45C8, R039+0x7A24), whose texts (DARKLAND.SNT) promise
+    //   resistance to fire, set only this nibble: no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6
+    //   (0x20) count as +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection
+    //   (Attacks.HitDamage), for good.
     private static Boon SetCharm(int high) => (s, _, given) =>
     {
         if (given == Who.Leader)
@@ -254,6 +268,11 @@ public static class SaintBook
     // orig: party[who].f41++ / party[who].f41 += 2
     // C: a char: wraps at 256; the carry runs into the high nibble.
     // C: who as given: for -1 the byte is DS:9C2A (see SetCharm): no member changes.
+    // orig: R039+0x3FF2; R039+0x7B22
+    // BUG: the texts (DARKLAND.SNT) promise St.Dunstan's better quality of the party's metal armour and St.Patrick's armour
+    //   against missiles in combat; the code adds 1 or 2 to the one member's Hardarmor nibble (R039+0x3FF2, R039+0x7B22):
+    //   armour against every blow, with no event, so it never wears off and piles up with each prayer (past 15 into the
+    //   fire-charm bits).
     private static Boon AddCharm(int points) => (s, _, given) =>
     {
         if (given == Who.Leader)
@@ -279,6 +298,10 @@ public static class SaintBook
     // orig: for (i = 0; i < 5; i++) if (party[i].status) { party[i].f3b += 10; party[i].f3c += 10; }
     // C: +0x3b/+0x3c are the signed char qualities of the vital and limb armour (also when none is worn):
     //   125 + 10 wraps to −121.
+    // orig: R039+0x3808
+    // BUG: the quality is raised for good and on metal armour too (the text, DARKLAND.SNT: "all non-metal armor"), with no
+    //   event; worn pieces are matched to their pack stacks by type and quality (Inventory.Unequip), so a mended piece no
+    //   longer matches its stack: taking that piece out of the pack (Inventory.TakeAt, RemoveStackAt) leaves the armour worn.
     private static readonly Boon MendArmor = (s, _, _) =>
     {
         foreach (var m in s.Party.Present)
@@ -382,8 +405,13 @@ public static class SaintBook
     private static readonly SaintHelp[] Table =
     [
         // 0 St.Adrian
+        // orig: R039+0x1FD4
+        // BUG: the text (DARKLAND.SNT) gives Endurance as "healing only"; the code raises it for a day (raise_attr_temp), past its
+        // maximum when unhurt, and takes it back when the day ends (so do St.Agatha and St.Anthony).
         new("R039+0x1FD4", [Boost(Endurance, 8, 15), Boost(Charisma, 6, 11), .. AllWeapons(15, 29)]),
         // 1 St.Agatha
+        // orig: R039+0x2130
+        // BUG: Endurance "healing only" by the text (DARKLAND.SNT), a day's boost in the code (see St.Adrian).
         new("R039+0x2130", [IfWoman([Boost(Endurance, 12, 23)], [Boost(Endurance, 6, 11)]), Boost(Charisma, 6, 11)]),
         // 2 St.Agnes
         new("R039+0x21EC", [IfAbleWomen([Standing(10, 20), Boost(Charisma, 10, 29)])]),
@@ -402,6 +430,8 @@ public static class SaintBook
         new("R039+0x2642", [Boost(EdgedWeapons, 15, 29), Boost(ImpactWeapons, 15, 29), Boost(Polearms, 15, 29), Boost(ThrownWeapons, 15, 29),
             Boost(Bows, 15, 29)]),
         // 9 St.Anthony
+        // orig: R039+0x2732
+        // BUG: Strength and Endurance "healing only" by the text (DARKLAND.SNT), a day's boost of each in the code (see St.Adrian).
         new("R039+0x2732", [Boost(Endurance, 4, 9), Boost(Strength, 5, 10), Boost(Charisma, 1, 10), Boost(SpeakCommon, 10, 19),
             Boost(SpeakLatin, 10, 19), Boost(ReadWrite, 20, 39)]),
         // 10 St.Anthony of Padua
@@ -413,6 +443,9 @@ public static class SaintBook
         // 12 St.Apollinarius
         new("R039+0x2B22", [Boost(Strength, 2, 4), Boost(Endurance, 8, 23)]),
         // 13 St.Barbara
+        // orig: R039+0x2BC0
+        // BUG: her text (DARKLAND.SNT) also "prevents death from wounds for a period (strength never goes below 1)": nothing records
+        // it, and damage_apply (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
         new("R039+0x2BC0", [Boost(Artifice, 15, 29, hours: 5), Boost(MissileDevices, 20, 39, hours: 10)]),
         // 14 St.Bathildis
         new("R039+0x2C5E", [Boost(Intelligence, 4, 8), Boost(Perception, 3, 6)]),

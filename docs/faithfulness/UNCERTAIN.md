@@ -64,13 +64,13 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-158737** `uncertain` - `src/Darklands.Core/Rules/LootSharing.cs:121` `LootSharing.AddToPile`  
   original: `R040+0x1242` (1462:1242, draft)  
   why: the original sets only type (code), quality and count of the new entry and leaves its kind and weight bytes stale; nothing reads them afterwards (Get takes both from the item list), so the item list's values are stored.
-- **U-5a0428** `uncertain` - `src/Darklands.Core/Rules/PotionEffects.cs:106` `PotionEffects.Drink`  
+- **U-5a0428** `uncertain` - `src/Darklands.Core/Rules/PotionEffects.cs:108` `PotionEffects.Drink`  
   original: `R031+0x10AE` (1462:10AE, draft), `R031+0x43B2` (1462:43B2, draft), `R031+0x4CC4` (18E7:0474, draft)  
   why: what Transformation is meant to do; the code adds one florin.
-- **U-41bb2f** `uncertain` - `src/Darklands.Core/Rules/SaintBook.cs:201` `SaintBook.TravelBlessing`  
+- **U-41bb2f** `uncertain` - `src/Darklands.Core/Rules/SaintBook.cs:210` `SaintBook.TravelBlessing`  
   original: `R029+0x2C4E` (0E76:2C4E, draft)  
   why: the meaning of kind 0x4B (EventKinds.TravelBlessing) is a guess from its expiry handler.
-- **U-d319a6** `uncertain` - `src/Darklands.Core/Rules/SaintBook.cs:211` `SaintBook.IfWoman`  
+- **U-d319a6** `uncertain` - `src/Darklands.Core/Rules/SaintBook.cs:220` `SaintBook.IfWoman`  
   original: `R029+0x2C4E` (0E76:2C4E, draft)  
   why: +0x03 is taken as "is a woman" as elsewhere in the port (party_count_able counts it).
 - **U-4dfb6d** `uncertain` - `src/Darklands.Core/Rules/Trading.cs:43` `Trading.StaleCodeSegment`  

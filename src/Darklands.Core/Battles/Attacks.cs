@@ -401,6 +401,11 @@ public static class Attacks
         }
         var target = battle[t];
         // C: the queue is a signed byte: the addition wraps at 8 bits.
+        // C: the queue is added to (18BF:093F, 18BF:0982 `add byte ptr`), never overwritten by a blow; only damage_apply, the
+        //   battle setup and the knock-back's halving write it.
+        // BUG: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's
+        //   animation; traps) wraps past 127 to a negative queue, which damage_apply's signed test (jle 42) lets through: the
+        //   target gains Endurance (and Strength, for the second byte) instead of losing it.
         target.QueuedEndurance = (sbyte)(target.QueuedEndurance + damage);
         int factor;
         if (armour < penetration)

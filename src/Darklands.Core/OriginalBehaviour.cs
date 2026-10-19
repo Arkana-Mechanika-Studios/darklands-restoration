@@ -82,6 +82,12 @@ public sealed class OriginalBehaviour
     /// </summary>
     public bool FixSaintLearnedByLeader { get; set; }
 
+    /// <summary>
+    /// St.Cecilia's standing goes to <c>cur_loc</c> even in the open country (−1: a null record,
+    /// nothing changes), where the other saints take the nearest city; fixed: the nearest city.
+    /// </summary>
+    public bool FixSaintStandingInOpenCountry { get; set; }
+
     /// <summary><c>keep_items_pct</c> starts one past the last stack; fixed: at the last stack.</summary>
     public bool FixKeepItemsOffByOne { get; set; }
 

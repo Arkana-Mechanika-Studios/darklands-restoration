@@ -2,6 +2,7 @@ using Darklands.Core.Characters;
 using Darklands.Core.Economy;
 using Darklands.Core.Events;
 using Darklands.Core.Rules;
+using Darklands.Core.World;
 using Attribute = Darklands.Core.Characters.Attribute;
 
 namespace Darklands.Core.Tests;
@@ -65,6 +66,31 @@ public sealed class SaintBookTests
         Assert.Empty(s.Events.All());
         Assert.Equal(before, ((Randomness.MscRandom)s.Random).State);
         Assert.Equal(0, Saints.Chance(s, 1, Agnes, 50));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void StCeciliaInTheOpenCountryRaisesNoStandingUnlessFixed(bool fixedGame)
+    {
+        const int cecilia = 18, instrument = 50;
+        var s = TestGame.Create();
+        var items = ((TestData)s.Data).Items;
+        items[instrument] = items[instrument] with { Flags = 0x2000_0000 };
+        Inventory.Add(s, 0, instrument);
+        s.CurrentLocation = GameState.Wilderness;
+        s.MapPosition = new MapPosition(0, 0);
+        s.Behaviour.FixSaintStandingInOpenCountry = fixedGame;
+        var nearest = LocationRules.NearestCity(s, 0, 0);
+        SaintBook.Help(s, 0, cecilia);
+        if (fixedGame)
+        {
+            Assert.InRange(s.Locations[nearest].Reputation, 20, 59);   // standing 0: the chance is 100
+        }
+        else
+        {
+            Assert.All(s.Locations, l => Assert.Equal(0, l.Reputation));
+        }
     }
 
     [Fact]

@@ -11,16 +11,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 39 | 16 | 23 |
+| rules | 49 | 17 | 32 |
 | cards | 49 | 0 | 49 |
 | events | 7 | 4 | 3 |
-| battles | 13 | 3 | 10 |
+| battles | 14 | 3 | 11 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 110 | 24 | 86 |
+| total | 121 | 25 | 96 |
 
-## Core logic (108)
+## Core logic (119)
 
-### rules (39)
+### rules (49)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:274` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -112,16 +112,46 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-d0b264** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:100` `PotionEffects.Drink`  
   original: `R031+0x10AE` (1462:10AE, draft), `R031+0x43B2` (1462:43B2, draft), `R031+0x4CC4` (18E7:0474, draft)  
   why: Hardarmor and Firewall never wear off: they raise the armour byte (+0x41) and the Firewall strength (+0x10, below) with no event, and nothing lowers them again (the manual gives them a day); the armour nibble carries past 15 into the fire-charm bits, which Attacks.HitDamage also counts as armour.
+- **B-87887e** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:103` `PotionEffects.Drink`  
+  original: `R031+0x10AE` (1462:10AE, draft), `R031+0x43B2` (1462:43B2, draft), `R031+0x4CC4` (18E7:0474, draft)  
+  why: Hardarmor gives 1, 2 or 3 levels of thickness (5 above quality 45) and no quality, where the manual has it better the armour's quality by 20 to 30 points and its thickness by one or two levels.
 - **B-82a169** `bug`, flag `FixFameCost` - `src/Darklands.Core/Rules/Practice.cs:78` `Practice.ChargeFame`  
   original: `R039+0x1E90` (1462:1E90, matched)  
   why: v - fame is stored (FixFameCost).
-- **B-148934** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:633` `SaintBook.new`  
+- **B-537f55** `bug`, flag `FixSaintStandingInOpenCountry` - `src/Darklands.Core/Rules/SaintBook.cs:170` `SaintBook.StandingHereIfCarrying`  
+  original: `R039+0x2FC4` (165C:1024, matched)  
+  why: so St.Cecilia called on in the open country raises no town's standing: the other saints' standing goes to the nearest city there (R039+0x2FC4 passes cur_loc as it is) (FixSaintStandingInOpenCountry).
+- **B-6878fe** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:190` `SaintBook.PragueStanding`  
+  original: `R039+0x619A` (165C:41FA, matched)  
+  why: in Prague the standing goes to u, a local the function never sets (165C:42D4 pushes [bp-2]; its frame's other words are the what-table), not to Prague: Prague's own standing never changes by this saint.
+- **B-7c09b0** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:253` `SaintBook.SetCharm`  
+  original: `R039+0x31FA` (165C:125A, matched), `R039+0x45C8` (165C:2628, matched), `R039+0x7A24` (165C:5A84, matched)  
+  why: St.Charity, St.Erasmus and St.Pantaleon (R039+0x31FA, R039+0x45C8, R039+0x7A24), whose texts (DARKLAND.SNT) promise resistance to fire, set only this nibble: no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6 (0x20) count as +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection (Attacks.HitDamage), for good.
+- **B-5d6ea6** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:272` `SaintBook.AddCharm`  
+  original: `R039+0x3FF2` (165C:2052, matched), `R039+0x7B22` (165C:5B82, matched)  
+  why: the texts (DARKLAND.SNT) promise St.Dunstan's better quality of the party's metal armour and St.Patrick's armour against missiles in combat; the code adds 1 or 2 to the one member's Hardarmor nibble (R039+0x3FF2, R039+0x7B22): armour against every blow, with no event, so it never wears off and piles up with each prayer (past 15 into the fire-charm bits).
+- **B-4d4c99** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:302` `SaintBook.MendArmor`  
+  original: `R039+0x3808` (165C:1868, matched)  
+  why: the quality is raised for good and on metal armour too (the text, DARKLAND.SNT: "all non-metal armor"), with no event; worn pieces are matched to their pack stacks by type and quality (Inventory.Unequip), so a mended piece no longer matches its stack: taking that piece out of the pack (Inventory.TakeAt, RemoveStackAt) leaves the armour worn.
+- **B-b81c7e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:409` `SaintBook.new`  
+  original: `R039+0x1FD4` (165C:0034, matched)  
+  why: the text (DARKLAND.SNT) gives Endurance as "healing only"; the code raises it for a day (raise_attr_temp), past its maximum when unhurt, and takes it back when the day ends (so do St.Agatha and St.Anthony).
+- **B-22d300** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:414` `SaintBook.new`  
+  original: `R039+0x2130` (165C:0190, matched)  
+  why: Endurance "healing only" by the text (DARKLAND.SNT), a day's boost in the code (see St.Adrian).
+- **B-747355** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:434` `SaintBook.new`  
+  original: `R039+0x2732` (165C:0792, matched)  
+  why: Strength and Endurance "healing only" by the text (DARKLAND.SNT), a day's boost of each in the code (see St.Adrian).
+- **B-defa50** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:447` `SaintBook.new`  
+  original: `R039+0x2BC0` (165C:0C20, matched)  
+  why: her text (DARKLAND.SNT) also "prevents death from wounds for a period (strength never goes below 1)": nothing records it, and damage_apply (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
+- **B-148934** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:666` `SaintBook.new`  
   original: `R039+0x7C6A` (165C:5CCA, matched), `R039+0x7D0C` (165C:5D6C, matched)  
   why: the helps of the two Pauls are mixed up: St.Paul gets R039+0x7C6A, whose feast day (66) and help are those DARKLAND.SNT gives St.Paul the Simple; St.Paul the Simple (106) gets R039+0x7D0C, a copy of St.Thomas Aquinas's help (R039+0x8B58); the help described for St.Paul is R039+0x9578, which no saint number reaches (Z-9318d7).
-- **B-44772a** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:651` `SaintBook.new`  
+- **B-44772a** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:684` `SaintBook.new`  
   original: `R039+0x80C2` (165C:6122, matched)  
   why: the saints' charms never wear off: FirewallForAll, like SetCharm and AddCharm, sets the charm byte (+0x41) and its strength (+0x10) with no event, and nothing takes them back.
-- **B-bf6543** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:682` `SaintBook.new`  
+- **B-bf6543** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:715` `SaintBook.new`  
   original: `R039+0x8A88` (165C:6AE8, matched)  
   why: St.Theodore Tiro raises Flail Weapons twice for a flail wielder: WeaponSkills already raises it for a member holding a flail, and the saint then raises it again; his help also does not match DARKLAND.SNT (all weapon skills, Charisma, Riding): no Riding, Endurance instead.
 - **B-94efea** `bug`, flag `FixSaintLearnedByLeader` - `src/Darklands.Core/Rules/Saints.cs:55` `Saints.Learn`  
@@ -219,7 +249,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the line that is closed for lack of money is 1 ("abandon the horses and crawl out through a sewer"), not the bribe line 2; kept as in the original.
 - **B-10641a** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S064/AlchemistFormulaSeller.cs:74` `AlchemistFormulaSeller.FormulaOnOffer`  
   original: `R064+0x2D38` (1B0B:0008, matched)  
-  why: only formulas 0..21 are ever for sale: the offer is taken modulo 22 (the number of potions) but used as a formula number (potion = n / 3, grade = n % 3), so only the first eight potions are offered.
+  why: only formulas 0..21 are ever for sale: the offer is taken modulo 22 (the number of potions) but used as a formula number (potion = n / 3, grade = n % 3), so only the first seven potions and the first grade of the eighth are offered (unsigned div by 0x16, 1B0B:008E and the three after it).
 - **B-dac2b0** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S065/BowyersGuildAtNight.cs:85` `BowyersGuildAtNight.KnockToBuy`  
   original: `R065+0x21BC` (1A29:02AC, matched)  
   why: woken at night, the bowyers sell the smiths' goods: the night shop passes the smiths' categories (0xFF, 0x400) where the day shop passes the bowyers' (0x30, 0x83C).
@@ -314,7 +344,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
 
-### battles (13)
+### battles (14)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -325,6 +355,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-0d81e6** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:348` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
   why: the penetration wraps: (bonus + weapon) & 15, so Strongedge or Great Power on a weapon of high penetration gives almost none ("after Great Power my bows only do 3-5 damage").
+- **B-08f8dd** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:406` `Attacks.QueueDamage`  
+  original: `R014+0xAD5A` (18BF:08CA, draft)  
+  why: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's animation; traps) wraps past 127 to a negative queue, which damage_apply's signed test (jle 42) lets through: the target gains Endurance (and Strength, for the second byte) instead of losing it.
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
   original: `R004+0x1D90` (0E76:1D90, draft)  
   why: the original removes an empty group by shifting the later groups down but keeps testing the same (stale, zero) counter, so every group after the first empty one is removed too.

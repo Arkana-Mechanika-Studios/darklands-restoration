@@ -100,6 +100,8 @@ public static class PotionEffects
                 // BUG: Hardarmor and Firewall never wear off: they raise the armour byte (+0x41) and the Firewall
                 // strength (+0x10, below) with no event, and nothing lowers them again (the manual gives them a day); the
                 // armour nibble carries past 15 into the fire-charm bits, which Attacks.HitDamage also counts as armour.
+                // BUG: Hardarmor gives 1, 2 or 3 levels of thickness (5 above quality 45) and no quality, where the manual has it
+                // better the armour's quality by 20 to 30 points and its thickness by one or two levels.
                 m.ArmourPotions = (byte)((m.ArmourPotions >> 4 << 4) + t + (m.ArmourPotions & 0xF));
                 break;
             // C: party_money++ increments the florin word alone (16-bit, no normalisation).
