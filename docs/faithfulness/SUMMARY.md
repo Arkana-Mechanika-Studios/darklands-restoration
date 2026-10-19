@@ -7,8 +7,7 @@ its bytes, never against another reimplementation.
 
 No known divergence, strong evidence, published coverage:
 
-* every original function the C# cites is compared with it statically, and no lead is open
-  except the one listed below;
+* every original function the C# cites is compared with it statically, and no lead is open;
 * every oracle agrees with the original wherever it runs, or differs for a listed reason;
 * the branch coverage of the original reached by the oracles is published below with its gaps;
 * a divergence found later is fixed with the same tools, and registered with its reason.
@@ -37,8 +36,8 @@ including paths no oracle case reaches. Its findings are leads to review; a revi
 |---|---:|
 | original functions compared | 5,540 |
 | comparisons without a finding | 3,128 of 3,421 |
-| leads reviewed (each with its reason) | 339 |
-| leads open | 1 (a depth threshold of the battle's sprite lists, R014+0x7BBE) |
+| leads reviewed (each with its reason) | 340 |
+| leads open | 0 |
 
 The first review of its leads fixed about twenty divergences in the card scripts and the rules (the
 order of the party queries a card makes, menus that ran on the wrong layout, a member who did not

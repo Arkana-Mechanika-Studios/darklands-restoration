@@ -29,14 +29,13 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 | `missing` | a game-logic call of the original the C# does not make | 0 | 95 |
 | `extra` | a traced call the original does not make (three calls deep) | 0 | 95 |
 | `order` | two shared calls in the opposite order | 0 | 32 |
-| `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 1 | 33 |
+| `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 0 | 34 |
 | `decisions` | fewer than half the original's conditional branches | 0 | 69 |
 
 ## Open findings by area
 
 | area | draws | args | stores | missing | extra | order | consts | decisions |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| battles (tactical) | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
 
 ## Limits
 

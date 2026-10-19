@@ -129,8 +129,52 @@ public sealed class CardOracleStates
                 }
                 break;
             default:
-                throw new ArgumentException(variant);
+                if (!Mutate(state, variant))
+                {
+                    throw new ArgumentException(variant);
+                }
+                break;
         }
+    }
+
+    /// <summary>
+    /// Condition-directed mutations (DARKLANDS_CARD_ORACLE_MUTATIONS: a JSON file of variant name -> either
+    /// {"0xDS-address": value} for a saved-game word, or a list of started events {kind, type, tag, location}).
+    /// Unset, no variant name resolves and nothing changes.
+    /// </summary>
+    private static bool Mutate(Core.GameState state, string variant)
+    {
+        if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_MUTATIONS") is not { Length: > 0 } file)
+        {
+            return false;
+        }
+        using var doc = JsonDocument.Parse(File.ReadAllText(file));
+        if (!doc.RootElement.TryGetProperty(variant, out var m))
+        {
+            return false;
+        }
+        if (m.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var e in m.EnumerateArray())
+            {
+                int Get(string name, int or) => e.TryGetProperty(name, out var v)
+                    ? (v.ValueKind == JsonValueKind.String ? state.CurrentLocation : v.GetInt32()) : or;
+                state.Events.Create(-2, Get("location", 0), 0, Get("kind", 0), Get("type", 0), 0, 0, 9999, 0, Get("tag", 0));
+            }
+            return true;
+        }
+        foreach (var p in m.EnumerateObject())
+        {
+            var value = p.Value.GetInt32();
+            switch (Convert.ToInt32(p.Name, 16))
+            {
+                case 0xA88D: state.PreviousCard = value; break;     // prev_screen (+0x8A)
+                case 0xA891: state.MapLeaveMode = value; break;     // map-leave mode (+0xA4)
+                case 0xE3D0: state.MapPosition = state.MapPosition with { X = value }; break;  // party_x (+0x7E)
+                default: throw new ArgumentException(p.Name);
+            }
+        }
+        return true;
     }
 
     /// <summary>The saved game and the side values of one state.</summary>
