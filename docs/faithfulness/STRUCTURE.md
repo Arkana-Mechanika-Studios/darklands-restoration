@@ -13,31 +13,30 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 
 | | count |
 |---|---:|
-| C# units with a trace (types left out) | 4459 |
-| original functions compared | 5546 |
-| comparisons (functions one C# unit implements together are compared as one) | 3424 |
+| C# units with a trace (types left out) | 4456 |
+| original functions compared | 5540 |
+| comparisons (functions one C# unit implements together are compared as one) | 3421 |
 | comparisons without a finding | 3128 |
-| implemented functions not compared (cited only in statements, types or map.csv) | 2695 |
+| implemented functions not compared (cited only in statements, types or map.csv) | 2701 |
 
 ## Findings
 
 | check | what it means | open | reviewed |
 |---|---|---:|---:|
-| `draws` | one side draws random numbers, the other never does | 2 | 2 |
+| `draws` | one side draws random numbers, the other never does | 0 | 2 |
 | `args` | a shared call passes a constant the other side never uses | 0 | 5 |
 | `stores` | the C# assigns a constant that appears nowhere in the original's code | 0 | 8 |
-| `missing` | a game-logic call of the original the C# does not make | 3 | 94 |
+| `missing` | a game-logic call of the original the C# does not make | 0 | 95 |
 | `extra` | a traced call the original does not make (three calls deep) | 0 | 95 |
 | `order` | two shared calls in the opposite order | 0 | 32 |
 | `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 1 | 33 |
-| `decisions` | fewer than half the original's conditional branches | 1 | 69 |
+| `decisions` | fewer than half the original's conditional branches | 0 | 69 |
 
 ## Open findings by area
 
 | area | draws | args | stores | missing | extra | order | consts | decisions |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | battles (tactical) | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-| rules (strategic core, event toolkit) | 2 | 0 | 0 | 3 | 0 | 0 | 0 | 1 |
 
 ## Limits
 

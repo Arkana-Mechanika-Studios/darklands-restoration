@@ -249,11 +249,7 @@ public static class SaintBook
     // orig: party[who].f41 = (party[who].f41 & 0xf) - 0x60
     // C: computed as int and stored into a char: (low nibble − 0x60) mod 256 = low nibble + 0xA0.
     // C: who as given: party[-1].f41 is DS:9C2A, the high byte of the UI word DS:9C29 (not modelled): no member changes.
-    // orig: R039+0x31FA; R039+0x45C8; R039+0x7A24
-    // BUG: St.Charity, St.Erasmus and St.Pantaleon (R039+0x31FA, R039+0x45C8, R039+0x7A24), whose texts (DARKLAND.SNT) promise
-    //   resistance to fire, set only this nibble: no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6
-    //   (0x20) count as +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection
-    //   (Attacks.HitDamage), for good.
+    // C: the only charm St.Charity, St.Erasmus and St.Pantaleon give (their rows have the BUG marker).
     private static Boon SetCharm(int high) => (s, _, given) =>
     {
         if (given == Who.Leader)
@@ -268,11 +264,7 @@ public static class SaintBook
     // orig: party[who].f41++ / party[who].f41 += 2
     // C: a char: wraps at 256; the carry runs into the high nibble.
     // C: who as given: for -1 the byte is DS:9C2A (see SetCharm): no member changes.
-    // orig: R039+0x3FF2; R039+0x7B22
-    // BUG: the texts (DARKLAND.SNT) promise St.Dunstan's better quality of the party's metal armour and St.Patrick's armour
-    //   against missiles in combat; the code adds 1 or 2 to the one member's Hardarmor nibble (R039+0x3FF2, R039+0x7B22):
-    //   armour against every blow, with no event, so it never wears off and piles up with each prayer (past 15 into the
-    //   fire-charm bits).
+    // C: St.Dunstan's and St.Patrick's help (their rows have the BUG marker).
     private static Boon AddCharm(int points) => (s, _, given) =>
     {
         if (given == Who.Leader)
@@ -298,10 +290,7 @@ public static class SaintBook
     // orig: for (i = 0; i < 5; i++) if (party[i].status) { party[i].f3b += 10; party[i].f3c += 10; }
     // C: +0x3b/+0x3c are the signed char qualities of the vital and limb armour (also when none is worn):
     //   125 + 10 wraps to −121.
-    // orig: R039+0x3808
-    // BUG: the quality is raised for good and on metal armour too (the text, DARKLAND.SNT: "all non-metal armor"), with no
-    //   event; worn pieces are matched to their pack stacks by type and quality (Inventory.Unequip), so a mended piece no
-    //   longer matches its stack: taking that piece out of the pack (Inventory.TakeAt, RemoveStackAt) leaves the armour worn.
+    // C: St.Crispin's row has the BUG marker.
     private static readonly Boon MendArmor = (s, _, _) =>
     {
         foreach (var m in s.Party.Present)
@@ -464,6 +453,11 @@ public static class SaintBook
         new("R039+0x306A", [Boost(Perception, 3, 5), Boost(Strength, 6, 11), Boost(Intelligence, 3, 5), .. AllWeapons(6, 11),
             Boost(SpeakLatin, 6, 11)]),
         // 20 St.Charity
+        // orig: R039+0x31FA
+        // BUG: her text (DARKLAND.SNT) promises resistance to fire, as St.Erasmus's and St.Pantaleon's do; the code sets only the
+        // charm nibble (SetCharm(0xA0)): no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6 (0x20) count as
+        // +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection (Attacks.HitDamage),
+        // for good.
         new("R039+0x31FA", [Standing(10, 20), Boost(FlailWeapons, 15, 29), Boost(Charisma, 6, 11), SetCharm(0xA0)]),
         // 21 St.Christina, Astonish.
         new("R039+0x32DA", [Boost(Agility, 8, 15), Boost(Charisma, 1, 10)]),
@@ -483,6 +477,11 @@ public static class SaintBook
         // 27 St.Cosmas
         new("R039+0x3744", [Heal(Endurance, 10), Heal(Strength, 10), Boost(Healing, 40, 79), Boost(Perception, 4, 7), Teach(Damian)]),
         // 28 St.Crispin
+        // orig: R039+0x3808
+        // BUG: the quality is raised for good and on metal armour too (the text, DARKLAND.SNT: "all non-metal armor"), with no
+        // event (MendArmor); worn pieces are matched to their pack stacks by type and quality (Inventory.Unequip), so a mended
+        // piece no longer matches its stack: taking that piece out of the pack (Inventory.TakeAt, RemoveStackAt) leaves the
+        // armour worn.
         new("R039+0x3808", [MendArmor]),
         // 29 St.Cyprian
         new("R039+0x388A", [Boost(Alchemy, 5, 9), Boost(Intelligence, 5, 9)]),
@@ -514,6 +513,10 @@ public static class SaintBook
         // here for a week, the kind that spares the party an ambush (Footpads), as St.Genevieve's does: no speed.
         new("R039+0x3F2C", [Boost(Perception, 6, 11), Boost(Healing, 10, 19), Boost(Woodwise, 20, 39), EventHere(0x4F, 168)]),
         // 39 St.Dunstan
+        // orig: R039+0x3FF2
+        // BUG: the text (DARKLAND.SNT) promises a better quality of the party's metal armour; the code adds 1 to the one member's
+        // Hardarmor nibble (AddCharm(1)): armour against every blow, with no event, so it never wears off and piles up with each
+        // prayer (past 15 into the fire-charm bits).
         new("R039+0x3FF2", [WeaponSkills(6, 11), Boost(Perception, 6, 11), Boost(Artifice, 25, 74), Boost(Streetwise, 6, 11), Boost(Alchemy, 5, 14),
             AddCharm(1)]),
         // 40 St.Dymphna
@@ -533,6 +536,8 @@ public static class SaintBook
         // 44 St.Engelbert
         new("R039+0x44D8", [Boost(Charisma, 5, 9), Boost(Riding, 10, 19), Boost(SpeakCommon, 6, 11), Boost(Woodwise, 10, 19), TravelBlessing]),
         // 45 St.Erasmus
+        // orig: R039+0x45C8
+        // BUG: resistance to fire by the text (DARKLAND.SNT), only the charm nibble in the code (see St.Charity).
         new("R039+0x45C8", [Boost(Agility, 6, 11), Boost(Perception, 6, 11), SetCharm(0xA0)]),
         // 46 St.Eric
         new("R039+0x4676", [Boost(Strength, 8, 23), Boost(Charisma, 4, 7), WeaponSkills(15, 24), Boost(Riding, 6, 11), Boost(SpeakCommon, 6, 11)]),
@@ -717,9 +722,14 @@ public static class SaintBook
         // 102 St.Olaf
         new("R039+0x78F2", [Heal(Endurance, 30), .. AllWeapons(8, 22)]),
         // 103 St.Pantaleon
+        // orig: R039+0x7A24
+        // BUG: his text (DARKLAND.SNT) also promises resistance to fire; the code sets only the charm nibble (see St.Charity).
         new("R039+0x7A24", [Heal(Endurance, 30), Heal(Strength, 30), Boost(Alchemy, 10, 19), Boost(Healing, 15, 29), Boost(Charisma, 6, 11),
             TravelBlessing, SetCharm(0xA0)]),
         // 104 St.Patrick
+        // orig: R039+0x7B22
+        // BUG: the text (DARKLAND.SNT) promises armour against missiles in combat; the code adds 2 to the one member's Hardarmor
+        // nibble (AddCharm(2)), against every blow and for good (see St.Dunstan).
         new("R039+0x7B22", [Boost(EdgedWeapons, 15, 29), Boost(ImpactWeapons, 15, 29), Boost(Polearms, 15, 29), Boost(SpeakCommon, 15, 29),
             Boost(SpeakLatin, 15, 29), Boost(ReadWrite, 15, 29), Boost(Charisma, 15, 24), Boost(Strength, 12, 19), AddCharm(2)]),
         // 105 St.Paul
