@@ -190,43 +190,6 @@ public static class PartyRules
         return slot;
     }
 
-    /// <summary>Members who went away leave the party (<c>party_drop_away</c>); returns how many.</summary>
-    // orig: party_drop_away R029+0x2434 (0E76:2434) matched
-    public static int DropAway(GameState s)
-    {
-        var n = 0;
-        foreach (var i in Away(s))
-        {
-            s.Party.Members[i].Status = CharacterStatus.Empty;
-            n++;
-        }
-        return n;
-    }
-
-    /// <summary>
-    /// Of the members who went away one leaves (the first or, at random, the last) and the
-    /// others return; the one who left is <see cref="PartyQueryResult.Member"/>. Returns how many were away.
-    /// </summary>
-    // orig: R029+0x2474 (0E76:2474) matched
-    // C: rand_mod(2) != 0 scans forward (the first leaves), else from slot 4 down (the last leaves).
-    public static int OneOfTheAwayLeaves(GameState s)
-    {
-        var away = Away(s).ToList();
-        if (s.Random.Below(2) == 0)
-        {
-            away.Reverse();
-        }
-        for (var k = 0; k < away.Count; k++)
-        {
-            s.Party.Members[away[k]].Status = k == 0 ? CharacterStatus.Empty : CharacterStatus.Able;
-        }
-        if (away.Count > 0)
-        {
-            s.Party.Last.Member = away[0];
-        }
-        return away.Count;
-    }
-
     /// <summary>Members who went away come back, having lost things (<c>party_rejoin_away</c>); returns how many.</summary>
     // orig: party_rejoin_away R029+0x251A (0E76:251A) matched
     public static int RejoinAway(GameState s)

@@ -30,7 +30,7 @@ public sealed class OutsideThePrison : Card
         return menu.Run(
             // orig: R115+0x1B52 (19BF:02E2) asm; hint R115+0x1B8C
             new MenuLine(_ => { ShowPicture(c, PrisonPicture); c.Screen.Text(1); FightTheGuards(c); }),
-            // orig: R115+0x1C46 (19BF:03D6) asm (hint)
+            // orig: R115+0x1BC4 (line 1); hint R115+0x1C46 (19BF:03D6) asm
             new MenuLine(p => SneakIn(c, p), () => SneakHint(c)),
             // orig: R115+0x1C74 (19BF:0404) asm; hint R115+0x1C80
             // The wait for the companions to be led to the magistrate is unwritten: it lets no time pass and the card asks again.

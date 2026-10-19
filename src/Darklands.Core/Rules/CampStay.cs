@@ -110,7 +110,7 @@ public sealed class CampStay
     /// <summary>Whether any teacher is here.</summary>
     public bool TeachersHere => _s.Events.At(EventKinds.Teacher, _s.CurrentLocation);
 
-    // orig: R036+0x1D24 (1462:1D24) draft (bytes match); the same scan in R036+0x0082 and R036+0x147A
+    // orig: R036+0x1D24 (1462:1D24) draft (bytes match); the same scan repeated inline in R036+0x0082 and R036+0x147A
     // BUG: j counts every teacher event met, so rows are numbered by log position and the scan stops after "count here" events of any town.
     /// <summary>The names of the skills taught here, in list order (the teacher box).</summary>
     public List<int> TeacherList()

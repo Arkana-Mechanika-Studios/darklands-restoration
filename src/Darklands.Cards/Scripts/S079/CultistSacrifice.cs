@@ -34,7 +34,7 @@ public sealed class CultistSacrifice : Card
 
         return menu.Run(
             new MenuLine(() => BearYourFate(c), OptionHint.Saying(SuccessAssured)),
-            new MenuLine(() => BegForMercy(c, MercyChance(c).Chance), hint: () => MercyChance(c)),
+            new MenuLine(chance => BegForMercy(c, chance), hint: () => MercyChance(c)),
             new MenuLine(() =>
             {
                 if (!BribeACultist(c, BribeChance(c).Chance))
@@ -58,7 +58,8 @@ public sealed class CultistSacrifice : Card
             }, () => NimblenessChance(c)),
             new MenuLine(() => SlipOutAPotion(c), OptionHint.Saying(CardTexts.SelectPotion),
                 () => PotionHint(c, c.MenuMember)),
-            // orig: R079+0x2C08 (1A6E:08A8) matched; R079+0x2C92 (1A6E:0932) matched; R079+0x2D1C (1A6E:09BC) matched; R079+0x2DA6 (1A6E:0A46) matched; tests: CardSmokeTests
+            // orig: R079+0x2A08 (line 6); R079+0x2C08 (1A6E:08A8) matched; R079+0x2C92 (1A6E:0932) matched; R079+0x2D1C (1A6E:09BC) matched;
+            // R079+0x2DA6 (1A6E:0A46) matched; tests: CardSmokeTests
             new MenuLine(() => CallOnASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint));
     }
 
@@ -202,10 +203,10 @@ public sealed class CultistSacrifice : Card
 
     // orig: R079+0x2906 (1A6E:05A6) matched; tests: CardSmokeTests
     // C: party_max_attr(0x0F) reads past the seven attributes: record +0x49 + 0x0F = +0x58,
-    // which is skill 1. UNCERTAIN: taken as the best skill 1 of the able members.
+    // which is skill 1; the result is kept in the attribute query's globals (DS:9C1D, DS:9A44).
     private static OptionHint NimblenessChance(CardContext c)
     {
-        var chance = c.PartyMaxSkill(1);
+        var chance = c.PartyMaxAttributeAtSkillOne();
         c.Variables.Chosen[0] = (byte)c.BestMember;
         return OptionHint.ChanceOf(chance, (byte)c.BestMember);
     }

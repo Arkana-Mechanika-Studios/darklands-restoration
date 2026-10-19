@@ -179,7 +179,7 @@ public sealed class SwordsmithsGuild : Card
     private static void SeekAnAudience(CardContext c, CardMenu menu, int chance)
     {
         menu[2] = OptionState.Shown;
-        // C: hours_until(5) is called and its result dropped (no effect).
+        // C: hours_until(5) (R029+0x577A) is called and its result dropped (no effect).
         NoteFact(c, 4);
         if (c.Events.QuestAt(PoliticsQuest, c.Here))
         {
@@ -311,7 +311,7 @@ public sealed class SwordsmithsGuild : Card
     private void SneakIn(CardContext c, int chance)
     {
         var roll = c.Random(100);
-        // C: hours_until(19) is called and its result dropped.
+        // C: hours_until(19) (R029+0x577A) is called and its result dropped.
         NoteFact(c, 5);
         if (chance < roll)
         {
@@ -360,6 +360,7 @@ public sealed class SwordsmithsGuild : Card
     private void SneakInUnderCover(CardContext c, int chance)
     {
         var roll = c.Random(100);
+        // C: hours_until(19) (R029+0x577A) is called and its result dropped.
         NoteFact(c, 5);
         if (chance < roll)
         {

@@ -81,7 +81,7 @@ internal sealed partial class CastleGenerator
         }
     }
 
-    // orig: the statements m[a][b] |= bits of R005+0x0416, 07f4 and 08be
+    // orig: the statement m[a][b] |= bits, repeated inline in R005+0x0416, R005+0x0BA4 (146D:07F4) and R005+0x0C6E (146D:08BE)
     private void AddLink(int a, int b, int bits) => _w.SetLink(_level, a, b, _w.Link(_level, a, b) | bits);
 
     /// <summary>Marks that rooms a and b touch.</summary>

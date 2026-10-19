@@ -186,7 +186,8 @@ public static class MemberRules
     }
 
     /// <summary>The members a <c>who</c> argument covers (one member: only if <paramref name="presentOnly"/> allows).</summary>
-    // orig: set_attr R029+0x0988 (0E76:0988) matched; add_attr R029+0x0A72 (0E76:0A72) matched
+    // orig: the who-resolution (-1 the leader, -2 everyone present) repeated inline in set_attr R029+0x0988, add_attr R029+0x0A72,
+    // repeated inline in heal_attr_pct R029+0x08F2 and add_attr_max R029+0x0BB6
     // C: -2 loops over the five slots with party[i][0] != 0; one member: -1 resolves to the leader.
     private static IEnumerable<int> Targets(GameState s, int who, bool presentOnly)
     {

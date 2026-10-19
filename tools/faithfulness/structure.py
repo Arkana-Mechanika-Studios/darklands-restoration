@@ -9,14 +9,32 @@ Roslyn, with the port's untraced helpers followed and its traced members standin
   draws     one side draws random numbers (rand or one of its wrappers: random_n, rand_mod, rand_1_n), the other
             draws neither itself nor in what it calls (two calls deep in the C#'s callees, three in the original)
   args      a call both sides make passes a constant the other side never uses (rand_mod(100) / Below(10))
-  stores    the C# assigns a constant that appears nowhere in the original's code (a next card, a flag)
-  missing   the original calls a game-logic function the C# neither calls (even two calls deep) nor names
+  stores    the C# assigns a constant that appears nowhere in the original's code (a next card, a flag), nor
+            among the stores of a function both sides call (the port may store its result in the caller), nor
+            among the card pictures it names (the port keeps the picture shown as a number)
+  missing   the original calls a game-logic function the C# neither calls (even two calls deep), installs (a
+            handler nested in it: a card's option action), names, nor does in place (a function of the same record
+            whose every call the C# makes and every stored constant it stores: an action written in its menu line);
+            a card's reset function (opt_on, opt_fn and the pop-up tables) is CardMenu's set-up; a leaf that writes
+            nothing (member_attr, is_daylight: an accessor) only returns data, which the port may read directly
   extra     the C# calls a traced function the original does not call, even three calls deep (a property
-            read is data access, not a call: the original reads memory there)
+            read is data access, not a call: the original reads memory there; a card's handler that only the
+            handler tables reach is installed by the C#'s menu line, not called, nor a line action its card's
+            menu loop calls (the line runs it); a function of the same record
+            whose work the original does in place is the port's one copy of repeated code; as for `missing`, the
+            game logic is compared with the game logic only, the screens with both)
   order     two calls both sides make are made one way round in the C# and only the other way in the
-            original (address order there, source order here; C evaluates arguments right to left)
-  consts    a `cmp`/`test` immediate of the original that appears nowhere in the C# (a threshold, a flag)
-  decisions the C# has fewer than half the original's conditional branches (switch cases counted)
+            original: in the original's control flow (a call reached after another on some path), in the C#'s
+            evaluation order (a call after its receiver and arguments; C evaluates arguments right to left).
+            The body of a lambda or a delegate is not ordered against the code around it, nor two arms of one
+            branch against each other, nor code after a return; each member is held against the functions it
+            cites. Two calls that touch nothing of each other (what they read and write by address, with their
+            callees; neither writes through a pointer) have no order, nor a draw and a call that never reaches
+            the random seed
+  consts    a `cmp`/`test` immediate of the original that appears nowhere in the C# (a threshold, a flag); a byte
+            is a signed char, a key code is matched by its character, a far pointer to a thunk is a handler
+  decisions the C# has fewer than half the original's conditional branches (switch cases counted; a card
+            function's menu loop, which CardMenu.Run runs, left out)
 
 All the C# that cites a function is compared with it together (parts split over several members, wrappers);
 functions one member implements together (a card option and its hint) are compared as one. Calls and stores
@@ -79,7 +97,33 @@ BCL_EQUIVALENTS = {
     "R029+0x4F76": ({"Math.Clamp", "Math.Min", "Math.Max"}, "clamp_range(lo, hi, v): hi above hi, lo below lo (signed)"),
     "R029+0x4F94": ({"Math.Max"}, "imax(a, b), signed"),
     "R029+0x4FA4": ({"Math.Min"}, "imin(a, b), signed"),
+    "root 0410:001A": ({"Math.Clamp", "Math.Min", "Math.Max"}, "clamp(v, lo, hi): lo below lo, hi above hi (signed)"),
 }
+# The original's services the port does not call function by function: the graphics driver's thunks, the file, catalog
+# and picture loading, the text output and the C run-time library. The port reads the game files once (Darklands.Content)
+# and draws on a canvas, so a `missing` call into them is not a lead (what is drawn is checked visually).
+SERVICES = ("root 047C:", "root 0617:", "root 05D9:", "root 0265:", "root 06A1:")
+# Functions the port does with the language or the host: (function, how); not leads for `missing` and `extra`.
+IMPLICIT = {
+    "R029+0x50DE": "money_copy (d = s, word by word): the port's Money is a value, copied by assignment",
+    "root 0000:1338": "exit_if_requested: the loops' check for a quit request, which the host makes at every frame"
+                      " (GameUi.Present)",
+    "R000+0x083E": "the menu bar's set-up (DS:9419 with its menus): the screens' menu bar, reached through their"
+                   " interfaces",
+}
+# Original functions the port reaches through one member: (the functions, why). card_load R043+0x0A9A (with the
+# card's own name, as every card script calls it) is card_load_near R043+0x0BA0 plus a redraw of the party column
+# (root 0000:1588, 0000:1716) and the MEM.LOG line (a registered DIVERGENCE); the C#'s ShowPicture (card_load_near)
+# draws the party column every time, so a card's card_load and its ShowPicture are one call here.
+SAME_CALL = [({"R043+0x0A9A", "R043+0x0BA0"}, "card_load / card_load_near: ShowPicture draws the party column too"),
+             ({"R029+0x1A7E", "R029+0x1A8E"}, "cur_loc_query(q) is loc_query(cur_loc, q)"),
+             ({"R029+0x5654", "R029+0x56A6"}, "cur_band() is hour_band(DS:E0), the same ladder on the current hour")]
+ONE_CALL = {t: min(g) for g, _ in SAME_CALL for t in g}
+# Code that never draws, whatever it calls: the C run-time library (only rand and srand use the seed; none of its
+# functions calls them, and its calls through pointers are int86's `int n / retf`, the heap's and the exit's) and the
+# graphics driver's thunks (they dispatch into the asm driver, which calls no game code); and quit_to_dos, which
+# returns on a no and ends the program on a yes (its shutdown calls the sound driver through a pointer).
+SEEDLESS = ("root 06A1:", "root 047C:", "root 0000:13A0")
 CARDS = ("R044", "R135")   # the card overlays: one card cannot call another's code (only through R029 / R043)
 MERGE_LIMIT = 6   # a unit citing more functions (a summary, or one handler for many identical options) merges none
 PRESENTATION = ("src/Darklands.Presentation/", "src/Darklands.Host.", "src/Darklands.Platform/", "src/Darklands.Audio")
@@ -142,6 +186,26 @@ def load_reviewed():
     return out
 
 
+def exclusive(a, b):
+    """Two C# calls in different arms of one branch (dicts branch -> arm): they never both run."""
+    return any(b["arms"].get(k, v) != v for k, v in a["arms"].items())
+
+
+def stays(a, b):
+    """b can run after a: b is inside every scope a cannot leave (a block with a return after a) within the same walk."""
+    return all(not (w in b["at"]) or int(start) <= int(b["at"][w]) < int(end) for w, start, end in a["exits"])
+
+
+def precedes_cs(seq):
+    """precedes() for the C#'s (call, where) in evaluation order: only calls that can both run, one after the other."""
+    out = set()
+    for i, (x, ax) in enumerate(seq):
+        for y, ay in seq[i + 1:]:
+            if x != y and not exclusive(ax, ay) and stays(ax, ay):
+                out.add((x, y))
+    return out
+
+
 def precedes(seq):
     """The pairs (x, y) of distinct items such that some x comes before some y."""
     first, last = {}, {}
@@ -168,6 +232,8 @@ def ds_addresses():
 
 
 DS_ADDRESSES: set = set()
+THUNK_SEGMENT = 0x09C0
+THUNK_OFFSETS: set = set()
 
 
 def value(v):
@@ -191,10 +257,72 @@ def compare(units, exe, thunks, coverage, kinds):
         c = thunks.get(c, c)
         return coverage.get(c, (None, c))[1]
 
+    # a function the C# implements only in the screens, hosts and drivers (members, handlers and types with a trace
+    # there; a unit of the game logic counts with the function its trace names first, not the ones its prose goes on
+    # to name: "..., the panel's row (root 0000:1716)") is presentation: coverage.csv counts every file naming it
+    implemented_in = collections.defaultdict(set)
+    for u in units:
+        shown = u["file"].startswith(PRESENTATION)
+        for c in (u["cites"] if shown else u["cites"][:1]):
+            implemented_in[canon(c)].add(shown)
+
     def role(c):
-        return coverage.get(c, ("runtime", c))[0]
+        r = coverage.get(c, ("runtime", c))[0]
+        return "presentation" if r == "logic" and implemented_in.get(c) == {True} else r
 
     callees = {k: [canon(t) for _, t, _ in v.get("calls", [])] for k, v in exe.items()}
+    called_directly = {t for ts in callees.values() for t in ts}
+    # a card's line actions: what a card function that runs the menu (card_menu R043+0x1BD2) calls in its own record
+    line_actions = {t for k, ts in callees.items() if "R043+0x1BD2" in ts for t in ts if t[:4] == k[:4]}
+
+    # the pure queries: functions that write no memory outside their frame and call only pure functions (rand
+    # writes its seed; a call through a pointer or out of the index is taken to write)
+    # the functions that may use the random seed (rand, srand, and whatever reaches them, or calls through a pointer):
+    # a draw commutes with any call outside them, which neither reads nor moves the sequence
+    seeded = {k for k, v in exe.items() if v.get("seed") or (not k.startswith(SEEDLESS) and (
+        "error" in v or any(t == "*" or t not in exe for t in callees.get(k, []))))}
+    grown = True
+    while grown:
+        grown = False
+        for k in exe:
+            if k not in seeded and not k.startswith(SEEDLESS) and any(t in seeded for t in callees.get(k, [])):
+                seeded.add(k)
+                grown = True
+    # what each function reads and writes by address, with its callees; `blind`: it may write anything (through a
+    # pointer or an index, into another segment, through a call by pointer or out of the index). Two calls commute when
+    # neither is blind and neither writes what the other reads or writes (a read through a pointer is taken not to reach
+    # a global the code names by its address: best_value, the event cursor)
+    reads = {k: set(v.get("dr", ())) for k, v in exe.items()}
+    writes = {k: set(v.get("dw", ())) for k, v in exe.items()}
+    blind = {k for k, v in exe.items()
+             if "error" in v or v.get("iw", True) or any(t == "*" for _, t, _ in v.get("calls", []))}
+    grown = True
+    while grown:
+        grown = False
+        for k in exe:
+            for t in callees.get(k, []):
+                if t not in exe:
+                    if k not in blind:
+                        blind.add(k)
+                        grown = True
+                    continue
+                if t in blind and k not in blind:
+                    blind.add(k)
+                    grown = True
+                if not reads[t] <= reads[k] or not writes[t] <= writes[k]:
+                    reads[k] |= reads[t]
+                    writes[k] |= writes[t]
+                    grown = True
+
+    # a card's reset function: it sets opt_on[0..19] (DS:E99C) to 0 or 1 and points opt_fn[0..19] (DS:EA14) and the
+    # pop-up tables at the card's handlers; CardMenu does that when the card makes its menu (with the card's Enable
+    # calls), and the card oracle compares the menus' opt_on states (CardOracleTests)
+    resets = {k for k, v in exe.items()
+              if CARDS[0] <= k[:4] <= CARDS[1] and 0xEA14 in v.get("imms", []) and not v.get("calls")}
+
+    def commute(x, y):
+        return (x not in blind and y not in blind and x in exe and y in exe
+                and not writes[x] & (reads[y] | writes[y]) and not writes[y] & reads[x])
 
     def deep(cs, levels):
         seen, frontier = set(cs), set(cs)
@@ -209,6 +337,14 @@ def compare(units, exe, thunks, coverage, kinds):
         u["fn"] = [c for c in dict.fromkeys(cites) if c in exe]
         # callee, args, documented, C# name, reached through a property (data access)
         u["c"] = [(canon(x[1]), x[4], x[5], x[3], x[6]) for x in u["calls"]]
+        # the calls of each context (the unit's own code, each lambda body: code that runs when it is invoked)
+        u["ctx"] = collections.defaultdict(list)
+        for x in u["calls"]:
+            if not x[5]:
+                u["ctx"][x[7]].append((canon(x[1]), {
+                    "arms": dict(a.rsplit(":", 1) for a in x[8] if a[0] not in "@!"),
+                    "at": dict(a[1:].split(".") for a in x[8] if a[0] == "@"),
+                    "exits": [a[1:].split(".") for a in x[8] if a[0] == "!"]}))
     # every unit that cites a function is compared as part of it: a wrapper's call of the function is internal
     # to the comparison, and a member that cites the function it calls only adds its other calls as `extra`;
     # functions one unit implements together (a card option and its hint, a function and the helper the port
@@ -258,10 +394,15 @@ def compare(units, exe, thunks, coverage, kinds):
         c_every = [(t, a, d, p) for u in members for t, a, d, _, p in u["c"] if t not in own and kinds.get(t) == "function"]
         c_calls = [(t, a) for t, a, d, _ in c_every if not d]
         # what the C# calls, not what it reads through a property (a lazily loaded table, a computed field)
-        c_called = [t for t, _, d, p in c_every if not d and not p]
+        # (not by a member that implements more than MERGE_LIMIT functions at once, a summary: its calls are theirs)
+        c_called = [t for u in members if len(u["fn"]) <= MERGE_LIMIT
+                    for t, _, d, _, p in u["c"] if t not in own and kinds.get(t) == "function" and not d and not p]
         o_seq = [t for t, _ in o_calls]
         c_seq = [t for t, _ in c_calls]
         mentions = {canon(c) for u in members for c in u["mentions"]}
+        # the handlers a member installs (a card's option actions, which the original's card function calls from
+        # its switch after the menu) are its calls of what they cite
+        installs = {canon(c) for u in members for c in u.get("installs", ())}
         found = {}
 
         # draws: one side draws itself, and the other draws neither itself nor in what it calls (two deep in
@@ -276,8 +417,30 @@ def compare(units, exe, thunks, coverage, kinds):
             found["draws"] = "original %d call sites, C# %d" % (o_draws, c_draws)
 
         bcl = {x[1][4:] for u in members for x in u["calls"] if x[1].startswith("bcl:")}
+        same = {t: g for g, _ in SAME_CALL for t in g}
+        c_deep |= {x for t in c_deep & set(same) for x in same[t]}
+        # a function of the same record that the port does in place (a card's option action written in its menu line):
+        # every call it makes is reached and every constant it stores is stored (an empty one trivially)
+        c_lits = {v for u in members for v in u["literals"] + u["stores"]}
+        records = {g[:4] for g in fns}
+
+        def inlined(t):
+            v = exe.get(t)
+            if v is not None and "error" not in v and not v.get("calls", True) and not v.get("writes", True):
+                return True   # an empty function (`retf`), or a pure accessor the port reads the data of directly
+            if (v is not None and "error" not in v and not v.get("writes", True) and callees.get(t)
+                    and all(x.startswith(SERVICES) for x in callees[t])):
+                return True   # a wrapper of the run-time's services that writes nothing itself (a file catalogue lookup)
+            # (a card function of another record is this card's own copy of it: the card overlays cannot call one
+            # another, so coverage maps a byte-identical action to the first card that has it)
+            return (v is not None and "error" not in v and (t[:4] in records or CARDS[0] <= t[:4] <= CARDS[1])
+                    and all(x in c_deep or x in mentions or x.startswith(SERVICES) for x in callees.get(t, []))
+                    and all(not value(w) or near(w, c_lits) for w in v.get("stores", [])))
+
         missing = [t for t in dict.fromkeys(o_seq)
-                   if role(t) in compared_roles and t not in c_deep and t not in mentions and t not in RANDOM
+                   if role(t) in compared_roles and t not in c_deep and t not in mentions and t not in installs
+                   and t not in RANDOM
+                   and not t.startswith(SERVICES) and not inlined(t) and t not in IMPLICIT and t not in resets
                    and not (t in BCL_EQUIVALENTS and BCL_EQUIVALENTS[t][0] & bcl)]
         if missing:
             found["missing"] = " ".join(missing)
@@ -286,17 +449,59 @@ def compare(units, exe, thunks, coverage, kinds):
         # another card that is the same pattern, not a call (the card overlays cannot call one another)
         own_records = {c[:4] for c in own}
         o_deep = deep(own, 3)
+        o_deep |= {x for t in o_deep & set(same) for x in same[t]}
+        # (a card's hint and pop-up handlers, which its reset function installs through the handler tables and nothing
+        # calls directly, are installed by the C#'s menu lines: not calls)
+        # (nor a function of the same record whose work the original does in place, the port sharing one copy of code
+        # the original repeats: every call it makes is in the original's reach, every constant it stores the original's;
+        # nor, from any record, a function that writes nothing itself, a pure accessor the original reads the data of in
+        # place or a wrapper of calls the original makes itself: wait_until_hour = hours_until, advance_hours)
+        o_imms = {v for c in own for v in exe[c].get("imms", [])}
+
+        def repeated(t):
+            v = exe.get(t)
+            if v is None or "error" in v:
+                return False
+            if t[:4] not in records and (v.get("writes", True) or not set(callees.get(t, [])) <= o_deep):
+                return False
+            return (all(x in o_deep or x.startswith(SERVICES) for x in callees.get(t, []))
+                    and all(not value(w) or near(w, o_imms) for w in v.get("stores", [])))
+
+        # (a member that stands for two functions the port merges, SAME_CALL, calls the one the original calls)
+        o_one = {ONE_CALL.get(x, x) for x in o_deep}
         extra = [t for t in dict.fromkeys(c_called)
-                 if role(t) != "runtime" and t not in o_deep and t not in mentions and t not in RANDOM
-                 and not (CARDS[0] <= t[:4] <= CARDS[1] and t[:4] not in own_records)]
+                 if role(t) in compared_roles and t not in o_deep and t not in mentions and t not in RANDOM
+                 and ONE_CALL.get(t, t) not in o_one
+                 and not (CARDS[0] <= t[:4] <= CARDS[1] and t[:4] not in own_records)
+                 and not (CARDS[0] <= t[:4] <= CARDS[1] and t not in called_directly) and not repeated(t)
+                 and t not in line_actions
+                 and t not in IMPLICIT]
         if extra:
             found["extra"] = " ".join(extra)
 
-        common = set(o_seq) & set(c_seq)
+        key = lambda t: ONE_CALL.get(t, t)   # noqa: E731
+        common = {key(t) for t in o_seq} & {key(t) for t in c_seq}
         # (within each original function and each C# member: a hint and its option are separate code)
-        o_pre = set().union(*[precedes([canon(t) for _, t, _ in exe[g]["calls"] if canon(t) in common]) for g in fns])
-        c_pre = set().union(*[precedes([t for t, _, d, _, _ in u["c"] if t in common and not d]) for u in members])
-        swapped = sorted((x, y) for x, y in c_pre - o_pre if (y, x) in o_pre)
+        # (the original's order is its control flow: a call reached after another on some path)
+        o_pre_of = {}
+        for g in fns:
+            targets = [key(canon(t)) for _, t, _ in exe[g]["calls"]]
+            after = exe[g].get("after") or [list(range(i + 1, len(targets))) for i in range(len(targets))]
+            o_pre_of[g] = {(targets[i], targets[j]) for i, js in enumerate(after) for j in js
+                           if targets[i] in common and targets[j] in common and targets[i] != targets[j]}
+        swapped = set()
+        for u in members:
+            # (each member against the original functions it cites itself, not the others merged into the comparison)
+            o_pre = set().union(*[o_pre_of[g] for g in u["fn"] if g in o_pre_of])
+            # (and within each context of a member: a lambda's code has no order against the code around it)
+            # (and never between calls in two arms of one branch)
+            c_pre = set().union(*[precedes_cs([(key(t), a) for t, a in seq if key(t) in common])
+                                  for seq in u["ctx"].values()])
+            # (two calls that touch nothing of each other give the same results in either order; a draw and a call that
+            # never reaches the seed, the same sequence of draws)
+            swapped |= {(x, y) for x, y in c_pre - o_pre if (y, x) in o_pre and not commute(x, y)
+                        and not (x in RANDOM and y not in seeded) and not (y in RANDOM and x not in seeded)}
+        swapped = sorted(swapped)
         if swapped:
             found["order"] = "; ".join("C# %s before %s" % p for p in swapped[:6]) + (" ..." if len(swapped) > 6 else "")
 
@@ -309,6 +514,8 @@ def compare(units, exe, thunks, coverage, kinds):
                  | {v for vs in c_args.values() for v in vs}
                  | {v for t, _, _, _ in c_every for v in literals_of.get(t, ())})
         o_all = {v for c in own for v in exe[c].get("imms", [])} | {v for vs in o_args.values() for v in vs}
+        # (a byte operation on a word's high byte: `or byte ptr [x+1], 4` sets 0x400, `and ..., 0FBh` clears it)
+        o_all |= {w for c in own for b in exe[c].get("bytes", []) for w in (b << 8, (b << 8) | 0xFF)}
 
         diffs = []
         for t in sorted(common):
@@ -321,15 +528,34 @@ def compare(units, exe, thunks, coverage, kinds):
         if diffs:
             found["args"] = "; ".join(diffs)
 
-        new_stores = sorted({v for u in members for v in u["stores"] if value(v) and not near(v, o_all)})
+        # (a function both sides call may store it in the original where the port stores its result in the caller)
+        moved = {v for t in set(o_seq) & set(c_seq) for v in exe.get(t, {}).get("stores", [])}
+        # (a card keeps the picture it shows as its number; the original copies the picture's name, pic_names[n])
+        moved |= {v for c in own for v in exe[c].get("pics", [])}
+        new_stores = sorted({v for u in members for v in u["stores"] if value(v) and not near(v, o_all | moved)})
         if new_stores:
             found["stores"] = words(new_stores)
 
-        lost = sorted(v for v in {v for g in fns for v in exe[g].get("cmps", [])} if value(v) and not near(v, c_all))
+        cmps = {v for g in fns for v in exe[g].get("cmps", [])}
+        # (a byte immediate is a signed char: 0xFF is -1; a byte test of a word's high half is the word's flag << 8;
+        # a key code is the scan code << 8 | the character, which the C# matches by the character; a far pointer to a
+        # thunk of segment 09C0, and the thunk's offset, are a handler)
+        thunked = THUNK_SEGMENT in cmps
+        high = {v for g in fns for v in exe[g].get("bytes", [])}
+        lost = sorted(v for v in cmps if value(v) and not near(v, c_all)
+                      and not (0x80 <= v < 0x100 and near(v | 0xFF00, c_all))
+                      and not (v in high and near(v << 8, c_all))
+                      and not (0x100 <= v < 0x8700 and 0x20 < v & 0xFF < 0x7F
+                               and {v & 0xFF, ord(chr(v & 0xFF).swapcase())} & c_all)
+                      and not (thunked and (v == THUNK_SEGMENT or v in THUNK_OFFSETS)))
         if lost:
             found["consts"] = words(lost)
 
         o_dec = sum(exe[g]["branches"] + sum(max(0, n - 1) for n in exe[g]["switches"]) for g in fns)
+        # (a card function's menu loop: the switch over the line chosen, the pop-up test, the loop's condition and the
+        # case bound are CardMenu.Run's, not the card's)
+        o_dec -= sum(max(0, max(exe[g]["switches"] or [0]) - 1) + 3 for g in fns
+                     if any(t == "R043+0x1BD2" for _, t, _ in exe[g]["calls"]))
         c_dec = sum(u["decisions"] for u in members)
         if o_dec >= 4 and c_dec * 2 < o_dec:
             found["decisions"] = "original %d, C# %d" % (o_dec, c_dec)
@@ -410,10 +636,36 @@ def write(rows, reviewed, units, exe, coverage):
            "  loop per case) where the port shares a helper, and the reverse.",
            "* Code the port moved to a caller or callee shows as `missing` on one side and `extra` on the other;",
            "  calls two levels deep (three for `extra`) and coordinates named in the C#'s comments are accepted.",
-           "* Constants: a value one off (`x < 6` against `cmp x, 5`), negated or complemented counts as used;",
-           "  the port may test through a table or an enum range, and switch tables test the case span.",
+           "* Constants: a value one off (`x < 6` against `cmp x, 5`), negated or complemented counts as used,",
+           "  and so do a signed byte (0xFF as -1), a byte test of a word's high half (0x20 as 0x2000), a BIOS",
+           "  key word whose character the C# tests, and a far pointer to a thunk; a jump table's range test and",
+           "  the bound of a counter stepped by a stride (a row offset) are not compared. Key words of keys",
+           "  without a character (Esc, Enter, arrows) and enum members defined outside the unit are not seen.",
+           "* Order is compared per C# context (a lambda, a deferred handler, each arm of a branch) against the",
+           "  original's control flow; calls that commute (no shared state read and written, no random draw",
+           "  between them) are not ordered. A pure query's end state (a best-member global) is seen only",
+           "  through the order of the queries.",
+           "* Card scripts: the menu loop (card_menu R043+0x1BD2 and the switch after it) is CardMenu.Run's;",
+           "  a card's reset function and the hint and pop-up handlers it installs are the menu lines'; a",
+           "  line action reached only through the option table is the line, not a call.",
            "* Decision points are a coarse count: `&&`/`||` chains, loops and switch tables compile to several",
-           "  branches each, and the port may replace branches with tables.",
+           "  branches each, and the port may replace branches with tables; decisions in followed helpers count.",
+           "* Run-time library, graphics, sound and file services (segments 047C, 0617, 05D9, 0265, 06A1) are",
+           "  the host's, not compared as calls; the BCL's equivalents (clamp) are accepted, and so is a wrapper",
+           "  of those services that writes nothing (a file catalogue lookup). A far jump to 0000:0000 is a",
+           "  graphics-driver entry patched at run time, not a call.",
+           "* Shared code: an orig line's coordinates after \"tail of\", \"repeated inline in\", \"repeated in\" or",
+           "  \"filled by\" (to the end of its block) are sites the member shares code with, not functions it",
+           "  implements: a call of the member is followed into, and a member that only shares code is compared",
+           "  with its first site. An example (\"e.g. R059+0x0CEC\") stays a cite: a shared handler stands for",
+           "  every card's copy. A coordinate in short form (`_0692`) is not read.",
+           "* Code done in place: a function the original calls and the port inlines is accepted when it is pure",
+           "  (no calls, no writes), or of the same record or a card's copy of another card's function (card",
+           "  overlays cannot call one another), with every call in the port's reach and every constant it",
+           "  stores in the port; for `extra`, a function that writes nothing and whose calls the original",
+           "  makes itself (a wrapper such as wait_until_hour) is accepted the same way.",
+           "* Delegates and closures: a call through a delegate field or a lambda stored in a local is seen only",
+           "  where the delegate's target is traced; menu-bar handlers given to MenuBar.Item count as calls.",
            "* Functions cited only at statement level, in types or in map.csv are not compared (see Scope).",
            ""]
     (OUT / "STRUCTURE.md").write_text("\n".join(md), encoding="utf-8", newline="\n")
@@ -431,6 +683,7 @@ def main():
     exe = json.load(open(LOCAL / "structure-exe.json", encoding="utf-8"))
     units = json.load(open(LOCAL / "structure-cs.json", encoding="utf-8"))
     thunks, kinds = load_index()
+    THUNK_OFFSETS.update(int(t.split(":")[1], 16) for t in thunks if t.startswith("thunk 09C0:"))
     coverage = load_coverage()
     DS_ADDRESSES.update(ds_addresses())
     RANDOM.update(random_helpers(exe))

@@ -368,7 +368,7 @@ public sealed partial class TacticalBattle
     public int SavedPathLength { get; set; }
 
     /// <summary>path_save / path_give_saved: keep the last path for an order confirmed later.</summary>
-    // orig: path_save R014+0x5DAC (12F7:159C) draft; path_give_saved R014+0x5DE0 (12F7:15D0) draft
+    // orig: path_save R014+0x5DAC (12F7:159C) draft
     // C: both copy length + 1 bytes (the path and its end byte); the bytes after them keep what an earlier path left.
     private void SavePath()
     {
@@ -376,5 +376,6 @@ public sealed partial class TacticalBattle
         Array.Copy(Paths.Path, SavedPath, Math.Min(SavedPathLength + 1, PathFinder.MaxSteps));
     }
 
+    // orig: path_give_saved R014+0x5DE0 (12F7:15D0) draft (the saved path copied into combatant i's, then packed)
     private void GiveSavedPath(int i) => PathFinder.GiveTo(Battle[i].Path, SavedPath, SavedPathLength);
 }

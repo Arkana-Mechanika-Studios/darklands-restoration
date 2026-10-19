@@ -58,11 +58,11 @@ public sealed class MerchantHouseOffices : Card
         menu.Popup = () => c.MemberPopupHint();
 
         return menu.Run(
-            // orig: R108+0x16DC (1925:080C) matched (hint)
+            // orig: R108+0x14C2 (line 0); hint R108+0x16DC (1925:080C) matched
             new MenuLine(p => PickTheLock(c, menu, p), () => PickHint(c)),
-            // orig: R108+0x1968 (1925:0A98) matched (hint)
+            // orig: R108+0x173E (line 1); hint R108+0x1968 (1925:0A98) matched
             new MenuLine(p => UseEaterWater(c, menu, p), () => EaterWaterHint(c)),
-            // orig: R108+0x1AEC (1925:0C1C) matched (hint)
+            // orig: R108+0x19BE (line 2); hint R108+0x1AEC (1925:0C1C) matched
             new MenuLine(p => UseAThunderbolt(c, menu, p),
                 () => OptionHint.ChanceOf(Math.Clamp(c.ItemQuality(Who.Everybody, Thunderbolt) + c.PartyMaxSkill((int)Skill.Artifice) * 2, 1, 99), c.Variables.Chosen[0])),
             // orig: R108+0x1B2C (1925:0C5C) matched; hint R108+0x1BC0
@@ -112,7 +112,8 @@ public sealed class MerchantHouseOffices : Card
     }
 
     /// <summary>Before an office door: pick the lock, use a potion, or reconsider.</summary>
-    // orig: R108+0x1B2C (1925:0C5C) matched (and its twins 0d28, 0e22, 0f1c)
+    // orig: R108+0x1B2C (1925:0C5C) matched (office 0, no door picture) and its twins R108+0x1BF8 (1925:0D28),
+    // R108+0x1CF2 (1925:0E22), R108+0x1DEC (1925:0F1C) (offices 2, 1, 3)
     private void GoToTheOffice(CardContext c, CardMenu menu, int office, bool changePicture)
     {
         _office = office;
@@ -301,7 +302,7 @@ public sealed class MerchantHouseOffices : Card
     private void SearchTheOffice(CardContext c)
     {
         if ((c.EventTypeAtHere(0x17, 1) || c.EventTypeAtHere(0x17, 2) || c.EventTypeAtHere(0x17, 3))
-            && c.Random(100) >= c.PartyAverageSkill((int)Skill.Stealth) + c.PartyAverageEffectiveAgility())
+            && c.Random(100) >= c.PartyAverageEffectiveAgility() + c.PartyAverageSkill((int)Skill.Stealth))
         {
             ShowPicture(c, 30);
             if (ItemIsInThisOffice(c))

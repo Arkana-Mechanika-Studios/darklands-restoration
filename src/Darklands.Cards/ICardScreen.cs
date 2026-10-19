@@ -72,7 +72,7 @@ public interface ICardScreen
     /// <see cref="CardContext.MenuSlot"/> and <see cref="CardContext.MenuPopup"/> and returns the line.
     /// <paramref name="popupHint"/> is the hint of a choice in line k's box, asked with the member and slot set.
     /// </summary>
-    // orig: card_menu R043+0x1BD2 (150B:1142) draft (bytes match) with card_mouse R043+0x21D4 (150B:1744) draft (bytes match): the pop-up's handler table is item_fn / saint_fn (DS:EC00 / DS:ECF6), copied into the menu's own with the box layout
+    // orig: card_options R043+0x0F2A (150B:049A) draft (function matched) + card_menu R043+0x1BD2 (150B:1142) draft (bytes match) with card_mouse R043+0x21D4 (150B:1744) draft (bytes match): the pop-up's handler table is item_fn / saint_fn (DS:EC00 / DS:ECF6), copied into the menu's own with the box layout
     // C: a screen without pop-up boxes (the scripted test screens) chooses as the three-argument Choose does.
     int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint) =>
         Choose(block, options, hint);

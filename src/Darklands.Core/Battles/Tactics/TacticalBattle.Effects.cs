@@ -1030,7 +1030,7 @@ public sealed class EffectField : IEffectClouds
     /// order whatever the screen shows.
     /// </summary>
     // orig: combat_draw R014+0x6818 (14F7:0008) draft, its effect parts: 3682, 3A46,
-    // R014+0x6FFC (with 24A4, 296E, 2D32), R014+0x719E (the flash), R014+0x76AE (ageing)
+    // R014+0x6FFC (with 24A4, 296E, R014+0x9542), R014+0x719E (the flash), R014+0x76AE (ageing)
     // C: while paused the ticks still come every 8 timer callbacks (TacticalBattle.Tick), so these draws go on.
     // orig: the draw list DS:E162 (R014+0x6919 starts it at 1), its limit 157 at each add (R014+0x7BD0 for 13AE, 0x82AA for 1A6A, 0x72F7 for
     // the flash, checked against the asm): the last frame's logged sprites, the animated pieces (1A6A: random_n(2) after the limit test,
@@ -1089,7 +1089,7 @@ public sealed class EffectField : IEffectClouds
                 _pieceFrames[(layer, x, y)] = Scaled(2);
             }
         }
-        // 07EC: the cloud edges (two random sprites each), then the areas' puffs (296E).
+        // 07EC: the cloud edges (two random sprites each), then the areas' puffs (R014+0x917E, 14F7:296E).
         if (CloudCount > 0)
         {
             for (var k = 0; k < CloudCount; k++)

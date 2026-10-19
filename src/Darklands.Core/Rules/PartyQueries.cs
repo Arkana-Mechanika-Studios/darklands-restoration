@@ -144,6 +144,11 @@ public static class PartyQueries
     // orig: party_max_attr R029+0x16FE (0E76:16FE) matched; tests: Oracle:rules.json party_max_attr
     public static int MaxAttribute(GameState s, int attribute) => HighestAttribute(s, Able(s), m => m.Attributes[attribute]);
 
+    /// <summary><c>party_max_attr(0x0F)</c>: the index reads past the attributes, record +0x49 + 0x0F = +0x58, skill 1.</summary>
+    // orig: party_max_attr R029+0x16FE (0E76:16FE) matched (with 0x0F, as R079+0x2906 calls it)
+    // C: the attribute query's globals (DS:9C1D, DS:9A44, best_member), not the skill query's best_value DS:99E6.
+    public static int MaxAttributeAtSkillOne(GameState s) => HighestAttribute(s, Able(s), m => m.Skills[1]);
+
     /// <summary>The highest attribute among present women.</summary>
     // orig: R029+0x174A (0E76:174A) matched; tests: Oracle:rules.json party_max_attr_women; FidelityFixTests
     // C: present members (status != 0) with record byte +3 == 1, unlike the skill variant (able).

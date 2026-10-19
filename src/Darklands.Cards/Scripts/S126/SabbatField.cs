@@ -58,10 +58,14 @@ public sealed class SabbatField : Card
 
         var assured = OptionHint.Saying(SuccessAssured);
         menu.Run(
+            // orig: R126+0x0286 (1838:0286) matched
             new MenuLine(_ => c.Next = 0x14A, assured),
+            // orig: R126+0x02C6 (1838:02C6) matched
             new MenuLine(_ => c.Next = 0x144, assured),
+            // orig: R126+0x0306 (1838:0306) matched
             new MenuLine(_ => c.Next = 0x145, assured),
             new MenuLine(_ => GoToTheFeast(c, menu), assured),
+            // orig: R126+0x03E8 (1838:03E8) matched
             new MenuLine(_ => c.Next = 0x149, assured),
             new MenuLine(_ => LeaveTheSabbat(c), assured),
             new MenuLine(_ => PrayInASecludedSpot(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),

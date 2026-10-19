@@ -281,7 +281,7 @@ internal sealed partial class CastleGenerator
     }
 
     /// <summary>The pixel position of a group in a room: its centre, or next to the party's side in the party's own room.</summary>
-    // orig: the macro GPOS of R007+0x23D4, 2a44 and 2cdc (15AF) draft
+    // orig: the group-position macro, repeated inline in R007+0x23D4, R007+0x2A44 and R007+0x2CDC (15AF) draft
     private (int X, int Y) GroupPosition(int l, int start, int room, int i, int dir)
     {
         var o0 = Room(l, i, X0);
@@ -313,7 +313,8 @@ internal sealed partial class CastleGenerator
     }
 
     /// <summary>The enemy kind of a request group when that group may be placed on this level; −1 otherwise.</summary>
-    // orig: the pattern if (30e6(...)) m = monster_type_map(lv, type, quality) of R007+0x224E, 23d4 and 2cdc; monster_type_map is R004+0x06AA
+    // orig: the pattern if (30e6(...)) m = monster_type_map(lv, type, quality) (Forces.AddKind),
+    // repeated inline in R007+0x224E, R007+0x23D4 and R007+0x2CDC, each calling monster_type_map R004+0x06AA
     private int KindFor(int battlefield, int l, int k, int side, GroupSpec spec) =>
         MayPlaceGroup(battlefield, l, k, side) ? _g.Forces.AddKind(l - _lowestLevel, spec.Type, spec.Quality) : -1;
 

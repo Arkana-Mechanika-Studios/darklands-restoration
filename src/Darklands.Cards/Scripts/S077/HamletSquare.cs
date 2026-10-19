@@ -43,7 +43,8 @@ public sealed class HamletSquare : Card
             new MenuLine(() => { c.PassHours(0); c.Next = 0x87; }, OptionHint.Saying(SuccessAssured)),
             // orig: R077+0x1166 (191C:0326) matched; R077+0x1178 (191C:0338) matched; tests: CardSmokeTests
             new MenuLine(() => { c.PassHours(0); c.Next = 0x89; }, OptionHint.Saying(SuccessAssured)),
-            // orig: R077+0x13C4 (191C:0584) matched; R077+0x144E (191C:060E) matched; R077+0x14D8 (191C:0698) matched; R077+0x1562 (191C:0722) matched; tests: CardSmokeTests
+            // orig: R077+0x11B0 (line 4); R077+0x13C4 (191C:0584) matched; R077+0x144E (191C:060E) matched; R077+0x14D8 (191C:0698) matched;
+            // R077+0x1562 (191C:0722) matched; tests: CardSmokeTests
             new MenuLine(() => PrayForGuidance(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R077+0x12D6 (191C:0496) matched; R077+0x12E8 (191C:04A8) matched; tests: CardSmokeTests
             new MenuLine(() => { c.PassHours(0); c.Next = 0x0C; }, OptionHint.Saying(SuccessAssured)));

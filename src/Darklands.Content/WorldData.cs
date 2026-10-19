@@ -26,7 +26,7 @@ public sealed class WorldData : IGameData
     public DarklandDescriptions Descriptions { get; }
 
     /// <summary>The description of a city ($PlaceDesc), or "" when the file has none.</summary>
-    // orig: city_desc, the 0x50-byte DARKLAND.DSC record read with the city record when the party arrives in a city: fseek(city * 0x50 + 1) in R030+0x02C0 (1462:02C0) draft (bytes match; 16 of the file's 22 functions do); tests: TextAndOpeningTests
+    // orig: city_desc, the 0x50-byte DARKLAND.DSC record read with the city record when the party arrives in a city: fseek(city * 0x50 + 1), repeated inline in R030+0x02C0 (1462:02C0) draft (bytes match; 16 of the file's 22 functions do); tests: TextAndOpeningTests
     public string CityDescription(int city) => Descriptions.Find(city)?.Text ?? "";
 
     /// <summary>The item list as the rules see it.</summary>
@@ -51,13 +51,15 @@ public sealed class WorldData : IGameData
     public string ItemName(int code) => code >= 0 && code < Items.Items.Count ? Items.Items[code].Name : $"item {code}";
 
     /// <summary>A fresh copy of a city's record (<c>load_city</c>); an unknown number gives zeros (readers outside the file go through CityFile).</summary>
-    // orig: fseek(darkland.cty, city * 0x26e + 1) and _dos_read(city_rec, 0x26e) in world_load R043+0x0100 and in the arrival branch of overland_loop R030+0x02C0
+    // orig: fseek(darkland.cty, city * 0x26e + 1) and _dos_read(city_rec, 0x26e), repeated inline in world_load R043+0x0100,
+    // repeated inline in the arrival branch of overland_loop R030+0x02C0, load_saved_game R037+0x8ED4 and load_city R029+0x4E68
     // C: the readers that can be handed an unknown number (a load, the cards) read through CityFile.Read, which keeps the record or reads the file's start.
     public CityRecord LoadCity(int city) =>
         Cities.Find(city) is { } c ? new CityRecord(city, [.. c.RawBytes]) : new CityRecord(city, new byte[CityRecord.Size]);
 
     /// <summary>The bytes of DARKLAND.CTY at a file offset: the city count byte, then the 0x26E-byte records.</summary>
-    // orig: the file as world_load and the loaded game's city read (R037+0x8ED4) seek in it: fseek(cur_loc * 0x26e + 1), _dos_read(city_rec, 0x26e)
+    // orig: the file as the city-record read seeks in it: fseek(cur_loc * 0x26e + 1), _dos_read(city_rec, 0x26e),
+    // repeated inline in world_load R043+0x0100 and in the loaded game's city read R037+0x8ED4
     public byte[]? CityFileBytes(long offset, int length)
     {
         var size = 1L + (long)Cities.Cities.Count * CityRecord.Size;

@@ -81,6 +81,7 @@ public sealed class BattlefieldContext
     public int AbleMembers { get; init; } = 4;
 
     /// <summary>party_lore_level(): 1..10.</summary>
+    // orig: party_lore_level_impl R039+0x0470 (1462:0470) matched: supplied by the game (PartyQueries.LoreLevel)
     public Func<int> LoreLevel { get; init; } = () => 1;
 
     /// <summary>
@@ -191,6 +192,7 @@ public sealed class GenerationState
     public int Roll(int sides) => Forces.RollDice(1, sides);
 
     /// <summary>Saves a level under its level number.</summary>
+    // orig: R004+0x4BCA (1262:0D0A) draft (bytes match): R004+0x493C writes the level as "level%d.flr"; kept in memory here
     public void Save(BattlefieldLevel level) => SavedLevels[level.LevelNumber] = level.Clone();
 
     /// <summary>mark_persistent_battlefield: the battlefield persists; a new location forgets the cleared levels.</summary>

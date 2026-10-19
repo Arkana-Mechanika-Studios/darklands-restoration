@@ -61,7 +61,8 @@ public sealed class SabbatFinishedAltar : Card
         ShowPicture(c, AltarPicture);
 
         var assured = OptionHint.Saying(SuccessAssured);
-        // orig: R126+0x0FF0 .. R126+0x120C (hints R126+0x100E .. R126+0x122A) matched
+        // orig: lines 3..9 R126+0x0FF0, R126+0x104A, R126+0x10A4, R126+0x10FE, R126+0x1158, R126+0x11B2, R126+0x120C
+        //   (hints R126+0x100E, R126+0x1068, R126+0x10C2, R126+0x111C, R126+0x1176, R126+0x11D0, R126+0x122A) matched
         // DORMANT: lines 3..9 are never enabled; each handler shows text 0, passes 0 hours and goes to 0x62.
         var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured);
         return menu.Run(

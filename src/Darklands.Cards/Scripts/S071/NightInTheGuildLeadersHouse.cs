@@ -37,10 +37,14 @@ public sealed class NightInTheGuildLeadersHouse : Card
         c.SetCardSaints(0, 0x59, 0x61, 0x80);
 
         return menu.Run(
+            // orig: R071+0x0328 (line 0); hint R071+0x068E matched
             new MenuLine(chance => SearchForEvidence(c, ref standing, chance), () => SneakChance(c)),
+            // orig: R071+0x06A0 (line 1); hint R071+0x06C2 matched
             new MenuLine(chance => WaitInHiding(c, ref standing, chance), () => SneakChance(c)),
+            // orig: R071+0x06D4 (line 2); hint R071+0x07B8 matched
             new MenuLine(chance => FrightenTheFamily(c, ref standing, chance), () => SneakChance(c)),
-            // C: line 3 is offered but its action (07ca) is empty. Hint R071+0x07CC.
+            // orig: hint R071+0x07CC matched
+            // C: line 3 is offered but its action (07ca) is empty.
             new MenuLine(_ => { }, () => SneakChance(c)),
             // DORMANT: line 4 (opt_flag_4 = 0): back to the card before. orig: R071+0x07DE (hint 07f0)
             new MenuLine(_ => { c.PassHours(0); c.Next = c.PreviousCard; }, OptionHint.Saying(SuccessAssured)),

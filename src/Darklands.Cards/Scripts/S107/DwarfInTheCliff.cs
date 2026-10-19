@@ -68,14 +68,14 @@ public sealed class DwarfInTheCliff : Card
         return menu.Run(
             // orig: R107+0x0410 (1838:0410) matched; hint R107+0x042E
             new MenuLine(_ => { c.Screen.Text(3); c.PassHours(3); c.Next = 252; }, () => OptionHint.Say(NoRisk)),
-            // orig: R107+0x05D6 (1838:05D6) matched (hint)
+            // orig: R107+0x0466 (line 1); hint R107+0x05D6 (1838:05D6) matched
             new MenuLine(p => ClimbWithTheRope(c, menu, p),
                 () => OptionHint.ChanceOf(Math.Clamp(c.EffectiveAgility(c.Variables.Chosen[0]) * 2, 1, 99), c.Variables.Chosen[0])),
-            // orig: R107+0x0768 (1838:0768) matched (hint)
+            // orig: R107+0x0604 (line 2); hint R107+0x0768 (1838:0768) matched
             new MenuLine(p => AllClimb(c, menu, p), () => WorstClimberHint(c)),
-            // orig: R107+0x0886 (1838:0886) matched (hint)
+            // orig: R107+0x0798 (line 3); hint R107+0x0886 (1838:0886) matched
             new MenuLine(_ => PrayForHelp(c, menu), () => OptionHint.Say("Select a person and a saint.")),
-            // orig: R107+0x09FA (1838:09FA) matched (hint)
+            // orig: R107+0x08BE (line 4); hint R107+0x09FA (1838:09FA) matched
             new MenuLine(_ => PayThePrice(c), Unknown),
             // orig: R107+0x0A32 (1838:0A32) matched; hint R107+0x0A46
             new MenuLine(_ => { c.EventHere(0x53, 720); c.Next = 253; }, Unknown),

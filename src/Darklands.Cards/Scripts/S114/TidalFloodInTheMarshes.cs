@@ -32,13 +32,13 @@ public sealed class TidalFloodInTheMarshes : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R114+0x2350 (1A3F:02E0) matched (hint)
+            // orig: R114+0x22E2 (line 0); hint R114+0x2350 (1A3F:02E0) matched
             new MenuLine(p => SeekHighGround(c, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageEffectiveAgility() + c.PartyMaxAttribute((int)Attribute.Perception), 1, 99), OptionHint.WholeParty)),
-            // orig: R114+0x2430 (1A3F:03C0) matched (hint)
+            // orig: R114+0x2380 (line 1); hint R114+0x2430 (1A3F:03C0) matched
             new MenuLine(p => BuildARaft(c, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyMaxSkill((int)Skill.Woodwise) * 2 + c.PartyMaxSkill((int)Skill.Artifice) / 3, 1, 99), OptionHint.WholeParty)),
-            // orig: R114+0x24C0 (1A3F:0450) matched (hint)
+            // orig: R114+0x246E (line 2); hint R114+0x24C0 (1A3F:0450) matched
             new MenuLine(_ => Pray(c, menu), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R114+0x24F8 (1A3F:0488) matched; hint R114+0x2500
             // DORMANT: lines 3 and 4 (other saints: cards 284 and 285) are never offered (opt_flag_3/4 = 0).

@@ -30,12 +30,12 @@ public sealed class MerchantsOfTheCity : Card
         var menu = Menu(c);
         menu.Enable(0, 1, 3, 7, 8, 9);
         return menu.Run(
-            new MenuLine(() => Trade(c, TradeHint(c).Chance), () => TradeHint(c)),
+            new MenuLine(chance => Trade(c, chance), () => TradeHint(c)),
             new MenuLine(() => SoundOutTheirPolitics(c), OptionHint.Saying(NoRisk)),
             // orig: R092+0x0BB8 (188F:0648) matched; hint R092+0x0BBA (r.a = 0, r.b = -2)
             // DORMANT: line 2 is hidden (flag 0) and does nothing; its hint is a 0 % chance.
             new MenuLine(() => { }, () => OptionHint.ChanceOf(0, Who.Everybody)),
-            new MenuLine(() => AskForTheirLeader(c, MeetingChance(c)), () => OptionHint.ChanceOf(MeetingChance(c), Who.Everybody)),
+            new MenuLine(chance => AskForTheirLeader(c, chance), () => OptionHint.ChanceOf(MeetingChance(c), Who.Everybody)),
             // orig: R092+0x0C8E (188F:071E) matched; hint R092+0x0C90 (r.a = 0, r.b = -2)
             // DORMANT: line 4 is hidden and does nothing.
             new MenuLine(() => { }, () => OptionHint.ChanceOf(0, Who.Everybody)),

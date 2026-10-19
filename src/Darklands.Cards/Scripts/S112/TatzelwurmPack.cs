@@ -56,21 +56,21 @@ public sealed class TatzelwurmPack : Card
             new MenuLine(_ => { TheWurmsStrike(c, menu, OptionState.Enabled); c.Next = 273; }, Unknown),
             // orig: R112+0x09FA (1881:056A) matched; hint R112+0x0A80
             new MenuLine(_ => { TheWurmsStrike(c, menu, OptionState.Enabled); c.Next = 273; }, Unknown),
-            // orig: R112+0x0BC4 (1881:0734) matched (hint)
+            // orig: R112+0x0AB8 (line 2); hint R112+0x0BC4 (1881:0734) matched
             new MenuLine(p => ThrowAPotion(c, menu, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
-            // orig: R112+0x0D12 (1881:0882) matched (hint)
+            // orig: R112+0x0BFC (line 3); hint R112+0x0D12 (1881:0882) matched
             new MenuLine(_ => PrayForDeliverance(c, menu), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R112+0x0D4A (1881:08BA) matched; hint R112+0x0DD4
             new MenuLine(_ => { TheWurmsStrike(c, menu, OptionState.Shown); c.Next = 273; }, () => OptionHint.Say(SuccessAssured)),
-            // orig: R112+0x0F20 (1881:0A90) matched (hint)
+            // orig: R112+0x0E0C (line 5); hint R112+0x0F20 (1881:0A90) matched
             new MenuLine(p => SneakAround(c, menu, p), Unknown),
             // orig: R112+0x0F58 (1881:0AC8) matched; hint R112+0x0F64
             // C: the battle kind is chosen by options_block (non-zero: the ambush kind).
             new MenuLine(_ => FightTheWurms(c, menu.Block != 0), () => OptionHint.Say("Enter Combat")),
-            // orig: R112+0x10B4 (1881:0C24) matched (hint)
+            // orig: R112+0x0F9C (line 7); hint R112+0x10B4 (1881:0C24) matched
             new MenuLine(p => ScoutItOut(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageSkill((int)Skill.Woodwise) + c.PartyAverageEffectiveAgility() * 2 / 3, 1, 89), OptionHint.WholeParty)),
-            // orig: R112+0x1278 (1881:0DE8) matched (hint)
+            // orig: R112+0x10EC (line 8); hint R112+0x1278 (1881:0DE8) matched
             new MenuLine(p => RideForIt(c, p), () => RideHint(c)),
             // orig: R112+0x12BA (1881:0E2A) matched (empty); hint R112+0x12BC (empty)
             // DORMANT: line 9 is never offered. UNCERTAIN: its hint returns AX/DX; a neutral hint is used.

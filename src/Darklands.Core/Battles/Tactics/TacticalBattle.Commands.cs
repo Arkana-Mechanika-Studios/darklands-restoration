@@ -85,6 +85,7 @@ public sealed partial class TacticalBattle
         }
         ViewOrigin = null;
         _view.RowChanged(-1);
+        ResetOrderMenu();
     }
 
     /// <summary>An arrow key: the active member takes one step that way this tick (not when the party travels as a group).</summary>

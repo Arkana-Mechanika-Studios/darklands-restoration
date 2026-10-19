@@ -283,6 +283,7 @@ public sealed class CharacterGeneratorScreen
     // ----- drawing -----
 
     /// <summary>The whole screen (<c>R037+0x4B9E</c>).</summary>
+    // orig: R037+0x4B9E (18C8:053E) draft (bytes match)
     private void DrawAll()
     {
         Screen.Draw(_back.Screen.Pixels, Canvas.Width, Canvas.Height, 0, 0);
@@ -313,6 +314,7 @@ public sealed class CharacterGeneratorScreen
     }
 
     /// <summary>The left-hand side (<c>R037+0x573A</c>): name line, help lines and the step's list.</summary>
+    // orig: R037+0x573A (18C8:10DA) draft (bytes match)
     private void DrawList()
     {
         var t = _data.Texts;
@@ -382,6 +384,7 @@ public sealed class CharacterGeneratorScreen
     ];
 
     /// <summary>The right-hand panel (<c>R037+0x5D98</c>).</summary>
+    // orig: R037+0x5D98 (18C8:1738) draft (bytes match)
     private void DrawPanel()
     {
         var c = _creation;

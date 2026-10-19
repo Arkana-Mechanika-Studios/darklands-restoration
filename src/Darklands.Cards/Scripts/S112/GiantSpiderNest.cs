@@ -60,20 +60,20 @@ public sealed class GiantSpiderNest : Card
             new MenuLine(_ => { TheSpidersStrike(c, menu, c.ItemsUsable()); c.Next = 274; }, Unknown),
             // orig: R112+0x1C20 (199D:05D0) matched; hint R112+0x1CAC
             new MenuLine(_ => { TheSpidersStrike(c, menu, c.ItemsUsable()); c.Next = 274; }, Unknown),
-            // orig: R112+0x1DEE (199D:079E) matched (hint)
+            // orig: R112+0x1CE4 (line 2); hint R112+0x1DEE (199D:079E) matched
             new MenuLine(p => ThrowAPotion(c, menu, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
-            // orig: R112+0x1F22 (199D:08D2) matched (hint)
+            // orig: R112+0x1E26 (line 3); hint R112+0x1F22 (199D:08D2) matched
             new MenuLine(_ => PrayForDeliverance(c, menu), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R112+0x1F5A (199D:090A) matched; hint R112+0x1F96
             new MenuLine(_ => { ShowPicture(c, CampPicture); c.Screen.Text(8); c.Next = 274; }, () => OptionHint.Say(SuccessAssured)),
-            // orig: R112+0x20E4 (199D:0A94) matched (hint)
+            // orig: R112+0x1FCE (line 5); hint R112+0x20E4 (199D:0A94) matched
             new MenuLine(p => SneakAround(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageSkill((int)Skill.Woodwise) + c.PartyAverageEffectiveAgility() * 2 / 3 + 5, 10, 85), OptionHint.WholeParty)),
             // orig: R112+0x2120 (199D:0AD0) matched; hint R112+0x2136
             new MenuLine(_ => FightTheSpiders(c, menu.Block == 1), () => OptionHint.Say("Enter Combat")),
-            // orig: R112+0x2294 (199D:0C44) matched (hint)
+            // orig: R112+0x216E (line 7); hint R112+0x2294 (199D:0C44) matched
             new MenuLine(p => ScoutItOut(c, menu, p), Unknown),
-            // orig: R112+0x239C (199D:0D4C) matched (hint)
+            // orig: R112+0x22CC (line 8); hint R112+0x239C (199D:0D4C) matched
             new MenuLine(p => RunAway(c, p), () => RunHint(c)),
             // orig: R112+0x23DA (199D:0D8A) matched (empty); hint R112+0x23DC (empty)
             // DORMANT: line 9 is never offered. UNCERTAIN: its hint returns AX/DX; a neutral hint is used.

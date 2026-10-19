@@ -23,9 +23,9 @@ public sealed class StormAtSea : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R113+0x029C (1838:029C) matched (hint)
+            // orig: R113+0x0232 (line 0); hint R113+0x029C (1838:029C) matched
             new MenuLine(_ => HangOnAndHope(c), () => OptionHint.Say("You can always encounter the unknown")),
-            // orig: R113+0x0344 (1838:0344) matched (hint)
+            // orig: R113+0x02D4 (line 1); hint R113+0x0344 (1838:0344) matched
             new MenuLine(_ => PrayForAid(c), () => OptionHint.Say("Select a person and a saint.")),
             // DORMANT: lines 2..9 are never offered; actions R113+0x037C.. and hints R113+0x037E.. are
             // empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).

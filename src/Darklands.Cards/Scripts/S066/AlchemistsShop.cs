@@ -92,6 +92,8 @@ public sealed class AlchemistsShop : Card
                 menu.Block = rounds++ == 0 ? 0 : 1;
             }
         };
+        // orig: the hints of lines 0..5, R066+0x12B0, R066+0x134C, R066+0x13A2, R066+0x1512, R066+0x1648, R066+0x1664 (each the
+        // mood below with the leader as a signed byte)
         Func<OptionHint> asLeader = () => new OptionHint(Persuasion(c), "", (sbyte)c.Leader);
         return menu.Run(
             new MenuLine(chance => ImproveTheStone(c, menu, chance), asLeader),

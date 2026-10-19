@@ -87,15 +87,15 @@ public sealed class HanseaticLeague : Card
         };
         var charm = () => new OptionHint(Math.Clamp((c.Attribute(c.Leader, (int)Attribute.Charisma) << 1) + c.State.HanseStanding + standing, 0, 99), "", c.Leader);
         return menu.Run(
-            // orig: handler R061+0x27DA: clamp(10, 50, cur_rep / 2 + favour / 2 + fame)
+            // orig: R061+0x260A (line 0); handler R061+0x27DA: clamp(10, 50, cur_rep / 2 + favour / 2 + fame)
             new MenuLine(chance => SeekACommission(c, menu, chance, waitFirst: true),
                 () => new OptionHint(Math.Clamp(standing / 2 + c.State.HanseStanding / 2 + c.State.Party.Fame, 10, 50), "", c.Leader)),
-            // orig: handler R061+0x29D8: clamp(10, 50, cur_rep + fame)
+            // orig: R061+0x2812 (line 1); handler R061+0x29D8: clamp(10, 50, cur_rep + fame)
             new MenuLine(chance => SeekACommission(c, menu, chance, waitFirst: false),
                 () => new OptionHint(Math.Clamp(standing + c.State.Party.Fame, 10, 50), "", c.Leader)),
-            // orig: handler R061+0x2CB2: clamp(0, 99, (Charisma << 1) + favour + cur_rep)
+            // orig: R061+0x2A00 (line 2); handler R061+0x2CB2: clamp(0, 99, (Charisma << 1) + favour + cur_rep)
             new MenuLine(_ => ReportTheCommission(c, favourChanges: true), charm),
-            // orig: handler R061+0x2F94 (assured)
+            // orig: R061+0x2CEC (line 3); handler R061+0x2F94 (assured)
             new MenuLine(_ => ReportTheCommission(c, favourChanges: false), OptionHint.Saying(SuccessAssured)),
             // DORMANT: lines 4, 5 and 6 (opt_flag_4..6 = 0, set nowhere): lines 4 and 5 show the first text and leave for the
             // city entry card; line 6 only calls advance_hours(0) and stays in the menu.
@@ -105,7 +105,7 @@ public sealed class HanseaticLeague : Card
             new MenuLine(_ => Leave(c), OptionHint.Saying(SuccessAssured)),
             // orig: handler R061+0x3084, action 0e08 R061+0x3078
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
-            // orig: handler R061+0x31A4: clamp(0, 99, Charisma << 1); action 0e4c
+            // orig: R061+0x30BC (line 7); handler R061+0x31A4: clamp(0, 99, Charisma << 1)
             new MenuLine(chance => ChatWithTheClerks(c, chance),
                 () => new OptionHint(Math.Clamp(c.Attribute(c.Leader, (int)Attribute.Charisma) << 1, 0, 99), "", c.Leader)),
             // orig: handler R061+0x31EA, action 0f66 R061+0x31D6

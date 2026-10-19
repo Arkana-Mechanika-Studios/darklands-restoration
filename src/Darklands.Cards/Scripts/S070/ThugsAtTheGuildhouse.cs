@@ -38,6 +38,7 @@ public sealed class ThugsAtTheGuildhouse : Card
             new MenuLine(chance => FrightenWithAPotion(c, menu, chance), () => new OptionHint(-1, CardTexts.PotionWorks, c.MenuMember),
                 () => c.MemberPopupHint()),
             new MenuLine(_ => CallTheWatch(c, ref standing), () => new OptionHint(-1, SuccessAssured, c.Leader)),
+            // orig: R070+0x3082 (line 3); hint R070+0x30A0 (1AC1:0810) matched
             new MenuLine(chance => SurpriseAttack(c, ref standing, chance),
                 () => new OptionHint(Math.Clamp(c.PartyMinSkill((int)Skill.Stealth) + 10, 0, 99), "", OptionHint.WholeParty)),
             new MenuLine(_ => Fight(c, ref standing), OptionHint.Saying(CardTexts.Unknown)),
@@ -70,7 +71,7 @@ public sealed class ThugsAtTheGuildhouse : Card
     private static OptionHint IntimidationChance(CardContext c, int standing)
     {
         var value = c.State.Party.Fame / 20 + (Math.Abs(standing) / 2
-            + (c.PartyAverageSkill((int)Skill.Stealth) / 3 + c.BestWeaponSkill(c.Leader) / 3));
+            + (c.BestWeaponSkill(c.Leader) / 3 + c.PartyAverageSkill((int)Skill.Stealth) / 3));
         return new OptionHint(Math.Clamp(value, 0, 99), "", c.Leader);
     }
 
@@ -130,7 +131,7 @@ public sealed class ThugsAtTheGuildhouse : Card
     }
 
     /// <summary>A surprise attack: the roll is made but either way it comes to the same fight.</summary>
-    // orig: R070+0x3082 (hint R070+0x30A0)
+    // orig: R070+0x3082 (hint 0810, on the menu line)
     // C: f0260(1) and f0260(0) are the same call: the fight takes no argument.
     private static void SurpriseAttack(CardContext c, ref int standing, int chance)
     {

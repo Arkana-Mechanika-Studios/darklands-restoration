@@ -47,11 +47,11 @@ public sealed class SmallCaveUnderTheLedge : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R106+0x1D92 (19BC:0552) matched (hint)
+            // orig: R106+0x1CDE (line 0); hint R106+0x1D92 (19BC:0552) matched
             new MenuLine(_ => EnterTheCave(c), Unknown),
-            // orig: R106+0x1E00 (19BC:05C0) matched (hint)
+            // orig: R106+0x1DCA (line 1); hint R106+0x1E00 (19BC:05C0) matched
             new MenuLine(_ => WatchTheCave(c), Unknown),
-            // orig: R106+0x1EA0 (19BC:0660) matched (hint)
+            // orig: R106+0x1E38 (line 2); hint R106+0x1EA0 (19BC:0660) matched
             new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
             // DORMANT: lines 3..8 are never offered; their actions R106+0x1ED8.. and hints
             // R106+0x1EDA.. are empty functions.
@@ -196,8 +196,10 @@ public sealed class SmallCaveUnderTheLedge : Card
             case 2:
             case 3:
             case 4:
-                // C: R029 2474 returns the member who left (or -1); see CardContext.OneAwayMemberLeaves.
-                c.Variables.Chosen[0] = c.OneAwayMemberLeaves();
+                // BUG: R029 2474 returns how many members were away, not who left: var_chosen1 gets that count, so the
+                // text names party member [count], and the test against -1 always holds: the loss text and the Virtue
+                // practice come even when nobody was away.
+                c.Variables.Chosen[0] = c.OneOfTheAwayLeaves();
                 if (c.Variables.Chosen[0] != -1)
                 {
                     c.Screen.Text(6);

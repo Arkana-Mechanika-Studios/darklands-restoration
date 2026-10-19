@@ -95,13 +95,13 @@ public sealed class RebelsBeforeTheCouncilHall : Card
                 },
                 () => OptionHint.ChanceOf(BribeChance(c), c.Leader)),
             // orig: R090+0x2858 (1A66:0578); hint R090+0x28C6 matched
-            new MenuLine(() => InspireTheCrowd(c, InspireChance(c), menu),
+            new MenuLine(chance => InspireTheCrowd(c, chance, menu),
                 () => OptionHint.ChanceOf(InspireChance(c), c.Variables.Chosen[0])),
             // orig: R090+0x2956 (1A66:0676); hint R090+0x29CE; saint hints R090+0x2E2A..0c5e matched
-            new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint)),
+            new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupMemberHint),
             // orig: R090+0x2A06 (1A66:0726); hint R090+0x2B10 matched
             // DORMANT: line 4 is always greyed out here, so the night break-in never runs.
-            new MenuLine(() => BreakInAtNight(c, BreakInChance(c), menu),
+            new MenuLine(chance => BreakInAtNight(c, chance, menu),
                 () => OptionHint.ChanceOf(BreakInChance(c), Who.Everybody)),
             // orig: R090+0x2B3A (1A66:085A); hint R090+0x2BDA; item hints R090+0x2DFA, R090+0x2E12 matched
             new MenuLine(() => UseAPotion(c, c.MenuPopup ? 100 : -1), OptionHint.Saying(CardTexts.SelectPotion)),

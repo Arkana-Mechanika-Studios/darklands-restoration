@@ -69,7 +69,7 @@ public sealed class BattleScreen : ITacticalView
     /// lost, 4 surrendered, 5 all down, 6 fell into a pit, 7 timed exit; 8 "left before the
     /// fight" is reported as 2, as battle_run's callers read it).
     /// </summary>
-    // orig: battle_run R002+0x0000 (0E76:0000) draft
+    // orig: battle_run R002+0x0000 (0E76:0000) draft; its loop is combat_input R014+0x3166 (0E76:3166) draft
     public int Run(BattleRequest request)
     {
         Start(request);
@@ -291,9 +291,9 @@ public sealed class BattleScreen : ITacticalView
     /// from its records (where each member stood, its animation), the battle's variables, then the start of a fight
     /// taken up again.
     /// </summary>
-    // orig: R002+0x0000 (0E76:0000) draft with DS:9081 bit 0: mode 1 (no new battlefield, combat flag 2, the levels as the restore
-    // R003+0x0CE8 wrote them), the reset R002+0x1830 without its restored part; the party's records are its combatant records as
-    // R037+0x8ED4 (1C7D:0D24) read them; tests: BattleSaveTests
+    // orig: R002+0x0000 (0E76:0000) draft with DS:9081 bit 0: mode 1 (no new battlefield, combat flag 2), the reset R002+0x1830
+    // without its restored part; tests: BattleSaveTests; the levels as filled by the restore R003+0x0CE8;
+    // the party's records are its combatant records as filled by R037+0x8ED4 (1C7D:0D24)
     // C: the reset R002+0x1830 still clears each member's action (+0x10) and target (+0x4A) and empties records 5..12: the enemies of the
     // fight that was saved are not in the battle file (only those not met yet, in the activations).
     private void Resume(BattleRequest request, BattleFile file)
@@ -1721,7 +1721,7 @@ public sealed class BattleScreen : ITacticalView
     }
 
     /// <summary>Draws the whole screen.</summary>
-    // orig: combat_draw's sprite lists, list C (depth-sorted sprites) filled by R014+0x7BBE
+    // orig: combat_draw's sprite lists: list C (depth-sorted sprites), which R014+0x7BBE fills
     // unmatched (a sprite queued with its depth and screen tile) and R014+0x8724 matched (at most 157), list A
     // R014+0x87E4 matched, list B R014+0x8862 matched; the dirty screen tiles re-queued by
     // R014+0x88E6 unmatched and R014+0x827A unmatched (walls, furniture, floor objects); list C
@@ -2012,7 +2012,7 @@ public sealed class BattleScreen : ITacticalView
     }
 
     /// <summary>The clouds (edges, then the puffs on top, in the colours of their type) and the flash and blast markers.</summary>
-    // orig: R014+0x6FFC (14F7:07EC), R014+0x8CB4 (14F7:24A4) and R014+0x76AE (14F7:0E9E) draft
+    // orig: R014+0x6FFC (14F7:07EC), R014+0x8CB4 (14F7:24A4), R014+0x9542 (14F7:2D32; the markers) and R014+0x76AE (14F7:0E9E) draft
     // DIVERGENCE: the edges are drawn over the combatants (the original sorts them in with the sprites by depth) and the puffs
     // are clipped to the view, not to the cloud's box.
     private void DrawClouds(Canvas canvas)

@@ -14,6 +14,7 @@ public static class MapTurn
 {
     private const int Span = 0x140;
 
+    // orig: R004+0x21BA (1091:000A) draft (see the type)
     public static void Apply(BattlefieldLevel level, int r, bool turnExitTargets)
     {
         // C: r %= 8 with a positive result.

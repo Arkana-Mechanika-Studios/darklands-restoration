@@ -13,38 +13,30 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 
 | | count |
 |---|---:|
-| C# units with a trace (types left out) | 3871 |
-| original functions compared | 4744 |
-| comparisons (functions one C# unit implements together are compared as one) | 3042 |
-| comparisons without a finding | 1695 |
-| implemented functions not compared (cited only in statements, types or map.csv) | 3496 |
+| C# units with a trace (types left out) | 4441 |
+| original functions compared | 5536 |
+| comparisons (functions one C# unit implements together are compared as one) | 3420 |
+| comparisons without a finding | 3126 |
+| implemented functions not compared (cited only in statements, types or map.csv) | 2705 |
 
 ## Findings
 
 | check | what it means | open | reviewed |
 |---|---|---:|---:|
-| `draws` | one side draws random numbers, the other never does | 1 | 2 |
-| `args` | a shared call passes a constant the other side never uses | 9 | 0 |
-| `stores` | the C# assigns a constant that appears nowhere in the original's code | 35 | 0 |
-| `missing` | a game-logic call of the original the C# does not make | 354 | 0 |
-| `extra` | a traced call the original does not make (three calls deep) | 613 | 0 |
-| `order` | two shared calls in the opposite order | 436 | 0 |
-| `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 132 | 1 |
-| `decisions` | fewer than half the original's conditional branches | 316 | 0 |
+| `draws` | one side draws random numbers, the other never does | 0 | 2 |
+| `args` | a shared call passes a constant the other side never uses | 0 | 4 |
+| `stores` | the C# assigns a constant that appears nowhere in the original's code | 0 | 7 |
+| `missing` | a game-logic call of the original the C# does not make | 5 | 92 |
+| `extra` | a traced call the original does not make (three calls deep) | 0 | 97 |
+| `order` | two shared calls in the opposite order | 0 | 32 |
+| `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 5 | 33 |
+| `decisions` | fewer than half the original's conditional branches | 1 | 68 |
 
 ## Open findings by area
 
 | area | draws | args | stores | missing | extra | order | consts | decisions |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| battlefield generation | 0 | 0 | 0 | 33 | 20 | 10 | 21 | 38 |
-| battles (tactical) | 1 | 1 | 10 | 58 | 52 | 21 | 46 | 26 |
-| card engine | 0 | 0 | 1 | 7 | 9 | 3 | 3 | 5 |
-| cards (event scripts) | 0 | 0 | 20 | 152 | 436 | 378 | 8 | 155 |
-| resident core (root) | 0 | 0 | 0 | 13 | 8 | 0 | 2 | 4 |
-| rules (strategic core, event toolkit) | 0 | 1 | 1 | 19 | 33 | 8 | 12 | 47 |
-| screens (inventory, barter, alchemy, saints, cache, camp, creation, saves, loot) | 0 | 6 | 1 | 62 | 42 | 13 | 29 | 36 |
-| start-up | 0 | 1 | 2 | 5 | 6 | 2 | 2 | 2 |
-| travel (overland map) | 0 | 0 | 0 | 5 | 7 | 1 | 9 | 3 |
+| battles (tactical) | 0 | 0 | 0 | 5 | 0 | 0 | 5 | 1 |
 
 ## Limits
 
@@ -54,8 +46,34 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
   loop per case) where the port shares a helper, and the reverse.
 * Code the port moved to a caller or callee shows as `missing` on one side and `extra` on the other;
   calls two levels deep (three for `extra`) and coordinates named in the C#'s comments are accepted.
-* Constants: a value one off (`x < 6` against `cmp x, 5`), negated or complemented counts as used;
-  the port may test through a table or an enum range, and switch tables test the case span.
+* Constants: a value one off (`x < 6` against `cmp x, 5`), negated or complemented counts as used,
+  and so do a signed byte (0xFF as -1), a byte test of a word's high half (0x20 as 0x2000), a BIOS
+  key word whose character the C# tests, and a far pointer to a thunk; a jump table's range test and
+  the bound of a counter stepped by a stride (a row offset) are not compared. Key words of keys
+  without a character (Esc, Enter, arrows) and enum members defined outside the unit are not seen.
+* Order is compared per C# context (a lambda, a deferred handler, each arm of a branch) against the
+  original's control flow; calls that commute (no shared state read and written, no random draw
+  between them) are not ordered. A pure query's end state (a best-member global) is seen only
+  through the order of the queries.
+* Card scripts: the menu loop (card_menu R043+0x1BD2 and the switch after it) is CardMenu.Run's;
+  a card's reset function and the hint and pop-up handlers it installs are the menu lines'; a
+  line action reached only through the option table is the line, not a call.
 * Decision points are a coarse count: `&&`/`||` chains, loops and switch tables compile to several
-  branches each, and the port may replace branches with tables.
+  branches each, and the port may replace branches with tables; decisions in followed helpers count.
+* Run-time library, graphics, sound and file services (segments 047C, 0617, 05D9, 0265, 06A1) are
+  the host's, not compared as calls; the BCL's equivalents (clamp) are accepted, and so is a wrapper
+  of those services that writes nothing (a file catalogue lookup). A far jump to 0000:0000 is a
+  graphics-driver entry patched at run time, not a call.
+* Shared code: an orig line's coordinates after "tail of", "repeated inline in", "repeated in" or
+  "filled by" (to the end of its block) are sites the member shares code with, not functions it
+  implements: a call of the member is followed into, and a member that only shares code is compared
+  with its first site. An example ("e.g. R059+0x0CEC") stays a cite: a shared handler stands for
+  every card's copy. A coordinate in short form (`_0692`) is not read.
+* Code done in place: a function the original calls and the port inlines is accepted when it is pure
+  (no calls, no writes), or of the same record or a card's copy of another card's function (card
+  overlays cannot call one another), with every call in the port's reach and every constant it
+  stores in the port; for `extra`, a function that writes nothing and whose calls the original
+  makes itself (a wrapper such as wait_until_hour) is accepted the same way.
+* Delegates and closures: a call through a delegate field or a lambda stored in a local is seen only
+  where the delegate's target is traced; menu-bar handlers given to MenuBar.Item count as calls.
 * Functions cited only at statement level, in types or in map.csv are not compared (see Scope).

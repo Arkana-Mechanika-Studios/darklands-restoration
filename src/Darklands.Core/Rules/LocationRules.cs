@@ -296,7 +296,8 @@ public static class LocationRules
     // ---- the map --------------------------------------------------------------------
 
     /// <summary>Map distance: the larger axis plus half the smaller, with y counted a third.</summary>
-    // orig: nearest_city_impl R030+0x271A (1462:271A) matched
+    // orig: the distance (dx = |x-X|, dy = |y-Y|/3, the larger plus half the smaller),
+    // repeated inline in nearest_city_impl R030+0x271A (1462:271A) and R034+0x1A86
     public static int Distance(int x1, int y1, int x2, int y2)
     {
         var dx = Math.Abs(x2 - x1);

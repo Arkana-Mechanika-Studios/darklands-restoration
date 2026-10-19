@@ -35,7 +35,8 @@ public sealed class PartyPanel(GameAssets assets)
     public void SetShieldPicture(int slot, Character member, char letter) => _shieldPictures[slot] = (member, letter);
 
     /// <summary>The frames, then every row (what a card or the map draws when it comes up).</summary>
-    // orig: party_panel_frames(0x100) then party_panel_rows(0x100), as card_load R043+0x0A9A does
+    // orig: party_panel_frames root 0000:1588 draft (bytes match), then party_panel_rows root 0000:1716 draft (bytes match), both (0x100)
+    // C: card_load (R043+0x0A9A) draws the panel this way when a card comes up.
     public void Draw(Canvas canvas, Party party)
     {
         for (var i = 0; i < Party.MaxMembers; i++)

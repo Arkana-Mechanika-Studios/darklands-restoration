@@ -42,7 +42,7 @@ public sealed class InsideTheRobberKnightsTower : Card
         menu.Enable(0, 1, 2, 3);
         return menu.Run(
             new MenuLine(() => FindTheKnight(c), hint: () => SurrenderHint(c)),
-            new MenuLine(() => SetTheTowerOnFire(c, FireChance(c).Chance), hint: () => FireChance(c)),
+            new MenuLine(chance => SetTheTowerOnFire(c, chance), hint: () => FireChance(c)),
             // orig: R081+0x0738 (1838:0738) matched; R081+0x0742 (1838:0742) matched; tests: CardSmokeTests
             new MenuLine(() => Fight(c, 1), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R081+0x077A (1838:077A) matched; R081+0x078C (1838:078C) matched; tests: CardSmokeTests

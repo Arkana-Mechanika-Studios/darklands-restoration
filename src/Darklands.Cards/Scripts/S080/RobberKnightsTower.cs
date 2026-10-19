@@ -93,10 +93,11 @@ public sealed class RobberKnightsTower : Card
             // orig: R080+0x199E (1929:0A8E) matched; R080+0x1ADE (1929:0BCE) matched; tests: CardSmokeTests
             new MenuLine(() => AskToComeInside(c, Recognise), OptionHint.Saying(CardTexts.Unknown)),
             // orig: R080+0x1B16 (1929:0C06) matched; R080+0x1C46 (1929:0D36) matched; tests: CardSmokeTests
-            new MenuLine(() => { Recognise(); ChallengeTheKnight(c, ChallengeChance(c).Chance); }, hint: () => ChallengeChance(c)),
+            new MenuLine(chance => { Recognise(); ChallengeTheKnight(c, chance); }, hint: () => ChallengeChance(c)),
             // orig: R080+0x1C86 (1929:0D76) matched; R080+0x1D70 (1929:0E60) matched; tests: CardSmokeTests
-            new MenuLine(() => SneakInAfterDark(c, SneakingChance(c).Chance, Recognise), hint: () => SneakingChance(c)),
-            // orig: R080+0x2154 (1929:1244) matched; R080+0x21DE (1929:12CE) matched; R080+0x2268 (1929:1358) matched; R080+0x22F2 (1929:13E2) matched; tests: CardSmokeTests
+            new MenuLine(chance => SneakInAfterDark(c, chance, Recognise), hint: () => SneakingChance(c)),
+            // orig: R080+0x1DC4 (line 5); R080+0x2154 (1929:1244) matched; R080+0x21DE (1929:12CE) matched; R080+0x2268 (1929:1358) matched;
+            // R080+0x22F2 (1929:13E2) matched; tests: CardSmokeTests
             new MenuLine(() => CallASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R080+0x1F22 (1929:1012) matched; R080+0x1F5A (1929:104A) matched; tests: CardSmokeTests
             new MenuLine(() =>

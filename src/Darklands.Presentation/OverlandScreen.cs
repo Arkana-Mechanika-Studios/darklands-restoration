@@ -49,7 +49,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private string _coordinates = "";
 
     /// <summary>Travels until a place is reached or something happens; returns the card to show.</summary>
-    // orig: overland_open (music, the first draw) and overland_loop (the passes); the return value is the `sel` branch of the loop: a location's arrival card, its own encounter card (2000), a road encounter (1000), or the camp ambush
+    // orig: overland_open R030+0x00A8 (1462:00A8) (music, the first draw) and overland_loop R030+0x02C0 (1462:02C0) (the passes);
+    // the return value is the `sel` branch of the loop: a location's arrival card, its own encounter card (2000), a road encounter
+    // (1000), or the camp ambush
     public int Travel(GameState state, Func<int, bool>? eventStarted = null)
     {
         ui.Redraw = () => UseMapPalette(state);   // orig: the `redraw` label of 0c44 after a character sheet or the party information: pictures reloaded, season palette, panel

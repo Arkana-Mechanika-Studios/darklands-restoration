@@ -51,7 +51,7 @@ public sealed class SabbatAltarPreparation : Card
 
         var unknown = OptionHint.Saying(CardTexts.Unknown);
         var assured = OptionHint.Saying(SuccessAssured);
-        // orig: R125+0x2160 / _091a matched — lines 8 and 9 (never enabled).
+        // orig: R125+0x2160 / R125+0x21BA matched — lines 8 and 9 (never enabled).
         var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured);
         return menu.Run(
             // orig: R125+0x1BB8 / R125+0x1BE0 matched — refuse (an int function returning options_block; ignored).

@@ -33,7 +33,7 @@ public sealed class RobberKnightsAudience : Card
         menu[2] = c.SaintsUsable();
 
         return menu.Run(
-            new MenuLine(() => DaringMove(c, DaringChance(c).Chance), hint: () => DaringChance(c)),
+            new MenuLine(chance => DaringMove(c, chance), hint: () => DaringChance(c)),
             // orig: R081+0x0D5A (18BB:052A) matched; R081+0x0DA8 (18BB:0578) matched; tests: CardSmokeTests
             new MenuLine(() =>
             {
@@ -45,7 +45,8 @@ public sealed class RobberKnightsAudience : Card
                 }
                 c.Next = 0x94;
             }, OptionHint.Saying(SuccessAssured)),
-            // orig: R081+0x110E (18BB:08DE) matched; R081+0x1198 (18BB:0968) matched; R081+0x1222 (18BB:09F2) matched; tests: CardSmokeTests
+            // orig: R081+0x0DE0 (line 2); R081+0x110E (18BB:08DE) matched; R081+0x1198 (18BB:0968) matched; R081+0x1222 (18BB:09F2) matched;
+            // tests: CardSmokeTests
             new MenuLine(() => CallASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R081+0x0EFA (18BB:06CA) matched; R081+0x0F04 (18BB:06D4) matched; tests: CardSmokeTests
             new MenuLine(() => Fight(c, 7), OptionHint.Saying(CardTexts.EnterCombat)),

@@ -12,16 +12,16 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 19 |
-| cards | core | 219 |
+| cards | core | 217 |
 | events | core | 1 |
 | travel | core | 6 |
 | battles | core | 30 |
 | persistence | core | 5 |
 | screens/presentation | other | 24 |
 | host/audio | other | 4 |
-| total |  | 308 |
+| total |  | 306 |
 
-## Core logic (280)
+## Core logic (278)
 
 ### rules (19)
 
@@ -83,7 +83,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: for a price word ≥ 0x8000 (never reached with the game's values) money_set's sign handling is assumed to match Money.From.
 
-### cards (219)
+### cards (217)
 
 - **U-a32a7e** `uncertain` - `src/Darklands.Cards/CardContext.Fights.cs:32` `CardContext.CombatFlags`  
   original: `R029+0x577A` (1367:086A, matched)  
@@ -241,9 +241,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-421b52** `uncertain` - `src/Darklands.Cards/Scripts/S074/RebelMobInTheStreets.cs:50` `RebelMobInTheStreets.Run`  
   original: `R074+0x2442` (1A42:03A2, matched), `R074+0x2444` (1A42:03A4, matched)  
   why: if a stale value 1 left the line enabled in block 0, choosing it would also do nothing.
-- **U-fc3d2e** `uncertain` - `src/Darklands.Cards/Scripts/S075/CloakedKidnapperOnTheRoad.cs:33` `CloakedKidnapperOnTheRoad.Run`  
-  original: `R075+0x0EBC` (18DA:049C, matched), `R075+0x0F44` (18DA:0524, matched), `R075+0x0FCC` (18DA:05AC, matched) +1 more  
-  why: after a text, the engine might keep a different block up.
 - **U-5043e9** `uncertain` - `src/Darklands.Cards/Scripts/S075/FactionLeadersHomes.cs:64` `FactionLeadersHomes.JoinSide`  
   original: `R075+0x05DC` (1838:05DC, matched), `R075+0x05FA` (1838:05FA, matched)  
   why: the side kept in party_x (CardContext.CityMark).
@@ -256,13 +253,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-14808f** `uncertain` - `src/Darklands.Cards/Scripts/S076/PriestVisitsTheCell.cs:77` `PriestVisitsTheCell.AskForEscape`  
   original: `R076+0x0EB0` (1901:0220, matched)  
   why: party_x (CityMark) as the jail's note of a refused escape (0 becomes 2, else 1).
-- **U-286c11** `uncertain` - `src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs:205` `CultistSacrifice.NimblenessChance`  
-  original: `R079+0x2906` (1A6E:05A6, matched)  
-  why: taken as the best skill 1 of the able members.
-- **U-b280c3** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:69` `PublicExecution.Verdict`  
+- **U-b280c3** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:70` `PublicExecution.Verdict`  
   original: `R079+0x0CF6` (18D8:02F6, asm)  
   why: the abbot's score starts uninitialised when fact (2, 0) holds here; taken as 0.
-- **U-bb4195** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:256` `PublicExecution.StrengthChance`  
+- **U-bb4195** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:257` `PublicExecution.StrengthChance`  
   original: `R079+0x11F4` (18D8:07F4, asm)  
   why: the member is DS:9A44 (the attribute queries' member), read as BestMember.
 - **U-cea1ac** `uncertain` - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:48` `DragonBlightedLand.Run`  
@@ -326,7 +320,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R106+0x14EA` (18B5:0D1A, asm), `R106+0x14FC` (18B5:0D2C, asm)  
   why: those hints return whatever is in AX/DX; a neutral hint is used.
 - **U-1bd08d** `uncertain` - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:58` `SmallCaveUnderTheLedge.Run`  
-  original: `R106+0x1EA0` (19BC:0660, matched)  
+  original: `R106+0x1E38` (19BC:05F8, matched), `R106+0x1EA0` (19BC:0660, matched)  
   why: those hints return whatever is in AX/DX; a neutral hint is used.
 - **U-9e6bf2** `uncertain` - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:76` `SmallCaveUnderTheLedge.EnterTheCave`  
   original: `R106+0x1CDE` (19BC:049E, matched)  
@@ -347,10 +341,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R107+0x316E` (1B0A:044E, matched), `R107+0x317A` (1B0A:045A, matched)  
   why: the empty hints return AX/DX; neutral hints are used).
 - **U-a90a41** `uncertain` - `src/Darklands.Cards/Scripts/S108/BanditAmbushOnTheRoad.cs:86` `BanditAmbushOnTheRoad.Run`  
-  original: `R108+0x2C9A` (1A3F:0C2A, matched)  
+  original: `R108+0x2C14` (1A3F:0BA4, matched), `R108+0x2C9A` (1A3F:0C2A, matched)  
   why: the hints return AX/DX; neutral hints are used).
 - **U-3f4467** `uncertain` - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:65` `CryptUnderTheRuinedChurch.Run`  
-  original: `R108+0x0B7A` (1838:0B7A, matched)  
+  original: `R108+0x0A5E` (1838:0A5E, matched), `R108+0x0B7A` (1838:0B7A, matched)  
   why: the hints return AX/DX; neutral hints are used).
 - **U-82835a** `uncertain` - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:76` `CryptUnderTheRuinedChurch.PotionHint`  
   original: `R108+0x0CDE` (1838:0CDE, matched)  
@@ -389,10 +383,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R112+0x1398` (1881:0F08, matched), `R112+0x13E8` (1881:0F58, matched)  
   why: slots 2 and 3 have empty pop-up handlers (R112+0x1438/0faa); the card has two potions, so they never show.
 - **U-aed7d1** `uncertain` - `src/Darklands.Cards/Scripts/S113/Blizzard_MeetB03.cs:36` `Blizzard_MeetB03.Run`  
-  original: `R113+0x1D66` (19B5:0596, matched)  
+  original: `R113+0x1CA4` (19B5:04D4, matched), `R113+0x1D66` (19B5:0596, matched)  
   why: the hints return AX/DX; neutral hints are used).
 - **U-d944e3** `uncertain` - `src/Darklands.Cards/Scripts/S113/StormAtSea.cs:31` `StormAtSea.Run`  
-  original: `R113+0x0344` (1838:0344, matched)  
+  original: `R113+0x02D4` (1838:02D4, matched), `R113+0x0344` (1838:0344, matched)  
   why: the hints return AX/DX; neutral hints are used).
 - **U-761d5a** `uncertain` - `src/Darklands.Cards/Scripts/S113/WalledCityApproach_CityE00.cs:22` `WalledCityApproach_CityE00.Run`  
   original: `R113+0x0B1C` (189D:04CC, matched)  
@@ -401,7 +395,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R114+0x1260` (18D3:08B0, matched)  
   why: the registration does not set item_fn, so the potion pop-up's handler is an earlier card's; the default pop-up hint is used.
 - **U-5f7fbb** `uncertain` - `src/Darklands.Cards/Scripts/S114/RiverPiratesAtNight.cs:47` `RiverPiratesAtNight.Run`  
-  original: `R114+0x1CAC` (1995:06DC, matched)  
+  original: `R114+0x1C12` (1995:0642, matched), `R114+0x1CAC` (1995:06DC, matched)  
   why: the hints return AX/DX; neutral hints are used).
 - **U-ce1f10** `uncertain` - `src/Darklands.Cards/Scripts/S114/TidalFloodInTheMarshes.cs:49` `TidalFloodInTheMarshes.Run`  
   original: `R114+0x2538` (1A3F:04C8, matched), `R114+0x2540` (1A3F:04D0, matched)  
@@ -415,11 +409,11 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-b50e47** `uncertain` - `src/Darklands.Cards/Scripts/S115/OutsideThePrison.cs:85` `OutsideThePrison.FightTheGuards`  
   original: `R115+0x1A92` (19BF:0222, asm)  
   why: the function's case layout is unusual; the behaviour above is the disassembly's.
-- **U-42c93a** `uncertain` - `src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs:60` `PrisonCellsRescue.FreeTheFriend`  
+- **U-42c93a** `uncertain` - `src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs:63` `PrisonCellsRescue.FreeTheFriend`  
   original: `R115+0x0F8A` (1901:02FA, matched)  
   why: when nobody can join (-1), the original copies the name at party[-1] + 0x11; the leader's name is used.
 - **U-66d9cb** `uncertain` - `src/Darklands.Cards/Scripts/S116/HutOfTheBlondeWoman.cs:57` `HutOfTheBlondeWoman.Run`  
-  original: `R116+0x1A26` (191B:0BF6, matched)  
+  original: `R116+0x192C` (191B:0AFC, matched), `R116+0x1A26` (191B:0BF6, matched)  
   why: the hints return AX/DX; neutral hints are used).
 - **U-13800a** `uncertain` - `src/Darklands.Cards/Scripts/S116/WitchAtYourMercy.cs:40` `WitchAtYourMercy.Run`  
   original: `R116+0x22E6` (1A1C:04A6, matched), `R116+0x2332` (1A1C:04F2, matched)  
@@ -431,7 +425,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R117+0x10E6` (18E0:0666, matched), `R117+0x1118` (18E0:0698, matched)  
   why: the hints return AX/DX; neutral hints are used).
 - **U-f2969f** `uncertain` - `src/Darklands.Cards/Scripts/S118/BoundAtTheStake.cs:49` `BoundAtTheStake.Run`  
-  original: `R118+0x04FC` (1838:04FC, matched)  
+  original: `R118+0x047C` (1838:047C, matched), `R118+0x04FC` (1838:04FC, matched)  
   why: the hints return AX/DX; neutral hints are used).
 - **U-24ba58** `uncertain` - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:40` `TemplarWritingDesk.Run`  
   original: `R118+0x246C` (1A2B:053C, matched), `R118+0x247A` (1A2B:054A, matched)  
@@ -739,7 +733,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-f2ee09** `uncertain` - `src/Darklands.Cards/Scripts/S135/FortressGuardDesk.cs:19` `FortressGuardDesk`  
   original: `R135+0x0000` (1838:0000, matched), `R135+0x0082` (1838:0082, matched), `R135+0x0094` (1838:0094, matched) +28 more  
   why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
-- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:212` `TextVariables.PlaceDescription`  
+- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:213` `TextVariables.PlaceDescription`  
   original: `R043+0x1316` (150B:0886, draft)  
   why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
 
@@ -751,8 +745,8 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 
 ### travel (6)
 
-- **U-6d067b** `uncertain` - `src/Darklands.Core/World/CityFile.cs:31` `CityFile.Read`  
-  original: `R043+0x0100` (1462:0100, matched), `R037+0x8ED4` (1C7D:0D24, matched)  
+- **U-6d067b** `uncertain` - `src/Darklands.Core/World/CityFile.cs:32` `CityFile.Read`  
+  original: `R043+0x0100` (1462:0100, matched), `R037+0x8ED4` (1C7D:0D24, matched), `R029+0x4E68` (0E76:4E68, draft) +1 more  
   why: the record read at the file's start is taken as city 0's (the darkland.dsc read of the same load also starts after the first byte); a record kept from before keeps its city.
 - **U-6099f4** `uncertain` - `src/Darklands.Core/World/Location.cs:8` `Location`  
   original: `R136+0xE9EE` (2E38:10BE, data)  
@@ -799,10 +793,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-f5a007** `uncertain` - `src/Darklands.Core/Battles/EnemyKind.cs:90` `EnemyKind.Byte57`  
   original: `R004+0x04CC` (0E76:04CC, draft)  
   why: what reads them.
-- **U-797710** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:376` `CastleGenerator.PlaceRoomGroups`  
+- **U-797710** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:377` `CastleGenerator.PlaceRoomGroups`  
   original: `R007+0x23D4` (15AF:23D4, draft)  
   why: for the unused slot the original writes has[-1] (the byte before its local table) when the slot holds -1; that byte is not read by anything visible, and the write is skipped here (DIVERGENCE).
-- **U-11ac86** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:559` `CastleGenerator.MarkKind`  
+- **U-11ac86** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:560` `CastleGenerator.MarkKind`  
   original: `R007+0x23D4` (15AF:23D4, draft)  
   why: what the mark means (see WildBattlefield.MarkSlot); it is only ever set here for the leader's kind.
 - **U-2a08c3** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Stairs.cs:11` `CastleGenerator.ContinueStairs`  
@@ -868,8 +862,8 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-86bbb1** `uncertain` - `src/Darklands.Content/GameAssets.cs:50` `GameAssets.Font`  
   original: `root 047C:07CE` (047C:07CE, draft), `root 0617:02F6` (0617:02F6, draft), `R000+0x052A` (0E76:052A, draft)  
   why: "slot n holds font n-1" is how the screens look (card text = slot 1, party panel = slot 3), not read from the driver; the C names only the slot argument. Slots outside 1..3 are clamped here (the original has the slot count of the driver).
-- **U-7bde4a** `uncertain` - `src/Darklands.Content/WorldData.cs:84` `WorldData.ToLocation`  
-  original: `R037+0x8ED4` (1C7D:0D24, matched)  
+- **U-7bde4a** `uncertain` - `src/Darklands.Content/WorldData.cs:86` `WorldData.ToLocation`  
+  original: `R043+0x0100` (1462:0100, matched), `R037+0x8ED4` (1C7D:0D24, matched)  
   why: names. NoticeRange (unk08: how far the place is noticed while travelling, R030+0x1300 compares it with the distance) and Danger (unk0a: added to the encounter weight, R030+0x2D44) are read from how the travel code uses them; ArrivalCard (menu) and EncounterCard (unk0e) from the card numbers the map returns; LocalValues, Mark, Recorded and CacheHandle are the rules' names (loc_query/loc_set), their meaning is a guess.
 - **U-7ce977** `uncertain` - `src/Darklands.Persistence/CharacterRecords.cs:16` `CharacterRecords`  
   original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched)  
@@ -918,7 +912,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-6f03e2** `uncertain` - `src/Darklands.Presentation/MessageBox.cs:23` `MessageBox.MessageMilliseconds`  
   original: `root 0410:0302` (0410:0302, asm)  
   why: the length of a 0410 timer tick. 1000 ms assumes 60 ticks per second; the PAN player's measured tick (86 ms per 6 ticks, see Cinematics) would give 860 ms.
-- **U-885319** `uncertain` - `src/Darklands.Presentation/MessageBox.cs:102` `MessageBox.Pause`  
+- **U-885319** `uncertain` - `src/Darklands.Presentation/MessageBox.cs:103` `MessageBox.Pause`  
   original: `root 0000:1080` (0000:1080, draft)  
   why: what sound_play(2) and (3) do; they are not played here.
 - **U-77166b** `uncertain` - `src/Darklands.Presentation/OpeningTiming.cs:21` `OpeningTiming.IReadOnlyList`  

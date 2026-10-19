@@ -31,9 +31,9 @@ public sealed class GargoylesAttack : Card
         return menu.Run(
             // orig: handler R059+0x1256 (enter combat); action 0340 R059+0x1250 (calls the fight, 0172)
             new MenuLine(_ => Fight(c), OptionHint.Saying(CardTexts.EnterCombat)),
-            // orig: handler R059+0x1384
+            // orig: R059+0x128E (line 1); handler R059+0x1384
             new MenuLine(chance => RunForIt(c, chance), () => EscapeChance(c)),
-            // orig: handler R059+0x146C (select saint); pop-up handlers 075e..08fc
+            // orig: R059+0x13CA (line 2); handler R059+0x146C (select saint); pop-up handlers 075e..08fc
             new MenuLine(_ => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // DORMANT: lines 3..9 have the "screwed up." handler from the setup function (0636) and no case in the action
             // switch; opt_on[3..9] come from opt_flag_3..9, which this card never sets (stale globals).

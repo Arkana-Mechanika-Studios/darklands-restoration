@@ -78,7 +78,7 @@ public sealed class RebelsBeforeTheFortress : Card
 
         return menu.Run(
             // orig: R090+0x1A20 (1999:0410); hint R090+0x1A90 matched
-            new MenuLine(() => { if (Succeeds(c, TalkChance(c))) { c.PassHours(1); c.Screen.Text(1); StormTheFortress(c); } else { SergeantRefuses(); } },
+            new MenuLine(chance => { if (Succeeds(c, chance)) { c.PassHours(1); c.Screen.Text(1); StormTheFortress(c); } else { SergeantRefuses(); } },
                 () => OptionHint.ChanceOf(TalkChance(c), c.Leader)),
             // orig: R090+0x1AE6 (1999:04D6); hint R090+0x1B62 matched
             new MenuLine(() =>
@@ -100,9 +100,9 @@ public sealed class RebelsBeforeTheFortress : Card
             // DORMANT: line 2 is hidden (flag 0).
             new MenuLine(() => PrayForTheGate(c), OptionHint.Saying(CardTexts.SelectSaint)),
             // orig: R090+0x1C52 (1999:0642); hint R090+0x1D0A; saint hints R090+0x20CC..0c54 matched
-            new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint)),
+            new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
             // orig: R090+0x1D42 (1999:0732); hint R090+0x1D9E matched
-            new MenuLine(() => ScaleTheWall(c, ClimbChance(c)), () => OptionHint.ChanceOf(ClimbChance(c), c.Variables.Chosen[0])),
+            new MenuLine(chance => ScaleTheWall(c, chance), () => OptionHint.ChanceOf(ClimbChance(c), c.Variables.Chosen[0])),
             // orig: R090+0x1DCC (1999:07BC); hint R090+0x1E5A; item hints R090+0x209C, R090+0x20B4 (100 %) matched
             new MenuLine(() => UseAPotion(c, c.MenuPopup ? 100 : -1), OptionHint.Saying(CardTexts.SelectPotion)),
             // orig: R090+0x1E92 (1999:0882); hint R090+0x1EA4 matched

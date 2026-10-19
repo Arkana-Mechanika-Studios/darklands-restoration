@@ -132,7 +132,7 @@ public sealed class SpiderWarehousePoster : Card
     }
 
     /// <summary>Ordinary spiders (a few bites) or the giant ones attack.</summary>
-    // orig: the body shared by R134+0x0550 / _0692 matched (they differ in the first roll and the enemy level)
+    // orig: the body shared by R134+0x0550 (1838:0550) / R134+0x0692 (1838:0692) matched (they differ in the first roll and the enemy level)
     // C: the "which spiders" roll is drawn first (by the caller), then the Endurance roll or, for the fight, the
     //   count rand_mod(5) + 1 after text 10. A lost battle (3, 4) moves to block 13 and the card stays.
     private static void EnterTheWarehouse(CardContext c, CardMenu menu, bool ordinarySpiders, int quality)

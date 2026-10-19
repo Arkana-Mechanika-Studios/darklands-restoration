@@ -31,7 +31,7 @@ public sealed class HermitByTheFire : Card
         menu.Popup = () => c.MemberPopupHint();
 
         return menu.Run(
-            // orig: R114+0x0356 (1838:0356) matched (hint)
+            // orig: R114+0x02A6 (line 0); hint R114+0x0356 (1838:0356) matched
             new MenuLine(p => GoAndMeetHim(c, menu, p), () => MeetingHint(c)),
             // orig: R114+0x03E4 (1838:03E4) matched; hint R114+0x03F2
             new MenuLine(_ => c.LeaveForTheMap(), () => OptionHint.Say(SuccessAssured)),

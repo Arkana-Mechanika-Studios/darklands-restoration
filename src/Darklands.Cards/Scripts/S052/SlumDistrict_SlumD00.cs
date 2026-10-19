@@ -53,13 +53,17 @@ public sealed class SlumDistrict_SlumD00 : Card
                 c.State.SavedCard = CardNumber;
                 c.Next = Rumours;
             }),
-            // DORMANT: options 2..6 are switched off by the entry (the MSG lines are placeholders "2".."6"); each shows text 0 and goes to the outskirts (card 4).
-            // option 2 R052+0x1998 (19A2:02F8) (hint R052+0x19B6 (19A2:0316)), option 3 R052+0x19EE (19A2:034E) (hint R052+0x1A0C (19A2:036C)), option 4 R052+0x1A44 (19A2:03A4) (hint R052+0x1A62 (19A2:03C2)),
-            // option 5 R052+0x1A9A (19A2:03FA) (hint R052+0x1AB8 (19A2:0418)), option 6 R052+0x1AF0 (19A2:0450) (hint R052+0x1B0E (19A2:046E)); all hints: success assured.
+            // DORMANT: options 2..6 are switched off by the entry (the MSG lines are placeholders "2".."6"); each shows text 0 and goes to the outskirts (card 4);
+            // all their hints: success assured.
+            // orig: R052+0x1998 (19A2:02F8) matched (option 2); hint R052+0x19B6 (19A2:0316) matched
             new MenuLine(() => LeaveForOutskirts(c)),
+            // orig: R052+0x19EE (19A2:034E) matched (option 3); hint R052+0x1A0C (19A2:036C) matched
             new MenuLine(() => LeaveForOutskirts(c)),
+            // orig: R052+0x1A44 (19A2:03A4) matched (option 4); hint R052+0x1A62 (19A2:03C2) matched
             new MenuLine(() => LeaveForOutskirts(c)),
+            // orig: R052+0x1A9A (19A2:03FA) matched (option 5); hint R052+0x1AB8 (19A2:0418) matched
             new MenuLine(() => LeaveForOutskirts(c)),
+            // orig: R052+0x1AF0 (19A2:0450) matched (option 6); hint R052+0x1B0E (19A2:046E) matched
             new MenuLine(() => LeaveForOutskirts(c)),
             // DORMANT: option 7 is switched off by the entry. A night-long sneak through the slum; see SneakThroughTheSlum.
             // orig: R052+0x1B46 (19A2:04A6) matched (option 7 action); hint R052+0x1C62 (19A2:05C2) (see SneakChance)
@@ -99,8 +103,10 @@ public sealed class SlumDistrict_SlumD00 : Card
         var divisor = 1;
         if (c.Random(100) <= chance)
         {
+            // C: the hours are counted before the text is shown.
+            var hours = HoursUntilDawn(c);
             c.Screen.Text(1, TextFrame.BlankPage);
-            c.PassHours(HoursUntilDawn(c));
+            c.PassHours(hours);
             c.PracticeSkill(Who.Everybody, Streetwise, 7, 10, 0);
         }
         else
@@ -118,8 +124,10 @@ public sealed class SlumDistrict_SlumD00 : Card
                 return;
             }
             c.AdjustReputation(c.Here, -1, -2);
+            // C: the hours are counted before the text is shown.
+            var hours = HoursUntilDawn(c);
             c.Screen.Text(6, TextFrame.BlankPage);
-            c.PassHours(HoursUntilDawn(c));
+            c.PassHours(hours);
             c.PracticeSkill(Who.Everybody, Streetwise, 0, 10, 0);
         }
         c.Next = CardNumber;

@@ -55,16 +55,16 @@ public sealed class BishopsRoadTithe : Card
         return menu.Run(
             // orig: R110+0x052E (1838:052E) matched; hint R110+0x057E
             new MenuLine(_ => { LeaderSpeaks(c); PayTheTithe(c, tithe); }, () => OptionHint.Say(SuccessAssured)),
-            // orig: R110+0x0608 (1838:0608) matched (hint)
+            // orig: R110+0x05B6 (line 1); hint R110+0x0608 (1838:0608) matched
             new MenuLine(_ => { LeaderSpeaks(c); PrayForAid(c, menu); }, () => OptionHint.Say("Select a person and a saint.")),
-            // orig: R110+0x0718 (1838:0718) matched (hint)
+            // orig: R110+0x0640 (line 2); hint R110+0x0718 (1838:0718) matched
             new MenuLine(p => { LeaderSpeaks(c); PleadYourVirtue(c, menu, p); }, () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageSkill((int)Skill.Virtue) + c.Skill(Who.Leader, (int)Skill.SpeakCommon) / 2, 0, 100), c.Leader)),
             // orig: R110+0x075C (1838:075C) matched; hint R110+0x07B6
             new MenuLine(_ => { LeaderSpeaks(c); Refuse(c, menu); }, Unknown),
-            // orig: R110+0x08FC (1838:08FC) matched (hint)
+            // orig: R110+0x07EE (line 4); hint R110+0x08FC (1838:08FC) matched
             new MenuLine(p => { LeaderSpeaks(c); RideOff(c, menu, p); }, () => EscapeHint(c)),
-            // orig: R110+0x0A04 (1838:0A04) matched (hint)
+            // orig: R110+0x0948 (line 5); hint R110+0x0A04 (1838:0A04) matched
             new MenuLine(p => { LeaderSpeaks(c); ThrowAPotion(c, menu, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // orig: R110+0x0A3C (1838:0A3C) matched; hint R110+0x0A8C
             new MenuLine(_ => { LeaderSpeaks(c); Submit(c); }, () => OptionHint.Say(SuccessAssured)),

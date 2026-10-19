@@ -39,18 +39,23 @@ public sealed class CastleOnTheKnoll : Card
         menu.Popup = () => c.SaintPopupChanceHint(); // this card's saint pop-up does not name the member
 
         return menu.Run(
-            // orig: R104+0x1794 (1982:02F4) matched (hint)
+            // orig: R104+0x1714 (line 0); hint R104+0x1794 (1982:02F4) matched
             new MenuLine(p => AskAtTheGate(c, menu, p), () => GateHint(c)),
-            // orig: R104+0x18E8 (1982:0448) matched (hint)
+            // orig: R104+0x1804 (line 1); hint R104+0x18E8 (1982:0448) matched
             new MenuLine(p => TalkToTheFarmers(c, p), () => FarmersHint(c)),
             new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R104+0x19F2 (1982:0552) matched
             new MenuLine(_ => { c.PassHours(c.HoursUntil(18) + 6); c.Next = 244; }, Assured),
             // DORMANT: lines 4..8 are never offered (opt_flag_4..8 = 0); each only lets no time pass.
+            // orig: R104+0x1A48 (line 4)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R104+0x1A8C (line 5)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R104+0x1AD0 (line 6)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R104+0x1B14 (line 7)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R104+0x1B58 (line 8)
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R104+0x1B9C (1982:06FC) matched (leaves without clearing cur_loc)
             new MenuLine(_ => { c.PassHours(0); c.Next = CardContext.MapCard; }, Assured));

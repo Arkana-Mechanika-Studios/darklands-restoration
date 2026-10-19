@@ -36,7 +36,8 @@ public sealed class MessageBox(GameUi ui)
     }
 
     /// <summary>A box that stays while something is done ("Loading Game", "Saving Game"); <see cref="Close"/> puts back what it covered.</summary>
-    // orig: text_box(card_window, -1, 1, text, card_window2, &r) ... copy_rect_saved(card_window2, r..., card_window, ...) in R037+0x8ED4 and R037+0x2ACE
+    // orig: text_box(card_window, -1, 1, text, card_window2, &r) ... copy_rect_saved(card_window2, r..., card_window, ...),
+    // repeated inline in R037+0x8ED4 and R037+0x2ACE
     public SavedRegion Open(string text)
     {
         var saved = Draw(text, Centred);

@@ -42,12 +42,12 @@ public sealed class RebelsRallyTheCrowd : Card
 
         return menu.Run(
             // orig: R090+0x036C (1838:036C); hint R090+0x046C matched
-            new MenuLine(() => Speak(c, InspireChance(c), menu),
+            new MenuLine(chance => Speak(c, chance, menu),
                 () => OptionHint.ChanceOf(InspireChance(c), c.Variables.Chosen[0])),
             // orig: R090+0x04E8 (1838:04E8); hint R090+0x056A matched
-            new MenuLine(() => WaitForTheCrowd(c, RallyChance(c)), () => OptionHint.ChanceOf(RallyChance(c), Who.Everybody)),
+            new MenuLine(chance => WaitForTheCrowd(c, chance), () => OptionHint.ChanceOf(RallyChance(c), Who.Everybody)),
             // orig: R090+0x05A8 (1838:05A8); hint R090+0x0666; saint hints R090+0x085A..09f8 matched
-            new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint)),
+            new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupMemberHint),
             // orig: R090+0x069E (1838:069E); hint R090+0x06A4 matched
             new MenuLine(() => FightTheGuard(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R090+0x06DC; R090+0x0720 matched

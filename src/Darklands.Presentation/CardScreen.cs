@@ -81,7 +81,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         DrawFrame();
     }
 
-    // orig: card_text(idx, how) R043+0x0E40: flush_keys; DS:E959 = idx; how 0 or 2 restore the text area from the picture page and draw the frame (28e6), how 1 (or more than 2) fill the text area with colour 0xFF first; then 04c4(card_window, idx, 0, how) draws the block (colour 0 when how == 1 else DS:EE59), wait_continue(), flush_keys()
+    // orig: card_text(idx, how) R043+0x0E40: flush_keys; DS:E959 = idx; how 0 or 2 restore the text area from the picture page and draw the
+    // frame (28e6), how 1 (or more than 2) fill the text area with colour 0xFF first; then R043+0x0F54(card_window, idx, 0, how) draws the
+    // block (colour 0 when how == 1 else DS:EE59), wait_continue(), flush_keys()
     public void Text(int block, TextFrame frame = TextFrame.OnPicture)
     {
         ui.FlushKeys();
@@ -178,7 +180,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     }
 
     /// <summary>The card frame: four border pictures around the text area.</summary>
-    // orig: R043+0x3376 (150B:28E6): gfx_draw_pic of DS:A61E (rpbdrtop) at (7, 0), DS:A624 (rpbdrrgt) at (0xFC, 0), DS:A622 (rpbdrlft) at (0, 0), DS:A620 (rpbdrbtm) at (7, 0xC2), loaded once at start-up from pics\rpbdr*.pic (root 03A1:000A)
+    // orig: R043+0x3376 (150B:28E6): gfx_draw_pic of DS:A61E (rpbdrtop) at (7, 0), DS:A624 (rpbdrrgt) at (0xFC, 0),
+    // DS:A622 (rpbdrlft) at (0, 0), DS:A620 (rpbdrbtm) at (7, 0xC2); the pictures are loaded once at start-up from pics\rpbdr*.pic,
+    // filled by main root 03A1:000A
     private void DrawFrame()
     {
         DrawIfPresent("rpbdrtop", WindowX + 7, 0);
@@ -195,7 +199,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         }
     }
 
-    // orig: text_expand(idx, msg_buf) (R043+0x118E, see TextVariables) then draw_text_wrapped(card_window, msg_buf, w - 10, x + 5, y + 5, font_height, &DS:E96E, 1, 0, 1, 1, 1): init, no stop, leading 1, drop cap on, option colour on
+    // orig: the block drawer R043+0x0F54 (04c4): text_expand(idx, msg_buf) (R043+0x118E, see TextVariables) then
+    // draw_text_wrapped(card_window, msg_buf, w - 10, x + 5, y + 5, font_height, &DS:E96E, 1, 0, 1, 1, 1): init, no stop, leading 1, drop
+    // cap on, option colour on
     // C: the block's x, y and width come from the .msg file (clamped to 0..200 for y and 0..320 for x by msg_load: clamp_range(0, 200, y), clamp_range(0, 0x140, x)).
     // DIVERGENCE: the clamps are not applied here (the data files stay inside them).
     private List<OptionArea> DrawBlock(int block, byte color, IReadOnlyList<OptionState> options)

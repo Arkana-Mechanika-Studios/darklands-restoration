@@ -70,17 +70,17 @@ public sealed class RebelMarch : Card
         menu.EachRound = () => speaker = c.Variables.Chosen[0];
         return menu.Run(
             // orig: R090+0x0F2E (18E0:04AE); hint R090+0x0FBE matched
-            new MenuLine(() => { if (Parley(c, menu, ParleyChance(c, speaker))) { Onward(); } },
+            new MenuLine(chance => { if (Parley(c, menu, chance)) { Onward(); } },
                 () => OptionHint.ChanceOf(ParleyChance(c, speaker), speaker)),
             // orig: R090+0x1032 (18E0:05B2); hint R090+0x105C matched
             new MenuLine(() => { BribeTheLieutenant(c); Onward(); }, () => OptionHint.Say(NoRisk, c.Leader)),
             // orig: R090+0x1096 (18E0:0616); hint R090+0x1106; saint hints R090+0x13F6..0b14 matched
-            new MenuLine(() => { if (Pray(c)) { Onward(); } }, OptionHint.Saying(CardTexts.SelectSaint)),
+            new MenuLine(() => { if (Pray(c)) { Onward(); } }, OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupMemberHint),
             // orig: R090+0x113E (18E0:06BE); hint R090+0x1144 matched
             new MenuLine(() => { if (FightTheGuard(c)) { Onward(); } }, OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R090+0x117C (18E0:06FC); hint R090+0x11FC matched
             // DORMANT: line 4 is hidden (flag 0) and nothing enables it.
-            new MenuLine(() => SlinkAway(c, c.PartyAverageSkill((int)Skill.Stealth)),
+            new MenuLine(chance => SlinkAway(c, chance),
                 () => OptionHint.ChanceOf(c.PartyAverageSkill((int)Skill.Stealth), Who.Everybody)),
             // orig: R090+0x1212; R090+0x1256; R090+0x129A; R090+0x12DE; R090+0x1322 matched
             // DORMANT: lines 5..9 are hidden (flags 0); they would only let no time pass.

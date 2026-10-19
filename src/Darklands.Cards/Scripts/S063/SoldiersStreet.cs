@@ -28,7 +28,7 @@ public sealed class SoldiersStreet : Card
         menu.Enable(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
         return menu.Run(
-            // orig: R063+0x0F86 (the leader at 100%)
+            // orig: R063+0x0F60 (line 0); hint R063+0x0F86 (the leader at 100%)
             new MenuLine(_ => VisitTheArmsOutfitter(c), () => new OptionHint(100, SuccessAssured, c.Leader)),
             new MenuLine(_ => TalkAndLeave(c), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => TalkAndLeave(c), OptionHint.Saying(SuccessAssured)),
@@ -50,7 +50,8 @@ public sealed class SoldiersStreet : Card
         c.Next = CityStreets;
     }
 
-    // orig: R063+0x0FC0 (and the eight like it, 02d6 .. 0532)
+    // orig: R063+0x0FC0 (line 1) and the eight like it, R063+0x1016, R063+0x106C, R063+0x10C2, R063+0x1118, R063+0x116E,
+    // R063+0x11C4, R063+0x121C, R063+0x1272 (lines 2..9)
     private static void TalkAndLeave(CardContext c)
     {
         c.Screen.Text(0);

@@ -83,7 +83,7 @@ public sealed class DragonsMaidenContest : Card
                 c.PassHours(2);
                 c.Next = 0x0C;
             }, OptionHint.Saying(CardTexts.Unknown)),
-            // orig: R083+0x135A (18FB:072A) matched; R083+0x13E4 (18FB:07B4) matched; tests: CardSmokeTests
+            // orig: R083+0x11F2 (line 3); R083+0x135A (18FB:072A) matched; R083+0x13E4 (18FB:07B4) matched; tests: CardSmokeTests
             new MenuLine(() => PrayForHelp(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint));
     }
 

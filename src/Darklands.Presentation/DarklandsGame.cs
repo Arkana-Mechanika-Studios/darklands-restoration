@@ -226,7 +226,7 @@ public sealed class DarklandsGame
 
     /// <summary>Alt-L while playing: "Loading is irreversable. Proceed?", then the load screen; the game goes on with what it gives.</summary>
     // orig: load_game R037+0x8B76 (1C7D:09C6) matched: card_window->f10 = 3; the question;
-    // thunk 09C0:1905("load", "a") (the debug log); in a battle (DS:907A == 1) the battle's pictures, sounds and level buffers are freed and its
+    // the debug log 1905("load", "a"), not reproduced (see Card.ShowPicture); in a battle (DS:907A == 1) the battle's pictures, sounds and level buffers are freed and its
     // flags reset; the card picture freed; `party[i][0] = 0` for the five slots; with DS:A891 == 3 the map's buffers freed; the events
     // freed; the load screen (DS:E89A = 0: no Return button); longjmp(DS:A752, -1)
     // BUG: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.

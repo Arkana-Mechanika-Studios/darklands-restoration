@@ -39,9 +39,9 @@ public sealed class RefugeesFromThePlague : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R109+0x2716 (1A52:0576) matched (hint)
+            // orig: R109+0x259C (line 0); hint R109+0x2716 (1A52:0576) matched
             new MenuLine(_ => GiveFoodAndClothing(c, menu, gift), Unknown),
-            // orig: R109+0x28E6 (1A52:0746) matched (hint)
+            // orig: R109+0x274E (line 1); hint R109+0x28E6 (1A52:0746) matched
             new MenuLine(_ => PrayForTheirCure(c, menu), SelectASaint),
             // orig: R109+0x291E (1A52:077E) matched; hint R109+0x2990
             new MenuLine(_ => SpringTheAmbush(c, menu), Unknown),
@@ -49,10 +49,10 @@ public sealed class RefugeesFromThePlague : Card
             new MenuLine(_ => { c.PassHours(1); c.LeaveForTheMap(); }, () => OptionHint.Say(NoRisk)),
             // orig: R109+0x2A18 (1A52:0878) matched; hint R109+0x2ADE
             new MenuLine(_ => PrayForGuidance(c, menu), SelectASaint),
-            // orig: R109+0x2BB0 (1A52:0A10) matched (hint)
+            // orig: R109+0x2B16 (line 5); hint R109+0x2BB0 (1A52:0A10) matched
             new MenuLine(p => Bargain(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.Skill(Who.Leader, (int)Skill.SpeakCommon) + c.Attribute(Who.Leader, (int)Attribute.Charisma), 1, 99), c.Leader)),
-            // orig: R109+0x2C64 (1A52:0AC4) matched (hint)
+            // orig: R109+0x2BF2 (line 6); hint R109+0x2C64 (1A52:0AC4) matched
             new MenuLine(_ => PrayToStopTheAttack(c), SelectASaint),
             // orig: R109+0x2C9C (1A52:0AFC) matched; hint R109+0x2CA2
             new MenuLine(_ => FightTheBandits(c), () => OptionHint.Say(SuccessAssured)),

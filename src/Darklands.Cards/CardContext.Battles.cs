@@ -50,38 +50,6 @@ public sealed partial class CardContext
 
     // party_delete is the shared DeleteMember (CardContext.Memory.cs); party_remove is RemoveMember (CardContext.Helpers.cs).
 
-    /// <summary>
-    /// Of the members who went away, one leaves the party for good and the others come back
-    /// (R029 2474, exactly as the original: a coin decides whether the first or the last of
-    /// them leaves; the one who leaves is removed with <see cref="RemoveMember"/> before the
-    /// next ones are looked at). Returns the member who left, or −1.
-    /// </summary>
-    public int OneAwayMemberLeaves()
-    {
-        var left = -1;
-        var found = 0;
-        var forward = Random(2) != 0;
-        for (var k = 0; k < Party.MaxMembers; k++)
-        {
-            var i = forward ? k : Party.MaxMembers - 1 - k;
-            if (Status(i) != CharacterStatus.Away)
-            {
-                continue;
-            }
-            if (found++ == 0)
-            {
-                SetStatus(i, CharacterStatus.Empty);
-                RemoveMember(i);
-                left = i;
-            }
-            else
-            {
-                SetStatus(i, CharacterStatus.Able);
-            }
-        }
-        return left;
-    }
-
     /// <summary>A character of the game's roster joins the party (<c>party_add</c>). Returns the slot, or −1.</summary>
     // orig: party_add R037+0x3CD6 (1462:3CD6) draft (fn matched): PartyRules.AddFromRoster
     public int CharacterJoins(int character) => PartyRules.AddFromRoster(State, character);

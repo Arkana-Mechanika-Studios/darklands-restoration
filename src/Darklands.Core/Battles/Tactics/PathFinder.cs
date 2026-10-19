@@ -625,7 +625,8 @@ public sealed class PathFinder
     }
 
     /// <summary>Gives the path to a combatant: each step byte gets its facing in the high nibble, with one-step facing jitter removed.</summary>
-    // orig: path_give R014+0x5D64 (12F7:1554) draft; packing R014+0x5E2A (12F7:161A) draft (asm-verified per spec D §4.8)
+    // orig: packing R014+0x5E2A (12F7:161A) draft (asm-verified per spec D §4.8) after the copy (memcpy) repeated inline in
+    // path_give R014+0x5D64 (12F7:1554) draft and path_give_saved R014+0x5DE0 (12F7:15D0) draft
     // C: length + 1 bytes are copied over the combatant's path (the bytes after them keep an earlier path's), byte 249 is set to the end byte.
     public static void GiveTo(byte[] p, byte[] path, int length)
     {

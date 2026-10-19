@@ -44,7 +44,7 @@ public sealed class DevilsBridgeCrossing : Card
             // orig: R088+0x0354 (1859:0144) matched; R088+0x0408 (1859:01F8) matched; tests: CardSmokeTests
             new MenuLine(() => OfferOneOfThePartyAsTheFee(c), OptionHint.Saying(SuccessAssured)),
             // orig: R088+0x0440 (1859:0230) matched; R088+0x0792 (1859:0582) matched; tests: CardSmokeTests
-            new MenuLine(() => ArgueTheContract(c, LawChance(c).Chance), hint: () => LawChance(c)),
+            new MenuLine(chance => ArgueTheContract(c, chance), hint: () => LawChance(c)),
             // orig: R088+0x07B4 (1859:05A4) matched; R088+0x08B0 (1859:06A0) matched; tests: CardSmokeTests
             // orig: R088+0x0982 (1859:0772) matched; R088+0x0A0C (1859:07FC) matched; R088+0x0A96 (1859:0886) matched; tests: CardSmokeTests
             new MenuLine(() => CallASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint));

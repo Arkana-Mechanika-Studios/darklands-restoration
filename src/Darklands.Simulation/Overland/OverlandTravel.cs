@@ -270,7 +270,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     private const int NightHuntQuest = 7;
 
     /// <summary>Near the dragon's lair: what the party meets depends on the dragon quest's sort.</summary>
-    // orig: the cur_loc != -1 && ev8_at(4, cur_loc) arm of the sel == 1000 branch; thunk 09C0:1FE5() = Quests.DragonSort
+    // orig: the cur_loc != -1 && ev8_at(4, cur_loc) arm of the sel == 1000 branch of R030+0x02C0; the dragon sort 1fe5 (Quests.DragonSort)
     private int DragonLairEncounter()
     {
         var events = state.Events;

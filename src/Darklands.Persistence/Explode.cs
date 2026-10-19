@@ -45,6 +45,7 @@ public sealed class Explode
     /// Decompresses one block of a battle file. Throws, as the original stops the game, when the block is shorter
     /// than its header or does not decode.
     /// </summary>
+    // orig: R003+0x2707 (1016:0D07) asm (the far pascal entry: the stack switch, then Run R003+0x26AE)
     public static byte[] Decompress(ReadOnlySpan<byte> input, string what)
     {
         var source = input.ToArray();

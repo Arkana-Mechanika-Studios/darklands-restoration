@@ -64,12 +64,14 @@ public sealed class SourceOfTheHorrors_MineH01 : Card
         // menu keeps whatever was shown); here the block the last card left is used.
         menu.EachRound = () => menu.Block = horror is >= 0 and <= 2 ? horror : c.OptionsBlock;
         return menu.Run(
-            new MenuLine(() => Bury(c, c.PartyAverageAttribute((int)Attribute.Strength)),
+            // orig: R102+0x0916 (line 0); hint R102+0x0982 (18A6:02A2) matched
+            new MenuLine(chance => Bury(c, chance),
                 () => OptionHint.ChanceOf(c.PartyAverageAttribute((int)Attribute.Strength), Who.Everybody)),
-            new MenuLine(() => BuildABarricade(c, BarricadeChance(c)),
+            new MenuLine(chance => BuildABarricade(c, chance),
                 () => OptionHint.ChanceOf(BarricadeChance(c), c.Variables.Chosen[0])),
-            new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint)),
-            new MenuLine(() => PourThePotion(c, horror), OptionHint.Saying(CardTexts.SelectPotion)),
+            // orig: R102+0x0A26 (line 2); saint pop-up hints R102+0x0CB8, R102+0x0D42, R102+0x0DCC (CardMenu.SaintPopupHint)
+            new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
+            new MenuLine(() => PourThePotion(c, horror), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             // orig: R102+0x0B5C (18A6:047C) matched
             new MenuLine(() => { c.BattleMode = 1; c.Next = -2; }));
     }
@@ -90,7 +92,7 @@ public sealed class SourceOfTheHorrors_MineH01 : Card
         c.Next = -6;
     }
 
-    // orig: R102+0x0916 (18A6:0236); hint R102+0x0982 matched
+    // orig: R102+0x0916 (18A6:0236) matched (hint 02a2, on the menu line)
     private static void Bury(CardContext c, int chance)
     {
         if (c.Random(100) <= chance)
@@ -124,7 +126,7 @@ public sealed class SourceOfTheHorrors_MineH01 : Card
     }
 
     /// <summary>A prayer always works here: the card asks no saint (Saint 0x2B in slot 1 brings the roof down, the others angels).</summary>
-    // orig: R102+0x0A26 (18A6:0346) matched; saint hints R102+0x0CB8 … 06ec
+    // orig: R102+0x0A26 (18A6:0346) matched
     // C: no invoke_saint is made; the pop-up's hint only names the one who prays.
     private static void Pray(CardContext c)
     {
@@ -133,10 +135,22 @@ public sealed class SourceOfTheHorrors_MineH01 : Card
         Sealed(c);
     }
 
+    /// <summary>The potion's pop-up: on the firespout 20, or 40 once it has flared up; elsewhere "Success is assured."</summary>
+    // orig: R102+0x0C4C (18A6:056C) matched
+    private static OptionHint PotionHint(CardContext c)
+    {
+        c.Variables.Chosen[0] = c.MenuMember;
+        if (c.MineDetail() % 3 == 0)
+        {
+            return OptionHint.ChanceOf(c.Events.Fact(MineQuestTag, 0x0A, c.Here) ? 40 : 20, c.MenuMember);
+        }
+        return OptionHint.Say(CardTexts.SuccessAssured, c.MenuMember);
+    }
+
     /// <summary>Firewall on the firespout works four times in five (else it flares up again, and the
     /// potion's hint chance becomes 40 instead of 20); Transformation on the hellgate always works.</summary>
-    // orig: R102+0x0A92 (18A6:03B2); item hint R102+0x0C4C matched
-    // C: the item hint's chance (20, or 40 after a flare-up) is shown but not used: the action rolls against 80.
+    // orig: R102+0x0A92 (18A6:03B2)
+    // C: the item pop-up's chance (20, or 40 after a flare-up) is shown but not used: the action rolls against 80.
     private static void PourThePotion(CardContext c, int horror)
     {
         c.Variables.Chosen[0] = c.MenuMember;

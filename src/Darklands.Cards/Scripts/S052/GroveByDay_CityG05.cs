@@ -58,15 +58,15 @@ public sealed class GroveByDay_CityG05 : Card
                 c.Next = ThisGrove(c);
             }),
             // DORMANT: options 3..7 are switched off by the entry (the MSG lines are the placeholders "3".."7").
-            // option 3 R052+0x0E34 (18E4:0374) (hint R052+0x0E40 (18E4:0380)): passes no time and names no next card, so it would stay on the card.
+            // orig: R052+0x0E34 (18E4:0374) matched (option 3); hint R052+0x0E40 (18E4:0380) matched: passes no time and names no next card, so it would stay on the card.
             new MenuLine(() => c.PassHours(0)),
-            // option 4 R052+0x0E78 (18E4:03B8) (hint R052+0x0E84 (18E4:03C4): success assured for the leader): the same.
+            // orig: R052+0x0E78 (18E4:03B8) matched (option 4); hint R052+0x0E84 (18E4:03C4) matched (success assured for the leader): the same.
             new MenuLine(() => c.PassHours(0), () => OptionHint.Say(SuccessAssured, c.Leader)),
-            // option 5 R052+0x0EBE (18E4:03FE) (hint R052+0x0ED0 (18E4:0410)): next card 0x62.
+            // orig: R052+0x0EBE (18E4:03FE) matched (option 5); hint R052+0x0ED0 (18E4:0410) matched: next card 0x62.
             new MenuLine(() => { c.PassHours(0); c.Next = CannotEnter; }),
-            // option 6 R052+0x0F08 (18E4:0448) (hint R052+0x0F1A (18E4:045A): 100% for the leader): next card 0x62.
+            // orig: R052+0x0F08 (18E4:0448) matched (option 6); hint R052+0x0F1A (18E4:045A) matched (100% for the leader): next card 0x62.
             new MenuLine(() => { c.PassHours(0); c.Next = CannotEnter; }, () => OptionHint.ChanceOf(100, c.Leader)),
-            // option 7 R052+0x0F54 (18E4:0494) (hint R052+0x0F66 (18E4:04A6): 100% for the leader): next card 0x62.
+            // orig: R052+0x0F54 (18E4:0494) matched (option 7); hint R052+0x0F66 (18E4:04A6) matched (100% for the leader): next card 0x62.
             new MenuLine(() => { c.PassHours(0); c.Next = CannotEnter; }, () => OptionHint.ChanceOf(100, c.Leader)),
             // orig: R052+0x0FA0 (18E4:04E0) matched (option 8: leave down the main street); hint R052+0x0FBE (18E4:04FE) (success assured)
             new MenuLine(() =>

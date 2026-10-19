@@ -280,7 +280,7 @@ public sealed class CardMenu
     /// The handler most card files keep for option lines their text does not have: the card's first text
     /// again (unless <paramref name="showFirstText"/> is false), then the end-of-game marker 0x62.
     /// </summary>
-    // orig: e.g. R119+0x1122 (the repeat-the-opening handler of the R119..R135 card files)
+    // orig: e.g. R119+0x10C8 (18D0:0748) matched (the repeat-the-opening handler of the R119..R135 card files)
     public static void ShowFirstTextAndEnd(CardContext c, bool showFirstText = true)
     {
         if (showFirstText)
@@ -342,6 +342,19 @@ public sealed partial class CardContext
     // orig: e.g. R119+0x0760 matched: saint_chance_lo, saint_chance_hi, chance_text; r.a = -1, r.b = menu_member
     public OptionHint SaintPopupChanceHint()
     {
+        var saint = CardSaints[MenuSlot];
+        var low = SaintChanceLow(MenuMember, saint);
+        return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)), MenuMember);
+    }
+
+    /// <summary>
+    /// The saint pop-up handler of the cards whose box makes the member who prays $ChosenOneName and
+    /// tells the chance of the prayer beside that member.
+    /// </summary>
+    // orig: e.g. R090+0x13F6 (18E0:0976) matched: var_chosen1 = menu_member; saint_chance_lo, saint_chance_hi, chance_text; r.a = -1, r.b = menu_member
+    public OptionHint SaintPopupMemberHint()
+    {
+        Variables.Chosen[0] = MenuMember;
         var saint = CardSaints[MenuSlot];
         var low = SaintChanceLow(MenuMember, saint);
         return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)), MenuMember);

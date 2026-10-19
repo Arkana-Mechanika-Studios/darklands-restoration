@@ -43,15 +43,15 @@ public sealed class HutOfTheBlondeWoman : Card
         return menu.Run(
             // orig: R116+0x12E6 (191B:04B6) matched; hint R116+0x1352
             new MenuLine(_ => { LeaderSpeaks(c); KnockOnTheDoor(c, menu); }, Unknown),
-            // orig: R116+0x14E6 (191B:06B6) matched (hint)
+            // orig: R116+0x138A (line 1); hint R116+0x14E6 (191B:06B6) matched
             new MenuLine(p => { LeaderSpeaks(c); WatchTheHut(c, menu, p); }, () => StealthHint(c)),
-            // orig: R116+0x16E8 (191B:08B8) matched (hint)
+            // orig: R116+0x1526 (line 2); hint R116+0x16E8 (191B:08B8) matched
             new MenuLine(p => { LeaderSpeaks(c); ClimbInAtTheWindow(c, menu, p); }, () => StealthHint(c)),
-            // orig: R116+0x17EA (191B:09BA) matched (hint)
+            // orig: R116+0x1728 (line 3); hint R116+0x17EA (191B:09BA) matched
             new MenuLine(_ => { LeaderSpeaks(c); PrayForInsight(c); }, () => OptionHint.Say("Select a person and a saint.")),
-            // orig: R116+0x18F4 (191B:0AC4) matched (hint)
+            // orig: R116+0x1822 (line 4); hint R116+0x18F4 (191B:0AC4) matched
             new MenuLine(_ => { LeaderSpeaks(c); StormTheHut(c); }, Unknown),
-            // orig: R116+0x1A26 (191B:0BF6) matched (hint)
+            // orig: R116+0x192C (line 5); hint R116+0x1A26 (191B:0BF6) matched
             new MenuLine(p => { LeaderSpeaks(c); BurnTheHut(c, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // DORMANT: lines 6..8 are never offered; actions R116+0x1A5E/0c32/0c36 and hints R116+0x1A60/0c34/0c38
             // are empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).

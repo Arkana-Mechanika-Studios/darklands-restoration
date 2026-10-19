@@ -70,13 +70,14 @@ public sealed class ThiefOfTheDragonsHoard : Card
         }
         return menu.Run(
             // orig: R083+0x1780 (197E:0320) matched; R083+0x1892 (197E:0432) matched; tests: CardSmokeTests
-            new MenuLine(() => TrackHim(c, PerceptionChance(c).Chance), hint: () => PerceptionChance(c)),
+            new MenuLine(chance => TrackHim(c, chance), hint: () => PerceptionChance(c)),
             // orig: R083+0x18B4 (197E:0454) matched; R083+0x19BE (197E:055E) matched; tests: CardSmokeTests
-            new MenuLine(() => WaylayHim(c, WoodLoreChance(c).Chance), hint: () => WoodLoreChance(c)),
-            // orig: R083+0x1D5A (197E:08FA) matched; R083+0x1DE4 (197E:0984) matched; R083+0x1E6E (197E:0A0E) matched; R083+0x1EF8 (197E:0A98) matched; tests: CardSmokeTests
+            new MenuLine(chance => WaylayHim(c, chance), hint: () => WoodLoreChance(c)),
+            // orig: R083+0x19E0 (line 2); R083+0x1D5A (197E:08FA) matched; R083+0x1DE4 (197E:0984) matched; R083+0x1E6E (197E:0A0E) matched;
+            // R083+0x1EF8 (197E:0A98) matched; tests: CardSmokeTests
             new MenuLine(() => InvokeASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R083+0x1B4A (197E:06EA) matched; R083+0x1C46 (197E:07E6) matched; tests: CardSmokeTests
-            new MenuLine(() => RunHimDown(c, RidingChance(c).Chance), hint: () => RidingChance(c)),
+            new MenuLine(chance => RunHimDown(c, chance), hint: () => RidingChance(c)),
             // orig: R083+0x1C70 (197E:0810) matched; R083+0x1C7E (197E:081E) matched; tests: CardSmokeTests
             new MenuLine(() => { c.State.CurrentLocation = -1; c.Next = 0x0C; }, OptionHint.Saying(SuccessAssured)));
     }

@@ -53,10 +53,11 @@ public sealed class DwarfKingsRedCap_MineB03 : Card
         menu.EachRound = () => menu.Block = c.OptionsBlock;
         return menu.Run(
             // orig: R101+0x0C40 (18BD:03F0) matched
-            new MenuLine(() => TakeTheCap(c, ShootChance(c), 4), () => OptionHint.ChanceOf(ShootChance(c), c.Variables.Chosen[0])),
+            new MenuLine(chance => TakeTheCap(c, chance, 4), () => OptionHint.ChanceOf(ShootChance(c), c.Variables.Chosen[0])),
             // orig: R101+0x0D24 (18BD:04D4) matched
-            new MenuLine(() => TakeTheCap(c, LeapChance(c), 11), () => OptionHint.ChanceOf(LeapChance(c), Who.Everybody)),
-            new MenuLine(() => Pray(c, menu), OptionHint.Saying(CardTexts.SelectSaint)),
+            new MenuLine(chance => TakeTheCap(c, chance, 11), () => OptionHint.ChanceOf(LeapChance(c), Who.Everybody)),
+            // orig: R101+0x0E00 (line 2); saint pop-up hints R101+0x10E0, R101+0x116A (CardMenu.SaintPopupHint)
+            new MenuLine(() => Pray(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(() => OfferTheTreasure(c), OptionHint.Saying(SuccessAssured)),
             // orig: R101+0x0FD6 (18BD:0786) matched
             new MenuLine(() =>
@@ -113,7 +114,7 @@ public sealed class DwarfKingsRedCap_MineB03 : Card
         TheKingStrikesBack(c);
     }
 
-    // orig: R101+0x0E00 (18BD:05B0) matched; saint hints R101+0x10E0, R101+0x116A
+    // orig: R101+0x0E00 (18BD:05B0) matched
     private void Pray(CardContext c, CardMenu menu)
     {
         // C: the saint pop-up's hint names the one who prays as $ChosenOneName.

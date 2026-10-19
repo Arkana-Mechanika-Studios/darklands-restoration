@@ -49,11 +49,11 @@ public sealed class LonelyMountainLake : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R106+0x1192 (18B5:09C2) asm (hint)
+            // orig: R106+0x0FF8 (line 0); hint R106+0x1192 (18B5:09C2) asm
             new MenuLine(_ => WatchTheLake(c), Unknown),
-            // orig: R106+0x135E (18B5:0B8E) asm (hint)
+            // orig: R106+0x11CA (line 1); hint R106+0x135E (18B5:0B8E) asm
             new MenuLine(_ => SearchTheShore(c), Unknown),
-            // orig: R106+0x14B2 (18B5:0CE2) asm (hint)
+            // orig: R106+0x1396 (line 2); hint R106+0x14B2 (18B5:0CE2) asm
             new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R106+0x14EA (18B5:0D1A) asm; hint R106+0x14FC
             // DORMANT: line 3 is never offered (opt_flag_3 = 0).

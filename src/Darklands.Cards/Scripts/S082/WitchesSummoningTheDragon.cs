@@ -34,8 +34,9 @@ public sealed class WitchesSummoningTheDragon : Card
         return menu.Run(
             // orig: R082+0x0A2E (18A9:031E) matched; R082+0x0A34 (18A9:0324) matched; tests: CardSmokeTests
             new MenuLine(() => Fight(c), OptionHint.Saying(CardTexts.Unknown)),
-            new MenuLine(() => JoinTheDance(c, DisguiseChance(c).Chance), hint: () => DisguiseChance(c)),
-            // orig: R082+0x0D02 (18A9:05F2) matched; R082+0x0D8C (18A9:067C) matched; R082+0x0E16 (18A9:0706) matched; tests: CardSmokeTests
+            new MenuLine(chance => JoinTheDance(c, chance), hint: () => DisguiseChance(c)),
+            // orig: R082+0x0B40 (line 2); R082+0x0D02 (18A9:05F2) matched; R082+0x0D8C (18A9:067C) matched; R082+0x0E16 (18A9:0706) matched;
+            // tests: CardSmokeTests
             new MenuLine(() => CallASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R082+0x0C22 (18A9:0512) matched; R082+0x0C30 (18A9:0520) matched; tests: CardSmokeTests
             new MenuLine(() => { c.State.CurrentLocation = -1; c.Next = 0x0C; }, OptionHint.Saying(SuccessAssured)));

@@ -34,19 +34,22 @@ public sealed class PrisonCellsRescue : Card
             // orig: R115+0x1090 (1901:0400) matched; hint R115+0x109A
             // C: the friend is freed first, then the fight is fought: the original calls the rescue, then the battle.
             new MenuLine(_ => { FreeTheFriend(c); FightTheGuards(c); }),
-            // orig: R115+0x1196 (1901:0506) matched (hint)
+            // orig: R115+0x10D2 (line 2); hint R115+0x1196 (1901:0506) matched
             new MenuLine(_ => ThrowAPotion(c), () => OptionHint.Say("Select a person and a potion.")),
-            // orig: R115+0x12A8 (1901:0618) matched (hint)
+            // orig: R115+0x11CE (line 3); hint R115+0x12A8 (1901:0618) matched
             new MenuLine(_ => CallOnASaint(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R115+0x12E0 (1901:0650) matched; hint R115+0x12F4
             new MenuLine(_ => c.Next = c.IsDaylight ? 0x12 : 0x19),
             // DORMANT: lines 5..9 are never offered; 5, 6, 8, 9 let no time pass, 7 (R115+0x13B4) leaves like line 4.
             // orig: R115+0x132C (1901:069C) matched; hint R115+0x1338
             new MenuLine(_ => c.PassHours(0)),
+            // orig: R115+0x1370 (line 6)
             new MenuLine(_ => c.PassHours(0)),
             // orig: R115+0x13B4 (1901:0724) matched; hint R115+0x13C8
             new MenuLine(_ => c.Next = c.IsDaylight ? 0x12 : 0x19),
+            // orig: R115+0x1400 (line 8)
             new MenuLine(_ => c.PassHours(0)),
+            // orig: R115+0x1444 (line 9)
             new MenuLine(_ => c.PassHours(0)));
     }
 

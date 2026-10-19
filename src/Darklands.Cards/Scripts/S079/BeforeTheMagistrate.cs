@@ -64,7 +64,7 @@ public sealed class BeforeTheMagistrate : Card
                 tortured++;
             }, OptionHint.Saying(CardTexts.Unknown)),
             new MenuLine(() => PleadInnocence(c, standing), OptionHint.Saying(CardTexts.Unknown)),
-            // orig: R079+0x08F0 (1838:08F0) matched; R079+0x097A (1838:097A) matched; tests: CardSmokeTests
+            // orig: R079+0x04D8 (line 2); R079+0x08F0 (1838:08F0) matched; R079+0x097A (1838:097A) matched; tests: CardSmokeTests
             new MenuLine(() => InvokeASaint(c, picture), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(() => ConfessGuilt(c, standing), OptionHint.Saying(SuccessAssured)));
     }

@@ -57,7 +57,7 @@ public sealed class DwarfWantsPotions_MineB00 : Card
                     menu[0] = OptionState.Shown;
                     c.Next = Number;
                 }, ArgueHint(c)),
-            new MenuLine(() => Threaten(c, ThreatChance(c), menu), () => OptionHint.ChanceOf(ThreatChance(c), c.Leader)),
+            new MenuLine(chance => Threaten(c, chance, menu), () => OptionHint.ChanceOf(ThreatChance(c), c.Leader)),
             new MenuLine(() => GivePotions(c), OptionHint.Saying(SuccessAssured)),
             // orig: R100+0x10B6 (18F6:04D6) matched
             new MenuLine(() =>

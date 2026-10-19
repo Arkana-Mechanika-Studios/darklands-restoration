@@ -141,7 +141,7 @@ public static class SaintBook
     /// nearest to the party, if that place is one of <paramref name="places"/> (none: anywhere).
     /// </summary>
     // orig: what = cur_loc == -1 ? nearest_city(party_x, party_y) : cur_loc; [switch (what) case ...:]
-    //   loc_reputation_adj(what, a, b) R029+0x19D0
+    //   loc_reputation_adj(what, a, b) (19d0, LocationRules.AdjustReputation), repeated inline in the saint functions
     private static Boon Standing(int a, int b, params int[] places) => (s, _, _) =>
     {
         var where = s.CurrentLocation == GameState.Wilderness

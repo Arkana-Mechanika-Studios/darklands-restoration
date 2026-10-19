@@ -7,8 +7,9 @@ namespace Darklands.Core.World;
 /// the seek fails and the read starts at the file's beginning (the count byte and most of city
 /// 0); past the last city the read returns nothing and the working copy keeps what it held.
 /// </summary>
-// orig: world_load R043+0x0100 (1462:0100) matched; load_saved_game's read R037+0x8ED4
-// R037+0x8ED4 (1C7D:0D24) matched; the cards that load a city themselves (CardContext.LoadCity)
+// orig: the city-record read (fseek city * 0x26E + 1, read 0x26E bytes), repeated inline in world_load R043+0x0100 (1462:0100),
+// repeated inline in load_saved_game R037+0x8ED4 (1C7D:0D24), load_city R029+0x4E68 (0E76:4E68, CardContext.LoadCity),
+// repeated inline in overland_loop R030+0x02C0 (1462:02C0) and the cards that load a city themselves
 // C: fseek to a negative offset fails and leaves the handle at 0; a seek past the end succeeds and the read returns 0 bytes; a read
 // that ends at the end of the file fills only its start.
 public static class CityFile

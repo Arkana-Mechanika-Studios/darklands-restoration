@@ -34,9 +34,10 @@ public sealed class WolfPackOnTheTrail : Card
         menu[2] = c.SaintsUsable();
         menu.EachRound = () => menu.Block = c.IsDaylight ? 0 : 1;
         return menu.Run(
-            new MenuLine(() => FrightenThem(c, WoodLoreChance(c).Chance), hint: () => WoodLoreChance(c)),
-            new MenuLine(() => OutrideThem(c, RidingChance(c).Chance), () => RidingChance(c)),
-            // orig: R084+0x0814 (1838:0814) matched; R084+0x089E (1838:089E) matched; R084+0x0928 (1838:0928) matched; R084+0x09B2 (1838:09B2) matched; tests: CardSmokeTests
+            new MenuLine(chance => FrightenThem(c, chance), hint: () => WoodLoreChance(c)),
+            new MenuLine(chance => OutrideThem(c, chance), () => RidingChance(c)),
+            // orig: R084+0x0572 (line 2); R084+0x0814 (1838:0814) matched; R084+0x089E (1838:089E) matched; R084+0x0928 (1838:0928) matched;
+            // R084+0x09B2 (1838:09B2) matched; tests: CardSmokeTests
             new MenuLine(() => CallASaint(c, picture), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R084+0x0654 (1838:0654) matched; R084+0x06AC (1838:06AC) matched; tests: CardSmokeTests
             // orig: R084+0x07D8 (1838:07D8) matched; tests: CardSmokeTests

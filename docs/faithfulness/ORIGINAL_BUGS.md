@@ -12,13 +12,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 30 | 16 | 14 |
-| cards | 40 | 0 | 40 |
+| cards | 41 | 0 | 41 |
 | events | 3 | 2 | 1 |
 | battles | 8 | 3 | 5 |
 | screens/presentation | 1 | 1 | 0 |
-| total | 82 | 22 | 60 |
+| total | 83 | 22 | 61 |
 
-## Core logic (81)
+## Core logic (82)
 
 ### rules (30)
 
@@ -64,22 +64,22 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2ffc47** `bug`, flag `FixSetAttributeMaximumLimit` - `src/Darklands.Core/Rules/MemberRules.cs:157` `MemberRules.SetAttributeMaximum`  
   original: `R029+0x0B84` (0E76:0B84, draft)  
   why: the clamp's result is dropped and v is stored as a char (FixSetAttributeMaximumLimit).
-- **B-8b2837** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:273` `MemberRules.RaiseAttributeTemporarily`  
+- **B-8b2837** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:274` `MemberRules.RaiseAttributeTemporarily`  
   original: `R029+0x4C04` (0E76:4C04, draft)  
   why: (-2) a member above the boost ends the call and the reduced boost carries over (FixWholePartyBoosts).
-- **B-6eb045** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:310` `MemberRules.RaiseAttributeTemporarily`  
+- **B-6eb045** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:311` `MemberRules.RaiseAttributeTemporarily`  
   original: `R029+0x4C04` (0E76:4C04, draft)  
   why: a temporary attribute boost that is not wholly applied lowers the attribute for good: the boost is cut only by the excess over the maximum and then recorded in full, but AddAttribute keeps the attribute within 1..99 and under the maximum plus the largest single boost (R029+0x4E0C); the expiry takes back the recorded amount, so a boost cut short (an attribute near 99, or a second boost overlapping a larger one, in either order) leaves the attribute lower than before. The whole-party path above does the same.
-- **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:338` `MemberRules.RaiseSkillTemporarily`  
+- **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:339` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
   why: (-2) member_skill(-2) and add_skill(-2) for each present member (FixWholePartyBoosts).
 - **B-014a8d** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:126` `PartyQueries.MinAttributeSum`  
   original: `R029+0x1696` (0E76:1696, draft)  
   why: best_value = a * 2 (FixAttributeSums); it writes best_value, not DS:9C1D, and also DS:9A44.
-- **B-82a302** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:158` `PartyQueries.MaxAttributeSum`  
+- **B-82a302** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:163` `PartyQueries.MaxAttributeSum`  
   original: `R029+0x179C` (0E76:179C, draft)  
   why: best_value = a * 2 (FixAttributeSums); DS:9A44 is not written here.
-- **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:251` `PartyRules.BattleSeed`  
+- **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:214` `PartyRules.BattleSeed`  
   original: `R029+0x2278` (0E76:2278, draft)  
   why: seed -2 gets party_seed twice (FixBattleSeed).
 - **B-23a975** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:76` `PotionEffects.Drink`  
@@ -113,7 +113,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (40)
+### cards (41)
 
 - **B-ed73b9** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/SideStreetAtNight.cs:100` `SideStreetAtNight.Run`  
   original: `R046+0x18B4` (194B:0784, matched), `R046+0x1866` (194B:0736, matched)  
@@ -193,13 +193,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-fa0f93** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:73` `AffairsElsewhere.Run`  
   original: `R071+0x1BC4` (1992:0624, matched)  
   why: outside a city the news test misses a negation: unlike the branch above, this one tests the mine quest without it, so the "nothing of interest" text appears here only while the mine quest runs (and not the robber knight's).
-- **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:89` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
+- **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:93` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
   original: `R071+0x02A8` (1838:02A8, matched)  
   why: the original makes $ChosenOneName the least agile member's Agility value (party_min_attr's result), not the member; a value past the party names nobody.
 - **B-2ac103** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:162` `BeforeTheCityWalls.Disgrace`  
   original: `R072+0x17D6` (1981:0346, matched)  
   why: at −40 or below the original draws improve_roll(v, −3, −9) and drops the result, so the standing stays as it is (the draw is still made).
-- **B-23f155** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:114` `VillageSchulz.AskForHelp`  
+- **B-23f155** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:115` `VillageSchulz.AskForHelp`  
   original: `R077+0x1958` (1996:0378, matched), `R077+0x1A64` (1996:0484, matched)  
   why: a full party gets text 6 ("Please accept this florin") but no florin; the low-standing branch adds it.
 - **B-132edf** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightTaskRewarded.cs:50` `RobberKnightTaskRewarded.Run`  
@@ -208,7 +208,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-166488** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightTaskRewarded.cs:59` `RobberKnightTaskRewarded.Run`  
   original: `R080+0x066C` (1870:02EC, matched), `R080+0x06A4` (1870:0324, matched)  
   why: text 1 says the Schulz departs from the party whether or not he joined it (RobberKnightTaskOffered); no member is removed here: one who joined stays until his 90 days are up.
-- **B-19435f** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S084/WolfPackOnTheTrail.cs:149` `WolfPackOnTheTrail.RidingChance`  
+- **B-19435f** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S084/WolfPackOnTheTrail.cs:150` `WolfPackOnTheTrail.RidingChance`  
   original: `R084+0x0536` (1838:0536, matched)  
   why: it tests item 0's flags.
 - **B-ee49f7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:35` `CityLordsReward.Run`  
@@ -220,6 +220,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-65bf20** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelMarch.cs:50` `RebelMarch.Run`  
   original: `R090+0x1366` (18E0:08E6, matched)  
   why: the bribe line's flag is set from saints_usable() (meant for line 2, the prayer, which stays enabled); it also overrides the 0 set just above for the far squads.
+- **B-805211** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:199` `SmallCaveUnderTheLedge.FightTheTatzelwurm`  
+  original: `R106+0x1C28` (19BC:03E8, matched)  
+  why: R029 2474 returns how many members were away, not who left: var_chosen1 gets that count, so the text names party member [count], and the test against -1 always holds: the loss text and the Virtue practice come even when nobody was away.
 - **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:73` `HussiteBand.ClaimFriendship`  
   original: `R114+0x0DCC` (18D3:041C, matched)  
   why: `rand_mod(100) == p` where every other card has `<=`; kept as the original has it.
@@ -233,7 +236,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R130+0x107E` (190C:033E, matched)  
   why: the original adds rand(10)+8 Endurance and rand(6)+6 Strength although text 6 says everyone is hurt (the prayer's path subtracts the same kind of amounts); kept as the original does it (no OriginalBehaviour flag yet).
 - **B-f2c259** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S134/SpiderWarehousePoster.cs:142` `SpiderWarehousePoster.EnterTheWarehouse`  
-  original: `R134+0x0550` (1838:0550, matched)  
+  original: `R134+0x0550` (1838:0550, matched), `R134+0x0692` (1838:0692, matched)  
   why: the original adds rand(10) Endurance although text 9 says many were bitten; kept as it is (no OriginalBehaviour flag for it).
 
 ### events (3)

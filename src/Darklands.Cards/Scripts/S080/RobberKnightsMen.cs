@@ -76,7 +76,7 @@ public sealed class RobberKnightsMen : Card
                 c.PracticeSkill(c.Leader, 0x12, 1, 10, 0);
                 Fight(c, block);
             }, OptionHint.Saying(CardTexts.EnterCombat)),
-            new MenuLine(() => DemandSurrender(c, block, SurrenderChance(c).Chance), () => SurrenderChance(c)),
+            new MenuLine(chance => DemandSurrender(c, block, chance), () => SurrenderChance(c)),
             new MenuLine(() => GreetThem(c, block), hint: () => GreetingHint(c)),
             // orig: R080+0x0D9C (18A5:06CC) matched; R080+0x0DAA (18A5:06DA) matched; tests: CardSmokeTests
             new MenuLine(() => GoOn(c), OptionHint.Saying(SuccessAssured)),

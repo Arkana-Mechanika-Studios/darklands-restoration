@@ -460,8 +460,6 @@ PartyRules.CharacterInSlot(),R037+0x3A8A,R037+0x3A8A,draft,PartyRosterRulesTests
 PartyRules.SlotOfCharacter(),R037+0x3AE2,R037+0x3AE2,draft,PartyRosterRulesTests,roster brought in step first (Reconcile)
 PartyRules.RemoveFromParty(),R037+0x3B58,R037+0x3B58,draft,PartyRosterRulesTests,record keeps status 5 and cur_loc; the slot gets an empty member
 PartyRules.AddFromRoster(),R037+0x3CD6,R037+0x3CD6,draft,PartyRosterRulesTests,divergence: an entry past the roster joins nobody
-PartyRules.DropAway(),R029+0x2434,R029+0x2434,matched,,
-PartyRules.OneOfTheAwayLeaves(),R029+0x2474,R029+0x2474,matched,,
 PartyRules.RejoinAway(),R029+0x251A,R029+0x251A,matched,,
 PartyRules.BattleSeed(),R029+0x2278,R029+0x2278,matched,,bug: seed -2 gets party_seed twice (FixBattleSeed).
 PartyRules.AfterBattle(),R029+0x2278,R029+0x2278,matched,,
@@ -602,8 +600,8 @@ CardContext.SaintChanceHigh(),R029+0x2116,R029+0x2116,matched,,divergence: -1 is
 CardContext.AddMember(),R029+0x4650,R029+0x4650,matched,,
 CardContext.EndTerms(),R029+0x4AA4,R029+0x4AA4,matched,,
 CardContext.ReportAway(),R029+0x23E2,R029+0x23E2,matched,,
-CardContext.DropAway(),R029+0x2434,R029+0x2434,matched,,
-CardContext.OneOfTheAwayLeaves(),R029+0x2474,R029+0x2474,matched,,
+CardContext.DropAway(),R029+0x2434,R029+0x2434,draft,,
+CardContext.OneOfTheAwayLeaves(),R029+0x2474,R029+0x2474,draft,,
 CardContext.RejoinAway(),R029+0x251A,R029+0x251A,matched,,
 CardContext.RunBattle(),R029+0x2278;R043+0x078E,R029+0x2278,matched,MusicCardTests,divergence: cards_shutdown's files and cards_startup's reloads not needed (only the shutdown's sound_play(1) is played); no 'after battle' log; the death film and the end of the game are the host's (AllDead)
 CardContext.LoadCity(),R029+0x4E68,R029+0x4E68,matched,,
@@ -1688,7 +1686,7 @@ Darklands.Cards.Scripts.TemplarFortressGate,R118+0x14C2;R118+0x16FA;R118+0x177A;
 Darklands.Cards.Scripts.TemplarWritingDesk,R118+0x1F3C;R118+0x2174;R118+0x21DC;R118+0x23A4;R118+0x23FA;R118+0x246C;R118+0x24B2,R118+0x1F3C,matched,CardSmokeTests,BUG: formula search uses && not &; battles via return -2/-3; dormant: lines 5-9 and texts 2 8
 CardMenu,R043+0x0F2A;R043+0x1BD2;R044+0x1A50,R043+0x0F2A;R043+0x1BD2;R044+0x1A50,draft,GoldenTraceTests;CardSmokeTests,"card_options + card_menu and the do/while every card script runs (opt_flag_k 0 hidden 1 enabled 2 shown, options_block, the chosen handler's r.a); divergence: lines start hidden instead of the stale global flags"
 MenuLine,R044+0x25BA,R044+0x25BA,matched,GoldenTraceTests,"opt_fn / item_fn / saint_fn and the per-option action; the reset's 'screwed up.' handler for lines without one; divergence: lines whose action takes no chance are not rated again on the choice"
-CardMenu.ShowFirstTextAndEnd(),R119+0x1122,R119+0x1122,matched,GoldenTraceTests,the repeat-the-opening handler of option lines the text does not have (R119..R135)
+CardMenu.ShowFirstTextAndEnd(),R119+0x10C8,R119+0x10C8,matched,GoldenTraceTests,the repeat-the-opening handler of option lines the text does not have (R119..R135)
 CardContext.MemberPopupHint(),R059+0x0BFC;R119+0x0670,R059+0x0BFC;R119+0x0670,matched,GoldenTraceTests,the item pop-up handler most cards install (names the member)
 CardContext.SaintPopupHint(),R059+0x0CEC;R074+0x0AD6,R059+0x0CEC;R074+0x0AD6,matched,GoldenTraceTests,the saint pop-up handler most cards install (names the member; chance for the party)
 CardContext.SaintPopupChanceHint(),R119+0x0760,R119+0x0760,matched,GoldenTraceTests,the saint pop-up handler that only tells the chance beside the member
