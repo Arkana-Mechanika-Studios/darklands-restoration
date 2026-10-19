@@ -12,16 +12,16 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 19 |
-| cards | core | 216 |
+| cards | core | 215 |
 | events | core | 1 |
 | travel | core | 6 |
 | battles | core | 30 |
 | persistence | core | 5 |
 | screens/presentation | other | 24 |
 | host/audio | other | 4 |
-| total |  | 305 |
+| total |  | 304 |
 
-## Core logic (277)
+## Core logic (276)
 
 ### rules (19)
 
@@ -83,7 +83,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: for a price word ≥ 0x8000 (never reached with the game's values) money_set's sign handling is assumed to match Money.From.
 
-### cards (216)
+### cards (215)
 
 - **U-a32a7e** `uncertain` - `src/Darklands.Cards/CardContext.Fights.cs:32` `CardContext.CombatFlags`  
   original: `R029+0x577A` (1367:086A, matched)  
@@ -178,9 +178,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-5c4897** `uncertain` - `src/Darklands.Cards/Scripts/S056/MinePitTrap_MineP00.cs:186` `MinePitTrap_MineP00.PotionHint`  
   original: `R056+0x063E` (1838:063E, matched)  
   why: item_fn[k][2..3] are never installed (stale handlers); card_items has only two entries, so the slots stay empty.
-- **U-b609a7** `uncertain` - `src/Darklands.Cards/Scripts/S057/ChurchAtNight_CityC01.cs:159` `ChurchAtNight_CityC01.AskAboutMass`  
-  original: `R057+0x0D32` (18D7:0342, matched)  
-  why: bands 4 and 5 (and any above 7) assign nothing in the original, which then names a stale stack word as the hour; the no-Mass hour stands in for it.
 - **U-ecbac4** `uncertain` - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:173` `CityChurchByDay.AskForTheNextMass`  
   original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
   why: in the small and late hours (band 0 and 1) the original names the hour of an uninitialised local (whatever its stack slot held); the C# names hour 0.

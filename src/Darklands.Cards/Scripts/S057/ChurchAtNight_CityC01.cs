@@ -19,8 +19,11 @@ public sealed class ChurchAtNight_CityC01 : Card
     /// <summary>The church by day (CityC00); the night card is this one.</summary>
     private const int ChurchByDay = 0x34, Church = 0x13, Sanctuary = 0x81;
 
-    /// <summary>The hour named when no Mass is held (and the stale word the original would use for bands without one).</summary>
+    /// <summary>The hour named when no Mass is held.</summary>
     private const int NoMassHour = 6;
+
+    /// <summary>The word the line's hint leaves where the boy's answer reads its hour in the bands it does not cover.</summary>
+    private const int StaleHintWord = -1;
 
     public override int Number => CardNumber;
 
@@ -156,9 +159,10 @@ public sealed class ChurchAtNight_CityC01 : Card
     private void AskAboutMass(CardContext c)
     {
         var size = c.HereQuery(2);
-        // UNCERTAIN: bands 4 and 5 (and any above 7) assign nothing in the original, which then names a
-        // stale stack word as the hour; the no-Mass hour stands in for it.
-        var hour = NoMassHour;
+        // BUG: bands 4 and 5 (R057+0x0D6A) assign nothing and name the uninitialised local [bp-2] as the hour. The card's
+        // loop (R057+0x0B0A) runs the line's hint R057+0x0E04 just before this action at the same stack depth, and the
+        // hint's local [bp-4] = -1 lies there: hour -1, whose bell is Matins (fix flag FixChurchAltarBoyStaleHour: the no-Mass hour).
+        var hour = c.State.Behaviour.FixChurchAltarBoyStaleHour ? NoMassHour : StaleHintWord;
         switch (TimeOfDay.BandFromOne(c.State.Date.Hour))
         {
             case 0:

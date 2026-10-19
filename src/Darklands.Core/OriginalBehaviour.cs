@@ -140,4 +140,18 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: load_game R037+0x8B76 (1C7D:09C6) matched: `party[i][0] = 0` and the events freed, then R037+0x81B2 and longjmp(DS:A752, -1) whatever it returned
     public bool FixLoadScreenEscape { get; set; }
+
+    /// <summary>
+    /// The university card (0x31) records a failed formulas search as a tried saints search, so
+    /// the saints line is shut for the week instead; fixed: the formulas line is.
+    /// </summary>
+    // orig: R056+0x0D88 pushes type 0 where the other searches push their own line (R056+0x0F35 2, R056+0x1070 3, R056+0x126B 4)
+    public bool FixUniversityFormulasTried { get; set; }
+
+    /// <summary>
+    /// The church-at-night card (0x35) asked about Mass between 09:00 and 14:59 names a stale
+    /// stack word (−1, Matins) as the hour; fixed: the hour named when no Mass is held (Prime).
+    /// </summary>
+    // orig: R057+0x0D6A reads the uninitialised [bp-2]
+    public bool FixChurchAltarBoyStaleHour { get; set; }
 }

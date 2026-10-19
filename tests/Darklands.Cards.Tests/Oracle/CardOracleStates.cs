@@ -29,7 +29,7 @@ public sealed class CardOracleStates
     public static string Key(int location, int option) => $"L{location}-O{option}";
 
     /// <summary>The pilot's start-state variations (DARKLANDS_CARD_ORACLE_VARIANTS): named changes to the golden-trace state.</summary>
-    public static readonly string[] Variants = ["night", "hurt", "rich", "poor", "skilled", "items", "facts"];
+    public static readonly string[] Variants = ["night", "hurt", "rich", "poor", "skilled", "items", "facts", "day", "day+poor", "day+skilled"];
 
     public static string Key(int location, int option, string? variant) =>
         variant is null ? Key(location, option) : $"L{location}-V{variant}-O{option}";
@@ -47,9 +47,21 @@ public sealed class CardOracleStates
     public static Core.GameState New(int location, int option, string variant)
     {
         var state = New(location, option);
+        foreach (var one in variant.Split('+'))
+        {
+            Apply(state, one);
+        }
+        return state;
+    }
+
+    private static void Apply(Core.GameState state, string variant)
+    {
         var members = state.Party.Members;
         switch (variant)
         {
+            case "day":
+                state.Date = state.Date with { Hour = 12 };
+                break;
             case "night":
                 state.Date = state.Date with { Hour = 23 };
                 break;
@@ -119,7 +131,6 @@ public sealed class CardOracleStates
             default:
                 throw new ArgumentException(variant);
         }
-        return state;
     }
 
     /// <summary>The saved game and the side values of one state.</summary>

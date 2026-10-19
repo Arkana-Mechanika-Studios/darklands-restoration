@@ -182,7 +182,9 @@ public sealed class University_Unive00 : Card
             c.Next = AlchemistShop;
             return;
         }
-        SearchFailed(c, FormulasLine);
+        // BUG: a failed formulas search records the saints line (type 0, R056+0x0D88) as tried, so on the next visit
+        // that week the saints line is shut and the formulas line open again (fix flag FixUniversityFormulasTried).
+        SearchFailed(c, c.State.Behaviour.FixUniversityFormulasTried ? FormulasLine : SaintsLine);
         ShowPicture(c, FrustratedSearchPicture);
         c.Screen.Text(5);
         ShowPicture(c, Picture);

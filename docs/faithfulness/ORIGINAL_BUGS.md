@@ -12,13 +12,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 78 | 17 | 61 |
-| cards | 49 | 0 | 49 |
+| cards | 51 | 2 | 49 |
 | events | 7 | 4 | 3 |
 | battles | 14 | 3 | 11 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 150 | 25 | 125 |
+| total | 152 | 27 | 125 |
 
-## Core logic (148)
+## Core logic (150)
 
 ### rules (78)
 
@@ -257,7 +257,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (49)
+### cards (51)
 
 - **B-ed73b9** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/SideStreetAtNight.cs:100` `SideStreetAtNight.Run`  
   original: `R046+0x18B4` (194B:0784, matched), `R046+0x1866` (194B:0736, matched)  
@@ -316,6 +316,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-7fade3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:360` `CathedralByDay.AcceptTheRelic`  
   original: `R056+0x2782` (19C4:0EC2, asm), `R056+0x26CA` (19C4:0E0A, asm)  
   why: neither the thing fetched is taken nor the reward event ended: the relic can be taken again and again.
+- **B-2fec94** `bug`, flag `FixUniversityFormulasTried` - `src/Darklands.Cards/Scripts/S056/University_Unive00.cs:185` `University_Unive00.AskAboutFormulas`  
+  original: `R056+0x0D14` (18C0:0494, matched)  
+  why: a failed formulas search records the saints line (type 0, R056+0x0D88) as tried, so on the next visit that week the saints line is shut and the formulas line open again (fix flag FixUniversityFormulasTried).
+- **B-d361c3** `bug`, flag `FixChurchAltarBoyStaleHour` - `src/Darklands.Cards/Scripts/S057/ChurchAtNight_CityC01.cs:162` `ChurchAtNight_CityC01.AskAboutMass`  
+  original: `R057+0x0D32` (18D7:0342, matched)  
+  why: bands 4 and 5 (R057+0x0D6A) assign nothing and name the uninitialised local [bp-2] as the hour. The card's loop (R057+0x0B0A) runs the line's hint R057+0x0E04 just before this action at the same stack depth, and the hint's local [bp-4] = -1 lies there: hour -1, whose bell is Matins (fix flag FixChurchAltarBoyStaleHour: the no-Mass hour).
 - **B-42f89c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:39` `CityChurchByDay.Run`  
   original: `R057+0x0000` (1838:0000, asm)  
   why: only the low word of the purse in pfennigs is tested (unsigned): a rich party whose low word is under 10 cannot give.

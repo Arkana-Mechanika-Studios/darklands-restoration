@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 38602,
-  "blocks_hit": 27755,
-  "functions": 4734,
-  "outcomes": 28680,
-  "outcomes_hit": 17919,
+  "blocks": 38769,
+  "blocks_hit": 27972,
+  "functions": 4771,
+  "outcomes": 28796,
+  "outcomes_hit": 18080,
   "runs": null
  },
  "battle": {
@@ -22,6 +22,14 @@
   "outcomes": 17274,
   "outcomes_hit": 7318,
   "runs": 365
+ },
+ "cards-day": {
+  "blocks": 27292,
+  "blocks_hit": 16145,
+  "functions": 4214,
+  "outcomes": 18238,
+  "outcomes_hit": 8079,
+  "runs": 22636
  },
  "cards-variants": {
   "blocks": 27761,
@@ -128,8 +136,8 @@
   "runs": 161
  },
  "tactics": {
-  "blocks": 319,
-  "blocks_hit": 270,
+  "blocks": 323,
+  "blocks_hit": 272,
   "functions": 11,
   "outcomes": 412,
   "outcomes_hit": 333,
