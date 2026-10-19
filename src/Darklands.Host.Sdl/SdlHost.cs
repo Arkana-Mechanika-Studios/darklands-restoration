@@ -251,6 +251,13 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>Shows the last picture again with the console over it (the game may not present while it waits).</summary>
     private void Redraw()
     {
+        DrawLast();
+        FinishFrame();
+    }
+
+    /// <summary>The last picture at the window's current size, not yet shown.</summary>
+    private void DrawLast()
+    {
         SdlNative.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
         SdlNative.SDL_RenderClear(_renderer);
         UpdateViewport();
@@ -268,7 +275,29 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         {
             SdlNative.SDL_RenderCopyTo(_renderer, _texture, IntPtr.Zero, ref _viewport);
         }
-        FinishFrame();
+    }
+
+    /// <summary>The window's size in the coordinates its mouse events use (tests).</summary>
+    internal (int Width, int Height) WindowSize
+    {
+        get
+        {
+            SdlNative.SDL_GetWindowSize(_window, out var width, out var height);
+            return (width, height);
+        }
+    }
+
+    /// <summary>The last picture drawn again and read back from the renderer, as ARGB in drawable pixels (tests).</summary>
+    internal int[] ReadBack(out int width, out int height)
+    {
+        DrawLast();
+        SdlNative.SDL_GetRendererOutputSize(_renderer, out width, out height);
+        var pixels = new int[width * height];
+        if (SdlNative.SDL_RenderReadPixels(_renderer, IntPtr.Zero, SdlNative.PixelFormatArgb8888, pixels, width * 4) != 0)
+        {
+            throw new SdlHostException("SDL_RenderReadPixels failed: " + SdlNative.GetErrorText());
+        }
+        return pixels;
     }
 
     /// <summary>The text screen at 720×400 (9×16 cells), at its own resolution (scaled with the window).</summary>

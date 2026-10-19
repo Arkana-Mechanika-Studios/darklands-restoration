@@ -272,6 +272,9 @@ internal static class SdlNative
     internal static extern int SDL_PollEvent(out SdlEvent @event);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_PushEvent(ref SdlEvent @event);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int SDL_ShowCursor(int toggle);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
