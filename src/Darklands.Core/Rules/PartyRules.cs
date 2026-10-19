@@ -14,7 +14,7 @@ public static class PartyRules
     /// original also writes the member into CHARACTR.TMP and loads the shield picture.)
     /// </summary>
     // orig: add_member R029+0x4650 (0E76:4650) matched; tests: PracticeAndItemsTests
-    // C: the shield letter rand_mod(15) is the only draw, before the three items; the weapon and missile qualities (+44/+46) are left as they were.
+    // C: the shield letter rand_mod(15) is the only draw, before the three items.
     // DIVERGENCE: CHARACTR.TMP, the shield picture, party_size and the redraw are the host's.
     public static int AddMember(GameState s, string name, string shortName, int hours, int term)
     {
@@ -24,6 +24,8 @@ public static class PartyRules
         {
             return -1;
         }
+        // C: the new member is written over the slot's record (a departed member's, or zeros): what add_member does not store stays.
+        var before = slot < party.Members.Count ? party.Members[slot] : party.DepartedRecords[slot];
         var m = new Character { Name = name, ShortName = shortName, Status = CharacterStatus.Able, Age = 25 };
         int[] maxima = [37, 34, 31, 29, 32, 34, 99];
         maxima.CopyTo(m.AttributeMaximums, 0);
@@ -35,8 +37,20 @@ public static class PartyRules
         m.VitalArmor = new EquippedItem(-1, 25);
         m.LimbArmor = new EquippedItem(-1, 25);
         m.Shield = new EquippedItem(-1, 25);
-        m.Weapon = EquippedItem.None;
-        m.MissileWeapon = EquippedItem.None;
+        // C: the weapon and missile qualities (+0x44/+0x46, record +0x58/+0x5A) are not stored: the slot's earlier values.
+        m.Weapon = new EquippedItem(-1, before?.Weapon.Quality ?? 0);
+        m.MissileWeapon = new EquippedItem(-1, before?.MissileWeapon.Quality ?? 0);
+        // C: it also stores bytes the model does not name: +4 = 0xFF, +5..+7 = 0, +8 = the slot, +0x36 = 0xFF, +0x39 = 5, +0x3A = 4
+        // C: (record +0x18..+0x1C, +0x4A, +0x4D/+0x4E), over the slot's earlier bytes: the record kept from its earlier member, or the
+        // C: zero member record of a slot no member held. What the model names is written over the record when it is used.
+        var record = before?.OriginalRecord is { Length: > 0x4E } kept ? (byte[])kept.Clone() : new byte[Character.MemberRecordSize];
+        record[0x18] = 0xFF;
+        record[0x19] = record[0x1A] = record[0x1B] = 0;
+        record[0x1C] = (byte)slot;
+        record[0x4A] = 0xFF;
+        record[0x4D] = 5;
+        record[0x4E] = 4;
+        m.OriginalRecord = record;
         while (party.Members.Count <= slot)
         {
             // C: a slot between keeps the record a departed member left there (only its status byte is 0)

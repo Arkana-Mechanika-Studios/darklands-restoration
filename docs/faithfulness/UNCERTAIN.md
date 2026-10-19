@@ -28,10 +28,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-0599b0** `uncertain` - `src/Darklands.Core/Characters/Character.cs:62` `Character`  
   original: `R136+0x33FC` (20A5:33FC, data)  
   why: IsFemale is record byte +3 (the "women" queries test it == 1); Age is the word before the record (see MemberRules.Age notes in CardContext.MemberAge).
-- **U-48bbcc** `uncertain` - `src/Darklands.Core/Characters/Character.cs:114` `Character.BattleCharms`  
+- **U-48bbcc** `uncertain` - `src/Darklands.Core/Characters/Character.cs:117` `Character.BattleCharms`  
   original: `R136+0x33FC` (20A5:33FC, data)  
   why: the nibbles' exact meaning in battle is not established.
-- **U-ff8cd2** `uncertain` - `src/Darklands.Core/Characters/Character.cs:122` `Character.CharmStrength`  
+- **U-ff8cd2** `uncertain` - `src/Darklands.Core/Characters/Character.cs:125` `Character.CharmStrength`  
   original: `R136+0x33FC` (20A5:33FC, data)  
   why: named after the potion and saint that set it; no reader of it is known.
 - **U-c43d50** `uncertain` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:629` `CharacterCreation.SpentWord`  
@@ -226,7 +226,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-660304** `uncertain` - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:19` `SallyPortInTheCityWall`  
   original: `R073+0x2CB0` (1A7E:0850, matched)  
   why: the card sets the window globals DS:EE70 = 0 and DS:EE72 = 7; they are not modelled (nothing reconstructed reads them).
-- **U-362643** `uncertain` - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:124` `SallyPortInTheCityWall.ClimbWithARope`  
+- **U-362643** `uncertain` - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:128` `SallyPortInTheCityWall.ClimbWithARope`  
   original: `R073+0x2732` (1A7E:02D2, matched)  
   why: the test looks inverted (a high chance makes success unlikely), but the code does exactly this (`cmp ax,[bp+6]; jle` in R073+0x2732; the same in R073+0x2820).
 - **U-4d69f3** `uncertain` - `src/Darklands.Cards/Scripts/S073/SoldiersClosingInAtTheWall.cs:16` `SoldiersClosingInAtTheWall`  
@@ -586,7 +586,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-218328** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorReceivesTheItem.cs:24` `CollectorReceivesTheItem`  
   original: `R128+0x16A2` (19A2:0002, matched), `R128+0x1B10` (19A2:0470, matched), `R128+0x1B4C` (19A2:04AC, matched) +28 more  
   why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture). C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
-- **U-ba0192** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorReceivesTheItem.cs:42` `CollectorReceivesTheItem.Run`  
+- **U-ba0192** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorReceivesTheItem.cs:44` `CollectorReceivesTheItem.Run`  
   original: `R128+0x16A2` (19A2:0002, matched), `R128+0x1B10` (19A2:0470, matched), `R128+0x1B4C` (19A2:04AC, matched) +28 more  
   why: card_text(k, 2): frame mode 2 read as drawing like mode 0.
 - **U-9e0c12** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorsCommission.cs:23` `CollectorsCommission`  

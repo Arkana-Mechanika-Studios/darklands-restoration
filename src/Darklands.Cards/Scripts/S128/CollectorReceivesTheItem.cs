@@ -38,7 +38,9 @@ public sealed class CollectorReceivesTheItem : Card
         var quest = c.State.SavedCard;
         c.Variables.Item = c.EventDetail(quest);
         c.TakeItem(Who.Everybody, c.Variables.Item);
-        // C: the event record is read through the raw pointer (+0x2E item, +0x1E value); an empty slot reads as 0 here.
+        // C: the event record is read through the raw pointer (+0x2E item, +0x1E value).
+        // DIVERGENCE: an empty slot (the card run without its quest) has a null pointer: the original reads the interrupt vectors at
+        // 0000:002E / 0000:001E (whatever the machine holds there); 0 here (card oracle: such runs are marked "null pointer").
         // UNCERTAIN: card_text(k, 2): frame mode 2 read as drawing like mode 0.
         // C: the C's switch lists cases 0 and 1 and a default that all show text 0.
         c.Screen.Text(c.EventValue(quest) switch

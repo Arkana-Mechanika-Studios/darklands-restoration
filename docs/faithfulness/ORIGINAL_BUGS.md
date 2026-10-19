@@ -97,7 +97,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-82a302** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:163` `PartyQueries.MaxAttributeSum`  
   original: `R029+0x179C` (0E76:179C, draft)  
   why: best_value = a * 2 (FixAttributeSums); DS:9A44 is not written here.
-- **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:214` `PartyRules.BattleSeed`  
+- **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:228` `PartyRules.BattleSeed`  
   original: `R029+0x2278` (0E76:2278, draft)  
   why: seed -2 gets party_seed twice (FixBattleSeed).
 - **B-11a75a** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:71` `PotionEffects.Drink`  
@@ -252,8 +252,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: it tests item 0's flags.
 - **B-ee49f7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:35` `CityLordsReward.Run`  
   original: `R089+0x0C5C` (18CE:02FC, matched)  
-  why: the original looks for a saint nobody in the party knows, starting from the city's own, but has no return statement: AX holds the last member_bit answer, 0 (checked against asm). So saint 0. (If the party knew all 136 saints the search would never end.)
-- **B-418c61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:92` `CityLordsReward.LearnTheFormula`  
+  why: the original looks for a saint nobody in the party knows, starting from the city's own, but has no return statement: AX holds the last member_bit answer, 0 (checked against asm). So saint 0.
+- **B-418c61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:93` `CityLordsReward.LearnTheFormula`  
   original: `R089+0x0C08` (18CE:02A8, matched)  
   why: see the summary; the formula table's byte is set to 7 (bits 0-2: the group's three formulas).
 - **B-65bf20** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelMarch.cs:50` `RebelMarch.Run`  

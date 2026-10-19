@@ -55,7 +55,7 @@ public sealed class MerchantsOfTheCity : Card
     // it once when the line is chosen (and on each Shift hover), before the action draws its own.
     private static OptionHint TradeHint(CardContext c)
     {
-        var price = c.Hostile() ? c.LocalPrice(0x1E, 3) : 0;
+        var price = c.Hostile() ? c.LocalPrice(0x1E, 4) : 0;
         // C: ((p << 1) + p << 1) / -10 + 100: 6p divided by −10, truncated toward zero.
         return price == 0 ? new OptionHint(-1, SuccessAssured, Who.Everybody) : OptionHint.ChanceOf(6 * price / -10 + 100, Who.Everybody);
     }
@@ -63,8 +63,8 @@ public sealed class MerchantsOfTheCity : Card
     // orig: R092+0x0792 (188F:0222) matched
     private static void Trade(CardContext c, int chance)
     {
-        // C: LocalPrice(0x1E, 3, 4): the original passes a third argument the rule ignores.
-        var price = c.Hostile() ? c.LocalPrice(0x1E, 3) : 0;
+        // C: thunk 09C0:20E9(0x1E, 3, 4): the rule ignores its middle argument; the third is the low bound.
+        var price = c.Hostile() ? c.LocalPrice(0x1E, 4) : 0;
         // UNCERTAIN: $NamedOneName is set to a string of the far table seg 290E (filled at run time,
         // probably the merchant's title); that table is not read yet.
         c.Variables.Named[0] = "";

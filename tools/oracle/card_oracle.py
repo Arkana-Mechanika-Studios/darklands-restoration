@@ -45,6 +45,7 @@ sys.path.insert(0, str(HERE))
 from dosmachine import DS, TRAMPOLINE_SEG as TRAMPOLINE, Machine, Stop, linear  # noqa: E402
 import savdiff  # noqa: E402
 from unicorn import UC_HOOK_MEM_READ  # noqa: E402
+from unicorn.x86_const import UC_X86_REG_CS, UC_X86_REG_IP  # noqa: E402
 
 # ---- DGROUP ---------------------------------------------------------------------------------
 CUR_LOC, CARD, NEXT_CARD, HOLDRAND = 0x907E, 0xA772, 0xE48A, 0x7B20
@@ -75,6 +76,7 @@ SAVED = "saves/dksave0.sav".replace("/", "\\")   # what the original's writer cr
 CARD_LOAD, CARD_LOAD_NEAR, MSG_LOAD = (0x150B, 0x000A), (0x150B, 0x0110), (0x150B, 0x020E)
 CARD_TEXT, CARD_OPTIONS, TEXT_EXPAND, CARD_MENU = (0x150B, 0x03B0), (0x150B, 0x049A), (0x150B, 0x06FE), (0x150B, 0x1142)
 HOURGLASS = (0x150B, 0x2A04)
+SAVE_RECT = (0x047C, 0x04D5)        # gfx_save_rect (screen under a box -> the segment of a DOS block)
 MESSAGE_BOX = (0x1367, 0x0C30)
 FILM_PAN = (0x030B, 0x0004)        # root: plays <name>.PAN (the films), presentation
 SHOW_MESSAGE = (0x0000, 0x24BC)     # show_message (text, ticks): a box for a while
@@ -99,13 +101,16 @@ PRESENTATION = {
     # root 047C: graphics, mouse, keyboard, sound
     "gfx_copy_rect": (0x047C, 0x0553, 0), "gfx_text": (0x047C, 0x055A, 0), "gfx_draw_pic": (0x047C, 0x05A5, 0),
     "gfx_recolor_rect": (0x047C, 0x04DC, 0), "gfx_fill_rect": (0x047C, 0x0952, 0), "gfx_line": (0x047C, 0x0D62, 0),
-    "gfx_draw_sprite": (0x047C, 0x04EF, 0), "gfx_save_rect": (0x047C, 0x04D5, 0), "set_palette": (0x047C, 0x058B, 0),
+    "gfx_draw_sprite": (0x047C, 0x04EF, 0), "set_palette": (0x047C, 0x058B, 0),
     "key_pressed": (0x047C, 0x073D, 1), "get_key": (0x047C, 0x0744, 0x1C0D), "sound_play": (0x047C, 0x078A, 0),
     "mouse_set_cursor": (0x047C, 0x124F, 0), "mouse_move": (0x047C, 0x1266, 0),
     "mouse_show": (0x047C, 0x1293, 0), "mouse_hide": (0x047C, 0x12C3, 0), "font_height": (0x047C, 0x051B, 8),
     "char_width": (0x047C, 0x04E3, 6),
     "gfx_0545": (0x047C, 0x0545, 0), "gfx_04f8": (0x047C, 0x04F8, 0), "gfx_0568": (0x047C, 0x0568, 0),
     "gfx_056f": (0x047C, 0x056F, 0), "gfx_059e": (0x047C, 0x059E, 0),
+    # the driver calls of loading a picture into memory (root 0617:045C, the portrait add_member R029+0x4650 loads)
+    "gfx_0de6": (0x047C, 0x0DE6, 0), "gfx_05bc": (0x047C, 0x05BC, 0), "gfx_0f60": (0x047C, 0x0F60, 0),
+    "gfx_05b5": (0x047C, 0x05B5, 0), "gfx_05ae": (0x047C, 0x05AE, 0),
     # root 0617: pictures
     "pic_draw": (0x0617, 0x01B2, 0), "pic_draw_1": (0x0617, 0x0230, 0), "pic_draw_pal": (0x0617, 0x024A, 0),
     "pic_draw_0": (0x0617, 0x0264, 0), "pic_draw_1r": (0x0617, 0x04D0, 0), "pic_draw_open": (0x0617, 0x04E2, 0),
@@ -154,6 +159,7 @@ class Oracle:
         self.snapshots = {}
         self.initial_savs = {}
         self.in_card = False
+        self.card_code = None
         self.messages = MessageFiles(Path(game) / "MSGFILES")
         self.cards = self.card_table()
         self.names = card_names()
@@ -238,6 +244,7 @@ class Oracle:
     # ---- services ------------------------------------------------------------------------
     def install(self):
         m = self.m
+        m.stub(*SAVE_RECT, self.save_rect)
         m.stub(*CARD_LOAD, self.card_load, record="R043")
         self.card_load.__func__.outside = True
         m.stub(*CARD_LOAD_NEAR, self.card_load_near, record="R043")
@@ -259,6 +266,11 @@ class Oracle:
                              (linear(0x2E38, 0x1B2C) - 4, linear(0x2E38, 0x1B2C), "events[-1]")):
             m.uc.hook_add(UC_HOOK_MEM_READ, (lambda w: lambda uc, acc, addr, size, val, ud: self.stray_read(w))(what),
                           begin=lo, end=hi - 1)
+        # the card's own code reading through a null far pointer (the record of an empty event slot, e.g. the quest slot
+        # DS:E7D8 when the card runs without its quest): the fields come from the interrupt vectors at 0000:0000, which
+        # differ from machine to machine; the run is marked too. (The rules' event scans read empty slots so on every
+        # run and are not counted.)
+        m.uc.hook_add(UC_HOOK_MEM_READ, lambda uc, acc, addr, size, val, ud: self.null_read(uc), begin=0, end=0xFF)
         m.stub(*BARTER, self.barter, record="R029")
         m.stub(*CAMP, lambda mm: (self.log("screen camp %d" % mm.sarg(0)), (0, 0))[1], record="R029")
         m.stub(*ITEM_STORE, lambda mm: (self.log("screen itemstore"), (0, 0))[1], record="R029")
@@ -266,6 +278,18 @@ class Oracle:
         m.stub(*BATTLE_RUN, self.battle, record="R002")
         m.stub(*CARDS_SHUTDOWN, zero, record="R043")
         m.stub(*CARDS_STARTUP, zero, record="R043")
+
+    def save_rect(self, m):
+        """gfx_save_rect: the screen under a box is kept in a DOS block, whose segment the caller frees afterwards
+        (R037+0x43E6 through 044A:0164, which ends the game if DOS refuses): a real block, one paragraph."""
+        seg = m.alloc(1)
+        return (seg or 0, 0)
+
+    def null_read(self, uc):
+        if self.run is not None and self.in_card and self.card_code is not None:
+            here = uc.reg_read(UC_X86_REG_CS) * 16 + uc.reg_read(UC_X86_REG_IP)
+            if self.card_code[0] <= here < self.card_code[1]:
+                self.run.stray.add("null pointer")
 
     def stray_read(self, what: str):
         if self.run is not None and self.in_card:
@@ -450,6 +474,8 @@ class Oracle:
         self.options_text = None
         self.pending_options = False
         m.ensure(rec)
+        section = self.m.rt.sections[rec]
+        self.card_code = (section["load_seg"] * 16, section["load_seg"] * 16 + section["length"])
         name = self.names.get(card)
         if name and (name + ".msg")[:12].lower() in self.messages.entries:
             # the card's own texts, as the card before it would usually have left them (some cards never load

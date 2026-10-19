@@ -88,7 +88,11 @@ public sealed class SallyPortInTheCityWall : Card
             new MenuLine(_ => UseAPotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             new MenuLine(_ => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(_ => BribeAGuard(c, standing, bribe, menu), () => BribeHint(c, ref standing)),
-            new MenuLine(_ => { c.PassHours(0); c.Next = Wilderness; }, OptionHint.Saying(SuccessAssured)));
+            // C: a choice in a pop-up box is rated by the card's box handler for the slot (DS:EB0A[menu_slot]: item_fn or saint_fn),
+            // C: whatever line opened it: the text's line 6 (alchemy) opens the potion box and runs the sneak-back case, line 7
+            // C: (prayer) opens the saints' box and has no case; the saint handler still makes the praying member $ChosenOneName.
+            new MenuLine(_ => { c.PassHours(0); c.Next = Wilderness; }, OptionHint.Saying(SuccessAssured), () => PotionHint(c)),
+            new MenuLine(() => { }, MenuLine.ScrewedUp, c.SaintPopupHint));
     }
 
     private static int Inside(CardContext c) => c.IsDaylight ? 9 : 0x0A;

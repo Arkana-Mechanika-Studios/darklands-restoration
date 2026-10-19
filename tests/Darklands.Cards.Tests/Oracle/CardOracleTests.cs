@@ -103,7 +103,8 @@ public sealed class CardOracleTests
                 }
                 else if (run.Value.TryGetProperty("stray", out _))
                 {
-                    // the original read through index -1 of the location or event table (the card ran without its quest):
+                    // the original read through index -1 of the location or event table, or its own code through a null far pointer (an
+                    // empty event slot), as the card ran without its quest:
                     // memory that holds something else; the C# reads an empty entry (TextVariables, CardContext.Events: DIVERGENCE)
                     justified++;
                     stray++;
