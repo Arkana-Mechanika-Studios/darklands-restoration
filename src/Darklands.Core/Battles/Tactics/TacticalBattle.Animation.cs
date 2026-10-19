@@ -114,6 +114,20 @@ public sealed partial class TacticalBattle
     // DIVERGENCE: a file missing from the catalogues leaves the slot as it was (the original would read garbage).
     private void LoadAnimation(int slot, string code, string posture, string weapon)
     {
+        // C: the switch on the code's first letter (upper-cased when above '_') picks the catalogue; in the monsters' case
+        // (0x3F76..0x3FB7) a file of M73 (the seven-headed dragon) sets DS:C21A to 'I', of M90 (the cave dragon) to 'Z' — every
+        // load of such a file, before it is read; nothing clears it until the next battle.
+        if (code.Length >= 3 && (code[0] > '_' ? code[0] - 0x20 : code[0]) == 'M')
+        {
+            if (code[1] == '7' && code[2] == '3')
+            {
+                Battle.DemoMode = Battle.HydraFight;
+            }
+            else if (code[1] == '9' && code[2] == '0')
+            {
+                Battle.DemoMode = Battle.CaveDragonFight;
+            }
+        }
         if (_library.Find(code, posture, weapon) is { } info)
         {
             Slots[slot].Load(info);
@@ -273,7 +287,42 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>anim_buffers[slot] != 0: the slot holds an animation.</summary>
-    private bool SlotLoaded(int slot) => Slots[slot].FileName.Length != 0;
+    private bool SlotLoaded(int slot) => Slots[slot].HasBuffer;
+
+    /// <summary>
+    /// After the loot screen: the enemy animations taken up again. The six enemy slots forget their files, each enemy record in use
+    /// sets its pose again (its frame sequence from the file; walking: no follow steps), and every combatant keeps its frame and sequence length.
+    /// </summary>
+    // orig: loot_screen R014+0xE3C0 (19CD:2E50) unmatched (its enemy animations; checked against the asm)
+    // C: DS:C96B[0..12] (cbt_anim_len) and record +0x1B (the frame) of the 13 combatants are saved at the start (0xE3D7) and put back at
+    // C: the end (0xE741), DS:D65F / DS:D67E (the enemy slots' identities) the same; enemy_anim_free5 at the start (0xE43C) frees the enemy
+    // C: slots' buffers; after loot_distribute the names of slots 5..10 are cleared (0xE6C0, DS:11BC..DS:11C6), then for i = 5..12 with
+    // C: record +0x14 != 0: if anim_buffers[+0x16] == 0 enemy_anim_alloc(+0x16), and cbt_set_anim(i, +0x18) (0xE703)
+    // C: the tiles reloaded after it (battle_tiles_load, and the varying furniture when its buffer was freed) are the same tiles: the
+    // C: original's memory, nothing to model
+    public void TakeUpEnemyAnimations()
+    {
+        var kept = Battle.Combatants.Select(c => (c.Frame, c.SequenceLength)).ToArray();
+        Slots[5].HasBuffer = Slots[6].HasBuffer = false;
+        for (var s = 5; s <= 10; s++)
+        {
+            Slots[s].ForgetFile();
+        }
+        for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
+        {
+            var c = Battle[i];
+            if (c.Status == Characters.CharacterStatus.Empty)
+            {
+                continue;
+            }
+            Slots[c.AnimationSlot].HasBuffer = true;
+            SetPose(i, c.Pose);
+        }
+        for (var i = 0; i < Combatant.Count; i++)
+        {
+            (Battle[i].Frame, Battle[i].SequenceLength) = kept[i];
+        }
+    }
 
     /// <summary>enemy_anim_load(kind, who): the slot's files and the enemy in its walking pose.</summary>
     // orig: enemy_anim_load R025+0x09A6 (1EF8:09A6) matched; its buffers by enemy_anim_alloc

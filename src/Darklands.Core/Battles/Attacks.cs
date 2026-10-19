@@ -108,9 +108,9 @@ public static class Attacks
             damage = HitDamage(battle, a, t, result, location);
             reaction = damage <= 1 ? 1 : 2;
         }
-        if (battle.DemoMode && a == 5)
+        if (battle.DemoMode != 0 && a == 5)
         {
-            // DORMANT: demo mode is never set in a normal game.
+            // C: the dragon's blows are counted (a byte: it wraps at 256); melee_frame breathes every DS:C21F-th.
             battle.DemoAttackCount++;
         }
         var missVariant = -1;
@@ -134,9 +134,9 @@ public static class Attacks
     {
         location = 0;
         var roll = battle.RollOneTo(100);
-        if (battle.DemoMode && a == 5 && battle.DemoMissFlag == -1)
+        if (battle.DemoMode != 0 && a == 5 && battle[5].Target == -1)
         {
-            // DORMANT: demo mode only.
+            // C: the dragon without a victim (DS:9F1F, its record's +0x4A) misses; the roll is drawn first.
             return HitResult.None;
         }
         var ca = battle[a];
@@ -486,7 +486,7 @@ public static class Attacks
         c.ArmourValue[1] = tables.ArmourValue(Math.Max((int)c.ArmourType[1], 0));
         int skill = c.ReadiedSkill = c.Skills[tables.SkillCategory(weapon)];
         c.FullStrength = (byte)(fullStrength | missileFlag);
-        animationCode?.Invoke(tables.AnimationCode(weapon));
+        animationCode?.Invoke(battle.AnimationCode(weapon));
         int strength = c.MaximumStrength;
         int tooWeakFighting = 0, tooWeakAiming = 0, unskilledFighting = 0, unskilledAiming = 0;
         var d = minimumStrength - strength;
@@ -521,8 +521,8 @@ public static class Attacks
     /// <summary>Uses one ammunition (or the thrown weapon itself); when it runs out the combatant goes back to its hand weapon.</summary>
     /// <param name="ranOut">Called when the ammunition ran out (the battle screen updates the panel and the AI).</param>
     // orig: use_ammo R014+0xB0D8 (18BF:0C48) draft
-    // DIVERGENCE: the AI reset for enemies (R014 1DB7:05C8), cbt_action = 0x0D, DS:A3D8 = 2 and the panel redraw are
-    // done by the caller through ranOut.
+    // C: the AI reset for enemies (R014 1DB7:05C8), DS:A3D8 = 2 and the panel redraw are the caller's ranOut, the action state
+    // 0x0D (DS:CA64) the caller's after the call.
     public static int UseAmmunition(Battle battle, int i, Action<int>? ranOut = null)
     {
         var c = battle[i];

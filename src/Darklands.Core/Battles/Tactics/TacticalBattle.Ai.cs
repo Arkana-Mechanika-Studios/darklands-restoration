@@ -205,7 +205,7 @@ public sealed partial class TacticalBattle
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];
-            if ((Battle.DemoMode && i == 5) || (c.Flags & TacticalFlags.Following) != 0 || !c.IsAble || (c.Action & CombatAction.Melee) != 0)
+            if ((Battle.DemoMode != 0 && i == 5) || (c.Flags & TacticalFlags.Following) != 0 || !c.IsAble || (c.Action & CombatAction.Melee) != 0)
             {
                 continue;
             }
@@ -229,7 +229,7 @@ public sealed partial class TacticalBattle
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];
-            if ((Battle.DemoMode && i == 5) || !c.IsAble || KeyMoved || (c.Flags & TacticalFlags.Following) != 0)
+            if ((Battle.DemoMode != 0 && i == 5) || !c.IsAble || KeyMoved || (c.Flags & TacticalFlags.Following) != 0)
             {
                 continue;
             }
@@ -386,7 +386,7 @@ public sealed partial class TacticalBattle
     // draft's "target down" test reads the wrong flag byte: the asm tests the corpse-processed flag, cbt_flags[t][1] & 1)
     private void Rethink(int i, int t)
     {
-        if (Battle.DemoMode && i == 5)
+        if (Battle.DemoMode != 0 && i == 5)
         {
             return;
         }

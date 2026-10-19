@@ -462,6 +462,7 @@ public sealed partial class TacticalBattle
                     c.Pose = Pose.Reload;
                     SetPose(si, Pose.Walking);
                     c.Frame = 0;
+                    DragonWeaponForFight(si);
                 }
                 c.Home = c.Position;
             }

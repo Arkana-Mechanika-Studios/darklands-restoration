@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 45 entries; recommendations: document: 1, justify: 39, keep: 5.
+- Part A (not-modelled, deliberate-fix, other in core logic): 44 entries; recommendations: document: 1, justify: 38, keep: 5.
 - Part B (undefined-memory in core logic): 117 entries; determinism: n/a: 79, no: 26, partly: 9, yes: 3.
 - Entries without a recommendation yet: 0.
 
@@ -41,7 +41,7 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### implement-later (0)
 
 
-## Done (57)
+## Done (58)
 
 Entries made faithful (the marker was replaced by the original behaviour, or reworded where a part stays out of reach): what changed, then the review's analysis.
 
@@ -131,6 +131,8 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
   analysis: DS:A67C is written only by party_add (event_count(0x43) after a member joins, R029 draft 2930), by new game (0) and by the save file (R037 seg 1C7D reads it; R037 seg 1462 writes it), and it is read by the R081 cards (party_size - DS:A67C). A hireling event that expires or is removed without a join leaves the cache stale in the original, so a live count differs. Keep the cached count in GameState, update it where the original does, and save/load it.
 - **D-a8d894** (was `document`) - Not a divergence: the original's outcome is fixed and equals the C#'s (see the analysis); the marker is now a C: note, no behaviour change.  
   analysis: event_next (asm 119CC-119D7) does les si,[bx]; ax=es:[si+22h]; cmp ax,k for every slot, with free slots holding NULL (event_free stores 0; far BSS is zero), so it reads the word at 0000:0022 = INT 8 vector segment. That value is host dependent but is a code segment (BIOS F000h or the game's own, >=0x70) and can never equal an event kind (<=0x4A), so the observable result (the empty slot never matches) is fixed and the C# is equivalent.
+- **D-a9d9ab** (was `justify`) - TacticalBattle.RanOutOfAmmunition sets DS:A3D8 = 2 (the panel letter e, BattleScreen.StatusLetter), the action state 0x0D is the caller's after use_ammo; the marker in Attacks.UseAmmunition is a C: note now.  
+  analysis: The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
 - **D-b82bf3** (was `reproduce-later`) - CharacterCreation.RecordBufferWord = DS:8BD2[-1] (DS:8BD0, the last word of DS:8B52): the creation menu's list sets it from the last roster record (+0x7E item count, +0x7F); ShownEntry(-1) reads it and the panel's entries past the tables come from the image (CreationTables.EntryAt); test CharacterCreationTests.  
   analysis: DS:8BD2[-1] is the word at DS:8BD0, which lies inside the 0x80-byte buffer DS:8B52 (8B52..8BD1) that R037 seg 1462 (~1462:16E0A) fills with __dos_read of a roster record, so it is that record's last word (+0x7E/+0x7F; for a record written from the combatant table that is the item count). BSS-zero until a roster record has been read (then prn=0, same as the C#); afterwards prn is that word (an item count) and the panel previews R136+0xB1F5/2cc1[that] - cosmetic only, no character data changes. DS:43EE is initialised to -1 (static 0xFFFF), so this happens on every redraw without a hovered row. Reproduce needs the roster-screen record buffer modelled; low priority (display only). Whether the roster screen can run before character creation in one session was not traced.
 - **D-bdd0d1** (was `document`) - Not a divergence: the original's outcome is fixed and equals the C#'s (see the analysis); the marker is now a C: note, no behaviour change.  
@@ -291,23 +293,19 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (15)
+### battles (14)
 
-#### not-modelled (6)
+#### not-modelled (5)
 
-- **D-a9d9ab** `not-modelled` - `src/Darklands.Core/Battles/Attacks.cs:524` `Attacks.UseAmmunition`  
-  original: `R014+0xB0D8` (18BF:0C48, draft)  
-  divergence: the AI reset for enemies (R014 1DB7:05C8), cbt_action = 0x0D, DS:A3D8 = 2 and the panel redraw are done by the caller through ranOut.  
-  recommendation: **justify** - The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
-- **D-5c369e** `not-modelled` - `src/Darklands.Core/Battles/BattleEnd.cs:265` `BattleEnd.LeaveCombatMode`  
+- **D-5c369e** `not-modelled` - `src/Darklands.Core/Battles/BattleEnd.cs:266` `BattleEnd.LeaveCombatMode`  
   original: `R014+0x0D86` (0E76:0D86, draft)  
   divergence: the menu states, the cbt_flags bits 13/14 and the collision boxes are the screen's (LeftCombatMode).  
   recommendation: **justify** - The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
-- **D-77b700** `not-modelled` - `src/Darklands.Core/Battles/BattleEnd.cs:275` `BattleEnd.Recover`  
+- **D-77b700** `not-modelled` - `src/Darklands.Core/Battles/BattleEnd.cs:276` `BattleEnd.Recover`  
   original: `R014+0x0DEE` (0E76:0DEE, draft)  
   divergence: the search for a free spot near where the woken member fell (random_n draws) is the movement layer's (PlaceWokenMember).  
   recommendation: **justify** - The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
-- **D-60ec59** `not-modelled` - `src/Darklands.Core/Battles/BattleEnd.cs:303` `BattleEnd.ImproveSkills`  
+- **D-60ec59** `not-modelled` - `src/Darklands.Core/Battles/BattleEnd.cs:304` `BattleEnd.ImproveSkills`  
   original: `R014+0x0694` (0E76:0694, draft)  
   divergence: saving the changed floor and activations and ending the temporary modifiers (DS:A532) belong to the battle screen.  
   recommendation: **justify** - The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
@@ -341,7 +339,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R011+0x1FB2` (1432:1FB2, draft)  
   divergence: the original works in the battle's static floor image; the map fills it completely, so nothing of an earlier battle remains.  
   recommendation: **justify** - The map fills the whole floor image, so no earlier battle's bytes remain; no divergence in effect. Keep the note as the argument.
-- **D-f262ec** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs:281` `TacticalBattle.LoadEnemyAnimation`  
+- **D-f262ec** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs:330` `TacticalBattle.LoadEnemyAnimation`  
   original: `R025+0x09A6` (1EF8:09A6, draft), `R025+0x0A84` (1EF8:0A84, draft)  
   divergence: when a higher slot's buffer lies above this one in memory the original frees both enemy slots and sets every enemy's current pose again keeping its frame (a heap-layout case); here the plain branch is always taken.  
   recommendation: **keep** (checked against the original) - enemy_anim_load (R025 09A6) takes the reload branch when a higher enemy slot's buffer has a higher segment than this slot's: it frees both slots, reallocates them and sets every enemy's current pose again with the frame kept (DS:C3CC), instead of setting the moving enemy's walking pose. Which branch runs depends on the order the DOS heap handed out the buffers over the whole program run (other screens allocate and free in between), which the C# does not model; the plain branch is the one taken when the slots were allocated in order.
@@ -829,7 +827,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R016+0x0DA6` (1EF8:0DA6, draft), `R016+0x0E2E` (1EF8:0E2E, draft)  
   divergence: an entry past the thirteen combatant records (a saved game's bytes) reads past the records; here it makes the order rebuilt.  
   deterministic: **n/a** (checked against the original); action: **justify** - Entries are slot numbers 0..4: R022+0x07AA takes F1..F5 (0..4) or a party row or hot spot (0..4), R016+0x0E2E takes slots 0..4. An entry of 13 or more needs a saved game edited by hand (header +0x9B); the original would read the status byte of memory past the combatant records.
-- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1266` `EffectField.LayOutCloud`  
+- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1272` `EffectField.LayOutCloud`  
   original: `R014+0x9E92` (14F7:3682, draft)  
   divergence: a size above 4 (the trap kinds 10..15 have sizes 6 and 9: the low nibble) writes past the 16-puff arrays on the original's stack; the random numbers are drawn, the extra puffs are not kept.  
   deterministic: **no** (checked against the original); action: **keep** - effect_layout with a size above 4 writes past its 16-puff locals on the stack (return address and saved registers of its caller); the outcome depends on the stack frame (a crash or corrupted locals), not a state that can be modelled. The random numbers are drawn as in the original.
@@ -837,7 +835,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R018+0x0706` (1F43:0256, draft)  
   divergence: the original's n would be whatever the stack held (spec D §9.5).  
   deterministic: **no** (checked against the original); action: **keep** - n_m is the local at [bp-6Eh] of enemy_turn (enter 7Ah); it is assigned only in the loop that finds a candidate with a different count and is read at random_n(n_m). When all five sorted candidates have equal counts (all visible and equally threatened) it holds whatever the stack contained at that depth, overwritten arbitrarily by the many calls the main loop makes between ticks; not reproducible, keep the C# stand-in.
-- **D-6ab284** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:205` `TacticalBattle.Approach`  
+- **D-6ab284** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:208` `TacticalBattle.Approach`  
   original: `R014+0x2CCA` (0E76:2CCA, draft)  
   divergence: DS:D6FB is a byte; an index past 249 reads the next combatant's path in the original (wrapped here).  
   deterministic: **n/a** (checked against the original); action: **document** - DS:D6FB[i] advances once per completed step (0E76 line 1151) and the walk stops at the 0xFF terminator that path copy 1554/15D0 writes at index DS:E118<=249 (the search is limited to 249 steps), so the index never exceeds 249 and cbt_paths[i][idx] never reads the next combatant's 250-byte row.
@@ -857,7 +855,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R025+0x0000` (1EF8:0000, draft)  
   divergence: the palettes (ENEMYPAL.DAT ranges) are the screen's; in mode 1 the original adds money from an uninitialised encounter pointer — no money is added here.  
   deterministic: **no** (checked against the original); action: **keep** - enemies_place mode 1 is called as enemies_place_vec(1) from the death handler 0E76:2324 (push 1 only), so enc is the caller's saved SI:DI pair (offset=SI, segment=DI of the death handler's caller) and who the next word; after placing, R136+0xE4E0.pf/gr/fl += enc->pf/gr/fl read through that pseudo-pointer (low memory), i.e. an unpredictable money change depending on register contents and DOS memory. Not reproducible, so adding no money is the sane model (the palette note is a presentation divergence, not memory).
-- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:219` `TacticalBattle.KeepPlaces`  
+- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:239` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   divergence: a member who was not in that battle has whatever bytes the record held in the original; here such members are placed in the level's start formation (the others then put back where they stood).  
   deterministic: **partly** (checked against the original); action: **keep** - Mode 1 runs no effect_start (R014+0x0058 is skipped without combat_flags 0x20), so each party record keeps x +4, y +6 and the facings +0x19/+0x1A as the last battle left them. A member who joined since that battle has the record bytes of the slot's last occupant (party_add copies the roster record, whose x/y are those of its own last battle, or zero for a new character): a function of play history that the C# does not keep per slot. Placing such a member in the start formation keeps the battle playable; only a party changed between two battles on one battlefield with mode 1 can see it.

@@ -4,8 +4,11 @@ namespace Darklands.Core.Battles.Tactics;
 
 public sealed partial class TacticalBattle
 {
-    /// <summary>DS:A3D8: no line of fire this tick.</summary>
-    private readonly bool[] _noLineOfFire = new bool[Combatant.Count];
+    /// <summary>DS:A3D8: 1 no line of fire this tick, 2 out of ammunition (the panel's letters 'b' and 'e'), else 0.</summary>
+    private readonly byte[] _fireBlocked = new byte[Combatant.Count];
+
+    /// <summary>DS:A3D8 of combatant <paramref name="i"/>: 1 no line of fire, 2 out of ammunition, else 0.</summary>
+    public int FireBlocked(int i) => _fireBlocked[i];
 
     /// <summary>
     /// The start of swings, shots and casts: whoever is ready, not walking and past its engage
@@ -26,10 +29,10 @@ public sealed partial class TacticalBattle
             }
             if ((c.Action & AttackOrders) != 0 && !c.Moving && c.EngageAt <= Clock && c.State == ActionState.Ready)
             {
-                _noLineOfFire[i] = false;
-                if (Battle.DemoMode && i == 5 && Battle.Result == BattleResult.Running)
+                _fireBlocked[i] = 0;
+                if (Battle.DemoMode != 0 && i == 5 && Battle.Result == BattleResult.Running)
                 {
-                    // DORMANT: the demonstration opponent picks a random party member.
+                    DragonPicksVictim(c);
                 }
                 int t = c.Target;
                 if ((c.Action & CombatAction.Missile) != 0 && t >= 0)
@@ -41,7 +44,7 @@ public sealed partial class TacticalBattle
                             SetPose(i, Pose.Fighting);
                             c.Frame = 0;
                         }
-                        _noLineOfFire[i] = true;
+                        _fireBlocked[i] = 1;
                         _view.RowChanged(i);
                         if (i < Combatant.PartySlots)
                         {
@@ -58,7 +61,7 @@ public sealed partial class TacticalBattle
                         _view.RowChanged(i);
                     }
                 }
-                if (!_noLineOfFire[i])
+                if (_fireBlocked[i] == 0)
                 {
                     if ((c.Action & CombatAction.Melee) != 0 && !HostilePair(i, t))
                     {
@@ -113,9 +116,9 @@ public sealed partial class TacticalBattle
         }
         if (outcome.Result == HitResult.Parried)
         {
-            if (Battle.DemoMode)
+            if (Battle.DemoMode != 0)
             {
-                // DORMANT: the demonstration fight keeps the frames.
+                // C: in a dragon fight a parried blow keeps the frames it had (R014+0xA690).
                 return;
             }
             if (!kind.NoParrySequence)
@@ -135,7 +138,7 @@ public sealed partial class TacticalBattle
                 return;
             }
         }
-        if (!Battle.DemoMode)
+        if (Battle.DemoMode == 0)
         {
             var n = set.AttackLength;
             c.SequenceLength = n;
@@ -150,7 +153,7 @@ public sealed partial class TacticalBattle
     // orig: cbt_hostile_pair R014+0x47AE (0E76:47AE) draft (asm-verified per spec D §1.11)
     private bool HostilePair(int i, int j)
     {
-        if (i == 5 && Battle.DemoMode)
+        if (i == 5 && Battle.DemoMode != 0)
         {
             return true;
         }

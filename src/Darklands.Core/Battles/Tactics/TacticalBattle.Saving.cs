@@ -410,6 +410,7 @@ public sealed partial class TacticalBattle
     // level is prepared again; the battle's other start-up runs as for any battle.
     public void Resume()
     {
+        ResetDragonFight();
         Ticks = 0;
         InitMenus();
         RebuildMarchingOrder();

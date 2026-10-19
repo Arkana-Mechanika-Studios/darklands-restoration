@@ -21,6 +21,7 @@ public sealed class BattleOracleTests
     private const int Queued = DataSegment * 16 + 0xD70C;
     private const int Shown = DataSegment * 16 + 0xD4C7;
     private const int Crit = DataSegment * 16 + 0xFE00;
+    private const int AnimFiles = DataSegment * 16 + 0xFD00;
 
     private static readonly Lazy<Corpus> Data = new(() => Corpus.Load("battle.json"));
 
@@ -118,7 +119,14 @@ public sealed class BattleOracleTests
             case "weapon_ready":
                 {
                     var k = args[0];
-                    Attacks.ReadyWeapon(battle, k, args[1], args[2]);
+                    var code = "";
+                    Attacks.ReadyWeapon(battle, k, args[1], args[2], x => code = x);
+                    if (i.TryGetProperty("dragonCode", out _))
+                    {
+                        // the animation code copied into anim_file[slot] (the generator points slot s at DS:FD00 + 4s)
+                        var at = AnimFiles + 4 * Record(i, k)[0x16];
+                        Assert.True(c.FinalByte(at, 0) == code[0] && c.FinalByte(at + 1, 0) == code[1], $"{label}: code {code}");
+                    }
                     var rec = Record(i, k);
                     var actual = (byte[])rec.Clone();
                     CombatantRecords.Write(battle[k], actual);
@@ -142,6 +150,14 @@ public sealed class BattleOracleTests
     private static Battle Setup(JsonElement i, IRandomSource random)
     {
         var battle = new Battle(Tables.Value!, random) { RealCombat = i.GetProperty("real").GetInt32() == 1 };
+        if (i.TryGetProperty("demo", out var demo))
+        {
+            battle.DemoMode = (byte)demo.GetInt32();
+        }
+        if (i.TryGetProperty("dragonCode", out var dragon) && dragon.ValueKind == JsonValueKind.String)
+        {
+            battle.DragonWeaponCode = dragon.GetString();
+        }
         var rates = Hex(i, "rates");
         var queued = Hex(i, "queued");
         var shown = Hex(i, "shown");

@@ -33,6 +33,12 @@ public interface ITacticalView : IBattleViewport
     void MapChanged();
 
     /// <summary>
+    /// The varying furniture: record <paramref name="record"/> of the tile set <paramref name="set"/> becomes furniture tile
+    /// <paramref name="tile"/>; its shape, or null when nothing changed.
+    /// </summary>
+    FurnitureShape? VaryFurniture(int tile, string set, int record);
+
+    /// <summary>
     /// <c>loot_screen</c>: the loot screen over a work list (a pile's block, the gathered loot or a chest's contents) and some
     /// money; what the party leaves stays in the list.
     /// </summary>
@@ -177,9 +183,23 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>DS:E237: the rotating enemy that may rethink this turn.</summary>
     private int _turnRotation;
 
-    /// <summary>DS:D6F1 / DS:D6ED: the member whose order menu the screen opens on its next frame (−1 none).</summary>
+    /// <summary>
+    /// DS:D6F1 / DS:D6ED: the member whose order mode the screen opens in the frame it draws after a combat tick, once the member has a
+    /// hot spot there (−1 none).
+    /// </summary>
     // orig: combat_tick R014+0x0F58 (0E76:0F58) draft (the DS:D6F1 test opens order mode; spec D §1.3, §7.2)
     public int PendingOrderMember { get; set; } = -1;
+
+    /// <summary>A combat tick ran since the screen last drew after one: the screen's next frame is the tick's combat_draw.</summary>
+    private bool _tickToDraw;
+
+    /// <summary>Whether a combat tick ran since the last call (the screen asks once per frame, after drawing it).</summary>
+    public bool TakeTickToDraw()
+    {
+        var ran = _tickToDraw;
+        _tickToDraw = false;
+        return ran;
+    }
 
     /// <summary>DS:D610: the party may move as a group (not in real combat and all on one floor).</summary>
     public bool GroupMoveAllowed { get; private set; }
@@ -268,6 +288,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         Map.IgnorePeople = false;
         _stopped = false;
         Battle.ResultCard = -1;
+        ResetDragonFight();
         Ticks = 0;
         InitMenus();
         RebuildMarchingOrder();
@@ -364,7 +385,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         _enemyRethinkSlot = 4;
         _enemyRethinkInterval = 0x10;
         SelectMember(Battle.Leader);
-        // DS:D6F1 = 1, DS:D6ED: the next drawn frame opens order mode for that member, so the battle begins paused.
+        // DS:D6F1 = 1, DS:D6ED: the frame drawn after the first tick opens order mode for that member, so the battle begins paused.
         PendingOrderMember = Battle.ActiveMember;
         MoveMode = 0;
         NextTickAt = (ushort)(Clock + TickLength);
@@ -609,6 +630,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         TurnTowardTargets();
         Effects.Drawn(_view);
         RefreshTargetCursor();
+        _tickToDraw = true;
         return true;
     }
 
@@ -662,7 +684,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
     }
 
     /// <summary>Shows another level (level_switch).</summary>
-    // orig: level_switch R024+0x059A (1EF8:059A) draft (outline)
+    // orig: level_switch R024+0x059A (1EF8:059A) draft (outline; the end checked against the asm: `if (DS:D6EE != 0) R024+0x07A2();`)
     // DIVERGENCE: the levels stay in memory (no .flr/.atv files); the hidden wall lists of unopened doors are applied by LevelShown.
     public void SwitchLevel(int floor)
     {
@@ -674,7 +696,31 @@ public sealed partial class TacticalBattle : IBattleEndActions
         Map.Level = _levels[floor];
         Battle.ExitCards = Map.Level.ExitCards;
         LevelShown();
+        // C: DS:D6EE is the varying furniture's buffer, which battle_tiles_load allocates when the terrain's +0xB4 is not 0
+        if (Field.Terrain[0xB4] != 0)
+        {
+            VaryFurniture();
+        }
         _view.MapChanged();
+    }
+
+    /// <summary>The level's own furniture record (byte 0x33D2 of the set named at 0x33C8) becomes furniture tile byte 0x33D1.</summary>
+    // orig: R024+0x07A2 (1EF8:07A2) draft (checked against the asm): for tile t = level[0x33D1] and record r = level[0x33D2] (signed bytes)
+    // of "%Fs.frc" (level + 0x33C8): DS:C8D5[t] = the sprite, DS:C12F[t] = +0x20, DS:C11D[t] = +0x21, DS:C907 = 1 when +0x24 == 1, and
+    // for k < 4 DS:D7BE / DS:D802 / DS:C13F / DS:C181 [4t + k] = the bytes +2k, +8 + 2k, +0x10 + 2k, +0x18 + 2k
+    private void VaryFurniture()
+    {
+        const int SetNameAt = 0x33C8, TileAt = 0x33D1, RecordAt = 0x33D2;
+        var image = Map.Level.Image;
+        var end = Array.IndexOf(image, (byte)0, SetNameAt);
+        var set = System.Text.Encoding.ASCII.GetString(image, SetNameAt, (end < 0 ? image.Length : end) - SetNameAt);
+        int tile = (sbyte)image[TileAt], record = (sbyte)image[RecordAt];
+        if (_view.VaryFurniture(tile, set, record) is { } shape && tile >= 0 && tile < Map.Furniture.Count)
+        {
+            var furniture = Map.Furniture.ToArray();
+            furniture[tile] = shape;
+            Map.Furniture = furniture;
+        }
     }
 
     // IBattleEndActions (combat_over's calls).
@@ -687,7 +733,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
     {
         Menus.Set(OrdersItem.EnemyInfo, 2);
         Menus.Set(OrdersItem.Surrender, 2);
-        // orig: combat_mode_leave R014+0x0D86 (0E76:0D86) draft (spec D §1.6): the box bits and walk sizes.
+        // orig: combat_mode_leave R014+0x0D86 (0E76:0D86) draft (spec D §1.6): DS:A3D8[0..12] = 0 (0xDB2), the box bits and walk sizes.
+        Array.Clear(_fireBlocked);
         foreach (var c in Battle.Combatants)
         {
             c.Flags &= ~(TacticalFlags.InFight | TacticalFlags.CombatBox);

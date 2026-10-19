@@ -56,13 +56,37 @@ public sealed class BattlefieldTiles
         LoadKind(tileSets, terrain, TileKind.WestWall, ".wwc", 10, (data, at, i) => tiles.WestWalls[i] = Wall(data, at));
         LoadKind(tileSets, terrain, TileKind.WestWallDecoration, ".wfc", 10, (data, at, i) =>
             tiles.WestWallDecorations[i] = new TileDecoration(RowRunSprite.Decode(data, Word(data, at + 2)), Second(data, at + 4), (sbyte)data[at + 8], (sbyte)data[at + 9]));
-        LoadKind(tileSets, terrain, TileKind.Furniture, ".frc", 0x28, (data, at, i) =>
-        {
-            int[] Offsets(int first) => [.. Enumerable.Range(0, 4).Select(k => (int)(short)Word(data, at + 2 * (first + k)))];
-            tiles.Furniture[i] = new FurnitureTile(RowRunSprite.Decode(data, Word(data, at + 0x26)),
-                Offsets(0), Offsets(4), Offsets(8), Offsets(12), (sbyte)data[at + 0x20], (sbyte)data[at + 0x21], Word(data, at + 0x24) == 1);
-        });
+        LoadKind(tileSets, terrain, TileKind.Furniture, ".frc", 0x28, (data, at, i) => tiles.Furniture[i] = FurnitureRecord(data, at));
         return tiles;
+    }
+
+    /// <summary>
+    /// The varying furniture: record <paramref name="record"/> of the set <paramref name="set"/>.frc becomes battlefield furniture tile
+    /// <paramref name="tile"/> (each level of the fortress names its own). Null, and nothing changed, for a tile or record out of range.
+    /// </summary>
+    // orig: R024+0x07A2 (1EF8:07A2) draft (checked against the asm): "%Fs.frc" of the set named at level + 0x33C8 loaded from the catalog
+    // "bc" (root 05D9:019A); its record at level + 0x33D2 copied to the tile at level + 0x33D1
+    // C: as battle_tiles_load copies each tile of the terrain's furniture set
+    // DIVERGENCE: a tile outside 0..15 or a record past the file's end writes or reads past the original's tables; here nothing changes.
+    public FurnitureTile? Vary(CatArchive tileSets, string set, int tile, int record)
+    {
+        if (tile is < 0 or >= 16 || record < 0)
+        {
+            return null;
+        }
+        var data = CatMemberDecoder.Decode(tileSets.ReadStored(set + ".frc"), 0x10000);
+        if (record * 0x28 + 0x28 > data.Length)
+        {
+            return null;
+        }
+        return Furniture[tile] = FurnitureRecord(data, record * 0x28);
+    }
+
+    private static FurnitureTile FurnitureRecord(byte[] data, int at)
+    {
+        int[] Offsets(int first) => [.. Enumerable.Range(0, 4).Select(k => (int)(short)Word(data, at + 2 * (first + k)))];
+        return new FurnitureTile(RowRunSprite.Decode(data, Word(data, at + 0x26)),
+            Offsets(0), Offsets(4), Offsets(8), Offsets(12), (sbyte)data[at + 0x20], (sbyte)data[at + 0x21], Word(data, at + 0x24) == 1);
     }
 
     private static void LoadKind(CatArchive tileSets, TerrainDescription terrain, TileKind kind, string extension, int recordSize,

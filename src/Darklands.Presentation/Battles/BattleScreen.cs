@@ -508,6 +508,10 @@ public sealed class BattleScreen : ITacticalView
     // orig: R014+0x465E (0E76:465E) draft (asm-verified per spec D §1.11)
     public void Sound(int n) => Darklands.Audio.GameSounds.PlayBattleSound(_ui.Audio, n, _ui.Options.SoundEffects, _ui.Options.Music);
 
+    // orig: R024+0x07A2 (1EF8:07A2) draft (the load and the tile's sprite and offsets; see BattlefieldTiles.Vary)
+    public FurnitureShape? VaryFurniture(int tile, string set, int record) =>
+        _tiles?.Vary(_assets.TileSets, set, tile, record) is { } f ? new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY) : null;
+
     public void Message(int text, int ticks)
     {
         _message = _assets.Executable.String(text);
@@ -568,6 +572,7 @@ public sealed class BattleScreen : ITacticalView
         PacksToMembers();
         _owner.TakeLoot(list, money);
         PacksFromMembers();
+        _battle!.TakeUpEnemyAnimations();
         // orig: R014+0xE5E3: the releases made on the loot screen are taken from the driver and forgotten
         _ui.TakeLeftReleases();
         _releases = 0;
@@ -677,27 +682,31 @@ public sealed class BattleScreen : ITacticalView
             new(() => "Pause", true, "\u000fP", () => _hotKey?.Invoke(Keys.AltP)),
             new(() => "Quit to DOS", true, "\u000fQ", () => _hotKey?.Invoke(Keys.AltQ)),
         };
+        // C: every Orders text starts with its tick byte (font 1: 1 a tick, 2 none, both 6 pixels wide): 2, but Travel As Group's (DS:07AA) and
+        // C: Travel Single File's (DS:07BC), which R016+0x0BD6 / R016+0x0CDC set to 1 for the mode turned on and every other writer (R002+0x0000,
+        // C: R014+0x0000 at real combat, R037+0x8B76) to 2 with move_mode 0: the tick is move_mode's
+        static string Tick(bool on) => on ? "" : "";
         var orders = new List<MenuBar.Item>
         {
-            O(OrdersItem.Resume, () => "Resume", "\x13", Resume),
-            O(OrdersItem.Finished, () => m.Giver + S(BattleScreens.FinishedText), "\x12", () => tb.LeaveOrderMode()),
-            O(OrdersItem.EnemyInfo, () => "Enemy Info", " E", EnemyInfo),
-            O(OrdersItem.Walk, () => S(0x67C).TrimStart('\x02').TrimEnd(), " W", () => tb.ChooseOrder(1)),
-            O(OrdersItem.Flee, () => S(0x690).TrimStart('\x02').TrimEnd(), " F", () => tb.ChooseOrder(1, flee: true)),
-            O(OrdersItem.Halt, () => "Halt", " H", () => tb.Halt(tb.Battle.Leader)),
-            O(OrdersItem.Group, () => "Travel As Group", " G", tb.ToggleGroup),
-            O(OrdersItem.SingleFile, () => "Travel Single File", " Q", tb.ToggleSingleFile),
-            O(OrdersItem.UseDoor, () => With(0x6AA, 8, m.DoorSuffix), " U", () => tb.UseKey(tb.Selected)),
-            O(OrdersItem.UseStairs, () => With(0x6BA, 10, m.StairsSuffix), " U", () => tb.UseKey(tb.Selected)),
-            O(OrdersItem.OpenChest, () => With(0x6CC, 10, m.ChestSuffix), " O", () => tb.OpenKey(tb.Selected)),
-            O(OrdersItem.PickLock, () => With(0x6DE, 9, m.PickSuffix), " P", () => tb.PickKey(tb.Selected)),
-            O(OrdersItem.DissolveLock, () => With(0x6F0, 13, m.DissolveSuffix), " D", () => tb.DissolveKey(tb.Selected)),
-            O(OrdersItem.DisarmTrap, () => S(m.DisarmText).TrimStart('\x02'), " D", () => tb.DissolveKey(tb.Selected)),
-            O(OrdersItem.Surrender, () => "Surrender (All)", " S", Surrender),
+            O(OrdersItem.Resume, () => "Resume", "", Resume),
+            O(OrdersItem.Finished, () => "" + m.Giver + S(BattleScreens.FinishedText), "", () => tb.LeaveOrderMode()),
+            O(OrdersItem.EnemyInfo, () => "Enemy Info", " E", EnemyInfo),
+            O(OrdersItem.Walk, () => S(0x67C).TrimEnd(), " W", () => tb.ChooseOrder(1)),
+            O(OrdersItem.Flee, () => S(0x690).TrimEnd(), " F", () => tb.ChooseOrder(1, flee: true)),
+            O(OrdersItem.Halt, () => "Halt", " H", () => tb.Halt(tb.Battle.Leader)),
+            O(OrdersItem.Group, () => Tick(tb.MoveMode == 1) + "Travel As Group", " G", tb.ToggleGroup),
+            O(OrdersItem.SingleFile, () => Tick(tb.MoveMode == 2) + "Travel Single File", " Q", tb.ToggleSingleFile),
+            O(OrdersItem.UseDoor, () => "" + With(0x6AA, 8, m.DoorSuffix), " U", () => tb.UseKey(tb.Selected)),
+            O(OrdersItem.UseStairs, () => "" + With(0x6BA, 10, m.StairsSuffix), " U", () => tb.UseKey(tb.Selected)),
+            O(OrdersItem.OpenChest, () => "" + With(0x6CC, 10, m.ChestSuffix), " O", () => tb.OpenKey(tb.Selected)),
+            O(OrdersItem.PickLock, () => "" + With(0x6DE, 9, m.PickSuffix), " P", () => tb.PickKey(tb.Selected)),
+            O(OrdersItem.DissolveLock, () => "" + With(0x6F0, 13, m.DissolveSuffix), " D", () => tb.DissolveKey(tb.Selected)),
+            O(OrdersItem.DisarmTrap, () => S(m.DisarmText), " D", () => tb.DissolveKey(tb.Selected)),
+            O(OrdersItem.Surrender, () => "Surrender (All)", " S", Surrender),
             // orig: R016+0x13CA (1EF8:13CA) matched (R016+0x13CA): R016+0x1590 with 9
-            O(OrdersItem.LootBodies, () => "Loot Bodies", " L", () => tb.ChoosePlace(PlaceAction.TakeLoot)),
-            O(OrdersItem.Exit, () => With(0x726, 16, m.ExitSuffix), " X", tb.ExitKey),
-            O(OrdersItem.Cancel, () => "Cancel Giving Order", "\x03", tb.CancelOrder),
+            O(OrdersItem.LootBodies, () => "Loot Bodies", " L", () => tb.ChoosePlace(PlaceAction.TakeLoot)),
+            O(OrdersItem.Exit, () => "" + With(0x726, 16, m.ExitSuffix), " X", tb.ExitKey),
+            O(OrdersItem.Cancel, () => "Cancel Giving Order", "", tb.CancelOrder),
         };
         // orig: the Attack items' functions DS:97DB (R000+0x083E), each R016+0x156E(action), matched: R016+0x130A (0x12), R016+0x1314 (0x0A)
         // orig: R016+0x131E (6), R016+0x1328 (0x22), R016+0x136E (0x80), matched; the Throw item's own function does nothing
@@ -1736,16 +1745,6 @@ public sealed class BattleScreen : ITacticalView
         var tb = _battle!;
         var canvas = _ui.Canvas;
         ApplyEnemyPalettes();
-        if (tb.PendingOrderMember >= 0)
-        {
-            // DS:D6F1: the next frame opens order mode for the member (combat_tick, once it has a hot spot).
-            var member = tb.PendingOrderMember;
-            tb.PendingOrderMember = -1;
-            if (tb.Battle[member].IsAble)
-            {
-                tb.EnterOrderMode(member);
-            }
-        }
         Follow();
         _view.Draw(canvas, tb.Level, _tiles!);
         var clip = BattlefieldView.Area;
@@ -1779,9 +1778,26 @@ public sealed class BattleScreen : ITacticalView
         _loggedSprites = _logged;
         DrawClouds(canvas);
         DrawGroundCursor(canvas);
+        OpenPendingOrderMode();
         DrawPanel(canvas);
         DrawMessage(canvas);
         DrawPointer(canvas);
+    }
+
+    /// <summary>In the frame drawn after a combat tick: the member waiting for order mode (DS:D6F1 / DS:D6ED) enters it once it has a hot spot.</summary>
+    // orig: combat_tick R014+0x0F58 (0E76:0F58) draft (its end, 0x10AF..0x1125, checked against the asm)
+    // C: after the tick's combat_draw, if DS:D6F1 == 1 the hot spots (DS:D848[0..DS:E0A1 - 1]) are searched for the member DS:D6ED; with
+    // C: one: selected_member = it, the member cursor's place (DS:E09F / DS:E09D, drawn here from the member), order_mode_enter and
+    // C: DS:D6F1 = 0; without one D6F1 stays for the next tick (the member's status is not tested)
+    private void OpenPendingOrderMode()
+    {
+        var tb = _battle!;
+        if (tb.TakeTickToDraw() && tb.PendingOrderMember >= 0 && HotSpot(tb.PendingOrderMember) is not null)
+        {
+            var member = tb.PendingOrderMember;
+            tb.PendingOrderMember = -1;
+            tb.EnterOrderMode(member);
+        }
     }
 
     /// <summary>The draw list's count and the sprites logged in the frame being drawn; the last frame's logged sprites (DS:E176).</summary>
@@ -2137,42 +2153,56 @@ public sealed class BattleScreen : ITacticalView
             Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2);
             var favour = (int)Core.Characters.Attribute.DivineFavor;
             Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E);
-            _small.Draw(canvas, 6, y + 0x1F, StatusLetter(i).ToString(), Palette.White);
+            if (StatusLetter(i) is { } letter)
+            {
+                _small.Draw(canvas, 6, y + 0x1F, letter.ToString(), Palette.White);
+            }
         }
     }
 
-    /// <summary>The order letter of a member (member_status_letter).</summary>
-    private char StatusLetter(int i)
+    /// <summary>The order letter of a member (member_status_letter); none for a member who left the field.</summary>
+    // orig: member_status_letter root 0000:18FA (0000:18FA) draft (checked against the asm): nothing outside a battle or for record +0x14 == 5;
+    // DS:A3D8[i] 1 'b' (no line of fire), 2 'e' (out of ammunition); else the order: order_action (DS:A6B0) when DS:A695 == 1, order_mode == 1,
+    // selected_member == i and it is not -1, else +0x10; 0x400 the place action: DS:A6D1 on the same conditions, else DS:A6C4[i]
+    // (cs:1A22: 1, 2 'U', 3, 6 'P', 4, 7 'D', 5 'O', 8 'X'); 0 '-', 1 'F' following else 'W', 6 'B', 0x0A 'V', 0x12 'A', 0x22 'P', 0x40 'R',
+    // 0x80 'M', 0x100 'T'
+    // DIVERGENCE: any other value (an A3D8, action or place the tables do not list) leaves the original's letter byte uninitialised (a stack
+    // byte drawn as it is); '-' here.
+    private char? StatusLetter(int i)
     {
-        var c = _battle!.Battle[i];
-        var order = i == _battle.Selected && _battle.OrderAction > 0 && _battle.OrderAction != 0x400 ? (CombatAction)_battle.OrderAction : c.Action;
-        if (i == _battle.Selected && _battle.OrderAction == 0x400)
+        var tb = _battle!;
+        var c = tb.Battle[i];
+        if (c.Status == CharacterStatus.Away)
         {
-            return _battle.PlaceOrder switch
+            return null;
+        }
+        if (tb.FireBlocked(i) != 0)
+        {
+            return tb.FireBlocked(i) switch
+            {
+                1 => 'b',
+                2 => 'e',
+                _ => '-',
+            };
+        }
+        var pending = tb.Paused && tb.InOrderMode && tb.Selected == i;
+        var order = pending && tb.OrderAction != -1 ? tb.OrderAction : (int)c.Action;
+        if (order == 0x400)
+        {
+            var place = pending && tb.PlaceOrder != -1 ? tb.PlaceOrder : (int)c.Place;
+            return place switch
             {
                 1 or 2 => 'U',
                 3 or 6 => 'P',
                 4 or 7 => 'D',
                 5 => 'O',
                 8 => 'X',
-                10 => 'H',
                 _ => '-',
             };
         }
-        if (c.Place != PlaceAction.None)
+        return order switch
         {
-            return c.Place switch
-            {
-                PlaceAction.UseDoor or PlaceAction.Stairs => 'U',
-                PlaceAction.PickDoorLock or PlaceAction.PickChestLock => 'P',
-                PlaceAction.DisarmChestTrap or PlaceAction.DissolveLock => 'D',
-                PlaceAction.OpenChest => 'O',
-                PlaceAction.Leave => 'X',
-                _ => '-',
-            };
-        }
-        return (int)order switch
-        {
+            0 => '-',
             1 => (c.Flags & TacticalFlags.Following) != 0 ? 'F' : 'W',
             6 => 'B',
             0x0A => 'V',

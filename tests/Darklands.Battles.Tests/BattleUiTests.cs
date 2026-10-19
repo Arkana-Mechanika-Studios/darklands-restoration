@@ -30,7 +30,7 @@ public sealed class BattleUiTests
             return;
         }
         using var run = new Session(files, Corridor);
-        run.Play("wait:3", "key:space", "wait:5", "key:1", "click:180,140", "wait:2");
+        run.Play("wait:10", "key:space", "wait:5", "key:1", "click:180,140", "wait:2");
         var tb = run.Screen.Tactics!;
         Assert.Equal(0, tb.Selected);
         Assert.True(tb.CursorTarget is -2 or -3);
@@ -71,7 +71,7 @@ public sealed class BattleUiTests
             return;
         }
         using var run = new Session(files, Corridor);
-        run.Play("wait:3", "key:space", "wait:5", "key:1", "click:234,180", "key:space", "wait:150", "key:1", "wait:3");
+        run.Play("wait:10", "key:space", "wait:5", "key:1", "click:234,180", "key:space", "wait:150", "key:1", "wait:3");
         var tb = run.Screen.Tactics!;
         var enemy = Enumerable.Range(Combatant.PartySlots, 8).First(i => tb.Battle[i].IsAble && run.Screen.HotSpot(i) is not null);
         var (ex, ey) = run.Screen.HotSpotCentre(enemy)!.Value;
@@ -177,7 +177,7 @@ public sealed class BattleUiTests
             return;
         }
         using var run = new Session(files, Corridor);
-        run.Play("wait:3", "key:space", "wait:5", "ldown:cbt:0", "wait:3");
+        run.Play("wait:10", "key:space", "wait:5", "ldown:cbt:0", "wait:3");
         var tb = run.Screen.Tactics!;
         Assert.Equal(0, tb.Selected);
         Assert.False(tb.InOrderMode);
@@ -202,7 +202,7 @@ public sealed class BattleUiTests
             return;
         }
         using var run = new Session(files, Corridor);
-        run.Play("wait:3", "key:space", "wait:5", "key:1", "move:180,140", "wait:3");
+        run.Play("wait:10", "key:space", "wait:5", "key:1", "move:180,140", "wait:3");
         var tb = run.Screen.Tactics!;
         Assert.True(tb.InOrderMode);
         Assert.True(tb.CursorKeysOn);
@@ -226,8 +226,8 @@ public sealed class BattleUiTests
             return;
         }
         using var run = new Session(files, Corridor);
-        // the battle starts paused (order mode's pause): Space lets the clock run
-        run.Play("wait:3", "key:space", "wait:5", "key:f10", "wait:2");
+        // the battle starts in order mode after its first combat tick (order mode pauses it): Space lets the clock run
+        run.Play("wait:10", "key:space", "wait:5", "key:f10", "wait:2");
         var tb = run.Screen.Tactics!;
         var clock = tb.Battle.Clock;
         run.Play("wait:30", "key:right", "wait:2", "key:down", "wait:30");

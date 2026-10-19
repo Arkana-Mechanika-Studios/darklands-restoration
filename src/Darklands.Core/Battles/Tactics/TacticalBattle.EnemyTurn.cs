@@ -97,9 +97,9 @@ public sealed partial class TacticalBattle
         {
             return;
         }
-        if (Battle.DemoMode)
+        if (Battle.DemoMode != 0)
         {
-            // DORMANT: the demonstration fight's set-up of combatant 5.
+            DragonTurn();
             return;
         }
         DelayedStart = false;

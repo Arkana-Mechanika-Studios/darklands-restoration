@@ -1148,6 +1148,12 @@ public sealed class EffectField : IEffectClouds
                 count++;
                 _bodyQueued[i] = true;
             }
+            else if (c.Status != CharacterStatus.Able && Battle.DemoMode == Battle.CaveDragonFight && count < DrawListLimit)
+            {
+                // C: in the cave dragon's fight list B is not used: R014+0x7BBE puts the fallen in list C too (0x7BC3..0x7BC9)
+                count++;
+                _bodyQueued[i] = true;
+            }
             var fx = c.Flash;
             if (fx[0] is < 0 and > -10)
             {

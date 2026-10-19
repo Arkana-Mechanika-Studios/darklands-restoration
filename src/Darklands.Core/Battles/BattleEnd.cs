@@ -212,9 +212,10 @@ public static class BattleEnd
             {
                 b[i].Status = CharacterStatus.Empty;
             }
-            if (b.DemoMode)
+            if (b.DemoMode != 0)
             {
-                // DORMANT: the demonstration fight only.
+                // C: a dragon fight ends with the victory (R014+0x0C7C); for the seven-headed dragon the view is then drawn again
+                // (R014+0x0CB6: floor_view_draw(−1), combat_draw), which the screen does every frame here.
                 b.LeaveAfterVictory = true;
             }
             foreach (var m in party)

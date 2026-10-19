@@ -70,7 +70,9 @@ public sealed class Implode
     /// (literals as 8 bits) or 1 ASCII (Huffman-coded literals), dictionary 0x400, 0x800 or 0x1000 bytes.
     /// Returns 0, or 1 for another dictionary size, 2 for another type.
     /// </summary>
-    // orig: R003+0x1E5E (1016:045E) asm (implode: the work area's fields, the literal and length code tables, then the compression)
+    // orig: R003+0x1E5E (1016:045E) asm (implode: the work area's fields, the literal and length code tables, then the compression),
+    // entered through R003+0x1EC6 (1016:04C6) asm
+    // C: the entry pushes 1016:045E, calls the stack-pointer test and returns into implode
     public int Compress(ReadBlock read, WriteBlock write, int type, int dictionarySize)
     {
         _read = read;

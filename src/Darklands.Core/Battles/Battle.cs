@@ -39,14 +39,38 @@ public sealed class Battle
     /// <summary>Which original bugs are kept.</summary>
     public OriginalBehaviour Behaviour { get; set; } = OriginalBehaviour.Faithful;
 
-    /// <summary>demo_mode (DS:C21A): the tutorial/demonstration fight; never set in a normal game.</summary>
-    public bool DemoMode { get; set; }
+    /// <summary>
+    /// DS:C21A: the dragon fight: 0 none, <see cref="HydraFight"/> once a file of the seven-headed dragon (picture code M73) was
+    /// loaded, <see cref="CaveDragonFight"/> for the cave dragon (M90). Combatant 5 is then the dragon: it breathes every
+    /// <see cref="DemoAttackInterval"/>-th blow, picks its own victims and does not take part in the usual enemy turn.
+    /// </summary>
+    // orig: set by sprite_file_load R014+0x3D2C (0x3F89..0x3FB7), reset by R002+0x1830 (0x1936)
+    public byte DemoMode { get; set; }
 
-    /// <summary>DS:9F1F: in demo mode, −1 makes combatant 5's attacks miss.</summary>
-    public int DemoMissFlag { get; set; }
+    /// <summary>DS:C21A of the seven-headed dragon's fight ('I').</summary>
+    public const byte HydraFight = 0x49;
 
-    /// <summary>DS:C26E: attacks made by combatant 5 in demo mode.</summary>
-    public int DemoAttackCount { get; set; }
+    /// <summary>DS:C21A of the cave dragon's fight ('Z').</summary>
+    public const byte CaveDragonFight = 0x5A;
+
+    /// <summary>DS:C26E: blows of combatant 5 in a dragon fight (a byte, 1 at the battle's start).</summary>
+    public byte DemoAttackCount { get; set; } = 1;
+
+    /// <summary>DS:C21F: every this many blows the dragon breathes instead (3 at the start, 6 once it has picked a fighter).</summary>
+    public sbyte DemoAttackInterval { get; set; } = 3;
+
+    /// <summary>
+    /// 20A5:763B: the animation code of weapon type 40 for this battle when a dragon fight changed it ("D7" the seven-headed
+    /// dragon, "CD" the cave dragon); null: the table's ("DG", which battle_run writes back after every battle).
+    /// </summary>
+    // orig: written by enemies_place R025+0x0000 (0x0779..0x07AA); "DG" written back by battle_run R002+0x0000 (0x0700) and R037+0x8B76 (0x8CF4)
+    public string? DragonWeaponCode { get; set; }
+
+    /// <summary>Weapon type 40, whose animation code a dragon fight changes.</summary>
+    public const int DragonWeapon = 40;
+
+    /// <summary>The two letters of a weapon type's animations as they stand in this battle.</summary>
+    public string AnimationCode(int weapon) => weapon == DragonWeapon && DragonWeaponCode is { } code ? code : Tables.AnimationCode(weapon);
 
     /// <summary>battle_result (DS:A893): −1 while fighting.</summary>
     public BattleResult Result { get; set; } = BattleResult.Running;
@@ -83,7 +107,7 @@ public sealed class Battle
     /// </summary>
     public bool Persistent { get; set; }
 
-    /// <summary>DS:9084: leave right after the victory (set by the demonstration fight).</summary>
+    /// <summary>DS:9084: leave right after the victory (set by a dragon fight, or the death of an enemy that ends the battle).</summary>
     public bool LeaveAfterVictory { get; set; }
 
     /// <summary>The card numbers of the level for each way of leaving it (floor image +0x1F42..+0x1F4A).</summary>
