@@ -11,16 +11,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 49 | 17 | 32 |
+| rules | 78 | 17 | 61 |
 | cards | 49 | 0 | 49 |
 | events | 7 | 4 | 3 |
 | battles | 14 | 3 | 11 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 121 | 25 | 96 |
+| total | 150 | 25 | 125 |
 
-## Core logic (119)
+## Core logic (148)
 
-### rules (49)
+### rules (78)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:274` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -142,18 +142,105 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-747355** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:434` `SaintBook.new`  
   original: `R039+0x2732` (165C:0792, matched)  
   why: Strength and Endurance "healing only" by the text (DARKLAND.SNT), a day's boost of each in the code (see St.Adrian).
-- **B-defa50** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:447` `SaintBook.new`  
+- **B-49f1ff** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:445` `SaintBook.new`  
+  original: `R039+0x2B22` (165C:0B82, matched)  
+  why: the text (DARKLAND.SNT) heals "a small amount of lost Strength and a fair amount of lost Endurance"; the code raises both for a day (raise_attr_temp), past their maxima when unhurt (see St.Adrian).
+- **B-defa50** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:450` `SaintBook.new`  
   original: `R039+0x2BC0` (165C:0C20, matched)  
   why: her text (DARKLAND.SNT) also "prevents death from wounds for a period (strength never goes below 1)": nothing records it, and damage_apply (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
-- **B-148934** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:666` `SaintBook.new`  
+- **B-623452** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:472` `SaintBook.new`  
+  original: `R039+0x3374` (165C:13D4, matched)  
+  why: the text (DARKLAND.SNT) "improves travel speeds" and restores a little Strength and Endurance; the code starts no event and heals nothing.
+- **B-44e795** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:495` `SaintBook.new`  
+  original: `R039+0x3AA2` (165C:1B02, matched)  
+  why: the text (DARKLAND.SNT) also restores "a small amount of Endurance"; the code heals Strength only.
+- **B-5eb6aa** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:503` `SaintBook.new`  
+  original: `R039+0x3C92` (165C:1CF2, matched)  
+  why: the text (DARKLAND.SNT) raises Agility, Woodwise and Stealth "for the entire party" and increases Charisma and Speak Common; the code boosts the one member only and gives neither Charisma nor Speak Common.
+- **B-465f6c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:513` `SaintBook.new`  
+  original: `R039+0x3F2C` (165C:1F8C, matched)  
+  why: the text (DARKLAND.SNT) "increases the party speed, but not the frequency of encounters"; the code starts event 0x4F here for a week, the kind that spares the party an ambush (Footpads), as St.Genevieve's does: no speed.
+- **B-32871d** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:523` `SaintBook.new`  
+  original: `R039+0x41A8` (165C:2208, matched)  
+  why: the text (DARKLAND.SNT) "heals a small amount of Endurance"; the code raises it for a day (see St.Adrian).
+- **B-9b19b6** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:528` `SaintBook.new`  
+  original: `R039+0x439E` (165C:23FE, matched)  
+  why: the text (DARKLAND.SNT) "may improve edged weapons, hammers, maces, halberds, crossbows and handguns"; the code touches no weapon (no quality, no skill).
+- **B-e8ecd2** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:541` `SaintBook.new`  
+  original: `R039+0x4762` (165C:27C2, matched)  
+  why: the text (DARKLAND.SNT) gives "a large increase to all weapon skills except impact and flail" and "may speed travel through woods"; the code raises Edged, Thrown and Bow by 6..11 only (no Polearms, no Mechanical Missile) and starts no event.
+- **B-3947bd** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:557` `SaintBook.new`  
+  original: `R039+0x9674` (165C:76D4, matched)  
+  why: the text (DARKLAND.SNT) gives Endurance, Perception, Charisma, Speak Common and "a very great increase to Virtue", and may cost 10% of the cash; the code heals, adds Healing, Artifice and Woodwise as St.Thomas the Apostle's text does, and gives no Virtue and takes no money.
+- **B-f995af** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:568` `SaintBook.new`  
+  original: `R039+0x4CF8` (165C:2D58, matched)  
+  why: the text (DARKLAND.SNT) "may improve the quality of weapons and armor"; the code changes no quality.
+- **B-ec67c9** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:572` `SaintBook.new`  
+  original: `R039+0x4E6E` (165C:2ECE, matched)  
+  why: the text (DARKLAND.SNT) also gives "a modest increase to Charisma"; the code gives none.
+- **B-f2531c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:579` `SaintBook.new`  
+  original: `R039+0x501E` (165C:307E, matched)  
+  why: the text (DARKLAND.SNT) gives "a small increase to Streetwise" and "a tremendous increase to Woodwise", and money if needed; the code swaps them (Streetwise 50..89, Woodwise 5..9) and gives no money.
+- **B-41e624** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:595` `SaintBook.new`  
+  original: `R039+0x55B2` (165C:3612, matched)  
+  why: the text (DARKLAND.SNT) also "heals a modest amount of Strength and Endurance"; the code heals nothing.
+- **B-2e94a4** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:616` `SaintBook.new`  
+  original: `R039+0x948A` (165C:74EA, matched)  
+  why: the text (DARKLAND.SNT) "causes a temporary loss of a small amount of Intelligence"; the code lowers nothing (and heals Endurance and Strength, which the text does not give).
+- **B-cced91** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:632` `SaintBook.new`  
+  original: `R039+0x5F62` (165C:3FC2, matched)  
+  why: the text (DARKLAND.SNT) "enhances ALL skills"; the code leaves out the seven weapon skills and Riding.
+- **B-64dd08** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:639` `SaintBook.new`  
+  original: `R039+0x62C0` (165C:4320, matched)  
+  why: the text (DARKLAND.SNT) gives Charisma "inside a city"; the code gives it everywhere.
+- **B-48bb81** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:643` `SaintBook.new`  
+  original: `R039+0x6378` (165C:43D8, matched)  
+  why: the text (DARKLAND.SNT) improves "every skill by a modest amount"; the code raises only the equipped weapons' skills (WeaponSkills) of the seven, and not Riding.
+- **B-7fe039** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:662` `SaintBook.new`  
+  original: `R039+0x6984` (165C:49E4, matched)  
+  why: the text (DARKLAND.SNT) "may increase the quality of one character's weapons"; the code changes no quality.
+- **B-d7771e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:670` `SaintBook.new`  
+  original: `R039+0x6BE6` (165C:4C46, matched)  
+  why: the text (DARKLAND.SNT): "Sharing her ecstasies in prayer costs Endurance"; the code raises Endurance for a day.
+- **B-38e50e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:674` `SaintBook.new`  
+  original: `R039+0x6CBA` (165C:4D1A, matched)  
+  why: the text (DARKLAND.SNT) also improves "the flame resistance of one person's armor"; the code sets no charm.
+- **B-06bdba** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:696` `SaintBook.new`  
+  original: `R039+0x7236` (165C:5296, matched)  
+  why: the text (DARKLAND.SNT) "may improve the quality of any edged weapons carried"; the code changes no quality.
+- **B-723764** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:700` `SaintBook.new`  
+  original: `R039+0x72D4` (165C:5334, matched)  
+  why: the text (DARKLAND.SNT): "in combat, he may improve the party's weapons and armor"; the code changes no quality and sets no charm.
+- **B-a1a2bc** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:709` `SaintBook.new`  
+  original: `R039+0x75DA` (165C:563A, matched)  
+  why: the text (DARKLAND.SNT) gives Agility, Charisma and "a tremendous increase to Riding", and reputation "in areas of his patronage"; the code gives Flail Weapons and Endurance instead of Riding and Agility (St.Charity's and St.Theodore Tiro's boosts), and the standing anywhere.
+- **B-148934** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:727` `SaintBook.new`  
   original: `R039+0x7C6A` (165C:5CCA, matched), `R039+0x7D0C` (165C:5D6C, matched)  
   why: the helps of the two Pauls are mixed up: St.Paul gets R039+0x7C6A, whose feast day (66) and help are those DARKLAND.SNT gives St.Paul the Simple; St.Paul the Simple (106) gets R039+0x7D0C, a copy of St.Thomas Aquinas's help (R039+0x8B58); the help described for St.Paul is R039+0x9578, which no saint number reaches (Z-9318d7).
-- **B-44772a** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:684` `SaintBook.new`  
+- **B-44772a** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:745` `SaintBook.new`  
   original: `R039+0x80C2` (165C:6122, matched)  
   why: the saints' charms never wear off: FirewallForAll, like SetCharm and AddCharm, sets the charm byte (+0x41) and its strength (+0x10) with no event, and nothing takes them back.
-- **B-bf6543** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:715` `SaintBook.new`  
+- **B-99f176** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:763` `SaintBook.new`  
+  original: `R039+0x85EA` (165C:664A, matched)  
+  why: the text (DARKLAND.SNT) also gives "a modest increase to all other weapon skills"; the code raises Bows only.
+- **B-b8a1ad** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:767` `SaintBook.new`  
+  original: `R039+0x86BE` (165C:671E, matched)  
+  why: the text (DARKLAND.SNT) "can increase local reputation in Poland and Cracow"; the code changes no standing.
+- **B-bf6543** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:780` `SaintBook.new`  
   original: `R039+0x8A88` (165C:6AE8, matched)  
   why: St.Theodore Tiro raises Flail Weapons twice for a flail wielder: WeaponSkills already raises it for a member holding a flail, and the saint then raises it again; his help also does not match DARKLAND.SNT (all weapon skills, Charisma, Riding): no Riding, Endurance instead.
+- **B-78a26c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:789` `SaintBook.new`  
+  original: `R039+0x8B58` (165C:6BB8, matched)  
+  why: the text (DARKLAND.SNT) gives "a very great increase to Religion"; the code gives none (Healing 10..19 instead, which the text does not give).
+- **B-29f615** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:805` `SaintBook.new`  
+  original: `R039+0x8FD8` (165C:7038, matched)  
+  why: the text (DARKLAND.SNT) "may double party travel speed"; the code starts event 0x4F here for a week, the kind that spares the party an ambush (see St.Drogo): no speed.
+- **B-e64add** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:814` `SaintBook.new`  
+  original: `R039+0x9228` (165C:7288, matched)  
+  why: the text (DARKLAND.SNT) "can enhance local reputation in northern Germany"; the code changes no standing.
+- **B-61d9a9** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:818` `SaintBook.new`  
+  original: `R039+0x92E2` (165C:7342, matched)  
+  why: the text (DARKLAND.SNT) "enhances local reputation in villages and with nobility"; the code changes no standing.
 - **B-94efea** `bug`, flag `FixSaintLearnedByLeader` - `src/Darklands.Core/Rules/Saints.cs:55` `Saints.Learn`  
   original: `R029+0x1302` (0E76:1302, draft)  
   why: "learn the saint of this place" (R056 19c4) and the teaching saints pass -1 and teach nobody (FixSaintLearnedByLeader).
