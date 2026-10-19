@@ -1,4 +1,5 @@
 using Darklands.Platform;
+using Darklands.Rendering;
 
 namespace Darklands.Host.Sdl;
 
@@ -22,6 +23,8 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private bool _shift;
     private bool _framePresented;
     private bool _showingText;
+    private HdFrame? _hdFrame;
+    private readonly Dictionary<RgbaImage, (IntPtr Texture, int Version)> _hdTextures = [];
 
     /// <summary>Opens the window at the size of <see cref="DisplayLayout.WindowSize"/> (720×400 by default).</summary>
     public SdlHost(string title, int width = DisplayLayout.BaseWidth, int height = DisplayLayout.BaseHeight, bool fullscreen = false)
@@ -82,6 +85,12 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>A line drawn small in the window's bottom-right corner when it gives one (the version on the start screen).</summary>
     public CornerText? Corner { get; set; }
 
+    /// <summary>
+    /// Replacement graphics (null: none): each frame is drawn as the renderer's items, the game's frame first and the
+    /// replacements over it. The host only puts the items on the graphics card.
+    /// </summary>
+    public HdRenderer? Renderer { get; set; }
+
     public MouseState Mouse => _mouse;
 
     public bool ShiftHeld => _shift;
@@ -134,6 +143,11 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public void Present(Screen screen)
     {
+        if (Renderer is not null)
+        {
+            PresentHd(screen, Renderer);
+            return;
+        }
         var pixels = screen.Pixels;
         var palette = screen.Palette;
         for (var i = 0; i < pixels.Length; i++)
@@ -147,6 +161,63 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         SdlNative.SDL_RenderCopyTo(_renderer, _texture, IntPtr.Zero, ref _viewport);
         _showingText = false;
         FinishFrame();
+    }
+
+    /// <summary>The renderer's items for the picture's place in the window: the frame's texture, then the replacements.</summary>
+    private void PresentHd(Screen screen, HdRenderer renderer)
+    {
+        SdlNative.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+        SdlNative.SDL_RenderClear(_renderer);
+        UpdateViewport();
+        _hdFrame = renderer.Render(screen, Graphics);
+        SdlNative.SDL_UpdateTexture(_texture, IntPtr.Zero, _hdFrame.Base.Texture.Argb, Screen.Width * 4);
+        DrawHdFrame(_hdFrame);
+        _showingText = false;
+        FinishFrame();
+    }
+
+    /// <summary>
+    /// Draws a frame's items: the base on the frame's own streaming texture, each replacement picture on a texture kept
+    /// while the picture object is in use and uploaded again when its version moves.
+    /// </summary>
+    private void DrawHdFrame(HdFrame frame)
+    {
+        var used = new HashSet<RgbaImage>(ReferenceEqualityComparer.Instance);
+        foreach (var item in frame.Items)
+        {
+            var destination = ToSdl(item.Destination);
+            if (item.Placement is null)
+            {
+                SdlNative.SDL_RenderCopyTo(_renderer, _texture, IntPtr.Zero, ref destination);
+                continue;
+            }
+            used.Add(item.Texture);
+            SdlNative.SDL_RenderCopyTo(_renderer, HdTexture(item), IntPtr.Zero, ref destination);
+        }
+        foreach (var image in _hdTextures.Keys.Where(image => !used.Contains(image)).ToList())
+        {
+            SdlNative.SDL_DestroyTexture(_hdTextures[image].Texture);
+            _hdTextures.Remove(image);
+        }
+    }
+
+    private IntPtr HdTexture(DrawItem item)
+    {
+        var image = item.Texture;
+        if (_hdTextures.TryGetValue(image, out var kept) && kept.Version == image.Version)
+        {
+            return kept.Texture;
+        }
+        var texture = kept.Texture;
+        if (texture == IntPtr.Zero)
+        {
+            texture = SdlNative.SDL_CreateTexture(_renderer, SdlNative.PixelFormatArgb8888, (int)SdlNative.TextureAccessStatic, image.Width, image.Height);
+            SdlNative.SDL_SetTextureBlendMode(texture, SdlNative.BlendModeBlend);
+            SdlNative.SDL_SetTextureScaleMode(texture, item.Filter == DrawFilter.Linear ? SdlNative.ScaleModeLinear : SdlNative.ScaleModeNearest);
+        }
+        SdlNative.SDL_UpdateTexture(texture, IntPtr.Zero, image.Argb, image.Width * 4);
+        _hdTextures[image] = (texture, image.Version);
+        return texture;
     }
 
     /// <summary>The console over the picture (when open), then the frame to the window.</summary>
@@ -171,6 +242,12 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         if (_showingText && _textTexture != IntPtr.Zero)
         {
             SdlNative.SDL_RenderCopyTo(_renderer, _textTexture, IntPtr.Zero, ref _textViewport);
+        }
+        else if (_hdFrame is not null)
+        {
+            // the items at the window's current size: the renderer places them again
+            _hdFrame = HdRenderer.Relayout(_hdFrame, Graphics);
+            DrawHdFrame(_hdFrame);
         }
         else
         {
@@ -340,6 +417,10 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public void Dispose()
     {
+        foreach (var (texture, _) in _hdTextures.Values)
+        {
+            SdlNative.SDL_DestroyTexture(texture);
+        }
         SdlNative.SDL_DestroyTexture(_texture);
         if (_textTexture != IntPtr.Zero)
         {

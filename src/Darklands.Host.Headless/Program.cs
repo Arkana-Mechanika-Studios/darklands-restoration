@@ -3,6 +3,7 @@ using Darklands.Content;
 using Darklands.Platform;
 using Darklands.Presentation;
 using Darklands.Presentation.Graphics;
+using Darklands.Rendering;
 
 // Plays a scripted session without a window and saves screenshots.
 //   Darklands.Host.Headless [--settings <file>] <game folder> <output folder> <step> [<step> ...]
@@ -17,6 +18,8 @@ using Darklands.Presentation.Graphics;
 //   shift:on|off, ctrl:on|off    the modifier keys; kdown:<hex> / kup:<hex> a key's make or break scan code
 //   wait:<frames>                lets frames pass; shot:<name> saves <name>.png; rec:<n> saves the next n frames
 //   seed:<n>                     the game's random seed
+//   hdpack:<folder>              replacement graphics (an HD pack, docs/SETTINGS.md display.hdPack; also from --settings): each
+//                                shot also saves <name>.hd.png, the frame with the replacements at hdscale:<n> (default 4) x 320x200
 //
 // Game steps:
 //   saves:<folder>               the saved games' folder (default: SAVES beside the program, never the game folder)
@@ -116,6 +119,15 @@ var soundStep = TakeStep("sound:") ?? (fileSettings.SoundCard is { } card and no
 var wavStep = TakeStep("wav:");
 var traceStep = TakeStep("trace:");
 var romsStep = TakeStep("mt32roms:") ?? resolved.Mt32Roms;
+var hdPackStep = TakeStep("hdpack:") ?? fileSettings.HdPack;
+var hdScaleStep = TakeStep("hdscale:");
+if (hdPackStep is not null)
+{
+    var pack = HdPack.Load(hdPackStep);
+    pack.Problems.ToList().ForEach(Console.Error.WriteLine);
+    ScriptedHost.HdRenderer = new HdRenderer(pack);
+    ScriptedHost.HdScale = hdScaleStep is null ? 4 : int.Parse(hdScaleStep, System.Globalization.CultureInfo.InvariantCulture);
+}
 var host = new ScriptedHost(steps, output);
 var battleStep = steps.FirstOrDefault(s => s.StartsWith("battle:", StringComparison.Ordinal));
 if (battleStep is not null)
@@ -355,6 +367,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     /// <summary>The text font of --settings (the environment variable and local/paths.json come after it).</summary>
     public static string? SettingsTextFont { get; set; }
 
+    /// <summary>The hdpack step's replacement graphics (null: none): each shot also saves the frame drawn with them.</summary>
+    public static HdRenderer? HdRenderer { get; set; }
+
+    /// <summary>The HD shots' size: this many times 320x200.</summary>
+    public static int HdScale { get; set; } = 4;
+
     private readonly TextFont _font = TextFont.FromEnvironment(SettingsTextFont ?? LocalPaths.Get("textfont", "DARKLANDS_TEXT_FONT"));
     private Screen? _last;
     private TextScreen? _lastText;
@@ -454,6 +472,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         {
             PngWriter.Write(_last, Path.Combine(output, name + ".png"));
             WriteIndexed(_last, Path.Combine(output, name + ".idx"));
+            if (HdRenderer is not null)
+            {
+                var (width, height) = (Screen.Width * HdScale, Screen.Height * HdScale);
+                var frame = HdRenderer.Render(_last, new DisplayRectangle(0, 0, width, height));
+                PngCodec.Write(FrameCompositor.Compose(frame, width, height), Path.Combine(output, name + ".hd.png"));
+            }
             ShotsTaken++;
         }
     }

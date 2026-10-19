@@ -15,6 +15,8 @@ public sealed class CommandLineOptions
 
     public bool Fullscreen { get; set; }
 
+    public string? HdPack { get; set; }
+
     public string? Sound { get; set; }
 
     public bool NoAudio { get; set; }
@@ -51,6 +53,9 @@ public sealed class ResolvedSettings
     public (int Width, int Height)? Window { get; private init; }
 
     public bool Fullscreen { get; private init; }
+
+    /// <summary>The HD pack's folder; null: none (the original pictures).</summary>
+    public string? HdPack { get; private init; }
 
     /// <summary>adlib, sb, sbpro2, mt32, cm32l or speaker; null: the game's own choice from CONFIG.DRK.</summary>
     public string? SoundChoice { get; private init; }
@@ -120,6 +125,7 @@ public sealed class ResolvedSettings
             SavesFolder = Pick(cli.SavesFolder, "DARKLANDS_SAVES", file.SavesFolder),
             Window = window,
             Fullscreen = cli.Fullscreen || (file.Fullscreen ?? false),
+            HdPack = Pick(cli.HdPack, null, file.HdPack),
             SoundChoice = sound is null or "config" or "none" ? null : sound,
             NoAudio = cli.NoAudio || (cli.Sound is null && sound == "none") || cli.Sound == "none",
             Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),

@@ -30,7 +30,7 @@ public class SettingsParsingTests
         {
           "gameFolder": "C:\\Games\\Darklands", /* block comment */
           "savesFolder": "C:\\Saves",
-          "display": { "scale": 2, "fullscreen": true, },
+          "display": { "scale": 2, "fullscreen": true, "hdPack": "C:\\Packs\\HD", },
           "sound": {
             "card": "MT32",
             "mt32Roms": "C:\\Roms",
@@ -53,6 +53,7 @@ public class SettingsParsingTests
         Assert.Equal("C:/Saves", s.SavesFolder);
         Assert.Equal(2, s.Scale);
         Assert.True(s.Fullscreen);
+        Assert.Equal("C:/Packs/HD", s.HdPack);
         Assert.Equal("mt32", s.SoundCard);
         Assert.Equal("C:/Roms", s.Mt32Roms);
         Assert.Equal(new ConfigDrkSettings(4, 0x240, 5, 3), s.ConfigDrk);
@@ -62,6 +63,21 @@ public class SettingsParsingTests
         Assert.Equal("C:/font.bin", s.TextFont);
         Assert.Equal("C:/Shots", s.ScreenshotsFolder);
         Assert.Equal("C:/SDL2.dll", s.SdlLibrary);
+    }
+
+    /// <summary>The HD pack folder: relative to the settings file's folder; --hd-pack replaces it.</summary>
+    [Fact]
+    public void TheHdPackFolderIsAPathAndTheCommandLineWins()
+    {
+        using var scratch = new Scratch();
+        var path = System.IO.Path.Combine(scratch.Folder("settings"), "darklands.settings.json");
+        File.WriteAllText(path, """{ "display": { "hdPack": "packs/hd" } }""");
+        var load = SettingsFile.Load(path);
+        Assert.Empty(load.Problems);
+        Assert.Equal(System.IO.Path.GetFullPath(System.IO.Path.Combine(scratch.Path, "settings", "packs", "hd")), load.Settings.HdPack);
+        Assert.Equal(load.Settings.HdPack, ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, load.Settings).HdPack);
+        Assert.Equal("D:/other", ResolvedSettings.Resolve(new CommandLineOptions { HdPack = "D:/other" }, _ => null, load.Settings).HdPack);
+        Assert.Null(ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, new GameSettings()).HdPack);
     }
 
     [Fact]
@@ -344,11 +360,11 @@ public class SettingsTemplateTests
             (fromNothing.GameFolder, fromNothing.SavesFolder, fromNothing.Window ?? DisplayLayout.WindowSize(null, null), fromNothing.Fullscreen, fromNothing.SoundChoice, fromNothing.NoAudio,
              fromNothing.Mt32Roms, fromNothing.ConfigDrk, fromNothing.ShowBanner, fromNothing.PlayIntro, string.Join(' ', fromNothing.CommandLine),
              fromNothing.TextFont, fromNothing.ScreenshotsFolder, fromNothing.SdlLibrary, fromNothing.ConsoleEnabled, fromNothing.ConsoleFont,
-             fromNothing.ConsoleFontSize),
+             fromNothing.ConsoleFontSize, fromNothing.HdPack),
             (fromTemplate.GameFolder, fromTemplate.SavesFolder, fromTemplate.Window ?? DisplayLayout.WindowSize(null, null), fromTemplate.Fullscreen, fromTemplate.SoundChoice, fromTemplate.NoAudio,
              fromTemplate.Mt32Roms, fromTemplate.ConfigDrk, fromTemplate.ShowBanner, fromTemplate.PlayIntro, string.Join(' ', fromTemplate.CommandLine),
              fromTemplate.TextFont, fromTemplate.ScreenshotsFolder, fromTemplate.SdlLibrary, fromTemplate.ConsoleEnabled, fromTemplate.ConsoleFont,
-             fromTemplate.ConsoleFontSize));
+             fromTemplate.ConsoleFontSize, fromTemplate.HdPack));
     }
 
     /// <summary>A resolution filled in beside the template's "scale": 1 replaces the scale, without a complaint.</summary>
@@ -375,12 +391,12 @@ public class SettingsTemplateTests
     [Fact]
     public void TheTemplateDocumentsEveryKey()
     {
-        foreach (var key in new[] { "gameFolder", "savesFolder", "scale", "resolution", "fullscreen", "card", "mt32Roms", "configDrk", "banner", "intro",
+        foreach (var key in new[] { "gameFolder", "savesFolder", "scale", "resolution", "fullscreen", "hdPack", "card", "mt32Roms", "configDrk", "banner", "intro",
                      "commandLine", "textFont", "screenshotsFolder", "library", "display", "sound", "startup", "sdl" })
         {
             Assert.Contains($"\"{key}\":", SettingsFile.Template);
         }
-        foreach (var option in new[] { "--saves", "--scale", "--resolution", "--fullscreen", "--sound", "--mt32-roms", "--no-banner", "--no-intro", "--text-font", "--screenshots", "--sdl" })
+        foreach (var option in new[] { "--saves", "--scale", "--resolution", "--fullscreen", "--hd-pack", "--sound", "--mt32-roms", "--no-banner", "--no-intro", "--text-font", "--screenshots", "--sdl" })
         {
             Assert.Contains(option, SettingsFile.Template);
         }

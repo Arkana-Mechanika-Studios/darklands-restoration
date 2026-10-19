@@ -44,6 +44,7 @@ not meant for players.
 | `display.scale` | 1 | `--scale N` | window = N x 720x400 |
 | `display.resolution` | | `--resolution WxH` | window size, e.g. `"1440x800"`; when set it replaces `scale` |
 | `display.fullscreen` | false | `--fullscreen` | |
+| `display.hdPack` | none | `--hd-pack <folder>` | a folder of replacement pictures (an HD pack, below); not part of the original, the game plays the same |
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
 | `sound.configDrk` | absent (commented out in the template) | | replaces CONFIG.DRK's words (below) |
@@ -56,6 +57,18 @@ not meant for players.
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
 | `console.font` | the bundled DejaVu Sans Mono | | a TrueType (.ttf) file for the console, e.g. `"C:/Windows/Fonts/consola.ttf"` |
 | `console.fontSize` | 14 | | the console's text height in pixels at the 720x400 window (6..64); it grows with the window |
+
+### `display.hdPack`
+
+A folder with one PNG per picture of the game it replaces, named after the picture's asset name (the scheme of
+`IndexedImage.AssetName`) plus `.png`, `\` and `/` as folders and `:` as `_`, in any letter case:
+`PICS/STARTSCR.PIC.png`, `COMMONSP.IMG#12.png`, `F01C.CAT/F01WKSW.IMC#3.5.png`, `dropcap_D.png`. An optional
+`pack.json` names other files: `{ "assets": { "PICS\\STARTSCR.PIC": "title.png" } }` (paths relative to the pack).
+A picture is stretched over the original's rectangle, so any size works (a multiple of the original keeps its
+proportions); it shows only where the original picture is still seen, so menus, text and anything drawn over it stay as
+they are. Palette effects (fades, colour cycling, recoloured figures) do not change a replacement yet. Problems (a
+missing folder, a broken PNG) are reported on the console and the original pictures are kept. The headless host takes
+the same key from `--settings`, or the step `hdpack:<folder>`, and then also saves `<name>.hd.png` for each shot.
 
 ### `sound.configDrk`
 

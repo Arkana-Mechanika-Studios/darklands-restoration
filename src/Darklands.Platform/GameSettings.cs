@@ -21,6 +21,9 @@ public sealed class GameSettings
 
     public bool? Fullscreen { get; set; }
 
+    /// <summary>A folder of replacement pictures (an HD pack; not part of the game). Null: the original pictures.</summary>
+    public string? HdPack { get; set; }
+
     /// <summary>One of <see cref="SoundCards"/>.</summary>
     public string? SoundCard { get; set; }
 

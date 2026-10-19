@@ -3,11 +3,13 @@ using Darklands.Audio;
 using Darklands.Content;
 using Darklands.Host.Sdl;
 using Darklands.Presentation;
+using Darklands.Rendering;
 
 // Darklands, on SDL2.
 //   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console]
+//                      [--hd-pack folder]
 //                      [--version] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
 // The options come from the command line, else the environment variables, else the settings file darklands.settings.json
 // (--settings, else next to the program, else %APPDATA%\DarklandsRestoration; without one a commented template is written on the
@@ -83,6 +85,7 @@ var cli = new CommandLineOptions
     Scale = Option("--scale"),
     Resolution = Option("--resolution"),
     Fullscreen = arguments.Remove("--fullscreen"),
+    HdPack = Option("--hd-pack"),
     NoConsole = arguments.Remove("--no-console"),
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
@@ -126,6 +129,13 @@ if (folder is null)
 var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
 SdlNative.ConfigureLibrary(settings.SdlLibrary ?? (File.Exists(besideProgram) ? besideProgram : LocalPaths.Get("sdl", "DARKLANDS_SDL2_PATH")));
 using var host = new SdlHost("Darklands Restoration Project " + version, window.Width, window.Height, settings.Fullscreen);
+if (settings.HdPack is { } hdPack)
+{
+    // replacement graphics (docs/SETTINGS.md, display.hdPack): drawn by Darklands.Rendering, the game plays the same
+    var pack = HdPack.Load(hdPack);
+    pack.Problems.ToList().ForEach(Console.Error.WriteLine);
+    host.Renderer = new HdRenderer(pack);
+}
 var textFont = settings.TextFont ?? LocalPaths.Get("textfont", "DARKLANDS_TEXT_FONT");
 if (textFont is not null)
 {
