@@ -20,7 +20,7 @@ public static class SpriteDrawing
         {
             return;
         }
-        var owner = ScreenOwners.IdOf(sprite.AssetName);
+        var owner = ScreenOwners.IdOf(sprite.AssetName, sprite.Width, sprite.Height);
         for (var row = 0; row < sprite.RowCount; row++)
         {
             var sy = y + row;
@@ -34,7 +34,7 @@ public static class SpriteDrawing
                 var sx = x + start + i;
                 if (pixels[i] != 0 && sx >= clip.Left && sx < clip.Right)
                 {
-                    canvas.Plot(sx, sy, remap is null ? pixels[i] : remap[pixels[i]], owner);
+                    canvas.Plot(sx, sy, remap is null ? pixels[i] : remap[pixels[i]], owner, ScreenTexel.Pack(start + i, row));
                 }
             }
         }

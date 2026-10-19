@@ -220,7 +220,7 @@ public sealed class GameUi
         }
         _screen.Pixels.CopyTo(_shown.Pixels, 0);
         _screen.Palette.CopyTo(_shown.Palette, 0);
-        _screen.Owners.CopyTo(_shown.Owners, 0);
+        _screen.CopyOwnershipTo(_shown);
         if (PointerVisible)
         {
             // orig: mouse_set_cursor(0, 0, cursor_default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left corner

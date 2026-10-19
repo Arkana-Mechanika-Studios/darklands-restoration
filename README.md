@@ -134,6 +134,7 @@ thousands of cases, and every card of the game runs against its original. See
 | `src/Darklands.Audio`, `src/Darklands.Audio.Mt32` | the sound drivers in an emulated PC; MT-32 |
 | `src/Darklands.Platform`, `src/Darklands.Host.*` | host interfaces and settings; the SDL and headless hosts |
 | `src/Darklands.DevConsole` | the developer console |
+| `src/Darklands.Rendering` | replacement graphics (HD packs) drawn over the game's frame, for any host |
 | `tests/` | unit tests, original-byte oracles, card traces |
 | `tools/` | oracle corpus builders, faithfulness reports, visual and timing comparisons |
 | `docs/` | architecture details, traceability, faithfulness registers, settings, saves, battles, screenshots |

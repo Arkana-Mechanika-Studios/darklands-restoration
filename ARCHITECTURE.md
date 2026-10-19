@@ -48,6 +48,7 @@ Darklands.Persistence    saved games (DKSAVEn.SAV / .BSV, docs/SAVES.md) and the
 
 Darklands.Platform       host interfaces (video, input, audio, clock, game timer), settings
 Darklands.Audio          the player's sound drivers in an emulated PC; Darklands.Audio.Mt32 adds mt32emu
+Darklands.Rendering      replacement graphics (HD packs) over the 320x200 screen, for the hosts (needs Platform only)
 Darklands.DevConsole     the developer console (references Core only; no game project references it)
 ```
 
@@ -126,6 +127,17 @@ through recolours, and saved regions and screens carry it back. Assets are named
 `dropcap:D`); images built at run time may stay unnamed. A pixel a screen writes directly keeps a stale or
 zero owner, and a replacement shows the original pixel there. The owners never change `Screen.Pixels`
 or `Screen.Palette` (`CanvasOwnershipTests` compares the canvas with the drawing from before).
+Beside each owner, `Screen.Texels` records which of the asset's own pixels it is (and whether it was drawn turned
+over), and `ScreenOwners.SizeOf` the asset's size, so a drawing's place is known even when it is clipped, mirrored,
+drawn twice or partly covered.
+
+`src/Darklands.Rendering` (it depends on Platform only: no game code, no host) turns a screen and an HD pack
+(`HdPack`: a folder of PNGs named after the assets, optional `pack.json`; settings key `display.hdPack`) into draw
+items (`HdRenderer` → `HdFrame`): the frame itself scaled to the output rectangle, then per drawing of a replaced asset
+its picture, turned as drawn and transparent outside the pixels the asset still owns. Without a pack the frame is the
+base item alone, exactly the picture shown before. The SDL host puts the items on SDL textures; the headless host
+composes them in software (`FrameCompositor`) for `<shot>.hd.png`. Palette effects (fades, colour cycling, recoloured
+figures) do not reach replacements yet.
 
 ## Verification
 
@@ -135,8 +147,9 @@ or `Screen.Palette` (`CanvasOwnershipTests` compares the canvas with the drawing
   the results must agree.
 * `tests/Darklands.Cards.Tests`: every card, the golden card traces, the card oracle's results.
 * `tests/Darklands.Battles.Tests`, `Darklands.Persistence.Tests`, `Darklands.Audio.Tests`,
-  `Darklands.Platform.Tests`, `Darklands.DevConsole.Tests`, `Darklands.Host.Sdl.Tests`: the screens and
-  battles, saved games, the sound drivers, settings, the console.
+  `Darklands.Platform.Tests`, `Darklands.DevConsole.Tests`, `Darklands.Host.Sdl.Tests`,
+  `Darklands.Rendering.Tests`: the screens and battles, saved games, the sound drivers, settings, the console,
+  the HD backend.
 
 Tests that need the player's files read the game folder from `DARKLANDS_DIR` (or `DARKLANDS_EXE` for
 the EXE alone); without them those tests pass without checking anything.

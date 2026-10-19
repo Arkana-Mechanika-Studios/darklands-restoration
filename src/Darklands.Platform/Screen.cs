@@ -21,6 +21,42 @@ public sealed class Screen
     // Not in the original: a record kept beside the pixels for replacement graphics (an HD backend draws an asset's
     // own texture over the pixels it still owns and keeps the original pixels everywhere else). It never changes Pixels.
     public int[] Owners { get; } = new int[Width * Height];
+
+    /// <summary>
+    /// Per owned pixel, which pixel of its asset it shows (<see cref="ScreenTexel"/>): with the asset's size this places
+    /// the asset's drawing on the screen. Meaningless where <see cref="Owners"/> is 0.
+    /// </summary>
+    // Not in the original, like Owners: the owner names the asset, the texel says where it was drawn (an asset may be
+    // drawn several times, clipped, mirrored or partly covered, so its rectangle cannot be told from the owners alone).
+    public int[] Texels { get; } = new int[Width * Height];
+
+    /// <summary>Copies <see cref="Owners"/> and <see cref="Texels"/> to another screen.</summary>
+    public void CopyOwnershipTo(Screen other)
+    {
+        Owners.CopyTo(other.Owners, 0);
+        Texels.CopyTo(other.Texels, 0);
+    }
+}
+
+/// <summary>
+/// The entries of <see cref="Screen.Texels"/>: the column and row of the asset's own pixel (before mirroring), and
+/// whether the asset was drawn turned over left to right or top to bottom.
+/// </summary>
+// Not in the original (see Screen.Owners).
+public static class ScreenTexel
+{
+    private const int FlipXBit = 1 << 24;
+    private const int FlipYBit = 1 << 25;
+
+    /// <summary>An owned pixel whose place in its asset is not known (a replacement leaves it alone).</summary>
+    public const int Unknown = -1;
+
+    /// <summary>Column and row 0..4095 of the asset's pixel.</summary>
+    public static int Pack(int column, int row, bool flipX = false, bool flipY = false) =>
+        (column & 0xFFF) | (row & 0xFFF) << 12 | (flipX ? FlipXBit : 0) | (flipY ? FlipYBit : 0);
+
+    public static (int Column, int Row, bool FlipX, bool FlipY) Unpack(int texel) =>
+        (texel & 0xFFF, texel >> 12 & 0xFFF, (texel & FlipXBit) != 0, (texel & FlipYBit) != 0);
 }
 
 /// <summary>
@@ -35,6 +71,7 @@ public static class ScreenOwners
     private static readonly Lock Gate = new();
     private static readonly Dictionary<string, int> Ids = new(StringComparer.Ordinal);
     private static readonly List<string?> Names = [null];
+    private static readonly List<(int Width, int Height)> Sizes = [(0, 0)];
 
     /// <summary>The id of an asset name; 0 for none.</summary>
     public static int IdOf(string? asset)
@@ -49,9 +86,34 @@ public static class ScreenOwners
             {
                 id = Names.Count;
                 Names.Add(asset);
+                Sizes.Add((0, 0));
                 Ids[asset] = id;
             }
             return id;
+        }
+    }
+
+    /// <summary>The id of an asset name, recording the asset's size (the largest given) for <see cref="SizeOf"/>.</summary>
+    public static int IdOf(string? asset, int width, int height)
+    {
+        var id = IdOf(asset);
+        if (id != 0)
+        {
+            lock (Gate)
+            {
+                var (w, h) = Sizes[id];
+                Sizes[id] = (Math.Max(w, width), Math.Max(h, height));
+            }
+        }
+        return id;
+    }
+
+    /// <summary>The size of the asset in its own pixels, (0, 0) when none was recorded.</summary>
+    public static (int Width, int Height) SizeOf(int id)
+    {
+        lock (Gate)
+        {
+            return id > 0 && id < Sizes.Count ? Sizes[id] : (0, 0);
         }
     }
 
