@@ -73,7 +73,8 @@ public sealed class CombatAnimation
     public RowRunSprite Frame(int frame, int facing) =>
         frame >= 0 && frame < FrameCount && facing is >= 0 and < 8 ? _frames[frame * 8 + facing] : RowRunSprite.Empty;
 
-    public static CombatAnimation Decode(byte[] decoded)
+    /// <summary>Decodes an IMC file; with <paramref name="assetName"/> ("F01C.CAT/F01WKSW.IMC") frame f of facing d is named "…#f.d".</summary>
+    public static CombatAnimation Decode(byte[] decoded, string? assetName = null)
     {
         var sprite = ImcSprite.Decode(decoded);
         var header = new short[13];
@@ -101,7 +102,7 @@ public sealed class CombatAnimation
         var frames = new RowRunSprite[sprite.FrameCount * 8];
         for (var k = 0; k < frames.Length; k++)
         {
-            frames[k] = RowRunSprite.Decode(sprite.GetFrameBytes(k / 8, k % 8), 0);
+            frames[k] = RowRunSprite.Decode(sprite.GetFrameBytes(k / 8, k % 8), 0, assetName is null ? null : $"{assetName}#{k / 8}.{k % 8}");
         }
         return new CombatAnimation(header, stepX, stepY, height, widths, footX, frames, sprite.FrameCount);
     }

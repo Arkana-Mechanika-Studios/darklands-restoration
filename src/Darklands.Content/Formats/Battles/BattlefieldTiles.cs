@@ -46,17 +46,17 @@ public sealed class BattlefieldTiles
     public static BattlefieldTiles Load(CatArchive tileSets, TerrainDescription terrain)
     {
         var tiles = new BattlefieldTiles();
-        LoadKind(tileSets, terrain, TileKind.Floor, ".flc", 4, (data, at, i) =>
-            tiles.Floors[i] = RowRunSprite.Decode(data, Word(data, at + 2)));
-        LoadKind(tileSets, terrain, TileKind.FloorDecoration, ".ffc", 6, (data, at, i) =>
-            tiles.FloorDecorations[i] = new TileDecoration(RowRunSprite.Decode(data, Word(data, at + 2)), Second(data, at + 4), 0, 0));
-        LoadKind(tileSets, terrain, TileKind.NorthWall, ".nwc", 10, (data, at, i) => tiles.NorthWalls[i] = Wall(data, at));
-        LoadKind(tileSets, terrain, TileKind.NorthWallDecoration, ".nfc", 10, (data, at, i) =>
-            tiles.NorthWallDecorations[i] = new TileDecoration(RowRunSprite.Decode(data, Word(data, at + 2)), Second(data, at + 4), (sbyte)data[at + 8], (sbyte)data[at + 9]));
-        LoadKind(tileSets, terrain, TileKind.WestWall, ".wwc", 10, (data, at, i) => tiles.WestWalls[i] = Wall(data, at));
-        LoadKind(tileSets, terrain, TileKind.WestWallDecoration, ".wfc", 10, (data, at, i) =>
-            tiles.WestWallDecorations[i] = new TileDecoration(RowRunSprite.Decode(data, Word(data, at + 2)), Second(data, at + 4), (sbyte)data[at + 8], (sbyte)data[at + 9]));
-        LoadKind(tileSets, terrain, TileKind.Furniture, ".frc", 0x28, (data, at, i) => tiles.Furniture[i] = FurnitureRecord(data, at));
+        LoadKind(tileSets, terrain, TileKind.Floor, ".flc", 4, (data, at, i, member) =>
+            tiles.Floors[i] = Sprite(data, Word(data, at + 2), member));
+        LoadKind(tileSets, terrain, TileKind.FloorDecoration, ".ffc", 6, (data, at, i, member) =>
+            tiles.FloorDecorations[i] = new TileDecoration(Sprite(data, Word(data, at + 2), member), Second(data, at + 4, member), 0, 0));
+        LoadKind(tileSets, terrain, TileKind.NorthWall, ".nwc", 10, (data, at, i, member) => tiles.NorthWalls[i] = Wall(data, at, member));
+        LoadKind(tileSets, terrain, TileKind.NorthWallDecoration, ".nfc", 10, (data, at, i, member) =>
+            tiles.NorthWallDecorations[i] = new TileDecoration(Sprite(data, Word(data, at + 2), member), Second(data, at + 4, member), (sbyte)data[at + 8], (sbyte)data[at + 9]));
+        LoadKind(tileSets, terrain, TileKind.WestWall, ".wwc", 10, (data, at, i, member) => tiles.WestWalls[i] = Wall(data, at, member));
+        LoadKind(tileSets, terrain, TileKind.WestWallDecoration, ".wfc", 10, (data, at, i, member) =>
+            tiles.WestWallDecorations[i] = new TileDecoration(Sprite(data, Word(data, at + 2), member), Second(data, at + 4, member), (sbyte)data[at + 8], (sbyte)data[at + 9]));
+        LoadKind(tileSets, terrain, TileKind.Furniture, ".frc", 0x28, (data, at, i, member) => tiles.Furniture[i] = FurnitureRecord(data, at, member));
         return tiles;
     }
 
@@ -79,18 +79,18 @@ public sealed class BattlefieldTiles
         {
             return null;
         }
-        return Furniture[tile] = FurnitureRecord(data, record * 0x28);
+        return Furniture[tile] = FurnitureRecord(data, record * 0x28, set + ".frc");
     }
 
-    private static FurnitureTile FurnitureRecord(byte[] data, int at)
+    private static FurnitureTile FurnitureRecord(byte[] data, int at, string member)
     {
         int[] Offsets(int first) => [.. Enumerable.Range(0, 4).Select(k => (int)(short)Word(data, at + 2 * (first + k)))];
-        return new FurnitureTile(RowRunSprite.Decode(data, Word(data, at + 0x26)),
+        return new FurnitureTile(Sprite(data, Word(data, at + 0x26), member),
             Offsets(0), Offsets(4), Offsets(8), Offsets(12), (sbyte)data[at + 0x20], (sbyte)data[at + 0x21], Word(data, at + 0x24) == 1);
     }
 
     private static void LoadKind(CatArchive tileSets, TerrainDescription terrain, TileKind kind, string extension, int recordSize,
-        Action<byte[], int, int> load)
+        Action<byte[], int, int, string> load)
     {
         var name = terrain.SetName(kind);
         if (name.Length == 0)
@@ -103,22 +103,26 @@ public sealed class BattlefieldTiles
             var tile = terrain.Tile(kind, i);
             if (tile >= 0)
             {
-                load(data, tile * recordSize, i);
+                load(data, tile * recordSize, i, name + extension);
             }
         }
     }
 
     // C: the four wall pieces are the record's offsets +2 (plain, DS:C220/DS:C29B), +4 (end joined, DS:C4DD/DS:C62C),
     // +6 (start joined, DS:C601/DS:C658) and +8 (both, DS:C24C/DS:C26F).
-    private static WallTile Wall(byte[] data, int at) => new(
-        RowRunSprite.Decode(data, Word(data, at + 2)), RowRunSprite.Decode(data, Word(data, at + 4)),
-        RowRunSprite.Decode(data, Word(data, at + 6)), RowRunSprite.Decode(data, Word(data, at + 8)));
+    private static WallTile Wall(byte[] data, int at, string member) => new(
+        Sprite(data, Word(data, at + 2), member), Sprite(data, Word(data, at + 4), member),
+        Sprite(data, Word(data, at + 6), member), Sprite(data, Word(data, at + 8), member));
 
     // C: a zero second-frame offset means the decoration has no second frame (the original stores segment 0).
     // UNCERTAIN: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second
     // frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-    private static RowRunSprite? Second(byte[] data, int at) =>
-        Word(data, at) == 0 || Word(data, at) + 2 > data.Length ? null : RowRunSprite.Decode(data, Word(data, at));
+    private static RowRunSprite? Second(byte[] data, int at, string member) =>
+        Word(data, at) == 0 || Word(data, at) + 2 > data.Length ? null : Sprite(data, Word(data, at), member);
+
+    // Not in the original: the sprite's asset name, "BC/CAVE.FLC@1A40" (the member and the offset; see IndexedImage.AssetName).
+    private static RowRunSprite Sprite(byte[] data, int offset, string member) =>
+        RowRunSprite.Decode(data, offset, $"BC/{member.ToUpperInvariant()}@{offset:X4}");
 
     private static int Word(byte[] data, int at) => BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(at, 2));
 }

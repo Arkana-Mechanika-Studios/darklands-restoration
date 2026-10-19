@@ -18,7 +18,7 @@ public sealed class BattleAssets
         Maps = PreparedMaps.Load(files);
         Citadel = CitadelFiles.Load(files);
         TileSets = CatArchive.Decode(files.Read("BC"));
-        Images = ImageBank.Decode(files.Read("BATTLEGR.IMG"), BattleImages.Count);
+        Images = ImageBank.Decode(files.Read("BATTLEGR.IMG"), BattleImages.Count, "BATTLEGR.IMG");
         Common = CommonSprites.Decode(files.Read("COMMONSP.IMG"));
         Animations = new CombatAnimations(files);
         HitSequences = HitSequences.Load(files, Executable);
@@ -79,13 +79,14 @@ public sealed class BattleAssets
         if (entry is not null)
         {
             var stored = _einfo.ReadStored(entry.Name);
+            var asset = "EINFO.CAT/" + entry.Name.ToUpperInvariant();
             try
             {
-                pic = new PicDecoder().Decode(name, stored);
+                pic = new PicDecoder().Decode(asset, stored);
             }
             catch (InvalidDataException)
             {
-                pic = new PicDecoder().Decode(name, CatMemberDecoder.Decode(stored, 0x20000));
+                pic = new PicDecoder().Decode(asset, CatMemberDecoder.Decode(stored, 0x20000));
             }
         }
         _portraits[name] = pic;

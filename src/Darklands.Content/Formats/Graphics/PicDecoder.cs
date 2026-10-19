@@ -73,7 +73,7 @@ public sealed class PicDecoder
             }
             else if (tag == PicChunkTags.Image)
             {
-                (image, imageChunk) = DecodeImageChunk(payloadOffset, length, chunk);
+                (image, imageChunk) = DecodeImageChunk(assetName, payloadOffset, length, chunk);
                 chunks.Add(imageChunk);
             }
             else
@@ -137,7 +137,7 @@ public sealed class PicDecoder
         return (byte)((value << 2) | (value >> 4));
     }
 
-    private static (IndexedImage Image, PicImageChunk Chunk) DecodeImageChunk(int payloadOffset, int payloadLength, ReadOnlySpan<byte> data)
+    private static (IndexedImage Image, PicImageChunk Chunk) DecodeImageChunk(string assetName, int payloadOffset, int payloadLength, ReadOnlySpan<byte> data)
     {
         if (data.Length < 5)
         {
@@ -157,7 +157,7 @@ public sealed class PicDecoder
         }
 
         return (
-            new IndexedImage(width, height, pixels.Take(expectedPixels)),
+            new IndexedImage(width, height, pixels.Take(expectedPixels), assetName),
             new PicImageChunk(
                 payloadOffset,
                 payloadLength,

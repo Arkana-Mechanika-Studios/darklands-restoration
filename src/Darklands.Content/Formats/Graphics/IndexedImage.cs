@@ -11,7 +11,7 @@ public sealed class IndexedImage
 
     private readonly byte[] _pixels;
 
-    public IndexedImage(int width, int height, IEnumerable<byte> pixels)
+    public IndexedImage(int width, int height, IEnumerable<byte> pixels, string? assetName = null)
     {
         if (pixels is null)
         {
@@ -36,6 +36,7 @@ public sealed class IndexedImage
 
         Width = width;
         Height = height;
+        AssetName = assetName;
     }
 
     public int Width { get; }
@@ -43,6 +44,22 @@ public sealed class IndexedImage
     public int Height { get; }
 
     public ReadOnlySpan<byte> Pixels => _pixels;
+
+    /// <summary>
+    /// Where the image came from, for replacement graphics (the screen's owner buffer); null for an image made at run time.
+    /// </summary>
+    /// <remarks>
+    /// Not in the original. One scheme for every asset name (also <c>RowRunSprite.AssetName</c>), upper case:
+    /// <list type="bullet">
+    /// <item>a file of the game folder: its path there, <c>\</c> between folders: <c>PICS\STARTSCR.PIC</c>, <c>COMMONSP.IMG</c>;</item>
+    /// <item>a member of a CAT archive: archive <c>/</c> member: <c>EINFO.CAT/E02SWST.PIC</c>, <c>BC/CAVE.FLC</c>;</item>
+    /// <item>one image of several in a file or member: <c>#</c> its index, <c>#frame.facing</c> for an animation's
+    /// frames, <c>@</c> its hex offset where the file finds its images by offset: <c>COMMONSP.IMG#12</c>,
+    /// <c>INTRO.PAN#3</c>, <c>F01C.CAT/F01WKSW.IMC#3.5</c>, <c>BC/CAVE.FLC@1A40</c>;</item>
+    /// <item>an image cut from another at run time: <c>kind:key</c>: <c>dropcap:D</c>.</item>
+    /// </list>
+    /// </remarks>
+    public string? AssetName { get; }
 
     public static IndexedImage Blank(int width = OriginalVgaWidth, int height = OriginalVgaHeight)
     {

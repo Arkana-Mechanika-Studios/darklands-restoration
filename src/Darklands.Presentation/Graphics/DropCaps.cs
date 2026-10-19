@@ -41,7 +41,7 @@ public static class DropCaps
                     pixels[y * Size + x] = sx < sheet.Width && sy < sheet.Height ? sheet.Pixels[sy * sheet.Width + sx] : (byte)0;
                 }
             }
-            letters[i] = new IndexedImage(Size, Size, pixels);
+            letters[i] = new IndexedImage(Size, Size, pixels, $"dropcap:{(char)('A' + i)}");
         }
         return letters;
     }

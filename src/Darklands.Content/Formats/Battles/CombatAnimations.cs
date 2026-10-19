@@ -18,17 +18,17 @@ public sealed class CombatAnimations(GameFiles files)
         {
             return cached;
         }
-        var catalogue = Catalogue(code);
+        var (file, catalogue) = Catalogue(code);
         CombatAnimation? animation = null;
         if (catalogue is not null && catalogue.Entries.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
         {
-            animation = CombatAnimation.Decode(CatMemberDecoder.Decode(catalogue.ReadStored(name), 0x20000));
+            animation = CombatAnimation.Decode(CatMemberDecoder.Decode(catalogue.ReadStored(name), 0x20000), $"{file}/{name.ToUpperInvariant()}");
         }
         _loaded[name] = animation;
         return animation;
     }
 
-    private CatArchive? Catalogue(string code)
+    private (string? File, CatArchive? Catalogue) Catalogue(string code)
     {
         var file = char.ToUpperInvariant(code[0]) switch
         {
@@ -41,13 +41,13 @@ public sealed class CombatAnimations(GameFiles files)
         };
         if (file is null || !files.Exists(file))
         {
-            return null;
+            return (file, null);
         }
         if (!_catalogues.TryGetValue(file, out var catalogue))
         {
             catalogue = CatArchive.Decode(files.Read(file));
             _catalogues[file] = catalogue;
         }
-        return catalogue;
+        return (file, catalogue);
     }
 }

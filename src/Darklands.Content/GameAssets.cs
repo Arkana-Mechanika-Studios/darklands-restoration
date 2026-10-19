@@ -24,7 +24,7 @@ public sealed class GameAssets(GameFiles files)
         if (!_pictures.TryGetValue(file, out var pic))
         {
             var path = files.Exists("PICS\\" + file) ? "PICS\\" + file : file;
-            pic = new PicDecoder().Decode(file, files.Read(path));
+            pic = new PicDecoder().Decode(path.ToUpperInvariant(), files.Read(path));
             _pictures[file] = pic;
         }
         return pic;

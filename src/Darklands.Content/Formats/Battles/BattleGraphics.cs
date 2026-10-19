@@ -18,7 +18,8 @@ public sealed class ImageBank
 
     public RowRunSprite this[int index] => Images[index];
 
-    public static ImageBank Decode(byte[] file, int count)
+    /// <summary>Decodes the bank; with <paramref name="assetName"/> (the file, "BATTLEGR.IMG") image i is named "BATTLEGR.IMG#i".</summary>
+    public static ImageBank Decode(byte[] file, int count, string? assetName = null)
     {
         var size = BinaryPrimitives.ReadUInt16LittleEndian(file);
         var data = file.AsSpan(2 + 2 * count, Math.Min(size, file.Length - 2 - 2 * count));
@@ -26,7 +27,7 @@ public sealed class ImageBank
         for (var i = 0; i < count; i++)
         {
             var offset = BinaryPrimitives.ReadUInt16LittleEndian(file.AsSpan(2 + 2 * i)) * 16;
-            images[i] = offset < data.Length ? RowRunSprite.Decode(data, offset) : RowRunSprite.Empty;
+            images[i] = offset < data.Length ? RowRunSprite.Decode(data, offset, assetName is null ? null : $"{assetName}#{i}") : RowRunSprite.Empty;
         }
         return new ImageBank(images);
     }
