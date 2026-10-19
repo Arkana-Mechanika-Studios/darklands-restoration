@@ -659,6 +659,8 @@ public sealed class EffectField : IEffectClouds
         {
             if (c.ArmourQuality[k] <= 0)
             {
+                // BUG: items are consumed until none of that type and quality is left: the spares stacked with the worn piece
+                // (worn down with it by WearItem) are thrown away with it.
                 while (Attacks.ConsumeItem(Battle, i, (byte)c.ArmourType[k], (byte)c.ArmourQuality[k]) != -1)
                 {
                 }

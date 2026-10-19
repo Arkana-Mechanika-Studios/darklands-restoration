@@ -51,7 +51,7 @@ public sealed class RebelsBeforeTheFortress : Card
             menu[0] = OptionState.Shown;
             menu[1] = OptionState.Shown;
         }
-        // UNCERTAIN: as the original has it, carrying item 0x3B greys out the climb.
+        // BUG: as the original has it, carrying a rope (item 0x3B) greys out the climb with a rope; the test looks inverted.
         if (c.CountItems(Who.Everybody, Rope) != 0)
         {
             menu[4] = OptionState.Shown;

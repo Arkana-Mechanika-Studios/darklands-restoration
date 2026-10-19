@@ -172,6 +172,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
         ShowPicture(c, SkeletonsPicture);
         c.Screen.Text(7);
         FightTheSkeletons(c, menu);
+        // BUG: a victory has already left for the map (cur_loc -1), so the errand's thing is given only after a defeat.
         c.FinishQuest10(c.Here);
     }
 

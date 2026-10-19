@@ -42,6 +42,7 @@ public sealed class ClimbingTheWallPastTheGuards : Card
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         // C: v_di is overwritten for every member, so only the last member's rope counts (1 without members).
+        // BUG: the rope line is greyed unless the last member carries a rope, whoever else has one.
         var rope = true;
         for (var who = 0; who < c.PartySize; who++)
         {

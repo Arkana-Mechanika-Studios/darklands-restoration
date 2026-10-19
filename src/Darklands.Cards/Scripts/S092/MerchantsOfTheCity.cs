@@ -86,6 +86,8 @@ public sealed class MerchantsOfTheCity : Card
             c.Screen.Text(1);
             c.Variables.Location = NearestCastle(c);
             c.State.SavedCard = c.IsDaylight ? 0x15 : 0x16;
+            // BUG: $Raubi01 (RobberKnightTaskRewarded) takes saved_card2 as the quest giver, but this is the castle's location:
+            // the reward (tag 3, owner 0, tested above) is not found, the card reads and frees events[-1], and the reward stays to be claimed again.
             c.State.SavedCard2 = c.Variables.Location;
             c.Next = 0x91;
             c.Events.Create(Who.Everybody, c.Here, 0x5F, ErrandOffered, 0, 0, 0, 0x48, 0, 0);

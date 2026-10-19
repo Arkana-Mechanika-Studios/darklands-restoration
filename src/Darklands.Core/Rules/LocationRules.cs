@@ -369,6 +369,8 @@ public static class LocationRules
         for (var i = 0; i < s.Locations.Count; i++)
         {
             var p = s.Locations[i];
+            // BUG: only the icon is tested: a pagan altar the party has purged (its cards closed, 0x62: PaganAltarOnTheHill) is
+            // still chosen as an errand's site, which can then never be done; NearestOfType's flag-4 test does not catch it either.
             if (p.Icon != icon || (p.X == x && p.Y == y))
             {
                 continue;

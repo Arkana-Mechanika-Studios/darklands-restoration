@@ -35,6 +35,9 @@ public sealed class SallyPortInTheCityWall : Card
         menu.Enable(0, 1, 2, 3, 4, 5, 6);
         // C: the init helper sets opt_on[0..19] = 1 (with the "screwed up." handler) and the loop copies only flags 0..6: lines
         // 7..19 stay enabled; the card's text has ten option lines, so lines 7..9 are offered and do nothing (card oracle: CardOracleTests).
+        // BUG: the text's lines 1, 3 and 5 are "abandon the horses and ..." variants the script has no options for (MSGFILES): the
+        // lines are numbered in order, so from the second line on each runs another option (the second line climbs without ropes,
+        // the sewer-grate line prays, the alchemy line sneaks back), and the last three (pray, bribe, sneak back) do nothing.
         menu.Enable(Enumerable.Range(7, 13).ToArray());
         // C: cur_rep is the card's copy of the reputation; the bribe line's rating refreshes it.
         var standing = c.LocationQuery(c.Here, 0);

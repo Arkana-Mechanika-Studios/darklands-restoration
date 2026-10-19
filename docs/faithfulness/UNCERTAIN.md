@@ -12,16 +12,16 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 19 |
-| cards | core | 217 |
+| cards | core | 216 |
 | events | core | 1 |
 | travel | core | 6 |
 | battles | core | 30 |
 | persistence | core | 5 |
 | screens/presentation | other | 24 |
 | host/audio | other | 4 |
-| total |  | 306 |
+| total |  | 305 |
 
-## Core logic (278)
+## Core logic (277)
 
 ### rules (19)
 
@@ -55,7 +55,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-226966** `uncertain` - `src/Darklands.Core/Rules/Brewing.cs:94` `BrewingBench.Brew`  
   original: `R033+0x1390` (1462:1390, draft)  
   why: the original calls event_renew with nine arguments; the tenth (the tag it matches on) is whatever lies on the caller's stack. 0 here.
-- **U-881f6b** `uncertain` - `src/Darklands.Core/Rules/CampStay.cs:161` `CampStay.CanDoAlchemy`  
+- **U-881f6b** `uncertain` - `src/Darklands.Core/Rules/CampStay.cs:165` `CampStay.CanDoAlchemy`  
   original: `R036+0x1E80` (1462:1E80, draft)  
   why: a byte is tested whole, so its top five bits (not formulas; kept in Character.OriginalRecord) would count too; nothing in the game sets them, and Formulas is the set of the low three bits.
 - **U-20fb81** `uncertain` - `src/Darklands.Core/Rules/LocationRules.cs:78` `LocationRules.Query`  
@@ -64,7 +64,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-158737** `uncertain` - `src/Darklands.Core/Rules/LootSharing.cs:121` `LootSharing.AddToPile`  
   original: `R040+0x1242` (1462:1242, draft)  
   why: the original sets only type (code), quality and count of the new entry and leaves its kind and weight bytes stale; nothing reads them afterwards (Get takes both from the item list), so the item list's values are stored.
-- **U-5a0428** `uncertain` - `src/Darklands.Core/Rules/PotionEffects.cs:100` `PotionEffects.Drink`  
+- **U-5a0428** `uncertain` - `src/Darklands.Core/Rules/PotionEffects.cs:106` `PotionEffects.Drink`  
   original: `R031+0x10AE` (1462:10AE, draft), `R031+0x43B2` (1462:43B2, draft), `R031+0x4CC4` (18E7:0474, draft)  
   why: what Transformation is meant to do; the code adds one florin.
 - **U-41bb2f** `uncertain` - `src/Darklands.Core/Rules/SaintBook.cs:201` `SaintBook.TravelBlessing`  
@@ -83,7 +83,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: for a price word ≥ 0x8000 (never reached with the game's values) money_set's sign handling is assumed to match Money.From.
 
-### cards (217)
+### cards (216)
 
 - **U-a32a7e** `uncertain` - `src/Darklands.Cards/CardContext.Fights.cs:32` `CardContext.CombatFlags`  
   original: `R029+0x577A` (1367:086A, matched)  
@@ -226,7 +226,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-660304** `uncertain` - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:19` `SallyPortInTheCityWall`  
   original: `R073+0x2CB0` (1A7E:0850, matched)  
   why: the card sets the window globals DS:EE70 = 0 and DS:EE72 = 7; they are not modelled (nothing reconstructed reads them).
-- **U-362643** `uncertain` - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:121` `SallyPortInTheCityWall.ClimbWithARope`  
+- **U-362643** `uncertain` - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:124` `SallyPortInTheCityWall.ClimbWithARope`  
   original: `R073+0x2732` (1A7E:02D2, matched)  
   why: the test looks inverted (a high chance makes success unlikely), but the code does exactly this (`cmp ax,[bp+6]; jle` in R073+0x2732; the same in R073+0x2820).
 - **U-4d69f3** `uncertain` - `src/Darklands.Cards/Scripts/S073/SoldiersClosingInAtTheWall.cs:16` `SoldiersClosingInAtTheWall`  
@@ -292,9 +292,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-af5b18** `uncertain` - `src/Darklands.Cards/Scripts/S089/ArrestingTheRebels.cs:120` `ArrestingTheRebels.Pray`  
   original: `R089+0x1AC6` (197F:0656, matched), `R089+0x1B30` (197F:06C0, matched)  
   why: block 2 has no option lines (block 8 is the text written for this); kept as the original sets it.
-- **U-f24aeb** `uncertain` - `src/Darklands.Cards/Scripts/S090/RebelsBeforeTheFortress.cs:54` `RebelsBeforeTheFortress.Run`  
-  original: `R090+0x161E` (1999:000E, matched)  
-  why: as the original has it, carrying item 0x3B greys out the climb.
 - **U-b1c447** `uncertain` - `src/Darklands.Cards/Scripts/S090/RebelsRallyTheCrowd.cs:27` `RebelsRallyTheCrowd.Run`  
   original: `R090+0x0000` (1838:0000, matched)  
   why: the card also sets its global DS:6223 (1 here, 0 below), which no other code reads.
@@ -841,10 +838,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-95aa32** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:266` `EffectField.private`  
   original: `R017+0x0000` (1EF8:0000, draft)  
   why: the lists are made anew each frame here; the original makes them when it redraws the whole view (the camera moved, a door or wall changed), which shows the same cells.
-- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:879` `EffectField.public`  
+- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:881` `EffectField.public`  
   original: `root 06A1:29B6` (06A1:29B6, asm), `R014+0xA738` (18BF:02A8, draft)  
   why: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
-- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1039` `EffectField.Drawn`  
+- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1041` `EffectField.Drawn`  
   original: `R014+0x6818` (14F7:0008, draft), `R014+0x7BBE` (14F7:13AE, draft)  
   why: an entry whose box the view clips to nothing gives its place back in the original; here every piece, edge and number of a combatant in view counts (the boxes are not clipped), and the cloud edges count for the clouds of the shown level with a puff in view.
 - **U-8dfdd7** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Party.cs:123` `TacticalBattle.StopEverything`  

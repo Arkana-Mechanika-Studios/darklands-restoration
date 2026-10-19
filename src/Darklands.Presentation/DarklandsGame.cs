@@ -314,7 +314,8 @@ public sealed class DarklandsGame
     //   combat_flags |= 4 (−3) / 8 (−5) / 0x80 (−6) / 0xC (−4), |= 1, battle_run(battle_mode, battle_enemy, battle_seed,
     //   −1, A76C, 0, −1, A76E, 0, −1, A770, 0), status 3 → 0 with party_delete_vec, others but 0 and 5 → 1,
     //   none left or battle_result == 5 → music 0x12, "death", exit; else cards_startup_vec and the result is the next screen.
-    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; cards_shutdown and cards_startup's reloads are not needed.
+    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; cards_shutdown and cards_startup's reloads are not
+    //   modelled, so the event table is not emptied for the battle, read back over it and compacted (see CardContext.RunBattle).
     // orig: cards_startup R043+0x078E (1462:078E) matched begins with srand((unsigned)time(0)): TimePassage.Reseed.
     // C: with DS:9081 bit 0 (GameState.ResumeBattle: a game saved in a battle) the card was skipped and the code is the DS:A764 the loop
     // holds (not a battle code after a load); R002+0x0000 takes the battle up from the battle file and clears the bit at its end.

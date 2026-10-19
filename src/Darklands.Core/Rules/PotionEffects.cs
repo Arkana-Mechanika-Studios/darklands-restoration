@@ -68,6 +68,9 @@ public static class PotionEffects
         int t;
         switch (stack.Code & 0xFFF)
         {
+            // BUG: the weapon potions add to the bonus byte without a limit and their bonus event (0x4A) is never undone
+            // (EventExpiry.UndoBoost): they last for good and stack, and the nibbles wrap (Deadly Blade's damage nibble loses
+            // its carry out of the byte, so a fourth potion can leave +1; Strongedge's carries into the damage nibble).
             case DeadlyBlade:
                 t = ThreeBands(3, 4, 5);
                 MemberRules.RecordPotionBonus(s, member, DeadlyBlade, t, 24);
@@ -79,6 +82,8 @@ public static class PotionEffects
                 MemberRules.RecordPotionBonus(s, member, index, t, 24);
                 m.WeaponPotions = (byte)((hi << 4) + t + lo);
                 break;
+            // BUG: Great Power adds 14/22/30 to the whole damage-and-penetration byte (+14 penetration; +1 damage +6; +1 damage
+            // +14, with the carries), where the manual has it raise the weapon's quality by that much, up to 99.
             case GreatPower:
                 t = ThreeBands(14, 22, 30);
                 MemberRules.RecordPotionBonus(s, member, index, t, 24);
@@ -93,7 +98,8 @@ public static class PotionEffects
             case Hardarmor:
                 t = Band(1, 2, 3, 5);
                 // BUG: Hardarmor and Firewall never wear off: they raise the armour byte (+0x41) and the Firewall
-                // strength (+0x10, below) with no event, and nothing lowers them again (the manual gives them a day).
+                // strength (+0x10, below) with no event, and nothing lowers them again (the manual gives them a day); the
+                // armour nibble carries past 15 into the fire-charm bits, which Attacks.HitDamage also counts as armour.
                 m.ArmourPotions = (byte)((m.ArmourPotions >> 4 << 4) + t + (m.ArmourPotions & 0xF));
                 break;
             // C: party_money++ increments the florin word alone (16-bit, no normalisation).

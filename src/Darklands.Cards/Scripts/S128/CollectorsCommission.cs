@@ -105,6 +105,8 @@ public sealed class CollectorsCommission : Card
                 break;
             case 10:
                 // Only the second and third kinds of owner here.
+                // BUG: debt notes name their holder by +0x2A % 2 (Medici, Fugger), but MerchantHouseOffices finds them in office
+                // +0x2A % 4, so the named office is often not the one that holds them.
                 switch (owner % 2)
                 {
                     case 0:

@@ -146,6 +146,8 @@ public sealed class BrewingBench
                     return;
                 }
                 count -= st.Count;
+                // BUG: the stack that slides into slot j is skipped (j still goes up), and whatever is still owed when the loop
+                // ends is forgotten: a batch whose ingredient is spread over several stacks costs only part of it.
                 Inventory.RemoveStack(_s, m, code);
             }
         }

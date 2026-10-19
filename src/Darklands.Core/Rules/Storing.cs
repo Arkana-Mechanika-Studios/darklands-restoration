@@ -22,6 +22,7 @@ public static class Storing
         if (at >= 0)
         {
             // C: cnt++ on a char: 255 + 1 wraps to 0.
+            // BUG: the count has no limit: the 256th item of one kind makes it 0, and the stored items are lost.
             store[at] = store[at] with { Count = (byte)(store[at].Count + 1) };
             return;
         }

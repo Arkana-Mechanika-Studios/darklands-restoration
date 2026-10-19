@@ -181,6 +181,8 @@ public static class MemberRules
         {
             var m = s.Party.Members[i];
             var a = m.Attributes[attribute];
+            // BUG: healing works from above the maximum too: an attribute boosted past it (Ironarm, New-wind, a saint) is brought
+            // most of the way down to it, so Essence o'Grace drunk while Ironarm runs takes most of the boost away.
             m.Attributes[attribute] = Math.Clamp(a + (m.AttributeMaximums[attribute] - a) * percent / 100, 1, 99);
         }
     }

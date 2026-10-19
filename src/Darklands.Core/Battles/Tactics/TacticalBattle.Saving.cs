@@ -34,6 +34,8 @@ public sealed partial class TacticalBattle
     // always current); tests: BattleSaveTests
     // DIVERGENCE: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant
     // tables' bytes left by earlier battles (path tails, slots not used since), are this program's (zeros) for a battlefield made here.
+    // BUG: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never
+    // touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
     // C: the function pointers of a level's objects are written as numbers: the secret door search 0 (a null pointer), thunk 09C0:17F7 1,
     // the spell trap 2, the missile trap 4, thunk 09C0:181F 5, thunk 09C0:1815 6, thunk 09C0:1833 7, thunk 09C0:1829 8 (as longs); another value is left as it is.
     public void WriteBattleFile(BattleFile file, bool inBattle, int clearedLevels, int lastCastleFlags)

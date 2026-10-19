@@ -335,11 +335,18 @@ public static class Attacks
             return 0;
         }
         var ct = battle[t];
+        // BUG: the whole charm byte but bit 7 counts as armour: its high nibble (bits 4-6) is the fire charm that Firewall
+        // (+1 each), St.Polycarp, St.Charity and the other SetCharm saints set, so they give +16 to +112 armour that never
+        // wears off (the "invulnerable after Polycarp and Firewall" bug); only the low nibble is the potions' and saints' armour.
         var armour = ct.ArmourValue[location] + (ct.Protection & 0x7F);
+        // BUG: the weapon potions' bonus byte counts with any weapon the member strikes with (bows and fists too), where the
+        // manual and the potions' own descriptions limit Deadly Blade, Strongedge and Great Power to some kinds of weapon.
         var bonus = (ca.WeaponBonus >> 4) + ca.WeaponDamage;
         var fullStrength = ca.FullStrength & 0x7F;
         int minimumStrength = ca.MinimumStrength;
         // C: the bonus byte is added whole (not just its low nibble) before masking.
+        // BUG: the penetration wraps: (bonus + weapon) & 15, so Strongedge or Great Power on a weapon of high penetration
+        // gives almost none ("after Great Power my bows only do 3-5 damage").
         var penetration = (ca.WeaponBonus + ca.WeaponClass) & 0xF;
         if (ca.Action.Has(CombatAction.VulnerableAttack))
         {
