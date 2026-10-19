@@ -31,7 +31,9 @@ public sealed class CardOracleTests
 
     public static JsonDocument? Corpus()
     {
-        var path = Path.Combine(Folder(), "cards-oracle.json.gz");
+        // DARKLANDS_CARD_ORACLE_CORPUS: another corpus (the pilot's start-state variations)
+        var path = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_CORPUS") is { Length: > 0 } other
+            ? other : Path.Combine(Folder(), "cards-oracle.json.gz");
         if (!File.Exists(path))
         {
             return null;
@@ -141,9 +143,8 @@ public sealed class CardOracleTests
         var parts = runName.Split(' ');
         var probe = parts[0] == "probe";
         var key = parts[1];
-        var location = int.Parse(key[1..key.IndexOf('-')]);
-        var option = int.Parse(key[(key.IndexOf("-O") + 2)..]);
-        var (actual, end, random, sav) = Run(card, location, option, probe, clock);
+        var option = int.Parse(key[(key.LastIndexOf("-O") + 2)..]);
+        var (actual, end, random, sav) = Run(card, key, option, probe, clock);
         foreach (var prefix in dropCSharp ?? [])
         {
             // a C# line the original has no counterpart for, listed in card-divergences.json
@@ -367,9 +368,9 @@ public sealed class CardOracleTests
 
     /// <summary>Runs the C# card on a start state as the oracle did.</summary>
     public static (List<string> Trace, string End, string Random, (string Place, JsonObject Sections)? Sav) Run(
-        Card card, int location, int option, bool probe, uint clock)
+        Card card, string key, int option, bool probe, uint clock)
     {
-        var state = CardOracleStates.New(location, option);
+        var state = CardOracleStates.FromKey(key);
         // C: srand((unsigned)time(0)) of the oracle's machine: its DOS clock is fixed, time(0) gives the corpus's "clock"
         state.ClockSeed = () => clock;
         var (start, _) = Persistence.OriginalSaves.Write(state);
