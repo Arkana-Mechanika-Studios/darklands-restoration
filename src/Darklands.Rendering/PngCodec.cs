@@ -105,9 +105,27 @@ public static class PngCodec
         {
             var line = raw.AsSpan(y * (stride + 1), stride + 1);
             Unfilter(line[0], line[1..], previous, current, pixelBytes);
-            for (var x = 0; x < width; x++)
+            var output = image.Argb.AsSpan(y * width, width);
+            if (depth == 8 && colorType == 6)
             {
-                image.Argb[y * width + x] = Pixel(current, x, depth, colorType, palette, transparency);
+                for (var x = 0; x < width; x++)
+                {
+                    output[x] = (uint)current[x * 4 + 3] << 24 | (uint)current[x * 4] << 16 | (uint)current[x * 4 + 1] << 8 | current[x * 4 + 2];
+                }
+            }
+            else if (depth == 8 && colorType == 2 && transparency is null)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    output[x] = 0xFF000000u | (uint)current[x * 3] << 16 | (uint)current[x * 3 + 1] << 8 | current[x * 3 + 2];
+                }
+            }
+            else
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    output[x] = Pixel(current, x, depth, colorType, palette, transparency);
+                }
             }
             (previous, current) = (current, previous);
         }
@@ -116,6 +134,24 @@ public static class PngCodec
 
     private static void Unfilter(byte filter, ReadOnlySpan<byte> line, byte[] previous, byte[] current, int pixelBytes)
     {
+        switch (filter)
+        {
+            case 0:
+                line.CopyTo(current);
+                return;
+            case 1:
+                for (var i = 0; i < line.Length; i++)
+                {
+                    current[i] = (byte)(line[i] + (i >= pixelBytes ? current[i - pixelBytes] : 0));
+                }
+                return;
+            case 2:
+                for (var i = 0; i < line.Length; i++)
+                {
+                    current[i] = (byte)(line[i] + previous[i]);
+                }
+                return;
+        }
         for (var i = 0; i < line.Length; i++)
         {
             int left = i >= pixelBytes ? current[i - pixelBytes] : 0;

@@ -134,6 +134,7 @@ if (settings.HdPack is { } hdPack)
     // replacement graphics (docs/SETTINGS.md, display.hdPack): drawn by Darklands.Rendering, the game plays the same
     var pack = HdPack.Load(hdPack);
     pack.Problems.ToList().ForEach(Console.Error.WriteLine);
+    _ = pack.PreloadAsync();
     host.Renderer = new HdRenderer(pack);
 }
 var textFont = settings.TextFont ?? LocalPaths.Get("textfont", "DARKLANDS_TEXT_FONT");

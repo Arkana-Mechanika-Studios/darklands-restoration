@@ -177,8 +177,8 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     }
 
     /// <summary>
-    /// Draws a frame's items: the base on the frame's own streaming texture, each replacement picture on a texture kept
-    /// while the picture object is in use and uploaded again when its version moves.
+    /// Draws a frame's items: the base on the frame's own streaming texture, every other picture (replacements, the
+    /// overlay) on a texture kept while the picture object is in use and uploaded again when its version moves.
     /// </summary>
     private void DrawHdFrame(HdFrame frame)
     {
@@ -186,7 +186,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         foreach (var item in frame.Items)
         {
             var destination = ToSdl(item.Destination);
-            if (item.Placement is null)
+            if (ReferenceEquals(item, frame.Base))
             {
                 SdlNative.SDL_RenderCopyTo(_renderer, _texture, IntPtr.Zero, ref destination);
                 continue;
@@ -215,7 +215,22 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
             SdlNative.SDL_SetTextureBlendMode(texture, SdlNative.BlendModeBlend);
             SdlNative.SDL_SetTextureScaleMode(texture, item.Filter == DrawFilter.Linear ? SdlNative.ScaleModeLinear : SdlNative.ScaleModeNearest);
         }
-        SdlNative.SDL_UpdateTexture(texture, IntPtr.Zero, image.Argb, image.Width * 4);
+        if (kept.Texture != IntPtr.Zero && kept.Version == image.Version - 1 && image.LastChange is var (x, y, w, h))
+        {
+            // only the rectangle the last change touched
+            var area = new SdlNative.SdlRect { X = x, Y = y, Width = w, Height = h };
+            unsafe
+            {
+                fixed (uint* pixels = &image.Argb[y * image.Width + x])
+                {
+                    SdlNative.SDL_UpdateTexture(texture, ref area, (IntPtr)pixels, image.Width * 4);
+                }
+            }
+        }
+        else
+        {
+            SdlNative.SDL_UpdateTexture(texture, IntPtr.Zero, image.Argb, image.Width * 4);
+        }
         _hdTextures[image] = (texture, image.Version);
         return texture;
     }

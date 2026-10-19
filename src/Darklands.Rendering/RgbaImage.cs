@@ -30,6 +30,23 @@ public sealed class RgbaImage
     /// </summary>
     public int Version { get; private set; }
 
+    /// <summary>
+    /// The rectangle (x, y, width, height) the latest change touched; null when it may have touched any pixel. A host
+    /// holding version <see cref="Version"/> − 1 needs to upload only this rectangle.
+    /// </summary>
+    public (int X, int Y, int Width, int Height)? LastChange { get; private set; }
+
     /// <summary>Marks the pixels as changed (<see cref="Version"/>).</summary>
-    public void Changed() => Version++;
+    public void Changed()
+    {
+        Version++;
+        LastChange = null;
+    }
+
+    /// <summary>Marks the pixels of a rectangle as changed, and only those.</summary>
+    public void Changed(int x, int y, int width, int height)
+    {
+        Version++;
+        LastChange = (x, y, width, height);
+    }
 }

@@ -156,8 +156,11 @@ public sealed class HdRendererTests
         var asset = ScreenOwners.IdOf("test:hd-asset");
 
         var frame = Render(pack, screen, 4);
-        Assert.Equal(2, frame.Items.Count);
+        // the frame, the replacement (whole: nothing else replaced in its rectangle), the overlay
+        Assert.Equal(3, frame.Items.Count);
         var item = frame.Items[1];
+        Assert.Null(frame.Items[2].Placement);
+        Assert.Equal(DrawFilter.Nearest, frame.Items[2].Filter);
         Assert.Equal(DrawFilter.Linear, item.Filter);
         Assert.Equal(new DisplayRectangle(40, 80, 32, 24), item.Destination);
         var placement = item.Placement!;
@@ -220,12 +223,12 @@ public sealed class HdRendererTests
         canvas.Draw(image, -3, 196);
         scratch.Png("test_hd-twice.png", Picture(16, 12, Marker));
         var frame = Render(HdPack.Load(scratch.Path), screen, 2);
-        Assert.Equal([(50, 50), (200, 120), (-3, 196)], frame.Items.Skip(1).Select(i => (i.Placement!.X, i.Placement.Y)));
+        Assert.Equal([(50, 50), (200, 120), (-3, 196)], frame.Items.Skip(1).SkipLast(1).Select(i => (i.Placement!.X, i.Placement.Y)));
         Assert.Equal(new DisplayRectangle(-6, 392, 16, 12), frame.Items[3].Destination);
         Assert.Equal(5 * 4, frame.Items[3].Placement!.Owned.Count(o => o));
-        // whole drawings draw the pack's picture itself; the clipped one a masked copy
+        // each draws the pack's picture itself, the clipped one too: the overlay keeps the frame outside its pixels
         Assert.Same(frame.Items[1].Texture, frame.Items[2].Texture);
-        Assert.NotSame(frame.Items[1].Texture, frame.Items[3].Texture);
+        Assert.Same(frame.Items[1].Texture, frame.Items[3].Texture);
         var composed = Compose(frame, 2).Argb;
         Assert.Equal(Marker(6, 0), composed[392 * 640 + 0]);
         Assert.Equal(Marker(0, 0), composed[100 * 640 + 100]);
@@ -260,8 +263,9 @@ public sealed class HdRendererTests
         Assert.Single(renderer.Render(screen, output).Items);
     }
 
+    /// <summary>Something passing over a drawing (a fill, the pointer) changes only the overlay, never the replacement's texture.</summary>
     [Fact]
-    public void AnUnchangedDrawingKeepsItsTextureObject()
+    public void ADrawingCoveredBySomethingElseKeepsItsTexture()
     {
         using var scratch = new Scratch();
         var screen = new Screen();
@@ -277,7 +281,12 @@ public sealed class HdRendererTests
         Assert.Same(first, second);
         Assert.Equal(version, second.Version);
         canvas.Fill(5, 5, 1, 1, 0);
-        Assert.NotSame(first, renderer.Render(screen, output).Items[1].Texture);
+        var frame = renderer.Render(screen, output);
+        Assert.Same(first, frame.Items[1].Texture);
+        Assert.Equal(version, first.Version);
+        Assert.Equal(0u, frame.Items[2].Texture.Argb[3 * Screen.Width + 3]);
+        Assert.NotEqual(0u, frame.Items[2].Texture.Argb[0]);
+        Assert.NotEqual(0u, frame.Items[2].Texture.Argb[5 * Screen.Width + 5]);
         // the base layer is one picture whose version moves every frame
         var baseLayer = renderer.Render(screen, output).Base.Texture;
         var baseVersion = baseLayer.Version;
@@ -350,7 +359,7 @@ public sealed class HdRendererTests
         }));
         var frame = Render(HdPack.Load(scratch.Path), screen, 4);
         // the picture, the pointer and the turned picture over the frame
-        Assert.Equal(4, frame.Items.Count);
+        Assert.Equal(5, frame.Items.Count);
         Assert.Equal(ScaledFrame(screen, 1280, 800), Compose(frame, 4).Argb);
     }
 }

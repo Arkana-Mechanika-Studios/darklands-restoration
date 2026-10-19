@@ -9,181 +9,143 @@ public readonly record struct ColorLine(double Scale, double Red, double Green, 
 {
     /// <summary>The line applied to a colour (0xAARRGGBB), its alpha kept.</summary>
     public uint Apply(uint argb) =>
-        (argb & 0xFF000000u) | Channel(argb, 16, Scale, Red) | Channel(argb, 8, Scale, Green) | Channel(argb, 0, Scale, Blue);
+        (argb & 0xFF000000u) | Channel(argb, 16, Red) << 16 | Channel(argb, 8, Green) << 8 | Channel(argb, 0, Blue);
 
-    private static uint Channel(uint argb, int shift, double scale, double offset) =>
-        (uint)Math.Clamp((int)Math.Round(scale * ((argb >> shift) & 0xFF) + offset, MidpointRounding.AwayFromZero), 0, 255) << shift;
+    /// <summary>The line as a table: 256 entries per channel (red, green, blue), for applying it to many pixels.</summary>
+    public byte[] Table()
+    {
+        var table = new byte[768];
+        for (var v = 0; v < 256; v++)
+        {
+            table[v] = (byte)Channel((uint)v << 16, 16, Red);
+            table[256 + v] = (byte)Channel((uint)v << 8, 8, Green);
+            table[512 + v] = (byte)Channel((uint)v, 0, Blue);
+        }
+        return table;
+    }
+
+    private uint Channel(uint argb, int shift, double offset) =>
+        (uint)Math.Clamp((int)Math.Round(Scale * ((argb >> shift) & 0xFF) + offset, MidpointRounding.AwayFromZero), 0, 255);
 }
 
 /// <summary>
-/// What the palette has done to an asset's drawing: per pixel of the asset (screen orientation, as
-/// <see cref="AssetPlacement.Owned"/>) the colour the asset is meant to show and the colour the screen shows instead,
-/// and the few <see cref="ColorLine"/>s that turn the first into the second. A replacement goes through the same lines,
-/// so it fades, greys or lightens with the original.
+/// The colour lines of a drawing's palette changes: found from the distinct pairs (own colour, shown colour) of its
+/// changed pixels, and which line each pair takes.
 /// </summary>
 /// <remarks>
-/// The lines are found from the pairs (own colour, shown colour) of the changed pixels: one line fitted to all, then
-/// the pair farthest from its line starts a new one and the pairs are shared out again, up to <see cref="MaxLines"/>
-/// lines or until every pair lies within <see cref="Tolerance"/> of its line. A palette fade, which moves every colour
-/// of a range the same part of the way to one colour, is one line and is reproduced exactly; changes that are not of
-/// that form (colour cycling, a remap to unrelated colours) end on flat lines, the shown colour without the detail.
-/// Deterministic: the pairs are taken in a fixed order.
+/// One line is fitted to all pairs (weighted by their pixel counts), then the pair farthest from its line starts a new
+/// one and the pairs are shared out again, up to <see cref="MaxLines"/> lines or until every pair lies within
+/// <see cref="Tolerance"/> of its line. A palette fade, which moves every colour of a range the same part of the way to
+/// one colour, is one line and is reproduced exactly; changes not of that form (colour cycling, a remap to unrelated
+/// colours) end on flat lines, the shown colour without the detail. When most of the drawing changed,
+/// <see cref="Unchanged"/> is the line with the most pixels: the colours a fade leaves alone (outlines, shadows) follow
+/// it, so the replacement shows nowhere unfaded inside a faded picture. Deterministic: the pairs come in a fixed order.
 /// </remarks>
-public sealed class PaletteEffect
+public sealed class ColorLines
 {
     public const int MaxLines = 4;
 
     /// <summary>How far (per channel, 0..255) a pair may lie from its line: the game's colours have 6 bits, so 4 is one step.</summary>
     public const double Tolerance = 6;
 
-    private PaletteEffect(uint[] own, uint[] shown, ColorLine[] lines, int[] lineOf)
+    private readonly Dictionary<(uint Own, uint Shown), int> _lineOfPair;
+
+    private ColorLines(ColorLine[] lines, Dictionary<(uint, uint), int> lineOfPair, int unchanged)
     {
-        Own = own;
-        Shown = shown;
         Lines = lines;
-        LineOf = lineOf;
+        _lineOfPair = lineOfPair;
+        Unchanged = unchanged;
+        Tables = [.. lines.Select(line => line.Table())];
     }
-
-    /// <summary>Per asset pixel, its own colour where the screen shows another (0: unchanged or not seen).</summary>
-    public uint[] Own { get; }
-
-    /// <summary>Per asset pixel, the colour the screen shows where it is not the own colour (0: unchanged or not seen).</summary>
-    public uint[] Shown { get; }
 
     public IReadOnlyList<ColorLine> Lines { get; }
 
-    /// <summary>Per asset pixel, the index of its line in <see cref="Lines"/>; -1 where the replacement keeps its colours.</summary>
-    public int[] LineOf { get; }
+    /// <summary>The line unchanged pixels take (-1: they keep the replacement's colours).</summary>
+    public int Unchanged { get; }
 
-    /// <summary>The colour a replacement pixel over asset pixel <paramref name="texel"/> shows.</summary>
-    public uint Apply(int texel, uint argb) => LineOf[texel] < 0 ? argb : Lines[LineOf[texel]].Apply(argb);
+    /// <summary>Per line, its <see cref="ColorLine.Table"/>.</summary>
+    public IReadOnlyList<byte[]> Tables { get; }
 
-    /// <summary>The same changes (so the same lines and the same replacement pixels).</summary>
-    public bool SameAs(PaletteEffect? other) =>
-        other is not null && Own.AsSpan().SequenceEqual(other.Own) && Shown.AsSpan().SequenceEqual(other.Shown);
+    /// <summary>The line of a changed pair.</summary>
+    public int LineOf(uint own, uint shown) => _lineOfPair[(own, shown)];
 
     /// <summary>
-    /// The effect of the changed pixels (<paramref name="shown"/> non-zero) of a drawing <paramref name="width"/> pixels
-    /// wide, with its lines. An unchanged owned pixel among mostly changed ones (more than half of the owned pixels within
-    /// two of it) takes their most frequent line: in a faded picture its outline and shadow colours, which the fade leaves
-    /// alone, do not show the replacement unfaded.
+    /// The lines of the changed pairs (sorted by own then shown colour, with their pixel counts) of a drawing of
+    /// <paramref name="pixels"/> pixels.
     /// </summary>
-    public static PaletteEffect Fit(uint[] own, uint[] shown, bool[] owned, int width)
+    public static ColorLines Fit(IReadOnlyList<((uint Own, uint Shown) Pair, int Count)> pairs, int pixels)
     {
-        var counts = new Dictionary<(uint Own, uint Shown), int>();
-        for (var t = 0; t < shown.Length; t++)
+        var lines = new List<ColorLine> { FitLine(pairs, null, -1) };
+        var lineOfPair = new int[pairs.Count];
+        while (true)
         {
-            if (shown[t] != 0)
+            for (var round = 0; round < 10; round++)
             {
-                counts[(own[t], shown[t])] = counts.GetValueOrDefault((own[t], shown[t])) + 1;
-            }
-        }
-        var pairs = counts.OrderBy(p => p.Key.Own).ThenBy(p => p.Key.Shown).ToArray();
-        var lines = new List<ColorLine>();
-        var lineOfPair = new int[pairs.Length];
-        if (pairs.Length > 0)
-        {
-            lines.Add(FitLine(pairs, lineOfPair, -1));
-            while (true)
-            {
-                for (var round = 0; round < 10; round++)
+                var changed = false;
+                for (var p = 0; p < pairs.Count; p++)
                 {
-                    var changed = false;
-                    for (var p = 0; p < pairs.Length; p++)
+                    var best = 0;
+                    for (var l = 1; l < lines.Count; l++)
                     {
-                        var best = 0;
-                        for (var l = 1; l < lines.Count; l++)
+                        if (Residual(pairs[p].Pair, lines[l]) < Residual(pairs[p].Pair, lines[best]))
                         {
-                            if (Residual(pairs[p].Key, lines[l]) < Residual(pairs[p].Key, lines[best]))
-                            {
-                                best = l;
-                            }
-                        }
-                        changed |= best != lineOfPair[p];
-                        lineOfPair[p] = best;
-                    }
-                    for (var l = 0; l < lines.Count; l++)
-                    {
-                        if (lineOfPair.Contains(l))
-                        {
-                            lines[l] = FitLine(pairs, lineOfPair, l);
+                            best = l;
                         }
                     }
-                    if (!changed && round > 0)
-                    {
-                        break;
-                    }
+                    changed |= best != lineOfPair[p];
+                    lineOfPair[p] = best;
                 }
-                var worst = -1;
-                var worstResidual = Tolerance;
-                for (var p = 0; p < pairs.Length; p++)
+                for (var l = 0; l < lines.Count; l++)
                 {
-                    var residual = Residual(pairs[p].Key, lines[lineOfPair[p]]);
-                    if (residual > worstResidual)
+                    if (lineOfPair.Contains(l))
                     {
-                        (worst, worstResidual) = (p, residual);
+                        lines[l] = FitLine(pairs, lineOfPair, l);
                     }
                 }
-                if (worst < 0 || lines.Count == MaxLines)
+                if (!changed && round > 0)
                 {
                     break;
                 }
-                var shownColor = pairs[worst].Key.Shown;
-                lines.Add(new ColorLine(0, (shownColor >> 16) & 0xFF, (shownColor >> 8) & 0xFF, shownColor & 0xFF));
             }
-        }
-        var index = new Dictionary<(uint, uint), int>();
-        for (var p = 0; p < pairs.Length; p++)
-        {
-            index[pairs[p].Key] = lineOfPair[p];
-        }
-        var changedLine = new int[shown.Length];
-        for (var t = 0; t < shown.Length; t++)
-        {
-            changedLine[t] = shown[t] == 0 ? -1 : index[(own[t], shown[t])];
-        }
-        var lineOf = (int[])changedLine.Clone();
-        var height = shown.Length / width;
-        Span<int> votes = stackalloc int[MaxLines];
-        for (var t = 0; t < shown.Length; t++)
-        {
-            if (changedLine[t] >= 0 || !owned[t])
+            var worst = -1;
+            var worstResidual = Tolerance;
+            for (var p = 0; p < pairs.Count; p++)
             {
-                continue;
-            }
-            votes.Clear();
-            var (ownedNear, changedNear) = (0, 0);
-            var (x, y) = (t % width, t / width);
-            for (var ny = Math.Max(0, y - 2); ny <= Math.Min(height - 1, y + 2); ny++)
-            {
-                for (var nx = Math.Max(0, x - 2); nx <= Math.Min(width - 1, x + 2); nx++)
+                var residual = Residual(pairs[p].Pair, lines[lineOfPair[p]]);
+                if (residual > worstResidual)
                 {
-                    var n = ny * width + nx;
-                    if (owned[n])
-                    {
-                        ownedNear++;
-                        if (changedLine[n] >= 0)
-                        {
-                            changedNear++;
-                            votes[changedLine[n]]++;
-                        }
-                    }
+                    (worst, worstResidual) = (p, residual);
                 }
             }
-            if (changedNear * 2 > ownedNear)
+            if (worst < 0 || lines.Count == MaxLines)
             {
-                var best = 0;
-                for (var l = 1; l < MaxLines; l++)
+                break;
+            }
+            var shown = pairs[worst].Pair.Shown;
+            lines.Add(new ColorLine(0, (shown >> 16) & 0xFF, (shown >> 8) & 0xFF, shown & 0xFF));
+        }
+        var map = new Dictionary<(uint, uint), int>();
+        var perLine = new long[lines.Count];
+        long changedPixels = 0;
+        for (var p = 0; p < pairs.Count; p++)
+        {
+            map[pairs[p].Pair] = lineOfPair[p];
+            perLine[lineOfPair[p]] += pairs[p].Count;
+            changedPixels += pairs[p].Count;
+        }
+        var unchanged = -1;
+        if (changedPixels * 2 > pixels)
+        {
+            unchanged = 0;
+            for (var l = 1; l < lines.Count; l++)
+            {
+                if (perLine[l] > perLine[unchanged])
                 {
-                    if (votes[l] > votes[best])
-                    {
-                        best = l;
-                    }
+                    unchanged = l;
                 }
-                lineOf[t] = best;
             }
         }
-        return new PaletteEffect(own, shown, [.. lines], lineOf);
+        return new ColorLines([.. lines], map, unchanged);
     }
 
     private static double Channel(uint argb, int channel) => (argb >> (16 - 8 * channel)) & 0xFF;
@@ -201,25 +163,25 @@ public sealed class PaletteEffect
     }
 
     /// <summary>
-    /// The line through the pairs of line <paramref name="line"/> (all pairs for -1), weighted by their pixel counts: one
-    /// scale for the three channels (least squares, kept within 0..1), an offset per channel.
+    /// The line through the pairs of line <paramref name="line"/> (all pairs when <paramref name="lineOfPair"/> is null),
+    /// weighted by their pixel counts: one scale for the three channels (least squares, kept within 0..1), an offset per channel.
     /// </summary>
-    private static ColorLine FitLine(KeyValuePair<(uint Own, uint Shown), int>[] pairs, int[] lineOfPair, int line)
+    private static ColorLine FitLine(IReadOnlyList<((uint Own, uint Shown) Pair, int Count)> pairs, int[]? lineOfPair, int line)
     {
         double n = 0;
         Span<double> ownMean = stackalloc double[3];
         Span<double> shownMean = stackalloc double[3];
-        for (var p = 0; p < pairs.Length; p++)
+        for (var p = 0; p < pairs.Count; p++)
         {
-            if (line >= 0 && lineOfPair[p] != line)
+            if (lineOfPair is not null && lineOfPair[p] != line)
             {
                 continue;
             }
-            n += pairs[p].Value;
+            n += pairs[p].Count;
             for (var c = 0; c < 3; c++)
             {
-                ownMean[c] += pairs[p].Value * Channel(pairs[p].Key.Own, c);
-                shownMean[c] += pairs[p].Value * Channel(pairs[p].Key.Shown, c);
+                ownMean[c] += pairs[p].Count * Channel(pairs[p].Pair.Own, c);
+                shownMean[c] += pairs[p].Count * Channel(pairs[p].Pair.Shown, c);
             }
         }
         for (var c = 0; c < 3; c++)
@@ -228,20 +190,51 @@ public sealed class PaletteEffect
             shownMean[c] /= n;
         }
         double covariance = 0, variance = 0;
-        for (var p = 0; p < pairs.Length; p++)
+        for (var p = 0; p < pairs.Count; p++)
         {
-            if (line >= 0 && lineOfPair[p] != line)
+            if (lineOfPair is not null && lineOfPair[p] != line)
             {
                 continue;
             }
             for (var c = 0; c < 3; c++)
             {
-                var o = Channel(pairs[p].Key.Own, c) - ownMean[c];
-                covariance += pairs[p].Value * o * (Channel(pairs[p].Key.Shown, c) - shownMean[c]);
-                variance += pairs[p].Value * o * o;
+                var o = Channel(pairs[p].Pair.Own, c) - ownMean[c];
+                covariance += pairs[p].Count * o * (Channel(pairs[p].Pair.Shown, c) - shownMean[c]);
+                variance += pairs[p].Count * o * o;
             }
         }
         var scale = variance > 1e-9 ? Math.Clamp(covariance / variance, 0, 1) : 0;
         return new ColorLine(scale, shownMean[0] - scale * ownMean[0], shownMean[1] - scale * ownMean[1], shownMean[2] - scale * ownMean[2]);
+    }
+}
+
+/// <summary>
+/// What the palette does to an asset's drawing now: per pixel of the asset (screen orientation, as
+/// <see cref="AssetPlacement.Owned"/>) the <see cref="ColorLines"/> line its replacement goes through, so the
+/// replacement fades, greys or lightens with the original.
+/// </summary>
+/// <remarks>
+/// A pixel's own colour is the asset's colour in the palette it was drawn with (<c>ScreenOwners.OwnColorsOf</c>); its
+/// shown colour is the screen's where the asset still owns the pixel, else the current palette's colour of the asset's
+/// own index (what the pixel would show uncovered), so a pointer or a box passing over the drawing does not change it.
+/// </remarks>
+public sealed class PaletteEffect(ColorLines lines, int[] lineOf)
+{
+    public ColorLines Lines => lines;
+
+    /// <summary>Per asset pixel, the index of its line; -1 where the replacement keeps its colours.</summary>
+    public int[] LineOf => lineOf;
+
+    /// <summary>The colour a replacement pixel over asset pixel <paramref name="texel"/> shows.</summary>
+    public uint Apply(int texel, uint argb) => Apply(lines.Tables, lineOf[texel], argb);
+
+    internal static uint Apply(IReadOnlyList<byte[]> tables, int line, uint argb)
+    {
+        if (line < 0)
+        {
+            return argb;
+        }
+        var table = tables[line];
+        return (argb & 0xFF000000u) | (uint)table[(argb >> 16) & 0xFF] << 16 | (uint)table[256 + ((argb >> 8) & 0xFF)] << 8 | table[512 + (argb & 0xFF)];
     }
 }

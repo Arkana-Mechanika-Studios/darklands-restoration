@@ -48,7 +48,10 @@ public sealed record AssetPlacement(string Asset, int X, int Y, int Width, int H
 /// <param name="Placement">The asset drawing it replaces; null for the base layer (the game's own frame).</param>
 public sealed record DrawItem(RgbaImage Texture, DisplayRectangle Destination, DrawFilter Filter, AssetPlacement? Placement);
 
-/// <summary>A frame to show: the items in drawing order, the first being the game's frame over the whole output rectangle.</summary>
+/// <summary>
+/// A frame to show: the items in drawing order, the first being the game's frame over the whole output rectangle; with
+/// replacements, the last is the overlay (the frame again, transparent where a replacement shows).
+/// </summary>
 public sealed record HdFrame(DisplayRectangle Output, IReadOnlyList<DrawItem> Items)
 {
     /// <summary>The game's own 320×200 frame (palette applied), scaled to <see cref="Output"/>.</summary>

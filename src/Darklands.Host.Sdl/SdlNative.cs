@@ -218,6 +218,9 @@ internal static class SdlNative
     internal static extern int SDL_UpdateTexture(IntPtr texture, IntPtr rectangle, uint[] pixels, int pitch);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_UpdateTexture(IntPtr texture, ref SdlRect rectangle, IntPtr pixels, int pitch);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int SDL_RenderClear(IntPtr renderer);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]

@@ -140,24 +140,45 @@ public sealed class HdPack
     public RgbaImage? Find(string assetName)
     {
         var key = Key(assetName);
-        if (!_files.TryGetValue(key, out var path))
+        return _files.TryGetValue(key, out var path) ? Load(key, path, assetName) : null;
+    }
+
+    /// <summary>
+    /// Reads every picture of the pack on worker threads, so that a picture's first appearance does not wait for its
+    /// file (a large PNG takes a tenth of a second). The pictures then stay in memory, as the ones read on demand do.
+    /// </summary>
+    public Task PreloadAsync() => Task.Run(() => Parallel.ForEach(_files.OrderBy(f => f.Key, StringComparer.Ordinal), f => Load(f.Key, f.Value, f.Key)));
+
+    /// <summary>The picture of a key, read once (outside the lock, so that a reader on another thread never waits for it).</summary>
+    private RgbaImage? Load(string key, string path, string assetName)
+    {
+        lock (_gate)
         {
-            return null;
+            if (_loaded.TryGetValue(key, out var known))
+            {
+                return known;
+            }
+        }
+        RgbaImage? image;
+        string? problem = null;
+        try
+        {
+            image = PngCodec.Read(path);
+        }
+        catch (Exception e) when (e is InvalidDataException or IOException or UnauthorizedAccessException)
+        {
+            problem = $"HD pack: {path}: {e.Message}; {assetName} keeps its original pixels";
+            image = null;
         }
         lock (_gate)
         {
-            if (_loaded.TryGetValue(key, out var image))
+            if (_loaded.TryGetValue(key, out var first))
             {
-                return image;
+                return first;
             }
-            try
+            if (problem is not null)
             {
-                image = PngCodec.Read(path);
-            }
-            catch (Exception e) when (e is InvalidDataException or IOException or UnauthorizedAccessException)
-            {
-                _problems.Add($"HD pack: {path}: {e.Message}; {assetName} keeps its original pixels");
-                image = null;
+                _problems.Add(problem);
             }
             _loaded[key] = image;
             return image;
