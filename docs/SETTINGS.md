@@ -66,7 +66,8 @@ A folder with one PNG per picture of the game it replaces, named after the pictu
 `pack.json` names other files: `{ "assets": { "PICS\\STARTSCR.PIC": "title.png" } }` (paths relative to the pack).
 A picture is stretched over the original's rectangle, so any size works (a multiple of the original keeps its
 proportions); it shows only where the original picture is still seen, so menus, text and anything drawn over it stay as
-they are. Palette effects (fades, colour cycling, recoloured figures) do not change a replacement yet. Problems (a
+they are. A replaced picture fades, greys or lightens with the original (the card's option fade); colour cycling and
+recoloured figures do not change a replacement yet. Problems (a
 missing folder, a broken PNG) are reported on the console and the original pictures are kept. The headless host takes
 the same key from `--settings`, or the step `hdpack:<folder>`, and then also saves `<name>.hd.png` for each shot.
 

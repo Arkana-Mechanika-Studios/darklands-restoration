@@ -44,6 +44,15 @@ public sealed class Canvas(Screen screen)
         }
     }
 
+    /// <summary>Changes one pixel's colour and keeps its owner, as a recolour does (text drawn by and, or, xor).</summary>
+    public void Repaint(int x, int y, byte color)
+    {
+        if ((uint)x < Width && (uint)y < Height)
+        {
+            _pixels[y * Width + x] = color;
+        }
+    }
+
     public void Clear(byte color)
     {
         Array.Fill(_pixels, color);
@@ -156,10 +165,12 @@ public sealed class Canvas(Screen screen)
     }
 
     /// <summary>Draws a picture and takes over its palette entries (the colours it defines).</summary>
+    /// <remarks>The picture's colours are recorded as its own (<see cref="ScreenOwners.SetOwnColors"/>).</remarks>
     public void DrawPicture(Pic picture, int x = 0, int y = 0, bool transparent = false)
     {
         UsePalette(picture);
         Draw(picture.Image, x, y, transparent);
+        ScreenOwners.SetOwnColors(ScreenOwners.IdOf(picture.Image.AssetName), picture.Image.Pixels, screen.Palette);
     }
 
     /// <summary>Copies the colours a picture defines into the current palette.</summary>

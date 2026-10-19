@@ -72,6 +72,7 @@ public static class ScreenOwners
     private static readonly Dictionary<string, int> Ids = new(StringComparer.Ordinal);
     private static readonly List<string?> Names = [null];
     private static readonly List<(int Width, int Height)> Sizes = [(0, 0)];
+    private static readonly Dictionary<int, (byte[] Pixels, uint[] Palette)> OwnColors = [];
 
     /// <summary>The id of an asset name; 0 for none.</summary>
     public static int IdOf(string? asset)
@@ -114,6 +115,35 @@ public static class ScreenOwners
         lock (Gate)
         {
             return id > 0 && id < Sizes.Count ? Sizes[id] : (0, 0);
+        }
+    }
+
+    /// <summary>
+    /// Records an asset's own pixels (row by row, its size) and the colours it is meant to be seen in (the palette it was
+    /// drawn with): a replacement then follows what the palette does to it since (a fade, a remap).
+    /// </summary>
+    public static void SetOwnColors(int id, ReadOnlySpan<byte> pixels, uint[] palette)
+    {
+        if (id == 0)
+        {
+            return;
+        }
+        lock (Gate)
+        {
+            if (OwnColors.TryGetValue(id, out var known) && known.Pixels.AsSpan().SequenceEqual(pixels) && known.Palette.AsSpan().SequenceEqual(palette))
+            {
+                return;
+            }
+            OwnColors[id] = (pixels.ToArray(), (uint[])palette.Clone());
+        }
+    }
+
+    /// <summary>The asset's own pixels and colours (<see cref="SetOwnColors"/>), null when none were recorded.</summary>
+    public static (byte[] Pixels, uint[] Palette)? OwnColorsOf(int id)
+    {
+        lock (Gate)
+        {
+            return OwnColors.TryGetValue(id, out var known) ? known : null;
         }
     }
 

@@ -136,8 +136,11 @@ drawn twice or partly covered.
 items (`HdRenderer` → `HdFrame`): the frame itself scaled to the output rectangle, then per drawing of a replaced asset
 its picture, turned as drawn and transparent outside the pixels the asset still owns. Without a pack the frame is the
 base item alone, exactly the picture shown before. The SDL host puts the items on SDL textures; the headless host
-composes them in software (`FrameCompositor`) for `<shot>.hd.png`. Palette effects (fades, colour cycling, recoloured
-figures) do not reach replacements yet.
+composes them in software (`FrameCompositor`) for `<shot>.hd.png`. A picture's own colours are recorded when it is
+drawn (`ScreenOwners.SetOwnColors`); where the screen now shows other colours (a palette fade, the card's grey remap)
+the replacement goes through the same change (`PaletteEffect`), and text drawn by and/or/xor recolours the picture's
+pixels instead of owning them, so the card's hidden option lines stay hidden. Sprites' recolours and colour cycling are
+not followed yet.
 
 ## Verification
 

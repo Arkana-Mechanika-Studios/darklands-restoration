@@ -13,15 +13,17 @@ namespace Darklands.Rendering;
 /// A pixel without an owner, of an unknown place or of an asset without a replacement shows the frame's pixel.</para>
 /// <para>Without a pack, or when nothing on the screen has a replacement, the frame is the base layer alone: exactly the
 /// picture hosts showed before (<see cref="FrameCompositor"/>).</para>
-/// <para>Not yet: palette effects. A replacement shows its own colours whatever the palette does (fades, colour cycling,
-/// recoloured figures and markers keep their asset's picture); later work.</para>
+/// <para>Palette effects: for an asset whose own colours are known (<see cref="ScreenOwners.OwnColorsOf"/>: pictures), each
+/// owned pixel's own colour is compared with the colour the screen shows; where the palette (a fade) or a recolour
+/// changed it, the replacement goes through the same change (<see cref="PaletteEffect"/>). Assets without known colours
+/// (sprites: recoloured figures, markers) keep their replacement's colours; later work.</para>
 /// New code (replacement graphics, not part of the game). Deterministic: the same screen and pack give the same items.
 /// </remarks>
 public sealed class HdRenderer(HdPack pack)
 {
     private readonly RgbaImage _base = new(Screen.Width, Screen.Height);
     private readonly Dictionary<int, RgbaImage?> _replacements = [];
-    private Dictionary<DrawingKey, (bool[] Owned, RgbaImage Texture)> _masked = [];
+    private Dictionary<DrawingKey, (bool[] Owned, PaletteEffect? Effect, RgbaImage Texture)> _masked = [];
 
     public HdPack Pack => pack;
 
@@ -39,14 +41,14 @@ public sealed class HdRenderer(HdPack pack)
             return new HdFrame(output, items);
         }
         var drawings = FindDrawings(screen);
-        var masked = new Dictionary<DrawingKey, (bool[] Owned, RgbaImage Texture)>();
+        var masked = new Dictionary<DrawingKey, (bool[] Owned, PaletteEffect? Effect, RgbaImage Texture)>();
         foreach (var (key, drawing) in drawings)
         {
             var replacement = _replacements[key.Owner]!;
             var texture = Texture(key, drawing, replacement);
             if (!ReferenceEquals(texture, replacement))
             {
-                masked[key] = (drawing.Owned, texture);
+                masked[key] = (drawing.Owned, drawing.Effect, texture);
             }
             items.Add(new DrawItem(texture, Destination(drawing, output), DrawFilter.Linear, drawing));
         }
@@ -77,6 +79,7 @@ public sealed class HdRenderer(HdPack pack)
     {
         var found = new Dictionary<DrawingKey, AssetPlacement>();
         var order = new List<(DrawingKey, AssetPlacement)>();
+        var changes = new Dictionary<DrawingKey, (uint[] Own, uint[] Shown)>();
         for (var y = 0; y < Screen.Height; y++)
         {
             for (var x = 0; x < Screen.Width; x++)
@@ -104,6 +107,28 @@ public sealed class HdRenderer(HdPack pack)
                     order.Add((key, drawing));
                 }
                 drawing.Owned[row * width + column] = true;
+                if (ScreenOwners.OwnColorsOf(owner) is { } colors && colors.Pixels.Length == width * height)
+                {
+                    var own = colors.Palette[colors.Pixels[v * width + u]] | 0xFF000000u;
+                    var shown = screen.Palette[screen.Pixels[i]] | 0xFF000000u;
+                    if (own != shown)
+                    {
+                        if (!changes.TryGetValue(key, out var change))
+                        {
+                            change = (new uint[width * height], new uint[width * height]);
+                            changes[key] = change;
+                        }
+                        change.Own[row * width + column] = own;
+                        change.Shown[row * width + column] = shown;
+                    }
+                }
+            }
+        }
+        for (var d = 0; d < order.Count; d++)
+        {
+            if (changes.TryGetValue(order[d].Item1, out var change))
+            {
+                order[d] = (order[d].Item1, order[d].Item2 with { Effect = PaletteEffect.Fit(change.Own, change.Shown, order[d].Item2.Owned, order[d].Item2.Width) });
             }
         }
         return order;
@@ -124,16 +149,18 @@ public sealed class HdRenderer(HdPack pack)
     }
 
     /// <summary>
-    /// The replacement turned as the drawing, transparent outside its owned pixels: the pack's picture itself when the
-    /// drawing is whole and unturned, the last frame's when the drawing has not changed.
+    /// The replacement turned as the drawing, transparent outside its owned pixels, through the drawing's palette effect:
+    /// the pack's picture itself when the drawing is whole, unturned and in its own colours, the last frame's when the
+    /// drawing has not changed.
     /// </summary>
     private RgbaImage Texture(DrawingKey key, AssetPlacement drawing, RgbaImage replacement)
     {
-        if (!drawing.FlipX && !drawing.FlipY && Array.TrueForAll(drawing.Owned, owned => owned))
+        if (!drawing.FlipX && !drawing.FlipY && drawing.Effect is null && Array.TrueForAll(drawing.Owned, owned => owned))
         {
             return replacement;
         }
-        if (_masked.TryGetValue(key, out var last) && last.Owned.AsSpan().SequenceEqual(drawing.Owned))
+        if (_masked.TryGetValue(key, out var last) && last.Owned.AsSpan().SequenceEqual(drawing.Owned)
+            && (last.Effect is null ? drawing.Effect is null : last.Effect.SameAs(drawing.Effect)))
         {
             return last.Texture;
         }
@@ -148,7 +175,8 @@ public sealed class HdRenderer(HdPack pack)
                 var column = (int)((long)px * drawing.Width / width);
                 if (drawing.Owns(column, row))
                 {
-                    texture.Argb[py * width + px] = replacement.Argb[sourceRow * width + (drawing.FlipX ? width - 1 - px : px)];
+                    var argb = replacement.Argb[sourceRow * width + (drawing.FlipX ? width - 1 - px : px)];
+                    texture.Argb[py * width + px] = drawing.Effect is { } effect ? effect.Apply(row * drawing.Width + column, argb) : argb;
                 }
             }
         }

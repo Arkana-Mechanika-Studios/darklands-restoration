@@ -29,6 +29,9 @@ public enum DrawFilter
 public sealed record AssetPlacement(string Asset, int X, int Y, int Width, int Height, bool FlipX, bool FlipY, bool[] Owned)
 {
     public bool Owns(int column, int row) => Owned[row * Width + column];
+
+    /// <summary>What the palette does to the drawing now (null: it shows the asset's own colours, or they are not known).</summary>
+    public PaletteEffect? Effect { get; init; }
 }
 
 /// <summary>
