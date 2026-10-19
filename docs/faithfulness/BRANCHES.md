@@ -20,26 +20,26 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 
 | source | runs | functions | blocks | outcomes | blocks before | outcomes before | corpus regenerated |
 |---|---|---|---|---|---|---|---|
-| rules | 2336 | 37 | 331/1021 (32.4%) | 251/484 (51.9%) | 323/396 (81.6%) | 241/292 (82.5%) | differs (173s) |
-| saints | 1792 | 162 | 781/1643 (47.5%) | 599/1024 (58.5%) | 781/1017 (76.8%) | 599/832 (72.0%) | differs (44s) |
-| trading | 1086 | 27 | 412/604 (68.2%) | 209/374 (55.9%) | 410/603 (68.0%) | 205/374 (54.8%) | differs (32s) |
-| core | 993 | 17 | 94/95 (98.9%) | 85/88 (96.6%) | 90/92 (97.8%) | 78/86 (90.7%) | differs (82s) |
-| chargen | 4042 | 8 | 957/972 (98.5%) | 915/940 (97.3%) | 951/972 (97.8%) | 909/940 (96.7%) | identical (760s) |
+| rules | 2336 | 37 | 331/987 (33.5%) | 251/478 (52.5%) | 323/396 (81.6%) | 241/292 (82.5%) | differs (142s) |
+| saints | 1792 | 162 | 781/1609 (48.5%) | 599/1018 (58.8%) | 781/1017 (76.8%) | 599/832 (72.0%) | differs (40s) |
+| trading | 1086 | 27 | 412/604 (68.2%) | 209/374 (55.9%) | 410/603 (68.0%) | 205/374 (54.8%) | differs (23s) |
+| core | 993 | 17 | 94/95 (98.9%) | 85/88 (96.6%) | 90/92 (97.8%) | 78/86 (90.7%) | differs (57s) |
+| chargen | 4042 | 8 | 957/972 (98.5%) | 915/940 (97.3%) | 951/972 (97.8%) | 909/940 (96.7%) | identical (536s) |
 | names | 550 | 8 | 32/43 (74.4%) | 7/12 (58.3%) | 32/43 (74.4%) | 7/12 (58.3%) | identical (7s) |
-| battle | 868 | 16 | 250/927 (27.0%) | 219/444 (49.3%) | 243/302 (80.5%) | 210/252 (83.3%) | differs (129s) |
-| tactics | 1200 | 11 | 270/319 (84.6%) | 333/412 (80.8%) | 270/319 (84.6%) | 333/412 (80.8%) | differs (28s) |
-| path | 60 | 22 | 345/386 (89.4%) | 365/428 (85.3%) | 345/386 (89.4%) | 365/428 (85.3%) | differs (419s) |
-| enemy | 738 | 9 | 392/412 (95.1%) | 321/364 (88.2%) | 392/412 (95.1%) | 321/364 (88.2%) | identical (95s) |
-| city | 42 | 48 | 1195/1657 (72.1%) | 850/1382 (61.5%) | 1195/1654 (72.2%) | 850/1382 (61.5%) | identical (193s) |
-| wild | 112 | 30 | 1192/1443 (82.6%) | 761/1076 (70.7%) | 1192/1442 (82.7%) | 761/1076 (70.7%) | identical (168s) |
-| mine | 416 | 76 | 2497/2953 (84.6%) | 1919/2500 (76.8%) | 2500/2954 (84.6%) | 1919/2500 (76.8%) | identical (364s) |
-| castle | 116 | 102 | 3840/4463 (86.0%) | 3396/4278 (79.4%) | 3840/4462 (86.1%) | 3396/4278 (79.4%) | identical (143s) |
-| special | 161 | 49 | 886/1099 (80.6%) | 599/852 (70.3%) | 886/1099 (80.6%) | 599/852 (70.3%) | identical (107s) |
-| cards | 372 | 3971 | 14986/26381 (56.8%) | 7348/17602 (41.7%) |  |  |  |
-| sainthelp | 136 | 232 | 1385/3025 (45.8%) | 868/2320 (37.4%) |  |  |  |
-| ALL |  | 4369 | 25988/36785 (70.6%) | 16742/27356 (61.2%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
+| battle | 1048 | 16 | 253/893 (28.3%) | 224/438 (51.1%) | 243/302 (80.5%) | 210/252 (83.3%) | identical (112s) |
+| tactics | 1200 | 11 | 270/319 (84.6%) | 333/412 (80.8%) | 270/319 (84.6%) | 333/412 (80.8%) | differs (19s) |
+| path | 60 | 22 | 345/386 (89.4%) | 365/428 (85.3%) | 345/386 (89.4%) | 365/428 (85.3%) | differs (407s) |
+| enemy | 738 | 9 | 392/412 (95.1%) | 321/364 (88.2%) | 392/412 (95.1%) | 321/364 (88.2%) | identical (59s) |
+| city | 42 | 48 | 1195/1657 (72.1%) | 850/1382 (61.5%) | 1195/1654 (72.2%) | 850/1382 (61.5%) | identical (154s) |
+| wild | 112 | 30 | 1192/1443 (82.6%) | 761/1076 (70.7%) | 1192/1442 (82.7%) | 761/1076 (70.7%) | identical (129s) |
+| mine | 416 | 76 | 2497/2953 (84.6%) | 1919/2500 (76.8%) | 2500/2954 (84.6%) | 1919/2500 (76.8%) | identical (250s) |
+| castle | 116 | 102 | 3840/4463 (86.0%) | 3396/4278 (79.4%) | 3840/4462 (86.1%) | 3396/4278 (79.4%) | identical (110s) |
+| special | 161 | 49 | 886/1099 (80.6%) | 599/852 (70.3%) | 886/1099 (80.6%) | 599/852 (70.3%) | identical (84s) |
+| cards | 365 | 3932 | 14884/25821 (57.6%) | 7318/17274 (42.4%) |  |  |  |
+| sainthelp | 136 | 232 | 1385/2991 (46.3%) | 868/2314 (37.5%) |  |  |  |
+| ALL |  | 4330 | 25889/36225 (71.5%) | 16717/27028 (61.9%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
 
-Never-exercised items: 21411, of which open 20361, justified in `unreachable.csv` 1050.
+Never-exercised items: 20647, of which open 19413, justified in `unreachable.csv` 1234.
 
 ## Per function
 
@@ -307,39 +307,6 @@ draft, reached by cards: blocks 7/10, outcomes 8/12
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
 
-### root 030B:001A `root 030B:001A`
-
-matched, reached by cards: blocks 4/7, outcomes 3/6
-
-- `root+0x30E1` `push 0x7d`
-- `root+0x3103` `push 0x7e`
-- `root+0x311A` `push 0x7f`
-
-### root 030B:0150 `root 030B:0150`
-
-matched, reached by cards: blocks 3/23, outcomes 2/26
-
-- `root+0x3292` `jmp 0x313`
-- `root+0x32A6` `jmp 0x2f9`
-- `root+0x32B2` `jmp 0x313`
-- `root+0x32B5` `push cs`
-- `root+0x32BD` `mov word ptr [bp - 2], si`
-- `root+0x32C0` `push cs`
-- `root+0x32CC` `push word ptr [0xa730]`
-- `root+0x32E5` `mov ax, word ptr [0xa72e]`
-- `root+0x3303` `push 0xd2`
-- `root+0x3314` `mov ax, word ptr [0x83b6]`
-- `root+0x335B` `sub cx, cx`
-- `root+0x3369` `mov ax, word ptr [0xa71a]`
-- `root+0x3385` `jb 0x2dd`
-- `root+0x3387` `cmp ax, word ptr [0xa72e]`
-- `root+0x338D` `mov word ptr [0xa71a], ax`
-- `root+0x339D` `lcall 0x5d9, 0x6a`
-- `root+0x33A6` `jmp 0x1f9`
-- `root+0x33A9` `lcall 0x5d9, 0x59`
-- `root+0x33B2` `push 0xde`
-- `root+0x33C3` `pop si`
-
 ### root 03EC:000E `root 03EC:000E`
 
 matched, reached by cards sainthelp: blocks 1/43, outcomes 0/48
@@ -463,31 +430,31 @@ draft, reached by cards: blocks 1/1, outcomes 0/0
 
 draft, reached by cards: blocks 8/25, outcomes 5/26
 
-- `root+0x55D7` `mov di, ds`
-- `root+0x55E4` `cmp word ptr [bp + 6], 1`
-- `root+0x55EA` `je 0xe35`
-- `root+0x55EC` `mov di, word ptr [bp + 6]`
-- `root+0x55F2` `add di, 2`
-- `root+0x55F5` `push di`
-- `root+0x5601` `push bx`
-- `root+0x560F` `lodsw ax, word ptr [si]`
-- `root+0x561B` `mov si, word ptr [0xf1fc]`
-- `root+0x5625` `push bx`
-- `root+0x5633` `lodsw ax, word ptr [si]`
-- `root+0x563B` `pop di`
-- `root+0x5644` `push ax`
-- `root+0x564D` `jmp 0xdf6`
-- `root+0x5661` `push bx`
-- `root+0x5681` `push bx`
-- `root+0x56A1` `push bx`
+- `root+0x55D7` `mov di, ds` (excluded)
+- `root+0x55E4` `cmp word ptr [bp + 6], 1` (excluded)
+- `root+0x55EA` `je 0xe35` (excluded)
+- `root+0x55EC` `mov di, word ptr [bp + 6]` (excluded)
+- `root+0x55F2` `add di, 2` (excluded)
+- `root+0x55F5` `push di` (excluded)
+- `root+0x5601` `push bx` (excluded)
+- `root+0x560F` `lodsw ax, word ptr [si]` (excluded)
+- `root+0x561B` `mov si, word ptr [0xf1fc]` (excluded)
+- `root+0x5625` `push bx` (excluded)
+- `root+0x5633` `lodsw ax, word ptr [si]` (excluded)
+- `root+0x563B` `pop di` (excluded)
+- `root+0x5644` `push ax` (excluded)
+- `root+0x564D` `jmp 0xdf6` (excluded)
+- `root+0x5661` `push bx` (excluded)
+- `root+0x5681` `push bx` (excluded)
+- `root+0x56A1` `push bx` (excluded)
 
 ### root 047C:0F7F `root 047C:0F7F`
 
 draft, reached by cards: blocks 4/7, outcomes 3/6
 
-- `root+0x5748` `ret `
-- `root+0x5764` `push bx`
-- `root+0x577B` `mov al, 0xb`
+- `root+0x5748` `ret ` (excluded)
+- `root+0x5764` `push bx` (excluded)
+- `root+0x577B` `mov al, 0xb` (excluded)
 
 ### root 047C:0FC8 `root 047C:0FC8`
 
@@ -529,21 +496,13 @@ draft, reached by cards sainthelp: blocks 1/4, outcomes 0/4
 
 matched, reached by cards sainthelp: blocks 6/7, outcomes 5/6
 
-- `root+0x5BEC` `lcall 0, 0x1354`
+- `root+0x5BEC` `lcall 0, 0x1354` (excluded)
 
 ### root 05BA:00C2 `root 05BA:00C2`
 
 matched, reached by cards: blocks 2/3, outcomes 1/2
 
-- `root+0x5C77` `lcall 0, 0x1354`
-
-### root 05D9:002A `root 05D9:002A`
-
-asm, reached by cards: blocks 1/1, outcomes 0/0
-
-### root 05D9:006A `root 05D9:006A`
-
-asm, reached by cards: blocks 1/1, outcomes 0/0
+- `root+0x5C77` `lcall 0, 0x1354` (excluded)
 
 ### root 0617:000E `root 0617:000E`
 
@@ -555,7 +514,7 @@ draft, reached by cards sainthelp: blocks 6/7, outcomes 5/6
 
 draft, reached by cards sainthelp: blocks 3/4, outcomes 3/4
 
-- `root+0x6238` `sub ax, ax`
+- `root+0x6238` `sub ax, ax` (excluded)
 
 ### root 0617:011E `root 0617:011E`
 
@@ -626,7 +585,7 @@ draft, reached by cards sainthelp: blocks 12/24, outcomes 11/24
 
 draft, reached by cards: blocks 2/3, outcomes 1/2
 
-- `root+0x6A12` `mov ax, word ptr [bp - 0xe]`
+- `root+0x6A12` `mov ax, word ptr [bp - 0xe]` (excluded)
 
 ### root 06A1:02C2 `root 06A1:02C2`
 
@@ -1050,7 +1009,7 @@ asm, reached by cards sainthelp: blocks 4/5, outcomes 3/4
 
 ### root 06A1:1AAA `root 06A1:1AAA`
 
-asm, reached by battle cards rules sainthelp saints: blocks 593/673, outcomes 91/210
+asm, reached by battle cards rules sainthelp saints: blocks 562/639, outcomes 88/204
 
 - `root+0x8539` `cmp word ptr [bp + 6], 0` (runtime-library)
 - `root+0x853F` `push word ptr [bp + 6]` (runtime-library)
@@ -1060,8 +1019,6 @@ asm, reached by battle cards rules sainthelp saints: blocks 593/673, outcomes 91
 - `root+0x8574` `mov ax, word ptr [si]` (runtime-library)
 - `root+0x857C` `inc si` (runtime-library)
 - `root+0x857E` `cmp word ptr [si], 0` (runtime-library)
-- `root+0x862B` `push bx` (runtime-library)
-- `root+0x863A` `retf ` (runtime-library)
 - `root+0x8688` `mov byte ptr [bp - 6], 0xcb` (runtime-library)
 - `root+0x86CE` `xor si, si` (runtime-library)
 - `root+0x86D2` `push cs` (runtime-library)
@@ -1129,7 +1086,6 @@ asm, reached by battle cards rules sainthelp saints: blocks 593/673, outcomes 91
 - `root+0x8F81` `cmp word ptr [si + 4], 1` (runtime-library)
 - `root+0x8FDD` `inc di` (runtime-library)
 - `root+0x907D` `sub word ptr [bp - 0x16], 0xe10` (runtime-library)
-- `root+0x9191` `xor di, di` (runtime-library)
 - `root+0x92EB` `div cx` (runtime-library)
 - `root+0x92F9` `add al, 0x27` (runtime-library)
 
@@ -1145,13 +1101,6 @@ asm, reached by cards: blocks 3/11, outcomes 1/12
 - `root+0x8574` `mov ax, word ptr [si]` (runtime-library)
 - `root+0x857C` `inc si` (runtime-library)
 - `root+0x857E` `cmp word ptr [si], 0` (runtime-library)
-
-### root 06A1:1C0A `root 06A1:1C0A`
-
-asm, reached by cards: blocks 3/5, outcomes 2/4
-
-- `root+0x862B` `push bx` (runtime-library)
-- `root+0x863A` `retf ` (runtime-library)
 
 ### root 06A1:1C58 `root 06A1:1C58`
 
@@ -1278,12 +1227,6 @@ asm, reached by cards: blocks 5/7, outcomes 4/8
 - `root+0x8FDD` `inc di` (runtime-library)
 - `root+0x907D` `sub word ptr [bp - 0x16], 0xe10` (runtime-library)
 
-### root 06A1:2760 `root 06A1:2760`
-
-asm, reached by cards: blocks 2/3, outcomes 1/2
-
-- `root+0x9191` `xor di, di` (runtime-library)
-
 ### root 06A1:27CC `root 06A1:27CC`
 
 asm, reached by cards: blocks 17/17, outcomes 19/22
@@ -1303,10 +1246,6 @@ asm, reached by battle cards castle chargen city core enemy mine names rules sai
 ### root 06A1:2BD4 `root 06A1:2BD4`
 
 asm, reached by cards sainthelp: blocks 1/1, outcomes 0/0
-
-### root 06A1:2BE2 `root 06A1:2BE2`
-
-asm, reached by cards: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2C28 `root 06A1:2C28`
 
@@ -3659,11 +3598,8 @@ draft, reached by battle: blocks 19/20, outcomes 17/18
 
 ### R014+0xA738 `R014+0xA738 (18BF:02A8)`
 
-draft, reached by battle: blocks 64/69, outcomes 58/66
+draft, reached by battle: blocks 67/69, outcomes 63/66
 
-- `R014+0xA751` `cmp word ptr [bp + 6], 5`
-- `R014+0xA757` `cmp byte ptr [0x9f1f], 0xff`
-- `R014+0xA75E` `sub ax, ax`
 - `R014+0xA8C3` `mov word ptr [bp - 2], 1`
 - `R014+0xA907` `mov word ptr [bp - 0xc], 0`
 
@@ -5611,378 +5547,6 @@ matched, reached by cards sainthelp: blocks 43/56, outcomes 25/38
 - `R037+0x9A71` `push 0x4905`
 - `R037+0x9B10` `mov byte ptr [0x907a], 0`
 
-### R038+0x02F8 `R038+0x02F8 (1462:02F8)`
-
-draft, reached by cards: blocks 0/367, outcomes 0/232
-
-- `R038+0x02F8` `enter 0x30, 0`
-- `R038+0x0308` `jmp 0xdfe`
-- `R038+0x030B` `jle 0x310`
-- `R038+0x030D` `jmp 0x2392`
-- `R038+0x0310` `cmp ax, 0x1352`
-- `R038+0x0315` `jmp 0x842`
-- `R038+0x0318` `jle 0x31d`
-- `R038+0x031A` `jmp 0x2366`
-- `R038+0x031D` `sub ax, 0x231`
-- `R038+0x0322` `jmp 0x11f6`
-- `R038+0x0325` `sub ax, 0x101`
-- `R038+0x032A` `jmp 0x177e`
-- `R038+0x032D` `sub ax, 0x101`
-- `R038+0x0332` `jmp 0x1dfe`
-- `R038+0x0335` `sub ax, 0xbcd`
-- `R038+0x033A` `jmp 0x2354`
-- `R038+0x033D` `pop si`
-- `R038+0x0342` `push 0x10`
-- `R038+0x036D` `mov ax, word ptr [0xe7dc]`
-- `R038+0x0374` `push 0x12`
-- `R038+0x0428` `inc word ptr [bp - 0xe]`
-- `R038+0x042B` `cmp word ptr [bp - 0xe], 4`
-- `R038+0x0431` `mov ax, word ptr [0xe7da]`
-- `R038+0x043E` `cmp word ptr [bp - 0xe], 4`
-- `R038+0x0444` `jmp 0x23e8`
-- `R038+0x0447` `cmp word ptr [0xe88e], 0`
-- `R038+0x044E` `push word ptr [0xe88e]`
-- `R038+0x045A` `lcall 0x47c, 0x545`
-- `R038+0x05B6` `push 0x27f4`
-- `R038+0x05C4` `push 0x10`
-- `R038+0x05F6` `mov word ptr [0xe7da], 0`
-- `R038+0x05FC` `push 0x12`
-- `R038+0x06B0` `inc word ptr [bp - 0xe]`
-- `R038+0x06B3` `cmp word ptr [bp - 0xe], 4`
-- `R038+0x06B9` `mov ax, word ptr [0xe7da]`
-- `R038+0x06C6` `cmp word ptr [bp - 0xe], 4`
-- `R038+0x06CC` `jmp 0x23e8`
-- `R038+0x06CF` `cmp word ptr [0xe88e], 0`
-- `R038+0x06D6` `push word ptr [0xe88e]`
-- `R038+0x06E2` `lcall 0x47c, 0x545`
-- `R038+0x0842` `mov ax, 0x11b`
-- `R038+0x084A` `cmp word ptr [0xe7dc], 0`
-- `R038+0x0851` `jmp 0x23e8`
-- `R038+0x0854` `lcall 0x47c, 0x12c3`
-- `R038+0x08FA` `push -1`
-- `R038+0x094C` `inc word ptr [bp - 0xe]`
-- `R038+0x094F` `cmp word ptr [bp - 0xe], 4`
-- `R038+0x0955` `mov bx, word ptr [0xe7da]`
-- `R038+0x0969` `push word ptr [0x907e]`
-- `R038+0x097C` `jmp 0x8fa`
-- `R038+0x097F` `cmp word ptr [bp - 0xe], 4`
-- `R038+0x0985` `jmp 0xd1e`
-- `R038+0x0988` `mov word ptr [bp - 0xe], 0`
-- `R038+0x0990` `inc word ptr [bp - 0xe]`
-- `R038+0x0993` `cmp word ptr [bp - 0xe], 4`
-- `R038+0x0999` `mov di, word ptr [bp - 0xe]`
-- `R038+0x09A4` `cmp word ptr [bp - 0xe], 4`
-- `R038+0x09AA` `push word ptr [bp - 0xa]`
-- `R038+0x09C3` `push 0x43`
-- `R038+0x09D0` `lcall 0x47c, 0x1293`
-- `R038+0x09D8` `push 0xa8`
-- `R038+0x0A2D` `push word ptr [0xe88e]`
-- `R038+0x0A39` `lcall 0x47c, 0x545`
-- `R038+0x0CA8` `mov byte ptr [bx - 0x6397], 1`
-- `R038+0x0CAD` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x0CF9` `inc ax`
-- `R038+0x0CFD` `push word ptr [bp - 0xe]`
-- `R038+0x0D1E` `push 0`
-- `R038+0x0D96` `add sp, 2`
-- `R038+0x0D9C` `lcall 0x47c, 0x12c3`
-- `R038+0x0DE3` `push 0x4aa0`
-- `R038+0x0DF2` `push cs`
-- `R038+0x0DFE` `cmp word ptr [0xe7dc], 0`
-- `R038+0x0E05` `jmp 0x23e8`
-- `R038+0x0E08` `lcall 0x47c, 0x12c3`
-- `R038+0x0EAE` `inc word ptr [bp - 0xe]`
-- `R038+0x0EB1` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x0EB7` `mov bx, word ptr [0xe7da]`
-- `R038+0x0ECB` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x0ED1` `push word ptr [bp - 0xa]`
-- `R038+0x0EE0` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x0EF1` `mov byte ptr [bx - 0x6396], 0x41`
-- `R038+0x0EF6` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x0FB9` `push 0x4a`
-- `R038+0x0FCA` `cmp word ptr [0xe7dc], 0`
-- `R038+0x0FD1` `jmp 0x23e8`
-- `R038+0x0FD4` `lcall 0x47c, 0x12c3`
-- `R038+0x107A` `inc word ptr [bp - 0xe]`
-- `R038+0x107D` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x1083` `mov bx, word ptr [0xe7da]`
-- `R038+0x1097` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x109D` `push word ptr [bp - 0xa]`
-- `R038+0x10AC` `mov ax, word ptr [0xe7de]`
-- `R038+0x10B9` `mov word ptr [0xe7e0], 0`
-- `R038+0x10BF` `push word ptr [0xe88e]`
-- `R038+0x11E4` `push 0x59`
-- `R038+0x11F6` `cmp word ptr [0xe7dc], 0`
-- `R038+0x11FD` `jmp 0x23e8`
-- `R038+0x1200` `lea ax, [bp - 4]`
-- `R038+0x1276` `inc word ptr [bp - 0xe]`
-- `R038+0x1279` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x127F` `mov ax, word ptr [0xe7da]`
-- `R038+0x128C` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x1292` `jmp 0x23e8`
-- `R038+0x1295` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x12B0` `sbb ax, ax`
-- `R038+0x12B5` `pop si`
-- `R038+0x12BA` `jmp 0x13ca`
-- `R038+0x12BD` `inc word ptr [0xe890]`
-- `R038+0x12C8` `mov word ptr [0xe890], ax`
-- `R038+0x12CB` `mov ax, word ptr [0xe890]`
-- `R038+0x12D2` `mov byte ptr [0xe753], 0x39`
-- `R038+0x12F4` `mov al, 0x1c`
-- `R038+0x1304` `mov byte ptr [0xe757], al`
-- `R038+0x1307` `mov byte ptr [0xe758], al`
-- `R038+0x130E` `sub al, al`
-- `R038+0x131E` `mov byte ptr [0xe754], 9`
-- `R038+0x1338` `mov byte ptr [0xe753], 0x23`
-- `R038+0x1356` `mov byte ptr [0xe753], 0x21`
-- `R038+0x1374` `cmp ax, 5`
-- `R038+0x1379` `shl ax, 1`
-- `R038+0x138E` `mov al, byte ptr [0xe753]`
-- `R038+0x13CA` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x13E3` `sbb ax, ax`
-- `R038+0x13E8` `pop si`
-- `R038+0x13ED` `jmp 0x150e`
-- `R038+0x13F0` `inc word ptr [0xe890]`
-- `R038+0x13FB` `mov word ptr [0xe890], ax`
-- `R038+0x13FE` `mov ax, word ptr [0xe890]`
-- `R038+0x1404` `mov byte ptr [0xe762], 0x21`
-- `R038+0x1413` `sub al, al`
-- `R038+0x1421` `mov byte ptr [0xe769], al`
-- `R038+0x1424` `mov byte ptr [0xe76a], al`
-- `R038+0x142A` `mov byte ptr [0xe762], 0x2f`
-- `R038+0x145A` `mov byte ptr [0xe762], 0x2d`
-- `R038+0x148A` `mov byte ptr [0xe762], 0x1c`
-- `R038+0x14A8` `sub al, al`
-- `R038+0x14B4` `sub al, al`
-- `R038+0x14CC` `mov byte ptr [0xe768], al`
-- `R038+0x14D2` `mov byte ptr [0xe762], 0x15`
-- `R038+0x14F2` `cmp ax, 5`
-- `R038+0x14F7` `jmp 0x1bbe`
-- `R038+0x14FA` `shl ax, 1`
-- `R038+0x150E` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x1527` `sbb ax, ax`
-- `R038+0x152C` `pop si`
-- `R038+0x1531` `jmp 0x15cc`
-- `R038+0x1534` `inc word ptr [0xe890]`
-- `R038+0x153F` `mov word ptr [0xe890], ax`
-- `R038+0x1542` `mov ax, word ptr [0xe890]`
-- `R038+0x1548` `mov al, 0x1c`
-- `R038+0x155D` `mov byte ptr [0xe755], al`
-- `R038+0x1564` `mov al, 0x23`
-- `R038+0x1566` `mov byte ptr [0xe756], al`
-- `R038+0x1578` `sub al, al`
-- `R038+0x157C` `mov byte ptr [0xe756], 0x1c`
-- `R038+0x158B` `mov byte ptr [0xe753], 0x3e`
-- `R038+0x159E` `mov al, 0x23`
-- `R038+0x15A0` `mov byte ptr [0xe756], al`
-- `R038+0x15AC` `sub al, al`
-- `R038+0x15B0` `cmp ax, 5`
-- `R038+0x15B5` `jmp 0x138e`
-- `R038+0x15B8` `shl ax, 1`
-- `R038+0x15CC` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x15E5` `sbb ax, ax`
-- `R038+0x15EA` `pop si`
-- `R038+0x15EF` `jmp 0x1772`
-- `R038+0x15F2` `inc word ptr [0xe890]`
-- `R038+0x15FD` `mov word ptr [0xe890], ax`
-- `R038+0x1600` `mov ax, word ptr [0xe890]`
-- `R038+0x1606` `mov byte ptr [0xe753], 0x28`
-- `R038+0x162A` `mov byte ptr [0xe75b], al`
-- `R038+0x1630` `mov byte ptr [0xe754], 0x20`
-- `R038+0x165C` `mov byte ptr [0xe753], 0x1a`
-- `R038+0x168A` `mov byte ptr [0xe753], 0x2e`
-- `R038+0x16B2` `mov byte ptr [0xe753], 0x33`
-- `R038+0x16DE` `mov byte ptr [0xe754], 0x1e`
-- `R038+0x1708` `cmp ax, 5`
-- `R038+0x170D` `shl ax, 1`
-- `R038+0x1722` `mov al, byte ptr [0xe753]`
-- `R038+0x1772` `push 0xe48c`
-- `R038+0x177E` `cmp word ptr [0xe7dc], 0`
-- `R038+0x1785` `jmp 0x23e8`
-- `R038+0x1788` `lea ax, [bp - 4]`
-- `R038+0x17FE` `inc word ptr [bp - 0xe]`
-- `R038+0x1801` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x1807` `mov ax, word ptr [0xe7da]`
-- `R038+0x1814` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x181A` `jmp 0x23e8`
-- `R038+0x181D` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x1838` `sbb ax, ax`
-- `R038+0x183D` `pop si`
-- `R038+0x1842` `jmp 0x1978`
-- `R038+0x1845` `inc word ptr [0xe892]`
-- `R038+0x1850` `mov word ptr [0xe892], ax`
-- `R038+0x1853` `mov ax, word ptr [0xe892]`
-- `R038+0x185A` `mov byte ptr [0xe75a], 0x18`
-- `R038+0x187E` `mov byte ptr [0xe761], al`
-- `R038+0x1884` `mov byte ptr [0xe75b], 0`
-- `R038+0x18AE` `mov byte ptr [0xe75a], 0x18`
-- `R038+0x18D4` `mov al, 0x35`
-- `R038+0x1900` `mov byte ptr [0xe759], 0x31`
-- `R038+0x192E` `mov byte ptr [0xe759], 0x1c`
-- `R038+0x195C` `cmp ax, 5`
-- `R038+0x1961` `jmp 0x21f2`
-- `R038+0x1964` `shl ax, 1`
-- `R038+0x1978` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x1991` `sbb ax, ax`
-- `R038+0x1996` `pop si`
-- `R038+0x199B` `jmp 0x1a7e`
-- `R038+0x199E` `inc word ptr [0xe892]`
-- `R038+0x19A9` `mov word ptr [0xe892], ax`
-- `R038+0x19AC` `mov ax, word ptr [0xe892]`
-- `R038+0x19B2` `mov byte ptr [0xe75c], 0x2b`
-- `R038+0x19E0` `mov byte ptr [0xe75e], al`
-- `R038+0x19F0` `mov al, 0x10`
-- `R038+0x1A20` `mov byte ptr [0xe768], al`
-- `R038+0x1A26` `cmp ax, 5`
-- `R038+0x1A2B` `shl ax, 1`
-- `R038+0x1A40` `mov al, byte ptr [0xe75c]`
-- `R038+0x1A7E` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x1A97` `sbb ax, ax`
-- `R038+0x1A9C` `pop si`
-- `R038+0x1AA1` `jmp 0x1c12`
-- `R038+0x1AA4` `inc word ptr [0xe892]`
-- `R038+0x1AAF` `mov word ptr [0xe892], ax`
-- `R038+0x1AB2` `mov ax, word ptr [0xe892]`
-- `R038+0x1AB8` `mov byte ptr [0xe762], 0x18`
-- `R038+0x1AE8` `mov al, 0x12`
-- `R038+0x1B04` `mov byte ptr [0xe763], 0x1c`
-- `R038+0x1B28` `mov byte ptr [0xe762], 0x28`
-- `R038+0x1B58` `mov byte ptr [0xe762], 0x21`
-- `R038+0x1B7A` `mov al, 0x32`
-- `R038+0x1BA4` `cmp ax, 5`
-- `R038+0x1BA9` `shl ax, 1`
-- `R038+0x1BBE` `mov al, byte ptr [0xe762]`
-- `R038+0x1BC9` `mov byte ptr es:[bx + 0x340b], al`
-- `R038+0x1C12` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x1C2B` `sbb ax, ax`
-- `R038+0x1C30` `pop si`
-- `R038+0x1C35` `jmp 0x1772`
-- `R038+0x1C38` `inc word ptr [0xe892]`
-- `R038+0x1C43` `mov word ptr [0xe892], ax`
-- `R038+0x1C46` `mov ax, word ptr [0xe892]`
-- `R038+0x1C4C` `mov al, 0x10`
-- `R038+0x1C84` `mov byte ptr [0xe757], 0x10`
-- `R038+0x1CAF` `mov byte ptr [0xe761], al`
-- `R038+0x1CB6` `mov byte ptr [0xe758], 0xd`
-- `R038+0x1CEE` `mov byte ptr [0xe756], 0x11`
-- `R038+0x1D22` `mov byte ptr [0xe756], 0x15`
-- `R038+0x1D4A` `mov byte ptr [0xe760], al`
-- `R038+0x1D50` `sub al, al`
-- `R038+0x1D78` `cmp ax, 5`
-- `R038+0x1D7D` `shl ax, 1`
-- `R038+0x1D92` `mov al, byte ptr [0xe756]`
-- `R038+0x1DC2` `mov al, byte ptr [0xe75b]`
-- `R038+0x1DFE` `cmp word ptr [0xe7dc], 0`
-- `R038+0x1E05` `jmp 0x23e8`
-- `R038+0x1E08` `lea ax, [bp - 4]`
-- `R038+0x1E7E` `inc word ptr [bp - 0xe]`
-- `R038+0x1E81` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x1E87` `mov ax, word ptr [0xe7da]`
-- `R038+0x1E94` `cmp word ptr [bp - 0xe], 5`
-- `R038+0x1E9A` `jmp 0x23e8`
-- `R038+0x1E9D` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x1EB8` `sbb ax, ax`
-- `R038+0x1EBD` `pop si`
-- `R038+0x1EC2` `jmp 0x1fe2`
-- `R038+0x1EC5` `inc word ptr [0xe894]`
-- `R038+0x1ED0` `mov word ptr [0xe894], ax`
-- `R038+0x1ED3` `mov ax, word ptr [0xe894]`
-- `R038+0x1EDA` `mov byte ptr [0xe762], 0x1c`
-- `R038+0x1EEC` `mov byte ptr [0xe764], 0`
-- `R038+0x1F16` `mov byte ptr [0xe762], 0x2b`
-- `R038+0x1F44` `mov al, 0x2a`
-- `R038+0x1F66` `mov byte ptr [0xe762], 0x15`
-- `R038+0x1F96` `mov byte ptr [0xe762], 0x26`
-- `R038+0x1FC6` `cmp ax, 5`
-- `R038+0x1FCB` `jmp 0x1bbe`
-- `R038+0x1FCE` `shl ax, 1`
-- `R038+0x1FE2` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x1FFB` `sbb ax, ax`
-- `R038+0x2000` `pop si`
-- `R038+0x2005` `jmp 0x20b4`
-- `R038+0x2008` `inc word ptr [0xe894]`
-- `R038+0x2013` `mov word ptr [0xe894], ax`
-- `R038+0x2016` `mov ax, word ptr [0xe894]`
-- `R038+0x201C` `mov byte ptr [0xe753], 0x19`
-- `R038+0x202E` `mov byte ptr [0xe754], 0x18`
-- `R038+0x2038` `mov byte ptr [0xe755], al`
-- `R038+0x203E` `mov byte ptr [0xe753], 0`
-- `R038+0x2050` `mov byte ptr [0xe753], 0x1c`
-- `R038+0x2057` `mov byte ptr [0xe754], al`
-- `R038+0x205C` `mov al, 0xe`
-- `R038+0x2064` `mov byte ptr [0xe753], 0x3f`
-- `R038+0x2076` `cmp ax, 5`
-- `R038+0x207B` `shl ax, 1`
-- `R038+0x2090` `mov al, byte ptr [0xe753]`
-- `R038+0x20B4` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x20CD` `sbb ax, ax`
-- `R038+0x20D2` `pop si`
-- `R038+0x20D7` `jmp 0x220e`
-- `R038+0x20DA` `inc word ptr [0xe894]`
-- `R038+0x20E5` `mov word ptr [0xe894], ax`
-- `R038+0x20E8` `mov ax, word ptr [0xe894]`
-- `R038+0x20EE` `mov byte ptr [0xe759], 0x2a`
-- `R038+0x211E` `mov al, 0x11`
-- `R038+0x2136` `mov byte ptr [0xe75f], al`
-- `R038+0x2140` `mov byte ptr [0xe75a], 0x2a`
-- `R038+0x215F` `mov byte ptr [0xe75f], al`
-- `R038+0x2166` `mov al, 0x21`
-- `R038+0x2180` `mov byte ptr [0xe759], 0x30`
-- `R038+0x21AA` `mov byte ptr [0xe759], 0x2f`
-- `R038+0x21D8` `cmp ax, 5`
-- `R038+0x21DD` `shl ax, 1`
-- `R038+0x21F2` `mov al, byte ptr [0xe759]`
-- `R038+0x220E` `mov bx, word ptr [bp - 0xe]`
-- `R038+0x2227` `sbb ax, ax`
-- `R038+0x222C` `pop si`
-- `R038+0x2231` `jmp 0x1772`
-- `R038+0x2234` `inc word ptr [0xe894]`
-- `R038+0x223F` `mov word ptr [0xe894], ax`
-- `R038+0x2242` `mov ax, word ptr [0xe894]`
-- `R038+0x2248` `mov byte ptr [0xe75c], 0x23`
-- `R038+0x227F` `mov byte ptr [0xe769], al`
-- `R038+0x2282` `mov byte ptr [0xe76a], al`
-- `R038+0x2288` `mov byte ptr [0xe75c], 8`
-- `R038+0x22C2` `mov byte ptr [0xe75d], 0x14`
-- `R038+0x2306` `mov byte ptr [0xe75c], 0x2a`
-- `R038+0x2338` `cmp ax, 5`
-- `R038+0x233D` `jmp 0x1a40`
-- `R038+0x2340` `shl ax, 1`
-- `R038+0x2354` `push 0`
-- `R038+0x2366` `sub ax, 0x1372`
-- `R038+0x236B` `jmp 0x842`
-- `R038+0x236E` `sub ax, 0xacf`
-- `R038+0x2373` `jmp 0x84a`
-- `R038+0x2376` `sub ax, 0x20`
-- `R038+0x237B` `jmp 0x84a`
-- `R038+0x237E` `sub ax, 0xf2`
-- `R038+0x2383` `jmp 0xfca`
-- `R038+0x2386` `sub ax, 0x20`
-- `R038+0x238B` `jmp 0xfca`
-- `R038+0x238E` `pop si`
-- `R038+0x2392` `cmp ax, 0x4b00`
-- `R038+0x2397` `jmp 0x342`
-- `R038+0x239A` `jg 0x23c0`
-- `R038+0x239C` `sub ax, 0x2368`
-- `R038+0x23A1` `jmp 0xdfe`
-- `R038+0x23A4` `sub ax, 0xadb`
-- `R038+0x23A9` `jmp 0xd9c`
-- `R038+0x23AC` `sub ax, 0x20`
-- `R038+0x23B1` `jmp 0xd9c`
-- `R038+0x23B4` `sub ax, 0x199d`
-- `R038+0x23B9` `jmp 0x342`
-- `R038+0x23BC` `pop si`
-- `R038+0x23C0` `sub ax, 0x4d00`
-- `R038+0x23C5` `jmp 0x342`
-- `R038+0x23C8` `sub ax, 0x231`
-- `R038+0x23CD` `jmp 0x11f6`
-- `R038+0x23D0` `sub ax, 0xcf`
-- `R038+0x23D5` `jmp 0x5c4`
-- `R038+0x23D8` `sub ax, 0x32`
-- `R038+0x23DD` `jmp 0x177e`
-- `R038+0x23E0` `sub ax, 0x101`
-- `R038+0x23E5` `jmp 0x1dfe`
-- `R038+0x23E8` `pop si`
-
 ### R039+0x0000 `R039+0x0000 (1462:0000)`
 
 matched, reached by cards: blocks 5/9, outcomes 4/8
@@ -6989,52 +6553,52 @@ draft, reached by cards: blocks 1/102, outcomes 0/96
 
 matched, reached by cards: blocks 18/64, outcomes 15/78
 
-- `R041+0x003B` `mov word ptr [bp - 4], di`
-- `R041+0x003E` `inc si`
-- `R041+0x006C` `mov si, 7`
-- `R041+0x0094` `mov di, 0xe`
-- `R041+0x03C9` `test byte ptr [0x6ef0], 1`
-- `R041+0x03D0` `mov di, word ptr [bp - 0xc]`
-- `R041+0x03D3` `sub si, si`
-- `R041+0x03DC` `cmp word ptr [0x6eec], 0x64`
-- `R041+0x03E3` `cmp word ptr [0x6eec], 0xc8`
-- `R041+0x03EB` `cmp word ptr [0x6eee], 0x3c`
-- `R041+0x03F2` `cmp word ptr [0x6eee], 0x64`
-- `R041+0x03F9` `mov word ptr [bp - 2], si`
-- `R041+0x03FC` `test byte ptr [0x6ef0], 1`
-- `R041+0x0403` `or di, di`
-- `R041+0x0408` `test byte ptr [0x6ef0], 1`
-- `R041+0x040F` `cmp word ptr [0x6eec], 0xdc`
-- `R041+0x0417` `cmp word ptr [0x6eec], 0x12c`
-- `R041+0x041F` `cmp word ptr [0x6eee], 0x3c`
-- `R041+0x0426` `cmp word ptr [0x6eee], 0x64`
-- `R041+0x042D` `mov word ptr [bp - 2], si`
-- `R041+0x0430` `test byte ptr [0x6ef0], 1`
-- `R041+0x0437` `cmp di, 2`
-- `R041+0x043E` `test byte ptr [0x6ef0], 1`
-- `R041+0x0445` `cmp word ptr [0x6eec], 0x64`
-- `R041+0x044C` `cmp word ptr [0x6eec], 0xc8`
-- `R041+0x0454` `cmp word ptr [0x6eee], 0x6e`
-- `R041+0x045B` `cmp word ptr [0x6eee], 0xb4`
-- `R041+0x0463` `mov word ptr [bp - 2], si`
-- `R041+0x0466` `test byte ptr [0x6ef0], 1`
-- `R041+0x046D` `cmp di, 1`
-- `R041+0x0472` `test byte ptr [0x6ef0], 1`
-- `R041+0x0479` `cmp word ptr [0x6eec], 0xdc`
-- `R041+0x0481` `cmp word ptr [0x6eec], 0x12c`
-- `R041+0x0489` `cmp word ptr [0x6eee], 0x6e`
-- `R041+0x0490` `cmp word ptr [0x6eee], 0xb4`
-- `R041+0x0498` `mov word ptr [bp - 2], si`
-- `R041+0x049B` `test byte ptr [0x6ef0], 1`
-- `R041+0x04A2` `cmp di, 3`
-- `R041+0x04A5` `je 0x4cb`
-- `R041+0x04A7` `push cs`
-- `R041+0x04AB` `lcall 0x47c, 0x73d`
-- `R041+0x04B4` `lcall 0x47c, 0x744`
-- `R041+0x04BB` `or si, si`
-- `R041+0x04BF` `jmp 0x3d3`
-- `R041+0x04C2` `push di`
-- `R041+0x04CB` `push word ptr [0x8dd4]`
+- `R041+0x003B` `mov word ptr [bp - 4], di` (excluded)
+- `R041+0x003E` `inc si` (excluded)
+- `R041+0x006C` `mov si, 7` (excluded)
+- `R041+0x0094` `mov di, 0xe` (excluded)
+- `R041+0x03C9` `test byte ptr [0x6ef0], 1` (excluded)
+- `R041+0x03D0` `mov di, word ptr [bp - 0xc]` (excluded)
+- `R041+0x03D3` `sub si, si` (excluded)
+- `R041+0x03DC` `cmp word ptr [0x6eec], 0x64` (excluded)
+- `R041+0x03E3` `cmp word ptr [0x6eec], 0xc8` (excluded)
+- `R041+0x03EB` `cmp word ptr [0x6eee], 0x3c` (excluded)
+- `R041+0x03F2` `cmp word ptr [0x6eee], 0x64` (excluded)
+- `R041+0x03F9` `mov word ptr [bp - 2], si` (excluded)
+- `R041+0x03FC` `test byte ptr [0x6ef0], 1` (excluded)
+- `R041+0x0403` `or di, di` (excluded)
+- `R041+0x0408` `test byte ptr [0x6ef0], 1` (excluded)
+- `R041+0x040F` `cmp word ptr [0x6eec], 0xdc` (excluded)
+- `R041+0x0417` `cmp word ptr [0x6eec], 0x12c` (excluded)
+- `R041+0x041F` `cmp word ptr [0x6eee], 0x3c` (excluded)
+- `R041+0x0426` `cmp word ptr [0x6eee], 0x64` (excluded)
+- `R041+0x042D` `mov word ptr [bp - 2], si` (excluded)
+- `R041+0x0430` `test byte ptr [0x6ef0], 1` (excluded)
+- `R041+0x0437` `cmp di, 2` (excluded)
+- `R041+0x043E` `test byte ptr [0x6ef0], 1` (excluded)
+- `R041+0x0445` `cmp word ptr [0x6eec], 0x64` (excluded)
+- `R041+0x044C` `cmp word ptr [0x6eec], 0xc8` (excluded)
+- `R041+0x0454` `cmp word ptr [0x6eee], 0x6e` (excluded)
+- `R041+0x045B` `cmp word ptr [0x6eee], 0xb4` (excluded)
+- `R041+0x0463` `mov word ptr [bp - 2], si` (excluded)
+- `R041+0x0466` `test byte ptr [0x6ef0], 1` (excluded)
+- `R041+0x046D` `cmp di, 1` (excluded)
+- `R041+0x0472` `test byte ptr [0x6ef0], 1` (excluded)
+- `R041+0x0479` `cmp word ptr [0x6eec], 0xdc` (excluded)
+- `R041+0x0481` `cmp word ptr [0x6eec], 0x12c` (excluded)
+- `R041+0x0489` `cmp word ptr [0x6eee], 0x6e` (excluded)
+- `R041+0x0490` `cmp word ptr [0x6eee], 0xb4` (excluded)
+- `R041+0x0498` `mov word ptr [bp - 2], si` (excluded)
+- `R041+0x049B` `test byte ptr [0x6ef0], 1` (excluded)
+- `R041+0x04A2` `cmp di, 3` (excluded)
+- `R041+0x04A5` `je 0x4cb` (excluded)
+- `R041+0x04A7` `push cs` (excluded)
+- `R041+0x04AB` `lcall 0x47c, 0x73d` (excluded)
+- `R041+0x04B4` `lcall 0x47c, 0x744` (excluded)
+- `R041+0x04BB` `or si, si` (excluded)
+- `R041+0x04BF` `jmp 0x3d3` (excluded)
+- `R041+0x04C2` `push di` (excluded)
+- `R041+0x04CB` `push word ptr [0x8dd4]` (excluded)
 
 ### R043+0x0100 `R043+0x0100 (1462:0100)`
 
@@ -8424,24 +7988,24 @@ matched, reached by cards: blocks 5/5, outcomes 4/4
 
 matched, reached by cards: blocks 0/18, outcomes 0/14
 
-- `R047+0x0000` `enter 4, 0`
-- `R047+0x003B` `jmp 0x110`
-- `R047+0x003E` `mov al, byte ptr [0xee76]`
-- `R047+0x00B3` `mov bx, si`
-- `R047+0x00BE` `mov bx, word ptr [0xee6a]`
-- `R047+0x00C9` `mov word ptr [bp - 4], ax`
-- `R047+0x00D2` `dec ax`
-- `R047+0x00D5` `dec ax`
-- `R047+0x00D8` `dec ax`
-- `R047+0x00DB` `jmp 0x106`
-- `R047+0x00DE` `push word ptr [bp - 4]`
-- `R047+0x00E8` `push word ptr [bp - 4]`
-- `R047+0x00F2` `push word ptr [bp - 4]`
-- `R047+0x00FC` `push word ptr [bp - 4]`
-- `R047+0x0103` `add sp, 2`
-- `R047+0x0106` `cmp word ptr [0xe48a], 0xc`
-- `R047+0x010D` `jmp 0x3e`
-- `R047+0x0110` `mov ax, word ptr [0xe48a]`
+- `R047+0x0000` `enter 4, 0` (excluded)
+- `R047+0x003B` `jmp 0x110` (excluded)
+- `R047+0x003E` `mov al, byte ptr [0xee76]` (excluded)
+- `R047+0x00B3` `mov bx, si` (excluded)
+- `R047+0x00BE` `mov bx, word ptr [0xee6a]` (excluded)
+- `R047+0x00C9` `mov word ptr [bp - 4], ax` (excluded)
+- `R047+0x00D2` `dec ax` (excluded)
+- `R047+0x00D5` `dec ax` (excluded)
+- `R047+0x00D8` `dec ax` (excluded)
+- `R047+0x00DB` `jmp 0x106` (excluded)
+- `R047+0x00DE` `push word ptr [bp - 4]` (excluded)
+- `R047+0x00E8` `push word ptr [bp - 4]` (excluded)
+- `R047+0x00F2` `push word ptr [bp - 4]` (excluded)
+- `R047+0x00FC` `push word ptr [bp - 4]` (excluded)
+- `R047+0x0103` `add sp, 2` (excluded)
+- `R047+0x0106` `cmp word ptr [0xe48a], 0xc` (excluded)
+- `R047+0x010D` `jmp 0x3e` (excluded)
+- `R047+0x0110` `mov ax, word ptr [0xe48a]` (excluded)
 
 ### R047+0x01A6 `R047+0x01A6 (1852:0006)`
 
@@ -8918,13 +8482,6 @@ matched, reached by cards: blocks 5/5, outcomes 4/4
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
 
-### R048+0x183C `R048+0x183C (190E:0ADC)`
-
-matched, reached by cards: blocks 1/3, outcomes 0/0
-
-- `R048+0x183C` `enter 4, 0`
-- `R048+0x1873` `pop si`
-
 ### R048+0x1B18 `R048+0x1B18 (19E9:0008)`
 
 matched, reached by cards: blocks 30/60, outcomes 18/54
@@ -9319,7 +8876,7 @@ matched, reached by cards: blocks 3/4, outcomes 2/4
 
 ### R049+0x183C `R049+0x183C (1893:128C)`
 
-matched, reached by cards: blocks 4/5, outcomes 1/2
+matched, reached by cards: blocks 3/4, outcomes 1/2
 
 - `R049+0x1874` `mov ax, 0x64`
 
@@ -9346,14 +8903,6 @@ matched, reached by cards: blocks 3/4, outcomes 2/4
 matched, reached by cards: blocks 3/4, outcomes 1/2
 
 - `R049+0x196C` `mov ax, 0x64`
-
-### R049+0x1A44 `R049+0x1A44 (1893:1494)`
-
-matched, reached by cards: blocks 1/4, outcomes 0/2
-
-- `R049+0x1A44` `enter 4, 0`
-- `R049+0x1A57` `mov di, 0x4f48`
-- `R049+0x1A7C` `mov ax, 0x64`
 
 ### R049+0x1A8E `R049+0x1A8E (1893:14DE)`
 
@@ -9746,7 +9295,7 @@ matched, reached by cards: blocks 4/6, outcomes 2/6
 
 ### R050+0x19D8 `R050+0x19D8 (1982:0538)`
 
-matched, reached by cards: blocks 4/5, outcomes 1/2
+matched, reached by cards: blocks 3/4, outcomes 1/2
 
 - `R050+0x1A24` `mov di, 0x4f48`
 
@@ -10595,8 +10144,9 @@ matched, reached by cards: blocks 1/26, outcomes 0/22
 
 ### R053+0x1ABC `R053+0x1ABC (1924:0BFC)`
 
-matched, reached by cards: blocks 1/36, outcomes 0/34
+matched, reached by cards: blocks 0/36, outcomes 0/34
 
+- `R053+0x1ABC` `enter 4, 0`
 - `R053+0x1AF5` `jmp 0xd02`
 - `R053+0x1AF8` `sub si, si`
 - `R053+0x1B00` `mov word ptr [bp - 2], 0x9c69`
@@ -11589,12 +11139,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
 
-### R057+0x1A8E `R057+0x1A8E (192F:0B1E)`
-
-matched, reached by cards: blocks 1/2, outcomes 0/0
-
-- `R057+0x1A8E` `enter 4, 0`
-
 ### R057+0x1BAC `R057+0x1BAC (192F:0C3C)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
@@ -11602,12 +11146,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 ### R057+0x1BB4 `R057+0x1BB4 (192F:0C44)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R057+0x1BEC `R057+0x1BEC (192F:0C7C)`
-
-matched, reached by cards: blocks 0/1, outcomes 0/0
-
-- `R057+0x1BEC` `push 0`
 
 ### R057+0x1C46 `R057+0x1C46 (192F:0CD6)`
 
@@ -12148,12 +11686,16 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 
 ### R059+0x1896 `R059+0x1896 (19C1:0006)`
 
-matched, reached by cards: blocks 6/22, outcomes 2/8
+matched, reached by cards: blocks 2/22, outcomes 1/8
 
 - `R059+0x191F` `jmp 0x220`
+- `R059+0x1A03` `mov bx, si`
 - `R059+0x1A0E` `mov bx, word ptr [0xee6a]`
+- `R059+0x1A19` `mov word ptr [bp - 4], ax`
 - `R059+0x1A23` `jmp 0x216`
 - `R059+0x1A26` `shl ax, 1`
+- `R059+0x1A42` `push word ptr [bp - 4]`
+- `R059+0x1A4C` `push word ptr [bp - 4]`
 - `R059+0x1A56` `push word ptr [bp - 4]`
 - `R059+0x1A60` `push word ptr [bp - 4]`
 - `R059+0x1A6A` `push word ptr [bp - 4]`
@@ -12271,12 +11813,6 @@ matched, reached by cards: blocks 0/9, outcomes 0/8
 ### R060+0x1282 `R060+0x1282 (18CF:0912)`
 
 matched, reached by cards: blocks 5/5, outcomes 4/4
-
-### R060+0x14D6 `R060+0x14D6 (18CF:0B66)`
-
-matched, reached by cards: blocks 1/2, outcomes 0/0
-
-- `R060+0x14D6` `enter 0x38, 0`
 
 ### R060+0x1674 `R060+0x1674 (199F:0004)`
 
@@ -12659,12 +12195,6 @@ matched, reached by cards: blocks 2/22, outcomes 1/8
 
 matched, reached by cards: blocks 5/5, outcomes 4/4
 
-### R062+0x1B54 `R062+0x1B54 (1967:0864)`
-
-matched, reached by cards: blocks 1/2, outcomes 0/0
-
-- `R062+0x1B54` `enter 0x38, 0`
-
 ### R062+0x1C68 `R062+0x1C68 (19FE:0008)`
 
 matched, reached by cards: blocks 15/35, outcomes 6/22
@@ -12863,12 +12393,6 @@ matched, reached by cards: blocks 5/5, outcomes 4/4
 ### R063+0x13A2 `R063+0x13A2 (190C:0662)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R063+0x15A6 `R063+0x15A6 (190C:0866)`
-
-matched, reached by cards: blocks 1/2, outcomes 0/0
-
-- `R063+0x15A6` `enter 0x38, 0`
 
 ### R063+0x16BA `R063+0x16BA (19A3:000A)`
 
@@ -13129,23 +12653,6 @@ matched, reached by cards: blocks 3/5, outcomes 1/4
 
 - `R064+0x14CF` `push word ptr [0x907e]`
 - `R064+0x14E2` `mov di, 0x4f48`
-
-### R064+0x155E `R064+0x155E (190C:081E)`
-
-matched, reached by cards: blocks 0/12, outcomes 0/4
-
-- `R064+0x155E` `push bp`
-- `R064+0x15AC` `shl ax, 1`
-- `R064+0x15C2` `push 0x78`
-- `R064+0x15C6` `push 0x79`
-- `R064+0x15CA` `push 0x7c`
-- `R064+0x15CE` `push 0x7e`
-- `R064+0x15D2` `push 0x7f`
-- `R064+0x15D6` `push 0x80`
-- `R064+0x15D9` `push -2`
-- `R064+0x15E3` `push 0x64`
-- `R064+0x15F2` `push 0`
-- `R064+0x1654` `push 0`
 
 ### R064+0x1B46 `R064+0x1B46 (190C:0E06)`
 
@@ -13413,12 +12920,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 ### R065+0x1A7E `R065+0x1A7E (18FB:0E4E)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R065+0x1AD4 `R065+0x1AD4 (18FB:0EA4)`
-
-matched, reached by cards: blocks 1/2, outcomes 0/0
-
-- `R065+0x1AD4` `enter 4, 0`
 
 ### R065+0x1B58 `R065+0x1B58 (18FB:0F28)`
 
@@ -13965,12 +13466,6 @@ matched, reached by cards: blocks 12/28, outcomes 6/14
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
 
-### R067+0x158A `R067+0x158A (1954:03CA)`
-
-matched, reached by cards: blocks 0/1, outcomes 0/0
-
-- `R067+0x158A` `enter 4, 0`
-
 ### R067+0x1B26 `R067+0x1B26 (1954:0966)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
@@ -14236,12 +13731,6 @@ matched, reached by cards: blocks 1/22, outcomes 0/8
 - `R068+0x14BC` `cmp word ptr [0xe48a], 0x62`
 - `R068+0x14C3` `jmp 0xb8`
 - `R068+0x14C6` `mov ax, word ptr [0xe48a]`
-
-### R068+0x1A76 `R068+0x1A76 (1960:07F6)`
-
-matched, reached by cards: blocks 0/1, outcomes 0/0
-
-- `R068+0x1A76` `enter 0x38, 0`
 
 ### R068+0x1C14 `R068+0x1C14 (19F9:0004)`
 
@@ -14997,12 +14486,6 @@ matched, reached by cards: blocks 12/28, outcomes 8/28
 - `R071+0x1784` `push 2`
 - `R071+0x178A` `push 4`
 - `R071+0x1798` `push 0xc`
-
-### R071+0x1A6A `R071+0x1A6A (1992:04CA)`
-
-matched, reached by cards: blocks 1/2, outcomes 0/0
-
-- `R071+0x1A6A` `enter 4, 0`
 
 ### R071+0x1FB6 `R071+0x1FB6 (1A33:0006)`
 
@@ -16538,12 +16021,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 
 matched, reached by cards: blocks 5/5, outcomes 4/4
 
-### R077+0x14D8 `R077+0x14D8 (191C:0698)`
-
-matched, reached by cards: blocks 0/1, outcomes 0/0
-
-- `R077+0x14D8` `enter 0x38, 0`
-
 ### R077+0x15EC `R077+0x15EC (1996:000C)`
 
 matched, reached by cards: blocks 16/22, outcomes 12/18
@@ -16831,17 +16308,6 @@ matched, reached by cards: blocks 4/6, outcomes 2/4
 ### R078+0x1340 `R078+0x1340 (191C:0500)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R078+0x1378 `R078+0x1378 (191C:0538)`
-
-matched, reached by cards: blocks 1/7, outcomes 0/4
-
-- `R078+0x1378` `push si`
-- `R078+0x13BA` `push 0`
-- `R078+0x13C6` `cmp si, 0x5a0`
-- `R078+0x13CC` `mov es, word ptr [0x8058]`
-- `R078+0x13FA` `mov es, word ptr [0x8058]`
-- `R078+0x1426` `lcall 0x150b, 0x3b0`
 
 ### R078+0x145C `R078+0x145C (191C:061C)`
 
@@ -17424,7 +16890,7 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 
 ### R080+0x1B16 `R080+0x1B16 (1929:0C06)`
 
-matched, reached by cards: blocks 4/7, outcomes 1/4
+matched, reached by cards: blocks 3/6, outcomes 1/4
 
 - `R080+0x1B92` `push word ptr [0x907e]`
 - `R080+0x1BB2` `mov es, word ptr [0x8074]`
@@ -18905,44 +18371,24 @@ matched, reached by cards: blocks 3/3, outcomes 2/2
 
 ### R086+0x1930 `R086+0x1930 (19CB:0000)`
 
-matched, reached by cards: blocks 14/18, outcomes 10/14
+matched, reached by cards: blocks 2/18, outcomes 1/14
 
 - `R086+0x198B` `jmp 0x130`
+- `R086+0x1A03` `mov bx, si`
 - `R086+0x1A0E` `mov bx, word ptr [0xee6a]`
+- `R086+0x1A19` `mov word ptr [bp - 4], ax`
+- `R086+0x1A22` `dec ax`
+- `R086+0x1A25` `dec ax`
+- `R086+0x1A28` `dec ax`
 - `R086+0x1A2B` `jmp 0x126`
+- `R086+0x1A2E` `push word ptr [bp - 4]`
+- `R086+0x1A38` `push word ptr [bp - 4]`
+- `R086+0x1A42` `push word ptr [bp - 4]`
+- `R086+0x1A4C` `push word ptr [bp - 4]`
+- `R086+0x1A53` `add sp, 2`
+- `R086+0x1A56` `cmp word ptr [0xe48a], 0xc`
+- `R086+0x1A5D` `jmp 0x5e`
 - `R086+0x1A60` `mov ax, word ptr [0xe48a]`
-
-### R086+0x1A68 `R086+0x1A68 (19CB:0138)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R086+0x1A74 `R086+0x1A74 (19CB:0144)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R086+0x1A8C `R086+0x1A8C (19CB:015C)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R086+0x1A98 `R086+0x1A98 (19CB:0168)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R086+0x1AB0 `R086+0x1AB0 (19CB:0180)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R086+0x1ABC `R086+0x1ABC (19CB:018C)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R086+0x1AD4 `R086+0x1AD4 (19CB:01A4)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R086+0x1AE0 `R086+0x1AE0 (19CB:01B0)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
 
 ### R086+0x1AF6 `R086+0x1AF6 (19CB:01C6)`
 
@@ -19439,25 +18885,6 @@ matched, reached by cards: blocks 2/3, outcomes 1/2
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
 
-### R089+0x1846 `R089+0x1846 (197F:03D6)`
-
-matched, reached by cards: blocks 0/14, outcomes 0/12
-
-- `R089+0x1846` `push si`
-- `R089+0x1867` `sub ax, ax`
-- `R089+0x186C` `dec si`
-- `R089+0x186F` `mov ax, word ptr [0xee6a]`
-- `R089+0x1876` `dec ax`
-- `R089+0x1879` `dec ax`
-- `R089+0x187C` `dec ax`
-- `R089+0x187F` `jmp 0x458`
-- `R089+0x1882` `push 0x14`
-- `R089+0x18A2` `push 1`
-- `R089+0x18B2` `push 1`
-- `R089+0x18C0` `lcall 0x150b, 0x3b0`
-- `R089+0x18C8` `mov word ptr [0xe48a], 0x54`
-- `R089+0x18D0` `mov word ptr [0x8e1e], 2`
-
 ### R089+0x18DE `R089+0x18DE (197F:046E)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
@@ -19628,12 +19055,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 ### R090+0x1366 `R090+0x1366 (18E0:08E6)`
 
 matched, reached by cards: blocks 5/5, outcomes 4/4
-
-### R090+0x150A `R090+0x150A (18E0:0A8A)`
-
-matched, reached by cards: blocks 1/2, outcomes 0/0
-
-- `R090+0x150A` `enter 0x38, 0`
 
 ### R090+0x161E `R090+0x161E (1999:000E)`
 
@@ -19923,21 +19344,12 @@ matched, reached by cards: blocks 3/3, outcomes 2/2
 
 ### R091+0x0BA8 `R091+0x0BA8 (18F2:0008)`
 
-matched, reached by cards: blocks 19/22, outcomes 5/8
+matched, reached by cards: blocks 18/22, outcomes 5/8
 
 - `R091+0x0C31` `jmp 0x223`
 - `R091+0x0D20` `mov bx, word ptr [0xee6a]`
 - `R091+0x0D35` `jmp 0x218`
-
-### R091+0x0DCA `R091+0x0DCA (18F2:022A)`
-
-matched, reached by cards: blocks 10/11, outcomes 7/10
-
-- `R091+0x0E5B` `mov byte ptr [0x9c32], 1`
-
-### R091+0x0E9A `R091+0x0E9A (18F2:02FA)`
-
-matched, reached by cards: blocks 1/1, outcomes 0/0
+- `R091+0x0D54` `push word ptr [bp - 4]`
 
 ### R091+0x0ED2 `R091+0x0ED2 (18F2:0332)`
 
@@ -22238,7 +21650,7 @@ matched, reached by cards: blocks 5/5, outcomes 4/4
 
 ### R101+0x11F4 `R101+0x11F4 (1957:0004)`
 
-matched, reached by cards: blocks 40/127, outcomes 37/126
+matched, reached by cards: blocks 39/126, outcomes 37/126
 
 - `R101+0x124B` `jmp 0x49a`
 - `R101+0x1257` `jmp 0x49a`
@@ -22714,7 +22126,7 @@ matched, reached by cards: blocks 2/3, outcomes 1/2
 
 matched, reached by cards: blocks 0/1, outcomes 0/0
 
-- `R104+0x0FC0` `enter 4, 0`
+- `R104+0x0FC0` `enter 4, 0` (excluded)
 
 ### R104+0x14A0 `R104+0x14A0 (1982:0000)`
 
@@ -23441,12 +22853,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 ### R107+0x16A8 `R107+0x16A8 (191F:0838)`
 
 matched, reached by cards: blocks 5/5, outcomes 4/4
-
-### R107+0x1852 `R107+0x1852 (191F:09E2)`
-
-matched, reached by cards: blocks 0/1, outcomes 0/0
-
-- `R107+0x1852` `enter 0x38, 0`
 
 ### R107+0x1962 `R107+0x1962 (19CE:0002)`
 
@@ -25393,17 +24799,6 @@ matched, reached by cards: blocks 16/21, outcomes 13/20
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
 
-### R113+0x1BC4 `R113+0x1BC4 (19B5:03F4)`
-
-matched, reached by cards: blocks 1/7, outcomes 0/4
-
-- `R113+0x1BC4` `push si`
-- `R113+0x1BE5` `sub ax, ax`
-- `R113+0x1BEA` `dec si`
-- `R113+0x1BED` `mov es, word ptr [0x81c8]`
-- `R113+0x1C30` `mov es, word ptr [0x81c8]`
-- `R113+0x1C42` `lcall 0x6a1, 0x2fe8`
-
 ### R113+0x1C6C `R113+0x1C6C (19B5:049C)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
@@ -25986,19 +25381,12 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 
 ### R116+0x1526 `R116+0x1526 (191B:06F6)`
 
-matched, reached by cards: blocks 4/16, outcomes 2/8
+matched, reached by cards: blocks 3/8, outcomes 2/6
 
 - `R116+0x1537` `jmp 0x7f0`
 - `R116+0x1563` `mov es, word ptr [0x81ec]`
 - `R116+0x1620` `push 0`
 - `R116+0x1649` `mov es, word ptr [0x81ec]`
-- `R116+0x1652` `push word ptr es:[0xc73]`
-- `R116+0x165E` `mov ax, word ptr [0x8b06]`
-- `R116+0x1660` `mov sp, bp`
-- `R116+0x1661` `in ax, 0x68`
-- `R116+0x1662` `push 0xe95f`
-- `R116+0x1663` `pop di`
-- `R116+0x1665` `push 0xe3d4`
 - `R116+0x1680` `mov word ptr [0xee78], 0`
 
 ### R116+0x16E8 `R116+0x16E8 (191B:08B8)`
@@ -26402,12 +25790,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 ### R118+0x10D8 `R118+0x10D8 (18C2:0838)`
 
 matched, reached by cards: blocks 5/5, outcomes 4/4
-
-### R118+0x143A `R118+0x143A (18C2:0B9A)`
-
-matched, reached by cards: blocks 1/2, outcomes 0/0
-
-- `R118+0x143A` `enter 0x38, 0`
 
 ### R118+0x14C2 `R118+0x14C2 (1984:0002)`
 
@@ -27353,12 +26735,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 
 matched, reached by cards: blocks 5/5, outcomes 4/4
 
-### R122+0x148E `R122+0x148E (18EA:096E)`
-
-matched, reached by cards: blocks 0/1, outcomes 0/0
-
-- `R122+0x148E` `enter 0x38, 0`
-
 ### R122+0x159E `R122+0x159E (1991:000E)`
 
 matched, reached by cards: blocks 13/22, outcomes 5/8
@@ -27901,26 +27277,6 @@ matched, reached by cards: blocks 1/1, outcomes 0/0
 ### R124+0x1BB2 `R124+0x1BB2 (199D:0562)`
 
 matched, reached by cards: blocks 1/1, outcomes 0/0
-
-### R124+0x1BEA `R124+0x1BEA (199D:059A)`
-
-matched, reached by cards: blocks 0/15, outcomes 0/12
-
-- `R124+0x1BEA` `push si`
-- `R124+0x1C08` `sub ax, ax`
-- `R124+0x1C0C` `or si, si`
-- `R124+0x1C10` `jmp 0x64c`
-- `R124+0x1C13` `mov ax, word ptr [0xee6a]`
-- `R124+0x1C1A` `dec ax`
-- `R124+0x1C1D` `dec ax`
-- `R124+0x1C20` `dec ax`
-- `R124+0x1C23` `jmp 0x638`
-- `R124+0x1C26` `mov es, word ptr [0x8230]`
-- `R124+0x1C54` `mov es, word ptr [0x8230]`
-- `R124+0x1C80` `lcall 0x150b, 0x3b0`
-- `R124+0x1C88` `push 0xe3e3`
-- `R124+0x1C9C` `push 0`
-- `R124+0x1CA0` `lcall 0x150b, 0x3b0`
 
 ### R124+0x1CCE `R124+0x1CCE (199D:067E)`
 

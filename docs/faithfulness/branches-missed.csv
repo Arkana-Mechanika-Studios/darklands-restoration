@@ -411,56 +411,6 @@ root 0265:09B2,root,3010,fallthrough,root 0265:09C0,jge 0x9c9,open,cards
 root 0265:09B2,root,3087,fallthrough,root 0265:0A37,jne 0xa44,open,cards
 root 0265:09B2,root,308D,taken,root 0265:0A3D,jne 0xa44,open,cards
 root 0265:09B2,root,308D,fallthrough,root 0265:0A3D,jne 0xa44,open,cards
-root 030B:001A,root,30E1,block,root 030B:0031,push 0x7d,open,cards
-root 030B:001A,root,3103,block,root 030B:0053,push 0x7e,open,cards
-root 030B:001A,root,311A,block,root 030B:006A,push 0x7f,open,cards
-root 030B:001A,root,30DF,fallthrough,root 030B:002F,je 0x41,open,cards
-root 030B:001A,root,3101,fallthrough,root 030B:0051,je 0x63,open,cards
-root 030B:001A,root,3118,fallthrough,root 030B:0068,jae 0x77,open,cards
-root 030B:0150,root,3292,block,root 030B:01E2,jmp 0x313,open,cards
-root 030B:0150,root,32A6,block,root 030B:01F6,jmp 0x2f9,open,cards
-root 030B:0150,root,32B2,block,root 030B:0202,jmp 0x313,open,cards
-root 030B:0150,root,32B5,block,root 030B:0205,push cs,open,cards
-root 030B:0150,root,32BD,block,root 030B:020D,"mov word ptr [bp - 2], si",open,cards
-root 030B:0150,root,32C0,block,root 030B:0210,push cs,open,cards
-root 030B:0150,root,32CC,block,root 030B:021C,push word ptr [0xa730],open,cards
-root 030B:0150,root,32E5,block,root 030B:0235,"mov ax, word ptr [0xa72e]",open,cards
-root 030B:0150,root,3303,block,root 030B:0253,push 0xd2,open,cards
-root 030B:0150,root,3314,block,root 030B:0264,"mov ax, word ptr [0x83b6]",open,cards
-root 030B:0150,root,335B,block,root 030B:02AB,"sub cx, cx",open,cards
-root 030B:0150,root,3369,block,root 030B:02B9,"mov ax, word ptr [0xa71a]",open,cards
-root 030B:0150,root,3385,block,root 030B:02D5,jb 0x2dd,open,cards
-root 030B:0150,root,3387,block,root 030B:02D7,"cmp ax, word ptr [0xa72e]",open,cards
-root 030B:0150,root,338D,block,root 030B:02DD,"mov word ptr [0xa71a], ax",open,cards
-root 030B:0150,root,339D,block,root 030B:02ED,"lcall 0x5d9, 0x6a",open,cards
-root 030B:0150,root,33A6,block,root 030B:02F6,jmp 0x1f9,open,cards
-root 030B:0150,root,33A9,block,root 030B:02F9,"lcall 0x5d9, 0x59",open,cards
-root 030B:0150,root,33B2,block,root 030B:0302,push 0xde,open,cards
-root 030B:0150,root,33C3,block,root 030B:0313,pop si,open,cards
-root 030B:0150,root,3290,fallthrough,root 030B:01E0,jne 0x1e5,open,cards
-root 030B:0150,root,32A4,fallthrough,root 030B:01F4,je 0x1f9,open,cards
-root 030B:0150,root,33B0,taken,root 030B:0300,jne 0x313,open,cards
-root 030B:0150,root,33B0,fallthrough,root 030B:0300,jne 0x313,open,cards
-root 030B:0150,root,32B0,taken,root 030B:0200,je 0x205,open,cards
-root 030B:0150,root,32B0,fallthrough,root 030B:0200,je 0x205,open,cards
-root 030B:0150,root,32BB,taken,root 030B:020B,jne 0x21c,open,cards
-root 030B:0150,root,32BB,fallthrough,root 030B:020B,jne 0x21c,open,cards
-root 030B:0150,root,32CA,taken,root 030B:021A,je 0x210,open,cards
-root 030B:0150,root,32CA,fallthrough,root 030B:021A,je 0x210,open,cards
-root 030B:0150,root,32E3,taken,root 030B:0233,jne 0x2ab,open,cards
-root 030B:0150,root,32E3,fallthrough,root 030B:0233,jne 0x2ab,open,cards
-root 030B:0150,root,3301,taken,root 030B:0251,jle 0x264,open,cards
-root 030B:0150,root,3301,fallthrough,root 030B:0251,jle 0x264,open,cards
-root 030B:0150,root,3383,taken,root 030B:02D3,ja 0x2ed,open,cards
-root 030B:0150,root,3383,fallthrough,root 030B:02D3,ja 0x2ed,open,cards
-root 030B:0150,root,3385,taken,root 030B:02D5,jb 0x2dd,open,cards
-root 030B:0150,root,3385,fallthrough,root 030B:02D5,jb 0x2dd,open,cards
-root 030B:0150,root,338B,taken,root 030B:02DB,ja 0x2ed,open,cards
-root 030B:0150,root,338B,fallthrough,root 030B:02DB,ja 0x2ed,open,cards
-root 030B:0150,root,339B,taken,root 030B:02EB,jbe 0x2b9,open,cards
-root 030B:0150,root,339B,fallthrough,root 030B:02EB,jbe 0x2b9,open,cards
-root 030B:0150,root,33A4,taken,root 030B:02F4,jne 0x2f9,open,cards
-root 030B:0150,root,33A4,fallthrough,root 030B:02F4,jne 0x2f9,open,cards
 root 03EC:000E,root,3EDB,block,root 03EC:001B,jmp 0x222,open,cards sainthelp
 root 03EC:000E,root,3EDE,block,root 03EC:001E,"cmp byte ptr [0x907a], 1",open,cards sainthelp
 root 03EC:000E,root,3EE5,block,root 03EC:0025,jmp 0x222,open,cards sainthelp
@@ -551,52 +501,52 @@ root 03EC:000E,root,4008,taken,root 03EC:0148,jg 0x14d,open,cards sainthelp
 root 03EC:000E,root,4008,fallthrough,root 03EC:0148,jg 0x14d,open,cards sainthelp
 root 03EC:000E,root,3F48,taken,root 03EC:0088,jb 0x61,open,cards sainthelp
 root 03EC:000E,root,3F48,fallthrough,root 03EC:0088,jb 0x61,open,cards sainthelp
-root 0410:02CA,root,43DA,taken,root 0410:02DA,jne 0x2dd,open,path
-root 044A:0164,root,4614,taken,root 044A:0174,jb 0x179,open,cards
-root 047C:0DE6,root,55D7,block,root 047C:0E17,"mov di, ds",open,cards
-root 047C:0DE6,root,55E4,block,root 047C:0E24,"cmp word ptr [bp + 6], 1",open,cards
-root 047C:0DE6,root,55EA,block,root 047C:0E2A,je 0xe35,open,cards
-root 047C:0DE6,root,55EC,block,root 047C:0E2C,"mov di, word ptr [bp + 6]",open,cards
-root 047C:0DE6,root,55F2,block,root 047C:0E32,"add di, 2",open,cards
-root 047C:0DE6,root,55F5,block,root 047C:0E35,push di,open,cards
-root 047C:0DE6,root,5601,block,root 047C:0E41,push bx,open,cards
-root 047C:0DE6,root,560F,block,root 047C:0E4F,"lodsw ax, word ptr [si]",open,cards
-root 047C:0DE6,root,561B,block,root 047C:0E5B,"mov si, word ptr [0xf1fc]",open,cards
-root 047C:0DE6,root,5625,block,root 047C:0E65,push bx,open,cards
-root 047C:0DE6,root,5633,block,root 047C:0E73,"lodsw ax, word ptr [si]",open,cards
-root 047C:0DE6,root,563B,block,root 047C:0E7B,pop di,open,cards
-root 047C:0DE6,root,5644,block,root 047C:0E84,push ax,open,cards
-root 047C:0DE6,root,564D,block,root 047C:0E8D,jmp 0xdf6,open,cards
-root 047C:0DE6,root,5661,block,root 047C:0EA1,push bx,open,cards
-root 047C:0DE6,root,5681,block,root 047C:0EC1,push bx,open,cards
-root 047C:0DE6,root,56A1,block,root 047C:0EE1,push bx,open,cards
-root 047C:0DE6,root,55BE,taken,root 047C:0DFE,jb 0xe0e,open,cards
-root 047C:0DE6,root,55D5,fallthrough,root 047C:0E15,je 0xe90,open,cards
-root 047C:0DE6,root,55E2,taken,root 047C:0E22,jne 0xe35,open,cards
-root 047C:0DE6,root,55E2,fallthrough,root 047C:0E22,jne 0xe35,open,cards
-root 047C:0DE6,root,55E8,taken,root 047C:0E28,jb 0xe32,open,cards
-root 047C:0DE6,root,55E8,fallthrough,root 047C:0E28,jb 0xe32,open,cards
-root 047C:0DE6,root,55EA,taken,root 047C:0E2A,je 0xe35,open,cards
-root 047C:0DE6,root,55EA,fallthrough,root 047C:0E2A,je 0xe35,open,cards
-root 047C:0DE6,root,55FF,taken,root 047C:0E3F,jb 0xe4f,open,cards
-root 047C:0DE6,root,55FF,fallthrough,root 047C:0E3F,jb 0xe4f,open,cards
-root 047C:0DE6,root,5619,taken,root 047C:0E59,jcxz 0xe7b,open,cards
-root 047C:0DE6,root,5619,fallthrough,root 047C:0E59,jcxz 0xe7b,open,cards
-root 047C:0DE6,root,5623,taken,root 047C:0E63,jb 0xe73,open,cards
-root 047C:0DE6,root,5623,fallthrough,root 047C:0E63,jb 0xe73,open,cards
-root 047C:0DE6,root,5639,taken,root 047C:0E79,loop 0xe5b,open,cards
-root 047C:0DE6,root,5639,fallthrough,root 047C:0E79,loop 0xe5b,open,cards
-root 047C:0DE6,root,5642,taken,root 047C:0E82,jne 0xe8d,open,cards
-root 047C:0DE6,root,5642,fallthrough,root 047C:0E82,jne 0xe8d,open,cards
-root 047C:0DE6,root,565F,fallthrough,root 047C:0E9F,jb 0xeaf,open,cards
-root 047C:0DE6,root,567F,fallthrough,root 047C:0EBF,jb 0xecf,open,cards
-root 047C:0DE6,root,569F,fallthrough,root 047C:0EDF,jb 0xeef,open,cards
-root 047C:0F7F,root,5748,block,root 047C:0F88,ret ,open,cards
-root 047C:0F7F,root,5764,block,root 047C:0FA4,push bx,open,cards
-root 047C:0F7F,root,577B,block,root 047C:0FBB,"mov al, 0xb",open,cards
-root 047C:0F7F,root,5746,fallthrough,root 047C:0F86,jne 0xf89,open,cards
-root 047C:0F7F,root,5762,fallthrough,root 047C:0FA2,jb 0xfb2,open,cards
-root 047C:0F7F,root,5779,fallthrough,root 047C:0FB9,jbe 0xfbd,open,cards
+root 0410:02CA,root,43DA,taken,root 0410:02DA,jne 0x2dd,excluded,path
+root 044A:0164,root,4614,taken,root 044A:0174,jb 0x179,excluded,cards
+root 047C:0DE6,root,55D7,block,root 047C:0E17,"mov di, ds",excluded,cards
+root 047C:0DE6,root,55E4,block,root 047C:0E24,"cmp word ptr [bp + 6], 1",excluded,cards
+root 047C:0DE6,root,55EA,block,root 047C:0E2A,je 0xe35,excluded,cards
+root 047C:0DE6,root,55EC,block,root 047C:0E2C,"mov di, word ptr [bp + 6]",excluded,cards
+root 047C:0DE6,root,55F2,block,root 047C:0E32,"add di, 2",excluded,cards
+root 047C:0DE6,root,55F5,block,root 047C:0E35,push di,excluded,cards
+root 047C:0DE6,root,5601,block,root 047C:0E41,push bx,excluded,cards
+root 047C:0DE6,root,560F,block,root 047C:0E4F,"lodsw ax, word ptr [si]",excluded,cards
+root 047C:0DE6,root,561B,block,root 047C:0E5B,"mov si, word ptr [0xf1fc]",excluded,cards
+root 047C:0DE6,root,5625,block,root 047C:0E65,push bx,excluded,cards
+root 047C:0DE6,root,5633,block,root 047C:0E73,"lodsw ax, word ptr [si]",excluded,cards
+root 047C:0DE6,root,563B,block,root 047C:0E7B,pop di,excluded,cards
+root 047C:0DE6,root,5644,block,root 047C:0E84,push ax,excluded,cards
+root 047C:0DE6,root,564D,block,root 047C:0E8D,jmp 0xdf6,excluded,cards
+root 047C:0DE6,root,5661,block,root 047C:0EA1,push bx,excluded,cards
+root 047C:0DE6,root,5681,block,root 047C:0EC1,push bx,excluded,cards
+root 047C:0DE6,root,56A1,block,root 047C:0EE1,push bx,excluded,cards
+root 047C:0DE6,root,55BE,taken,root 047C:0DFE,jb 0xe0e,excluded,cards
+root 047C:0DE6,root,55D5,fallthrough,root 047C:0E15,je 0xe90,excluded,cards
+root 047C:0DE6,root,55E2,taken,root 047C:0E22,jne 0xe35,excluded,cards
+root 047C:0DE6,root,55E2,fallthrough,root 047C:0E22,jne 0xe35,excluded,cards
+root 047C:0DE6,root,55E8,taken,root 047C:0E28,jb 0xe32,excluded,cards
+root 047C:0DE6,root,55E8,fallthrough,root 047C:0E28,jb 0xe32,excluded,cards
+root 047C:0DE6,root,55EA,taken,root 047C:0E2A,je 0xe35,excluded,cards
+root 047C:0DE6,root,55EA,fallthrough,root 047C:0E2A,je 0xe35,excluded,cards
+root 047C:0DE6,root,55FF,taken,root 047C:0E3F,jb 0xe4f,excluded,cards
+root 047C:0DE6,root,55FF,fallthrough,root 047C:0E3F,jb 0xe4f,excluded,cards
+root 047C:0DE6,root,5619,taken,root 047C:0E59,jcxz 0xe7b,excluded,cards
+root 047C:0DE6,root,5619,fallthrough,root 047C:0E59,jcxz 0xe7b,excluded,cards
+root 047C:0DE6,root,5623,taken,root 047C:0E63,jb 0xe73,excluded,cards
+root 047C:0DE6,root,5623,fallthrough,root 047C:0E63,jb 0xe73,excluded,cards
+root 047C:0DE6,root,5639,taken,root 047C:0E79,loop 0xe5b,excluded,cards
+root 047C:0DE6,root,5639,fallthrough,root 047C:0E79,loop 0xe5b,excluded,cards
+root 047C:0DE6,root,5642,taken,root 047C:0E82,jne 0xe8d,excluded,cards
+root 047C:0DE6,root,5642,fallthrough,root 047C:0E82,jne 0xe8d,excluded,cards
+root 047C:0DE6,root,565F,fallthrough,root 047C:0E9F,jb 0xeaf,excluded,cards
+root 047C:0DE6,root,567F,fallthrough,root 047C:0EBF,jb 0xecf,excluded,cards
+root 047C:0DE6,root,569F,fallthrough,root 047C:0EDF,jb 0xeef,excluded,cards
+root 047C:0F7F,root,5748,block,root 047C:0F88,ret ,excluded,cards
+root 047C:0F7F,root,5764,block,root 047C:0FA4,push bx,excluded,cards
+root 047C:0F7F,root,577B,block,root 047C:0FBB,"mov al, 0xb",excluded,cards
+root 047C:0F7F,root,5746,fallthrough,root 047C:0F86,jne 0xf89,excluded,cards
+root 047C:0F7F,root,5762,fallthrough,root 047C:0FA2,jb 0xfb2,excluded,cards
+root 047C:0F7F,root,5779,fallthrough,root 047C:0FB9,jbe 0xfbd,excluded,cards
 root 047C:1120,root,5937,block,root 047C:1177,"mov ax, word ptr [bp + 6]",dormant,tactics
 root 047C:1120,root,5974,block,root 047C:11B4,"xor ax, ax",dormant,tactics
 root 047C:1120,root,597A,block,root 047C:11BA,"mov ax, bx",dormant,tactics
@@ -637,14 +587,14 @@ root 047C:12C3,root,5A88,taken,root 047C:12C8,je 0x12db,open,cards sainthelp
 root 047C:12C3,root,5A88,fallthrough,root 047C:12C8,je 0x12db,open,cards sainthelp
 root 047C:12C3,root,5A8F,taken,root 047C:12CF,je 0x12db,open,cards sainthelp
 root 047C:12C3,root,5A8F,fallthrough,root 047C:12CF,je 0x12db,open,cards sainthelp
-root 05BA:0004,root,5BEC,block,root 05BA:004C,"lcall 0, 0x1354",open,cards sainthelp
-root 05BA:0004,root,5BEA,fallthrough,root 05BA:004A,jae 0x77,open,cards sainthelp
-root 05BA:00C2,root,5C77,block,root 05BA:00D7,"lcall 0, 0x1354",open,cards
-root 05BA:00C2,root,5C75,fallthrough,root 05BA:00D5,je 0x13f,open,cards
+root 05BA:0004,root,5BEC,block,root 05BA:004C,"lcall 0, 0x1354",excluded,cards sainthelp
+root 05BA:0004,root,5BEA,fallthrough,root 05BA:004A,jae 0x77,excluded,cards sainthelp
+root 05BA:00C2,root,5C77,block,root 05BA:00D7,"lcall 0, 0x1354",excluded,cards
+root 05BA:00C2,root,5C75,fallthrough,root 05BA:00D5,je 0x13f,excluded,cards
 root 0617:000E,root,61AB,block,root 0617:003B,push word ptr [bp + 6],open,cards sainthelp
 root 0617:000E,root,61A9,fallthrough,root 0617:0039,je 0x45,open,cards sainthelp
-root 0617:00AE,root,6238,block,root 0617:00C8,"sub ax, ax",open,cards sainthelp
-root 0617:00AE,root,6236,fallthrough,root 0617:00C6,je 0xd2,open,cards sainthelp
+root 0617:00AE,root,6238,block,root 0617:00C8,"sub ax, ax",excluded,cards sainthelp
+root 0617:00AE,root,6236,fallthrough,root 0617:00C6,je 0xd2,excluded,cards sainthelp
 root 0617:011E,root,62C1,block,root 0617:0151,"sub ax, ax",open,cards sainthelp
 root 0617:011E,root,62BF,fallthrough,root 0617:014F,je 0x15b,open,cards sainthelp
 root 0617:045C,root,660A,block,root 0617:049A,"mov ax, 0xeebc",open,cards
@@ -685,8 +635,8 @@ root 0617:0736,root,6957,taken,root 0617:07E7,jne 0x7ba,open,cards sainthelp
 root 0617:0736,root,6957,fallthrough,root 0617:07E7,jne 0x7ba,open,cards sainthelp
 root 0617:0736,root,696E,fallthrough,root 0617:07FE,jne 0x803,open,cards sainthelp
 root 0617:0736,root,699D,fallthrough,root 0617:082D,je 0x839,open,cards sainthelp
-root 0617:0868,root,6A12,block,root 0617:08A2,"mov ax, word ptr [bp - 0xe]",open,cards
-root 0617:0868,root,6A09,taken,root 0617:0899,jne 0x8a2,open,cards
+root 0617:0868,root,6A12,block,root 0617:08A2,"mov ax, word ptr [bp - 0xe]",excluded,cards
+root 0617:0868,root,6A09,taken,root 0617:0899,jne 0x8a2,excluded,cards
 root 06A1:02C2,root,6CE5,block,root 06A1:02D5,push dx,runtime-library,cards castle city mine special trading wild
 root 06A1:02C2,root,6CED,block,root 06A1:02DD,"xor ax, ax",runtime-library,cards castle city mine special trading wild
 root 06A1:02C2,root,6CF2,block,root 06A1:02E2,ljmp [0x7794],runtime-library,cards castle city mine special trading wild
@@ -1255,8 +1205,6 @@ root 06A1:1AAA,root,8563,block,root 06A1:1B53,push di,runtime-library,battle car
 root 06A1:1AAA,root,8574,block,root 06A1:1B64,"mov ax, word ptr [si]",runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,857C,block,root 06A1:1B6C,inc si,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,857E,block,root 06A1:1B6E,"cmp word ptr [si], 0",runtime-library,battle cards rules sainthelp saints
-root 06A1:1AAA,root,862B,block,root 06A1:1C1B,push bx,runtime-library,battle cards rules sainthelp saints
-root 06A1:1AAA,root,863A,block,root 06A1:1C2A,retf ,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,8688,block,root 06A1:1C78,"mov byte ptr [bp - 6], 0xcb",runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,86CE,block,root 06A1:1CBE,"xor si, si",runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,86D2,block,root 06A1:1CC2,push cs,runtime-library,battle cards rules sainthelp saints
@@ -1324,14 +1272,12 @@ root 06A1:1AAA,root,8F7F,block,root 06A1:256F,jne 0x2577,runtime-library,battle 
 root 06A1:1AAA,root,8F81,block,root 06A1:2571,"cmp word ptr [si + 4], 1",runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,8FDD,block,root 06A1:25CD,inc di,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,907D,block,root 06A1:266D,"sub word ptr [bp - 0x16], 0xe10",runtime-library,battle cards rules sainthelp saints
-root 06A1:1AAA,root,9191,block,root 06A1:2781,"xor di, di",runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,92EB,block,root 06A1:28DB,div cx,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,92F9,block,root 06A1:28E9,"add al, 0x27",runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,92A4,taken,root 06A1:2894,jcxz 0x28a4,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,9208,taken,root 06A1:27F8,ja 0x27fc,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,91FE,taken,root 06A1:27EE,je 0x280c,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,91EC,taken,root 06A1:27DC,jcxz 0x281b,runtime-library,battle cards rules sainthelp saints
-root 06A1:1AAA,root,918F,fallthrough,root 06A1:277F,je 0x2783,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,907B,fallthrough,root 06A1:266B,je 0x2676,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,906B,taken,root 06A1:265B,je 0x2676,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,8FDB,fallthrough,root 06A1:25CB,jle 0x25ce,runtime-library,battle cards rules sainthelp saints
@@ -1427,8 +1373,6 @@ root 06A1:1AAA,root,86CC,taken,root 06A1:1CBC,jb 0x1cc2,runtime-library,battle c
 root 06A1:1AAA,root,86CC,fallthrough,root 06A1:1CBC,jb 0x1cc2,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,8680,taken,root 06A1:1C70,je 0x1c78,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,867C,taken,root 06A1:1C6C,je 0x1c78,runtime-library,battle cards rules sainthelp saints
-root 06A1:1AAA,root,8629,fallthrough,root 06A1:1C19,jne 0x1c24,runtime-library,battle cards rules sainthelp saints
-root 06A1:1AAA,root,8621,taken,root 06A1:1C11,je 0x1c2a,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,8537,fallthrough,root 06A1:1B27,je 0x1b73,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,853D,taken,root 06A1:1B2D,je 0x1b73,runtime-library,battle cards rules sainthelp saints
 root 06A1:1AAA,root,853D,fallthrough,root 06A1:1B2D,je 0x1b73,runtime-library,battle cards rules sainthelp saints
@@ -1465,10 +1409,6 @@ root 06A1:1B1C,root,8561,taken,root 06A1:1B51,jne 0x1b6c,runtime-library,cards
 root 06A1:1B1C,root,8561,fallthrough,root 06A1:1B51,jne 0x1b6c,runtime-library,cards
 root 06A1:1B1C,root,8572,taken,root 06A1:1B62,jne 0x1b6c,runtime-library,cards
 root 06A1:1B1C,root,8572,fallthrough,root 06A1:1B62,jne 0x1b6c,runtime-library,cards
-root 06A1:1C0A,root,862B,block,root 06A1:1C1B,push bx,runtime-library,cards
-root 06A1:1C0A,root,863A,block,root 06A1:1C2A,retf ,runtime-library,cards
-root 06A1:1C0A,root,8621,taken,root 06A1:1C11,je 0x1c2a,runtime-library,cards
-root 06A1:1C0A,root,8629,fallthrough,root 06A1:1C19,jne 0x1c24,runtime-library,cards
 root 06A1:1C58,root,8688,block,root 06A1:1C78,"mov byte ptr [bp - 6], 0xcb",runtime-library,cards
 root 06A1:1C58,root,86CE,block,root 06A1:1CBE,"xor si, si",runtime-library,cards
 root 06A1:1C58,root,86D2,block,root 06A1:1CC2,push cs,runtime-library,cards
@@ -1631,8 +1571,6 @@ root 06A1:2580,root,8FD5,taken,root 06A1:25C5,jne 0x25ce,runtime-library,cards
 root 06A1:2580,root,8FDB,fallthrough,root 06A1:25CB,jle 0x25ce,runtime-library,cards
 root 06A1:2580,root,906B,taken,root 06A1:265B,je 0x2676,runtime-library,cards
 root 06A1:2580,root,907B,fallthrough,root 06A1:266B,je 0x2676,runtime-library,cards
-root 06A1:2760,root,9191,block,root 06A1:2781,"xor di, di",runtime-library,cards
-root 06A1:2760,root,918F,fallthrough,root 06A1:277F,je 0x2783,runtime-library,cards
 root 06A1:27CC,root,91EC,taken,root 06A1:27DC,jcxz 0x281b,runtime-library,cards
 root 06A1:27CC,root,91FE,taken,root 06A1:27EE,je 0x280c,runtime-library,cards
 root 06A1:27CC,root,9208,taken,root 06A1:27F8,ja 0x27fc,runtime-library,cards
@@ -4658,16 +4596,8 @@ R014+0x9C4C,R014,9C75,taken,R014+0x9C75 (14F7:3465),jl 0x3476,open,path
 R014+0x9C4C,R014,9C75,fallthrough,R014+0x9C75 (14F7:3465),jl 0x3476,open,path
 R014+0xA492,R014,A583,block,R014+0xA583 (18BF:00F3),"sub dx, dx",open,battle
 R014+0xA492,R014,A581,fallthrough,R014+0xA581 (18BF:00F1),jge 0xf5,open,battle
-R014+0xA738,R014,A751,block,R014+0xA751 (18BF:02C1),"cmp word ptr [bp + 6], 5",open,battle
-R014+0xA738,R014,A757,block,R014+0xA757 (18BF:02C7),"cmp byte ptr [0x9f1f], 0xff",open,battle
-R014+0xA738,R014,A75E,block,R014+0xA75E (18BF:02CE),"sub ax, ax",open,battle
 R014+0xA738,R014,A8C3,block,R014+0xA8C3 (18BF:0433),"mov word ptr [bp - 2], 1",open,battle
 R014+0xA738,R014,A907,block,R014+0xA907 (18BF:0477),"mov word ptr [bp - 0xc], 0",open,battle
-R014+0xA738,R014,A74F,fallthrough,R014+0xA74F (18BF:02BF),je 0x2d4,open,battle
-R014+0xA738,R014,A755,taken,R014+0xA755 (18BF:02C5),jne 0x2d4,open,battle
-R014+0xA738,R014,A755,fallthrough,R014+0xA755 (18BF:02C5),jne 0x2d4,open,battle
-R014+0xA738,R014,A75C,taken,R014+0xA75C (18BF:02CC),jne 0x2d4,open,battle
-R014+0xA738,R014,A75C,fallthrough,R014+0xA75C (18BF:02CC),jne 0x2d4,open,battle
 R014+0xA738,R014,A7FF,taken,R014+0xA7FF (18BF:036F),jg 0x3bb,open,battle
 R014+0xA738,R014,A8C1,fallthrough,R014+0xA8C1 (18BF:0431),jge 0x43f,open,battle
 R014+0xA738,R014,A905,fallthrough,R014+0xA905 (18BF:0475),jge 0x4aa,open,battle
@@ -7013,605 +6943,6 @@ R037+0x8ED4,R037,98B6,taken,R037+0x98B6 (1C7D:1706),jg 0x169c,open,cards sainthe
 R037+0x8ED4,R037,9969,fallthrough,R037+0x9969 (1C7D:17B9),je 0x17d0,open,cards sainthelp
 R037+0x8ED4,R037,99F4,fallthrough,R037+0x99F4 (1C7D:1844),je 0x185a,open,cards sainthelp
 R037+0x8ED4,R037,9A6F,fallthrough,R037+0x9A6F (1C7D:18BF),je 0x18d6,open,cards sainthelp
-R038+0x02F8,R038,02F8,block,R038+0x02F8 (1462:02F8),"enter 0x30, 0",open,cards
-R038+0x02F8,R038,0308,block,R038+0x0308 (1462:0308),jmp 0xdfe,open,cards
-R038+0x02F8,R038,030B,block,R038+0x030B (1462:030B),jle 0x310,open,cards
-R038+0x02F8,R038,030D,block,R038+0x030D (1462:030D),jmp 0x2392,open,cards
-R038+0x02F8,R038,0310,block,R038+0x0310 (1462:0310),"cmp ax, 0x1352",open,cards
-R038+0x02F8,R038,0315,block,R038+0x0315 (1462:0315),jmp 0x842,open,cards
-R038+0x02F8,R038,0318,block,R038+0x0318 (1462:0318),jle 0x31d,open,cards
-R038+0x02F8,R038,031A,block,R038+0x031A (1462:031A),jmp 0x2366,open,cards
-R038+0x02F8,R038,031D,block,R038+0x031D (1462:031D),"sub ax, 0x231",open,cards
-R038+0x02F8,R038,0322,block,R038+0x0322 (1462:0322),jmp 0x11f6,open,cards
-R038+0x02F8,R038,0325,block,R038+0x0325 (1462:0325),"sub ax, 0x101",open,cards
-R038+0x02F8,R038,032A,block,R038+0x032A (1462:032A),jmp 0x177e,open,cards
-R038+0x02F8,R038,032D,block,R038+0x032D (1462:032D),"sub ax, 0x101",open,cards
-R038+0x02F8,R038,0332,block,R038+0x0332 (1462:0332),jmp 0x1dfe,open,cards
-R038+0x02F8,R038,0335,block,R038+0x0335 (1462:0335),"sub ax, 0xbcd",open,cards
-R038+0x02F8,R038,033A,block,R038+0x033A (1462:033A),jmp 0x2354,open,cards
-R038+0x02F8,R038,033D,block,R038+0x033D (1462:033D),pop si,open,cards
-R038+0x02F8,R038,0342,block,R038+0x0342 (1462:0342),push 0x10,open,cards
-R038+0x02F8,R038,036D,block,R038+0x036D (1462:036D),"mov ax, word ptr [0xe7dc]",open,cards
-R038+0x02F8,R038,0374,block,R038+0x0374 (1462:0374),push 0x12,open,cards
-R038+0x02F8,R038,0428,block,R038+0x0428 (1462:0428),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,042B,block,R038+0x042B (1462:042B),"cmp word ptr [bp - 0xe], 4",open,cards
-R038+0x02F8,R038,0431,block,R038+0x0431 (1462:0431),"mov ax, word ptr [0xe7da]",open,cards
-R038+0x02F8,R038,043E,block,R038+0x043E (1462:043E),"cmp word ptr [bp - 0xe], 4",open,cards
-R038+0x02F8,R038,0444,block,R038+0x0444 (1462:0444),jmp 0x23e8,open,cards
-R038+0x02F8,R038,0447,block,R038+0x0447 (1462:0447),"cmp word ptr [0xe88e], 0",open,cards
-R038+0x02F8,R038,044E,block,R038+0x044E (1462:044E),push word ptr [0xe88e],open,cards
-R038+0x02F8,R038,045A,block,R038+0x045A (1462:045A),"lcall 0x47c, 0x545",open,cards
-R038+0x02F8,R038,05B6,block,R038+0x05B6 (1462:05B6),push 0x27f4,open,cards
-R038+0x02F8,R038,05C4,block,R038+0x05C4 (1462:05C4),push 0x10,open,cards
-R038+0x02F8,R038,05F6,block,R038+0x05F6 (1462:05F6),"mov word ptr [0xe7da], 0",open,cards
-R038+0x02F8,R038,05FC,block,R038+0x05FC (1462:05FC),push 0x12,open,cards
-R038+0x02F8,R038,06B0,block,R038+0x06B0 (1462:06B0),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,06B3,block,R038+0x06B3 (1462:06B3),"cmp word ptr [bp - 0xe], 4",open,cards
-R038+0x02F8,R038,06B9,block,R038+0x06B9 (1462:06B9),"mov ax, word ptr [0xe7da]",open,cards
-R038+0x02F8,R038,06C6,block,R038+0x06C6 (1462:06C6),"cmp word ptr [bp - 0xe], 4",open,cards
-R038+0x02F8,R038,06CC,block,R038+0x06CC (1462:06CC),jmp 0x23e8,open,cards
-R038+0x02F8,R038,06CF,block,R038+0x06CF (1462:06CF),"cmp word ptr [0xe88e], 0",open,cards
-R038+0x02F8,R038,06D6,block,R038+0x06D6 (1462:06D6),push word ptr [0xe88e],open,cards
-R038+0x02F8,R038,06E2,block,R038+0x06E2 (1462:06E2),"lcall 0x47c, 0x545",open,cards
-R038+0x02F8,R038,0842,block,R038+0x0842 (1462:0842),"mov ax, 0x11b",open,cards
-R038+0x02F8,R038,084A,block,R038+0x084A (1462:084A),"cmp word ptr [0xe7dc], 0",open,cards
-R038+0x02F8,R038,0851,block,R038+0x0851 (1462:0851),jmp 0x23e8,open,cards
-R038+0x02F8,R038,0854,block,R038+0x0854 (1462:0854),"lcall 0x47c, 0x12c3",open,cards
-R038+0x02F8,R038,08FA,block,R038+0x08FA (1462:08FA),push -1,open,cards
-R038+0x02F8,R038,094C,block,R038+0x094C (1462:094C),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,094F,block,R038+0x094F (1462:094F),"cmp word ptr [bp - 0xe], 4",open,cards
-R038+0x02F8,R038,0955,block,R038+0x0955 (1462:0955),"mov bx, word ptr [0xe7da]",open,cards
-R038+0x02F8,R038,0969,block,R038+0x0969 (1462:0969),push word ptr [0x907e],open,cards
-R038+0x02F8,R038,097C,block,R038+0x097C (1462:097C),jmp 0x8fa,open,cards
-R038+0x02F8,R038,097F,block,R038+0x097F (1462:097F),"cmp word ptr [bp - 0xe], 4",open,cards
-R038+0x02F8,R038,0985,block,R038+0x0985 (1462:0985),jmp 0xd1e,open,cards
-R038+0x02F8,R038,0988,block,R038+0x0988 (1462:0988),"mov word ptr [bp - 0xe], 0",open,cards
-R038+0x02F8,R038,0990,block,R038+0x0990 (1462:0990),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,0993,block,R038+0x0993 (1462:0993),"cmp word ptr [bp - 0xe], 4",open,cards
-R038+0x02F8,R038,0999,block,R038+0x0999 (1462:0999),"mov di, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,09A4,block,R038+0x09A4 (1462:09A4),"cmp word ptr [bp - 0xe], 4",open,cards
-R038+0x02F8,R038,09AA,block,R038+0x09AA (1462:09AA),push word ptr [bp - 0xa],open,cards
-R038+0x02F8,R038,09C3,block,R038+0x09C3 (1462:09C3),push 0x43,open,cards
-R038+0x02F8,R038,09D0,block,R038+0x09D0 (1462:09D0),"lcall 0x47c, 0x1293",open,cards
-R038+0x02F8,R038,09D8,block,R038+0x09D8 (1462:09D8),push 0xa8,open,cards
-R038+0x02F8,R038,0A2D,block,R038+0x0A2D (1462:0A2D),push word ptr [0xe88e],open,cards
-R038+0x02F8,R038,0A39,block,R038+0x0A39 (1462:0A39),"lcall 0x47c, 0x545",open,cards
-R038+0x02F8,R038,0CA8,block,R038+0x0CA8 (1462:0CA8),"mov byte ptr [bx - 0x6397], 1",open,cards
-R038+0x02F8,R038,0CAD,block,R038+0x0CAD (1462:0CAD),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,0CF9,block,R038+0x0CF9 (1462:0CF9),inc ax,open,cards
-R038+0x02F8,R038,0CFD,block,R038+0x0CFD (1462:0CFD),push word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,0D1E,block,R038+0x0D1E (1462:0D1E),push 0,open,cards
-R038+0x02F8,R038,0D96,block,R038+0x0D96 (1462:0D96),"add sp, 2",open,cards
-R038+0x02F8,R038,0D9C,block,R038+0x0D9C (1462:0D9C),"lcall 0x47c, 0x12c3",open,cards
-R038+0x02F8,R038,0DE3,block,R038+0x0DE3 (1462:0DE3),push 0x4aa0,open,cards
-R038+0x02F8,R038,0DF2,block,R038+0x0DF2 (1462:0DF2),push cs,open,cards
-R038+0x02F8,R038,0DFE,block,R038+0x0DFE (1462:0DFE),"cmp word ptr [0xe7dc], 0",open,cards
-R038+0x02F8,R038,0E05,block,R038+0x0E05 (1462:0E05),jmp 0x23e8,open,cards
-R038+0x02F8,R038,0E08,block,R038+0x0E08 (1462:0E08),"lcall 0x47c, 0x12c3",open,cards
-R038+0x02F8,R038,0EAE,block,R038+0x0EAE (1462:0EAE),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,0EB1,block,R038+0x0EB1 (1462:0EB1),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,0EB7,block,R038+0x0EB7 (1462:0EB7),"mov bx, word ptr [0xe7da]",open,cards
-R038+0x02F8,R038,0ECB,block,R038+0x0ECB (1462:0ECB),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,0ED1,block,R038+0x0ED1 (1462:0ED1),push word ptr [bp - 0xa],open,cards
-R038+0x02F8,R038,0EE0,block,R038+0x0EE0 (1462:0EE0),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,0EF1,block,R038+0x0EF1 (1462:0EF1),"mov byte ptr [bx - 0x6396], 0x41",open,cards
-R038+0x02F8,R038,0EF6,block,R038+0x0EF6 (1462:0EF6),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,0FB9,block,R038+0x0FB9 (1462:0FB9),push 0x4a,open,cards
-R038+0x02F8,R038,0FCA,block,R038+0x0FCA (1462:0FCA),"cmp word ptr [0xe7dc], 0",open,cards
-R038+0x02F8,R038,0FD1,block,R038+0x0FD1 (1462:0FD1),jmp 0x23e8,open,cards
-R038+0x02F8,R038,0FD4,block,R038+0x0FD4 (1462:0FD4),"lcall 0x47c, 0x12c3",open,cards
-R038+0x02F8,R038,107A,block,R038+0x107A (1462:107A),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,107D,block,R038+0x107D (1462:107D),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,1083,block,R038+0x1083 (1462:1083),"mov bx, word ptr [0xe7da]",open,cards
-R038+0x02F8,R038,1097,block,R038+0x1097 (1462:1097),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,109D,block,R038+0x109D (1462:109D),push word ptr [bp - 0xa],open,cards
-R038+0x02F8,R038,10AC,block,R038+0x10AC (1462:10AC),"mov ax, word ptr [0xe7de]",open,cards
-R038+0x02F8,R038,10B9,block,R038+0x10B9 (1462:10B9),"mov word ptr [0xe7e0], 0",open,cards
-R038+0x02F8,R038,10BF,block,R038+0x10BF (1462:10BF),push word ptr [0xe88e],open,cards
-R038+0x02F8,R038,11E4,block,R038+0x11E4 (1462:11E4),push 0x59,open,cards
-R038+0x02F8,R038,11F6,block,R038+0x11F6 (1462:11F6),"cmp word ptr [0xe7dc], 0",open,cards
-R038+0x02F8,R038,11FD,block,R038+0x11FD (1462:11FD),jmp 0x23e8,open,cards
-R038+0x02F8,R038,1200,block,R038+0x1200 (1462:1200),"lea ax, [bp - 4]",open,cards
-R038+0x02F8,R038,1276,block,R038+0x1276 (1462:1276),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,1279,block,R038+0x1279 (1462:1279),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,127F,block,R038+0x127F (1462:127F),"mov ax, word ptr [0xe7da]",open,cards
-R038+0x02F8,R038,128C,block,R038+0x128C (1462:128C),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,1292,block,R038+0x1292 (1462:1292),jmp 0x23e8,open,cards
-R038+0x02F8,R038,1295,block,R038+0x1295 (1462:1295),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,12B0,block,R038+0x12B0 (1462:12B0),"sbb ax, ax",open,cards
-R038+0x02F8,R038,12B5,block,R038+0x12B5 (1462:12B5),pop si,open,cards
-R038+0x02F8,R038,12BA,block,R038+0x12BA (1462:12BA),jmp 0x13ca,open,cards
-R038+0x02F8,R038,12BD,block,R038+0x12BD (1462:12BD),inc word ptr [0xe890],open,cards
-R038+0x02F8,R038,12C8,block,R038+0x12C8 (1462:12C8),"mov word ptr [0xe890], ax",open,cards
-R038+0x02F8,R038,12CB,block,R038+0x12CB (1462:12CB),"mov ax, word ptr [0xe890]",open,cards
-R038+0x02F8,R038,12D2,block,R038+0x12D2 (1462:12D2),"mov byte ptr [0xe753], 0x39",open,cards
-R038+0x02F8,R038,12F4,block,R038+0x12F4 (1462:12F4),"mov al, 0x1c",open,cards
-R038+0x02F8,R038,1304,block,R038+0x1304 (1462:1304),"mov byte ptr [0xe757], al",open,cards
-R038+0x02F8,R038,1307,block,R038+0x1307 (1462:1307),"mov byte ptr [0xe758], al",open,cards
-R038+0x02F8,R038,130E,block,R038+0x130E (1462:130E),"sub al, al",open,cards
-R038+0x02F8,R038,131E,block,R038+0x131E (1462:131E),"mov byte ptr [0xe754], 9",open,cards
-R038+0x02F8,R038,1338,block,R038+0x1338 (1462:1338),"mov byte ptr [0xe753], 0x23",open,cards
-R038+0x02F8,R038,1356,block,R038+0x1356 (1462:1356),"mov byte ptr [0xe753], 0x21",open,cards
-R038+0x02F8,R038,1374,block,R038+0x1374 (1462:1374),"cmp ax, 5",open,cards
-R038+0x02F8,R038,1379,block,R038+0x1379 (1462:1379),"shl ax, 1",open,cards
-R038+0x02F8,R038,138E,block,R038+0x138E (1462:138E),"mov al, byte ptr [0xe753]",open,cards
-R038+0x02F8,R038,13CA,block,R038+0x13CA (1462:13CA),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,13E3,block,R038+0x13E3 (1462:13E3),"sbb ax, ax",open,cards
-R038+0x02F8,R038,13E8,block,R038+0x13E8 (1462:13E8),pop si,open,cards
-R038+0x02F8,R038,13ED,block,R038+0x13ED (1462:13ED),jmp 0x150e,open,cards
-R038+0x02F8,R038,13F0,block,R038+0x13F0 (1462:13F0),inc word ptr [0xe890],open,cards
-R038+0x02F8,R038,13FB,block,R038+0x13FB (1462:13FB),"mov word ptr [0xe890], ax",open,cards
-R038+0x02F8,R038,13FE,block,R038+0x13FE (1462:13FE),"mov ax, word ptr [0xe890]",open,cards
-R038+0x02F8,R038,1404,block,R038+0x1404 (1462:1404),"mov byte ptr [0xe762], 0x21",open,cards
-R038+0x02F8,R038,1413,block,R038+0x1413 (1462:1413),"sub al, al",open,cards
-R038+0x02F8,R038,1421,block,R038+0x1421 (1462:1421),"mov byte ptr [0xe769], al",open,cards
-R038+0x02F8,R038,1424,block,R038+0x1424 (1462:1424),"mov byte ptr [0xe76a], al",open,cards
-R038+0x02F8,R038,142A,block,R038+0x142A (1462:142A),"mov byte ptr [0xe762], 0x2f",open,cards
-R038+0x02F8,R038,145A,block,R038+0x145A (1462:145A),"mov byte ptr [0xe762], 0x2d",open,cards
-R038+0x02F8,R038,148A,block,R038+0x148A (1462:148A),"mov byte ptr [0xe762], 0x1c",open,cards
-R038+0x02F8,R038,14A8,block,R038+0x14A8 (1462:14A8),"sub al, al",open,cards
-R038+0x02F8,R038,14B4,block,R038+0x14B4 (1462:14B4),"sub al, al",open,cards
-R038+0x02F8,R038,14CC,block,R038+0x14CC (1462:14CC),"mov byte ptr [0xe768], al",open,cards
-R038+0x02F8,R038,14D2,block,R038+0x14D2 (1462:14D2),"mov byte ptr [0xe762], 0x15",open,cards
-R038+0x02F8,R038,14F2,block,R038+0x14F2 (1462:14F2),"cmp ax, 5",open,cards
-R038+0x02F8,R038,14F7,block,R038+0x14F7 (1462:14F7),jmp 0x1bbe,open,cards
-R038+0x02F8,R038,14FA,block,R038+0x14FA (1462:14FA),"shl ax, 1",open,cards
-R038+0x02F8,R038,150E,block,R038+0x150E (1462:150E),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,1527,block,R038+0x1527 (1462:1527),"sbb ax, ax",open,cards
-R038+0x02F8,R038,152C,block,R038+0x152C (1462:152C),pop si,open,cards
-R038+0x02F8,R038,1531,block,R038+0x1531 (1462:1531),jmp 0x15cc,open,cards
-R038+0x02F8,R038,1534,block,R038+0x1534 (1462:1534),inc word ptr [0xe890],open,cards
-R038+0x02F8,R038,153F,block,R038+0x153F (1462:153F),"mov word ptr [0xe890], ax",open,cards
-R038+0x02F8,R038,1542,block,R038+0x1542 (1462:1542),"mov ax, word ptr [0xe890]",open,cards
-R038+0x02F8,R038,1548,block,R038+0x1548 (1462:1548),"mov al, 0x1c",open,cards
-R038+0x02F8,R038,155D,block,R038+0x155D (1462:155D),"mov byte ptr [0xe755], al",open,cards
-R038+0x02F8,R038,1564,block,R038+0x1564 (1462:1564),"mov al, 0x23",open,cards
-R038+0x02F8,R038,1566,block,R038+0x1566 (1462:1566),"mov byte ptr [0xe756], al",open,cards
-R038+0x02F8,R038,1578,block,R038+0x1578 (1462:1578),"sub al, al",open,cards
-R038+0x02F8,R038,157C,block,R038+0x157C (1462:157C),"mov byte ptr [0xe756], 0x1c",open,cards
-R038+0x02F8,R038,158B,block,R038+0x158B (1462:158B),"mov byte ptr [0xe753], 0x3e",open,cards
-R038+0x02F8,R038,159E,block,R038+0x159E (1462:159E),"mov al, 0x23",open,cards
-R038+0x02F8,R038,15A0,block,R038+0x15A0 (1462:15A0),"mov byte ptr [0xe756], al",open,cards
-R038+0x02F8,R038,15AC,block,R038+0x15AC (1462:15AC),"sub al, al",open,cards
-R038+0x02F8,R038,15B0,block,R038+0x15B0 (1462:15B0),"cmp ax, 5",open,cards
-R038+0x02F8,R038,15B5,block,R038+0x15B5 (1462:15B5),jmp 0x138e,open,cards
-R038+0x02F8,R038,15B8,block,R038+0x15B8 (1462:15B8),"shl ax, 1",open,cards
-R038+0x02F8,R038,15CC,block,R038+0x15CC (1462:15CC),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,15E5,block,R038+0x15E5 (1462:15E5),"sbb ax, ax",open,cards
-R038+0x02F8,R038,15EA,block,R038+0x15EA (1462:15EA),pop si,open,cards
-R038+0x02F8,R038,15EF,block,R038+0x15EF (1462:15EF),jmp 0x1772,open,cards
-R038+0x02F8,R038,15F2,block,R038+0x15F2 (1462:15F2),inc word ptr [0xe890],open,cards
-R038+0x02F8,R038,15FD,block,R038+0x15FD (1462:15FD),"mov word ptr [0xe890], ax",open,cards
-R038+0x02F8,R038,1600,block,R038+0x1600 (1462:1600),"mov ax, word ptr [0xe890]",open,cards
-R038+0x02F8,R038,1606,block,R038+0x1606 (1462:1606),"mov byte ptr [0xe753], 0x28",open,cards
-R038+0x02F8,R038,162A,block,R038+0x162A (1462:162A),"mov byte ptr [0xe75b], al",open,cards
-R038+0x02F8,R038,1630,block,R038+0x1630 (1462:1630),"mov byte ptr [0xe754], 0x20",open,cards
-R038+0x02F8,R038,165C,block,R038+0x165C (1462:165C),"mov byte ptr [0xe753], 0x1a",open,cards
-R038+0x02F8,R038,168A,block,R038+0x168A (1462:168A),"mov byte ptr [0xe753], 0x2e",open,cards
-R038+0x02F8,R038,16B2,block,R038+0x16B2 (1462:16B2),"mov byte ptr [0xe753], 0x33",open,cards
-R038+0x02F8,R038,16DE,block,R038+0x16DE (1462:16DE),"mov byte ptr [0xe754], 0x1e",open,cards
-R038+0x02F8,R038,1708,block,R038+0x1708 (1462:1708),"cmp ax, 5",open,cards
-R038+0x02F8,R038,170D,block,R038+0x170D (1462:170D),"shl ax, 1",open,cards
-R038+0x02F8,R038,1722,block,R038+0x1722 (1462:1722),"mov al, byte ptr [0xe753]",open,cards
-R038+0x02F8,R038,1772,block,R038+0x1772 (1462:1772),push 0xe48c,open,cards
-R038+0x02F8,R038,177E,block,R038+0x177E (1462:177E),"cmp word ptr [0xe7dc], 0",open,cards
-R038+0x02F8,R038,1785,block,R038+0x1785 (1462:1785),jmp 0x23e8,open,cards
-R038+0x02F8,R038,1788,block,R038+0x1788 (1462:1788),"lea ax, [bp - 4]",open,cards
-R038+0x02F8,R038,17FE,block,R038+0x17FE (1462:17FE),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,1801,block,R038+0x1801 (1462:1801),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,1807,block,R038+0x1807 (1462:1807),"mov ax, word ptr [0xe7da]",open,cards
-R038+0x02F8,R038,1814,block,R038+0x1814 (1462:1814),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,181A,block,R038+0x181A (1462:181A),jmp 0x23e8,open,cards
-R038+0x02F8,R038,181D,block,R038+0x181D (1462:181D),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,1838,block,R038+0x1838 (1462:1838),"sbb ax, ax",open,cards
-R038+0x02F8,R038,183D,block,R038+0x183D (1462:183D),pop si,open,cards
-R038+0x02F8,R038,1842,block,R038+0x1842 (1462:1842),jmp 0x1978,open,cards
-R038+0x02F8,R038,1845,block,R038+0x1845 (1462:1845),inc word ptr [0xe892],open,cards
-R038+0x02F8,R038,1850,block,R038+0x1850 (1462:1850),"mov word ptr [0xe892], ax",open,cards
-R038+0x02F8,R038,1853,block,R038+0x1853 (1462:1853),"mov ax, word ptr [0xe892]",open,cards
-R038+0x02F8,R038,185A,block,R038+0x185A (1462:185A),"mov byte ptr [0xe75a], 0x18",open,cards
-R038+0x02F8,R038,187E,block,R038+0x187E (1462:187E),"mov byte ptr [0xe761], al",open,cards
-R038+0x02F8,R038,1884,block,R038+0x1884 (1462:1884),"mov byte ptr [0xe75b], 0",open,cards
-R038+0x02F8,R038,18AE,block,R038+0x18AE (1462:18AE),"mov byte ptr [0xe75a], 0x18",open,cards
-R038+0x02F8,R038,18D4,block,R038+0x18D4 (1462:18D4),"mov al, 0x35",open,cards
-R038+0x02F8,R038,1900,block,R038+0x1900 (1462:1900),"mov byte ptr [0xe759], 0x31",open,cards
-R038+0x02F8,R038,192E,block,R038+0x192E (1462:192E),"mov byte ptr [0xe759], 0x1c",open,cards
-R038+0x02F8,R038,195C,block,R038+0x195C (1462:195C),"cmp ax, 5",open,cards
-R038+0x02F8,R038,1961,block,R038+0x1961 (1462:1961),jmp 0x21f2,open,cards
-R038+0x02F8,R038,1964,block,R038+0x1964 (1462:1964),"shl ax, 1",open,cards
-R038+0x02F8,R038,1978,block,R038+0x1978 (1462:1978),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,1991,block,R038+0x1991 (1462:1991),"sbb ax, ax",open,cards
-R038+0x02F8,R038,1996,block,R038+0x1996 (1462:1996),pop si,open,cards
-R038+0x02F8,R038,199B,block,R038+0x199B (1462:199B),jmp 0x1a7e,open,cards
-R038+0x02F8,R038,199E,block,R038+0x199E (1462:199E),inc word ptr [0xe892],open,cards
-R038+0x02F8,R038,19A9,block,R038+0x19A9 (1462:19A9),"mov word ptr [0xe892], ax",open,cards
-R038+0x02F8,R038,19AC,block,R038+0x19AC (1462:19AC),"mov ax, word ptr [0xe892]",open,cards
-R038+0x02F8,R038,19B2,block,R038+0x19B2 (1462:19B2),"mov byte ptr [0xe75c], 0x2b",open,cards
-R038+0x02F8,R038,19E0,block,R038+0x19E0 (1462:19E0),"mov byte ptr [0xe75e], al",open,cards
-R038+0x02F8,R038,19F0,block,R038+0x19F0 (1462:19F0),"mov al, 0x10",open,cards
-R038+0x02F8,R038,1A20,block,R038+0x1A20 (1462:1A20),"mov byte ptr [0xe768], al",open,cards
-R038+0x02F8,R038,1A26,block,R038+0x1A26 (1462:1A26),"cmp ax, 5",open,cards
-R038+0x02F8,R038,1A2B,block,R038+0x1A2B (1462:1A2B),"shl ax, 1",open,cards
-R038+0x02F8,R038,1A40,block,R038+0x1A40 (1462:1A40),"mov al, byte ptr [0xe75c]",open,cards
-R038+0x02F8,R038,1A7E,block,R038+0x1A7E (1462:1A7E),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,1A97,block,R038+0x1A97 (1462:1A97),"sbb ax, ax",open,cards
-R038+0x02F8,R038,1A9C,block,R038+0x1A9C (1462:1A9C),pop si,open,cards
-R038+0x02F8,R038,1AA1,block,R038+0x1AA1 (1462:1AA1),jmp 0x1c12,open,cards
-R038+0x02F8,R038,1AA4,block,R038+0x1AA4 (1462:1AA4),inc word ptr [0xe892],open,cards
-R038+0x02F8,R038,1AAF,block,R038+0x1AAF (1462:1AAF),"mov word ptr [0xe892], ax",open,cards
-R038+0x02F8,R038,1AB2,block,R038+0x1AB2 (1462:1AB2),"mov ax, word ptr [0xe892]",open,cards
-R038+0x02F8,R038,1AB8,block,R038+0x1AB8 (1462:1AB8),"mov byte ptr [0xe762], 0x18",open,cards
-R038+0x02F8,R038,1AE8,block,R038+0x1AE8 (1462:1AE8),"mov al, 0x12",open,cards
-R038+0x02F8,R038,1B04,block,R038+0x1B04 (1462:1B04),"mov byte ptr [0xe763], 0x1c",open,cards
-R038+0x02F8,R038,1B28,block,R038+0x1B28 (1462:1B28),"mov byte ptr [0xe762], 0x28",open,cards
-R038+0x02F8,R038,1B58,block,R038+0x1B58 (1462:1B58),"mov byte ptr [0xe762], 0x21",open,cards
-R038+0x02F8,R038,1B7A,block,R038+0x1B7A (1462:1B7A),"mov al, 0x32",open,cards
-R038+0x02F8,R038,1BA4,block,R038+0x1BA4 (1462:1BA4),"cmp ax, 5",open,cards
-R038+0x02F8,R038,1BA9,block,R038+0x1BA9 (1462:1BA9),"shl ax, 1",open,cards
-R038+0x02F8,R038,1BBE,block,R038+0x1BBE (1462:1BBE),"mov al, byte ptr [0xe762]",open,cards
-R038+0x02F8,R038,1BC9,block,R038+0x1BC9 (1462:1BC9),"mov byte ptr es:[bx + 0x340b], al",open,cards
-R038+0x02F8,R038,1C12,block,R038+0x1C12 (1462:1C12),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,1C2B,block,R038+0x1C2B (1462:1C2B),"sbb ax, ax",open,cards
-R038+0x02F8,R038,1C30,block,R038+0x1C30 (1462:1C30),pop si,open,cards
-R038+0x02F8,R038,1C35,block,R038+0x1C35 (1462:1C35),jmp 0x1772,open,cards
-R038+0x02F8,R038,1C38,block,R038+0x1C38 (1462:1C38),inc word ptr [0xe892],open,cards
-R038+0x02F8,R038,1C43,block,R038+0x1C43 (1462:1C43),"mov word ptr [0xe892], ax",open,cards
-R038+0x02F8,R038,1C46,block,R038+0x1C46 (1462:1C46),"mov ax, word ptr [0xe892]",open,cards
-R038+0x02F8,R038,1C4C,block,R038+0x1C4C (1462:1C4C),"mov al, 0x10",open,cards
-R038+0x02F8,R038,1C84,block,R038+0x1C84 (1462:1C84),"mov byte ptr [0xe757], 0x10",open,cards
-R038+0x02F8,R038,1CAF,block,R038+0x1CAF (1462:1CAF),"mov byte ptr [0xe761], al",open,cards
-R038+0x02F8,R038,1CB6,block,R038+0x1CB6 (1462:1CB6),"mov byte ptr [0xe758], 0xd",open,cards
-R038+0x02F8,R038,1CEE,block,R038+0x1CEE (1462:1CEE),"mov byte ptr [0xe756], 0x11",open,cards
-R038+0x02F8,R038,1D22,block,R038+0x1D22 (1462:1D22),"mov byte ptr [0xe756], 0x15",open,cards
-R038+0x02F8,R038,1D4A,block,R038+0x1D4A (1462:1D4A),"mov byte ptr [0xe760], al",open,cards
-R038+0x02F8,R038,1D50,block,R038+0x1D50 (1462:1D50),"sub al, al",open,cards
-R038+0x02F8,R038,1D78,block,R038+0x1D78 (1462:1D78),"cmp ax, 5",open,cards
-R038+0x02F8,R038,1D7D,block,R038+0x1D7D (1462:1D7D),"shl ax, 1",open,cards
-R038+0x02F8,R038,1D92,block,R038+0x1D92 (1462:1D92),"mov al, byte ptr [0xe756]",open,cards
-R038+0x02F8,R038,1DC2,block,R038+0x1DC2 (1462:1DC2),"mov al, byte ptr [0xe75b]",open,cards
-R038+0x02F8,R038,1DFE,block,R038+0x1DFE (1462:1DFE),"cmp word ptr [0xe7dc], 0",open,cards
-R038+0x02F8,R038,1E05,block,R038+0x1E05 (1462:1E05),jmp 0x23e8,open,cards
-R038+0x02F8,R038,1E08,block,R038+0x1E08 (1462:1E08),"lea ax, [bp - 4]",open,cards
-R038+0x02F8,R038,1E7E,block,R038+0x1E7E (1462:1E7E),inc word ptr [bp - 0xe],open,cards
-R038+0x02F8,R038,1E81,block,R038+0x1E81 (1462:1E81),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,1E87,block,R038+0x1E87 (1462:1E87),"mov ax, word ptr [0xe7da]",open,cards
-R038+0x02F8,R038,1E94,block,R038+0x1E94 (1462:1E94),"cmp word ptr [bp - 0xe], 5",open,cards
-R038+0x02F8,R038,1E9A,block,R038+0x1E9A (1462:1E9A),jmp 0x23e8,open,cards
-R038+0x02F8,R038,1E9D,block,R038+0x1E9D (1462:1E9D),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,1EB8,block,R038+0x1EB8 (1462:1EB8),"sbb ax, ax",open,cards
-R038+0x02F8,R038,1EBD,block,R038+0x1EBD (1462:1EBD),pop si,open,cards
-R038+0x02F8,R038,1EC2,block,R038+0x1EC2 (1462:1EC2),jmp 0x1fe2,open,cards
-R038+0x02F8,R038,1EC5,block,R038+0x1EC5 (1462:1EC5),inc word ptr [0xe894],open,cards
-R038+0x02F8,R038,1ED0,block,R038+0x1ED0 (1462:1ED0),"mov word ptr [0xe894], ax",open,cards
-R038+0x02F8,R038,1ED3,block,R038+0x1ED3 (1462:1ED3),"mov ax, word ptr [0xe894]",open,cards
-R038+0x02F8,R038,1EDA,block,R038+0x1EDA (1462:1EDA),"mov byte ptr [0xe762], 0x1c",open,cards
-R038+0x02F8,R038,1EEC,block,R038+0x1EEC (1462:1EEC),"mov byte ptr [0xe764], 0",open,cards
-R038+0x02F8,R038,1F16,block,R038+0x1F16 (1462:1F16),"mov byte ptr [0xe762], 0x2b",open,cards
-R038+0x02F8,R038,1F44,block,R038+0x1F44 (1462:1F44),"mov al, 0x2a",open,cards
-R038+0x02F8,R038,1F66,block,R038+0x1F66 (1462:1F66),"mov byte ptr [0xe762], 0x15",open,cards
-R038+0x02F8,R038,1F96,block,R038+0x1F96 (1462:1F96),"mov byte ptr [0xe762], 0x26",open,cards
-R038+0x02F8,R038,1FC6,block,R038+0x1FC6 (1462:1FC6),"cmp ax, 5",open,cards
-R038+0x02F8,R038,1FCB,block,R038+0x1FCB (1462:1FCB),jmp 0x1bbe,open,cards
-R038+0x02F8,R038,1FCE,block,R038+0x1FCE (1462:1FCE),"shl ax, 1",open,cards
-R038+0x02F8,R038,1FE2,block,R038+0x1FE2 (1462:1FE2),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,1FFB,block,R038+0x1FFB (1462:1FFB),"sbb ax, ax",open,cards
-R038+0x02F8,R038,2000,block,R038+0x2000 (1462:2000),pop si,open,cards
-R038+0x02F8,R038,2005,block,R038+0x2005 (1462:2005),jmp 0x20b4,open,cards
-R038+0x02F8,R038,2008,block,R038+0x2008 (1462:2008),inc word ptr [0xe894],open,cards
-R038+0x02F8,R038,2013,block,R038+0x2013 (1462:2013),"mov word ptr [0xe894], ax",open,cards
-R038+0x02F8,R038,2016,block,R038+0x2016 (1462:2016),"mov ax, word ptr [0xe894]",open,cards
-R038+0x02F8,R038,201C,block,R038+0x201C (1462:201C),"mov byte ptr [0xe753], 0x19",open,cards
-R038+0x02F8,R038,202E,block,R038+0x202E (1462:202E),"mov byte ptr [0xe754], 0x18",open,cards
-R038+0x02F8,R038,2038,block,R038+0x2038 (1462:2038),"mov byte ptr [0xe755], al",open,cards
-R038+0x02F8,R038,203E,block,R038+0x203E (1462:203E),"mov byte ptr [0xe753], 0",open,cards
-R038+0x02F8,R038,2050,block,R038+0x2050 (1462:2050),"mov byte ptr [0xe753], 0x1c",open,cards
-R038+0x02F8,R038,2057,block,R038+0x2057 (1462:2057),"mov byte ptr [0xe754], al",open,cards
-R038+0x02F8,R038,205C,block,R038+0x205C (1462:205C),"mov al, 0xe",open,cards
-R038+0x02F8,R038,2064,block,R038+0x2064 (1462:2064),"mov byte ptr [0xe753], 0x3f",open,cards
-R038+0x02F8,R038,2076,block,R038+0x2076 (1462:2076),"cmp ax, 5",open,cards
-R038+0x02F8,R038,207B,block,R038+0x207B (1462:207B),"shl ax, 1",open,cards
-R038+0x02F8,R038,2090,block,R038+0x2090 (1462:2090),"mov al, byte ptr [0xe753]",open,cards
-R038+0x02F8,R038,20B4,block,R038+0x20B4 (1462:20B4),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,20CD,block,R038+0x20CD (1462:20CD),"sbb ax, ax",open,cards
-R038+0x02F8,R038,20D2,block,R038+0x20D2 (1462:20D2),pop si,open,cards
-R038+0x02F8,R038,20D7,block,R038+0x20D7 (1462:20D7),jmp 0x220e,open,cards
-R038+0x02F8,R038,20DA,block,R038+0x20DA (1462:20DA),inc word ptr [0xe894],open,cards
-R038+0x02F8,R038,20E5,block,R038+0x20E5 (1462:20E5),"mov word ptr [0xe894], ax",open,cards
-R038+0x02F8,R038,20E8,block,R038+0x20E8 (1462:20E8),"mov ax, word ptr [0xe894]",open,cards
-R038+0x02F8,R038,20EE,block,R038+0x20EE (1462:20EE),"mov byte ptr [0xe759], 0x2a",open,cards
-R038+0x02F8,R038,211E,block,R038+0x211E (1462:211E),"mov al, 0x11",open,cards
-R038+0x02F8,R038,2136,block,R038+0x2136 (1462:2136),"mov byte ptr [0xe75f], al",open,cards
-R038+0x02F8,R038,2140,block,R038+0x2140 (1462:2140),"mov byte ptr [0xe75a], 0x2a",open,cards
-R038+0x02F8,R038,215F,block,R038+0x215F (1462:215F),"mov byte ptr [0xe75f], al",open,cards
-R038+0x02F8,R038,2166,block,R038+0x2166 (1462:2166),"mov al, 0x21",open,cards
-R038+0x02F8,R038,2180,block,R038+0x2180 (1462:2180),"mov byte ptr [0xe759], 0x30",open,cards
-R038+0x02F8,R038,21AA,block,R038+0x21AA (1462:21AA),"mov byte ptr [0xe759], 0x2f",open,cards
-R038+0x02F8,R038,21D8,block,R038+0x21D8 (1462:21D8),"cmp ax, 5",open,cards
-R038+0x02F8,R038,21DD,block,R038+0x21DD (1462:21DD),"shl ax, 1",open,cards
-R038+0x02F8,R038,21F2,block,R038+0x21F2 (1462:21F2),"mov al, byte ptr [0xe759]",open,cards
-R038+0x02F8,R038,220E,block,R038+0x220E (1462:220E),"mov bx, word ptr [bp - 0xe]",open,cards
-R038+0x02F8,R038,2227,block,R038+0x2227 (1462:2227),"sbb ax, ax",open,cards
-R038+0x02F8,R038,222C,block,R038+0x222C (1462:222C),pop si,open,cards
-R038+0x02F8,R038,2231,block,R038+0x2231 (1462:2231),jmp 0x1772,open,cards
-R038+0x02F8,R038,2234,block,R038+0x2234 (1462:2234),inc word ptr [0xe894],open,cards
-R038+0x02F8,R038,223F,block,R038+0x223F (1462:223F),"mov word ptr [0xe894], ax",open,cards
-R038+0x02F8,R038,2242,block,R038+0x2242 (1462:2242),"mov ax, word ptr [0xe894]",open,cards
-R038+0x02F8,R038,2248,block,R038+0x2248 (1462:2248),"mov byte ptr [0xe75c], 0x23",open,cards
-R038+0x02F8,R038,227F,block,R038+0x227F (1462:227F),"mov byte ptr [0xe769], al",open,cards
-R038+0x02F8,R038,2282,block,R038+0x2282 (1462:2282),"mov byte ptr [0xe76a], al",open,cards
-R038+0x02F8,R038,2288,block,R038+0x2288 (1462:2288),"mov byte ptr [0xe75c], 8",open,cards
-R038+0x02F8,R038,22C2,block,R038+0x22C2 (1462:22C2),"mov byte ptr [0xe75d], 0x14",open,cards
-R038+0x02F8,R038,2306,block,R038+0x2306 (1462:2306),"mov byte ptr [0xe75c], 0x2a",open,cards
-R038+0x02F8,R038,2338,block,R038+0x2338 (1462:2338),"cmp ax, 5",open,cards
-R038+0x02F8,R038,233D,block,R038+0x233D (1462:233D),jmp 0x1a40,open,cards
-R038+0x02F8,R038,2340,block,R038+0x2340 (1462:2340),"shl ax, 1",open,cards
-R038+0x02F8,R038,2354,block,R038+0x2354 (1462:2354),push 0,open,cards
-R038+0x02F8,R038,2366,block,R038+0x2366 (1462:2366),"sub ax, 0x1372",open,cards
-R038+0x02F8,R038,236B,block,R038+0x236B (1462:236B),jmp 0x842,open,cards
-R038+0x02F8,R038,236E,block,R038+0x236E (1462:236E),"sub ax, 0xacf",open,cards
-R038+0x02F8,R038,2373,block,R038+0x2373 (1462:2373),jmp 0x84a,open,cards
-R038+0x02F8,R038,2376,block,R038+0x2376 (1462:2376),"sub ax, 0x20",open,cards
-R038+0x02F8,R038,237B,block,R038+0x237B (1462:237B),jmp 0x84a,open,cards
-R038+0x02F8,R038,237E,block,R038+0x237E (1462:237E),"sub ax, 0xf2",open,cards
-R038+0x02F8,R038,2383,block,R038+0x2383 (1462:2383),jmp 0xfca,open,cards
-R038+0x02F8,R038,2386,block,R038+0x2386 (1462:2386),"sub ax, 0x20",open,cards
-R038+0x02F8,R038,238B,block,R038+0x238B (1462:238B),jmp 0xfca,open,cards
-R038+0x02F8,R038,238E,block,R038+0x238E (1462:238E),pop si,open,cards
-R038+0x02F8,R038,2392,block,R038+0x2392 (1462:2392),"cmp ax, 0x4b00",open,cards
-R038+0x02F8,R038,2397,block,R038+0x2397 (1462:2397),jmp 0x342,open,cards
-R038+0x02F8,R038,239A,block,R038+0x239A (1462:239A),jg 0x23c0,open,cards
-R038+0x02F8,R038,239C,block,R038+0x239C (1462:239C),"sub ax, 0x2368",open,cards
-R038+0x02F8,R038,23A1,block,R038+0x23A1 (1462:23A1),jmp 0xdfe,open,cards
-R038+0x02F8,R038,23A4,block,R038+0x23A4 (1462:23A4),"sub ax, 0xadb",open,cards
-R038+0x02F8,R038,23A9,block,R038+0x23A9 (1462:23A9),jmp 0xd9c,open,cards
-R038+0x02F8,R038,23AC,block,R038+0x23AC (1462:23AC),"sub ax, 0x20",open,cards
-R038+0x02F8,R038,23B1,block,R038+0x23B1 (1462:23B1),jmp 0xd9c,open,cards
-R038+0x02F8,R038,23B4,block,R038+0x23B4 (1462:23B4),"sub ax, 0x199d",open,cards
-R038+0x02F8,R038,23B9,block,R038+0x23B9 (1462:23B9),jmp 0x342,open,cards
-R038+0x02F8,R038,23BC,block,R038+0x23BC (1462:23BC),pop si,open,cards
-R038+0x02F8,R038,23C0,block,R038+0x23C0 (1462:23C0),"sub ax, 0x4d00",open,cards
-R038+0x02F8,R038,23C5,block,R038+0x23C5 (1462:23C5),jmp 0x342,open,cards
-R038+0x02F8,R038,23C8,block,R038+0x23C8 (1462:23C8),"sub ax, 0x231",open,cards
-R038+0x02F8,R038,23CD,block,R038+0x23CD (1462:23CD),jmp 0x11f6,open,cards
-R038+0x02F8,R038,23D0,block,R038+0x23D0 (1462:23D0),"sub ax, 0xcf",open,cards
-R038+0x02F8,R038,23D5,block,R038+0x23D5 (1462:23D5),jmp 0x5c4,open,cards
-R038+0x02F8,R038,23D8,block,R038+0x23D8 (1462:23D8),"sub ax, 0x32",open,cards
-R038+0x02F8,R038,23DD,block,R038+0x23DD (1462:23DD),jmp 0x177e,open,cards
-R038+0x02F8,R038,23E0,block,R038+0x23E0 (1462:23E0),"sub ax, 0x101",open,cards
-R038+0x02F8,R038,23E5,block,R038+0x23E5 (1462:23E5),jmp 0x1dfe,open,cards
-R038+0x02F8,R038,23E8,block,R038+0x23E8 (1462:23E8),pop si,open,cards
-R038+0x02F8,R038,0306,taken,R038+0x0306 (1462:0306),jne 0x30b,open,cards
-R038+0x02F8,R038,0306,fallthrough,R038+0x0306 (1462:0306),jne 0x30b,open,cards
-R038+0x02F8,R038,0E03,taken,R038+0x0E03 (1462:0E03),jg 0xe08,open,cards
-R038+0x02F8,R038,0E03,fallthrough,R038+0x0E03 (1462:0E03),jg 0xe08,open,cards
-R038+0x02F8,R038,0EB5,taken,R038+0x0EB5 (1462:0EB5),jge 0xecb,open,cards
-R038+0x02F8,R038,0EB5,fallthrough,R038+0x0EB5 (1462:0EB5),jge 0xecb,open,cards
-R038+0x02F8,R038,0EC9,taken,R038+0x0EC9 (1462:0EC9),jne 0xeae,open,cards
-R038+0x02F8,R038,0EC9,fallthrough,R038+0x0EC9 (1462:0EC9),jne 0xeae,open,cards
-R038+0x02F8,R038,0ECF,taken,R038+0x0ECF (1462:0ECF),jl 0xee0,open,cards
-R038+0x02F8,R038,0ECF,fallthrough,R038+0x0ECF (1462:0ECF),jl 0xee0,open,cards
-R038+0x02F8,R038,0EEF,taken,R038+0x0EEF (1462:0EEF),jl 0xef6,open,cards
-R038+0x02F8,R038,0EEF,fallthrough,R038+0x0EEF (1462:0EEF),jl 0xef6,open,cards
-R038+0x02F8,R038,030B,taken,R038+0x030B (1462:030B),jle 0x310,open,cards
-R038+0x02F8,R038,030B,fallthrough,R038+0x030B (1462:030B),jle 0x310,open,cards
-R038+0x02F8,R038,2395,taken,R038+0x2395 (1462:2395),jne 0x239a,open,cards
-R038+0x02F8,R038,2395,fallthrough,R038+0x2395 (1462:2395),jne 0x239a,open,cards
-R038+0x02F8,R038,036B,taken,R038+0x036B (1462:036B),jns 0x374,open,cards
-R038+0x02F8,R038,036B,fallthrough,R038+0x036B (1462:036B),jns 0x374,open,cards
-R038+0x02F8,R038,042F,taken,R038+0x042F (1462:042F),jge 0x43e,open,cards
-R038+0x02F8,R038,042F,fallthrough,R038+0x042F (1462:042F),jge 0x43e,open,cards
-R038+0x02F8,R038,043C,taken,R038+0x043C (1462:043C),jne 0x428,open,cards
-R038+0x02F8,R038,043C,fallthrough,R038+0x043C (1462:043C),jne 0x428,open,cards
-R038+0x02F8,R038,0442,taken,R038+0x0442 (1462:0442),jl 0x447,open,cards
-R038+0x02F8,R038,0442,fallthrough,R038+0x0442 (1462:0442),jl 0x447,open,cards
-R038+0x02F8,R038,044C,taken,R038+0x044C (1462:044C),je 0x45a,open,cards
-R038+0x02F8,R038,044C,fallthrough,R038+0x044C (1462:044C),je 0x45a,open,cards
-R038+0x02F8,R038,239A,taken,R038+0x239A (1462:239A),jg 0x23c0,open,cards
-R038+0x02F8,R038,239A,fallthrough,R038+0x239A (1462:239A),jg 0x23c0,open,cards
-R038+0x02F8,R038,239F,taken,R038+0x239F (1462:239F),jne 0x23a4,open,cards
-R038+0x02F8,R038,239F,fallthrough,R038+0x239F (1462:239F),jne 0x23a4,open,cards
-R038+0x02F8,R038,23A7,taken,R038+0x23A7 (1462:23A7),jne 0x23ac,open,cards
-R038+0x02F8,R038,23A7,fallthrough,R038+0x23A7 (1462:23A7),jne 0x23ac,open,cards
-R038+0x02F8,R038,0DE1,taken,R038+0x0DE1 (1462:0DE1),je 0xdf2,open,cards
-R038+0x02F8,R038,0DE1,fallthrough,R038+0x0DE1 (1462:0DE1),je 0xdf2,open,cards
-R038+0x02F8,R038,23AF,taken,R038+0x23AF (1462:23AF),jne 0x23b4,open,cards
-R038+0x02F8,R038,23AF,fallthrough,R038+0x23AF (1462:23AF),jne 0x23b4,open,cards
-R038+0x02F8,R038,23B7,taken,R038+0x23B7 (1462:23B7),jne 0x23bc,open,cards
-R038+0x02F8,R038,23B7,fallthrough,R038+0x23B7 (1462:23B7),jne 0x23bc,open,cards
-R038+0x02F8,R038,23C3,taken,R038+0x23C3 (1462:23C3),jne 0x23c8,open,cards
-R038+0x02F8,R038,23C3,fallthrough,R038+0x23C3 (1462:23C3),jne 0x23c8,open,cards
-R038+0x02F8,R038,23CB,taken,R038+0x23CB (1462:23CB),jne 0x23d0,open,cards
-R038+0x02F8,R038,23CB,fallthrough,R038+0x23CB (1462:23CB),jne 0x23d0,open,cards
-R038+0x02F8,R038,11FB,taken,R038+0x11FB (1462:11FB),jg 0x1200,open,cards
-R038+0x02F8,R038,11FB,fallthrough,R038+0x11FB (1462:11FB),jg 0x1200,open,cards
-R038+0x02F8,R038,127D,taken,R038+0x127D (1462:127D),jge 0x128c,open,cards
-R038+0x02F8,R038,127D,fallthrough,R038+0x127D (1462:127D),jge 0x128c,open,cards
-R038+0x02F8,R038,128A,taken,R038+0x128A (1462:128A),jne 0x1276,open,cards
-R038+0x02F8,R038,128A,fallthrough,R038+0x128A (1462:128A),jne 0x1276,open,cards
-R038+0x02F8,R038,1290,taken,R038+0x1290 (1462:1290),jl 0x1295,open,cards
-R038+0x02F8,R038,1290,fallthrough,R038+0x1290 (1462:1290),jl 0x1295,open,cards
-R038+0x02F8,R038,12AE,taken,R038+0x12AE (1462:12AE),je 0x12b5,open,cards
-R038+0x02F8,R038,12AE,fallthrough,R038+0x12AE (1462:12AE),je 0x12b5,open,cards
-R038+0x02F8,R038,12B8,taken,R038+0x12B8 (1462:12B8),je 0x12bd,open,cards
-R038+0x02F8,R038,12B8,fallthrough,R038+0x12B8 (1462:12B8),je 0x12bd,open,cards
-R038+0x02F8,R038,13E1,taken,R038+0x13E1 (1462:13E1),je 0x13e8,open,cards
-R038+0x02F8,R038,13E1,fallthrough,R038+0x13E1 (1462:13E1),je 0x13e8,open,cards
-R038+0x02F8,R038,13EB,taken,R038+0x13EB (1462:13EB),je 0x13f0,open,cards
-R038+0x02F8,R038,13EB,fallthrough,R038+0x13EB (1462:13EB),je 0x13f0,open,cards
-R038+0x02F8,R038,1525,taken,R038+0x1525 (1462:1525),je 0x152c,open,cards
-R038+0x02F8,R038,1525,fallthrough,R038+0x1525 (1462:1525),je 0x152c,open,cards
-R038+0x02F8,R038,152F,taken,R038+0x152F (1462:152F),je 0x1534,open,cards
-R038+0x02F8,R038,152F,fallthrough,R038+0x152F (1462:152F),je 0x1534,open,cards
-R038+0x02F8,R038,15E3,taken,R038+0x15E3 (1462:15E3),je 0x15ea,open,cards
-R038+0x02F8,R038,15E3,fallthrough,R038+0x15E3 (1462:15E3),je 0x15ea,open,cards
-R038+0x02F8,R038,15ED,taken,R038+0x15ED (1462:15ED),je 0x15f2,open,cards
-R038+0x02F8,R038,15ED,fallthrough,R038+0x15ED (1462:15ED),je 0x15f2,open,cards
-R038+0x02F8,R038,15FB,taken,R038+0x15FB (1462:15FB),jl 0x1600,open,cards
-R038+0x02F8,R038,15FB,fallthrough,R038+0x15FB (1462:15FB),jl 0x1600,open,cards
-R038+0x02F8,R038,170B,taken,R038+0x170B (1462:170B),ja 0x1722,open,cards
-R038+0x02F8,R038,170B,fallthrough,R038+0x170B (1462:170B),ja 0x1722,open,cards
-R038+0x02F8,R038,153D,taken,R038+0x153D (1462:153D),jl 0x1542,open,cards
-R038+0x02F8,R038,153D,fallthrough,R038+0x153D (1462:153D),jl 0x1542,open,cards
-R038+0x02F8,R038,15B3,taken,R038+0x15B3 (1462:15B3),jbe 0x15b8,open,cards
-R038+0x02F8,R038,15B3,fallthrough,R038+0x15B3 (1462:15B3),jbe 0x15b8,open,cards
-R038+0x02F8,R038,13F9,taken,R038+0x13F9 (1462:13F9),jl 0x13fe,open,cards
-R038+0x02F8,R038,13F9,fallthrough,R038+0x13F9 (1462:13F9),jl 0x13fe,open,cards
-R038+0x02F8,R038,14F5,taken,R038+0x14F5 (1462:14F5),jbe 0x14fa,open,cards
-R038+0x02F8,R038,14F5,fallthrough,R038+0x14F5 (1462:14F5),jbe 0x14fa,open,cards
-R038+0x02F8,R038,12C6,taken,R038+0x12C6 (1462:12C6),jl 0x12cb,open,cards
-R038+0x02F8,R038,12C6,fallthrough,R038+0x12C6 (1462:12C6),jl 0x12cb,open,cards
-R038+0x02F8,R038,1377,taken,R038+0x1377 (1462:1377),ja 0x138e,open,cards
-R038+0x02F8,R038,1377,fallthrough,R038+0x1377 (1462:1377),ja 0x138e,open,cards
-R038+0x02F8,R038,23D3,taken,R038+0x23D3 (1462:23D3),jne 0x23d8,open,cards
-R038+0x02F8,R038,23D3,fallthrough,R038+0x23D3 (1462:23D3),jne 0x23d8,open,cards
-R038+0x02F8,R038,05F4,taken,R038+0x05F4 (1462:05F4),jl 0x5fc,open,cards
-R038+0x02F8,R038,05F4,fallthrough,R038+0x05F4 (1462:05F4),jl 0x5fc,open,cards
-R038+0x02F8,R038,06B7,taken,R038+0x06B7 (1462:06B7),jge 0x6c6,open,cards
-R038+0x02F8,R038,06B7,fallthrough,R038+0x06B7 (1462:06B7),jge 0x6c6,open,cards
-R038+0x02F8,R038,06C4,taken,R038+0x06C4 (1462:06C4),jne 0x6b0,open,cards
-R038+0x02F8,R038,06C4,fallthrough,R038+0x06C4 (1462:06C4),jne 0x6b0,open,cards
-R038+0x02F8,R038,06CA,taken,R038+0x06CA (1462:06CA),jl 0x6cf,open,cards
-R038+0x02F8,R038,06CA,fallthrough,R038+0x06CA (1462:06CA),jl 0x6cf,open,cards
-R038+0x02F8,R038,06D4,taken,R038+0x06D4 (1462:06D4),je 0x6e2,open,cards
-R038+0x02F8,R038,06D4,fallthrough,R038+0x06D4 (1462:06D4),je 0x6e2,open,cards
-R038+0x02F8,R038,23DB,taken,R038+0x23DB (1462:23DB),jne 0x23e0,open,cards
-R038+0x02F8,R038,23DB,fallthrough,R038+0x23DB (1462:23DB),jne 0x23e0,open,cards
-R038+0x02F8,R038,1783,taken,R038+0x1783 (1462:1783),jg 0x1788,open,cards
-R038+0x02F8,R038,1783,fallthrough,R038+0x1783 (1462:1783),jg 0x1788,open,cards
-R038+0x02F8,R038,1805,taken,R038+0x1805 (1462:1805),jge 0x1814,open,cards
-R038+0x02F8,R038,1805,fallthrough,R038+0x1805 (1462:1805),jge 0x1814,open,cards
-R038+0x02F8,R038,1812,taken,R038+0x1812 (1462:1812),jne 0x17fe,open,cards
-R038+0x02F8,R038,1812,fallthrough,R038+0x1812 (1462:1812),jne 0x17fe,open,cards
-R038+0x02F8,R038,1818,taken,R038+0x1818 (1462:1818),jl 0x181d,open,cards
-R038+0x02F8,R038,1818,fallthrough,R038+0x1818 (1462:1818),jl 0x181d,open,cards
-R038+0x02F8,R038,1836,taken,R038+0x1836 (1462:1836),je 0x183d,open,cards
-R038+0x02F8,R038,1836,fallthrough,R038+0x1836 (1462:1836),je 0x183d,open,cards
-R038+0x02F8,R038,1840,taken,R038+0x1840 (1462:1840),je 0x1845,open,cards
-R038+0x02F8,R038,1840,fallthrough,R038+0x1840 (1462:1840),je 0x1845,open,cards
-R038+0x02F8,R038,198F,taken,R038+0x198F (1462:198F),je 0x1996,open,cards
-R038+0x02F8,R038,198F,fallthrough,R038+0x198F (1462:198F),je 0x1996,open,cards
-R038+0x02F8,R038,1999,taken,R038+0x1999 (1462:1999),je 0x199e,open,cards
-R038+0x02F8,R038,1999,fallthrough,R038+0x1999 (1462:1999),je 0x199e,open,cards
-R038+0x02F8,R038,1A95,taken,R038+0x1A95 (1462:1A95),je 0x1a9c,open,cards
-R038+0x02F8,R038,1A95,fallthrough,R038+0x1A95 (1462:1A95),je 0x1a9c,open,cards
-R038+0x02F8,R038,1A9F,taken,R038+0x1A9F (1462:1A9F),je 0x1aa4,open,cards
-R038+0x02F8,R038,1A9F,fallthrough,R038+0x1A9F (1462:1A9F),je 0x1aa4,open,cards
-R038+0x02F8,R038,1C29,taken,R038+0x1C29 (1462:1C29),je 0x1c30,open,cards
-R038+0x02F8,R038,1C29,fallthrough,R038+0x1C29 (1462:1C29),je 0x1c30,open,cards
-R038+0x02F8,R038,1C33,taken,R038+0x1C33 (1462:1C33),je 0x1c38,open,cards
-R038+0x02F8,R038,1C33,fallthrough,R038+0x1C33 (1462:1C33),je 0x1c38,open,cards
-R038+0x02F8,R038,1C41,taken,R038+0x1C41 (1462:1C41),jl 0x1c46,open,cards
-R038+0x02F8,R038,1C41,fallthrough,R038+0x1C41 (1462:1C41),jl 0x1c46,open,cards
-R038+0x02F8,R038,1D7B,taken,R038+0x1D7B (1462:1D7B),ja 0x1d92,open,cards
-R038+0x02F8,R038,1D7B,fallthrough,R038+0x1D7B (1462:1D7B),ja 0x1d92,open,cards
-R038+0x02F8,R038,1AAD,taken,R038+0x1AAD (1462:1AAD),jl 0x1ab2,open,cards
-R038+0x02F8,R038,1AAD,fallthrough,R038+0x1AAD (1462:1AAD),jl 0x1ab2,open,cards
-R038+0x02F8,R038,1BA7,taken,R038+0x1BA7 (1462:1BA7),ja 0x1bbe,open,cards
-R038+0x02F8,R038,1BA7,fallthrough,R038+0x1BA7 (1462:1BA7),ja 0x1bbe,open,cards
-R038+0x02F8,R038,19A7,taken,R038+0x19A7 (1462:19A7),jl 0x19ac,open,cards
-R038+0x02F8,R038,19A7,fallthrough,R038+0x19A7 (1462:19A7),jl 0x19ac,open,cards
-R038+0x02F8,R038,1A29,taken,R038+0x1A29 (1462:1A29),ja 0x1a40,open,cards
-R038+0x02F8,R038,1A29,fallthrough,R038+0x1A29 (1462:1A29),ja 0x1a40,open,cards
-R038+0x02F8,R038,184E,taken,R038+0x184E (1462:184E),jl 0x1853,open,cards
-R038+0x02F8,R038,184E,fallthrough,R038+0x184E (1462:184E),jl 0x1853,open,cards
-R038+0x02F8,R038,195F,taken,R038+0x195F (1462:195F),jbe 0x1964,open,cards
-R038+0x02F8,R038,195F,fallthrough,R038+0x195F (1462:195F),jbe 0x1964,open,cards
-R038+0x02F8,R038,23E3,taken,R038+0x23E3 (1462:23E3),jne 0x23e8,open,cards
-R038+0x02F8,R038,23E3,fallthrough,R038+0x23E3 (1462:23E3),jne 0x23e8,open,cards
-R038+0x02F8,R038,1E03,taken,R038+0x1E03 (1462:1E03),jg 0x1e08,open,cards
-R038+0x02F8,R038,1E03,fallthrough,R038+0x1E03 (1462:1E03),jg 0x1e08,open,cards
-R038+0x02F8,R038,1E85,taken,R038+0x1E85 (1462:1E85),jge 0x1e94,open,cards
-R038+0x02F8,R038,1E85,fallthrough,R038+0x1E85 (1462:1E85),jge 0x1e94,open,cards
-R038+0x02F8,R038,1E92,taken,R038+0x1E92 (1462:1E92),jne 0x1e7e,open,cards
-R038+0x02F8,R038,1E92,fallthrough,R038+0x1E92 (1462:1E92),jne 0x1e7e,open,cards
-R038+0x02F8,R038,1E98,taken,R038+0x1E98 (1462:1E98),jl 0x1e9d,open,cards
-R038+0x02F8,R038,1E98,fallthrough,R038+0x1E98 (1462:1E98),jl 0x1e9d,open,cards
-R038+0x02F8,R038,1EB6,taken,R038+0x1EB6 (1462:1EB6),je 0x1ebd,open,cards
-R038+0x02F8,R038,1EB6,fallthrough,R038+0x1EB6 (1462:1EB6),je 0x1ebd,open,cards
-R038+0x02F8,R038,1EC0,taken,R038+0x1EC0 (1462:1EC0),je 0x1ec5,open,cards
-R038+0x02F8,R038,1EC0,fallthrough,R038+0x1EC0 (1462:1EC0),je 0x1ec5,open,cards
-R038+0x02F8,R038,1FF9,taken,R038+0x1FF9 (1462:1FF9),je 0x2000,open,cards
-R038+0x02F8,R038,1FF9,fallthrough,R038+0x1FF9 (1462:1FF9),je 0x2000,open,cards
-R038+0x02F8,R038,2003,taken,R038+0x2003 (1462:2003),je 0x2008,open,cards
-R038+0x02F8,R038,2003,fallthrough,R038+0x2003 (1462:2003),je 0x2008,open,cards
-R038+0x02F8,R038,20CB,taken,R038+0x20CB (1462:20CB),je 0x20d2,open,cards
-R038+0x02F8,R038,20CB,fallthrough,R038+0x20CB (1462:20CB),je 0x20d2,open,cards
-R038+0x02F8,R038,20D5,taken,R038+0x20D5 (1462:20D5),je 0x20da,open,cards
-R038+0x02F8,R038,20D5,fallthrough,R038+0x20D5 (1462:20D5),je 0x20da,open,cards
-R038+0x02F8,R038,2225,taken,R038+0x2225 (1462:2225),je 0x222c,open,cards
-R038+0x02F8,R038,2225,fallthrough,R038+0x2225 (1462:2225),je 0x222c,open,cards
-R038+0x02F8,R038,222F,taken,R038+0x222F (1462:222F),je 0x2234,open,cards
-R038+0x02F8,R038,222F,fallthrough,R038+0x222F (1462:222F),je 0x2234,open,cards
-R038+0x02F8,R038,223D,taken,R038+0x223D (1462:223D),jl 0x2242,open,cards
-R038+0x02F8,R038,223D,fallthrough,R038+0x223D (1462:223D),jl 0x2242,open,cards
-R038+0x02F8,R038,233B,taken,R038+0x233B (1462:233B),jbe 0x2340,open,cards
-R038+0x02F8,R038,233B,fallthrough,R038+0x233B (1462:233B),jbe 0x2340,open,cards
-R038+0x02F8,R038,20E3,taken,R038+0x20E3 (1462:20E3),jl 0x20e8,open,cards
-R038+0x02F8,R038,20E3,fallthrough,R038+0x20E3 (1462:20E3),jl 0x20e8,open,cards
-R038+0x02F8,R038,21DB,taken,R038+0x21DB (1462:21DB),ja 0x21f2,open,cards
-R038+0x02F8,R038,21DB,fallthrough,R038+0x21DB (1462:21DB),ja 0x21f2,open,cards
-R038+0x02F8,R038,2011,taken,R038+0x2011 (1462:2011),jl 0x2016,open,cards
-R038+0x02F8,R038,2011,fallthrough,R038+0x2011 (1462:2011),jl 0x2016,open,cards
-R038+0x02F8,R038,2079,taken,R038+0x2079 (1462:2079),ja 0x2090,open,cards
-R038+0x02F8,R038,2079,fallthrough,R038+0x2079 (1462:2079),ja 0x2090,open,cards
-R038+0x02F8,R038,1ECE,taken,R038+0x1ECE (1462:1ECE),jl 0x1ed3,open,cards
-R038+0x02F8,R038,1ECE,fallthrough,R038+0x1ECE (1462:1ECE),jl 0x1ed3,open,cards
-R038+0x02F8,R038,1FC9,taken,R038+0x1FC9 (1462:1FC9),jbe 0x1fce,open,cards
-R038+0x02F8,R038,1FC9,fallthrough,R038+0x1FC9 (1462:1FC9),jbe 0x1fce,open,cards
-R038+0x02F8,R038,0313,taken,R038+0x0313 (1462:0313),jne 0x318,open,cards
-R038+0x02F8,R038,0313,fallthrough,R038+0x0313 (1462:0313),jne 0x318,open,cards
-R038+0x02F8,R038,0318,taken,R038+0x0318 (1462:0318),jle 0x31d,open,cards
-R038+0x02F8,R038,0318,fallthrough,R038+0x0318 (1462:0318),jle 0x31d,open,cards
-R038+0x02F8,R038,2369,taken,R038+0x2369 (1462:2369),jne 0x236e,open,cards
-R038+0x02F8,R038,2369,fallthrough,R038+0x2369 (1462:2369),jne 0x236e,open,cards
-R038+0x02F8,R038,2371,taken,R038+0x2371 (1462:2371),jne 0x2376,open,cards
-R038+0x02F8,R038,2371,fallthrough,R038+0x2371 (1462:2371),jne 0x2376,open,cards
-R038+0x02F8,R038,084F,taken,R038+0x084F (1462:084F),jg 0x854,open,cards
-R038+0x02F8,R038,084F,fallthrough,R038+0x084F (1462:084F),jg 0x854,open,cards
-R038+0x02F8,R038,0953,taken,R038+0x0953 (1462:0953),jge 0x97f,open,cards
-R038+0x02F8,R038,0953,fallthrough,R038+0x0953 (1462:0953),jge 0x97f,open,cards
-R038+0x02F8,R038,0967,taken,R038+0x0967 (1462:0967),jne 0x94c,open,cards
-R038+0x02F8,R038,0967,fallthrough,R038+0x0967 (1462:0967),jne 0x94c,open,cards
-R038+0x02F8,R038,097A,taken,R038+0x097A (1462:097A),je 0x97f,open,cards
-R038+0x02F8,R038,097A,fallthrough,R038+0x097A (1462:097A),je 0x97f,open,cards
-R038+0x02F8,R038,0983,taken,R038+0x0983 (1462:0983),jge 0x988,open,cards
-R038+0x02F8,R038,0983,fallthrough,R038+0x0983 (1462:0983),jge 0x988,open,cards
-R038+0x02F8,R038,0997,taken,R038+0x0997 (1462:0997),jge 0x9a4,open,cards
-R038+0x02F8,R038,0997,fallthrough,R038+0x0997 (1462:0997),jge 0x9a4,open,cards
-R038+0x02F8,R038,09A2,taken,R038+0x09A2 (1462:09A2),jne 0x990,open,cards
-R038+0x02F8,R038,09A2,fallthrough,R038+0x09A2 (1462:09A2),jne 0x990,open,cards
-R038+0x02F8,R038,09A8,taken,R038+0x09A8 (1462:09A8),jl 0x9d8,open,cards
-R038+0x02F8,R038,09A8,fallthrough,R038+0x09A8 (1462:09A8),jl 0x9d8,open,cards
-R038+0x02F8,R038,0A2B,taken,R038+0x0A2B (1462:0A2B),je 0xa39,open,cards
-R038+0x02F8,R038,0A2B,fallthrough,R038+0x0A2B (1462:0A2B),je 0xa39,open,cards
-R038+0x02F8,R038,0CA6,taken,R038+0x0CA6 (1462:0CA6),jne 0xcad,open,cards
-R038+0x02F8,R038,0CA6,fallthrough,R038+0x0CA6 (1462:0CA6),jne 0xcad,open,cards
-R038+0x02F8,R038,0CF7,taken,R038+0x0CF7 (1462:0CF7),jg 0xcfd,open,cards
-R038+0x02F8,R038,0CF7,fallthrough,R038+0x0CF7 (1462:0CF7),jg 0xcfd,open,cards
-R038+0x02F8,R038,2379,taken,R038+0x2379 (1462:2379),jne 0x237e,open,cards
-R038+0x02F8,R038,2379,fallthrough,R038+0x2379 (1462:2379),jne 0x237e,open,cards
-R038+0x02F8,R038,2381,taken,R038+0x2381 (1462:2381),jne 0x2386,open,cards
-R038+0x02F8,R038,2381,fallthrough,R038+0x2381 (1462:2381),jne 0x2386,open,cards
-R038+0x02F8,R038,0FCF,taken,R038+0x0FCF (1462:0FCF),jg 0xfd4,open,cards
-R038+0x02F8,R038,0FCF,fallthrough,R038+0x0FCF (1462:0FCF),jg 0xfd4,open,cards
-R038+0x02F8,R038,1081,taken,R038+0x1081 (1462:1081),jge 0x1097,open,cards
-R038+0x02F8,R038,1081,fallthrough,R038+0x1081 (1462:1081),jge 0x1097,open,cards
-R038+0x02F8,R038,1095,taken,R038+0x1095 (1462:1095),jne 0x107a,open,cards
-R038+0x02F8,R038,1095,fallthrough,R038+0x1095 (1462:1095),jne 0x107a,open,cards
-R038+0x02F8,R038,109B,taken,R038+0x109B (1462:109B),jl 0x10ac,open,cards
-R038+0x02F8,R038,109B,fallthrough,R038+0x109B (1462:109B),jl 0x10ac,open,cards
-R038+0x02F8,R038,10B7,taken,R038+0x10B7 (1462:10B7),jl 0x10bf,open,cards
-R038+0x02F8,R038,10B7,fallthrough,R038+0x10B7 (1462:10B7),jl 0x10bf,open,cards
-R038+0x02F8,R038,2389,taken,R038+0x2389 (1462:2389),jne 0x238e,open,cards
-R038+0x02F8,R038,2389,fallthrough,R038+0x2389 (1462:2389),jne 0x238e,open,cards
-R038+0x02F8,R038,0320,taken,R038+0x0320 (1462:0320),jne 0x325,open,cards
-R038+0x02F8,R038,0320,fallthrough,R038+0x0320 (1462:0320),jne 0x325,open,cards
-R038+0x02F8,R038,0328,taken,R038+0x0328 (1462:0328),jne 0x32d,open,cards
-R038+0x02F8,R038,0328,fallthrough,R038+0x0328 (1462:0328),jne 0x32d,open,cards
-R038+0x02F8,R038,0330,taken,R038+0x0330 (1462:0330),jne 0x335,open,cards
-R038+0x02F8,R038,0330,fallthrough,R038+0x0330 (1462:0330),jne 0x335,open,cards
-R038+0x02F8,R038,0338,taken,R038+0x0338 (1462:0338),jne 0x33d,open,cards
-R038+0x02F8,R038,0338,fallthrough,R038+0x0338 (1462:0338),jne 0x33d,open,cards
 R039+0x0000,R039,001D,block,R039+0x001D (1462:001D),"mov ax, si",open,cards
 R039+0x0000,R039,0039,block,R039+0x0039 (1462:0039),"mov ax, si",open,cards
 R039+0x0000,R039,0063,block,R039+0x0063 (1462:0063),"mov ax, si",open,cards
@@ -8193,115 +7524,115 @@ R040+0x0C22,R040,11E4,taken,R040+0x11E4 (1462:11E4),jl 0x11ec,open,cards
 R040+0x0C22,R040,11E4,fallthrough,R040+0x11E4 (1462:11E4),jl 0x11ec,open,cards
 R040+0x0C22,R040,1212,taken,R040+0x1212 (1462:1212),je 0x1217,open,cards
 R040+0x0C22,R040,1212,fallthrough,R040+0x1212 (1462:1212),je 0x1217,open,cards
-R041+0x0000,R041,003B,block,R041+0x003B (1462:003B),"mov word ptr [bp - 4], di",open,cards
-R041+0x0000,R041,003E,block,R041+0x003E (1462:003E),inc si,open,cards
-R041+0x0000,R041,006C,block,R041+0x006C (1462:006C),"mov si, 7",open,cards
-R041+0x0000,R041,0094,block,R041+0x0094 (1462:0094),"mov di, 0xe",open,cards
-R041+0x0000,R041,03C9,block,R041+0x03C9 (1462:03C9),"test byte ptr [0x6ef0], 1",open,cards
-R041+0x0000,R041,03D0,block,R041+0x03D0 (1462:03D0),"mov di, word ptr [bp - 0xc]",open,cards
-R041+0x0000,R041,03D3,block,R041+0x03D3 (1462:03D3),"sub si, si",open,cards
-R041+0x0000,R041,03DC,block,R041+0x03DC (1462:03DC),"cmp word ptr [0x6eec], 0x64",open,cards
-R041+0x0000,R041,03E3,block,R041+0x03E3 (1462:03E3),"cmp word ptr [0x6eec], 0xc8",open,cards
-R041+0x0000,R041,03EB,block,R041+0x03EB (1462:03EB),"cmp word ptr [0x6eee], 0x3c",open,cards
-R041+0x0000,R041,03F2,block,R041+0x03F2 (1462:03F2),"cmp word ptr [0x6eee], 0x64",open,cards
-R041+0x0000,R041,03F9,block,R041+0x03F9 (1462:03F9),"mov word ptr [bp - 2], si",open,cards
-R041+0x0000,R041,03FC,block,R041+0x03FC (1462:03FC),"test byte ptr [0x6ef0], 1",open,cards
-R041+0x0000,R041,0403,block,R041+0x0403 (1462:0403),"or di, di",open,cards
-R041+0x0000,R041,0408,block,R041+0x0408 (1462:0408),"test byte ptr [0x6ef0], 1",open,cards
-R041+0x0000,R041,040F,block,R041+0x040F (1462:040F),"cmp word ptr [0x6eec], 0xdc",open,cards
-R041+0x0000,R041,0417,block,R041+0x0417 (1462:0417),"cmp word ptr [0x6eec], 0x12c",open,cards
-R041+0x0000,R041,041F,block,R041+0x041F (1462:041F),"cmp word ptr [0x6eee], 0x3c",open,cards
-R041+0x0000,R041,0426,block,R041+0x0426 (1462:0426),"cmp word ptr [0x6eee], 0x64",open,cards
-R041+0x0000,R041,042D,block,R041+0x042D (1462:042D),"mov word ptr [bp - 2], si",open,cards
-R041+0x0000,R041,0430,block,R041+0x0430 (1462:0430),"test byte ptr [0x6ef0], 1",open,cards
-R041+0x0000,R041,0437,block,R041+0x0437 (1462:0437),"cmp di, 2",open,cards
-R041+0x0000,R041,043E,block,R041+0x043E (1462:043E),"test byte ptr [0x6ef0], 1",open,cards
-R041+0x0000,R041,0445,block,R041+0x0445 (1462:0445),"cmp word ptr [0x6eec], 0x64",open,cards
-R041+0x0000,R041,044C,block,R041+0x044C (1462:044C),"cmp word ptr [0x6eec], 0xc8",open,cards
-R041+0x0000,R041,0454,block,R041+0x0454 (1462:0454),"cmp word ptr [0x6eee], 0x6e",open,cards
-R041+0x0000,R041,045B,block,R041+0x045B (1462:045B),"cmp word ptr [0x6eee], 0xb4",open,cards
-R041+0x0000,R041,0463,block,R041+0x0463 (1462:0463),"mov word ptr [bp - 2], si",open,cards
-R041+0x0000,R041,0466,block,R041+0x0466 (1462:0466),"test byte ptr [0x6ef0], 1",open,cards
-R041+0x0000,R041,046D,block,R041+0x046D (1462:046D),"cmp di, 1",open,cards
-R041+0x0000,R041,0472,block,R041+0x0472 (1462:0472),"test byte ptr [0x6ef0], 1",open,cards
-R041+0x0000,R041,0479,block,R041+0x0479 (1462:0479),"cmp word ptr [0x6eec], 0xdc",open,cards
-R041+0x0000,R041,0481,block,R041+0x0481 (1462:0481),"cmp word ptr [0x6eec], 0x12c",open,cards
-R041+0x0000,R041,0489,block,R041+0x0489 (1462:0489),"cmp word ptr [0x6eee], 0x6e",open,cards
-R041+0x0000,R041,0490,block,R041+0x0490 (1462:0490),"cmp word ptr [0x6eee], 0xb4",open,cards
-R041+0x0000,R041,0498,block,R041+0x0498 (1462:0498),"mov word ptr [bp - 2], si",open,cards
-R041+0x0000,R041,049B,block,R041+0x049B (1462:049B),"test byte ptr [0x6ef0], 1",open,cards
-R041+0x0000,R041,04A2,block,R041+0x04A2 (1462:04A2),"cmp di, 3",open,cards
-R041+0x0000,R041,04A5,block,R041+0x04A5 (1462:04A5),je 0x4cb,open,cards
-R041+0x0000,R041,04A7,block,R041+0x04A7 (1462:04A7),push cs,open,cards
-R041+0x0000,R041,04AB,block,R041+0x04AB (1462:04AB),"lcall 0x47c, 0x73d",open,cards
-R041+0x0000,R041,04B4,block,R041+0x04B4 (1462:04B4),"lcall 0x47c, 0x744",open,cards
-R041+0x0000,R041,04BB,block,R041+0x04BB (1462:04BB),"or si, si",open,cards
-R041+0x0000,R041,04BF,block,R041+0x04BF (1462:04BF),jmp 0x3d3,open,cards
-R041+0x0000,R041,04C2,block,R041+0x04C2 (1462:04C2),push di,open,cards
-R041+0x0000,R041,04CB,block,R041+0x04CB (1462:04CB),push word ptr [0x8dd4],open,cards
-R041+0x0000,R041,0039,fallthrough,R041+0x0039 (1462:0039),jne 0x4d,open,cards
-R041+0x0000,R041,004B,taken,R041+0x004B (1462:004B),je 0x3e,open,cards
-R041+0x0000,R041,004B,fallthrough,R041+0x004B (1462:004B),je 0x3e,open,cards
-R041+0x0000,R041,006A,fallthrough,R041+0x006A (1462:006A),jl 0x6f,open,cards
-R041+0x0000,R041,0071,taken,R041+0x0071 (1462:0071),je 0x66,open,cards
-R041+0x0000,R041,0092,fallthrough,R041+0x0092 (1462:0092),jl 0x97,open,cards
-R041+0x0000,R041,0099,taken,R041+0x0099 (1462:0099),je 0x8e,open,cards
-R041+0x0000,R041,03CE,taken,R041+0x03CE (1462:03CE),jne 0x3c9,open,cards
-R041+0x0000,R041,03CE,fallthrough,R041+0x03CE (1462:03CE),jne 0x3c9,open,cards
-R041+0x0000,R041,03DA,taken,R041+0x03DA (1462:03DA),je 0x408,open,cards
-R041+0x0000,R041,03DA,fallthrough,R041+0x03DA (1462:03DA),je 0x408,open,cards
-R041+0x0000,R041,03E1,taken,R041+0x03E1 (1462:03E1),jle 0x408,open,cards
-R041+0x0000,R041,03E1,fallthrough,R041+0x03E1 (1462:03E1),jle 0x408,open,cards
-R041+0x0000,R041,03E9,taken,R041+0x03E9 (1462:03E9),jge 0x408,open,cards
-R041+0x0000,R041,03E9,fallthrough,R041+0x03E9 (1462:03E9),jge 0x408,open,cards
-R041+0x0000,R041,03F0,taken,R041+0x03F0 (1462:03F0),jle 0x408,open,cards
-R041+0x0000,R041,03F0,fallthrough,R041+0x03F0 (1462:03F0),jle 0x408,open,cards
-R041+0x0000,R041,03F7,taken,R041+0x03F7 (1462:03F7),jge 0x408,open,cards
-R041+0x0000,R041,03F7,fallthrough,R041+0x03F7 (1462:03F7),jge 0x408,open,cards
-R041+0x0000,R041,0401,taken,R041+0x0401 (1462:0401),jne 0x3fc,open,cards
-R041+0x0000,R041,0401,fallthrough,R041+0x0401 (1462:0401),jne 0x3fc,open,cards
-R041+0x0000,R041,04A5,taken,R041+0x04A5 (1462:04A5),je 0x4cb,open,cards
-R041+0x0000,R041,04A5,fallthrough,R041+0x04A5 (1462:04A5),je 0x4cb,open,cards
-R041+0x0000,R041,04B2,taken,R041+0x04B2 (1462:04B2),je 0x4bb,open,cards
-R041+0x0000,R041,04B2,fallthrough,R041+0x04B2 (1462:04B2),je 0x4bb,open,cards
-R041+0x0000,R041,04BD,taken,R041+0x04BD (1462:04BD),jne 0x4c2,open,cards
-R041+0x0000,R041,04BD,fallthrough,R041+0x04BD (1462:04BD),jne 0x4c2,open,cards
-R041+0x0000,R041,040D,taken,R041+0x040D (1462:040D),je 0x43e,open,cards
-R041+0x0000,R041,040D,fallthrough,R041+0x040D (1462:040D),je 0x43e,open,cards
-R041+0x0000,R041,0415,taken,R041+0x0415 (1462:0415),jle 0x43e,open,cards
-R041+0x0000,R041,0415,fallthrough,R041+0x0415 (1462:0415),jle 0x43e,open,cards
-R041+0x0000,R041,041D,taken,R041+0x041D (1462:041D),jge 0x43e,open,cards
-R041+0x0000,R041,041D,fallthrough,R041+0x041D (1462:041D),jge 0x43e,open,cards
-R041+0x0000,R041,0424,taken,R041+0x0424 (1462:0424),jle 0x43e,open,cards
-R041+0x0000,R041,0424,fallthrough,R041+0x0424 (1462:0424),jle 0x43e,open,cards
-R041+0x0000,R041,042B,taken,R041+0x042B (1462:042B),jge 0x43e,open,cards
-R041+0x0000,R041,042B,fallthrough,R041+0x042B (1462:042B),jge 0x43e,open,cards
-R041+0x0000,R041,0435,taken,R041+0x0435 (1462:0435),jne 0x430,open,cards
-R041+0x0000,R041,0435,fallthrough,R041+0x0435 (1462:0435),jne 0x430,open,cards
-R041+0x0000,R041,0443,taken,R041+0x0443 (1462:0443),je 0x472,open,cards
-R041+0x0000,R041,0443,fallthrough,R041+0x0443 (1462:0443),je 0x472,open,cards
-R041+0x0000,R041,044A,taken,R041+0x044A (1462:044A),jle 0x472,open,cards
-R041+0x0000,R041,044A,fallthrough,R041+0x044A (1462:044A),jle 0x472,open,cards
-R041+0x0000,R041,0452,taken,R041+0x0452 (1462:0452),jge 0x472,open,cards
-R041+0x0000,R041,0452,fallthrough,R041+0x0452 (1462:0452),jge 0x472,open,cards
-R041+0x0000,R041,0459,taken,R041+0x0459 (1462:0459),jle 0x472,open,cards
-R041+0x0000,R041,0459,fallthrough,R041+0x0459 (1462:0459),jle 0x472,open,cards
-R041+0x0000,R041,0461,taken,R041+0x0461 (1462:0461),jge 0x472,open,cards
-R041+0x0000,R041,0461,fallthrough,R041+0x0461 (1462:0461),jge 0x472,open,cards
-R041+0x0000,R041,046B,taken,R041+0x046B (1462:046B),jne 0x466,open,cards
-R041+0x0000,R041,046B,fallthrough,R041+0x046B (1462:046B),jne 0x466,open,cards
-R041+0x0000,R041,0477,taken,R041+0x0477 (1462:0477),je 0x4ab,open,cards
-R041+0x0000,R041,0477,fallthrough,R041+0x0477 (1462:0477),je 0x4ab,open,cards
-R041+0x0000,R041,047F,taken,R041+0x047F (1462:047F),jle 0x4ab,open,cards
-R041+0x0000,R041,047F,fallthrough,R041+0x047F (1462:047F),jle 0x4ab,open,cards
-R041+0x0000,R041,0487,taken,R041+0x0487 (1462:0487),jge 0x4ab,open,cards
-R041+0x0000,R041,0487,fallthrough,R041+0x0487 (1462:0487),jge 0x4ab,open,cards
-R041+0x0000,R041,048E,taken,R041+0x048E (1462:048E),jle 0x4ab,open,cards
-R041+0x0000,R041,048E,fallthrough,R041+0x048E (1462:048E),jle 0x4ab,open,cards
-R041+0x0000,R041,0496,taken,R041+0x0496 (1462:0496),jge 0x4ab,open,cards
-R041+0x0000,R041,0496,fallthrough,R041+0x0496 (1462:0496),jge 0x4ab,open,cards
-R041+0x0000,R041,04A0,taken,R041+0x04A0 (1462:04A0),jne 0x49b,open,cards
-R041+0x0000,R041,04A0,fallthrough,R041+0x04A0 (1462:04A0),jne 0x49b,open,cards
+R041+0x0000,R041,003B,block,R041+0x003B (1462:003B),"mov word ptr [bp - 4], di",excluded,cards
+R041+0x0000,R041,003E,block,R041+0x003E (1462:003E),inc si,excluded,cards
+R041+0x0000,R041,006C,block,R041+0x006C (1462:006C),"mov si, 7",excluded,cards
+R041+0x0000,R041,0094,block,R041+0x0094 (1462:0094),"mov di, 0xe",excluded,cards
+R041+0x0000,R041,03C9,block,R041+0x03C9 (1462:03C9),"test byte ptr [0x6ef0], 1",excluded,cards
+R041+0x0000,R041,03D0,block,R041+0x03D0 (1462:03D0),"mov di, word ptr [bp - 0xc]",excluded,cards
+R041+0x0000,R041,03D3,block,R041+0x03D3 (1462:03D3),"sub si, si",excluded,cards
+R041+0x0000,R041,03DC,block,R041+0x03DC (1462:03DC),"cmp word ptr [0x6eec], 0x64",excluded,cards
+R041+0x0000,R041,03E3,block,R041+0x03E3 (1462:03E3),"cmp word ptr [0x6eec], 0xc8",excluded,cards
+R041+0x0000,R041,03EB,block,R041+0x03EB (1462:03EB),"cmp word ptr [0x6eee], 0x3c",excluded,cards
+R041+0x0000,R041,03F2,block,R041+0x03F2 (1462:03F2),"cmp word ptr [0x6eee], 0x64",excluded,cards
+R041+0x0000,R041,03F9,block,R041+0x03F9 (1462:03F9),"mov word ptr [bp - 2], si",excluded,cards
+R041+0x0000,R041,03FC,block,R041+0x03FC (1462:03FC),"test byte ptr [0x6ef0], 1",excluded,cards
+R041+0x0000,R041,0403,block,R041+0x0403 (1462:0403),"or di, di",excluded,cards
+R041+0x0000,R041,0408,block,R041+0x0408 (1462:0408),"test byte ptr [0x6ef0], 1",excluded,cards
+R041+0x0000,R041,040F,block,R041+0x040F (1462:040F),"cmp word ptr [0x6eec], 0xdc",excluded,cards
+R041+0x0000,R041,0417,block,R041+0x0417 (1462:0417),"cmp word ptr [0x6eec], 0x12c",excluded,cards
+R041+0x0000,R041,041F,block,R041+0x041F (1462:041F),"cmp word ptr [0x6eee], 0x3c",excluded,cards
+R041+0x0000,R041,0426,block,R041+0x0426 (1462:0426),"cmp word ptr [0x6eee], 0x64",excluded,cards
+R041+0x0000,R041,042D,block,R041+0x042D (1462:042D),"mov word ptr [bp - 2], si",excluded,cards
+R041+0x0000,R041,0430,block,R041+0x0430 (1462:0430),"test byte ptr [0x6ef0], 1",excluded,cards
+R041+0x0000,R041,0437,block,R041+0x0437 (1462:0437),"cmp di, 2",excluded,cards
+R041+0x0000,R041,043E,block,R041+0x043E (1462:043E),"test byte ptr [0x6ef0], 1",excluded,cards
+R041+0x0000,R041,0445,block,R041+0x0445 (1462:0445),"cmp word ptr [0x6eec], 0x64",excluded,cards
+R041+0x0000,R041,044C,block,R041+0x044C (1462:044C),"cmp word ptr [0x6eec], 0xc8",excluded,cards
+R041+0x0000,R041,0454,block,R041+0x0454 (1462:0454),"cmp word ptr [0x6eee], 0x6e",excluded,cards
+R041+0x0000,R041,045B,block,R041+0x045B (1462:045B),"cmp word ptr [0x6eee], 0xb4",excluded,cards
+R041+0x0000,R041,0463,block,R041+0x0463 (1462:0463),"mov word ptr [bp - 2], si",excluded,cards
+R041+0x0000,R041,0466,block,R041+0x0466 (1462:0466),"test byte ptr [0x6ef0], 1",excluded,cards
+R041+0x0000,R041,046D,block,R041+0x046D (1462:046D),"cmp di, 1",excluded,cards
+R041+0x0000,R041,0472,block,R041+0x0472 (1462:0472),"test byte ptr [0x6ef0], 1",excluded,cards
+R041+0x0000,R041,0479,block,R041+0x0479 (1462:0479),"cmp word ptr [0x6eec], 0xdc",excluded,cards
+R041+0x0000,R041,0481,block,R041+0x0481 (1462:0481),"cmp word ptr [0x6eec], 0x12c",excluded,cards
+R041+0x0000,R041,0489,block,R041+0x0489 (1462:0489),"cmp word ptr [0x6eee], 0x6e",excluded,cards
+R041+0x0000,R041,0490,block,R041+0x0490 (1462:0490),"cmp word ptr [0x6eee], 0xb4",excluded,cards
+R041+0x0000,R041,0498,block,R041+0x0498 (1462:0498),"mov word ptr [bp - 2], si",excluded,cards
+R041+0x0000,R041,049B,block,R041+0x049B (1462:049B),"test byte ptr [0x6ef0], 1",excluded,cards
+R041+0x0000,R041,04A2,block,R041+0x04A2 (1462:04A2),"cmp di, 3",excluded,cards
+R041+0x0000,R041,04A5,block,R041+0x04A5 (1462:04A5),je 0x4cb,excluded,cards
+R041+0x0000,R041,04A7,block,R041+0x04A7 (1462:04A7),push cs,excluded,cards
+R041+0x0000,R041,04AB,block,R041+0x04AB (1462:04AB),"lcall 0x47c, 0x73d",excluded,cards
+R041+0x0000,R041,04B4,block,R041+0x04B4 (1462:04B4),"lcall 0x47c, 0x744",excluded,cards
+R041+0x0000,R041,04BB,block,R041+0x04BB (1462:04BB),"or si, si",excluded,cards
+R041+0x0000,R041,04BF,block,R041+0x04BF (1462:04BF),jmp 0x3d3,excluded,cards
+R041+0x0000,R041,04C2,block,R041+0x04C2 (1462:04C2),push di,excluded,cards
+R041+0x0000,R041,04CB,block,R041+0x04CB (1462:04CB),push word ptr [0x8dd4],excluded,cards
+R041+0x0000,R041,0039,fallthrough,R041+0x0039 (1462:0039),jne 0x4d,excluded,cards
+R041+0x0000,R041,004B,taken,R041+0x004B (1462:004B),je 0x3e,excluded,cards
+R041+0x0000,R041,004B,fallthrough,R041+0x004B (1462:004B),je 0x3e,excluded,cards
+R041+0x0000,R041,006A,fallthrough,R041+0x006A (1462:006A),jl 0x6f,excluded,cards
+R041+0x0000,R041,0071,taken,R041+0x0071 (1462:0071),je 0x66,excluded,cards
+R041+0x0000,R041,0092,fallthrough,R041+0x0092 (1462:0092),jl 0x97,excluded,cards
+R041+0x0000,R041,0099,taken,R041+0x0099 (1462:0099),je 0x8e,excluded,cards
+R041+0x0000,R041,03CE,taken,R041+0x03CE (1462:03CE),jne 0x3c9,excluded,cards
+R041+0x0000,R041,03CE,fallthrough,R041+0x03CE (1462:03CE),jne 0x3c9,excluded,cards
+R041+0x0000,R041,03DA,taken,R041+0x03DA (1462:03DA),je 0x408,excluded,cards
+R041+0x0000,R041,03DA,fallthrough,R041+0x03DA (1462:03DA),je 0x408,excluded,cards
+R041+0x0000,R041,03E1,taken,R041+0x03E1 (1462:03E1),jle 0x408,excluded,cards
+R041+0x0000,R041,03E1,fallthrough,R041+0x03E1 (1462:03E1),jle 0x408,excluded,cards
+R041+0x0000,R041,03E9,taken,R041+0x03E9 (1462:03E9),jge 0x408,excluded,cards
+R041+0x0000,R041,03E9,fallthrough,R041+0x03E9 (1462:03E9),jge 0x408,excluded,cards
+R041+0x0000,R041,03F0,taken,R041+0x03F0 (1462:03F0),jle 0x408,excluded,cards
+R041+0x0000,R041,03F0,fallthrough,R041+0x03F0 (1462:03F0),jle 0x408,excluded,cards
+R041+0x0000,R041,03F7,taken,R041+0x03F7 (1462:03F7),jge 0x408,excluded,cards
+R041+0x0000,R041,03F7,fallthrough,R041+0x03F7 (1462:03F7),jge 0x408,excluded,cards
+R041+0x0000,R041,0401,taken,R041+0x0401 (1462:0401),jne 0x3fc,excluded,cards
+R041+0x0000,R041,0401,fallthrough,R041+0x0401 (1462:0401),jne 0x3fc,excluded,cards
+R041+0x0000,R041,04A5,taken,R041+0x04A5 (1462:04A5),je 0x4cb,excluded,cards
+R041+0x0000,R041,04A5,fallthrough,R041+0x04A5 (1462:04A5),je 0x4cb,excluded,cards
+R041+0x0000,R041,04B2,taken,R041+0x04B2 (1462:04B2),je 0x4bb,excluded,cards
+R041+0x0000,R041,04B2,fallthrough,R041+0x04B2 (1462:04B2),je 0x4bb,excluded,cards
+R041+0x0000,R041,04BD,taken,R041+0x04BD (1462:04BD),jne 0x4c2,excluded,cards
+R041+0x0000,R041,04BD,fallthrough,R041+0x04BD (1462:04BD),jne 0x4c2,excluded,cards
+R041+0x0000,R041,040D,taken,R041+0x040D (1462:040D),je 0x43e,excluded,cards
+R041+0x0000,R041,040D,fallthrough,R041+0x040D (1462:040D),je 0x43e,excluded,cards
+R041+0x0000,R041,0415,taken,R041+0x0415 (1462:0415),jle 0x43e,excluded,cards
+R041+0x0000,R041,0415,fallthrough,R041+0x0415 (1462:0415),jle 0x43e,excluded,cards
+R041+0x0000,R041,041D,taken,R041+0x041D (1462:041D),jge 0x43e,excluded,cards
+R041+0x0000,R041,041D,fallthrough,R041+0x041D (1462:041D),jge 0x43e,excluded,cards
+R041+0x0000,R041,0424,taken,R041+0x0424 (1462:0424),jle 0x43e,excluded,cards
+R041+0x0000,R041,0424,fallthrough,R041+0x0424 (1462:0424),jle 0x43e,excluded,cards
+R041+0x0000,R041,042B,taken,R041+0x042B (1462:042B),jge 0x43e,excluded,cards
+R041+0x0000,R041,042B,fallthrough,R041+0x042B (1462:042B),jge 0x43e,excluded,cards
+R041+0x0000,R041,0435,taken,R041+0x0435 (1462:0435),jne 0x430,excluded,cards
+R041+0x0000,R041,0435,fallthrough,R041+0x0435 (1462:0435),jne 0x430,excluded,cards
+R041+0x0000,R041,0443,taken,R041+0x0443 (1462:0443),je 0x472,excluded,cards
+R041+0x0000,R041,0443,fallthrough,R041+0x0443 (1462:0443),je 0x472,excluded,cards
+R041+0x0000,R041,044A,taken,R041+0x044A (1462:044A),jle 0x472,excluded,cards
+R041+0x0000,R041,044A,fallthrough,R041+0x044A (1462:044A),jle 0x472,excluded,cards
+R041+0x0000,R041,0452,taken,R041+0x0452 (1462:0452),jge 0x472,excluded,cards
+R041+0x0000,R041,0452,fallthrough,R041+0x0452 (1462:0452),jge 0x472,excluded,cards
+R041+0x0000,R041,0459,taken,R041+0x0459 (1462:0459),jle 0x472,excluded,cards
+R041+0x0000,R041,0459,fallthrough,R041+0x0459 (1462:0459),jle 0x472,excluded,cards
+R041+0x0000,R041,0461,taken,R041+0x0461 (1462:0461),jge 0x472,excluded,cards
+R041+0x0000,R041,0461,fallthrough,R041+0x0461 (1462:0461),jge 0x472,excluded,cards
+R041+0x0000,R041,046B,taken,R041+0x046B (1462:046B),jne 0x466,excluded,cards
+R041+0x0000,R041,046B,fallthrough,R041+0x046B (1462:046B),jne 0x466,excluded,cards
+R041+0x0000,R041,0477,taken,R041+0x0477 (1462:0477),je 0x4ab,excluded,cards
+R041+0x0000,R041,0477,fallthrough,R041+0x0477 (1462:0477),je 0x4ab,excluded,cards
+R041+0x0000,R041,047F,taken,R041+0x047F (1462:047F),jle 0x4ab,excluded,cards
+R041+0x0000,R041,047F,fallthrough,R041+0x047F (1462:047F),jle 0x4ab,excluded,cards
+R041+0x0000,R041,0487,taken,R041+0x0487 (1462:0487),jge 0x4ab,excluded,cards
+R041+0x0000,R041,0487,fallthrough,R041+0x0487 (1462:0487),jge 0x4ab,excluded,cards
+R041+0x0000,R041,048E,taken,R041+0x048E (1462:048E),jle 0x4ab,excluded,cards
+R041+0x0000,R041,048E,fallthrough,R041+0x048E (1462:048E),jle 0x4ab,excluded,cards
+R041+0x0000,R041,0496,taken,R041+0x0496 (1462:0496),jge 0x4ab,excluded,cards
+R041+0x0000,R041,0496,fallthrough,R041+0x0496 (1462:0496),jge 0x4ab,excluded,cards
+R041+0x0000,R041,04A0,taken,R041+0x04A0 (1462:04A0),jne 0x49b,excluded,cards
+R041+0x0000,R041,04A0,fallthrough,R041+0x04A0 (1462:04A0),jne 0x49b,excluded,cards
 R043+0x0100,R043,0120,block,R043+0x0120 (1462:0120),push 0x5001,open,cards sainthelp
 R043+0x0100,R043,02C4,block,R043+0x02C4 (1462:02C4),push 0x502c,open,cards sainthelp
 R043+0x0100,R043,0368,block,R043+0x0368 (1462:0368),push 0x504c,open,cards sainthelp
@@ -9417,38 +8748,38 @@ R046+0x1A14,R046,1BC5,fallthrough,R046+0x1BC5 (19D9:01B5),jbe 0x1ba,open,cards
 R046+0x1A14,R046,1C51,taken,R046+0x1C51 (19D9:0241),jne 0x246,open,cards
 R046+0x1A14,R046,1C51,fallthrough,R046+0x1C51 (19D9:0241),jne 0x246,open,cards
 R046+0x1E86,R046,1E86,block,R046+0x1E86 (19D9:0476),"enter 4, 0",open,cards
-R047+0x0000,R047,0000,block,R047+0x0000 (1838:0000),"enter 4, 0",open,cards
-R047+0x0000,R047,003B,block,R047+0x003B (1838:003B),jmp 0x110,open,cards
-R047+0x0000,R047,003E,block,R047+0x003E (1838:003E),"mov al, byte ptr [0xee76]",open,cards
-R047+0x0000,R047,00B3,block,R047+0x00B3 (1838:00B3),"mov bx, si",open,cards
-R047+0x0000,R047,00BE,block,R047+0x00BE (1838:00BE),"mov bx, word ptr [0xee6a]",open,cards
-R047+0x0000,R047,00C9,block,R047+0x00C9 (1838:00C9),"mov word ptr [bp - 4], ax",open,cards
-R047+0x0000,R047,00D2,block,R047+0x00D2 (1838:00D2),dec ax,open,cards
-R047+0x0000,R047,00D5,block,R047+0x00D5 (1838:00D5),dec ax,open,cards
-R047+0x0000,R047,00D8,block,R047+0x00D8 (1838:00D8),dec ax,open,cards
-R047+0x0000,R047,00DB,block,R047+0x00DB (1838:00DB),jmp 0x106,open,cards
-R047+0x0000,R047,00DE,block,R047+0x00DE (1838:00DE),push word ptr [bp - 4],open,cards
-R047+0x0000,R047,00E8,block,R047+0x00E8 (1838:00E8),push word ptr [bp - 4],open,cards
-R047+0x0000,R047,00F2,block,R047+0x00F2 (1838:00F2),push word ptr [bp - 4],open,cards
-R047+0x0000,R047,00FC,block,R047+0x00FC (1838:00FC),push word ptr [bp - 4],open,cards
-R047+0x0000,R047,0103,block,R047+0x0103 (1838:0103),"add sp, 2",open,cards
-R047+0x0000,R047,0106,block,R047+0x0106 (1838:0106),"cmp word ptr [0xe48a], 0xc",open,cards
-R047+0x0000,R047,010D,block,R047+0x010D (1838:010D),jmp 0x3e,open,cards
-R047+0x0000,R047,0110,block,R047+0x0110 (1838:0110),"mov ax, word ptr [0xe48a]",open,cards
-R047+0x0000,R047,0039,taken,R047+0x0039 (1838:0039),je 0x3e,open,cards
-R047+0x0000,R047,0039,fallthrough,R047+0x0039 (1838:0039),je 0x3e,open,cards
-R047+0x0000,R047,00B1,taken,R047+0x00B1 (1838:00B1),jne 0xbe,open,cards
-R047+0x0000,R047,00B1,fallthrough,R047+0x00B1 (1838:00B1),jne 0xbe,open,cards
-R047+0x0000,R047,00D0,taken,R047+0x00D0 (1838:00D0),je 0xde,open,cards
-R047+0x0000,R047,00D0,fallthrough,R047+0x00D0 (1838:00D0),je 0xde,open,cards
-R047+0x0000,R047,00D3,taken,R047+0x00D3 (1838:00D3),je 0xe8,open,cards
-R047+0x0000,R047,00D3,fallthrough,R047+0x00D3 (1838:00D3),je 0xe8,open,cards
-R047+0x0000,R047,00D6,taken,R047+0x00D6 (1838:00D6),je 0xf2,open,cards
-R047+0x0000,R047,00D6,fallthrough,R047+0x00D6 (1838:00D6),je 0xf2,open,cards
-R047+0x0000,R047,00D9,taken,R047+0x00D9 (1838:00D9),je 0xfc,open,cards
-R047+0x0000,R047,00D9,fallthrough,R047+0x00D9 (1838:00D9),je 0xfc,open,cards
-R047+0x0000,R047,010B,taken,R047+0x010B (1838:010B),jne 0x110,open,cards
-R047+0x0000,R047,010B,fallthrough,R047+0x010B (1838:010B),jne 0x110,open,cards
+R047+0x0000,R047,0000,block,R047+0x0000 (1838:0000),"enter 4, 0",excluded,cards
+R047+0x0000,R047,003B,block,R047+0x003B (1838:003B),jmp 0x110,excluded,cards
+R047+0x0000,R047,003E,block,R047+0x003E (1838:003E),"mov al, byte ptr [0xee76]",excluded,cards
+R047+0x0000,R047,00B3,block,R047+0x00B3 (1838:00B3),"mov bx, si",excluded,cards
+R047+0x0000,R047,00BE,block,R047+0x00BE (1838:00BE),"mov bx, word ptr [0xee6a]",excluded,cards
+R047+0x0000,R047,00C9,block,R047+0x00C9 (1838:00C9),"mov word ptr [bp - 4], ax",excluded,cards
+R047+0x0000,R047,00D2,block,R047+0x00D2 (1838:00D2),dec ax,excluded,cards
+R047+0x0000,R047,00D5,block,R047+0x00D5 (1838:00D5),dec ax,excluded,cards
+R047+0x0000,R047,00D8,block,R047+0x00D8 (1838:00D8),dec ax,excluded,cards
+R047+0x0000,R047,00DB,block,R047+0x00DB (1838:00DB),jmp 0x106,excluded,cards
+R047+0x0000,R047,00DE,block,R047+0x00DE (1838:00DE),push word ptr [bp - 4],excluded,cards
+R047+0x0000,R047,00E8,block,R047+0x00E8 (1838:00E8),push word ptr [bp - 4],excluded,cards
+R047+0x0000,R047,00F2,block,R047+0x00F2 (1838:00F2),push word ptr [bp - 4],excluded,cards
+R047+0x0000,R047,00FC,block,R047+0x00FC (1838:00FC),push word ptr [bp - 4],excluded,cards
+R047+0x0000,R047,0103,block,R047+0x0103 (1838:0103),"add sp, 2",excluded,cards
+R047+0x0000,R047,0106,block,R047+0x0106 (1838:0106),"cmp word ptr [0xe48a], 0xc",excluded,cards
+R047+0x0000,R047,010D,block,R047+0x010D (1838:010D),jmp 0x3e,excluded,cards
+R047+0x0000,R047,0110,block,R047+0x0110 (1838:0110),"mov ax, word ptr [0xe48a]",excluded,cards
+R047+0x0000,R047,0039,taken,R047+0x0039 (1838:0039),je 0x3e,excluded,cards
+R047+0x0000,R047,0039,fallthrough,R047+0x0039 (1838:0039),je 0x3e,excluded,cards
+R047+0x0000,R047,00B1,taken,R047+0x00B1 (1838:00B1),jne 0xbe,excluded,cards
+R047+0x0000,R047,00B1,fallthrough,R047+0x00B1 (1838:00B1),jne 0xbe,excluded,cards
+R047+0x0000,R047,00D0,taken,R047+0x00D0 (1838:00D0),je 0xde,excluded,cards
+R047+0x0000,R047,00D0,fallthrough,R047+0x00D0 (1838:00D0),je 0xde,excluded,cards
+R047+0x0000,R047,00D3,taken,R047+0x00D3 (1838:00D3),je 0xe8,excluded,cards
+R047+0x0000,R047,00D3,fallthrough,R047+0x00D3 (1838:00D3),je 0xe8,excluded,cards
+R047+0x0000,R047,00D6,taken,R047+0x00D6 (1838:00D6),je 0xf2,excluded,cards
+R047+0x0000,R047,00D6,fallthrough,R047+0x00D6 (1838:00D6),je 0xf2,excluded,cards
+R047+0x0000,R047,00D9,taken,R047+0x00D9 (1838:00D9),je 0xfc,excluded,cards
+R047+0x0000,R047,00D9,fallthrough,R047+0x00D9 (1838:00D9),je 0xfc,excluded,cards
+R047+0x0000,R047,010B,taken,R047+0x010B (1838:010B),jne 0x110,excluded,cards
+R047+0x0000,R047,010B,fallthrough,R047+0x010B (1838:010B),jne 0x110,excluded,cards
 R047+0x01A6,R047,026E,block,R047+0x026E (1852:00CE),"mov ax, word ptr [0xe3d0]",open,cards
 R047+0x01A6,R047,02A1,block,R047+0x02A1 (1852:0101),"mov word ptr [0xee7c], ax",open,cards
 R047+0x01A6,R047,02AE,block,R047+0x02AE (1852:010E),push word ptr [0x907e],open,cards
@@ -9796,8 +9127,6 @@ R048+0x1456,R048,151E,block,R048+0x151E (190E:07BE),"lcall 0x1367, 0x72a",open,c
 R048+0x1456,R048,1476,fallthrough,R048+0x1476 (190E:0716),jg 0x740,open,cards
 R048+0x1456,R048,14A5,taken,R048+0x14A5 (190E:0745),jne 0x756,open,cards
 R048+0x1456,R048,14FF,taken,R048+0x14FF (190E:079F),jge 0x7be,open,cards
-R048+0x183C,R048,183C,block,R048+0x183C (190E:0ADC),"enter 4, 0",open,cards
-R048+0x183C,R048,1873,block,R048+0x1873 (190E:0B13),pop si,open,cards
 R048+0x1B18,R048,1B7E,block,R048+0x1B7E (19E9:006E),push word ptr [0x907e],open,cards
 R048+0x1B18,R048,1B90,block,R048+0x1B90 (19E9:0080),"mov word ptr [0xe48a], 0xb2",open,cards
 R048+0x1B18,R048,1C20,block,R048+0x1C20 (19E9:0110),"mov word ptr [0xee7a], 1",open,cards
@@ -10127,11 +9456,6 @@ R049+0x1902,R049,191A,taken,R049+0x191A (1893:136A),jl 0x137c,open,cards
 R049+0x1902,R049,1921,fallthrough,R049+0x1921 (1893:1371),je 0x137c,open,cards
 R049+0x1934,R049,196C,block,R049+0x196C (1893:13BC),"mov ax, 0x64",open,cards
 R049+0x1934,R049,1945,taken,R049+0x1945 (1893:1395),jne 0x13bc,open,cards
-R049+0x1A44,R049,1A44,block,R049+0x1A44 (1893:1494),"enter 4, 0",open,cards
-R049+0x1A44,R049,1A57,block,R049+0x1A57 (1893:14A7),"mov di, 0x4f48",open,cards
-R049+0x1A44,R049,1A7C,block,R049+0x1A7C (1893:14CC),"mov ax, 0x64",open,cards
-R049+0x1A44,R049,1A55,taken,R049+0x1A55 (1893:14A5),jne 0x14cc,open,cards
-R049+0x1A44,R049,1A55,fallthrough,R049+0x1A55 (1893:14A5),jne 0x14cc,open,cards
 R049+0x1A8E,R049,1AA6,block,R049+0x1AA6 (1893:14F6),push 0,open,cards
 R049+0x1A8E,R049,1A9D,taken,R049+0x1A9D (1893:14ED),jl 0x1508,open,cards
 R049+0x1A8E,R049,1AA4,fallthrough,R049+0x1AA4 (1893:14F4),je 0x1508,open,cards
@@ -10900,6 +10224,7 @@ R053+0x191E,R053,19AB,taken,R053+0x19AB (1924:0AEB),jl 0xaa5,open,cards
 R053+0x191E,R053,19AB,fallthrough,R053+0x19AB (1924:0AEB),jl 0xaa5,open,cards
 R053+0x191E,R053,19D6,taken,R053+0x19D6 (1924:0B16),jne 0xb2c,open,cards
 R053+0x191E,R053,19D6,fallthrough,R053+0x19D6 (1924:0B16),jne 0xb2c,open,cards
+R053+0x1ABC,R053,1ABC,block,R053+0x1ABC (1924:0BFC),"enter 4, 0",open,cards
 R053+0x1ABC,R053,1AF5,block,R053+0x1AF5 (1924:0C35),jmp 0xd02,open,cards
 R053+0x1ABC,R053,1AF8,block,R053+0x1AF8 (1924:0C38),"sub si, si",open,cards
 R053+0x1ABC,R053,1B00,block,R053+0x1B00 (1924:0C40),"mov word ptr [bp - 2], 0x9c69",open,cards
@@ -11614,8 +10939,6 @@ R057+0x1986,R057,19A7,taken,R057+0x19A7 (192F:0A37),jle 0xa7c,open,cards
 R057+0x1986,R057,19AF,taken,R057+0x19AF (192F:0A3F),je 0xa71,open,cards
 R057+0x1986,R057,19DA,fallthrough,R057+0x19DA (192F:0A6A),jl 0xa71,open,cards
 R057+0x1986,R057,19F3,taken,R057+0x19F3 (192F:0A83),je 0xa87,open,cards
-R057+0x1A8E,R057,1A8E,block,R057+0x1A8E (192F:0B1E),"enter 4, 0",open,cards
-R057+0x1BEC,R057,1BEC,block,R057+0x1BEC (192F:0C7C),push 0,open,cards
 R057+0x1CA0,R057,1D86,block,R057+0x1D86 (1A02:00E6),jmp 0x27a,open,cards
 R057+0x1CA0,R057,1E8B,block,R057+0x1E8B (1A02:01EB),jmp 0x270,open,cards
 R057+0x1CA0,R057,1EC0,block,R057+0x1EC0 (1A02:0220),push word ptr [bp - 4],open,cards
@@ -11978,9 +11301,13 @@ R059+0x13CA,R059,13F0,block,R059+0x13F0 (1929:04E0),"mov es, word ptr [0x7f90]",
 R059+0x13CA,R059,13E6,fallthrough,R059+0x13E6 (1929:04D6),jne 0x4dc,open,cards
 R059+0x13CA,R059,13EE,fallthrough,R059+0x13EE (1929:04DE),je 0x522,open,cards
 R059+0x1896,R059,191F,block,R059+0x191F (19C1:008F),jmp 0x220,open,cards
+R059+0x1896,R059,1A03,block,R059+0x1A03 (19C1:0173),"mov bx, si",open,cards
 R059+0x1896,R059,1A0E,block,R059+0x1A0E (19C1:017E),"mov bx, word ptr [0xee6a]",open,cards
+R059+0x1896,R059,1A19,block,R059+0x1A19 (19C1:0189),"mov word ptr [bp - 4], ax",open,cards
 R059+0x1896,R059,1A23,block,R059+0x1A23 (19C1:0193),jmp 0x216,open,cards
 R059+0x1896,R059,1A26,block,R059+0x1A26 (19C1:0196),"shl ax, 1",open,cards
+R059+0x1896,R059,1A42,block,R059+0x1A42 (19C1:01B2),push word ptr [bp - 4],open,cards
+R059+0x1896,R059,1A4C,block,R059+0x1A4C (19C1:01BC),push word ptr [bp - 4],open,cards
 R059+0x1896,R059,1A56,block,R059+0x1A56 (19C1:01C6),push word ptr [bp - 4],open,cards
 R059+0x1896,R059,1A60,block,R059+0x1A60 (19C1:01D0),push word ptr [bp - 4],open,cards
 R059+0x1896,R059,1A6A,block,R059+0x1A6A (19C1:01DA),push word ptr [bp - 4],open,cards
@@ -11995,6 +11322,7 @@ R059+0x1896,R059,1AAD,block,R059+0x1AAD (19C1:021D),jmp 0x92,open,cards
 R059+0x1896,R059,1AB0,block,R059+0x1AB0 (19C1:0220),"mov ax, word ptr [0xe48a]",open,cards
 R059+0x1896,R059,191D,fallthrough,R059+0x191D (19C1:008D),je 0x92,open,cards
 R059+0x1896,R059,1A01,taken,R059+0x1A01 (19C1:0171),jne 0x17e,open,cards
+R059+0x1896,R059,1A01,fallthrough,R059+0x1A01 (19C1:0171),jne 0x17e,open,cards
 R059+0x1896,R059,1A21,taken,R059+0x1A21 (19C1:0191),jbe 0x196,open,cards
 R059+0x1896,R059,1A21,fallthrough,R059+0x1A21 (19C1:0191),jbe 0x196,open,cards
 R059+0x1896,R059,1AAB,taken,R059+0x1AAB (19C1:021B),jne 0x220,open,cards
@@ -12108,7 +11436,6 @@ R060+0x0CE8,R060,0DD2,taken,R060+0x0DD2 (18CF:0462),jge 0x4ae,open,cards
 R060+0x0CE8,R060,0DD2,fallthrough,R060+0x0DD2 (18CF:0462),jge 0x4ae,open,cards
 R060+0x0CE8,R060,0DE0,taken,R060+0x0DE0 (18CF:0470),jl 0x4ae,open,cards
 R060+0x0CE8,R060,0DE0,fallthrough,R060+0x0DE0 (18CF:0470),jl 0x4ae,open,cards
-R060+0x14D6,R060,14D6,block,R060+0x14D6 (18CF:0B66),"enter 0x38, 0",open,cards
 R060+0x1674,R060,16FD,block,R060+0x16FD (199F:008D),jmp 0x21e,open,cards
 R060+0x1674,R060,17E1,block,R060+0x17E1 (199F:0171),"mov bx, si",open,cards
 R060+0x1674,R060,17EC,block,R060+0x17EC (199F:017C),"mov bx, word ptr [0xee6a]",open,cards
@@ -12411,7 +11738,6 @@ R062+0x12F0,R062,147B,taken,R062+0x147B (1967:018B),jbe 0x190,open,cards
 R062+0x12F0,R062,147B,fallthrough,R062+0x147B (1967:018B),jbe 0x190,open,cards
 R062+0x12F0,R062,1505,taken,R062+0x1505 (1967:0215),jne 0x21a,open,cards
 R062+0x12F0,R062,1505,fallthrough,R062+0x1505 (1967:0215),jne 0x21a,open,cards
-R062+0x1B54,R062,1B54,block,R062+0x1B54 (1967:0864),"enter 0x38, 0",open,cards
 R062+0x1C68,R062,1CF0,block,R062+0x1CF0 (19FE:0090),push word ptr [0x907e],open,cards
 R062+0x1C68,R062,1D04,block,R062+0x1D04 (19FE:00A4),"mov word ptr [0xee78], 2",open,cards
 R062+0x1C68,R062,1D0A,block,R062+0x1D0A (19FE:00AA),push word ptr [0x907e],open,cards
@@ -12511,7 +11837,6 @@ R063+0x0D40,R063,0F57,block,R063+0x0F57 (190C:0217),jmp 0x8c,open,cards
 R063+0x0D40,R063,0DC7,fallthrough,R063+0x0DC7 (190C:0087),je 0x8c,open,cards
 R063+0x0D40,R063,0ECB,fallthrough,R063+0x0ECB (190C:018B),jbe 0x190,open,cards
 R063+0x0D40,R063,0F55,fallthrough,R063+0x0F55 (190C:0215),jne 0x21a,open,cards
-R063+0x15A6,R063,15A6,block,R063+0x15A6 (190C:0866),"enter 0x38, 0",open,cards
 R063+0x16BA,R063,1743,block,R063+0x1743 (19A3:0093),jmp 0x224,open,cards
 R063+0x16BA,R063,1832,block,R063+0x1832 (19A3:0182),"mov bx, word ptr [0xee6a]",open,cards
 R063+0x16BA,R063,1847,block,R063+0x1847 (19A3:0197),jmp 0x21a,open,cards
@@ -12677,22 +12002,6 @@ R064+0x14B4,R064,14E2,block,R064+0x14E2 (190C:07A2),"mov di, 0x4f48",open,cards
 R064+0x14B4,R064,14CD,fallthrough,R064+0x14CD (190C:078D),jne 0x7cc,open,cards
 R064+0x14B4,R064,14E0,taken,R064+0x14E0 (190C:07A0),jne 0x7cc,open,cards
 R064+0x14B4,R064,14E0,fallthrough,R064+0x14E0 (190C:07A0),jne 0x7cc,open,cards
-R064+0x155E,R064,155E,block,R064+0x155E (190C:081E),push bp,open,cards
-R064+0x155E,R064,15AC,block,R064+0x15AC (190C:086C),"shl ax, 1",open,cards
-R064+0x155E,R064,15C2,block,R064+0x15C2 (190C:0882),push 0x78,open,cards
-R064+0x155E,R064,15C6,block,R064+0x15C6 (190C:0886),push 0x79,open,cards
-R064+0x155E,R064,15CA,block,R064+0x15CA (190C:088A),push 0x7c,open,cards
-R064+0x155E,R064,15CE,block,R064+0x15CE (190C:088E),push 0x7e,open,cards
-R064+0x155E,R064,15D2,block,R064+0x15D2 (190C:0892),push 0x7f,open,cards
-R064+0x155E,R064,15D6,block,R064+0x15D6 (190C:0896),push 0x80,open,cards
-R064+0x155E,R064,15D9,block,R064+0x15D9 (190C:0899),push -2,open,cards
-R064+0x155E,R064,15E3,block,R064+0x15E3 (190C:08A3),push 0x64,open,cards
-R064+0x155E,R064,15F2,block,R064+0x15F2 (190C:08B2),push 0,open,cards
-R064+0x155E,R064,1654,block,R064+0x1654 (190C:0914),push 0,open,cards
-R064+0x155E,R064,15AA,taken,R064+0x15AA (190C:086A),ja 0x8a3,open,cards
-R064+0x155E,R064,15AA,fallthrough,R064+0x15AA (190C:086A),ja 0x8a3,open,cards
-R064+0x155E,R064,15F0,taken,R064+0x15F0 (190C:08B0),jg 0x914,open,cards
-R064+0x155E,R064,15F0,fallthrough,R064+0x15F0 (190C:08B0),jg 0x914,open,cards
 R064+0x1FF4,R064,2078,block,R064+0x2078 (1A37:0088),"mov ax, 2",open,cards
 R064+0x1FF4,R064,2095,block,R064+0x2095 (1A37:00A5),"mov word ptr [0xee7c], 2",open,cards
 R064+0x1FF4,R064,20B2,block,R064+0x20B2 (1A37:00C2),push word ptr [0x907e],open,cards
@@ -12868,7 +12177,6 @@ R065+0x13CE,R065,13FC,block,R065+0x13FC (18FB:07CC),"mov di, 0x4f48",open,cards
 R065+0x13CE,R065,13E7,fallthrough,R065+0x13E7 (18FB:07B7),jne 0x7f6,open,cards
 R065+0x13CE,R065,13FA,taken,R065+0x13FA (18FB:07CA),jne 0x7f6,open,cards
 R065+0x13CE,R065,13FA,fallthrough,R065+0x13FA (18FB:07CA),jne 0x7f6,open,cards
-R065+0x1AD4,R065,1AD4,block,R065+0x1AD4 (18FB:0EA4),"enter 4, 0",open,cards
 R065+0x1F1A,R065,1F9E,block,R065+0x1F9E (1A29:008E),"mov ax, 2",open,cards
 R065+0x1F1A,R065,1FBB,block,R065+0x1FBB (1A29:00AB),"mov word ptr [0xee7c], 2",open,cards
 R065+0x1F1A,R065,1FD8,block,R065+0x1FD8 (1A29:00C8),push word ptr [0x907e],open,cards
@@ -13282,7 +12590,6 @@ R067+0x11C4,R067,13DD,fallthrough,R067+0x13DD (1954:021D),jbe 0x222,open,cards
 R067+0x11C4,R067,1467,fallthrough,R067+0x1467 (1954:02A7),jne 0x2ac,open,cards
 R067+0x11C4,R067,128C,taken,R067+0x128C (1954:00CC),je 0xd4,open,cards
 R067+0x11C4,R067,128C,fallthrough,R067+0x128C (1954:00CC),je 0xd4,open,cards
-R067+0x158A,R067,158A,block,R067+0x158A (1954:03CA),"enter 4, 0",open,cards
 R067+0x1ECE,R067,1F3A,block,R067+0x1F3A (1A24:007A),jmp 0x21a,open,cards
 R067+0x1ECE,R067,2036,block,R067+0x2036 (1A24:0176),"mov bx, word ptr [0xee6a]",open,cards
 R067+0x1ECE,R067,204B,block,R067+0x204B (1A24:018B),jmp 0x210,open,cards
@@ -13406,7 +12713,6 @@ R068+0x128C,R068,1437,taken,R068+0x1437 (1960:01B7),jbe 0x1bc,open,cards
 R068+0x128C,R068,1437,fallthrough,R068+0x1437 (1960:01B7),jbe 0x1bc,open,cards
 R068+0x128C,R068,14C1,taken,R068+0x14C1 (1960:0241),jne 0x246,open,cards
 R068+0x128C,R068,14C1,fallthrough,R068+0x14C1 (1960:0241),jne 0x246,open,cards
-R068+0x1A76,R068,1A76,block,R068+0x1A76 (1960:07F6),"enter 0x38, 0",open,cards
 R068+0x1C14,R068,1C9F,block,R068+0x1C9F (19F9:008F),"mov di, 1",open,cards
 R068+0x1C14,R068,1CA4,block,R068+0x1CA4 (19F9:0094),"mov di, word ptr [bp - 4]",open,cards
 R068+0x1C14,R068,1CC6,block,R068+0x1CC6 (19F9:00B6),"mov word ptr [0xee78], 2",open,cards
@@ -13844,7 +13150,6 @@ R071+0x15A4,R071,16D2,taken,R071+0x16D2 (1992:0132),jne 0x1b1,open,cards
 R071+0x15A4,R071,16E0,fallthrough,R071+0x16E0 (1992:0140),je 0x145,open,cards
 R071+0x15A4,R071,16F1,fallthrough,R071+0x16F1 (1992:0151),je 0x156,open,cards
 R071+0x15A4,R071,1702,fallthrough,R071+0x1702 (1992:0162),je 0x167,open,cards
-R071+0x1A6A,R071,1A6A,block,R071+0x1A6A (1992:04CA),"enter 4, 0",open,cards
 R071+0x1FB6,R071,206E,block,R071+0x206E (1A33:00BE),jmp 0x252,open,cards
 R071+0x1FB6,R071,215E,block,R071+0x215E (1A33:01AE),"mov bx, word ptr [0xee6a]",open,cards
 R071+0x1FB6,R071,2173,block,R071+0x2173 (1A33:01C3),jmp 0x248,open,cards
@@ -14630,7 +13935,6 @@ R077+0x0E48,R077,0F66,fallthrough,R077+0x0F66 (191C:0126),je 0x12b,open,cards
 R077+0x0E48,R077,1002,taken,R077+0x1002 (191C:01C2),jne 0x1d0,open,cards
 R077+0x0E48,R077,1023,taken,R077+0x1023 (191C:01E3),ja 0x236,open,cards
 R077+0x0E48,R077,107C,fallthrough,R077+0x107C (191C:023C),jne 0x241,open,cards
-R077+0x14D8,R077,14D8,block,R077+0x14D8 (191C:0698),"enter 0x38, 0",open,cards
 R077+0x15EC,R077,1660,block,R077+0x1660 (1996:0080),"mov word ptr [0xee78], 2",open,cards
 R077+0x15EC,R077,1692,block,R077+0x1692 (1996:00B2),jmp 0x1a7,open,cards
 R077+0x15EC,R077,1728,block,R077+0x1728 (1996:0148),"mov bx, word ptr [0xee6a]",open,cards
@@ -14778,16 +14082,6 @@ R078+0x126C,R078,127E,block,R078+0x127E (191C:043E),"mov es, word ptr [0x8058]",
 R078+0x126C,R078,12BE,block,R078+0x12BE (191C:047E),"mov es, word ptr [0x8058]",open,cards
 R078+0x126C,R078,127C,fallthrough,R078+0x127C (191C:043C),je 0x46c,open,cards
 R078+0x126C,R078,12BC,fallthrough,R078+0x12BC (191C:047C),je 0x4ac,open,cards
-R078+0x1378,R078,1378,block,R078+0x1378 (191C:0538),push si,open,cards
-R078+0x1378,R078,13BA,block,R078+0x13BA (191C:057A),push 0,open,cards
-R078+0x1378,R078,13C6,block,R078+0x13C6 (191C:0586),"cmp si, 0x5a0",open,cards
-R078+0x1378,R078,13CC,block,R078+0x13CC (191C:058C),"mov es, word ptr [0x8058]",open,cards
-R078+0x1378,R078,13FA,block,R078+0x13FA (191C:05BA),"mov es, word ptr [0x8058]",open,cards
-R078+0x1378,R078,1426,block,R078+0x1426 (191C:05E6),"lcall 0x150b, 0x3b0",open,cards
-R078+0x1378,R078,13B8,taken,R078+0x13B8 (191C:0578),jge 0x586,open,cards
-R078+0x1378,R078,13B8,fallthrough,R078+0x13B8 (191C:0578),jge 0x586,open,cards
-R078+0x1378,R078,13CA,taken,R078+0x13CA (191C:058A),jge 0x5ba,open,cards
-R078+0x1378,R078,13CA,fallthrough,R078+0x13CA (191C:058A),jge 0x5ba,open,cards
 R079+0x0000,R079,0094,block,R079+0x0094 (1838:0094),jmp 0x175,open,cards
 R079+0x0000,R079,0122,block,R079+0x0122 (1838:0122),"mov bx, word ptr [0xee6a]",open,cards
 R079+0x0000,R079,013F,block,R079+0x013F (1838:013F),jmp 0x16a,open,cards
@@ -16533,13 +15827,34 @@ R086+0x114C,R086,11FB,fallthrough,R086+0x11FB (1916:041B),jne 0x423,open,cards
 R086+0x1886,R086,188F,block,R086+0x188F (1916:0AAF),"mov ax, word ptr [0xe7d8]",open,cards
 R086+0x1886,R086,188D,fallthrough,R086+0x188D (1916:0AAD),je 0xab6,open,cards
 R086+0x1930,R086,198B,block,R086+0x198B (19CB:005B),jmp 0x130,open,cards
+R086+0x1930,R086,1A03,block,R086+0x1A03 (19CB:00D3),"mov bx, si",open,cards
 R086+0x1930,R086,1A0E,block,R086+0x1A0E (19CB:00DE),"mov bx, word ptr [0xee6a]",open,cards
+R086+0x1930,R086,1A19,block,R086+0x1A19 (19CB:00E9),"mov word ptr [bp - 4], ax",open,cards
+R086+0x1930,R086,1A22,block,R086+0x1A22 (19CB:00F2),dec ax,open,cards
+R086+0x1930,R086,1A25,block,R086+0x1A25 (19CB:00F5),dec ax,open,cards
+R086+0x1930,R086,1A28,block,R086+0x1A28 (19CB:00F8),dec ax,open,cards
 R086+0x1930,R086,1A2B,block,R086+0x1A2B (19CB:00FB),jmp 0x126,open,cards
+R086+0x1930,R086,1A2E,block,R086+0x1A2E (19CB:00FE),push word ptr [bp - 4],open,cards
+R086+0x1930,R086,1A38,block,R086+0x1A38 (19CB:0108),push word ptr [bp - 4],open,cards
+R086+0x1930,R086,1A42,block,R086+0x1A42 (19CB:0112),push word ptr [bp - 4],open,cards
+R086+0x1930,R086,1A4C,block,R086+0x1A4C (19CB:011C),push word ptr [bp - 4],open,cards
+R086+0x1930,R086,1A53,block,R086+0x1A53 (19CB:0123),"add sp, 2",open,cards
+R086+0x1930,R086,1A56,block,R086+0x1A56 (19CB:0126),"cmp word ptr [0xe48a], 0xc",open,cards
+R086+0x1930,R086,1A5D,block,R086+0x1A5D (19CB:012D),jmp 0x5e,open,cards
 R086+0x1930,R086,1A60,block,R086+0x1A60 (19CB:0130),"mov ax, word ptr [0xe48a]",open,cards
 R086+0x1930,R086,1989,fallthrough,R086+0x1989 (19CB:0059),je 0x5e,open,cards
 R086+0x1930,R086,1A01,taken,R086+0x1A01 (19CB:00D1),jne 0xde,open,cards
+R086+0x1930,R086,1A01,fallthrough,R086+0x1A01 (19CB:00D1),jne 0xde,open,cards
+R086+0x1930,R086,1A20,taken,R086+0x1A20 (19CB:00F0),je 0xfe,open,cards
+R086+0x1930,R086,1A20,fallthrough,R086+0x1A20 (19CB:00F0),je 0xfe,open,cards
+R086+0x1930,R086,1A23,taken,R086+0x1A23 (19CB:00F3),je 0x108,open,cards
+R086+0x1930,R086,1A23,fallthrough,R086+0x1A23 (19CB:00F3),je 0x108,open,cards
+R086+0x1930,R086,1A26,taken,R086+0x1A26 (19CB:00F6),je 0x112,open,cards
+R086+0x1930,R086,1A26,fallthrough,R086+0x1A26 (19CB:00F6),je 0x112,open,cards
+R086+0x1930,R086,1A29,taken,R086+0x1A29 (19CB:00F9),je 0x11c,open,cards
 R086+0x1930,R086,1A29,fallthrough,R086+0x1A29 (19CB:00F9),je 0x11c,open,cards
 R086+0x1930,R086,1A5B,taken,R086+0x1A5B (19CB:012B),jne 0x130,open,cards
+R086+0x1930,R086,1A5B,fallthrough,R086+0x1A5B (19CB:012B),jne 0x130,open,cards
 R087+0x0000,R087,0101,block,R087+0x0101 (1838:0101),jmp 0x293,open,cards
 R087+0x0000,R087,01F0,block,R087+0x01F0 (1838:01F0),"mov bx, word ptr [0xee6a]",open,cards
 R087+0x0000,R087,0205,block,R087+0x0205 (1838:0205),jmp 0x288,open,cards
@@ -16876,32 +16191,6 @@ R089+0x147A,R089,15E2,taken,R089+0x15E2 (197F:0172),jne 0x180,open,cards
 R089+0x147A,R089,1603,taken,R089+0x1603 (197F:0193),ja 0x1e6,open,cards
 R089+0x175E,R089,176F,block,R089+0x176F (197F:02FF),push 0xf,open,cards
 R089+0x175E,R089,176D,fallthrough,R089+0x176D (197F:02FD),jg 0x33e,open,cards
-R089+0x1846,R089,1846,block,R089+0x1846 (197F:03D6),push si,open,cards
-R089+0x1846,R089,1867,block,R089+0x1867 (197F:03F7),"sub ax, ax",open,cards
-R089+0x1846,R089,186C,block,R089+0x186C (197F:03FC),dec si,open,cards
-R089+0x1846,R089,186F,block,R089+0x186F (197F:03FF),"mov ax, word ptr [0xee6a]",open,cards
-R089+0x1846,R089,1876,block,R089+0x1876 (197F:0406),dec ax,open,cards
-R089+0x1846,R089,1879,block,R089+0x1879 (197F:0409),dec ax,open,cards
-R089+0x1846,R089,187C,block,R089+0x187C (197F:040C),dec ax,open,cards
-R089+0x1846,R089,187F,block,R089+0x187F (197F:040F),jmp 0x458,open,cards
-R089+0x1846,R089,1882,block,R089+0x1882 (197F:0412),push 0x14,open,cards
-R089+0x1846,R089,18A2,block,R089+0x18A2 (197F:0432),push 1,open,cards
-R089+0x1846,R089,18B2,block,R089+0x18B2 (197F:0442),push 1,open,cards
-R089+0x1846,R089,18C0,block,R089+0x18C0 (197F:0450),"lcall 0x150b, 0x3b0",open,cards
-R089+0x1846,R089,18C8,block,R089+0x18C8 (197F:0458),"mov word ptr [0xe48a], 0x54",open,cards
-R089+0x1846,R089,18D0,block,R089+0x18D0 (197F:0460),"mov word ptr [0x8e1e], 2",open,cards
-R089+0x1846,R089,1865,taken,R089+0x1865 (197F:03F5),jne 0x3fc,open,cards
-R089+0x1846,R089,1865,fallthrough,R089+0x1865 (197F:03F5),jne 0x3fc,open,cards
-R089+0x1846,R089,186D,taken,R089+0x186D (197F:03FD),jne 0x460,open,cards
-R089+0x1846,R089,186D,fallthrough,R089+0x186D (197F:03FD),jne 0x460,open,cards
-R089+0x1846,R089,1874,taken,R089+0x1874 (197F:0404),jl 0x458,open,cards
-R089+0x1846,R089,1874,fallthrough,R089+0x1874 (197F:0404),jl 0x458,open,cards
-R089+0x1846,R089,1877,taken,R089+0x1877 (197F:0407),jle 0x412,open,cards
-R089+0x1846,R089,1877,fallthrough,R089+0x1877 (197F:0407),jle 0x412,open,cards
-R089+0x1846,R089,187A,taken,R089+0x187A (197F:040A),je 0x432,open,cards
-R089+0x1846,R089,187A,fallthrough,R089+0x187A (197F:040A),je 0x432,open,cards
-R089+0x1846,R089,187D,taken,R089+0x187D (197F:040D),je 0x442,open,cards
-R089+0x1846,R089,187D,fallthrough,R089+0x187D (197F:040D),je 0x442,open,cards
 R089+0x1916,R089,1955,block,R089+0x1955 (197F:04E5),dec ax,open,cards
 R089+0x1916,R089,1958,block,R089+0x1958 (197F:04E8),jmp 0x5df,open,cards
 R089+0x1916,R089,195B,block,R089+0x195B (197F:04EB),dec ax,open,cards
@@ -17002,7 +16291,6 @@ R090+0x1096,R090,10B4,block,R090+0x10B4 (18E0:0634),"sub ax, ax",open,cards
 R090+0x1096,R090,10C1,block,R090+0x10C1 (18E0:0641),push 7,open,cards
 R090+0x1096,R090,10B2,fallthrough,R090+0x10B2 (18E0:0632),jne 0x638,open,cards
 R090+0x1096,R090,10BF,fallthrough,R090+0x10BF (18E0:063F),jne 0x66e,open,cards
-R090+0x150A,R090,150A,block,R090+0x150A (18E0:0A8A),"enter 0x38, 0",open,cards
 R090+0x161E,R090,172A,block,R090+0x172A (1999:011A),"mov ax, 2",open,cards
 R090+0x161E,R090,1743,block,R090+0x1743 (1999:0133),"mov word ptr [0xee7e], 2",open,cards
 R090+0x161E,R090,1751,block,R090+0x1751 (1999:0141),"mov ax, 2",open,cards
@@ -17166,13 +16454,10 @@ R091+0x0892,R091,09C8,fallthrough,R091+0x09C8 (18C1:0138),je 0x140,open,cards
 R091+0x0BA8,R091,0C31,block,R091+0x0C31 (18F2:0091),jmp 0x223,open,cards
 R091+0x0BA8,R091,0D20,block,R091+0x0D20 (18F2:0180),"mov bx, word ptr [0xee6a]",open,cards
 R091+0x0BA8,R091,0D35,block,R091+0x0D35 (18F2:0195),jmp 0x218,open,cards
+R091+0x0BA8,R091,0D54,block,R091+0x0D54 (18F2:01B4),push word ptr [bp - 4],open,cards
 R091+0x0BA8,R091,0C2F,fallthrough,R091+0x0C2F (18F2:008F),je 0x94,open,cards
 R091+0x0BA8,R091,0D13,taken,R091+0x0D13 (18F2:0173),jne 0x180,open,cards
 R091+0x0BA8,R091,0D33,fallthrough,R091+0x0D33 (18F2:0193),jbe 0x198,open,cards
-R091+0x0DCA,R091,0E5B,block,R091+0x0E5B (18F2:02BB),"mov byte ptr [0x9c32], 1",open,cards
-R091+0x0DCA,R091,0E33,taken,R091+0x0E33 (18F2:0293),je 0x29a,open,cards
-R091+0x0DCA,R091,0E59,fallthrough,R091+0x0E59 (18F2:02B9),je 0x2c0,open,cards
-R091+0x0DCA,R091,0E7F,taken,R091+0x0E7F (18F2:02DF),je 0x2e6,open,cards
 R091+0x0ED2,R091,0F32,taken,R091+0x0F32 (18F2:0392),je 0x399,open,cards
 R091+0x0ED2,R091,0F45,taken,R091+0x0F45 (18F2:03A5),je 0x3ac,open,cards
 R091+0x0ED2,R091,0F58,taken,R091+0x0F58 (18F2:03B8),je 0x3bf,open,cards
@@ -17784,6 +17069,21 @@ R101+0x11F4,R101,16B6,block,R101+0x16B6 (1957:04C6),push 0,open,cards
 R101+0x11F4,R101,16BC,block,R101+0x16BC (1957:04CC),push 0,open,cards
 R101+0x11F4,R101,16BF,block,R101+0x16BF (1957:04CF),"lcall 0x150b, 0x3b0",open,cards
 R101+0x11F4,R101,16C7,block,R101+0x16C7 (1957:04D7),"mov word ptr [0xa766], 1",open,cards
+R101+0x11F4,R101,1249,fallthrough,R101+0x1249 (1957:0059),jne 0x5e,open,cards
+R101+0x11F4,R101,16A5,taken,R101+0x16A5 (1957:04B5),je 0x4c0,open,cards
+R101+0x11F4,R101,16A5,fallthrough,R101+0x16A5 (1957:04B5),je 0x4c0,open,cards
+R101+0x11F4,R101,16A8,taken,R101+0x16A8 (1957:04B8),je 0x4c6,open,cards
+R101+0x11F4,R101,16A8,fallthrough,R101+0x16A8 (1957:04B8),je 0x4c6,open,cards
+R101+0x11F4,R101,16AB,taken,R101+0x16AB (1957:04BB),je 0x4cc,open,cards
+R101+0x11F4,R101,16AB,fallthrough,R101+0x16AB (1957:04BB),je 0x4cc,open,cards
+R101+0x11F4,R101,1255,fallthrough,R101+0x1255 (1957:0065),jne 0x6a,open,cards
+R101+0x11F4,R101,125E,fallthrough,R101+0x125E (1957:006E),jne 0x73,open,cards
+R101+0x11F4,R101,1267,fallthrough,R101+0x1267 (1957:0077),jne 0x7c,open,cards
+R101+0x11F4,R101,1270,fallthrough,R101+0x1270 (1957:0080),jne 0x85,open,cards
+R101+0x11F4,R101,1279,fallthrough,R101+0x1279 (1957:0089),jne 0x8e,open,cards
+R101+0x11F4,R101,1282,fallthrough,R101+0x1282 (1957:0092),jne 0x97,open,cards
+R101+0x11F4,R101,128A,fallthrough,R101+0x128A (1957:009A),jne 0x9f,open,cards
+R101+0x11F4,R101,1293,fallthrough,R101+0x1293 (1957:00A3),jne 0xa8,open,cards
 R101+0x11F4,R101,14CA,taken,R101+0x14CA (1957:02DA),je 0x2f8,open,cards
 R101+0x11F4,R101,14CA,fallthrough,R101+0x14CA (1957:02DA),je 0x2f8,open,cards
 R101+0x11F4,R101,14CD,taken,R101+0x14CD (1957:02DD),je 0x308,open,cards
@@ -17812,21 +17112,6 @@ R101+0x11F4,R101,1628,taken,R101+0x1628 (1957:0438),je 0x43d,open,cards
 R101+0x11F4,R101,1628,fallthrough,R101+0x1628 (1957:0438),je 0x43d,open,cards
 R101+0x11F4,R101,1631,taken,R101+0x1631 (1957:0441),je 0x446,open,cards
 R101+0x11F4,R101,1631,fallthrough,R101+0x1631 (1957:0441),je 0x446,open,cards
-R101+0x11F4,R101,1249,fallthrough,R101+0x1249 (1957:0059),jne 0x5e,open,cards
-R101+0x11F4,R101,16A5,taken,R101+0x16A5 (1957:04B5),je 0x4c0,open,cards
-R101+0x11F4,R101,16A5,fallthrough,R101+0x16A5 (1957:04B5),je 0x4c0,open,cards
-R101+0x11F4,R101,16A8,taken,R101+0x16A8 (1957:04B8),je 0x4c6,open,cards
-R101+0x11F4,R101,16A8,fallthrough,R101+0x16A8 (1957:04B8),je 0x4c6,open,cards
-R101+0x11F4,R101,16AB,taken,R101+0x16AB (1957:04BB),je 0x4cc,open,cards
-R101+0x11F4,R101,16AB,fallthrough,R101+0x16AB (1957:04BB),je 0x4cc,open,cards
-R101+0x11F4,R101,1255,fallthrough,R101+0x1255 (1957:0065),jne 0x6a,open,cards
-R101+0x11F4,R101,125E,fallthrough,R101+0x125E (1957:006E),jne 0x73,open,cards
-R101+0x11F4,R101,1267,fallthrough,R101+0x1267 (1957:0077),jne 0x7c,open,cards
-R101+0x11F4,R101,1270,fallthrough,R101+0x1270 (1957:0080),jne 0x85,open,cards
-R101+0x11F4,R101,1279,fallthrough,R101+0x1279 (1957:0089),jne 0x8e,open,cards
-R101+0x11F4,R101,1282,fallthrough,R101+0x1282 (1957:0092),jne 0x97,open,cards
-R101+0x11F4,R101,128A,fallthrough,R101+0x128A (1957:009A),jne 0x9f,open,cards
-R101+0x11F4,R101,1293,fallthrough,R101+0x1293 (1957:00A3),jne 0xa8,open,cards
 R101+0x11F4,R101,129C,fallthrough,R101+0x129C (1957:00AC),jne 0xb1,open,cards
 R101+0x11F4,R101,12A5,fallthrough,R101+0x12A5 (1957:00B5),jne 0xba,open,cards
 R101+0x11F4,R101,12AE,fallthrough,R101+0x12AE (1957:00BE),jne 0xc3,open,cards
@@ -18007,7 +17292,7 @@ R104+0x058C,R104,05BA,block,R104+0x05BA (1838:05BA),"mov es, word ptr [0x816c]",
 R104+0x058C,R104,05B8,fallthrough,R104+0x05B8 (1838:05B8),jle 0x634,open,cards
 R104+0x0D62,R104,0DCC,block,R104+0x0DCC (190E:006C),"mov si, word ptr [bp - 2]",open,cards
 R104+0x0D62,R104,0DCA,fallthrough,R104+0x0DCA (190E:006A),je 0xbd,open,cards
-R104+0x0FC0,R104,0FC0,block,R104+0x0FC0 (190E:0260),"enter 4, 0",open,cards
+R104+0x0FC0,R104,0FC0,block,R104+0x0FC0 (190E:0260),"enter 4, 0",excluded,cards
 R104+0x14A0,R104,1525,block,R104+0x1525 (1982:0085),"mov word ptr [0xee76], 2",open,cards
 R104+0x14A0,R104,153D,block,R104+0x153D (1982:009D),"mov word ptr [0xee78], 2",open,cards
 R104+0x14A0,R104,1569,block,R104+0x1569 (1982:00C9),jmp 0x26d,open,cards
@@ -18431,7 +17716,6 @@ R107+0x133A,R107,1347,fallthrough,R107+0x1347 (191F:04D7),je 0x532,open,cards
 R107+0x133A,R107,13A7,taken,R107+0x13A7 (191F:0537),je 0x53c,open,cards
 R107+0x133A,R107,13C4,taken,R107+0x13C4 (191F:0554),jle 0x586,open,cards
 R107+0x133A,R107,13C4,fallthrough,R107+0x13C4 (191F:0554),jle 0x586,open,cards
-R107+0x1852,R107,1852,block,R107+0x1852 (191F:09E2),"enter 0x38, 0",open,cards
 R107+0x1962,R107,19E7,block,R107+0x19E7 (19CE:0087),push -1,open,cards
 R107+0x1962,R107,1AA5,block,R107+0x1AA5 (19CE:0145),jmp 0x2d9,open,cards
 R107+0x1962,R107,1BAB,block,R107+0x1BAB (19CE:024B),jmp 0x2ce,open,cards
@@ -19499,16 +18783,6 @@ R113+0x1A12,R113,1AB0,taken,R113+0x1AB0 (19B5:02E0),jne 0x300,open,cards
 R113+0x1A12,R113,1AB0,fallthrough,R113+0x1AB0 (19B5:02E0),jne 0x300,open,cards
 R113+0x1A12,R113,1ABF,taken,R113+0x1ABF (19B5:02EF),jg 0x300,open,cards
 R113+0x1A12,R113,1ABF,fallthrough,R113+0x1ABF (19B5:02EF),jg 0x300,open,cards
-R113+0x1BC4,R113,1BC4,block,R113+0x1BC4 (19B5:03F4),push si,open,cards
-R113+0x1BC4,R113,1BE5,block,R113+0x1BE5 (19B5:0415),"sub ax, ax",open,cards
-R113+0x1BC4,R113,1BEA,block,R113+0x1BEA (19B5:041A),dec si,open,cards
-R113+0x1BC4,R113,1BED,block,R113+0x1BED (19B5:041D),"mov es, word ptr [0x81c8]",open,cards
-R113+0x1BC4,R113,1C30,block,R113+0x1C30 (19B5:0460),"mov es, word ptr [0x81c8]",open,cards
-R113+0x1BC4,R113,1C42,block,R113+0x1C42 (19B5:0472),"lcall 0x6a1, 0x2fe8",open,cards
-R113+0x1BC4,R113,1BE3,taken,R113+0x1BE3 (19B5:0413),jne 0x41a,open,cards
-R113+0x1BC4,R113,1BE3,fallthrough,R113+0x1BE3 (19B5:0413),jne 0x41a,open,cards
-R113+0x1BC4,R113,1BEB,taken,R113+0x1BEB (19B5:041B),jne 0x460,open,cards
-R113+0x1BC4,R113,1BEB,fallthrough,R113+0x1BEB (19B5:041B),jne 0x460,open,cards
 R113+0x1CA4,R113,1CFA,block,R113+0x1CFA (19B5:052A),push 1,open,cards
 R113+0x1CA4,R113,1CF8,fallthrough,R113+0x1CF8 (19B5:0528),jg 0x537,open,cards
 R114+0x0000,R114,010B,block,R114+0x010B (1838:010B),jmp 0x29f,open,cards
@@ -19744,16 +19018,7 @@ R116+0x1526,R116,1537,block,R116+0x1537 (191B:0707),jmp 0x7f0,open,cards
 R116+0x1526,R116,1563,block,R116+0x1563 (191B:0733),"mov es, word ptr [0x81ec]",open,cards
 R116+0x1526,R116,1620,block,R116+0x1620 (191B:07F0),push 0,open,cards
 R116+0x1526,R116,1649,block,R116+0x1649 (191B:0819),"mov es, word ptr [0x81ec]",open,cards
-R116+0x1526,R116,1652,block,R116+0x1652 (191B:0822),push word ptr es:[0xc73],open,cards
-R116+0x1526,R116,165E,block,R116+0x165E (191B:082E),"mov ax, word ptr [0x8b06]",open,cards
-R116+0x1526,R116,1660,block,R116+0x1660 (191B:0830),"mov sp, bp",open,cards
-R116+0x1526,R116,1661,block,R116+0x1661 (191B:0831),"in ax, 0x68",open,cards
-R116+0x1526,R116,1662,block,R116+0x1662 (191B:0832),push 0xe95f,open,cards
-R116+0x1526,R116,1663,block,R116+0x1663 (191B:0833),pop di,open,cards
-R116+0x1526,R116,1665,block,R116+0x1665 (191B:0835),push 0xe3d4,open,cards
 R116+0x1526,R116,1680,block,R116+0x1680 (191B:0850),"mov word ptr [0xee78], 0",open,cards
-R116+0x1526,R116,1650,taken,R116+0x1650 (191B:0820),jne 0x82e,open,cards
-R116+0x1526,R116,1650,fallthrough,R116+0x1650 (191B:0820),jne 0x82e,open,cards
 R116+0x1526,R116,1535,fallthrough,R116+0x1535 (191B:0705),jle 0x70a,open,cards
 R116+0x1526,R116,1647,taken,R116+0x1647 (191B:0817),je 0x850,open,cards
 R116+0x1526,R116,1647,fallthrough,R116+0x1647 (191B:0817),je 0x850,open,cards
@@ -19899,7 +19164,6 @@ R118+0x08AA,R118,0B30,block,R118+0x0B30 (18C2:0290),push word ptr [bp - 4],open,
 R118+0x08AA,R118,09DE,fallthrough,R118+0x09DE (18C2:013E),je 0x143,open,cards
 R118+0x08AA,R118,0AC4,taken,R118+0x0AC4 (18C2:0224),jne 0x232,open,cards
 R118+0x08AA,R118,0AE5,fallthrough,R118+0x0AE5 (18C2:0245),jbe 0x24a,open,cards
-R118+0x143A,R118,143A,block,R118+0x143A (18C2:0B9A),"enter 0x38, 0",open,cards
 R118+0x14C2,R118,155E,block,R118+0x155E (1984:009E),jmp 0x233,open,cards
 R118+0x14C2,R118,164E,block,R118+0x164E (1984:018E),"mov bx, word ptr [0xee6a]",open,cards
 R118+0x14C2,R118,1663,block,R118+0x1663 (1984:01A3),jmp 0x228,open,cards
@@ -20172,7 +19436,6 @@ R122+0x0B2E,R122,0CA9,taken,R122+0x0CA9 (18EA:0189),jne 0x196,open,cards
 R122+0x0B2E,R122,0CC9,fallthrough,R122+0x0CC9 (18EA:01A9),jbe 0x1ae,open,cards
 R122+0x0E40,R122,0E51,block,R122+0x0E51 (18EA:0331),"mov word ptr [0xa766], 2",open,cards
 R122+0x0E40,R122,0E4F,fallthrough,R122+0x0E4F (18EA:032F),jge 0x340,open,cards
-R122+0x148E,R122,148E,block,R122+0x148E (18EA:096E),"enter 0x38, 0",open,cards
 R122+0x159E,R122,163D,block,R122+0x163D (1991:00AD),jmp 0x241,open,cards
 R122+0x159E,R122,172E,block,R122+0x172E (1991:019E),"mov bx, word ptr [0xee6a]",open,cards
 R122+0x159E,R122,1743,block,R122+0x1743 (1991:01B3),jmp 0x236,open,cards
@@ -20423,33 +19686,6 @@ R124+0x1976,R124,19D3,fallthrough,R124+0x19D3 (199D:0383),jl 0x38c,open,cards
 R124+0x1976,R124,19EB,fallthrough,R124+0x19EB (199D:039B),jl 0x3a3,open,cards
 R124+0x1AAC,R124,1AC4,block,R124+0x1AC4 (199D:0474),"mov ax, 1",open,cards
 R124+0x1AAC,R124,1ABA,taken,R124+0x1ABA (199D:046A),jne 0x474,open,cards
-R124+0x1BEA,R124,1BEA,block,R124+0x1BEA (199D:059A),push si,open,cards
-R124+0x1BEA,R124,1C08,block,R124+0x1C08 (199D:05B8),"sub ax, ax",open,cards
-R124+0x1BEA,R124,1C0C,block,R124+0x1C0C (199D:05BC),"or si, si",open,cards
-R124+0x1BEA,R124,1C10,block,R124+0x1C10 (199D:05C0),jmp 0x64c,open,cards
-R124+0x1BEA,R124,1C13,block,R124+0x1C13 (199D:05C3),"mov ax, word ptr [0xee6a]",open,cards
-R124+0x1BEA,R124,1C1A,block,R124+0x1C1A (199D:05CA),dec ax,open,cards
-R124+0x1BEA,R124,1C1D,block,R124+0x1C1D (199D:05CD),dec ax,open,cards
-R124+0x1BEA,R124,1C20,block,R124+0x1C20 (199D:05D0),dec ax,open,cards
-R124+0x1BEA,R124,1C23,block,R124+0x1C23 (199D:05D3),jmp 0x638,open,cards
-R124+0x1BEA,R124,1C26,block,R124+0x1C26 (199D:05D6),"mov es, word ptr [0x8230]",open,cards
-R124+0x1BEA,R124,1C54,block,R124+0x1C54 (199D:0604),"mov es, word ptr [0x8230]",open,cards
-R124+0x1BEA,R124,1C80,block,R124+0x1C80 (199D:0630),"lcall 0x150b, 0x3b0",open,cards
-R124+0x1BEA,R124,1C88,block,R124+0x1C88 (199D:0638),push 0xe3e3,open,cards
-R124+0x1BEA,R124,1C9C,block,R124+0x1C9C (199D:064C),push 0,open,cards
-R124+0x1BEA,R124,1CA0,block,R124+0x1CA0 (199D:0650),"lcall 0x150b, 0x3b0",open,cards
-R124+0x1BEA,R124,1C06,taken,R124+0x1C06 (199D:05B6),jne 0x5bc,open,cards
-R124+0x1BEA,R124,1C06,fallthrough,R124+0x1C06 (199D:05B6),jne 0x5bc,open,cards
-R124+0x1BEA,R124,1C0E,taken,R124+0x1C0E (199D:05BE),jne 0x5c3,open,cards
-R124+0x1BEA,R124,1C0E,fallthrough,R124+0x1C0E (199D:05BE),jne 0x5c3,open,cards
-R124+0x1BEA,R124,1C18,taken,R124+0x1C18 (199D:05C8),jl 0x638,open,cards
-R124+0x1BEA,R124,1C18,fallthrough,R124+0x1C18 (199D:05C8),jl 0x638,open,cards
-R124+0x1BEA,R124,1C1B,taken,R124+0x1C1B (199D:05CB),jle 0x5d6,open,cards
-R124+0x1BEA,R124,1C1B,fallthrough,R124+0x1C1B (199D:05CB),jle 0x5d6,open,cards
-R124+0x1BEA,R124,1C1E,taken,R124+0x1C1E (199D:05CE),jl 0x638,open,cards
-R124+0x1BEA,R124,1C1E,fallthrough,R124+0x1C1E (199D:05CE),jl 0x638,open,cards
-R124+0x1BEA,R124,1C21,taken,R124+0x1C21 (199D:05D1),jle 0x604,open,cards
-R124+0x1BEA,R124,1C21,fallthrough,R124+0x1C21 (199D:05D1),jle 0x604,open,cards
 R124+0x22AC,R124,2343,block,R124+0x2343 (1A62:00A3),jmp 0x237,open,cards
 R124+0x22AC,R124,2434,block,R124+0x2434 (1A62:0194),"mov bx, word ptr [0xee6a]",open,cards
 R124+0x22AC,R124,2449,block,R124+0x2449 (1A62:01A9),jmp 0x22c,open,cards
