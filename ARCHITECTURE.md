@@ -111,6 +111,22 @@ SDL host opens it with F11 (a key the original never reads) and draws it over th
 font (StbTrueTypeSharp, DejaVu Sans Mono), outside the game's picture; the headless host runs its commands
 with `console:` steps (docs/SETTINGS.md).
 
+## Rendering
+
+Presentation draws every frame into `Darklands.Platform.Screen`: 320x200 palette indices and the 256
+colours, exactly as the original. Hosts only adapt devices (show that frame, scaled; read input; play
+sound) and make no rendering decisions.
+
+For replacement graphics (HD packs, a later host-independent rendering library) the screen also keeps
+`Screen.Owners`, a modern addition outside the game like the developer console: per pixel the id of the
+asset that drew it (`ScreenOwners`, interned asset names, 0 = none). `Canvas` records it for every copy of
+an image's pixels (only the pixels written), clears it for fills, outlines and single pixels, keeps it
+through recolours, and saved regions and screens carry it back. Assets are named by one scheme
+(`IndexedImage.AssetName`: `PICS\STARTSCR.PIC`, `COMMONSP.IMG#12`, `F01C.CAT/F01WKSW.IMC#3.5`,
+`dropcap:D`); images built at run time may stay unnamed. A pixel a screen writes directly keeps a stale or
+zero owner, and a replacement shows the original pixel there. The owners never change `Screen.Pixels`
+or `Screen.Palette` (`CanvasOwnershipTests` compares the canvas with the drawing from before).
+
 ## Verification
 
 * `tests/Darklands.Core.Tests`: unit tests per rule, the faithfulness registers and the source map.

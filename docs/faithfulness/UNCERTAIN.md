@@ -897,7 +897,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:46` `GameScreens2.int`  
   original: `R029+0x2204` (0E76:2204, draft), `R029+0x222A` (0E76:222A, draft)  
   why: which keys the original's menu_bar_run takes inside the sheet is not traced; only the Alt keys are passed.
-- **U-fccc5f** `uncertain` - `src/Darklands.Presentation/GameUi.cs:317` `GameUi.Wait`  
+- **U-fccc5f** `uncertain` - `src/Darklands.Presentation/GameUi.cs:318` `GameUi.Wait`  
   original: `root 0410:0302` (0410:0302, asm), `R030+0x3096` (1767:0046, matched)  
   why: a clock() tick as one millisecond (MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit, see MessageBox and Cinematics.
 - **U-797153** `uncertain` - `src/Darklands.Presentation/MarchingOrderScreen.cs:20` `MarchingOrderScreen`  
