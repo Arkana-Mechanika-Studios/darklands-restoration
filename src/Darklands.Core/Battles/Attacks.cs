@@ -108,10 +108,10 @@ public static class Attacks
             damage = HitDamage(battle, a, t, result, location);
             reaction = damage <= 1 ? 1 : 2;
         }
-        if (battle.DemoMode != 0 && a == 5)
+        if (battle.DragonFight != 0 && a == 5)
         {
             // C: the dragon's blows are counted (a byte: it wraps at 256); melee_frame breathes every DS:C21F-th.
-            battle.DemoAttackCount++;
+            battle.DragonBlowCount++;
         }
         var missVariant = -1;
         if (result == HitResult.None)
@@ -134,7 +134,7 @@ public static class Attacks
     {
         location = 0;
         var roll = battle.RollOneTo(100);
-        if (battle.DemoMode != 0 && a == 5 && battle[5].Target == -1)
+        if (battle.DragonFight != 0 && a == 5 && battle[5].Target == -1)
         {
             // C: the dragon without a victim (DS:9F1F, its record's +0x4A) misses; the roll is drawn first.
             return HitResult.None;

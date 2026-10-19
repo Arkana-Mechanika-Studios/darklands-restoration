@@ -150,9 +150,9 @@ public sealed class BattleOracleTests
     private static Battle Setup(JsonElement i, IRandomSource random)
     {
         var battle = new Battle(Tables.Value!, random) { RealCombat = i.GetProperty("real").GetInt32() == 1 };
-        if (i.TryGetProperty("demo", out var demo))
+        if (i.TryGetProperty("dragon", out var fight))
         {
-            battle.DemoMode = (byte)demo.GetInt32();
+            battle.DragonFight = (byte)fight.GetInt32();
         }
         if (i.TryGetProperty("dragonCode", out var dragon) && dragon.ValueKind == JsonValueKind.String)
         {

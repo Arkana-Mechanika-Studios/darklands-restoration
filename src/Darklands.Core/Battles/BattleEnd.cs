@@ -212,7 +212,7 @@ public static class BattleEnd
             {
                 b[i].Status = CharacterStatus.Empty;
             }
-            if (b.DemoMode != 0)
+            if (b.DragonFight != 0)
             {
                 // C: a dragon fight ends with the victory (R014+0x0C7C); for the seven-headed dragon the view is then drawn again
                 // (R014+0x0CB6: floor_view_draw(−1), combat_draw), which the screen does every frame here.

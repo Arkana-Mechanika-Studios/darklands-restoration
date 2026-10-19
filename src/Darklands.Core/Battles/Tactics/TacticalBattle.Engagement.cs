@@ -30,7 +30,7 @@ public sealed partial class TacticalBattle
             if ((c.Action & AttackOrders) != 0 && !c.Moving && c.EngageAt <= Clock && c.State == ActionState.Ready)
             {
                 _fireBlocked[i] = 0;
-                if (Battle.DemoMode != 0 && i == 5 && Battle.Result == BattleResult.Running)
+                if (Battle.DragonFight != 0 && i == 5 && Battle.Result == BattleResult.Running)
                 {
                     DragonPicksVictim(c);
                 }
@@ -116,7 +116,7 @@ public sealed partial class TacticalBattle
         }
         if (outcome.Result == HitResult.Parried)
         {
-            if (Battle.DemoMode != 0)
+            if (Battle.DragonFight != 0)
             {
                 // C: in a dragon fight a parried blow keeps the frames it had (R014+0xA690).
                 return;
@@ -138,7 +138,7 @@ public sealed partial class TacticalBattle
                 return;
             }
         }
-        if (Battle.DemoMode == 0)
+        if (Battle.DragonFight == 0)
         {
             var n = set.AttackLength;
             c.SequenceLength = n;
@@ -153,7 +153,7 @@ public sealed partial class TacticalBattle
     // orig: cbt_hostile_pair R014+0x47AE (0E76:47AE) draft (asm-verified per spec D §1.11)
     private bool HostilePair(int i, int j)
     {
-        if (i == 5 && Battle.DemoMode != 0)
+        if (i == 5 && Battle.DragonFight != 0)
         {
             return true;
         }

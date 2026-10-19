@@ -226,7 +226,7 @@ public sealed partial class TacticalBattle
         {
             return;
         }
-        if (Battle.DemoMode != 0 && i == 5)
+        if (Battle.DragonFight != 0 && i == 5)
         {
             DragonMayBreathe(c);
         }
@@ -273,7 +273,7 @@ public sealed partial class TacticalBattle
         {
             c.Exchange = Exchange.None;
             target.Exchange = Exchange.None;
-            c.State = Battle.DemoMode != 0 && i == 5 ? ActionState.Ready : ActionState.Idle;
+            c.State = Battle.DragonFight != 0 && i == 5 ? ActionState.Ready : ActionState.Idle;
             _view.RowChanged(i);
             _view.RowChanged(t);
             if (t < i)
@@ -433,7 +433,7 @@ public sealed partial class TacticalBattle
             c.State = ActionState.Chanting;
             c.ReloadStartAt = (ushort)(Scaled(40) + Clock + 90);
             c.LoopSetUp = false;
-            if (Battle.DemoMode != 0 && i == 5)
+            if (Battle.DragonFight != 0 && i == 5)
             {
                 // C: the dragon breathes at once (no chant; R014+0x1F33..0x1F50).
                 c.State = ActionState.Casting;
@@ -473,14 +473,14 @@ public sealed partial class TacticalBattle
                     LaunchMissile(i, c.Target, 6, c.Spell, c.SpellPower);
                     Effects.UseUpPotion(i, c.Spell, c.SpellPower);
                     c.State = ActionState.Finished;
-                    if (Battle.DemoMode != 0 && i == 5)
+                    if (Battle.DragonFight != 0 && i == 5)
                     {
                         // C: the dragon goes back to its claws: state 7, action 0x12, no victim, its fighting animation
                         // (R014+0x2115..0x2150: DS:CA69, DS:9EE5, DS:9F1F, anim_file[5] = DS:17DC / DS:17DF).
                         c.State = ActionState.Ready;
                         c.Action = CombatAction.StandardAttack;
                         c.Target = -1;
-                        SlotWeapons[5] = ClawCode(Battle.DemoMode);
+                        SlotWeapons[5] = ClawCode(Battle.DragonFight);
                         return;
                     }
                     if (i < Combatant.PartySlots)
@@ -679,7 +679,7 @@ public sealed partial class TacticalBattle
         for (var k = 0; k < Combatant.Count; k++)
         {
             var s = Battle[k];
-            if (s.IsAble && s.Target == i && (s.Action == CombatAction.Missile || s.Action == CombatAction.UseItem) && !(Battle.DemoMode != 0 && k == 5))
+            if (s.IsAble && s.Target == i && (s.Action == CombatAction.Missile || s.Action == CombatAction.UseItem) && !(Battle.DragonFight != 0 && k == 5))
             {
                 s.State = ActionState.Finished;
                 s.Target = -1;

@@ -42,10 +42,10 @@ public sealed class Battle
     /// <summary>
     /// DS:C21A: the dragon fight: 0 none, <see cref="HydraFight"/> once a file of the seven-headed dragon (picture code M73) was
     /// loaded, <see cref="CaveDragonFight"/> for the cave dragon (M90). Combatant 5 is then the dragon: it breathes every
-    /// <see cref="DemoAttackInterval"/>-th blow, picks its own victims and does not take part in the usual enemy turn.
+    /// <see cref="DragonBreathInterval"/>-th blow, picks its own victims and does not take part in the usual enemy turn.
     /// </summary>
     // orig: set by sprite_file_load R014+0x3D2C (0x3F89..0x3FB7), reset by R002+0x1830 (0x1936)
-    public byte DemoMode { get; set; }
+    public byte DragonFight { get; set; }
 
     /// <summary>DS:C21A of the seven-headed dragon's fight ('I').</summary>
     public const byte HydraFight = 0x49;
@@ -54,10 +54,10 @@ public sealed class Battle
     public const byte CaveDragonFight = 0x5A;
 
     /// <summary>DS:C26E: blows of combatant 5 in a dragon fight (a byte, 1 at the battle's start).</summary>
-    public byte DemoAttackCount { get; set; } = 1;
+    public byte DragonBlowCount { get; set; } = 1;
 
     /// <summary>DS:C21F: every this many blows the dragon breathes instead (3 at the start, 6 once it has picked a fighter).</summary>
-    public sbyte DemoAttackInterval { get; set; } = 3;
+    public sbyte DragonBreathInterval { get; set; } = 3;
 
     /// <summary>
     /// 20A5:763B: the animation code of weapon type 40 for this battle when a dragon fight changed it ("D7" the seven-headed

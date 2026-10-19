@@ -32,16 +32,16 @@ public sealed class DragonFightTests
             var code = tactics.SlotCodes[b[5].AnimationSlot].ToUpperInvariant();
             if (code is "M73" or "M90")
             {
-                Assert.Equal(code == "M73" ? Battle.HydraFight : Battle.CaveDragonFight, b.DemoMode);
+                Assert.Equal(code == "M73" ? Battle.HydraFight : Battle.CaveDragonFight, b.DragonFight);
             }
-            if (b.DemoMode == 0)
+            if (b.DragonFight == 0)
             {
                 continue;
             }
             breathed |= b[5].Action == CombatAction.UseItem && b[5].Spell == 8 && b[5].SpellPower == 50;
             picked |= b[5].Target is >= 0 and < Combatant.PartySlots;
         }
-        Assert.True(b.DemoMode != 0, $"the lair's enemy loads a dragon's files ({tactics.SlotCodes[5]})");
+        Assert.True(b.DragonFight != 0, $"the lair's enemy loads a dragon's files ({tactics.SlotCodes[5]})");
         Assert.True(picked, "the dragon picked a member");
         Assert.True(breathed || b.Result != BattleResult.Running, "the dragon breathed (or the fight ended first)");
     }

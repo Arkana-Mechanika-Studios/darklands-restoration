@@ -121,11 +121,11 @@ public sealed partial class TacticalBattle
         {
             if (code[1] == '7' && code[2] == '3')
             {
-                Battle.DemoMode = Battle.HydraFight;
+                Battle.DragonFight = Battle.HydraFight;
             }
             else if (code[1] == '9' && code[2] == '0')
             {
-                Battle.DemoMode = Battle.CaveDragonFight;
+                Battle.DragonFight = Battle.CaveDragonFight;
             }
         }
         if (_library.Find(code, posture, weapon) is { } info)

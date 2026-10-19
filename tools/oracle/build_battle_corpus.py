@@ -27,7 +27,7 @@ DS = 0x321A
 HOLDRAND = 0x7B20
 COMBATANTS = 0x9C55
 ATTACK_RATE, QUEUED, SHOWN = 0xD493, 0xD70C, 0xD4C7
-REAL_COMBAT, DEMO, CLOUDS = 0xA6C1, 0xC21A, 0xA33D
+REAL_COMBAT, DRAGON_FIGHT, CLOUDS = 0xA6C1, 0xC21A, 0xA33D
 REACH_SEG, REACH_OFF = 0x20A5, 0x7900
 ANIM_FILE_TABLE = 0x1174
 CODES_SEG, DRAGON_CODE = 0x20A5, 0x763B   # weapon type 40's animation code ("DG"; "D7" / "CD" in a dragon fight)
@@ -107,7 +107,7 @@ def battle(r):
     memory = [ds(COMBATANTS + 0x80 * i, rec) for i, rec in enumerate(recs)]
     memory += [{"segment": "%04X" % REACH_SEG, "offset": "%04X" % REACH_OFF, "hex": reach.hex()},
                ds(ATTACK_RATE, rates), ds(QUEUED, queued), ds(SHOWN, shown), ds(REAL_COMBAT, bytes([real])),
-               ds(DEMO, b"\x00"), ds(CLOUDS, b"\x00"), ds(HOLDRAND, struct.pack("<I", state)),
+               ds(DRAGON_FIGHT, b"\x00"), ds(CLOUDS, b"\x00"), ds(HOLDRAND, struct.pack("<I", state)),
                ds(COMBATANTS + 13 * 0x80 + 0x14, b"\x00")]  # the 14th "status" the enemies' loop reads
     inputs = {"combatants": [x.hex() for x in recs], "reach": reach.hex(), "rates": rates.hex(),
               "queued": queued.hex(), "shown": shown.hex(), "state": state, "real": real}
@@ -168,9 +168,9 @@ DRAGON = (("to_hit_roll", 120), ("weapon_ready", 60))
 def dragon_cases(r):
     out = []
     for name, memory, args, inputs, results in cases(r, DRAGON):
-        demo = r.choice([0x49, 0x5A])
-        memory.append(ds(DEMO, bytes([demo])))
-        inputs["demo"] = demo
+        fight = r.choice([0x49, 0x5A])
+        memory.append(ds(DRAGON_FIGHT, bytes([fight])))
+        inputs["dragon"] = fight
         if name == "to_hit_roll":
             a = r.choice([5, 5, int(args[0], 16)])
             args[0] = h16(a)

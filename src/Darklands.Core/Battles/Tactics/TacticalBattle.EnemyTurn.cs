@@ -97,7 +97,7 @@ public sealed partial class TacticalBattle
         {
             return;
         }
-        if (Battle.DemoMode != 0)
+        if (Battle.DragonFight != 0)
         {
             DragonTurn();
             return;

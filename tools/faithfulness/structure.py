@@ -151,13 +151,28 @@ def run_extractors(exe):
                     str(REPO), str(LOCAL / "structure-cs.json")], check=True)
 
 
+EXTENTS: dict = collections.defaultdict(list)   # record -> [(first payload, end payload, function)]
+
+
 def load_index():
     thunks, kinds = {}, {}
     for r in csv.DictReader(open(INDEX, encoding="utf-8")):
         kinds[r["coordinate"]] = r["kind"]
         if r["kind"] == "thunk":
             thunks[r["coordinate"]] = r["target"].split(" (")[0]
+        elif r["kind"] == "function" and r["size"] and not r["coordinate"].startswith("root"):
+            start = int(r["coordinate"][7:], 16)
+            EXTENTS[r["coordinate"][:4]].append((start, start + int(r["size"]), r["coordinate"]))
     return thunks, kinds
+
+
+def containing(c):
+    """The function an overlay address lies in (`R032+0x00FE`, a piece of R032+0x0000), or None."""
+    m = re.fullmatch(r"(R\d{3})\+0x([0-9A-Fa-f]+)", c)
+    if not m:
+        return None
+    at = int(m.group(2), 16)
+    return next((f for lo, hi, f in EXTENTS.get(m.group(1), ()) if lo <= at < hi), None)
 
 
 def load_coverage():
@@ -334,7 +349,13 @@ def compare(units, exe, thunks, coverage, kinds):
     units = [u for u in units if u["kind"] != "type"]
     for u in units:
         cites = [canon(c) for c in u["cites"] if kinds.get(thunks.get(c, c)) in ("function", "thunk")]
-        u["fn"] = [c for c in dict.fromkeys(cites) if c in exe]
+        u["entry"] = [c for c in dict.fromkeys(cites) if c in exe]
+        # a cited address inside a function (a piece the port wrote as its own member, such as one switch of it)
+        # joins the comparison of that function, but does not make one: alone it is not the function
+        pieces = [canon(containing(c)) for c in u["cites"]
+                  if kinds.get(thunks.get(c, c)) not in ("function", "thunk") and containing(c)]
+        u["part"] = [c for c in dict.fromkeys(pieces) if c in exe and c not in u["entry"]]
+        u["fn"] = u["entry"] + u["part"]
         # callee, args, documented, C# name, reached through a property (data access)
         u["c"] = [(canon(x[1]), x[4], x[5], x[3], x[6]) for x in u["calls"]]
         # the calls of each context (the unit's own code, each lambda body: code that runs when it is invoked)
@@ -359,7 +380,7 @@ def compare(units, exe, thunks, coverage, kinds):
 
     size = collections.Counter()
     for u in units:
-        fs = u["fn"]
+        fs = u["entry"]
         if len(fs) <= MERGE_LIMIT:
             for f in fs[1:]:
                 a, b = find(f), find(fs[0])
@@ -368,12 +389,16 @@ def compare(units, exe, thunks, coverage, kinds):
                     size[b] += size[a] + 1
     groups = collections.defaultdict(lambda: ([], []))
     for u in units:
-        for f in u["fn"]:
+        for f in u["entry"]:
             g = groups[find(f)]
             if u not in g[0]:
                 g[0].append(u)
             if f not in g[1]:
                 g[1].append(f)
+    for u in units:
+        for f in u["part"]:
+            if find(f) in groups and f in groups[find(f)][1] and u not in groups[find(f)][0]:
+                groups[find(f)][0].append(u)
     literals_of = collections.defaultdict(set)   # what the C# that cites a function uses and calls
     calls_of = collections.defaultdict(set)
     for u in units:

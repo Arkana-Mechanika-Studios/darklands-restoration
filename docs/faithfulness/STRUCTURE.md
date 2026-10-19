@@ -24,10 +24,10 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 | check | what it means | open | reviewed |
 |---|---|---:|---:|
 | `draws` | one side draws random numbers, the other never does | 0 | 2 |
-| `args` | a shared call passes a constant the other side never uses | 1 | 4 |
-| `stores` | the C# assigns a constant that appears nowhere in the original's code | 0 | 7 |
+| `args` | a shared call passes a constant the other side never uses | 0 | 5 |
+| `stores` | the C# assigns a constant that appears nowhere in the original's code | 0 | 8 |
 | `missing` | a game-logic call of the original the C# does not make | 0 | 94 |
-| `extra` | a traced call the original does not make (three calls deep) | 0 | 96 |
+| `extra` | a traced call the original does not make (three calls deep) | 0 | 95 |
 | `order` | two shared calls in the opposite order | 0 | 32 |
 | `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 1 | 33 |
 | `decisions` | fewer than half the original's conditional branches | 0 | 69 |
@@ -36,8 +36,7 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 
 | area | draws | args | stores | missing | extra | order | consts | decisions |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| rules (strategic core, event toolkit) | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-| screens (inventory, barter, alchemy, saints, cache, camp, creation, saves, loot) | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| battles (tactical) | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
 
 ## Limits
 

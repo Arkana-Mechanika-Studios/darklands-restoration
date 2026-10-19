@@ -20,9 +20,9 @@ public sealed partial class TacticalBattle
     // DS:C21F = 3 (0x18FF), DS:C21A = 0 (0x1936)
     private void ResetDragonFight()
     {
-        Battle.DemoAttackCount = 1;
-        Battle.DemoAttackInterval = 3;
-        Battle.DemoMode = 0;
+        Battle.DragonBlowCount = 1;
+        Battle.DragonBreathInterval = 3;
+        Battle.DragonFight = 0;
     }
 
     /// <summary>
@@ -33,9 +33,9 @@ public sealed partial class TacticalBattle
     // 20A5:763B..763C = "D7" when DS:C21A == 'I', else "CD"; after the slot's files were loaded (0x0733) and the weapon readied (0x042B)
     private void DragonWeaponForFight(int si)
     {
-        if (Battle.DemoMode != 0 && si == 5)
+        if (Battle.DragonFight != 0 && si == 5)
         {
-            Battle.DragonWeaponCode = ClawCode(Battle.DemoMode);
+            Battle.DragonWeaponCode = ClawCode(Battle.DragonFight);
         }
     }
 
@@ -64,7 +64,7 @@ public sealed partial class TacticalBattle
                     if (Battle[k].Status == CharacterStatus.Able && (Battle[k].Action & CombatAction.Melee) != 0)
                     {
                         c.Target = (sbyte)k;
-                        Battle.DemoAttackInterval = 6;
+                        Battle.DragonBreathInterval = 6;
                         break;
                     }
                 }
@@ -83,11 +83,11 @@ public sealed partial class TacticalBattle
     // (signed), the code copied to anim_file[5] (*DS:117E), DS:9EE5 = 0x100, DS:CA11 = 8, DS:C97F = 50
     private void DragonMayBreathe(Combatant c)
     {
-        if (Battle.DemoAttackCount % Battle.DemoAttackInterval != 0 || Battle.Result != BattleResult.Running)
+        if (Battle.DragonBlowCount % Battle.DragonBreathInterval != 0 || Battle.Result != BattleResult.Running)
         {
             return;
         }
-        SlotWeapons[5] = BreathCode(Battle.DemoMode);
+        SlotWeapons[5] = BreathCode(Battle.DragonFight);
         c.Action = CombatAction.UseItem;
         c.Spell = 8;
         c.SpellPower = 50;
@@ -110,7 +110,7 @@ public sealed partial class TacticalBattle
         c.Action = CombatAction.StandardAttack;
         c.EngageAt = Clock;
         c.State = ActionState.Ready;
-        SlotWeapons[5] = ClawCode(Battle.DemoMode);
+        SlotWeapons[5] = ClawCode(Battle.DragonFight);
         Battle.RealCombat = true;
         Menus.Set(OrdersItem.Surrender, 1);
         CombatBoxRetryAt = (ushort)(Clock + 300);
