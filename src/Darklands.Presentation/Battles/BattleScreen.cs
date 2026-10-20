@@ -63,6 +63,16 @@ public sealed class BattleScreen : ITacticalView
             int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture),
             p.Length > 2 ? int.Parse(p[2], System.Globalization.CultureInfo.InvariantCulture) : 0)));
 
+    /// <summary>A debugging aid: timer callbacks that came within a pass beyond its one, by the combat clock at the pass's head ("1382,69;1452,67":
+    /// the clock was 1382 at the head, 69 more callbacks came during the pass), as tools/oracle/battle_oracle.py measures them in the original
+    /// (DARKLANDS_BATTLE_CLOCK_JUMPS): the original's emulated time passes during a pass that computes for long (R014+0x4BFA..0x66FE
+    /// in the wild fight), and the timer callbacks of that time count the clock on.</summary>
+    public static Dictionary<int, int>? ClockJumps { get; set; } = ParseClockJumps(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CLOCK_JUMPS"));
+
+    private static Dictionary<int, int>? ParseClockJumps(string? text) => string.IsNullOrEmpty(text) ? null
+        : text.Split(';').Select(p => p.Split(',')).ToDictionary(p => int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
+            p => int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture));
+
     private (int Loads, int FirstFrame, int Late) _setUpTicks;
     private long _setUpMark;
 
@@ -126,6 +136,7 @@ public sealed class BattleScreen : ITacticalView
             // orig: R014+0x031E / 0x0326 (R014+0x0000, before its loop): the mouse driver's release count read and DS:C62A = 0
             _ui.TakeLeftReleases();
             _releases = 0;
+            var lateTicks = 0;
             while (true)
             {
                 var now = _ui.Clock.Milliseconds;
@@ -137,6 +148,10 @@ public sealed class BattleScreen : ITacticalView
                 if (OneTickPerPass)
                 {
                     _clockFraction = 1;
+                    if (ClockJumps is not null && ClockJumps.Remove(_battle!.Battle.Clock, out var jump))
+                    {
+                        lateTicks = jump;
+                    }
                     Advance(0);
                 }
                 else
@@ -172,6 +187,13 @@ public sealed class BattleScreen : ITacticalView
                 if (_battle!.Iterate())
                 {
                     break;
+                }
+                if (lateTicks > 0)
+                {
+                    // the callbacks of the time a long tick took came during it: after what the tick read of the clock
+                    _clockFraction = lateTicks;
+                    Advance(0);
+                    lateTicks = 0;
                 }
                 Draw();
                 _ui.Clock.Sleep(FrameMilliseconds);

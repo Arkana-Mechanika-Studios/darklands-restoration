@@ -11,7 +11,8 @@ fights as the original's party without orders does, the enemies by their AI. The
 
 At the head of every battle pass (R014+0x3166, the combat clock DS:07D4) both write a line: the random generator's state
 (DS:7B20), the 13 combatant records (DS:9C55, 0x80 bytes each; the C#'s through CombatantRecords.Write), the queued damage
-(DS:D70C, endurance and strength per combatant) and the attack rates (DS:D493). They are compared by combat clock (the first
+(DS:D70C, endurance and strength per combatant) and the attack rates (DS:D493). A pass of the original that computes for long lets the time-based timer callbacks come (the clock
+rises by more than one to the next pass); the C# is given those extra callbacks by clock. They are compared by combat clock (the first
 pass at each clock value), over the record bytes the C# models; the first difference is reported per fight with its field.
 
 With --coverage the original's executed blocks and branch outcomes go to <out>/<fight>/cov/cov-0.jsonl (as card_oracle's;
@@ -145,6 +146,13 @@ def parse(lines):
     return out
 
 
+def clock_jumps(lines):
+    """[(clock at a pass head, timer callbacks beyond its one)] where the original's clock rose by more than one to the next pass: a pass
+    that computes for long (R014+0x4BFA..0x66FE) lets the time-based timer callbacks come, which the C# (one tick a pass) does not have."""
+    clocks = [int(l.split()[2]) for l in lines]
+    return [(a, b - a - 1) for a, b in zip(clocks, clocks[1:]) if b - a > 1]
+
+
 def first_difference(original: dict, rewrite: dict):
     common = sorted(set(original) & set(rewrite))
     start = {}      # slot -> (original, rewrite) +0x1D at its first tick
@@ -237,7 +245,7 @@ def main():
         os.environ["DARKLANDS_BATTLE_TRACE"] = "records"
         os.environ["DARKLANDS_BATTLE_REQUEST"] = ",".join(str(v) for v in request) if request else ""
         t = time.time()
-        _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up)
+        _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up, clock_jumps(trace))
         t_rewrite = time.time() - t
         lines = [l for l in output.splitlines() if l.startswith("pass ")]
         (folder / "rewrite-battle.trace").write_text("\n".join(lines), encoding="utf-8")
