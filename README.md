@@ -82,6 +82,16 @@ belong (battles: `docs/BATTLES.md`).
 
 Version 1.0 will come when the remaining faithfulness checks are finished.
 
+## License
+
+The Darklands Restoration Project is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software Foundation, either version 3
+of the License, or (at your option) any later version. See `LICENSE`.
+
+This covers the project's own code only. *Darklands* itself (© 1992 MicroProse) is not part of it and
+not licensed by it; you need your own copy of the game. Third-party components keep their own licences
+(see `THIRD_PARTY_NOTICES.md`).
+
 ## Community
 
 News, devlogs and the research behind the restoration: https://arkana-mechanika-labs.github.io/ —
