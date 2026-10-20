@@ -876,10 +876,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-e6062e** `uncertain` - `src/Darklands.Content/Formats/Battles/RowRunSprite.cs:10` `RowRunSprite`  
   original: unresolved (none)  
   why: the format is read from the data (every BC tile parses exactly within its record size, IMC frames as the old engine's CleanCombatPreparedPresentation does); whether the first byte is width − 1 or a hot spot for IMC frames is not settled, so nothing relies on Width for frames.
-- **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:133` `BattleScreens.public`  
+- **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1456` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1478` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:52` `BuySellPage.DrawParty`  

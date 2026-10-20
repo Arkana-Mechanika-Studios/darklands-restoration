@@ -30,6 +30,27 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>A debugging aid: a line at the head of each pass, the combat clock and the random state (DARKLANDS_BATTLE_TRACE).</summary>
     public static Action<string>? PassTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TRACE") is null ? null : Console.WriteLine;
 
+    /// <summary>DARKLANDS_BATTLE_TRACE=records (the battle tester): each pass's line also holds the combatants' records and tables.</summary>
+    public static bool RecordTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TRACE") == "records";
+
+    /// <summary>" cbt &lt;13 records, hex&gt; q &lt;queued endurance, strength per combatant&gt; ar &lt;attack rates&gt;", as the tester reads them in
+    /// the original's memory.</summary>
+    private static string CombatantDump(Battle battle)
+    {
+        var records = new byte[Combatant.Count * Darklands.Persistence.CombatantRecords.Size];
+        var queued = new byte[Combatant.Count * 2];
+        var rates = new byte[Combatant.Count];
+        for (var i = 0; i < Combatant.Count; i++)
+        {
+            var c = battle[i];
+            Darklands.Persistence.CombatantRecords.Write(c, records.AsSpan(i * Darklands.Persistence.CombatantRecords.Size));
+            queued[2 * i] = (byte)c.QueuedEndurance;
+            queued[2 * i + 1] = (byte)c.QueuedStrength;
+            rates[i] = c.AttackRate;
+        }
+        return $" cbt {Convert.ToHexString(records)} q {Convert.ToHexString(queued)} ar {Convert.ToHexString(rates)}";
+    }
+
     public static bool OneTickPerPass { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TICK_PER_PASS") is not null;
 
     /// <summary>A debugging aid: the clock ticks each battle's set-up takes (stages 1 and 2, see ITacticalView.SetUpTime), in place of
@@ -108,7 +129,8 @@ public sealed class BattleScreen : ITacticalView
                 var now = _ui.Clock.Milliseconds;
                 if (PassTrace is { } trace)
                 {
-                    trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}");
+                    trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}"
+                        + (RecordTrace ? CombatantDump(_battle.Battle) : ""));
                 }
                 if (OneTickPerPass)
                 {
