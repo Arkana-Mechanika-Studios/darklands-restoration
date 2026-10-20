@@ -49,6 +49,10 @@ public sealed class MouseMappingTests
         {
             host.Pump();
         }
+        // The real pointer moving over the shown window (or the window appearing under it) queues motion events of its own,
+        // and one landing after a pushed event would replace it: only the pushed events may reach the host.
+        SdlNative.SDL_EventState(SdlNative.EventMouseMotion, 0);
+        host.Pump();
 
         // The picture, three times: the low byte of x, the high bit of x, then y; the green channel marks the picture.
         var screen = new Screen();
