@@ -48,7 +48,8 @@ public interface ITacticalView : IBattleViewport
     /// <summary>
     /// The battle's set-up takes time while the combat clock runs (the timer callback counts it whenever DS:07D3 is 0): stage 0 when
     /// the timers are cleared, 1 before the enemies' turn (after the activations' and the weapons' file loads), 2 after the first
-    /// frame (before DS:D9E4 is set); at stages 1 and 2 the clock moves on by the time that passed.
+    /// frame (before DS:D9E4 is set), 3 once the first tick's time is taken (R014+0x0311) until the first pass; at stages 1 and 2 the clock
+    /// moves on by the time that passed (at 3 only when the ticks are given).
     /// </summary>
     void SetUpTime(int stage)
     {
@@ -422,6 +423,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
         _view.SetUpTime(2);
         NextTickAt = (ushort)(Clock + TickLength);
         ActivationsAt = (ushort)(Clock + 120);
+        // orig: R014+0x0311 reads the clock for DS:D9E4 (next tick); the ticks up to the first pass of R014+0x3166 follow it
+        _view.SetUpTime(3);
         SaveRulesMessage(newBattlefield);
     }
 

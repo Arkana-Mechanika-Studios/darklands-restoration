@@ -53,15 +53,17 @@ public sealed class BattleScreen : ITacticalView
 
     public static bool OneTickPerPass { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TICK_PER_PASS") is not null;
 
-    /// <summary>A debugging aid: the clock ticks each battle's set-up takes (stages 1 and 2, see ITacticalView.SetUpTime), in place of
-    /// the time that passed, battle after battle ("704,41;650,40"; the last pair goes on), as tools/oracle/lockstep.py measures them in
-    /// the original (DARKLANDS_BATTLE_SETUP_TICKS).</summary>
-    public static Queue<(int Loads, int FirstFrame)>? SetUpTicks { get; set; } = ParseSetUpTicks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_SETUP_TICKS"));
+    /// <summary>A debugging aid: the clock ticks each battle's set-up takes (stages 1, 2 and 3, see ITacticalView.SetUpTime), in place of
+    /// the time that passed, battle after battle ("704,41,1;650,40,0"; the last triple goes on), as tools/oracle/lockstep.py measures them
+    /// in the original (DARKLANDS_BATTLE_SETUP_TICKS).</summary>
+    public static Queue<(int Loads, int FirstFrame, int Late)>? SetUpTicks { get; set; } = ParseSetUpTicks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_SETUP_TICKS"));
 
-    private static Queue<(int, int)>? ParseSetUpTicks(string? text) => text is null ? null
-        : new(text.Split(';').Select(p => p.Split(',')).Select(p => (int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture))));
+    private static Queue<(int, int, int)>? ParseSetUpTicks(string? text) => text is null ? null
+        : new(text.Split(';').Select(p => p.Split(',')).Select(p => (int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
+            int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture),
+            p.Length > 2 ? int.Parse(p[2], System.Globalization.CultureInfo.InvariantCulture) : 0)));
 
-    private (int Loads, int FirstFrame) _setUpTicks;
+    private (int Loads, int FirstFrame, int Late) _setUpTicks;
     private long _setUpMark;
 
     private readonly GameUi _ui;
@@ -629,8 +631,12 @@ public sealed class BattleScreen : ITacticalView
         }
         if (SetUpTicks is not null)
         {
-            _clockFraction = stage == 1 ? _setUpTicks.Loads : _setUpTicks.FirstFrame;
+            _clockFraction = stage switch { 1 => _setUpTicks.Loads, 2 => _setUpTicks.FirstFrame, _ => _setUpTicks.Late };
             Advance(0);
+        }
+        else if (stage == 3)
+        {
+            return;
         }
         else
         {

@@ -37,7 +37,7 @@ from dosmachine import DS, Stop  # noqa: E402
 BATTLE_ENTRY = (0x0E76, 0x0000)     # R002+0x0000, called by the main loop root 03A1:000A with 12 words
 COMBATANTS, RECORD, COUNT = 0x9C55, 0x80, 13
 QUEUED, RATES = 0xD70C, 0xD493     # 2 bytes a combatant (endurance, strength); 1 byte a combatant
-PAUSED = 296                        # passes the battle stays paused before its key: the C# host's pause under the script's wait:300 (297 passes)
+PAUSED = 297                        # passes the battle stays paused before its key: the C# host's pause under the script's wait:300 (298 passes at one clock value)
 SESSION = HERE / "lockstep-sessions" / "gate-battle.steps"
 
 # mode, battlefield, seed, then (a, b, c) of the three enemy groups as the battle's arguments take them (the C#'s BattleRequest
@@ -81,6 +81,14 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
                 m.put_word(m.reg("SS"), m.reg("SP") + 4 + 2 * k, v & 0xFFFF)
         m.log.append("battle %s -> %s at %d ms" % (given[-1], request, m.ms))
     s.hook(*BATTLE_ENTRY, entry, record="R002")
+
+    # The one-section mine arm (R009+0x01E0, 1432:01E0) reads its rotation from a stack word it never sets: the word R009+0x3FA2
+    # (182C:0002) left in the frame (the second wall-tile draw, 1..3). An interrupt that lands between that return and the arm (the
+    # emulator's timing, about one battle in 10^5 on a real machine) pushes a register over the word and turns the mine another way.
+    # The word is kept at the return and put back at the arm's entry, so the original runs as if no interrupt hit the window.
+    stale = []
+    s.hook(0x1432, 0x0087, lambda m: stale.append(m.word(m.reg("SS"), (m.reg("SP") - 8) & 0xFFFF)), record="R009")
+    s.hook(0x1432, 0x01E5, lambda m: stale and m.put_word(m.reg("SS"), (m.reg("BP") - 2) & 0xFFFF, stale[-1]), record="R009")
 
     class Trace(list):
         def append(self, line):
@@ -139,6 +147,7 @@ def parse(lines):
 
 def first_difference(original: dict, rewrite: dict):
     common = sorted(set(original) & set(rewrite))
+    start = {}      # slot -> (original, rewrite) +0x1D at its first tick
     for clock in common:
         (orand, orec, oq, oar), (crand, crec, cq, car) = original[clock], rewrite[clock]
         diffs = []
@@ -146,8 +155,14 @@ def first_difference(original: dict, rewrite: dict):
             o, c = orec[i * RECORD:(i + 1) * RECORD], crec[i * RECORD:(i + 1) * RECORD]
             if o[0x14] == 0 and c[0x14] == 0:
                 continue                # an empty slot: the original keeps old bytes there
+            first = start.setdefault(i, (o[0x1D], c[0x1D]))
             for off, name in FIELDS.items():
-                if o[off] != c[off]:
+                if off == 0x1D:
+                    # +0x1D starts as whatever the stack held when level_enemies_load (R020+0x0000) wrote the enemy file, which
+                    # enemies_place (R025+0x0885) reads into DS:B899 and copies whole (R025+0x0267); only its changes are compared
+                    if (o[off] - first[0]) & 0xFF != (c[off] - first[1]) & 0xFF:
+                        diffs.append({"combatant": i, "field": name, "offset": "+1D", "original": o[off], "rewrite": c[off]})
+                elif o[off] != c[off]:
                     diffs.append({"combatant": i, "field": name, "offset": "+%02X" % off, "original": o[off], "rewrite": c[off]})
             for k, what in ((0, "queued endurance"), (1, "queued strength")):
                 if oq[2 * i + k] != cq[2 * i + k]:

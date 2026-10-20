@@ -841,7 +841,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-8dfdd7** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Party.cs:123` `TacticalBattle.StopEverything`  
   original: `R016+0x0000` (1EF8:0000, draft)  
   why: a debugging key left in; the hot key (Change Marching Order) takes Alt-O first when that entry is on.
-- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:237` `TacticalBattle.AnimationSet`  
+- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:238` `TacticalBattle.AnimationSet`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: read from the slot rules of cbt_set_anim (spec D §3.9): enemies use slot +2 fighting/hit and +4 dying.
 - **U-610cdf** `uncertain` - `src/Darklands.Core/Battles/TerrainDescription.cs:90` `TerrainDescription.FirstSightBlockingFurniture`  
@@ -879,7 +879,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1478` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1484` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:52` `BuySellPage.DrawParty`  

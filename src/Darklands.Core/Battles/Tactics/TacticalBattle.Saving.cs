@@ -459,6 +459,7 @@ public sealed partial class TacticalBattle
         _view.SetUpTime(2);
         NextTickAt = (ushort)(Clock + TickLength);
         ActivationsAt = (ushort)(Clock + 120);
+        _view.SetUpTime(3);
         SaveRulesMessage(true);
     }
 

@@ -85,6 +85,7 @@ BATTLE_PASS_LIN = 0x0E76 * 16 + 0x3166   # R014+0x3166 combat_input, called once
 CLEAR_TIMERS_VEC = (0x09C0, 0x1C61)  # R014+0x010B's vector to R020+0x06B6 (combat_state_clear: the combat clock back to 0)
 ENEMY_TURN_VEC = (0x09C0, 0x1C43)    # R014+0x0280's vector to R018+0x0706 (the enemies' turn), after the set-up's file loads
 WALL_DRAWS = ((0x8381, 0x838B), (0x8438, 0x8442), (0x84AE, 0x84BE))   # R014+0x827A: push 2; call random_n; (after)
+NEXT_TICK = 0xD9E4                 # the clock value of the battle's next combat tick (set at R014+0x0311)
 COMBAT_CLOCK = 0x07D4               # the combat clock the timer callback counts while the battle runs
 TIMER_CALLBACK = (0x047C, 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
 BATTLE_QUIET = 5_000_000            # bytes of code without the time-based timer after a battle pass began
@@ -161,7 +162,8 @@ class Session(Machine):
         self.battle_passes = 0
         self.battle_trace = None        # a list: a line at the head of each battle pass (--battle-trace)
         # the clock ticks each battle's set-up took (the loads before the enemies' turn, then up to the first pass): the C# is given them
-        self.set_up_ticks: list[tuple[int, int]] = []
+        # (the loads, up to the clock's read at R014+0x0311 that sets the first tick's time DS:D9E4 = read + 8, from there to the first pass)
+        self.set_up_ticks: list[tuple[int, int, int]] = []
         self._setting_up = None
         self.hook(*CLEAR_TIMERS_VEC, lambda m: setattr(m, "_setting_up", [None]) if 14 in m.resident else None)
         self.hook(*ENEMY_TURN_VEC, self._enemy_turn)
@@ -334,7 +336,8 @@ class Session(Machine):
                 self.battle_passes += 1
                 if self._setting_up is not None:
                     loads = self._setting_up[0] or 0
-                    self.set_up_ticks.append((loads, self.word(DS, COMBAT_CLOCK) - loads))
+                    read = (self.word(DS, NEXT_TICK) - 8) & 0xFFFF
+                    self.set_up_ticks.append((loads, read - loads, self.word(DS, COMBAT_CLOCK) - read))
                     self._setting_up = None
                 if self.battle_trace is not None:
                     self.battle_trace.append("pass clock %d rand %08X" % (self.word(DS, COMBAT_CLOCK), struct.unpack("<I", self.read(DS, HOLDRAND, 4))[0]))
@@ -716,7 +719,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
         env["DARKLANDS_BATTLE_TRACE"] = "1"
     if set_up_ticks:
         # the clock the original's battle set-ups took here (its loads run at the emulator's speed): the C#'s set-up takes none
-        env["DARKLANDS_BATTLE_SETUP_TICKS"] = ";".join("%d,%d" % p for p in set_up_ticks)
+        env["DARKLANDS_BATTLE_SETUP_TICKS"] = ";".join("%d,%d,%d" % p for p in set_up_ticks)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():
