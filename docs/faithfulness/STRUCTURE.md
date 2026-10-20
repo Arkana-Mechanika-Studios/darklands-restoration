@@ -13,11 +13,11 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 
 | | count |
 |---|---:|
-| C# units with a trace (types left out) | 4456 |
-| original functions compared | 5540 |
+| C# units with a trace (types left out) | 4458 |
+| original functions compared | 5541 |
 | comparisons (functions one C# unit implements together are compared as one) | 3421 |
 | comparisons without a finding | 3128 |
-| implemented functions not compared (cited only in statements, types or map.csv) | 2701 |
+| implemented functions not compared (cited only in statements, types or map.csv) | 2700 |
 
 ## Findings
 
@@ -30,7 +30,7 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 | `extra` | a traced call the original does not make (three calls deep) | 0 | 95 |
 | `order` | two shared calls in the opposite order | 0 | 32 |
 | `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 0 | 34 |
-| `decisions` | fewer than half the original's conditional branches | 0 | 69 |
+| `decisions` | fewer than half the original's conditional branches | 0 | 68 |
 
 ## Open findings by area
 
