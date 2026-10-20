@@ -1,89 +1,169 @@
 {
  "ALL": {
-  "blocks": 45636,
-  "blocks_hit": 32771,
-  "functions": 5126,
-  "outcomes": 35112,
-  "outcomes_hit": 21728,
+  "blocks": 48082,
+  "blocks_hit": 34443,
+  "functions": 5208,
+  "outcomes": 37434,
+  "outcomes_hit": 23145,
   "runs": null
  },
  "battle": {
-  "blocks": 1225,
+  "blocks": 1255,
   "blocks_hit": 253,
   "functions": 16,
-  "outcomes": 462,
+  "outcomes": 470,
   "outcomes_hit": 224,
   "runs": 1048
  },
  "battle-oracle-castle": {
-  "blocks": 13346,
+  "blocks": 13376,
   "blocks_hit": 7773,
   "functions": 586,
-  "outcomes": 11988,
+  "outcomes": 11996,
   "outcomes_hit": 5330,
   "runs": 1
  },
+ "battle-oracle-castle07": {
+  "blocks": 14891,
+  "blocks_hit": 9205,
+  "functions": 655,
+  "outcomes": 13526,
+  "outcomes_hit": 6636,
+  "runs": 1
+ },
+ "battle-oracle-castle7c": {
+  "blocks": 13317,
+  "blocks_hit": 7823,
+  "functions": 587,
+  "outcomes": 11934,
+  "outcomes_hit": 5351,
+  "runs": 1
+ },
+ "battle-oracle-city15": {
+  "blocks": 11560,
+  "blocks_hit": 6809,
+  "functions": 591,
+  "outcomes": 10190,
+  "outcomes_hit": 4564,
+  "runs": 1
+ },
+ "battle-oracle-city1c": {
+  "blocks": 10008,
+  "blocks_hit": 5394,
+  "functions": 513,
+  "outcomes": 8604,
+  "outcomes_hit": 3262,
+  "runs": 1
+ },
+ "battle-oracle-city1f": {
+  "blocks": 11424,
+  "blocks_hit": 6877,
+  "functions": 579,
+  "outcomes": 10044,
+  "outcomes_hit": 4643,
+  "runs": 1
+ },
+ "battle-oracle-city24": {
+  "blocks": 11829,
+  "blocks_hit": 6818,
+  "functions": 592,
+  "outcomes": 10394,
+  "outcomes_hit": 4498,
+  "runs": 1
+ },
+ "battle-oracle-fort5e": {
+  "blocks": 10023,
+  "blocks_hit": 5624,
+  "functions": 520,
+  "outcomes": 8578,
+  "outcomes_hit": 3431,
+  "runs": 1
+ },
  "battle-oracle-gate": {
-  "blocks": 12052,
+  "blocks": 12082,
   "blocks_hit": 7150,
   "functions": 601,
-  "outcomes": 10642,
+  "outcomes": 10650,
   "outcomes_hit": 4806,
   "runs": 1
  },
  "battle-oracle-mine": {
-  "blocks": 11546,
+  "blocks": 11576,
   "blocks_hit": 5674,
   "functions": 546,
-  "outcomes": 9990,
+  "outcomes": 9998,
   "outcomes_hit": 3455,
   "runs": 1
  },
+ "battle-oracle-mine0b": {
+  "blocks": 11961,
+  "blocks_hit": 6589,
+  "functions": 554,
+  "outcomes": 10326,
+  "outcomes_hit": 4194,
+  "runs": 1
+ },
  "battle-oracle-street": {
-  "blocks": 11754,
+  "blocks": 11784,
   "blocks_hit": 6858,
   "functions": 587,
-  "outcomes": 10356,
+  "outcomes": 10364,
   "outcomes_hit": 4581,
   "runs": 1
  },
  "battle-oracle-wild": {
-  "blocks": 11907,
+  "blocks": 11937,
   "blocks_hit": 6839,
   "functions": 582,
-  "outcomes": 10396,
+  "outcomes": 10404,
   "outcomes_hit": 4503,
   "runs": 1
  },
+ "battle-oracle-wild30": {
+  "blocks": 11571,
+  "blocks_hit": 6323,
+  "functions": 559,
+  "outcomes": 9986,
+  "outcomes_hit": 3997,
+  "runs": 1
+ },
+ "battle-oracle-wild75": {
+  "blocks": 11986,
+  "blocks_hit": 6871,
+  "functions": 583,
+  "outcomes": 10446,
+  "outcomes_hit": 4532,
+  "runs": 1
+ },
  "cards": {
-  "blocks": 26172,
+  "blocks": 26202,
   "blocks_hit": 14890,
   "functions": 3932,
-  "outcomes": 17298,
+  "outcomes": 17306,
   "outcomes_hit": 7318,
   "runs": 365
  },
  "cards-day": {
-  "blocks": 27624,
+  "blocks": 27654,
   "blocks_hit": 16145,
   "functions": 4214,
-  "outcomes": 18262,
+  "outcomes": 18270,
   "outcomes_hit": 8079,
   "runs": 22636
  },
  "cards-flip": {
-  "blocks": 10622,
+  "blocks": 10652,
   "blocks_hit": 6461,
   "functions": 1181,
-  "outcomes": 7640,
+  "outcomes": 7648,
   "outcomes_hit": 3534,
   "runs": 1400
  },
  "cards-variants": {
-  "blocks": 28093,
+  "blocks": 28123,
   "blocks_hit": 16830,
   "functions": 4347,
-  "outcomes": 18548,
+  "outcomes": 18556,
   "outcomes_hit": 8577,
   "runs": 18535
  },
@@ -127,6 +207,46 @@
   "outcomes_hit": 321,
   "runs": 738
  },
+ "lockstep-gate-battle": {
+  "blocks": 12658,
+  "blocks_hit": 7807,
+  "functions": 635,
+  "outcomes": 11200,
+  "outcomes_hit": 5384,
+  "runs": 1
+ },
+ "lockstep-pressburg-map": {
+  "blocks": 6451,
+  "blocks_hit": 3952,
+  "functions": 392,
+  "outcomes": 5090,
+  "outcomes_hit": 2294,
+  "runs": 1
+ },
+ "lockstep-residence": {
+  "blocks": 5754,
+  "blocks_hit": 3503,
+  "functions": 361,
+  "outcomes": 4392,
+  "outcomes_hit": 1897,
+  "runs": 1
+ },
+ "lockstep-save-load": {
+  "blocks": 5353,
+  "blocks_hit": 3361,
+  "functions": 349,
+  "outcomes": 4012,
+  "outcomes_hit": 1805,
+  "runs": 1
+ },
+ "lockstep-tyrnau": {
+  "blocks": 6800,
+  "blocks_hit": 4214,
+  "functions": 414,
+  "outcomes": 5412,
+  "outcomes_hit": 2466,
+  "runs": 1
+ },
  "mine": {
   "blocks": 2970,
   "blocks_hit": 2497,
@@ -152,26 +272,26 @@
   "runs": 60
  },
  "rules": {
-  "blocks": 1319,
+  "blocks": 1349,
   "blocks_hit": 331,
   "functions": 37,
-  "outcomes": 502,
+  "outcomes": 510,
   "outcomes_hit": 251,
   "runs": 2336
  },
  "sainthelp": {
-  "blocks": 3324,
+  "blocks": 3354,
   "blocks_hit": 1385,
   "functions": 232,
-  "outcomes": 2338,
+  "outcomes": 2346,
   "outcomes_hit": 868,
   "runs": 136
  },
  "saints": {
-  "blocks": 1942,
+  "blocks": 1972,
   "blocks_hit": 781,
   "functions": 162,
-  "outcomes": 1042,
+  "outcomes": 1050,
   "outcomes_hit": 599,
   "runs": 1792
  },

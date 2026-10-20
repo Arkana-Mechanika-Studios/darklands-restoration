@@ -1,7 +1,7 @@
 """Lockstep: one scripted session played by the ORIGINAL DARKLAND.EXE and by the C# rewrite, states compared.
 
 usage: python -I -B lockstep.py <DARKLAND.EXE> <game folder> <script> <out folder> [--save <DKSAVEn.SAV>]
-           [--headless <Darklands.Host.Headless.exe>] [--battle-trace] [--no-wall-draws]
+           [--headless <Darklands.Host.Headless.exe>] [--battle-trace] [--no-wall-draws] [--coverage]
 
 The sessions are in lockstep-sessions/ (each from the player's SAVES/DKSAVE0.SAV, given with --save).
 
@@ -44,6 +44,8 @@ Out folder: report.json, original.log (keys, clicks, cards, clock seeds, states 
 original-<state>.sav, cs/<state>.sav, original-file-*, cs-saves/, rewrite.log; with --battle-trace a line per
 battle pass in original-battle.trace / rewrite-battle.trace (the combat clock DS:07D4 / Battle.Clock and the
 random state; compare them by clock value: the start-of-battle pause lasts a different number of passes).
+With --coverage the original's executed blocks and branch outcomes over the whole session go to <out>/cov/cov-0.jsonl (the
+format of card_oracle's and battle_oracle's; block_coverage.py takes such a folder as a source), only if every state agrees.
 The C# side has its own debugging aids: DARKLANDS_TRACE_MAP (each step of the map's marker),
 DARKLANDS_RANDOM_TRACE (each seed and draw with its callers), DARKLANDS_STEP_TRACE (each combatant's step).
 """
@@ -661,10 +663,10 @@ SRAND = (0x06A1, 0x29A4)
 HEADLESS = HERE.parent.parent / "src" / "Darklands.Host.Headless" / "bin" / "Release" / "net10.0" / "Darklands.Host.Headless.exe"
 
 
-def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, battle_trace=None, no_wall_draws=False):
+def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, battle_trace=None, no_wall_draws=False, cov_out: dict | None = None):
     """The session in the original: (states {name: (sav, random, card)}, clock seeds in order, log, how it ended, saved files,
-    each battle's set-up ticks)."""
-    s = Session(exe.read_bytes(), game, max_instructions=budget)
+    each battle's set-up ticks). cov_out, when given, is filled with the coverage record."""
+    s = Session(exe.read_bytes(), game, max_instructions=budget, coverage=cov_out is not None)
     if no_wall_draws:
         # an experiment: the animated pieces' picture variant (random_n(2) in R014+0x827A, each combat_draw) leaves the game's generator as
         # it was (the C# makes those draws: it then parts from the original at the battle's first frame)
@@ -693,6 +695,8 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         end = "the program ended"
     except Stop as e:
         end = str(e)[:600]
+    if cov_out is not None:
+        cov_out.update(s.coverage_result())
     files = {k.rpartition("\\")[2].upper(): bytes(v) for k, v in s.vfs.files.items()
              if k.startswith("saves") and k.endswith((".sav", ".bsv")) and k.rpartition("\\")[2] not in ("dksave0.sav", "dksave0.bsv")}
     return s.states, seeds, [line for line in s.log if not line.startswith("INT")], end, files, s.set_up_ticks
@@ -777,6 +781,7 @@ def main():
     ap.add_argument("--budget", type=int, default=2_000_000_000)
     ap.add_argument("--battle-trace", action="store_true", help="original-battle.trace / rewrite-battle.trace: each battle pass")
     ap.add_argument("--no-wall-draws", action="store_true", help="experiment: R014+0x827A's random_n(2) leaves the generator as it was")
+    ap.add_argument("--coverage", action="store_true", help="<out>/cov/cov-0.jsonl: the original's blocks and branch outcomes (kept only if all states agree)")
     a = ap.parse_args()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -785,7 +790,8 @@ def main():
     import time
     t = time.time()
     trace = [] if a.battle_trace else None
-    original, seeds, log, end, files, set_up = run_original(Path(a.exe), a.game, steps, save, a.budget, trace, a.no_wall_draws)
+    cov = {} if a.coverage else None
+    original, seeds, log, end, files, set_up = run_original(Path(a.exe), a.game, steps, save, a.budget, trace, a.no_wall_draws, cov)
     if trace is not None:
         (out / "original-battle.trace").write_text(chr(10).join(trace), encoding="utf-8")
     t_original = time.time() - t
@@ -816,6 +822,12 @@ def main():
             if data[:0x64] != theirs.read_bytes()[:0x64]:
                 row["texts"] = {"original": data[:0x64].hex(), "rewrite": theirs.read_bytes()[:0x64].hex()}
         rows.append(row)
+    if cov is not None:
+        if all(set(r) <= {"state", "file", "text state", "texts"} for r in rows):
+            (out / "cov").mkdir(exist_ok=True)
+            (out / "cov" / "cov-0.jsonl").write_text(json.dumps({"unit": Path(a.script).stem, **cov}, separators=(",", ":")) + "\n", encoding="utf-8")
+        else:
+            print("coverage not written: the states differ")
     report = {"script": a.script, "save": a.save, "clock seeds": seeds, "battle set-up ticks": set_up, "original end": end,
               "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)}, "states": rows}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")

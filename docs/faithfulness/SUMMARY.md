@@ -16,10 +16,10 @@ No known divergence, strong evidence, published coverage:
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 49% of the branch outcomes have run in a comparison with the original, and the
+implements, about 52% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
-are the battlefield generators and the rules; the least covered are the screens and the overland
-map, and in battle the spells, potions and the player's orders (see below). In the card scripts, the open branches lie behind particular quest
+are the battlefield generators and the rules; the least covered are the screens, and in battle the
+spells, potions and the player's orders (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
 after 1.0.
 
@@ -59,35 +59,34 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 5,126 functions the oracles enter | 71.8% (32,771 / 45,636) | 61.9% (21,728 / 35,112) |
-| **every function the C# implements (9,281)** | | **49.2% (21,032 / 42,770)** |
+| the 5,208 functions the oracles enter | 71.6% (34,443 / 48,082) | 61.8% (23,145 / 37,434) |
+| **every function the C# implements (9,281)** | | **52.4% (22,408 / 42,778)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 21,032 against 21,728 exercised. By area:
+differ slightly on the resident code, hence 22,408 against 23,145 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
-| battlefield generators | 222 / 226 | 6,778 / 8,524 | 80% |
-| rules | 307 / 358 | 1,712 / 2,584 | 66% |
-| card scripts | 4,025 / 7,949 | 7,112 / 14,614 | 49% |
-| card engine | 28 / 36 | 284 / 686 | 41% |
-| resident code | 109 / 160 | 653 / 1,632 | 40% |
-| battles (tactical combat) | 166 / 314 | 2,937 / 7,516 | 39% |
-| screens (inventory, barter, creation ...) | 63 / 202 | 1,422 / 6,070 | 23% |
-| travel (overland map) | 8 / 24 | 71 / 982 | 7% |
+| battlefield generators | 222 / 226 | 6,783 / 8,524 | 80% |
+| rules | 309 / 358 | 1,723 / 2,584 | 67% |
+| travel (overland map) | 22 / 24 | 495 / 982 | 50% |
+| card engine | 31 / 36 | 336 / 686 | 49% |
+| card scripts | 4,025 / 7,949 | 7,116 / 14,614 | 49% |
+| battles (tactical combat) | 195 / 314 | 3,593 / 7,516 | 48% |
+| resident code | 113 / 160 | 695 / 1,640 | 42% |
+| screens (inventory, barter, creation ...) | 85 / 202 | 1,604 / 6,070 | 26% |
 
-The overland map is run by the whole-game sessions (below), which do not record coverage, so its
-figure counts only the oracles that do; the screens are checked mostly by the structure comparison
-and the C#'s own tests.
+The whole-game sessions and the battle oracle record the original's coverage where they agree with
+the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-26,249 items of the functions the oracles enter were never exercised: 1,205 are justified in
+27,928 items of the functions the oracles enter were never exercised: 1,207 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 25,044 are open. The battle oracle entered about 300 functions no run had entered, whose
-unreached branches are now listed too. By area, the open items lie in the card scripts (about
-12,100), the battles (about 4,600), the battlefield generators (about 3,000), the screens (about
-2,900) and the rules (about 900).
+reaches), 26,721 are open. The battle oracle and the whole-game sessions entered about 380
+functions no run had entered, whose unreached branches are now listed too. By area, the open items
+lie in the card scripts (about 12,100), the battles (about 4,400), the screens (about 3,900), the
+battlefield generators (about 3,000), the rules (about 900) and the overland map (about 800).
 
 ## Card oracle
 
@@ -143,22 +142,23 @@ records written back as the original writes them.
 `tools/oracle/battle_oracle.py` starts a fight in both games from the same situation (the
 battlefield, the seed and three enemy groups, put in place at the battle's entry R002+0x0000), lets
 both fight without the player's orders, and compares the 13 combatant records, the queued damage,
-the attack rates and the random generator's state at every combat tick. Five fights:
+the attack rates and the random generator's state at every combat tick. 25 fights so far, over
+city battlefields, wildernesses, mines, castles, a fortress, tombs and a cave:
 
-| fight | battlefield, enemies | ticks compared | |
-|---|---|---:|---|
-| gate | city gate, guards | 1,204 | identical |
-| street | city street, thugs and archers | 1,204 | identical |
-| wild | wilderness, wolves and huntsmen | 1,203 | identical |
-| mine | mine, kobolds and gnomes | 675 (the original's run ends at 971 passes) | identical |
-| castle | castle, knights and sergeants | 1,203 | identical |
+* 15 agree at every compared tick for their whole run (gate, street, wild, mine and castle, and ten
+  more: four city battlefields, two wildernesses, two castles, a fortress and a mine);
+* 10 show a first difference, not yet investigated (cave60, city13, city2b, castle04, mine10,
+  mine80, tombs5f, wild40, wild50, wild6f): some from the first tick (a combatant's range or
+  fighting value, a facing, a position), others late in the fight (an attribute, a destination).
+  As with the first five, part of these may be the tester's own; they are listed as open leads,
+  and their coverage is not counted.
 
-They brought the battle code run against the original from 32 to 166 of 314 functions. They found
-one divergence in the C# (the first frame also turns whoever just got an action toward its target,
-so enemies face their targets from the start); the other differences they showed were the tester's
-own (fields the original has not set yet, the pause, the set-up and the clock's jumps during long
-passes), passed to the C# by opt-in hooks that leave normal play unchanged. Not yet compared: spells,
-potions, missile duels beyond these fights, and the player's orders.
+The fights brought the battle code run against the original from 32 to 195 of 314 functions. The
+first five found one divergence in the C# (the first frame also turns whoever just got an action
+toward its target, so enemies face their targets from the start); the other differences they showed
+were the tester's own (fields the original has not set yet, the pause, the set-up and the clock's
+jumps during long passes), passed to the C# by opt-in hooks that leave normal play unchanged. Not yet
+compared: spells, potions and the player's orders.
 
 ## Saint oracle
 

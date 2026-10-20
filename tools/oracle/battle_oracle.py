@@ -49,6 +49,28 @@ FIGHTS = {
     "wild": (0, 0x2E, 777, 42, 2, 4, 1, 2, 2, -1, 0, 0),         # wilderness: wolves (42), huntsmen (1: missiles)
     "mine": (0, 0x0A, 99, 48, 2, 4, 46, 2, 2, -1, 0, 0),         # a mine: kobolds (48), gnomes (46)
     "castle": (0, 0x01, 4321, 33, 2, 2, 0, 2, 2, -1, 0, 0),      # a castle: knights (33), sergeants (0: missiles)
+    # the batch: more battlefields (city battle types 1..9, other wilderness, mines, castles, fortress, tombs, dragon cave), the
+    # enemy templates of DARKLAND.ENM (missile users: the sergeants 0..4), larger and mixed groups, qualities 1..3, other seeds
+    "city13": (0, 0x13, 4001, 11, 2, 5, 1, 3, 2, 6, 1, 3),      # city: bandits, sergeants, guards
+    "city1c": (0, 0x1C, 5002, 15, 2, 6, 3, 2, 3, -1, 0, 0),     # city battle type 9: mercenaries, sergeants
+    "city1f": (0, 0x1F, 6003, 40, 2, 4, 7, 2, 4, -1, 0, 0),     # city battle type 8: cultists, guards
+    "city24": (0, 0x24, 7004, 10, 1, 8, -1, 0, 0, -1, 0, 0),    # city battle type 5: eight bandits
+    "city2b": (0, 0x2B, 8005, 28, 2, 3, 31, 2, 2, -1, 0, 0),    # city battle type 6: monks, knights
+    "city15": (0, 0x15, 9006, 21, 2, 3, 5, 2, 4, -1, 0, 0),     # city battle type 7: evil alchemists, guards
+    "wild30": (0, 0x30, 1111, 63, 2, 2, 43, 1, 3, -1, 0, 0),    # wilderness: bears, boars
+    "wild40": (0, 0x40, 2222, 12, 3, 6, 2, 2, 3, -1, 0, 0),     # wilderness: bandits, sergeants (missiles)
+    "wild50": (0, 0x50, 3333, 62, 2, 5, 46, 2, 4, -1, 0, 0),    # wilderness: spiders, skeletons
+    "wild6f": (0, 0x6F, 4444, 36, 2, 4, 4, 3, 2, -1, 0, 0),     # wilderness: templars, sergeants
+    "wild75": (0, 0x75, 5555, 66, 2, 3, 67, 2, 2, 42, 2, 6),    # wilderness: hell hounds, schrats, wolves
+    "mine0b": (0, 0x0B, 6666, 46, 2, 4, 50, 2, 6, -1, 0, 0),    # mine: skeletons, kobolds
+    "mine10": (0, 0x10, 7777, 49, 2, 3, 44, 2, 4, -1, 0, 0),    # mine: gargoyles, dwarves
+    "mine80": (0, 0x80, 8888, 48, 2, 5, 54, 2, 1, 0, 2, 3),     # mine: gnomes, giant gnome, sergeants
+    "castle04": (0, 0x04, 1212, 30, 2, 4, 33, 2, 2, 3, 2, 3),   # castle: knights, tin knights, sergeants
+    "castle07": (0, 0x07, 2323, 37, 2, 5, 29, 2, 3, -1, 0, 0),  # castle: templars, monks
+    "castle7c": (0, 0x7C, 3434, 8, 3, 8, 2, 2, 4, -1, 0, 0),    # castle: eight guards, sergeants
+    "fort5e": (0, 0x5E, 4545, 37, 2, 4, 1, 2, 4, -1, 0, 0),     # templar fortress: templars, sergeants
+    "tombs5f": (0, 0x5F, 5656, 47, 2, 5, 52, 2, 2, -1, 0, 0),   # tombs: skeletons, undead
+    "cave60": (0, 0x60, 6767, 69, 2, 1, -1, 0, 0, -1, 0, 0),    # dragon cave: the cave dragon
 }
 
 # the record bytes CombatantRecords.Write fills, by name
