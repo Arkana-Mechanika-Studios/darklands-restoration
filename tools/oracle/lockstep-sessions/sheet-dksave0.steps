@@ -1,0 +1,20 @@
+# Lockstep session: F1 at the city menu from DKSAVE0: the original stops (Buffer dealloc error in the sheet, R031+0x0B22), the minimal case
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:200
+state:menu
+key:f1
+wait:100
+state:sheet

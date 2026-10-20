@@ -38,6 +38,9 @@ from dosmachine import DS, Stop  # noqa: E402
 BATTLE_ENTRY = (0x0E76, 0x0000)     # R002+0x0000, called by the main loop root 03A1:000A with 12 words
 COMBATANTS, RECORD, COUNT = 0x9C55, 0x80, 13
 QUEUED, RATES = 0xD70C, 0xD493     # 2 bytes a combatant (endurance, strength); 1 byte a combatant
+# the fields the weapon-readying step sets: an enemy whose weapon is not readied before the fight keeps the
+# enemy file buffer's stack bytes there (R025+0x0267 copies the buffer whole), which the C# leaves 0
+STALE_READY = {0x0C, 0x0D, 0x20, 0x21, 0x23, 0x4D, 0x4E, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x59}
 PAUSED = 297                        # passes the battle stays paused before its key: the C# host's pause under the script's wait:300 (298 passes at one clock value)
 SESSION = HERE / "lockstep-sessions" / "gate-battle.steps"
 
@@ -198,6 +201,7 @@ def clock_jumps(lines):
 def first_difference(original: dict, rewrite: dict):
     common = sorted(set(original) & set(rewrite))
     start = {}      # slot -> (original, rewrite) +0x1D at its first tick
+    ready = {}      # (slot, offset) -> (original, rewrite) at the slot's first tick
     dest = {}       # slot -> (original, rewrite) +0x08..0x0B at its first tick
     for clock in common:
         (orand, orec, oq, oar), (crand, crec, cq, car) = original[clock], rewrite[clock]
@@ -208,8 +212,14 @@ def first_difference(original: dict, rewrite: dict):
                 continue                # an empty slot: the original keeps old bytes there
             first = start.setdefault(i, (o[0x1D], c[0x1D]))
             kept = dest.setdefault(i, (o[8:12], c[8:12]))
+            for off in STALE_READY:
+                ready.setdefault((i, off), (o[off], c[off]))
             for off, name in FIELDS.items():
-                if off == 0x1D:
+                if off in STALE_READY:
+                    # compared once either side has changed it (weapon_ready sets it outright)
+                    if (o[off] != ready[(i, off)][0] or c[off] != ready[(i, off)][1]) and o[off] != c[off]:
+                        diffs.append({"combatant": i, "field": name, "offset": "+%02X" % off, "original": o[off], "rewrite": c[off]})
+                elif off == 0x1D:
                     # +0x1D starts as whatever the stack held when level_enemies_load (R020+0x0000) wrote the enemy file, which
                     # enemies_place (R025+0x0885) reads into DS:B899 and copies whole (R025+0x0267); it is compared once either side
                     # has changed it (the aim sets it outright)

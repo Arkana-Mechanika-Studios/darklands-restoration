@@ -161,6 +161,12 @@ public sealed class BattleScreen : ITacticalView
             {
                 var now = _ui.Clock.Milliseconds;
                 Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
+                // orig: R014+0x0000 (0E76:0000) runs the end test (R014+0x08FE) and the endurance recovery (R014+0x45AE), then R014+0x3166
+                // (the head the tester compares, the player's input); the timer callbacks of a pass come after them
+                if (_battle!.IterateHead())
+                {
+                    break;
+                }
                 if (PassTrace is { } trace)
                 {
                     trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}"
@@ -217,10 +223,7 @@ public sealed class BattleScreen : ITacticalView
                     previous = _ui.Clock.Milliseconds;
                     _resyncClock = false;
                 }
-                if (_battle!.Iterate())
-                {
-                    break;
-                }
+                _battle!.IterateRest();
                 if (lateTicks > 0)
                 {
                     // the callbacks of the time a long tick took came during it: after what the tick read of the clock

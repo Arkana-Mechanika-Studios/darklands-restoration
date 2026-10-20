@@ -678,6 +678,9 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         s.vfs.put("saves/dksave0.sav", save.read_bytes())
         if save.with_suffix(".BSV").exists():
             s.vfs.put("saves/dksave0.bsv", save.with_suffix(".BSV").read_bytes())
+    elif (Path(game) / "SAVES" / "DEFAULT").is_file():
+        # a session from the start screen without a saved game: the character creation reads SAVES\DEFAULT (R037+0x4184), hidden from the game folder
+        s.vfs.put("saves/default", (Path(game) / "SAVES" / "DEFAULT").read_bytes())
     s.script = list(steps)
     s.battle_trace = battle_trace
     seeds = []

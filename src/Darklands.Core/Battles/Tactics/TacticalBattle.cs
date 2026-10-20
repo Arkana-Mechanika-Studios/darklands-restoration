@@ -498,7 +498,14 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// ticks, the initial enemy placement, then <see cref="Tick"/>. Returns true when the battle is over.
     /// </summary>
     // orig: combat_main R014+0x0000 (0E76:0000) draft (the main loop, spec D §1.2, asm-verified)
-    public bool Iterate()
+    public bool Iterate() => IterateHead() || IterateRest();
+
+    /// <summary>
+    /// The pass up to the endurance recovery (R014+0x08FE .. R014+0x45AE, called before R014+0x3166, the player's input); true when
+    /// the battle is over.
+    /// </summary>
+    // orig: combat_main R014+0x0000 (0E76:0000) calls the end test and the endurance recovery, then the input (R014+0x3166), then the rest
+    public bool IterateHead()
     {
         OfferSave();
         if (BattleEnd.IsOver(Battle, this))
@@ -543,6 +550,12 @@ public sealed partial class TacticalBattle : IBattleEndActions
         {
             RecoverEndurance();
         }
+        return false;
+    }
+
+    /// <summary>The pass after the input: idle frames, the activation check / enemy turn, the initial enemy placement, <see cref="Tick"/>.</summary>
+    public bool IterateRest()
+    {
         if (!KeyMoved)
         {
             foreach (var c in Battle.Combatants)

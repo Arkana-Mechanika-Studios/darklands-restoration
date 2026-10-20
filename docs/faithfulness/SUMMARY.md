@@ -10,13 +10,13 @@ No known divergence, strong evidence, published coverage:
 * every original function the C# cites is compared with it statically, and no lead is open;
 * every oracle agrees with the original wherever it runs, or differs for a listed reason;
 * whole scripted game sessions, played in the original and in the C# side by side, give the same
-  game state at every step, a battle included;
-* fights started in the original and in the C# from the same situation agree at every combat tick;
+  game state at every step, a battle included, and fights started from the same situation agree at
+  every combat tick; the few that do not yet are listed below as open leads;
 * the branch coverage of the original reached by the oracles is published below with its gaps;
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 52% of the branch outcomes have run in a comparison with the original, and the
+implements, about 54% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
 are the battlefield generators and the rules; the least covered are the screens, and in battle the
 spells, potions and the player's orders (see below). In the card scripts, the open branches lie behind particular quest
@@ -59,33 +59,33 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 5,208 functions the oracles enter | 71.6% (34,443 / 48,082) | 61.8% (23,145 / 37,434) |
-| **every function the C# implements (9,281)** | | **52.4% (22,408 / 42,778)** |
+| the 5,236 functions the oracles enter | 72.1% (35,231 / 48,891) | 62.2% (23,736 / 38,152) |
+| **every function the C# implements (9,281)** | | **53.8% (22,996 / 42,778)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 22,408 against 23,145 exercised. By area:
+differ slightly on the resident code, hence 22,996 against 23,736 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 6,783 / 8,524 | 80% |
-| rules | 309 / 358 | 1,723 / 2,584 | 67% |
-| travel (overland map) | 22 / 24 | 495 / 982 | 50% |
-| card engine | 31 / 36 | 336 / 686 | 49% |
-| card scripts | 4,025 / 7,949 | 7,116 / 14,614 | 49% |
-| battles (tactical combat) | 195 / 314 | 3,593 / 7,516 | 48% |
-| resident code | 113 / 160 | 695 / 1,640 | 42% |
-| screens (inventory, barter, creation ...) | 85 / 202 | 1,604 / 6,070 | 26% |
+| rules | 309 / 358 | 1,725 / 2,584 | 67% |
+| card engine | 33 / 36 | 375 / 686 | 55% |
+| travel (overland map) | 23 / 24 | 526 / 982 | 54% |
+| card scripts | 4,025 / 7,949 | 7,117 / 14,614 | 49% |
+| battles (tactical combat) | 195 / 314 | 3,640 / 7,516 | 48% |
+| resident code | 114 / 160 | 714 / 1,640 | 44% |
+| screens (inventory, barter, creation ...) | 109 / 202 | 2,053 / 6,070 | 34% |
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-27,928 items of the functions the oracles enter were never exercised: 1,207 are justified in
+28,076 items of the functions the oracles enter were never exercised: 1,172 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 26,721 are open. The battle oracle and the whole-game sessions entered about 380
+reaches), 26,904 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 12,100), the battles (about 4,400), the screens (about 3,900), the
+lie in the card scripts (about 12,100), the battles (about 4,300), the screens (about 4,100), the
 battlefield generators (about 3,000), the rules (about 900) and the overland map (about 800).
 
 ## Card oracle
@@ -127,6 +127,19 @@ from a saved game in Pressburg:
 | residence | taking up residence, days passing | 8 states identical |
 | save-load | saving with Alt-S, resting, loading it back with Alt-L | 6 states identical; the saved file is identical |
 | gate-battle | fighting the gate's guards | identical in every state, every battle pass and both saves after it |
+| shop | a merchant: buying, selling, dropping, barter for the next member | identical |
+| cache | the innkeeper's cache: putting and getting items | identical |
+| saints | the character sheet's saints, praying to two saints | identical |
+| stay | the residence: each member's work over five days | identical |
+| wildcamp | camping on the map, work choices, three days | identical |
+| sheet | the character sheets: readying items, the formulae | identical |
+| alchemy | the alchemist brews, then days pass | **open lead**: an event's word differs after brewing |
+| inventory | giving and dropping items, the saints box | **open lead**: the members' packs differ after giving |
+| chargen-party | creating characters, beginning the adventure | **open lead**: the state differs when the adventure begins |
+
+In one more session (the character sheet from DKSAVE0) the original itself stops with its "Buffer
+dealloc error" (R031+0x0B22) where the C# goes on. Only the sessions that agree throughout count as
+coverage.
 
 They found six divergences the per-function checks could not see, now fixed: leaving the map
 (the previous card and the hour pass after it), entering it (the party's square), the click to
@@ -145,19 +158,20 @@ both fight without the player's orders, and compares the 13 combatant records, t
 the attack rates and the random generator's state at every combat tick. 25 fights so far, over
 city battlefields, wildernesses, mines, castles, a fortress, tombs and a cave:
 
-* 15 agree at every compared tick for their whole run (gate, street, wild, mine and castle, and ten
-  more: four city battlefields, two wildernesses, two castles, a fortress and a mine);
-* 10 show a first difference, not yet investigated (cave60, city13, city2b, castle04, mine10,
-  mine80, tombs5f, wild40, wild50, wild6f): some from the first tick (a combatant's range or
-  fighting value, a facing, a position), others late in the fight (an attribute, a destination).
-  As with the first five, part of these may be the tester's own; they are listed as open leads,
-  and their coverage is not counted.
+* 18 agree at every compared tick for their whole run (gate, street, wild, mine and castle, and 13
+  more: five city battlefields, two wildernesses, three castles, a fortress and two mines);
+* 7 are open leads, with a first difference not yet explained (city13, wild40, wild50, wild6f,
+  mine10, tombs5f, cave60): a destination, a position, a facing, an attribute or an aim delay,
+  most of them late in the fight. As with the others, part of these may be the tester's own;
+  their coverage is not counted.
 
 The fights brought the battle code run against the original from 32 to 195 of 314 functions. The
 first five found one divergence in the C# (the first frame also turns whoever just got an action
 toward its target, so enemies face their targets from the start); the other differences they showed
 were the tester's own (fields the original has not set yet, the pause, the set-up and the clock's
-jumps during long passes), passed to the C# by opt-in hooks that leave normal play unchanged. Not yet
+jumps during long passes), passed to the C# by opt-in hooks that leave normal play unchanged. The
+next round put the end test and the endurance recovery of a battle pass before the player's input,
+as the original's R014+0x0000 runs them (a reordering within the pass, in normal play too). Not yet
 compared: spells, potions and the player's orders.
 
 ## Saint oracle

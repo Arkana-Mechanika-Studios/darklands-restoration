@@ -20,14 +20,14 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 
 | source | runs | functions | blocks | outcomes | blocks before | outcomes before | corpus regenerated |
 |---|---|---|---|---|---|---|---|
-| rules | 2336 | 37 | 331/1349 (24.5%) | 251/510 (49.2%) | 323/396 (81.6%) | 241/292 (82.5%) | differs (142s) |
-| saints | 1792 | 162 | 781/1972 (39.6%) | 599/1050 (57.0%) | 781/1017 (76.8%) | 599/832 (72.0%) | differs (40s) |
+| rules | 2336 | 37 | 331/1351 (24.5%) | 251/510 (49.2%) | 323/396 (81.6%) | 241/292 (82.5%) | differs (142s) |
+| saints | 1792 | 162 | 781/1974 (39.6%) | 599/1050 (57.0%) | 781/1017 (76.8%) | 599/832 (72.0%) | differs (40s) |
 | trading | 1086 | 27 | 412/621 (66.3%) | 209/374 (55.9%) | 410/603 (68.0%) | 205/374 (54.8%) | differs (23s) |
 | core | 993 | 17 | 94/95 (98.9%) | 85/88 (96.6%) | 90/92 (97.8%) | 78/86 (90.7%) | differs (57s) |
 | chargen | 4042 | 8 | 957/972 (98.5%) | 915/940 (97.3%) | 951/972 (97.8%) | 909/940 (96.7%) | identical (536s) |
 | names | 550 | 8 | 32/43 (74.4%) | 7/12 (58.3%) | 32/43 (74.4%) | 7/12 (58.3%) | identical (7s) |
-| battle | 1048 | 16 | 253/1255 (20.2%) | 224/470 (47.7%) | 243/302 (80.5%) | 210/252 (83.3%) | identical (112s) |
-| tactics | 1200 | 11 | 272/323 (84.2%) | 333/412 (80.8%) | 270/319 (84.6%) | 333/412 (80.8%) | differs (19s) |
+| battle | 1048 | 16 | 253/1257 (20.1%) | 224/470 (47.7%) | 243/302 (80.5%) | 210/252 (83.3%) | identical (112s) |
+| tactics | 1200 | 11 | 272/327 (83.2%) | 333/412 (80.8%) | 270/319 (84.6%) | 333/412 (80.8%) | differs (19s) |
 | path | 60 | 22 | 345/386 (89.4%) | 365/428 (85.3%) | 345/386 (89.4%) | 365/428 (85.3%) | differs (407s) |
 | enemy | 738 | 9 | 392/412 (95.1%) | 321/364 (88.2%) | 392/412 (95.1%) | 321/364 (88.2%) | identical (59s) |
 | city | 42 | 48 | 1195/1674 (71.4%) | 850/1382 (61.5%) | 1195/1654 (72.2%) | 850/1382 (61.5%) | identical (154s) |
@@ -35,34 +35,43 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 | mine | 416 | 76 | 2497/2970 (84.1%) | 1919/2500 (76.8%) | 2500/2954 (84.6%) | 1919/2500 (76.8%) | identical (250s) |
 | castle | 116 | 102 | 3842/4486 (85.6%) | 3396/4280 (79.3%) | 3840/4462 (86.1%) | 3396/4278 (79.4%) | identical (110s) |
 | special | 161 | 49 | 886/1116 (79.4%) | 599/852 (70.3%) | 886/1099 (80.6%) | 599/852 (70.3%) | identical (84s) |
-| cards | 365 | 3932 | 14890/26202 (56.8%) | 7318/17306 (42.3%) |  |  |  |
-| battle-oracle-castle | 1 | 586 | 7773/13376 (58.1%) | 5330/11996 (44.4%) |  |  |  |
-| battle-oracle-castle07 | 1 | 655 | 9205/14891 (61.8%) | 6636/13526 (49.1%) |  |  |  |
-| battle-oracle-castle7c | 1 | 587 | 7823/13317 (58.7%) | 5351/11934 (44.8%) |  |  |  |
-| battle-oracle-city15 | 1 | 591 | 6809/11560 (58.9%) | 4564/10190 (44.8%) |  |  |  |
-| battle-oracle-city1c | 1 | 513 | 5394/10008 (53.9%) | 3262/8604 (37.9%) |  |  |  |
-| battle-oracle-city1f | 1 | 579 | 6877/11424 (60.2%) | 4643/10044 (46.2%) |  |  |  |
-| battle-oracle-city24 | 1 | 592 | 6818/11829 (57.6%) | 4498/10394 (43.3%) |  |  |  |
-| battle-oracle-fort5e | 1 | 520 | 5624/10023 (56.1%) | 3431/8578 (40.0%) |  |  |  |
-| battle-oracle-gate | 1 | 601 | 7150/12082 (59.2%) | 4806/10650 (45.1%) |  |  |  |
-| battle-oracle-mine | 1 | 546 | 5674/11576 (49.0%) | 3455/9998 (34.6%) |  |  |  |
-| battle-oracle-mine0b | 1 | 554 | 6589/11961 (55.1%) | 4194/10326 (40.6%) |  |  |  |
-| battle-oracle-street | 1 | 587 | 6858/11784 (58.2%) | 4581/10364 (44.2%) |  |  |  |
-| battle-oracle-wild | 1 | 582 | 6839/11937 (57.3%) | 4503/10404 (43.3%) |  |  |  |
-| battle-oracle-wild30 | 1 | 559 | 6323/11571 (54.6%) | 3997/9986 (40.0%) |  |  |  |
-| battle-oracle-wild75 | 1 | 583 | 6871/11986 (57.3%) | 4532/10446 (43.4%) |  |  |  |
-| cards-day | 22636 | 4214 | 16145/27654 (58.4%) | 8079/18270 (44.2%) |  |  |  |
-| cards-flip | 1400 | 1181 | 6461/10652 (60.7%) | 3534/7648 (46.2%) |  |  |  |
-| cards-variants | 18535 | 4347 | 16830/28123 (59.8%) | 8577/18556 (46.2%) |  |  |  |
-| lockstep-gate-battle | 1 | 635 | 7807/12658 (61.7%) | 5384/11200 (48.1%) |  |  |  |
-| lockstep-pressburg-map | 1 | 392 | 3952/6451 (61.3%) | 2294/5090 (45.1%) |  |  |  |
-| lockstep-residence | 1 | 361 | 3503/5754 (60.9%) | 1897/4392 (43.2%) |  |  |  |
-| lockstep-save-load | 1 | 349 | 3361/5353 (62.8%) | 1805/4012 (45.0%) |  |  |  |
-| lockstep-tyrnau | 1 | 414 | 4214/6800 (62.0%) | 2466/5412 (45.6%) |  |  |  |
-| sainthelp | 136 | 232 | 1385/3354 (41.3%) | 868/2346 (37.0%) |  |  |  |
-| ALL |  | 5208 | 34443/48082 (71.6%) | 23145/37434 (61.8%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
+| cards | 365 | 3932 | 14890/26204 (56.8%) | 7318/17306 (42.3%) |  |  |  |
+| battle-oracle-castle | 1 | 586 | 7773/13378 (58.1%) | 5330/11996 (44.4%) |  |  |  |
+| battle-oracle-castle04 | 1 | 635 | 8505/14532 (58.5%) | 5963/13198 (45.2%) |  |  |  |
+| battle-oracle-castle07 | 1 | 655 | 9205/14897 (61.8%) | 6636/13526 (49.1%) |  |  |  |
+| battle-oracle-castle7c | 1 | 587 | 7823/13319 (58.7%) | 5351/11934 (44.8%) |  |  |  |
+| battle-oracle-city15 | 1 | 591 | 6809/11566 (58.9%) | 4564/10190 (44.8%) |  |  |  |
+| battle-oracle-city1c | 1 | 513 | 5394/10010 (53.9%) | 3262/8604 (37.9%) |  |  |  |
+| battle-oracle-city1f | 1 | 579 | 6877/11430 (60.2%) | 4643/10044 (46.2%) |  |  |  |
+| battle-oracle-city24 | 1 | 592 | 6818/11835 (57.6%) | 4498/10394 (43.3%) |  |  |  |
+| battle-oracle-city2b | 1 | 534 | 5738/10673 (53.8%) | 3523/9206 (38.3%) |  |  |  |
+| battle-oracle-fort5e | 1 | 520 | 5624/10025 (56.1%) | 3431/8578 (40.0%) |  |  |  |
+| battle-oracle-gate | 1 | 601 | 7150/12088 (59.1%) | 4806/10650 (45.1%) |  |  |  |
+| battle-oracle-mine | 1 | 546 | 5674/11578 (49.0%) | 3455/9998 (34.6%) |  |  |  |
+| battle-oracle-mine0b | 1 | 554 | 6589/11963 (55.1%) | 4194/10326 (40.6%) |  |  |  |
+| battle-oracle-mine80 | 1 | 605 | 6911/12211 (56.6%) | 4560/10770 (42.3%) |  |  |  |
+| battle-oracle-street | 1 | 587 | 6858/11790 (58.2%) | 4581/10364 (44.2%) |  |  |  |
+| battle-oracle-wild | 1 | 582 | 6839/11943 (57.3%) | 4503/10404 (43.3%) |  |  |  |
+| battle-oracle-wild30 | 1 | 559 | 6323/11577 (54.6%) | 3997/9986 (40.0%) |  |  |  |
+| battle-oracle-wild75 | 1 | 583 | 6871/11992 (57.3%) | 4532/10446 (43.4%) |  |  |  |
+| cards-day | 22636 | 4214 | 16145/27656 (58.4%) | 8079/18270 (44.2%) |  |  |  |
+| cards-flip | 1400 | 1181 | 6461/10654 (60.6%) | 3534/7648 (46.2%) |  |  |  |
+| cards-variants | 18535 | 4347 | 16830/28125 (59.8%) | 8577/18556 (46.2%) |  |  |  |
+| lockstep-cache | 1 | 316 | 2974/4972 (59.8%) | 1604/3668 (43.7%) |  |  |  |
+| lockstep-gate-battle | 1 | 635 | 7807/12664 (61.6%) | 5384/11200 (48.1%) |  |  |  |
+| lockstep-pressburg-map | 1 | 392 | 3952/6453 (61.2%) | 2294/5090 (45.1%) |  |  |  |
+| lockstep-residence | 1 | 361 | 3503/5756 (60.9%) | 1897/4392 (43.2%) |  |  |  |
+| lockstep-saints | 1 | 353 | 3402/6091 (55.9%) | 1887/4610 (40.9%) |  |  |  |
+| lockstep-save-load | 1 | 349 | 3361/5355 (62.8%) | 1805/4012 (45.0%) |  |  |  |
+| lockstep-sheet | 1 | 331 | 3292/5757 (57.2%) | 1805/4298 (42.0%) |  |  |  |
+| lockstep-shop | 1 | 361 | 3473/5805 (59.8%) | 1966/4504 (43.7%) |  |  |  |
+| lockstep-stay | 1 | 359 | 3502/5735 (61.1%) | 1890/4382 (43.1%) |  |  |  |
+| lockstep-tyrnau | 1 | 414 | 4214/6802 (62.0%) | 2466/5412 (45.6%) |  |  |  |
+| lockstep-wildcamp | 1 | 337 | 3504/5945 (58.9%) | 1908/4738 (40.3%) |  |  |  |
+| sainthelp | 136 | 232 | 1385/3356 (41.3%) | 868/2346 (37.0%) |  |  |  |
+| ALL |  | 5236 | 35231/48891 (72.1%) | 23736/38152 (62.2%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
 
-Never-exercised items: 27928, of which open 26721, justified in `unreachable.csv` 1207.
+Never-exercised items: 28076, of which open 26904, justified in `unreachable.csv` 1172.
 
 ## Per function
 
@@ -71,7 +80,7 @@ record; the outcomes are in `branches-missed.csv`).
 
 ### root 0000:0000 `root 0000:0000`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 21/45, outcomes 14/48
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 21/45, outcomes 14/48
 
 - `root+0x0026` `jmp 0x1bc`
 - `root+0x0029` `lcall 0x47c, 0x73d`
@@ -100,15 +109,15 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 0000:0C70 `root 0000:0C70`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants chargen core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules sainthelp saints trading: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants chargen core lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp rules sainthelp saints trading: blocks 3/3, outcomes 2/2
 
 ### root 0000:0C8C `root 0000:0C8C`
 
-draft, reached by battle battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 core lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 core lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### root 0000:0CAA `root 0000:0CAA`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 20/43, outcomes 17/38
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 20/43, outcomes 17/38
 
 - `root+0x0CB4` `jmp 0xd78`
 - `root+0x0CE3` `jmp 0xd94`
@@ -136,7 +145,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 0000:1338 `root 0000:1338`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 2/3, outcomes 1/2
 
 - `root+0x133F` `push cs`
 
@@ -148,22 +157,20 @@ draft, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### root 0000:1384 `root 0000:1384`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 1/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 2/3, outcomes 1/4
 
 - `root+0x1390` `lcall 0x47c, 0x744`
 
 ### root 0000:1438 `root 0000:1438`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 7/11, outcomes 4/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 9/11, outcomes 6/8
 
-- `root+0x1469` `dec ax`
 - `root+0x146C` `jmp 0x14dc`
 - `root+0x146E` `mov bx, word ptr [0x99ec]`
-- `root+0x14A2` `mov al, 2`
 
 ### root 0000:14F6 `root 0000:14F6`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/12, outcomes 4/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/12, outcomes 4/16
 
 - `root+0x1502` `add word ptr [bp + 0xc], bx`
 - `root+0x150F` `sub ax, ax`
@@ -175,19 +182,19 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 0000:1588 `root 0000:1588`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 15/16, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 15/16, outcomes 9/10
 
 - `root+0x165B` `jmp 0x16fc`
 
 ### root 0000:1716 `root 0000:1716`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 30/31, outcomes 25/28
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 30/31, outcomes 25/28
 
 - `root+0x18A7` `lcall 0x47c, 0x12c3`
 
 ### root 0000:18FA `root 0000:18FA`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 21/57, outcomes 17/52
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 21/57, outcomes 17/52
 
 - `root+0x1918` `jmp 0x1a98`
 - `root+0x1922` `jmp 0x1a50`
@@ -228,7 +235,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 0000:1A9C `root 0000:1A9C`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 69/103, outcomes 68/108
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 72/103, outcomes 71/108
 
 - `root+0x1AB7` `push si`
 - `root+0x1B21` `mov word ptr [bp - 0xa], 0xffff`
@@ -241,8 +248,6 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 - `root+0x1C33` `mov word ptr [bp - 8], ax`
 - `root+0x1C8B` `mov word ptr [bp - 0xa], 0xffff`
 - `root+0x1C90` `mov byte ptr [0x1bc], 1`
-- `root+0x1CE1` `sub di, di`
-- `root+0x1CF3` `push 0x266`
 - `root+0x1E1B` `jmp 0x1ec2`
 - `root+0x1E22` `sub di, di`
 - `root+0x1E34` `push 0x26a`
@@ -251,7 +256,6 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 - `root+0x1F56` `jmp 0x1ffd`
 - `root+0x1F5D` `sub di, di`
 - `root+0x1F6F` `push 0x26e`
-- `root+0x1F8B` `push 0xf`
 - `root+0x2075` `jmp 0x2278`
 - `root+0x2086` `jmp 0x2278`
 - `root+0x20BE` `sub di, di`
@@ -267,17 +271,17 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 0000:2286 `root 0000:2286`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0000:23E6 `root 0000:23E6`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 5/6, outcomes 2/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 5/6, outcomes 2/4
 
 - `root+0x23F4` `mov word ptr [bp - 2], dx`
 
 ### root 0000:24BC `root 0000:24BC`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0000:2522 `root 0000:2522`
 
@@ -289,7 +293,7 @@ draft, reached by lockstep-save-load: blocks 6/9, outcomes 2/6
 
 ### root 0000:25F2 `root 0000:25F2`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 3/3, outcomes 2/2
 
 ### root 0000:262E `root 0000:262E`
 
@@ -297,29 +301,29 @@ draft, reached by lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### root 0000:2646 `root 0000:2646`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### root 0265:0002 `root 0265:0002`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0265:0004 `root 0265:0004`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/5, outcomes 2/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/5, outcomes 2/4
 
 - `root+0x266D` `shl word ptr [bp + 8], 1`
 - `root+0x26A6` `mov cx, 2`
 
 ### root 0265:006E `root 0265:006E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/5, outcomes 2/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/5, outcomes 2/4
 
 - `root+0x26D7` `shl word ptr [bp + 8], 1`
 - `root+0x26FB` `mov cx, 2`
 
 ### root 0265:0134 `root 0265:0134`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 126/142, outcomes 124/148
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 126/142, outcomes 124/148
 
 - `root+0x27E6` `jmp 0x607`
 - `root+0x27EE` `jmp 0x607`
@@ -340,7 +344,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 0265:0654 `root 0265:0654`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 56/66, outcomes 48/72
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 56/66, outcomes 48/72
 
 - `root+0x2CDA` `mov ax, 0x15`
 - `root+0x2D27` `jmp 0x762`
@@ -355,11 +359,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 0265:084E `root 0265:084E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 3/4
 
 ### root 0265:09B2 `root 0265:09B2`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 9/10, outcomes 11/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 9/10, outcomes 11/12
 
 - `root+0x3012` `neg di`
 
@@ -369,7 +373,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 030B:0508 `root 030B:0508`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 8/22, outcomes 5/28
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 8/22, outcomes 5/28
 
 - `root+0x35BF` `jmp 0x5c9`
 - `root+0x35D3` `cmp word ptr [0x573c], 0`
@@ -388,7 +392,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### root 03A1:000A `root 03A1:000A`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 19/57, outcomes 14/64
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 19/57, outcomes 14/64
 
 - `root+0x3A43` `sub ax, ax`
 - `root+0x3A52` `cmp byte ptr [0xa876], 0x70`
@@ -431,7 +435,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### root 03EC:000E `root 03EC:000E`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 33/43, outcomes 23/48
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 33/43, outcomes 23/48
 
 - `root+0x3EDB` `jmp 0x222`
 - `root+0x3F26` `cmp word ptr [bx - 8], dx`
@@ -446,76 +450,76 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### root 0410:0008 `root 0410:0008`
 
-matched, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-tyrnau names trading: blocks 1/1, outcomes 0/0
+matched, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp names trading: blocks 1/1, outcomes 0/0
 
 ### root 0410:001A `root 0410:001A`
 
-asm, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 4/4, outcomes 4/4
+asm, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 4/4, outcomes 4/4
 
 ### root 0410:0038 `root 0410:0038`
 
-asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 3/3, outcomes 2/2
 
 ### root 0410:0068 `root 0410:0068`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 1/1, outcomes 0/0
 
 ### root 0410:007E `root 0410:007E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### root 0410:01DC `root 0410:01DC`
 
-asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 4/4
+asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 4/4
 
 ### root 0410:02A8 `root 0410:02A8`
 
-asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 4/4
+asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 4/4
 
 ### root 0410:02CA `root 0410:02CA`
 
-asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 3/3, outcomes 1/2
+asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 3/3, outcomes 1/2
 
 ### root 0410:02E6 `root 0410:02E6`
 
-asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
+asm, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
 
 ### root 0410:0302 `root 0410:0302`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/4, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 4/4, outcomes 3/4
 
 ### root 0410:031E `root 0410:031E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 7/9, outcomes 6/8
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 7/9, outcomes 6/8
 
 - `root+0x4430` `mov word ptr [bp - 2], 1`
 - `root+0x445B` `mov byte ptr [0x7d8], 1`
 
 ### root 0410:0364 `root 0410:0364`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 7/9, outcomes 6/8
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 7/9, outcomes 6/8
 
 - `root+0x4475` `mov word ptr [bp - 2], 1`
 - `root+0x44A2` `mov byte ptr [0x7d8], 1`
 
 ### root 044A:000A `root 044A:000A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/7, outcomes 3/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/7, outcomes 3/6
 
 - `root+0x44BE` `cmp al, 0x7a`
 - `root+0x44C2` `sub al, 0x20`
 
 ### root 044A:0043 `root 044A:0043`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### root 044A:00A9 `root 044A:00A9`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 9/9, outcomes 6/8
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 9/9, outcomes 6/8
 
 ### root 044A:0100 `root 044A:0100`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 044A:0122 `root 044A:0122`
 
@@ -523,23 +527,23 @@ asm, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 044A:0133 `root 044A:0133`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 044A:014E `root 044A:014E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 044A:0164 `root 044A:0164`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### root 044A:019C `root 044A:019C`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:0066 `root 047C:0066`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### root 047C:00A9 `root 047C:00A9`
 
@@ -549,192 +553,192 @@ draft, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### root 047C:02A2 `root 047C:02A2`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/7, outcomes 3/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/7, outcomes 3/6
 
 - `root+0x4ABD` `cmp ax, 6`
 - `root+0x4AC2` `jmp 0x313`
 
 ### root 047C:0329 `root 047C:0329`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 6/6, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 6/6, outcomes 3/4
 
 ### root 047C:0347 `root 047C:0347`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/2, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/2, outcomes 0/0
 
 ### root 047C:0362 `root 047C:0362`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 8/9, outcomes 5/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 8/9, outcomes 5/8
 
 - `root+0x4B56` `mov dx, 0x10`
 
 ### root 047C:03DA `root 047C:03DA`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
 
 ### root 047C:040B `root 047C:040B`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### root 047C:04C7 `root 047C:04C7`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:04CE `root 047C:04CE`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:04D5 `root 047C:04D5`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:04DC `root 047C:04DC`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:04E3 `root 047C:04E3`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:04EA `root 047C:04EA`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:04EF `root 047C:04EF`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:04F8 `root 047C:04F8`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:051B `root 047C:051B`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:052E `root 047C:052E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:053E `root 047C:053E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0545 `root 047C:0545`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:054C `root 047C:054C`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0553 `root 047C:0553`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:055A `root 047C:055A`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:055F `root 047C:055F`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:0568 `root 047C:0568`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:056F `root 047C:056F`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0576 `root 047C:0576`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0584 `root 047C:0584`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:058B `root 047C:058B`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0597 `root 047C:0597`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:059E `root 047C:059E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### root 047C:05A5 `root 047C:05A5`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:05AE `root 047C:05AE`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05B5 `root 047C:05B5`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05BC `root 047C:05BC`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05CA `root 047C:05CA`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05D8 `root 047C:05D8`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05DF `root 047C:05DF`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05E6 `root 047C:05E6`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05ED `root 047C:05ED`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0617 `root 047C:0617`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:061E `root 047C:061E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:073D `root 047C:073D`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0744 `root 047C:0744`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0767 `root 047C:0767`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0783 `root 047C:0783`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:078A `root 047C:078A`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:07CE `root 047C:07CE`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/18, outcomes 0/18
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/18, outcomes 0/18
 
 - `root+0x4F9A` `lea si, [0x6a90]`
 - `root+0x4FA1` `mov ah, 0x48`
@@ -756,21 +760,21 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 047C:08C8 `root 047C:08C8`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 0/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/3, outcomes 0/2
 
 - `root+0x50B4` `pop ds`
 
 ### root 047C:0952 `root 047C:0952`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:09E6 `root 047C:09E6`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### root 047C:0B94 `root 047C:0B94`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 31/38, outcomes 21/36
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 31/38, outcomes 21/36
 
 - `root+0x53AE` `cmc `
 - `root+0x53C1` `cmc `
@@ -782,15 +786,15 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 047C:0D20 `root 047C:0D20`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 9/9, outcomes 6/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 9/9, outcomes 6/8
 
 ### root 047C:0D62 `root 047C:0D62`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:0DE6 `root 047C:0DE6`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 21/25, outcomes 20/26
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 21/25, outcomes 20/26
 
 - `root+0x5601` `push bx` (excluded)
 - `root+0x5661` `push bx` (excluded)
@@ -799,11 +803,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 047C:0F60 `root 047C:0F60`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:0F7F `root 047C:0F7F`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/7, outcomes 3/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 4/7, outcomes 3/6
 
 - `root+0x5748` `ret ` (excluded)
 - `root+0x5764` `push bx` (excluded)
@@ -811,11 +815,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 047C:0FC8 `root 047C:0FC8`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/5, outcomes 4/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/5, outcomes 4/4
 
 ### root 047C:0FFE `root 047C:0FFE`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 12/15, outcomes 10/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 12/15, outcomes 10/14
 
 - `root+0x57C5` `inc cx`
 - `root+0x580A` `mov ah, al`
@@ -823,27 +827,21 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 047C:1070 `root 047C:1070`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 16/16, outcomes 14/14, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 16/16, outcomes 14/14, unresolved indirect jumps 1
 
 ### root 047C:1120 `root 047C:1120`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle tactics: blocks 6/17, outcomes 5/20
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle tactics: blocks 20/21, outcomes 15/20
 
 - `root+0x5937` `mov ax, word ptr [bp + 6]` (dormant)
-- `root+0x5974` `xor ax, ax` (dormant)
-- `root+0x597A` `mov ax, bx` (dormant)
-- `root+0x5980` `mov dx, 0x20` (dormant)
-- `root+0x5989` `mov dx, 0x10` (dormant)
-- `root+0x598E` `shl ax, 1` (dormant)
-- `root+0x5993` `mov ax, bx` (dormant)
-- `root+0x599B` `shr bp, 1` (dormant)
-- `root+0x59A2` `mov bp, ax` (dormant)
-- `root+0x59B2` `mov ax, bp` (dormant)
-- `root+0x59B4` `pop bp` (dormant)
+
+### root 047C:11AB `root 047C:11AB`
+
+draft, reached by lockstep-stay: blocks 1/1, outcomes 0/0
 
 ### root 047C:11F6 `root 047C:11F6`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/4, outcomes 0/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/4, outcomes 0/4
 
 - `root+0x59C5` `mov ax, 0`
 - `root+0x59CE` `mov ax, 0xc`
@@ -851,139 +849,139 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 047C:124F `root 047C:124F`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:1293 `root 047C:1293`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 047C:12C3 `root 047C:12C3`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 047C:1320 `root 047C:1320`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### root 05BA:0004 `root 05BA:0004`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 6/7, outcomes 5/6
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 6/7, outcomes 5/6
 
 - `root+0x5BEC` `lcall 0, 0x1354` (excluded)
 
 ### root 05BA:00C2 `root 05BA:00C2`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### root 05D9:000C `root 05D9:000C`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### root 05D9:002A `root 05D9:002A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### root 05D9:0059 `root 05D9:0059`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### root 05D9:006A `root 05D9:006A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### root 05D9:0070 `root 05D9:0070`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 38/40, outcomes 35/40
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 38/40, outcomes 35/40
 
 - `root+0x5E96` `call 0xc`
 - `root+0x5EAF` `call 0xc`
 
 ### root 05D9:019A `root 05D9:019A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/6, outcomes 3/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/6, outcomes 3/6
 
 ### root 05F8:0064 `root 05F8:0064`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/3, outcomes 0/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/3, outcomes 0/2
 
 - `root+0x6002` `mov al, 0x90`
 - `root+0x6004` `mov word ptr ss:[0x942], ax`
 
 ### root 05F8:00A9 `root 05F8:00A9`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### root 05F8:00CA `root 05F8:00CA`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### root 05F8:00F3 `root 05F8:00F3`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### root 05F8:0117 `root 05F8:0117`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0617:000E `root 0617:000E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 6/7, outcomes 5/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 6/7, outcomes 5/6
 
 - `root+0x61AB` `push word ptr [bp + 6]`
 
 ### root 0617:0080 `root 0617:0080`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/3, outcomes 1/2
 
 - `root+0x620C` `push word ptr [bp + 6]`
 
 ### root 0617:00AE `root 0617:00AE`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 3/4, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 3/4, outcomes 3/4
 
 - `root+0x6238` `sub ax, ax` (excluded)
 
 ### root 0617:011E `root 0617:011E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x62C1` `sub ax, ax`
 
 ### root 0617:016A `root 0617:016A`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/3, outcomes 1/2
 
 - `root+0x6309` `sub ax, ax`
 
 ### root 0617:01B2 `root 0617:01B2`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/6, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/6, outcomes 3/4
 
 - `root+0x6353` `mov word ptr [0x8e3a], 0`
 
 ### root 0617:0230 `root 0617:0230`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0617:024A `root 0617:024A`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0617:0264 `root 0617:0264`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0617:045C `root 0617:045C`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/4, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 4/4, outcomes 2/2
 
 ### root 0617:05F0 `root 0617:05F0`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0617:0654 `root 0617:0654`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0617:067E `root 0617:067E`
 
@@ -995,19 +993,19 @@ draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 0617:06D8 `root 0617:06D8`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/3, outcomes 1/2
 
 - `root+0x6864` `sub ax, ax`
 
 ### root 0617:070E `root 0617:070E`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/5, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 4/5, outcomes 3/4
 
 - `root+0x6895` `sub ax, ax`
 
 ### root 0617:0736 `root 0617:0736`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 12/24, outcomes 11/24
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 12/24, outcomes 11/24
 
 - `root+0x68D1` `sub ax, ax`
 - `root+0x68F8` `sub ax, ax`
@@ -1024,13 +1022,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### root 0617:0868 `root 0617:0868`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/3, outcomes 1/2
 
 - `root+0x6A12` `mov ax, word ptr [bp - 0xe]` (excluded)
 
 ### root 06A1:02C2 `root 06A1:02C2`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants castle city lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine special trading wild: blocks 3/6, outcomes 2/6, unresolved indirect jumps 1
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants castle city lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine special trading wild: blocks 3/6, outcomes 2/6, unresolved indirect jumps 1
 
 - `root+0x6CE5` `push dx` (runtime-library)
 - `root+0x6CED` `xor ax, ax` (runtime-library)
@@ -1038,20 +1036,19 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:0546 `root 06A1:0546`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:054C `root 06A1:054C`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 6/10, outcomes 4/10
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 7/10, outcomes 5/10
 
 - `root+0x6F6A` `cmp al, 0x22` (runtime-library)
 - `root+0x6F6E` `cmp al, 0x20` (runtime-library)
 - `root+0x6F72` `mov al, 5` (runtime-library)
-- `root+0x6F85` `mov al, ah` (runtime-library)
 
 ### root 06A1:05E2 `root 06A1:05E2`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 6/12, outcomes 5/12
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 6/12, outcomes 5/12
 
 - `root+0x7006` `jmp 0x690` (runtime-library)
 - `root+0x7049` `mov ax, 0x77b2` (runtime-library)
@@ -1062,28 +1059,28 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:069C `root 06A1:069C`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 3/4, outcomes 1/2
 
 - `root+0x70BB` `sub ax, ax` (runtime-library)
 
 ### root 06A1:06C8 `root 06A1:06C8`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:06DE `root 06A1:06DE`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:0716 `root 06A1:0716`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 25/27, outcomes 22/26
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 25/27, outcomes 22/26
 
 - `root+0x7195` `jmp 0x7f3` (runtime-library)
 - `root+0x71EE` `or byte ptr [si + 6], 0x20` (runtime-library)
 
 ### root 06A1:07FA `root 06A1:07FA`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 27/31, outcomes 22/34
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 27/31, outcomes 22/34
 
 - `root+0x7292` `push bx` (runtime-library)
 - `root+0x72EE` `inc ax` (runtime-library)
@@ -1092,7 +1089,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:093E `root 06A1:093E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 14/18, outcomes 10/18
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 14/18, outcomes 10/18
 
 - `root+0x73A1` `or byte ptr [si + 6], 0x20` (runtime-library)
 - `root+0x73A7` `or byte ptr [si + 6], 0x20` (runtime-library)
@@ -1101,7 +1098,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:09D4 `root 06A1:09D4`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 19/23, outcomes 17/30
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 19/23, outcomes 17/30
 
 - `root+0x7400` `test al, 0x10` (runtime-library)
 - `root+0x7404` `mov cx, word ptr [si + 4]` (runtime-library)
@@ -1110,15 +1107,15 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:0AB8 `root 06A1:0AB8`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/4, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 06A1:0AE4 `root 06A1:0AE4`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/4, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/4, outcomes 2/2
 
 ### root 06A1:0B28 `root 06A1:0B28`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 22/27, outcomes 16/28
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 22/27, outcomes 16/28
 
 - `root+0x7588` `mov word ptr [bp - 2], 0` (runtime-library)
 - `root+0x75A0` `test si, 2` (runtime-library)
@@ -1128,7 +1125,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:0C10 `root 06A1:0C10`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/11, outcomes 3/14
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/11, outcomes 3/14
 
 - `root+0x7643` `mov di, si` (runtime-library)
 - `root+0x7653` `test byte ptr [di], 1` (runtime-library)
@@ -1139,7 +1136,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:0C83 `root 06A1:0C83`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/5, outcomes 1/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/5, outcomes 1/6
 
 - `root+0x76AA` `xor bx, bx` (runtime-library)
 - `root+0x76B6` `push si` (runtime-library)
@@ -1147,14 +1144,14 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:0CC2 `root 06A1:0CC2`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 8/10, outcomes 8/12
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 8/10, outcomes 8/12
 
 - `root+0x76E1` `sub ax, ax` (runtime-library)
 - `root+0x772D` `or byte ptr [si + 6], 0x20` (runtime-library)
 
 ### root 06A1:0D9A `root 06A1:0D9A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine special trading wild: blocks 277/347, outcomes 76/150, unresolved indirect jumps 1
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine special trading wild: blocks 277/347, outcomes 76/150, unresolved indirect jumps 1
 
 - `root+0x7827` `or byte ptr [bp - 4], 4` (runtime-library)
 - `root+0x7831` `or byte ptr [bp - 4], 1` (runtime-library)
@@ -1229,79 +1226,76 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:11A5 `root 06A1:11A5`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine special trading wild: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine special trading wild: blocks 1/1, outcomes 0/0
 
 ### root 06A1:11AD `root 06A1:11AD`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau trading: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp trading: blocks 1/1, outcomes 0/0
 
 ### root 06A1:11B9 `root 06A1:11B9`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau trading wild: blocks 4/5, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp trading wild: blocks 4/5, outcomes 3/4
 
 - `root+0x7BE0` `mov es, ax` (runtime-library)
 
 ### root 06A1:11D6 `root 06A1:11D6`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine special trading wild: blocks 5/6, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine special trading wild: blocks 5/6, outcomes 3/4
 
 - `root+0x7C0E` `jmp 0x11e8` (runtime-library)
 
 ### root 06A1:1200 `root 06A1:1200`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine special trading wild: blocks 5/6, outcomes 5/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine special trading wild: blocks 5/6, outcomes 5/6
 
 - `root+0x7C28` `mov word ptr [bp - 8], 0xffff` (runtime-library)
 
 ### root 06A1:121E `root 06A1:121E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine special trading wild: blocks 5/6, outcomes 5/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine special trading wild: blocks 5/6, outcomes 5/6
 
 - `root+0x7C44` `mov word ptr [bp - 8], 0xffff` (runtime-library)
 
 ### root 06A1:123A `root 06A1:123A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine special trading wild: blocks 8/9, outcomes 6/8
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine special trading wild: blocks 8/9, outcomes 6/8
 
 - `root+0x7C6C` `add al, byte ptr [bp - 1]` (runtime-library)
 
 ### root 06A1:1272 `root 06A1:1272`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 6/6, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 6/6, outcomes 3/4
 
 ### root 06A1:12DC `root 06A1:12DC`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/4, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/4, outcomes 2/2
 
 ### root 06A1:12FA `root 06A1:12FA`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/5, outcomes 2/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/5, outcomes 2/4
 
 - `root+0x7D16` `mov ax, 0x900` (runtime-library)
 
 ### root 06A1:131A `root 06A1:131A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 5/14, outcomes 3/16
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 8/14, outcomes 5/16
 
 - `root+0x7D39` `mov ax, 0x900` (runtime-library)
-- `root+0x7D45` `cmp word ptr [bp + 0xc], 0` (runtime-library)
 - `root+0x7D4B` `xor cx, cx` (runtime-library)
 - `root+0x7D56` `test word ptr [bp + 0xc], 2` (runtime-library)
 - `root+0x7D5D` `add ax, word ptr [bp + 8]` (runtime-library)
-- `root+0x7D65` `mov ax, 0x1600` (runtime-library)
-- `root+0x7D68` `stc ` (runtime-library)
 - `root+0x7D6B` `mov word ptr [bp - 2], dx` (runtime-library)
 - `root+0x7D80` `mov cx, word ptr [bp - 2]` (runtime-library)
 
 ### root 06A1:1394 `root 06A1:1394`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 2/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x7DB3` `mov bh, byte ptr [bp + 0xa]` (runtime-library)
 
 ### root 06A1:13AE `root 06A1:13AE`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 34/47, outcomes 33/56
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 34/47, outcomes 33/56
 
 - `root+0x7E11` `mov ah, 0x3e` (runtime-library)
 - `root+0x7E28` `or byte ptr [bp - 4], 0x40` (runtime-library)
@@ -1319,13 +1313,13 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:153F `root 06A1:153F`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 2/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x7F5C` `or cl, 1` (runtime-library)
 
 ### root 06A1:1550 `root 06A1:1550`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 15/36, outcomes 14/42
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 15/36, outcomes 14/42
 
 - `root+0x7F6F` `stc ` (runtime-library)
 - `root+0x7F8B` `call word ptr [0x7cee]` (runtime-library)
@@ -1351,7 +1345,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:163A `root 06A1:163A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 29/49, outcomes 24/50
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 29/49, outcomes 24/50
 
 - `root+0x8059` `mov ax, 0x900` (runtime-library)
 - `root+0x805D` `jmp 0x539` (runtime-library)
@@ -1376,7 +1370,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:16EE `root 06A1:16EE`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/11, outcomes 3/14
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 4/11, outcomes 3/14
 
 - `root+0x811F` `lahf ` (runtime-library)
 - `root+0x8129` `sahf ` (runtime-library)
@@ -1388,36 +1382,36 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:177A `root 06A1:177A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/4, outcomes 1/2
 
 - `root+0x819A` `xor ax, ax` (runtime-library)
 
 ### root 06A1:178E `root 06A1:178E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 06A1:1794 `root 06A1:1794`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 06A1:179A `root 06A1:179A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/4, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 06A1:17BB `root 06A1:17BB`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 6/6, outcomes 6/8
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 6/6, outcomes 6/8
 
 ### root 06A1:17E4 `root 06A1:17E4`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 17/19, outcomes 15/18
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 17/19, outcomes 15/18
 
 - `root+0x824A` `mov ax, ax` (runtime-library)
 - `root+0x825C` `add di, cx` (runtime-library)
 
 ### root 06A1:1860 `root 06A1:1860`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 10/23, outcomes 8/24
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 10/23, outcomes 8/24
 
 - `root+0x829A` `jmp 0x18cb` (runtime-library)
 - `root+0x829C` `push ss` (runtime-library)
@@ -1435,7 +1429,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:18EC `root 06A1:18EC`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 5/13, outcomes 3/14
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 5/13, outcomes 3/14
 
 - `root+0x8312` `inc dx` (runtime-library)
 - `root+0x8313` `push bx` (runtime-library)
@@ -1448,13 +1442,13 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:193D `root 06A1:193D`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/5, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/5, outcomes 3/4
 
 - `root+0x8356` `mov si, word ptr [bx + 6]` (runtime-library)
 
 ### root 06A1:1AAA `root 06A1:1AAA`
 
-asm, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 918/1001, outcomes 109/236
+asm, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp rules sainthelp saints: blocks 922/1003, outcomes 111/236
 
 - `root+0x8539` `cmp word ptr [bp + 6], 0` (runtime-library)
 - `root+0x853F` `push word ptr [bp + 6]` (runtime-library)
@@ -1473,8 +1467,6 @@ asm, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle
 - `root+0x87A8` `mov word ptr [bp - 4], 0` (runtime-library)
 - `root+0x87B0` `mov byte ptr [di + 6], 2` (runtime-library)
 - `root+0x880B` `mov word ptr [0x775a], 0x16` (runtime-library)
-- `root+0x8861` `cmp dx, ax` (runtime-library)
-- `root+0x8865` `mov ax, 0xffff` (runtime-library)
 - `root+0x8896` `mov word ptr [si + 2], 0` (runtime-library)
 - `root+0x88B8` `mov ax, 0xffff` (runtime-library)
 - `root+0x88FC` `mov di, word ptr [si + 4]` (runtime-library)
@@ -1542,7 +1534,7 @@ asm, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle
 
 ### root 06A1:1B1C `root 06A1:1B1C`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/11, outcomes 1/12
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/11, outcomes 1/12
 
 - `root+0x8539` `cmp word ptr [bp + 6], 0` (runtime-library)
 - `root+0x853F` `push word ptr [bp + 6]` (runtime-library)
@@ -1562,7 +1554,7 @@ asm, reached by lockstep-save-load: blocks 4/6, outcomes 2/4
 
 ### root 06A1:1C58 `root 06A1:1C58`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 6/8, outcomes 3/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 6/8, outcomes 3/6
 
 - `root+0x8688` `mov byte ptr [bp - 6], 0xcb` (runtime-library)
 - `root+0x86CE` `xor si, si` (runtime-library)
@@ -1573,7 +1565,7 @@ asm, reached by lockstep-tyrnau: blocks 6/6, outcomes 4/4
 
 ### root 06A1:1D2A `root 06A1:1D2A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 22/26, outcomes 17/30
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 22/26, outcomes 17/30
 
 - `root+0x8754` `sub ax, ax` (runtime-library)
 - `root+0x8777` `sub di, di` (runtime-library)
@@ -1582,15 +1574,13 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:1DE2 `root 06A1:1DE2`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 10/13, outcomes 8/14
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 12/13, outcomes 10/14
 
 - `root+0x880B` `mov word ptr [0x775a], 0x16` (runtime-library)
-- `root+0x8861` `cmp dx, ax` (runtime-library)
-- `root+0x8865` `mov ax, 0xffff` (runtime-library)
 
 ### root 06A1:1E62 `root 06A1:1E62`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 18/37, outcomes 16/38
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 18/37, outcomes 16/38
 
 - `root+0x8896` `mov word ptr [si + 2], 0` (runtime-library)
 - `root+0x88B8` `mov ax, 0xffff` (runtime-library)
@@ -1614,47 +1604,47 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:2052 `root 06A1:2052`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/3, outcomes 1/2
 
 - `root+0x8A89` `mov al, byte ptr [si + 6]` (runtime-library)
 
 ### root 06A1:2096 `root 06A1:2096`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine special trading wild: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine special trading wild: blocks 3/4, outcomes 1/2
 
 - `root+0x8AEC` `push si` (runtime-library)
 
 ### root 06A1:20F0 `root 06A1:20F0`
 
-asm, reached by cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:21C6 `root 06A1:21C6`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/4, outcomes 1/2
 
 - `root+0x8C0C` `push cs` (runtime-library)
 
 ### root 06A1:220E `root 06A1:220E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/4, outcomes 1/2
 
 - `root+0x8C6A` `push cs` (runtime-library)
 
 ### root 06A1:226C `root 06A1:226C`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:228A `root 06A1:228A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2298 `root 06A1:2298`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### root 06A1:22A6 `root 06A1:22A6`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/11, outcomes 5/12
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/11, outcomes 5/12
 
 - `root+0x8CF8` `cmp byte ptr [bp - 9], 0` (runtime-library)
 - `root+0x8CFE` `lea ax, [bp - 6]` (runtime-library)
@@ -1663,7 +1653,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:23A8 `root 06A1:23A8`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/6, outcomes 2/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/6, outcomes 2/6
 
 - `root+0x8DDD` `cmp al, 0x17` (runtime-library)
 - `root+0x8DE1` `mov dx, bx` (runtime-library)
@@ -1671,11 +1661,11 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:23FC `root 06A1:23FC`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:240E `root 06A1:240E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/14, outcomes 1/14
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/14, outcomes 1/14
 
 - `root+0x8E35` `cmp byte ptr [si], 0` (runtime-library)
 - `root+0x8E3A` `jmp 0x24b2` (runtime-library)
@@ -1691,7 +1681,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:24B6 `root 06A1:24B6`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/23, outcomes 1/28
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 4/23, outcomes 1/28
 
 - `root+0x8EDA` `cmp word ptr [si + 8], 9` (runtime-library)
 - `root+0x8EE0` `jmp 0x2577` (runtime-library)
@@ -1715,46 +1705,46 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:2580 `root 06A1:2580`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/7, outcomes 4/8
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/7, outcomes 4/8
 
 - `root+0x8FDD` `inc di` (runtime-library)
 - `root+0x907D` `sub word ptr [bp - 0x16], 0xe10` (runtime-library)
 
 ### root 06A1:2682 `root 06A1:2682`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:26DE `root 06A1:26DE`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
 
 ### root 06A1:2724 `root 06A1:2724`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### root 06A1:278A `root 06A1:278A`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/6, outcomes 6/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/6, outcomes 6/6
 
 ### root 06A1:27CC `root 06A1:27CC`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 17/17, outcomes 19/22
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 17/17, outcomes 19/22
 
 ### root 06A1:287E `root 06A1:287E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 5/5, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 5/5, outcomes 3/4
 
 ### root 06A1:29A4 `root 06A1:29A4`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau names trading: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp names trading: blocks 1/1, outcomes 0/0
 
 ### root 06A1:29B6 `root 06A1:29B6`
 
-asm, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants castle chargen city core enemy lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine names rules sainthelp saints special trading wild: blocks 1/1, outcomes 0/0
+asm, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants castle chargen city core enemy lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine names rules sainthelp saints special trading wild: blocks 1/1, outcomes 0/0
 
 ### root 06A1:29DE `root 06A1:29DE`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2A01 `root 06A1:2A01`
 
@@ -1764,60 +1754,60 @@ asm, reached by lockstep-save-load: blocks 2/3, outcomes 1/2
 
 ### root 06A1:2BD4 `root 06A1:2BD4`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2BE2 `root 06A1:2BE2`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2C28 `root 06A1:2C28`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2C3D `root 06A1:2C3D`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 3/5, outcomes 1/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 3/5, outcomes 1/4
 
 - `root+0x965E` `cmp ax, 0x50` (runtime-library)
 - `root+0x9664` `mov ah, 0x11` (runtime-library)
 
 ### root 06A1:2C60 `root 06A1:2C60`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2C6B `root 06A1:2C6B`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2C9E `root 06A1:2C9E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2CB6 `root 06A1:2CB6`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 8/9, outcomes 2/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 8/9, outcomes 2/4
 
 - `root+0x96E0` `call word ptr [0x7cee]` (runtime-library)
 
 ### root 06A1:2CBD `root 06A1:2CBD`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2CE6 `root 06A1:2CE6`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2CF4 `root 06A1:2CF4`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2D0E `root 06A1:2D0E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2D28 `root 06A1:2D28`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau tactics trading: blocks 9/17, outcomes 7/18
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp tactics trading: blocks 9/17, outcomes 7/18
 
 - `root+0x9789` `mov bx, ax` (runtime-library)
 - `root+0x9794` `shr bx, 1` (runtime-library)
@@ -1830,11 +1820,11 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:2DC2 `root 06A1:2DC2`
 
-asm, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants castle chargen city core enemy lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine names rules sainthelp saints special trading wild: blocks 3/3, outcomes 2/2
+asm, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants castle chargen city core enemy lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine names rules sainthelp saints special trading wild: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2EB4 `root 06A1:2EB4`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau path sainthelp: blocks 4/8, outcomes 3/8
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp path sainthelp: blocks 4/8, outcomes 3/8
 
 - `root+0x98FF` `or si, si` (runtime-library)
 - `root+0x9903` `mov ax, ds` (runtime-library)
@@ -1843,11 +1833,11 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### root 06A1:2F12 `root 06A1:2F12`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 6/6, outcomes 5/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 6/6, outcomes 5/6
 
 ### root 06A1:2F58 `root 06A1:2F58`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 6/6, outcomes 3/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 6/6, outcomes 3/6
 
 ### root 06A1:2F94 `root 06A1:2F94`
 
@@ -1855,19 +1845,19 @@ asm, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/6
 
 ### root 06A1:2FBE `root 06A1:2FBE`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2FE8 `root 06A1:2FE8`
 
-asm, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants castle city enemy lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau mine names rules sainthelp saints special wild: blocks 3/3, outcomes 2/2
+asm, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants castle city enemy lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp mine names rules sainthelp saints special wild: blocks 3/3, outcomes 2/2
 
 ### root 06A1:301E `root 06A1:301E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau names sainthelp: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp names sainthelp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:3064 `root 06A1:3064`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 6/7, outcomes 3/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 6/7, outcomes 3/6
 
 - `root+0x9AA3` `mov bx, es` (runtime-library)
 
@@ -1877,17 +1867,17 @@ asm, reached by cards cards-day cards-variants: blocks 7/7, outcomes 5/6
 
 ### R000+0x0022 `R000+0x0022 (0E76:0022)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/3, outcomes 1/2
 
 - `R000+0x0064` `push 0xbd6`
 
 ### R000+0x0092 `R000+0x0092 (0E76:0092)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R000+0x0114 `R000+0x0114 (0E76:0114)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 17/49, outcomes 12/46
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 17/49, outcomes 12/46
 
 - `R000+0x0214` `push si`
 - `R000+0x0235` `ja 0x247`
@@ -1924,7 +1914,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R000+0x052A `R000+0x052A (0E76:052A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 11/17, outcomes 7/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 11/17, outcomes 7/12
 
 - `R000+0x05E6` `push 1`
 - `R000+0x0792` `mov byte ptr [0x11dd], 1`
@@ -1935,22 +1925,22 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R000+0x083E `R000+0x083E (0E76:083E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 19/19, outcomes 16/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 19/19, outcomes 16/16
 
 ### R000+0x0F04 `R000+0x0F04 (0E76:0F04)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/9, outcomes 4/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/9, outcomes 4/6
 
 - `R000+0x0F60` `mov di, 0x744`
 - `R000+0x0FEC` `mov di, 0x744`
 
 ### R000+0x1010 `R000+0x1010 (0E76:1010)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R000+0x1150 `R000+0x1150 (0E76:1150)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 25/39, outcomes 22/42
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 25/39, outcomes 22/42
 
 - `R000+0x1192` `mov ax, word ptr [0xa8bb]`
 - `R000+0x1224` `mov ax, word ptr es:[bx + 3]`
@@ -1969,7 +1959,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R000+0x13C8 `R000+0x13C8 (0FB2:0008)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/18, outcomes 1/18
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/18, outcomes 1/18
 
 - `R000+0x13F8` `push es`
 - `R000+0x1410` `cmp ax, 7`
@@ -1990,7 +1980,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R002+0x0000 `R002+0x0000 (0E76:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 59/85, outcomes 43/76
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 59/85, outcomes 43/76
 
 - `R002+0x002C` `cmp byte ptr [0xa876], 0x4e`
 - `R002+0x0033` `lcall 0x47c, 0x791`
@@ -2021,17 +2011,17 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R002+0x0806 `R002+0x0806 (0E76:0806)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 14/15, outcomes 12/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 14/15, outcomes 12/14
 
 - `R002+0x08AB` `jmp 0x8c2`
 
 ### R002+0x08FE `R002+0x08FE (0E76:08FE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 21/21, outcomes 20/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 21/21, outcomes 20/20
 
 ### R002+0x0C8C `R002+0x0C8C (0E76:0C8C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 101/106, outcomes 81/86
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 101/106, outcomes 81/86
 
 - `R002+0x0D05` `jmp 0xdee`
 - `R002+0x0DFF` `jmp 0xf46`
@@ -2041,43 +2031,43 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R002+0x168A `R002+0x168A (0E76:168A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 11/11, outcomes 7/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 11/11, outcomes 7/8
 
 ### R002+0x1750 `R002+0x1750 (0E76:1750)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R002+0x1762 `R002+0x1762 (0E76:1762)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R002+0x17EA `R002+0x17EA (0E76:17EA)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R002+0x1830 `R002+0x1830 (0E76:1830)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/16, outcomes 11/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/16, outcomes 11/14
 
 ### R002+0x1A7A `R002+0x1A7A (0E76:1A7A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R003+0x0000 `R003+0x0000 (0E76:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### R003+0x006A `R003+0x006A (0E76:006A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R003+0x00A0 `R003+0x00A0 (0E76:00A0)`
 
-draft, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R003+0x00DC `R003+0x00DC (0E76:00DC)`
 
-draft, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 14/45, outcomes 9/50
+draft, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 14/45, outcomes 10/50
 
 - `R003+0x0139` `mov al, byte ptr [0x11ca]`
 - `R003+0x099A` `mov word ptr [bp - 0x10], si`
@@ -2113,7 +2103,7 @@ draft, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence
 
 ### R003+0x0CE8 `R003+0x0CE8 (0E76:0CE8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 18/47, outcomes 12/32
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 24/47, outcomes 17/32
 
 - `R003+0x0D68` `jmp 0x19c6`
 - `R003+0x0DBA` `push 0x131c`
@@ -2130,28 +2120,22 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 - `R003+0x1653` `jmp 0x15c4`
 - `R003+0x1656` `shl ax, 1`
 - `R003+0x1670` `inc word ptr [bp - 0x34]`
-- `R003+0x1673` `les bx, ptr [bp - 0x58]`
 - `R003+0x1681` `mov di, word ptr [bp - 0x34]`
-- `R003+0x1698` `push 0x33fc`
-- `R003+0x175A` `lea ax, [bp - 0x32]`
 - `R003+0x1793` `push 0x1326`
-- `R003+0x179D` `mov bx, si`
 - `R003+0x17F2` `push word ptr [bp - 0x36]`
-- `R003+0x17FF` `push si`
 - `R003+0x1838` `push word ptr [0x1164]`
 - `R003+0x187B` `push 0x1352`
 - `R003+0x18C4` `push ax`
-- `R003+0x18F5` `push word ptr [0x1162]`
 - `R003+0x1937` `push 0x135f`
 - `R003+0x1980` `push ax`
 
 ### R003+0x1A86 `R003+0x1A86 (1016:0086)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R003+0x1E5E `R003+0x1E5E (1016:045E)`
 
-asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 19/27, outcomes 10/18
+asm, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 19/27, outcomes 10/18
 
 - `R003+0x1EB5` `sub ax, 0x800`
 - `R003+0x1EBA` `mov ax, 1`
@@ -2164,11 +2148,11 @@ asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence l
 
 ### R003+0x1EC6 `R003+0x1EC6 (1016:04C6)`
 
-asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R003+0x1FA6 `R003+0x1FA6 (1016:05A6)`
 
-asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 49/53, outcomes 43/54
+asm, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 49/53, outcomes 43/54
 
 - `R003+0x2044` `cmp word ptr [bp - 0xe], 0`
 - `R003+0x204A` `jmp 0x7b7`
@@ -2177,7 +2161,7 @@ asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence l
 
 ### R003+0x2264 `R003+0x2264 (1016:0864)`
 
-asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 61/64, outcomes 65/68
+asm, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 61/64, outcomes 65/68
 
 - `R003+0x2275` `cli `
 - `R003+0x2450` `int3 `
@@ -2185,33 +2169,33 @@ asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence l
 
 ### R003+0x24D2 `R003+0x24D2 (1016:0AD2)`
 
-asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 9/9, outcomes 8/8
+asm, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 9/9, outcomes 8/8
 
 ### R003+0x2549 `R003+0x2549 (1016:0B49)`
 
-asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/7, outcomes 6/6
+asm, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/7, outcomes 6/6
 
 ### R003+0x25D6 `R003+0x25D6 (1016:0BD6)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/5, outcomes 2/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 4/5, outcomes 2/4
 
 - `R003+0x25EC` `movsb byte ptr es:[di], byte ptr [si]`
 
 ### R003+0x25FE `R003+0x25FE (1016:0BFE)`
 
-asm, reached by lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/5, outcomes 2/4
+asm, reached by lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 4/5, outcomes 2/4
 
 - `R003+0x2611` `stosb byte ptr es:[di], al`
 
 ### R003+0x2621 `R003+0x2621 (1016:0C21)`
 
-asm, reached by lockstep-gate-battle: blocks 5/6, outcomes 2/4
+asm, reached by lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 5/6, outcomes 2/4
 
 - `R003+0x268A` `mov si, bx`
 
 ### R003+0x26AE `R003+0x26AE (1016:0CAE)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 13/21, outcomes 5/12
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 13/21, outcomes 5/12
 
 - `R003+0x2700` `mov ax, 3`
 - `R003+0x2742` `jmp 0xdf7`
@@ -2224,17 +2208,17 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### R003+0x2707 `R003+0x2707 (1016:0D07)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R003+0x2801 `R003+0x2801 (1016:0E01)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 10/11, outcomes 7/8
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 10/11, outcomes 7/8
 
 - `R003+0x28A4` `mov word ptr [bp - 2], 0x306`
 
 ### R003+0x28CC `R003+0x28CC (1016:0ECC)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 15/31, outcomes 11/28
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 15/31, outcomes 11/28
 
 - `R003+0x294D` `jmp 0xee3`
 - `R003+0x2970` `jmp 0xee3`
@@ -2255,24 +2239,22 @@ asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle
 
 ### R003+0x2A0A `R003+0x2A0A (1016:100A)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/9, outcomes 4/6
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/9, outcomes 4/6
 
 - `R003+0x2A2F` `sub ax, ax`
 - `R003+0x2A52` `jmp 0x102f`
 
 ### R003+0x2A72 `R003+0x2A72 (1016:1072)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 6/7, outcomes 5/6
-
-- `R003+0x2ACA` `xor di, di`
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/7, outcomes 6/6
 
 ### R003+0x2AF5 `R003+0x2AF5 (1016:10F5)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/5, outcomes 4/4
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/5, outcomes 4/4
 
 ### R004+0x0000 `R004+0x0000 (0E76:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 14/20, outcomes 4/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 14/20, outcomes 4/6
 
 - `R004+0x00E8` `jmp 0x208`
 - `R004+0x0208` `push word ptr [bp + 0x1c]`
@@ -2283,11 +2265,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x04CC `R004+0x04CC (0E76:04CC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city enemy lockstep-gate-battle mine special wild: blocks 19/19, outcomes 18/18
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city enemy lockstep-gate-battle mine special wild: blocks 19/19, outcomes 18/18
 
 ### R004+0x06AA `R004+0x06AA (0E76:06AA)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city enemy lockstep-gate-battle mine special wild: blocks 114/122, outcomes 97/118
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city enemy lockstep-gate-battle mine special wild: blocks 114/122, outcomes 97/118
 
 - `R004+0x0702` `cmp word ptr [bp - 0x10], 0`
 - `R004+0x0708` `dec word ptr [bp - 0x10]`
@@ -2300,15 +2282,15 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x1060 `R004+0x1060 (0E76:1060)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city enemy lockstep-gate-battle mine special wild: blocks 9/9, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city enemy lockstep-gate-battle mine special wild: blocks 9/9, outcomes 8/8
 
 ### R004+0x1134 `R004+0x1134 (0E76:1134)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R004+0x122C `R004+0x122C (0E76:122C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 enemy lockstep-gate-battle: blocks 186/192, outcomes 148/160
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 enemy lockstep-gate-battle: blocks 186/192, outcomes 148/160
 
 - `R004+0x194B` `mov ax, 0x7f`
 - `R004+0x1978` `mov ax, 0x7f`
@@ -2319,35 +2301,35 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x1D90 `R004+0x1D90 (0E76:1D90)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 enemy lockstep-gate-battle: blocks 53/54, outcomes 45/46
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 enemy lockstep-gate-battle: blocks 53/54, outcomes 45/46
 
 - `R004+0x1ECD` `mov byte ptr es:[bx + 0xd], 0`
 
 ### R004+0x20DC `R004+0x20DC (0E76:20DC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-fort5e battle-oracle-mine0b castle city mine special: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-fort5e battle-oracle-mine0b castle city mine special: blocks 3/3, outcomes 2/2
 
 ### R004+0x20F6 `R004+0x20F6 (0E76:20F6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city enemy lockstep-gate-battle mine special wild: blocks 9/9, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 castle city enemy lockstep-gate-battle mine special wild: blocks 9/9, outcomes 9/10
 
 ### R004+0x213C `R004+0x213C (0E76:213C)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-castle7c castle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 3/3, outcomes 2/2
 
 ### R004+0x2160 `R004+0x2160 (0E76:2160)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 city lockstep-gate-battle wild: blocks 13/13, outcomes 18/18
+draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 city lockstep-gate-battle wild: blocks 13/13, outcomes 18/18
 
 ### R004+0x21BA `R004+0x21BA (1091:000A)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 2/3, outcomes 1/2
 
 - `R004+0x21D1` `mov ax, 7`
 
 ### R004+0x227A `R004+0x227A (1091:00CA)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 32/32, outcomes 22/22
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 32/32, outcomes 22/22
 
 ### R004+0x27B4 `R004+0x27B4 (1091:0604)`
 
@@ -2362,11 +2344,11 @@ draft, reached by battle-oracle-city24 battle-oracle-mine battle-oracle-mine0b c
 
 ### R004+0x28FE `R004+0x28FE (1091:074E)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 14/14, outcomes 14/14
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 14/14, outcomes 14/14
 
 ### R004+0x29B0 `R004+0x29B0 (1091:0800)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 43/50, outcomes 34/44
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 43/50, outcomes 34/44
 
 - `R004+0x2AA9` `mov al, byte ptr es:[si + 0xa]`
 - `R004+0x2B68` `mov al, byte ptr [bp - 7]`
@@ -2378,33 +2360,33 @@ draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate b
 
 ### R004+0x2D66 `R004+0x2D66 (1091:0BB6)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 19/19, outcomes 18/18
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 19/19, outcomes 18/18
 
 ### R004+0x2E7A `R004+0x2E7A (1091:0CCA)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 22/22, outcomes 20/20
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 22/22, outcomes 20/20
 
 ### R004+0x2F54 `R004+0x2F54 (1091:0DA4)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 32/33, outcomes 32/34
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 32/33, outcomes 32/34
 
 - `R004+0x3040` `jmp 0xf37`
 
 ### R004+0x3166 `R004+0x3166 (1091:0FB6)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 19/19, outcomes 18/18
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 19/19, outcomes 18/18
 
 ### R004+0x32D6 `R004+0x32D6 (1091:1126)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 40/40, outcomes 40/40
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 40/40, outcomes 40/40
 
 ### R004+0x34E4 `R004+0x34E4 (1091:1334)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 19/19, outcomes 18/18
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 19/19, outcomes 18/18
 
 ### R004+0x360A `R004+0x360A (1091:145A)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 38/55, outcomes 45/60
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 38/55, outcomes 45/60
 
 - `R004+0x368D` `mov es, word ptr [bp - 2]`
 - `R004+0x36AE` `mov es, word ptr [bp - 2]`
@@ -2426,11 +2408,11 @@ draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate b
 
 ### R004+0x3990 `R004+0x3990 (1091:17E0)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street city lockstep-gate-battle mine: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street city lockstep-gate-battle mine: blocks 3/3, outcomes 2/2
 
 ### R004+0x3ADE `R004+0x3ADE (1223:000E)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 11/19, outcomes 9/24
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 11/19, outcomes 9/24
 
 - `R004+0x3AFE` `cmp dx, ax`
 - `R004+0x3B02` `sub ax, ax`
@@ -2443,7 +2425,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R004+0x3B78 `R004+0x3B78 (1223:00A8)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/19, outcomes 8/24
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/19, outcomes 8/24
 
 - `R004+0x3B98` `cmp dx, ax`
 - `R004+0x3B9C` `sub ax, ax`
@@ -2457,7 +2439,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R004+0x3EC2 `R004+0x3EC2 (1262:0002)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/9, outcomes 4/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/9, outcomes 4/10
 
 - `R004+0x3F06` `mov ax, bx`
 - `R004+0x3F19` `push 0x2e38`
@@ -2465,7 +2447,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x3F64 `R004+0x3F64 (1262:00A4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/13, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/13, outcomes 1/2
 
 - `R004+0x3F73` `jmp 0x157`
 - `R004+0x3F8E` `mov ax, word ptr [0x8ce]`
@@ -2478,7 +2460,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x401C `R004+0x401C (1262:015C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/13, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/13, outcomes 1/2
 
 - `R004+0x4032` `jmp 0x208`
 - `R004+0x404E` `mov ax, word ptr [0x8ce]`
@@ -2490,11 +2472,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x4124 `R004+0x4124 (1262:0264)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 3/4
 
 ### R004+0x415A `R004+0x415A (1262:029A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 9/16, outcomes 7/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 9/16, outcomes 7/16
 
 - `R004+0x417D` `mov ax, word ptr [bp + 6]`
 - `R004+0x418E` `cmp word ptr es:[0x34], dx`
@@ -2506,7 +2488,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x4342 `R004+0x4342 (1262:0482)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/27, outcomes 3/28
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/27, outcomes 3/28
 
 - `R004+0x4364` `mov ax, 7`
 - `R004+0x4385` `cmp dx, ax`
@@ -2532,7 +2514,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x44C2 `R004+0x44C2 (1262:0602)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/29, outcomes 3/34
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/29, outcomes 3/34
 
 - `R004+0x451F` `mov ax, word ptr [bp - 8]`
 - `R004+0x453A` `jl 0x684`
@@ -2560,7 +2542,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x473A `R004+0x473A (1262:087A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 8/13, outcomes 5/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 8/13, outcomes 5/10
 
 - `R004+0x4754` `mov ax, si`
 - `R004+0x475A` `push word ptr [bp + 0x12]`
@@ -2570,7 +2552,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x47D4 `R004+0x47D4 (1262:0914)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 8/13, outcomes 5/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 8/13, outcomes 5/10
 
 - `R004+0x47EE` `mov ax, si`
 - `R004+0x47F4` `push word ptr [bp + 0x12]`
@@ -2580,7 +2562,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x493C `R004+0x493C (1262:0A7C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/7, outcomes 2/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/7, outcomes 2/8
 
 - `R004+0x4952` `push ds`
 - `R004+0x4962` `mov word ptr [bp - 6], ax`
@@ -2589,11 +2571,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x4BCA `R004+0x4BCA (1262:0D0A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R004+0x4C06 `R004+0x4C06 (1336:0006)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 12/21, outcomes 10/24
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 12/21, outcomes 10/24
 
 - `R004+0x4C0F` `jmp 0xe2`
 - `R004+0x4C25` `mov word ptr [0x8da], 2`
@@ -2607,7 +2589,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x4CF6 `R004+0x4CF6 (1336:00F6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/9, outcomes 1/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/9, outcomes 1/8
 
 - `R004+0x4D12` `push cs`
 - `R004+0x4D20` `push dx`
@@ -2619,7 +2601,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x4E52 `R004+0x4E52 (1336:0252)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/7, outcomes 1/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/7, outcomes 1/6
 
 - `R004+0x4E6C` `push cs`
 - `R004+0x4E84` `xor byte ptr [0x8d6], 2`
@@ -2629,7 +2611,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x4F92 `R004+0x4F92 (1336:0392)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/5, outcomes 1/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/5, outcomes 1/4
 
 - `R004+0x4FA4` `push di`
 - `R004+0x4FBE` `xor byte ptr [0x8d6], 8`
@@ -2637,7 +2619,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x5220 `R004+0x5220 (1336:0620)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 11/16, outcomes 7/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 11/16, outcomes 7/14
 
 - `R004+0x52B6` `mov ax, word ptr [bp - 0x1a]`
 - `R004+0x52CD` `mov ax, word ptr [bx + 0x1c]`
@@ -2647,7 +2629,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x56E6 `R004+0x56E6 (1336:0AE6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/6, outcomes 1/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/6, outcomes 1/6
 
 - `R004+0x56FC` `mov ah, 0x46`
 - `R004+0x5705` `mov word ptr [bp - 2], 0`
@@ -2656,13 +2638,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x5752 `R004+0x5752 (1336:0B52)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/6, outcomes 3/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/6, outcomes 3/6
 
 - `R004+0x57B6` `mov ax, 1`
 
 ### R004+0x58B4 `R004+0x58B4 (1336:0CB4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/6, outcomes 1/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/6, outcomes 1/4
 
 - `R004+0x58D2` `mov ax, word ptr [0xc0f9]`
 - `R004+0x58EE` `mov word ptr [0x8c2], ax`
@@ -2671,34 +2653,34 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R004+0x595C `R004+0x595C (1336:0D5C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/3, outcomes 1/2
 
 - `R004+0x5974` `mov word ptr [bp - 6], 1`
 
 ### R005+0x0000 `R005+0x0000 (1432:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 3/3, outcomes 2/2
 
 ### R005+0x005C `R005+0x005C (1432:005C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 18/18, outcomes 16/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 18/18, outcomes 16/16
 
 ### R005+0x022A `R005+0x022A (1432:022A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 33/35, outcomes 34/36
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 33/35, outcomes 34/36
 
 - `R005+0x0280` `jmp 0x3b3`
 - `R005+0x02A5` `jmp 0x3a5`
 
 ### R005+0x03BC `R005+0x03BC (146D:000C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 7/8, outcomes 6/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 7/8, outcomes 6/12
 
 - `R005+0x0410` `sub ax, ax`
 
 ### R005+0x0416 `R005+0x0416 (146D:0066)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 18/22, outcomes 18/22
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 18/22, outcomes 18/22
 
 - `R005+0x042D` `jmp 0x175`
 - `R005+0x0434` `jmp 0x175`
@@ -2707,19 +2689,19 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R005+0x052A `R005+0x052A (146D:017A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 7/8, outcomes 6/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 7/8, outcomes 6/12
 
 - `R005+0x057E` `sub ax, ax`
 
 ### R005+0x0584 `R005+0x0584 (146D:01D4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 5/6, outcomes 4/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 5/6, outcomes 4/8
 
 - `R005+0x0600` `sub ax, ax`
 
 ### R005+0x0606 `R005+0x0606 (146D:0256)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 137/157, outcomes 134/178
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 137/157, outcomes 134/178
 
 - `R005+0x06DF` `jmp 0x2e8`
 - `R005+0x06E2` `dec word ptr [bp - 2]`
@@ -2744,17 +2726,17 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R005+0x0BA4 `R005+0x0BA4 (146D:07F4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 6/6, outcomes 4/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 6/6, outcomes 4/8
 
 ### R005+0x0C08 `R005+0x0C08 (146D:0858)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 9/10, outcomes 10/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 9/10, outcomes 10/16
 
 - `R005+0x0C68` `sub ax, ax`
 
 ### R005+0x0C6E `R005+0x0C6E (146D:08BE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 22/26, outcomes 26/30
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 22/26, outcomes 26/30
 
 - `R005+0x0C7B` `jmp 0x9db`
 - `R005+0x0C94` `jmp 0x9db`
@@ -2763,35 +2745,35 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R005+0x0D90 `R005+0x0D90 (146D:09E0)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 7/8, outcomes 6/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 7/8, outcomes 6/12
 
 - `R005+0x0DE4` `sub ax, ax`
 
 ### R005+0x0DEA `R005+0x0DEA (146D:0A3A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 12/14, outcomes 14/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 12/14, outcomes 14/20
 
 - `R005+0x0E06` `jmp 0xae2`
 - `R005+0x0E0D` `jmp 0xae2`
 
 ### R005+0x0E98 `R005+0x0E98 (146D:0AE8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 6/6, outcomes 4/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 6/6, outcomes 4/8
 
 ### R005+0x0EF2 `R005+0x0EF2 (146D:0B42)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 6/6, outcomes 4/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 6/6, outcomes 4/8
 
 ### R005+0x0F4C `R005+0x0F4C (146D:0B9C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 7/9, outcomes 6/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 7/9, outcomes 6/12
 
 - `R005+0x0FA4` `sub ax, ax`
 - `R005+0x0FAA` `mov ax, 0xffff`
 
 ### R005+0x0FB2 `R005+0x0FB2 (146D:0C02)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 43/47, outcomes 48/54
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 43/47, outcomes 48/54
 
 - `R005+0x0FCD` `jmp 0xd75`
 - `R005+0x0FD4` `jmp 0xd75`
@@ -2800,7 +2782,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R005+0x112A `R005+0x112A (146D:0D7A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 12/17, outcomes 5/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 12/17, outcomes 5/10
 
 - `R005+0x1145` `jmp 0xe40`
 - `R005+0x114C` `jmp 0xe40`
@@ -2810,18 +2792,18 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R005+0x11F6 `R005+0x11F6 (1551:0006)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 19/21, outcomes 26/32
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 19/21, outcomes 26/32
 
 - `R005+0x1258` `cmp word ptr es:[si + 8], bx`
 - `R005+0x128C` `cmp word ptr es:[si + 8], bx`
 
 ### R005+0x12AC `R005+0x12AC (1551:00BC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 10/10, outcomes 11/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 10/10, outcomes 11/12
 
 ### R005+0x1314 `R005+0x1314 (1551:0124)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 36/50, outcomes 35/52
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 36/50, outcomes 35/52
 
 - `R005+0x1322` `jmp 0x29a`
 - `R005+0x132D` `jmp 0x29a`
@@ -2840,7 +2822,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R005+0x1492 `R005+0x1492 (1551:02A2)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 42/69, outcomes 39/72
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 42/69, outcomes 39/72
 
 - `R005+0x14A1` `jmp 0x4d4`
 - `R005+0x14AA` `jmp 0x4d4`
@@ -2872,7 +2854,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R005+0x16CA `R005+0x16CA (1551:04DA)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 19/32, outcomes 16/28
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 19/32, outcomes 16/28
 
 - `R005+0x16D8` `jmp 0x5cc`
 - `R005+0x16E0` `jmp 0x5cc`
@@ -2890,17 +2872,17 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x0000 `R006+0x0000 (15AF:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 11/11, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 11/11, outcomes 8/8
 
 ### R006+0x01CC `R006+0x01CC (15AF:01CC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 35/36, outcomes 28/30
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 35/36, outcomes 28/30
 
 - `R006+0x01D9` `jmp 0x46b`
 
 ### R006+0x0470 `R006+0x0470 (15AF:0470)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 107/110, outcomes 86/104
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 107/110, outcomes 86/104
 
 - `R006+0x04A6` `jmp 0x882`
 - `R006+0x04DF` `jmp 0x7c2`
@@ -2908,7 +2890,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x0886 `R006+0x0886 (1637:0006)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 47/50, outcomes 37/40
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 47/50, outcomes 37/40
 
 - `R006+0x0944` `jmp 0x362`
 - `R006+0x0A1B` `jmp 0x362`
@@ -2916,7 +2898,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x0BE6 `R006+0x0BE6 (1637:0366)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 38/43, outcomes 33/38
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 38/43, outcomes 33/38
 
 - `R006+0x0C35` `pop si`
 - `R006+0x0C49` `mov ax, word ptr [si]`
@@ -2926,13 +2908,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x0D50 `R006+0x0D50 (1637:04D0)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 13/14, outcomes 13/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 13/14, outcomes 13/16
 
 - `R006+0x0DEC` `mov ax, 8`
 
 ### R006+0x0DF8 `R006+0x0DF8 (168E:0008)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 40/44, outcomes 36/40
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 40/44, outcomes 36/40
 
 - `R006+0x0E10` `jmp 0x2ad`
 - `R006+0x0E3B` `jmp 0x2a5`
@@ -2941,14 +2923,14 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x10A2 `R006+0x10A2 (168E:02B2)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 37/39, outcomes 32/34
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 37/39, outcomes 32/34
 
 - `R006+0x10CE` `jmp 0x536`
 - `R006+0x11C8` `jmp 0x50a`
 
 ### R006+0x132A `R006+0x132A (16E1:000A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 177/204, outcomes 162/192
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 177/204, outcomes 162/192
 
 - `R006+0x1343` `jmp 0xa25`
 - `R006+0x1353` `jmp 0xa25`
@@ -2980,13 +2962,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x1D48 `R006+0x1D48 (16E1:0A28)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 105/106, outcomes 100/108
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 105/106, outcomes 100/108
 
 - `R006+0x1DA1` `pop si`
 
 ### R006+0x230A `R006+0x230A (17DF:000A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 105/110, outcomes 87/96
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 105/110, outcomes 87/96
 
 - `R006+0x23C7` `jmp 0x47a`
 - `R006+0x2574` `jmp 0x424`
@@ -2996,7 +2978,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x2880 `R006+0x2880 (17DF:0580)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 69/73, outcomes 63/68
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 69/73, outcomes 63/68
 
 - `R006+0x28A8` `jmp 0x9ac`
 - `R006+0x2A06` `jmp 0x99e`
@@ -3005,7 +2987,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x2CB2 `R006+0x2CB2 (17DF:09B2)`
 
-draft, reached by battle-oracle-castle07 castle: blocks 68/71, outcomes 52/58
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 castle: blocks 68/71, outcomes 52/58
 
 - `R006+0x2CD1` `jmp 0xd10`
 - `R006+0x2CF4` `jmp 0xd10`
@@ -3013,14 +2995,14 @@ draft, reached by battle-oracle-castle07 castle: blocks 68/71, outcomes 52/58
 
 ### R006+0x3016 `R006+0x3016 (17DF:0D16)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 43/45, outcomes 48/56
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 43/45, outcomes 48/56
 
 - `R006+0x3067` `jmp 0xea4`
 - `R006+0x3159` `jmp 0xdab`
 
 ### R006+0x31C4 `R006+0x31C4 (17DF:0EC4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 57/63, outcomes 64/74
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 57/63, outcomes 64/74
 
 - `R006+0x31D7` `jmp 0x110c`
 - `R006+0x31E2` `jmp 0x110c`
@@ -3031,11 +3013,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x3412 `R006+0x3412 (17DF:1112)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c cards-day cards-variants castle: blocks 11/11, outcomes 11/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c cards-day cards-variants castle: blocks 11/11, outcomes 11/12
 
 ### R006+0x34B8 `R006+0x34B8 (18FA:0008)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 202/241, outcomes 187/248
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 202/241, outcomes 187/248
 
 - `R006+0x34C9` `jmp 0x96a`
 - `R006+0x362B` `mov word ptr [bp - 0x10], 0xfff6`
@@ -3079,7 +3061,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x3E1E `R006+0x3E1E (18FA:096E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c cards cards-day cards-variants castle: blocks 151/168, outcomes 157/182
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c cards cards-day cards-variants castle: blocks 151/168, outcomes 157/182
 
 - `R006+0x3E31` `jmp 0xfcf`
 - `R006+0x3E56` `mov word ptr [bp - 0x2e], 0`
@@ -3101,7 +3083,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x4484 `R006+0x4484 (18FA:0FD4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 35/42, outcomes 35/46
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 35/42, outcomes 35/46
 
 - `R006+0x4491` `jmp 0x11ef`
 - `R006+0x4499` `jmp 0x11ef`
@@ -3113,7 +3095,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x46A4 `R006+0x46A4 (18FA:11F4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 68/71, outcomes 75/86
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 68/71, outcomes 75/86
 
 - `R006+0x46C8` `sub dx, dx`
 - `R006+0x47D6` `sub dx, dx`
@@ -3121,13 +3103,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x491A `R006+0x491A (18FA:146A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 32/33, outcomes 27/32
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 32/33, outcomes 27/32
 
 - `R006+0x4A62` `mov dx, 1`
 
 ### R006+0x4A8C `R006+0x4A8C (1A57:000C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 58/65, outcomes 70/80
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 58/65, outcomes 70/80
 
 - `R006+0x4A98` `jmp 0x2a4`
 - `R006+0x4AA1` `jmp 0x2a4`
@@ -3139,7 +3121,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x4D28 `R006+0x4D28 (1A57:02A8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 40/45, outcomes 35/42
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 40/45, outcomes 35/42
 
 - `R006+0x4D36` `jmp 0x429`
 - `R006+0x4D3E` `jmp 0x429`
@@ -3149,7 +3131,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x4EAE `R006+0x4EAE (1A57:042E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 22/45, outcomes 19/46
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 22/45, outcomes 19/46
 
 - `R006+0x4ECC` `jmp 0x686`
 - `R006+0x4ED7` `jmp 0x686`
@@ -3177,14 +3159,14 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x510A `R006+0x510A (1ABF:000A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 73/75, outcomes 82/90
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 73/75, outcomes 82/90
 
 - `R006+0x5123` `pop si`
 - `R006+0x5248` `jmp 0x389`
 
 ### R006+0x548E `R006+0x548E (1ABF:038E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c cards cards-day cards-variants castle: blocks 68/86, outcomes 68/90
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c cards cards-day cards-variants castle: blocks 68/86, outcomes 68/90
 
 - `R006+0x54A0` `jmp 0x76a`
 - `R006+0x54F1` `jmp 0x76a`
@@ -3207,7 +3189,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x586E `R006+0x586E (1ABF:076E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 83/92, outcomes 79/90
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 83/92, outcomes 79/90
 
 - `R006+0x59BF` `pop si`
 - `R006+0x5A13` `jmp 0x787`
@@ -3221,29 +3203,29 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R006+0x5C78 `R006+0x5C78 (1ABF:0B78)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 6/6, outcomes 4/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 6/6, outcomes 4/4
 
 ### R007+0x0000 `R007+0x0000 (15AF:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 12/13, outcomes 12/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 12/13, outcomes 12/14
 
 - `R007+0x0071` `jmp 0x184`
 
 ### R007+0x0188 `R007+0x0188 (15AF:0188)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 14/15, outcomes 12/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 14/15, outcomes 12/14
 
 - `R007+0x01CA` `jmp 0x256`
 
 ### R007+0x025A `R007+0x025A (15AF:025A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 18/19, outcomes 11/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 18/19, outcomes 11/12
 
 - `R007+0x03AA` `mov si, word ptr [0xdb33]`
 
 ### R007+0x051E `R007+0x051E (15AF:051E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 23/27, outcomes 16/22
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 23/27, outcomes 16/22
 
 - `R007+0x0548` `jmp 0x694`
 - `R007+0x0558` `jmp 0x694`
@@ -3252,7 +3234,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x0698 `R007+0x0698 (15AF:0698)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 63/69, outcomes 60/68
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 63/69, outcomes 60/68
 
 - `R007+0x06E8` `jmp 0x879`
 - `R007+0x0785` `jmp 0x879`
@@ -3263,7 +3245,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x0B3E `R007+0x0B3E (15AF:0B3E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c cards castle: blocks 134/142, outcomes 137/152
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c cards castle: blocks 134/142, outcomes 137/152
 
 - `R007+0x0C08` `jmp 0x106e`
 - `R007+0x0C4D` `mov word ptr [si], 6`
@@ -3276,7 +3258,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x10A6 `R007+0x10A6 (15AF:10A6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 15/19, outcomes 10/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 15/19, outcomes 10/14
 
 - `R007+0x10B2` `jmp 0x1230`
 - `R007+0x10BC` `jmp 0x1230`
@@ -3285,7 +3267,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x1234 `R007+0x1234 (15AF:1234)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 46/61, outcomes 33/52
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 46/61, outcomes 33/52
 
 - `R007+0x12A1` `jmp 0x16ab`
 - `R007+0x12CA` `jmp 0x1691`
@@ -3305,13 +3287,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x16BA `R007+0x16BA (15AF:16BA)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 19/20, outcomes 13/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 19/20, outcomes 13/14
 
 - `R007+0x1831` `jmp 0x18e4`
 
 ### R007+0x18F8 `R007+0x18F8 (15AF:18F8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 22/27, outcomes 17/22
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 22/27, outcomes 17/22
 
 - `R007+0x1939` `jmp 0x1a59`
 - `R007+0x1941` `pop si`
@@ -3321,7 +3303,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x1A5E `R007+0x1A5E (15AF:1A5E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 42/52, outcomes 26/36
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 42/52, outcomes 26/36
 
 - `R007+0x1A86` `jmp 0x1bf9`
 - `R007+0x1A97` `jmp 0x1bf9`
@@ -3336,7 +3318,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x1BFE `R007+0x1BFE (15AF:1BFE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 26/30, outcomes 20/24
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 26/30, outcomes 20/24
 
 - `R007+0x1C67` `jmp 0x1d74`
 - `R007+0x1C6F` `pop si`
@@ -3345,7 +3327,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x1D78 `R007+0x1D78 (15AF:1D78)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c cards castle sainthelp: blocks 88/100, outcomes 63/82
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c cards castle sainthelp: blocks 88/100, outcomes 63/82
 
 - `R007+0x1DA5` `sub ax, ax`
 - `R007+0x1E46` `mov es, word ptr [0xdb39]`
@@ -3375,7 +3357,7 @@ draft, reached by cards castle sainthelp: blocks 24/32, outcomes 15/30
 
 ### R007+0x23D4 `R007+0x23D4 (15AF:23D4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 castle: blocks 139/150, outcomes 126/146
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 castle: blocks 139/150, outcomes 126/146
 
 - `R007+0x2479` `cmp word ptr [bp - 0x24], 0`
 - `R007+0x247F` `jmp 0x2960`
@@ -3422,14 +3404,14 @@ draft, reached by battle-oracle-castle7c castle: blocks 83/88, outcomes 74/82
 
 ### R007+0x30E6 `R007+0x30E6 (15AF:30E6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 24/26, outcomes 26/36
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 24/26, outcomes 26/36
 
 - `R007+0x311C` `jmp 0x3166`
 - `R007+0x312B` `jmp 0x3166`
 
 ### R007+0x316C `R007+0x316C (15AF:316C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 48/52, outcomes 54/60
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 48/52, outcomes 54/60
 
 - `R007+0x31CA` `mov ax, 4`
 - `R007+0x31E1` `sub ax, ax`
@@ -3438,13 +3420,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x3372 `R007+0x3372 (15AF:3372)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 17/18, outcomes 16/18
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 17/18, outcomes 16/18
 
 - `R007+0x33D1` `jmp 0x33fd`
 
 ### R007+0x345A `R007+0x345A (15AF:345A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c cards-day cards-variants castle: blocks 47/54, outcomes 43/52
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c cards-day cards-variants castle: blocks 47/54, outcomes 43/52
 
 - `R007+0x3499` `jmp 0x34df`
 - `R007+0x34ED` `xchg word ptr [bx + di - 0x25], si`
@@ -3456,39 +3438,39 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x3694 `R007+0x3694 (15AF:3694)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c cards castle: blocks 8/8, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c cards castle: blocks 8/8, outcomes 8/8
 
 ### R007+0x36E2 `R007+0x36E2 (15AF:36E2)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 59/59, outcomes 58/68
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 59/59, outcomes 58/68
 
 ### R007+0x39BA `R007+0x39BA (15AF:39BA)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 13/13, outcomes 12/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 13/13, outcomes 12/16
 
 ### R007+0x3AAC `R007+0x3AAC (15AF:3AAC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 10/10, outcomes 10/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 10/10, outcomes 10/12
 
 ### R007+0x3B92 `R007+0x3B92 (15AF:3B92)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 10/10, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 10/10, outcomes 9/10
 
 ### R007+0x3BCE `R007+0x3BCE (15AF:3BCE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 8/8, outcomes 6/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 8/8, outcomes 6/6
 
 ### R007+0x3D2E `R007+0x3D2E (15AF:3D2E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 10/10, outcomes 8/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 10/10, outcomes 8/10
 
 ### R007+0x3DA0 `R007+0x3DA0 (15AF:3DA0)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 15/15, outcomes 7/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 15/15, outcomes 7/8
 
 ### R007+0x3E3E `R007+0x3E3E (15AF:3E3E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 39/45, outcomes 38/50
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 39/45, outcomes 38/50
 
 - `R007+0x3E55` `jmp 0x3f4a`
 - `R007+0x3E70` `jmp 0x3f4a`
@@ -3499,7 +3481,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R007+0x3F8A `R007+0x3F8A (15AF:3F8A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c castle: blocks 12/12, outcomes 11/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c castle: blocks 12/12, outcomes 11/12
 
 ### R007+0x4076 `R007+0x4076 (15AF:4076)`
 
@@ -3687,11 +3669,11 @@ draft, reached by battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 w
 
 ### R009+0x0000 `R009+0x0000 (1432:0000)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 27/27, outcomes 13/14
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 27/27, outcomes 13/14
 
 ### R009+0x019E `R009+0x019E (1432:019E)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 1/1, outcomes 0/0
 
 ### R009+0x01E0 `R009+0x01E0 (1432:01E0)`
 
@@ -3714,7 +3696,7 @@ draft, reached by battle-oracle-mine0b mine: blocks 13/16, outcomes 7/16
 
 ### R009+0x05E4 `R009+0x05E4 (1432:05E4)`
 
-draft, reached by mine: blocks 21/21, outcomes 20/20
+draft, reached by battle-oracle-mine80 mine: blocks 21/21, outcomes 20/20
 
 ### R009+0x0732 `R009+0x0732 (1432:0732)`
 
@@ -3742,7 +3724,7 @@ draft, reached by mine: blocks 14/14, outcomes 15/16
 
 ### R009+0x0D90 `R009+0x0D90 (1432:0D90)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b cards cards-day cards-variants mine: blocks 108/111, outcomes 91/102
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 cards cards-day cards-variants mine: blocks 108/111, outcomes 91/102
 
 - `R009+0x0DB9` `jmp 0x12ae`
 - `R009+0x0DC2` `jmp 0x12ae`
@@ -3750,7 +3732,7 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b cards cards-day cards-
 
 ### R009+0x12B2 `R009+0x12B2 (1432:12B2)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 12/17, outcomes 10/18
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 12/17, outcomes 10/18
 
 - `R009+0x12D1` `cmp bx, 4`
 - `R009+0x12D6` `mov ax, bx`
@@ -3760,7 +3742,7 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 12/17, ou
 
 ### R009+0x1358 `R009+0x1358 (1432:1358)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 96/99, outcomes 91/100
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 96/99, outcomes 91/100
 
 - `R009+0x1381` `jmp 0x18f8`
 - `R009+0x138A` `jmp 0x18f8`
@@ -3768,18 +3750,18 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 96/99, ou
 
 ### R009+0x18FC `R009+0x18FC (1432:18FC)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 8/8, outcomes 6/10
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 8/8, outcomes 6/10
 
 ### R009+0x1948 `R009+0x1948 (1432:1948)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 30/32, outcomes 28/32
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 30/32, outcomes 28/32
 
 - `R009+0x1969` `jmp 0x1aeb`
 - `R009+0x1971` `jmp 0x1aeb`
 
 ### R009+0x1AF0 `R009+0x1AF0 (1432:1AF0)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 37/41, outcomes 30/42
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 37/41, outcomes 30/42
 
 - `R009+0x1B12` `jmp 0x1d9f`
 - `R009+0x1B1A` `jmp 0x1d9f`
@@ -3788,7 +3770,7 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 37/41, ou
 
 ### R009+0x1DA4 `R009+0x1DA4 (1432:1DA4)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 36/39, outcomes 27/36
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 36/39, outcomes 27/36
 
 - `R009+0x1DC6` `jmp 0x2059`
 - `R009+0x1DCE` `jmp 0x2059`
@@ -3807,14 +3789,14 @@ draft, reached by battle-oracle-mine0b mine: blocks 22/28, outcomes 20/32
 
 ### R009+0x2252 `R009+0x2252 (1432:2252)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 25/27, outcomes 22/26
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 25/27, outcomes 22/26
 
 - `R009+0x22A8` `jmp 0x23d1`
 - `R009+0x22B0` `jmp 0x23d1`
 
 ### R009+0x23D6 `R009+0x23D6 (1432:23D6)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 41/49, outcomes 42/58
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 41/49, outcomes 42/58
 
 - `R009+0x23F1` `jmp 0x26c7`
 - `R009+0x2400` `jmp 0x26c7`
@@ -3896,7 +3878,7 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 26/30, ou
 
 ### R009+0x3BEA `R009+0x3BEA (1432:3BEA)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 45/49, outcomes 42/50
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 45/49, outcomes 42/50
 
 - `R009+0x3C0B` `jmp 0x3e17`
 - `R009+0x3C13` `jmp 0x3e17`
@@ -3905,32 +3887,32 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 45/49, ou
 
 ### R009+0x3E1C `R009+0x3E1C (1432:3E1C)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 15/16, outcomes 15/18
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 15/16, outcomes 15/18
 
 - `R009+0x3E46` `jmp 0x3f4f`
 
 ### R009+0x3F54 `R009+0x3F54 (1432:3F54)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 4/4, outcomes 4/4
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 4/4, outcomes 4/4
 
 ### R009+0x3F6C `R009+0x3F6C (1432:3F6C)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 5/5, outcomes 5/6
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 5/5, outcomes 5/6
 
 ### R009+0x3F8A `R009+0x3F8A (1432:3F8A)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 4/4, outcomes 3/4
 
 ### R009+0x3FA2 `R009+0x3FA2 (182C:0002)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 47/49, outcomes 44/46
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 47/49, outcomes 44/46
 
 - `R009+0x40E5` `jmp 0x175`
 - `R009+0x4215` `jmp 0x2a5`
 
 ### R009+0x436A `R009+0x436A (182C:03CA)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 33/41, outcomes 21/32
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 33/41, outcomes 21/32
 
 - `R009+0x43F0` `sub ax, 0x83`
 - `R009+0x43F5` `dec ax`
@@ -3943,7 +3925,7 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 33/41, ou
 
 ### R009+0x4542 `R009+0x4542 (182C:05A2)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 13/17, outcomes 9/18
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 13/17, outcomes 9/18
 
 - `R009+0x457E` `sub ax, 0x83`
 - `R009+0x4583` `dec ax`
@@ -3952,7 +3934,7 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 13/17, ou
 
 ### R009+0x45BA `R009+0x45BA (182C:061A)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b cards cards-day cards-variants mine: blocks 26/29, outcomes 10/14, unresolved indirect jumps 1
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 cards cards-day cards-variants mine: blocks 26/29, outcomes 10/14, unresolved indirect jumps 1
 
 - `R009+0x45EE` `jmp 0x7cc`
 - `R009+0x4610` `jmp 0x7cc`
@@ -3960,7 +3942,7 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b cards cards-day cards-
 
 ### R009+0x4770 `R009+0x4770 (182C:07D0)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 46/52, outcomes 36/50
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 46/52, outcomes 36/50
 
 - `R009+0x47C8` `sub ax, 0x83`
 - `R009+0x47CD` `dec ax`
@@ -3971,7 +3953,7 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 46/52, ou
 
 ### R009+0x48D8 `R009+0x48D8 (182C:0938)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 18/18, outcomes 23/24
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 18/18, outcomes 23/24
 
 ### R009+0x4954 `R009+0x4954 (182C:09B4)`
 
@@ -4131,14 +4113,14 @@ draft, reached by battle-oracle-mine0b mine: blocks 97/113, outcomes 41/60
 
 ### R009+0x6044 `R009+0x6044 (182C:20A4)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 17/19, outcomes 12/16
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 17/19, outcomes 12/16
 
 - `R009+0x60BC` `sub ax, ax`
 - `R009+0x60F4` `mov ax, 5`
 
 ### R009+0x613E `R009+0x613E (182C:219E)`
 
-draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 78/85, outcomes 40/64
+draft, reached by battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 mine: blocks 78/85, outcomes 40/64
 
 - `R009+0x6274` `push 0xa`
 - `R009+0x6286` `shl ax, 1`
@@ -4150,11 +4132,11 @@ draft, reached by battle-oracle-mine battle-oracle-mine0b mine: blocks 78/85, ou
 
 ### R010+0x0000 `R010+0x0000 (1432:0000)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 9/9, outcomes 6/6
+draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 9/9, outcomes 6/6
 
 ### R010+0x0102 `R010+0x0102 (1432:0102)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 31/35, outcomes 25/36
+draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 31/35, outcomes 25/36
 
 - `R010+0x0110` `jmp 0x1d2`
 - `R010+0x01ED` `jmp 0x280`
@@ -4163,13 +4145,13 @@ draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f
 
 ### R010+0x0292 `R010+0x0292 (1432:0292)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 10/11, outcomes 7/10
+draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 10/11, outcomes 7/10
 
 - `R010+0x02AC` `pop si`
 
 ### R010+0x02CC `R010+0x02CC (1432:02CC)`
 
-draft, reached by battle-oracle-city24 battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 37/43, outcomes 25/32
+draft, reached by battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 37/43, outcomes 25/32
 
 - `R010+0x031A` `mov si, word ptr [bp - 2]`
 - `R010+0x0332` `jmp 0x31a`
@@ -4188,7 +4170,7 @@ draft, reached by battle-oracle-city15 city: blocks 1/1, outcomes 0/0
 
 ### R010+0x08AA `R010+0x08AA (1432:08AA)`
 
-draft, reached by battle-oracle-city24 battle-oracle-gate battle-oracle-street cards cards-day cards-variants city lockstep-gate-battle: blocks 94/165, outcomes 60/140
+draft, reached by battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street cards cards-day cards-variants city lockstep-gate-battle: blocks 94/165, outcomes 60/140
 
 - `R010+0x09B0` `cmp word ptr [bp - 0x80], 0xc8`
 - `R010+0x09C4` `jmp 0x9b7`
@@ -4268,7 +4250,7 @@ draft, reached by battle-oracle-city15 battle-oracle-street city: blocks 16/16, 
 
 ### R010+0x11AA `R010+0x11AA (1432:11AA)`
 
-draft, reached by battle-oracle-city24 battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 87/91, outcomes 78/86
+draft, reached by battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 87/91, outcomes 78/86
 
 - `R010+0x1220` `jmp 0x12a5`
 - `R010+0x1262` `jmp 0x1286`
@@ -4331,7 +4313,7 @@ draft, reached by battle-oracle-city15 city: blocks 51/53, outcomes 52/58
 
 ### R010+0x2A2C `R010+0x2A2C (1432:2A2C)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 20/26, outcomes 19/24
+draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 20/26, outcomes 19/24
 
 - `R010+0x2A39` `jmp 0x2b3c`
 - `R010+0x2A41` `jmp 0x2b3c`
@@ -4342,7 +4324,7 @@ draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f
 
 ### R010+0x2B42 `R010+0x2B42 (1432:2B42)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 29/37, outcomes 31/44
+draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 29/37, outcomes 31/44
 
 - `R010+0x2B5A` `jmp 0x2ddb`
 - `R010+0x2B6F` `jmp 0x2ddb`
@@ -4355,7 +4337,7 @@ draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f
 
 ### R010+0x2DE0 `R010+0x2DE0 (1432:2DE0)`
 
-draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 4/4, outcomes 2/4
+draft, reached by battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-street city lockstep-gate-battle: blocks 4/4, outcomes 2/4
 
 ### R011+0x0000 `R011+0x0000 (1432:0000)`
 
@@ -4557,7 +4539,7 @@ draft, reached by special: blocks 10/11, outcomes 6/12
 
 ### R014+0x0000 `R014+0x0000 (0E76:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 66/121, outcomes 66/136
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 66/121, outcomes 66/136
 
 - `R014+0x0064` `mov es, word ptr [0x7d36]`
 - `R014+0x0070` `mov ax, 1`
@@ -4617,7 +4599,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x0620 `R014+0x0620 (0E76:0620)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/7, outcomes 1/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/7, outcomes 1/6
 
 - `R014+0x062F` `mov word ptr [bp - 2], 0`
 - `R014+0x0636` `inc word ptr [bp - 2]`
@@ -4643,7 +4625,7 @@ draft, reached by lockstep-gate-battle: blocks 22/33, outcomes 18/32
 
 ### R014+0x08FE `R014+0x08FE (0E76:08FE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 69/142, outcomes 62/162
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 72/142, outcomes 69/162
 
 - `R014+0x0921` `mov ax, word ptr [0xda4d]`
 - `R014+0x095C` `inc word ptr [bp - 6]`
@@ -4682,7 +4664,6 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 - `R014+0x0B0C` `cmp byte ptr [bx - 0x6397], 3`
 - `R014+0x0B13` `cmp byte ptr [bx - 0x6397], 5`
 - `R014+0x0B1A` `sub si, si`
-- `R014+0x0BB4` `mov word ptr [0xa893], 0`
 - `R014+0x0BC9` `sub si, si`
 - `R014+0x0BCB` `mov bx, si`
 - `R014+0x0BD7` `cmp byte ptr [si - 0x594c], 0x9d`
@@ -4691,8 +4672,6 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 - `R014+0x0BEA` `cmp word ptr [0xa893], 3`
 - `R014+0x0BF1` `mov word ptr [0xa893], 5`
 - `R014+0x0C44` `mov es, word ptr [0x7d36]`
-- `R014+0x0C58` `mov ax, word ptr [bp - 8]`
-- `R014+0x0C61` `jmp 0xd66`
 - `R014+0x0C64` `mov si, 5`
 - `R014+0x0C67` `mov bx, si`
 - `R014+0x0C77` `lcall 0x9c0, 0x1cb1`
@@ -4721,7 +4700,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x0D86 `R014+0x0D86 (0E76:0D86)`
 
-draft, reached by lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle04 battle-oracle-mine80 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R014+0x0DEE `R014+0x0DEE (0E76:0DEE)`
 
@@ -4739,7 +4718,7 @@ draft, reached by lockstep-gate-battle: blocks 16/25, outcomes 13/26
 
 ### R014+0x0F58 `R014+0x0F58 (0E76:0F58)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 41/53, outcomes 41/56
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 41/53, outcomes 41/56
 
 - `R014+0x0F65` `jmp 0x1153`
 - `R014+0x0FEA` `mov byte ptr [0xd610], 0`
@@ -4756,11 +4735,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x1158 `R014+0x1158 (0E76:1158)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R014+0x116E `R014+0x116E (0E76:116E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 75/80, outcomes 78/86
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 75/80, outcomes 78/86
 
 - `R014+0x119E` `jmp 0x158a`
 - `R014+0x11D1` `mov al, byte ptr [0xc623]`
@@ -4770,7 +4749,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x1624 `R014+0x1624 (0E76:1624)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 20/54, outcomes 16/54
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 20/54, outcomes 16/54
 
 - `R014+0x1658` `mov word ptr [si - 0x2636], bx`
 - `R014+0x1662` `jmp 0x1998`
@@ -4809,7 +4788,7 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0x199C `R014+0x199C (0E76:199C)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 33/36, outcomes 36/42
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 33/36, outcomes 36/42
 
 - `R014+0x1A25` `mov ax, word ptr [0x117e]`
 - `R014+0x1B68` `cmp bx, 5`
@@ -4857,7 +4836,7 @@ draft, reached by battle-oracle-wild30: blocks 19/40, outcomes 15/42
 
 ### R014+0x2324 `R014+0x2324 (0E76:2324)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 46/69, outcomes 44/74
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 46/69, outcomes 44/74
 
 - `R014+0x236D` `jmp 0x27a9`
 - `R014+0x240D` `mov byte ptr [0x9084], 1`
@@ -4885,11 +4864,11 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0x27AC `R014+0x27AC (0E76:27AC)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R014+0x2802 `R014+0x2802 (0E76:2802)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 17/27, outcomes 14/26
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 17/27, outcomes 14/26
 
 - `R014+0x291B` `cmp word ptr [bp - 0x14], dx`
 - `R014+0x2920` `mov bl, byte ptr [0xc80e]`
@@ -4904,13 +4883,13 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0x2A04 `R014+0x2A04 (0E76:2A04)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild75 lockstep-gate-battle: blocks 8/9, outcomes 7/8
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild75 lockstep-gate-battle: blocks 8/9, outcomes 7/8
 
 - `R014+0x2A40` `mov si, 7`
 
 ### R014+0x2A4A `R014+0x2A4A (0E76:2A4A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 46/58, outcomes 44/60
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 46/58, outcomes 44/60
 
 - `R014+0x2A77` `jmp 0x2c3d`
 - `R014+0x2AA8` `jmp 0x2b3c`
@@ -4927,7 +4906,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x2CCA `R014+0x2CCA (0E76:2CCA)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 27/42, outcomes 20/40
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 27/42, outcomes 20/40
 
 - `R014+0x2CDD` `mov bx, di`
 - `R014+0x2DE6` `mov dx, word ptr [bp - 6]`
@@ -4947,7 +4926,7 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0x2FA2 `R014+0x2FA2 (0E76:2FA2)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 10/16, outcomes 10/16
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 10/16, outcomes 10/16
 
 - `R014+0x2FE2` `mov ax, word ptr [0x7d4]`
 - `R014+0x302C` `mov word ptr [bx - 0x639b], 0`
@@ -4958,11 +4937,11 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0x306A `R014+0x306A (0E76:306A)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 31/31, outcomes 29/34
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 31/31, outcomes 29/34
 
 ### R014+0x3166 `R014+0x3166 (0E76:3166)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 32/69, outcomes 29/94
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 32/69, outcomes 29/94
 
 - `R014+0x31B5` `mov bx, word ptr [0xc4fe]`
 - `R014+0x31BF` `mov si, 0x40`
@@ -5004,7 +4983,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x33A2 `R014+0x33A2 (0E76:33A2)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 22/62, outcomes 21/88
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 22/62, outcomes 21/88
 
 - `R014+0x33AD` `cmp word ptr [0x9c42], dx`
 - `R014+0x33B3` `jmp 0x35f6`
@@ -5049,7 +5028,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x35FC `R014+0x35FC (0E76:35FC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/84, outcomes 3/70
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/84, outcomes 3/70
 
 - `R014+0x3616` `mov ax, word ptr [0xe092]`
 - `R014+0x361F` `jmp 0x36c4`
@@ -5132,7 +5111,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x38B6 `R014+0x38B6 (0E76:38B6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 54/62, outcomes 47/58
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 54/62, outcomes 47/58
 
 - `R014+0x3903` `jmp 0x399b`
 - `R014+0x390F` `jmp 0x399b`
@@ -5145,22 +5124,22 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x3C86 `R014+0x3C86 (0E76:3C86)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 3/5, outcomes 1/4
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 3/5, outcomes 1/4
 
 - `R014+0x3CA0` `inc bx`
 - `R014+0x3CA8` `pop di`
 
 ### R014+0x3CC4 `R014+0x3CC4 (0E76:3CC4)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R014+0x3D0C `R014+0x3D0C (0E76:3D0C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R014+0x3D2C `R014+0x3D2C (0E76:3D2C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 47/56, outcomes 34/44
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 47/56, outcomes 34/44
 
 - `R014+0x3D3E` `sub al, 0x20`
 - `R014+0x3D59` `jmp 0x3f5e`
@@ -5174,7 +5153,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x4188 `R014+0x4188 (0E76:4188)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 25/39, outcomes 11/28
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 25/39, outcomes 11/28
 
 - `R014+0x4194` `cmp word ptr [bp + 8], -1`
 - `R014+0x419A` `jmp 0x443d`
@@ -5193,31 +5172,24 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x4442 `R014+0x4442 (0E76:4442)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 20/29, outcomes 17/30
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 24/29, outcomes 22/30
 
 - `R014+0x4456` `jmp 0x459e`
 - `R014+0x4460` `jmp 0x459e`
 - `R014+0x446A` `jmp 0x459e`
-- `R014+0x4508` `cmp byte ptr [0xd6cc], 0`
-- `R014+0x450F` `sub di, di`
-- `R014+0x4514` `cmp byte ptr [si], 1`
-- `R014+0x4519` `push 0`
 - `R014+0x4550` `inc di`
 - `R014+0x455B` `jmp 0x4584`
 
 ### R014+0x45AE `R014+0x45AE (0E76:45AE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle7c battle-oracle-city1c battle-oracle-fort5e battle-oracle-mine battle-oracle-mine0b lockstep-gate-battle: blocks 12/17, outcomes 11/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle7c battle-oracle-city1c battle-oracle-city2b battle-oracle-fort5e battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 lockstep-gate-battle: blocks 15/17, outcomes 14/16
 
-- `R014+0x4612` `mov ax, word ptr [bp - 2]`
 - `R014+0x461D` `mov ax, dx`
-- `R014+0x4624` `mov ax, word ptr [bp - 2]`
 - `R014+0x462E` `mov ax, dx`
-- `R014+0x4636` `mov ax, dx`
 
 ### R014+0x465E `R014+0x465E (0E76:465E)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/8, outcomes 2/12
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/8, outcomes 2/12
 
 - `R014+0x4671` `cmp si, 0x12`
 - `R014+0x4676` `cmp byte ptr [0x1bf], 1`
@@ -5230,35 +5202,35 @@ draft, reached by battle-oracle-wild30: blocks 7/7, outcomes 9/10
 
 ### R014+0x4780 `R014+0x4780 (0E76:4780)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/4, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/4, outcomes 2/2
 
 ### R014+0x47AE `R014+0x47AE (0E76:47AE)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 9/10, outcomes 10/12
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 9/10, outcomes 10/12
 
 - `R014+0x47D0` `sub ax, ax`
 
 ### R014+0x481A `R014+0x481A (12F7:000A)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 35/36, outcomes 33/36
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 35/36, outcomes 33/36
 
 - `R014+0x4A88` `mov di, word ptr [0xe11a]`
 
 ### R014+0x4B5A `R014+0x4B5A (12F7:034A)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 9/9, outcomes 9/10
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 9/9, outcomes 9/10
 
 ### R014+0x4BC6 `R014+0x4BC6 (12F7:03B6)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R014+0x4BE2 `R014+0x4BE2 (12F7:03D2)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R014+0x4BFA `R014+0x4BFA (12F7:03EA)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 66/69, outcomes 62/70
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 66/69, outcomes 62/70
 
 - `R014+0x4FF3` `jmp 0x960`
 - `R014+0x504E` `mov bx, word ptr [bp + 6]`
@@ -5266,11 +5238,11 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0x519E `R014+0x519E (12F7:098E)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 19/19, outcomes 20/20
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 19/19, outcomes 20/20
 
 ### R014+0x52C4 `R014+0x52C4 (12F7:0AB4)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 47/50, outcomes 43/46
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 47/50, outcomes 43/46
 
 - `R014+0x53D4` `jmp 0xacd`
 - `R014+0x546B` `jmp 0xacd`
@@ -5278,15 +5250,15 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0x580E `R014+0x580E (12F7:0FFE)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 1/1, outcomes 0/0
 
 ### R014+0x58A4 `R014+0x58A4 (12F7:1094)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 8/8, outcomes 12/12
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 8/8, outcomes 12/12
 
 ### R014+0x5976 `R014+0x5976 (12F7:1166)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 35/40, outcomes 28/38
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 35/40, outcomes 28/38
 
 - `R014+0x59A5` `jmp 0x1353`
 - `R014+0x5B5E` `mov word ptr [bp - 0x14], 1`
@@ -5296,35 +5268,35 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0x5C8C `R014+0x5C8C (12F7:147C)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 3/3, outcomes 2/2
 
 ### R014+0x5CA4 `R014+0x5CA4 (12F7:1494)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 1/1, outcomes 0/0
 
 ### R014+0x5D04 `R014+0x5D04 (12F7:14F4)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 1/1, outcomes 0/0
 
 ### R014+0x5D64 `R014+0x5D64 (12F7:1554)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R014+0x5E2A `R014+0x5E2A (12F7:161A)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 11/11, outcomes 13/14
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 11/11, outcomes 13/14
 
 ### R014+0x5EB4 `R014+0x5EB4 (12F7:16A4)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 1/1, outcomes 0/0
 
 ### R014+0x5ECA `R014+0x5ECA (1462:000A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 10/10, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 10/10, outcomes 8/8
 
 ### R014+0x60B0 `R014+0x60B0 (1462:01F0)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day lockstep-gate-battle tactics: blocks 81/87, outcomes 121/128
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-day lockstep-gate-battle tactics: blocks 81/87, outcomes 121/128
 
 - `R014+0x60F7` `pcmpeqb mm6, qword ptr [bx + si]`
 - `R014+0x611B` `mov ax, word ptr [0x851e]`
@@ -5335,21 +5307,21 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x63CC `R014+0x63CC (1462:050C)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 60/60, outcomes 96/96
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 60/60, outcomes 96/96
 
 ### R014+0x6600 `R014+0x6600 (1462:0740)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 24/25, outcomes 31/32
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 24/25, outcomes 31/32
 
 - `R014+0x6642` `jmp 0x828`
 
 ### R014+0x66FE `R014+0x66FE (1462:083E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 15/15, outcomes 20/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path tactics: blocks 15/15, outcomes 20/20
 
 ### R014+0x6818 `R014+0x6818 (14F7:0008)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 77/117, outcomes 49/86
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 77/117, outcomes 49/86
 
 - `R014+0x6860` `sub si, si`
 - `R014+0x6864` `mov bx, si`
@@ -5394,7 +5366,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x6FFC `R014+0x6FFC (14F7:07EC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/26, outcomes 4/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/26, outcomes 4/20
 
 - `R014+0x700C` `push cs`
 - `R014+0x701C` `jmp 0x96d`
@@ -5419,7 +5391,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x719E `R014+0x719E (14F7:098E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 37/40, outcomes 35/38
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 37/40, outcomes 35/38
 
 - `R014+0x71E3` `jmp 0xc6c`
 - `R014+0x72FF` `jmp 0xb9f`
@@ -5427,7 +5399,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x74A2 `R014+0x74A2 (14F7:0C92)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 27/30, outcomes 21/32
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 27/30, outcomes 21/32
 
 - `R014+0x74B1` `jmp 0xd41`
 - `R014+0x7606` `jmp 0xe99`
@@ -5435,7 +5407,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x76AE `R014+0x76AE (14F7:0E9E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 20/53, outcomes 18/58
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 20/53, outcomes 18/58
 
 - `R014+0x76C3` `mov si, 0xa2ef`
 - `R014+0x76CB` `mov es, word ptr [0xd6f5]`
@@ -5473,7 +5445,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x799E `R014+0x799E (14F7:118E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 32/40, outcomes 25/36
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 32/40, outcomes 25/36
 
 - `R014+0x79C8` `jmp 0x1388`
 - `R014+0x7A20` `jmp 0x1388`
@@ -5486,17 +5458,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x7BBE `R014+0x7BBE (14F7:13AE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 105/116, outcomes 96/108
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 109/116, outcomes 98/108
 
 - `R014+0x7CFC` `dec byte ptr [0xe166]`
 - `R014+0x7E05` `jmp 0x167a`
-- `R014+0x7E0B` `jmp 0x16ac`
 - `R014+0x7E14` `jmp 0x1704`
 - `R014+0x7E8A` `mov bx, word ptr [bp + 6]`
-- `R014+0x7EA2` `mov word ptr es:[bx + 0x1e], cx`
-- `R014+0x7EBC` `mov bx, word ptr [bp + 6]`
 - `R014+0x8012` `jmp 0x189e`
-- `R014+0x801A` `jmp 0x189e`
 - `R014+0x80F8` `jmp 0x197c`
 - `R014+0x81CC` `jmp 0x1a58`
 
@@ -5512,7 +5480,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x8680 `R014+0x8680 (14F7:1E70)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/19, outcomes 16/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/19, outcomes 16/20
 
 - `R014+0x86F9` `mov word ptr es:[bx + 0xc], 0`
 - `R014+0x870D` `mov ax, 0xc8`
@@ -5520,21 +5488,21 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x8724 `R014+0x8724 (14F7:1F14)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/4, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/4, outcomes 1/2
 
 - `R014+0x8733` `jmp 0x1fcf`
 
 ### R014+0x87E4 `R014+0x87E4 (14F7:1FD4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R014+0x8862 `R014+0x8862 (14F7:2052)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
 
 ### R014+0x88E6 `R014+0x88E6 (14F7:20D6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 37/42, outcomes 36/42
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 37/42, outcomes 36/42
 
 - `R014+0x890E` `mov word ptr es:[bx], 0`
 - `R014+0x8922` `mov word ptr es:[bx], 0`
@@ -5561,32 +5529,32 @@ draft, reached by battle-oracle-wild30: blocks 27/39, outcomes 18/36
 
 ### R014+0x97A6 `R014+0x97A6 (14F7:2F96)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/12, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/12, outcomes 9/10
 
 - `R014+0x97B7` `jmp 0x3046`
 - `R014+0x9856` `pop si`
 
 ### R014+0x99F6 `R014+0x99F6 (14F7:31E6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 37/38, outcomes 34/38
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 37/38, outcomes 34/38
 
 - `R014+0x9A1D` `jmp 0x33ed`
 
 ### R014+0x9C14 `R014+0x9C14 (14F7:3404)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/4, outcomes 3/4
 
 ### R014+0x9C4C `R014+0x9C4C (14F7:343C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path: blocks 9/9, outcomes 10/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle path: blocks 9/9, outcomes 10/10
 
 ### R014+0x9C8C `R014+0x9C8C (14F7:347C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/10, outcomes 14/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/10, outcomes 14/16
 
 ### R014+0x9CE6 `R014+0x9CE6 (14F7:34D6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/18, outcomes 8/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/18, outcomes 8/20
 
 - `R014+0x9CF2` `jmp 0x3596`
 - `R014+0x9CFB` `jmp 0x3596`
@@ -5599,11 +5567,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0x9DAA `R014+0x9DAA (14F7:359A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R014+0x9DDE `R014+0x9DDE (14F7:35CE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 7/12, outcomes 6/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 7/12, outcomes 6/16
 
 - `R014+0x9DEA` `add word ptr [bp + 0xc], dx`
 - `R014+0x9DF7` `sub ax, ax`
@@ -5613,26 +5581,26 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xA492 `R014+0xA492 (18BF:0002)`
 
-draft, reached by battle battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 19/20, outcomes 17/18
+draft, reached by battle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 19/20, outcomes 17/18
 
 - `R014+0xA583` `sub dx, dx`
 
 ### R014+0xA592 `R014+0xA592 (18BF:0102)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 28/29, outcomes 28/32
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 28/29, outcomes 28/32
 
 - `R014+0xA697` `jmp 0x2a1`
 
 ### R014+0xA738 `R014+0xA738 (18BF:02A8)`
 
-draft, reached by battle battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 67/69, outcomes 63/66
+draft, reached by battle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 67/69, outcomes 63/66
 
 - `R014+0xA8C3` `mov word ptr [bp - 2], 1`
 - `R014+0xA907` `mov word ptr [bp - 0xc], 0`
 
 ### R014+0xAA22 `R014+0xAA22 (18BF:0592)`
 
-draft, reached by battle battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 45/50, outcomes 47/52
+draft, reached by battle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 45/50, outcomes 47/52
 
 - `R014+0xABA2` `mov word ptr [bp - 6], di`
 - `R014+0xABAB` `push word ptr [bp + 6]`
@@ -5642,19 +5610,19 @@ draft, reached by battle battle-oracle-castle07 battle-oracle-city15 battle-orac
 
 ### R014+0xAC08 `R014+0xAC08 (18BF:0778)`
 
-draft, reached by battle battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 22/22, outcomes 18/18
+draft, reached by battle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 22/22, outcomes 18/18
 
 ### R014+0xAD5A `R014+0xAD5A (18BF:08CA)`
 
-draft, reached by battle battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 17/17, outcomes 13/14
+draft, reached by battle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 17/17, outcomes 13/14
 
 ### R014+0xAE1E `R014+0xAE1E (18BF:098E)`
 
-draft, reached by battle battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 15/15, outcomes 14/14
+draft, reached by battle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 15/15, outcomes 14/14
 
 ### R014+0xAED0 `R014+0xAED0 (18BF:0A40)`
 
-draft, reached by battle battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 29/30, outcomes 27/30
+draft, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 29/30, outcomes 27/30
 
 - `R014+0xB07D` `mov dx, 0xff`
 
@@ -5684,7 +5652,7 @@ draft, reached by battle-oracle-gate battle-oracle-wild30 lockstep-gate-battle: 
 
 ### R014+0xB576 `R014+0xB576 (19CD:0006)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 13/111, outcomes 9/108
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 13/111, outcomes 9/108
 
 - `R014+0xB592` `jmp 0x697`
 - `R014+0xB59C` `mov ax, word ptr [0xda4b]`
@@ -5787,11 +5755,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xBC0C `R014+0xBC0C (19CD:069C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 3/4
 
 ### R014+0xBCA8 `R014+0xBCA8 (19CD:0738)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/58, outcomes 3/56
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/58, outcomes 3/56
 
 - `R014+0xBCCD` `cmp dx, 0x400`
 - `R014+0xBCD3` `mov al, byte ptr [0xa6b2]`
@@ -5849,7 +5817,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xCD66 `R014+0xCD66 (19CD:17F6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 14/26, outcomes 13/30
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 14/26, outcomes 13/30
 
 - `R014+0xCD8D` `jmp 0x187b`
 - `R014+0xCDFE` `jmp 0x1957`
@@ -5866,7 +5834,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xCF5E `R014+0xCF5E (19CD:19EE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/16, outcomes 4/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/16, outcomes 4/16
 
 - `R014+0xCF7A` `sub si, si`
 - `R014+0xCF83` `jmp 0x1ad9`
@@ -5882,30 +5850,16 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xD04E `R014+0xD04E (19CD:1ADE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 19/57, outcomes 17/56
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 33/57, outcomes 27/56
 
-- `R014+0xD0E4` `mov si, word ptr [bp - 0xa]`
 - `R014+0xD12A` `mov byte ptr [di - 0x3911], 0`
-- `R014+0xD132` `mov bx, word ptr [bp - 0xe]`
 - `R014+0xD140` `mov byte ptr [di - 0x3911], 1`
-- `R014+0xD148` `mov al, byte ptr es:[bx + 0x1f5d]`
 - `R014+0xD153` `mov byte ptr [di - 0x3911], 2`
-- `R014+0xD15A` `mov al, byte ptr es:[bx + 0x1f5d]`
-- `R014+0xD165` `mov byte ptr [di - 0x3911], 3`
-- `R014+0xD16A` `mov al, byte ptr [di - 0x3911]`
-- `R014+0xD174` `dec ax`
-- `R014+0xD177` `dec ax`
-- `R014+0xD17A` `dec ax`
 - `R014+0xD17D` `jmp 0x1c38`
 - `R014+0xD180` `mov al, byte ptr [bp - 2]`
 - `R014+0xD186` `mov al, byte ptr [bp - 4]`
 - `R014+0xD18C` `mov al, byte ptr [bp - 1]`
-- `R014+0xD194` `mov ax, word ptr [bp - 4]`
-- `R014+0xD1A2` `and ax, 0xf`
-- `R014+0xD1A8` `mov bx, di`
-- `R014+0xD1B7` `mov byte ptr [di - 0x3988], 1`
 - `R014+0xD1BE` `mov byte ptr [di - 0x3988], 0`
-- `R014+0xD1C3` `mov ax, si`
 - `R014+0xD1DB` `jmp 0x1d5a`
 - `R014+0xD1F2` `mov bl, byte ptr [di - 0x39b4]`
 - `R014+0xD210` `jmp 0x1d38`
@@ -5925,18 +5879,18 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xD2CE `R014+0xD2CE (19CD:1D5E)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/6, outcomes 4/6
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/6, outcomes 5/6
 
 ### R014+0xD328 `R014+0xD328 (19CD:1DB8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 15/17, outcomes 15/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 15/17, outcomes 15/20
 
 - `R014+0xD3B0` `mov al, byte ptr [bp - 8]`
 - `R014+0xD3D8` `mov byte ptr [0x96bd], 1`
 
 ### R014+0xD402 `R014+0xD402 (19CD:1E92)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/49, outcomes 11/54
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/49, outcomes 11/54
 
 - `R014+0xD459` `mov ax, word ptr [bp - 4]`
 - `R014+0xD462` `mov ax, word ptr [bp - 6]`
@@ -5974,14 +5928,14 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xD60A `R014+0xD60A (19CD:209A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 18/20, outcomes 17/22
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 18/20, outcomes 17/22
 
 - `R014+0xD69E` `mov al, byte ptr [bp - 0xa]`
 - `R014+0xD6CB` `mov al, 1`
 
 ### R014+0xD6DA `R014+0xD6DA (19CD:216A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 11/18, outcomes 12/26
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 11/18, outcomes 12/26
 
 - `R014+0xD747` `cmp di, 5`
 - `R014+0xD74C` `jl 0x221a`
@@ -5993,7 +5947,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xD7A2 `R014+0xD7A2 (19CD:2232)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle7c battle-oracle-city1c battle-oracle-fort5e battle-oracle-mine battle-oracle-mine0b: blocks 8/21, outcomes 5/26
+draft, reached by battle-oracle-castle battle-oracle-castle7c battle-oracle-city1c battle-oracle-city2b battle-oracle-fort5e battle-oracle-mine battle-oracle-mine0b: blocks 8/21, outcomes 5/26
 
 - `R014+0xD7DF` `mov cx, 0x59cc`
 - `R014+0xD7EB` `mov al, byte ptr ss:[0x11ca]`
@@ -6011,11 +5965,8 @@ draft, reached by battle-oracle-castle battle-oracle-castle7c battle-oracle-city
 
 ### R014+0xDC14 `R014+0xDC14 (19CD:26A4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 41/57, outcomes 39/62
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 45/57, outcomes 43/62
 
-- `R014+0xDC4E` `and byte ptr [si], 0xda`
-- `R014+0xDC51` `or byte ptr [si], 8`
-- `R014+0xDC5E` `test byte ptr [si], 2`
 - `R014+0xDC63` `and byte ptr [si], 0xda`
 - `R014+0xDC87` `and byte ptr [si], 0xd9`
 - `R014+0xDC92` `test byte ptr [si], 1`
@@ -6026,20 +5977,19 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 - `R014+0xDCF4` `and byte ptr [si], 0xf8`
 - `R014+0xDD00` `test byte ptr [si], 0x20`
 - `R014+0xDD05` `and byte ptr [si], 0xf8`
-- `R014+0xDD08` `push di`
 - `R014+0xDD6C` `jmp 0x288b`
 - `R014+0xDDDA` `push 1`
 
 ### R014+0xDE12 `R014+0xDE12 (19CD:28A2)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 10/12, outcomes 6/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 10/12, outcomes 6/8
 
 - `R014+0xDE78` `mov di, 0x744`
 - `R014+0xDF04` `mov di, 0x744`
 
 ### R014+0xDF28 `R014+0xDF28 (19CD:29B8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/61, outcomes 12/66
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/61, outcomes 12/66
 
 - `R014+0xDF63` `mov byte ptr [0x96bd], 1`
 - `R014+0xDFF5` `cmp byte ptr [0xa6c1], 0`
@@ -6089,11 +6039,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R014+0xE774 `R014+0xE774 (19CD:3204)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R014+0xED10 `R014+0xED10 (1D47:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 20/25, outcomes 17/26
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 20/25, outcomes 17/26
 
 - `R014+0xED96` `jmp 0x127`
 - `R014+0xEDD3` `sub al, al`
@@ -6114,43 +6064,42 @@ draft, reached by battle-oracle-gate battle-oracle-wild30 lockstep-gate-battle: 
 
 ### R014+0xEF3C `R014+0xEF3C (1D69:000C)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle tactics: blocks 59/61, outcomes 60/62
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle tactics: blocks 59/61, outcomes 60/62
 
 - `R014+0xEFB3` `jmp 0x26d`
 - `R014+0xEFDD` `jmp 0x257`
 
 ### R014+0xF284 `R014+0xF284 (1D69:0354)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle tactics: blocks 21/21, outcomes 20/20
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle tactics: blocks 21/21, outcomes 20/20
 
 ### R014+0xF3E2 `R014+0xF3E2 (1D69:04B2)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle tactics: blocks 9/9, outcomes 8/8
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle tactics: blocks 9/9, outcomes 8/8
 
 ### R014+0xF418 `R014+0xF418 (1DB7:0008)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/4, outcomes 3/4
 
 ### R014+0xF438 `R014+0xF438 (1DB7:0028)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 21/23, outcomes 22/26
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 21/23, outcomes 22/26
 
 - `R014+0xF452` `jmp 0x144`
 - `R014+0xF47D` `jmp 0x144`
 
 ### R014+0xF568 `R014+0xF568 (1DB7:0158)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 14/14, outcomes 14/16
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle path: blocks 14/14, outcomes 14/16
 
 ### R014+0xF67A `R014+0xF67A (1DB7:026A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 34/39, outcomes 31/42
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 35/39, outcomes 32/42
 
 - `R014+0xF754` `cmp di, 0x9ed9`
 - `R014+0xF75A` `cmp word ptr [bp - 8], 0x7aad`
 - `R014+0xF761` `cmp di, 0x9ed9`
 - `R014+0xF767` `cmp word ptr [bp - 8], 0x7aad`
-- `R014+0xF788` `mov si, word ptr [bp - 0xc]`
 
 ### R014+0xF828 `R014+0xF828 (1DB7:0418)`
 
@@ -6177,7 +6126,7 @@ draft, reached by lockstep-gate-battle: blocks 8/16, outcomes 8/16
 
 ### R014+0xFADC `R014+0xFADC (1DB7:06CC)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 27/32, outcomes 27/34
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 27/32, outcomes 27/34
 
 - `R014+0xFAE9` `jmp 0x83c`
 - `R014+0xFB16` `jmp 0x822`
@@ -6187,44 +6136,42 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R014+0xFC50 `R014+0xFC50 (1DB7:0840)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 25/27, outcomes 27/36
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 25/27, outcomes 27/36
 
 - `R014+0xFD14` `mov al, byte ptr [di + 0x3a]`
 - `R014+0xFD38` `push si`
 
 ### R014+0xFDBE `R014+0xFDBE (1DB7:09AE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 15/15, outcomes 13/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 15/15, outcomes 13/14
 
 ### R014+0xFE90 `R014+0xFE90 (1DB7:0A80)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/16, outcomes 12/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 16/16, outcomes 12/12
 
 ### R014+0xFFB8 `R014+0xFFB8 (1DB7:0BA8)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 10/11, outcomes 10/12
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 10/11, outcomes 10/12
 
 - `R014+0xFFDB` `mov ax, word ptr [bx - 0x639b]`
 
 ### R014+0x1003A `R014+0x1003A (1DB7:0C2A)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 4/5, outcomes 2/4
-
-- `R014+0x1008B` `push si`
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 3/4
 
 ### R014+0x1010A `R014+0x1010A (1DB7:0CFA)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 6/6, outcomes 4/4
+draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 6/6, outcomes 4/4
 
 ### R014+0x10146 `R014+0x10146 (1DB7:0D36)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 18/19, outcomes 18/22
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 18/19, outcomes 18/22
 
 - `R014+0x10153` `jmp 0xe1e`
 
 ### R014+0x10232 `R014+0x10232 (1DB7:0E22)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 58/62, outcomes 57/66
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 58/62, outcomes 57/66
 
 - `R014+0x10251` `cmp di, 5`
 - `R014+0x10256` `jmp 0x111c`
@@ -6245,7 +6192,7 @@ draft, reached by battle-oracle-wild30: blocks 2/9, outcomes 1/8
 
 ### R014+0x1060A `R014+0x1060A (1EC9:00DA)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R014+0x10672 `R014+0x10672 (1EC9:0142)`
 
@@ -6267,11 +6214,11 @@ draft, reached by battle-oracle-gate lockstep-gate-battle: blocks 2/15, outcomes
 
 ### R015+0x0000 `R015+0x0000 (1EF8:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 4/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 4/6
 
 ### R016+0x0000 `R016+0x0000 (1EF8:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 14/438, outcomes 9/390
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 14/438, outcomes 9/390
 
 - `R016+0x001E` `jmp 0xac`
 - `R016+0x002E` `cmp byte ptr [0x880], 0`
@@ -6700,14 +6647,14 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R016+0x0A2C `R016+0x0A2C (1EF8:0A2C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 9/11, outcomes 7/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 9/11, outcomes 7/14
 
 - `R016+0x0A5F` `lcall 0x19cd, 0x738`
 - `R016+0x0A89` `mov al, byte ptr [si - 0x594c]`
 
 ### R016+0x0DA6 `R016+0x0DA6 (1EF8:0DA6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/17, outcomes 1/22
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 2/17, outcomes 1/22
 
 - `R016+0x0DC2` `mov dx, 1`
 - `R016+0x0DCE` `mov al, byte ptr [si - 0x39dc]`
@@ -6727,17 +6674,17 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R016+0x0E2E `R016+0x0E2E (1EF8:0E2E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/7, outcomes 5/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/7, outcomes 5/6
 
 - `R016+0x0E5A` `push 0x286b`
 
 ### R016+0x1436 `R016+0x1436 (1EF8:1436)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 1/2
 
 ### R017+0x0000 `R017+0x0000 (1EF8:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 192/210, outcomes 198/250
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 192/210, outcomes 198/250
 
 - `R017+0x0205` `cmp word ptr [bp - 8], 0`
 - `R017+0x0328` `cmp byte ptr [0xe230], 1`
@@ -6811,7 +6758,7 @@ matched, reached by battle-oracle-gate lockstep-gate-battle: blocks 14/27, outco
 
 ### R018+0x04B6 `R018+0x04B6 (1F43:0006)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 47/61, outcomes 41/58
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 47/61, outcomes 41/58
 
 - `R018+0x04F8` `mov dx, word ptr [bp + 6]`
 - `R018+0x0501` `cmp byte ptr [bx], 1`
@@ -6830,7 +6777,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R018+0x0706 `R018+0x0706 (1F43:0256)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 102/179, outcomes 97/176
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 102/179, outcomes 97/176
 
 - `R018+0x0713` `jmp 0xc86`
 - `R018+0x071D` `mov ax, word ptr [0xc2bb]`
@@ -6930,19 +6877,15 @@ draft, reached by battle-oracle-gate lockstep-gate-battle: blocks 17/30, outcome
 
 ### R018+0x13B2 `R018+0x13B2 (1F43:0F02)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 13/13, outcomes 12/12
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild75 lockstep-gate-battle: blocks 13/13, outcomes 12/12
 
 ### R018+0x1472 `R018+0x1472 (1F43:0FC2)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/5, outcomes 3/4
-
-- `R018+0x14D4` `mov al, byte ptr [di + 0x1182]`
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/5, outcomes 4/4
 
 ### R018+0x14FC `R018+0x14FC (1F43:104C)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/7, outcomes 6/8
-
-- `R018+0x1523` `push si`
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 7/7, outcomes 7/8
 
 ### R019+0x0000 `R019+0x0000 (1EF8:0000)`
 
@@ -7050,7 +6993,7 @@ matched, reached by battle-oracle-wild30: blocks 12/22, outcomes 9/22
 
 ### R019+0x0C80 `R019+0x0C80 (1EF8:0C80)`
 
-matched, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 12/25, outcomes 9/28
+matched, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 12/25, outcomes 9/28
 
 - `R019+0x0C9D` `jmp 0xdf7`
 - `R019+0x0CC2` `mov di, word ptr [bp - 8]`
@@ -7074,7 +7017,7 @@ matched, reached by battle-oracle-wild30: blocks 2/3, outcomes 1/2
 
 ### R020+0x0000 `R020+0x0000 (1EF8:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 43/49, outcomes 39/50
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 43/49, outcomes 39/50
 
 - `R020+0x0389` `mov ax, word ptr [bp - 0x2c]`
 - `R020+0x0452` `mov ax, word ptr [bp - 2]`
@@ -7085,11 +7028,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R020+0x05E6 `R020+0x05E6 (1EF8:05E6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R020+0x06B6 `R020+0x06B6 (1EF8:06B6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 2/2
 
 ### R021+0x0000 `R021+0x0000 (1EF8:0000)`
 
@@ -7105,7 +7048,7 @@ matched, reached by battle: blocks 6/9, outcomes 3/6
 
 ### R023+0x04AC `R023+0x04AC (1EF8:04AC)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city1f: blocks 29/51, outcomes 19/44
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city1f: blocks 29/51, outcomes 19/44
 
 - `R023+0x04E5` `mov word ptr [bp - 6], 1`
 - `R023+0x0532` `mov byte ptr [0xd4e4], 1`
@@ -7132,14 +7075,14 @@ draft, reached by battle-oracle-castle07 battle-oracle-city1f: blocks 29/51, out
 
 ### R023+0x0734 `R023+0x0734 (1EF8:0734)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city1f: blocks 18/20, outcomes 16/18
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city1f: blocks 18/20, outcomes 16/18
 
 - `R023+0x074D` `leave `
 - `R023+0x07B8` `leave `
 
 ### R024+0x0000 `R024+0x0000 (1EF8:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 54/58, outcomes 38/40
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 54/58, outcomes 38/40
 
 - `R024+0x0027` `jmp 0x596`
 - `R024+0x04C7` `add al, 0xb`
@@ -7148,7 +7091,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R024+0x059A `R024+0x059A (1EF8:059A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 20/21, outcomes 20/22
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 20/21, outcomes 20/22
 
 - `R024+0x05BB` `mov al, byte ptr [0x11ca]`
 
@@ -7160,7 +7103,7 @@ draft, reached by battle-oracle-fort5e: blocks 4/5, outcomes 3/4
 
 ### R025+0x0000 `R025+0x0000 (1EF8:0000)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 107/125, outcomes 86/112
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 109/125, outcomes 89/112
 
 - `R025+0x002A` `dec ax`
 - `R025+0x002D` `jmp 0x190`
@@ -7170,10 +7113,8 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 - `R025+0x0232` `mov si, 0xffff`
 - `R025+0x023A` `jmp 0x80f`
 - `R025+0x02AE` `mov byte ptr [si - 0x3d41], 0`
-- `R025+0x03E9` `mov ax, word ptr [0xd67e]`
 - `R025+0x03F5` `mov byte ptr [si - 0x2980], 6`
 - `R025+0x0414` `mov byte ptr [si - 0x2980], 5`
-- `R025+0x0436` `mov bx, si`
 - `R025+0x0611` `jmp 0x82c`
 - `R025+0x0620` `jmp 0x6a4`
 - `R025+0x078C` `mov es, word ptr [0x7e10]`
@@ -7183,7 +7124,7 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R025+0x09A6 `R025+0x09A6 (1EF8:09A6)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/18, outcomes 5/20
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 6/18, outcomes 5/20
 
 - `R025+0x09D0` `mov ax, word ptr [bx]`
 - `R025+0x09DC` `mov word ptr [bp - 6], 1`
@@ -7200,7 +7141,7 @@ draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city
 
 ### R025+0x0A84 `R025+0x0A84 (1EF8:0A84)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/10, outcomes 4/8
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 5/10, outcomes 4/8
 
 - `R025+0x0B01` `jmp 0xb8c`
 - `R025+0x0B8C` `mov ax, word ptr [bp - 0x10]`
@@ -7220,11 +7161,11 @@ draft, reached by lockstep-gate-battle: blocks 6/7, outcomes 3/6
 
 ### R025+0x0D3C `R025+0x0D3C (1EF8:0D3C)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-gate battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/4, outcomes 3/4
 
 ### R026+0x011C `R026+0x011C (1F09:000C)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 11/19, outcomes 9/24
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 11/19, outcomes 9/24
 
 - `R026+0x013C` `cmp dx, ax`
 - `R026+0x0140` `sub ax, ax`
@@ -7237,7 +7178,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R026+0x01B6 `R026+0x01B6 (1F09:00A6)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 10/19, outcomes 8/24
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 10/19, outcomes 8/24
 
 - `R026+0x01D6` `cmp dx, ax`
 - `R026+0x01DA` `sub ax, ax`
@@ -7251,11 +7192,11 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R027+0x0000 `R027+0x0000 (1F48:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 9/9, outcomes 7/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 9/9, outcomes 7/10
 
 ### R027+0x00A2 `R027+0x00A2 (1F48:00A2)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/13, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/13, outcomes 2/2
 
 - `R027+0x00CC` `mov ax, word ptr [0x8ce]`
 - `R027+0x00DA` `push si`
@@ -7266,7 +7207,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R027+0x015A `R027+0x015A (1F48:015A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/13, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/13, outcomes 2/2
 
 - `R027+0x018C` `mov ax, word ptr [0x8ce]`
 - `R027+0x019A` `push si`
@@ -7277,7 +7218,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R027+0x020E `R027+0x020E (1F48:020E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R027+0x0238 `R027+0x0238 (1F48:0238)`
 
@@ -7285,11 +7226,11 @@ draft, reached by lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R027+0x0262 `R027+0x0262 (1F48:0262)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/3, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 3/3, outcomes 3/4
 
 ### R027+0x0298 `R027+0x0298 (1F48:0298)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 12/16, outcomes 12/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 12/16, outcomes 12/16
 
 - `R027+0x02E7` `push di`
 - `R027+0x0303` `jmp 0x47a`
@@ -7298,7 +7239,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R027+0x0480 `R027+0x0480 (1F48:0480)`
 
-draft, reached by lockstep-gate-battle: blocks 6/27, outcomes 3/28
+draft, reached by lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 6/27, outcomes 3/28
 
 - `R027+0x04A2` `mov ax, 7`
 - `R027+0x04C3` `cmp dx, ax`
@@ -7324,7 +7265,7 @@ draft, reached by lockstep-gate-battle: blocks 6/27, outcomes 3/28
 
 ### R027+0x05FE `R027+0x05FE (1F48:05FE)`
 
-draft, reached by lockstep-gate-battle: blocks 6/29, outcomes 3/34
+draft, reached by lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 6/29, outcomes 3/34
 
 - `R027+0x065B` `mov ax, word ptr [bp - 8]`
 - `R027+0x0676` `jg 0x680`
@@ -7365,7 +7306,7 @@ draft, reached by lockstep-gate-battle: blocks 8/16, outcomes 7/18
 
 ### R027+0x0876 `R027+0x0876 (1F48:0876)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 8/13, outcomes 5/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 8/13, outcomes 5/10
 
 - `R027+0x0890` `mov ax, si`
 - `R027+0x0896` `push word ptr [bp + 0x12]`
@@ -7375,7 +7316,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R027+0x0910 `R027+0x0910 (1F48:0910)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 8/13, outcomes 5/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 8/13, outcomes 5/10
 
 - `R027+0x092A` `mov ax, si`
 - `R027+0x0930` `push word ptr [bp + 0x12]`
@@ -7399,7 +7340,7 @@ draft, reached by lockstep-gate-battle: blocks 3/3, outcomes 1/2
 
 ### R027+0x0A78 `R027+0x0A78 (1F48:0A78)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 3/7, outcomes 2/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 3/7, outcomes 2/8
 
 - `R027+0x0A8E` `push ds`
 - `R027+0x0A9E` `mov word ptr [bp - 6], ax`
@@ -7408,7 +7349,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R027+0x0BA8 `R027+0x0BA8 (1F48:0BA8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 4/10, outcomes 3/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 4/10, outcomes 3/12
 
 - `R027+0x0BBD` `push ds`
 - `R027+0x0BCC` `mov word ptr [bp - 4], ax`
@@ -7419,15 +7360,15 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R027+0x0D06 `R027+0x0D06 (1F48:0D06)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R027+0x0D30 `R027+0x0D30 (1F48:0D30)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-saints lockstep-sheet lockstep-stay lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R028+0x0000 `R028+0x0000 (1F48:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 16/23, outcomes 14/26
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 16/23, outcomes 14/26
 
 - `R028+0x0009` `jmp 0xe8`
 - `R028+0x002A` `mov word ptr [0x8da], 2`
@@ -7439,7 +7380,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R028+0x00FC `R028+0x00FC (1F48:00FC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/9, outcomes 1/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/9, outcomes 1/8
 
 - `R028+0x0118` `push cs`
 - `R028+0x0126` `push dx`
@@ -7451,7 +7392,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R028+0x0258 `R028+0x0258 (1F48:0258)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/7, outcomes 1/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/7, outcomes 1/6
 
 - `R028+0x0272` `push cs`
 - `R028+0x028A` `xor byte ptr [0x8d6], 2`
@@ -7461,7 +7402,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R028+0x0398 `R028+0x0398 (1F48:0398)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/5, outcomes 1/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/5, outcomes 1/4
 
 - `R028+0x03AA` `push di`
 - `R028+0x03C4` `xor byte ptr [0x8d6], 8`
@@ -7469,18 +7410,18 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R028+0x0470 `R028+0x0470 (1F48:0470)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/5, outcomes 2/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/5, outcomes 2/4
 
 - `R028+0x047B` `sub ax, ax`
 - `R028+0x0495` `xor byte ptr [0x8d6], 0x20`
 
 ### R028+0x04CA `R028+0x04CA (1F48:04CA)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### R028+0x0626 `R028+0x0626 (1F48:0626)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 11/16, outcomes 7/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 11/16, outcomes 7/14
 
 - `R028+0x06BE` `mov ax, word ptr [bp - 0x1a]`
 - `R028+0x06D5` `mov ax, word ptr [bx + 0x1c]`
@@ -7490,11 +7431,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R028+0x08E8 `R028+0x08E8 (1F48:08E8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R028+0x0AEE `R028+0x0AEE (1F48:0AEE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/6, outcomes 1/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/6, outcomes 1/6
 
 - `R028+0x0B04` `mov ah, 0x46`
 - `R028+0x0B0D` `mov word ptr [bp - 2], 0`
@@ -7503,13 +7444,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R028+0x0B5A `R028+0x0B5A (1F48:0B5A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/6, outcomes 3/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/6, outcomes 3/6
 
 - `R028+0x0BB4` `mov ax, 1`
 
 ### R028+0x0CB2 `R028+0x0CB2 (1F48:0CB2)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/6, outcomes 1/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/6, outcomes 1/4
 
 - `R028+0x0CD0` `mov ax, word ptr [0xc0f9]`
 - `R028+0x0CEC` `mov word ptr [0x8c2], ax`
@@ -7518,7 +7459,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R028+0x0D5A `R028+0x0D5A (1F48:0D5A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 2/3, outcomes 1/2
 
 - `R028+0x0D72` `mov word ptr [bp - 6], 1`
 
@@ -7528,7 +7469,7 @@ draft, reached by cards cards-day cards-flip cards-variants sainthelp saints: bl
 
 ### R029+0x013A `R029+0x013A (0E76:013A)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/8
+draft, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-sheet: blocks 8/9, outcomes 7/8
 
 - `R029+0x0148` `mov al, byte ptr [0x907b]`
 
@@ -7538,7 +7479,7 @@ draft, reached by cards cards-day cards-flip cards-variants rules sainthelp sain
 
 ### R029+0x01C0 `R029+0x01C0 (0E76:01C0)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules: blocks 8/9, outcomes 7/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau rules: blocks 8/9, outcomes 7/8
 
 - `R029+0x0208` `mov byte ptr [0x99eb], 0` (dormant)
 
@@ -7548,7 +7489,7 @@ draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/8, o
 
 ### R029+0x026A `R029+0x026A (0E76:026A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules: blocks 8/8, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp rules: blocks 8/8, outcomes 8/8
 
 ### R029+0x02B8 `R029+0x02B8 (0E76:02B8)`
 
@@ -7564,7 +7505,7 @@ draft, reached by cards cards-day cards-flip cards-variants rules sainthelp sain
 
 ### R029+0x05EE `R029+0x05EE (0E76:05EE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau sainthelp saints trading: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-shop lockstep-tyrnau sainthelp saints trading: blocks 3/3, outcomes 2/2
 
 ### R029+0x060E `R029+0x060E (0E76:060E)`
 
@@ -7614,18 +7555,18 @@ draft, reached by sainthelp saints: blocks 4/9, outcomes 3/8
 
 ### R029+0x0988 `R029+0x0988 (0E76:0988)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau saints: blocks 10/12, outcomes 10/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau saints: blocks 10/12, outcomes 10/12
 
 - `R029+0x09E6` `push word ptr [bp + 8]`
 - `R029+0x0A57` `push di`
 
 ### R029+0x0A72 `R029+0x0A72 (0E76:0A72)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 13/13, outcomes 14/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 13/13, outcomes 14/14
 
 ### R029+0x0B64 `R029+0x0B64 (0E76:0B64)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau sainthelp saints: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-tyrnau sainthelp saints: blocks 3/3, outcomes 2/2
 
 ### R029+0x0BB6 `R029+0x0BB6 (0E76:0BB6)`
 
@@ -7650,7 +7591,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 20/30, outco
 
 ### R029+0x0DD8 `R029+0x0DD8 (0E76:0DD8)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-pressburg-map lockstep-tyrnau sainthelp: blocks 22/28, outcomes 18/28
+draft, reached by cards cards-day cards-flip cards-variants lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 22/28, outcomes 18/28
 
 - `R029+0x0E73` `mov al, byte ptr [0x907b]`
 - `R029+0x0E83` `jmp 0xf4c`
@@ -7691,18 +7632,18 @@ draft, reached by cards cards-day cards-variants: blocks 12/37, outcomes 10/40
 
 ### R029+0x118E `R029+0x118E (0E76:118E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 8/8, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 8/8, outcomes 8/8
 
 ### R029+0x1260 `R029+0x1260 (0E76:1260)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 11/13, outcomes 10/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 11/13, outcomes 10/12
 
 - `R029+0x12C1` `mov al, byte ptr [0x907b]`
 - `R029+0x12FE` `pop si`
 
 ### R029+0x1326 `R029+0x1326 (0E76:1326)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-pressburg-map lockstep-tyrnau trading: blocks 10/12, outcomes 10/14
+draft, reached by cards cards-day cards-flip cards-variants lockstep-pressburg-map lockstep-shop lockstep-tyrnau lockstep-wildcamp trading: blocks 10/12, outcomes 10/14
 
 - `R029+0x1336` `dec ax`
 - `R029+0x137A` `mov ax, word ptr [0x9078]`
@@ -7725,7 +7666,7 @@ draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x14A4 `R029+0x14A4 (0E76:14A4)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-pressburg-map lockstep-residence lockstep-tyrnau rules: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants lockstep-pressburg-map lockstep-residence lockstep-stay lockstep-tyrnau lockstep-wildcamp rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x14EC `R029+0x14EC (0E76:14EC)`
 
@@ -7741,7 +7682,7 @@ draft, reached by cards cards-day cards-flip cards-variants rules: blocks 6/6, o
 
 ### R029+0x1600 `R029+0x1600 (0E76:1600)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules: blocks 8/8, outcomes 6/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp rules: blocks 8/8, outcomes 6/6
 
 ### R029+0x164A `R029+0x164A (0E76:164A)`
 
@@ -7783,7 +7724,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcome
 
 ### R029+0x199C `R029+0x199C (0E76:199C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R029+0x19B4 `R029+0x19B4 (0E76:19B4)`
 
@@ -7795,11 +7736,11 @@ draft, reached by cards cards-day cards-flip cards-variants rules sainthelp sain
 
 ### R029+0x1A7E `R029+0x1A7E (0E76:1A7E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau trading: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau trading: blocks 1/1, outcomes 0/0
 
 ### R029+0x1A8E `R029+0x1A8E (0E76:1A8E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules trading: blocks 73/73, outcomes 34/34
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau rules trading: blocks 73/73, outcomes 34/34
 
 ### R029+0x1DFE `R029+0x1DFE (0E76:1DFE)`
 
@@ -7830,15 +7771,13 @@ draft, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blo
 
 ### R029+0x21AA `R029+0x21AA (0E76:21AA)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/4, outcomes 0/2
+draft, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 3/4, outcomes 1/2
 
 - `R029+0x21B9` `mov ax, word ptr [bp + 0xa]`
-- `R029+0x21C4` `mov es, word ptr [0x7e2e]`
-- `R029+0x21DD` `push word ptr [bp + 0xe]`
 
 ### R029+0x222A `R029+0x222A (0E76:222A)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-residence: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants lockstep-residence lockstep-stay: blocks 1/1, outcomes 0/0
 
 ### R029+0x225C `R029+0x225C (0E76:225C)`
 
@@ -7846,7 +7785,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcome
 
 ### R029+0x2278 `R029+0x2278 (0E76:2278)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 20/27, outcomes 19/28
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 20/27, outcomes 19/28
 
 - `R029+0x2290` `push 2`
 - `R029+0x235C` `push 0x12`
@@ -7870,7 +7809,7 @@ draft, reached by cards cards-day cards-variants: blocks 4/5, outcomes 3/4
 
 ### R029+0x255A `R029+0x255A (0E76:255A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 40/53, outcomes 40/54
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 40/53, outcomes 40/54
 
 - `R029+0x2570` `sub dx, dx`
 - `R029+0x2575` `cmp byte ptr [bx], 1`
@@ -7905,7 +7844,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 12/12, outco
 
 ### R029+0x2C4E `R029+0x2C4E (0E76:2C4E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 5/6, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-shop lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 5/6, outcomes 3/4
 
 - `R029+0x2C70` `mov ax, 0xffff`
 
@@ -7925,40 +7864,40 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 26/28, outco
 
 ### R029+0x3034 `R029+0x3034 (0E76:3034)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-shop lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 1/1, outcomes 0/0
 
 ### R029+0x30FE `R029+0x30FE (0E76:30FE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### R029+0x3144 `R029+0x3144 (0E76:3144)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 4/6, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-shop lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 4/6, outcomes 3/4
 
 - `R029+0x315F` `mov ax, 0x321a`
 - `R029+0x316E` `push 0x64`
 
 ### R029+0x3180 `R029+0x3180 (0E76:3180)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 10/11, outcomes 10/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau lockstep-wildcamp: blocks 10/11, outcomes 11/16
 
 - `R029+0x31A4` `sub ax, ax`
 
 ### R029+0x31E6 `R029+0x31E6 (0E76:31E6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 11/11, outcomes 14/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 11/11, outcomes 14/16
 
 ### R029+0x324C `R029+0x324C (0E76:324C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 9/9, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp rules sainthelp saints: blocks 9/9, outcomes 9/10
 
 ### R029+0x32CE `R029+0x32CE (0E76:32CE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 4/4, outcomes 3/4
 
 ### R029+0x32FE `R029+0x32FE (0E76:32FE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/8, outcomes 6/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 7/8, outcomes 6/8
 
 - `R029+0x3340` `jmp 0x334a`
 
@@ -7974,7 +7913,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 3/8, outcome
 
 ### R029+0x3404 `R029+0x3404 (0E76:3404)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 3/10, outcomes 1/12
+draft, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 3/10, outcomes 1/12
 
 - `R029+0x3420` `mov es, word ptr [0x7e30]`
 - `R029+0x343A` `mov ax, word ptr [bp + 0xa]`
@@ -7986,13 +7925,13 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 3/10, outcom
 
 ### R029+0x3470 `R029+0x3470 (0E76:3470)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 8/9, outcomes 7/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-shop lockstep-tyrnau: blocks 8/9, outcomes 7/10
 
 - `R029+0x34C2` `jmp 0x34cc`
 
 ### R029+0x353E `R029+0x353E (0E76:353E)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 6/10, outcomes 6/12
+draft, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 6/10, outcomes 6/12
 
 - `R029+0x357D` `mov ax, word ptr [bp + 8]`
 - `R029+0x3586` `push si`
@@ -8009,7 +7948,7 @@ draft, reached by cards cards-day cards-variants: blocks 6/9, outcomes 6/10
 
 ### R029+0x360C `R029+0x360C (0E76:360C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 9/10, outcomes 9/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-shop lockstep-tyrnau: blocks 9/10, outcomes 9/12
 
 - `R029+0x3666` `jmp 0x3670`
 
@@ -8021,13 +7960,13 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcome
 
 ### R029+0x3742 `R029+0x3742 (0E76:3742)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 9/10, outcomes 9/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-shop lockstep-tyrnau: blocks 9/10, outcomes 9/12
 
 - `R029+0x379C` `jmp 0x37b2`
 
 ### R029+0x37E2 `R029+0x37E2 (0E76:37E2)`
 
-draft, reached by lockstep-residence: blocks 3/7, outcomes 1/8
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 3/7, outcomes 1/8
 
 - `R029+0x37FD` `push si`
 - `R029+0x3809` `mov ax, word ptr [bp + 8]`
@@ -8036,7 +7975,7 @@ draft, reached by lockstep-residence: blocks 3/7, outcomes 1/8
 
 ### R029+0x3878 `R029+0x3878 (0E76:3878)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-tyrnau: blocks 8/9, outcomes 7/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 8/9, outcomes 7/10
 
 - `R029+0x38C2` `jmp 0x38cc`
 
@@ -8052,7 +7991,7 @@ draft, reached by cards cards-day cards-variants: blocks 4/9, outcomes 2/10
 
 ### R029+0x392C `R029+0x392C (0E76:392C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 9/10, outcomes 8/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-shop lockstep-tyrnau: blocks 9/10, outcomes 8/12
 
 - `R029+0x3985` `jmp 0x3990`
 
@@ -8076,14 +8015,14 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 4/10, outcom
 
 ### R029+0x3B62 `R029+0x3B62 (0E76:3B62)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 16/18, outcomes 19/24
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau lockstep-wildcamp: blocks 16/18, outcomes 19/24
 
 - `R029+0x3BD9` `mov ax, word ptr [bp + 0x10]`
 - `R029+0x3C17` `jmp 0x3c20`
 
 ### R029+0x3CDE `R029+0x3CDE (0E76:3CDE)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-residence: blocks 14/16, outcomes 15/20
+draft, reached by cards cards-day cards-flip cards-variants lockstep-residence lockstep-stay lockstep-wildcamp: blocks 14/16, outcomes 15/20
 
 - `R029+0x3D3C` `mov ax, word ptr [bp + 0xc]`
 - `R029+0x3D85` `pop si`
@@ -8102,7 +8041,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 14/15, outco
 
 ### R029+0x3F30 `R029+0x3F30 (0E76:3F30)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 8/9, outcomes 7/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 8/9, outcomes 7/8
 
 - `R029+0x3F82` `les bx, ptr [bp - 4]`
 
@@ -8112,7 +8051,7 @@ draft, reached by lockstep-residence lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R029+0x4534 `R029+0x4534 (0E76:4534)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/4, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 3/4, outcomes 1/2
 
 - `R029+0x45AC` `mov ax, word ptr [0xe6]`
 
@@ -8136,7 +8075,7 @@ draft, reached by sainthelp saints: blocks 10/17, outcomes 7/14
 
 ### R029+0x4C04 `R029+0x4C04 (0E76:4C04)`
 
-draft, reached by cards cards-day cards-variants sainthelp saints: blocks 16/21, outcomes 12/20
+draft, reached by cards cards-day cards-variants lockstep-saints sainthelp saints: blocks 16/21, outcomes 12/20
 
 - `R029+0x4C51` `cmp word ptr [bp + 0xa], di`
 - `R029+0x4C56` `jmp 0x4d1f`
@@ -8146,7 +8085,7 @@ draft, reached by cards cards-day cards-variants sainthelp saints: blocks 16/21,
 
 ### R029+0x4E0C `R029+0x4E0C (0E76:4E0C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 8/9, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp rules sainthelp saints: blocks 8/9, outcomes 9/10
 
 - `R029+0x4E5D` `pop si`
 
@@ -8164,7 +8103,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outco
 
 ### R029+0x4F76 `R029+0x4F76 (1367:0066)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants chargen lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules sainthelp saints trading: blocks 4/4, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants chargen lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp rules sainthelp saints trading: blocks 4/4, outcomes 4/4
 
 ### R029+0x4F94 `R029+0x4F94 (1367:0084)`
 
@@ -8176,23 +8115,23 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outco
 
 ### R029+0x4FB4 `R029+0x4FB4 (1367:00A4)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 5/5, outcomes 4/4
 
 ### R029+0x5002 `R029+0x5002 (1367:00F2)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-residence sainthelp saints trading: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-residence lockstep-shop lockstep-stay sainthelp saints trading: blocks 1/1, outcomes 0/0
 
 ### R029+0x5040 `R029+0x5040 (1367:0130)`
 
-matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core lockstep-shop lockstep-stay: blocks 5/5, outcomes 4/4
 
 ### R029+0x5090 `R029+0x5090 (1367:0180)`
 
-matched, reached by cards cards-day cards-flip cards-variants core lockstep-residence sainthelp saints: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core lockstep-residence lockstep-shop lockstep-stay sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R029+0x50DE `R029+0x50DE (1367:01CE)`
 
-matched, reached by cards cards-day cards-flip cards-variants core lockstep-residence: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants core lockstep-residence lockstep-stay: blocks 1/1, outcomes 0/0
 
 ### R029+0x50FC `R029+0x50FC (1367:01EC)`
 
@@ -8200,7 +8139,7 @@ matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, 
 
 ### R029+0x514E `R029+0x514E (1367:023E)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau: blocks 5/5, outcomes 4/4
 
 ### R029+0x51A0 `R029+0x51A0 (1367:0290)`
 
@@ -8208,19 +8147,19 @@ matched, reached by core: blocks 4/4, outcomes 4/4
 
 ### R029+0x51E4 `R029+0x51E4 (1367:02D4)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 9/9, outcomes 11/12
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 9/9, outcomes 11/12
 
 ### R029+0x5286 `R029+0x5286 (1367:0376)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 23/23, outcomes 18/18
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-stay lockstep-tyrnau: blocks 23/23, outcomes 18/18
 
 ### R029+0x54D6 `R029+0x54D6 (1367:05C6)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-shop lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R029+0x54D8 `R029+0x54D8 (1367:05C8)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/9, outcomes 8/14
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/9, outcomes 8/14
 
 - `R029+0x552C` `mov ax, word ptr [bp - 2]`
 - `R029+0x5564` `inc word ptr [0xe6]`
@@ -8231,7 +8170,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R029+0x563A `R029+0x563A (1367:072A)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/4, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau: blocks 4/4, outcomes 4/4
 
 ### R029+0x5650 `R029+0x5650 (1367:0740)`
 
@@ -8239,7 +8178,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x5654 `R029+0x5654 (1367:0744)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 16/16, outcomes 14/14
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 16/16, outcomes 14/14
 
 ### R029+0x56A6 `R029+0x56A6 (1367:0796)`
 
@@ -8272,37 +8211,37 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R029+0x577A `R029+0x577A (1367:086A)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-residence: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants lockstep-residence lockstep-stay lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### R029+0x57BE `R029+0x57BE (1367:08AE)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/7, outcomes 8/8
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 7/7, outcomes 8/8
 
 ### R029+0x5848 `R029+0x5848 (1367:0938)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 5/7, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-tyrnau: blocks 5/7, outcomes 6/8
 
 - `R029+0x5859` `mov ax, di`
 - `R029+0x587B` `sub bx, bx`
 
 ### R029+0x5892 `R029+0x5892 (1367:0982)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 5/7, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-tyrnau: blocks 5/7, outcomes 6/8
 
 - `R029+0x58A3` `mov ax, di`
 - `R029+0x58C5` `sub bx, bx`
 
 ### R029+0x58DC `R029+0x58DC (1367:09CC)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 4/4, outcomes 3/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 4/4, outcomes 3/4
 
 ### R029+0x58FA `R029+0x58FA (1367:09EA)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 7/7, outcomes 8/8
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-shop lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 7/7, outcomes 8/8
 
 ### R029+0x5A2C `R029+0x5A2C (1367:0B1C)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 9/11, outcomes 7/10
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 9/11, outcomes 7/10
 
 - `R029+0x5A94` `mov cx, ax`
 - `R029+0x5AA3` `sub ax, ax`
@@ -8325,16 +8264,14 @@ matched, reached by cards cards-day cards-flip cards-variants names: blocks 15/1
 
 ### R030+0x0000 `R030+0x0000 (1462:0000)`
 
-draft, reached by cards cards-day cards-variants lockstep-pressburg-map lockstep-tyrnau: blocks 10/12, outcomes 6/10
+draft, reached by cards cards-day cards-variants lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 11/12, outcomes 9/10
 
-- `R030+0x0056` `mov di, word ptr ss:[0xe3d0]`
 - `R030+0x0073` `mov ax, 0xf1`
 
 ### R030+0x00A8 `R030+0x00A8 (1462:00A8)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 18/29, outcomes 13/24
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 19/29, outcomes 14/24
 
-- `R030+0x00CE` `push 0x14`
 - `R030+0x011A` `mov word ptr [0x2860], 6`
 - `R030+0x0122` `mov word ptr [0x2860], 0xf`
 - `R030+0x014B` `push word ptr [0x775a]`
@@ -8348,7 +8285,7 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 18/29, outcomes
 
 ### R030+0x02C0 `R030+0x02C0 (1462:02C0)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 68/209, outcomes 56/198
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 68/209, outcomes 56/198
 
 - `R030+0x0302` `mov word ptr [bp - 0x46], 0`
 - `R030+0x031F` `push 0x28ab`
@@ -8494,7 +8431,7 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 68/209, outcome
 
 ### R030+0x0C44 `R030+0x0C44 (1462:0C44)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 59/153, outcomes 49/138
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 63/153, outcomes 51/138
 
 - `R030+0x0CBD` `jmp 0xd80`
 - `R030+0x0CCA` `jmp 0xe68`
@@ -8503,7 +8440,6 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 59/153, outcome
 - `R030+0x0CDF` `jmp 0xf52`
 - `R030+0x0CE7` `jmp 0xf52`
 - `R030+0x0CEF` `jmp 0xf06`
-- `R030+0x0CF7` `jmp 0xf06`
 - `R030+0x0CFE` `dec word ptr [0x2866]`
 - `R030+0x0D09` `mov word ptr [0x2866], 0xb`
 - `R030+0x0D0F` `mov word ptr [0x8676], 7`
@@ -8537,15 +8473,12 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 59/153, outcome
 - `R030+0x0E4E` `mov word ptr [0x2868], 0xb1`
 - `R030+0x0E54` `mov word ptr [0x8676], 6`
 - `R030+0x0E68` `mov ax, si`
-- `R030+0x0E91` `push cs`
 - `R030+0x0ECE` `mov ax, si`
 - `R030+0x0EDF` `jmp 0x109e`
 - `R030+0x0EE2` `mov bx, ax`
 - `R030+0x0EEE` `jmp 0x109e`
 - `R030+0x0EF1` `mov al, byte ptr [bp - 4]`
-- `R030+0x0F06` `push 0x2907`
 - `R030+0x0F40` `mov ax, 0x3e8`
-- `R030+0x0F46` `lcall 0x47c, 0x568`
 - `R030+0x0F52` `mov word ptr [0x2910], 0`
 - `R030+0x0F60` `test byte ptr [0x6ef0], 3`
 - `R030+0x0F67` `push 0`
@@ -8630,7 +8563,7 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 43/75, outcomes
 
 ### R030+0x16C6 `R030+0x16C6 (1462:16C6)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 116/132, outcomes 106/156
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 118/132, outcomes 109/156
 
 - `R030+0x1759` `mov ax, 0x1c`
 - `R030+0x1774` `mov es, word ptr [0x7e44]`
@@ -8639,8 +8572,6 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 116/132, outcom
 - `R030+0x17A0` `mov es, word ptr [0x7e48]`
 - `R030+0x18BF` `jmp 0x19f5`
 - `R030+0x18D5` `jmp 0x19f5`
-- `R030+0x190B` `or byte ptr [bp - 0xa], 1`
-- `R030+0x1927` `cmp byte ptr es:[bx + 0x2389], 0x1b`
 - `R030+0x1972` `jmp 0x19f5`
 - `R030+0x197E` `mov es, word ptr [0x7e3e]`
 - `R030+0x1996` `jmp 0x1a1e`
@@ -8651,19 +8582,15 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 116/132, outcom
 
 ### R030+0x1C4E `R030+0x1C4E (1462:1C4E)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R030+0x1C76 `R030+0x1C76 (1462:1C76)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 23/26, outcomes 7/8
-
-- `R030+0x1CDB` `jmp 0x1da9`
-- `R030+0x1D64` `mov word ptr [si], 0x3e`
-- `R030+0x1D9A` `mov word ptr [si], 0x3a`
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 26/26, outcomes 8/8
 
 ### R030+0x1DD4 `R030+0x1DD4 (1462:1DD4)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 14/18, outcomes 12/20
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 14/18, outcomes 12/20
 
 - `R030+0x1DE4` `jmp 0x1f2b`
 - `R030+0x1E00` `cmp si, di`
@@ -8672,11 +8599,11 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 14/18, outcomes
 
 ### R030+0x1F30 `R030+0x1F30 (1462:1F30)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 13/13, outcomes 12/12
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 13/13, outcomes 12/12
 
 ### R030+0x20D2 `R030+0x20D2 (1462:20D2)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 122/129, outcomes 122/152
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 122/129, outcomes 123/152
 
 - `R030+0x20DE` `mov word ptr [bp + 6], 1`
 - `R030+0x20E9` `mov word ptr [bp + 8], 1`
@@ -8685,6 +8612,29 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 122/129, outcom
 - `R030+0x236C` `jmp 0x23ef`
 - `R030+0x2390` `jmp 0x2418`
 - `R030+0x2528` `jmp 0x23ef`
+
+### R030+0x25BE `R030+0x25BE (1462:25BE)`
+
+draft, reached by lockstep-wildcamp: blocks 23/41, outcomes 20/42
+
+- `R030+0x25FA` `lea ax, [si + 0x18]`
+- `R030+0x2654` `cmp di, 5`
+- `R030+0x2659` `sub di, 5`
+- `R030+0x265E` `lea ax, [di - 5]`
+- `R030+0x2668` `cmp cx, 5`
+- `R030+0x266D` `sub cx, 5`
+- `R030+0x2672` `mov ax, cx`
+- `R030+0x267E` `cmp cx, di`
+- `R030+0x2682` `mov cx, di`
+- `R030+0x2684` `mov word ptr [bp - 8], cx`
+- `R030+0x269D` `mov ax, cx`
+- `R030+0x26DD` `sub bx, 5`
+- `R030+0x26E8` `sub bx, 6`
+- `R030+0x26EE` `sub bx, 3`
+- `R030+0x26F4` `dec bx`
+- `R030+0x26F8` `dec bx`
+- `R030+0x26FF` `inc bx`
+- `R030+0x270D` `inc bx`
 
 ### R030+0x271A `R030+0x271A (1462:271A)`
 
@@ -8696,7 +8646,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 12/12, outco
 
 ### R030+0x2842 `R030+0x2842 (1462:2842)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 15/15, outcomes 15/18
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 15/15, outcomes 15/18
 
 ### R030+0x28F2 `R030+0x28F2 (1462:28F2)`
 
@@ -8753,7 +8703,7 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 9/10, outcomes 
 
 ### R030+0x2DD6 `R030+0x2DD6 (1462:2DD6)`
 
-draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 6/35, outcomes 3/28
+draft, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 6/35, outcomes 3/28
 
 - `R030+0x2DE5` `jmp 0x3042`
 - `R030+0x2E08` `cmp byte ptr [0xe56a], 0x2e`
@@ -8787,11 +8737,11 @@ draft, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 6/35, outcomes 
 
 ### R030+0x3096 `R030+0x3096 (1767:0046)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/5, outcomes 5/6
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 5/5, outcomes 5/6
 
 ### R030+0x3122 `R030+0x3122 (1767:00D2)`
 
-matched, reached by lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R031+0x0000 `R031+0x0000 (1462:0000)`
 
@@ -8809,18 +8759,196 @@ draft, reached by cards: blocks 0/11, outcomes 0/10
 - `R031+0x00DA` `add si, 4`
 - `R031+0x00E3` `push word ptr [bp - 4]`
 
+### R031+0x0124 `R031+0x0124 (1462:0124)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 48/143, outcomes 40/146
+
+- `R031+0x013A` `jmp 0x8ee`
+- `R031+0x0141` `jmp 0x8ee`
+- `R031+0x01AE` `jmp 0x626`
+- `R031+0x0222` `cmp byte ptr [0x867e], 0`
+- `R031+0x0229` `jmp 0x37c`
+- `R031+0x022C` `mov al, byte ptr [0x867c]`
+- `R031+0x023F` `jmp 0x37c`
+- `R031+0x0242` `mov ax, word ptr [0x6eec]`
+- `R031+0x024C` `jmp 0x37c`
+- `R031+0x024F` `mov al, byte ptr es:[bx + 0x3567]`
+- `R031+0x0263` `jmp 0x37c`
+- `R031+0x0266` `mov ax, word ptr [0x6eee]`
+- `R031+0x0270` `jmp 0x37c`
+- `R031+0x0273` `mov ax, word ptr es:[bx + 0x3565]`
+- `R031+0x0283` `jmp 0x37c`
+- `R031+0x0286` `test byte ptr [0x6ef0], 1`
+- `R031+0x028D` `jmp 0x6bb`
+- `R031+0x0290` `mov al, byte ptr [0x867c]`
+- `R031+0x02A4` `cmp byte ptr es:[bx + 0x356d], ah`
+- `R031+0x02AB` `dec byte ptr es:[bx + 0x356d]`
+- `R031+0x02B0` `push si`
+- `R031+0x02BC` `lcall 0x47c, 0x12c3`
+- `R031+0x035D` `push 0`
+- `R031+0x0371` `jmp 0x6bb`
+- `R031+0x0374` `mov ax, 0x290e`
+- `R031+0x037C` `cmp byte ptr [0x867e], 0`
+- `R031+0x0383` `jmp 0x510`
+- `R031+0x0386` `mov al, byte ptr [0x867c]`
+- `R031+0x0399` `jmp 0x510`
+- `R031+0x039C` `mov ax, word ptr [0x6eec]`
+- `R031+0x03A6` `jmp 0x510`
+- `R031+0x03A9` `mov al, byte ptr es:[bx + 0x3567]`
+- `R031+0x03BD` `jmp 0x510`
+- `R031+0x03C0` `mov al, byte ptr es:[bx + 0x3568]`
+- `R031+0x03DA` `jmp 0x510`
+- `R031+0x03DD` `mov ax, word ptr [0x6eee]`
+- `R031+0x03E5` `jmp 0x510`
+- `R031+0x03E8` `test byte ptr [0x6ef0], 1`
+- `R031+0x03EF` `jmp 0x6bb`
+- `R031+0x03F2` `mov al, byte ptr [0x867c]`
+- `R031+0x0410` `mov al, byte ptr es:[bx + 0x356d]`
+- `R031+0x041F` `jmp 0x6bb`
+- `R031+0x0422` `mov es, word ptr [0x7e50]`
+- `R031+0x043A` `mov al, byte ptr es:[bx + 0x356d]`
+- `R031+0x044C` `jmp 0x6bb`
+- `R031+0x044F` `lcall 0x47c, 0x12c3`
+- `R031+0x04F0` `push 0`
+- `R031+0x0504` `jmp 0x6bb`
+- `R031+0x0507` `mov ax, 0x290e`
+- `R031+0x0510` `sub si, si`
+- `R031+0x0515` `mov ax, word ptr [0x6eec]`
+- `R031+0x051D` `mov ax, word ptr es:[bx + 4]`
+- `R031+0x052C` `mov ax, word ptr [0x6eee]`
+- `R031+0x0535` `mov ax, word ptr es:[bx + 2]`
+- `R031+0x0545` `inc si`
+- `R031+0x054F` `cmp si, 0x12`
+- `R031+0x0554` `sub si, si`
+- `R031+0x0556` `cmp byte ptr [0x867e], 0`
+- `R031+0x055D` `cmp word ptr [0x867a], 0`
+- `R031+0x0564` `lcall 0x47c, 0x12c3`
+- `R031+0x0570` `push word ptr [0x867a]`
+- `R031+0x05AC` `lcall 0x47c, 0x1293`
+- `R031+0x05B1` `cmp byte ptr [0x867e], 0`
+- `R031+0x05B8` `je 0x5c3`
+- `R031+0x05BA` `mov al, byte ptr [0x867c]`
+- `R031+0x05C3` `push 0xc`
+- `R031+0x05F2` `mov es, word ptr [0x7e50]`
+- `R031+0x061F` `mov si, word ptr [bp + 6]`
+- `R031+0x0626` `mov ax, word ptr [0x6eee]`
+- `R031+0x0635` `jmp 0x8e1`
+- `R031+0x0638` `mov bx, di`
+- `R031+0x0644` `cmp byte ptr [0x907a], 1`
+- `R031+0x064B` `cmp byte ptr [di - 0x594c], 0x9d`
+- `R031+0x0652` `push di`
+- `R031+0x065E` `mov si, di`
+- `R031+0x0691` `push 0x2a74`
+- `R031+0x06A6` `push si`
+- `R031+0x06D9` `mov word ptr [0x9c46], 0`
+- `R031+0x070D` `push 0x2a76`
+- `R031+0x0722` `push word ptr [bp + 6]`
+- `R031+0x0748` `jmp 0x81a`
+- `R031+0x075A` `jmp 0x81a`
+- `R031+0x0763` `jmp 0x81a`
+- `R031+0x076C` `jmp 0x81a`
+- `R031+0x0789` `jmp 0x8a6`
+- `R031+0x07A1` `jmp 0x8f1`
+- `R031+0x07AB` `cmp byte ptr [di - 0x594c], 0x9d`
+- `R031+0x07B2` `push di`
+- `R031+0x07F7` `push 0x2a7a`
+- `R031+0x0828` `jmp 0x8e1`
+- `R031+0x083E` `cmp byte ptr [di - 0x594c], 0x9d`
+- `R031+0x0845` `jmp 0x7b2`
+- `R031+0x087C` `push 0x2a78`
+- `R031+0x08EE` `mov ax, 0xffff`
+- `R031+0x08F1` `pop si`
+
+### R031+0x08F6 `R031+0x08F6 (1462:08F6)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 5/5, outcomes 3/4
+
+### R031+0x0950 `R031+0x0950 (1462:0950)`
+
+draft, reached by lockstep-sheet: blocks 3/3, outcomes 1/2
+
+### R031+0x09B8 `R031+0x09B8 (1462:09B8)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 2/3, outcomes 1/2
+
+- `R031+0x09E5` `push 0x2a82`
+
+### R031+0x0A82 `R031+0x0A82 (1462:0A82)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 3/3, outcomes 2/2
+
+### R031+0x0B22 `R031+0x0B22 (1462:0B22)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 52/113, outcomes 24/46
+
+- `R031+0x0B98` `push 0x2b38`
+- `R031+0x0B9E` `push 0x2b4a`
+- `R031+0x0BA4` `push 0x2b5c`
+- `R031+0x0BB6` `push 0x2b91`
+- `R031+0x0BBC` `push 0x2ba3`
+- `R031+0x0BC2` `push 0x2bb5`
+- `R031+0x0BC8` `push 0x2bc6`
+- `R031+0x0C2E` `push 0x2bda`
+- `R031+0x0C34` `push 0x2beb`
+- `R031+0x0C3A` `push 0x2bfc`
+- `R031+0x0C40` `push 0x2c0e`
+- `R031+0x0C46` `push 0x2c1f`
+- `R031+0x0C4C` `push 0x2c31`
+- `R031+0x0C52` `push 0x2c43`
+- `R031+0x0C58` `push 0x2c55`
+- `R031+0x0C9E` `jmp 0xebd`
+- `R031+0x0CF8` `mov word ptr [bp - 4], 0xffff`
+- `R031+0x0D00` `mov word ptr [bp - 4], 2`
+- `R031+0x0D10` `mov word ptr [bp - 4], 4`
+- `R031+0x0D18` `mov word ptr [bp - 4], 5`
+- `R031+0x0D20` `mov word ptr [bp - 4], 6`
+- `R031+0x0D28` `mov word ptr [bp - 4], 7`
+- `R031+0x0D38` `mov word ptr [bp - 4], 9`
+- `R031+0x0D40` `mov word ptr [bp - 4], 0xb`
+- `R031+0x0D48` `mov word ptr [bp - 4], 0xc`
+- `R031+0x0D50` `mov word ptr [bp - 4], 0xd`
+- `R031+0x0D58` `mov word ptr [bp - 4], 0xe`
+- `R031+0x0D68` `mov word ptr [bp - 4], 0x10`
+- `R031+0x0D72` `mov word ptr [bp - 4], 0x11`
+- `R031+0x0D7C` `mov word ptr [bp - 4], 0x12`
+- `R031+0x0D84` `mov word ptr [bp - 4], 0x13`
+- `R031+0x0D8C` `mov word ptr [bp - 4], 0x14`
+- `R031+0x0D94` `mov word ptr [bp - 4], 0x15`
+- `R031+0x0D9C` `mov word ptr [bp - 4], 0x16`
+- `R031+0x0DA4` `mov word ptr [bp - 4], 0x18`
+- `R031+0x0DAC` `mov word ptr [bp - 4], 0`
+- `R031+0x0DB4` `mov word ptr [bp - 4], 0x1a`
+- `R031+0x0DBC` `mov word ptr [bp - 4], 0x1b`
+- `R031+0x0DC4` `mov word ptr [bp - 4], 1`
+- `R031+0x0DCC` `mov word ptr [bp - 4], 0x1c`
+- `R031+0x0DD4` `mov word ptr [bp - 4], 0x1d`
+- `R031+0x0DDC` `mov word ptr [bp - 4], 0x1e`
+- `R031+0x0DE4` `mov word ptr [bp - 4], 0x1f`
+- `R031+0x0DEC` `mov word ptr [bp - 4], 0x20`
+- `R031+0x0DF4` `mov word ptr [bp - 4], 0x21`
+- `R031+0x0DFC` `mov word ptr [bp - 4], 0x22`
+- `R031+0x0E07` `jmp 0xebd`
+- `R031+0x0EE1` `mov di, 0x2c93`
+- `R031+0x0EF4` `mov di, 0x2cac`
+- `R031+0x0F61` `jmp 0x10a9`
+- `R031+0x0F90` `mov word ptr [bp - 4], 0xffff`
+- `R031+0x0F98` `mov word ptr [bp - 4], 0x17`
+- `R031+0x0FA8` `mov word ptr [bp - 4], 0x1b`
+- `R031+0x0FB0` `mov word ptr [bp - 4], 1`
+- `R031+0x0FC0` `mov word ptr [bp - 4], 0x1d`
+- `R031+0x0FC8` `mov word ptr [bp - 4], 0x1e`
+- `R031+0x0FD0` `mov word ptr [bp - 4], 0x1f`
+- `R031+0x0FD8` `mov word ptr [bp - 4], 0x20`
+- `R031+0x0FE0` `mov word ptr [bp - 4], 0x21`
+- `R031+0x0FE8` `mov word ptr [bp - 4], 0x22`
+- `R031+0x0FF3` `jmp 0x10a9`
+
 ### R031+0x10AE `R031+0x10AE (1462:10AE)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/242, outcomes 0/196
+draft, reached by cards cards-day cards-variants lockstep-saints lockstep-sheet: blocks 77/242, outcomes 52/196
 
-- `R031+0x10AE` `enter 8, 0`
 - `R031+0x10BE` `jmp 0x185e`
-- `R031+0x10C1` `jle 0x10c6`
-- `R031+0x10C3` `jmp 0x1cbc`
-- `R031+0x10C6` `cmp ax, 0x1000`
 - `R031+0x10CB` `jmp 0x1c3c`
-- `R031+0x10CE` `jle 0x10d3`
-- `R031+0x10D0` `jmp 0x1c7e`
 - `R031+0x10D3` `cmp ax, 0x332`
 - `R031+0x10D8` `jmp 0x1642`
 - `R031+0x10DB` `jle 0x10e0`
@@ -8831,47 +8959,24 @@ draft, reached by cards cards-day cards-variants: blocks 1/242, outcomes 0/196
 - `R031+0x10F3` `jmp 0x1d40`
 - `R031+0x10F6` `mov al, byte ptr [0x867c]`
 - `R031+0x1100` `add sp, 2`
-- `R031+0x1108` `push ax`
-- `R031+0x110D` `add sp, 4`
-- `R031+0x1114` `cmp byte ptr [0x867e], 0`
-- `R031+0x111B` `push word ptr [bp + 8]`
-- `R031+0x112A` `cmp byte ptr [0x867e], 0`
-- `R031+0x1131` `mov al, byte ptr [0x867c]`
-- `R031+0x113E` `mov es, word ptr [0x7e50]`
 - `R031+0x1172` `cmp byte ptr [0x867e], 0`
 - `R031+0x1179` `mov al, byte ptr [0x867c]`
 - `R031+0x1186` `mov es, word ptr [0x7e50]`
-- `R031+0x11BA` `mov es, word ptr [0x7e50]`
 - `R031+0x11CE` `jmp 0x12ac`
-- `R031+0x11D1` `cmp byte ptr [0x867e], ah`
 - `R031+0x11D7` `jmp 0x12ac`
-- `R031+0x11DA` `add bx, word ptr [bp + 8]`
 - `R031+0x11E4` `cmp byte ptr es:[bx + 0x356d], ah`
 - `R031+0x11EB` `jmp 0x1d40`
 - `R031+0x11EE` `imul bx, ax, 0x24`
 - `R031+0x11F9` `push word ptr [bp + 8]`
 - `R031+0x11FC` `push ax`
-- `R031+0x1204` `lcall 0x47c, 0x12c3`
-- `R031+0x1293` `add cx, 5`
-- `R031+0x12A2` `lcall 0x47c, 0x1293`
 - `R031+0x12AC` `cmp byte ptr [0x867e], 0`
 - `R031+0x12B3` `mov al, byte ptr [0x867c]`
 - `R031+0x12C0` `mov es, word ptr [0x7e50]`
-- `R031+0x12F4` `mov es, word ptr [0x7e50]`
-- `R031+0x1308` `jmp 0x1410`
-- `R031+0x130B` `cmp byte ptr [0x867e], ah`
-- `R031+0x1311` `jmp 0x1410`
-- `R031+0x1314` `mov ax, bx`
 - `R031+0x1330` `mov byte ptr [bp - 8], cl`
 - `R031+0x1347` `jmp 0x1d40`
 - `R031+0x134A` `mov al, byte ptr [0x867c]`
-- `R031+0x135E` `mov al, byte ptr [0x867c]`
 - `R031+0x137D` `dec byte ptr es:[bx + 0x3572]`
-- `R031+0x1386` `lcall 0x47c, 0x12c3`
-- `R031+0x1410` `cmp byte ptr [0x867e], 0`
 - `R031+0x1417` `mov al, byte ptr [0x867c]`
-- `R031+0x1424` `mov es, word ptr [0x7e50]`
-- `R031+0x1454` `mov byte ptr [0x867c], al`
 - `R031+0x145A` `mov es, word ptr [0x7e50]`
 - `R031+0x146E` `jmp 0x1d40`
 - `R031+0x1471` `cmp byte ptr [0x867e], ah`
@@ -8934,7 +9039,6 @@ draft, reached by cards cards-day cards-variants: blocks 1/242, outcomes 0/196
 - `R031+0x1701` `push word ptr [0x867a]`
 - `R031+0x173D` `push word ptr [bp + 8]`
 - `R031+0x17A6` `push word ptr [bp + 8]`
-- `R031+0x17B2` `sub sp, 0x12`
 - `R031+0x17D4` `mov bx, si`
 - `R031+0x17E9` `jmp 0x1d40`
 - `R031+0x17EC` `cmp byte ptr [0x907a], 1`
@@ -8957,30 +9061,11 @@ draft, reached by cards cards-day cards-variants: blocks 1/242, outcomes 0/196
 - `R031+0x18CF` `add sp, 4`
 - `R031+0x18DE` `push word ptr [0x867a]`
 - `R031+0x1905` `push word ptr [bp + 8]`
-- `R031+0x192E` `mov es, word ptr [0x7e50]`
-- `R031+0x1942` `jmp 0x1d40`
-- `R031+0x1945` `cmp byte ptr [0x867e], ah`
 - `R031+0x194B` `jmp 0x1d40`
-- `R031+0x194E` `add bx, word ptr [bp + 8]`
-- `R031+0x197A` `push word ptr [0x867a]`
-- `R031+0x19A1` `push word ptr [bp + 8]`
 - `R031+0x19CE` `jmp 0x1ae4`
-- `R031+0x19D1` `cmp word ptr [0x867a], 0`
 - `R031+0x19D8` `jmp 0x1a9b`
-- `R031+0x19DB` `push 0x2cd2`
-- `R031+0x19E2` `mov es, word ptr [0x7e50]`
-- `R031+0x19F6` `jmp 0x1d40`
-- `R031+0x19F9` `cmp byte ptr [0x867e], ah`
 - `R031+0x19FF` `jmp 0x1d40`
-- `R031+0x1A02` `add bx, word ptr [bp + 8]`
-- `R031+0x1A31` `push word ptr [0x867a]`
-- `R031+0x1A58` `push word ptr [bp + 8]`
-- `R031+0x1A85` `cmp word ptr [0x867a], 0`
-- `R031+0x1A8C` `push 0x2cd4`
-- `R031+0x1A8F` `push word ptr [0x867a]`
-- `R031+0x1A9B` `lcall 0x47c, 0x545`
 - `R031+0x1AE4` `push word ptr [bp + 8]`
-- `R031+0x1AF1` `add sp, 4`
 - `R031+0x1B2C` `cmp byte ptr [0x867c], 9`
 - `R031+0x1B33` `jmp 0x1d40`
 - `R031+0x1B36` `cmp byte ptr [0x867e], 0`
@@ -9010,91 +9095,48 @@ draft, reached by cards cards-day cards-variants: blocks 1/242, outcomes 0/196
 - `R031+0x1C5E` `sub ax, 0x101`
 - `R031+0x1C61` `jne 0x1c66`
 - `R031+0x1C63` `jmp 0x1642`
-- `R031+0x1C66` `cmp byte ptr [0x867e], 0`
-- `R031+0x1C6D` `jmp 0x1d40`
 - `R031+0x1C70` `mov al, byte ptr [0x867c]`
-- `R031+0x1C7E` `cmp ax, 0x1970`
 - `R031+0x1C83` `jmp 0x1b2c`
-- `R031+0x1C86` `jg 0x1ca2`
-- `R031+0x1C88` `sub ax, 0x1655`
 - `R031+0x1C8D` `jmp 0x19e2`
-- `R031+0x1C90` `sub ax, 0x20`
-- `R031+0x1C95` `jmp 0x19e2`
 - `R031+0x1C98` `sub ax, 0x2db`
 - `R031+0x1C9D` `jmp 0x1b2c`
 - `R031+0x1CA0` `jmp 0x1c66`
-- `R031+0x1CA2` `sub ax, 0x1c0d`
-- `R031+0x1CA7` `jmp 0x1114`
-- `R031+0x1CAA` `sub ax, 0x234`
 - `R031+0x1CAF` `jmp 0x192e`
-- `R031+0x1CB2` `sub ax, 0x20`
-- `R031+0x1CB7` `jmp 0x192e`
 - `R031+0x1CBA` `jmp 0x1c66`
-- `R031+0x1CBC` `cmp ax, 0x4f00`
 - `R031+0x1CC1` `jmp 0x154c`
-- `R031+0x1CC4` `jg 0x1cfe`
-- `R031+0x1CC6` `cmp ax, 0x4800`
-- `R031+0x1CCB` `jmp 0x11ba`
-- `R031+0x1CCE` `jg 0x1ce2`
-- `R031+0x1CD0` `sub ax, 0x2064`
 - `R031+0x1CD5` `jmp 0x185e`
-- `R031+0x1CD8` `sub ax, 0x269c`
 - `R031+0x1CDD` `jmp 0x15ca`
-- `R031+0x1CE0` `jmp 0x1c66`
-- `R031+0x1CE2` `sub ax, 0x4900`
 - `R031+0x1CE7` `jmp 0x145a`
-- `R031+0x1CEA` `sub ax, 0x200`
-- `R031+0x1CEF` `jmp 0x112a`
 - `R031+0x1CF2` `sub ax, 0x200`
 - `R031+0x1CF7` `jmp 0x1172`
 - `R031+0x1CFA` `jmp 0x1c66`
-- `R031+0x1CFE` `sub ax, 0x5000`
 - `R031+0x1D05` `jmp 0x1c66`
-- `R031+0x1D08` `shr ax, 7`
 - `R031+0x1D10` `jmp 0x1c66`
-- `R031+0x1D13` `xchg bx, ax`
-- `R031+0x1D40` `pop si`
+
+### R031+0x1D44 `R031+0x1D44 (1462:1D44)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 4/4, outcomes 2/2
 
 ### R031+0x1E42 `R031+0x1E42 (1462:1E42)`
 
-draft, reached by cards: blocks 1/77, outcomes 0/72
+draft, reached by cards lockstep-saints: blocks 24/77, outcomes 17/72
 
-- `R031+0x1E42` `enter 8, 0`
 - `R031+0x1E56` `mov word ptr [bp - 2], 0`
-- `R031+0x1E5E` `mov word ptr [bp - 2], 1`
-- `R031+0x1E63` `mov si, word ptr [bp + 8]`
 - `R031+0x1EA1` `jmp 0x2513`
-- `R031+0x1EA4` `lcall 0x47c, 0x12c3`
 - `R031+0x1F64` `push word ptr [0x8678]`
-- `R031+0x1F74` `lcall 0x47c, 0x1293`
-- `R031+0x1F79` `test byte ptr [0x6ef0], 1`
-- `R031+0x1F80` `mov ax, 0x290e`
 - `R031+0x1F8C` `jmp 0x22ac`
-- `R031+0x1F8F` `mov bx, word ptr [bp - 4]`
 - `R031+0x1F9C` `jmp 0x2108`
-- `R031+0x1F9F` `mov al, byte ptr es:[bx + 0x3567]`
 - `R031+0x1FB3` `jmp 0x2108`
-- `R031+0x1FB6` `mov ax, word ptr [0x6eee]`
 - `R031+0x1FC0` `jmp 0x2108`
-- `R031+0x1FC3` `mov al, byte ptr es:[bx + 0x3568]`
 - `R031+0x1FD7` `jmp 0x2108`
-- `R031+0x1FDA` `cmp di, 9`
 - `R031+0x1FDF` `mov ax, word ptr [0x6eee]`
 - `R031+0x1FFC` `mov word ptr [bp - 2], 0`
 - `R031+0x2001` `mov bx, si`
 - `R031+0x2010` `jmp 0x24ea`
 - `R031+0x2013` `mov es, word ptr [0x7e50]`
-- `R031+0x2052` `add sp, 4`
-- `R031+0x2058` `cmp di, 0xa`
-- `R031+0x205D` `cmp di, 0xb`
 - `R031+0x2062` `jmp 0x24ea`
-- `R031+0x2065` `cmp di, 0xa`
 - `R031+0x206A` `mov bx, word ptr [bp - 6]`
 - `R031+0x2098` `push ax`
-- `R031+0x20AE` `cmp di, 0xb`
-- `R031+0x20B3` `mov bx, word ptr [bp - 6]`
-- `R031+0x20E1` `push 0`
-- `R031+0x20F6` `push si`
 - `R031+0x2108` `sub cx, cx`
 - `R031+0x2112` `mov ax, word ptr [0x6eec]`
 - `R031+0x211A` `mov ax, word ptr es:[si + 4]`
@@ -9132,15 +9174,28 @@ draft, reached by cards: blocks 1/77, outcomes 0/72
 - `R031+0x2461` `push word ptr [0x867a]`
 - `R031+0x2498` `push word ptr [bp + 8]`
 - `R031+0x24E5` `lcall 0x47c, 0x1293`
-- `R031+0x24EA` `mov es, word ptr [0x7e50]`
-- `R031+0x24F9` `lcall 0x47c, 0x12c3`
-- `R031+0x2513` `pop si`
+
+### R031+0x2518 `R031+0x2518 (1462:2518)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 1/1, outcomes 0/0
+
+### R031+0x25DE `R031+0x25DE (1462:25DE)`
+
+draft, reached by lockstep-sheet: blocks 3/3, outcomes 1/2
+
+### R031+0x264C `R031+0x264C (1462:264C)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 15/19, outcomes 9/16
+
+- `R031+0x2676` `mov al, byte ptr [0x867c]`
+- `R031+0x2680` `mov al, byte ptr [bp + 8]`
+- `R031+0x27BB` `jmp 0x2ab4`
+- `R031+0x2AB4` `mov es, word ptr [0x7e50]`
 
 ### R031+0x2B14 `R031+0x2B14 (1462:2B14)`
 
-draft, reached by cards sainthelp: blocks 2/108, outcomes 0/84
+draft, reached by cards lockstep-saints lockstep-sheet sainthelp: blocks 38/108, outcomes 23/84
 
-- `R031+0x2B14` `enter 0x32, 0`
 - `R031+0x2B26` `mov es, word ptr [0x7e58]`
 - `R031+0x2C8C` `inc si`
 - `R031+0x2C8D` `cmp si, 7`
@@ -9179,20 +9234,9 @@ draft, reached by cards sainthelp: blocks 2/108, outcomes 0/84
 - `R031+0x33E5` `cmp si, 6`
 - `R031+0x33EA` `jmp 0x399c`
 - `R031+0x33ED` `mov bx, word ptr [bp + 8]`
-- `R031+0x3438` `mov bx, word ptr [bp + 8]`
 - `R031+0x3445` `jmp 0x399c`
-- `R031+0x3448` `mov word ptr [0x2800], 8`
 - `R031+0x346F` `sub ax, 0xa`
-- `R031+0x348E` `mov bx, word ptr [bp + 8]`
 - `R031+0x34AD` `dec cl`
-- `R031+0x34B4` `sub si, si`
-- `R031+0x34BA` `mov ax, bx`
-- `R031+0x34DD` `mov ax, word ptr [bp + 8]`
-- `R031+0x3559` `inc si`
-- `R031+0x355A` `mov es, word ptr [0x7e50]`
-- `R031+0x3569` `jmp 0x34ba`
-- `R031+0x356C` `push 9`
-- `R031+0x35BD` `mov word ptr [0x2800], 0xbf`
 - `R031+0x35C8` `mov word ptr [0x2800], 8`
 - `R031+0x35D8` `mov es, word ptr [0x7e50]`
 - `R031+0x35E7` `jmp 0x3768`
@@ -9221,31 +9265,35 @@ draft, reached by cards sainthelp: blocks 2/108, outcomes 0/84
 - `R031+0x37E5` `inc word ptr [0xe7a4]`
 - `R031+0x37E9` `imul bx, word ptr [bp + 8], 0x16`
 - `R031+0x37F7` `inc word ptr [0xe7a4]`
-- `R031+0x37FE` `mov word ptr [0x2800], 8`
-- `R031+0x3820` `inc word ptr [bp - 6]`
-- `R031+0x3823` `cmp word ptr [bp - 6], 8`
-- `R031+0x3829` `jmp 0x38ba`
-- `R031+0x382C` `mov ax, word ptr [bp - 6]`
-- `R031+0x384C` `mov es, word ptr [0x7e50]`
-- `R031+0x3864` `mov bx, ax`
-- `R031+0x3871` `mov es, word ptr [0x7e60]`
-- `R031+0x38B5` `inc di`
-- `R031+0x38BA` `inc si`
-- `R031+0x38BB` `cmp si, 0x11`
-- `R031+0x38C0` `mov ax, di`
-- `R031+0x38E1` `mov word ptr [bp - 6], 0`
-- `R031+0x38EA` `sub si, si`
-- `R031+0x38F2` `inc word ptr [bp - 6]`
-- `R031+0x38F5` `cmp word ptr [bp - 6], 8`
-- `R031+0x38FB` `mov ax, word ptr [bp - 6]`
-- `R031+0x391B` `inc word ptr [0xe7a4]`
-- `R031+0x3922` `inc si`
-- `R031+0x3923` `cmp si, 0x11`
-- `R031+0x3928` `mov word ptr [bp - 6], 0`
-- `R031+0x3930` `push 9`
-- `R031+0x397A` `sub ax, 3`
-- `R031+0x3982` `shl ax, 1`
 - `R031+0x399C` `pop si`
+
+### R031+0x39A0 `R031+0x39A0 (1462:39A0)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 1/1, outcomes 0/0
+
+### R031+0x39C6 `R031+0x39C6 (1462:39C6)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 46/59, outcomes 26/44
+
+- `R031+0x39D6` `jmp 0x42a7`
+- `R031+0x3B8D` `dec ax`
+- `R031+0x3B90` `dec ax`
+- `R031+0x3B93` `jmp 0x3bd0`
+- `R031+0x3B96` `push 0x2df4`
+- `R031+0x3BA2` `push 0x2e0b`
+- `R031+0x3BA8` `push 0x2e16`
+- `R031+0x3F06` `push 0x2e9a`
+- `R031+0x3F80` `push 0x2ea4`
+- `R031+0x3FEA` `push 0x2eaf`
+- `R031+0x40BE` `push 0x2ec4`
+- `R031+0x41D6` `push 0x2ef2`
+- `R031+0x4267` `mov bx, word ptr [bp + 8]`
+
+### R031+0x433C `R031+0x433C (1462:433C)`
+
+draft, reached by lockstep-saints: blocks 7/8, outcomes 7/8
+
+- `R031+0x4396` `mov ax, 0x321a`
 
 ### R031+0x4930 `R031+0x4930 (18E7:00E0)`
 
@@ -9261,7 +9309,7 @@ draft, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R031+0x4A04 `R031+0x4A04 (18E7:01B4)`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 41/45, outcomes 37/50
+draft, reached by cards cards-day cards-flip cards-variants lockstep-shop sainthelp: blocks 41/45, outcomes 37/50
 
 - `R031+0x4A56` `mov al, byte ptr es:[si + 4]`
 - `R031+0x4A92` `cwde `
@@ -9270,14 +9318,13 @@ draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 41
 
 ### R031+0x4C56 `R031+0x4C56 (18E7:0406)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 4/4
+draft, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 4/4, outcomes 4/4
 
 ### R031+0x4CC4 `R031+0x4CC4 (18E7:0474)`
 
-draft, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
+draft, reached by cards cards-day cards-variants lockstep-shop: blocks 4/5, outcomes 3/4
 
 - `R031+0x4CD1` `mov al, byte ptr [0x907b]`
-- `R031+0x4CF2` `mov bx, si`
 
 ### R031+0x4D24 `R031+0x4D24 (18E7:04D4)`
 
@@ -9421,9 +9468,21 @@ draft, reached by cards-variants: blocks 10/22, outcomes 7/20
 - `R031+0x590E` `mov ax, 0x321a`
 - `R031+0x591C` `sub ax, ax`
 
+### R031+0x5A02 `R031+0x5A02 (18E7:11B2)`
+
+draft, reached by lockstep-sheet: blocks 7/14, outcomes 6/16
+
+- `R031+0x5A4A` `mov es, word ptr [0x7e62]`
+- `R031+0x5ABF` `cmp al, 0x4c`
+- `R031+0x5AC3` `mov bx, si`
+- `R031+0x5AE4` `cmp byte ptr [bp - 8], 0x5f`
+- `R031+0x5AEA` `mov al, byte ptr [bp - 8]`
+- `R031+0x5B0E` `cmp byte ptr [bp - 8], 0x61`
+- `R031+0x5B14` `mov al, byte ptr [bp - 8]`
+
 ### R031+0x5B38 `R031+0x5B38 (18E7:12E8)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 17/20, outcomes 18/26
+draft, reached by cards cards-day cards-flip cards-variants lockstep-sheet lockstep-shop: blocks 17/20, outcomes 18/26
 
 - `R031+0x5B4A` `push di`
 - `R031+0x5C40` `mov al, byte ptr [bx - 0x6350]`
@@ -9431,11 +9490,11 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 17/20, outco
 
 ### R031+0x5C5A `R031+0x5C5A (18E7:140A)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
+draft, reached by cards cards-day cards-flip cards-variants lockstep-sheet lockstep-shop: blocks 5/5, outcomes 4/4
 
 ### R031+0x5D06 `R031+0x5D06 (18E7:14B6)`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 22/23, outcomes 20/22
+draft, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-sheet lockstep-shop sainthelp: blocks 22/23, outcomes 20/22
 
 - `R031+0x5D1F` `jmp 0x15ce`
 
@@ -9479,56 +9538,192 @@ draft, reached by cards-variants: blocks 9/32, outcomes 6/38
 - `R031+0x60C9` `mov al, byte ptr [si]`
 - `R031+0x60D1` `mov di, ax`
 
+### R032+0x0000 `R032+0x0000 (1462:0000)`
+
+draft, reached by lockstep-shop: blocks 40/117, outcomes 29/142
+
+- `R032+0x004E` `mov es, word ptr [0x7e66]`
+- `R032+0x0085` `mov word ptr [0x8834], 0x19`
+- `R032+0x00A4` `mov word ptr [0x8834], 0xa`
+- `R032+0x0107` `jmp 0x194`
+- `R032+0x0114` `cmp word ptr [0x6eec], 0xe6`
+- `R032+0x011C` `cmp word ptr [0x6eee], 0x1b`
+- `R032+0x0123` `cmp word ptr [0x6eee], 0x43`
+- `R032+0x012A` `mov ax, word ptr [0x6eee]`
+- `R032+0x0144` `jmp 0x243`
+- `R032+0x0147` `lcall 0x47c, 0x12c3`
+- `R032+0x019B` `cmp word ptr [0x6eec], 0x50`
+- `R032+0x01A2` `cmp word ptr [0x6eec], 0xe6`
+- `R032+0x01AA` `cmp word ptr [0x6eee], 0x1b`
+- `R032+0x01B1` `cmp word ptr [0x6eee], 0x43`
+- `R032+0x01B8` `test byte ptr [0x6ef0], 1`
+- `R032+0x01BF` `mov ax, word ptr [0x6eee]`
+- `R032+0x01D7` `dec ax`
+- `R032+0x01DA` `dec ax`
+- `R032+0x01DD` `dec ax`
+- `R032+0x01E0` `dec ax`
+- `R032+0x01E3` `jmp 0x243`
+- `R032+0x01E6` `mov si, 0x1950`
+- `R032+0x01EC` `mov si, 0x1f53`
+- `R032+0x01F2` `mov si, 0x1e41`
+- `R032+0x01F8` `mov si, 0x3042`
+- `R032+0x01FE` `mov si, 0x11b`
+- `R032+0x0212` `lcall 0x47c, 0x12c3`
+- `R032+0x023E` `lcall 0x47c, 0x1293`
+- `R032+0x024D` `cmp word ptr [0x6eec], 0x72`
+- `R032+0x0254` `jmp 0x323`
+- `R032+0x0257` `cmp word ptr [0x6eec], 0x11c`
+- `R032+0x025F` `jmp 0x323`
+- `R032+0x0262` `cmp word ptr [0x6eee], 0x93`
+- `R032+0x026A` `jmp 0x323`
+- `R032+0x026D` `cmp word ptr [0x6eee], 0xb3`
+- `R032+0x0275` `jmp 0x323`
+- `R032+0x0278` `lcall 0x47c, 0x12c3`
+- `R032+0x031C` `test byte ptr [0x6ef0], 1`
+- `R032+0x032D` `cmp word ptr [0x6eec], 0x52`
+- `R032+0x0334` `jmp 0x3ff`
+- `R032+0x0337` `cmp word ptr [0x6eec], 0x10b`
+- `R032+0x033F` `jmp 0x3ff`
+- `R032+0x0342` `cmp word ptr [0x6eee], 0x55`
+- `R032+0x0349` `jmp 0x3ff`
+- `R032+0x034C` `cmp word ptr [0x6eee], 0x75`
+- `R032+0x0353` `jmp 0x3ff`
+- `R032+0x0356` `lcall 0x47c, 0x12c3`
+- `R032+0x03F8` `test byte ptr [0x6ef0], 1`
+- `R032+0x0409` `cmp word ptr [0x6eee], 0x8a`
+- `R032+0x0411` `cmp word ptr [0x6eee], 0x93`
+- `R032+0x0419` `cmp word ptr [0x6eec], 0x72`
+- `R032+0x0420` `cmp word ptr [0x6eec], 0x12b`
+- `R032+0x0428` `test byte ptr [0x6ef0], 1`
+- `R032+0x042F` `mov si, 0x4800`
+- `R032+0x0494` `cmp word ptr [0x6eee], 0xb3`
+- `R032+0x049C` `cmp word ptr [0x6eee], 0xbc`
+- `R032+0x04A4` `cmp word ptr [0x6eec], 0x72`
+- `R032+0x04AB` `cmp word ptr [0x6eec], 0x12b`
+- `R032+0x04B3` `test byte ptr [0x6ef0], 1`
+- `R032+0x04BA` `mov si, 0x5000`
+- `R032+0x051F` `cmp word ptr [0x6eee], 0x4c`
+- `R032+0x0526` `cmp word ptr [0x6eee], 0x55`
+- `R032+0x052D` `cmp word ptr [0x6eec], 0x52`
+- `R032+0x0534` `cmp word ptr [0x6eec], 0x10b`
+- `R032+0x053C` `test byte ptr [0x6ef0], 1`
+- `R032+0x0543` `mov si, 0x4800`
+- `R032+0x05AE` `cmp word ptr [0x6eee], 0x75`
+- `R032+0x05B5` `cmp word ptr [0x6eee], 0x7e`
+- `R032+0x05BC` `cmp word ptr [0x6eec], 0x52`
+- `R032+0x05C3` `cmp word ptr [0x6eec], 0x10b`
+- `R032+0x05CB` `test byte ptr [0x6ef0], 1`
+- `R032+0x05D2` `mov si, 0x5000`
+- `R032+0x063A` `cmp word ptr [0x6eec], 0x3c`
+- `R032+0x0641` `mov ax, word ptr [0x6eee]`
+- `R032+0x06AB` `test byte ptr [0x6ef0], 1`
+- `R032+0x06C6` `mov word ptr [0x9c46], 0`
+- `R032+0x0769` `jmp 0x742`
+
+### R032+0x076C `R032+0x076C (1462:076C)`
+
+draft, reached by lockstep-shop: blocks 1/1, outcomes 0/0
+
 ### R032+0x078E `R032+0x078E (1462:078E)`
 
-draft, reached by trading: blocks 18/21, outcomes 13/18
+draft, reached by lockstep-shop trading: blocks 19/21, outcomes 15/18
 
 - `R032+0x0846` `mov ax, word ptr [0x2fac]`
 - `R032+0x086B` `mov di, word ptr [bp + 8]`
-- `R032+0x09AE` `mov es, word ptr [0x7e68]`
 
 ### R032+0x0B30 `R032+0x0B30 (1462:0B30)`
 
-draft, reached by cards cards-day cards-variants: blocks 0/22, outcomes 0/18
+draft, reached by cards cards-day cards-variants lockstep-shop: blocks 17/22, outcomes 11/18
 
-- `R032+0x0B30` `enter 0x94, 0`
-- `R032+0x0BC5` `lea di, [bp - 0xc]`
 - `R032+0x0BDA` `mov ax, word ptr [0x30ba]`
-- `R032+0x0BED` `mov ax, ss`
-- `R032+0x0BFF` `mov si, word ptr [bp + 6]`
 - `R032+0x0C1E` `mov si, word ptr [bp + 6]`
-- `R032+0x0C3B` `lea ax, [bp - 0x8e]`
 - `R032+0x0D54` `jmp 0xe02`
-- `R032+0x0D57` `mov ax, si`
-- `R032+0x0D6E` `mov bx, word ptr [bp - 0x90]`
-- `R032+0x0D7B` `jmp 0xe02`
-- `R032+0x0D7E` `mov es, word ptr [0x7e68]`
-- `R032+0x0DFF` `jmp 0xd6e`
-- `R032+0x0E02` `mov di, word ptr [0x86a0]`
 - `R032+0x0E0D` `jmp 0xe92`
-- `R032+0x0E10` `mov si, di`
-- `R032+0x0E18` `cmp word ptr [0x885c], di`
-- `R032+0x0E1E` `mov es, word ptr [0x7e6a]`
-- `R032+0x0E92` `mov bx, word ptr [0x884e]`
-- `R032+0x0E9F` `push 9`
 - `R032+0x0EB6` `push 9`
-- `R032+0x0ED2` `push 0x27f4`
 
 ### R032+0x0EFA `R032+0x0EFA (1462:0EFA)`
 
-draft, reached by trading: blocks 10/10, outcomes 15/16
+draft, reached by lockstep-shop trading: blocks 10/10, outcomes 15/16
+
+### R032+0x0F60 `R032+0x0F60 (1462:0F60)`
+
+draft, reached by lockstep-shop: blocks 71/128, outcomes 54/114
+
+- `R032+0x0F6E` `jmp 0x1384`
+- `R032+0x0F82` `jmp 0x101e`
+- `R032+0x0F8A` `jmp 0x1032`
+- `R032+0x0F95` `sub ax, 0x5e3`
+- `R032+0x0F9A` `jmp 0x11ac`
+- `R032+0x0F9D` `jmp 0x1768`
+- `R032+0x0FA5` `jmp 0x1320`
+- `R032+0x0FB0` `sub ax, 0x5e8`
+- `R032+0x0FB5` `jmp 0x137c`
+- `R032+0x0FB8` `sub ax, 0x20`
+- `R032+0x0FBD` `jmp 0x137c`
+- `R032+0x0FC0` `jmp 0x1768`
+- `R032+0x0FEE` `jmp 0x1768`
+- `R032+0x0FF2` `sub ax, 0x5e00`
+- `R032+0x0FF7` `jmp 0x15e4`
+- `R032+0x0FFA` `sub ax, 0x100`
+- `R032+0x0FFF` `jmp 0x15e4`
+- `R032+0x1002` `sub ax, 0x100`
+- `R032+0x1007` `jmp 0x15e4`
+- `R032+0x100A` `sub ax, 0x100`
+- `R032+0x100F` `jmp 0x15e4`
+- `R032+0x1012` `sub ax, 0x100`
+- `R032+0x1017` `jmp 0x15e4`
+- `R032+0x101A` `jmp 0x1768`
+- `R032+0x101E` `push 0`
+- `R032+0x1049` `jmp 0x1768`
+- `R032+0x1084` `jmp 0x1768`
+- `R032+0x11BF` `jmp 0x1768`
+- `R032+0x11C9` `jmp 0x1768`
+- `R032+0x1207` `jmp 0x1768`
+- `R032+0x12D5` `mov bx, word ptr [0x884e]`
+- `R032+0x12E4` `dec word ptr [si - 0x77ae]`
+- `R032+0x12EA` `cmp word ptr [si - 0x77a2], 0`
+- `R032+0x12F1` `dec word ptr [si - 0x77a2]`
+- `R032+0x1331` `jmp 0x1768`
+- `R032+0x137C` `mov ax, 0x11b`
+- `R032+0x13F4` `dec word ptr [0x8832]`
+- `R032+0x1411` `cmp word ptr [0x8832], 0`
+- `R032+0x1418` `cmp word ptr [0x86a0], 0`
+- `R032+0x141F` `inc word ptr [0x8832]`
+- `R032+0x1427` `push word ptr [0x907e]`
+- `R032+0x1453` `inc word ptr [bx - 0x77a2]`
+- `R032+0x1465` `mov word ptr [0x8832], 0`
+- `R032+0x14A1` `push 9`
+- `R032+0x1510` `mov ax, word ptr [0x86a0]`
+- `R032+0x151B` `mov word ptr [0x8832], bx`
+- `R032+0x1538` `mov ax, word ptr [si - 0x77a2]`
+- `R032+0x1546` `mov word ptr [0x8832], bx`
+- `R032+0x1554` `push word ptr [0x884e]`
+- `R032+0x1578` `dec bx`
+- `R032+0x1582` `mov word ptr [0x8832], 3`
+- `R032+0x1591` `mov word ptr [bx - 0x77a2], 3`
+- `R032+0x15E4` `mov cl, 8`
+- `R032+0x15FB` `jmp 0x1768`
+- `R032+0x15FE` `mov al, byte ptr [bp + 6]`
+- `R032+0x1621` `jmp 0x16c2`
+- `R032+0x16C2` `mov word ptr [0x2800], 7`
+
+### R032+0x1770 `R032+0x1770 (1462:1770)`
+
+draft, reached by lockstep-shop: blocks 7/8, outcomes 5/6
+
+- `R032+0x17AF` `jmp 0x1867`
 
 ### R032+0x192E `R032+0x192E (1462:192E)`
 
-draft, reached by trading: blocks 24/24, outcomes 23/24
+draft, reached by lockstep-shop trading: blocks 24/24, outcomes 23/24
 
 ### R032+0x1B26 `R032+0x1B26 (1462:1B26)`
 
-draft, reached by cards cards-day cards-variants trading: blocks 26/26, outcomes 25/26
+draft, reached by cards cards-day cards-variants lockstep-shop trading: blocks 26/26, outcomes 25/26
 
 ### R032+0x1D18 `R032+0x1D18 (1462:1D18)`
 
-draft, reached by trading: blocks 29/29, outcomes 28/28
+draft, reached by lockstep-shop trading: blocks 29/29, outcomes 28/28
 
 ### R033+0x0000 `R033+0x0000 (1462:0000)`
 
@@ -9710,11 +9905,19 @@ matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: b
 - `R034+0x00BD` `mov ax, word ptr [0x887c]`
 - `R034+0x00D3` `mov ax, word ptr [0x887c]`
 
+### R034+0x0102 `R034+0x0102 (1462:0102)`
+
+matched, reached by lockstep-saints: blocks 13/17, outcomes 8/16
+
+- `R034+0x01AE` `push 0x63`
+- `R034+0x01BF` `mov di, word ptr [bp + 6]`
+- `R034+0x01E0` `mov di, word ptr [bp + 6]`
+- `R034+0x01E8` `lcall 0, 0x24bc`
+
 ### R034+0x022C `R034+0x022C (1462:022C)`
 
-matched, reached by lockstep-tyrnau: blocks 25/93, outcomes 20/110
+matched, reached by lockstep-saints lockstep-tyrnau: blocks 30/93, outcomes 25/110
 
-- `R034+0x0290` `mov al, byte ptr [bp - 2]`
 - `R034+0x02BB` `mov word ptr [0x887c], 0`
 - `R034+0x02F5` `test byte ptr [0x6ef0], 1`
 - `R034+0x02FC` `jmp 0x386`
@@ -9776,16 +9979,18 @@ matched, reached by lockstep-tyrnau: blocks 25/93, outcomes 20/110
 - `R034+0x05F2` `mov ax, word ptr [0x6eee]`
 - `R034+0x0606` `jmp 0x6c4`
 - `R034+0x061D` `mov word ptr [0x9c46], 0`
-- `R034+0x067D` `push 7`
-- `R034+0x06AC` `mov word ptr [0x89ea], 0xffff`
-- `R034+0x06B2` `push word ptr [bp + 8]`
 - `R034+0x06C4` `cmp word ptr [0x887a], 0`
 - `R034+0x06CB` `push 0x342a`
-- `R034+0x06DA` `mov ax, 0xffff`
+
+### R034+0x06E2 `R034+0x06E2 (1462:06E2)`
+
+matched, reached by lockstep-saints: blocks 2/3, outcomes 1/2
+
+- `R034+0x06F8` `push 0x342c`
 
 ### R034+0x0720 `R034+0x0720 (1462:0720)`
 
-matched, reached by lockstep-tyrnau: blocks 6/21, outcomes 2/4
+matched, reached by lockstep-saints lockstep-tyrnau: blocks 8/21, outcomes 2/4
 
 - `R034+0x076A` `push 0xe48c`
 - `R034+0x0772` `push 0xe48c`
@@ -9793,9 +9998,7 @@ matched, reached by lockstep-tyrnau: blocks 6/21, outcomes 2/4
 - `R034+0x0782` `push 0xe48c`
 - `R034+0x078A` `push 0xe48c`
 - `R034+0x0792` `push 0xe48c`
-- `R034+0x079A` `push 0xe48c`
 - `R034+0x07A2` `push 0xe48c`
-- `R034+0x07AA` `push 0xe48c`
 - `R034+0x07BA` `push 0xe48c`
 - `R034+0x07C2` `push 0xe48c`
 - `R034+0x07CA` `push 0xe48c`
@@ -9805,64 +10008,56 @@ matched, reached by lockstep-tyrnau: blocks 6/21, outcomes 2/4
 
 ### R034+0x0878 `R034+0x0878 (1462:0878)`
 
-matched, reached by lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by lockstep-saints lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R034+0x08D2 `R034+0x08D2 (1462:08D2)`
 
-matched, reached by lockstep-tyrnau: blocks 8/29, outcomes 7/30
+matched, reached by lockstep-saints lockstep-tyrnau: blocks 19/29, outcomes 15/30
 
 - `R034+0x08F1` `jmp 0x988`
 - `R034+0x08F9` `jmp 0x99e`
 - `R034+0x0901` `jmp 0x99e`
-- `R034+0x0908` `sub ax, 0x266c`
-- `R034+0x090D` `sub ax, 0xbe1`
-- `R034+0x0912` `sub ax, 0x20`
 - `R034+0x0917` `sub ax, 0x17c0`
 - `R034+0x091C` `sub ax, 0x3fe`
 - `R034+0x0921` `pop si`
-- `R034+0x0926` `dec word ptr [0x887c]`
 - `R034+0x092C` `mov word ptr [0x887c], 0`
-- `R034+0x0936` `push 0x27f4`
-- `R034+0x0942` `mov di, word ptr [bp + 0xa]`
-- `R034+0x0965` `mov bx, si`
 - `R034+0x0979` `mov word ptr [0x887c], ax`
-- `R034+0x097C` `push 0x27f4`
-- `R034+0x0981` `push cs`
 - `R034+0x0988` `push word ptr [bp + 0xa]`
 - `R034+0x099E` `push 0x27f4`
-- `R034+0x09AB` `add sp, 6`
-- `R034+0x09AE` `pop si`
 
 ### R034+0x09B2 `R034+0x09B2 (1462:09B2)`
 
-matched, reached by lockstep-tyrnau: blocks 2/3, outcomes 1/2
+matched, reached by lockstep-saints lockstep-tyrnau: blocks 2/3, outcomes 1/2
 
 - `R034+0x09C3` `mov word ptr [0x887e], 0`
 
 ### R034+0x0AA4 `R034+0x0AA4 (1462:0AA4)`
 
-matched, reached by lockstep-tyrnau: blocks 4/10, outcomes 2/8
+matched, reached by lockstep-saints lockstep-tyrnau: blocks 5/10, outcomes 3/8
 
 - `R034+0x0AB5` `cmp word ptr [0x887a], 0`
 - `R034+0x0ABC` `push word ptr [0x887a]`
 - `R034+0x0AD1` `cmp word ptr [0x887a], 0`
 - `R034+0x0AD8` `push 0x3585`
 - `R034+0x0AE7` `mov word ptr [0x887a], 0`
-- `R034+0x0B72` `push 0x35e4`
 
 ### R034+0x0BC4 `R034+0x0BC4 (1462:0BC4)`
 
-matched, reached by lockstep-tyrnau: blocks 5/7, outcomes 2/4
+matched, reached by lockstep-saints lockstep-tyrnau: blocks 6/7, outcomes 3/4
 
 - `R034+0x0C09` `push 0`
-- `R034+0x0CBE` `mov di, 0x32`
+
+### R036+0x0000 `R036+0x0000 (1462:0000)`
+
+draft, reached by lockstep-wildcamp: blocks 5/7, outcomes 3/6
+
+- `R036+0x001B` `lcall 0x47c, 0x744`
+- `R036+0x0040` `push 0x61`
 
 ### R036+0x0082 `R036+0x0082 (1462:0082)`
 
-draft, reached by lockstep-residence: blocks 34/106, outcomes 25/104
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 37/106, outcomes 28/104
 
-- `R036+0x00CB` `push 0x15`
-- `R036+0x00DE` `push 9`
 - `R036+0x0112` `push di`
 - `R036+0x011F` `mov ax, word ptr [0x907e]`
 - `R036+0x0136` `mov ax, word ptr es:[bx]`
@@ -9931,12 +10126,11 @@ draft, reached by lockstep-residence: blocks 34/106, outcomes 25/104
 - `R036+0x063D` `push 0xe48c`
 - `R036+0x0646` `push 0xe48c`
 - `R036+0x064C` `push 1`
-- `R036+0x06CC` `jmp 0x6a3`
 - `R036+0x06CE` `pop si`
 
 ### R036+0x06D2 `R036+0x06D2 (1462:06D2)`
 
-draft, reached by lockstep-residence: blocks 7/17, outcomes 5/24
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 7/17, outcomes 5/24
 
 - `R036+0x06DE` `mov dx, word ptr [bp + 8]`
 - `R036+0x06E7` `cmp dx, 0x2d`
@@ -9951,77 +10145,40 @@ draft, reached by lockstep-residence: blocks 7/17, outcomes 5/24
 
 ### R036+0x082C `R036+0x082C (1462:082C)`
 
-draft, reached by lockstep-residence: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R036+0x0862 `R036+0x0862 (1462:0862)`
 
-draft, reached by lockstep-residence: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R036+0x0872 `R036+0x0872 (1462:0872)`
 
-draft, reached by lockstep-residence: blocks 3/4, outcomes 1/2
-
-- `R036+0x087E` `push 0xe48c`
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 4/4, outcomes 2/2
 
 ### R036+0x08EC `R036+0x08EC (1462:08EC)`
 
-draft, reached by lockstep-residence: blocks 18/176, outcomes 15/158
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 73/176, outcomes 58/158
 
-- `R036+0x08FC` `jmp 0xe34`
-- `R036+0x0901` `jmp 0x9c2`
 - `R036+0x0909` `jmp 0xb26`
-- `R036+0x090E` `cmp ax, 0x635`
-- `R036+0x0913` `jmp 0xa6e`
-- `R036+0x0916` `jg 0x93c`
-- `R036+0x0918` `sub ax, 0x231`
-- `R036+0x091D` `jmp 0xa6e`
-- `R036+0x0920` `sub ax, 0x101`
-- `R036+0x0925` `jmp 0xa6e`
-- `R036+0x0928` `sub ax, 0x101`
-- `R036+0x092D` `jmp 0xa6e`
-- `R036+0x0930` `sub ax, 0x101`
-- `R036+0x0933` `jne 0x938`
-- `R036+0x0935` `jmp 0xa6e`
 - `R036+0x0938` `jmp 0xf88`
-- `R036+0x093C` `sub ax, 0x1000`
 - `R036+0x0941` `jmp 0xa8c`
-- `R036+0x0944` `sub ax, 0x245`
 - `R036+0x0949` `jmp 0xaa0`
-- `R036+0x094C` `sub ax, 0x20`
-- `R036+0x0951` `jmp 0xaa0`
-- `R036+0x0954` `sub ax, 0xed`
 - `R036+0x0959` `jmp 0xad0`
-- `R036+0x095C` `sub ax, 0x20`
-- `R036+0x0961` `jmp 0xad0`
 - `R036+0x0964` `jmp 0xf88`
 - `R036+0x096D` `jmp 0xc6c`
-- `R036+0x0972` `sub ax, 0x1474`
 - `R036+0x0977` `jmp 0xb26`
-- `R036+0x097A` `sub ax, 0x4dc`
 - `R036+0x097F` `jmp 0xc1c`
-- `R036+0x0982` `sub ax, 0x20`
-- `R036+0x0987` `jmp 0xc1c`
 - `R036+0x098A` `sub ax, 0x4d1`
 - `R036+0x098F` `jmp 0xc6c`
 - `R036+0x0992` `jmp 0xf88`
 - `R036+0x099B` `jmp 0xd0c`
-- `R036+0x09A6` `sub ax, 0x2d4`
 - `R036+0x09AB` `jmp 0xe10`
-- `R036+0x09AE` `sub ax, 0x20`
-- `R036+0x09B3` `jmp 0xe10`
 - `R036+0x09B6` `sub ax, 0x1e3`
 - `R036+0x09BB` `jmp 0xe34`
 - `R036+0x09BE` `jmp 0xf88`
-- `R036+0x09C2` `cmp ax, 0x4c35`
 - `R036+0x09C7` `jmp 0xa6e`
-- `R036+0x09CA` `jg 0xa20`
-- `R036+0x09CC` `cmp ax, 0x3d00`
 - `R036+0x09D1` `jmp 0xe7a`
-- `R036+0x09D4` `jg 0x9fa`
-- `R036+0x09D6` `sub ax, 0x264c`
 - `R036+0x09DB` `jmp 0xd26`
-- `R036+0x09DE` `sub ax, 0x20`
-- `R036+0x09E3` `jmp 0xd26`
 - `R036+0x09E6` `sub ax, 0x1494`
 - `R036+0x09EB` `jmp 0xe7a`
 - `R036+0x09EE` `sub ax, 0x100`
@@ -10055,14 +10212,7 @@ draft, reached by lockstep-residence: blocks 18/176, outcomes 15/158
 - `R036+0x0A62` `sub ax, 0x100`
 - `R036+0x0A67` `jmp 0xee0`
 - `R036+0x0A6A` `jmp 0xf88`
-- `R036+0x0A6E` `mov di, word ptr [bp + 8]`
 - `R036+0x0A8C` `push word ptr [bp + 8]`
-- `R036+0x0AA0` `mov si, word ptr [bp + 8]`
-- `R036+0x0AA7` `jmp 0xf88`
-- `R036+0x0AAA` `push word ptr [0x3aba]`
-- `R036+0x0AD0` `mov si, word ptr [0x3aba]`
-- `R036+0x0AE3` `jmp 0xf88`
-- `R036+0x0AE6` `mov si, word ptr [bp + 8]`
 - `R036+0x0B26` `push word ptr [0x907e]`
 - `R036+0x0B38` `jmp 0xf88`
 - `R036+0x0B3B` `push word ptr [0x3aba]`
@@ -10072,8 +10222,6 @@ draft, reached by lockstep-residence: blocks 18/176, outcomes 15/158
 - `R036+0x0BEE` `mov cx, 0xffff`
 - `R036+0x0C0D` `push word ptr [bp + 8]`
 - `R036+0x0C14` `add sp, 2`
-- `R036+0x0C1C` `mov si, word ptr [0x3aba]`
-- `R036+0x0C2F` `jmp 0xf88`
 - `R036+0x0C32` `mov si, word ptr [bp + 8]`
 - `R036+0x0C6C` `push word ptr [0x3aba]`
 - `R036+0x0C7B` `jmp 0xf88`
@@ -10084,11 +10232,9 @@ draft, reached by lockstep-residence: blocks 18/176, outcomes 15/158
 - `R036+0x0D00` `jmp 0xc0d`
 - `R036+0x0D03` `mov di, 0x3d63`
 - `R036+0x0D14` `push word ptr [0x907e]`
-- `R036+0x0D26` `mov ax, 0x11b`
 - `R036+0x0D33` `push 0x64`
 - `R036+0x0D5D` `push 2`
 - `R036+0x0D61` `lcall 0xe76, 0x2930`
-- `R036+0x0D71` `push 0x32`
 - `R036+0x0D8F` `mov dx, 4`
 - `R036+0x0D9E` `cmp byte ptr [bx], 0`
 - `R036+0x0DA3` `cmp word ptr [di], 5`
@@ -10097,12 +10243,6 @@ draft, reached by lockstep-residence: blocks 18/176, outcomes 15/158
 - `R036+0x0DB5` `push 2`
 - `R036+0x0DDB` `jmp 0xd26`
 - `R036+0x0DF8` `jmp 0xf88`
-- `R036+0x0E10` `mov si, word ptr [bp + 8]`
-- `R036+0x0E18` `jmp 0xf88`
-- `R036+0x0E1B` `push word ptr [0x3aba]`
-- `R036+0x0E34` `mov si, word ptr [bp + 8]`
-- `R036+0x0E5F` `mov word ptr [bx - 0x7602], ax`
-- `R036+0x0E63` `push 0x27f4`
 - `R036+0x0E7A` `mov ax, si`
 - `R036+0x0EB6` `test byte ptr [0x6ef0], 1`
 - `R036+0x0EBD` `push 0`
@@ -10122,27 +10262,18 @@ draft, reached by lockstep-residence: blocks 18/176, outcomes 15/158
 - `R036+0x0F5F` `cmp bx, cx`
 - `R036+0x0F63` `mov ax, bx`
 - `R036+0x0F6A` `mov word ptr [0x3aba], bx`
-- `R036+0x0F81` `push cs`
-- `R036+0x0F85` `add sp, 4`
-- `R036+0x0F88` `pop si`
 
 ### R036+0x0F8C `R036+0x0F8C (1462:0F8C)`
 
-draft, reached by lockstep-residence: blocks 15/22, outcomes 7/14
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 20/22, outcomes 12/14
 
-- `R036+0x0F9D` `mov word ptr [bp - 2], 7`
-- `R036+0x0FD8` `mov ax, word ptr [bp - 2]`
 - `R036+0x100E` `mov word ptr [si + 0xc], di`
-- `R036+0x1031` `mov word ptr [si + 0xc], di`
-- `R036+0x1058` `mov ax, word ptr [bp - 2]`
-- `R036+0x1075` `mov word ptr [si + 0xc], di`
 - `R036+0x10A3` `mov word ptr [si + 0xc], di`
 
 ### R036+0x10D0 `R036+0x10D0 (1462:10D0)`
 
-draft, reached by lockstep-residence: blocks 16/30, outcomes 8/18
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 18/30, outcomes 9/18
 
-- `R036+0x10E3` `jmp 0x12be`
 - `R036+0x110D` `jmp 0x11f4`
 - `R036+0x1127` `mov si, 1`
 - `R036+0x1131` `push di`
@@ -10155,30 +10286,21 @@ draft, reached by lockstep-residence: blocks 16/30, outcomes 8/18
 - `R036+0x122A` `les bx, ptr [0x9785]`
 - `R036+0x1232` `mov es, word ptr [0x7e9e]`
 - `R036+0x1250` `push word ptr [bp - 2]`
-- `R036+0x12BE` `mov si, word ptr [bp + 8]`
 
 ### R036+0x1368 `R036+0x1368 (1462:1368)`
 
-draft, reached by lockstep-residence: blocks 12/13, outcomes 7/8
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 12/13, outcomes 7/8
 
 - `R036+0x13FA` `push word ptr [bp - 2]`
 
 ### R036+0x147A `R036+0x147A (1462:147A)`
 
-draft, reached by lockstep-residence: blocks 34/72, outcomes 28/88
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 43/72, outcomes 40/88
 
-- `R036+0x14E3` `dec ax`
-- `R036+0x14E6` `dec ax`
-- `R036+0x14E9` `dec ax`
-- `R036+0x14EC` `dec ax`
-- `R036+0x14EF` `dec ax`
-- `R036+0x14F3` `jmp 0x15fe`
-- `R036+0x14F6` `push 0xd`
 - `R036+0x151C` `mov word ptr [di - 0x75e8], 0`
 - `R036+0x152C` `mov al, byte ptr [si + 0x16]`
 - `R036+0x154B` `jmp 0x15fe`
 - `R036+0x154E` `mov word ptr [di - 0x75e8], 0`
-- `R036+0x1558` `push word ptr [di - 0x7602]`
 - `R036+0x156E` `push -1`
 - `R036+0x158C` `push 0x906b`
 - `R036+0x15BB` `jl 0x15c1`
@@ -10195,7 +10317,6 @@ draft, reached by lockstep-residence: blocks 34/72, outcomes 28/88
 - `R036+0x16D5` `push 1`
 - `R036+0x16E6` `push 0`
 - `R036+0x16F7` `lea ax, [si - 1]`
-- `R036+0x174D` `push 0xd`
 - `R036+0x178F` `mov di, 0x8a38`
 - `R036+0x1792` `push si`
 - `R036+0x17A4` `push si`
@@ -10208,44 +10329,62 @@ draft, reached by lockstep-residence: blocks 34/72, outcomes 28/88
 
 ### R036+0x1858 `R036+0x1858 (1462:1858)`
 
-draft, reached by lockstep-residence: blocks 10/17, outcomes 7/14
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 14/17, outcomes 11/14
 
-- `R036+0x188E` `cmp si, 2`
 - `R036+0x1893` `push si`
-- `R036+0x1896` `cmp si, 3`
 - `R036+0x189B` `mov di, 1`
-- `R036+0x18A0` `sub di, di`
-- `R036+0x18C6` `sub di, word ptr [si - 0x7602]`
 - `R036+0x18CC` `push -1`
+
+### R036+0x197E `R036+0x197E (1462:197E)`
+
+draft, reached by lockstep-stay: blocks 22/25, outcomes 18/24
+
+- `R036+0x19BB` `mov ax, 1`
+- `R036+0x1A9B` `sub ax, ax`
+- `R036+0x1AED` `imul bx, word ptr [bp + 6], 0x14`
+
+### R036+0x1B4C `R036+0x1B4C (1462:1B4C)`
+
+draft, reached by lockstep-stay: blocks 6/6, outcomes 5/6
 
 ### R036+0x1B80 `R036+0x1B80 (1462:1B80)`
 
-draft, reached by lockstep-residence: blocks 9/27, outcomes 8/32
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 16/27, outcomes 15/32
 
 - `R036+0x1B94` `sub ax, ax`
-- `R036+0x1BB8` `cmp byte ptr [si], 0x46`
 - `R036+0x1BBD` `mov ax, 3`
-- `R036+0x1BC2` `cmp byte ptr [si], 0x1e`
 - `R036+0x1BC7` `mov ax, 2`
-- `R036+0x1BCC` `mov ax, 1`
-- `R036+0x1BCF` `sub di, ax`
 - `R036+0x1BDB` `dec di`
-- `R036+0x1BE0` `cmp byte ptr [bp - 4], 0x1e`
 - `R036+0x1BE6` `dec di`
-- `R036+0x1BE7` `cmp byte ptr [si - 0x12], 0x1e`
 - `R036+0x1BED` `cmp byte ptr [si - 0xd], 0x1e`
 - `R036+0x1BF3` `cmp byte ptr [si - 0x10], 0x1e`
 - `R036+0x1BF9` `cmp byte ptr [si - 0xf], 0x1e`
 - `R036+0x1BFF` `cmp byte ptr [si - 0xe], 0x1e`
 - `R036+0x1C05` `cmp byte ptr [si - 0xc], 0x1e`
-- `R036+0x1C0B` `dec di`
 - `R036+0x1C1D` `mov di, 0xf`
 
 ### R036+0x1E80 `R036+0x1E80 (1462:1E80)`
 
-draft, reached by lockstep-residence: blocks 5/6, outcomes 3/4
+draft, reached by lockstep-residence lockstep-stay lockstep-wildcamp: blocks 6/6, outcomes 4/4
 
-- `R036+0x1EB0` `mov ax, 0x321a`
+### R036+0x1EC2 `R036+0x1EC2 (1462:1EC2)`
+
+draft, reached by lockstep-stay lockstep-wildcamp: blocks 9/23, outcomes 6/20
+
+- `R036+0x1EDF` `push 0x401b`
+- `R036+0x1F45` `mov di, word ptr [bp - 8]`
+- `R036+0x1F8E` `jmp 0x2084`
+- `R036+0x1FA6` `mov ax, word ptr [bp + 6]`
+- `R036+0x1FC3` `jmp 0x207a`
+- `R036+0x1FC6` `mov si, word ptr es:[bx + 0x20]`
+- `R036+0x1FE2` `jmp 0x207a`
+- `R036+0x1FE5` `mov word ptr [bp - 8], di`
+- `R036+0x2000` `mov word ptr [bp - 2], 0`
+- `R036+0x2005` `les bx, ptr [bp - 0x4a]`
+- `R036+0x2072` `dec word ptr [bp - 6]`
+- `R036+0x2077` `mov di, word ptr [bp - 8]`
+- `R036+0x207A` `inc di`
+- `R036+0x2081` `jmp 0x1f91`
 
 ### R037+0x0000 `R037+0x0000 (1462:0000)`
 
@@ -10319,7 +10458,7 @@ draft, reached by lockstep-save-load: blocks 4/5, outcomes 2/4
 
 ### R037+0x2ACE `R037+0x2ACE (1462:2ACE)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 54/81, outcomes 38/66
+draft, reached by cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 54/81, outcomes 38/66
 
 - `R037+0x2AF9` `mov word ptr [bp - 0x64], ax`
 - `R037+0x2AFC` `mov bx, word ptr [bp - 0x64]`
@@ -10380,7 +10519,7 @@ draft, reached by cards cards-day cards-flip cards-variants lockstep-gate-battle
 
 ### R037+0x4184 `R037+0x4184 (1462:4184)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 12/12, outcomes 11/12
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 12/12, outcomes 11/12
 
 ### R037+0x43E6 `R037+0x43E6 (1462:43E6)`
 
@@ -10433,7 +10572,7 @@ draft, reached by chargen: blocks 8/11, outcomes 5/12
 
 ### R037+0x81B2 `R037+0x81B2 (1C7D:0002)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 27/51, outcomes 24/66
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 27/51, outcomes 24/66
 
 - `R037+0x822B` `push 8`
 - `R037+0x8271` `cmp word ptr [0x6eec], 0x44`
@@ -10462,19 +10601,19 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R037+0x83C8 `R037+0x83C8 (1C7D:0218)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### R037+0x83FE `R037+0x83FE (1C7D:024E)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R037+0x847E `R037+0x847E (1C7D:02CE)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R037+0x84BA `R037+0x84BA (1C7D:030A)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 24/49, outcomes 19/40
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 24/49, outcomes 19/40
 
 - `R037+0x84C8` `jmp 0x5e0`
 - `R037+0x84E1` `jmp 0x470`
@@ -10504,7 +10643,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R037+0x8896 `R037+0x8896 (1C7D:06E6)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 10/15, outcomes 6/10
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 10/15, outcomes 6/10
 
 - `R037+0x88DB` `jmp 0x95a`
 - `R037+0x88EA` `jmp 0x90e`
@@ -10514,7 +10653,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R037+0x8B0E `R037+0x8B0E (1C7D:095E)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 2/2
 
 ### R037+0x8B76 `R037+0x8B76 (1C7D:09C6)`
 
@@ -10566,7 +10705,7 @@ matched, reached by lockstep-save-load: blocks 14/57, outcomes 12/56
 
 ### R037+0x8ED4 `R037+0x8ED4 (1C7D:0D24)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 46/56, outcomes 28/38
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 46/56, outcomes 28/38
 
 - `R037+0x8F2E` `push 0x48a4`
 - `R037+0x9502` `or byte ptr [0x9081], 1`
@@ -10581,13 +10720,13 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R037+0x9C10 `R037+0x9C10 (1C7D:1A60)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/4, outcomes 3/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/4, outcomes 3/4
 
 - `R037+0x9C2C` `sub ax, ax`
 
 ### R037+0x9C48 `R037+0x9C48 (1E26:0008)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 8/18, outcomes 7/22
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 8/18, outcomes 7/22
 
 - `R037+0x9C77` `cmp word ptr [0x6eee], 0x32`
 - `R037+0x9C7E` `cmp word ptr [0x6eee], 0x96`
@@ -10602,19 +10741,19 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R037+0x9CE6 `R037+0x9CE6 (1E26:00A6)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 1/2
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/3, outcomes 1/2
 
 ### R037+0x9D1C `R037+0x9D1C (1E26:00DC)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R037+0x9D8A `R037+0x9D8A (1E26:014A)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R037+0x9DB2 `R037+0x9DB2 (1E26:0172)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/28, outcomes 4/24
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 7/28, outcomes 4/24
 
 - `R037+0x9DC0` `jmp 0x330`
 - `R037+0x9DC5` `sub ax, 0x1000`
@@ -11074,7 +11213,7 @@ draft, reached by cards-day cards-variants: blocks 1/369, outcomes 0/232
 
 ### R039+0x0000 `R039+0x0000 (1462:0000)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 5/9, outcomes 4/8
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 5/9, outcomes 4/8
 
 - `R039+0x001D` `mov ax, si`
 - `R039+0x0039` `mov ax, si`
@@ -11083,7 +11222,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R039+0x00BA `R039+0x00BA (1462:00BA)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-pressburg-map lockstep-tyrnau: blocks 5/6, outcomes 4/8
+matched, reached by cards cards-day cards-flip cards-variants lockstep-pressburg-map lockstep-shop lockstep-tyrnau: blocks 5/6, outcomes 4/8
 
 - `R039+0x00F2` `cmp si, -0xa`
 
@@ -11107,7 +11246,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 11/13, out
 
 ### R039+0x0470 `R039+0x0470 (1462:0470)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau rules: blocks 13/13, outcomes 12/12
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp rules: blocks 13/13, outcomes 12/12
 
 ### R039+0x0A34 `R039+0x0A34 (1462:0A34)`
 
@@ -11315,7 +11454,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
 
 ### R039+0x1C22 `R039+0x1C22 (1462:1C22)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 8/18, outcomes 5/16
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 8/18, outcomes 5/16
 
 - `R039+0x1C4C` `push 2`
 - `R039+0x1C5A` `mov ax, 0x67`
@@ -11344,7 +11483,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outco
 
 ### R039+0x1D2C `R039+0x1D2C (1462:1D2C)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 11/17, outcomes 9/18
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-stay lockstep-tyrnau: blocks 11/17, outcomes 9/18
 
 - `R039+0x1D3C` `mov ax, si`
 - `R039+0x1D57` `mov ax, si`
@@ -11355,7 +11494,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R039+0x1DE6 `R039+0x1DE6 (1462:1DE6)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 5/5, outcomes 4/4
 
 ### R039+0x1E06 `R039+0x1E06 (1462:1E06)`
 
@@ -11376,7 +11515,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
 
 ### R039+0x1FA0 `R039+0x1FA0 (165C:0000)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau saints: blocks 4/4, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-tyrnau saints: blocks 4/4, outcomes 4/4
 
 ### R039+0x1FD4 `R039+0x1FD4 (165C:0034)`
 
@@ -11412,7 +11551,7 @@ matched, reached by sainthelp saints: blocks 10/11, outcomes 8/10
 
 ### R039+0x25A4 `R039+0x25A4 (165C:0604)`
 
-matched, reached by sainthelp saints: blocks 5/5, outcomes 4/4
+matched, reached by lockstep-saints sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R039+0x2642 `R039+0x2642 (165C:06A2)`
 
@@ -11424,7 +11563,7 @@ matched, reached by cards-day cards-variants sainthelp saints: blocks 5/5, outco
 
 ### R039+0x2838 `R039+0x2838 (165C:0898)`
 
-matched, reached by cards-day cards-variants sainthelp saints: blocks 5/5, outcomes 4/4
+matched, reached by cards-day cards-variants lockstep-saints sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R039+0x2942 `R039+0x2942 (165C:09A2)`
 
@@ -12129,13 +12268,13 @@ matched, reached by cards cards-day cards-variants lockstep-pressburg-map lockst
 
 ### R043+0x0000 `R043+0x0000 (1462:0000)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 11/12, outcomes 9/12
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 11/12, outcomes 9/12
 
 - `R043+0x00A6` `push 1`
 
 ### R043+0x0100 `R043+0x0100 (1462:0100)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau sainthelp: blocks 42/47, outcomes 34/46
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp sainthelp: blocks 42/47, outcomes 34/46
 
 - `R043+0x0120` `push 0x5001`
 - `R043+0x02C4` `push 0x502c`
@@ -12145,7 +12284,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R043+0x054E `R043+0x054E (1462:054E)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 21/22, outcomes 19/22
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 21/22, outcomes 19/22
 
 - `R043+0x0713` `push 0x50cd`
 
@@ -12155,25 +12294,25 @@ matched, reached by cards cards-day cards-flip cards-variants lockstep-gate-batt
 
 ### R043+0x09AE `R043+0x09AE (1462:09AE)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/4, outcomes 1/2
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 3/4, outcomes 1/2
 
 - `R043+0x09BE` `push 1`
 
 ### R043+0x0A9A `R043+0x0A9A (150B:000A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/6, outcomes 2/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 5/6, outcomes 3/4
 
 - `R043+0x0B56` `push 0xff`
 
 ### R043+0x0BA0 `R043+0x0BA0 (150B:0110)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/6, outcomes 2/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 5/6, outcomes 2/4
 
 - `R043+0x0C42` `push 0xff`
 
 ### R043+0x0C9E `R043+0x0C9E (150B:020E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 10/15, outcomes 10/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 10/15, outcomes 10/14
 
 - `R043+0x0D07` `jmp 0x32a`
 - `R043+0x0D13` `jmp 0x32a`
@@ -12183,15 +12322,15 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R043+0x0E40 `R043+0x0E40 (150B:03B0)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 7/7, outcomes 6/6
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 7/7, outcomes 6/6
 
 ### R043+0x0F2A `R043+0x0F2A (150B:049A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R043+0x0F54 `R043+0x0F54 (150B:04C4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 29/33, outcomes 21/26
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 29/33, outcomes 21/26
 
 - `R043+0x0FB4` `jmp 0x5ac`
 - `R043+0x10E0` `jmp 0x6f9`
@@ -12200,11 +12339,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R043+0x118E `R043+0x118E (150B:06FE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 22/22, outcomes 26/28
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 22/22, outcomes 26/28
 
 ### R043+0x1316 `R043+0x1316 (150B:0886)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 104/115, outcomes 24/30
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 104/115, outcomes 24/30
 
 - `R043+0x13CE` `mov ax, word ptr [0xed52]`
 - `R043+0x13EA` `mov ax, word ptr [0x9785]`
@@ -12220,28 +12359,23 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R043+0x1B8C `R043+0x1B8C (150B:10FC)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 5/5, outcomes 4/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 5/5, outcomes 4/4
 
 ### R043+0x1BD2 `R043+0x1BD2 (150B:1142)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 14/38, outcomes 10/38
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 20/38, outcomes 15/38
 
 - `R043+0x1C23` `mov word ptr [0x9c46], 0`
 - `R043+0x1C4A` `push cs`
 - `R043+0x1C64` `jmp 0x1364`
-- `R043+0x1C7D` `cmp si, 0x3920`
 - `R043+0x1C91` `mov al, byte ptr [0xe96f]`
-- `R043+0x1CD2` `cmp si, 0x1000`
 - `R043+0x1CD8` `lcall 0, 0x13a0`
-- `R043+0x1CDD` `push si`
 - `R043+0x1CEB` `cmp byte ptr [0xed6c], 1`
 - `R043+0x1CF2` `mov al, byte ptr [0xe96f]`
 - `R043+0x1CF9` `sub al, al`
 - `R043+0x1CFB` `cwde `
 - `R043+0x1D32` `mov al, byte ptr [0xe96e]`
 - `R043+0x1D40` `dec byte ptr [0xe96f]`
-- `R043+0x1D46` `cmp si, 0x5000`
-- `R043+0x1D4C` `jmp 0x135b`
 - `R043+0x1D4F` `cmp byte ptr [0xed6c], 1`
 - `R043+0x1D56` `jmp 0x135b`
 - `R043+0x1D59` `mov al, byte ptr [0xe96f]`
@@ -12249,19 +12383,31 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 - `R043+0x1D62` `cwde `
 - `R043+0x1D9F` `mov byte ptr [0xe96f], 0`
 - `R043+0x1DA6` `push word ptr [0xee57]`
-- `R043+0x1DEB` `lcall 0, 0x1338`
+
+### R043+0x1E82 `R043+0x1E82 (150B:13F2)`
+
+draft, reached by lockstep-saints lockstep-sheet: blocks 15/23, outcomes 10/18
+
+- `R043+0x1F4A` `push 6`
+- `R043+0x1F7B` `jmp 0x1602`
+- `R043+0x200A` `push 3`
+- `R043+0x203D` `cmp al, 0x80`
+- `R043+0x2041` `mov al, bl`
+- `R043+0x2052` `push 0`
+- `R043+0x2092` `push word ptr [0x17c]`
+- `R043+0x20BB` `push 1`
 
 ### R043+0x211C `R043+0x211C (150B:168C)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 11/11, outcomes 11/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 11/11, outcomes 11/14
 
 ### R043+0x2178 `R043+0x2178 (150B:16E8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 11/11, outcomes 11/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 11/11, outcomes 11/14
 
 ### R043+0x21D4 `R043+0x21D4 (150B:1744)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 50/115, outcomes 48/140
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 50/115, outcomes 50/140
 
 - `R043+0x2260` `push word ptr [0xa776]`
 - `R043+0x2280` `push word ptr [0xee59]`
@@ -12331,9 +12477,8 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R043+0x27E6 `R043+0x27E6 (150B:1D56)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 16/21, outcomes 11/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 17/21, outcomes 12/16
 
-- `R043+0x27F3` `jmp 0x1f39`
 - `R043+0x288E` `push 0xa`
 - `R043+0x2930` `mov di, 0x52a0`
 - `R043+0x293C` `mov ax, 0x9085`
@@ -12341,7 +12486,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R043+0x29CE `R043+0x29CE (150B:1F3E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R043+0x29D0 `R043+0x29D0 (150B:1F40)`
 
@@ -12425,24 +12570,32 @@ draft, reached by lockstep-tyrnau: blocks 2/3, outcomes 1/2
 
 ### R043+0x32B6 `R043+0x32B6 (150B:2826)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 11/19, outcomes 8/22
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 14/19, outcomes 11/22
 
 - `R043+0x32EA` `mov word ptr [0x9c46], 0`
 - `R043+0x3311` `push cs`
-- `R043+0x332F` `cmp si, 0x3920`
-- `R043+0x3335` `cmp si, 0x1000`
-- `R043+0x333B` `push si`
 - `R043+0x3358` `lcall 0, 0x13a0`
 - `R043+0x3360` `mov si, 0x1c0d`
 - `R043+0x336A` `cmp byte ptr [0x9c4c], 0`
 
 ### R043+0x3376 `R043+0x3376 (150B:28E6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 1/1, outcomes 0/0
+
+### R043+0x33C6 `R043+0x33C6 (150B:2936)`
+
+draft, reached by lockstep-cache lockstep-saints lockstep-sheet: blocks 18/24, outcomes 17/32
+
+- `R043+0x33D4` `jmp 0x29c8`
+- `R043+0x3458` `lcall 0x9c0, 0x185b`
+- `R043+0x3466` `mov ax, si`
+- `R043+0x3477` `mov bx, si`
+- `R043+0x3483` `mov byte ptr [0x907b], al`
+- `R043+0x3491` `pop si`
 
 ### R043+0x3494 `R043+0x3494 (150B:2A04)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 22/29, outcomes 14/26
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 22/29, outcomes 14/26
 
 - `R043+0x34AB` `jmp 0x2d35`
 - `R043+0x3534` `mov si, di`
@@ -12454,11 +12607,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-cast
 
 ### R043+0x37CA `R043+0x37CA (150B:2D3A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 17/17, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wildcamp: blocks 17/17, outcomes 1/2
 
 ### R043+0x3838 `R043+0x3838 (17E5:0008)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 21/27, outcomes 18/24
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 21/27, outcomes 18/24
 
 - `R043+0x3873` `mov ax, 1`
 - `R043+0x387B` `mov ax, 0x3e8`
@@ -12469,15 +12622,15 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R043+0x3A1C `R043+0x3A1C (17E5:01EC)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 6/6, outcomes 4/6
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 6/6, outcomes 4/6
 
 ### R043+0x3A7C `R043+0x3A7C (17E5:024C)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 3/3, outcomes 2/2
 
 ### R043+0x3AE6 `R043+0x3AE6 (1810:0006)`
 
-asm, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-stay lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R044+0x0000 `R044+0x0000 (1838:0000)`
 
@@ -12969,7 +13122,7 @@ matched, reached by cards-variants: blocks 0/1, outcomes 0/0
 
 ### R045+0x0C40 `R045+0x0C40 (18FC:0000)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 40/58, outcomes 29/52
+matched, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 40/58, outcomes 29/52
 
 - `R045+0x0CCD` `mov word ptr [0xee76], ax`
 - `R045+0x0CF7` `mov word ptr [0xee7a], ax`
@@ -13012,13 +13165,13 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outco
 
 ### R045+0x11BA `R045+0x11BA (18FC:057A)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 3/4, outcomes 3/4
 
 - `R045+0x11D2` `push 0`
 
 ### R045+0x11F4 `R045+0x11F4 (18FC:05B4)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 4/4, outcomes 2/2
 
 ### R045+0x124C `R045+0x124C (18FC:060C)`
 
@@ -13088,7 +13241,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outco
 
 ### R045+0x162C `R045+0x162C (18FC:09EC)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 1/1, outcomes 0/0
 
 ### R045+0x162E `R045+0x162E (199A:000E)`
 
@@ -13096,7 +13249,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0000 `R046+0x0000 (1838:0000)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 35/54, outcomes 25/48
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 35/54, outcomes 25/48
 
 - `R046+0x008D` `mov word ptr [0xee76], ax`
 - `R046+0x00B7` `mov word ptr [0xee7a], ax`
@@ -13200,7 +13353,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outco
 
 ### R046+0x0630 `R046+0x0630 (1838:0630)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R046+0x0646 `R046+0x0646 (1838:0646)`
 
@@ -13215,18 +13368,18 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R046+0x06A6 `R046+0x06A6 (1838:06A6)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 2/4, outcomes 1/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 2/4, outcomes 1/4
 
 - `R046+0x06B7` `cmp word ptr [0x57bc], 0`
 - `R046+0x06BE` `mov word ptr [0xe7d8], 0x3a`
 
 ### R046+0x06D4 `R046+0x06D4 (1838:06D4)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R046+0x06EA `R046+0x06EA (1838:06EA)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R046+0x0724 `R046+0x0724 (18AA:0004)`
 
@@ -14341,7 +14494,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R049+0x05B2 `R049+0x05B2 (1893:0002)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 45/68, outcomes 32/58
+matched, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 45/68, outcomes 33/58
 
 - `R049+0x0618` `push word ptr [0x907e]`
 - `R049+0x062A` `mov word ptr [0xe48a], 0xb2`
@@ -14369,7 +14522,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 45/68, out
 
 ### R049+0x0A0A `R049+0x0A0A (1893:045A)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 16/24, outcomes 11/18
+matched, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 16/24, outcomes 11/18
 
 - `R049+0x0A71` `push 0`
 - `R049+0x0B7B` `push 0`
@@ -14382,7 +14535,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 16/24, out
 
 ### R049+0x0E4A `R049+0x0E4A (1893:089A)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 6/6, outcomes 2/2
 
 ### R049+0x0EA2 `R049+0x0EA2 (1893:08F2)`
 
@@ -14466,7 +14619,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outco
 
 ### R049+0x1BB8 `R049+0x1BB8 (1893:1608)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-shop: blocks 1/1, outcomes 0/0
 
 ### R049+0x1BF2 `R049+0x1BF2 (19F7:0002)`
 
@@ -15015,7 +15168,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R051+0x091E `R051+0x091E (18C9:000E)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 26/34, outcomes 12/18
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-stay lockstep-tyrnau: blocks 26/34, outcomes 12/18
 
 - `R051+0x09B8` `mov word ptr [0xee80], 1`
 - `R051+0x09E4` `sub ax, ax`
@@ -15041,21 +15194,21 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outco
 
 ### R051+0x0D30 `R051+0x0D30 (18C9:0420)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau: blocks 7/8, outcomes 7/8
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau: blocks 7/8, outcomes 7/8
 
 - `R051+0x0DFA` `mov word ptr [0xee78], 2`
 
 ### R051+0x0E22 `R051+0x0E22 (18C9:0512)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-sheet lockstep-stay lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R051+0x0E5A `R051+0x0E5A (18C9:054A)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-residence: blocks 6/6, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants lockstep-residence lockstep-stay: blocks 6/6, outcomes 4/4
 
 ### R051+0x0EA8 `R051+0x0EA8 (18C9:0598)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-residence: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-residence lockstep-stay: blocks 1/1, outcomes 0/0
 
 ### R051+0x0EE0 `R051+0x0EE0 (18C9:05D0)`
 
@@ -15067,11 +15220,11 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R051+0x0FCC `R051+0x0FCC (18C9:06BC)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-cache: blocks 1/1, outcomes 0/0
 
 ### R051+0x1040 `R051+0x1040 (18C9:0730)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-cache: blocks 1/1, outcomes 0/0
 
 ### R051+0x1128 `R051+0x1128 (18C9:0818)`
 
@@ -15083,11 +15236,11 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R051+0x117E `R051+0x117E (18C9:086E)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R051+0x119C `R051+0x119C (18C9:088C)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R051+0x11D4 `R051+0x11D4 (18C9:08C4)`
 
@@ -15099,7 +15252,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R051+0x1280 `R051+0x1280 (18C9:0970)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-cache lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-saints lockstep-save-load lockstep-sheet lockstep-stay lockstep-tyrnau: blocks 3/3, outcomes 2/2
 
 ### R051+0x12F0 `R051+0x12F0 (1967:0000)`
 
@@ -15828,7 +15981,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R054+0x09B8 `R054+0x09B8 (18D3:0008)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 24/35, outcomes 11/18
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 24/35, outcomes 11/18
 
 - `R054+0x0AD8` `mov es, word ptr [0x7f58]`
 - `R054+0x0C26` `jmp 0x408`
@@ -15844,11 +15997,11 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R054+0x0DC0 `R054+0x0DC0 (18D3:0410)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R054+0x0DC8 `R054+0x0DC8 (18D3:0418)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R054+0x0E02 `R054+0x0E02 (18D3:0452)`
 
@@ -15860,11 +16013,11 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x0E4C `R054+0x0E4C (18D3:049C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants lockstep-shop: blocks 1/1, outcomes 0/0
 
 ### R054+0x0E54 `R054+0x0E54 (18D3:04A4)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 0/0
+matched, reached by cards cards-day cards-variants lockstep-shop: blocks 3/3, outcomes 0/0
 
 ### R054+0x0E8C `R054+0x0E8C (18D3:04DC)`
 
@@ -15872,7 +16025,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x0E94 `R054+0x0E94 (18D3:04E4)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R054+0x10B8 `R054+0x10B8 (18D3:0708)`
 
@@ -15882,7 +16035,7 @@ matched, reached by cards: blocks 0/1, outcomes 0/0
 
 ### R054+0x1134 `R054+0x1134 (18D3:0784)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-tyrnau: blocks 3/3, outcomes 2/2
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-residence lockstep-save-load lockstep-shop lockstep-tyrnau: blocks 3/3, outcomes 2/2
 
 ### R054+0x11A4 `R054+0x11A4 (1952:0004)`
 
@@ -16948,7 +17101,7 @@ matched, reached by cards-variants: blocks 0/1, outcomes 0/0
 
 ### R058+0x0E24 `R058+0x0E24 (191A:0004)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 17/18, outcomes 6/8
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 17/18, outcomes 6/8
 
 - `R058+0x0ED7` `jmp 0x1ec`
 
@@ -17021,7 +17174,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R058+0x17DA `R058+0x17DA (191A:09BA)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 15/23, outcomes 9/16
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 15/23, outcomes 9/16
 
 - `R058+0x1849` `push -9`
 - `R058+0x18AF` `jmp 0xbe7`
@@ -17034,7 +17187,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-ca
 
 ### R058+0x1A24 `R058+0x1A24 (191A:0C04)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle: blocks 1/1, outcomes 0/0
 
 ### R058+0x1A5C `R058+0x1A5C (191A:0C3C)`
 
@@ -17050,11 +17203,11 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R058+0x1AA4 `R058+0x1AA4 (191A:0C84)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R058+0x1ADC `R058+0x1ADC (191A:0CBC)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild30 battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-pressburg-map lockstep-tyrnau: blocks 5/5, outcomes 4/4
 
 ### R058+0x1B9E `R058+0x1B9E (191A:0D7E)`
 
