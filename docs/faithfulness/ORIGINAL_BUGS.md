@@ -14,11 +14,11 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | rules | 81 | 17 | 64 |
 | cards | 51 | 2 | 49 |
 | events | 7 | 4 | 3 |
-| battles | 14 | 3 | 11 |
+| battles | 15 | 3 | 12 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 155 | 27 | 128 |
+| total | 156 | 27 | 129 |
 
-## Core logic (153)
+## Core logic (154)
 
 ### rules (81)
 
@@ -446,7 +446,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
 
-### battles (14)
+### battles (15)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -463,6 +463,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
   original: `R004+0x1D90` (0E76:1D90, draft)  
   why: the original removes an empty group by shifting the later groups down but keeps testing the same (stale, zero) counter, so every group after the first empty one is removed too.
+- **B-d7cb44** `bug`, no fix flag - `src/Darklands.Core/Battles/CombatantSetup.cs:95` `CombatantSetup.BackToMember`  
+  original: `R002+0x0000` (0E76:0000, draft)  
+  why: the record's +0x00 word is the roster's location of the character and the combatant's scrx: the battle's last frame leaves the member's screen x there (cbt_screen_pos R014+0x99F6), which the inn's roster later reads as a location.
 - **B-8fdd39** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:149` `CastleGenerator.PlaceParty`  
   original: `R007+0x1D78` (15AF:1D78, draft)  
   why: the original draws until the room differs from the gate room, which never happens when the only room it can draw is the gate room (the game then freezes; the emulated original does not return for seed 49955, lore 3, cleared 28, specs (46,4,2) (60,6,8) (41,5,3)).

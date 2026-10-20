@@ -32,6 +32,17 @@ public sealed class BattleScreen : ITacticalView
 
     public static bool OneTickPerPass { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TICK_PER_PASS") is not null;
 
+    /// <summary>A debugging aid: the clock ticks each battle's set-up takes (stages 1 and 2, see ITacticalView.SetUpTime), in place of
+    /// the time that passed, battle after battle ("704,41;650,40"; the last pair goes on), as tools/oracle/lockstep.py measures them in
+    /// the original (DARKLANDS_BATTLE_SETUP_TICKS).</summary>
+    public static Queue<(int Loads, int FirstFrame)>? SetUpTicks { get; set; } = ParseSetUpTicks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_SETUP_TICKS"));
+
+    private static Queue<(int, int)>? ParseSetUpTicks(string? text) => text is null ? null
+        : new(text.Split(';').Select(p => p.Split(',')).Select(p => (int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture))));
+
+    private (int Loads, int FirstFrame) _setUpTicks;
+    private long _setUpMark;
+
     private readonly GameUi _ui;
     private readonly BattleAssets _assets;
     private readonly GameState _state;
@@ -141,9 +152,6 @@ public sealed class BattleScreen : ITacticalView
                 Draw();
                 _ui.Clock.Sleep(FrameMilliseconds);
             }
-            Finish();
-            // C: the battle's marching order is the game's (DS:C624 / DS:C629): it stays as the battle left it.
-            Darklands.Core.Rules.MarchingOrderChoice.Store(_battle.MarchingOrder, _state.MarchingOrder);
             // orig: battle_run R002+0x0000 after thunk 09C0:1B03 (combat_main): mouse_hide (root 047C:12C3), mouse_set_cursor(0, 0, cursor_default)
             // (root 047C:124F), catalog_close (root 0000:262E), then "BattleResults - victory" … through show_message(DS:9085, 0x96) over the screen
             // as combat_main left it: the battle view in the battle palette (after a victory the loot screen has put both back, see OpenLoot).
@@ -154,6 +162,11 @@ public sealed class BattleScreen : ITacticalView
             {
                 new MessageBox(_ui).Show(BattleScreens.ResultText((int)ended), 0x96 * 1000 / 60);
             }
+            // C: R002+0x05C1: combat_recover, then the buffers freed and (R002+0x0710) the able and unconscious lose their action and target
+            _battle.RecoverAfterBattle();
+            Finish();
+            // C: the battle's marching order is the game's (DS:C624 / DS:C629): it stays as the battle left it.
+            Darklands.Core.Rules.MarchingOrderChoice.Store(_battle.MarchingOrder, _state.MarchingOrder);
         }
         finally
         {
@@ -299,10 +312,10 @@ public sealed class BattleScreen : ITacticalView
         SetPalette(field.Terrain.BackgroundPalette);
         // orig: the marching order (DS:C624 / DS:C629) is the game's: the battle starts from it, R016+0x0DA6 keeping it while it is valid
         _battle.MarchingOrder.AddRange(Darklands.Core.Rules.MarchingOrderChoice.Entries(_state.MarchingOrder));
+        (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
         _battle.Start(arrivedThroughDoor: request.Mode >= 2, delayedStart: field.Timed && !reuse,
             combatFlags: request.CombatFlags | _state.BattleOrders.Flags, keptPlaces: reuse && request.Mode == 1 ? field.Store.PartyPlaces : null);
         _menuBar = BuildMenuBar();
-        Follow(force: true);
     }
 
     /// <summary>
@@ -358,9 +371,9 @@ public sealed class BattleScreen : ITacticalView
         _battle.ReadBattleFile(file);
         _small = new TextPainter(_ui.Assets.Font(3));
         SetPalette(field.Terrain.BackgroundPalette);
+        (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
         _battle.Resume();
         _menuBar = BuildMenuBar();
-        Follow(force: true);
     }
 
     /// <summary>The battle palette: common colours, the party's colours, the terrain's background colours.</summary>
@@ -413,6 +426,7 @@ public sealed class BattleScreen : ITacticalView
     private void Finish()
     {
         var b = _battle!.Battle;
+        _owner.ViewCentre = (_view.CentreColumn, _view.CentreRow);
         // C: what the battle leaves in the program's battle file (variables, levels, terrain.fil, the loot file), as R002+0x0000 leaves
         // its globals: DS:907A = 0, the floor (DS:A6B4) of the members who were able or unconscious 0, the result 8 read as 2.
         var file = _state.BattleFile ??= new BattleFile();
@@ -443,6 +457,8 @@ public sealed class BattleScreen : ITacticalView
                     var record = (byte[])kept.Clone();
                     Persistence.CombatantRecords.Write(b[i], record);
                     Persistence.CombatantRecords.WriteAnimation(b[i], record);
+                    // C: R002+0x1830 set +0x1C to the slot at the battle's start
+                    record[0x1C] = (byte)i;
                     if (b[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious)
                     {
                         record[0x10] = record[0x11] = 0;
@@ -575,8 +591,59 @@ public sealed class BattleScreen : ITacticalView
     {
     }
 
+    // orig: the timer callback root 047C:000A counts the combat clock (DS:07D4) while the set-up of combat_main R014+0x0000 loads its
+    // files: here the clock moves on by the real time the set-up took (next to nothing)
+    public void SetUpTime(int stage)
+    {
+        var now = _ui.Clock.Milliseconds;
+        if (stage == 0)
+        {
+            _setUpMark = now;
+            if (SetUpTicks is { Count: > 0 } given)
+            {
+                _setUpTicks = given.Count > 1 ? given.Dequeue() : given.Peek();
+            }
+            return;
+        }
+        if (SetUpTicks is not null)
+        {
+            _clockFraction = stage == 1 ? _setUpTicks.Loads : _setUpTicks.FirstFrame;
+            Advance(0);
+        }
+        else
+        {
+            Advance(now - _setUpMark);
+        }
+        _setUpMark = now;
+    }
+
+    // orig: floor_view_draw R017+0x0000 (1EF8:0000) draft with who −1: the view around the centre kept (DS:C866 / DS:C886, which a
+    // placement may have set); DS:E160 = 1, so the next combat_draw forgets the last frame's logged sprites (DS:E176 = 0)
     public void MapChanged()
     {
+        ApplyViewOrigin();
+        _viewRedrawn = true;
+    }
+
+    // orig: floor_view_draw R017+0x0000 draft with who ≥ 0: the centre becomes the combatant's cell (DS:E233 = x >> 5, DS:E235 = y >> 4)
+    public void Recentre(int who)
+    {
+        var c = _battle!.Battle[who];
+        _battle.ViewOrigin = null;
+        _view.CentreColumn = c.Position.Column;
+        _view.CentreRow = c.Position.Row;
+        _viewRedrawn = true;
+    }
+
+    // orig: combat_tick R014+0x1065..0x10A7 (checked against the asm): scry < 0x14 or > 0xA0, or scrx < 0x14 or > 0xDC, of DS:17B0, as
+    // cbt_screen_pos R014+0x99F6 left them in the last frame (the sprite's top left in the view)
+    public void KeepInView(int who)
+    {
+        var (sx, sy) = _battle!.Battle[who].ScreenPlace;
+        if (sy < 0x14 || sy > 0xA0 || sx < 0x14 || sx > 0xDC)
+        {
+            Recentre(who);
+        }
     }
 
     /// <summary>The loot screen over the battle (the party records are the combatants): what the party leaves stays in the list.</summary>
@@ -1179,11 +1246,10 @@ public sealed class BattleScreen : ITacticalView
             // within 1..0x27, then floor_view_draw
             _view.CentreColumn = Math.Clamp(_view.CentreColumn + dx[direction], 1, 0x27);
             _view.CentreRow = Math.Clamp(_view.CentreRow + dy[direction], 1, 0x27);
-            _following = false;
+            ViewScrolled();
             return;
         }
         _battle!.StepKey(direction);
-        _following = true;
     }
 
     /// <summary>The front-most combatant (any, and enemy) whose hot spot holds the point, −1 none.</summary>
@@ -1441,7 +1507,15 @@ public sealed class BattleScreen : ITacticalView
     {
         _view.CentreColumn = Math.Clamp(_view.CentreColumn + dc, 1, 0x27);
         _view.CentreRow = Math.Clamp(_view.CentreRow + dr, 1, 0x27);
-        _following = false;
+        ViewScrolled();
+    }
+
+    /// <summary>R016+0x0B92's end: floor_view_draw (DS:E160) and DS:11B1 = 0, the view no longer follows the active member.</summary>
+    private void ViewScrolled()
+    {
+        _battle!.ViewOrigin = null;
+        _battle.FollowsActive = false;
+        _viewRedrawn = true;
     }
 
     /// <summary>"You can't view … at this time.": a message box for 150 ticks, the battle waiting.</summary>
@@ -1719,32 +1793,31 @@ public sealed class BattleScreen : ITacticalView
 
     // Drawing
 
-    private bool _following = true;
+    /// <summary>DS:E160: the view was drawn anew since the last combat_draw (which then forgets the logged sprites).</summary>
+    private bool _viewRedrawn;
 
-    /// <summary>The view follows the active member when it nears the edges.</summary>
-    // orig: combat_tick R014+0x0F58 (0E76:0F58) draft (DS:11B1: scry &lt; 0x14 or &gt; 0xA0, scrx &lt; 0x14 or &gt; 0xDC)
-    private void Follow(bool force = false)
+    /// <summary>A placement's view centre (effect_start's DS:C866 / DS:C886) becomes the view's.</summary>
+    private void ApplyViewOrigin()
     {
-        var tb = _battle!;
-        if (tb.ViewOrigin is { } origin)
+        if (_battle!.ViewOrigin is { } origin)
         {
             _view.CentreColumn = origin.Column;
             _view.CentreRow = origin.Row;
-            tb.ViewOrigin = null;
-            _following = false;
-            return;
+            _battle.ViewOrigin = null;
         }
-        var c = tb.Battle[tb.Battle.ActiveMember];
-        if (!_following && !force)
+    }
+
+    /// <summary>cbt_screen_pos's places: each combatant on the level shown (any status but empty) gets its sprite's top left.</summary>
+    // orig: cbt_screen_pos R014+0x99F6 (14F7:31E6) draft: scrx = foot x − DS:D505[set][facing], scry = DS:C8CA[set] − DS:D5D3[set] + y + 0x69
+    private void RecordScreenPlaces()
+    {
+        var tb = _battle!;
+        for (var i = 0; i < Combatant.Count; i++)
         {
-            return;
-        }
-        var (sx, sy) = _view.ToScreen(c.Position.X, c.Position.Y);
-        sx -= BattlefieldView.Left;
-        if (force || sy < 0x14 || sy > 0xA0 || sx < 0x14 || sx > 0xDC)
-        {
-            _view.CentreColumn = c.Position.Column;
-            _view.CentreRow = c.Position.Row;
+            if (tb.Battle[i].Status != CharacterStatus.Empty && tb.Battle[i].Floor == tb.Battle.FloorShown && SpriteBox(i) is { } box)
+            {
+                tb.Battle[i].ScreenPlace = (box.Left - BattlefieldView.Left, box.Top);
+            }
         }
     }
 
@@ -1759,16 +1832,15 @@ public sealed class BattleScreen : ITacticalView
     // fallen first, then y and x), the missiles and the clouds are drawn in that order every frame.
     // DIVERGENCE: the whole view is redrawn each frame (no dirty tiles), the wall pieces are drawn by the view before the sprites rather
     // than sorted in among them, and the 157-sprite limit is not kept (see EffectField.Drawn for its effect on the random numbers).
-    // DIVERGENCE: R014+0x827A picks each re-queued wall, furniture or floor piece's picture variant with random_n(2) from the game's generator
-    // (R014+0x8381, +0x8438, +0x84AE), as often as the dirty screen tiles need it; without dirty tiles those draws are not made, so a battle's
-    // random numbers part from the original's at its first redraw (tools/oracle/lockstep.py, --no-wall-draws: with them left out both agree
-    // for 750 combat ticks of the gate battle of Pressburg).
+    // C: R014+0x827A's random_n(2) for each animated piece of the last full redraw (R017+0x0000's lists DS:E13D / DS:E178 / DS:E196) are
+    // drawn by EffectField.Drawn at each combat_draw, the first one at the battle's start (R014+0x0307).
     public void Draw()
     {
         var tb = _battle!;
         var canvas = _ui.Canvas;
         ApplyEnemyPalettes();
-        Follow();
+        ApplyViewOrigin();
+        RecordScreenPlaces();
         _view.Draw(canvas, tb.Level, _tiles!);
         var clip = BattlefieldView.Area;
         foreach (var pile in tb.LootPiles)
@@ -1826,7 +1898,16 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The draw list's count and the sprites logged in the frame being drawn; the last frame's logged sprites (DS:E176).</summary>
     private int _listCount, _logged, _loggedSprites;
 
-    public int LoggedSprites => _loggedSprites;
+    // C: combat_draw reads DS:E160 once at its start: after a floor_view_draw DS:E176 = 0 (and DS:E160 = 0)
+    public int LoggedSprites
+    {
+        get
+        {
+            var logged = _viewRedrawn ? 0 : _loggedSprites;
+            _viewRedrawn = false;
+            return logged;
+        }
+    }
 
     /// <summary>A sprite after the combatants takes a place in the draw list while there is room; true when it has one.</summary>
     // orig: R014+0x7BD0 (13AE's `cmp word ptr [E162h], 9Dh / jl`), the ground cursor (R014+0x6B1C) and the missiles (R014+0x6D33) logged

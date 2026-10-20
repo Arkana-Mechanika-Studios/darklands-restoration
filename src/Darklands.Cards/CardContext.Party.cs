@@ -398,7 +398,7 @@ public sealed partial class CardContext
         }
         var battleSeed = PartyRules.BattleSeed(State, seed);
         var result = Battle?.Invoke(side, battleSeed, parameters) ?? 0;
-        PartyRules.AfterBattle(State);
+        PartyRules.AfterBattle(State, DeleteMember);
         if (!State.Party.Members.Any(m => m.IsPresent))
         {
             AllDead?.Invoke();

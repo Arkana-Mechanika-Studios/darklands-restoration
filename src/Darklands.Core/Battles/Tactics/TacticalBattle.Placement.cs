@@ -19,6 +19,11 @@ public sealed partial class TacticalBattle
     /// <summary>The view origin cell the screen should centre (DS:C866 / DS:C886) after a placement; null when the view follows the leader.</summary>
     public (int Column, int Row)? ViewOrigin { get; set; }
 
+    /// <summary>DS:11B1: the view follows the active member (combat_tick's test); set by choosing a member, cleared by a placement and
+    /// by scrolling the view.</summary>
+    // orig: set by R016+0x09BC and 0x0A2C; cleared by effect_start R014+0x4188 and R016+0x0B92
+    public bool FollowsActive { get; set; }
+
     /// <summary>
     /// The party arrives at (x, y) facing <paramref name="dir"/>: the marching order in a
     /// five-slot formation, those that do not fit at random free spots in sight.
@@ -36,6 +41,7 @@ public sealed partial class TacticalBattle
             // C: signed byte divisions by 4.
             ViewOrigin = (ViewOffsetX[dir] / 4 + (x >> 5), ViewOffsetY[dir] / 4 + (y >> 4));
         }
+        FollowsActive = false;
         int[] dx, dy;
         switch (dir)
         {

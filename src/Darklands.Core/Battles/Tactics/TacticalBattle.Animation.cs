@@ -49,7 +49,7 @@ public sealed partial class TacticalBattle
             case Pose.Walking:
                 if (!loaded)
                 {
-                    LoadAnimation(slot, SlotCodes[kind], posture, weapon);
+                    LoadAnimation(i, slot, SlotCodes[kind], posture, weapon);
                 }
                 c.FollowSteps = -1;
                 c.SequenceLength = Slots[kind].FrameCount;
@@ -65,7 +65,7 @@ public sealed partial class TacticalBattle
             case Pose.Fighting:
                 if (!loaded)
                 {
-                    LoadAnimation(slot, SlotCodes[kind], posture, weapon);
+                    LoadAnimation(i, slot, SlotCodes[kind], posture, weapon);
                 }
                 c.SequenceLength = Slots[slot].AttackLength;
                 for (var k = 0; k < c.SequenceLength && k < c.Sequence.Length; k++)
@@ -76,7 +76,7 @@ public sealed partial class TacticalBattle
             case Pose.Hit:
                 if (!loaded)
                 {
-                    LoadAnimation(slot, SlotCodes[kind], posture, weapon);
+                    LoadAnimation(i, slot, SlotCodes[kind], posture, weapon);
                 }
                 c.SequenceLength = 2;
                 for (var k = 0; k <= 2; k++)
@@ -87,9 +87,10 @@ public sealed partial class TacticalBattle
             case Pose.Dying:
                 if (!loaded)
                 {
-                    LoadAnimation(slot, SlotCodes[kind], posture, "");
+                    LoadAnimation(i, slot, SlotCodes[kind], posture, "");
                 }
-                // C: party members keep their current sequence length (only enemies take the dying file's frame count).
+                // C: party members keep the length the load left (the file's frame count, or the last pose's when it was loaded already);
+                // only enemies take DS:C90C[slot].
                 if (kind >= Combatant.PartySlots)
                 {
                     c.SequenceLength = Slots[slot].FrameCount;
@@ -109,10 +110,10 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>sprite_file_load: the file's header values into the slot.</summary>
+    /// <summary>sprite_file_load: the file's header values into the slot, its frame count also combatant i's sequence length.</summary>
     // orig: sprite_file_load R014+0x3D2C (0E76:3D2C) draft
     // DIVERGENCE: a file missing from the catalogues leaves the slot as it was (the original would read garbage).
-    private void LoadAnimation(int slot, string code, string posture, string weapon)
+    private void LoadAnimation(int i, int slot, string code, string posture, string weapon)
     {
         // C: the switch on the code's first letter (upper-cased when above '_') picks the catalogue; in the monsters' case
         // (0x3F76..0x3FB7) a file of M73 (the seven-headed dragon) sets DS:C21A to 'I', of M90 (the cave dragon) to 'Z' — every
@@ -131,6 +132,9 @@ public sealed partial class TacticalBattle
         if (_library.Find(code, posture, weapon) is { } info)
         {
             Slots[slot].Load(info);
+            // C: cbt_anim_len[i] = DS:C908[slot] = the header's frame count (the dying pose of a party member keeps it: R014+0x3C21
+            // sets the length for enemies only)
+            Battle[i].SequenceLength = Slots[slot].FrameCount;
         }
     }
 

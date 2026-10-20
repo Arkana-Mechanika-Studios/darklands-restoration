@@ -28,7 +28,9 @@ the card menu shown), state:<name>; wait/shot steps are for the C# only. With --
      every screen's loop calls) and IDLE_MS of emulated time with no random number drawn and the same card; a click
      holds the button CLICK_MS once the game has read it;
    * the battle: one call of the game's timer callback (047C:000A) at the head of each pass (R014+0x3166), the
-     time-based timer kept out of the pass (the C# host then advances one 60 Hz tick a pass);
+     time-based timer kept out of the pass (the C# host then advances one 60 Hz tick a pass); the ticks each battle's
+     set-up takes (combat_state_clear to the enemies' turn, then to the first pass: its loads run at the emulator's
+     speed) are measured and given to the C# (DARKLANDS_BATTLE_SETUP_TICKS);
    * state:<name> runs the original's own saved-game writer (R037 1462:2ACE) on a copy of the machine;
    * every srand((unsigned)time(0)) (a call that follows `call time`) is recorded: the clock seeds; the other
      seeds (party seed + place, battle seed) are the game's own and the C# computes them.
@@ -80,6 +82,8 @@ MACHINE_STATE = ("resident", "trampolines", "call_stack", "mcbs", "dta", "scratc
 IDLE_MS = 3000                      # and as long without a random number drawn, a card change or a step
 IDLE_POLLS = 2000
 BATTLE_PASS_LIN = 0x0E76 * 16 + 0x3166   # R014+0x3166 combat_input, called once a pass of the battle's loop
+CLEAR_TIMERS_VEC = (0x09C0, 0x1C61)  # R014+0x010B's vector to R020+0x06B6 (combat_state_clear: the combat clock back to 0)
+ENEMY_TURN_VEC = (0x09C0, 0x1C43)    # R014+0x0280's vector to R018+0x0706 (the enemies' turn), after the set-up's file loads
 WALL_DRAWS = ((0x8381, 0x838B), (0x8438, 0x8442), (0x84AE, 0x84BE))   # R014+0x827A: push 2; call random_n; (after)
 COMBAT_CLOCK = 0x07D4               # the combat clock the timer callback counts while the battle runs
 TIMER_CALLBACK = (0x047C, 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
@@ -156,6 +160,11 @@ class Session(Machine):
         self._ticked = False
         self.battle_passes = 0
         self.battle_trace = None        # a list: a line at the head of each battle pass (--battle-trace)
+        # the clock ticks each battle's set-up took (the loads before the enemies' turn, then up to the first pass): the C# is given them
+        self.set_up_ticks: list[tuple[int, int]] = []
+        self._setting_up = None
+        self.hook(*CLEAR_TIMERS_VEC, lambda m: setattr(m, "_setting_up", [None]) if 14 in m.resident else None)
+        self.hook(*ENEMY_TURN_VEC, self._enemy_turn)
         self._hook_address(BATTLE_PASS_LIN)
         self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._button_read, begin=DS * 16 + MOUSE_BUTTONS, end=DS * 16 + MOUSE_BUTTONS + 1)
         self.idle_mark = None
@@ -182,6 +191,10 @@ class Session(Machine):
             elif b[0] == 0xE8 and (off + 3 + struct.unpack_from("<h", b, 1)[0]) & 0xFFFF == 0x048A:
                 out.append(off)
         return out
+
+    def _enemy_turn(self, m):
+        if self._setting_up is not None and self._setting_up[0] is None:
+            self._setting_up[0] = self.word(DS, COMBAT_CLOCK)
 
     def _release(self):
         """A click is let go CLICK_MS after the press once the game has read the button (DS:6EF0): held longer, a map pass aims at
@@ -319,6 +332,10 @@ class Session(Machine):
                 self._ticked = True
                 self.next_irq = self.count + BATTLE_QUIET
                 self.battle_passes += 1
+                if self._setting_up is not None:
+                    loads = self._setting_up[0] or 0
+                    self.set_up_ticks.append((loads, self.word(DS, COMBAT_CLOCK) - loads))
+                    self._setting_up = None
                 if self.battle_trace is not None:
                     self.battle_trace.append("pass clock %d rand %08X" % (self.word(DS, COMBAT_CLOCK), struct.unpack("<I", self.read(DS, HOLDRAND, 4))[0]))
                 ss, sp = self.reg("SS"), (self.reg("SP") - 4) & 0xFFFF
@@ -642,11 +659,12 @@ HEADLESS = HERE.parent.parent / "src" / "Darklands.Host.Headless" / "bin" / "Rel
 
 
 def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, battle_trace=None, no_wall_draws=False):
-    """The session in the original: (states {name: (sav, random, card)}, clock seeds in order, log, how it ended)."""
+    """The session in the original: (states {name: (sav, random, card)}, clock seeds in order, log, how it ended, saved files,
+    each battle's set-up ticks)."""
     s = Session(exe.read_bytes(), game, max_instructions=budget)
     if no_wall_draws:
-        # an experiment: the wall pieces' picture variant (random_n(2) in R014+0x827A, as the dirty screen tiles are redrawn) leaves the
-        # game's generator as it was, as the C#, which redraws the whole view, has it
+        # an experiment: the animated pieces' picture variant (random_n(2) in R014+0x827A, each combat_draw) leaves the game's generator as
+        # it was (the C# makes those draws: it then parts from the original at the battle's first frame)
         kept = {}
         for before, after in WALL_DRAWS:
             s.hook(0x0E76, before, lambda m: kept.__setitem__("r", m.read(DS, HOLDRAND, 4)), record="R014")
@@ -674,10 +692,10 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         end = str(e)[:600]
     files = {k.rpartition("\\")[2].upper(): bytes(v) for k, v in s.vfs.files.items()
              if k.startswith("saves") and k.endswith((".sav", ".bsv")) and k.rpartition("\\")[2] not in ("dksave0.sav", "dksave0.bsv")}
-    return s.states, seeds, [line for line in s.log if not line.startswith("INT")], end, files
+    return s.states, seeds, [line for line in s.log if not line.startswith("INT")], end, files, s.set_up_ticks
 
 
-def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False):
+def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=()):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -696,6 +714,9 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     env = dict(os.environ, DARKLANDS_BATTLE_TICK_PER_PASS="1")   # one 60 Hz tick a battle pass, as the original is run here
     if battle_trace:
         env["DARKLANDS_BATTLE_TRACE"] = "1"
+    if set_up_ticks:
+        # the clock the original's battle set-ups took here (its loads run at the emulator's speed): the C#'s set-up takes none
+        env["DARKLANDS_BATTLE_SETUP_TICKS"] = ";".join("%d,%d" % p for p in set_up_ticks)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():
@@ -758,7 +779,7 @@ def main():
     import time
     t = time.time()
     trace = [] if a.battle_trace else None
-    original, seeds, log, end, files = run_original(Path(a.exe), a.game, steps, save, a.budget, trace, a.no_wall_draws)
+    original, seeds, log, end, files, set_up = run_original(Path(a.exe), a.game, steps, save, a.budget, trace, a.no_wall_draws)
     if trace is not None:
         (out / "original-battle.trace").write_text(chr(10).join(trace), encoding="utf-8")
     t_original = time.time() - t
@@ -766,7 +787,7 @@ def main():
     for name, (sav, _, _) in original.items():
         (out / ("original-%s.sav" % name)).write_bytes(sav)
     t = time.time()
-    rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, a.battle_trace)
+    rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, a.battle_trace, set_up)
     if a.battle_trace:
         (out / "rewrite-battle.trace").write_text(chr(10).join(l for l in output.splitlines() if l.startswith("pass ")), encoding="utf-8")
     t_rewrite = time.time() - t
@@ -789,7 +810,7 @@ def main():
             if data[:0x64] != theirs.read_bytes()[:0x64]:
                 row["texts"] = {"original": data[:0x64].hex(), "rewrite": theirs.read_bytes()[:0x64].hex()}
         rows.append(row)
-    report = {"script": a.script, "save": a.save, "clock seeds": seeds, "original end": end,
+    report = {"script": a.script, "save": a.save, "clock seeds": seeds, "battle set-up ticks": set_up, "original end": end,
               "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)}, "states": rows}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     first = next((r for r in rows if set(r) - {"state", "file", "text state", "texts"}), None)

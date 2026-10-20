@@ -29,6 +29,9 @@ public sealed partial class Combatant
     /// <summary>The party member this combatant stands for (party slots only).</summary>
     public Character? Member { get; set; }
 
+    /// <summary>+0x00 / +0x02 (scrx, scry): the sprite's top left in the view where the last frame drew it (cbt_screen_pos R014+0x99F6).</summary>
+    public (int X, int Y) ScreenPlace { get; set; }
+
     /// <summary>Map position in pixels (+0x04, +0x06).</summary>
     public MapPoint Position { get; set; }
 

@@ -32,6 +32,28 @@ public interface ITacticalView : IBattleViewport
     /// <summary>The level on screen changed (doors, furniture, floor switch: floor_view_draw(−1)).</summary>
     void MapChanged();
 
+    /// <summary>floor_view_draw(<paramref name="who"/>) (R017+0x0000): the view drawn anew around combatant who's cell.</summary>
+    void Recentre(int who)
+    {
+    }
+
+    /// <summary>
+    /// combat_tick's follow (DS:11B1 set): when combatant <paramref name="who"/>'s sprite, where the last frame put it (+scrx, +scry), lies
+    /// outside 0x14..0xDC × 0x14..0xA0 of the view, floor_view_draw(who).
+    /// </summary>
+    void KeepInView(int who)
+    {
+    }
+
+    /// <summary>
+    /// The battle's set-up takes time while the combat clock runs (the timer callback counts it whenever DS:07D3 is 0): stage 0 when
+    /// the timers are cleared, 1 before the enemies' turn (after the activations' and the weapons' file loads), 2 after the first
+    /// frame (before DS:D9E4 is set); at stages 1 and 2 the clock moves on by the time that passed.
+    /// </summary>
+    void SetUpTime(int stage)
+    {
+    }
+
     /// <summary>
     /// The varying furniture: record <paramref name="record"/> of the tile set <paramref name="set"/> becomes furniture tile
     /// <paramref name="tile"/>; its shape, or null when nothing changed.
@@ -350,6 +372,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         RepeatActivation(combatFlags);
         ClearTimers();
+        _view.SetUpTime(0);
         if (delayedStart)
         {
             DelayedStartAt = (ushort)(Clock + 600);
@@ -375,6 +398,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
                 SetPose(i, Pose.Walking);
             }
         }
+        // C: the clock as the loads of activations_check (R025's enemy sprites) and of weapon_ready left it
+        _view.SetUpTime(1);
         EnemyTurn();
         Battle.Result = BattleResult.Running;
         foreach (var c in Battle.Combatants)
@@ -388,6 +413,13 @@ public sealed partial class TacticalBattle : IBattleEndActions
         // DS:D6F1 = 1, DS:D6ED: the frame drawn after the first tick opens order mode for that member, so the battle begins paused.
         PendingOrderMember = Battle.ActiveMember;
         MoveMode = 0;
+        // orig: R014+0x02FF / 0x0307: floor_view_draw(−1) (the view around the centre kept, DS:C866 / DS:C886: the placement's) and
+        // combat_draw, before the first tick: the draw list's random draws (the animated pieces of that view)
+        _view.MapChanged();
+        Effects.Drawn(_view);
+        RefreshTargetCursor();
+        // C: mouse_show and root 047C:1293 (R014+0x030C) take time before R014+0x0311 reads the clock
+        _view.SetUpTime(2);
         NextTickAt = (ushort)(Clock + TickLength);
         ActivationsAt = (ushort)(Clock + 120);
         SaveRulesMessage(newBattlefield);
@@ -627,6 +659,16 @@ public sealed partial class TacticalBattle : IBattleEndActions
             CombatActions();
         }
         NextTickAt = (ushort)(Clock + TickLength);
+        // orig: R014+0x105B: DS:CA29 set by this tick's actions (a pit, an alarm): combat_tick returns before the follow and the draw
+        if (_stopped)
+        {
+            return true;
+        }
+        // orig: R014+0x1065..0x10A7: with DS:11B1 the view follows the active member (DS:17B0) by its place in the last frame
+        if (FollowsActive)
+        {
+            _view.KeepInView(Battle.ActiveMember);
+        }
         TurnTowardTargets();
         Effects.Drawn(_view);
         RefreshTargetCursor();
@@ -746,6 +788,11 @@ public sealed partial class TacticalBattle : IBattleEndActions
     }
 
     public void PlaceWokenMember(int member) => PlaceWoken(member);
+
+    /// <summary>battle_run's end: after the result message, combat_recover for whatever the result (the unconscious of a lost
+    /// battle wake on a free spot near where they lay, with their random draws).</summary>
+    // orig: R002+0x05C1 (thunk 09C0:1AF9 to combat_recover R014+0x0DEE), checked against the asm
+    public void RecoverAfterBattle() => BattleEnd.Recover(Battle, this);
 
     public void VictoryCleanUp()
     {

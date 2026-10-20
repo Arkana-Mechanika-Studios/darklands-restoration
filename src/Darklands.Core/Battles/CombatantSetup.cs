@@ -17,6 +17,8 @@ public static class CombatantSetup
     {
         c.Member = member;
         c.Status = member.Status;
+        // C: +0x00 (the roster's location word) and +0x02 are scrx and scry until a frame draws the member
+        c.ScreenPlace = (member.RosterLocation, member.OriginalRecord is { Length: >= 4 } r ? (short)(r[2] | r[3] << 8) : 0);
         for (var k = 0; k < Character.AttributeCount; k++)
         {
             c.Attributes[k] = (sbyte)member.Attributes[k];
@@ -90,6 +92,9 @@ public static class CombatantSetup
             return;
         }
         member.Status = c.Status;
+        // BUG: the record's +0x00 word is the roster's location of the character and the combatant's scrx: the battle's last frame
+        // leaves the member's screen x there (cbt_screen_pos R014+0x99F6), which the inn's roster later reads as a location.
+        member.RosterLocation = c.ScreenPlace.X;
         for (var k = 0; k < Character.AttributeCount; k++)
         {
             member.Attributes[k] = c.Attributes[k];
@@ -98,7 +103,8 @@ public static class CombatantSetup
         {
             member.Skills[k] = c.Skills[k];
         }
-        member.MissileWeapon = c.ReadiedWeapon < 0 ? EquippedItem.None : member.MissileWeapon with { Type = c.ReadiedWeapon };
+        // C: the record's +0x22 / +0x5A as the battle left them (an empty slot keeps its quality byte)
+        member.MissileWeapon = new EquippedItem(c.ReadiedWeapon < 0 ? -1 : c.ReadiedWeapon, c.MissileQuality);
         // The effects wear armour down and throw it away when it is worn through (R019 0968 / 0914).
         member.VitalArmor = c.ArmourType[0] < 0 ? EquippedItem.None : new EquippedItem(c.ArmourType[0], c.ArmourQuality[0]);
         member.LimbArmor = c.ArmourType[1] < 0 ? EquippedItem.None : new EquippedItem(c.ArmourType[1], c.ArmourQuality[1]);

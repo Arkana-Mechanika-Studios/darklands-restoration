@@ -16,6 +16,7 @@ public static class CombatantRecords
     /// <summary>Fills a combatant from a record (the battle-only tables stay as they are).</summary>
     public static void Read(ReadOnlySpan<byte> r, Combatant c)
     {
+        c.ScreenPlace = (Word(r, 0x00), Word(r, 0x02));
         c.Position = new MapPoint(Word(r, 0x04), Word(r, 0x06));
         c.Destination = new MapPoint(Word(r, 0x08), Word(r, 0x0A));
         c.WeaponRange = (sbyte)r[0x0C];
@@ -66,6 +67,8 @@ public static class CombatantRecords
     /// <summary>Writes the fields <see cref="Read"/> reads into a record.</summary>
     public static void Write(Combatant c, Span<byte> r)
     {
+        PutWord(r, 0x00, c.ScreenPlace.X);
+        PutWord(r, 0x02, c.ScreenPlace.Y);
         PutWord(r, 0x04, c.Position.X);
         PutWord(r, 0x06, c.Position.Y);
         PutWord(r, 0x08, c.Destination.X);
@@ -119,6 +122,7 @@ public static class CombatantRecords
     // orig: struct cbt +0x18, +0x1B, +0x1E, +0x1F (a party member's are saved with its character record in a battle)
     public static void WriteAnimation(Combatant c, Span<byte> r)
     {
+        PutWord(r, 0x0E, InfoPointer(c));
         r[0x18] = (byte)c.Pose;
         r[0x1B] = (byte)c.Frame;
         r[0x1E] = (byte)c.StepDelay;
@@ -133,6 +137,18 @@ public static class CombatantRecords
         c.StepDelay = r[0x1E];
         c.FrameDelay = r[0x1F];
     }
+
+    /// <summary>+0x0E: the near pointer to the animation set's info block for the pose (an address in the original's data segment).</summary>
+    // orig: cbt_set_anim R014+0x38B6 (0E76:38B6) draft, checked against the asm (0x3C2E..0x3C38 for dying): &DS:CAB4[slot] walking
+    // (0x90-byte blocks), &DS:CEAE[slot] (0x70-byte blocks, also R014's ANIMINFO) fighting and hit, &DS:D1E4[slot] (0x40-byte blocks) dying
+    // C: before any pose the battle's reset (R002's 1830) leaves &DS:CAB4[i]; the blocks' addresses were read in the original's memory
+    private static int InfoPointer(Combatant c) => c.Pose switch
+    {
+        Pose.Walking => 0xCAB4 + 0x90 * c.AnimationSlot,
+        Pose.Fighting or Pose.Hit or Pose.Reload => 0xCEAE + 0x70 * c.AnimationSlot,
+        Pose.Dying => 0xD1E4 + 0x40 * c.AnimationSlot,
+        _ => 0xCAB4 + 0x90 * c.Index,
+    };
 
     private static int Word(ReadOnlySpan<byte> r, int at) => (short)(r[at] | r[at + 1] << 8);
 

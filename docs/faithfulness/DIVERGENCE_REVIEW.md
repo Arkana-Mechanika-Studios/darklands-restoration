@@ -321,7 +321,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0x0694` (0E76:0694, draft)  
   divergence: saving the changed floor and activations and ending the temporary modifiers (DS:A532) belong to the battle screen.  
   recommendation: **justify** - The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
-- **D-b616cc** `not-modelled` - `src/Darklands.Core/Battles/CombatantSetup.cs:118` `CombatantSetup.FromEnemy`  
+- **D-b616cc** `not-modelled` - `src/Darklands.Core/Battles/CombatantSetup.cs:124` `CombatantSetup.FromEnemy`  
   original: `R020+0x0000` (1EF8:0000, draft), `R025+0x0000` (1EF8:0000, draft)  
   divergence: the head bytes +0x1E/+0x1F (both 8) are not modelled; the slot's other head fields are whatever the .enm buffer held (0 for a fresh load), reset here.  
   recommendation: **justify** - Head bytes +0x1E/+0x1F (both 8) and stale head fields are not read by the clean model. They matter only when a battle is written to the .BSV file; revisit with battle saving (OriginalSaves).
@@ -351,7 +351,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R011+0x1FB2` (1432:1FB2, draft)  
   divergence: the original works in the battle's static floor image; the map fills it completely, so nothing of an earlier battle remains.  
   recommendation: **justify** - The map fills the whole floor image, so no earlier battle's bytes remain; no divergence in effect. Keep the note as the argument.
-- **D-f262ec** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs:330` `TacticalBattle.LoadEnemyAnimation`  
+- **D-f262ec** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs:334` `TacticalBattle.LoadEnemyAnimation`  
   original: `R025+0x09A6` (1EF8:09A6, draft), `R025+0x0A84` (1EF8:0A84, draft)  
   divergence: when a higher slot's buffer lies above this one in memory the original frees both enemy slots and sets every enemy's current pose again keeping its frame (a heap-layout case); here the plain branch is always taken.  
   recommendation: **keep** (checked against the original) - enemy_anim_load (R025 09A6) takes the reload branch when a higher enemy slot's buffer has a higher segment than this slot's: it frees both slots, reallocates them and sets every enemy's current pose again with the frame kept (DS:C3CC), instead of setting the moving enemy's walking pose. Which branch runs depends on the order the DOS heap handed out the buffers over the whole program run (other screens allocate and free in between), which the C# does not model; the plain branch is the one taken when the slots were allocated in order.
@@ -835,7 +835,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0x4BFA` (12F7:03EA, draft)  
   divergence: a 99 table entry (never used in the shipped tables per spec D) would index the step tables out of range.  
   deterministic: **n/a** (checked against the original); action: **document** - A follower's 'last' direction is always 1,2,5 or 6: DS:1900/DS:19A0 (read from the EXE image) only contain -1,1,2,5,6, spawned followers record that value, and every table output DS:18D4/DS:18E2/DS:18F0/DS:18F8 for those rows is again 1,2,5,6; the 99 entries sit in rows 0,3,4 (a straight tracker uses dir 0..9, which RX/RY cover). Hence nd is never 99 and no step table is indexed out of range.
-- **D-2ea4c0** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs:114` `TacticalBattle.LoadAnimation`  
+- **D-2ea4c0** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs:115` `TacticalBattle.LoadAnimation`  
   original: `R014+0x3D2C` (0E76:3D2C, draft)  
   divergence: a file missing from the catalogues leaves the slot as it was (the original would read garbage).  
   deterministic: **partly** (checked against the original); action: **keep** - sprite_file_load (0E76:3D2C) calls file_read_all(name, load_buf); root 05D9:019A returns 0 without reading when the member is not in the selected catalogue (no abort), so the slot header is then parsed from load_buf as it was, i.e. the last file read through that scratch buffer (deterministic only given the whole read history). That needs an animation name absent from the catalogues; I did not enumerate all code/posture/weapon combinations, so reachability with the shipped files is assumed rare or absent. Keep the C# 'slot unchanged'.
@@ -863,19 +863,19 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R018+0x0000` (1EF8:0000, matched)  
   divergence: the speed and sprite of an unknown weapon (uninitialised in the original) are 15 / 5 here.  
   deterministic: **n/a**; action: **justify** - missile_launch leaves speed/sprite uninitialised only for a weapon type outside the missile types (0x17..0x21); a missile is only launched for a readied missile weapon or a trap weapon, all inside that range, so the case does not occur.
-- **D-d12abf** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:55` `TacticalBattle.PlaceParty`  
+- **D-d12abf** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:61` `TacticalBattle.PlaceParty`  
   original: `R014+0x4188` (0E76:4188, draft)  
   divergence: directions above 7 leave the offsets uninitialised in the original; the north formation is used.  
   deterministic: **n/a** (checked against the original); action: **document** - effect_start (0E76:4188) leaves dx/dy unset only for dir outside 0..7. Its callers pass the level's party facing (x1f50) or trigger-record dirs: all 143 IMAPS maps have x1f50 in {0,2,4,6} and every non-placeholder 3350/3382 trigger record has dir 0..7, and the generators write 0,2,4,6 (dir_between, gate side), so dir>7 does not occur.
-- **D-ec9a18** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:155` `TacticalBattle.PlaceAround`  
+- **D-ec9a18** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:161` `TacticalBattle.PlaceAround`  
   original: `R024+0x08F2` (1EF8:08F2, draft)  
   divergence: odd directions read stack garbage in the original; the next even direction's offsets are used.  
   deterministic: **n/a** (checked against the original); action: **document** - place_around (R024 1EF8:08F2) takes dir from the exit/activation record (+0xC); in the 143 shipped maps exit dirs are 0,2,4,6 only, and across the generated levels (all battlefield types, 100 seeds each) the only odd value is dir 1 in 7 all-zero placeholder exits of the special mine variants 0x82/0x84-0x86 (area 0,0,0,0, never entered), so the garbage dx/dy path cannot be triggered in play.
-- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:291` `TacticalBattle.PlaceEnemies`  
+- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:297` `TacticalBattle.PlaceEnemies`  
   original: `R025+0x0000` (1EF8:0000, draft)  
   divergence: the palettes (ENEMYPAL.DAT ranges) are the screen's; in mode 1 the original adds money from an uninitialised encounter pointer — no money is added here.  
   deterministic: **no** (checked against the original); action: **keep** - enemies_place mode 1 is called as enemies_place_vec(1) from the death handler 0E76:2324 (push 1 only), so enc is the caller's saved SI:DI pair (offset=SI, segment=DI of the death handler's caller) and who the next word; after placing, R136+0xE4E0.pf/gr/fl += enc->pf/gr/fl read through that pseudo-pointer (low memory), i.e. an unpredictable money change depending on register contents and DOS memory. Not reproducible, so adding no money is the sane model (the palette note is a presentation divergence, not memory).
-- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:239` `TacticalBattle.KeepPlaces`  
+- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:261` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   divergence: a member who was not in that battle has whatever bytes the record held in the original; here such members are placed in the level's start formation (the others then put back where they stood).  
   deterministic: **partly** (checked against the original); action: **keep** - Mode 1 runs no effect_start (R014+0x0058 is skipped without combat_flags 0x20), so each party record keeps x +4, y +6 and the facings +0x19/+0x1A as the last battle left them. A member who joined since that battle has the record bytes of the slot's last occupant (party_add copies the roster record, whose x/y are those of its own last battle, or zero for a new character): a function of play history that the C# does not keep per slot. Placing such a member in the start formation keeps the battle playable; only a party changed between two battles on one battlefield with mode 1 can see it.

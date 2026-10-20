@@ -55,12 +55,13 @@ public sealed partial class TacticalBattle
         {
             LeaveOrderMode();
         }
+        FollowsActive = true;
         Battle.ActiveMember = i;
         if (c.Floor != Battle.FloorShown)
         {
             SwitchLevel(c.Floor);
+            _view.Recentre(i);
         }
-        ViewOrigin = null;
         ResetOrderMenu();
         PendingOrderMember = i;
     }
@@ -78,12 +79,12 @@ public sealed partial class TacticalBattle
         {
             return;
         }
+        FollowsActive = true;
         Battle.ActiveMember = Battle.Leader = i;
         if (c.Floor != Battle.FloorShown)
         {
             SwitchLevel(c.Floor);
         }
-        ViewOrigin = null;
         _view.RowChanged(-1);
         ResetOrderMenu();
     }

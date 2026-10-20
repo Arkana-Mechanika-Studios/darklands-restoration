@@ -17,9 +17,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | travel | core | 5 |
 | battles | core | 30 |
 | persistence | core | 5 |
-| screens/presentation | other | 24 |
+| screens/presentation | other | 25 |
 | host/audio | other | 4 |
-| total |  | 303 |
+| total |  | 304 |
 
 ## Core logic (275)
 
@@ -766,13 +766,13 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-5b1fc6** `uncertain` - `src/Darklands.Core/Battles/CombatAction.cs:32` `CombatAction.R`  
   original: `R016+0x15BE` (1EF8:15BE, draft)  
   why: what it orders.
-- **U-ed27f0** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:58` `Combatant.FightingValue`  
+- **U-ed27f0** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:61` `Combatant.FightingValue`  
   original: `R014+0x0694` (0E76:0694, draft)  
   why: the name (the draft calls it "def").
-- **U-6c8b8a** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:62` `Combatant.AimingValue`  
+- **U-6c8b8a** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:65` `Combatant.AimingValue`  
   original: `R014+0x0694` (0E76:0694, draft)  
   why: the name (the draft's "atk").
-- **U-a567d4** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:71` `Combatant.PiercingResistance`  
+- **U-a567d4** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:74` `Combatant.PiercingResistance`  
   original: `R014+0x0694` (0E76:0694, draft)  
   why: meaning.
 - **U-53f6bd** `uncertain` - `src/Darklands.Core/Battles/EnemyCatalogue.cs:37` `EnemyTemplate.Byte12`  
@@ -841,7 +841,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-8dfdd7** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Party.cs:123` `TacticalBattle.StopEverything`  
   original: `R016+0x0000` (1EF8:0000, draft)  
   why: a debugging key left in; the hot key (Change Marching Order) takes Alt-O first when that entry is on.
-- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:215` `TacticalBattle.AnimationSet`  
+- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:237` `TacticalBattle.AnimationSet`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: read from the slot rules of cbt_set_anim (spec D §3.9): enemies use slot +2 fighting/hit and +4 dying.
 - **U-610cdf** `uncertain` - `src/Darklands.Core/Battles/TerrainDescription.cs:90` `TerrainDescription.FirstSightBlockingFurniture`  
@@ -866,9 +866,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 
-## Presentation and host (28)
+## Presentation and host (29)
 
-### screens/presentation (24)
+### screens/presentation (25)
 
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
@@ -876,7 +876,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-e6062e** `uncertain` - `src/Darklands.Content/Formats/Battles/RowRunSprite.cs:10` `RowRunSprite`  
   original: unresolved (none)  
   why: the format is read from the data (every BC tile parses exactly within its record size, IMC frames as the old engine's CleanCombatPreparedPresentation does); whether the first byte is width − 1 or a hot spot for IMC frames is not settled, so nothing relies on Width for frames.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1390` `BattleScreen.EdgeScroll`  
+- **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:133` `BattleScreens.public`  
+  original: `R002+0x0000` (0E76:0000, draft)  
+  why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1456` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:52` `BuySellPage.DrawParty`  

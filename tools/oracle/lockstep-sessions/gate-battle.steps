@@ -1,4 +1,4 @@
-# Lockstep session: load DKSAVE0 to the gate at night, attack the guards: a battle fought without orders (see BattleScreen's DIVERGENCE on the wall pieces; --battle-trace, --no-wall-draws)
+# Lockstep session: load DKSAVE0 to the gate at night, attack the guards: a battle fought without orders and lost, the dead member deleted (--battle-trace compares every battle pass)
 key:t
 wait:5
 key:l

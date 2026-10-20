@@ -128,6 +128,12 @@ public sealed class BattleScreens
 
     public int LastFieldLocation { get; internal set; } = -1;
 
+    /// <summary>DS:C866 / DS:C886: the battle view's centre cell, a global the next battle's first view is drawn around (unless its
+    /// placement sets it).</summary>
+    // UNCERTAIN: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start,
+    // or a battle of the game played before) was not traced.
+    public (int Column, int Row) ViewCentre { get; internal set; }
+
     /// <summary>The card the last battle left for (battle_args: the level's card for its result).</summary>
     public int LastResultCard { get; private set; }
 

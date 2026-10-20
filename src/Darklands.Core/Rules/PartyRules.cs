@@ -239,18 +239,23 @@ public static class PartyRules
         return (short)(seed + s.Party.Seed);
     }
 
-    /// <summary>After a battle: the dead leave the party, everybody else (but those away) is able again.</summary>
+    /// <summary>After a battle: the dead leave the party for good, everybody else (but those away) is able again.</summary>
+    /// <param name="delete">party_delete (the slot emptied, the character out of the roster, the party trimmed).</param>
     // orig: run_battle R029+0x2278 (0E76:2278) matched
-    // C: status 3 -> 0 (party_delete_vec) first, then every status but 0 and 5 -> 1.
-    public static void AfterBattle(GameState s)
+    // C: for each of the 5 slots, status 3 -> 0 and party_delete_vec(i) (R037+0x3F30) first, then every status but 0 and 5 -> 1.
+    public static void AfterBattle(GameState s, Action<int> delete)
     {
+        for (var i = 0; i < Party.MaxMembers; i++)
+        {
+            if (i < s.Party.Members.Count && s.Party.Members[i].Status == CharacterStatus.Dead)
+            {
+                s.Party.Members[i].Status = CharacterStatus.Empty;
+                delete(i);
+            }
+        }
         foreach (var m in s.Party.Members)
         {
-            if (m.Status == CharacterStatus.Dead)
-            {
-                m.Status = CharacterStatus.Empty;
-            }
-            else if (m.Status is not CharacterStatus.Empty and not CharacterStatus.Away)
+            if (m.Status is not CharacterStatus.Empty and not CharacterStatus.Away)
             {
                 m.Status = CharacterStatus.Able;
             }
