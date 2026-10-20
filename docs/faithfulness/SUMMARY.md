@@ -14,10 +14,13 @@ No known divergence, strong evidence, published coverage:
 * the branch coverage of the original reached by the oracles is published below with its gaps;
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
-It is not a proof that every branch of the original has run: about two thirds of the branch
-outcomes have, and the rest is listed (`branches-missed.csv`). The open items lie mostly in the
-card scripts behind particular quest stages, items and location facts; reaching them with start
-states made for each card continues after 1.0.
+It is not a proof that every branch of the original has run: counted over every function the C#
+implements, about 42% of the branch outcomes have run in a comparison with the original, and the
+rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
+are the battlefield generators and the rules; the least covered are the battles, the overland map
+and the screens (see below). In the card scripts, the open branches lie behind particular quest
+stages, items and location facts; reaching them with start states made for each card continues
+after 1.0.
 
 ## Coverage of the original functions
 
@@ -55,7 +58,26 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| all 4,800 functions the oracles reach | 73.0% (28,389 / 38,892) | 64.0% (18,486 / 28,882) |
+| the 4,800 functions the oracles enter | 73.0% (28,389 / 38,892) | 64.0% (18,486 / 28,882) |
+| **every function the C# implements (9,281)** | | **42.5% (18,149 / 42,744)** |
+
+The last line is the whole-program figure: the functions no oracle enters count with all their
+branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
+differ slightly on the resident code, hence 18,149 against 18,486 exercised. By area:
+
+| area | functions run / implemented | branch outcomes exercised / total | |
+|---|---:|---:|---:|
+| battlefield generators | 218 / 226 | 6,768 / 8,524 | 79% |
+| rules | 305 / 358 | 1,703 / 2,584 | 66% |
+| card scripts | 4,025 / 7,949 | 7,109 / 14,614 | 49% |
+| screens (inventory, barter, creation ...) | 50 / 202 | 1,371 / 6,070 | 23% |
+| card engine | 21 / 36 | 141 / 686 | 21% |
+| resident code | 63 / 160 | 240 / 1,606 | 15% |
+| battles (tactical combat) | 32 / 314 | 750 / 7,516 | 10% |
+| travel (overland map) | 7 / 24 | 67 / 982 | 7% |
+
+The battles and the overland map are checked mostly by the structure comparison and the C#'s own
+tests; the whole-game sessions (below) now run the map, and a battle tester is being built.
 
 20,899 items were never exercised: 1,231 are justified in `unreachable.csv` (dormant branches —
 tautologies, repeated tests, unused thresholds —, compiled forms, the C run-time library, drivers,
