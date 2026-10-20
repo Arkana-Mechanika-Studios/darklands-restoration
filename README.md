@@ -120,7 +120,9 @@ difference, every original bug kept, and every open question, each with its reas
 
 The rules are checked against the original itself: original-byte oracles run each original function
 (from your `DARKLAND.EXE`, in an emulated processor) and the C# on the same inputs, over tens of
-thousands of cases, and every card of the game runs against its original. See
+thousands of cases, and every card of the game runs against its original. A static check compares
+every cited function's calls, constants and branches with the executable's bytes, and whole scripted
+game sessions run in the original and in the rewrite side by side, compared after every step. See
 `docs/faithfulness/SUMMARY.md`.
 
 ### Layout

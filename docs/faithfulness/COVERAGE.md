@@ -8,16 +8,16 @@ The per-function table is `coverage.csv`; the reviewed exclusions are `exclusion
 
 | status | functions |
 |---|---:|
-| implemented (1009 of them byte-identical clones of cited functions) | 9278 |
+| implemented (987 of them byte-identical clones of cited functions) | 9281 |
 | excluded:compiler-helper | 5 |
-| excluded:copy-protection | 4 |
-| excluded:crt | 115 |
+| excluded:copy-protection | 3 |
+| excluded:crt | 114 |
 | excluded:debug | 1 |
 | excluded:dos-io | 24 |
 | excluded:driver | 58 |
 | excluded:empty | 293 |
 | excluded:host | 1 |
-| excluded:memory | 151 |
+| excluded:memory | 150 |
 | excluded:rtlink | 51 |
 | excluded:streaming | 5 |
 | excluded:string-helper | 8 |
@@ -61,7 +61,7 @@ link-time address) for overlay functions; an exact coordinate matches too.
 | `root 06A1:2DF4` | compiler-helper | 1 | __aFlrem: signed 32-bit remainder of C long; C# % at the call site |
 | `root 06A1:2E94` | compiler-helper | 1 | __aFNaldiv: long /= long in place; C# arithmetic at the call site |
 | `root 06A1:02C2` | compiler-helper | 1 | __chkstk: stack probe the compiler inserts in big frames; no effect on the game |
-| `root 06A1:*` | crt | 115 | Microsoft C 6.0 run-time library (crt0 + LIBC: start-up, stdio, strings, DOS calls, printf engine, heap). Replaced by .NET: file access by Darklands.Content/Persistence, strings and number formatting by the BCL; the call sites cite the C call (strcpy, sprintf, fopen ...) where its semantics matter. rand/srand/time are listed above as game logic |
+| `root 06A1:*` | crt | 114 | Microsoft C 6.0 run-time library (crt0 + LIBC: start-up, stdio, strings, DOS calls, printf engine, heap). Replaced by .NET: file access by Darklands.Content/Persistence, strings and number formatting by the BCL; the call sites cite the C call (strcpy, sprintf, fopen ...) where its semantics matter. rand/srand/time are listed above as game logic |
 | `root 09BF:*` | rtlink | 0 | RTLink/Plus 16-byte stub segment; overlay loading has no counterpart in a flat .NET program |
 | `root 09C0:*` | rtlink | 13 | RTLink/Plus overlay manager (vector handler, section loader); every vector is resolved to its target by this audit, overlays are ordinary classes in the C# |
 | `root 0D14:*` | rtlink | 38 | RTLink/Plus overlay cache (EMS/XMS/disk); memory management of overlays, no game effect |
@@ -73,7 +73,7 @@ link-time address) for overlay functions; an exact coordinate matches too.
 | `R004+* (1212:*)` | memory | 2 | twin of R026 1ef8 (XMS block moves) linked into the battlefield loader; see R026 |
 | `R004+* (1223:*)` | memory | 2 | twin of R026 1f09 (swap-file block I/O); see R026 |
 | `R004+* (1237:*)` | memory | 4 | twin of R026 1f1d (EMS block moves); see R026 |
-| `R004+* (1262:*)` | memory | 20 | twin of R027 1f48 (swap blocks and hash table); see R027 |
+| `R004+* (1262:*)` | memory | 19 | twin of R027 1f48 (swap blocks and hash table); see R027 |
 | `R004+* (1336:*)` | memory | 36 | twin of R028 1f48 (swap start-up); see R028 |
 | `R014+0x4BC6` | memory | 1 | path_ems_on: maps the path-finder's EMS page; the C# path finder keeps its tables in memory |
 | `R014+0x4BE2` | memory | 1 | path_ems_off: unmaps the path-finder's EMS page |
@@ -114,7 +114,7 @@ link-time address) for overlay functions; an exact coordinate matches too.
 | `root 0000:262E` | host | 0 | datafile_forget: closes the open catalogs before a reload; Darklands.Content opens files per read |
 | `R000+0x0022` | startup | 0 | main: start-up (config, memory, drivers, fonts) and the call of the main loop root 03A1; the hosts (Darklands.Host.*) and DarklandsGame do this, the main loop itself is ported |
 | `R000+0x1150` | startup | 0 | start-up memory check (EMS/XMS and the swap store, with the EMS error texts); no memory limits in .NET |
-| `R041+*` | copy-protection | 4 | the manual's symbol check (copyprot_run with its pictures and retries) only gates play; the C# skips it (as the later CD release does), no other game state depends on it |
+| `R041+*` | copy-protection | 3 | the manual's symbol check (copyprot_run with its pictures and retries) only gates play; the C# skips it (as the later CD release does), no other game state depends on it |
 | `R015+0x0000` | debug | 1 | debug_mem_track: the developers' memory statistics in a battle; no game effect |
 | `root 0410:0068` | string-helper | 1 | word_fill(ptr, value, n): fill n words of a near array; the battle code's callers (combat_main, cbt_collisions, floor_view_draw, R019 0C80) clear their arrays with Array.Clear/Fill |
 | `root 0410:007E` | string-helper | 1 | word_fill_far: the same for a far array (combat_draw's tile tables, 1DB7:0028's trackers); Array.Fill in the C# |
