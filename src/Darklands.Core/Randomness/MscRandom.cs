@@ -41,6 +41,9 @@ public sealed class MscRandom(uint seed = 1) : IRandomSource
     /// <summary>A debugging aid (DARKLANDS_RANDOM_TRACE): each seed and each draw with the method that drew (tools/oracle/lockstep.py).</summary>
     public static Action<string>? Trace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_RANDOM_TRACE") is null ? null : Console.WriteLine;
 
+    /// <summary>A debugging aid: called before each draw (tools/oracle/battle_oracle.py gives the C# the clock the original's long passes counted between draws).</summary>
+    public static Action? BeforeDraw { get; set; }
+
     private static string Caller()
     {
         var frames = new System.Diagnostics.StackTrace(2, false).GetFrames();
@@ -51,6 +54,7 @@ public sealed class MscRandom(uint seed = 1) : IRandomSource
     // orig: _rand root 06A1:29B6 (MSC 6 run-time library) asm; tests: CoreValuesOracleTests (Oracle:core.json)
     public int NextRaw()
     {
+        BeforeDraw?.Invoke();
         _previous = State;
         State = unchecked(State * Multiplier + Increment);
         if (Trace is { } trace)

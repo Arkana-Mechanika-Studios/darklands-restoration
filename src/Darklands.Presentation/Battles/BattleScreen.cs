@@ -73,6 +73,26 @@ public sealed class BattleScreen : ITacticalView
         : text.Split(';').Select(p => p.Split(',')).ToDictionary(p => int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
             p => int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture));
 
+    /// <summary>A debugging aid: the same jumps' part that came between the pass's random draws ("1452,67,4:4,5:2": before the pass's 4th draw
+    /// (counted from 0 at the pass's head) 4 callbacks came, before the 5th 2 more, the rest after the pass), as battle_oracle.py measures them:
+    /// the draws that read the clock (a re-path time) see the clock the original had then (DARKLANDS_BATTLE_CLOCK_JUMPS).</summary>
+    public static Dictionary<int, Dictionary<int, int>>? ClockRises { get; set; } = ParseClockRises(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CLOCK_JUMPS"));
+
+    private static Dictionary<int, Dictionary<int, int>>? ParseClockRises(string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return null;
+        }
+        var all = new Dictionary<int, Dictionary<int, int>>();
+        foreach (var entry in text.Split(';').Select(p => p.Split(',')).Where(p => p.Length > 2))
+        {
+            all[int.Parse(entry[0], System.Globalization.CultureInfo.InvariantCulture)] = entry.Skip(2).Select(r => r.Split(':'))
+                .ToDictionary(r => int.Parse(r[0], System.Globalization.CultureInfo.InvariantCulture), r => int.Parse(r[1], System.Globalization.CultureInfo.InvariantCulture));
+        }
+        return all;
+    }
+
     private (int Loads, int FirstFrame, int Late) _setUpTicks;
     private long _setUpMark;
 
@@ -140,6 +160,7 @@ public sealed class BattleScreen : ITacticalView
             while (true)
             {
                 var now = _ui.Clock.Milliseconds;
+                Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
                 if (PassTrace is { } trace)
                 {
                     trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}"
@@ -151,6 +172,18 @@ public sealed class BattleScreen : ITacticalView
                     if (ClockJumps is not null && ClockJumps.Remove(_battle!.Battle.Clock, out var jump))
                     {
                         lateTicks = jump;
+                    }
+                    if (ClockRises is not null && ClockRises.Remove(_battle!.Battle.Clock, out var rises))
+                    {
+                        var draws = 0;
+                        Darklands.Core.Randomness.MscRandom.BeforeDraw = () =>
+                        {
+                            if (rises.TryGetValue(draws++, out var rise))
+                            {
+                                _clockFraction = rise;
+                                Advance(0);
+                            }
+                        };
                     }
                     Advance(0);
                 }
@@ -198,6 +231,7 @@ public sealed class BattleScreen : ITacticalView
                 Draw();
                 _ui.Clock.Sleep(FrameMilliseconds);
             }
+            Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
             // orig: battle_run R002+0x0000 after thunk 09C0:1B03 (combat_main): mouse_hide (root 047C:12C3), mouse_set_cursor(0, 0, cursor_default)
             // (root 047C:124F), catalog_close (root 0000:262E), then "BattleResults - victory" … through show_message(DS:9085, 0x96) over the screen
             // as combat_main left it: the battle view in the battle palette (after a victory the loot screen has put both back, see OpenLoot).

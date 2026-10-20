@@ -92,13 +92,19 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
     s.hook(0x1432, 0x01E5, lambda m: stale and m.put_word(m.reg("SS"), (m.reg("BP") - 2) & 0xFFFF, stale[-1]), record="R009")
 
     class Trace(list):
+        draw_clocks: list = []      # the combat clock at each random draw (rand, root 06A1:29B6)
+        draws_at: list = []         # the draws made before each pass head
+
         def append(self, line):
+            self.draws_at.append(len(self.draw_clocks))
             records = s.read(DS, COMBATANTS, COUNT * RECORD)
             super().append("%s cbt %s q %s ar %s" % (line, records.hex().upper(), s.read(DS, QUEUED, 2 * COUNT).hex().upper(),
                                                     s.read(DS, RATES, COUNT).hex().upper()))
             if len(self) >= passes:
                 s.budget = 0            # the next block stops the run (Stop: instruction budget)
     s.battle_trace = Trace()
+    s.battle_trace.draw_clocks, s.battle_trace.draws_at = [], []
+    s.hook(0x06A1, 0x29B6, lambda m: s.battle_trace.draw_clocks.append(m.word(DS, 0x07D4)))
     # the battle's pause (after its first ticks) waits for Space; lockstep's idle test (no random draw for IDLE_MS) never passes on a
     # battlefield whose animated pieces draw at every frame: in a battle the key is given once the clock has stood still PAUSED passes
     idle_test = s._next_key
@@ -130,7 +136,7 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
     except Stop as e:
         end = str(e)[:300]
     cov = s.coverage_result() if coverage else None
-    return list(s.battle_trace), given, seeds, [l for l in s.log if not l.startswith("INT")], end, s.set_up_ticks, cov
+    return s.battle_trace, given, seeds, [l for l in s.log if not l.startswith("INT")], end, s.set_up_ticks, cov
 
 
 def parse(lines):
@@ -147,10 +153,24 @@ def parse(lines):
 
 
 def clock_jumps(lines):
-    """[(clock at a pass head, timer callbacks beyond its one)] where the original's clock rose by more than one to the next pass: a pass
-    that computes for long (R014+0x4BFA..0x66FE) lets the time-based timer callbacks come, which the C# (one tick a pass) does not have."""
+    """[(clock at a pass head, timer callbacks beyond its one, "draw:rise" ...)] where the original's clock rose by more than one to the next
+    pass: a pass that computes for long (R014+0x4BFA..0x66FE) lets the time-based timer callbacks come, which the C# (one tick a pass) does not
+    have. The rises that came between the pass's random draws (a draw that reads the clock, a re-path time, sees them) are listed by the
+    draw's number in the pass; the callbacks beyond those come after the pass."""
     clocks = [int(l.split()[2]) for l in lines]
-    return [(a, b - a - 1) for a, b in zip(clocks, clocks[1:]) if b - a > 1]
+    draw_clocks, draws_at = getattr(lines, "draw_clocks", []), getattr(lines, "draws_at", [])
+    out = []
+    for k, (a, b) in enumerate(zip(clocks, clocks[1:])):
+        if b - a <= 1:
+            continue
+        cur, rises = a + 1, []
+        if k + 1 < len(draws_at):
+            for n, c in enumerate(draw_clocks[draws_at[k]:draws_at[k + 1]]):
+                if c > cur:
+                    rises.append("%d:%d" % (n, c - cur))
+                    cur = c
+        out.append((a, b - cur) + tuple(rises))
+    return out
 
 
 def first_difference(original: dict, rewrite: dict):
@@ -242,10 +262,11 @@ def main():
         if cov is not None:
             (folder / "cov").mkdir(exist_ok=True)
             (folder / "cov" / "cov-0.jsonl").write_text(json.dumps(cov) + "\n", encoding="utf-8")
+        jumps = clock_jumps(trace)
         os.environ["DARKLANDS_BATTLE_TRACE"] = "records"
         os.environ["DARKLANDS_BATTLE_REQUEST"] = ",".join(str(v) for v in request) if request else ""
         t = time.time()
-        _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up, clock_jumps(trace))
+        _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up, jumps)
         t_rewrite = time.time() - t
         lines = [l for l in output.splitlines() if l.startswith("pass ")]
         (folder / "rewrite-battle.trace").write_text("\n".join(lines), encoding="utf-8")
@@ -260,6 +281,14 @@ def main():
             t_original += time.time() - t
             (folder / "original-battle.trace").write_text("\n".join(trace), encoding="utf-8")
             (folder / "original.log").write_text("\n".join(log + ["end: " + end]), encoding="utf-8")
+            if clock_jumps(trace) != jumps:
+                # the long passes (and so the clock jumps) of the original moved with its key: the C# is run again with this run's
+                t = time.time()
+                _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up, clock_jumps(trace))
+                t_rewrite += time.time() - t
+                lines = [l for l in output.splitlines() if l.startswith("pass ")]
+                (folder / "rewrite-battle.trace").write_text("\n".join(lines), encoding="utf-8")
+                (folder / "rewrite.log").write_text("\n".join(l for l in output.splitlines() if not l.startswith("pass ")), encoding="utf-8")
         result = first_difference(parse(trace), parse(lines))
         report[name] = {"request": request, "card's arguments": given, "set-up ticks": set_up, "original end": end,
                         "passes": {"original": len(trace), "rewrite": len(lines)},

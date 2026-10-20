@@ -722,7 +722,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
         env["DARKLANDS_BATTLE_SETUP_TICKS"] = ";".join("%d,%d,%d" % p for p in set_up_ticks)
     if clock_jumps:
         # the clock a long pass of the original took beyond its one tick (the timer's time-based callbacks): the C# has no emulated time
-        env["DARKLANDS_BATTLE_CLOCK_JUMPS"] = ";".join("%d,%d" % p for p in clock_jumps)
+        env["DARKLANDS_BATTLE_CLOCK_JUMPS"] = ";".join(",".join(str(v) for v in p) for p in clock_jumps)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():
