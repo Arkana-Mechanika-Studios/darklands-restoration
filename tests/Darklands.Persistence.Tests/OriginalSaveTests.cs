@@ -46,7 +46,20 @@ public sealed class OriginalSaveTests
 
         var loaded = OriginalSaves.Read(sav, bsv, name, NoGameData.Instance);
         var (written, battle) = OriginalSaves.Write(loaded.State, null, loaded.Music, loaded.SoundEffects);
-        Assert.True(sav.AsSpan().SequenceEqual(written), $"{name}: {sav.Length} bytes read, {written.Length} written, first difference at 0x{FirstDifference(sav, written):X}");
+        // The original's writer names the current place in the header every time; a file that named another place (DKSAVE0, DKSAVE1:
+        // "Prag" while the party is in Pressburg) comes back naming the party's place, and every other byte as it was read.
+        var state = loaded.State;
+        var place = state.CurrentLocation >= 0 && state.CurrentLocation < state.Locations.Count
+            ? state.Locations[state.CurrentLocation].Name
+            : OriginalSaves.Wilderness;
+        var nameEnd = Array.IndexOf(written, (byte)0, 0, 0x15);
+        Assert.Equal(place, System.Text.Encoding.Latin1.GetString(written, 0, nameEnd < 0 ? 0x15 : nameEnd));
+        var expectedSav = (byte[])sav.Clone();
+        if (!sav.AsSpan(0, 0x15).SequenceEqual(written.AsSpan(0, 0x15)))
+        {
+            written.AsSpan(0, 0x15).CopyTo(expectedSav);
+        }
+        Assert.True(expectedSav.AsSpan().SequenceEqual(written), $"{name}: {sav.Length} bytes read, {written.Length} written, first difference at 0x{FirstDifference(expectedSav, written):X}");
         if (bsv.Length > 0)
         {
             // The battle file comes back as the original writes it after a load: a work file saved empty was removed by the

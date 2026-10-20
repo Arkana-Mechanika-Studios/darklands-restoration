@@ -226,7 +226,6 @@ public static class OriginalSaves
         {
             FileName = fileName,
             Header = (byte[])h.Clone(),
-            Place = PlaceName(state),
             PartySize = file.PartySize,
             PartySizeFromSlots = PartySizeOf(file.PartyIds),
             Images = (byte[])file.Images.Clone(),
@@ -287,13 +286,9 @@ public static class OriginalSaves
         var image = state.OriginalSave as SaveImage;
         var file = new SaveFile { Header = image is null ? new byte[SaveFile.HeaderSize] : (byte[])image.Header.Clone() };
         var h = file.Header;
-        // C: the saved games of the player's folder do not all name cur_loc's place (DKSAVE0: "Prag" at cur_loc 85, Pressburg); the name is
-        // written as read while the place it would be taken from is unchanged.
-        var place = PlaceName(state);
-        if (image is null || image.Place != place)
-        {
-            PutText(h, PlaceAt, PlaceLength, place);
-        }
+        // orig: the saved game's writer R037+0x2ACE writes the current location's name (or "Wilderness") every time
+        // C: so a file whose header named another place (DKSAVE0: "Prag" at cur_loc 85, Pressburg) names cur_loc's after a save, as in the original.
+        PutText(h, PlaceAt, PlaceLength, PlaceName(state));
         PutText(h, CommentAt, CommentLength, comment ?? (image is null ? DefaultComment : Text(h, CommentAt, CommentLength)));
         PutWord(h, SeedAt, state.Party.Seed);
         PutWord(h, VersionAt, Version);
@@ -445,7 +440,6 @@ public static class OriginalSaves
         {
             FileName = fileName,
             Header = file.Header,
-            Place = PlaceName(state),
             PartySize = file.PartySize,
             PartySizeFromSlots = PartySizeOf(file.PartyIds),
             Images = file.Images,
@@ -493,9 +487,6 @@ public static class OriginalSaves
         public required string FileName { get; init; }
 
         public required byte[] Header { get; init; }
-
-        /// <summary>The place name the state gave when the file was read (the header's may differ).</summary>
-        public required string Place { get; init; }
 
         public int PartySize { get; init; }
 
