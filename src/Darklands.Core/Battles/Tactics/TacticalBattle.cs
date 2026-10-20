@@ -416,15 +416,18 @@ public sealed partial class TacticalBattle : IBattleEndActions
         MoveMode = 0;
         // orig: R014+0x02FF / 0x0307: floor_view_draw(−1) (the view around the centre kept, DS:C866 / DS:C886: the placement's) and
         // combat_draw, before the first tick: the draw list's random draws (the animated pieces of that view)
+        // orig: that draw's R014+0x99F6 (14F7:31E6) also turns whoever EnemyTurn just gave an action toward its target
         _view.MapChanged();
+        TurnTowardTargets();
         Effects.Drawn(_view);
         RefreshTargetCursor();
         // C: mouse_show and root 047C:1293 (R014+0x030C) take time before R014+0x0311 reads the clock
         _view.SetUpTime(2);
         NextTickAt = (ushort)(Clock + TickLength);
-        ActivationsAt = (ushort)(Clock + 120);
         // orig: R014+0x0311 reads the clock for DS:D9E4 (next tick); the ticks up to the first pass of R014+0x3166 follow it
         _view.SetUpTime(3);
+        // orig: the next activations check is 120 after the clock of the first pass, the late set-up ticks included (R014+0x3166)
+        ActivationsAt = (ushort)(Clock + 120);
         SaveRulesMessage(newBattlefield);
     }
 

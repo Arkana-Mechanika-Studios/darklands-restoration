@@ -458,8 +458,9 @@ public sealed partial class TacticalBattle
         RefreshTargetCursor();
         _view.SetUpTime(2);
         NextTickAt = (ushort)(Clock + TickLength);
-        ActivationsAt = (ushort)(Clock + 120);
         _view.SetUpTime(3);
+        // orig: the next activations check is 120 after the clock of the first pass, the late set-up ticks included (R014+0x3166)
+        ActivationsAt = (ushort)(Clock + 120);
         SaveRulesMessage(true);
     }
 

@@ -65,7 +65,7 @@ FIELDS = {0x04: "x", 0x05: "x", 0x06: "y", 0x07: "y",
           **{0x6B + k: "skill %d" % k for k in range(19)}}
 
 
-def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, coverage: bool):
+def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, coverage: bool, paused: int = PAUSED):
     """(trace lines, the battle's arguments as the card gave them, log, how it ended, set-up ticks, coverage)."""
     s = lockstep.Session(exe.read_bytes(), game, max_instructions=4_000_000_000, coverage=coverage)
     s.vfs.put("saves/dksave0.sav", save.read_bytes())
@@ -105,10 +105,10 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
 
     def next_key():
         t = s.battle_trace
-        while len(t) > PAUSED and s.script and s.script[0][0] in ("wait", "shot"):
+        while len(t) > paused and s.script and s.script[0][0] in ("wait", "shot"):
             s.script.pop(0)             # the C#'s steps
-        if (len(t) > PAUSED and s.script and s.script[0][0] == "key"
-                and len({line.split()[2] for line in t[-PAUSED:]}) == 1):
+        if (len(t) > paused and s.script and s.script[0][0] == "key"
+                and len({line.split()[2] for line in t[-paused:]}) == 1):
             # peeked as key_pressed does; get_key takes it from the script
             if not given_keys or given_keys[-1] != len(t):
                 given_keys.append(len(t))
@@ -148,6 +148,7 @@ def parse(lines):
 def first_difference(original: dict, rewrite: dict):
     common = sorted(set(original) & set(rewrite))
     start = {}      # slot -> (original, rewrite) +0x1D at its first tick
+    dest = {}       # slot -> (original, rewrite) +0x08..0x0B at its first tick
     for clock in common:
         (orand, orec, oq, oar), (crand, crec, cq, car) = original[clock], rewrite[clock]
         diffs = []
@@ -156,12 +157,18 @@ def first_difference(original: dict, rewrite: dict):
             if o[0x14] == 0 and c[0x14] == 0:
                 continue                # an empty slot: the original keeps old bytes there
             first = start.setdefault(i, (o[0x1D], c[0x1D]))
+            kept = dest.setdefault(i, (o[8:12], c[8:12]))
             for off, name in FIELDS.items():
                 if off == 0x1D:
                     # +0x1D starts as whatever the stack held when level_enemies_load (R020+0x0000) wrote the enemy file, which
-                    # enemies_place (R025+0x0885) reads into DS:B899 and copies whole (R025+0x0267); only its changes are compared
-                    if (o[off] - first[0]) & 0xFF != (c[off] - first[1]) & 0xFF:
+                    # enemies_place (R025+0x0885) reads into DS:B899 and copies whole (R025+0x0267); it is compared once either side
+                    # has changed it (the aim sets it outright)
+                    if (o[off] != first[0] or c[off] != first[1]) and o[off] != c[off]:
                         diffs.append({"combatant": i, "field": name, "offset": "+1D", "original": o[off], "rewrite": c[off]})
+                elif 8 <= off < 12 and o[8:12] == kept[0] and c[8:12] == kept[1]:
+                    # the destination is copied whole with the enemy file's record (R025+0x0267) and set by the enemy's first move; a
+                    # missile user that never moves keeps the stack bytes there (0x0D70, 0xF272), so it is compared once either side moved
+                    continue
                 elif o[off] != c[off]:
                     diffs.append({"combatant": i, "field": name, "offset": "+%02X" % off, "original": o[off], "rewrite": c[off]})
             for k, what in ((0, "queued endurance"), (1, "queued strength")):
@@ -174,6 +181,18 @@ def first_difference(original: dict, rewrite: dict):
         if diffs:
             return {"clock": clock, "ticks agreeing": common.index(clock), "differences": diffs[:60]}
     return {"clock": None, "ticks agreeing": len(common), "clocks": [common[0], common[-1]] if common else []}
+
+
+def pause_length(lines):
+    """The passes of the longest stretch at one clock value: the battle's pause."""
+    best = run = 0
+    last = None
+    for line in lines:
+        clock = line.split()[2]
+        run = run + 1 if clock == last else 1
+        last = clock
+        best = max(best, run)
+    return best
 
 
 def battle_steps(passes: int):
@@ -223,6 +242,16 @@ def main():
         lines = [l for l in output.splitlines() if l.startswith("pass ")]
         (folder / "rewrite-battle.trace").write_text("\n".join(lines), encoding="utf-8")
         (folder / "rewrite.log").write_text("\n".join(l for l in output.splitlines() if not l.startswith("pass ")), encoding="utf-8")
+        # the C#'s pause lasts 297 or 298 passes by the fight (its timer callbacks against the set-up's ticks); the original's ends with
+        # the key, so it is run again with the key moved by the difference: the animated pieces draw every 8 passes, and a pause that
+        # ends one pass apart shifts every later draw against the passes
+        shift = pause_length(lines) - pause_length(trace)
+        if shift:
+            t = time.time()
+            trace, given, seeds, log, end, set_up, cov = run_original(Path(a.exe), a.game, steps, Path(a.save), request, a.passes, a.coverage, PAUSED + shift)
+            t_original += time.time() - t
+            (folder / "original-battle.trace").write_text("\n".join(trace), encoding="utf-8")
+            (folder / "original.log").write_text("\n".join(log + ["end: " + end]), encoding="utf-8")
         result = first_difference(parse(trace), parse(lines))
         report[name] = {"request": request, "card's arguments": given, "set-up ticks": set_up, "original end": end,
                         "passes": {"original": len(trace), "rewrite": len(lines)},
