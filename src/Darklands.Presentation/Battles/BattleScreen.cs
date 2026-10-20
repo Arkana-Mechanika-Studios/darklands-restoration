@@ -25,6 +25,13 @@ public sealed class BattleScreen : ITacticalView
 {
     private const int FrameMilliseconds = 16;
 
+    /// <summary>A debugging aid: exactly one timer callback of the 60 Hz clock a pass of the loop, whatever the time (DARKLANDS_BATTLE_TICK_PER_PASS),
+    /// as tools/oracle/lockstep.py runs the original's battle.</summary>
+    /// <summary>A debugging aid: a line at the head of each pass, the combat clock and the random state (DARKLANDS_BATTLE_TRACE).</summary>
+    public static Action<string>? PassTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TRACE") is null ? null : Console.WriteLine;
+
+    public static bool OneTickPerPass { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TICK_PER_PASS") is not null;
+
     private readonly GameUi _ui;
     private readonly BattleAssets _assets;
     private readonly GameState _state;
@@ -88,7 +95,19 @@ public sealed class BattleScreen : ITacticalView
             while (true)
             {
                 var now = _ui.Clock.Milliseconds;
-                Advance(now - previous);
+                if (PassTrace is { } trace)
+                {
+                    trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}");
+                }
+                if (OneTickPerPass)
+                {
+                    _clockFraction = 1;
+                    Advance(0);
+                }
+                else
+                {
+                    Advance(now - previous);
+                }
                 previous = now;
                 _ui.Present();
                 // orig: R014+0x3166: the cursor keys (DS:D7FE), the mouse handler (the hover while the button is held, then a
@@ -1740,6 +1759,10 @@ public sealed class BattleScreen : ITacticalView
     // fallen first, then y and x), the missiles and the clouds are drawn in that order every frame.
     // DIVERGENCE: the whole view is redrawn each frame (no dirty tiles), the wall pieces are drawn by the view before the sprites rather
     // than sorted in among them, and the 157-sprite limit is not kept (see EffectField.Drawn for its effect on the random numbers).
+    // DIVERGENCE: R014+0x827A picks each re-queued wall, furniture or floor piece's picture variant with random_n(2) from the game's generator
+    // (R014+0x8381, +0x8438, +0x84AE), as often as the dirty screen tiles need it; without dirty tiles those draws are not made, so a battle's
+    // random numbers part from the original's at its first redraw (tools/oracle/lockstep.py, --no-wall-draws: with them left out both agree
+    // for 750 combat ticks of the gate battle of Pressburg).
     public void Draw()
     {
         var tb = _battle!;

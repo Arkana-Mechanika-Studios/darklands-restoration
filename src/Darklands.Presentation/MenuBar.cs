@@ -157,7 +157,7 @@ public sealed class MenuBar
         };
         var game = new List<Item>
         {
-            // C: the items' flag bytes are DS:9920 and DS:9934 (HotKeys.SaveGameItem / LoadGameItem): greyed while the inn's roster is up.
+            // C: the items' flag bytes are DS:9920 and DS:9934 (HotKeys.SaveGameItem / LoadGameItem): greyed while a screen switches them off (the inn's roster, a stay, the character sheet, barter: see HotKeys).
             new(() => "\x02Save Game", true, "\x0fS", () => keys.Save?.Invoke(), State: () => keys.SaveGameItem),
             new(() => "\x02Load Saved Game", true, "\x0fL", keys.LoadGame, State: () => keys.LoadGameItem),
             new(() => "\x02" + "Difficulty", true, "\x0f" + "D", () => { }, difficulty),

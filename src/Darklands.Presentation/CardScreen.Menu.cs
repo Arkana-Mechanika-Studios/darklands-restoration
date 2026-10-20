@@ -41,6 +41,13 @@ public sealed partial class CardScreen
         public bool Contains(int mx, int my) => X <= mx && mx <= X + Width && Y <= my && my <= Y + Height;
     }
 
+    /// <summary>The menu being chosen from (null: none): for <see cref="OptionPoint"/>.</summary>
+    private static OptionLayout? _choosing;
+
+    /// <summary>A point on line <paramref name="line"/> of the menu being chosen from (a scripted host's option:&lt;n&gt; step), null without one.</summary>
+    public static (int X, int Y)? OptionPoint(int line) =>
+        _choosing is { } l && line >= 0 && line < l.Lines.Count ? (l.X + 1, l.Lines[line].Y + 1) : null;
+
     // orig: card_menu: combat_clock = 0, flush_keys, DS:EE41 = DS:EE42 = 0, menu_popup = DS:8DDE = 0, menu_highlight = -1; then per pass: menu_bar_run (GameUi), the party_icons_dirty redraw (not needed), a left press on a portrait -> 13a0, card_mouse (hover, box, hint, click), and a waiting key: Enter / Space with a highlighted line choose it (in the box: menu_member = opt / 4, menu_slot = opt % 4, the line is the main line the box belongs to, DS:A7BA[DS:A779]), Alt-Q quits (HotKeys), card_global_keys (HotKeys), Up / Down while the pointer is over a line move the highlight (wrapping) and the pointer onto it
     // C: a choice by Enter in the box sets menu_member and menu_slot but not menu_popup, so the card rates and runs the line as a plain choice.
     // C: Up from no highlight cannot happen in the original (the cursor keys need the pointer over a line, which card_mouse has just highlighted).
@@ -55,6 +62,7 @@ public sealed partial class CardScreen
         var c = context();
         c.MenuPopup = false;
         var main = new OptionLayout(areas, _optionX, _optionWidth);
+        _choosing = main;
         var current = main;
         PopupBox? box = null;
         var hintShownFor = NoHint;

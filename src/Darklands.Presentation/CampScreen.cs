@@ -62,9 +62,16 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     private SavedRegion? _teacherBox;
     private int _chosen;
 
+    /// <summary>Sets the Save Game and Load Saved Game items of the hot keys and the menu bar (1 on, 2 off).</summary>
+    public Action<int>? SaveAndLoad { get; set; }
+
     /// <summary>A stay as cards open it (<see cref="CampPlace"/> numbering).</summary>
+    // C: the stay (R036+0x0082) begins with DS:9920 = DS:9934 = 2 (no Save Game, no Load Saved Game while the stay is up) and its clean-up
+    //   R036+0x082C ends with DS:9920 = DS:9934 = 1, whatever they were before; a stay left by a click on an empty party row skips the
+    //   clean-up and leaves them at 2
     public void Stay(GameState state, int mode)
     {
+        SaveAndLoad?.Invoke(2);
         // orig: R036+0x0082: DS:9C3D = music_play(5); `if (mode == 1) music_play(0x15); else if (rand_mod(2)) music_play(9); else music_play(10);`
         ui.SaveMusic();
         ui.PlayMusic((CampPlace)mode == CampPlace.Wilderness ? WildMusic : state.Random.Below(2) != 0 ? 9 : 10);
@@ -80,6 +87,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 // orig: R036+0x082C: the unfinished brews lost (event_remove(0x1D, ...)), the fonts back, music_play(DS:9C3D)
                 Brewing.AbandonAll(state);
                 ui.RestoreMusic();
+                SaveAndLoad?.Invoke(1);
             }
         }
         finally

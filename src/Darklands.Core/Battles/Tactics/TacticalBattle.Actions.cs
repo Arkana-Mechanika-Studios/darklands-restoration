@@ -94,11 +94,15 @@ public sealed partial class TacticalBattle
         }
     }
 
+    /// <summary>A debugging aid (DARKLANDS_STEP_TRACE): each combatant's step call, as tools/oracle/lockstep.py compares it.</summary>
+    public static Action<string>? StepTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_STEP_TRACE") is null ? null : Console.WriteLine;
+
     /// <summary>One step along the path (or the step queued by a key).</summary>
     // orig: cbt_step R014+0x1624 (0E76:1624) draft (spec D §2.3, asm-verified)
     private void Step(int i, int set)
     {
         var c = Battle[i];
+        StepTrace?.Invoke($"step {i} clock {Clock} queued {c.QueuedStep} next {c.NextStepAt} delay {c.StepDelay} held {c.Held} wait {c.WaitSteps} moving {c.Moving} at {c.Position.X},{c.Position.Y}");
         if (c.QueuedStep == -1)
         {
             return;

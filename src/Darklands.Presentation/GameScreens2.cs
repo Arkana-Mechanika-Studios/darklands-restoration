@@ -34,6 +34,8 @@ public sealed class GameScreens2 : IGameScreens
         _alchemy = new AlchemyScreen(ui, panel, formulas);
         _sheet = new CharacterSheetScreen(ui, panel, formulas, world.Items.Saints.Select(s => s.FullName).ToList(), _alchemy);
         _camp = new CampScreen(ui, panel, formulas, _alchemy, _sheet);
+        _sheet.SaveAndLoad = SetSaveAndLoad;
+        _camp.SaveAndLoad = SetSaveAndLoad;
         _panel = panel;
         _world = world;
     }
@@ -78,7 +80,22 @@ public sealed class GameScreens2 : IGameScreens
 
     public void Alchemy(int member, int place) => Keeping(() => _alchemy.Use(_state, _state.Party.Resolve(member), place));
 
-    public void Barter(int shop, string name, long categories) => _others.Barter(shop, name, categories);
+    // orig: barter_open R032+0x0000 sets DS:9920 = DS:9934 = 2 and barter_close R032+0x076C sets them to 1
+    public void Barter(int shop, string name, long categories)
+    {
+        SetSaveAndLoad(2);
+        _others.Barter(shop, name, categories);
+        SetSaveAndLoad(1);
+    }
+
+    private void SetSaveAndLoad(int flag)
+    {
+        if (HotKeys is { } keys)
+        {
+            keys.SaveGameItem = flag;
+            keys.LoadGameItem = flag;
+        }
+    }
 
     public void ItemStore() => _others.ItemStore();
 

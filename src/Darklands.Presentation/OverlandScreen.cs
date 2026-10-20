@@ -38,8 +38,18 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 
     private IndexedImage[]? _tiles;
     private IndexedImage[]? _partySprites;
-    private int _originX;
-    private int _originY;
+    // orig: the view of R030: DS:286A the first column shown, DS:286E the first row of the row buffer, DS:286C the first row shown in it; the
+    //   marker's position in the view is DS:2866 / DS:2868 (here _x - _originX, _y - _originY)
+    /// <summary>A debugging aid: each step of the marker, as tools/oracle/lockstep.py prints the original's (DARKLANDS_TRACE_MAP).</summary>
+    public static Action<string>? Trace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_TRACE_MAP") is null ? null : Console.WriteLine;
+
+    private int _viewColumn;
+    private int _viewTop;
+    private int _viewRows;
+
+    private int _originX => _viewColumn * WorldMap.TileWidth;
+
+    private int _originY => (_viewTop + _viewRows) * WorldMap.RowHeight;
     private int _x;
     private int _y;
     private int _direction;
@@ -98,7 +108,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             {
                 if (ui.Mouse.X > AreaX)
                 {
-                    target = (_originX + ui.Mouse.X - AreaX - 5, _originY + ui.Mouse.Y - AreaY - 5);   // C: mxe = mouse_x - 0x41; mye = mouse_y - 0x15
+                    // C: mxe = mouse_x - 0x41; mye = mouse_y - 0x15: a point of the view (overland_loop's locals), not of the map: when the view
+                    //   jumps (0c44 moves DS:2866 / DS:2868 by 128 / 92 pixels) the target stays where it was in the view
+                    target = (ui.Mouse.X - AreaX - 5, ui.Mouse.Y - AreaY - 5);
                 }
                 else if (action is { IsLeftClick: true })
                 {
@@ -139,7 +151,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 ui.Wait(StepMilliseconds, skippable: false);
                 continue;
             }
-            var result = MoveOnce(travel, dx, dy);
+            var result = MoveOnce(state, travel, dx, dy);
             if (result is { Outcome: StepOutcome.Blocked })
             {
                 // C: 9999 -> `mxe = 0` in the loop (the target is dropped)
@@ -242,7 +254,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     /// <summary>One step: horizontal moves every time, vertical moves every other time, as in the game.</summary>
     // orig: the direction cases of R030+0x0C44 (DS:2866 ± 1 for the horizontal part, DS:2868 ± 1 only when DS:290E++ was non-zero, DS:8676 = direction)
     // C: `if (DS:290E++)` counts every pass with a vertical key, moved or not, and `if (DS:290E > 1) DS:290E = 0` resets it after the second: a vertical pixel needs two passes, and each pass pays for a step (1300) even when the marker did not move or was held by the border (`if (DS:8676 != 0) 1300(...)`).
-    private StepResult MoveOnce(OverlandTravel travel, int dx, int dy)
+    private StepResult MoveOnce(GameState state, OverlandTravel travel, int dx, int dy)
     {
         var x = _x + dx;
         var y = _y;
@@ -254,61 +266,152 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 y += dy;
             }
         }
-        // C: DS:2866 in [11, 0xf7] and DS:2868 in [13, 0xb1] in the view, which with the view's own limits are these bounds on the map
-        (x, y) = map.ClampPosition(x, y);
+        // orig: DS:2866 kept in [0xB, 0xF7] and DS:2868 in [0xD, 0xB1]: in the view
+        x = _originX + Math.Clamp(x - _originX, 0xB, 0xF7);
+        y = _originY + Math.Clamp(y - _originY, 0xD, 0xB1);
         _direction = DirectionNumber(dx, dy);
         _frame = (_frame + 1) % 8;
         var result = travel.Step(x, y);
-        // C: for a result of 0 or more 0c44 restores the old position; only a plain walk (-1) keeps the new one. Here an arrival or encounter leaves the screen anyway and takes the new cell with it.
-        if (result.Outcome != StepOutcome.Blocked)
+        Trace?.Invoke($"step d={dx},{dy} view {x - _originX},{y - _originY} col {_viewColumn} top {_viewTop} rows {_viewRows} cell {state.MapPosition.X},{state.MapPosition.Y} -> {result.Outcome}");
+        // orig: for a result of 0 or more (blocked, arrived, an encounter) 0c44 puts the marker back and returns before the scroll block; only a
+        //   plain walk (-1) keeps the new position (the cell the party stands on is OverlandTravel.Step's)
+        if (result.Outcome == StepOutcome.Walked)
         {
             _x = x;
             _y = y;
-            Scroll();
+            Scroll(state);
         }
         return result;
     }
 
     // orig: the start of overland_open: x = party_x = city exit (cities) or the location's own position, view centred with DS:2866 = 0x82 and DS:2868 = 0x40 (hence the 130 and 64), then cur_loc = -1 in overland_loop
     // C: for a city (cur_loc < 92) the party leaves from the exit point of the city record (exit_x, exit_y); for another place from the place's own x, y; in the wilderness from party_x, party_y.
+    // orig: overland_open R030+0x00A8 (1462:015A..0222) places the view and the marker for party (x, y) in rows of 4 and columns of 16 pixels:
+    //   top = max(y / 100 - 1, 0) * 100 (DS:286E); r = y - top - 16 (DS:286C); while r > 0x53 the top moves down 24 rows; marker y DS:2868 = 0x40;
+    //   near the map's bottom (height - top - 0x30 < r) DS:2868 = (top - height + r + 0x40) * 4, DS:286E = height - 0x83, DS:286C = 0x53;
+    //   DS:286C < 0 becomes 0; marker x DS:2866 = 0x82 with the view column DS:286A = x - 8, near the right edge (x - 8 > width - 0x11)
+    //   DS:2866 = (x - 8 - width) * 16 + 0x192 with DS:286A = width - 0x11, at the left (x - 8 <= 0) DS:2866 = 0x82 - (x - 8) with DS:286A = 0.
+    // C: in one absolute pixel (WorldMap.CellAt) the marker stands at (16 x + 2, 4 y) away from the edges. Every pass of 0c44, the idle one
+    //   included, sets party_x/party_y from the cell under the marker (R030+0x0C44 +0x54/+0x63): (16 x + 2, 4 y) is cell (x, y + 1), so the
+    //   party stands one row south of the exit point as soon as the map runs (the first pass comes before any step or save).
+    // C: x - 8 <= 0 puts the marker at 0x82 - (x - 8) pixels, not 16 x + 2 (a column near the left edge reads another cell); kept.
     private void PlaceParty(GameState state)
     {
         var (column, row) = (state.MapPosition.X, state.MapPosition.Y);
         state.CurrentLocation = GameState.Wilderness;
-        _x = column * WorldMap.TileWidth;
-        _y = row * WorldMap.RowHeight - WorldMap.RowHeight;
-        state.MapPosition = new Core.World.MapPosition(column, row);
-        _originX = _x - 130;
-        _originY = _y - 64;
-        ClampOrigin();
+        var top = Math.Max(row / 100 - 1, 0) * 100;
+        var rows = row - top - 0x10;
+        var markerY = 0x40;
+        while (rows > 0x53)
+        {
+            top += 0x18;
+            rows = row - top - 0x10;
+        }
+        if (map.Height - top - 0x30 < rows)
+        {
+            markerY = (top - map.Height + rows + 0x40) * 4;
+            top = map.Height - 0x83;
+            rows = 0x53;
+        }
+        rows = Math.Max(rows, 0);
+        var markerX = 0x82;
+        var viewColumn = column - 8;
+        if (viewColumn > map.Width - 0x11)
+        {
+            markerX = (viewColumn - map.Width) * 16 + 0x192;
+            viewColumn = map.Width - 0x11;
+        }
+        else if (viewColumn <= 0)
+        {
+            markerX = 0x82 - viewColumn;
+            viewColumn = 0;
+        }
+        _viewColumn = viewColumn;
+        _viewTop = top;
+        _viewRows = rows;
+        _x = _originX + markerX;
+        _y = _originY + markerY;
+        var (cellColumn, cellRow) = WorldMap.CellAt(_x, _y);
+        state.MapPosition = new Core.World.MapPosition(cellColumn, cellRow);
         _verticalStep = false;
         _frame = 0;
         _direction = 0;
     }
 
-    /// <summary>The view jumps when the party comes near its edge.</summary>
-    // orig: the scroll block of 0c44: DS:2868 < 20 or > 170 moves the view 23 rows (92 pixels), DS:2866 < 20 or > 0xe2 (226) moves it 8 columns (128 pixels)
-    // DIVERGENCE: the original also moves its row buffer by 0x41 rows at a time (1dd4 reloading map rows) and corrects the marker at the map's borders with its own arithmetic (including a factor 5 on the vertical correction); here the view is clamped to the map (ClampOrigin).
-    private void Scroll()
+    /// <summary>The view jumps when the party comes near its edge; the marker keeps its place on the map but at the map's borders.</summary>
+    // orig: the scroll block of R030+0x0C44 (1462:10E0..12AE), after a walked step or a pass without one: with DS:2868 < 0x14 or > 0xAA the
+    //   shown rows move 0x17 (23) and the marker 0x5C (92) pixels the other way; the row buffer follows 0x41 rows at a time (1dd4 reloads it) and
+    //   the shown rows are kept in 1 .. 0x53; at the bottom (height - top - 0x30 <= rows) the buffer is the last 0x83 rows and the marker moves by
+    //   (old - new rows) * 5 pixels (rows are 4 pixels: the marker leaves its cell); with DS:2866 < 0x14 or > 0xE2 the view moves 8 columns and the
+    //   marker 0x80 pixels, the view kept in 0 .. width - 0x11 with the marker corrected by 16 per column at the borders
+    // C: the marker's map pixel (_x, _y) is what the next pass reads the party's cell from (0c44 +0x54/+0x63): the bottom correction moves the party.
+    private void Scroll(GameState state)
     {
-        var viewX = _x - _originX;
-        var viewY = _y - _originY;
-        if (viewX < 20 || viewX > 226)
+        var vx = _x - _originX;
+        var vy = _y - _originY;
+        var (oldColumn, oldTop, oldRows) = (_viewColumn, _viewTop, _viewRows);
+        if (vy < 0x14 || vy > 0xAA)
         {
-            _originX += viewX < 20 ? -128 : 128;
+            _viewRows += vy < 0x14 ? -0x17 : 0x17;
+            if (map.Height - _viewTop - 0x30 <= _viewRows)
+            {
+                _viewTop = map.Height - 0x83;
+                _viewRows = map.Height - _viewTop - 0x30;
+                vy += (oldRows - _viewRows) * 5;
+            }
+            else if (_viewRows > 0x53)
+            {
+                _viewTop = _viewTop + 0xC4 >= map.Height ? map.Height - 0x83 : _viewTop + 0x41;
+                if (_viewTop != oldTop)
+                {
+                    _viewRows += oldTop - _viewTop;
+                    vy += vy < 0x14 ? 0x5C : -0x5C;
+                }
+                _viewRows = Math.Min(_viewRows, 0x53);
+            }
+            else if (_viewRows <= 1)
+            {
+                _viewTop = _viewTop <= 0x41 ? 0 : _viewTop - 0x41;
+                if (_viewTop != oldTop)
+                {
+                    _viewRows += oldTop - _viewTop;
+                    vy += vy < 0x14 ? 0x5C : -0x5C;
+                }
+                if (_viewRows <= 1)
+                {
+                    _viewRows = 1;
+                    vy += (oldRows - 1) * 4;
+                }
+            }
+            else
+            {
+                vy += vy < 0x14 ? 0x5C : -0x5C;
+            }
         }
-        if (viewY < 20 || viewY > 170)
+        if (vx < 0x14 || vx > 0xE2)
         {
-            _originY += viewY < 20 ? -92 : 92;
+            _viewColumn += vx < 0x14 ? -8 : 8;
+            if (map.Width - 0x11 < _viewColumn)
+            {
+                _viewColumn = map.Width - 0x11;
+                vx += (oldColumn - _viewColumn) * 16;
+            }
+            else if (_viewColumn <= 0)
+            {
+                _viewColumn = 0;
+                vx += oldColumn * 16;
+            }
+            else
+            {
+                vx += vx < 0x14 ? 0x80 : -0x80;
+            }
         }
-        ClampOrigin();
+        _x = _originX + vx;
+        _y = _originY + vy;
+        var (column, row) = WorldMap.CellAt(_x, _y);
+        state.MapPosition = new Core.World.MapPosition(column, row);
     }
 
-    private void ClampOrigin()
-    {
-        _originX = Math.Clamp(_originX, 0, map.Width * WorldMap.TileWidth - AreaWidth);
-        _originY = Math.Clamp(_originY, 0, map.Height * WorldMap.RowHeight - AreaHeight);
-    }
 
     // orig: R030+0x20D2 (map tiles into the 260x184 buffer, then the header picture at (60, 0), the clock picture mapbrs{hour/3*3} at (289, 0) and the copy to the screen at (60, 16)) + R030+0x16C6 (the party sprite, R136+0x100C8[direction][frame])
     private void Draw(GameState state)
@@ -542,7 +645,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         {
             return (0, 0);
         }
-        return (Math.Sign(t.X - _x), Math.Sign(t.Y - _y));
+        return (Math.Sign(t.X - (_x - _originX)), Math.Sign(t.Y - (_y - _originY)));
     }
 
     /// <summary>Sprite row: 1 north, 2 north-east … 8 north-west; 0 standing.</summary>

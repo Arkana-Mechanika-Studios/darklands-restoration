@@ -271,6 +271,8 @@ public sealed class DarklandsGame
         if (!state.Events.Started(CopyProtectionEvent))
         {
             // DIVERGENCE: copyprot_run_vec asks the copy-protection question (a code from the manual); it is not asked here. The event it leaves behind, for 0x3E80 hours (about 22 months), is created as in the original.
+            //   The question's own random numbers (R041+0x0000: rand_mod(4), rand_mod(20), rand_mod(7) ... to pick the symbols) are not drawn either, so
+            //   the generator differs from the original's until the next reseed from the clock (the map's next hour) (found by tools/oracle/lockstep.py).
             state.Events.CreateHere(CopyProtectionEvent, CopyProtectionHours);
         }
         return new OverlandScreen(_ui, panel, _map) { CharacterSheet = sheet, Camp = camp }.Travel(state);
@@ -445,10 +447,19 @@ public sealed class DarklandsGame
                 }
                 if (card == CardDispatcher.OverlandMap)
                 {
-                    state.PreviousCard = card;
                     // orig: C / F8 on the map: thunk 09C0:1FF9 = R036+0x0000 (1462:0000) with the party's watch value (R030+0x25BE): the
                     //   wilderness stay with the day's poaching risk (CampScreen.CampInTheWild)
-                    state.CurrentCard = Travel(state, panel, context.Screens.CharacterSheet, screens.CampInTheWild);
+                    // orig: the map is card 0x0C of the table: root 03A1:000A ends its pass as any card's (03A1:0442..0463): the previous-screen
+                    //   word becomes 0x0C only after the map returns (a game saved on the map keeps the card before), then advance_hours(0)
+                    var afterMap = Travel(state, panel, context.Screens.CharacterSheet, screens.CampInTheWild);
+                    if (CardDispatcher.IsBattle(afterMap))
+                    {
+                        CardDispatcher.FinishPass(state, FightTheBattle(state, context, battles, afterMap));
+                    }
+                    else
+                    {
+                        CardDispatcher.FinishPass(state, afterMap);
+                    }
                     continue;
                 }
                 // orig: root 03A1:000A runs the card (the table at 2DAE:0000) only while DS:9081 bit 0 is clear: a game saved in a battle skips its

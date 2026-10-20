@@ -18,6 +18,8 @@ using Darklands.Rendering;
 //   shift:on|off, ctrl:on|off    the modifier keys; kdown:<hex> / kup:<hex> a key's make or break scan code
 //   wait:<frames>                lets frames pass; shot:<name> saves <name>.png; rec:<n> saves the next n frames
 //   seed:<n>                     the game's random seed
+//   clock:<n>,<n>,...            the clock's seeds in turn instead (srand((unsigned)time(0)) at the start and wherever the game
+//                                reseeds: tools/oracle/lockstep.py gives the original's); the last one stays
 //   hdpack:<folder>              replacement graphics (an HD pack, docs/SETTINGS.md display.hdPack; also from --settings): each
 //                                shot also saves <name>.hd.png, the frame with the replacements at hdscale:<n> (default 4) x 320x200
 //
@@ -32,6 +34,9 @@ using Darklands.Rendering;
 //
 // Debug steps:
 //   card:<hex>                   starts a Quickstart game at that card (key:q still chooses Quickstart)
+//   option:<n>                   the pointer onto line n of the card menu being chosen from (then key:enter chooses it)
+//   state:<name>                 writes the game being played as a saved game, <name>.sav in the output folder (the comment
+//                                "Darklands"; tools/oracle/lockstep.py compares it with the original's at the same point)
 //   load:<file>                  starts with that saved game of the saves folder; a game saved in a battle resumes it
 //   console:<command>            a developer console command on the game being played ("console:money add 10" as one argument)
 //   screen:barter|store|loot     opens that screen on a Quickstart game instead of playing
@@ -99,6 +104,24 @@ if (seedStep is not null)
 {
     seed = uint.Parse(seedStep[5..], System.Globalization.CultureInfo.InvariantCulture);
     steps.Remove(seedStep);
+}
+// clock:<n>,<n>,... - the seeds the clock gives in turn (each reseed takes the next; the last stays).
+var clockStep = steps.FirstOrDefault(s => s.StartsWith("clock:", StringComparison.Ordinal));
+var clockSeeds = new Queue<uint>();
+if (clockStep is not null)
+{
+    steps.Remove(clockStep);
+    foreach (var v in clockStep[6..].Split(','))
+    {
+        clockSeeds.Enqueue(uint.Parse(v, System.Globalization.CultureInfo.InvariantCulture));
+    }
+    seed = clockSeeds.Peek();
+}
+uint NextSeed()
+{
+    var value = clockSeeds.Count > 1 ? clockSeeds.Dequeue() : clockSeeds.Count == 1 ? clockSeeds.Peek() : seed;
+    Console.WriteLine($"clock seed {value}");
+    return value;
 }
 // saves:<folder> - the folder of the saved games (default for scripted runs: SAVES beside the program, never the game folder).
 var savesStep = steps.FirstOrDefault(s => s.StartsWith("saves:", StringComparison.Ordinal));
@@ -300,7 +323,7 @@ List<string> commandLine = [.. resolved.CommandLine, .. TakeArguments(steps)];
 using var sound = soundStep is null ? null : HeadlessSound.Attach(host, OpenGame(), soundStep, romsStep, wavStep, traceStep, commandLine);
 var game = new DarklandsGame(host, OpenGame())
 {
-    Seed = () => seed,
+    Seed = clockStep is null ? () => seed : NextSeed,
     PlayOpening = steps.Remove("intro") || fileSettings.Intro == true,
     ShowStartUp = steps.Remove("banner") || fileSettings.Banner == true,
     CommandLine = commandLine,
@@ -326,6 +349,20 @@ if (sound?.Trace is { } traceWriter)
 }
 var developerConsole = new Darklands.DevConsole.GameConsole();
 Darklands.DevConsole.GameCommands.Register(developerConsole, () => game.Playing);
+host.State = name =>
+{
+    if (game.Playing is { } playing)
+    {
+        var (sav, _) = Darklands.Persistence.OriginalSaves.Write(playing, "Darklands", game.Options.Music, game.Options.SoundEffects);
+        File.WriteAllBytes(Path.Combine(output, name + ".sav"), sav);
+        var random = playing.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?";
+        Console.WriteLine($"state {name}: card 0x{playing.CurrentCard:X2} random {random}");
+    }
+    else
+    {
+        Console.WriteLine($"state {name}: no game");
+    }
+};
 host.ConsoleCommand = line =>
 {
     foreach (var text in developerConsole.Execute(line).Lines)
@@ -349,6 +386,9 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
 {
     /// <summary>Runs a console:&lt;command&gt; step (the developer console's commands on the game being played).</summary>
     public Action<string>? ConsoleCommand { get; set; }
+
+    /// <summary>Runs a state:&lt;name&gt; step (the game being played written as a saved game).</summary>
+    public Action<string>? State { get; set; }
 
     private readonly Queue<string> _steps = new(steps);
     private readonly Queue<int> _keys = new();
@@ -570,6 +610,20 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 break;
             case "console":
                 ConsoleCommand?.Invoke(value);
+                break;
+            case "state":
+                State?.Invoke(value);
+                break;
+            case "option":
+                // the pointer onto line n of the card menu being chosen from (tools/oracle/lockstep.py does the same in the original)
+                if (CardScreen.OptionPoint(int.Parse(value, System.Globalization.CultureInfo.InvariantCulture)) is { } point)
+                {
+                    Mouse = Mouse with { X = point.X, Y = point.Y };
+                }
+                else
+                {
+                    Console.WriteLine($"option {value}: no menu");
+                }
                 break;
             case "tail":
                 _tailSize = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);

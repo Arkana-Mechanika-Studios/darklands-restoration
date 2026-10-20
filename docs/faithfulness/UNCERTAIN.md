@@ -14,14 +14,14 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | rules | core | 19 |
 | cards | core | 215 |
 | events | core | 1 |
-| travel | core | 6 |
+| travel | core | 5 |
 | battles | core | 30 |
 | persistence | core | 5 |
 | screens/presentation | other | 24 |
 | host/audio | other | 4 |
-| total |  | 304 |
+| total |  | 303 |
 
-## Core logic (276)
+## Core logic (275)
 
 ### rules (19)
 
@@ -737,7 +737,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R029+0x3034` (0E76:3034, draft)  
   why: Data1..Data3 (+2A/+2C/+2E) and Extra (+20) are named by their uses.
 
-### travel (6)
+### travel (5)
 
 - **U-6d067b** `uncertain` - `src/Darklands.Core/World/CityFile.cs:32` `CityFile.Read`  
   original: `R043+0x0100` (1462:0100, matched), `R037+0x8ED4` (1C7D:0D24, matched), `R029+0x4E68` (0E76:4E68, draft) +1 more  
@@ -754,9 +754,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-84fc60** `uncertain` - `src/Darklands.Simulation/Overland/OverlandTravel.cs:44` `OverlandTravel.WeightEvent`  
   original: `R030+0x2D44` (1462:2D44, draft)  
   why: what scripts create the 0x2A and 0x2B events was not searched; their meaning (an encounter weight, a message number) is read from the use here.
-- **U-70f5fc** `uncertain` - `src/Darklands.Simulation/Overland/WorldMap.cs:76` `WorldMap.public`  
-  original: `R030+0x0C44` (1462:0C44, draft)  
-  why: the borders are derived from the view registers (the marker's absolute position is not a variable of the original), so the exact edge pixel could be off by the jump above. Earlier versions of OverlandScreen clamped to 11 and 13 TILES (176 and 52 pixels), which kept the party from the villages in the far west (location 213 at column 3).
 
 ### battles (30)
 
@@ -879,7 +876,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-e6062e** `uncertain` - `src/Darklands.Content/Formats/Battles/RowRunSprite.cs:10` `RowRunSprite`  
   original: unresolved (none)  
   why: the format is read from the data (every BC tile parses exactly within its record size, IMC frames as the old engine's CleanCombatPreparedPresentation does); whether the first byte is width − 1 or a hot spot for IMC frames is not settled, so nothing relies on Width for frames.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1371` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1390` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:52` `BuySellPage.DrawParty`  
@@ -891,7 +888,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:88` `CharacterCreationScreen.FigureImages`  
   original: `R037+0x0000` (1462:0000, draft), `R037+0x0444` (1462:0444, draft), `R037+0x0390` (1462:0390, draft) +5 more  
   why: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
-- **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:46` `GameScreens2.int`  
+- **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
   original: `R029+0x2204` (0E76:2204, draft), `R029+0x222A` (0E76:222A, draft)  
   why: which keys the original's menu_bar_run takes inside the sheet is not traced; only the Alt keys are passed.
 - **U-fccc5f** `uncertain` - `src/Darklands.Presentation/GameUi.cs:318` `GameUi.Wait`  
