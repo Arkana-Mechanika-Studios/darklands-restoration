@@ -1,54 +1,94 @@
 {
  "ALL": {
-  "blocks": 38892,
-  "blocks_hit": 28389,
-  "functions": 4800,
-  "outcomes": 28882,
-  "outcomes_hit": 18486,
+  "blocks": 45636,
+  "blocks_hit": 32771,
+  "functions": 5126,
+  "outcomes": 35112,
+  "outcomes_hit": 21728,
   "runs": null
  },
  "battle": {
-  "blocks": 893,
+  "blocks": 1225,
   "blocks_hit": 253,
   "functions": 16,
-  "outcomes": 438,
+  "outcomes": 462,
   "outcomes_hit": 224,
   "runs": 1048
  },
+ "battle-oracle-castle": {
+  "blocks": 13346,
+  "blocks_hit": 7773,
+  "functions": 586,
+  "outcomes": 11988,
+  "outcomes_hit": 5330,
+  "runs": 1
+ },
+ "battle-oracle-gate": {
+  "blocks": 12052,
+  "blocks_hit": 7150,
+  "functions": 601,
+  "outcomes": 10642,
+  "outcomes_hit": 4806,
+  "runs": 1
+ },
+ "battle-oracle-mine": {
+  "blocks": 11546,
+  "blocks_hit": 5674,
+  "functions": 546,
+  "outcomes": 9990,
+  "outcomes_hit": 3455,
+  "runs": 1
+ },
+ "battle-oracle-street": {
+  "blocks": 11754,
+  "blocks_hit": 6858,
+  "functions": 587,
+  "outcomes": 10356,
+  "outcomes_hit": 4581,
+  "runs": 1
+ },
+ "battle-oracle-wild": {
+  "blocks": 11907,
+  "blocks_hit": 6839,
+  "functions": 582,
+  "outcomes": 10396,
+  "outcomes_hit": 4503,
+  "runs": 1
+ },
  "cards": {
-  "blocks": 25840,
+  "blocks": 26172,
   "blocks_hit": 14890,
   "functions": 3932,
-  "outcomes": 17274,
+  "outcomes": 17298,
   "outcomes_hit": 7318,
   "runs": 365
  },
  "cards-day": {
-  "blocks": 27292,
+  "blocks": 27624,
   "blocks_hit": 16145,
   "functions": 4214,
-  "outcomes": 18238,
+  "outcomes": 18262,
   "outcomes_hit": 8079,
   "runs": 22636
  },
  "cards-flip": {
-  "blocks": 10290,
+  "blocks": 10622,
   "blocks_hit": 6461,
   "functions": 1181,
-  "outcomes": 7616,
+  "outcomes": 7640,
   "outcomes_hit": 3534,
   "runs": 1400
  },
  "cards-variants": {
-  "blocks": 27761,
+  "blocks": 28093,
   "blocks_hit": 16830,
   "functions": 4347,
-  "outcomes": 18524,
+  "outcomes": 18548,
   "outcomes_hit": 8577,
   "runs": 18535
  },
  "castle": {
-  "blocks": 4469,
+  "blocks": 4486,
   "blocks_hit": 3842,
   "functions": 102,
   "outcomes": 4280,
@@ -64,7 +104,7 @@
   "runs": 4042
  },
  "city": {
-  "blocks": 1657,
+  "blocks": 1674,
   "blocks_hit": 1195,
   "functions": 48,
   "outcomes": 1382,
@@ -88,7 +128,7 @@
   "runs": 738
  },
  "mine": {
-  "blocks": 2953,
+  "blocks": 2970,
   "blocks_hit": 2497,
   "functions": 76,
   "outcomes": 2500,
@@ -112,31 +152,31 @@
   "runs": 60
  },
  "rules": {
-  "blocks": 987,
+  "blocks": 1319,
   "blocks_hit": 331,
   "functions": 37,
-  "outcomes": 478,
+  "outcomes": 502,
   "outcomes_hit": 251,
   "runs": 2336
  },
  "sainthelp": {
-  "blocks": 2992,
+  "blocks": 3324,
   "blocks_hit": 1385,
   "functions": 232,
-  "outcomes": 2314,
+  "outcomes": 2338,
   "outcomes_hit": 868,
   "runs": 136
  },
  "saints": {
-  "blocks": 1610,
+  "blocks": 1942,
   "blocks_hit": 781,
   "functions": 162,
-  "outcomes": 1018,
+  "outcomes": 1042,
   "outcomes_hit": 599,
   "runs": 1792
  },
  "special": {
-  "blocks": 1099,
+  "blocks": 1116,
   "blocks_hit": 886,
   "functions": 49,
   "outcomes": 852,
@@ -152,7 +192,7 @@
   "runs": 1200
  },
  "trading": {
-  "blocks": 604,
+  "blocks": 621,
   "blocks_hit": 412,
   "functions": 27,
   "outcomes": 374,
@@ -160,7 +200,7 @@
   "runs": 1086
  },
  "wild": {
-  "blocks": 1443,
+  "blocks": 1460,
   "blocks_hit": 1192,
   "functions": 30,
   "outcomes": 1076,

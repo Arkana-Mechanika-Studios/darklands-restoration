@@ -20,42 +20,115 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 
 | source | runs | functions | blocks | outcomes | blocks before | outcomes before | corpus regenerated |
 |---|---|---|---|---|---|---|---|
-| rules | 2336 | 37 | 331/987 (33.5%) | 251/478 (52.5%) | 323/396 (81.6%) | 241/292 (82.5%) | differs (142s) |
-| saints | 1792 | 162 | 781/1610 (48.5%) | 599/1018 (58.8%) | 781/1017 (76.8%) | 599/832 (72.0%) | differs (40s) |
-| trading | 1086 | 27 | 412/604 (68.2%) | 209/374 (55.9%) | 410/603 (68.0%) | 205/374 (54.8%) | differs (23s) |
+| rules | 2336 | 37 | 331/1319 (25.1%) | 251/502 (50.0%) | 323/396 (81.6%) | 241/292 (82.5%) | differs (142s) |
+| saints | 1792 | 162 | 781/1942 (40.2%) | 599/1042 (57.5%) | 781/1017 (76.8%) | 599/832 (72.0%) | differs (40s) |
+| trading | 1086 | 27 | 412/621 (66.3%) | 209/374 (55.9%) | 410/603 (68.0%) | 205/374 (54.8%) | differs (23s) |
 | core | 993 | 17 | 94/95 (98.9%) | 85/88 (96.6%) | 90/92 (97.8%) | 78/86 (90.7%) | differs (57s) |
 | chargen | 4042 | 8 | 957/972 (98.5%) | 915/940 (97.3%) | 951/972 (97.8%) | 909/940 (96.7%) | identical (536s) |
 | names | 550 | 8 | 32/43 (74.4%) | 7/12 (58.3%) | 32/43 (74.4%) | 7/12 (58.3%) | identical (7s) |
-| battle | 1048 | 16 | 253/893 (28.3%) | 224/438 (51.1%) | 243/302 (80.5%) | 210/252 (83.3%) | identical (112s) |
+| battle | 1048 | 16 | 253/1225 (20.7%) | 224/462 (48.5%) | 243/302 (80.5%) | 210/252 (83.3%) | identical (112s) |
 | tactics | 1200 | 11 | 272/323 (84.2%) | 333/412 (80.8%) | 270/319 (84.6%) | 333/412 (80.8%) | differs (19s) |
 | path | 60 | 22 | 345/386 (89.4%) | 365/428 (85.3%) | 345/386 (89.4%) | 365/428 (85.3%) | differs (407s) |
 | enemy | 738 | 9 | 392/412 (95.1%) | 321/364 (88.2%) | 392/412 (95.1%) | 321/364 (88.2%) | identical (59s) |
-| city | 42 | 48 | 1195/1657 (72.1%) | 850/1382 (61.5%) | 1195/1654 (72.2%) | 850/1382 (61.5%) | identical (154s) |
-| wild | 112 | 30 | 1192/1443 (82.6%) | 761/1076 (70.7%) | 1192/1442 (82.7%) | 761/1076 (70.7%) | identical (129s) |
-| mine | 416 | 76 | 2497/2953 (84.6%) | 1919/2500 (76.8%) | 2500/2954 (84.6%) | 1919/2500 (76.8%) | identical (250s) |
-| castle | 116 | 102 | 3842/4469 (86.0%) | 3396/4280 (79.3%) | 3840/4462 (86.1%) | 3396/4278 (79.4%) | identical (110s) |
-| special | 161 | 49 | 886/1099 (80.6%) | 599/852 (70.3%) | 886/1099 (80.6%) | 599/852 (70.3%) | identical (84s) |
-| cards | 365 | 3932 | 14890/25840 (57.6%) | 7318/17274 (42.4%) |  |  |  |
-| cards-day | 22636 | 4214 | 16145/27292 (59.2%) | 8079/18238 (44.3%) |  |  |  |
-| cards-flip | 1400 | 1181 | 6461/10290 (62.8%) | 3534/7616 (46.4%) |  |  |  |
-| cards-variants | 18535 | 4347 | 16830/27761 (60.6%) | 8577/18524 (46.3%) |  |  |  |
-| sainthelp | 136 | 232 | 1385/2992 (46.3%) | 868/2314 (37.5%) |  |  |  |
-| ALL |  | 4800 | 28389/38892 (73.0%) | 18486/28882 (64.0%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
+| city | 42 | 48 | 1195/1674 (71.4%) | 850/1382 (61.5%) | 1195/1654 (72.2%) | 850/1382 (61.5%) | identical (154s) |
+| wild | 112 | 30 | 1192/1460 (81.6%) | 761/1076 (70.7%) | 1192/1442 (82.7%) | 761/1076 (70.7%) | identical (129s) |
+| mine | 416 | 76 | 2497/2970 (84.1%) | 1919/2500 (76.8%) | 2500/2954 (84.6%) | 1919/2500 (76.8%) | identical (250s) |
+| castle | 116 | 102 | 3842/4486 (85.6%) | 3396/4280 (79.3%) | 3840/4462 (86.1%) | 3396/4278 (79.4%) | identical (110s) |
+| special | 161 | 49 | 886/1116 (79.4%) | 599/852 (70.3%) | 886/1099 (80.6%) | 599/852 (70.3%) | identical (84s) |
+| cards | 365 | 3932 | 14890/26172 (56.9%) | 7318/17298 (42.3%) |  |  |  |
+| battle-oracle-castle | 1 | 586 | 7773/13346 (58.2%) | 5330/11988 (44.5%) |  |  |  |
+| battle-oracle-gate | 1 | 601 | 7150/12052 (59.3%) | 4806/10642 (45.2%) |  |  |  |
+| battle-oracle-mine | 1 | 546 | 5674/11546 (49.1%) | 3455/9990 (34.6%) |  |  |  |
+| battle-oracle-street | 1 | 587 | 6858/11754 (58.3%) | 4581/10356 (44.2%) |  |  |  |
+| battle-oracle-wild | 1 | 582 | 6839/11907 (57.4%) | 4503/10396 (43.3%) |  |  |  |
+| cards-day | 22636 | 4214 | 16145/27624 (58.4%) | 8079/18262 (44.2%) |  |  |  |
+| cards-flip | 1400 | 1181 | 6461/10622 (60.8%) | 3534/7640 (46.3%) |  |  |  |
+| cards-variants | 18535 | 4347 | 16830/28093 (59.9%) | 8577/18548 (46.2%) |  |  |  |
+| sainthelp | 136 | 232 | 1385/3324 (41.7%) | 868/2338 (37.1%) |  |  |  |
+| ALL |  | 5126 | 32771/45636 (71.8%) | 21728/35112 (61.9%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
 
-Never-exercised items: 20899, of which open 19668, justified in `unreachable.csv` 1231.
+Never-exercised items: 26249, of which open 25044, justified in `unreachable.csv` 1205.
 
 ## Per function
 
 Blocks and outcomes exercised / total; the never-exercised blocks follow (payload offsets in the
 record; the outcomes are in `branches-missed.csv`).
 
+### root 0000:0000 `root 0000:0000`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 21/45, outcomes 14/48
+
+- `root+0x0026` `jmp 0x1bc`
+- `root+0x0029` `lcall 0x47c, 0x73d`
+- `root+0x004F` `lcall 0x47c, 0x73d`
+- `root+0x0058` `test byte ptr [0x6ef0], 2`
+- `root+0x005F` `push cs`
+- `root+0x0078` `mov dx, 1`
+- `root+0x0080` `mov word ptr [0xa2e3], dx`
+- `root+0x008D` `cmp byte ptr [0x907a], 1`
+- `root+0x0094` `cmp byte ptr [0x9c4c], 1`
+- `root+0x009B` `lcall 0x47c, 0x12c3`
+- `root+0x00A7` `push word ptr [0xa693]`
+- `root+0x00AE` `push word ptr [0xa691]`
+- `root+0x00B2` `push 0`
+- `root+0x00C9` `push word ptr [bp + 6]`
+- `root+0x00E8` `jmp 0x1ac`
+- `root+0x00F5` `sub ax, ax`
+- `root+0x011C` `mov word ptr [0x944b], 0`
+- `root+0x013F` `cmp word ptr [0x9413], si`
+- `root+0x0145` `mov ax, word ptr [bp - 8]`
+- `root+0x015B` `cmp word ptr [0x9783], 1`
+- `root+0x0162` `mov word ptr [0x9783], 0`
+- `root+0x018D` `mov ax, word ptr [bp - 2]`
+- `root+0x0196` `mov ax, word ptr [bp - 8]`
+- `root+0x01B2` `jmp 0x48`
+
 ### root 0000:0C70 `root 0000:0C70`
 
-draft, reached by cards cards-day cards-flip cards-variants chargen core rules sainthelp saints trading: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants chargen core rules sainthelp saints trading: blocks 3/3, outcomes 2/2
 
 ### root 0000:0C8C `root 0000:0C8C`
 
-draft, reached by battle core: blocks 3/3, outcomes 2/2
+draft, reached by battle battle-oracle-gate battle-oracle-street battle-oracle-wild core: blocks 3/3, outcomes 2/2
+
+### root 0000:0CAA `root 0000:0CAA`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 15/43, outcomes 13/38
+
+- `root+0x0CB4` `jmp 0xd78`
+- `root+0x0CDB` `jmp 0xd82`
+- `root+0x0CE3` `jmp 0xd94`
+- `root+0x0CEB` `jmp 0xd9e`
+- `root+0x0CF3` `jmp 0xda8`
+- `root+0x0CFB` `jmp 0xdba`
+- `root+0x0D02` `lcall 0x47c, 0x744`
+- `root+0x0D0E` `lcall 0x47c, 0x744`
+- `root+0x0D1A` `jmp 0xdd1`
+- `root+0x0D1D` `lcall 0x9c0, 0x183d`
+- `root+0x0D26` `lcall 0x47c, 0x744`
+- `root+0x0D32` `lcall 0x47c, 0x744`
+- `root+0x0D3E` `jmp 0xdd1`
+- `root+0x0D41` `lcall 0x9c0, 0x1847`
+- `root+0x0D4A` `lcall 0x47c, 0x744`
+- `root+0x0D56` `push cs`
+- `root+0x0D5C` `cmp byte ptr [0x906a], 1`
+- `root+0x0D63` `push cs`
+- `root+0x0D6A` `cmp byte ptr [0x906a], 2`
+- `root+0x0D71` `push cs`
+- `root+0x0D78` `lcall 0x47c, 0x744`
+- `root+0x0D82` `lcall 0x47c, 0x744`
+- `root+0x0D8E` `lcall 0x9c0, 0x1851`
+- `root+0x0D94` `lcall 0x47c, 0x744`
+- `root+0x0D9E` `lcall 0x47c, 0x744`
+- `root+0x0DA8` `lcall 0x47c, 0x744`
+- `root+0x0DB4` `lcall 0x9c0, 0x185b`
+- `root+0x0DBA` `lcall 0x47c, 0x744`
+
+### root 0000:1338 `root 0000:1338`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/3, outcomes 1/2
+
+- `root+0x133F` `push cs`
 
 ### root 0000:1354 `root 0000:1354`
 
@@ -65,140 +138,172 @@ draft, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### root 0000:1384 `root 0000:1384`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/3, outcomes 0/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/4
 
 - `root+0x1390` `lcall 0x47c, 0x744`
-- `root+0x139E` `leave `
 
 ### root 0000:1438 `root 0000:1438`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/11, outcomes 0/8
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 7/11, outcomes 4/8
 
-- `root+0x1466` `dec ax`
 - `root+0x1469` `dec ax`
 - `root+0x146C` `jmp 0x14dc`
 - `root+0x146E` `mov bx, word ptr [0x99ec]`
-- `root+0x1488` `mov bx, word ptr [0x9a02]`
 - `root+0x14A2` `mov al, 2`
-- `root+0x14BA` `lea si, [bp - 0x50]`
-- `root+0x14DC` `cmp word ptr [bp + 6], 1`
-- `root+0x14E2` `push 0x3c`
-- `root+0x14EF` `pop si`
+
+### root 0000:14F6 `root 0000:14F6`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/12, outcomes 4/16
+
+- `root+0x1502` `add word ptr [bp + 0xc], bx`
+- `root+0x150F` `sub ax, ax`
+- `root+0x1523` `mov ax, word ptr [si + 6]`
+- `root+0x1530` `jmp 0x1546`
+- `root+0x1532` `mov di, word ptr [bp + 0xe]`
+- `root+0x1543` `jmp 0x150f`
+- `root+0x155F` `mov si, word ptr [di + 8]`
 
 ### root 0000:1588 `root 0000:1588`
 
-draft, reached by cards cards-day cards-variants: blocks 1/16, outcomes 0/10
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 15/16, outcomes 9/10
 
-- `root+0x1597` `mov dx, 0x1f`
-- `root+0x159C` `shl bx, 1`
-- `root+0x15A2` `sub si, si`
-- `root+0x15A9` `lcall 0x47c, 0x12c3`
-- `root+0x15B7` `jmp 0x16fc`
-- `root+0x15BA` `cmp byte ptr [di - 0x6f9c], 0`
-- `root+0x15C1` `jmp 0x1654`
-- `root+0x15C4` `push word ptr [0xa2e9]`
-- `root+0x1654` `cmp byte ptr [di - 0x6f9c], 1`
 - `root+0x165B` `jmp 0x16fc`
-- `root+0x165E` `push word ptr [0xa33b]`
-- `root+0x16EA` `lea ax, [si + 0x27]`
-- `root+0x16FC` `lcall 0x47c, 0x1293`
-- `root+0x170E` `jmp 0x15a9`
-- `root+0x1711` `pop si`
 
 ### root 0000:1716 `root 0000:1716`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/31, outcomes 0/28
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 30/31, outcomes 25/28
 
-- `root+0x1725` `mov word ptr [bp - 2], 0x1f`
-- `root+0x172C` `shl bx, 1`
-- `root+0x1735` `mov bx, word ptr [0x168]`
-- `root+0x1753` `mov al, byte ptr [bp - 2]`
-- `root+0x175C` `jmp 0x18ce`
-- `root+0x175F` `push word ptr [0xa626]`
-- `root+0x1780` `jmp 0x184a`
-- `root+0x1783` `cmp al, 3`
-- `root+0x1787` `push word ptr [0xa2e5]`
-- `root+0x178E` `mov bx, word ptr [bp - 0xa]`
-- `root+0x1793` `mov ax, word ptr [bp - 4]`
-- `root+0x17CF` `mov al, byte ptr [0xa6b2]`
-- `root+0x17D8` `mov bx, word ptr [bp - 8]`
-- `root+0x17E2` `mov bx, word ptr [bp - 6]`
-- `root+0x17EE` `cmp al, 5`
-- `root+0x17F2` `mov al, byte ptr [0x907b]`
-- `root+0x17FB` `mov bx, word ptr [0x168]`
-- `root+0x1806` `mov bx, word ptr [0x168]`
-- `root+0x1812` `mov bx, word ptr [0x168]`
-- `root+0x181B` `lea ax, [bp - 0x34]`
-- `root+0x184A` `mov bx, word ptr [bp - 6]`
-- `root+0x1852` `mov bx, word ptr [0x168]`
-- `root+0x186E` `push 7`
-- `root+0x188A` `sub ax, ax`
-- `root+0x18A0` `cmp word ptr [0x6eec], 0x2d`
 - `root+0x18A7` `lcall 0x47c, 0x12c3`
-- `root+0x18AC` `push word ptr [bp - 4]`
-- `root+0x18CE` `sar word ptr [bp - 2], 1`
-- `root+0x18E8` `jmp 0x1753`
-- `root+0x18EB` `mov ax, word ptr [bp - 0xc]`
+
+### root 0000:18FA `root 0000:18FA`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 21/57, outcomes 17/52
+
+- `root+0x1918` `jmp 0x1a98`
+- `root+0x1922` `jmp 0x1a50`
+- `root+0x1933` `mov al, byte ptr [0xa6b2]`
+- `root+0x193B` `mov bx, word ptr [0xa6b0]`
+- `root+0x1944` `mov dx, bx`
+- `root+0x1957` `jmp 0x19e8`
+- `root+0x196A` `jmp 0x1a68`
+- `root+0x1971` `dec al`
+- `root+0x1975` `sub al, 5`
+- `root+0x1979` `jmp 0x1a68`
+- `root+0x1984` `sub ax, 0x1e`
+- `root+0x1989` `sub ax, 0x40`
+- `root+0x198E` `sub ax, 0x80`
+- `root+0x1993` `jmp 0x1a68`
+- `root+0x199E` `mov bx, si`
+- `root+0x19B8` `mov byte ptr [bp - 2], 0x42`
+- `root+0x19D0` `mov byte ptr [bp - 2], 0x52`
+- `root+0x19D8` `mov byte ptr [bp - 2], 0x4d`
+- `root+0x19E0` `mov byte ptr [bp - 2], 0x54`
+- `root+0x19E8` `cmp byte ptr [0xa695], 1`
+- `root+0x19EF` `cmp byte ptr [0xa6b3], 1`
+- `root+0x19F6` `mov al, byte ptr [0xa6b2]`
+- `root+0x19FE` `mov bx, word ptr [0xa6d1]`
+- `root+0x1A07` `mov dx, bx`
+- `root+0x1A0C` `mov dl, byte ptr [si - 0x593c]`
+- `root+0x1A12` `mov ax, dx`
+- `root+0x1A1A` `shl ax, 1`
+- `root+0x1A32` `mov byte ptr [bp - 2], 0x55`
+- `root+0x1A3E` `mov byte ptr [bp - 2], 0x44`
+- `root+0x1A44` `mov byte ptr [bp - 2], 0x4f`
+- `root+0x1A4A` `mov byte ptr [bp - 2], 0x58`
+- `root+0x1A50` `mov al, byte ptr [si - 0x5c28]`
+- `root+0x1A58` `dec ax`
+- `root+0x1A5B` `jmp 0x1a68`
+- `root+0x1A5E` `mov byte ptr [bp - 2], 0x62`
+- `root+0x1A64` `mov byte ptr [bp - 2], 0x65`
+
+### root 0000:1A9C `root 0000:1A9C`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 66/103, outcomes 63/108
+
+- `root+0x1AB7` `push si`
+- `root+0x1B21` `mov word ptr [bp - 0xa], 0xffff`
+- `root+0x1B26` `mov byte ptr [0x1bc], 1`
+- `root+0x1BB4` `mov di, 0xf`
+- `root+0x1BDD` `mov ax, word ptr [0x1a8]`
+- `root+0x1BF1` `mov ax, word ptr [0x1aa]`
+- `root+0x1C05` `mov ax, word ptr [0x1ac]`
+- `root+0x1C19` `mov ax, word ptr [0x1ae]`
+- `root+0x1C30` `mov ax, word ptr [0x1b0]`
+- `root+0x1C33` `mov word ptr [bp - 8], ax`
+- `root+0x1C8B` `mov word ptr [bp - 0xa], 0xffff`
+- `root+0x1C90` `mov byte ptr [0x1bc], 1`
+- `root+0x1CE1` `sub di, di`
+- `root+0x1CF3` `push 0x266`
+- `root+0x1E1B` `jmp 0x1ec2`
+- `root+0x1E22` `sub di, di`
+- `root+0x1E34` `push 0x26a`
+- `root+0x1F49` `or bl, bl`
+- `root+0x1F4D` `mov di, 0xf`
+- `root+0x1F56` `jmp 0x1ffd`
+- `root+0x1F5D` `sub di, di`
+- `root+0x1F6F` `push 0x26e`
+- `root+0x1F8B` `push 0xf`
+- `root+0x2075` `jmp 0x2278`
+- `root+0x2086` `jmp 0x2278`
+- `root+0x20B7` `mov di, 0xf`
+- `root+0x20BE` `sub di, di`
+- `root+0x20D6` `push 0x272`
+- `root+0x2158` `or bl, bl`
+- `root+0x215C` `mov di, 0xf`
+- `root+0x2163` `sub di, di`
+- `root+0x217B` `push 0x274`
+- `root+0x21FD` `or bl, bl`
+- `root+0x2201` `mov di, 0xf`
+- `root+0x2208` `sub di, di`
+- `root+0x2220` `push 0x276`
+- `root+0x223C` `push 0xf`
+
+### root 0000:2286 `root 0000:2286`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 0000:23E6 `root 0000:23E6`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/6, outcomes 0/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 5/6, outcomes 2/4
 
 - `root+0x23F4` `mov word ptr [bp - 2], dx`
-- `root+0x23FC` `mov si, word ptr [bp + 6]`
-- `root+0x2417` `mov di, word ptr [bp + 0xc]`
-- `root+0x2466` `mov bx, word ptr [bp + 0x10]`
-- `root+0x2491` `push word ptr [si + 0xe]`
+
+### root 0000:24BC `root 0000:24BC`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 0000:25F2 `root 0000:25F2`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 0000:2646 `root 0000:2646`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+
+### root 0265:0002 `root 0265:0002`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 0265:0004 `root 0265:0004`
 
-draft, reached by cards-day cards-variants: blocks 1/5, outcomes 0/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-day cards-variants: blocks 3/5, outcomes 2/4
 
 - `root+0x266D` `shl word ptr [bp + 8], 1`
-- `root+0x2679` `push word ptr [bp + 0xe]`
 - `root+0x26A6` `mov cx, 2`
-- `root+0x26BB` `pop si`
+
+### root 0265:006E `root 0265:006E`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/5, outcomes 2/4
+
+- `root+0x26D7` `shl word ptr [bp + 8], 1`
+- `root+0x26FB` `mov cx, 2`
 
 ### root 0265:0134 `root 0265:0134`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/142, outcomes 0/148
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 124/142, outcomes 121/148
 
-- `root+0x27C9` `mov bx, word ptr [bp + 0x12]`
-- `root+0x27D5` `cmp word ptr [bp + 0x1a], 1`
-- `root+0x27DB` `jmp 0x607`
-- `root+0x27DE` `mov bx, word ptr [bp - 0xa]`
 - `root+0x27E6` `jmp 0x607`
-- `root+0x27E9` `cmp byte ptr [bx], 0x5b`
 - `root+0x27EE` `jmp 0x607`
-- `root+0x27F1` `mov bl, byte ptr [bx]`
-- `root+0x2832` `sub ax, ax`
-- `root+0x283A` `mov ax, word ptr [bp - 0x26]`
-- `root+0x2842` `jmp 0x2c2`
-- `root+0x2845` `mov bx, word ptr [bp - 0xa]`
-- `root+0x284D` `jmp 0x2c2`
-- `root+0x2850` `cmp byte ptr [bx], 0xa`
-- `root+0x2855` `jmp 0x2c2`
-- `root+0x2858` `cmp byte ptr [bx], 0x14`
-- `root+0x285D` `cmp byte ptr [bx], 0x15`
-- `root+0x2862` `cmp byte ptr [bx], 0x10`
-- `root+0x2867` `cmp byte ptr [bx], 0x16`
-- `root+0x286C` `cmp byte ptr [bx], 6`
-- `root+0x2871` `cmp byte ptr [bx], 0x1d`
-- `root+0x2876` `cmp byte ptr [bx], 0xd`
-- `root+0x287B` `cmp byte ptr [bx], 1`
-- `root+0x2880` `cmp byte ptr [bx], 0x13`
-- `root+0x2885` `mov al, byte ptr [bx]`
-- `root+0x289A` `cmp byte ptr [bx], 0x14`
-- `root+0x289F` `add word ptr [bp + 0xe], 2`
-- `root+0x28A6` `cmp byte ptr [bx], 1`
 - `root+0x28AB` `inc word ptr [bp - 0xa]`
 - `root+0x28BB` `jmp 0x276`
 - `root+0x28BE` `cmp byte ptr [bx], 0`
@@ -206,116 +311,54 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 1/142, outco
 - `root+0x28C6` `mov bx, word ptr [bp - 0xa]`
 - `root+0x28CE` `mov ax, bx`
 - `root+0x28D9` `inc word ptr [bp - 8]`
-- `root+0x28E0` `cmp byte ptr [bx], 0x13`
 - `root+0x28E5` `inc word ptr [bp - 0xa]`
-- `root+0x28EE` `cmp byte ptr [bx], 0x15`
-- `root+0x28F3` `cmp byte ptr [bx], 0x10`
-- `root+0x28F8` `cmp byte ptr [bx], 0x16`
-- `root+0x28FD` `cmp byte ptr [bx], 6`
-- `root+0x2902` `jmp 0x42c`
-- `root+0x2905` `cmp word ptr [bp + 0x16], 0`
-- `root+0x290B` `jmp 0x356`
 - `root+0x290E` `mov byte ptr [bp - 0x16], 0`
-- `root+0x2912` `cmp word ptr [bp - 0x1e], ax`
-- `root+0x2917` `dec word ptr [bp - 0xa]`
-- `root+0x291D` `mov bx, word ptr [bp - 0xa]`
-- `root+0x2925` `mov byte ptr [bp - 0x12], 1`
-- `root+0x292F` `mov bx, word ptr [bp + 0x12]`
-- `root+0x2944` `mov bx, word ptr [bp - 0xa]`
-- `root+0x294C` `mov byte ptr [bp - 0x12], 1`
-- `root+0x2956` `mov bx, word ptr [bp + 0x12]`
-- `root+0x296B` `mov bx, word ptr [bp - 0xa]`
-- `root+0x2973` `jmp 0x474`
-- `root+0x2976` `cmp byte ptr [bx], 0`
-- `root+0x297B` `jmp 0x474`
-- `root+0x297E` `cmp byte ptr [bx], 0xa`
-- `root+0x2983` `jmp 0x474`
-- `root+0x2986` `cmp byte ptr [bx], 0x2d`
-- `root+0x298B` `jmp 0x474`
-- `root+0x298E` `cmp word ptr [bp - 0x10], bx`
 - `root+0x2993` `jmp 0x474`
-- `root+0x2996` `cmp bx, word ptr [bp - 6]`
 - `root+0x299B` `jmp 0x474`
-- `root+0x299E` `dec word ptr [bp - 0xa]`
-- `root+0x29A6` `cmp word ptr [bp + 0x1c], 1`
-- `root+0x29AC` `mov bx, word ptr [bp + 6]`
-- `root+0x29B4` `mov bx, word ptr [bp + 0x12]`
-- `root+0x29C0` `jmp 0x406`
-- `root+0x29C3` `cmp byte ptr [bx + si + 0x2e], 1`
 - `root+0x29C9` `jmp 0x427`
-- `root+0x29CC` `mov al, byte ptr [bx]`
-- `root+0x29FA` `ja 0x3b4`
-- `root+0x29FC` `sub al, 6`
-- `root+0x2A00` `sub al, 0xa`
-- `root+0x2A04` `mov bx, word ptr [bp + 0x12]`
-- `root+0x2A16` `mov bx, word ptr [bp + 0x12]`
-- `root+0x2A25` `inc byte ptr [bx]`
-- `root+0x2A2A` `mov bx, word ptr [bp + 0x12]`
-- `root+0x2A3C` `mov bx, word ptr [bp + 0x12]`
-- `root+0x2A4E` `cmp byte ptr [bx], 0`
-- `root+0x2A53` `inc word ptr [bp - 0xa]`
-- `root+0x2A56` `mov bx, word ptr [bp - 0xa]`
-- `root+0x2A5E` `cmp byte ptr [bx], 0`
-- `root+0x2A63` `mov word ptr [bp - 6], bx`
-- `root+0x2A6C` `mov ax, bx`
-- `root+0x2A72` `mov word ptr [bp - 0xc], 0xffff`
-- `root+0x2A77` `inc word ptr [bp - 0x22]`
-- `root+0x2A7C` `cmp byte ptr [bx], 0x1d`
-- `root+0x2A81` `mov ax, word ptr [bp - 6]`
-- `root+0x2ABA` `inc word ptr [bp - 0xc]`
-- `root+0x2AC4` `mov byte ptr [bp - 0x14], 0`
-- `root+0x2ACD` `mov bx, word ptr [bp - 0xe]`
-- `root+0x2AD5` `cmp byte ptr [bx], 0`
-- `root+0x2ADA` `cmp byte ptr [bx], 0x20`
-- `root+0x2ADF` `mov byte ptr [bp - 0x14], 1`
-- `root+0x2AE3` `cmp byte ptr [bp - 0x14], 0`
-- `root+0x2AE9` `mov byte ptr [bp - 0x12], 1`
 - `root+0x2AF3` `mov bx, word ptr [bp + 0x12]`
-- `root+0x2B08` `mov ax, word ptr [bp - 0xe]`
-- `root+0x2B0E` `mov bx, word ptr [bp - 0xa]`
-- `root+0x2B16` `inc word ptr [bp - 0xc]`
-- `root+0x2B19` `cmp byte ptr [bx], 0`
-- `root+0x2B1E` `mov byte ptr [bp - 0x16], 0`
-- `root+0x2B22` `cmp word ptr [bp - 0xc], 0`
-- `root+0x2B28` `jmp 0x5ca`
-- `root+0x2B2B` `sub ax, ax`
-- `root+0x2B36` `inc word ptr [bp - 0xe]`
-- `root+0x2B3C` `inc word ptr [bp - 0x18]`
-- `root+0x2B3F` `mov ax, word ptr [bp - 0xc]`
-- `root+0x2B47` `mov bx, word ptr [bp - 0x18]`
-- `root+0x2B52` `cmp byte ptr [bx + si], 0x15`
-- `root+0x2B57` `cmp byte ptr [bx + si], 0x10`
-- `root+0x2B5C` `cmp byte ptr [bx + si], 0x16`
-- `root+0x2B61` `cmp byte ptr [bx + si], 6`
-- `root+0x2B66` `cmp byte ptr [bx + si], 0x1d`
-- `root+0x2B6B` `cmp byte ptr [bx + si], 1`
-- `root+0x2B70` `cmp byte ptr [bx + si], 0x13`
-- `root+0x2B75` `cmp byte ptr [bx + si], 0xd`
-- `root+0x2B7A` `mov al, byte ptr [bx + si]`
-- `root+0x2B88` `mov si, word ptr [bp - 0x1c]`
-- `root+0x2B98` `dec ax`
 - `root+0x2B9B` `dec ax`
 - `root+0x2B9E` `jmp 0x566`
-- `root+0x2BA0` `lea ax, [bp - 0xbe]`
-- `root+0x2BAB` `push word ptr [bp + 6]`
-- `root+0x2BB6` `cmp byte ptr [bp - 0x24], 1`
-- `root+0x2BBC` `mov bx, word ptr [bp + 0x12]`
-- `root+0x2BCA` `mov ax, word ptr [bp + 0x18]`
-- `root+0x2BD6` `lea ax, [bp - 0xbe]`
 - `root+0x2BF8` `lea ax, [bp - 0xbe]`
-- `root+0x2C13` `add ax, word ptr [bp - 0x20]`
-- `root+0x2C1A` `inc word ptr [bp + 0xa]`
-- `root+0x2C1D` `inc word ptr [bp - 0xa]`
-- `root+0x2C2C` `mov al, byte ptr [bp - 0x1a]`
-- `root+0x2C45` `cmp byte ptr [bp - 0x12], 1`
-- `root+0x2C4B` `mov ax, word ptr [bp + 0xc]`
-- `root+0x2C57` `cmp byte ptr [bp - 0x16], 0`
-- `root+0x2C5D` `jmp 0x1e2`
-- `root+0x2C60` `pop si`
+
+### root 0265:0654 `root 0265:0654`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 40/66, outcomes 33/72
+
+- `root+0x2CDA` `mov ax, 0x15`
+- `root+0x2D17` `jmp 0x762`
+- `root+0x2D1F` `jmp 0x762`
+- `root+0x2D27` `jmp 0x762`
+- `root+0x2D2F` `jmp 0x762`
+- `root+0x2D60` `mov byte ptr [bp - 5], 1`
+- `root+0x2D95` `inc bx`
+- `root+0x2DA3` `jmp 0x80c`
+- `root+0x2DB2` `cmp byte ptr [bx], 0x14`
+- `root+0x2DB7` `add word ptr [bp + 0xe], 2`
+- `root+0x2DBE` `cmp byte ptr [bx], 0x15`
+- `root+0x2DC3` `cmp byte ptr [bx], 0x10`
+- `root+0x2DC8` `cmp byte ptr [bx], 0x16`
+- `root+0x2DCD` `cmp byte ptr [bx], 6`
+- `root+0x2DD2` `cmp byte ptr [bx], 0x1d`
+- `root+0x2DD7` `mov ax, word ptr [bp - 0xa]`
+- `root+0x2E12` `mov bx, word ptr [bp + 0x12]`
+- `root+0x2E1E` `mov bx, word ptr [bp - 8]`
+- `root+0x2E26` `mov si, bx`
+- `root+0x2E28` `cmp byte ptr [si], 0`
+- `root+0x2E2D` `inc si`
+- `root+0x2E33` `mov word ptr [bp - 8], si`
+- `root+0x2E36` `mov ax, word ptr [bp - 8]`
+- `root+0x2E42` `inc word ptr [bp - 0x12]`
+- `root+0x2E5C` `inc word ptr [bp + 0xa]`
+- `root+0x2E6C` `mov dx, word ptr [bp + 0xa]`
+
+### root 0265:084E `root 0265:084E`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 3/4
 
 ### root 0265:09B2 `root 0265:09B2`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 11/12
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 11/12
 
 - `root+0x3012` `neg di`
 
@@ -323,88 +366,181 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcom
 
 matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
+### root 030B:0508 `root 030B:0508`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 8/22, outcomes 5/28
+
+- `root+0x35BF` `jmp 0x5c9`
+- `root+0x35D3` `cmp word ptr [0x573c], 0`
+- `root+0x35DA` `lcall 0x9c0, 0x18ab`
+- `root+0x35E9` `dec word ptr [0x83b8]`
+- `root+0x35EF` `jmp 0x5c3`
+- `root+0x360C` `push word ptr [0xa718]`
+- `root+0x362F` `ja 0x587`
+- `root+0x3631` `cmp word ptr [0xa716], ax`
+- `root+0x3637` `mov ax, word ptr [0xa716]`
+- `root+0x3644` `jb 0x59c`
+- `root+0x3646` `cmp word ptr [0xa722], ax`
+- `root+0x364C` `mov ax, word ptr [0xa71e]`
+- `root+0x365A` `inc word ptr [0xa736]`
+- `root+0x366F` `push cs`
+
+### root 03A1:000A `root 03A1:000A`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 19/57, outcomes 13/64
+
+- `root+0x3A43` `sub ax, ax`
+- `root+0x3A52` `cmp byte ptr [0xa876], 0x70`
+- `root+0x3A59` `push 0x39d`
+- `root+0x3A88` `push 0x2f`
+- `root+0x3B24` `push 0`
+- `root+0x3B3D` `mov ax, word ptr [0xa750]`
+- `root+0x3B46` `push word ptr [0xa750]`
+- `root+0x3D0B` `lcall 0x9c0, 0x18c9`
+- `root+0x3D17` `or byte ptr [0x9080], 4`
+- `root+0x3D1C` `mov dx, word ptr [0xa764]`
+- `root+0x3D25` `or byte ptr [0x9080], 8`
+- `root+0x3D2A` `cmp dx, -6`
+- `root+0x3D2F` `or byte ptr [0x9080], 0x80`
+- `root+0x3D34` `cmp dx, -4`
+- `root+0x3D39` `or byte ptr [0x9080], 0xc`
+- `root+0x3D3E` `or byte ptr [0x9080], 1`
+- `root+0x3D82` `cmp byte ptr [si], 3`
+- `root+0x3D87` `mov byte ptr [si], 0`
+- `root+0x3D93` `inc di`
+- `root+0x3D9E` `mov bx, 0x9c69`
+- `root+0x3DA4` `cmp byte ptr [bx], 0`
+- `root+0x3DA9` `cmp byte ptr [bx], 5`
+- `root+0x3DAE` `mov byte ptr [bx], 1`
+- `root+0x3DB1` `add bx, 0x80`
+- `root+0x3DBB` `sub dx, dx`
+- `root+0x3DC3` `cmp byte ptr [bx], 0`
+- `root+0x3DC8` `inc dx`
+- `root+0x3DC9` `add bx, 0x80`
+- `root+0x3DD3` `or dx, dx`
+- `root+0x3DD7` `cmp word ptr [0xa893], 5`
+- `root+0x3DDE` `lcall 0x47c, 0x12c3`
+- `root+0x3DF4` `push 0x4b8`
+- `root+0x3E08` `lcall 0x6a1, 0x1c30`
+- `root+0x3E0D` `lcall 0x44a, 0x1f4`
+- `root+0x3E28` `push word ptr [0x940b]`
+- `root+0x3E34` `push 0`
+- `root+0x3E3E` `push 0`
+- `root+0x3E8E` `push 0x4be`
+
 ### root 03EC:000E `root 03EC:000E`
 
-matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/43, outcomes 0/48
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 31/43, outcomes 22/48
 
 - `root+0x3EDB` `jmp 0x222`
-- `root+0x3EDE` `cmp byte ptr [0x907a], 1`
 - `root+0x3EE5` `jmp 0x222`
-- `root+0x3EE8` `mov dx, word ptr [bp + 6]`
-- `root+0x3F13` `jmp 0x16a`
-- `root+0x3F16` `sub di, di`
-- `root+0x3F21` `cmp word ptr [bx], 0`
 - `root+0x3F26` `cmp word ptr [bx - 8], dx`
 - `root+0x3F2B` `cmp word ptr [bx - 6], cx`
 - `root+0x3F30` `mov ax, word ptr [bp + 0xc]`
 - `root+0x3F38` `mov ax, word ptr [bp + 0xe]`
-- `root+0x3F40` `inc di`
-- `root+0x3F4A` `cmp di, 0xc`
-- `root+0x3F4F` `sub di, di`
-- `root+0x3F54` `cmp word ptr [bx], 0`
 - `root+0x3F59` `inc di`
-- `root+0x3F63` `cmp di, 0xc`
 - `root+0x3F68` `mov ax, 8`
-- `root+0x3F70` `mov word ptr [bp - 8], di`
 - `root+0x3F92` `jmp 0x244`
-- `root+0x3F95` `mov di, word ptr [bp - 8]`
-- `root+0x3FC4` `mov word ptr [bp - 2], 0`
-- `root+0x4000` `mov ax, word ptr [bp + 0xe]`
-- `root+0x400A` `jmp 0x242`
-- `root+0x400D` `push word ptr [bp + 0xc]`
-- `root+0x402A` `sub di, di`
-- `root+0x4035` `cmp word ptr [bx], 0`
-- `root+0x403A` `mov ax, word ptr [bp + 0x12]`
-- `root+0x4042` `mov ax, word ptr [bp + 0x14]`
-- `root+0x404A` `cmp word ptr [bx - 4], dx`
-- `root+0x404F` `cmp word ptr [bx - 2], cx`
 - `root+0x4054` `inc di`
-- `root+0x405E` `cmp di, 0xc`
 - `root+0x4063` `jmp 0xa8`
-- `root+0x4066` `sub si, si`
-- `root+0x40A2` `push word ptr [bp + 0xc]`
-- `root+0x40BC` `mov ax, word ptr [bp + 0xe]`
-- `root+0x40C6` `mov bx, word ptr [bp - 0xe]`
-- `root+0x40E0` `jmp 0x242`
 - `root+0x40E2` `push word ptr [bp + 0x14]`
-- `root+0x4102` `sub ax, ax`
-- `root+0x4104` `pop si`
 
 ### root 0410:0008 `root 0410:0008`
 
-matched, reached by battle cards cards-day cards-flip cards-variants core names trading: blocks 1/1, outcomes 0/0
+matched, reached by battle battle-oracle-castle battle-oracle-gate battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants core names trading: blocks 1/1, outcomes 0/0
 
 ### root 0410:001A `root 0410:001A`
 
-asm, reached by battle cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 4/4, outcomes 4/4
+asm, reached by battle battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 4/4, outcomes 4/4
 
 ### root 0410:0038 `root 0410:0038`
 
-asm, reached by path: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 3/3, outcomes 2/2
 
 ### root 0410:0068 `root 0410:0068`
 
-asm, reached by path tactics: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild path tactics: blocks 1/1, outcomes 0/0
+
+### root 0410:007E `root 0410:007E`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 0410:01DC `root 0410:01DC`
+
+asm, reached by battle-oracle-gate battle-oracle-wild: blocks 5/5, outcomes 4/4
+
+### root 0410:02A8 `root 0410:02A8`
+
+asm, reached by battle-oracle-gate battle-oracle-wild: blocks 5/5, outcomes 4/4
 
 ### root 0410:02CA `root 0410:02CA`
 
-asm, reached by path: blocks 3/3, outcomes 1/2
+asm, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 3/3, outcomes 1/2
+
+### root 0410:02E6 `root 0410:02E6`
+
+asm, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### root 0410:0302 `root 0410:0302`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 4/4, outcomes 3/4
+
+### root 0410:031E `root 0410:031E`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/9, outcomes 6/8
+
+- `root+0x4430` `mov word ptr [bp - 2], 1`
+- `root+0x445B` `mov byte ptr [0x7d8], 1`
+
+### root 0410:0364 `root 0410:0364`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/9, outcomes 6/8
+
+- `root+0x4475` `mov word ptr [bp - 2], 1`
+- `root+0x44A2` `mov byte ptr [0x7d8], 1`
+
+### root 044A:000A `root 044A:000A`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/7, outcomes 3/6
+
+- `root+0x44BE` `cmp al, 0x7a`
+- `root+0x44C2` `sub al, 0x20`
 
 ### root 044A:0043 `root 044A:0043`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+
+### root 044A:00A9 `root 044A:00A9`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 9/9, outcomes 6/8
+
+### root 044A:0100 `root 044A:0100`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 044A:0122 `root 044A:0122`
 
 asm, reached by cards-variants: blocks 1/1, outcomes 0/0
 
+### root 044A:0133 `root 044A:0133`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
 ### root 044A:014E `root 044A:014E`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 044A:0164 `root 044A:0164`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+
+### root 044A:019C `root 044A:019C`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 047C:0066 `root 047C:0066`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
 
 ### root 047C:00A9 `root 047C:00A9`
 
@@ -412,99 +548,263 @@ draft, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 - `root+0x4874` `mov ah, 0x25`
 
+### root 047C:02A2 `root 047C:02A2`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/7, outcomes 3/6
+
+- `root+0x4ABD` `cmp ax, 6`
+- `root+0x4AC2` `jmp 0x313`
+
+### root 047C:0329 `root 047C:0329`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/6, outcomes 3/4
+
+### root 047C:0347 `root 047C:0347`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/2, outcomes 0/0
+
+### root 047C:0362 `root 047C:0362`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 8/9, outcomes 5/8
+
+- `root+0x4B56` `mov dx, 0x10`
+
+### root 047C:03DA `root 047C:03DA`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### root 047C:040B `root 047C:040B`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### root 047C:04C7 `root 047C:04C7`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:04CE `root 047C:04CE`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
 ### root 047C:04D5 `root 047C:04D5`
 
-draft, reached by cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:04DC `root 047C:04DC`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:04E3 `root 047C:04E3`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:04EA `root 047C:04EA`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:04EF `root 047C:04EF`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 047C:04F8 `root 047C:04F8`
 
-draft, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:051B `root 047C:051B`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:052E `root 047C:052E`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:053E `root 047C:053E`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0545 `root 047C:0545`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:054C `root 047C:054C`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0553 `root 047C:0553`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:055A `root 047C:055A`
 
-draft, reached by cards-day: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-day: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:055F `root 047C:055F`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 047C:0568 `root 047C:0568`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:056F `root 047C:056F`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:0576 `root 047C:0576`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:0584 `root 047C:0584`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:058B `root 047C:058B`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:0597 `root 047C:0597`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 047C:059E `root 047C:059E`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 047C:05A5 `root 047C:05A5`
 
-draft, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 047C:05AE `root 047C:05AE`
 
-draft, reached by cards-day: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-day: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:05B5 `root 047C:05B5`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05BC `root 047C:05BC`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:05CA `root 047C:05CA`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:05D8 `root 047C:05D8`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:05DF `root 047C:05DF`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:05E6 `root 047C:05E6`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:05ED `root 047C:05ED`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:0617 `root 047C:0617`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:061E `root 047C:061E`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:073D `root 047C:073D`
 
-draft, reached by cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0744 `root 047C:0744`
 
-draft, reached by cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:0767 `root 047C:0767`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:0783 `root 047C:0783`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:078A `root 047C:078A`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+
+### root 047C:07CE `root 047C:07CE`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/18, outcomes 0/18
+
+- `root+0x4F9A` `lea si, [0x6a90]`
+- `root+0x4FA1` `mov ah, 0x48`
+- `root+0x4FAF` `lea si, [0x6aab]`
+- `root+0x4FB6` `push ds`
+- `root+0x4FCC` `cmp ax, 2`
+- `root+0x4FD1` `lea si, [0x6ae1]`
+- `root+0x4FD8` `cmp ax, 8`
+- `root+0x4FDD` `lea si, [0x6af4]`
+- `root+0x4FE4` `je 0x82d`
+- `root+0x4FE6` `lea si, [0x6b13]`
+- `root+0x4FED` `mov es, word ptr [0x6a86]`
+- `root+0x500E` `call 0x876`
+- `root+0x5011` `mov ax, es`
+- `root+0x501E` `lea si, [0x6b37]`
+- `root+0x5025` `mov ah, 0x4a`
+- `root+0x502B` `lea si, [0x6b5c]`
+- `root+0x5032` `mov ax, es`
+
+### root 047C:08C8 `root 047C:08C8`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/3, outcomes 0/2
+
+- `root+0x50B4` `pop ds`
 
 ### root 047C:0952 `root 047C:0952`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+
+### root 047C:09E6 `root 047C:09E6`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
+
+### root 047C:0B94 `root 047C:0B94`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 31/38, outcomes 21/36
+
+- `root+0x53AE` `cmc `
+- `root+0x53C1` `cmc `
+- `root+0x53C7` `sar dx, 1`
+- `root+0x53CC` `cmc `
+- `root+0x53DA` `jmp 0xbdc`
+- `root+0x5409` `xchg si, cx`
+- `root+0x5485` `sub bx, bx`
+
+### root 047C:0D20 `root 047C:0D20`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 9/9, outcomes 6/8
+
+### root 047C:0D62 `root 047C:0D62`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 047C:0DE6 `root 047C:0DE6`
 
-draft, reached by cards cards-day cards-variants: blocks 8/25, outcomes 5/26
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 21/25, outcomes 20/26
 
-- `root+0x55D7` `mov di, ds` (excluded)
-- `root+0x55E4` `cmp word ptr [bp + 6], 1` (excluded)
-- `root+0x55EA` `je 0xe35` (excluded)
-- `root+0x55EC` `mov di, word ptr [bp + 6]` (excluded)
-- `root+0x55F2` `add di, 2` (excluded)
-- `root+0x55F5` `push di` (excluded)
 - `root+0x5601` `push bx` (excluded)
-- `root+0x560F` `lodsw ax, word ptr [si]` (excluded)
-- `root+0x561B` `mov si, word ptr [0xf1fc]` (excluded)
-- `root+0x5625` `push bx` (excluded)
-- `root+0x5633` `lodsw ax, word ptr [si]` (excluded)
-- `root+0x563B` `pop di` (excluded)
-- `root+0x5644` `push ax` (excluded)
-- `root+0x564D` `jmp 0xdf6` (excluded)
 - `root+0x5661` `push bx` (excluded)
 - `root+0x5681` `push bx` (excluded)
 - `root+0x56A1` `push bx` (excluded)
 
+### root 047C:0F60 `root 047C:0F60`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
 ### root 047C:0F7F `root 047C:0F7F`
 
-draft, reached by cards cards-variants: blocks 4/7, outcomes 3/6
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-variants: blocks 4/7, outcomes 3/6
 
 - `root+0x5748` `ret ` (excluded)
 - `root+0x5764` `push bx` (excluded)
@@ -512,11 +812,23 @@ draft, reached by cards cards-variants: blocks 4/7, outcomes 3/6
 
 ### root 047C:0FC8 `root 047C:0FC8`
 
-draft, reached by cards cards-variants: blocks 5/5, outcomes 4/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-variants: blocks 5/5, outcomes 4/4
+
+### root 047C:0FFE `root 047C:0FFE`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 12/15, outcomes 10/14
+
+- `root+0x57C5` `inc cx`
+- `root+0x580A` `mov ah, al`
+- `root+0x581D` `jmp 0x1067`
+
+### root 047C:1070 `root 047C:1070`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 16/16, outcomes 14/14, unresolved indirect jumps 1
 
 ### root 047C:1120 `root 047C:1120`
 
-draft, reached by tactics: blocks 6/17, outcomes 5/20
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild tactics: blocks 6/17, outcomes 5/20
 
 - `root+0x5937` `mov ax, word ptr [bp + 6]` (dormant)
 - `root+0x5974` `xor ax, ax` (dormant)
@@ -530,74 +842,145 @@ draft, reached by tactics: blocks 6/17, outcomes 5/20
 - `root+0x59B2` `mov ax, bp` (dormant)
 - `root+0x59B4` `pop bp` (dormant)
 
+### root 047C:11F6 `root 047C:11F6`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/4, outcomes 0/4
+
+- `root+0x59C5` `mov ax, 0`
+- `root+0x59CE` `mov ax, 0xc`
+- `root+0x59FB` `mov byte ptr [0x6efb], al`
+
+### root 047C:124F `root 047C:124F`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
 ### root 047C:1293 `root 047C:1293`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/4, outcomes 0/4
-
-- `root+0x5A5A` `cmp byte ptr [0x6a81], 0`
-- `root+0x5A61` `push word ptr [0x6ef4]`
-- `root+0x5A82` `retf `
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 047C:12C3 `root 047C:12C3`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/4, outcomes 0/4
-
-- `root+0x5A8A` `cmp byte ptr [0x6a81], 0`
-- `root+0x5A91` `mov byte ptr [0x6a81], 0`
-- `root+0x5A9B` `retf `
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 047C:1320 `root 047C:1320`
 
-draft, reached by cards-day: blocks 1/3, outcomes 0/2
-
-- `root+0x5B06` `mov cl, byte ptr [0x6efa]`
-- `root+0x5B0E` `lea ax, [0x6f00]`
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-day: blocks 3/3, outcomes 1/2
 
 ### root 05BA:0004 `root 05BA:0004`
 
-matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 5/6
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 5/6
 
 - `root+0x5BEC` `lcall 0, 0x1354` (excluded)
 
 ### root 05BA:00C2 `root 05BA:00C2`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+
+### root 05D9:000C `root 05D9:000C`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 05D9:002A `root 05D9:002A`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 05D9:0059 `root 05D9:0059`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 05D9:006A `root 05D9:006A`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 05D9:0070 `root 05D9:0070`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 38/40, outcomes 35/40
+
+- `root+0x5E96` `call 0xc`
+- `root+0x5EAF` `call 0xc`
+
+### root 05D9:019A `root 05D9:019A`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/6, outcomes 3/6
+
+### root 05F8:0064 `root 05F8:0064`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/3, outcomes 0/2
+
+- `root+0x6002` `mov al, 0x90`
+- `root+0x6004` `mov word ptr ss:[0x942], ax`
+
+### root 05F8:00A9 `root 05F8:00A9`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### root 05F8:00CA `root 05F8:00CA`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### root 05F8:00F3 `root 05F8:00F3`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### root 05F8:0117 `root 05F8:0117`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 0617:000E `root 0617:000E`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 5/6
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 5/6
 
 - `root+0x61AB` `push word ptr [bp + 6]`
 
+### root 0617:0080 `root 0617:0080`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/3, outcomes 1/2
+
+- `root+0x620C` `push word ptr [bp + 6]`
+
 ### root 0617:00AE `root 0617:00AE`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 3/4
 
 - `root+0x6238` `sub ax, ax` (excluded)
 
 ### root 0617:011E `root 0617:011E`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x62C1` `sub ax, ax`
 
+### root 0617:016A `root 0617:016A`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/3, outcomes 1/2
+
+- `root+0x6309` `sub ax, ax`
+
+### root 0617:01B2 `root 0617:01B2`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/6, outcomes 3/4
+
+- `root+0x6353` `mov word ptr [0x8e3a], 0`
+
+### root 0617:0230 `root 0617:0230`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
 ### root 0617:024A `root 0617:024A`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 0617:045C `root 0617:045C`
 
-draft, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
-
-- `root+0x660A` `mov ax, 0xeebc`
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 4/4, outcomes 2/2
 
 ### root 0617:05F0 `root 0617:05F0`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 0617:0654 `root 0617:0654`
 
-draft, reached by cards cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 0617:067E `root 0617:067E`
 
@@ -609,21 +992,19 @@ draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 0617:06D8 `root 0617:06D8`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `root+0x6864` `sub ax, ax`
 
 ### root 0617:070E `root 0617:070E`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 2/5, outcomes 1/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 4/5, outcomes 3/4
 
-- `root+0x6885` `push word ptr [0x6ba8]`
 - `root+0x6895` `sub ax, ax`
-- `root+0x689F` `mov word ptr [0x6ba8], 0xffff`
 
 ### root 0617:0736 `root 0617:0736`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 12/24, outcomes 11/24
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 12/24, outcomes 11/24
 
 - `root+0x68D1` `sub ax, ax`
 - `root+0x68F8` `sub ax, ax`
@@ -640,31 +1021,34 @@ draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 12
 
 ### root 0617:0868 `root 0617:0868`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `root+0x6A12` `mov ax, word ptr [bp - 0xe]` (excluded)
 
 ### root 06A1:02C2 `root 06A1:02C2`
 
-asm, reached by cards cards-day cards-flip cards-variants castle city mine special trading wild: blocks 3/6, outcomes 2/6, unresolved indirect jumps 1
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants castle city mine special trading wild: blocks 3/6, outcomes 2/6, unresolved indirect jumps 1
 
 - `root+0x6CE5` `push dx` (runtime-library)
 - `root+0x6CED` `xor ax, ax` (runtime-library)
 - `root+0x6CF2` `ljmp [0x7794]` (runtime-library)
 
+### root 06A1:0546 `root 06A1:0546`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
 ### root 06A1:054C `root 06A1:054C`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/10, outcomes 3/10
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 6/10, outcomes 4/10
 
 - `root+0x6F6A` `cmp al, 0x22` (runtime-library)
 - `root+0x6F6E` `cmp al, 0x20` (runtime-library)
 - `root+0x6F72` `mov al, 5` (runtime-library)
-- `root+0x6F7A` `mov al, 0x13` (runtime-library)
 - `root+0x6F85` `mov al, ah` (runtime-library)
 
 ### root 06A1:05E2 `root 06A1:05E2`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/12, outcomes 4/12
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 5/12, outcomes 4/12
 
 - `root+0x7006` `jmp 0x690` (runtime-library)
 - `root+0x700F` `jmp 0x690` (runtime-library)
@@ -676,24 +1060,28 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/12
 
 ### root 06A1:069C `root 06A1:069C`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 1/2
 
 - `root+0x70BB` `sub ax, ax` (runtime-library)
 
 ### root 06A1:06C8 `root 06A1:06C8`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
+
+### root 06A1:06DE `root 06A1:06DE`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 06A1:0716 `root 06A1:0716`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 25/27, outcomes 22/26
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 25/27, outcomes 22/26
 
 - `root+0x7195` `jmp 0x7f3` (runtime-library)
 - `root+0x71EE` `or byte ptr [si + 6], 0x20` (runtime-library)
 
 ### root 06A1:07FA `root 06A1:07FA`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 26/31, outcomes 21/34
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 26/31, outcomes 21/34
 
 - `root+0x7279` `jmp 0x8f9` (runtime-library)
 - `root+0x7292` `push bx` (runtime-library)
@@ -703,7 +1091,7 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 26/3
 
 ### root 06A1:093E `root 06A1:093E`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 14/18, outcomes 10/18
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 14/18, outcomes 10/18
 
 - `root+0x73A1` `or byte ptr [si + 6], 0x20` (runtime-library)
 - `root+0x73A7` `or byte ptr [si + 6], 0x20` (runtime-library)
@@ -712,46 +1100,60 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 14/1
 
 ### root 06A1:09D4 `root 06A1:09D4`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 17/23, outcomes 15/30
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 19/23, outcomes 17/30
 
 - `root+0x7400` `test al, 0x10` (runtime-library)
 - `root+0x7404` `mov cx, word ptr [si + 4]` (runtime-library)
 - `root+0x7440` `test byte ptr [bx + 0x7769], 0x40` (runtime-library)
 - `root+0x745C` `mov ax, 0xffff` (runtime-library)
-- `root+0x7485` `push cx` (runtime-library)
-- `root+0x74AF` `mov cx, 2` (runtime-library)
 
 ### root 06A1:0AB8 `root 06A1:0AB8`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 06A1:0AE4 `root 06A1:0AE4`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 2/2
 
 ### root 06A1:0B28 `root 06A1:0B28`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 19/27, outcomes 14/28
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 22/27, outcomes 16/28
 
-- `root+0x7555` `sub ax, ax` (runtime-library)
 - `root+0x7588` `mov word ptr [bp - 2], 0` (runtime-library)
-- `root+0x759A` `mov si, 0x109` (runtime-library)
 - `root+0x75A0` `test si, 2` (runtime-library)
 - `root+0x75A6` `or si, 2` (runtime-library)
 - `root+0x75B2` `test si, 0xc000` (runtime-library)
 - `root+0x75B8` `or si, 0x4000` (runtime-library)
-- `root+0x75E4` `jmp 0xb45` (runtime-library)
+
+### root 06A1:0C10 `root 06A1:0C10`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/11, outcomes 3/14
+
+- `root+0x7643` `mov di, si` (runtime-library)
+- `root+0x7653` `test byte ptr [di], 1` (runtime-library)
+- `root+0x7658` `mov ax, word ptr [bx]` (runtime-library)
+- `root+0x765E` `mov word ptr [si + 4], ax` (runtime-library)
+- `root+0x7679` `push bx` (runtime-library)
+- `root+0x7689` `mov word ptr [bx], ax` (runtime-library)
+
+### root 06A1:0C83 `root 06A1:0C83`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/5, outcomes 1/6
+
+- `root+0x76AA` `xor bx, bx` (runtime-library)
+- `root+0x76B6` `push si` (runtime-library)
+- `root+0x76C2` `xor ax, ax` (runtime-library)
 
 ### root 06A1:0CC2 `root 06A1:0CC2`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 8/10, outcomes 8/12
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 8/10, outcomes 8/12
 
 - `root+0x76E1` `sub ax, ax` (runtime-library)
 - `root+0x772D` `or byte ptr [si + 6], 0x20` (runtime-library)
 
 ### root 06A1:0D9A `root 06A1:0D9A`
 
-asm, reached by castle city mine special trading wild: blocks 257/330, outcomes 72/150, unresolved indirect jumps 1
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city mine special trading wild: blocks 277/347, outcomes 76/150, unresolved indirect jumps 1
 
 - `root+0x7827` `or byte ptr [bp - 4], 4` (runtime-library)
 - `root+0x7831` `or byte ptr [bp - 4], 1` (runtime-library)
@@ -811,17 +1213,14 @@ asm, reached by castle city mine special trading wild: blocks 257/330, outcomes 
 - `root+0x7AAC` `test byte ptr [bp - 4], 0x80` (runtime-library)
 - `root+0x7AB2` `or byte ptr [bp - 3], 2` (runtime-library)
 - `root+0x7AB6` `mov byte ptr [bp - 6], 8` (runtime-library)
-- `root+0x7ADD` `or byte ptr [bp - 3], 1` (runtime-library)
 - `root+0x7AF5` `and byte ptr [bp - 4], 0xf7` (runtime-library)
 - `root+0x7B1A` `jcxz 0x1112` (runtime-library)
 - `root+0x7B1C` `cmp byte ptr es:[di], 0x30` (runtime-library)
 - `root+0x7B22` `dec di` (runtime-library)
-- `root+0x7B36` `mov byte ptr [bp - 0xe], 0x2d` (runtime-library)
 - `root+0x7B47` `mov byte ptr [bp - 0xe], 0x2b` (runtime-library)
 - `root+0x7B58` `mov byte ptr [bp - 0xe], 0x20` (runtime-library)
 - `root+0x7BAB` `mov cx, ax` (runtime-library)
 - `root+0x7BE0` `mov es, ax` (runtime-library)
-- `root+0x7BFA` `push es` (runtime-library)
 - `root+0x7C0E` `jmp 0x11e8` (runtime-library)
 - `root+0x7C28` `mov word ptr [bp - 8], 0xffff` (runtime-library)
 - `root+0x7C44` `mov word ptr [bp - 8], 0xffff` (runtime-library)
@@ -829,62 +1228,61 @@ asm, reached by castle city mine special trading wild: blocks 257/330, outcomes 
 
 ### root 06A1:11A5 `root 06A1:11A5`
 
-asm, reached by castle city mine special trading wild: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city mine special trading wild: blocks 1/1, outcomes 0/0
 
 ### root 06A1:11AD `root 06A1:11AD`
 
-asm, reached by trading: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild trading: blocks 1/1, outcomes 0/0
 
 ### root 06A1:11B9 `root 06A1:11B9`
 
-asm, reached by trading wild: blocks 4/5, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild trading wild: blocks 4/5, outcomes 3/4
 
 - `root+0x7BE0` `mov es, ax` (runtime-library)
 
 ### root 06A1:11D6 `root 06A1:11D6`
 
-asm, reached by castle city mine special trading wild: blocks 4/6, outcomes 1/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city mine special trading wild: blocks 5/6, outcomes 3/4
 
-- `root+0x7BFA` `push es` (runtime-library)
 - `root+0x7C0E` `jmp 0x11e8` (runtime-library)
 
 ### root 06A1:1200 `root 06A1:1200`
 
-asm, reached by castle city mine special trading wild: blocks 5/6, outcomes 5/6
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city mine special trading wild: blocks 5/6, outcomes 5/6
 
 - `root+0x7C28` `mov word ptr [bp - 8], 0xffff` (runtime-library)
 
 ### root 06A1:121E `root 06A1:121E`
 
-asm, reached by castle city mine special trading wild: blocks 5/6, outcomes 5/6
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city mine special trading wild: blocks 5/6, outcomes 5/6
 
 - `root+0x7C44` `mov word ptr [bp - 8], 0xffff` (runtime-library)
 
 ### root 06A1:123A `root 06A1:123A`
 
-asm, reached by castle city mine special trading wild: blocks 8/9, outcomes 6/8
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city mine special trading wild: blocks 8/9, outcomes 6/8
 
 - `root+0x7C6C` `add al, byte ptr [bp - 1]` (runtime-library)
 
 ### root 06A1:1272 `root 06A1:1272`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/6, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 6/6, outcomes 3/4
 
 ### root 06A1:12DC `root 06A1:12DC`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 1/2
 
 - `root+0x7CF7` `inc word ptr [bx]` (runtime-library)
 
 ### root 06A1:12FA `root 06A1:12FA`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/5, outcomes 2/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 4/5, outcomes 2/4
 
 - `root+0x7D16` `mov ax, 0x900` (runtime-library)
 
 ### root 06A1:131A `root 06A1:131A`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/14, outcomes 3/16
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 5/14, outcomes 3/16
 
 - `root+0x7D39` `mov ax, 0x900` (runtime-library)
 - `root+0x7D45` `cmp word ptr [bp + 0xc], 0` (runtime-library)
@@ -898,44 +1296,37 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/14
 
 ### root 06A1:1394 `root 06A1:1394`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x7DB3` `mov bh, byte ptr [bp + 0xa]` (runtime-library)
 
 ### root 06A1:13AE `root 06A1:13AE`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 27/47, outcomes 25/56
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 34/47, outcomes 33/56
 
-- `root+0x7E02` `stc ` (runtime-library)
 - `root+0x7E11` `mov ah, 0x3e` (runtime-library)
 - `root+0x7E28` `or byte ptr [bp - 4], 0x40` (runtime-library)
 - `root+0x7E32` `jmp 0x14f8` (runtime-library)
 - `root+0x7E4B` `mov ah, 0x3e` (runtime-library)
-- `root+0x7E5F` `jmp 0x14f8` (runtime-library)
 - `root+0x7E6A` `mov cx, 0xffff` (runtime-library)
 - `root+0x7E81` `cmp byte ptr [bp - 1], 0x1a` (runtime-library)
 - `root+0x7E87` `neg cx` (runtime-library)
 - `root+0x7E96` `xor cx, cx` (runtime-library)
-- `root+0x7EBB` `and cl, 0xfe` (runtime-library)
 - `root+0x7EC7` `jmp 0x539` (runtime-library)
-- `root+0x7ED8` `mov ah, 0x3e` (runtime-library)
-- `root+0x7EED` `xchg bx, ax` (runtime-library)
-- `root+0x7EF4` `test word ptr [bp + 0xa], 1` (runtime-library)
 - `root+0x7EFB` `or cl, 1` (runtime-library)
 - `root+0x7F1F` `mov cl, 0x10` (runtime-library)
-- `root+0x7F28` `or cl, 0x20` (runtime-library)
 - `root+0x7F31` `mov ah, 0x3e` (runtime-library)
 - `root+0x7F4B` `xor cl, cl` (runtime-library)
 
 ### root 06A1:153F `root 06A1:153F`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x7F5C` `or cl, 1` (runtime-library)
 
 ### root 06A1:1550 `root 06A1:1550`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 15/36, outcomes 14/42
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 15/36, outcomes 14/42
 
 - `root+0x7F6F` `stc ` (runtime-library)
 - `root+0x7F8B` `call word ptr [0x7cee]` (runtime-library)
@@ -961,33 +1352,15 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 15/3
 
 ### root 06A1:163A `root 06A1:163A`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 9/49, outcomes 7/50
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 29/49, outcomes 24/50
 
 - `root+0x8059` `mov ax, 0x900` (runtime-library)
 - `root+0x805D` `jmp 0x539` (runtime-library)
 - `root+0x8068` `call word ptr [0x7cee]` (runtime-library)
-- `root+0x8073` `mov ax, 0x4202` (runtime-library)
-- `root+0x8085` `mov dx, word ptr [bp + 8]` (runtime-library)
-- `root+0x80A1` `mov al, 0xa` (runtime-library)
-- `root+0x80A7` `lcall 0x6a1, 0x177a` (runtime-library)
-- `root+0x80B1` `sub sp, 2` (runtime-library)
 - `root+0x80BE` `mov dx, 0x80` (runtime-library)
-- `root+0x80C1` `sub sp, dx` (runtime-library)
-- `root+0x80CC` `lodsb al, byte ptr [si]` (runtime-library)
-- `root+0x80D1` `cmp di, bx` (runtime-library)
-- `root+0x80D5` `stosb byte ptr es:[di], al` (runtime-library)
-- `root+0x80D8` `call 0x16ee` (runtime-library)
-- `root+0x80DB` `jmp 0x1738` (runtime-library)
-- `root+0x80DD` `mov al, 0xd` (runtime-library)
 - `root+0x80E3` `call 0x16ee` (runtime-library)
-- `root+0x80E6` `stosb byte ptr es:[di], al` (runtime-library)
-- `root+0x80EE` `call 0x16ee` (runtime-library)
 - `root+0x80F3` `pop si` (runtime-library)
 - `root+0x80F7` `mov ax, 0xfffc` (runtime-library)
-- `root+0x80FE` `push ax` (runtime-library)
-- `root+0x8107` `push cx` (runtime-library)
-- `root+0x8112` `add word ptr [bp - 2], ax` (runtime-library)
-- `root+0x8119` `pop cx` (runtime-library)
 - `root+0x811F` `lahf ` (runtime-library)
 - `root+0x8129` `sahf ` (runtime-library)
 - `root+0x812C` `mov ah, 9` (runtime-library)
@@ -995,8 +1368,6 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 9/49
 - `root+0x8137` `mov bx, word ptr [bp + 8]` (runtime-library)
 - `root+0x813F` `clc ` (runtime-library)
 - `root+0x8142` `stc ` (runtime-library)
-- `root+0x8148` `mov ax, word ptr [bp - 2]` (runtime-library)
-- `root+0x814E` `mov sp, word ptr [bp - 8]` (runtime-library)
 - `root+0x815D` `mov ax, cx` (runtime-library)
 - `root+0x816B` `mov ah, 9` (runtime-library)
 - `root+0x8173` `test byte ptr [bx + 0x7769], 0x40` (runtime-library)
@@ -1004,32 +1375,50 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 9/49
 - `root+0x8181` `clc ` (runtime-library)
 - `root+0x8184` `stc ` (runtime-library)
 
+### root 06A1:16EE `root 06A1:16EE`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 4/11, outcomes 3/14
+
+- `root+0x811F` `lahf ` (runtime-library)
+- `root+0x8129` `sahf ` (runtime-library)
+- `root+0x812C` `mov ah, 9` (runtime-library)
+- `root+0x8130` `test byte ptr [bx + 0x7769], 0x40` (runtime-library)
+- `root+0x8137` `mov bx, word ptr [bp + 8]` (runtime-library)
+- `root+0x813F` `clc ` (runtime-library)
+- `root+0x8142` `stc ` (runtime-library)
+
+### root 06A1:177A `root 06A1:177A`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/4, outcomes 1/2
+
+- `root+0x819A` `xor ax, ax` (runtime-library)
+
 ### root 06A1:178E `root 06A1:178E`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 06A1:1794 `root 06A1:1794`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 06A1:179A `root 06A1:179A`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 06A1:17BB `root 06A1:17BB`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/6, outcomes 6/8
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 6/6, outcomes 6/8
 
 ### root 06A1:17E4 `root 06A1:17E4`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 17/19, outcomes 15/18
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 17/19, outcomes 15/18
 
 - `root+0x824A` `mov ax, ax` (runtime-library)
 - `root+0x825C` `add di, cx` (runtime-library)
 
 ### root 06A1:1860 `root 06A1:1860`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 10/23, outcomes 8/24
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 10/23, outcomes 8/24
 
 - `root+0x829A` `jmp 0x18cb` (runtime-library)
 - `root+0x829C` `push ss` (runtime-library)
@@ -1047,7 +1436,7 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 10/2
 
 ### root 06A1:18EC `root 06A1:18EC`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/13, outcomes 3/14
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 5/13, outcomes 3/14
 
 - `root+0x8312` `inc dx` (runtime-library)
 - `root+0x8313` `push bx` (runtime-library)
@@ -1060,13 +1449,13 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/13
 
 ### root 06A1:193D `root 06A1:193D`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/5, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 4/5, outcomes 3/4
 
 - `root+0x8356` `mov si, word ptr [bx + 6]` (runtime-library)
 
 ### root 06A1:1AAA `root 06A1:1AAA`
 
-asm, reached by battle cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 562/639, outcomes 88/204
+asm, reached by battle battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 890/971, outcomes 102/228
 
 - `root+0x8539` `cmp word ptr [bp + 6], 0` (runtime-library)
 - `root+0x853F` `push word ptr [bp + 6]` (runtime-library)
@@ -1078,8 +1467,6 @@ asm, reached by battle cards cards-day cards-flip cards-variants rules sainthelp
 - `root+0x857E` `cmp word ptr [si], 0` (runtime-library)
 - `root+0x8688` `mov byte ptr [bp - 6], 0xcb` (runtime-library)
 - `root+0x86CE` `xor si, si` (runtime-library)
-- `root+0x86D2` `push cs` (runtime-library)
-- `root+0x86DB` `mov word ptr [di + 0xc], si` (runtime-library)
 - `root+0x8754` `sub ax, ax` (runtime-library)
 - `root+0x8777` `sub di, di` (runtime-library)
 - `root+0x87A8` `mov word ptr [bp - 4], 0` (runtime-library)
@@ -1106,8 +1493,14 @@ asm, reached by battle cards cards-day cards-flip cards-variants rules sainthelp
 - `root+0x899A` `inc word ptr [bp - 0xc]` (runtime-library)
 - `root+0x89A0` `sub ax, ax` (runtime-library)
 - `root+0x89C7` `inc ax` (runtime-library)
+- `root+0x8A89` `mov al, byte ptr [si + 6]` (runtime-library)
 - `root+0x8AEC` `push si` (runtime-library)
 - `root+0x8C0C` `push cs` (runtime-library)
+- `root+0x8C6A` `push cs` (runtime-library)
+- `root+0x8CF8` `cmp byte ptr [bp - 9], 0` (runtime-library)
+- `root+0x8CFE` `lea ax, [bp - 6]` (runtime-library)
+- `root+0x8D45` `inc ax` (runtime-library)
+- `root+0x8DA2` `mov bx, word ptr [bp + 6]` (runtime-library)
 - `root+0x8DDD` `cmp al, 0x17` (runtime-library)
 - `root+0x8DE1` `mov dx, bx` (runtime-library)
 - `root+0x8E00` `mov bx, word ptr [bp + 6]` (runtime-library)
@@ -1148,7 +1541,7 @@ asm, reached by battle cards cards-day cards-flip cards-variants rules sainthelp
 
 ### root 06A1:1B1C `root 06A1:1B1C`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 3/11, outcomes 1/12
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/11, outcomes 1/12
 
 - `root+0x8539` `cmp word ptr [bp + 6], 0` (runtime-library)
 - `root+0x853F` `push word ptr [bp + 6]` (runtime-library)
@@ -1161,16 +1554,14 @@ asm, reached by cards cards-day cards-flip cards-variants: blocks 3/11, outcomes
 
 ### root 06A1:1C58 `root 06A1:1C58`
 
-asm, reached by cards cards-day cards-variants: blocks 4/8, outcomes 2/6
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 6/8, outcomes 3/6
 
 - `root+0x8688` `mov byte ptr [bp - 6], 0xcb` (runtime-library)
 - `root+0x86CE` `xor si, si` (runtime-library)
-- `root+0x86D2` `push cs` (runtime-library)
-- `root+0x86DB` `mov word ptr [di + 0xc], si` (runtime-library)
 
 ### root 06A1:1D2A `root 06A1:1D2A`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 22/26, outcomes 17/30
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 22/26, outcomes 17/30
 
 - `root+0x8754` `sub ax, ax` (runtime-library)
 - `root+0x8777` `sub di, di` (runtime-library)
@@ -1179,7 +1570,7 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 22/2
 
 ### root 06A1:1DE2 `root 06A1:1DE2`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 10/13, outcomes 8/14
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 10/13, outcomes 8/14
 
 - `root+0x880B` `mov word ptr [0x775a], 0x16` (runtime-library)
 - `root+0x8861` `cmp dx, ax` (runtime-library)
@@ -1187,7 +1578,7 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 10/1
 
 ### root 06A1:1E62 `root 06A1:1E62`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 18/37, outcomes 16/38
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 18/37, outcomes 16/38
 
 - `root+0x8896` `mov word ptr [si + 2], 0` (runtime-library)
 - `root+0x88B8` `mov ax, 0xffff` (runtime-library)
@@ -1209,9 +1600,15 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 18/3
 - `root+0x89A0` `sub ax, ax` (runtime-library)
 - `root+0x89C7` `inc ax` (runtime-library)
 
+### root 06A1:2052 `root 06A1:2052`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/3, outcomes 1/2
+
+- `root+0x8A89` `mov al, byte ptr [si + 6]` (runtime-library)
+
 ### root 06A1:2096 `root 06A1:2096`
 
-asm, reached by castle city mine special trading wild: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city mine special trading wild: blocks 3/4, outcomes 1/2
 
 - `root+0x8AEC` `push si` (runtime-library)
 
@@ -1221,13 +1618,40 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1,
 
 ### root 06A1:21C6 `root 06A1:21C6`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `root+0x8C0C` `push cs` (runtime-library)
 
+### root 06A1:220E `root 06A1:220E`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/4, outcomes 1/2
+
+- `root+0x8C6A` `push cs` (runtime-library)
+
+### root 06A1:226C `root 06A1:226C`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 06A1:228A `root 06A1:228A`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 06A1:2298 `root 06A1:2298`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 06A1:22A6 `root 06A1:22A6`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/11, outcomes 5/12
+
+- `root+0x8CF8` `cmp byte ptr [bp - 9], 0` (runtime-library)
+- `root+0x8CFE` `lea ax, [bp - 6]` (runtime-library)
+- `root+0x8D45` `inc ax` (runtime-library)
+- `root+0x8DA2` `mov bx, word ptr [bp + 6]` (runtime-library)
+
 ### root 06A1:23A8 `root 06A1:23A8`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 3/6, outcomes 2/6
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/6, outcomes 2/6
 
 - `root+0x8DDD` `cmp al, 0x17` (runtime-library)
 - `root+0x8DE1` `mov dx, bx` (runtime-library)
@@ -1235,11 +1659,11 @@ asm, reached by cards cards-day cards-flip cards-variants: blocks 3/6, outcomes 
 
 ### root 06A1:23FC `root 06A1:23FC`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 06A1:240E `root 06A1:240E`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 3/14, outcomes 1/14
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/14, outcomes 1/14
 
 - `root+0x8E35` `cmp byte ptr [si], 0` (runtime-library)
 - `root+0x8E3A` `jmp 0x24b2` (runtime-library)
@@ -1255,7 +1679,7 @@ asm, reached by cards cards-day cards-flip cards-variants: blocks 3/14, outcomes
 
 ### root 06A1:24B6 `root 06A1:24B6`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 4/23, outcomes 1/28
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 4/23, outcomes 1/28
 
 - `root+0x8EDA` `cmp word ptr [si + 8], 9` (runtime-library)
 - `root+0x8EE0` `jmp 0x2577` (runtime-library)
@@ -1279,67 +1703,103 @@ asm, reached by cards cards-day cards-flip cards-variants: blocks 4/23, outcomes
 
 ### root 06A1:2580 `root 06A1:2580`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 5/7, outcomes 4/8
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 5/7, outcomes 4/8
 
 - `root+0x8FDD` `inc di` (runtime-library)
 - `root+0x907D` `sub word ptr [bp - 0x16], 0xe10` (runtime-library)
 
+### root 06A1:2682 `root 06A1:2682`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 06A1:26DE `root 06A1:26DE`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### root 06A1:2724 `root 06A1:2724`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 06A1:278A `root 06A1:278A`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/6, outcomes 5/6
+
 ### root 06A1:27CC `root 06A1:27CC`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 17/17, outcomes 19/22
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 17/17, outcomes 19/22
 
 ### root 06A1:287E `root 06A1:287E`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/5, outcomes 3/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 5/5, outcomes 3/4
 
 ### root 06A1:29A4 `root 06A1:29A4`
 
-asm, reached by cards cards-day cards-flip cards-variants names trading: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants names trading: blocks 1/1, outcomes 0/0
 
 ### root 06A1:29B6 `root 06A1:29B6`
 
-asm, reached by battle cards cards-day cards-flip cards-variants castle chargen city core enemy mine names rules sainthelp saints special trading wild: blocks 1/1, outcomes 0/0
+asm, reached by battle battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants castle chargen city core enemy mine names rules sainthelp saints special trading wild: blocks 1/1, outcomes 0/0
+
+### root 06A1:29DE `root 06A1:29DE`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2BD4 `root 06A1:2BD4`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
+
+### root 06A1:2BE2 `root 06A1:2BE2`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2C28 `root 06A1:2C28`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2C3D `root 06A1:2C3D`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/5, outcomes 1/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 3/5, outcomes 1/4
 
 - `root+0x965E` `cmp ax, 0x50` (runtime-library)
 - `root+0x9664` `mov ah, 0x11` (runtime-library)
 
+### root 06A1:2C60 `root 06A1:2C60`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
 ### root 06A1:2C6B `root 06A1:2C6B`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/3, outcomes 1/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2C9E `root 06A1:2C9E`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2CB6 `root 06A1:2CB6`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 8/9, outcomes 2/4
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 8/9, outcomes 2/4
 
 - `root+0x96E0` `call word ptr [0x7cee]` (runtime-library)
 
 ### root 06A1:2CBD `root 06A1:2CBD`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2CE6 `root 06A1:2CE6`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+
+### root 06A1:2CF4 `root 06A1:2CF4`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### root 06A1:2D0E `root 06A1:2D0E`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2D28 `root 06A1:2D28`
 
-asm, reached by cards cards-day cards-flip cards-variants tactics trading: blocks 9/17, outcomes 7/18
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants tactics trading: blocks 9/17, outcomes 7/18
 
 - `root+0x9789` `mov bx, ax` (runtime-library)
 - `root+0x9794` `shr bx, 1` (runtime-library)
@@ -1352,11 +1812,11 @@ asm, reached by cards cards-day cards-flip cards-variants tactics trading: block
 
 ### root 06A1:2DC2 `root 06A1:2DC2`
 
-asm, reached by battle cards cards-day cards-flip cards-variants castle chargen city core enemy mine names rules sainthelp saints special trading wild: blocks 3/3, outcomes 2/2
+asm, reached by battle battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants castle chargen city core enemy mine names rules sainthelp saints special trading wild: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2EB4 `root 06A1:2EB4`
 
-asm, reached by cards cards-day cards-flip cards-variants path sainthelp: blocks 4/8, outcomes 3/8
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants path sainthelp: blocks 4/8, outcomes 3/8
 
 - `root+0x98FF` `or si, si` (runtime-library)
 - `root+0x9903` `mov ax, ds` (runtime-library)
@@ -1365,7 +1825,11 @@ asm, reached by cards cards-day cards-flip cards-variants path sainthelp: blocks
 
 ### root 06A1:2F12 `root 06A1:2F12`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 5/6
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 5/6
+
+### root 06A1:2F58 `root 06A1:2F58`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/6, outcomes 3/6
 
 ### root 06A1:2F94 `root 06A1:2F94`
 
@@ -1373,19 +1837,19 @@ asm, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/6
 
 ### root 06A1:2FBE `root 06A1:2FBE`
 
-asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2FE8 `root 06A1:2FE8`
 
-asm, reached by battle cards cards-day cards-flip cards-variants castle city enemy mine names rules sainthelp saints special wild: blocks 3/3, outcomes 2/2
+asm, reached by battle battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants castle city enemy mine names rules sainthelp saints special wild: blocks 3/3, outcomes 2/2
 
 ### root 06A1:301E `root 06A1:301E`
 
-asm, reached by cards cards-day cards-flip cards-variants names sainthelp: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants names sainthelp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:3064 `root 06A1:3064`
 
-asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 3/6
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 3/6
 
 - `root+0x9AA3` `mov bx, es` (runtime-library)
 
@@ -1393,47 +1857,137 @@ asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/7,
 
 asm, reached by cards cards-day cards-variants: blocks 7/7, outcomes 5/6
 
+### R000+0x0022 `R000+0x0022 (0E76:0022)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/3, outcomes 1/2
+
+- `R000+0x0064` `push 0xbd6`
+
+### R000+0x0092 `R000+0x0092 (0E76:0092)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R000+0x0114 `R000+0x0114 (0E76:0114)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 17/49, outcomes 12/46
+
+- `R000+0x0214` `push si`
+- `R000+0x0235` `ja 0x247`
+- `R000+0x0237` `cmp al, 6`
+- `R000+0x023B` `cmp al, 4`
+- `R000+0x023F` `or al, al`
+- `R000+0x0243` `sub al, 3`
+- `R000+0x0247` `mov ax, word ptr [0xc27]`
+- `R000+0x024C` `sub al, 7`
+- `R000+0x0250` `jmp 0x247`
+- `R000+0x0252` `mov ax, word ptr [0xc1f]`
+- `R000+0x0258` `mov ax, word ptr [0xc21]`
+- `R000+0x025E` `mov ax, word ptr [0xc23]`
+- `R000+0x0264` `mov ax, word ptr [0xc25]`
+- `R000+0x0267` `mov word ptr [0xa876], ax`
+- `R000+0x02D4` `jmp 0x37d`
+- `R000+0x02EB` `mov bx, word ptr [bp - 0x54]`
+- `R000+0x02F5` `lea di, [bp - 0x52]`
+- `R000+0x037A` `jmp 0x2d7`
+- `R000+0x0383` `push 0`
+- `R000+0x03A5` `jmp 0x512`
+- `R000+0x03C2` `ja 0x3cf`
+- `R000+0x03C4` `sub al, 0x41`
+- `R000+0x03C8` `sub al, 0xe`
+- `R000+0x03CC` `jmp 0x4f4`
+- `R000+0x03CF` `lea di, [bp - 0x52]`
+- `R000+0x040F` `lea si, [bp - 0x52]`
+- `R000+0x0444` `mov bx, word ptr [bp - 0x54]`
+- `R000+0x0491` `mov bx, word ptr [bp - 0x54]`
+- `R000+0x04D6` `lea ax, [bp - 0x12]`
+- `R000+0x04F4` `mov byte ptr [0xbf4], 1`
+- `R000+0x050F` `jmp 0x3a8`
+- `R000+0x0518` `push 0`
+
+### R000+0x052A `R000+0x052A (0E76:052A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 11/17, outcomes 7/12
+
+- `R000+0x05E6` `push 1`
+- `R000+0x0792` `mov byte ptr [0x11dd], 1`
+- `R000+0x079E` `mov al, byte ptr [0xc02]`
+- `R000+0x07DC` `push 0`
+- `R000+0x07F2` `push 0`
+- `R000+0x081E` `lcall 0x44a, 0x1f4`
+
+### R000+0x083E `R000+0x083E (0E76:083E)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 19/19, outcomes 16/16
+
+### R000+0x0F04 `R000+0x0F04 (0E76:0F04)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/9, outcomes 4/6
+
+- `R000+0x0F60` `mov di, 0x744`
+- `R000+0x0FEC` `mov di, 0x744`
+
+### R000+0x1010 `R000+0x1010 (0E76:1010)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R000+0x1150 `R000+0x1150 (0E76:1150)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 25/39, outcomes 22/42
+
+- `R000+0x1192` `mov ax, word ptr [0xa8bb]`
+- `R000+0x1224` `mov ax, word ptr es:[bx + 3]`
+- `R000+0x128A` `sub al, 0x41`
+- `R000+0x1296` `sub al, 2`
+- `R000+0x129A` `jmp 0x12c9`
+- `R000+0x12A0` `add word ptr [bp - 0x1c], 0x2c90`
+- `R000+0x12A8` `add word ptr [bp - 0x1c], 0x2fc0`
+- `R000+0x12B8` `add word ptr [bp - 0x1c], 0x290c`
+- `R000+0x12C0` `add word ptr [bp - 0x1c], 0x1c60`
+- `R000+0x12EB` `push 0`
+- `R000+0x1378` `cmp byte ptr [0xbf4], 1`
+- `R000+0x137F` `mov ax, word ptr [0xa8b9]`
+- `R000+0x138E` `push 0`
+- `R000+0x1395` `add sp, 2`
+
+### R000+0x13C8 `R000+0x13C8 (0FB2:0008)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/18, outcomes 1/18
+
+- `R000+0x13F8` `push es`
+- `R000+0x1410` `cmp ax, 7`
+- `R000+0x1415` `cmp byte ptr [bp - 0x23], 8`
+- `R000+0x141B` `cmp byte ptr [bp - 0x23], 0xe`
+- `R000+0x1421` `mov word ptr [0xe2c], 0x11`
+- `R000+0x142A` `cmp byte ptr [bp - 0x23], 0x10`
+- `R000+0x1430` `mov word ptr [0xe2c], 0x14`
+- `R000+0x143A` `mov al, byte ptr [bp - 0x24]`
+- `R000+0x1447` `mov word ptr [0xe2c], 0x23`
+- `R000+0x1450` `cmp byte ptr [bp - 0x23], 0xe`
+- `R000+0x1456` `mov word ptr [0xe2c], 0x22`
+- `R000+0x1460` `cmp byte ptr [bp - 0x23], 0x10`
+- `R000+0x1466` `mov word ptr [0xe2c], 0x24`
+- `R000+0x146E` `mov word ptr [0xe2a], 3`
+- `R000+0x1474` `mov word ptr [0xe2c], 0x12`
+- `R000+0x147A` `pop di`
+
 ### R002+0x0000 `R002+0x0000 (0E76:0000)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/85, outcomes 0/76
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 24/85, outcomes 18/76
 
 - `R002+0x002C` `cmp byte ptr [0xa876], 0x4e`
 - `R002+0x0033` `lcall 0x47c, 0x791`
-- `R002+0x0098` `mov byte ptr [0x907a], 1`
-- `R002+0x00A4` `mov ax, word ptr [bp + 6]`
 - `R002+0x00AB` `dec ax`
 - `R002+0x00AE` `dec ax`
 - `R002+0x00B1` `dec ax`
 - `R002+0x00B4` `jmp 0xee`
-- `R002+0x00B6` `and byte ptr [0x9080], 0xfd`
 - `R002+0x00C6` `and byte ptr [0x9080], 0xed`
 - `R002+0x00D2` `and byte ptr [0x9080], 0xed`
 - `R002+0x00E4` `or byte ptr [0x9080], 2`
-- `R002+0x00EE` `push cs`
 - `R002+0x00F9` `lcall 0x9c0, 0x1adb`
 - `R002+0x0104` `mov bx, 0x40`
 - `R002+0x0112` `or byte ptr [0x9080], 1`
-- `R002+0x0117` `mov ax, word ptr [bp + 0xa]`
-- `R002+0x0129` `push 0xff8`
 - `R002+0x0148` `push 0xffc`
-- `R002+0x014B` `push 0x11ea`
-- `R002+0x01D5` `push word ptr [bp + 0x1c]`
-- `R002+0x0204` `push cs`
-- `R002+0x026F` `mov al, byte ptr [bp - 2]`
-- `R002+0x028B` `push cs`
-- `R002+0x02BF` `mov bx, word ptr [bp - 2]`
-- `R002+0x02D9` `mov al, byte ptr [0x9080]`
-- `R002+0x02E2` `push word ptr [0x1162]`
-- `R002+0x02EE` `mov word ptr [bp - 2], 5`
-- `R002+0x02F3` `mov bx, word ptr [bp - 2]`
-- `R002+0x0307` `mov word ptr [bp - 4], 0x26`
-- `R002+0x0311` `mov ax, word ptr [bp - 4]`
-- `R002+0x0332` `sub ax, ax`
-- `R002+0x034B` `mov bx, word ptr [bp - 2]`
-- `R002+0x0378` `push 0x1c0`
 - `R002+0x038A` `jmp 0x4d2`
-- `R002+0x038D` `push word ptr [0x11e8]`
-- `R002+0x04D2` `push 0x15`
 - `R002+0x053C` `mov di, 0x10dc`
 - `R002+0x053F` `mov si, 0x9085`
 - `R002+0x0566` `mov di, 0x10e4`
@@ -1482,13 +2036,188 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 1/85, outcom
 - `R002+0x07FA` `lcall 0x9c0, 0x186f`
 - `R002+0x07FF` `mov ax, word ptr [0xca3d]`
 
+### R002+0x0806 `R002+0x0806 (0E76:0806)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 14/15, outcomes 12/14
+
+- `R002+0x08AB` `jmp 0x8c2`
+
+### R002+0x08FE `R002+0x08FE (0E76:08FE)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 21/21, outcomes 20/20
+
+### R002+0x0C8C `R002+0x0C8C (0E76:0C8C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 95/106, outcomes 76/86
+
+- `R002+0x0D05` `jmp 0xdee`
+- `R002+0x0DFF` `jmp 0xf46`
+- `R002+0x0F57` `jmp 0x1088`
+- `R002+0x1217` `jmp 0x1348`
+- `R002+0x14E8` `jmp 0x1631`
+- `R002+0x1641` `mov word ptr [bp - 0x22], 0`
+- `R002+0x164A` `mov al, byte ptr [bx + si + 0xb5]`
+- `R002+0x165E` `mov ax, word ptr es:[bx + di + 0x22]`
+- `R002+0x1665` `inc si`
+- `R002+0x1666` `mov bx, word ptr [bp - 0x28]`
+- `R002+0x1672` `push 0x1285`
+
+### R002+0x168A `R002+0x168A (0E76:168A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 11/11, outcomes 7/8
+
+### R002+0x1750 `R002+0x1750 (0E76:1750)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R002+0x1762 `R002+0x1762 (0E76:1762)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
+
+### R002+0x17EA `R002+0x17EA (0E76:17EA)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R002+0x1830 `R002+0x1830 (0E76:1830)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 16/16, outcomes 11/14
+
+### R002+0x1A7A `R002+0x1A7A (0E76:1A7A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R003+0x0000 `R003+0x0000 (0E76:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### R003+0x006A `R003+0x006A (0E76:006A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R003+0x0CE8 `R003+0x0CE8 (0E76:0CE8)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 18/47, outcomes 12/32
+
+- `R003+0x0D68` `jmp 0x19c6`
+- `R003+0x0DBA` `push 0x131c`
+- `R003+0x0E03` `push ax`
+- `R003+0x1534` `mov di, word ptr [bp - 0x34]`
+- `R003+0x1558` `mov di, word ptr [bp - 0x34]`
+- `R003+0x157C` `mov di, word ptr [bp - 0x34]`
+- `R003+0x15A0` `mov di, word ptr [bp - 0x34]`
+- `R003+0x15C4` `mov di, word ptr [bp - 0x34]`
+- `R003+0x15E8` `mov di, word ptr [bp - 0x34]`
+- `R003+0x160A` `mov di, word ptr [bp - 0x34]`
+- `R003+0x162C` `mov di, word ptr [bp - 0x34]`
+- `R003+0x164E` `cmp ax, 8`
+- `R003+0x1653` `jmp 0x15c4`
+- `R003+0x1656` `shl ax, 1`
+- `R003+0x1670` `inc word ptr [bp - 0x34]`
+- `R003+0x1673` `les bx, ptr [bp - 0x58]`
+- `R003+0x1681` `mov di, word ptr [bp - 0x34]`
+- `R003+0x1698` `push 0x33fc`
+- `R003+0x175A` `lea ax, [bp - 0x32]`
+- `R003+0x1793` `push 0x1326`
+- `R003+0x179D` `mov bx, si`
+- `R003+0x17F2` `push word ptr [bp - 0x36]`
+- `R003+0x17FF` `push si`
+- `R003+0x1838` `push word ptr [0x1164]`
+- `R003+0x187B` `push 0x1352`
+- `R003+0x18C4` `push ax`
+- `R003+0x18F5` `push word ptr [0x1162]`
+- `R003+0x1937` `push 0x135f`
+- `R003+0x1980` `push ax`
+
+### R003+0x1A86 `R003+0x1A86 (1016:0086)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R003+0x25D6 `R003+0x25D6 (1016:0BD6)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 4/5, outcomes 2/4
+
+- `R003+0x25EC` `movsb byte ptr es:[di], byte ptr [si]`
+
+### R003+0x26AE `R003+0x26AE (1016:0CAE)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 13/21, outcomes 5/12
+
+- `R003+0x2700` `mov ax, 3`
+- `R003+0x2742` `jmp 0xdf7`
+- `R003+0x274A` `jmp 0xdf7`
+- `R003+0x2762` `dec ax`
+- `R003+0x2765` `mov ax, 2`
+- `R003+0x276B` `lea ax, [si + 0x2f9e]`
+- `R003+0x27ED` `mov ax, 4`
+- `R003+0x27F7` `mov ax, 1`
+
+### R003+0x2707 `R003+0x2707 (1016:0D07)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R003+0x2801 `R003+0x2801 (1016:0E01)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 10/11, outcomes 7/8
+
+- `R003+0x28A4` `mov word ptr [bp - 2], 0x306`
+
+### R003+0x28CC `R003+0x28CC (1016:0ECC)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 15/31, outcomes 11/28
+
+- `R003+0x294D` `jmp 0xee3`
+- `R003+0x2970` `jmp 0xee3`
+- `R003+0x2973` `mov al, byte ptr es:[si + 0xa]`
+- `R003+0x297D` `mov bx, si`
+- `R003+0x298D` `test byte ptr es:[si + 0xa], 0x3f`
+- `R003+0x2994` `mov ax, 4`
+- `R003+0x299E` `jmp 0xee3`
+- `R003+0x29A1` `les bx, ptr [0x6f0e]`
+- `R003+0x29B4` `mov ax, 6`
+- `R003+0x29BE` `jmp 0xee3`
+- `R003+0x29C2` `les bx, ptr [0x6f0e]`
+- `R003+0x29D4` `mov ax, 8`
+- `R003+0x29DE` `jmp 0xee3`
+- `R003+0x29E1` `les bx, ptr [0x6f0e]`
+- `R003+0x29F2` `and di, 0xff`
+- `R003+0x29F6` `mov bx, word ptr [0x6f0e]`
+
+### R003+0x2A0A `R003+0x2A0A (1016:100A)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/9, outcomes 4/6
+
+- `R003+0x2A2F` `sub ax, ax`
+- `R003+0x2A52` `jmp 0x102f`
+
+### R003+0x2A72 `R003+0x2A72 (1016:1072)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/7, outcomes 5/6
+
+- `R003+0x2ACA` `xor di, di`
+
+### R003+0x2AF5 `R003+0x2AF5 (1016:10F5)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/5, outcomes 4/4
+
+### R004+0x0000 `R004+0x0000 (0E76:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 13/20, outcomes 4/6
+
+- `R004+0x00E8` `jmp 0x208`
+- `R004+0x0208` `push word ptr [bp + 0x1c]`
+- `R004+0x02D0` `mov si, word ptr [bp + 0xa]`
+- `R004+0x0302` `push word ptr [bp + 0x1c]`
+- `R004+0x032C` `push word ptr [bp + 0x1c]`
+- `R004+0x0352` `push word ptr [bp + 0x1c]`
+- `R004+0x03C6` `jmp 0x4a6`
+
 ### R004+0x04CC `R004+0x04CC (0E76:04CC)`
 
-draft, reached by castle city enemy mine special wild: blocks 19/19, outcomes 18/18
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city enemy mine special wild: blocks 19/19, outcomes 18/18
 
 ### R004+0x06AA `R004+0x06AA (0E76:06AA)`
 
-draft, reached by castle city enemy mine special wild: blocks 114/122, outcomes 97/118
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city enemy mine special wild: blocks 114/122, outcomes 97/118
 
 - `R004+0x0702` `cmp word ptr [bp - 0x10], 0`
 - `R004+0x0708` `dec word ptr [bp - 0x10]`
@@ -1501,14 +2230,17 @@ draft, reached by castle city enemy mine special wild: blocks 114/122, outcomes 
 
 ### R004+0x1060 `R004+0x1060 (0E76:1060)`
 
-draft, reached by castle city enemy mine special wild: blocks 9/9, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city enemy mine special wild: blocks 9/9, outcomes 8/8
+
+### R004+0x1134 `R004+0x1134 (0E76:1134)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
 
 ### R004+0x122C `R004+0x122C (0E76:122C)`
 
-draft, reached by enemy: blocks 183/192, outcomes 144/160
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild enemy: blocks 184/192, outcomes 145/160
 
 - `R004+0x1638` `inc word ptr [bp - 0x176]`
-- `R004+0x176B` `jmp 0x16da`
 - `R004+0x18C7` `mov cx, word ptr [bp - 0x1e]`
 - `R004+0x194B` `mov ax, 0x7f`
 - `R004+0x1978` `mov ax, 0x7f`
@@ -1519,17 +2251,17 @@ draft, reached by enemy: blocks 183/192, outcomes 144/160
 
 ### R004+0x1D90 `R004+0x1D90 (0E76:1D90)`
 
-draft, reached by enemy: blocks 53/54, outcomes 45/46
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild enemy: blocks 53/54, outcomes 45/46
 
 - `R004+0x1ECD` `mov byte ptr es:[bx + 0xd], 0`
 
 ### R004+0x20DC `R004+0x20DC (0E76:20DC)`
 
-draft, reached by castle city mine special: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle castle city mine special: blocks 3/3, outcomes 2/2
 
 ### R004+0x20F6 `R004+0x20F6 (0E76:20F6)`
 
-draft, reached by castle city enemy mine special wild: blocks 9/9, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild castle city enemy mine special wild: blocks 9/9, outcomes 9/10
 
 ### R004+0x213C `R004+0x213C (0E76:213C)`
 
@@ -1537,21 +2269,21 @@ draft, reached by castle: blocks 3/3, outcomes 2/2
 
 ### R004+0x2160 `R004+0x2160 (0E76:2160)`
 
-draft, reached by city wild: blocks 13/13, outcomes 18/18
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild city wild: blocks 13/13, outcomes 18/18
 
 ### R004+0x21BA `R004+0x21BA (1091:000A)`
 
-draft, reached by city mine: blocks 2/3, outcomes 1/2
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 2/3, outcomes 1/2
 
 - `R004+0x21D1` `mov ax, 7`
 
 ### R004+0x227A `R004+0x227A (1091:00CA)`
 
-draft, reached by city mine: blocks 32/32, outcomes 22/22
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 32/32, outcomes 22/22
 
 ### R004+0x27B4 `R004+0x27B4 (1091:0604)`
 
-draft, reached by city mine: blocks 11/17, outcomes 1/2
+draft, reached by battle-oracle-mine city mine: blocks 11/17, outcomes 1/2
 
 - `R004+0x2804` `jmp 0x745`
 - `R004+0x2820` `mov dx, word ptr [bp - 0xc]`
@@ -1562,11 +2294,11 @@ draft, reached by city mine: blocks 11/17, outcomes 1/2
 
 ### R004+0x28FE `R004+0x28FE (1091:074E)`
 
-draft, reached by city mine: blocks 14/14, outcomes 14/14
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 14/14, outcomes 14/14
 
 ### R004+0x29B0 `R004+0x29B0 (1091:0800)`
 
-draft, reached by city mine: blocks 43/50, outcomes 34/44
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 43/50, outcomes 34/44
 
 - `R004+0x2AA9` `mov al, byte ptr es:[si + 0xa]`
 - `R004+0x2B68` `mov al, byte ptr [bp - 7]`
@@ -1578,33 +2310,33 @@ draft, reached by city mine: blocks 43/50, outcomes 34/44
 
 ### R004+0x2D66 `R004+0x2D66 (1091:0BB6)`
 
-draft, reached by city mine: blocks 19/19, outcomes 18/18
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 19/19, outcomes 18/18
 
 ### R004+0x2E7A `R004+0x2E7A (1091:0CCA)`
 
-draft, reached by city mine: blocks 22/22, outcomes 20/20
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 22/22, outcomes 20/20
 
 ### R004+0x2F54 `R004+0x2F54 (1091:0DA4)`
 
-draft, reached by city mine: blocks 32/33, outcomes 32/34
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 32/33, outcomes 32/34
 
 - `R004+0x3040` `jmp 0xf37`
 
 ### R004+0x3166 `R004+0x3166 (1091:0FB6)`
 
-draft, reached by city mine: blocks 19/19, outcomes 18/18
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 19/19, outcomes 18/18
 
 ### R004+0x32D6 `R004+0x32D6 (1091:1126)`
 
-draft, reached by city mine: blocks 40/40, outcomes 40/40
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 40/40, outcomes 40/40
 
 ### R004+0x34E4 `R004+0x34E4 (1091:1334)`
 
-draft, reached by city mine: blocks 19/19, outcomes 18/18
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 19/19, outcomes 18/18
 
 ### R004+0x360A `R004+0x360A (1091:145A)`
 
-draft, reached by city mine: blocks 38/55, outcomes 45/60
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 38/55, outcomes 45/60
 
 - `R004+0x368D` `mov es, word ptr [bp - 2]`
 - `R004+0x36AE` `mov es, word ptr [bp - 2]`
@@ -1626,32 +2358,279 @@ draft, reached by city mine: blocks 38/55, outcomes 45/60
 
 ### R004+0x3990 `R004+0x3990 (1091:17E0)`
 
-draft, reached by city mine: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-gate battle-oracle-mine battle-oracle-street city mine: blocks 3/3, outcomes 2/2
+
+### R004+0x3ADE `R004+0x3ADE (1223:000E)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 11/19, outcomes 9/24
+
+- `R004+0x3AFE` `cmp dx, ax`
+- `R004+0x3B02` `sub ax, ax`
+- `R004+0x3B24` `mov word ptr [bp - 2], 0xffff`
+- `R004+0x3B48` `jg 0x80`
+- `R004+0x3B4A` `cmp word ptr [bp + 6], 0`
+- `R004+0x3B50` `mov ax, word ptr [bp + 0xa]`
+- `R004+0x3B6B` `cmp word ptr [bp + 6], 0`
+- `R004+0x3B76` `jmp 0x32`
+
+### R004+0x3B78 `R004+0x3B78 (1223:00A8)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 10/19, outcomes 8/24
+
+- `R004+0x3B98` `cmp dx, ax`
+- `R004+0x3B9C` `sub ax, ax`
+- `R004+0x3BA6` `add word ptr [bp + 6], 1`
+- `R004+0x3BBE` `mov word ptr [bp - 2], 0xffff`
+- `R004+0x3BE2` `jg 0x11a`
+- `R004+0x3BE4` `cmp word ptr [bp + 6], 0`
+- `R004+0x3BEA` `mov ax, word ptr [bp + 0xa]`
+- `R004+0x3C05` `cmp word ptr [bp + 6], 0`
+- `R004+0x3C10` `jmp 0xcc`
+
+### R004+0x3EC2 `R004+0x3EC2 (1262:0002)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/9, outcomes 4/10
+
+- `R004+0x3F06` `mov ax, bx`
+- `R004+0x3F19` `push 0x2e38`
+- `R004+0x3F3C` `push 8`
+
+### R004+0x3F64 `R004+0x3F64 (1262:00A4)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/13, outcomes 1/2
+
+- `R004+0x3F73` `jmp 0x157`
+- `R004+0x3F8E` `mov ax, word ptr [0x8ce]`
+- `R004+0x3F9C` `push si`
+- `R004+0x3FCA` `push si`
+- `R004+0x3FE4` `push si`
+- `R004+0x3FFE` `push si`
+- `R004+0x400E` `sub ax, ax`
+- `R004+0x4017` `mov ax, si`
+
+### R004+0x401C `R004+0x401C (1262:015C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/13, outcomes 1/2
+
+- `R004+0x4032` `jmp 0x208`
+- `R004+0x404E` `mov ax, word ptr [0x8ce]`
+- `R004+0x405C` `push si`
+- `R004+0x4078` `push si`
+- `R004+0x4092` `push si`
+- `R004+0x40AC` `push si`
+- `R004+0x40BC` `sub ax, ax`
+
+### R004+0x4124 `R004+0x4124 (1262:0264)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 3/4
+
+### R004+0x415A `R004+0x415A (1262:029A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 9/16, outcomes 7/16
+
+- `R004+0x417D` `mov ax, word ptr [bp + 6]`
+- `R004+0x418E` `cmp word ptr es:[0x34], dx`
+- `R004+0x419C` `push dx`
+- `R004+0x41A9` `push di`
+- `R004+0x41C5` `jmp 0x47c`
+- `R004+0x41FE` `jmp 0x47c`
+- `R004+0x433C` `sub ax, ax`
+
+### R004+0x4342 `R004+0x4342 (1262:0482)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/27, outcomes 3/28
+
+- `R004+0x4364` `mov ax, 7`
+- `R004+0x4385` `cmp dx, ax`
+- `R004+0x4389` `jmp 0x5ee`
+- `R004+0x438C` `mov bx, word ptr [0xc099]`
+- `R004+0x43C2` `mov ax, word ptr [bp - 8]`
+- `R004+0x43CB` `mov word ptr [0x8da], si`
+- `R004+0x43D8` `mov bx, word ptr [bp - 0xa]`
+- `R004+0x43DF` `mov di, word ptr [bp - 8]`
+- `R004+0x43E2` `test word ptr [0x8d8], di`
+- `R004+0x43E8` `mov word ptr [0xc099], si`
+- `R004+0x43F1` `inc si`
+- `R004+0x4400` `cmp word ptr [bp - 4], -1`
+- `R004+0x4406` `cmp si, 8`
+- `R004+0x440B` `mov word ptr [0x8da], si`
+- `R004+0x4416` `mov cx, si`
+- `R004+0x4423` `shl di, 1`
+- `R004+0x4428` `mov si, word ptr [0x8da]`
+- `R004+0x442E` `mov word ptr [0x8da], si`
+- `R004+0x446A` `cmp dx, ax`
+- `R004+0x446E` `mov si, word ptr [0x8da]`
+- `R004+0x449A` `mov es, word ptr [0x7d2c]`
+
+### R004+0x44C2 `R004+0x44C2 (1262:0602)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/29, outcomes 3/34
+
+- `R004+0x451F` `mov ax, word ptr [bp - 8]`
+- `R004+0x453A` `jl 0x684`
+- `R004+0x453C` `cmp word ptr [bp - 8], ax`
+- `R004+0x4541` `jmp 0x735`
+- `R004+0x4544` `sub si, si`
+- `R004+0x4546` `mov ax, word ptr [bp - 8]`
+- `R004+0x4574` `mov ax, word ptr [bp - 0x20]`
+- `R004+0x4589` `cmp word ptr [bp - 0x34], 2`
+- `R004+0x458F` `or si, si`
+- `R004+0x4593` `push word ptr [bp - 2]`
+- `R004+0x45AD` `mov ax, word ptr [bp + 6]`
+- `R004+0x45B8` `jl 0x6ff`
+- `R004+0x45BA` `cmp word ptr [bp - 8], ax`
+- `R004+0x45BF` `mov ax, word ptr [bp - 0x20]`
+- `R004+0x45CE` `adc dx, 0`
+- `R004+0x45DD` `cmp word ptr [bp - 6], -1`
+- `R004+0x45E3` `cmp word ptr [bp - 0x20], -1`
+- `R004+0x45E9` `jmp 0x63f`
+- `R004+0x45EC` `cmp word ptr [bp - 0x1e], -1`
+- `R004+0x45F2` `jmp 0x63f`
+- `R004+0x4600` `jl 0x747`
+- `R004+0x4602` `cmp word ptr [bp - 8], ax`
+- `R004+0x4607` `mov ax, 0xffff`
+
+### R004+0x473A `R004+0x473A (1262:087A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 8/13, outcomes 5/10
+
+- `R004+0x4754` `mov ax, si`
+- `R004+0x475A` `push word ptr [bp + 0x12]`
+- `R004+0x4778` `push word ptr [bp + 0x12]`
+- `R004+0x4796` `push word ptr [bp + 0x12]`
+- `R004+0x47A2` `push word ptr [bp + 0x12]`
+
+### R004+0x47D4 `R004+0x47D4 (1262:0914)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 8/13, outcomes 5/10
+
+- `R004+0x47EE` `mov ax, si`
+- `R004+0x47F4` `push word ptr [bp + 0x12]`
+- `R004+0x4812` `push word ptr [bp + 0x12]`
+- `R004+0x4830` `push word ptr [bp + 0x12]`
+- `R004+0x483C` `push word ptr [bp + 0x12]`
+
+### R004+0x493C `R004+0x493C (1262:0A7C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/7, outcomes 2/8
+
+- `R004+0x4952` `push ds`
+- `R004+0x4962` `mov word ptr [bp - 6], ax`
+- `R004+0x4975` `mov word ptr [bp - 8], 1`
+- `R004+0x4981` `mov ax, word ptr [bp - 8]`
+
+### R004+0x4BCA `R004+0x4BCA (1262:0D0A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R004+0x4C06 `R004+0x4C06 (1336:0006)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 12/21, outcomes 10/24
+
+- `R004+0x4C0F` `jmp 0xe2`
+- `R004+0x4C25` `mov word ptr [0x8da], 2`
+- `R004+0x4C4B` `mov word ptr [0x8da], 3`
+- `R004+0x4C76` `mov word ptr [0x8da], 5`
+- `R004+0x4C9E` `push cs`
+- `R004+0x4CA6` `mov word ptr [0x8da], 6`
+- `R004+0x4CC3` `push cs`
+- `R004+0x4CCB` `mov word ptr [0x8da], 7`
+- `R004+0x4CE9` `mov word ptr [0x8d6], 0xff00`
+
+### R004+0x4CF6 `R004+0x4CF6 (1336:00F6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/9, outcomes 1/8
+
+- `R004+0x4D12` `push cs`
+- `R004+0x4D20` `push dx`
+- `R004+0x4D2F` `xor byte ptr [0x8d6], 1`
+- `R004+0x4D36` `xor byte ptr [0x8d6], 1`
+- `R004+0x4D6A` `mov word ptr [0x8d4], 1`
+- `R004+0x4D92` `mov word ptr [0x8d4], 2`
+- `R004+0x4DD7` `mov word ptr [bp - 0x24], 2`
+
+### R004+0x4E52 `R004+0x4E52 (1336:0252)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/7, outcomes 1/6
+
+- `R004+0x4E6C` `push cs`
+- `R004+0x4E84` `xor byte ptr [0x8d6], 2`
+- `R004+0x4E8C` `xor byte ptr [0x8d6], 2`
+- `R004+0x4ED3` `mov word ptr [0x8d4], 3`
+- `R004+0x4F18` `mov word ptr [bp - 0x24], 2`
+
+### R004+0x4F92 `R004+0x4F92 (1336:0392)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/5, outcomes 1/4
+
+- `R004+0x4FA4` `push di`
+- `R004+0x4FBE` `xor byte ptr [0x8d6], 8`
+- `R004+0x4FC6` `xor byte ptr [0x8d6], 8`
+
+### R004+0x5220 `R004+0x5220 (1336:0620)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 11/16, outcomes 7/14
+
+- `R004+0x52B6` `mov ax, word ptr [bp - 0x1a]`
+- `R004+0x52CD` `mov ax, word ptr [bx + 0x1c]`
+- `R004+0x52D5` `popf `
+- `R004+0x52DC` `popf `
+- `R004+0x52EC` `mov ax, word ptr [bp - 0x1a]`
+
+### R004+0x56E6 `R004+0x56E6 (1336:0AE6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/6, outcomes 1/6
+
+- `R004+0x56FC` `mov ah, 0x46`
+- `R004+0x5705` `mov word ptr [bp - 2], 0`
+- `R004+0x570C` `mov word ptr [0x8be], ax`
+- `R004+0x571F` `mov ax, word ptr [bp - 2]`
+
+### R004+0x5752 `R004+0x5752 (1336:0B52)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/6, outcomes 3/6
+
+- `R004+0x57B6` `mov ax, 1`
+
+### R004+0x58B4 `R004+0x58B4 (1336:0CB4)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/6, outcomes 1/4
+
+- `R004+0x58D2` `mov ax, word ptr [0xc0f9]`
+- `R004+0x58EE` `mov word ptr [0x8c2], ax`
+- `R004+0x58FC` `xor bh, bh`
+- `R004+0x5907` `mov ax, word ptr [bp - 6]`
+
+### R004+0x595C `R004+0x595C (1336:0D5C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/3, outcomes 1/2
+
+- `R004+0x5974` `mov word ptr [bp - 6], 1`
 
 ### R005+0x0000 `R005+0x0000 (1432:0000)`
 
-draft, reached by castle: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle castle: blocks 3/3, outcomes 2/2
 
 ### R005+0x005C `R005+0x005C (1432:005C)`
 
-draft, reached by castle: blocks 18/18, outcomes 16/16
+draft, reached by battle-oracle-castle castle: blocks 18/18, outcomes 16/16
 
 ### R005+0x022A `R005+0x022A (1432:022A)`
 
-draft, reached by castle: blocks 33/35, outcomes 34/36
+draft, reached by battle-oracle-castle castle: blocks 33/35, outcomes 34/36
 
 - `R005+0x0280` `jmp 0x3b3`
 - `R005+0x02A5` `jmp 0x3a5`
 
 ### R005+0x03BC `R005+0x03BC (146D:000C)`
 
-draft, reached by castle: blocks 7/8, outcomes 6/12
+draft, reached by battle-oracle-castle castle: blocks 7/8, outcomes 6/12
 
 - `R005+0x0410` `sub ax, ax`
 
 ### R005+0x0416 `R005+0x0416 (146D:0066)`
 
-draft, reached by castle: blocks 18/22, outcomes 18/22
+draft, reached by battle-oracle-castle castle: blocks 18/22, outcomes 18/22
 
 - `R005+0x042D` `jmp 0x175`
 - `R005+0x0434` `jmp 0x175`
@@ -1660,19 +2639,19 @@ draft, reached by castle: blocks 18/22, outcomes 18/22
 
 ### R005+0x052A `R005+0x052A (146D:017A)`
 
-draft, reached by castle: blocks 7/8, outcomes 6/12
+draft, reached by battle-oracle-castle castle: blocks 7/8, outcomes 6/12
 
 - `R005+0x057E` `sub ax, ax`
 
 ### R005+0x0584 `R005+0x0584 (146D:01D4)`
 
-draft, reached by castle: blocks 5/6, outcomes 4/8
+draft, reached by battle-oracle-castle castle: blocks 5/6, outcomes 4/8
 
 - `R005+0x0600` `sub ax, ax`
 
 ### R005+0x0606 `R005+0x0606 (146D:0256)`
 
-draft, reached by castle: blocks 137/157, outcomes 134/178
+draft, reached by battle-oracle-castle castle: blocks 137/157, outcomes 134/178
 
 - `R005+0x06DF` `jmp 0x2e8`
 - `R005+0x06E2` `dec word ptr [bp - 2]`
@@ -1697,17 +2676,17 @@ draft, reached by castle: blocks 137/157, outcomes 134/178
 
 ### R005+0x0BA4 `R005+0x0BA4 (146D:07F4)`
 
-draft, reached by castle: blocks 6/6, outcomes 4/8
+draft, reached by battle-oracle-castle castle: blocks 6/6, outcomes 4/8
 
 ### R005+0x0C08 `R005+0x0C08 (146D:0858)`
 
-draft, reached by castle: blocks 9/10, outcomes 10/16
+draft, reached by battle-oracle-castle castle: blocks 9/10, outcomes 10/16
 
 - `R005+0x0C68` `sub ax, ax`
 
 ### R005+0x0C6E `R005+0x0C6E (146D:08BE)`
 
-draft, reached by castle: blocks 22/26, outcomes 26/30
+draft, reached by battle-oracle-castle castle: blocks 22/26, outcomes 26/30
 
 - `R005+0x0C7B` `jmp 0x9db`
 - `R005+0x0C94` `jmp 0x9db`
@@ -1716,35 +2695,35 @@ draft, reached by castle: blocks 22/26, outcomes 26/30
 
 ### R005+0x0D90 `R005+0x0D90 (146D:09E0)`
 
-draft, reached by castle: blocks 7/8, outcomes 6/12
+draft, reached by battle-oracle-castle castle: blocks 7/8, outcomes 6/12
 
 - `R005+0x0DE4` `sub ax, ax`
 
 ### R005+0x0DEA `R005+0x0DEA (146D:0A3A)`
 
-draft, reached by castle: blocks 12/14, outcomes 14/20
+draft, reached by battle-oracle-castle castle: blocks 12/14, outcomes 14/20
 
 - `R005+0x0E06` `jmp 0xae2`
 - `R005+0x0E0D` `jmp 0xae2`
 
 ### R005+0x0E98 `R005+0x0E98 (146D:0AE8)`
 
-draft, reached by castle: blocks 6/6, outcomes 4/8
+draft, reached by battle-oracle-castle castle: blocks 6/6, outcomes 4/8
 
 ### R005+0x0EF2 `R005+0x0EF2 (146D:0B42)`
 
-draft, reached by castle: blocks 6/6, outcomes 4/8
+draft, reached by battle-oracle-castle castle: blocks 6/6, outcomes 4/8
 
 ### R005+0x0F4C `R005+0x0F4C (146D:0B9C)`
 
-draft, reached by castle: blocks 7/9, outcomes 6/12
+draft, reached by battle-oracle-castle castle: blocks 7/9, outcomes 6/12
 
 - `R005+0x0FA4` `sub ax, ax`
 - `R005+0x0FAA` `mov ax, 0xffff`
 
 ### R005+0x0FB2 `R005+0x0FB2 (146D:0C02)`
 
-draft, reached by castle: blocks 43/47, outcomes 48/54
+draft, reached by battle-oracle-castle castle: blocks 43/47, outcomes 48/54
 
 - `R005+0x0FCD` `jmp 0xd75`
 - `R005+0x0FD4` `jmp 0xd75`
@@ -1753,7 +2732,7 @@ draft, reached by castle: blocks 43/47, outcomes 48/54
 
 ### R005+0x112A `R005+0x112A (146D:0D7A)`
 
-draft, reached by castle: blocks 12/17, outcomes 5/10
+draft, reached by battle-oracle-castle castle: blocks 12/17, outcomes 5/10
 
 - `R005+0x1145` `jmp 0xe40`
 - `R005+0x114C` `jmp 0xe40`
@@ -1763,18 +2742,18 @@ draft, reached by castle: blocks 12/17, outcomes 5/10
 
 ### R005+0x11F6 `R005+0x11F6 (1551:0006)`
 
-draft, reached by castle: blocks 19/21, outcomes 26/32
+draft, reached by battle-oracle-castle castle: blocks 19/21, outcomes 26/32
 
 - `R005+0x1258` `cmp word ptr es:[si + 8], bx`
 - `R005+0x128C` `cmp word ptr es:[si + 8], bx`
 
 ### R005+0x12AC `R005+0x12AC (1551:00BC)`
 
-draft, reached by castle: blocks 10/10, outcomes 11/12
+draft, reached by battle-oracle-castle castle: blocks 10/10, outcomes 11/12
 
 ### R005+0x1314 `R005+0x1314 (1551:0124)`
 
-draft, reached by castle: blocks 36/50, outcomes 35/52
+draft, reached by battle-oracle-castle castle: blocks 36/50, outcomes 35/52
 
 - `R005+0x1322` `jmp 0x29a`
 - `R005+0x132D` `jmp 0x29a`
@@ -1793,7 +2772,7 @@ draft, reached by castle: blocks 36/50, outcomes 35/52
 
 ### R005+0x1492 `R005+0x1492 (1551:02A2)`
 
-draft, reached by castle: blocks 42/69, outcomes 39/72
+draft, reached by battle-oracle-castle castle: blocks 42/69, outcomes 39/72
 
 - `R005+0x14A1` `jmp 0x4d4`
 - `R005+0x14AA` `jmp 0x4d4`
@@ -1825,7 +2804,7 @@ draft, reached by castle: blocks 42/69, outcomes 39/72
 
 ### R005+0x16CA `R005+0x16CA (1551:04DA)`
 
-draft, reached by castle: blocks 19/32, outcomes 16/28
+draft, reached by battle-oracle-castle castle: blocks 19/32, outcomes 16/28
 
 - `R005+0x16D8` `jmp 0x5cc`
 - `R005+0x16E0` `jmp 0x5cc`
@@ -1843,17 +2822,17 @@ draft, reached by castle: blocks 19/32, outcomes 16/28
 
 ### R006+0x0000 `R006+0x0000 (15AF:0000)`
 
-draft, reached by castle: blocks 11/11, outcomes 8/8
+draft, reached by battle-oracle-castle castle: blocks 11/11, outcomes 8/8
 
 ### R006+0x01CC `R006+0x01CC (15AF:01CC)`
 
-draft, reached by castle: blocks 35/36, outcomes 28/30
+draft, reached by battle-oracle-castle castle: blocks 35/36, outcomes 28/30
 
 - `R006+0x01D9` `jmp 0x46b`
 
 ### R006+0x0470 `R006+0x0470 (15AF:0470)`
 
-draft, reached by castle: blocks 107/110, outcomes 86/104
+draft, reached by battle-oracle-castle castle: blocks 107/110, outcomes 86/104
 
 - `R006+0x04A6` `jmp 0x882`
 - `R006+0x04DF` `jmp 0x7c2`
@@ -1861,7 +2840,7 @@ draft, reached by castle: blocks 107/110, outcomes 86/104
 
 ### R006+0x0886 `R006+0x0886 (1637:0006)`
 
-draft, reached by castle: blocks 47/50, outcomes 37/40
+draft, reached by battle-oracle-castle castle: blocks 47/50, outcomes 37/40
 
 - `R006+0x0944` `jmp 0x362`
 - `R006+0x0A1B` `jmp 0x362`
@@ -1869,7 +2848,7 @@ draft, reached by castle: blocks 47/50, outcomes 37/40
 
 ### R006+0x0BE6 `R006+0x0BE6 (1637:0366)`
 
-draft, reached by castle: blocks 38/43, outcomes 33/38
+draft, reached by battle-oracle-castle castle: blocks 38/43, outcomes 33/38
 
 - `R006+0x0C35` `pop si`
 - `R006+0x0C49` `mov ax, word ptr [si]`
@@ -1879,13 +2858,13 @@ draft, reached by castle: blocks 38/43, outcomes 33/38
 
 ### R006+0x0D50 `R006+0x0D50 (1637:04D0)`
 
-draft, reached by castle: blocks 13/14, outcomes 13/16
+draft, reached by battle-oracle-castle castle: blocks 13/14, outcomes 13/16
 
 - `R006+0x0DEC` `mov ax, 8`
 
 ### R006+0x0DF8 `R006+0x0DF8 (168E:0008)`
 
-draft, reached by castle: blocks 40/44, outcomes 36/40
+draft, reached by battle-oracle-castle castle: blocks 40/44, outcomes 36/40
 
 - `R006+0x0E10` `jmp 0x2ad`
 - `R006+0x0E3B` `jmp 0x2a5`
@@ -1894,14 +2873,14 @@ draft, reached by castle: blocks 40/44, outcomes 36/40
 
 ### R006+0x10A2 `R006+0x10A2 (168E:02B2)`
 
-draft, reached by castle: blocks 37/39, outcomes 32/34
+draft, reached by battle-oracle-castle castle: blocks 37/39, outcomes 32/34
 
 - `R006+0x10CE` `jmp 0x536`
 - `R006+0x11C8` `jmp 0x50a`
 
 ### R006+0x132A `R006+0x132A (16E1:000A)`
 
-draft, reached by castle: blocks 177/204, outcomes 162/192
+draft, reached by battle-oracle-castle castle: blocks 177/204, outcomes 162/192
 
 - `R006+0x1343` `jmp 0xa25`
 - `R006+0x1353` `jmp 0xa25`
@@ -1933,13 +2912,13 @@ draft, reached by castle: blocks 177/204, outcomes 162/192
 
 ### R006+0x1D48 `R006+0x1D48 (16E1:0A28)`
 
-draft, reached by castle: blocks 105/106, outcomes 100/108
+draft, reached by battle-oracle-castle castle: blocks 105/106, outcomes 100/108
 
 - `R006+0x1DA1` `pop si`
 
 ### R006+0x230A `R006+0x230A (17DF:000A)`
 
-draft, reached by castle: blocks 105/110, outcomes 87/96
+draft, reached by battle-oracle-castle castle: blocks 105/110, outcomes 87/96
 
 - `R006+0x23C7` `jmp 0x47a`
 - `R006+0x2574` `jmp 0x424`
@@ -1949,7 +2928,7 @@ draft, reached by castle: blocks 105/110, outcomes 87/96
 
 ### R006+0x2880 `R006+0x2880 (17DF:0580)`
 
-draft, reached by castle: blocks 69/73, outcomes 63/68
+draft, reached by battle-oracle-castle castle: blocks 69/73, outcomes 63/68
 
 - `R006+0x28A8` `jmp 0x9ac`
 - `R006+0x2A06` `jmp 0x99e`
@@ -1966,14 +2945,14 @@ draft, reached by castle: blocks 68/71, outcomes 52/58
 
 ### R006+0x3016 `R006+0x3016 (17DF:0D16)`
 
-draft, reached by castle: blocks 43/45, outcomes 48/56
+draft, reached by battle-oracle-castle castle: blocks 43/45, outcomes 48/56
 
 - `R006+0x3067` `jmp 0xea4`
 - `R006+0x3159` `jmp 0xdab`
 
 ### R006+0x31C4 `R006+0x31C4 (17DF:0EC4)`
 
-draft, reached by castle: blocks 57/63, outcomes 64/74
+draft, reached by battle-oracle-castle castle: blocks 57/63, outcomes 64/74
 
 - `R006+0x31D7` `jmp 0x110c`
 - `R006+0x31E2` `jmp 0x110c`
@@ -1984,11 +2963,11 @@ draft, reached by castle: blocks 57/63, outcomes 64/74
 
 ### R006+0x3412 `R006+0x3412 (17DF:1112)`
 
-draft, reached by cards-day cards-variants castle: blocks 11/11, outcomes 11/12
+draft, reached by battle-oracle-castle cards-day cards-variants castle: blocks 11/11, outcomes 11/12
 
 ### R006+0x34B8 `R006+0x34B8 (18FA:0008)`
 
-draft, reached by castle: blocks 202/241, outcomes 187/248
+draft, reached by battle-oracle-castle castle: blocks 202/241, outcomes 187/248
 
 - `R006+0x34C9` `jmp 0x96a`
 - `R006+0x362B` `mov word ptr [bp - 0x10], 0xfff6`
@@ -2032,7 +3011,7 @@ draft, reached by castle: blocks 202/241, outcomes 187/248
 
 ### R006+0x3E1E `R006+0x3E1E (18FA:096E)`
 
-draft, reached by cards cards-day cards-variants castle: blocks 151/168, outcomes 157/182
+draft, reached by battle-oracle-castle cards cards-day cards-variants castle: blocks 151/168, outcomes 157/182
 
 - `R006+0x3E31` `jmp 0xfcf`
 - `R006+0x3E56` `mov word ptr [bp - 0x2e], 0`
@@ -2054,7 +3033,7 @@ draft, reached by cards cards-day cards-variants castle: blocks 151/168, outcome
 
 ### R006+0x4484 `R006+0x4484 (18FA:0FD4)`
 
-draft, reached by castle: blocks 35/42, outcomes 35/46
+draft, reached by battle-oracle-castle castle: blocks 35/42, outcomes 35/46
 
 - `R006+0x4491` `jmp 0x11ef`
 - `R006+0x4499` `jmp 0x11ef`
@@ -2066,7 +3045,7 @@ draft, reached by castle: blocks 35/42, outcomes 35/46
 
 ### R006+0x46A4 `R006+0x46A4 (18FA:11F4)`
 
-draft, reached by castle: blocks 68/71, outcomes 75/86
+draft, reached by battle-oracle-castle castle: blocks 68/71, outcomes 75/86
 
 - `R006+0x46C8` `sub dx, dx`
 - `R006+0x47D6` `sub dx, dx`
@@ -2074,13 +3053,13 @@ draft, reached by castle: blocks 68/71, outcomes 75/86
 
 ### R006+0x491A `R006+0x491A (18FA:146A)`
 
-draft, reached by castle: blocks 32/33, outcomes 27/32
+draft, reached by battle-oracle-castle castle: blocks 32/33, outcomes 27/32
 
 - `R006+0x4A62` `mov dx, 1`
 
 ### R006+0x4A8C `R006+0x4A8C (1A57:000C)`
 
-draft, reached by castle: blocks 58/65, outcomes 70/80
+draft, reached by battle-oracle-castle castle: blocks 58/65, outcomes 70/80
 
 - `R006+0x4A98` `jmp 0x2a4`
 - `R006+0x4AA1` `jmp 0x2a4`
@@ -2092,7 +3071,7 @@ draft, reached by castle: blocks 58/65, outcomes 70/80
 
 ### R006+0x4D28 `R006+0x4D28 (1A57:02A8)`
 
-draft, reached by castle: blocks 40/45, outcomes 35/42
+draft, reached by battle-oracle-castle castle: blocks 40/45, outcomes 35/42
 
 - `R006+0x4D36` `jmp 0x429`
 - `R006+0x4D3E` `jmp 0x429`
@@ -2102,7 +3081,7 @@ draft, reached by castle: blocks 40/45, outcomes 35/42
 
 ### R006+0x4EAE `R006+0x4EAE (1A57:042E)`
 
-draft, reached by castle: blocks 22/45, outcomes 19/46
+draft, reached by battle-oracle-castle castle: blocks 22/45, outcomes 19/46
 
 - `R006+0x4ECC` `jmp 0x686`
 - `R006+0x4ED7` `jmp 0x686`
@@ -2130,14 +3109,14 @@ draft, reached by castle: blocks 22/45, outcomes 19/46
 
 ### R006+0x510A `R006+0x510A (1ABF:000A)`
 
-draft, reached by castle: blocks 73/75, outcomes 82/90
+draft, reached by battle-oracle-castle castle: blocks 73/75, outcomes 82/90
 
 - `R006+0x5123` `pop si`
 - `R006+0x5248` `jmp 0x389`
 
 ### R006+0x548E `R006+0x548E (1ABF:038E)`
 
-draft, reached by cards cards-day cards-variants castle: blocks 68/86, outcomes 68/90
+draft, reached by battle-oracle-castle cards cards-day cards-variants castle: blocks 68/86, outcomes 68/90
 
 - `R006+0x54A0` `jmp 0x76a`
 - `R006+0x54F1` `jmp 0x76a`
@@ -2160,7 +3139,7 @@ draft, reached by cards cards-day cards-variants castle: blocks 68/86, outcomes 
 
 ### R006+0x586E `R006+0x586E (1ABF:076E)`
 
-draft, reached by castle: blocks 83/92, outcomes 79/90
+draft, reached by battle-oracle-castle castle: blocks 83/92, outcomes 79/90
 
 - `R006+0x59BF` `pop si`
 - `R006+0x5A13` `jmp 0x787`
@@ -2174,29 +3153,29 @@ draft, reached by castle: blocks 83/92, outcomes 79/90
 
 ### R006+0x5C78 `R006+0x5C78 (1ABF:0B78)`
 
-draft, reached by castle: blocks 6/6, outcomes 4/4
+draft, reached by battle-oracle-castle castle: blocks 6/6, outcomes 4/4
 
 ### R007+0x0000 `R007+0x0000 (15AF:0000)`
 
-draft, reached by castle: blocks 12/13, outcomes 12/14
+draft, reached by battle-oracle-castle castle: blocks 12/13, outcomes 12/14
 
 - `R007+0x0071` `jmp 0x184`
 
 ### R007+0x0188 `R007+0x0188 (15AF:0188)`
 
-draft, reached by castle: blocks 14/15, outcomes 12/14
+draft, reached by battle-oracle-castle castle: blocks 14/15, outcomes 12/14
 
 - `R007+0x01CA` `jmp 0x256`
 
 ### R007+0x025A `R007+0x025A (15AF:025A)`
 
-draft, reached by castle: blocks 18/19, outcomes 11/12
+draft, reached by battle-oracle-castle castle: blocks 18/19, outcomes 11/12
 
 - `R007+0x03AA` `mov si, word ptr [0xdb33]`
 
 ### R007+0x051E `R007+0x051E (15AF:051E)`
 
-draft, reached by castle: blocks 23/27, outcomes 16/22
+draft, reached by battle-oracle-castle castle: blocks 23/27, outcomes 16/22
 
 - `R007+0x0548` `jmp 0x694`
 - `R007+0x0558` `jmp 0x694`
@@ -2205,7 +3184,7 @@ draft, reached by castle: blocks 23/27, outcomes 16/22
 
 ### R007+0x0698 `R007+0x0698 (15AF:0698)`
 
-draft, reached by castle: blocks 63/69, outcomes 60/68
+draft, reached by battle-oracle-castle castle: blocks 63/69, outcomes 60/68
 
 - `R007+0x06E8` `jmp 0x879`
 - `R007+0x0785` `jmp 0x879`
@@ -2216,7 +3195,7 @@ draft, reached by castle: blocks 63/69, outcomes 60/68
 
 ### R007+0x0B3E `R007+0x0B3E (15AF:0B3E)`
 
-draft, reached by cards castle: blocks 134/142, outcomes 137/152
+draft, reached by battle-oracle-castle cards castle: blocks 134/142, outcomes 137/152
 
 - `R007+0x0C08` `jmp 0x106e`
 - `R007+0x0C4D` `mov word ptr [si], 6`
@@ -2229,7 +3208,7 @@ draft, reached by cards castle: blocks 134/142, outcomes 137/152
 
 ### R007+0x10A6 `R007+0x10A6 (15AF:10A6)`
 
-draft, reached by castle: blocks 15/19, outcomes 10/14
+draft, reached by battle-oracle-castle castle: blocks 15/19, outcomes 10/14
 
 - `R007+0x10B2` `jmp 0x1230`
 - `R007+0x10BC` `jmp 0x1230`
@@ -2238,7 +3217,7 @@ draft, reached by castle: blocks 15/19, outcomes 10/14
 
 ### R007+0x1234 `R007+0x1234 (15AF:1234)`
 
-draft, reached by castle: blocks 46/61, outcomes 33/52
+draft, reached by battle-oracle-castle castle: blocks 46/61, outcomes 33/52
 
 - `R007+0x12A1` `jmp 0x16ab`
 - `R007+0x12CA` `jmp 0x1691`
@@ -2258,13 +3237,13 @@ draft, reached by castle: blocks 46/61, outcomes 33/52
 
 ### R007+0x16BA `R007+0x16BA (15AF:16BA)`
 
-draft, reached by castle: blocks 19/20, outcomes 13/14
+draft, reached by battle-oracle-castle castle: blocks 19/20, outcomes 13/14
 
 - `R007+0x1831` `jmp 0x18e4`
 
 ### R007+0x18F8 `R007+0x18F8 (15AF:18F8)`
 
-draft, reached by castle: blocks 22/27, outcomes 17/22
+draft, reached by battle-oracle-castle castle: blocks 22/27, outcomes 17/22
 
 - `R007+0x1939` `jmp 0x1a59`
 - `R007+0x1941` `pop si`
@@ -2274,7 +3253,7 @@ draft, reached by castle: blocks 22/27, outcomes 17/22
 
 ### R007+0x1A5E `R007+0x1A5E (15AF:1A5E)`
 
-draft, reached by castle: blocks 42/52, outcomes 26/36
+draft, reached by battle-oracle-castle castle: blocks 42/52, outcomes 26/36
 
 - `R007+0x1A86` `jmp 0x1bf9`
 - `R007+0x1A97` `jmp 0x1bf9`
@@ -2289,7 +3268,7 @@ draft, reached by castle: blocks 42/52, outcomes 26/36
 
 ### R007+0x1BFE `R007+0x1BFE (15AF:1BFE)`
 
-draft, reached by castle: blocks 26/30, outcomes 20/24
+draft, reached by battle-oracle-castle castle: blocks 26/30, outcomes 20/24
 
 - `R007+0x1C67` `jmp 0x1d74`
 - `R007+0x1C6F` `pop si`
@@ -2298,7 +3277,7 @@ draft, reached by castle: blocks 26/30, outcomes 20/24
 
 ### R007+0x1D78 `R007+0x1D78 (15AF:1D78)`
 
-draft, reached by cards castle sainthelp: blocks 88/100, outcomes 63/82
+draft, reached by battle-oracle-castle cards castle sainthelp: blocks 88/100, outcomes 63/82
 
 - `R007+0x1DA5` `sub ax, ax`
 - `R007+0x1E46` `mov es, word ptr [0xdb39]`
@@ -2328,7 +3307,7 @@ draft, reached by cards castle sainthelp: blocks 24/32, outcomes 15/30
 
 ### R007+0x23D4 `R007+0x23D4 (15AF:23D4)`
 
-draft, reached by castle: blocks 138/150, outcomes 125/146
+draft, reached by battle-oracle-castle castle: blocks 139/150, outcomes 126/146
 
 - `R007+0x2479` `cmp word ptr [bp - 0x24], 0`
 - `R007+0x247F` `jmp 0x2960`
@@ -2336,7 +3315,6 @@ draft, reached by castle: blocks 138/150, outcomes 125/146
 - `R007+0x2520` `jmp 0x24b1`
 - `R007+0x2535` `jmp 0x24b1`
 - `R007+0x2622` `jmp 0x28ad`
-- `R007+0x26D0` `push 3`
 - `R007+0x2884` `jmp 0x259f`
 - `R007+0x2892` `jmp 0x259f`
 - `R007+0x289C` `jmp 0x259f`
@@ -2376,14 +3354,14 @@ draft, reached by castle: blocks 83/88, outcomes 74/82
 
 ### R007+0x30E6 `R007+0x30E6 (15AF:30E6)`
 
-draft, reached by castle: blocks 24/26, outcomes 26/36
+draft, reached by battle-oracle-castle castle: blocks 24/26, outcomes 26/36
 
 - `R007+0x311C` `jmp 0x3166`
 - `R007+0x312B` `jmp 0x3166`
 
 ### R007+0x316C `R007+0x316C (15AF:316C)`
 
-draft, reached by castle: blocks 48/52, outcomes 54/60
+draft, reached by battle-oracle-castle castle: blocks 48/52, outcomes 54/60
 
 - `R007+0x31CA` `mov ax, 4`
 - `R007+0x31E1` `sub ax, ax`
@@ -2392,13 +3370,13 @@ draft, reached by castle: blocks 48/52, outcomes 54/60
 
 ### R007+0x3372 `R007+0x3372 (15AF:3372)`
 
-draft, reached by castle: blocks 17/18, outcomes 16/18
+draft, reached by battle-oracle-castle castle: blocks 17/18, outcomes 16/18
 
 - `R007+0x33D1` `jmp 0x33fd`
 
 ### R007+0x345A `R007+0x345A (15AF:345A)`
 
-draft, reached by cards-day cards-variants castle: blocks 47/54, outcomes 43/52
+draft, reached by battle-oracle-castle cards-day cards-variants castle: blocks 47/54, outcomes 43/52
 
 - `R007+0x3499` `jmp 0x34df`
 - `R007+0x34ED` `xchg word ptr [bx + di - 0x25], si`
@@ -2410,41 +3388,41 @@ draft, reached by cards-day cards-variants castle: blocks 47/54, outcomes 43/52
 
 ### R007+0x3694 `R007+0x3694 (15AF:3694)`
 
-draft, reached by cards castle: blocks 8/8, outcomes 8/8
+draft, reached by battle-oracle-castle cards castle: blocks 8/8, outcomes 8/8
 
 ### R007+0x36E2 `R007+0x36E2 (15AF:36E2)`
 
-draft, reached by castle: blocks 58/59, outcomes 58/68
+draft, reached by battle-oracle-castle castle: blocks 58/59, outcomes 58/68
 
 - `R007+0x385D` `inc si`
 
 ### R007+0x39BA `R007+0x39BA (15AF:39BA)`
 
-draft, reached by castle: blocks 13/13, outcomes 12/16
+draft, reached by battle-oracle-castle castle: blocks 13/13, outcomes 12/16
 
 ### R007+0x3AAC `R007+0x3AAC (15AF:3AAC)`
 
-draft, reached by castle: blocks 10/10, outcomes 10/12
+draft, reached by battle-oracle-castle castle: blocks 10/10, outcomes 10/12
 
 ### R007+0x3B92 `R007+0x3B92 (15AF:3B92)`
 
-draft, reached by castle: blocks 10/10, outcomes 9/10
+draft, reached by battle-oracle-castle castle: blocks 10/10, outcomes 9/10
 
 ### R007+0x3BCE `R007+0x3BCE (15AF:3BCE)`
 
-draft, reached by castle: blocks 8/8, outcomes 6/6
+draft, reached by battle-oracle-castle castle: blocks 8/8, outcomes 6/6
 
 ### R007+0x3D2E `R007+0x3D2E (15AF:3D2E)`
 
-draft, reached by castle: blocks 10/10, outcomes 8/10
+draft, reached by battle-oracle-castle castle: blocks 10/10, outcomes 8/10
 
 ### R007+0x3DA0 `R007+0x3DA0 (15AF:3DA0)`
 
-draft, reached by castle: blocks 15/15, outcomes 7/8
+draft, reached by battle-oracle-castle castle: blocks 15/15, outcomes 7/8
 
 ### R007+0x3E3E `R007+0x3E3E (15AF:3E3E)`
 
-draft, reached by castle: blocks 39/45, outcomes 38/50
+draft, reached by battle-oracle-castle castle: blocks 39/45, outcomes 38/50
 
 - `R007+0x3E55` `jmp 0x3f4a`
 - `R007+0x3E70` `jmp 0x3f4a`
@@ -2455,45 +3433,45 @@ draft, reached by castle: blocks 39/45, outcomes 38/50
 
 ### R007+0x3F8A `R007+0x3F8A (15AF:3F8A)`
 
-draft, reached by castle: blocks 12/12, outcomes 11/12
+draft, reached by battle-oracle-castle castle: blocks 12/12, outcomes 11/12
 
 ### R007+0x4076 `R007+0x4076 (15AF:4076)`
 
-draft, reached by castle: blocks 45/47, outcomes 19/24
+draft, reached by battle-oracle-castle castle: blocks 45/47, outcomes 19/24
 
 - `R007+0x408F` `jmp 0x42d7`
 - `R007+0x4227` `jmp 0x42cf`
 
 ### R007+0x42DC `R007+0x42DC (15AF:42DC)`
 
-draft, reached by castle: blocks 12/13, outcomes 13/14
+draft, reached by battle-oracle-castle castle: blocks 12/13, outcomes 13/14
 
 - `R007+0x42EC` `jmp 0x43b3`
 
 ### R008+0x0000 `R008+0x0000 (1432:0000)`
 
-draft, reached by wild: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-wild wild: blocks 1/1, outcomes 0/0
 
 ### R008+0x009C `R008+0x009C (1432:009C)`
 
-draft, reached by wild: blocks 9/10, outcomes 3/4
+draft, reached by battle-oracle-wild wild: blocks 9/10, outcomes 3/4
 
 - `R008+0x0159` `mov word ptr [0xdf83], 0x11`
 
 ### R008+0x0172 `R008+0x0172 (1432:0172)`
 
-draft, reached by wild: blocks 50/52, outcomes 22/28
+draft, reached by battle-oracle-wild wild: blocks 50/52, outcomes 22/28
 
 - `R008+0x03D2` `cmp word ptr [0xdf89], si`
 - `R008+0x03D8` `push 0xa`
 
 ### R008+0x04CE `R008+0x04CE (1432:04CE)`
 
-draft, reached by wild: blocks 77/77, outcomes 62/66
+draft, reached by battle-oracle-wild wild: blocks 77/77, outcomes 62/66
 
 ### R008+0x0926 `R008+0x0926 (1432:0926)`
 
-draft, reached by wild: blocks 214/218, outcomes 144/158
+draft, reached by battle-oracle-wild wild: blocks 214/218, outcomes 144/158
 
 - `R008+0x0A82` `inc word ptr [bp - 0x46]`
 - `R008+0x10FD` `jmp 0x1002`
@@ -2502,7 +3480,7 @@ draft, reached by wild: blocks 214/218, outcomes 144/158
 
 ### R008+0x1388 `R008+0x1388 (1432:1388)`
 
-draft, reached by wild: blocks 48/51, outcomes 48/52
+draft, reached by battle-oracle-wild wild: blocks 48/51, outcomes 48/52
 
 - `R008+0x1588` `mov ax, word ptr [bp - 0xa]`
 - `R008+0x1664` `mov si, word ptr [bp - 0x14]`
@@ -2510,14 +3488,14 @@ draft, reached by wild: blocks 48/51, outcomes 48/52
 
 ### R008+0x1694 `R008+0x1694 (1432:1694)`
 
-draft, reached by wild: blocks 15/17, outcomes 9/14
+draft, reached by battle-oracle-wild wild: blocks 15/17, outcomes 9/14
 
 - `R008+0x1770` `jmp 0x1778`
 - `R008+0x1786` `jmp 0x1778`
 
 ### R008+0x1790 `R008+0x1790 (1432:1790)`
 
-draft, reached by cards cards-day cards-variants wild: blocks 111/152, outcomes 64/108
+draft, reached by battle-oracle-wild cards cards-day cards-variants wild: blocks 111/152, outcomes 64/108
 
 - `R008+0x17EE` `mov word ptr [bp - 8], 0x37`
 - `R008+0x1817` `jmp 0x2066`
@@ -2563,7 +3541,7 @@ draft, reached by cards cards-day cards-variants wild: blocks 111/152, outcomes 
 
 ### R008+0x20B2 `R008+0x20B2 (1432:20B2)`
 
-draft, reached by wild: blocks 158/196, outcomes 105/164
+draft, reached by battle-oracle-wild wild: blocks 158/196, outcomes 105/164
 
 - `R008+0x21C9` `cmp word ptr [0xc0fe], 3`
 - `R008+0x22CF` `cmp word ptr [0xc0fe], 3`
@@ -2606,11 +3584,11 @@ draft, reached by wild: blocks 158/196, outcomes 105/164
 
 ### R008+0x28A0 `R008+0x28A0 (1432:28A0)`
 
-draft, reached by wild: blocks 17/17, outcomes 18/20
+draft, reached by battle-oracle-wild wild: blocks 17/17, outcomes 18/20
 
 ### R008+0x294E `R008+0x294E (1432:294E)`
 
-draft, reached by wild: blocks 45/56, outcomes 33/48
+draft, reached by battle-oracle-wild wild: blocks 45/56, outcomes 33/48
 
 - `R008+0x29B8` `jmp 0x2ad7`
 - `R008+0x29C6` `mov word ptr [si], 1`
@@ -2626,7 +3604,7 @@ draft, reached by wild: blocks 45/56, outcomes 33/48
 
 ### R008+0x2ADC `R008+0x2ADC (1432:2ADC)`
 
-draft, reached by wild: blocks 31/39, outcomes 34/46
+draft, reached by battle-oracle-wild wild: blocks 31/39, outcomes 34/46
 
 - `R008+0x2B07` `jmp 0x2d2c`
 - `R008+0x2B0F` `jmp 0x2d2c`
@@ -2639,19 +3617,19 @@ draft, reached by wild: blocks 31/39, outcomes 34/46
 
 ### R008+0x2D34 `R008+0x2D34 (1432:2D34)`
 
-draft, reached by wild: blocks 5/5, outcomes 5/6
+draft, reached by battle-oracle-wild wild: blocks 5/5, outcomes 5/6
 
 ### R009+0x0000 `R009+0x0000 (1432:0000)`
 
-draft, reached by mine: blocks 27/27, outcomes 13/14
+draft, reached by battle-oracle-mine mine: blocks 27/27, outcomes 13/14
 
 ### R009+0x019E `R009+0x019E (1432:019E)`
 
-draft, reached by mine: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-mine mine: blocks 1/1, outcomes 0/0
 
 ### R009+0x01E0 `R009+0x01E0 (1432:01E0)`
 
-draft, reached by mine: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-mine mine: blocks 1/1, outcomes 0/0
 
 ### R009+0x0218 `R009+0x0218 (1432:0218)`
 
@@ -2698,7 +3676,7 @@ draft, reached by mine: blocks 14/14, outcomes 15/16
 
 ### R009+0x0D90 `R009+0x0D90 (1432:0D90)`
 
-draft, reached by cards cards-day cards-variants mine: blocks 108/111, outcomes 91/102
+draft, reached by battle-oracle-mine cards cards-day cards-variants mine: blocks 108/111, outcomes 91/102
 
 - `R009+0x0DB9` `jmp 0x12ae`
 - `R009+0x0DC2` `jmp 0x12ae`
@@ -2706,7 +3684,7 @@ draft, reached by cards cards-day cards-variants mine: blocks 108/111, outcomes 
 
 ### R009+0x12B2 `R009+0x12B2 (1432:12B2)`
 
-draft, reached by mine: blocks 12/17, outcomes 10/18
+draft, reached by battle-oracle-mine mine: blocks 12/17, outcomes 10/18
 
 - `R009+0x12D1` `cmp bx, 4`
 - `R009+0x12D6` `mov ax, bx`
@@ -2716,7 +3694,7 @@ draft, reached by mine: blocks 12/17, outcomes 10/18
 
 ### R009+0x1358 `R009+0x1358 (1432:1358)`
 
-draft, reached by mine: blocks 96/99, outcomes 91/100
+draft, reached by battle-oracle-mine mine: blocks 96/99, outcomes 91/100
 
 - `R009+0x1381` `jmp 0x18f8`
 - `R009+0x138A` `jmp 0x18f8`
@@ -2724,18 +3702,18 @@ draft, reached by mine: blocks 96/99, outcomes 91/100
 
 ### R009+0x18FC `R009+0x18FC (1432:18FC)`
 
-draft, reached by mine: blocks 8/8, outcomes 6/10
+draft, reached by battle-oracle-mine mine: blocks 8/8, outcomes 6/10
 
 ### R009+0x1948 `R009+0x1948 (1432:1948)`
 
-draft, reached by mine: blocks 30/32, outcomes 28/32
+draft, reached by battle-oracle-mine mine: blocks 30/32, outcomes 28/32
 
 - `R009+0x1969` `jmp 0x1aeb`
 - `R009+0x1971` `jmp 0x1aeb`
 
 ### R009+0x1AF0 `R009+0x1AF0 (1432:1AF0)`
 
-draft, reached by mine: blocks 37/41, outcomes 30/42
+draft, reached by battle-oracle-mine mine: blocks 37/41, outcomes 30/42
 
 - `R009+0x1B12` `jmp 0x1d9f`
 - `R009+0x1B1A` `jmp 0x1d9f`
@@ -2744,7 +3722,7 @@ draft, reached by mine: blocks 37/41, outcomes 30/42
 
 ### R009+0x1DA4 `R009+0x1DA4 (1432:1DA4)`
 
-draft, reached by mine: blocks 36/39, outcomes 27/36
+draft, reached by battle-oracle-mine mine: blocks 36/39, outcomes 27/36
 
 - `R009+0x1DC6` `jmp 0x2059`
 - `R009+0x1DCE` `jmp 0x2059`
@@ -2763,14 +3741,14 @@ draft, reached by mine: blocks 22/28, outcomes 20/32
 
 ### R009+0x2252 `R009+0x2252 (1432:2252)`
 
-draft, reached by mine: blocks 25/27, outcomes 22/26
+draft, reached by battle-oracle-mine mine: blocks 25/27, outcomes 22/26
 
 - `R009+0x22A8` `jmp 0x23d1`
 - `R009+0x22B0` `jmp 0x23d1`
 
 ### R009+0x23D6 `R009+0x23D6 (1432:23D6)`
 
-draft, reached by mine: blocks 41/49, outcomes 42/58
+draft, reached by battle-oracle-mine mine: blocks 41/49, outcomes 42/58
 
 - `R009+0x23F1` `jmp 0x26c7`
 - `R009+0x2400` `jmp 0x26c7`
@@ -2783,7 +3761,7 @@ draft, reached by mine: blocks 41/49, outcomes 42/58
 
 ### R009+0x26CC `R009+0x26CC (1432:26CC)`
 
-draft, reached by mine: blocks 32/39, outcomes 31/46
+draft, reached by battle-oracle-mine mine: blocks 32/39, outcomes 31/46
 
 - `R009+0x26EE` `jmp 0x295f`
 - `R009+0x26F6` `jmp 0x295f`
@@ -2834,7 +3812,7 @@ draft, reached by cards mine sainthelp: blocks 144/170, outcomes 124/158
 
 ### R009+0x37B4 `R009+0x37B4 (1432:37B4)`
 
-draft, reached by mine: blocks 30/34, outcomes 25/42
+draft, reached by battle-oracle-mine mine: blocks 30/34, outcomes 25/42
 
 - `R009+0x37FF` `jmp 0x3805`
 - `R009+0x3823` `jmp 0x3a8b`
@@ -2843,7 +3821,7 @@ draft, reached by mine: blocks 30/34, outcomes 25/42
 
 ### R009+0x3A90 `R009+0x3A90 (1432:3A90)`
 
-draft, reached by mine: blocks 26/30, outcomes 28/34
+draft, reached by battle-oracle-mine mine: blocks 26/30, outcomes 28/34
 
 - `R009+0x3AB1` `jmp 0x3be4`
 - `R009+0x3AB9` `jmp 0x3be4`
@@ -2852,7 +3830,7 @@ draft, reached by mine: blocks 26/30, outcomes 28/34
 
 ### R009+0x3BEA `R009+0x3BEA (1432:3BEA)`
 
-draft, reached by mine: blocks 45/49, outcomes 42/50
+draft, reached by battle-oracle-mine mine: blocks 45/49, outcomes 42/50
 
 - `R009+0x3C0B` `jmp 0x3e17`
 - `R009+0x3C13` `jmp 0x3e17`
@@ -2861,32 +3839,32 @@ draft, reached by mine: blocks 45/49, outcomes 42/50
 
 ### R009+0x3E1C `R009+0x3E1C (1432:3E1C)`
 
-draft, reached by mine: blocks 15/16, outcomes 15/18
+draft, reached by battle-oracle-mine mine: blocks 15/16, outcomes 15/18
 
 - `R009+0x3E46` `jmp 0x3f4f`
 
 ### R009+0x3F54 `R009+0x3F54 (1432:3F54)`
 
-draft, reached by mine: blocks 4/4, outcomes 4/4
+draft, reached by battle-oracle-mine mine: blocks 4/4, outcomes 4/4
 
 ### R009+0x3F6C `R009+0x3F6C (1432:3F6C)`
 
-draft, reached by mine: blocks 5/5, outcomes 5/6
+draft, reached by battle-oracle-mine mine: blocks 5/5, outcomes 5/6
 
 ### R009+0x3F8A `R009+0x3F8A (1432:3F8A)`
 
-draft, reached by mine: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-mine mine: blocks 4/4, outcomes 3/4
 
 ### R009+0x3FA2 `R009+0x3FA2 (182C:0002)`
 
-draft, reached by mine: blocks 47/49, outcomes 44/46
+draft, reached by battle-oracle-mine mine: blocks 47/49, outcomes 44/46
 
 - `R009+0x40E5` `jmp 0x175`
 - `R009+0x4215` `jmp 0x2a5`
 
 ### R009+0x436A `R009+0x436A (182C:03CA)`
 
-draft, reached by mine: blocks 33/41, outcomes 21/32
+draft, reached by battle-oracle-mine mine: blocks 33/41, outcomes 21/32
 
 - `R009+0x43F0` `sub ax, 0x83`
 - `R009+0x43F5` `dec ax`
@@ -2899,7 +3877,7 @@ draft, reached by mine: blocks 33/41, outcomes 21/32
 
 ### R009+0x4542 `R009+0x4542 (182C:05A2)`
 
-draft, reached by mine: blocks 13/17, outcomes 9/18
+draft, reached by battle-oracle-mine mine: blocks 13/17, outcomes 9/18
 
 - `R009+0x457E` `sub ax, 0x83`
 - `R009+0x4583` `dec ax`
@@ -2908,7 +3886,7 @@ draft, reached by mine: blocks 13/17, outcomes 9/18
 
 ### R009+0x45BA `R009+0x45BA (182C:061A)`
 
-draft, reached by cards cards-day cards-variants mine: blocks 26/29, outcomes 10/14, unresolved indirect jumps 1
+draft, reached by battle-oracle-mine cards cards-day cards-variants mine: blocks 26/29, outcomes 10/14, unresolved indirect jumps 1
 
 - `R009+0x45EE` `jmp 0x7cc`
 - `R009+0x4610` `jmp 0x7cc`
@@ -2916,7 +3894,7 @@ draft, reached by cards cards-day cards-variants mine: blocks 26/29, outcomes 10
 
 ### R009+0x4770 `R009+0x4770 (182C:07D0)`
 
-draft, reached by mine: blocks 46/52, outcomes 36/50
+draft, reached by battle-oracle-mine mine: blocks 46/52, outcomes 36/50
 
 - `R009+0x47C8` `sub ax, 0x83`
 - `R009+0x47CD` `dec ax`
@@ -2927,11 +3905,11 @@ draft, reached by mine: blocks 46/52, outcomes 36/50
 
 ### R009+0x48D8 `R009+0x48D8 (182C:0938)`
 
-draft, reached by mine: blocks 18/18, outcomes 23/24
+draft, reached by battle-oracle-mine mine: blocks 18/18, outcomes 23/24
 
 ### R009+0x4954 `R009+0x4954 (182C:09B4)`
 
-draft, reached by mine: blocks 159/201, outcomes 138/182
+draft, reached by battle-oracle-mine mine: blocks 159/201, outcomes 138/182
 
 - `R009+0x4974` `jmp 0xd82`
 - `R009+0x49C9` `jmp 0xdb4`
@@ -2978,7 +3956,7 @@ draft, reached by mine: blocks 159/201, outcomes 138/182
 
 ### R009+0x4D56 `R009+0x4D56 (182C:0DB6)`
 
-draft, reached by mine: blocks 49/56, outcomes 35/44
+draft, reached by battle-oracle-mine mine: blocks 49/56, outcomes 35/44
 
 - `R009+0x4DA4` `sub ax, 0x82`
 - `R009+0x4DA9` `dec ax`
@@ -3015,7 +3993,7 @@ draft, reached by mine: blocks 4/4, outcomes 2/4
 
 ### R009+0x5200 `R009+0x5200 (182C:1260)`
 
-draft, reached by cards cards-day cards-variants mine: blocks 334/380, outcomes 252/300
+draft, reached by battle-oracle-mine cards cards-day cards-variants mine: blocks 334/380, outcomes 252/300
 
 - `R009+0x527A` `jmp 0x1cb2`
 - `R009+0x52B3` `jmp 0x1cb2`
@@ -3087,14 +4065,14 @@ draft, reached by mine: blocks 97/113, outcomes 41/60
 
 ### R009+0x6044 `R009+0x6044 (182C:20A4)`
 
-draft, reached by mine: blocks 17/19, outcomes 12/16
+draft, reached by battle-oracle-mine mine: blocks 17/19, outcomes 12/16
 
 - `R009+0x60BC` `sub ax, ax`
 - `R009+0x60F4` `mov ax, 5`
 
 ### R009+0x613E `R009+0x613E (182C:219E)`
 
-draft, reached by mine: blocks 78/85, outcomes 40/64
+draft, reached by battle-oracle-mine mine: blocks 78/85, outcomes 40/64
 
 - `R009+0x6274` `push 0xa`
 - `R009+0x6286` `shl ax, 1`
@@ -3106,11 +4084,11 @@ draft, reached by mine: blocks 78/85, outcomes 40/64
 
 ### R010+0x0000 `R010+0x0000 (1432:0000)`
 
-draft, reached by city: blocks 9/9, outcomes 6/6
+draft, reached by battle-oracle-gate battle-oracle-street city: blocks 9/9, outcomes 6/6
 
 ### R010+0x0102 `R010+0x0102 (1432:0102)`
 
-draft, reached by city: blocks 31/35, outcomes 25/36
+draft, reached by battle-oracle-gate battle-oracle-street city: blocks 31/35, outcomes 25/36
 
 - `R010+0x0110` `jmp 0x1d2`
 - `R010+0x01ED` `jmp 0x280`
@@ -3119,13 +4097,13 @@ draft, reached by city: blocks 31/35, outcomes 25/36
 
 ### R010+0x0292 `R010+0x0292 (1432:0292)`
 
-draft, reached by city: blocks 10/11, outcomes 7/10
+draft, reached by battle-oracle-gate battle-oracle-street city: blocks 10/11, outcomes 7/10
 
 - `R010+0x02AC` `pop si`
 
 ### R010+0x02CC `R010+0x02CC (1432:02CC)`
 
-draft, reached by city: blocks 37/43, outcomes 25/32
+draft, reached by battle-oracle-gate battle-oracle-street city: blocks 37/43, outcomes 25/32
 
 - `R010+0x031A` `mov si, word ptr [bp - 2]`
 - `R010+0x0332` `jmp 0x31a`
@@ -3144,7 +4122,7 @@ draft, reached by city: blocks 1/1, outcomes 0/0
 
 ### R010+0x08AA `R010+0x08AA (1432:08AA)`
 
-draft, reached by cards cards-day cards-variants city: blocks 94/165, outcomes 59/140
+draft, reached by battle-oracle-gate battle-oracle-street cards cards-day cards-variants city: blocks 94/165, outcomes 59/140
 
 - `R010+0x09B0` `cmp word ptr [bp - 0x80], 0xc8`
 - `R010+0x09C4` `jmp 0x9b7`
@@ -3220,11 +4198,11 @@ draft, reached by cards cards-day cards-variants city: blocks 94/165, outcomes 5
 
 ### R010+0x114E `R010+0x114E (1432:114E)`
 
-draft, reached by city: blocks 16/16, outcomes 14/14
+draft, reached by battle-oracle-street city: blocks 16/16, outcomes 14/14
 
 ### R010+0x11AA `R010+0x11AA (1432:11AA)`
 
-draft, reached by city: blocks 87/91, outcomes 78/86
+draft, reached by battle-oracle-gate battle-oracle-street city: blocks 87/91, outcomes 78/86
 
 - `R010+0x1220` `jmp 0x12a5`
 - `R010+0x1262` `jmp 0x1286`
@@ -3287,7 +4265,7 @@ draft, reached by city: blocks 51/53, outcomes 52/58
 
 ### R010+0x2A2C `R010+0x2A2C (1432:2A2C)`
 
-draft, reached by city: blocks 20/26, outcomes 19/24
+draft, reached by battle-oracle-gate battle-oracle-street city: blocks 20/26, outcomes 19/24
 
 - `R010+0x2A39` `jmp 0x2b3c`
 - `R010+0x2A41` `jmp 0x2b3c`
@@ -3298,7 +4276,7 @@ draft, reached by city: blocks 20/26, outcomes 19/24
 
 ### R010+0x2B42 `R010+0x2B42 (1432:2B42)`
 
-draft, reached by city: blocks 29/37, outcomes 31/44
+draft, reached by battle-oracle-gate battle-oracle-street city: blocks 29/37, outcomes 31/44
 
 - `R010+0x2B5A` `jmp 0x2ddb`
 - `R010+0x2B6F` `jmp 0x2ddb`
@@ -3311,7 +4289,7 @@ draft, reached by city: blocks 29/37, outcomes 31/44
 
 ### R010+0x2DE0 `R010+0x2DE0 (1432:2DE0)`
 
-draft, reached by city: blocks 4/4, outcomes 2/4
+draft, reached by battle-oracle-gate battle-oracle-street city: blocks 4/4, outcomes 2/4
 
 ### R011+0x0000 `R011+0x0000 (1432:0000)`
 
@@ -3512,9 +4490,699 @@ draft, reached by special: blocks 10/11, outcomes 6/12
 
 - `R013+0x0CA0` `mov bx, di`
 
+### R014+0x0000 `R014+0x0000 (0E76:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 61/121, outcomes 62/136
+
+- `R014+0x0064` `mov es, word ptr [0x7d36]`
+- `R014+0x0070` `mov ax, 1`
+- `R014+0x007D` `shl ax, 1`
+- `R014+0x0085` `mov cx, ax`
+- `R014+0x00A4` `mov ax, word ptr es:[di]`
+- `R014+0x00C3` `mov es, word ptr [0x7d36]`
+- `R014+0x00E3` `mov byte ptr [0xd4e4], 1`
+- `R014+0x00E8` `mov es, word ptr [0x7d36]`
+- `R014+0x0119` `sub si, si`
+- `R014+0x011E` `mov bx, si`
+- `R014+0x0133` `cmp word ptr es:[bx + 0x218e], 0x9c0`
+- `R014+0x013C` `push si`
+- `R014+0x014A` `add sp, 4`
+- `R014+0x015F` `sub si, si`
+- `R014+0x0164` `inc si`
+- `R014+0x0165` `mov es, word ptr [0x7d36]`
+- `R014+0x0172` `mov ax, word ptr [0xc925]`
+- `R014+0x0188` `mov ax, word ptr [0xc978]`
+- `R014+0x0192` `mov al, byte ptr [0xc989]`
+- `R014+0x019C` `mov al, byte ptr [0xca1b]`
+- `R014+0x01A6` `cmp word ptr es:[bx + 0x218c], 0x1833`
+- `R014+0x01AF` `jmp 0x11e`
+- `R014+0x01B2` `cmp word ptr es:[bx + 0x218e], 0x9c0`
+- `R014+0x01BB` `jmp 0x11e`
+- `R014+0x01BE` `push si`
+- `R014+0x01D0` `inc si`
+- `R014+0x01D1` `mov al, byte ptr [0xd6cc]`
+- `R014+0x01DA` `mov es, word ptr [0x7d3c]`
+- `R014+0x01E9` `neg word ptr es:[bx + 0x47ee]`
+- `R014+0x01FB` `mov ax, word ptr [0x7d4]`
+- `R014+0x0344` `mov al, byte ptr [0x9081]`
+- `R014+0x035D` `push 0x96`
+- `R014+0x037B` `cmp byte ptr [0xa6c1], 0`
+- `R014+0x0382` `mov byte ptr [0x9920], al`
+- `R014+0x0394` `jmp 0x618`
+- `R014+0x03BC` `cmp byte ptr [0xa6c1], 0`
+- `R014+0x03C3` `mov ax, word ptr [0x7d4]`
+- `R014+0x03CC` `mov byte ptr [0xd6f4], 0x63`
+- `R014+0x03E3` `push si`
+- `R014+0x0400` `mov byte ptr [0xc102], 0`
+- `R014+0x042E` `mov bx, si`
+- `R014+0x044E` `push 0x3c`
+- `R014+0x046E` `add word ptr [0x7d4], 0x4098`
+- `R014+0x04B4` `mov bx, si`
+- `R014+0x04C4` `mov al, byte ptr [0xa33d]`
+- `R014+0x04CC` `sub si, si`
+- `R014+0x04D0` `mov bx, si`
+- `R014+0x04E0` `mov al, byte ptr [0xa395]`
+- `R014+0x04E8` `sub si, si`
+- `R014+0x04EA` `mov bx, si`
+- `R014+0x053B` `add word ptr [bx - 0x5ac2], 0x4098`
+- `R014+0x0541` `imul bx, si, 0x12`
+- `R014+0x054C` `add word ptr [bx - 0x5ac0], 0x4098`
+- `R014+0x0552` `imul bx, si, 0x12`
+- `R014+0x055D` `add word ptr [bx - 0x5abe], 0x4098`
+- `R014+0x0563` `inc si`
+- `R014+0x05C4` `push 0xe`
+- `R014+0x05D9` `mov ax, word ptr [0x7d4]`
+- `R014+0x05E2` `lcall 0x9c0, 0x1c93`
+- `R014+0x0618` `push cs`
+
+### R014+0x0620 `R014+0x0620 (0E76:0620)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/7, outcomes 1/6
+
+- `R014+0x062F` `mov word ptr [bp - 2], 0`
+- `R014+0x0636` `inc word ptr [bp - 2]`
+- `R014+0x0639` `mov al, byte ptr [0xd6cc]`
+- `R014+0x0643` `mov es, word ptr [0x7d3c]`
+- `R014+0x0653` `imul ax, word ptr [bp - 2], 0x1e`
+
+### R014+0x08FE `R014+0x08FE (0E76:08FE)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 53/142, outcomes 45/162
+
+- `R014+0x0912` `mov ax, 1`
+- `R014+0x0921` `mov ax, word ptr [0xda4d]`
+- `R014+0x095C` `inc word ptr [bp - 6]`
+- `R014+0x098E` `cmp word ptr [bp - 6], 0`
+- `R014+0x0994` `cmp byte ptr [0xa6c1], 1`
+- `R014+0x099B` `mov word ptr [0xa893], 2`
+- `R014+0x09AC` `mov word ptr [0xa893], 8`
+- `R014+0x09BA` `mov word ptr [0xca3d], ax`
+- `R014+0x09C2` `inc si`
+- `R014+0x09C3` `cmp si, 5`
+- `R014+0x09C8` `jmp 0x912`
+- `R014+0x09CB` `cmp byte ptr [si - 0x594c], 0x9d`
+- `R014+0x09D2` `mov bx, si`
+- `R014+0x09DE` `cmp byte ptr [bx - 0x6397], 2`
+- `R014+0x09E5` `mov bx, si`
+- `R014+0x0A11` `mov bx, si`
+- `R014+0x0A1D` `inc word ptr [bp - 6]`
+- `R014+0x0A4B` `cmp word ptr [bp - 6], 0`
+- `R014+0x0A51` `jmp 0xb20`
+- `R014+0x0A54` `sub si, si`
+- `R014+0x0A56` `mov al, byte ptr [0xc651]`
+- `R014+0x0A5F` `mov bx, si`
+- `R014+0x0A6B` `cmp byte ptr [bx - 0x6397], 2`
+- `R014+0x0A72` `mov bx, si`
+- `R014+0x0A7C` `inc si`
+- `R014+0x0A82` `lcall 0x19cd, 0x34a0`
+- `R014+0x0A8C` `inc si`
+- `R014+0x0A8D` `cmp si, 5`
+- `R014+0x0A92` `mov bx, si`
+- `R014+0x0A9E` `cmp byte ptr [bx - 0x6397], 2`
+- `R014+0x0AA5` `mov ax, si`
+- `R014+0x0AAD` `push cs`
+- `R014+0x0AC6` `inc si`
+- `R014+0x0AC7` `cmp si, 5`
+- `R014+0x0ACC` `mov bx, si`
+- `R014+0x0AD8` `mov al, byte ptr [si - 0x594c]`
+- `R014+0x0AEC` `mov bx, di`
+- `R014+0x0AFC` `mov al, byte ptr [0x907b]`
+- `R014+0x0B0C` `cmp byte ptr [bx - 0x6397], 3`
+- `R014+0x0B13` `cmp byte ptr [bx - 0x6397], 5`
+- `R014+0x0B1A` `sub si, si`
+- `R014+0x0B7A` `inc si`
+- `R014+0x0BAA` `push cs`
+- `R014+0x0BB4` `mov word ptr [0xa893], 0`
+- `R014+0x0BC3` `cmp word ptr [bp - 4], 1`
+- `R014+0x0BC9` `sub si, si`
+- `R014+0x0BCB` `mov bx, si`
+- `R014+0x0BD7` `cmp byte ptr [si - 0x594c], 0x9d`
+- `R014+0x0BDE` `mov word ptr [0xa893], 3`
+- `R014+0x0BE4` `inc si`
+- `R014+0x0BEA` `cmp word ptr [0xa893], 3`
+- `R014+0x0BF1` `mov word ptr [0xa893], 5`
+- `R014+0x0BFA` `cmp word ptr [bp - 0xc], 1`
+- `R014+0x0C00` `mov word ptr [0xa893], 3`
+- `R014+0x0C06` `mov ax, word ptr [0x7d4]`
+- `R014+0x0C19` `mov es, word ptr [0x7d36]`
+- `R014+0x0C21` `mov word ptr [0xca3d], ax`
+- `R014+0x0C38` `mov ax, word ptr [bp - 8]`
+- `R014+0x0C41` `jmp 0x912`
+- `R014+0x0C44` `mov es, word ptr [0x7d36]`
+- `R014+0x0C58` `mov ax, word ptr [bp - 8]`
+- `R014+0x0C61` `jmp 0xd66`
+- `R014+0x0C64` `mov si, 5`
+- `R014+0x0C67` `mov bx, si`
+- `R014+0x0C77` `lcall 0x9c0, 0x1cb1`
+- `R014+0x0C83` `mov byte ptr [0x9084], 1`
+- `R014+0x0C88` `sub si, si`
+- `R014+0x0C8A` `mov bx, si`
+- `R014+0x0C96` `mov byte ptr [si - 0x592d], 0`
+- `R014+0x0CB0` `inc si`
+- `R014+0x0CB6` `cmp byte ptr [0xc21a], 0x49`
+- `R014+0x0CBD` `push -1`
+- `R014+0x0CCC` `mov al, byte ptr [0x907b]`
+- `R014+0x0CDC` `cmp byte ptr [bx - 0x6397], 3`
+- `R014+0x0CE3` `cmp byte ptr [bx - 0x6397], 5`
+- `R014+0x0CEA` `sub si, si`
+- `R014+0x0CEE` `inc si`
+- `R014+0x0CEF` `cmp si, 5`
+- `R014+0x0CF4` `mov bx, si`
+- `R014+0x0D00` `cmp byte ptr [bx - 0x6397], 2`
+- `R014+0x0D07` `mov ax, si`
+- `R014+0x0D0F` `lcall 0x19cd, 0x34a0`
+- `R014+0x0D4D` `jmp 0x912`
+- `R014+0x0D50` `mov al, byte ptr [0x9080]`
+- `R014+0x0D59` `cmp byte ptr [0x9084], 0`
+- `R014+0x0D60` `mov word ptr [0xa893], 0xffff`
+- `R014+0x0D6D` `test byte ptr [0x9080], 1`
+- `R014+0x0D74` `mov ax, word ptr [bp - 8]`
+- `R014+0x0D7D` `jmp 0x912`
+
+### R014+0x0F58 `R014+0x0F58 (0E76:0F58)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 40/53, outcomes 39/56
+
+- `R014+0x0F65` `jmp 0x1153`
+- `R014+0x0FB4` `jmp 0xfef`
+- `R014+0x0FEA` `mov byte ptr [0xd610], 0`
+- `R014+0x1001` `mov byte ptr [0x9681], 1`
+- `R014+0x1015` `mov byte ptr [0x9681], 2`
+- `R014+0x1062` `jmp 0x1153`
+- `R014+0x10CB` `jmp 0x112a`
+- `R014+0x1131` `inc byte ptr [0x7d3]`
+- `R014+0x1138` `lcall 0x47c, 0x744`
+- `R014+0x1142` `sub si, si`
+- `R014+0x1146` `lcall 0, 0x13a0`
+- `R014+0x114B` `or si, si`
+- `R014+0x114F` `dec byte ptr [0x7d3]`
+
+### R014+0x1158 `R014+0x1158 (0E76:1158)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
+
+### R014+0x116E `R014+0x116E (0E76:116E)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 73/80, outcomes 74/86
+
+- `R014+0x119E` `jmp 0x158a`
+- `R014+0x11D1` `mov al, byte ptr [0xc623]`
+- `R014+0x11DA` `push bx`
+- `R014+0x12A0` `push word ptr [bp - 6]`
+- `R014+0x12B6` `push bx`
+- `R014+0x13E8` `mov byte ptr [bx - 0x35a9], 5`
+- `R014+0x15E3` `mov al, 0x2a`
+
+### R014+0x1624 `R014+0x1624 (0E76:1624)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 19/54, outcomes 15/54
+
+- `R014+0x1658` `mov word ptr [si - 0x2636], bx`
+- `R014+0x1662` `jmp 0x1998`
+- `R014+0x166F` `push 0x5a`
+- `R014+0x1696` `mov al, byte ptr [0xc624]`
+- `R014+0x169E` `jmp 0x17b4`
+- `R014+0x16A1` `mov si, 1`
+- `R014+0x16AB` `jmp 0x1757`
+- `R014+0x16AE` `mov al, byte ptr [si - 0x39dd]`
+- `R014+0x16E6` `mov al, byte ptr [si - 0x39dc]`
+- `R014+0x174B` `mov al, byte ptr [0xc629]`
+- `R014+0x1754` `jmp 0x16ae`
+- `R014+0x1757` `cmp byte ptr [0xa6c1], 0`
+- `R014+0x175E` `mov dx, word ptr [0x190]`
+- `R014+0x176F` `cmp byte ptr [di], 1`
+- `R014+0x1774` `mov al, byte ptr [0x907b]`
+- `R014+0x177C` `mov bx, dx`
+- `R014+0x1786` `mov bx, dx`
+- `R014+0x178D` `push word ptr [0x190]`
+- `R014+0x179E` `inc si`
+- `R014+0x17A9` `mov ax, word ptr [bp - 4]`
+- `R014+0x17B1` `mov di, word ptr [bp + 4]`
+- `R014+0x17BB` `dec byte ptr [di - 0x35e4]`
+- `R014+0x17E7` `sub cx, cx`
+- `R014+0x17F2` `mov word ptr [bp - 4], dx`
+- `R014+0x17FA` `mov bx, word ptr [bp - 8]`
+- `R014+0x1804` `push word ptr [bp + 4]`
+- `R014+0x1815` `mov al, byte ptr [si]`
+- `R014+0x181E` `mov word ptr [bp - 4], ax`
+- `R014+0x1821` `add si, 0xa`
+- `R014+0x182D` `mov dx, word ptr [bp - 4]`
+- `R014+0x1830` `or dx, dx`
+- `R014+0x1834` `mov bx, dx`
+- `R014+0x183D` `jmp 0x1998`
+- `R014+0x18EA` `jmp 0x1977`
+- `R014+0x1933` `mov ax, word ptr [bp - 6]`
+
+### R014+0x199C `R014+0x199C (0E76:199C)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 27/36, outcomes 30/42
+
+- `R014+0x19FF` `cmp word ptr [bp + 4], 5`
+- `R014+0x1A05` `mov al, byte ptr [0xc21f]`
+- `R014+0x1A17` `cmp word ptr [0xa893], -1`
+- `R014+0x1A1E` `cmp byte ptr [0xc21a], 0x49`
+- `R014+0x1A25` `mov ax, word ptr [0x117e]`
+- `R014+0x1A30` `mov ax, word ptr [0x117e]`
+- `R014+0x1A38` `push ds`
+- `R014+0x1B68` `cmp bx, 5`
+- `R014+0x1B6D` `mov byte ptr [bx - 0x359c], 7`
+
+### R014+0x1BA0 `R014+0x1BA0 (0E76:1BA0)`
+
+draft, reached by battle-oracle-gate: blocks 52/62, outcomes 47/66
+
+- `R014+0x1BC3` `jmp 0x1efc`
+- `R014+0x1BFA` `mov bx, di`
+- `R014+0x1C06` `and byte ptr [bx - 0x5969], 0xfd`
+- `R014+0x1CAC` `mov bx, word ptr [bp - 4]`
+- `R014+0x1CC5` `mov al, byte ptr [bx - 0x6351]`
+- `R014+0x1D03` `cmp al, 0x41`
+- `R014+0x1D25` `mov byte ptr [si - 0x359c], 0xd`
+- `R014+0x1D5B` `jmp 0x1efc`
+- `R014+0x1E11` `jmp 0x1efc`
+- `R014+0x1EE2` `jmp 0x1dce`
+
+### R014+0x2324 `R014+0x2324 (0E76:2324)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 39/69, outcomes 36/74
+
+- `R014+0x236D` `jmp 0x27a9`
+- `R014+0x240D` `mov byte ptr [0x9084], 1`
+- `R014+0x245C` `inc word ptr [bp - 2]`
+- `R014+0x2469` `mov al, byte ptr [0x11ca]`
+- `R014+0x2483` `mov ax, word ptr [bp - 0xc]`
+- `R014+0x248D` `mov ax, word ptr [bp - 0x10]`
+- `R014+0x2497` `mov ax, word ptr [bp - 0xe]`
+- `R014+0x24A1` `mov ax, word ptr [bp - 0x12]`
+- `R014+0x24AB` `mov ax, cx`
+- `R014+0x24B9` `mov es, word ptr [0x7d42]`
+- `R014+0x24E5` `push 0`
+- `R014+0x24F9` `cmp word ptr [bp + 4], 5`
+- `R014+0x24FF` `push word ptr [bp - 6]`
+- `R014+0x2510` `push word ptr [bp - 6]`
+- `R014+0x251D` `push ax`
+- `R014+0x25A2` `inc word ptr [bp - 2]`
+- `R014+0x25A5` `mov al, byte ptr [0xc80e]`
+- `R014+0x25AF` `jmp 0x2680`
+- `R014+0x25B2` `mov bx, word ptr [bp - 2]`
+- `R014+0x25C6` `mov ax, word ptr [bp - 0xa]`
+- `R014+0x2612` `mov ax, word ptr [bp - 6]`
+- `R014+0x26EA` `mov bx, si`
+- `R014+0x26F3` `mov bl, byte ptr [0xc80e]`
+- `R014+0x272C` `cmp byte ptr es:[0xbfd], 0`
+- `R014+0x2734` `mov byte ptr [0xd6ec], 0`
+- `R014+0x2744` `mov al, byte ptr es:[0xbfd]`
+- `R014+0x274D` `push 1`
+- `R014+0x2783` `cmp byte ptr [0xc21a], 0`
+- `R014+0x278A` `cmp word ptr [bp - 2], 5`
+- `R014+0x2790` `mov bx, word ptr [bp - 2]`
+
+### R014+0x27AC `R014+0x27AC (0E76:27AC)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R014+0x2802 `R014+0x2802 (0E76:2802)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 16/27, outcomes 13/26
+
+- `R014+0x291B` `cmp word ptr [bp - 0x14], dx`
+- `R014+0x2920` `mov bl, byte ptr [0xc80e]`
+- `R014+0x2962` `mov bl, byte ptr [0xc80e]`
+- `R014+0x2981` `cmp word ptr [bp - 0x18], dx`
+- `R014+0x2986` `mov bl, byte ptr [0xc80e]`
+- `R014+0x29A2` `cmp word ptr [bp - 0x16], dx`
+- `R014+0x29A7` `mov bl, byte ptr [0xc80e]`
+- `R014+0x29C2` `cmp dx, word ptr [bp - 0x14]`
+- `R014+0x29C7` `mov bl, byte ptr [0xc80e]`
+- `R014+0x29E0` `mov ax, word ptr [bp - 0xe]`
+- `R014+0x29F7` `mov cx, word ptr [bp - 0x10]`
+
+### R014+0x2A04 `R014+0x2A04 (0E76:2A04)`
+
+draft, reached by battle-oracle-gate battle-oracle-street: blocks 8/9, outcomes 7/8
+
+- `R014+0x2A40` `mov si, 7`
+
+### R014+0x2A4A `R014+0x2A4A (0E76:2A4A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 32/58, outcomes 29/60
+
+- `R014+0x2A77` `jmp 0x2c3d`
+- `R014+0x2AA2` `cmp si, 0x9f1f`
+- `R014+0x2AA8` `jmp 0x2b3c`
+- `R014+0x2AAB` `cmp word ptr [0xa893], -1`
+- `R014+0x2AB2` `jmp 0x2b3c`
+- `R014+0x2AB5` `mov word ptr [bp - 6], si`
+- `R014+0x2ABB` `cmp word ptr [0x9ee5], 0x100`
+- `R014+0x2AC3` `push 5`
+- `R014+0x2AD2` `mov byte ptr [0x9f1f], 0xff`
+- `R014+0x2AD9` `push 5`
+- `R014+0x2AF1` `mov bx, si`
+- `R014+0x2AFD` `mov ax, di`
+- `R014+0x2B05` `jmp 0x2b10`
+- `R014+0x2B08` `mov byte ptr [0x9f1f], al`
+- `R014+0x2B10` `cmp byte ptr [0x9f1f], 0xff`
+- `R014+0x2B17` `mov al, byte ptr [0x9f1f]`
+- `R014+0x2B27` `push 4`
+- `R014+0x2B82` `push 2`
+- `R014+0x2BA4` `push 0x3c`
+- `R014+0x2BF1` `mov byte ptr [di - 0x359c], 0xd`
+- `R014+0x2C60` `mov ax, word ptr [0x7d4]`
+- `R014+0x2C68` `push di`
+- `R014+0x2C7F` `mov ax, word ptr [0x7d4]`
+- `R014+0x2C87` `push di`
+- `R014+0x2C9E` `mov ax, word ptr [0x7d4]`
+- `R014+0x2CA6` `push di`
+
+### R014+0x2CCA `R014+0x2CCA (0E76:2CCA)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 25/42, outcomes 17/40
+
+- `R014+0x2CDD` `mov bx, di`
+- `R014+0x2DC2` `jmp 0x2f81`
+- `R014+0x2DE0` `inc bx`
+- `R014+0x2DE6` `mov dx, word ptr [bp - 6]`
+- `R014+0x2DF2` `jmp 0x2f81`
+- `R014+0x2E43` `jmp 0x2f81`
+- `R014+0x2E52` `cmp di, 5`
+- `R014+0x2E57` `mov bx, word ptr [bp - 0xc]`
+- `R014+0x2E84` `mov ax, word ptr [bx - 0x63a7]`
+- `R014+0x2EA7` `push 0x20`
+- `R014+0x2EE8` `mov ax, word ptr [bp - 4]`
+- `R014+0x2EF1` `push 0`
+- `R014+0x2F03` `inc si`
+- `R014+0x2F09` `mov byte ptr [di - 0x592d], 0`
+- `R014+0x2F1F` `mov byte ptr [0xe0a2], 0`
+- `R014+0x2F29` `mov bx, word ptr [bp - 0xe]`
+- `R014+0x2F56` `push di`
+
+### R014+0x2FA2 `R014+0x2FA2 (0E76:2FA2)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 10/16, outcomes 10/16
+
+- `R014+0x2FE2` `mov ax, word ptr [0x7d4]`
+- `R014+0x302C` `mov word ptr [bx - 0x639b], 0`
+- `R014+0x3037` `mov dx, word ptr [0x190]`
+- `R014+0x3048` `mov word ptr [bx + 0xc], 0xe`
+- `R014+0x3050` `mov word ptr [bx + 0xc], 0xf`
+- `R014+0x3055` `push dx`
+
+### R014+0x306A `R014+0x306A (0E76:306A)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 26/31, outcomes 23/34
+
+- `R014+0x3080` `jne 0x3089`
+- `R014+0x3082` `cmp byte ptr [bx - 0x6361], 0xff`
+- `R014+0x3089` `mov di, word ptr [bx - 0x63a3]`
+- `R014+0x30E6` `mov cx, 0x14`
+- `R014+0x3142` `mov si, 2`
+
+### R014+0x3166 `R014+0x3166 (0E76:3166)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 32/69, outcomes 29/94
+
+- `R014+0x31B5` `mov bx, word ptr [0xc4fe]`
+- `R014+0x31BF` `mov si, 0x40`
+- `R014+0x31CD` `mov ax, word ptr [bx + 6]`
+- `R014+0x31E5` `mov si, word ptr [bp - 2]`
+- `R014+0x31EF` `push word ptr [bx + 6]`
+- `R014+0x31FF` `cmp byte ptr [di], 1`
+- `R014+0x3204` `push si`
+- `R014+0x320D` `inc si`
+- `R014+0x3218` `jmp 0x3238`
+- `R014+0x321C` `push word ptr [bp - 2]`
+- `R014+0x3226` `mov ax, word ptr [bx + 6]`
+- `R014+0x3235` `add sp, 2`
+- `R014+0x3238` `mov word ptr [0xc62a], 0`
+- `R014+0x3252` `jmp 0x3382`
+- `R014+0x325C` `cmp word ptr [0x6eec], 0xff`
+- `R014+0x3264` `cmp word ptr [0x6eee], 8`
+- `R014+0x326B` `dec byte ptr [0xc866]`
+- `R014+0x3279` `cmp word ptr [0x6eec], 0xff`
+- `R014+0x3281` `cmp word ptr [0x6eee], 0xbf`
+- `R014+0x3289` `inc byte ptr [0xc866]`
+- `R014+0x329E` `cmp word ptr [0x6eee], 0x32`
+- `R014+0x32A5` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x32AD` `dec byte ptr [0xc866]`
+- `R014+0x32BC` `cmp word ptr [0x6eee], 0x32`
+- `R014+0x32C3` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x32CB` `inc byte ptr [0xc866]`
+- `R014+0x32F5` `cmp word ptr [0x6eee], 0x32`
+- `R014+0x32FC` `sub byte ptr [0xc866], 2`
+- `R014+0x330C` `cmp word ptr [0x6eee], 8`
+- `R014+0x331B` `cmp word ptr [0x6eee], 0x32`
+- `R014+0x3322` `dec byte ptr [0xc886]`
+- `R014+0x334C` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x335C` `cmp word ptr [0x6eee], 0xbf`
+- `R014+0x336C` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x3374` `add byte ptr [0xc866], 2`
+- `R014+0x3379` `inc byte ptr [0xc886]`
+- `R014+0x337D` `lcall 0x9c0, 0x1d3d`
+
+### R014+0x33A2 `R014+0x33A2 (0E76:33A2)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 22/62, outcomes 21/88
+
+- `R014+0x33AD` `cmp word ptr [0x9c42], dx`
+- `R014+0x33B3` `jmp 0x35f6`
+- `R014+0x33BD` `cmp word ptr [0x6eec], 0xff`
+- `R014+0x33C5` `cmp word ptr [0x6eee], 8`
+- `R014+0x33CC` `cmp word ptr [0xd72b], dx`
+- `R014+0x33D2` `jmp 0x35fa`
+- `R014+0x33D5` `lcall 0x47c, 0x12c3`
+- `R014+0x33F2` `mov word ptr [0xa68f], ax`
+- `R014+0x33FD` `cmp word ptr [0x6eec], 0xff`
+- `R014+0x3405` `cmp word ptr [0x6eee], 0xbf`
+- `R014+0x340D` `cmp word ptr [0xd733], dx`
+- `R014+0x3413` `jmp 0x35fa`
+- `R014+0x3416` `lcall 0x47c, 0x12c3`
+- `R014+0x3444` `cmp word ptr [0x6eee], 0x32`
+- `R014+0x344B` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x3453` `cmp word ptr [0xd737], dx`
+- `R014+0x3459` `jmp 0x35fa`
+- `R014+0x345C` `lcall 0x47c, 0x12c3`
+- `R014+0x3484` `cmp word ptr [0x6eee], 0x32`
+- `R014+0x348B` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x3493` `cmp word ptr [0xd72f], dx`
+- `R014+0x3499` `jmp 0x35fa`
+- `R014+0x349C` `lcall 0x47c, 0x12c3`
+- `R014+0x34DF` `cmp word ptr [0x6eee], 0x32`
+- `R014+0x34E6` `cmp word ptr [0xd739], dx`
+- `R014+0x34EC` `jmp 0x35fa`
+- `R014+0x34EF` `lcall 0x47c, 0x12c3`
+- `R014+0x3518` `cmp word ptr [0x6eee], 8`
+- `R014+0x3527` `cmp word ptr [0x6eee], 0x32`
+- `R014+0x352E` `cmp word ptr [0xd72d], dx`
+- `R014+0x3534` `jmp 0x35fa`
+- `R014+0x3537` `lcall 0x47c, 0x12c3`
+- `R014+0x357C` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x3584` `cmp word ptr [0xd735], dx`
+- `R014+0x358A` `lcall 0x47c, 0x12c3`
+- `R014+0x35B2` `cmp word ptr [0x6eee], 0xbf`
+- `R014+0x35C2` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x35CA` `cmp word ptr [0xd731], dx`
+- `R014+0x35D0` `lcall 0x47c, 0x12c3`
+- `R014+0x35F6` `push cs`
+
+### R014+0x35FC `R014+0x35FC (0E76:35FC)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/84, outcomes 3/70
+
+- `R014+0x3616` `mov ax, word ptr [0xe092]`
+- `R014+0x361F` `jmp 0x36c4`
+- `R014+0x3622` `mov word ptr [0xe094], ax`
+- `R014+0x3631` `mov byte ptr [0xd947], 1`
+- `R014+0x3636` `cmp byte ptr [0x880], 0`
+- `R014+0x363D` `cmp byte ptr [0x881], 0`
+- `R014+0x3644` `mov word ptr [bp - 4], 0x4700`
+- `R014+0x364C` `cmp byte ptr [0x880], 0`
+- `R014+0x3653` `cmp byte ptr [0x881], 0`
+- `R014+0x365A` `mov word ptr [bp - 4], 0x4f00`
+- `R014+0x3662` `cmp byte ptr [0x880], 0`
+- `R014+0x3669` `cmp byte ptr [0x881], 0`
+- `R014+0x3670` `mov word ptr [bp - 4], 0x4900`
+- `R014+0x3678` `cmp byte ptr [0x880], 0`
+- `R014+0x367F` `cmp byte ptr [0x881], 0`
+- `R014+0x3686` `mov word ptr [bp - 4], 0x5100`
+- `R014+0x368E` `cmp byte ptr [0x880], 0`
+- `R014+0x3695` `mov word ptr [bp - 4], 0x4b00`
+- `R014+0x369C` `cmp byte ptr [0x880], 0`
+- `R014+0x36A3` `mov word ptr [bp - 4], 0x4d00`
+- `R014+0x36AA` `cmp byte ptr [0x881], 0`
+- `R014+0x36B1` `mov word ptr [bp - 4], 0x4800`
+- `R014+0x36B8` `cmp byte ptr [0x881], 0`
+- `R014+0x36BF` `mov word ptr [bp - 4], 0x5000`
+- `R014+0x36C4` `mov ax, word ptr [0x7d6]`
+- `R014+0x36D0` `mov word ptr [bp - 2], 1`
+- `R014+0x36D8` `cmp ax, 0x4b`
+- `R014+0x36DD` `mov word ptr [bp - 2], 3`
+- `R014+0x36E4` `cmp ax, 0x5a`
+- `R014+0x36E9` `mov word ptr [bp - 2], 5`
+- `R014+0x36F0` `mov word ptr [bp - 2], 0xa`
+- `R014+0x36F5` `mov ax, word ptr [bp - 4]`
+- `R014+0x36FC` `mov ax, word ptr [0x6eee]`
+- `R014+0x3704` `mov ax, word ptr [0x6eee]`
+- `R014+0x370C` `sub ax, ax`
+- `R014+0x370E` `mov word ptr [bp - 8], ax`
+- `R014+0x3716` `lcall 0x47c, 0x1266`
+- `R014+0x3727` `jmp 0x38b4`
+- `R014+0x372A` `lcall 0x47c, 0x744`
+- `R014+0x3732` `mov ax, word ptr [bp - 2]`
+- `R014+0x3740` `mov ax, 0xc7`
+- `R014+0x3746` `mov ax, word ptr [bp - 2]`
+- `R014+0x3752` `mov ax, word ptr [0x6eec]`
+- `R014+0x375D` `mov ax, word ptr [0x6eec]`
+- `R014+0x3766` `mov ax, 0x3d`
+- `R014+0x3769` `mov word ptr [bp - 8], ax`
+- `R014+0x3770` `push ax`
+- `R014+0x3774` `mov ax, word ptr [bp - 2]`
+- `R014+0x3782` `mov ax, 0x13f`
+- `R014+0x3788` `mov ax, word ptr [bp - 2]`
+- `R014+0x3794` `mov ax, word ptr [0x6eee]`
+- `R014+0x379C` `mov ax, word ptr [0x6eee]`
+- `R014+0x37A4` `sub ax, ax`
+- `R014+0x37A6` `mov word ptr [bp - 8], ax`
+- `R014+0x37B4` `mov ax, word ptr [0x6eec]`
+- `R014+0x37BC` `mov ax, 0x3d`
+- `R014+0x37BF` `mov word ptr [bp - 0xa], ax`
+- `R014+0x37C8` `mov ax, word ptr [bp - 2]`
+- `R014+0x37D6` `mov ax, 0xc7`
+- `R014+0x37DC` `mov ax, word ptr [bp - 2]`
+- `R014+0x37E5` `mov word ptr [bp - 0xa], ax`
+- `R014+0x37F3` `mov ax, word ptr [0x6eec]`
+- `R014+0x37FC` `mov ax, 0x3d`
+- `R014+0x37FF` `mov word ptr [bp - 8], ax`
+- `R014+0x3808` `mov ax, word ptr [bp - 2]`
+- `R014+0x3816` `mov ax, 0xc7`
+- `R014+0x381C` `mov ax, word ptr [bp - 2]`
+- `R014+0x3825` `mov word ptr [bp - 0xa], ax`
+- `R014+0x3836` `mov ax, word ptr [bp - 2]`
+- `R014+0x3842` `mov ax, word ptr [0x6eee]`
+- `R014+0x384A` `mov ax, word ptr [0x6eee]`
+- `R014+0x3852` `sub ax, ax`
+- `R014+0x3854` `mov word ptr [bp - 0xa], ax`
+- `R014+0x3865` `mov ax, 0x13f`
+- `R014+0x386A` `sub ax, 0x4700`
+- `R014+0x3871` `shr ax, 7`
+- `R014+0x3879` `xchg bx, ax`
+- `R014+0x38A2` `mov byte ptr [0xd73b], 1`
+
+### R014+0x38B6 `R014+0x38B6 (0E76:38B6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 54/62, outcomes 47/58
+
+- `R014+0x3903` `jmp 0x399b`
+- `R014+0x390F` `jmp 0x399b`
+- `R014+0x3A89` `jmp 0x3c79`
+- `R014+0x3B67` `cmp si, 5`
+- `R014+0x3B6C` `mov bx, si`
+- `R014+0x3B78` `mov bx, si`
+- `R014+0x3B84` `imul ax, si, 0x70`
+- `R014+0x3BD3` `jmp 0x3c79`
+
+### R014+0x3C86 `R014+0x3C86 (0E76:3C86)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 3/5, outcomes 1/4
+
+- `R014+0x3CA0` `inc bx`
+- `R014+0x3CA8` `pop di`
+
+### R014+0x3CC4 `R014+0x3CC4 (0E76:3CC4)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
+
+### R014+0x3D0C `R014+0x3D0C (0E76:3D0C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R014+0x3D2C `R014+0x3D2C (0E76:3D2C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 45/56, outcomes 31/44
+
+- `R014+0x3D3E` `sub al, 0x20`
+- `R014+0x3D59` `jmp 0x3f5e`
+- `R014+0x3D6A` `jmp 0x3d7f`
+- `R014+0x3D6C` `push si`
+- `R014+0x3F5E` `push si`
+- `R014+0x3F92` `cmp byte ptr [bx + 2], 0x33`
+- `R014+0x3F98` `mov byte ptr [0xc21a], 0x49`
+- `R014+0x3FA9` `cmp byte ptr [bx + 2], 0x30`
+- `R014+0x3FAF` `jmp 0x3d7f`
+- `R014+0x3FB2` `mov byte ptr [0xc21a], 0x5a`
+- `R014+0x3FC3` `push si`
+
+### R014+0x4188 `R014+0x4188 (0E76:4188)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 24/39, outcomes 11/28
+
+- `R014+0x4194` `cmp word ptr [bp + 8], -1`
+- `R014+0x419A` `jmp 0x443d`
+- `R014+0x41EE` `mov word ptr [bp - 0x16], 0xfff8`
+- `R014+0x4340` `mov bx, word ptr [bp - 0xa]`
+- `R014+0x434B` `mov word ptr [bp - 0x28], 0`
+- `R014+0x4350` `push 0x30`
+- `R014+0x438F` `mov ax, word ptr [si - 0x63a7]`
+- `R014+0x43AF` `mov al, byte ptr [bp - 0x22]`
+- `R014+0x43BA` `inc word ptr [bp - 0xa]`
+- `R014+0x43C0` `inc word ptr [bp - 0x28]`
+- `R014+0x43CA` `cmp word ptr [bp - 2], 0`
+- `R014+0x43D0` `mov ax, word ptr [bp + 8]`
+- `R014+0x442C` `cmp word ptr [bp - 0x28], 0x1f4`
+- `R014+0x4433` `jmp 0x4350`
+- `R014+0x4436` `jmp 0x43ba`
+
+### R014+0x4442 `R014+0x4442 (0E76:4442)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 18/29, outcomes 14/30
+
+- `R014+0x4456` `jmp 0x459e`
+- `R014+0x4460` `jmp 0x459e`
+- `R014+0x446A` `jmp 0x459e`
+- `R014+0x449D` `jmp 0x4584`
+- `R014+0x44FD` `inc di`
+- `R014+0x4508` `cmp byte ptr [0xd6cc], 0`
+- `R014+0x450F` `sub di, di`
+- `R014+0x4514` `cmp byte ptr [si], 1`
+- `R014+0x4519` `push 0`
+- `R014+0x4550` `inc di`
+- `R014+0x455B` `jmp 0x4584`
+
+### R014+0x45AE `R014+0x45AE (0E76:45AE)`
+
+draft, reached by battle-oracle-castle battle-oracle-mine: blocks 9/17, outcomes 8/16
+
+- `R014+0x45FE` `inc byte ptr [si]`
+- `R014+0x460B` `mov ax, dx`
+- `R014+0x4612` `mov ax, word ptr [bp - 2]`
+- `R014+0x461D` `mov ax, dx`
+- `R014+0x4624` `mov ax, word ptr [bp - 2]`
+- `R014+0x462E` `mov ax, dx`
+- `R014+0x4636` `mov ax, dx`
+- `R014+0x463B` `mov word ptr [di], ax`
+
+### R014+0x465E `R014+0x465E (0E76:465E)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 4/8, outcomes 2/12
+
+- `R014+0x4671` `cmp si, 0x12`
+- `R014+0x4676` `cmp byte ptr [0x1bf], 1`
+- `R014+0x467D` `cmp si, 7`
+- `R014+0x4682` `cmp si, 9`
+
+### R014+0x4780 `R014+0x4780 (0E76:4780)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 4/4, outcomes 2/2
+
+### R014+0x47AE `R014+0x47AE (0E76:47AE)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 8/10, outcomes 8/12
+
+- `R014+0x47C3` `mov ax, 1`
+- `R014+0x47D0` `sub ax, ax`
+
 ### R014+0x481A `R014+0x481A (12F7:000A)`
 
-draft, reached by path: blocks 27/36, outcomes 24/36
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 28/36, outcomes 25/36
 
 - `R014+0x48FA` `mov si, 0x1f5b`
 - `R014+0x4900` `mov es, word ptr [0x7d4a]`
@@ -3523,12 +5191,11 @@ draft, reached by path: blocks 27/36, outcomes 24/36
 - `R014+0x491F` `push 0`
 - `R014+0x492C` `add si, 0xe`
 - `R014+0x493D` `mov di, word ptr [bp + 6]`
-- `R014+0x4987` `jmp 0x31d`
 - `R014+0x4A88` `mov di, word ptr [0xe11a]`
 
 ### R014+0x4B5A `R014+0x4B5A (12F7:034A)`
 
-draft, reached by path: blocks 4/9, outcomes 3/10
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 4/9, outcomes 3/10
 
 - `R014+0x4B73` `mov di, 0x1f54`
 - `R014+0x4B76` `mov es, word ptr [0x7d4a]`
@@ -3536,23 +5203,29 @@ draft, reached by path: blocks 4/9, outcomes 3/10
 - `R014+0x4B8C` `push 0`
 - `R014+0x4B9D` `add di, 0xe`
 
+### R014+0x4BC6 `R014+0x4BC6 (12F7:03B6)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
+
+### R014+0x4BE2 `R014+0x4BE2 (12F7:03D2)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
+
 ### R014+0x4BFA `R014+0x4BFA (12F7:03EA)`
 
-draft, reached by path: blocks 64/69, outcomes 59/70
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 66/69, outcomes 61/70
 
-- `R014+0x4F15` `jmp 0x960`
-- `R014+0x4F80` `jmp 0x960`
 - `R014+0x4FF3` `jmp 0x960`
 - `R014+0x504E` `mov bx, word ptr [bp + 6]`
 - `R014+0x5061` `jmp 0x960`
 
 ### R014+0x519E `R014+0x519E (12F7:098E)`
 
-draft, reached by path: blocks 19/19, outcomes 20/20
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 19/19, outcomes 20/20
 
 ### R014+0x52C4 `R014+0x52C4 (12F7:0AB4)`
 
-draft, reached by path: blocks 46/50, outcomes 42/46
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 46/50, outcomes 42/46
 
 - `R014+0x53D4` `jmp 0xacd`
 - `R014+0x5420` `jmp 0xacd`
@@ -3561,15 +5234,15 @@ draft, reached by path: blocks 46/50, outcomes 42/46
 
 ### R014+0x580E `R014+0x580E (12F7:0FFE)`
 
-draft, reached by path: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 1/1, outcomes 0/0
 
 ### R014+0x58A4 `R014+0x58A4 (12F7:1094)`
 
-draft, reached by path: blocks 8/8, outcomes 12/12
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 8/8, outcomes 12/12
 
 ### R014+0x5976 `R014+0x5976 (12F7:1166)`
 
-draft, reached by path: blocks 33/40, outcomes 27/38
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 33/40, outcomes 27/38
 
 - `R014+0x59A5` `jmp 0x1353`
 - `R014+0x59D8` `jmp 0x13ce`
@@ -3581,27 +5254,35 @@ draft, reached by path: blocks 33/40, outcomes 27/38
 
 ### R014+0x5C8C `R014+0x5C8C (12F7:147C)`
 
-draft, reached by path: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 3/3, outcomes 2/2
 
 ### R014+0x5CA4 `R014+0x5CA4 (12F7:1494)`
 
-draft, reached by path: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 1/1, outcomes 0/0
 
 ### R014+0x5D04 `R014+0x5D04 (12F7:14F4)`
 
-draft, reached by path: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 1/1, outcomes 0/0
+
+### R014+0x5D64 `R014+0x5D64 (12F7:1554)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R014+0x5E2A `R014+0x5E2A (12F7:161A)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 11/11, outcomes 13/14
 
 ### R014+0x5EB4 `R014+0x5EB4 (12F7:16A4)`
 
-draft, reached by path: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 1/1, outcomes 0/0
 
 ### R014+0x5ECA `R014+0x5ECA (1462:000A)`
 
-draft, reached by path tactics: blocks 10/10, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild path tactics: blocks 10/10, outcomes 8/8
 
 ### R014+0x60B0 `R014+0x60B0 (1462:01F0)`
 
-draft, reached by cards-day tactics: blocks 64/87, outcomes 94/128
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-day tactics: blocks 70/87, outcomes 103/128
 
 - `R014+0x60F7` `pcmpeqb mm6, qword ptr [bx + si]`
 - `R014+0x611B` `mov ax, word ptr [0x851e]`
@@ -3613,10 +5294,6 @@ draft, reached by cards-day tactics: blocks 64/87, outcomes 94/128
 - `R014+0x61E9` `jmp 0x503`
 - `R014+0x61EC` `mov ax, cx`
 - `R014+0x61F7` `jmp 0x503`
-- `R014+0x6229` `lea ax, [di + 1]`
-- `R014+0x6232` `jmp 0x503`
-- `R014+0x6235` `mov ax, word ptr [0x851e]`
-- `R014+0x6241` `jmp 0x503`
 - `R014+0x628A` `jmp 0x503`
 - `R014+0x62DA` `mov ax, bx`
 - `R014+0x62E5` `jmp 0x503`
@@ -3624,49 +5301,343 @@ draft, reached by cards-day tactics: blocks 64/87, outcomes 94/128
 - `R014+0x632C` `jmp 0x503`
 - `R014+0x632F` `mov ax, word ptr [0x852e]`
 - `R014+0x633B` `jmp 0x503`
-- `R014+0x636C` `mov ax, word ptr [0x852c]`
-- `R014+0x6376` `mov ax, word ptr [0x852e]`
 
 ### R014+0x63CC `R014+0x63CC (1462:050C)`
 
-draft, reached by path tactics: blocks 60/60, outcomes 96/96
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path tactics: blocks 60/60, outcomes 96/96
 
 ### R014+0x6600 `R014+0x6600 (1462:0740)`
 
-draft, reached by path tactics: blocks 24/25, outcomes 31/32
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild path tactics: blocks 24/25, outcomes 31/32
 
 - `R014+0x6642` `jmp 0x828`
 
 ### R014+0x66FE `R014+0x66FE (1462:083E)`
 
-draft, reached by path tactics: blocks 15/15, outcomes 20/20
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild path tactics: blocks 15/15, outcomes 20/20
+
+### R014+0x6818 `R014+0x6818 (14F7:0008)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 73/117, outcomes 48/86
+
+- `R014+0x6860` `sub si, si`
+- `R014+0x6864` `mov bx, si`
+- `R014+0x6873` `mov al, byte ptr [0xa395]`
+- `R014+0x6890` `mov bx, si`
+- `R014+0x68B1` `mov bx, si`
+- `R014+0x68BB` `push si`
+- `R014+0x68D3` `sub si, si`
+- `R014+0x68D8` `mov bx, si`
+- `R014+0x68F0` `push si`
+- `R014+0x68F8` `inc si`
+- `R014+0x68F9` `mov al, byte ptr [0xa395]`
+- `R014+0x6AB9` `mov ax, word ptr [0xe1b6]`
+- `R014+0x6B42` `imul bx, si, 0x1a`
+- `R014+0x6B54` `imul bx, si, 0x1a`
+- `R014+0x6B66` `imul bx, si, 0x1a`
+- `R014+0x6B78` `mov ax, word ptr [0xd5b7]`
+- `R014+0x6B7E` `imul bx, si, 0x1a`
+- `R014+0x6B90` `mov ax, word ptr [0xd4ff]`
+- `R014+0x6B96` `mov ax, word ptr [0xd501]`
+- `R014+0x6BF0` `imul bx, si, 0x1a`
+- `R014+0x6C02` `imul bx, si, 0x1a`
+- `R014+0x6C14` `imul bx, si, 0x1a`
+- `R014+0x6C26` `mov ax, word ptr [0xd5b7]`
+- `R014+0x6C2C` `imul bx, si, 0x1a`
+- `R014+0x6C3E` `mov ax, word ptr [0xd4ff]`
+- `R014+0x6C44` `mov ax, word ptr [0xd501]`
+- `R014+0x6C88` `mov word ptr [bp - 0x16], 7`
+- `R014+0x6C9A` `mov word ptr [bp - 0x16], 1`
+- `R014+0x6CA4` `mov word ptr [bp - 0x16], 0xa`
+- `R014+0x6D60` `jmp 0x3be`
+- `R014+0x6D89` `jmp 0x600`
+- `R014+0x6E22` `mov cl, byte ptr [0xd845]`
+- `R014+0x6E31` `jmp 0x6a8`
+- `R014+0x6E34` `mov si, 1`
+- `R014+0x6E3A` `inc si`
+- `R014+0x6E3B` `cmp word ptr [0xe162], si`
+- `R014+0x6E41` `mov es, word ptr [0x7d52]`
+- `R014+0x6E55` `mov al, byte ptr [0xd845]`
+- `R014+0x6E5D` `cmp word ptr [0xe162], 0x9d`
+- `R014+0x6E65` `mov es, word ptr [0x7d52]`
+- `R014+0x6F52` `mov ax, word ptr [0xe1bc]`
+- `R014+0x6F5B` `cmp word ptr [0xc2bd], ax`
+- `R014+0x6F61` `mov ax, word ptr [0xe1c2]`
+- `R014+0x6F92` `mov bx, si`
+
+### R014+0x6FFC `R014+0x6FFC (14F7:07EC)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/26, outcomes 3/20
+
+- `R014+0x700C` `push cs`
+- `R014+0x701C` `jmp 0x96d`
+- `R014+0x701F` `sub ax, ax`
+- `R014+0x702A` `mov al, byte ptr [di]`
+- `R014+0x7041` `sub ax, ax`
+- `R014+0x7048` `push 2`
+- `R014+0x706F` `mov word ptr [bp - 0xc], ax`
+- `R014+0x7076` `mov word ptr [bp - 0x14], di`
+- `R014+0x707C` `mov si, word ptr [bp - 0xe]`
+- `R014+0x7082` `mov dx, word ptr [bp - 0x10]`
+- `R014+0x708D` `mov es, word ptr [0x7d54]`
+- `R014+0x709E` `push 0`
+- `R014+0x70F1` `mov es, word ptr [0x7d5c]`
+- `R014+0x7102` `push 0`
+- `R014+0x7155` `inc di`
+- `R014+0x715C` `jmp 0x87d`
+- `R014+0x715F` `mov di, word ptr [bp - 0x14]`
+- `R014+0x7162` `inc si`
+- `R014+0x717A` `jmp 0x81a`
+- `R014+0x7184` `push word ptr [bp + 6]`
+- `R014+0x7195` `push cs`
+
+### R014+0x719E `R014+0x719E (14F7:098E)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 27/40, outcomes 24/38
+
+- `R014+0x71E3` `jmp 0xc6c`
+- `R014+0x72DC` `jmp 0xbe8`
+- `R014+0x72E8` `mov ax, word ptr [bp + 6]`
+- `R014+0x72F4` `jmp 0xb9f`
+- `R014+0x72F7` `cmp word ptr [0xe162], 0x9d`
+- `R014+0x72FF` `jmp 0xb9f`
+- `R014+0x7302` `mov es, word ptr [0x7d52]`
+- `R014+0x73BC` `mov ax, word ptr [bp + 6]`
+- `R014+0x73C8` `mov bx, word ptr [bp - 0xa]`
+- `R014+0x73F8` `cmp word ptr es:[bx], -0xa`
+- `R014+0x73FE` `jmp 0xacf`
+- `R014+0x7401` `inc word ptr es:[bx]`
+- `R014+0x7406` `mov ax, word ptr [0xd4c1]`
+
+### R014+0x74A2 `R014+0x74A2 (14F7:0C92)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 27/30, outcomes 21/32
+
+- `R014+0x74B1` `jmp 0xd41`
+- `R014+0x7606` `jmp 0xe99`
+- `R014+0x7636` `mov es, word ptr [0x7d52]`
+
+### R014+0x76AE `R014+0x76AE (14F7:0E9E)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 14/53, outcomes 12/58
+
+- `R014+0x76C3` `mov si, 0xa2ef`
+- `R014+0x76CB` `mov es, word ptr [0xd6f5]`
+- `R014+0x770E` `mov word ptr [bp - 0xa], 0`
+- `R014+0x7716` `push word ptr [bp - 2]`
+- `R014+0x7736` `mov cx, word ptr [0xe167]`
+- `R014+0x7749` `jmp 0xfce`
+- `R014+0x774C` `mov bx, di`
+- `R014+0x7757` `jmp 0xfce`
+- `R014+0x775A` `mov bx, di`
+- `R014+0x7780` `mov word ptr [bp - 0x10], si`
+- `R014+0x7791` `mov ax, 0x20a5`
+- `R014+0x77A2` `or ax, ax`
+- `R014+0x77A6` `push word ptr [bp - 0xa]`
+- `R014+0x77D4` `inc si`
+- `R014+0x77DB` `mov si, word ptr [bp - 0x10]`
+- `R014+0x77DE` `add word ptr [bp - 0xe], 0x20`
+- `R014+0x77F5` `jmp 0xebb`
+- `R014+0x781A` `sub si, si`
+- `R014+0x781F` `mov al, byte ptr [di]`
+- `R014+0x7879` `mov di, si`
+- `R014+0x7882` `inc byte ptr [di]`
+- `R014+0x7889` `push si`
+- `R014+0x7892` `sub di, 8`
+- `R014+0x78A1` `mov di, si`
+- `R014+0x78B0` `mov ax, word ptr [bp + 6]`
+- `R014+0x78B7` `push si`
+- `R014+0x78C0` `sub di, 0xa`
+- `R014+0x78CF` `mov si, 0xa346`
+- `R014+0x78DB` `mov al, byte ptr [si]`
+- `R014+0x78E9` `inc byte ptr [si]`
+- `R014+0x78EE` `add si, 0xa`
+- `R014+0x78FD` `mov di, si`
+- `R014+0x790C` `mov ax, word ptr [bp + 6]`
+- `R014+0x7913` `push si`
+- `R014+0x791C` `sub di, 0xa`
+- `R014+0x792B` `mov si, 0xa2ef`
+- `R014+0x7937` `mov al, byte ptr [si]`
+- `R014+0x7945` `inc byte ptr [si]`
+- `R014+0x7947` `add si, 0xa`
+
+### R014+0x799E `R014+0x799E (14F7:118E)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 32/40, outcomes 25/36
+
+- `R014+0x79C8` `jmp 0x1388`
+- `R014+0x7A20` `jmp 0x1388`
+- `R014+0x7A29` `jmp 0x1388`
+- `R014+0x7AEF` `jmp 0x1388`
+- `R014+0x7AF8` `mov word ptr [bp - 6], 0`
+- `R014+0x7B03` `mov word ptr [bp - 8], 0`
+- `R014+0x7B0F` `mov word ptr [bp - 4], 0x103`
+- `R014+0x7B1E` `mov si, 0xc7`
+
+### R014+0x7BBE `R014+0x7BBE (14F7:13AE)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 83/116, outcomes 74/108
+
+- `R014+0x7CFC` `dec byte ptr [0xe166]`
+- `R014+0x7E02` `dec ax`
+- `R014+0x7E05` `jmp 0x167a`
+- `R014+0x7E08` `dec ax`
+- `R014+0x7E0B` `jmp 0x16ac`
+- `R014+0x7E0E` `dec ax`
+- `R014+0x7E11` `jmp 0x16c6`
+- `R014+0x7E14` `jmp 0x1704`
+- `R014+0x7E8A` `mov bx, word ptr [bp + 6]`
+- `R014+0x7EA2` `mov word ptr es:[bx + 0x1e], cx`
+- `R014+0x7EBC` `mov bx, word ptr [bp + 6]`
+- `R014+0x7ED6` `mov bx, word ptr [bp + 6]`
+- `R014+0x7F3C` `jmp 0x17c0`
+- `R014+0x8012` `jmp 0x189e`
+- `R014+0x801A` `jmp 0x189e`
+- `R014+0x80D9` `mov word ptr [bp - 0xe], 0`
+- `R014+0x80DE` `mov bx, word ptr [bp - 0xe]`
+- `R014+0x80F0` `jmp 0x197c`
+- `R014+0x80F3` `cmp ax, 0x8c`
+- `R014+0x80F8` `jmp 0x197c`
+- `R014+0x80FB` `mov al, byte ptr [bx + 0x1abe]`
+- `R014+0x8114` `les bx, ptr [bp - 0xc]`
+- `R014+0x812C` `mov word ptr es:[bx], ax`
+- `R014+0x812F` `les bx, ptr [bp - 0xc]`
+- `R014+0x8148` `mov word ptr es:[bx], ax`
+- `R014+0x814B` `les bx, ptr [bp - 0xc]`
+- `R014+0x8168` `mov word ptr es:[bx], ax`
+- `R014+0x816B` `les bx, ptr [bp - 0xc]`
+- `R014+0x8189` `mov word ptr es:[bx], ax`
+- `R014+0x818C` `inc word ptr [bp - 0xe]`
+- `R014+0x8195` `jmp 0x18ce`
+- `R014+0x81CC` `jmp 0x1a58`
+- `R014+0x81D4` `jmp 0x1a58`
+
+### R014+0x827A `R014+0x827A (14F7:1A6A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-street: blocks 36/41, outcomes 27/34
+
+- `R014+0x828D` `jmp 0x1e6c`
+- `R014+0x82B2` `jmp 0x1e6c`
+- `R014+0x84FD` `jmp 0x1e54`
+- `R014+0x8590` `jmp 0x1e44`
+- `R014+0x8670` `dec byte ptr [0xe166]`
+
+### R014+0x8680 `R014+0x8680 (14F7:1E70)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 13/19, outcomes 13/20
+
+- `R014+0x86AB` `mov word ptr es:[bx + 0xa], 0`
+- `R014+0x86CE` `mov word ptr es:[bx + 0xa], 0`
+- `R014+0x86E5` `mov word ptr es:[bx + 0xc], 0`
+- `R014+0x86F9` `mov word ptr es:[bx + 0xc], 0`
+- `R014+0x870D` `mov ax, 0xc8`
+- `R014+0x871C` `mov word ptr es:[bx + 0xc], 0`
+
+### R014+0x8724 `R014+0x8724 (14F7:1F14)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/4, outcomes 1/2
+
+- `R014+0x8733` `jmp 0x1fcf`
+
+### R014+0x87E4 `R014+0x87E4 (14F7:1FD4)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### R014+0x8862 `R014+0x8862 (14F7:2052)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### R014+0x88E6 `R014+0x88E6 (14F7:20D6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 36/42, outcomes 35/42
+
+- `R014+0x890E` `mov word ptr es:[bx], 0`
+- `R014+0x8922` `mov word ptr es:[bx], 0`
+- `R014+0x8937` `mov word ptr es:[bx], 0x103`
+- `R014+0x894C` `mov word ptr es:[bx], 0xc7`
+- `R014+0x8A07` `mov bx, word ptr es:[bx]`
+- `R014+0x8AB1` `mov bx, word ptr es:[bx]`
+
+### R014+0x97A6 `R014+0x97A6 (14F7:2F96)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 10/12, outcomes 9/10
+
+- `R014+0x97B7` `jmp 0x3046`
+- `R014+0x9856` `pop si`
+
+### R014+0x99F6 `R014+0x99F6 (14F7:31E6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 35/38, outcomes 30/38
+
+- `R014+0x9A1D` `jmp 0x33ed`
+- `R014+0x9A2E` `jne 0x3252`
+- `R014+0x9A30` `cmp ax, 0x100`
+
+### R014+0x9C14 `R014+0x9C14 (14F7:3404)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 4/4, outcomes 3/4
 
 ### R014+0x9C4C `R014+0x9C4C (14F7:343C)`
 
-draft, reached by path: blocks 4/9, outcomes 3/10
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild path: blocks 9/9, outcomes 9/10
 
-- `R014+0x9C72` `cmp dx, 5`
-- `R014+0x9C77` `inc dx`
-- `R014+0x9C7E` `cmp dx, 5`
-- `R014+0x9C83` `add dx, 4`
-- `R014+0x9C86` `mov ax, dx`
+### R014+0x9C8C `R014+0x9C8C (14F7:347C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 9/10, outcomes 11/16
+
+- `R014+0x9CD5` `sub dx, word ptr [si + 8]`
+
+### R014+0x9CE6 `R014+0x9CE6 (14F7:34D6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 10/18, outcomes 8/20
+
+- `R014+0x9CF2` `jmp 0x3596`
+- `R014+0x9CFB` `jmp 0x3596`
+- `R014+0x9D05` `add bx, dx`
+- `R014+0x9D0D` `sub ax, ax`
+- `R014+0x9D49` `mov di, word ptr [si + 8]`
+- `R014+0x9D54` `jmp 0x34fd`
+- `R014+0x9D56` `mov ax, word ptr [bp + 0xa]`
+- `R014+0x9D67` `jmp 0x34fd`
+
+### R014+0x9DAA `R014+0x9DAA (14F7:359A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R014+0x9DDE `R014+0x9DDE (14F7:35CE)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/12, outcomes 6/16
+
+- `R014+0x9DEA` `add word ptr [bp + 0xc], dx`
+- `R014+0x9DF7` `sub ax, ax`
+- `R014+0x9E1A` `add word ptr [bp + 0xe], si`
+- `R014+0x9E27` `jmp 0x35e7`
+- `R014+0x9E41` `mov ax, word ptr [di + 8]`
 
 ### R014+0xA492 `R014+0xA492 (18BF:0002)`
 
-draft, reached by battle: blocks 19/20, outcomes 17/18
+draft, reached by battle battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 19/20, outcomes 17/18
 
 - `R014+0xA583` `sub dx, dx`
 
+### R014+0xA592 `R014+0xA592 (18BF:0102)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 26/29, outcomes 25/32
+
+- `R014+0xA624` `cmp di, 5`
+- `R014+0xA629` `inc byte ptr [0xc26e]`
+- `R014+0xA697` `jmp 0x2a1`
+
 ### R014+0xA738 `R014+0xA738 (18BF:02A8)`
 
-draft, reached by battle: blocks 67/69, outcomes 63/66
+draft, reached by battle battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 67/69, outcomes 63/66
 
 - `R014+0xA8C3` `mov word ptr [bp - 2], 1`
 - `R014+0xA907` `mov word ptr [bp - 0xc], 0`
 
 ### R014+0xAA22 `R014+0xAA22 (18BF:0592)`
 
-draft, reached by battle: blocks 45/50, outcomes 47/52
+draft, reached by battle battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 45/50, outcomes 47/52
 
 - `R014+0xABA2` `mov word ptr [bp - 6], di`
 - `R014+0xABAB` `push word ptr [bp + 6]`
@@ -3676,41 +5647,1423 @@ draft, reached by battle: blocks 45/50, outcomes 47/52
 
 ### R014+0xAC08 `R014+0xAC08 (18BF:0778)`
 
-draft, reached by battle: blocks 22/22, outcomes 18/18
+draft, reached by battle battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 22/22, outcomes 18/18
 
 ### R014+0xAD5A `R014+0xAD5A (18BF:08CA)`
 
-draft, reached by battle: blocks 17/17, outcomes 13/14
+draft, reached by battle battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 17/17, outcomes 13/14
 
 ### R014+0xAE1E `R014+0xAE1E (18BF:098E)`
 
-draft, reached by battle: blocks 15/15, outcomes 14/14
+draft, reached by battle battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 15/15, outcomes 14/14
 
 ### R014+0xAED0 `R014+0xAED0 (18BF:0A40)`
 
-draft, reached by battle: blocks 29/30, outcomes 27/30
+draft, reached by battle battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 29/30, outcomes 27/30
 
 - `R014+0xB07D` `mov dx, 0xff`
 
+### R014+0xB0D8 `R014+0xB0D8 (18BF:0C48)`
+
+draft, reached by battle-oracle-gate: blocks 4/10, outcomes 2/8
+
+- `R014+0xB108` `mov bx, word ptr [bp - 6]`
+- `R014+0xB12C` `mov bx, word ptr [bp - 6]`
+- `R014+0xB142` `mov bx, word ptr [bp - 6]`
+- `R014+0xB14A` `cmp si, 5`
+- `R014+0xB14F` `push si`
+- `R014+0xB158` `mov byte ptr [si - 0x359c], 0xd`
+
+### R014+0xB244 `R014+0xB244 (18BF:0DB4)`
+
+draft, reached by battle-oracle-gate: blocks 12/36, outcomes 8/34
+
+- `R014+0xB25A` `mov word ptr [bp - 6], 0`
+- `R014+0xB270` `mov ax, 0x2e38`
+- `R014+0xB278` `imul ax, si, 0x180`
+- `R014+0xB28C` `mov al, byte ptr es:[si]`
+- `R014+0xB296` `mov al, byte ptr [bp + 0xa]`
+- `R014+0xB29F` `add si, 6`
+- `R014+0xB2AA` `jmp 0xe26`
+- `R014+0xB2AC` `mov dx, di`
+- `R014+0xB2B6` `cmp word ptr [bp - 8], 1`
+- `R014+0xB2BC` `jmp 0xf9d`
+- `R014+0xB2BF` `mov bx, word ptr [bp + 6]`
+- `R014+0xB2EA` `mov dx, word ptr [bp - 2]`
+- `R014+0xB2FD` `jmp 0xf98`
+- `R014+0xB300` `mov ax, si`
+- `R014+0xB325` `mov ax, word ptr [bp - 2]`
+- `R014+0xB347` `jmp 0xf98`
+- `R014+0xB35D` `mov ax, 0x2e38`
+- `R014+0xB392` `jmp 0xf0e`
+- `R014+0xB3A4` `jmp 0xf9d`
+- `R014+0xB3CE` `mov dx, word ptr [bp - 2]`
+- `R014+0xB3E1` `mov ax, si`
+- `R014+0xB406` `mov ax, word ptr [bp - 2]`
+- `R014+0xB428` `mov bx, word ptr [bp - 0xa]`
+- `R014+0xB42D` `mov ax, 0xffff`
+
+### R014+0xB576 `R014+0xB576 (19CD:0006)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 13/111, outcomes 9/108
+
+- `R014+0xB592` `jmp 0x697`
+- `R014+0xB59C` `mov ax, word ptr [0xda4b]`
+- `R014+0xB5A5` `mov byte ptr [0xd845], 0xff`
+- `R014+0xB5B1` `mov al, byte ptr [0xc624]`
+- `R014+0xB5F1` `mov al, byte ptr [0xc624]`
+- `R014+0xB628` `mov word ptr [bp - 0x1a], ax`
+- `R014+0xB63C` `cmp word ptr [bp - 0xc], 0`
+- `R014+0xB642` `jmp 0x299`
+- `R014+0xB645` `cmp word ptr [bp - 0xc], 0x104`
+- `R014+0xB64C` `jmp 0x299`
+- `R014+0xB64F` `mov bx, 0x40`
+- `R014+0xB65D` `jmp 0x299`
+- `R014+0xB660` `cmp byte ptr [0xc102], 0`
+- `R014+0xB667` `jmp 0x1c4`
+- `R014+0xB66A` `mov al, byte ptr [0xc624]`
+- `R014+0xB6CC` `mov ax, word ptr [0x7d4]`
+- `R014+0xB6D4` `mov ax, word ptr [0x7d4]`
+- `R014+0xB6DA` `mov word ptr [0xda4b], ax`
+- `R014+0xB6EC` `mov byte ptr [0xd845], 0xfe`
+- `R014+0xB709` `push ax`
+- `R014+0xB714` `mov byte ptr [0xd845], 0xfd`
+- `R014+0xB734` `cmp byte ptr [0xa6b3], 0`
+- `R014+0xB73B` `jmp 0x28c`
+- `R014+0xB73E` `mov al, byte ptr [0xe0a1]`
+- `R014+0xB748` `dec word ptr [bp - 0x18]`
+- `R014+0xB74B` `cmp word ptr [bp - 0x18], 0`
+- `R014+0xB751` `jmp 0x27f`
+- `R014+0xB754` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xB75E` `mov ax, word ptr [bp - 0xc]`
+- `R014+0xB769` `cmp word ptr [bx - 0x2729], ax`
+- `R014+0xB76F` `mov ax, word ptr [bp - 0x10]`
+- `R014+0xB778` `cmp word ptr [bx - 0x275d], ax`
+- `R014+0xB77E` `mov si, word ptr [bp - 0x18]`
+- `R014+0xB7EF` `cmp word ptr [bp - 0x18], 0`
+- `R014+0xB7F5` `mov byte ptr [0xa6b2], 0xff`
+- `R014+0xB7FC` `push word ptr [bp - 0x10]`
+- `R014+0xB838` `cmp byte ptr [0xd73b], 1`
+- `R014+0xB83F` `cmp byte ptr [0xc102], 0`
+- `R014+0xB846` `mov ax, word ptr [0x7d4]`
+- `R014+0xB84F` `mov byte ptr [0xd73b], 0`
+- `R014+0xB862` `mov bx, word ptr [0xc4fe]`
+- `R014+0xB872` `mov word ptr [bp - 0x10], ax`
+- `R014+0xB87B` `jmp 0x697`
+- `R014+0xB87E` `mov word ptr [0xc62a], 0`
+- `R014+0xB892` `mov al, byte ptr [0xe0a1]`
+- `R014+0xB89C` `dec word ptr [bp - 0x18]`
+- `R014+0xB89F` `cmp word ptr [bp - 0x18], 0`
+- `R014+0xB8A5` `jmp 0x697`
+- `R014+0xB8A8` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xB8B2` `mov ax, word ptr [bp - 0xc]`
+- `R014+0xB8BD` `cmp word ptr [bx - 0x2729], ax`
+- `R014+0xB8C3` `mov ax, word ptr [bp - 0x10]`
+- `R014+0xB8CC` `cmp word ptr [bx - 0x275d], ax`
+- `R014+0xB8D2` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xB8E8` `cmp byte ptr [0xc102], 0`
+- `R014+0xB8EF` `jmp 0x5de`
+- `R014+0xB8F2` `mov es, word ptr [0x7da2]`
+- `R014+0xB91E` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xB92B` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xB933` `inc word ptr [bp - 0x18]`
+- `R014+0xB93C` `mov ax, word ptr [bp - 0xa]`
+- `R014+0xB959` `jmp 0x58c`
+- `R014+0xB95C` `cmp byte ptr [0xc102], 1`
+- `R014+0xB963` `jmp 0x4d6`
+- `R014+0xB966` `mov word ptr [bp - 0x18], 0`
+- `R014+0xB96E` `inc word ptr [bp - 0x18]`
+- `R014+0xB971` `mov al, byte ptr [0xc629]`
+- `R014+0xB97A` `jmp 0x697`
+- `R014+0xB97D` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xB991` `push ax`
+- `R014+0xB99D` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xB9F0` `mov byte ptr [0xd845], 0xfd`
+- `R014+0xBA22` `inc word ptr [bp - 0x18]`
+- `R014+0xBA25` `cmp word ptr [bp - 0x18], 5`
+- `R014+0xBA2B` `jmp 0x697`
+- `R014+0xBA2E` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xBA3B` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xBA46` `mov al, byte ptr [0xc624]`
+- `R014+0xBA71` `mov al, byte ptr [0xc624]`
+- `R014+0xBAC2` `mov byte ptr [0xd845], 0xfd`
+- `R014+0xBAFC` `mov word ptr [bp - 0x18], 0`
+- `R014+0xBB01` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xBB0E` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xBB16` `inc word ptr [bp - 0x18]`
+- `R014+0xBB1F` `mov byte ptr [0xd845], 0xfd`
+- `R014+0xBB4E` `cmp byte ptr [0xa6b3], 0`
+- `R014+0xBB55` `jmp 0x68c`
+- `R014+0xBB58` `mov byte ptr [0xa6b2], 0xff`
+- `R014+0xBB68` `dec word ptr [bp - 0x18]`
+- `R014+0xBB6B` `cmp word ptr [bp - 0x18], 0`
+- `R014+0xBB71` `jmp 0x697`
+- `R014+0xBB74` `mov bx, word ptr [bp - 0x18]`
+- `R014+0xBB7E` `mov ax, word ptr [bp - 0xc]`
+- `R014+0xBB89` `cmp word ptr [bx - 0x2729], ax`
+- `R014+0xBB8F` `mov ax, word ptr [bp - 0x10]`
+- `R014+0xBB98` `cmp word ptr [bx - 0x275d], ax`
+- `R014+0xBB9E` `mov si, word ptr [bp - 0x18]`
+- `R014+0xBBFC` `push ax`
+
+### R014+0xBC0C `R014+0xBC0C (19CD:069C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/5, outcomes 3/4
+
+### R014+0xBCA8 `R014+0xBCA8 (19CD:0738)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/58, outcomes 3/56
+
+- `R014+0xBCCD` `cmp dx, 0x400`
+- `R014+0xBCD3` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBCF6` `cmp byte ptr [0xd845], 0xfd`
+- `R014+0xBCFD` `jmp 0xa94`
+- `R014+0xBD00` `mov ax, word ptr [0xc2bd]`
+- `R014+0xBD09` `jmp 0xa94`
+- `R014+0xBD0C` `mov dx, word ptr [0xc652]`
+- `R014+0xBD18` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBD31` `cmp word ptr [0xa6b0], -1`
+- `R014+0xBD38` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBD48` `mov ax, word ptr [0xa6b0]`
+- `R014+0xBD53` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBD60` `cmp byte ptr [0xd845], 0`
+- `R014+0xBD67` `jmp 0x99e`
+- `R014+0xBD6A` `cmp word ptr [0xa6b0], 0x80`
+- `R014+0xBD72` `jmp 0x8d0`
+- `R014+0xBD75` `cmp word ptr [0xa6b0], 0x100`
+- `R014+0xBD7D` `jmp 0x8d0`
+- `R014+0xBD80` `cmp byte ptr [0xc7cc], 1`
+- `R014+0xBD87` `or dx, dx`
+- `R014+0xBD8B` `cmp byte ptr [0xc762], 0`
+- `R014+0xBD92` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBD9F` `push 0`
+- `R014+0xBDD8` `mov dx, word ptr [0xa6b0]`
+- `R014+0xBDE4` `jmp 0xa94`
+- `R014+0xBDE7` `mov word ptr [bx - 0x639b], dx`
+- `R014+0xBDEB` `mov bx, word ptr [bp - 4]`
+- `R014+0xBDEE` `mov byte ptr [bx - 0x359c], 7`
+- `R014+0xBDF6` `cmp byte ptr [0xc762], 1`
+- `R014+0xBDFD` `mov ax, word ptr [0xa6b0]`
+- `R014+0xBE06` `mov bx, word ptr [bp - 4]`
+- `R014+0xBE2B` `jmp 0xa94`
+- `R014+0xBE2E` `push word ptr [0xa6b0]`
+- `R014+0xBE3A` `add sp, 4`
+- `R014+0xBE40` `cmp word ptr [0xa6b0], 0x80`
+- `R014+0xBE48` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBE98` `cmp word ptr [0xa6b0], 0x100`
+- `R014+0xBEA0` `jmp 0xa94`
+- `R014+0xBEA3` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBEE9` `mov word ptr [bx - 0x63a3], dx`
+- `R014+0xBEF8` `mov al, byte ptr [0xd845]`
+- `R014+0xBEFF` `mov ax, word ptr [0xc867]`
+- `R014+0xBF0E` `cmp byte ptr [0xd845], 0xfe`
+- `R014+0xBF15` `jmp 0xa94`
+- `R014+0xBF18` `cmp word ptr [0xa6b0], 0x100`
+- `R014+0xBF20` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBF76` `cmp byte ptr [0xa6c1], 1`
+- `R014+0xBF7D` `mov al, byte ptr [0x11ca]`
+- `R014+0xBF86` `push 0x96`
+- `R014+0xBF94` `cmp byte ptr [0xc7cc], 1`
+- `R014+0xBF9B` `or dx, dx`
+- `R014+0xBF9F` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBFB7` `mov al, byte ptr [0xa6b2]`
+
+### R014+0xCD66 `R014+0xCD66 (19CD:17F6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 14/26, outcomes 13/30
+
+- `R014+0xCD8D` `jmp 0x187b`
+- `R014+0xCDFE` `jmp 0x1957`
+- `R014+0xCE16` `mov dx, word ptr [0xa6b0]`
+- `R014+0xCE20` `cmp dx, 0x100`
+- `R014+0xCE26` `cmp dx, -1`
+- `R014+0xCE2B` `mov al, byte ptr [0xa6b2]`
+- `R014+0xCE40` `cmp ax, 0x100`
+- `R014+0xCE45` `mov di, word ptr [0xe1bc]`
+- `R014+0xCE4C` `mov al, byte ptr [0xa6b2]`
+- `R014+0xCE91` `mov di, word ptr [0xc242]`
+- `R014+0xCE98` `mov di, word ptr [0xc2bd]`
+- `R014+0xCE9C` `mov al, byte ptr [0xd845]`
+
+### R014+0xCF5E `R014+0xCF5E (19CD:19EE)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/16, outcomes 4/16
+
+- `R014+0xCF7A` `sub si, si`
+- `R014+0xCF83` `jmp 0x1ad9`
+- `R014+0xCF86` `mov al, byte ptr [bx - 0x6361]`
+- `R014+0xCF95` `mov al, byte ptr [0xe0a1]`
+- `R014+0xCF9E` `pop si`
+- `R014+0xCFA2` `mov al, byte ptr [si - 0x27b8]`
+- `R014+0xCFFE` `mov bx, word ptr [bp - 2]`
+- `R014+0xD009` `mov word ptr [0xe1c0], 0xf`
+- `R014+0xD018` `mov word ptr [0xe1c0], 0x1a`
+- `R014+0xD025` `mov ax, word ptr [bx - 0x63a3]`
+- `R014+0xD049` `pop si`
+
+### R014+0xD04E `R014+0xD04E (19CD:1ADE)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 19/57, outcomes 16/56
+
+- `R014+0xD0E4` `mov si, word ptr [bp - 0xa]`
+- `R014+0xD12A` `mov byte ptr [di - 0x3911], 0`
+- `R014+0xD132` `mov bx, word ptr [bp - 0xe]`
+- `R014+0xD140` `mov byte ptr [di - 0x3911], 1`
+- `R014+0xD148` `mov al, byte ptr es:[bx + 0x1f5d]`
+- `R014+0xD153` `mov byte ptr [di - 0x3911], 2`
+- `R014+0xD15A` `mov al, byte ptr es:[bx + 0x1f5d]`
+- `R014+0xD165` `mov byte ptr [di - 0x3911], 3`
+- `R014+0xD16A` `mov al, byte ptr [di - 0x3911]`
+- `R014+0xD174` `dec ax`
+- `R014+0xD177` `dec ax`
+- `R014+0xD17A` `dec ax`
+- `R014+0xD17D` `jmp 0x1c38`
+- `R014+0xD180` `mov al, byte ptr [bp - 2]`
+- `R014+0xD186` `mov al, byte ptr [bp - 4]`
+- `R014+0xD18C` `mov al, byte ptr [bp - 1]`
+- `R014+0xD194` `mov ax, word ptr [bp - 4]`
+- `R014+0xD1A2` `and ax, 0xf`
+- `R014+0xD1A8` `mov bx, di`
+- `R014+0xD1B7` `mov byte ptr [di - 0x3988], 1`
+- `R014+0xD1BE` `mov byte ptr [di - 0x3988], 0`
+- `R014+0xD1C3` `mov ax, si`
+- `R014+0xD1DB` `jmp 0x1d5a`
+- `R014+0xD1F2` `mov bl, byte ptr [di - 0x39b4]`
+- `R014+0xD210` `jmp 0x1d38`
+- `R014+0xD213` `cmp byte ptr [0xa6c1], 0`
+- `R014+0xD21A` `jmp 0x1d38`
+- `R014+0xD21D` `mov al, 2`
+- `R014+0xD248` `imul ax, di, 0x180`
+- `R014+0xD25F` `lea bx, [si - 3]`
+- `R014+0xD267` `mov al, byte ptr [si]`
+- `R014+0xD270` `mov word ptr [bp - 4], ax`
+- `R014+0xD27F` `add si, 6`
+- `R014+0xD290` `mov ax, 0x321a`
+- `R014+0xD295` `mov bx, word ptr [bp + 4]`
+- `R014+0xD29F` `mov byte ptr [0x96f9], 1`
+- `R014+0xD2A8` `mov al, byte ptr [bp - 0x12]`
+- `R014+0xD2AF` `mov byte ptr [0x96a9], 1`
+
+### R014+0xD2CE `R014+0xD2CE (19CD:1D5E)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 4/6, outcomes 2/6
+
+- `R014+0xD2E8` `imul ax, si, 0x1e`
+- `R014+0xD2FC` `mov ax, word ptr [bp - 2]`
+
+### R014+0xD328 `R014+0xD328 (19CD:1DB8)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 12/17, outcomes 10/20
+
+- `R014+0xD378` `mov ax, word ptr [bp - 2]`
+- `R014+0xD381` `mov ax, word ptr [bp - 4]`
+- `R014+0xD38A` `mov ax, word ptr [bp - 6]`
+- `R014+0xD3B0` `mov al, byte ptr [bp - 8]`
+- `R014+0xD3D8` `mov byte ptr [0x96bd], 1`
+
+### R014+0xD402 `R014+0xD402 (19CD:1E92)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 10/49, outcomes 6/54
+
+- `R014+0xD41A` `mov si, 0x300e`
+- `R014+0xD420` `mov ax, word ptr es:[si]`
+- `R014+0xD42A` `mov al, byte ptr es:[si + 4]`
+- `R014+0xD459` `mov ax, word ptr [bp - 4]`
+- `R014+0xD462` `mov ax, word ptr [bp - 6]`
+- `R014+0xD46B` `mov ax, word ptr [bp - 8]`
+- `R014+0xD474` `mov bx, di`
+- `R014+0xD47D` `add si, 0x2c`
+- `R014+0xD48D` `jmp 0x1f36`
+- `R014+0xD496` `mov al, byte ptr [bp - 0xa]`
+- `R014+0xD4B8` `jmp 0x2095`
+- `R014+0xD4CF` `mov al, 2`
+- `R014+0xD4EF` `jmp 0x2010`
+- `R014+0xD4F2` `cmp byte ptr [0xa6c1], ah`
+- `R014+0xD4F8` `jmp 0x2010`
+- `R014+0xD4FB` `mov byte ptr [0x96e5], 1`
+- `R014+0xD51E` `imul ax, di, 0x180`
+- `R014+0xD535` `lea bx, [si - 3]`
+- `R014+0xD53D` `mov al, byte ptr [si]`
+- `R014+0xD546` `mov word ptr [bp - 4], ax`
+- `R014+0xD555` `add si, 6`
+- `R014+0xD566` `mov ax, 0x321a`
+- `R014+0xD56B` `mov bx, word ptr [bp + 4]`
+- `R014+0xD575` `jmp 0x2095`
+- `R014+0xD578` `mov byte ptr [0x96f9], 1`
+- `R014+0xD580` `cmp byte ptr es:[bx + 0x3017], 0`
+- `R014+0xD588` `cmp byte ptr [0xa6c1], 0`
+- `R014+0xD58F` `mov byte ptr [0x970d], 1`
+- `R014+0xD5A0` `ja 0x2095`
+- `R014+0xD5A2` `sub al, 0x14`
+- `R014+0xD5A6` `sub al, 0x1e`
+- `R014+0xD5AA` `pop si`
+- `R014+0xD5AE` `mov word ptr [0x970b], 0x5f2`
+- `R014+0xD5B8` `mov word ptr [0x970b], 0x60c`
+- `R014+0xD5C2` `mov word ptr [0x970b], 0x628`
+- `R014+0xD5CC` `mov al, byte ptr es:[bx + 0x3016]`
+- `R014+0xD5D5` `cmp byte ptr es:[bx + 0x3017], 0`
+- `R014+0xD5DD` `cmp byte ptr [0xa6c1], 0`
+- `R014+0xD5E4` `mov byte ptr [0x96d1], 1`
+
+### R014+0xD60A `R014+0xD60A (19CD:209A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 18/20, outcomes 17/22
+
+- `R014+0xD69E` `mov al, byte ptr [bp - 0xa]`
+- `R014+0xD6CB` `mov al, 1`
+
+### R014+0xD6DA `R014+0xD6DA (19CD:216A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 11/18, outcomes 11/26
+
+- `R014+0xD747` `cmp di, 5`
+- `R014+0xD74C` `jl 0x221a`
+- `R014+0xD74E` `cmp word ptr es:[si + 6], 0x180b`
+- `R014+0xD756` `cmp word ptr es:[si + 8], 0x9c0`
+- `R014+0xD75E` `cmp word ptr es:[si + 6], 0x1801`
+- `R014+0xD766` `cmp word ptr es:[si + 8], 0x9c0`
+- `R014+0xD76E` `mov es, word ptr [0x7daa]`
+
+### R014+0xD7A2 `R014+0xD7A2 (19CD:2232)`
+
+draft, reached by battle-oracle-castle battle-oracle-mine: blocks 8/21, outcomes 5/26
+
+- `R014+0xD7DF` `mov cx, 0x59cc`
+- `R014+0xD7EB` `mov al, byte ptr ss:[0x11ca]`
+- `R014+0xD7F6` `lea bx, [si - 2]`
+- `R014+0xD7FE` `cmp word ptr [si], cx`
+- `R014+0xD802` `mov ax, word ptr [bp - 4]`
+- `R014+0xD809` `mov ax, word ptr [bp - 6]`
+- `R014+0xD811` `mov ax, word ptr [bp - 8]`
+- `R014+0xD819` `add si, 0xc`
+- `R014+0xD827` `mov ax, 0x321a`
+- `R014+0xD832` `mov ax, 0x321a`
+- `R014+0xD847` `mov al, 1`
+- `R014+0xD867` `cmp byte ptr [0xa6c1], 0`
+- `R014+0xD86E` `mov byte ptr [0x9735], 1`
+
+### R014+0xDC14 `R014+0xDC14 (19CD:26A4)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 36/57, outcomes 30/62
+
+- `R014+0xDC4E` `and byte ptr [si], 0xda`
+- `R014+0xDC51` `or byte ptr [si], 8`
+- `R014+0xDC5E` `test byte ptr [si], 2`
+- `R014+0xDC63` `and byte ptr [si], 0xda`
+- `R014+0xDC87` `and byte ptr [si], 0xd9`
+- `R014+0xDC92` `test byte ptr [si], 1`
+- `R014+0xDC97` `and byte ptr [si], 0xd9`
+- `R014+0xDCBE` `and byte ptr [si], 0xdc`
+- `R014+0xDCCA` `test byte ptr [si], 4`
+- `R014+0xDCCF` `and byte ptr [si], 0xdc`
+- `R014+0xDCF4` `and byte ptr [si], 0xf8`
+- `R014+0xDD00` `test byte ptr [si], 0x20`
+- `R014+0xDD05` `and byte ptr [si], 0xf8`
+- `R014+0xDD08` `push di`
+- `R014+0xDD6C` `jmp 0x288b`
+- `R014+0xDD76` `jmp 0x288b`
+- `R014+0xDDB4` `cmp word ptr [bx], cx`
+- `R014+0xDDB8` `cmp word ptr [bx], dx`
+- `R014+0xDDBC` `cmp word ptr [bx + 2], di`
+- `R014+0xDDC1` `mov ax, word ptr [bp - 8]`
+- `R014+0xDDDA` `push 1`
+
+### R014+0xDE12 `R014+0xDE12 (19CD:28A2)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 10/12, outcomes 6/8
+
+- `R014+0xDE78` `mov di, 0x744`
+- `R014+0xDF04` `mov di, 0x744`
+
+### R014+0xDF28 `R014+0xDF28 (19CD:29B8)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 16/61, outcomes 12/66
+
+- `R014+0xDF63` `mov byte ptr [0x96bd], 1`
+- `R014+0xDFF5` `cmp byte ptr [0xa6c1], 0`
+- `R014+0xDFFC` `mov byte ptr [0x9735], 1`
+- `R014+0xE046` `mov al, 2`
+- `R014+0xE06C` `push ax`
+- `R014+0xE099` `mov ax, 0x20a5`
+- `R014+0xE0BF` `jmp 0x2bd4`
+- `R014+0xE0C2` `cmp byte ptr [0xa6c1], 0`
+- `R014+0xE0C9` `mov al, 1`
+- `R014+0xE0D7` `mov word ptr [bp - 4], 0x64`
+- `R014+0xE0F4` `mov al, byte ptr [0xa6b2]`
+- `R014+0xE106` `lea bx, [si - 3]`
+- `R014+0xE10F` `mov al, byte ptr es:[si]`
+- `R014+0xE119` `mov word ptr [bp - 4], ax`
+- `R014+0xE125` `add si, 6`
+- `R014+0xE131` `mov bx, word ptr [bp - 6]`
+- `R014+0xE13B` `mov byte ptr [0x96f9], 1`
+- `R014+0xE144` `mov byte ptr [0x96a9], 1`
+- `R014+0xE149` `mov byte ptr [0xd7ff], 2`
+- `R014+0xE157` `mov byte ptr [0x96bd], al`
+- `R014+0xE168` `mov byte ptr [0x9749], 1`
+- `R014+0xE179` `cmp byte ptr [0xa6c1], 0`
+- `R014+0xE180` `jmp 0x2d03`
+- `R014+0xE183` `mov es, word ptr [0x7daa]`
+- `R014+0xE19F` `jmp 0x2cb4`
+- `R014+0xE1A2` `mov byte ptr [0x96e5], 1`
+- `R014+0xE1B1` `jmp 0x2d03`
+- `R014+0xE1B4` `mov word ptr [bp - 4], 0x64`
+- `R014+0xE1D1` `mov al, byte ptr [0xa6b2]`
+- `R014+0xE1E3` `lea bx, [si - 3]`
+- `R014+0xE1EC` `mov al, byte ptr es:[si]`
+- `R014+0xE1F6` `mov word ptr [bp - 4], ax`
+- `R014+0xE202` `add si, 6`
+- `R014+0xE20E` `mov bx, word ptr [bp - 6]`
+- `R014+0xE218` `mov byte ptr [0x96f9], 1`
+- `R014+0xE224` `mov ax, 0x20a5`
+- `R014+0xE231` `mov byte ptr [0x970d], 1`
+- `R014+0xE242` `ja 0x2d03`
+- `R014+0xE244` `sub al, 0x14`
+- `R014+0xE248` `sub al, 0x1e`
+- `R014+0xE24C` `pop si`
+- `R014+0xE250` `mov word ptr [0x970b], 0x5b2`
+- `R014+0xE25A` `mov word ptr [0x970b], 0x5c6`
+- `R014+0xE264` `mov word ptr [0x970b], 0x5dc`
+- `R014+0xE26E` `mov byte ptr [0x96d1], 1`
+
+### R014+0xE774 `R014+0xE774 (19CD:3204)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R014+0xED10 `R014+0xED10 (1D47:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 18/25, outcomes 15/26
+
+- `R014+0xED96` `jmp 0x127`
+- `R014+0xEDA8` `jmp 0x123`
+- `R014+0xEDD3` `sub al, al`
+- `R014+0xEDE5` `push word ptr [bp - 2]`
+- `R014+0xEDF0` `push di`
+- `R014+0xEE0E` `mov al, byte ptr [si + 0x18]`
+- `R014+0xEE47` `jmp 0x1a`
+
+### R014+0xEE4E `R014+0xEE4E (1D47:013E)`
+
+draft, reached by battle-oracle-gate: blocks 20/26, outcomes 13/20
+
+- `R014+0xEE96` `mov ax, 0xffff`
+- `R014+0xEEA6` `mov ax, 0xffff`
+- `R014+0xEEB0` `mov dx, bx`
+- `R014+0xEEF1` `add di, word ptr [bp - 0xa]`
+- `R014+0xEEF6` `mov di, word ptr [bp - 4]`
+- `R014+0xEF16` `add bx, word ptr [bp - 0xc]`
+
 ### R014+0xEF3C `R014+0xEF3C (1D69:000C)`
 
-draft, reached by tactics: blocks 58/61, outcomes 59/62
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild tactics: blocks 59/61, outcomes 60/62
 
 - `R014+0xEFB3` `jmp 0x26d`
 - `R014+0xEFDD` `jmp 0x257`
-- `R014+0xF274` `jmp 0x276`
 
 ### R014+0xF284 `R014+0xF284 (1D69:0354)`
 
-draft, reached by tactics: blocks 21/21, outcomes 20/20
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild tactics: blocks 21/21, outcomes 20/20
 
 ### R014+0xF3E2 `R014+0xF3E2 (1D69:04B2)`
 
-draft, reached by tactics: blocks 9/9, outcomes 8/8
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild tactics: blocks 9/9, outcomes 8/8
+
+### R014+0xF418 `R014+0xF418 (1DB7:0008)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 4/4, outcomes 3/4
+
+### R014+0xF438 `R014+0xF438 (1DB7:0028)`
+
+draft, reached by battle-oracle-gate battle-oracle-wild: blocks 21/23, outcomes 21/26
+
+- `R014+0xF452` `jmp 0x144`
+- `R014+0xF47D` `jmp 0x144`
 
 ### R014+0xF568 `R014+0xF568 (1DB7:0158)`
 
-draft, reached by path: blocks 14/14, outcomes 14/16
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild path: blocks 14/14, outcomes 14/16
+
+### R014+0xF67A `R014+0xF67A (1DB7:026A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 30/39, outcomes 26/42
+
+- `R014+0xF6AE` `jmp 0x3e6`
+- `R014+0xF754` `cmp di, 0x9ed9`
+- `R014+0xF75A` `cmp word ptr [bp - 8], 0x7aad`
+- `R014+0xF761` `cmp di, 0x9ed9`
+- `R014+0xF767` `cmp word ptr [bp - 8], 0x7aad`
+- `R014+0xF788` `mov si, word ptr [bp - 0xc]`
+- `R014+0xF7C0` `mov byte ptr [si - 0x2a17], 1`
+- `R014+0xF7FD` `mov ax, word ptr [0x7d4]`
+- `R014+0xF807` `mov byte ptr [si - 0x2a17], 0`
+
+### R014+0xF828 `R014+0xF828 (1DB7:0418)`
+
+draft, reached by battle-oracle-wild: blocks 8/14, outcomes 5/14
+
+- `R014+0xF855` `inc dx`
+- `R014+0xF860` `mov dx, word ptr [bp - 2]`
+- `R014+0xF86B` `cmp cx, 5`
+- `R014+0xF870` `mov word ptr [0xd65f], 0xffff`
+- `R014+0xF87A` `mov word ptr [0xd67e], 0xffff`
+- `R014+0xF882` `lcall 0x9c0, 0x1dd3`
+
+### R014+0xFADC `R014+0xFADC (1DB7:06CC)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 23/32, outcomes 22/34
+
+- `R014+0xFAE9` `jmp 0x83c`
+- `R014+0xFB03` `cmp word ptr [bp - 0xa], 0x41`
+- `R014+0xFB09` `jmp 0x822`
+- `R014+0xFB16` `jmp 0x822`
+- `R014+0xFB47` `jmp 0x822`
+- `R014+0xFB9E` `mov word ptr [bp - 4], si`
+- `R014+0xFBA7` `mov bx, word ptr [bp - 6]`
+- `R014+0xFBB1` `push bx`
+- `R014+0xFBB9` `push 0`
+
+### R014+0xFC50 `R014+0xFC50 (1DB7:0840)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 23/27, outcomes 22/36
+
+- `R014+0xFC68` `mov word ptr [bp - 6], cx`
+- `R014+0xFD14` `mov al, byte ptr [di + 0x3a]`
+- `R014+0xFD31` `cmp byte ptr [si - 0x3d41], 0`
+- `R014+0xFD38` `push si`
+
+### R014+0xFDBE `R014+0xFDBE (1DB7:09AE)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 15/15, outcomes 13/14
+
+### R014+0xFE90 `R014+0xFE90 (1DB7:0A80)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 16/16, outcomes 12/12
+
+### R014+0xFFB8 `R014+0xFFB8 (1DB7:0BA8)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 10/11, outcomes 10/12
+
+- `R014+0xFFDB` `mov ax, word ptr [bx - 0x639b]`
+
+### R014+0x1003A `R014+0x1003A (1DB7:0C2A)`
+
+draft, reached by battle-oracle-gate battle-oracle-wild: blocks 4/5, outcomes 2/4
+
+- `R014+0x1008B` `push si`
+
+### R014+0x1010A `R014+0x1010A (1DB7:0CFA)`
+
+draft, reached by battle-oracle-gate battle-oracle-wild: blocks 6/6, outcomes 4/4
+
+### R014+0x10146 `R014+0x10146 (1DB7:0D36)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 18/19, outcomes 18/22
+
+- `R014+0x10153` `jmp 0xe1e`
+
+### R014+0x10232 `R014+0x10232 (1DB7:0E22)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 38/62, outcomes 32/66
+
+- `R014+0x10251` `cmp di, 5`
+- `R014+0x10256` `jmp 0x111c`
+- `R014+0x10291` `jmp 0xf1d`
+- `R014+0x1029E` `jmp 0xf1d`
+- `R014+0x10390` `cmp di, 5`
+- `R014+0x10395` `mov bx, di`
+- `R014+0x103B6` `mov byte ptr [di - 0x359c], 0`
+- `R014+0x10456` `sub bx, bx`
+- `R014+0x10460` `cmp byte ptr es:[bx + 0x7c4d], 0xff`
+- `R014+0x10468` `mov si, bx`
+- `R014+0x10476` `mov cx, 5`
+- `R014+0x10481` `inc bx`
+- `R014+0x10487` `mov word ptr [bp - 8], 0xffff`
+- `R014+0x1048C` `push 0xd`
+- `R014+0x104AD` `mov word ptr [bp - 8], 0xffff`
+- `R014+0x104C6` `shl ax, 1`
+- `R014+0x104DB` `mov bx, cx`
+- `R014+0x104E5` `cmp word ptr es:[di], 0x270f`
+- `R014+0x104EC` `mov word ptr [bp - 8], si`
+- `R014+0x104EF` `inc di`
+- `R014+0x104FB` `cmp word ptr [bp - 8], -1`
+- `R014+0x10501` `mov bx, word ptr [bp - 6]`
+- `R014+0x1050E` `push word ptr [bp - 8]`
+- `R014+0x1051A` `cmp word ptr [bp - 8], -1`
+
+### R014+0x1060A `R014+0x1060A (1EC9:00DA)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
+
+### R014+0x10672 `R014+0x10672 (1EC9:0142)`
+
+draft, reached by battle-oracle-gate: blocks 2/15, outcomes 1/12
+
+- `R014+0x10686` `mov bx, word ptr [bp + 6]`
+- `R014+0x106BC` `mov bx, cx`
+- `R014+0x10703` `push word ptr [0xe0a5]`
+- `R014+0x1074F` `pop ax`
+- `R014+0x10758` `pop word ptr [0xe0a3]`
+- `R014+0x10760` `inc word ptr [bp - 4]`
+- `R014+0x10763` `mov ax, word ptr [bp - 0x10]`
+- `R014+0x1076F` `jmp 0x18c`
+- `R014+0x10772` `mov ax, word ptr [bp - 6]`
+- `R014+0x1078D` `mov al, byte ptr [0xa33d]`
+- `R014+0x10796` `jmp 0x14f`
+- `R014+0x10799` `mov bx, word ptr [bp - 0xe]`
+- `R014+0x107ED` `mov ax, word ptr [0xe0a5]`
+
+### R015+0x0000 `R015+0x0000 (1EF8:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/5, outcomes 4/6
+
+### R016+0x0000 `R016+0x0000 (1EF8:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 14/438, outcomes 9/390
+
+- `R016+0x001E` `jmp 0xac`
+- `R016+0x002E` `cmp byte ptr [0x880], 0`
+- `R016+0x0035` `cmp byte ptr [0x881], 0`
+- `R016+0x003C` `mov si, 0x4700`
+- `R016+0x0042` `cmp byte ptr [0x880], 0`
+- `R016+0x0049` `cmp byte ptr [0x881], 0`
+- `R016+0x0050` `mov si, 0x4f00`
+- `R016+0x0056` `cmp byte ptr [0x880], 0`
+- `R016+0x005D` `cmp byte ptr [0x881], 0`
+- `R016+0x0064` `mov si, 0x4900`
+- `R016+0x006A` `cmp byte ptr [0x880], 0`
+- `R016+0x0071` `cmp byte ptr [0x881], 0`
+- `R016+0x0078` `mov si, 0x5100`
+- `R016+0x007E` `cmp byte ptr [0x880], 0`
+- `R016+0x0085` `mov si, 0x4b00`
+- `R016+0x008A` `cmp byte ptr [0x880], 0`
+- `R016+0x0091` `mov si, 0x4d00`
+- `R016+0x0096` `cmp byte ptr [0x881], 0`
+- `R016+0x009D` `mov si, 0x4800`
+- `R016+0x00A2` `cmp byte ptr [0x881], 0`
+- `R016+0x00A9` `mov si, 0x5000`
+- `R016+0x00B5` `mov ax, si`
+- `R016+0x00BC` `jle 0xc1`
+- `R016+0x00BE` `jmp 0x1f8`
+- `R016+0x00C1` `cmp ax, 0x1675`
+- `R016+0x00C6` `jmp 0x14e`
+- `R016+0x00C9` `jle 0xce`
+- `R016+0x00CB` `jmp 0x1ba`
+- `R016+0x00CE` `cmp ax, 0x433`
+- `R016+0x00D3` `jle 0xd8`
+- `R016+0x00D5` `jmp 0x19c`
+- `R016+0x00D8` `sub ax, 0x11b`
+- `R016+0x00DD` `sub ax, 0x116`
+- `R016+0x00E2` `sub ax, 0x101`
+- `R016+0x00E5` `je 0xfc`
+- `R016+0x00E7` `pop si`
+- `R016+0x00EA` `push 0x96`
+- `R016+0x00F5` `add sp, 4`
+- `R016+0x0103` `jmp 0x6ee`
+- `R016+0x010B` `cmp ax, 0x1800`
+- `R016+0x0110` `jmp 0x6f6`
+- `R016+0x0113` `jle 0x118`
+- `R016+0x0115` `jmp 0x7ec`
+- `R016+0x0118` `cmp ax, 0x1071`
+- `R016+0x011D` `jmp 0x666`
+- `R016+0x0120` `jle 0x125`
+- `R016+0x0122` `jmp 0x7a2`
+- `R016+0x0125` `cmp ax, 0x433`
+- `R016+0x012A` `jmp 0x5a6`
+- `R016+0x012D` `jle 0x132`
+- `R016+0x012F` `jmp 0x786`
+- `R016+0x0132` `sub ax, 0x11b`
+- `R016+0x0137` `jmp 0x774`
+- `R016+0x013A` `sub ax, 0x116`
+- `R016+0x013F` `jmp 0x59a`
+- `R016+0x0142` `sub ax, 0x101`
+- `R016+0x0147` `jmp 0x5a2`
+- `R016+0x014A` `jmp 0x9b8`
+- `R016+0x014E` `cmp byte ptr [0xa695], 1`
+- `R016+0x0155` `cmp byte ptr [0x96bd], 1`
+- `R016+0x015C` `jmp 0x9b8`
+- `R016+0x015F` `mov al, byte ptr [0xa6b2]`
+- `R016+0x0174` `mov al, byte ptr [0x907b]`
+- `R016+0x0181` `jmp 0x9b8`
+- `R016+0x0184` `push bx`
+- `R016+0x0194` `lcall 0, 0x13a0`
+- `R016+0x019C` `sub ax, 0x534`
+- `R016+0x01A1` `jmp 0xfc`
+- `R016+0x01A4` `sub ax, 0x101`
+- `R016+0x01A9` `jmp 0xfc`
+- `R016+0x01AC` `sub ax, 0x9cb`
+- `R016+0x01B1` `sub ax, 0x655`
+- `R016+0x01B6` `pop si`
+- `R016+0x01BA` `cmp ax, 0x3d00`
+- `R016+0x01BF` `jmp 0xfc`
+- `R016+0x01C2` `jg 0x1da`
+- `R016+0x01C4` `sub ax, 0x1c0d`
+- `R016+0x01C9` `jmp 0xfc`
+- `R016+0x01CC` `sub ax, 0x1d13`
+- `R016+0x01D1` `jmp 0xfc`
+- `R016+0x01D4` `sub ax, 0x1e0`
+- `R016+0x01DA` `sub ax, 0x3e00`
+- `R016+0x01DF` `jmp 0xfc`
+- `R016+0x01E2` `sub ax, 0x100`
+- `R016+0x01E7` `jmp 0xfc`
+- `R016+0x01EA` `sub ax, 0x800`
+- `R016+0x01EF` `jmp 0xea`
+- `R016+0x01F2` `sub ax, 0x37`
+- `R016+0x01F8` `cmp ax, 0x4f31`
+- `R016+0x01FD` `jmp 0xea`
+- `R016+0x0200` `jg 0x240`
+- `R016+0x0202` `cmp ax, 0x4b00`
+- `R016+0x0207` `jmp 0xea`
+- `R016+0x020A` `jg 0x222`
+- `R016+0x020C` `sub ax, 0x4838`
+- `R016+0x0211` `jmp 0xea`
+- `R016+0x0214` `sub ax, 0xc8`
+- `R016+0x0219` `jmp 0xea`
+- `R016+0x021C` `sub ax, 0x39`
+- `R016+0x0222` `sub ax, 0x4b34`
+- `R016+0x0227` `jmp 0xea`
+- `R016+0x022A` `sub ax, 0x1cc`
+- `R016+0x022F` `jmp 0xea`
+- `R016+0x0232` `sub ax, 0x36`
+- `R016+0x0237` `jmp 0xea`
+- `R016+0x023A` `sub ax, 0x1ca`
+- `R016+0x0240` `cmp ax, 0x5e00`
+- `R016+0x0245` `jmp 0xfc`
+- `R016+0x0248` `jg 0x26e`
+- `R016+0x024A` `sub ax, 0x5000`
+- `R016+0x024F` `jmp 0xea`
+- `R016+0x0252` `sub ax, 0x32`
+- `R016+0x0257` `jmp 0xea`
+- `R016+0x025A` `sub ax, 0xce`
+- `R016+0x025F` `jmp 0xea`
+- `R016+0x0262` `sub ax, 0x33`
+- `R016+0x0265` `jne 0x26a`
+- `R016+0x0267` `jmp 0xea`
+- `R016+0x026A` `jmp 0x9b8`
+- `R016+0x026E` `sub ax, 0x5f00`
+- `R016+0x0273` `jmp 0xfc`
+- `R016+0x0276` `sub ax, 0x100`
+- `R016+0x027B` `jmp 0xfc`
+- `R016+0x027E` `sub ax, 0x100`
+- `R016+0x0281` `jne 0x286`
+- `R016+0x0283` `jmp 0xfc`
+- `R016+0x0286` `sub ax, 0x100`
+- `R016+0x028C` `mov bx, 0x40`
+- `R016+0x029A` `test byte ptr es:[bx], 1`
+- `R016+0x02A0` `dec byte ptr [0xc866]`
+- `R016+0x02A4` `dec byte ptr [0xc886]`
+- `R016+0x02A8` `push cs`
+- `R016+0x02B0` `mov al, byte ptr [0x17b0]`
+- `R016+0x02BF` `jmp 0x9b8`
+- `R016+0x02C2` `cmp byte ptr [0x17b0], 5`
+- `R016+0x02C9` `jmp 0x9b8`
+- `R016+0x02CC` `cmp byte ptr [0xc102], 1`
+- `R016+0x02D3` `jmp 0x9b8`
+- `R016+0x02D6` `mov byte ptr [0xe079], 1`
+- `R016+0x02F0` `mov bx, 0x40`
+- `R016+0x02FE` `test byte ptr es:[bx], 1`
+- `R016+0x0304` `inc byte ptr [0xc866]`
+- `R016+0x030C` `mov al, byte ptr [0x17b0]`
+- `R016+0x031B` `jmp 0x9b8`
+- `R016+0x031E` `cmp byte ptr [0x17b0], 5`
+- `R016+0x0325` `jmp 0x9b8`
+- `R016+0x0328` `cmp byte ptr [0xc102], 1`
+- `R016+0x032F` `jmp 0x9b8`
+- `R016+0x0332` `mov byte ptr [0xe079], 1`
+- `R016+0x034C` `mov bx, 0x40`
+- `R016+0x035A` `test byte ptr es:[bx], 1`
+- `R016+0x0360` `dec byte ptr [0xc866]`
+- `R016+0x0368` `mov al, byte ptr [0x17b0]`
+- `R016+0x0377` `jmp 0x9b8`
+- `R016+0x037A` `cmp byte ptr [0x17b0], 5`
+- `R016+0x0381` `jmp 0x9b8`
+- `R016+0x0384` `cmp byte ptr [0xc102], 1`
+- `R016+0x038B` `jmp 0x9b8`
+- `R016+0x038E` `mov byte ptr [0xe079], 1`
+- `R016+0x03A8` `mov bx, 0x40`
+- `R016+0x03B6` `test byte ptr es:[bx], 1`
+- `R016+0x03BC` `inc byte ptr [0xc866]`
+- `R016+0x03C4` `mov al, byte ptr [0x17b0]`
+- `R016+0x03D3` `jmp 0x9b8`
+- `R016+0x03D6` `cmp byte ptr [0x17b0], 5`
+- `R016+0x03DD` `jmp 0x9b8`
+- `R016+0x03E0` `cmp byte ptr [0xc102], 1`
+- `R016+0x03E7` `jmp 0x9b8`
+- `R016+0x03EA` `mov byte ptr [0xe079], 1`
+- `R016+0x0404` `mov bx, 0x40`
+- `R016+0x0412` `test byte ptr es:[bx], 1`
+- `R016+0x0418` `sub byte ptr [0xc866], 2`
+- `R016+0x0420` `mov al, byte ptr [0x17b0]`
+- `R016+0x042F` `jmp 0x9b8`
+- `R016+0x0432` `cmp byte ptr [0x17b0], 5`
+- `R016+0x0439` `jmp 0x9b8`
+- `R016+0x043C` `cmp byte ptr [0xc102], 1`
+- `R016+0x0443` `jmp 0x9b8`
+- `R016+0x0446` `mov byte ptr [0xe079], 1`
+- `R016+0x0460` `mov bx, 0x40`
+- `R016+0x046E` `mov al, byte ptr [0x17b0]`
+- `R016+0x047D` `jmp 0x9b8`
+- `R016+0x0480` `cmp byte ptr [0x17b0], 5`
+- `R016+0x0487` `jmp 0x9b8`
+- `R016+0x048A` `cmp byte ptr [0xc102], 1`
+- `R016+0x0491` `jmp 0x9b8`
+- `R016+0x0494` `mov byte ptr [0xe079], 1`
+- `R016+0x04AE` `mov bx, 0x40`
+- `R016+0x04BC` `test byte ptr es:[bx], 1`
+- `R016+0x04C2` `add byte ptr [0xc866], 2`
+- `R016+0x04C7` `inc byte ptr [0xc886]`
+- `R016+0x04CE` `mov al, byte ptr [0x17b0]`
+- `R016+0x04DD` `jmp 0x9b8`
+- `R016+0x04E0` `cmp byte ptr [0x17b0], 5`
+- `R016+0x04E7` `jmp 0x9b8`
+- `R016+0x04EA` `cmp byte ptr [0xc102], 1`
+- `R016+0x04F1` `jmp 0x9b8`
+- `R016+0x04F4` `mov byte ptr [0xe079], 1`
+- `R016+0x050E` `mov bx, 0x40`
+- `R016+0x051C` `jmp 0x2a4`
+- `R016+0x051F` `mov al, byte ptr [0x17b0]`
+- `R016+0x052E` `jmp 0x9b8`
+- `R016+0x0531` `cmp byte ptr [0x17b0], 5`
+- `R016+0x0538` `jmp 0x9b8`
+- `R016+0x053B` `cmp byte ptr [0xc102], 1`
+- `R016+0x0542` `jmp 0x9b8`
+- `R016+0x0545` `mov byte ptr [0xe079], 1`
+- `R016+0x0560` `push 0xa`
+- `R016+0x0562` `lcall 0x9c0, 0x1d65`
+- `R016+0x0567` `add sp, 2`
+- `R016+0x056E` `push 0x32`
+- `R016+0x0572` `push 0x5a`
+- `R016+0x0576` `push 0x82`
+- `R016+0x057C` `push 0xaa`
+- `R016+0x0582` `push 0`
+- `R016+0x0584` `push cs`
+- `R016+0x058A` `push 1`
+- `R016+0x058E` `push 2`
+- `R016+0x0592` `push 3`
+- `R016+0x0596` `push 4`
+- `R016+0x059A` `push 0`
+- `R016+0x059C` `push cs`
+- `R016+0x05A2` `push 1`
+- `R016+0x05A6` `push 2`
+- `R016+0x05AA` `push 3`
+- `R016+0x05AE` `push 4`
+- `R016+0x05B2` `cmp byte ptr [0x97f1], 1`
+- `R016+0x05B9` `jmp 0x9b8`
+- `R016+0x05BC` `cmp byte ptr [0xa6b2], 0xff`
+- `R016+0x05C3` `jmp 0x9b8`
+- `R016+0x05C6` `push cs`
+- `R016+0x05CE` `cmp byte ptr [0x9819], 1`
+- `R016+0x05D5` `jmp 0x9b8`
+- `R016+0x05D8` `cmp byte ptr [0xa6b2], 0xff`
+- `R016+0x05DF` `jmp 0x9b8`
+- `R016+0x05E2` `push cs`
+- `R016+0x05EA` `push cs`
+- `R016+0x05F2` `cmp byte ptr [0x9631], 1`
+- `R016+0x05F9` `jmp 0x9b8`
+- `R016+0x05FC` `lcall 0x9c0, 0x1a4f`
+- `R016+0x0604` `cmp byte ptr [0xa695], 1`
+- `R016+0x060B` `jmp 0x9b8`
+- `R016+0x060E` `cmp byte ptr [0x9659], 1`
+- `R016+0x0615` `jmp 0x9b8`
+- `R016+0x0618` `cmp byte ptr [0xa6b2], 0xff`
+- `R016+0x061F` `jmp 0x9b8`
+- `R016+0x0622` `push cs`
+- `R016+0x062A` `cmp byte ptr [0x9681], 1`
+- `R016+0x0631` `jmp 0x9b8`
+- `R016+0x0634` `push cs`
+- `R016+0x063C` `push cs`
+- `R016+0x0644` `cmp byte ptr [0x9841], 1`
+- `R016+0x064B` `jmp 0x9b8`
+- `R016+0x064E` `push cs`
+- `R016+0x0656` `push cs`
+- `R016+0x065E` `push cs`
+- `R016+0x0666` `cmp byte ptr [0x9695], 1`
+- `R016+0x066D` `jmp 0x9b8`
+- `R016+0x0670` `push cs`
+- `R016+0x0678` `lcall 0x9c0, 0x19eb`
+- `R016+0x0680` `cmp byte ptr [0x97dd], 1`
+- `R016+0x0687` `jmp 0x9b8`
+- `R016+0x068A` `mov byte ptr [0x9c26], 1`
+- `R016+0x06A4` `push cs`
+- `R016+0x06AC` `cmp byte ptr [0x9805], 1`
+- `R016+0x06B3` `jmp 0x9b8`
+- `R016+0x06B6` `cmp byte ptr [0xa6b2], 0xff`
+- `R016+0x06BD` `jmp 0x9b8`
+- `R016+0x06C0` `push cs`
+- `R016+0x06C8` `cmp byte ptr [0xa695], 1`
+- `R016+0x06CF` `jmp 0x9b8`
+- `R016+0x06D2` `cmp byte ptr [0x9645], 1`
+- `R016+0x06D9` `jmp 0x9b8`
+- `R016+0x06DC` `cmp byte ptr [0xa6b2], 0xff`
+- `R016+0x06E3` `jmp 0x9b8`
+- `R016+0x06E6` `push cs`
+- `R016+0x06EE` `push cs`
+- `R016+0x06F6` `mov word ptr [bp - 2], 0`
+- `R016+0x06FB` `mov bx, word ptr [bp - 2]`
+- `R016+0x0718` `mov byte ptr [0xa6c1], 0`
+- `R016+0x0726` `cmp byte ptr [0xd7fe], 1`
+- `R016+0x072D` `cmp byte ptr [0xc102], 1`
+- `R016+0x0734` `mov byte ptr [0xd73b], 1`
+- `R016+0x073C` `cmp byte ptr [0xc102], 0`
+- `R016+0x0743` `jmp 0x9b8`
+- `R016+0x0746` `lcall 0x19cd, 0x738`
+- `R016+0x0755` `mov byte ptr [0xa695], 1`
+- `R016+0x0774` `cmp byte ptr [0xa695], 1`
+- `R016+0x077B` `jmp 0x9b8`
+- `R016+0x077E` `push cs`
+- `R016+0x0786` `sub ax, 0x534`
+- `R016+0x078B` `jmp 0x5aa`
+- `R016+0x078E` `sub ax, 0x101`
+- `R016+0x0793` `jmp 0x5ae`
+- `R016+0x0796` `sub ax, 0xa1c`
+- `R016+0x079B` `jmp 0x666`
+- `R016+0x079E` `jmp 0x9b8`
+- `R016+0x07A2` `cmp ax, 0x1265`
+- `R016+0x07A7` `jmp 0x5f2`
+- `R016+0x07AA` `jg 0x7c8`
+- `R016+0x07AC` `sub ax, 0x1157`
+- `R016+0x07B1` `jmp 0x6c8`
+- `R016+0x07B4` `sub ax, 0x20`
+- `R016+0x07B9` `jmp 0x6c8`
+- `R016+0x07BC` `sub ax, 0xce`
+- `R016+0x07C1` `jmp 0x5f2`
+- `R016+0x07C4` `jmp 0x9b8`
+- `R016+0x07C8` `sub ax, 0x1454`
+- `R016+0x07CD` `jmp 0x680`
+- `R016+0x07D0` `sub ax, 0x20`
+- `R016+0x07D5` `jmp 0x680`
+- `R016+0x07D8` `sub ax, 0x1e1`
+- `R016+0x07DD` `jmp 0x6a4`
+- `R016+0x07E0` `sub ax, 0x20`
+- `R016+0x07E5` `jmp 0x6a4`
+- `R016+0x07E8` `jmp 0x9b8`
+- `R016+0x07EC` `cmp ax, 0x1f73`
+- `R016+0x07F1` `jmp 0x678`
+- `R016+0x07F4` `jg 0x840`
+- `R016+0x07F6` `cmp ax, 0x1970`
+- `R016+0x07FB` `jmp 0x65e`
+- `R016+0x07FE` `jg 0x81c`
+- `R016+0x0800` `sub ax, 0x184f`
+- `R016+0x0805` `jmp 0x656`
+- `R016+0x0808` `sub ax, 0x20`
+- `R016+0x080D` `jmp 0x656`
+- `R016+0x0810` `sub ax, 0xe1`
+- `R016+0x0815` `jmp 0x65e`
+- `R016+0x0818` `jmp 0x9b8`
+- `R016+0x081C` `sub ax, 0x1c0d`
+- `R016+0x0821` `jmp 0x726`
+- `R016+0x0824` `sub ax, 0x234`
+- `R016+0x0829` `jmp 0x5b2`
+- `R016+0x082C` `sub ax, 0x20`
+- `R016+0x0831` `jmp 0x5b2`
+- `R016+0x0834` `sub ax, 0xf2`
+- `R016+0x0839` `jmp 0x678`
+- `R016+0x083C` `jmp 0x9b8`
+- `R016+0x0840` `cmp ax, 0x2166`
+- `R016+0x0845` `jmp 0x604`
+- `R016+0x0848` `jg 0x866`
+- `R016+0x084A` `sub ax, 0x2044`
+- `R016+0x084F` `jmp 0x5ea`
+- `R016+0x0852` `sub ax, 0x20`
+- `R016+0x0857` `jmp 0x5ea`
+- `R016+0x085A` `sub ax, 0xe2`
+- `R016+0x085F` `jmp 0x604`
+- `R016+0x0862` `jmp 0x9b8`
+- `R016+0x0866` `sub ax, 0x2247`
+- `R016+0x086B` `jmp 0x62a`
+- `R016+0x086E` `sub ax, 0x20`
+- `R016+0x0873` `jmp 0x62a`
+- `R016+0x0876` `sub ax, 0xe1`
+- `R016+0x087B` `jmp 0x63c`
+- `R016+0x087E` `sub ax, 0x20`
+- `R016+0x0883` `jmp 0x63c`
+- `R016+0x0886` `jmp 0x9b8`
+- `R016+0x088F` `jmp 0x2a0`
+- `R016+0x0894` `jmp 0x924`
+- `R016+0x089F` `jg 0x8e4`
+- `R016+0x08A1` `cmp ax, 0x3042`
+- `R016+0x08A6` `jmp 0x5ce`
+- `R016+0x08A9` `jg 0x8c8`
+- `R016+0x08AB` `sub ax, 0x2d78`
+- `R016+0x08B0` `jmp 0x6ee`
+- `R016+0x08B3` `sub ax, 0x1de`
+- `R016+0x08B8` `jmp 0x6ac`
+- `R016+0x08BB` `sub ax, 0x20`
+- `R016+0x08C0` `jmp 0x6ac`
+- `R016+0x08C3` `jmp 0x9b8`
+- `R016+0x08C8` `sub ax, 0x3062`
+- `R016+0x08CD` `jmp 0x5ce`
+- `R016+0x08D0` `sub ax, 0x1eb`
+- `R016+0x08D5` `jmp 0x644`
+- `R016+0x08D8` `sub ax, 0x20`
+- `R016+0x08DD` `jmp 0x644`
+- `R016+0x08E0` `jmp 0x9b8`
+- `R016+0x08E4` `cmp ax, 0x4737`
+- `R016+0x08E9` `jmp 0x418`
+- `R016+0x08EC` `sub ax, 0x3b00`
+- `R016+0x08F3` `jmp 0x9b8`
+- `R016+0x08F6` `shr ax, 7`
+- `R016+0x08FE` `jmp 0x9b8`
+- `R016+0x0901` `xchg bx, ax`
+- `R016+0x0924` `cmp ax, 0x5000`
+- `R016+0x0929` `jmp 0x2f0`
+- `R016+0x092C` `jg 0x974`
+- `R016+0x092E` `cmp ax, 0x4b34`
+- `R016+0x0933` `jmp 0x360`
+- `R016+0x0936` `jg 0x952`
+- `R016+0x0938` `sub ax, 0x4900`
+- `R016+0x093D` `jmp 0x50e`
+- `R016+0x0940` `sub ax, 0x39`
+- `R016+0x0945` `jmp 0x2a4`
+- `R016+0x0948` `sub ax, 0x1c7`
+- `R016+0x094D` `jmp 0x34c`
+- `R016+0x0950` `jmp 0x9b8`
+- `R016+0x0952` `sub ax, 0x4d00`
+- `R016+0x0957` `jmp 0x3a8`
+- `R016+0x095A` `sub ax, 0x36`
+- `R016+0x095F` `jmp 0x3bc`
+- `R016+0x0962` `sub ax, 0x1ca`
+- `R016+0x0967` `jmp 0x460`
+- `R016+0x096A` `sub ax, 0x31`
+- `R016+0x096F` `jmp 0x4c7`
+- `R016+0x0972` `jmp 0x9b8`
+- `R016+0x0974` `cmp ax, 0x5e00`
+- `R016+0x0979` `jmp 0x582`
+- `R016+0x097C` `jg 0x998`
+- `R016+0x097E` `sub ax, 0x5032`
+- `R016+0x0983` `jmp 0x304`
+- `R016+0x0986` `sub ax, 0xce`
+- `R016+0x098B` `jmp 0x4ae`
+- `R016+0x098E` `sub ax, 0x33`
+- `R016+0x0993` `jmp 0x4c2`
+- `R016+0x0996` `jmp 0x9b8`
+- `R016+0x0998` `sub ax, 0x5f00`
+- `R016+0x099D` `jmp 0x58a`
+- `R016+0x09A0` `sub ax, 0x100`
+- `R016+0x09A5` `jmp 0x58e`
+- `R016+0x09A8` `sub ax, 0x100`
+- `R016+0x09AD` `jmp 0x592`
+- `R016+0x09B0` `sub ax, 0x100`
+- `R016+0x09B5` `jmp 0x596`
+
+### R016+0x0A2C `R016+0x0A2C (1EF8:0A2C)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 9/11, outcomes 7/14
+
+- `R016+0x0A5F` `lcall 0x19cd, 0x738`
+- `R016+0x0A89` `mov al, byte ptr [si - 0x594c]`
+
+### R016+0x0DA6 `R016+0x0DA6 (1EF8:0DA6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/17, outcomes 1/22
+
+- `R016+0x0DC2` `mov dx, 1`
+- `R016+0x0DCE` `mov al, byte ptr [si - 0x39dc]`
+- `R016+0x0DDF` `sub dx, dx`
+- `R016+0x0DE1` `mov al, byte ptr [0xc629]`
+- `R016+0x0DEA` `or dx, dx`
+- `R016+0x0DEE` `sub dx, dx`
+- `R016+0x0DF3` `cmp byte ptr [di], 1`
+- `R016+0x0DF8` `sub si, si`
+- `R016+0x0E03` `mov al, byte ptr [si - 0x39dc]`
+- `R016+0x0E0C` `mov al, byte ptr [0xc629]`
+- `R016+0x0E15` `jmp 0xe1b`
+- `R016+0x0E18` `mov cx, 1`
+- `R016+0x0E1B` `or cx, cx`
+- `R016+0x0E1F` `inc dx`
+- `R016+0x0E2A` `pop si`
+
+### R016+0x0E2E `R016+0x0E2E (1EF8:0E2E)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/7, outcomes 5/6
+
+- `R016+0x0E5A` `push 0x286b`
+
+### R016+0x1436 `R016+0x1436 (1EF8:1436)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### R017+0x0000 `R017+0x0000 (1EF8:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 175/210, outcomes 172/250
+
+- `R017+0x0203` `jg 0x20b`
+- `R017+0x0205` `cmp word ptr [bp - 8], 0`
+- `R017+0x020B` `mov word ptr [bp - 0x1e], 0`
+- `R017+0x0226` `cmp word ptr [bp - 4], 0`
+- `R017+0x026E` `cmp byte ptr [bp - 0x28], 0`
+- `R017+0x0274` `cmp byte ptr [bp - 0x4c], 0`
+- `R017+0x02A4` `cmp byte ptr [0xe230], 1`
+- `R017+0x02AB` `mov byte ptr [0xe22f], 0`
+- `R017+0x0328` `cmp byte ptr [0xe230], 1`
+- `R017+0x032F` `mov byte ptr [0xe22f], 0`
+- `R017+0x03CC` `cmp byte ptr [0xe230], 1`
+- `R017+0x03D3` `mov byte ptr [0xe22f], 0`
+- `R017+0x0424` `mov es, word ptr [0x7dc0]`
+- `R017+0x0450` `cmp byte ptr [0xe230], 1`
+- `R017+0x0457` `mov byte ptr [0xe22f], 0`
+- `R017+0x05AF` `jg 0x5b7`
+- `R017+0x05B1` `cmp word ptr [bp - 4], 0`
+- `R017+0x05B7` `mov word ptr [bp - 0x42], 0`
+- `R017+0x05EA` `jg 0x5f2`
+- `R017+0x05EC` `cmp word ptr [bp - 0x12], 0`
+- `R017+0x05F2` `cmp byte ptr [bp - 0x30], 0`
+- `R017+0x0650` `cmp byte ptr [0xe230], 1`
+- `R017+0x0657` `mov byte ptr [0xe22f], 0`
+- `R017+0x06D4` `cmp byte ptr [0xe230], 1`
+- `R017+0x06DB` `mov byte ptr [0xe22f], 0`
+- `R017+0x077B` `cmp byte ptr [0xe230], 1`
+- `R017+0x0782` `mov byte ptr [0xe22f], 0`
+- `R017+0x0807` `cmp byte ptr [0xe230], 1`
+- `R017+0x080E` `mov byte ptr [0xe22f], 0`
+- `R017+0x0889` `cmp byte ptr [0xe230], 1`
+- `R017+0x0890` `mov byte ptr [0xe22f], 0`
+- `R017+0x0A11` `jmp 0x8eb`
+- `R017+0x0A19` `jmp 0x8eb`
+- `R017+0x0B29` `mov byte ptr [0xe230], 0`
+- `R017+0x0B4D` `xor byte ptr [0x11c8], 1`
+
+### R018+0x0000 `R018+0x0000 (1EF8:0000)`
+
+matched, reached by battle-oracle-gate: blocks 20/49, outcomes 12/42
+
+- `R018+0x000D` `push 0`
+- `R018+0x0046` `cmp word ptr [bp + 6], 0`
+- `R018+0x004C` `mov bx, word ptr [bp + 6]`
+- `R018+0x0062` `mov ax, word ptr [0xe0a9]`
+- `R018+0x0080` `jmp 0x108`
+- `R018+0x009E` `mov dx, word ptr [bp + 0xe]`
+- `R018+0x00CA` `mov si, word ptr [bp - 8]`
+- `R018+0x00D0` `mov si, 5`
+- `R018+0x00D3` `mov word ptr [bp - 4], 0xf`
+- `R018+0x00DC` `mov si, 4`
+- `R018+0x00E2` `mov si, 3`
+- `R018+0x00FC` `mov si, 1`
+- `R018+0x0108` `mov bx, word ptr [bp + 6]`
+- `R018+0x0122` `mov bx, ax`
+- `R018+0x0134` `push 0x20de`
+- `R018+0x0148` `mov bx, word ptr [bp - 0xa]`
+- `R018+0x0152` `mov bx, word ptr [bp - 0xa]`
+- `R018+0x015C` `mov si, 6`
+- `R018+0x0178` `jmp 0x250`
+- `R018+0x01AB` `mov bx, si`
+- `R018+0x01C0` `mov word ptr [bp - 4], 0x14`
+- `R018+0x01D9` `mov si, 8`
+- `R018+0x01DE` `push 0x20e6`
+- `R018+0x01F2` `push 0x20ea`
+- `R018+0x0206` `mov si, 7`
+- `R018+0x020C` `mov si, 9`
+- `R018+0x023F` `shl si, 1`
+- `R018+0x0250` `mov ax, word ptr [0xe0a5]`
+- `R018+0x0272` `mov byte ptr [bx + 0x11], 1`
+
+### R018+0x027E `R018+0x027E (1EF8:027E)`
+
+matched, reached by battle-oracle-gate: blocks 6/6, outcomes 4/6
+
+### R018+0x02BE `R018+0x02BE (1EF8:02BE)`
+
+matched, reached by battle-oracle-gate: blocks 9/9, outcomes 7/8
+
+### R018+0x03AE `R018+0x03AE (1EF8:03AE)`
+
+matched, reached by battle-oracle-gate: blocks 14/27, outcomes 11/30
+
+- `R018+0x03D0` `jg 0x42d`
+- `R018+0x03D2` `sub al, 0x17`
+- `R018+0x03D6` `dec al`
+- `R018+0x03DA` `dec al`
+- `R018+0x03DE` `dec al`
+- `R018+0x03E2` `jmp 0x42d`
+- `R018+0x03E4` `mov word ptr [bp - 6], 0x17`
+- `R018+0x03F0` `mov word ptr [bp - 6], 0x18`
+- `R018+0x0400` `mov word ptr [bp - 6], 0x19`
+- `R018+0x040C` `mov word ptr [bp - 6], 1`
+- `R018+0x0424` `mov word ptr [bp - 6], 0x22`
+- `R018+0x0455` `add si, 6`
+- `R018+0x0463` `mov ax, 0x321a`
+
+### R018+0x04B6 `R018+0x04B6 (1F43:0006)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 47/61, outcomes 40/58
+
+- `R018+0x04F8` `mov dx, word ptr [bp + 6]`
+- `R018+0x0501` `cmp byte ptr [bx], 1`
+- `R018+0x0506` `mov si, dx`
+- `R018+0x050D` `inc dx`
+- `R018+0x0519` `mov byte ptr [0xd6f4], 0`
+- `R018+0x0545` `jmp 0x23a`
+- `R018+0x057E` `jmp 0x224`
+- `R018+0x0639` `sub cx, cx`
+- `R018+0x0642` `mov word ptr [bp - 0x14], si`
+- `R018+0x0663` `cmp word ptr [si], di`
+- `R018+0x0667` `inc si`
+- `R018+0x0675` `mov si, word ptr [bp - 0x14]`
+- `R018+0x0678` `mov dx, word ptr [bp - 8]`
+- `R018+0x067E` `mov dx, 1`
+
+### R018+0x0706 `R018+0x0706 (1F43:0256)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 90/179, outcomes 84/176
+
+- `R018+0x0713` `jmp 0xc86`
+- `R018+0x071D` `mov ax, word ptr [0xc2bb]`
+- `R018+0x0726` `jmp 0xc86`
+- `R018+0x0730` `test word ptr [0x9ee5], 0x1be`
+- `R018+0x0738` `mov word ptr [0x9ee5], 0x12`
+- `R018+0x0750` `mov ax, word ptr [0x117e]`
+- `R018+0x075A` `mov ax, word ptr [0x117e]`
+- `R018+0x0762` `push ds`
+- `R018+0x077E` `inc word ptr [bp - 0x78]`
+- `R018+0x0781` `cmp word ptr [bp - 0x78], 0xd`
+- `R018+0x0787` `jmp 0xc86`
+- `R018+0x078A` `push word ptr [bp - 0x78]`
+- `R018+0x079D` `jmp 0xc86`
+- `R018+0x0812` `mov bx, word ptr [bp - 0x5e]`
+- `R018+0x081F` `mov si, word ptr [bp - 0x5e]`
+- `R018+0x082C` `inc word ptr [bp - 0x5e]`
+- `R018+0x082F` `cmp word ptr [bp - 0x5e], 5`
+- `R018+0x0835` `mov bx, word ptr [bp - 0x78]`
+- `R018+0x0886` `mov bx, ax`
+- `R018+0x08C3` `jmp 0x390`
+- `R018+0x08DA` `push bx`
+- `R018+0x0A8A` `jmp 0x7a4`
+- `R018+0x0AF5` `push bx`
+- `R018+0x0C4A` `shl bx, 1`
+- `R018+0x0C54` `push 3`
+- `R018+0x0C62` `jmp 0xb9e`
+- `R018+0x0C65` `mov bx, word ptr [bp - 0x7a]`
+- `R018+0x0C6F` `push word ptr [bp - 0x7a]`
+- `R018+0x0CB0` `cmp byte ptr [bx - 0x2e29], 0`
+- `R018+0x0CB7` `push 0xa`
+- `R018+0x0CC9` `mov bx, ax`
+- `R018+0x0CE0` `mov word ptr [bp - 0x74], ax`
+- `R018+0x0CF7` `mov bx, word ptr [bp - 0x7a]`
+- `R018+0x0D11` `jmp 0x93c`
+- `R018+0x0D14` `mov word ptr [bp - 0x60], 0`
+- `R018+0x0D1C` `inc word ptr [bp - 0x60]`
+- `R018+0x0D1F` `cmp word ptr [bp - 0x60], 5`
+- `R018+0x0D25` `jmp 0xb9e`
+- `R018+0x0D28` `mov si, word ptr [bp - 0x60]`
+- `R018+0x0D51` `mov di, word ptr [bp - 0x62]`
+- `R018+0x0D5C` `push -1`
+- `R018+0x0D6A` `cmp word ptr [bp + si - 0x38], 0x20`
+- `R018+0x0D70` `jmp 0x7bf`
+- `R018+0x0D73` `mov bx, word ptr [bp - 0x7a]`
+- `R018+0x0DD8` `mov ax, word ptr [0x7d4]`
+- `R018+0x0DEC` `mov word ptr [bp - 0x70], 0`
+- `R018+0x0DF6` `inc word ptr [bp - 0x60]`
+- `R018+0x0DF9` `cmp word ptr [bp - 0x60], 5`
+- `R018+0x0DFF` `mov ax, word ptr [bp - 0x70]`
+- `R018+0x0E12` `mov cx, word ptr [bp + si - 0x38]`
+- `R018+0x0E1D` `mov si, word ptr [bp - 0x70]`
+- `R018+0x0E29` `mov word ptr [bp - 0x60], 5`
+- `R018+0x0E30` `inc word ptr [bp - 0x60]`
+- `R018+0x0E33` `cmp word ptr [bp - 0x60], 0xd`
+- `R018+0x0E39` `mov bx, word ptr [bp - 0x60]`
+- `R018+0x0E46` `push word ptr [bp - 0x60]`
+- `R018+0x0E58` `mov si, word ptr [bp - 0x70]`
+- `R018+0x0E64` `mov al, 0xff`
+- `R018+0x0E72` `inc word ptr [bp - 0x70]`
+- `R018+0x0E75` `cmp word ptr [bp - 0x70], 5`
+- `R018+0x0E7B` `mov bx, word ptr [bp - 0x70]`
+- `R018+0x0E96` `mov si, word ptr [bp - 0x70]`
+- `R018+0x0EA1` `push -1`
+- `R018+0x0EB1` `mov ax, word ptr [si - 0x63a7]`
+- `R018+0x0EE2` `mov word ptr [bp - 0x70], 0`
+- `R018+0x0EEA` `mov al, byte ptr [bp - 0x4d]`
+- `R018+0x0EF8` `mov ax, word ptr [bp - 0x60]`
+- `R018+0x0F0A` `inc word ptr [bp - 0x60]`
+- `R018+0x0F0D` `cmp word ptr [bp - 0x60], 5`
+- `R018+0x0F13` `mov si, word ptr [bp - 0x70]`
+- `R018+0x0F3A` `cmp word ptr [bp - 0x70], 4`
+- `R018+0x0F40` `mov ax, word ptr [bp - 0x70]`
+- `R018+0x0F5E` `cmp byte ptr [bp - 0x14], 0xff`
+- `R018+0x0F64` `jmp 0xb52`
+- `R018+0x0F67` `mov word ptr [bp - 0x70], 1`
+- `R018+0x0F6E` `inc word ptr [bp - 0x70]`
+- `R018+0x0F71` `cmp word ptr [bp - 0x70], 5`
+- `R018+0x0F77` `mov al, byte ptr [bp - 0x13]`
+- `R018+0x0F85` `mov ax, word ptr [bp - 0x70]`
+- `R018+0x0F8B` `push word ptr [bp - 0x6e]`
+- `R018+0x1002` `mov word ptr [bp - 0x5c], 1`
+- `R018+0x100E` `inc word ptr [bp - 0x70]`
+- `R018+0x1011` `cmp word ptr [bp - 0x70], 5`
+- `R018+0x1017` `mov si, word ptr [bp - 0x70]`
+- `R018+0x1023` `mov bl, byte ptr [bp + si - 0x14]`
+- `R018+0x1032` `mov word ptr [bp - 0x5c], 0`
+- `R018+0x1037` `cmp word ptr [bp - 0x5c], 1`
+- `R018+0x103D` `jmp 0x7bf`
+- `R018+0x1040` `lea ax, [bp - 0x38]`
+
+### R018+0x113A `R018+0x113A (1F43:0C8A)`
+
+draft, reached by battle-oracle-gate: blocks 17/30, outcomes 14/32
+
+- `R018+0x123F` `sub si, si`
+- `R018+0x1247` `cmp word ptr [di - 4], 0x7d00`
+- `R018+0x124E` `mov bx, word ptr [di]`
+- `R018+0x128E` `add di, 6`
+- `R018+0x129C` `mov di, word ptr [bp + 6]`
+- `R018+0x12F9` `mov cx, 5`
+- `R018+0x1309` `cmp byte ptr [di], 1`
+- `R018+0x130E` `cmp word ptr [bp + 6], si`
+- `R018+0x1313` `mov ax, word ptr [di - 0x10]`
+- `R018+0x133B` `inc si`
+- `R018+0x1346` `mov di, word ptr [bp + 6]`
+- `R018+0x134C` `mov di, word ptr [bp + 6]`
+- `R018+0x13A6` `shl di, 7`
+
+### R018+0x13B2 `R018+0x13B2 (1F43:0F02)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 13/13, outcomes 11/12
+
+### R018+0x1472 `R018+0x1472 (1F43:0FC2)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 4/5, outcomes 3/4
+
+- `R018+0x14D4` `mov al, byte ptr [di + 0x1182]`
+
+### R018+0x14FC `R018+0x14FC (1F43:104C)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 6/7, outcomes 6/8
+
+- `R018+0x1523` `push si`
+
+### R019+0x0C80 `R019+0x0C80 (1EF8:0C80)`
+
+matched, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 12/25, outcomes 9/28
+
+- `R019+0x0C9D` `jmp 0xdf7`
+- `R019+0x0CC2` `mov di, word ptr [bp - 8]`
+- `R019+0x0CEF` `cmp word ptr [si], 0x68`
+- `R019+0x0CF4` `cmp byte ptr [si + 3], 0x14`
+- `R019+0x0CFA` `cmp byte ptr [si + 3], 0x32`
+- `R019+0x0D00` `cmp word ptr [si], 0x61`
+- `R019+0x0D05` `mov ax, word ptr [si]`
+- `R019+0x0D6D` `lea bx, [bp - 0xb6]`
+- `R019+0x0D74` `lea ax, [bp - 8]`
+- `R019+0x0D7B` `cmp word ptr [bx], -1`
+- `R019+0x0D80` `mov word ptr [bx], 0xffff`
+- `R019+0x0D85` `add bx, 0x12`
+- `R019+0x0D9E` `mov bx, word ptr [si]`
+
+### R020+0x0000 `R020+0x0000 (1EF8:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 43/49, outcomes 39/50
+
+- `R020+0x0389` `mov ax, word ptr [bp - 0x2c]`
+- `R020+0x0452` `mov ax, word ptr [bp - 2]`
+- `R020+0x04D6` `mov ax, word ptr [bx]`
+- `R020+0x04E9` `jmp 0x506`
+- `R020+0x0534` `jmp 0x5e2`
+- `R020+0x0541` `lcall 0x47c, 0x56f`
+
+### R020+0x05E6 `R020+0x05E6 (1EF8:05E6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R020+0x06B6 `R020+0x06B6 (1EF8:06B6)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
 
 ### R021+0x0000 `R021+0x0000 (1EF8:0000)`
 
@@ -3723,6 +7076,318 @@ matched, reached by battle: blocks 6/9, outcomes 3/6
 - `R021+0x008C` `jmp 0x1de`
 - `R021+0x0095` `mov al, byte ptr [0x907b]`
 - `R021+0x01D2` `push 0xc`
+
+### R024+0x0000 `R024+0x0000 (1EF8:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 49/58, outcomes 36/40
+
+- `R024+0x0027` `jmp 0x596`
+- `R024+0x0435` `jmp 0x3a9`
+- `R024+0x04A2` `mov word ptr [si], 0x17ed`
+- `R024+0x04BA` `mov word ptr [si], 0x1801`
+- `R024+0x04C7` `add al, 0xb`
+- `R024+0x04CB` `inc sp`
+- `R024+0x04D0` `nop `
+- `R024+0x04EA` `mov word ptr [si], 0x1833`
+- `R024+0x04F6` `mov word ptr [si], 0x1829`
+
+### R024+0x059A `R024+0x059A (1EF8:059A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 19/21, outcomes 18/22
+
+- `R024+0x05BB` `mov al, byte ptr [0x11ca]`
+- `R024+0x0796` `push cs`
+
+### R025+0x0000 `R025+0x0000 (1EF8:0000)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 101/125, outcomes 78/112
+
+- `R025+0x002A` `dec ax`
+- `R025+0x002D` `jmp 0x190`
+- `R025+0x0030` `jmp 0x123`
+- `R025+0x00A4` `mov word ptr [bp - 0x50], 0x14`
+- `R025+0x0102` `mov word ptr [bp - 0x44], 2`
+- `R025+0x0190` `mov es, word ptr [0x7e0a]`
+- `R025+0x0232` `mov si, 0xffff`
+- `R025+0x023A` `jmp 0x80f`
+- `R025+0x02AE` `mov byte ptr [si - 0x3d41], 0`
+- `R025+0x03E9` `mov ax, word ptr [0xd67e]`
+- `R025+0x03F5` `mov byte ptr [si - 0x2980], 6`
+- `R025+0x0414` `mov byte ptr [si - 0x2980], 5`
+- `R025+0x0436` `mov bx, si`
+- `R025+0x04A9` `sub ax, ax`
+- `R025+0x0611` `jmp 0x82c`
+- `R025+0x0620` `jmp 0x6a4`
+- `R025+0x0780` `cmp si, 5`
+- `R025+0x0785` `cmp byte ptr [0xc21a], 0x49`
+- `R025+0x078C` `mov es, word ptr [0x7e10]`
+- `R025+0x07A0` `mov es, word ptr [0x7e10]`
+- `R025+0x0839` `mov bx, si`
+- `R025+0x08A7` `jmp 0x98f`
+- `R025+0x0911` `mov ax, word ptr es:[0xbb2]`
+- `R025+0x0961` `mov al, byte ptr [bp + di - 0x1a]`
+
+### R025+0x09A6 `R025+0x09A6 (1EF8:09A6)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 6/18, outcomes 5/20
+
+- `R025+0x09D0` `mov ax, word ptr [bx]`
+- `R025+0x09DC` `mov word ptr [bp - 6], 1`
+- `R025+0x0A08` `push cs`
+- `R025+0x0A19` `cmp byte ptr [di - 2], 0`
+- `R025+0x0A1F` `mov al, byte ptr [di]`
+- `R025+0x0A2F` `push si`
+- `R025+0x0A3C` `mov bx, word ptr [bp - 2]`
+- `R025+0x0A46` `cmp si, 6`
+- `R025+0x0A4B` `mov bx, word ptr [bp - 2]`
+- `R025+0x0A53` `mov byte ptr [0xc3cc], 1`
+- `R025+0x0A6D` `add di, 0x80`
+- `R025+0x0A7F` `pop si`
+
+### R025+0x0A84 `R025+0x0A84 (1EF8:0A84)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 5/10, outcomes 4/8
+
+- `R025+0x0B01` `jmp 0xb8c`
+- `R025+0x0B8C` `mov ax, word ptr [bp - 0x10]`
+- `R025+0x0B94` `mov bx, word ptr [bp - 0x18]`
+- `R025+0x0BB6` `mov bx, word ptr [bp - 0x18]`
+- `R025+0x0BD5` `lcall 0x5ba, 4`
+
+### R025+0x0D3C `R025+0x0D3C (1EF8:0D3C)`
+
+draft, reached by battle-oracle-gate battle-oracle-street battle-oracle-wild: blocks 4/4, outcomes 3/4
+
+### R026+0x011C `R026+0x011C (1F09:000C)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 10/19, outcomes 8/24
+
+- `R026+0x013C` `cmp dx, ax`
+- `R026+0x0140` `sub ax, ax`
+- `R026+0x014A` `add word ptr [bp + 6], 1`
+- `R026+0x0162` `mov word ptr [bp - 2], 0xffff`
+- `R026+0x0186` `jg 0x7e`
+- `R026+0x0188` `cmp word ptr [bp + 6], 0`
+- `R026+0x018E` `mov ax, word ptr [bp + 0xa]`
+- `R026+0x01A9` `cmp word ptr [bp + 6], 0`
+- `R026+0x01B4` `jmp 0x30`
+
+### R026+0x01B6 `R026+0x01B6 (1F09:00A6)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 10/19, outcomes 8/24
+
+- `R026+0x01D6` `cmp dx, ax`
+- `R026+0x01DA` `sub ax, ax`
+- `R026+0x01E4` `add word ptr [bp + 6], 1`
+- `R026+0x01FC` `mov word ptr [bp - 2], 0xffff`
+- `R026+0x0220` `jg 0x118`
+- `R026+0x0222` `cmp word ptr [bp + 6], 0`
+- `R026+0x0228` `mov ax, word ptr [bp + 0xa]`
+- `R026+0x0243` `cmp word ptr [bp + 6], 0`
+- `R026+0x024E` `jmp 0xca`
+
+### R027+0x0000 `R027+0x0000 (1F48:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/9, outcomes 6/10
+
+- `R027+0x0077` `jmp 0x9c`
+- `R027+0x009C` `sub ax, ax`
+
+### R027+0x00A2 `R027+0x00A2 (1F48:00A2)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/13, outcomes 2/2
+
+- `R027+0x00CC` `mov ax, word ptr [0x8ce]`
+- `R027+0x00DA` `push si`
+- `R027+0x0108` `push si`
+- `R027+0x0122` `push si`
+- `R027+0x013C` `push si`
+- `R027+0x014C` `sub ax, ax`
+
+### R027+0x015A `R027+0x015A (1F48:015A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/13, outcomes 1/2
+
+- `R027+0x0173` `shl ax, 1`
+- `R027+0x018C` `mov ax, word ptr [0x8ce]`
+- `R027+0x019A` `push si`
+- `R027+0x01B1` `add sp, 0xe`
+- `R027+0x01B6` `push si`
+- `R027+0x01D0` `push si`
+- `R027+0x01D6` `push word ptr [0x8cc]`
+- `R027+0x01EA` `push si`
+- `R027+0x01F2` `push si`
+- `R027+0x01FA` `sub ax, ax`
+
+### R027+0x020E `R027+0x020E (1F48:020E)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R027+0x0262 `R027+0x0262 (1F48:0262)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 3/4
+
+### R027+0x0298 `R027+0x0298 (1F48:0298)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/16, outcomes 4/16
+
+- `R027+0x02A4` `add word ptr [bp + 6], 1`
+- `R027+0x02DA` `push dx`
+- `R027+0x02E7` `push di`
+- `R027+0x02EF` `push word ptr [bp + 8]`
+- `R027+0x0303` `jmp 0x47a`
+- `R027+0x0306` `push di`
+- `R027+0x0326` `add bx, 8`
+- `R027+0x032F` `mov ax, bx`
+- `R027+0x033C` `jmp 0x47a`
+- `R027+0x033F` `mov word ptr [bp - 0xc], bx`
+- `R027+0x047A` `sub ax, ax`
+
+### R027+0x0876 `R027+0x0876 (1F48:0876)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 8/13, outcomes 5/10
+
+- `R027+0x0890` `mov ax, si`
+- `R027+0x0896` `push word ptr [bp + 0x12]`
+- `R027+0x08B4` `push word ptr [bp + 0x12]`
+- `R027+0x08D2` `push word ptr [bp + 0x12]`
+- `R027+0x08DE` `push word ptr [bp + 0x12]`
+
+### R027+0x0910 `R027+0x0910 (1F48:0910)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 8/13, outcomes 5/10
+
+- `R027+0x092A` `mov ax, si`
+- `R027+0x0930` `push word ptr [bp + 0x12]`
+- `R027+0x094E` `push word ptr [bp + 0x12]`
+- `R027+0x096C` `push word ptr [bp + 0x12]`
+- `R027+0x0978` `push word ptr [bp + 0x12]`
+
+### R027+0x0A78 `R027+0x0A78 (1F48:0A78)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/7, outcomes 2/8
+
+- `R027+0x0A8E` `push ds`
+- `R027+0x0A9E` `mov word ptr [bp - 6], ax`
+- `R027+0x0AB1` `mov word ptr [bp - 8], 1`
+- `R027+0x0ABD` `mov ax, word ptr [bp - 8]`
+
+### R027+0x0BA8 `R027+0x0BA8 (1F48:0BA8)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 4/10, outcomes 3/12
+
+- `R027+0x0BBD` `push ds`
+- `R027+0x0BCC` `mov word ptr [bp - 4], ax`
+- `R027+0x0BDF` `mov bx, word ptr [bp - 4]`
+- `R027+0x0BE8` `mov word ptr [bp - 6], 1`
+- `R027+0x0BED` `mov ax, word ptr [bp - 6]`
+- `R027+0x0C46` `sub ax, ax`
+
+### R027+0x0D06 `R027+0x0D06 (1F48:0D06)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R027+0x0D30 `R027+0x0D30 (1F48:0D30)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R028+0x0000 `R028+0x0000 (1F48:0000)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 15/23, outcomes 11/26
+
+- `R028+0x0009` `jmp 0xe8`
+- `R028+0x002A` `mov word ptr [0x8da], 2`
+- `R028+0x0051` `mov word ptr [0x8da], 3`
+- `R028+0x007C` `mov word ptr [0x8da], 5`
+- `R028+0x00A4` `push cs`
+- `R028+0x00AC` `mov word ptr [0x8da], 6`
+- `R028+0x00E8` `cmp word ptr [0x8d8], 0`
+- `R028+0x00EF` `mov word ptr [0x8d6], 0xff00`
+
+### R028+0x00FC `R028+0x00FC (1F48:00FC)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/9, outcomes 1/8
+
+- `R028+0x0118` `push cs`
+- `R028+0x0126` `push dx`
+- `R028+0x0135` `xor byte ptr [0x8d6], 1`
+- `R028+0x013C` `xor byte ptr [0x8d6], 1`
+- `R028+0x0170` `mov word ptr [0x8d4], 1`
+- `R028+0x0198` `mov word ptr [0x8d4], 2`
+- `R028+0x01DD` `mov word ptr [bp - 0x24], 2`
+
+### R028+0x0258 `R028+0x0258 (1F48:0258)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/7, outcomes 1/6
+
+- `R028+0x0272` `push cs`
+- `R028+0x028A` `xor byte ptr [0x8d6], 2`
+- `R028+0x0292` `xor byte ptr [0x8d6], 2`
+- `R028+0x02D9` `mov word ptr [0x8d4], 3`
+- `R028+0x031E` `mov word ptr [bp - 0x24], 2`
+
+### R028+0x0398 `R028+0x0398 (1F48:0398)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/5, outcomes 1/4
+
+- `R028+0x03AA` `push di`
+- `R028+0x03C4` `xor byte ptr [0x8d6], 8`
+- `R028+0x03CC` `xor byte ptr [0x8d6], 8`
+
+### R028+0x0470 `R028+0x0470 (1F48:0470)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/5, outcomes 2/4
+
+- `R028+0x047B` `sub ax, ax`
+- `R028+0x0495` `xor byte ptr [0x8d6], 0x20`
+
+### R028+0x04CA `R028+0x04CA (1F48:04CA)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### R028+0x0626 `R028+0x0626 (1F48:0626)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 11/16, outcomes 7/14
+
+- `R028+0x06BE` `mov ax, word ptr [bp - 0x1a]`
+- `R028+0x06D5` `mov ax, word ptr [bx + 0x1c]`
+- `R028+0x06DD` `popf `
+- `R028+0x06E4` `popf `
+- `R028+0x06F4` `mov ax, word ptr [bp - 0x1a]`
+
+### R028+0x08E8 `R028+0x08E8 (1F48:08E8)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R028+0x0AEE `R028+0x0AEE (1F48:0AEE)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/6, outcomes 1/6
+
+- `R028+0x0B04` `mov ah, 0x46`
+- `R028+0x0B0D` `mov word ptr [bp - 2], 0`
+- `R028+0x0B14` `mov word ptr [0x8be], ax`
+- `R028+0x0B27` `mov ax, word ptr [bp - 2]`
+
+### R028+0x0B5A `R028+0x0B5A (1F48:0B5A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/6, outcomes 3/6
+
+- `R028+0x0BB4` `mov ax, 1`
+
+### R028+0x0CB2 `R028+0x0CB2 (1F48:0CB2)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/6, outcomes 1/4
+
+- `R028+0x0CD0` `mov ax, word ptr [0xc0f9]`
+- `R028+0x0CEC` `mov word ptr [0x8c2], ax`
+- `R028+0x0CFA` `xor bh, bh`
+- `R028+0x0D05` `mov ax, word ptr [bp - 6]`
+
+### R028+0x0D5A `R028+0x0D5A (1F48:0D5A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 2/3, outcomes 1/2
+
+- `R028+0x0D72` `mov word ptr [bp - 6], 1`
 
 ### R029+0x007C `R029+0x007C (0E76:007C)`
 
@@ -3740,7 +7405,7 @@ draft, reached by cards cards-day cards-flip cards-variants rules sainthelp sain
 
 ### R029+0x01C0 `R029+0x01C0 (0E76:01C0)`
 
-draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/9, outcomes 7/8
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules: blocks 8/9, outcomes 7/8
 
 - `R029+0x0208` `mov byte ptr [0x99eb], 0` (dormant)
 
@@ -3750,7 +7415,7 @@ draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/8, o
 
 ### R029+0x026A `R029+0x026A (0E76:026A)`
 
-draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/8, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules: blocks 8/8, outcomes 8/8
 
 ### R029+0x02B8 `R029+0x02B8 (0E76:02B8)`
 
@@ -3766,7 +7431,7 @@ draft, reached by cards cards-day cards-flip cards-variants rules sainthelp sain
 
 ### R029+0x05EE `R029+0x05EE (0E76:05EE)`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp saints trading: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp saints trading: blocks 3/3, outcomes 2/2
 
 ### R029+0x060E `R029+0x060E (0E76:060E)`
 
@@ -3816,18 +7481,18 @@ draft, reached by sainthelp saints: blocks 4/9, outcomes 3/8
 
 ### R029+0x0988 `R029+0x0988 (0E76:0988)`
 
-draft, reached by cards cards-day cards-flip cards-variants saints: blocks 10/12, outcomes 10/12
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants saints: blocks 10/12, outcomes 10/12
 
 - `R029+0x09E6` `push word ptr [bp + 8]`
 - `R029+0x0A57` `push di`
 
 ### R029+0x0A72 `R029+0x0A72 (0E76:0A72)`
 
-draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 13/13, outcomes 14/14
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 13/13, outcomes 14/14
 
 ### R029+0x0B64 `R029+0x0B64 (0E76:0B64)`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp saints: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp saints: blocks 3/3, outcomes 2/2
 
 ### R029+0x0BB6 `R029+0x0BB6 (0E76:0BB6)`
 
@@ -3893,11 +7558,11 @@ draft, reached by cards cards-day cards-variants: blocks 12/37, outcomes 10/40
 
 ### R029+0x118E `R029+0x118E (0E76:118E)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 8/8
 
 ### R029+0x1260 `R029+0x1260 (0E76:1260)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 11/13, outcomes 10/12
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 11/13, outcomes 10/12
 
 - `R029+0x12C1` `mov al, byte ptr [0x907b]`
 - `R029+0x12FE` `pop si`
@@ -3943,7 +7608,7 @@ draft, reached by cards cards-day cards-flip cards-variants rules: blocks 6/6, o
 
 ### R029+0x1600 `R029+0x1600 (0E76:1600)`
 
-draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/8, outcomes 6/6
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules: blocks 8/8, outcomes 6/6
 
 ### R029+0x164A `R029+0x164A (0E76:164A)`
 
@@ -3985,7 +7650,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcome
 
 ### R029+0x199C `R029+0x199C (0E76:199C)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x19B4 `R029+0x19B4 (0E76:19B4)`
 
@@ -3997,11 +7662,11 @@ draft, reached by cards cards-day cards-flip cards-variants rules sainthelp sain
 
 ### R029+0x1A7E `R029+0x1A7E (0E76:1A7E)`
 
-draft, reached by cards cards-day cards-flip cards-variants trading: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants trading: blocks 1/1, outcomes 0/0
 
 ### R029+0x1A8E `R029+0x1A8E (0E76:1A8E)`
 
-draft, reached by cards cards-day cards-flip cards-variants rules trading: blocks 73/73, outcomes 34/34
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules trading: blocks 73/73, outcomes 34/34
 
 ### R029+0x1DFE `R029+0x1DFE (0E76:1DFE)`
 
@@ -4048,7 +7713,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcome
 
 ### R029+0x2278 `R029+0x2278 (0E76:2278)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 19/27, outcomes 18/28
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 19/27, outcomes 18/28
 
 - `R029+0x2290` `push 2`
 - `R029+0x230C` `mov byte ptr [si], 0`
@@ -4073,7 +7738,7 @@ draft, reached by cards cards-day cards-variants: blocks 4/5, outcomes 3/4
 
 ### R029+0x255A `R029+0x255A (0E76:255A)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 40/53, outcomes 40/54
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 40/53, outcomes 40/54
 
 - `R029+0x2570` `sub dx, dx`
 - `R029+0x2575` `cmp byte ptr [bx], 1`
@@ -4108,7 +7773,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 12/12, outco
 
 ### R029+0x2C4E `R029+0x2C4E (0E76:2C4E)`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/6, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 5/6, outcomes 3/4
 
 - `R029+0x2C70` `mov ax, 0xffff`
 
@@ -4128,46 +7793,42 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 26/28, outco
 
 ### R029+0x3034 `R029+0x3034 (0E76:3034)`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### R029+0x30FE `R029+0x30FE (0E76:30FE)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R029+0x3144 `R029+0x3144 (0E76:3144)`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/6, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 4/6, outcomes 3/4
 
 - `R029+0x315F` `mov ax, 0x321a`
 - `R029+0x316E` `push 0x64`
 
 ### R029+0x3180 `R029+0x3180 (0E76:3180)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 10/11, outcomes 10/16
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 10/11, outcomes 10/16
 
 - `R029+0x31A4` `sub ax, ax`
 
 ### R029+0x31E6 `R029+0x31E6 (0E76:31E6)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 13/16
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 14/16
 
 ### R029+0x324C `R029+0x324C (0E76:324C)`
 
-draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 9/9, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 9/9, outcomes 9/10
 
 ### R029+0x32CE `R029+0x32CE (0E76:32CE)`
 
-draft, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
-
-- `R029+0x32E5` `push si`
-- `R029+0x32F1` `mov ax, 1`
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 4/4, outcomes 3/4
 
 ### R029+0x32FE `R029+0x32FE (0E76:32FE)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 6/8, outcomes 5/8
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 7/8, outcomes 6/8
 
 - `R029+0x3340` `jmp 0x334a`
-- `R029+0x3342` `mov ax, 1`
 
 ### R029+0x3350 `R029+0x3350 (0E76:3350)`
 
@@ -4193,7 +7854,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 3/10, outcom
 
 ### R029+0x3470 `R029+0x3470 (0E76:3470)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/10
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/10
 
 - `R029+0x34C2` `jmp 0x34cc`
 
@@ -4216,7 +7877,7 @@ draft, reached by cards cards-day cards-variants: blocks 6/9, outcomes 6/10
 
 ### R029+0x360C `R029+0x360C (0E76:360C)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 9/12
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 9/12
 
 - `R029+0x3666` `jmp 0x3670`
 
@@ -4228,13 +7889,13 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcome
 
 ### R029+0x3742 `R029+0x3742 (0E76:3742)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 9/12
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 9/12
 
 - `R029+0x379C` `jmp 0x37b2`
 
 ### R029+0x3878 `R029+0x3878 (0E76:3878)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/10
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/10
 
 - `R029+0x38C2` `jmp 0x38cc`
 
@@ -4250,7 +7911,7 @@ draft, reached by cards cards-day cards-variants: blocks 4/9, outcomes 2/10
 
 ### R029+0x392C `R029+0x392C (0E76:392C)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 8/12
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 8/12
 
 - `R029+0x3985` `jmp 0x3990`
 
@@ -4275,7 +7936,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 4/10, outcom
 
 ### R029+0x3B62 `R029+0x3B62 (0E76:3B62)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 16/18, outcomes 19/24
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 16/18, outcomes 19/24
 
 - `R029+0x3BD9` `mov ax, word ptr [bp + 0x10]`
 - `R029+0x3C17` `jmp 0x3c20`
@@ -4301,10 +7962,15 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 14/15, outco
 
 ### R029+0x3F30 `R029+0x3F30 (0E76:3F30)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 7/9, outcomes 6/8
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/8
 
-- `R029+0x3F5B` `push di`
 - `R029+0x3F82` `les bx, ptr [bp - 4]`
+
+### R029+0x4534 `R029+0x4534 (0E76:4534)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/4, outcomes 1/2
+
+- `R029+0x45AC` `mov ax, word ptr [0xe6]`
 
 ### R029+0x4650 `R029+0x4650 (0E76:4650)`
 
@@ -4336,7 +8002,7 @@ draft, reached by cards cards-day cards-variants sainthelp saints: blocks 16/21,
 
 ### R029+0x4E0C `R029+0x4E0C (0E76:4E0C)`
 
-draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 8/9, outcomes 9/10
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 8/9, outcomes 9/10
 
 - `R029+0x4E5D` `pop si`
 
@@ -4354,7 +8020,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outco
 
 ### R029+0x4F76 `R029+0x4F76 (1367:0066)`
 
-matched, reached by cards cards-day cards-flip cards-variants chargen rules sainthelp saints trading: blocks 4/4, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants chargen rules sainthelp saints trading: blocks 4/4, outcomes 4/4
 
 ### R029+0x4F94 `R029+0x4F94 (1367:0084)`
 
@@ -4366,7 +8032,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outco
 
 ### R029+0x4FB4 `R029+0x4FB4 (1367:00A4)`
 
-matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
 
 ### R029+0x5002 `R029+0x5002 (1367:00F2)`
 
@@ -4390,7 +8056,7 @@ matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, 
 
 ### R029+0x514E `R029+0x514E (1367:023E)`
 
-matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
 
 ### R029+0x51A0 `R029+0x51A0 (1367:0290)`
 
@@ -4398,19 +8064,19 @@ matched, reached by core: blocks 4/4, outcomes 4/4
 
 ### R029+0x51E4 `R029+0x51E4 (1367:02D4)`
 
-matched, reached by cards cards-day cards-flip cards-variants core: blocks 9/9, outcomes 11/12
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants core: blocks 9/9, outcomes 11/12
 
 ### R029+0x5286 `R029+0x5286 (1367:0376)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 23/23, outcomes 18/18
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 23/23, outcomes 18/18
 
 ### R029+0x54D6 `R029+0x54D6 (1367:05C6)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x54D8 `R029+0x54D8 (1367:05C8)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 7/9, outcomes 8/14
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 7/9, outcomes 8/14
 
 - `R029+0x552C` `mov ax, word ptr [bp - 2]`
 - `R029+0x5564` `inc word ptr [0xe6]`
@@ -4421,7 +8087,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R029+0x563A `R029+0x563A (1367:072A)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 4/4
 
 ### R029+0x5650 `R029+0x5650 (1367:0740)`
 
@@ -4429,7 +8095,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x5654 `R029+0x5654 (1367:0744)`
 
-matched, reached by cards cards-day cards-flip cards-variants core: blocks 16/16, outcomes 14/14
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants core: blocks 16/16, outcomes 14/14
 
 ### R029+0x56A6 `R029+0x56A6 (1367:0796)`
 
@@ -4466,7 +8132,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outco
 
 ### R029+0x57BE `R029+0x57BE (1367:08AE)`
 
-matched, reached by cards cards-day cards-variants core: blocks 7/7, outcomes 8/8
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants core: blocks 7/7, outcomes 8/8
 
 ### R029+0x5848 `R029+0x5848 (1367:0938)`
 
@@ -4486,13 +8152,17 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/7, outco
 - `R029+0x58C5` `sub bx, bx`
 - `R029+0x58C7` `mov si, bx`
 
+### R029+0x58DC `R029+0x58DC (1367:09CC)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 4/4, outcomes 3/4
+
 ### R029+0x58FA `R029+0x58FA (1367:09EA)`
 
-matched, reached by cards cards-day cards-flip cards-variants core sainthelp: blocks 7/7, outcomes 8/8
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants core sainthelp: blocks 7/7, outcomes 8/8
 
 ### R029+0x5A2C `R029+0x5A2C (1367:0B1C)`
 
-matched, reached by cards cards-day cards-variants: blocks 9/11, outcomes 7/10
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 9/11, outcomes 7/10
 
 - `R029+0x5A94` `mov cx, ax`
 - `R029+0x5AA3` `sub ax, ax`
@@ -4531,7 +8201,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 12/12, outco
 
 ### R030+0x2842 `R030+0x2842 (1462:2842)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 15/15, outcomes 15/18
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 15/15, outcomes 15/18
 
 ### R030+0x28F2 `R030+0x28F2 (1462:28F2)`
 
@@ -4555,6 +8225,10 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 13/20, outco
 - `R030+0x2A98` `mov ax, word ptr [bp - 2]`
 - `R030+0x2AA4` `mov ax, 1`
 - `R030+0x2AC3` `mov ax, cx`
+
+### R030+0x3096 `R030+0x3096 (1767:0046)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 5/5, outcomes 4/6
 
 ### R031+0x0000 `R031+0x0000 (1462:0000)`
 
@@ -5601,7 +9275,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 10/10, outco
 
 ### R037+0x4184 `R037+0x4184 (1462:4184)`
 
-draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 12/12, outcomes 11/12
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 12/12, outcomes 11/12
 
 ### R037+0x43E6 `R037+0x43E6 (1462:43E6)`
 
@@ -5652,22 +9326,179 @@ draft, reached by chargen: blocks 8/11, outcomes 5/12
 - `R037+0x814F` `mov al, byte ptr [bp - 0xb]`
 - `R037+0x816C` `mov ax, di`
 
+### R037+0x81B2 `R037+0x81B2 (1C7D:0002)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 21/51, outcomes 16/66
+
+- `R037+0x820C` `mov ax, word ptr [0x6eee]`
+- `R037+0x821E` `jmp 0x1ba`
+- `R037+0x8221` `lcall 0x47c, 0x12c3`
+- `R037+0x822B` `push 8`
+- `R037+0x824C` `mov word ptr [bp - 4], si`
+- `R037+0x8271` `cmp word ptr [0x6eec], 0x44`
+- `R037+0x8278` `cmp word ptr [0x6eec], 0xc6`
+- `R037+0x8280` `cmp word ptr [0x6eee], 0x2d`
+- `R037+0x8287` `cmp word ptr [0x6eee], 0x5a`
+- `R037+0x828E` `test byte ptr [0x6ef0], 1`
+- `R037+0x8295` `mov ax, word ptr [0x6eee]`
+- `R037+0x82A7` `dec ax`
+- `R037+0x82AA` `dec ax`
+- `R037+0x82AD` `jmp 0x1ba`
+- `R037+0x82B0` `mov word ptr [bp - 2], 0x264c`
+- `R037+0x82B8` `mov word ptr [bp - 2], 0x2044`
+- `R037+0x82C0` `cmp byte ptr [0xe89a], 1`
+- `R037+0x82C7` `jmp 0x1ba`
+- `R037+0x82CA` `mov word ptr [bp - 2], 0x11b`
+- `R037+0x82DC` `cmp word ptr [0x6eec], 0xc3`
+- `R037+0x82E4` `jmp 0x1ba`
+- `R037+0x82E7` `cmp word ptr [0x6eec], 0x140`
+- `R037+0x82EF` `cmp word ptr [0x6eee], 0x14`
+- `R037+0x82F6` `cmp word ptr [0x6eee], 0xa5`
+- `R037+0x82FE` `test byte ptr [0x6ef0], 1`
+- `R037+0x8305` `mov ax, word ptr [0x6eee]`
+- `R037+0x831F` `lcall 0x47c, 0x12c3`
+- `R037+0x835A` `push 0x27f4`
+- `R037+0x8396` `push 0`
+- `R037+0x839C` `cmp si, 0x11b`
+
+### R037+0x83C8 `R037+0x83C8 (1C7D:0218)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### R037+0x83FE `R037+0x83FE (1C7D:024E)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R037+0x847E `R037+0x847E (1C7D:02CE)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R037+0x84BA `R037+0x84BA (1C7D:030A)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 16/49, outcomes 12/40
+
+- `R037+0x84C8` `jmp 0x5e0`
+- `R037+0x84E1` `jmp 0x470`
+- `R037+0x84EC` `jmp 0x6e2`
+- `R037+0x84F0` `sub ax, 0x4800`
+- `R037+0x84F5` `jmp 0x5e8`
+- `R037+0x84F8` `sub ax, 0x300`
+- `R037+0x84FD` `jmp 0x5e8`
+- `R037+0x8500` `sub ax, 0x200`
+- `R037+0x8505` `jmp 0x65a`
+- `R037+0x8508` `sub ax, 0x200`
+- `R037+0x850D` `jmp 0x6ae`
+- `R037+0x8510` `sub ax, 0x100`
+- `R037+0x8515` `jmp 0x65a`
+- `R037+0x8518` `pop si`
+- `R037+0x851C` `push 0`
+- `R037+0x852E` `lcall 0x47c, 0x12c3`
+- `R037+0x8590` `lcall 0x47c, 0x12c3`
+- `R037+0x85BC` `lcall 0x47c, 0x12c3`
+- `R037+0x8629` `jmp 0x6e2`
+- `R037+0x8790` `sub ax, ax`
+- `R037+0x8798` `mov ax, 0x10`
+- `R037+0x87C2` `cmp word ptr [0x8c52], 0`
+- `R037+0x87C9` `dec word ptr [0x8c52]`
+- `R037+0x87D3` `push 0x27f4`
+- `R037+0x87E0` `mov word ptr [0x8c50], 0`
+- `R037+0x87E6` `push 0x12`
+- `R037+0x880A` `mov ax, 0x10`
+- `R037+0x883B` `mov ax, word ptr [0x8c4c]`
+- `R037+0x884B` `dec word ptr [0x8c50]`
+- `R037+0x8856` `dec word ptr [0x8c50]`
+- `R037+0x885E` `mov ax, word ptr [0x8c4c]`
+- `R037+0x8885` `mov word ptr [0x8c50], ax`
+- `R037+0x8892` `pop si`
+
+### R037+0x8896 `R037+0x8896 (1C7D:06E6)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 9/15, outcomes 5/10
+
+- `R037+0x88DB` `jmp 0x95a`
+- `R037+0x88EA` `jmp 0x90e`
+- `R037+0x88F8` `jmp 0x924`
+- `R037+0x8ACE` `jmp 0x72e`
+- `R037+0x8AD4` `dec word ptr [0x8c54]`
+- `R037+0x8AE1` `mov ax, word ptr [0x8c54]`
+
+### R037+0x8B0E `R037+0x8B0E (1C7D:095E)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
 ### R037+0x8ED4 `R037+0x8ED4 (1C7D:0D24)`
 
-matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 44/56, outcomes 26/38
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 46/56, outcomes 28/38
 
 - `R037+0x8F2E` `push 0x48a4`
 - `R037+0x9502` `or byte ptr [0x9081], 1`
 - `R037+0x9529` `mov byte ptr [0x907a], 0`
 - `R037+0x95AC` `mov di, 0x48af`
 - `R037+0x9612` `mov di, 0x48b6`
-- `R037+0x96DC` `jmp 0x15fe`
 - `R037+0x97A7` `mov byte ptr [si - 0x6396], 0x41`
-- `R037+0x97AE` `push 1`
 - `R037+0x996B` `push 0x48c4`
 - `R037+0x99F6` `push 0x48e4`
 - `R037+0x9A71` `push 0x4905`
 - `R037+0x9B10` `mov byte ptr [0x907a], 0`
+
+### R037+0x9C10 `R037+0x9C10 (1C7D:1A60)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/4, outcomes 2/4
+
+- `R037+0x9C2C` `sub ax, ax`
+
+### R037+0x9C48 `R037+0x9C48 (1E26:0008)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 8/18, outcomes 7/22
+
+- `R037+0x9C77` `cmp word ptr [0x6eee], 0x32`
+- `R037+0x9C7E` `cmp word ptr [0x6eee], 0x96`
+- `R037+0x9C86` `test byte ptr [0x6ef0], 1`
+- `R037+0x9C8D` `mov ax, word ptr [0x6eee]`
+- `R037+0x9CA5` `dec ax`
+- `R037+0x9CA8` `dec ax`
+- `R037+0x9CAB` `sub si, si`
+- `R037+0x9CB0` `mov si, 0x1051`
+- `R037+0x9CB6` `mov si, 0x2e43`
+- `R037+0x9CBC` `mov si, 0x1454`
+
+### R037+0x9CE6 `R037+0x9CE6 (1E26:00A6)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 1/2
+
+### R037+0x9D1C `R037+0x9D1C (1E26:00DC)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R037+0x9D8A `R037+0x9D8A (1E26:014A)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
+
+### R037+0x9DB2 `R037+0x9DB2 (1E26:0172)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 7/28, outcomes 4/24
+
+- `R037+0x9DC0` `jmp 0x330`
+- `R037+0x9DC5` `sub ax, 0x1000`
+- `R037+0x9DCA` `sub ax, 0x51`
+- `R037+0x9DCF` `sub ax, 0x20`
+- `R037+0x9DD4` `pop si`
+- `R037+0x9DE0` `sub ax, 0x19cf`
+- `R037+0x9DE5` `jmp 0x374`
+- `R037+0x9DE8` `sub ax, 0x20`
+- `R037+0x9DED` `jmp 0x374`
+- `R037+0x9DF0` `pop si`
+- `R037+0x9DF4` `push cs`
+- `R037+0x9E02` `lcall 0x47c, 0x12c3`
+- `R037+0x9E48` `lcall 0x47c, 0x545`
+- `R037+0x9EDA` `jmp 0x208`
+- `R037+0x9EDD` `mov word ptr [0xa2df], 0`
+- `R037+0x9F1B` `mov ax, word ptr [bp - 2]`
+- `R037+0x9F2E` `mov word ptr [bp - 8], 0xffff`
+- `R037+0x9FA2` `mov byte ptr [0xe89a], 0`
+- `R037+0x9FB4` `lcall 0x47c, 0x12c3`
+- `R037+0x9FE8` `lcall 0x47c, 0x568`
+- `R037+0x9FF3` `push 1`
 
 ### R038+0x0000 `R038+0x0000 (1462:0000)`
 
@@ -6105,7 +9936,7 @@ draft, reached by cards-day cards-variants: blocks 1/369, outcomes 0/232
 
 ### R039+0x0000 `R039+0x0000 (1462:0000)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 5/9, outcomes 4/8
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 5/9, outcomes 4/8
 
 - `R039+0x001D` `mov ax, si`
 - `R039+0x0039` `mov ax, si`
@@ -6138,7 +9969,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 11/13, out
 
 ### R039+0x0470 `R039+0x0470 (1462:0470)`
 
-matched, reached by cards cards-day cards-flip cards-variants rules: blocks 13/13, outcomes 12/12
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants rules: blocks 13/13, outcomes 12/12
 
 ### R039+0x0A34 `R039+0x0A34 (1462:0A34)`
 
@@ -6346,7 +10177,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
 
 ### R039+0x1C22 `R039+0x1C22 (1462:1C22)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/18, outcomes 5/16
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 8/18, outcomes 5/16
 
 - `R039+0x1C4C` `push 2`
 - `R039+0x1C5A` `mov ax, 0x67`
@@ -6375,7 +10206,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outco
 
 ### R039+0x1D2C `R039+0x1D2C (1462:1D2C)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 11/17, outcomes 9/18
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 11/17, outcomes 9/18
 
 - `R039+0x1D3C` `mov ax, si`
 - `R039+0x1D57` `mov ax, si`
@@ -6386,7 +10217,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 11/17, out
 
 ### R039+0x1DE6 `R039+0x1DE6 (1462:1DE6)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R039+0x1E06 `R039+0x1E06 (1462:1E06)`
 
@@ -7158,9 +10989,15 @@ matched, reached by cards cards-day cards-variants: blocks 18/64, outcomes 15/78
 - `R041+0x04C2` `push di` (excluded)
 - `R041+0x04CB` `push word ptr [0x8dd4]` (excluded)
 
+### R043+0x0000 `R043+0x0000 (1462:0000)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 11/12, outcomes 9/12
+
+- `R043+0x00A6` `push 1`
+
 ### R043+0x0100 `R043+0x0100 (1462:0100)`
 
-matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 38/47, outcomes 31/46
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants sainthelp: blocks 38/47, outcomes 31/46
 
 - `R043+0x0120` `push 0x5001`
 - `R043+0x02C4` `push 0x502c`
@@ -7174,29 +11011,9 @@ matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 
 
 ### R043+0x054E `R043+0x054E (1462:054E)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/22, outcomes 0/22
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 21/22, outcomes 19/22
 
-- `R043+0x05BD` `mov si, dx`
-- `R043+0x05C5` `mov bx, dx`
-- `R043+0x05E5` `add word ptr [bp - 4], 4`
-- `R043+0x05F0` `lea ax, [bp - 8]`
-- `R043+0x061F` `lea ax, [bp - 0xc]`
-- `R043+0x0644` `push word ptr [bp - 8]`
-- `R043+0x0670` `mov ax, word ptr es:[si + 2]`
-- `R043+0x0679` `inc word ptr [bp - 0x10]`
-- `R043+0x067C` `add si, 4`
-- `R043+0x0685` `lea ax, [bp - 0xc]`
-- `R043+0x06A1` `mov es, word ptr [0x7ee2]`
-- `R043+0x06B4` `lea ax, [bp - 0xc]`
-- `R043+0x06EE` `add si, 4`
-- `R043+0x06F7` `push word ptr [bp - 8]`
 - `R043+0x0713` `push 0x50cd`
-- `R043+0x0722` `mov word ptr [0xa776], 0`
-- `R043+0x076C` `mov si, 0xa2d7`
-- `R043+0x076F` `cmp word ptr [si], 0`
-- `R043+0x0774` `push 0x50e4`
-- `R043+0x0781` `inc si`
-- `R043+0x078A` `pop si`
 
 ### R043+0x078E `R043+0x078E (1462:078E)`
 
@@ -7213,33 +11030,25 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/9, outco
 
 ### R043+0x09AE `R043+0x09AE (1462:09AE)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R043+0x09BE` `push 1`
 
 ### R043+0x0A9A `R043+0x0A9A (150B:000A)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/6, outcomes 0/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 2/4
 
-- `R043+0x0B37` `mov ax, 0xf`
-- `R043+0x0B3A` `mov word ptr [0xee59], ax`
-- `R043+0x0B43` `push 0xe48c`
 - `R043+0x0B56` `push 0xff`
-- `R043+0x0B6F` `mov word ptr [0xee55], 1`
 
 ### R043+0x0BA0 `R043+0x0BA0 (150B:0110)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/6, outcomes 0/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 2/4
 
-- `R043+0x0C24` `mov ax, 0xf`
-- `R043+0x0C27` `mov word ptr [0xee59], ax`
-- `R043+0x0C2F` `push 0xe48c`
 - `R043+0x0C42` `push 0xff`
-- `R043+0x0C5B` `mov word ptr [0xee55], 1`
 
 ### R043+0x0C9E `R043+0x0C9E (150B:020E)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 10/15, outcomes 10/14
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 10/15, outcomes 10/14
 
 - `R043+0x0D07` `jmp 0x32a`
 - `R043+0x0D13` `jmp 0x32a`
@@ -7249,33 +11058,28 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 10/15, outco
 
 ### R043+0x0E40 `R043+0x0E40 (150B:03B0)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcomes 5/6
-
-- `R043+0x0E9A` `mov word ptr [0xee55], 0`
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 6/6
 
 ### R043+0x0F2A `R043+0x0F2A (150B:049A)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R043+0x0F54 `R043+0x0F54 (150B:04C4)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 26/33, outcomes 18/26
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 29/33, outcomes 21/26
 
-- `R043+0x0FAE` `cmp word ptr [bp + 0xa], 1`
 - `R043+0x0FB4` `jmp 0x5ac`
-- `R043+0x0FB7` `mov word ptr [0xee55], 0`
 - `R043+0x10E0` `jmp 0x6f9`
 - `R043+0x112F` `cmp al, 0x80`
 - `R043+0x1133` `mov al, bl`
-- `R043+0x117F` `push 0xf`
 
 ### R043+0x118E `R043+0x118E (150B:06FE)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 22/22, outcomes 26/28
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 22/22, outcomes 26/28
 
 ### R043+0x1316 `R043+0x1316 (150B:0886)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 104/115, outcomes 24/30
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 104/115, outcomes 24/30
 
 - `R043+0x13CE` `mov ax, word ptr [0xed52]`
 - `R043+0x13EA` `mov ax, word ptr [0x9785]`
@@ -7291,29 +11095,17 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 104/115, out
 
 ### R043+0x1B8C `R043+0x1B8C (150B:10FC)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R043+0x1BD2 `R043+0x1BD2 (150B:1142)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/38, outcomes 0/38
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 14/38, outcomes 10/38
 
-- `R043+0x1BE5` `push 0`
-- `R043+0x1BF5` `lcall 0, 0x1384`
-- `R043+0x1C0F` `push 0`
 - `R043+0x1C23` `mov word ptr [0x9c46], 0`
-- `R043+0x1C43` `test byte ptr [0x6ef0], 1`
 - `R043+0x1C4A` `push cs`
-- `R043+0x1C4E` `push word ptr [bp + 8]`
 - `R043+0x1C64` `jmp 0x1364`
-- `R043+0x1C67` `lcall 0x47c, 0x73d`
-- `R043+0x1C70` `lcall 0x47c, 0x744`
 - `R043+0x1C7D` `cmp si, 0x3920`
-- `R043+0x1C83` `cmp byte ptr [0xe96f], 0xff`
-- `R043+0x1C8A` `cmp byte ptr [0xee42], 0`
 - `R043+0x1C91` `mov al, byte ptr [0xe96f]`
-- `R043+0x1CBE` `mov al, byte ptr [0xe96f]`
-- `R043+0x1CC8` `cwde `
-- `R043+0x1CCF` `jmp 0x1364`
 - `R043+0x1CD2` `cmp si, 0x1000`
 - `R043+0x1CD8` `lcall 0, 0x13a0`
 - `R043+0x1CDD` `push si`
@@ -7333,15 +11125,104 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 1/38, outcom
 - `R043+0x1D9F` `mov byte ptr [0xe96f], 0`
 - `R043+0x1DA6` `push word ptr [0xee57]`
 - `R043+0x1DEB` `lcall 0, 0x1338`
-- `R043+0x1DF4` `push 0`
 
 ### R043+0x211C `R043+0x211C (150B:168C)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 11/14
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 11/14
 
 ### R043+0x2178 `R043+0x2178 (150B:16E8)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 11/14
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 11/14
+
+### R043+0x21D4 `R043+0x21D4 (150B:1744)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 44/115, outcomes 43/140
+
+- `R043+0x2260` `push word ptr [0xa776]`
+- `R043+0x2280` `push word ptr [0xee59]`
+- `R043+0x2288` `push 0`
+- `R043+0x228A` `push 5`
+- `R043+0x22B1` `push 0x5280`
+- `R043+0x22C0` `mov word ptr [0xa776], 0`
+- `R043+0x231A` `push 0x100`
+- `R043+0x238C` `cmp byte ptr [0xee41], 0`
+- `R043+0x2393` `dec ax`
+- `R043+0x2396` `dec ax`
+- `R043+0x2399` `jmp 0x1925`
+- `R043+0x239C` `mov ax, 0xea64`
+- `R043+0x23A6` `mov ax, 0xea64`
+- `R043+0x23AE` `push ds`
+- `R043+0x23B5` `push word ptr [bp - 0xa]`
+- `R043+0x2401` `sub dx, dx`
+- `R043+0x240A` `cmp byte ptr [0xee42], 0`
+- `R043+0x2411` `mov ax, word ptr [0xee0d]`
+- `R043+0x241F` `mov ax, word ptr [0xee11]`
+- `R043+0x2431` `mov al, byte ptr [0xee0f]`
+- `R043+0x243E` `mov cl, byte ptr [0xee10]`
+- `R043+0x244E` `mov dx, 1`
+- `R043+0x2451` `dec dx`
+- `R043+0x2454` `mov ax, 0xa778`
+- `R043+0x247E` `sub dx, dx`
+- `R043+0x2487` `jmp 0x1aaf`
+- `R043+0x248A` `mov ax, word ptr [0xee0d]`
+- `R043+0x2498` `mov ax, word ptr [0xee11]`
+- `R043+0x24AA` `mov al, byte ptr [0xee0f]`
+- `R043+0x24B7` `mov cl, byte ptr [0xee10]`
+- `R043+0x24C7` `mov byte ptr [0xee42], 0`
+- `R043+0x24E5` `mov si, dx`
+- `R043+0x24EA` `mov si, word ptr [bp - 2]`
+- `R043+0x24ED` `mov ax, word ptr [0xe972]`
+- `R043+0x24FB` `mov ax, word ptr [0xe970]`
+- `R043+0x250D` `mov al, byte ptr [si - 0x168c]`
+- `R043+0x251B` `mov cl, byte ptr [si - 0x1678]`
+- `R043+0x252B` `mov al, byte ptr [0xe96e]`
+- `R043+0x2534` `mov al, byte ptr [0xe96f]`
+- `R043+0x253C` `mov dx, 1`
+- `R043+0x253F` `cmp byte ptr [0xee41], 1`
+- `R043+0x2546` `jmp 0x1b45`
+- `R043+0x2549` `cmp byte ptr [0xee42], 0`
+- `R043+0x2550` `jmp 0x1b45`
+- `R043+0x2553` `or dx, dx`
+- `R043+0x2557` `lcall 0x47c, 0x12c3`
+- `R043+0x257C` `push 0x5282`
+- `R043+0x258B` `cmp byte ptr [0xe3e3], 0x78`
+- `R043+0x2592` `push word ptr [0xee59]`
+- `R043+0x259A` `push 0`
+- `R043+0x259C` `push 5`
+- `R043+0x25D5` `cmp byte ptr [0xe96f], 0xff`
+- `R043+0x25DC` `lcall 0x47c, 0x12c3`
+- `R043+0x2620` `push 0x100`
+- `R043+0x2636` `lcall 0x47c, 0x1293`
+- `R043+0x2729` `mov byte ptr [0xed6c], 0`
+- `R043+0x2737` `mov si, ax`
+- `R043+0x2739` `mov ax, word ptr [0xe972]`
+- `R043+0x2744` `mov ax, word ptr [0xe970]`
+- `R043+0x2753` `mov al, byte ptr [di - 0x168c]`
+- `R043+0x275E` `mov cl, byte ptr [di - 0x1678]`
+- `R043+0x276B` `mov al, byte ptr [0xe96e]`
+- `R043+0x2774` `jmp 0x1ceb`
+- `R043+0x2776` `mov byte ptr [0xed6c], 1`
+- `R043+0x277B` `cmp byte ptr [0xed6c], 1`
+- `R043+0x2782` `cmp byte ptr [0xee42], 0`
+- `R043+0x2789` `cmp byte ptr [0xee41], 0`
+- `R043+0x2790` `mov word ptr [0x8dde], 1`
+- `R043+0x27A0` `cwde `
+- `R043+0x27A6` `cmp byte ptr [0xee42], 1`
+- `R043+0x27AD` `mov cl, 4`
+
+### R043+0x27E6 `R043+0x27E6 (150B:1D56)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 16/21, outcomes 11/16
+
+- `R043+0x27F3` `jmp 0x1f39`
+- `R043+0x288E` `push 0xa`
+- `R043+0x2930` `mov di, 0x52a0`
+- `R043+0x293C` `mov ax, 0x9085`
+- `R043+0x298A` `sub si, si`
+
+### R043+0x29CE `R043+0x29CE (150B:1F3E)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### R043+0x29D0 `R043+0x29D0 (150B:1F40)`
 
@@ -7361,94 +11242,67 @@ draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/
 
 ### R043+0x32B6 `R043+0x32B6 (150B:2826)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/19, outcomes 0/22
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 11/19, outcomes 8/22
 
-- `R043+0x32D6` `push 0`
 - `R043+0x32EA` `mov word ptr [0x9c46], 0`
-- `R043+0x330A` `test byte ptr [0x6ef0], 1`
 - `R043+0x3311` `push cs`
-- `R043+0x3319` `lcall 0x47c, 0x73d`
-- `R043+0x3322` `lcall 0x47c, 0x744`
 - `R043+0x332F` `cmp si, 0x3920`
 - `R043+0x3335` `cmp si, 0x1000`
 - `R043+0x333B` `push si`
-- `R043+0x3343` `lcall 0, 0x1338`
-- `R043+0x334A` `mov ax, si`
-- `R043+0x3351` `sub ax, 0x2920`
-- `R043+0x3356` `jmp 0x28d3`
 - `R043+0x3358` `lcall 0, 0x13a0`
 - `R043+0x3360` `mov si, 0x1c0d`
-- `R043+0x3363` `test byte ptr [0x6ef0], 1`
 - `R043+0x336A` `cmp byte ptr [0x9c4c], 0`
-- `R043+0x3371` `mov ax, si`
 
 ### R043+0x3376 `R043+0x3376 (150B:28E6)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R043+0x3494 `R043+0x3494 (150B:2A04)`
 
-draft, reached by cards cards-day cards-flip cards-variants: blocks 1/29, outcomes 0/26
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 20/29, outcomes 12/26
 
 - `R043+0x34AB` `jmp 0x2d35`
-- `R043+0x34AE` `mov word ptr [bp + 6], si`
-- `R043+0x34B1` `test byte ptr [0x6ef0], 1`
-- `R043+0x34B8` `mov ax, word ptr [0xe0]`
 - `R043+0x3534` `mov si, di`
-- `R043+0x353A` `mov word ptr [bp - 0xa], si`
-- `R043+0x3542` `cmp si, 8`
 - `R043+0x3547` `mov bx, word ptr [bp - 4]`
 - `R043+0x3558` `sub di, ax`
 - `R043+0x3563` `mov word ptr [bp - 4], 0`
 - `R043+0x3568` `sub si, 8`
-- `R043+0x356B` `mov ax, si`
 - `R043+0x357F` `jmp 0x2bda`
-- `R043+0x3582` `test byte ptr [0x6ef0], 1`
 - `R043+0x3589` `jmp 0x2bda`
-- `R043+0x358C` `push word ptr [bp - 2]`
-- `R043+0x366A` `inc si`
-- `R043+0x3670` `jmp 0x2ab2`
-- `R043+0x3673` `mov word ptr [bp - 8], di`
-- `R043+0x3676` `mov ax, si`
-- `R043+0x3757` `test byte ptr [0x6ef0], 1`
-- `R043+0x375E` `push ax`
-- `R043+0x376A` `lcall 0x47c, 0x73d`
 - `R043+0x3773` `lcall 0x47c, 0x744`
-- `R043+0x3778` `push word ptr [bp - 0xc]`
-- `R043+0x37AE` `push 0x5302`
-- `R043+0x37BC` `mov bx, word ptr [0x17c]`
-- `R043+0x37C5` `pop si`
+
+### R043+0x37CA `R043+0x37CA (150B:2D3A)`
+
+draft, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 12/17, outcomes 1/2
+
+- `R043+0x37EE` `push word ptr [0xa62e]`
+- `R043+0x37F4` `push word ptr [0xa630]`
+- `R043+0x37FC` `push word ptr [0xa632]`
+- `R043+0x3820` `push word ptr [0xa630]`
+- `R043+0x3824` `push -0x14`
 
 ### R043+0x3838 `R043+0x3838 (17E5:0008)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/27, outcomes 0/24
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 21/27, outcomes 18/24
 
-- `R043+0x3857` `push cs`
-- `R043+0x385E` `mov cx, 0x64`
 - `R043+0x3873` `mov ax, 1`
-- `R043+0x3876` `cmp ax, 0x3e8`
 - `R043+0x387B` `mov ax, 0x3e8`
-- `R043+0x387E` `mov word ptr [bp - 0x18], ax`
 - `R043+0x3896` `mov ax, cx`
-- `R043+0x3898` `mov word ptr [bp + 8], ax`
 - `R043+0x389F` `sub ax, ax`
-- `R043+0x38A1` `mov word ptr [bp + 8], ax`
 - `R043+0x38CB` `mov ax, 0x64`
-- `R043+0x38CE` `mov word ptr [bp + 0xc], ax`
 - `R043+0x38D5` `sub ax, ax`
-- `R043+0x38D7` `mov word ptr [bp + 0xc], ax`
-- `R043+0x3904` `mov ax, word ptr [bp - 0xe]`
-- `R043+0x3928` `mov si, word ptr [bp + 6]`
-- `R043+0x3946` `mov word ptr [bp - 0x10], 0`
-- `R043+0x394B` `mov ax, word ptr [bp - 0x10]`
-- `R043+0x3983` `mov ax, 0x560a`
-- `R043+0x39A1` `mov si, word ptr [bp + 0xa]`
-- `R043+0x39BF` `mov word ptr [bp - 0x10], 0`
-- `R043+0x39C4` `mov ax, word ptr [bp - 0x10]`
-- `R043+0x39FC` `mov ax, 0x560a`
-- `R043+0x3A0B` `mov ax, word ptr [bp - 0x16]`
-- `R043+0x3A13` `jmp 0xd4`
-- `R043+0x3A16` `pop si`
+
+### R043+0x3A1C `R043+0x3A1C (17E5:01EC)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 6/6, outcomes 4/6
+
+### R043+0x3A7C `R043+0x3A7C (17E5:024C)`
+
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 3/3, outcomes 2/2
+
+### R043+0x3AE6 `R043+0x3AE6 (1810:0006)`
+
+asm, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild: blocks 1/1, outcomes 0/0
 
 ### R044+0x0000 `R044+0x0000 (1838:0000)`
 
@@ -8067,7 +11921,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0000 `R046+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 35/54, outcomes 25/48
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 35/54, outcomes 25/48
 
 - `R046+0x008D` `mov word ptr [0xee76], ax`
 - `R046+0x00B7` `mov word ptr [0xee7a], ax`
@@ -8171,7 +12025,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outco
 
 ### R046+0x0630 `R046+0x0630 (1838:0630)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0646 `R046+0x0646 (1838:0646)`
 
@@ -8186,18 +12040,18 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R046+0x06A6 `R046+0x06A6 (1838:06A6)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x06B7` `cmp word ptr [0x57bc], 0`
 - `R046+0x06BE` `mov word ptr [0xe7d8], 0x3a`
 
 ### R046+0x06D4 `R046+0x06D4 (1838:06D4)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x06EA `R046+0x06EA (1838:06EA)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0724 `R046+0x0724 (18AA:0004)`
 
@@ -9986,7 +13840,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R051+0x091E `R051+0x091E (18C9:000E)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 26/34, outcomes 12/18
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 26/34, outcomes 12/18
 
 - `R051+0x09B8` `mov word ptr [0xee80], 1`
 - `R051+0x09E4` `sub ax, ax`
@@ -10012,14 +13866,13 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outco
 
 ### R051+0x0D30 `R051+0x0D30 (18C9:0420)`
 
-matched, reached by cards-variants: blocks 6/8, outcomes 6/8
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards-variants: blocks 7/8, outcomes 7/8
 
-- `R051+0x0DB8` `push 1`
 - `R051+0x0DFA` `mov word ptr [0xee78], 2`
 
 ### R051+0x0E22 `R051+0x0E22 (18C9:0512)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x0E5A `R051+0x0E5A (18C9:054A)`
 
@@ -10055,11 +13908,11 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R051+0x117E `R051+0x117E (18C9:086E)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x119C `R051+0x119C (18C9:088C)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x11D4 `R051+0x11D4 (18C9:08C4)`
 
@@ -10071,7 +13924,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R051+0x1280 `R051+0x1280 (18C9:0970)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R051+0x12F0 `R051+0x12F0 (1967:0000)`
 
@@ -10800,7 +14653,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R054+0x09B8 `R054+0x09B8 (18D3:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 24/35, outcomes 9/18
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 24/35, outcomes 11/18
 
 - `R054+0x0AD8` `mov es, word ptr [0x7f58]`
 - `R054+0x0C26` `jmp 0x408`
@@ -10816,11 +14669,11 @@ matched, reached by cards cards-day cards-variants: blocks 24/35, outcomes 9/18
 
 ### R054+0x0DC0 `R054+0x0DC0 (18D3:0410)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x0DC8 `R054+0x0DC8 (18D3:0418)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x0E02 `R054+0x0E02 (18D3:0452)`
 
@@ -10844,7 +14697,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x0E94 `R054+0x0E94 (18D3:04E4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x10B8 `R054+0x10B8 (18D3:0708)`
 
@@ -10854,7 +14707,7 @@ matched, reached by cards: blocks 0/1, outcomes 0/0
 
 ### R054+0x1134 `R054+0x1134 (18D3:0784)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R054+0x11A4 `R054+0x11A4 (1952:0004)`
 
@@ -11920,7 +15773,7 @@ matched, reached by cards-variants: blocks 0/1, outcomes 0/0
 
 ### R058+0x0E24 `R058+0x0E24 (191A:0004)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 17/18, outcomes 6/8
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 17/18, outcomes 6/8
 
 - `R058+0x0ED7` `jmp 0x1ec`
 
@@ -11993,7 +15846,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R058+0x17DA `R058+0x17DA (191A:09BA)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 10/23, outcomes 5/16
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 10/23, outcomes 5/16
 
 - `R058+0x1849` `push -9`
 - `R058+0x18AF` `jmp 0xbe7`
@@ -12011,7 +15864,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 10/23, out
 
 ### R058+0x1A24 `R058+0x1A24 (191A:0C04)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1A5C `R058+0x1A5C (191A:0C3C)`
 
@@ -12027,11 +15880,11 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R058+0x1AA4 `R058+0x1AA4 (191A:0C84)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1ADC `R058+0x1ADC (191A:0CBC)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-gate battle-oracle-mine battle-oracle-street battle-oracle-wild cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R058+0x1B9E `R058+0x1B9E (191A:0D7E)`
 
