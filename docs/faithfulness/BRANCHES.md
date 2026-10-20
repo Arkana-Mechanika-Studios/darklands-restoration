@@ -37,11 +37,12 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 | special | 161 | 49 | 886/1099 (80.6%) | 599/852 (70.3%) | 886/1099 (80.6%) | 599/852 (70.3%) | identical (84s) |
 | cards | 365 | 3932 | 14890/25840 (57.6%) | 7318/17274 (42.4%) |  |  |  |
 | cards-day | 22636 | 4214 | 16145/27292 (59.2%) | 8079/18238 (44.3%) |  |  |  |
+| cards-flip | 1400 | 1181 | 6461/10290 (62.8%) | 3534/7616 (46.4%) |  |  |  |
 | cards-variants | 18535 | 4347 | 16830/27761 (60.6%) | 8577/18524 (46.3%) |  |  |  |
 | sainthelp | 136 | 232 | 1385/2992 (46.3%) | 868/2314 (37.5%) |  |  |  |
-| ALL |  | 4771 | 27972/38769 (72.2%) | 18080/28796 (62.8%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
+| ALL |  | 4800 | 28389/38892 (73.0%) | 18486/28882 (64.0%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
 
-Never-exercised items: 21513, of which open 20282, justified in `unreachable.csv` 1231.
+Never-exercised items: 20899, of which open 19668, justified in `unreachable.csv` 1231.
 
 ## Per function
 
@@ -50,7 +51,7 @@ record; the outcomes are in `branches-missed.csv`).
 
 ### root 0000:0C70 `root 0000:0C70`
 
-draft, reached by cards cards-day cards-variants chargen core rules sainthelp saints trading: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants chargen core rules sainthelp saints trading: blocks 3/3, outcomes 2/2
 
 ### root 0000:0C8C `root 0000:0C8C`
 
@@ -64,14 +65,14 @@ draft, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### root 0000:1384 `root 0000:1384`
 
-draft, reached by cards cards-day cards-variants: blocks 1/3, outcomes 0/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/3, outcomes 0/4
 
 - `root+0x1390` `lcall 0x47c, 0x744`
 - `root+0x139E` `leave `
 
 ### root 0000:1438 `root 0000:1438`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 1/11, outcomes 0/8
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/11, outcomes 0/8
 
 - `root+0x1466` `dec ax`
 - `root+0x1469` `dec ax`
@@ -106,7 +107,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/16, outcomes 0/10
 
 ### root 0000:1716 `root 0000:1716`
 
-draft, reached by cards cards-day cards-variants: blocks 1/31, outcomes 0/28
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/31, outcomes 0/28
 
 - `root+0x1725` `mov word ptr [bp - 2], 0x1f`
 - `root+0x172C` `shl bx, 1`
@@ -141,7 +142,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/31, outcomes 0/28
 
 ### root 0000:23E6 `root 0000:23E6`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 1/6, outcomes 0/4
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/6, outcomes 0/4
 
 - `root+0x23F4` `mov word ptr [bp - 2], dx`
 - `root+0x23FC` `mov si, word ptr [bp + 6]`
@@ -151,11 +152,11 @@ draft, reached by cards cards-day cards-variants sainthelp: blocks 1/6, outcomes
 
 ### root 0000:25F2 `root 0000:25F2`
 
-draft, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 0000:2646 `root 0000:2646`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 0265:0004 `root 0265:0004`
 
@@ -168,7 +169,7 @@ draft, reached by cards-day cards-variants: blocks 1/5, outcomes 0/4
 
 ### root 0265:0134 `root 0265:0134`
 
-draft, reached by cards cards-day cards-variants: blocks 1/142, outcomes 0/148
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/142, outcomes 0/148
 
 - `root+0x27C9` `mov bx, word ptr [bp + 0x12]`
 - `root+0x27D5` `cmp word ptr [bp + 0x1a], 1`
@@ -314,7 +315,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/142, outcomes 0/148
 
 ### root 0265:09B2 `root 0265:09B2`
 
-draft, reached by cards cards-day cards-variants: blocks 9/10, outcomes 11/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 11/12
 
 - `root+0x3012` `neg di`
 
@@ -324,7 +325,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 03EC:000E `root 03EC:000E`
 
-matched, reached by cards cards-day cards-variants sainthelp: blocks 1/43, outcomes 0/48
+matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/43, outcomes 0/48
 
 - `root+0x3EDB` `jmp 0x222`
 - `root+0x3EDE` `cmp byte ptr [0x907a], 1`
@@ -371,11 +372,11 @@ matched, reached by cards cards-day cards-variants sainthelp: blocks 1/43, outco
 
 ### root 0410:0008 `root 0410:0008`
 
-matched, reached by battle cards cards-day cards-variants core names trading: blocks 1/1, outcomes 0/0
+matched, reached by battle cards cards-day cards-flip cards-variants core names trading: blocks 1/1, outcomes 0/0
 
 ### root 0410:001A `root 0410:001A`
 
-asm, reached by battle cards cards-day cards-variants rules sainthelp saints: blocks 4/4, outcomes 4/4
+asm, reached by battle cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 4/4, outcomes 4/4
 
 ### root 0410:0038 `root 0410:0038`
 
@@ -391,7 +392,7 @@ asm, reached by path: blocks 3/3, outcomes 1/2
 
 ### root 044A:0043 `root 044A:0043`
 
-asm, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 044A:0122 `root 044A:0122`
 
@@ -399,11 +400,11 @@ asm, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 044A:014E `root 044A:014E`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 044A:0164 `root 044A:0164`
 
-asm, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 047C:00A9 `root 047C:00A9`
 
@@ -425,7 +426,7 @@ draft, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved
 
 ### root 047C:051B `root 047C:051B`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0545 `root 047C:0545`
 
@@ -433,7 +434,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unre
 
 ### root 047C:0553 `root 047C:0553`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:055A `root 047C:055A`
 
@@ -449,7 +450,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unre
 
 ### root 047C:058B `root 047C:058B`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:05A5 `root 047C:05A5`
 
@@ -473,11 +474,11 @@ draft, reached by cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect 
 
 ### root 047C:078A `root 047C:078A`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 047C:0952 `root 047C:0952`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 047C:0DE6 `root 047C:0DE6`
 
@@ -531,7 +532,7 @@ draft, reached by tactics: blocks 6/17, outcomes 5/20
 
 ### root 047C:1293 `root 047C:1293`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 1/4, outcomes 0/4
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/4, outcomes 0/4
 
 - `root+0x5A5A` `cmp byte ptr [0x6a81], 0`
 - `root+0x5A61` `push word ptr [0x6ef4]`
@@ -539,7 +540,7 @@ draft, reached by cards cards-day cards-variants sainthelp: blocks 1/4, outcomes
 
 ### root 047C:12C3 `root 047C:12C3`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 1/4, outcomes 0/4
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/4, outcomes 0/4
 
 - `root+0x5A8A` `cmp byte ptr [0x6a81], 0`
 - `root+0x5A91` `mov byte ptr [0x6a81], 0`
@@ -554,29 +555,29 @@ draft, reached by cards-day: blocks 1/3, outcomes 0/2
 
 ### root 05BA:0004 `root 05BA:0004`
 
-matched, reached by cards cards-day cards-variants sainthelp: blocks 6/7, outcomes 5/6
+matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 5/6
 
 - `root+0x5BEC` `lcall 0, 0x1354` (excluded)
 
 ### root 05BA:00C2 `root 05BA:00C2`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 0617:000E `root 0617:000E`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 6/7, outcomes 5/6
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 5/6
 
 - `root+0x61AB` `push word ptr [bp + 6]`
 
 ### root 0617:00AE `root 0617:00AE`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 3/4, outcomes 3/4
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 3/4
 
 - `root+0x6238` `sub ax, ax` (excluded)
 
 ### root 0617:011E `root 0617:011E`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 2/3, outcomes 1/2
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x62C1` `sub ax, ax`
 
@@ -608,13 +609,13 @@ draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 0617:06D8 `root 0617:06D8`
 
-draft, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+draft, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `root+0x6864` `sub ax, ax`
 
 ### root 0617:070E `root 0617:070E`
 
-draft, reached by cards cards-day cards-variants: blocks 2/5, outcomes 1/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 2/5, outcomes 1/4
 
 - `root+0x6885` `push word ptr [0x6ba8]`
 - `root+0x6895` `sub ax, ax`
@@ -622,7 +623,7 @@ draft, reached by cards cards-day cards-variants: blocks 2/5, outcomes 1/4
 
 ### root 0617:0736 `root 0617:0736`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 12/24, outcomes 11/24
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 12/24, outcomes 11/24
 
 - `root+0x68D1` `sub ax, ax`
 - `root+0x68F8` `sub ax, ax`
@@ -639,13 +640,13 @@ draft, reached by cards cards-day cards-variants sainthelp: blocks 12/24, outcom
 
 ### root 0617:0868 `root 0617:0868`
 
-draft, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+draft, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `root+0x6A12` `mov ax, word ptr [bp - 0xe]` (excluded)
 
 ### root 06A1:02C2 `root 06A1:02C2`
 
-asm, reached by cards cards-day cards-variants castle city mine special trading wild: blocks 3/6, outcomes 2/6, unresolved indirect jumps 1
+asm, reached by cards cards-day cards-flip cards-variants castle city mine special trading wild: blocks 3/6, outcomes 2/6, unresolved indirect jumps 1
 
 - `root+0x6CE5` `push dx` (runtime-library)
 - `root+0x6CED` `xor ax, ax` (runtime-library)
@@ -653,7 +654,7 @@ asm, reached by cards cards-day cards-variants castle city mine special trading 
 
 ### root 06A1:054C `root 06A1:054C`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 5/10, outcomes 3/10
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/10, outcomes 3/10
 
 - `root+0x6F6A` `cmp al, 0x22` (runtime-library)
 - `root+0x6F6E` `cmp al, 0x20` (runtime-library)
@@ -663,7 +664,7 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 5/10, outcomes 
 
 ### root 06A1:05E2 `root 06A1:05E2`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 5/12, outcomes 4/12
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/12, outcomes 4/12
 
 - `root+0x7006` `jmp 0x690` (runtime-library)
 - `root+0x700F` `jmp 0x690` (runtime-library)
@@ -675,24 +676,24 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 5/12, outcomes 
 
 ### root 06A1:069C `root 06A1:069C`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 3/4, outcomes 1/2
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 1/2
 
 - `root+0x70BB` `sub ax, ax` (runtime-library)
 
 ### root 06A1:06C8 `root 06A1:06C8`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:0716 `root 06A1:0716`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 25/27, outcomes 22/26
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 25/27, outcomes 22/26
 
 - `root+0x7195` `jmp 0x7f3` (runtime-library)
 - `root+0x71EE` `or byte ptr [si + 6], 0x20` (runtime-library)
 
 ### root 06A1:07FA `root 06A1:07FA`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 26/31, outcomes 21/34
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 26/31, outcomes 21/34
 
 - `root+0x7279` `jmp 0x8f9` (runtime-library)
 - `root+0x7292` `push bx` (runtime-library)
@@ -702,7 +703,7 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 26/31, outcomes
 
 ### root 06A1:093E `root 06A1:093E`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 14/18, outcomes 10/18
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 14/18, outcomes 10/18
 
 - `root+0x73A1` `or byte ptr [si + 6], 0x20` (runtime-library)
 - `root+0x73A7` `or byte ptr [si + 6], 0x20` (runtime-library)
@@ -711,7 +712,7 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 14/18, outcomes
 
 ### root 06A1:09D4 `root 06A1:09D4`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 17/23, outcomes 15/30
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 17/23, outcomes 15/30
 
 - `root+0x7400` `test al, 0x10` (runtime-library)
 - `root+0x7404` `mov cx, word ptr [si + 4]` (runtime-library)
@@ -722,15 +723,15 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 17/23, outcomes
 
 ### root 06A1:0AB8 `root 06A1:0AB8`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 4/4, outcomes 3/4
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 06A1:0AE4 `root 06A1:0AE4`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 4/4, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 2/2
 
 ### root 06A1:0B28 `root 06A1:0B28`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 19/27, outcomes 14/28
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 19/27, outcomes 14/28
 
 - `root+0x7555` `sub ax, ax` (runtime-library)
 - `root+0x7588` `mov word ptr [bp - 2], 0` (runtime-library)
@@ -743,7 +744,7 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 19/27, outcomes
 
 ### root 06A1:0CC2 `root 06A1:0CC2`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 8/10, outcomes 8/12
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 8/10, outcomes 8/12
 
 - `root+0x76E1` `sub ax, ax` (runtime-library)
 - `root+0x772D` `or byte ptr [si + 6], 0x20` (runtime-library)
@@ -867,23 +868,23 @@ asm, reached by castle city mine special trading wild: blocks 8/9, outcomes 6/8
 
 ### root 06A1:1272 `root 06A1:1272`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 6/6, outcomes 3/4
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/6, outcomes 3/4
 
 ### root 06A1:12DC `root 06A1:12DC`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 3/4, outcomes 1/2
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/4, outcomes 1/2
 
 - `root+0x7CF7` `inc word ptr [bx]` (runtime-library)
 
 ### root 06A1:12FA `root 06A1:12FA`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 4/5, outcomes 2/4
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/5, outcomes 2/4
 
 - `root+0x7D16` `mov ax, 0x900` (runtime-library)
 
 ### root 06A1:131A `root 06A1:131A`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 5/14, outcomes 3/16
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/14, outcomes 3/16
 
 - `root+0x7D39` `mov ax, 0x900` (runtime-library)
 - `root+0x7D45` `cmp word ptr [bp + 0xc], 0` (runtime-library)
@@ -897,13 +898,13 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 5/14, outcomes 
 
 ### root 06A1:1394 `root 06A1:1394`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 2/3, outcomes 1/2
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x7DB3` `mov bh, byte ptr [bp + 0xa]` (runtime-library)
 
 ### root 06A1:13AE `root 06A1:13AE`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 27/47, outcomes 25/56
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 27/47, outcomes 25/56
 
 - `root+0x7E02` `stc ` (runtime-library)
 - `root+0x7E11` `mov ah, 0x3e` (runtime-library)
@@ -928,13 +929,13 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 27/47, outcomes
 
 ### root 06A1:153F `root 06A1:153F`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 2/3, outcomes 1/2
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 2/3, outcomes 1/2
 
 - `root+0x7F5C` `or cl, 1` (runtime-library)
 
 ### root 06A1:1550 `root 06A1:1550`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 15/36, outcomes 14/42
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 15/36, outcomes 14/42
 
 - `root+0x7F6F` `stc ` (runtime-library)
 - `root+0x7F8B` `call word ptr [0x7cee]` (runtime-library)
@@ -960,7 +961,7 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 15/36, outcomes
 
 ### root 06A1:163A `root 06A1:163A`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 9/49, outcomes 7/50
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 9/49, outcomes 7/50
 
 - `root+0x8059` `mov ax, 0x900` (runtime-library)
 - `root+0x805D` `jmp 0x539` (runtime-library)
@@ -1005,30 +1006,30 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 9/49, outcomes 
 
 ### root 06A1:178E `root 06A1:178E`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 06A1:1794 `root 06A1:1794`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0, unresolved indirect jumps 1
 
 ### root 06A1:179A `root 06A1:179A`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 4/4, outcomes 3/4
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/4, outcomes 3/4
 
 ### root 06A1:17BB `root 06A1:17BB`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 6/6, outcomes 6/8
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/6, outcomes 6/8
 
 ### root 06A1:17E4 `root 06A1:17E4`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 17/19, outcomes 15/18
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 17/19, outcomes 15/18
 
 - `root+0x824A` `mov ax, ax` (runtime-library)
 - `root+0x825C` `add di, cx` (runtime-library)
 
 ### root 06A1:1860 `root 06A1:1860`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 10/23, outcomes 8/24
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 10/23, outcomes 8/24
 
 - `root+0x829A` `jmp 0x18cb` (runtime-library)
 - `root+0x829C` `push ss` (runtime-library)
@@ -1046,7 +1047,7 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 10/23, outcomes
 
 ### root 06A1:18EC `root 06A1:18EC`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 5/13, outcomes 3/14
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/13, outcomes 3/14
 
 - `root+0x8312` `inc dx` (runtime-library)
 - `root+0x8313` `push bx` (runtime-library)
@@ -1059,13 +1060,13 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 5/13, outcomes 
 
 ### root 06A1:193D `root 06A1:193D`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 4/5, outcomes 3/4
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/5, outcomes 3/4
 
 - `root+0x8356` `mov si, word ptr [bx + 6]` (runtime-library)
 
 ### root 06A1:1AAA `root 06A1:1AAA`
 
-asm, reached by battle cards cards-day cards-variants rules sainthelp saints: blocks 562/639, outcomes 88/204
+asm, reached by battle cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 562/639, outcomes 88/204
 
 - `root+0x8539` `cmp word ptr [bp + 6], 0` (runtime-library)
 - `root+0x853F` `push word ptr [bp + 6]` (runtime-library)
@@ -1147,7 +1148,7 @@ asm, reached by battle cards cards-day cards-variants rules sainthelp saints: bl
 
 ### root 06A1:1B1C `root 06A1:1B1C`
 
-asm, reached by cards cards-day cards-variants: blocks 3/11, outcomes 1/12
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/11, outcomes 1/12
 
 - `root+0x8539` `cmp word ptr [bp + 6], 0` (runtime-library)
 - `root+0x853F` `push word ptr [bp + 6]` (runtime-library)
@@ -1169,7 +1170,7 @@ asm, reached by cards cards-day cards-variants: blocks 4/8, outcomes 2/6
 
 ### root 06A1:1D2A `root 06A1:1D2A`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 22/26, outcomes 17/30
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 22/26, outcomes 17/30
 
 - `root+0x8754` `sub ax, ax` (runtime-library)
 - `root+0x8777` `sub di, di` (runtime-library)
@@ -1178,7 +1179,7 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 22/26, outcomes
 
 ### root 06A1:1DE2 `root 06A1:1DE2`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 10/13, outcomes 8/14
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 10/13, outcomes 8/14
 
 - `root+0x880B` `mov word ptr [0x775a], 0x16` (runtime-library)
 - `root+0x8861` `cmp dx, ax` (runtime-library)
@@ -1186,7 +1187,7 @@ asm, reached by cards cards-day cards-variants sainthelp: blocks 10/13, outcomes
 
 ### root 06A1:1E62 `root 06A1:1E62`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 18/37, outcomes 16/38
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 18/37, outcomes 16/38
 
 - `root+0x8896` `mov word ptr [si + 2], 0` (runtime-library)
 - `root+0x88B8` `mov ax, 0xffff` (runtime-library)
@@ -1216,17 +1217,17 @@ asm, reached by castle city mine special trading wild: blocks 3/4, outcomes 1/2
 
 ### root 06A1:20F0 `root 06A1:20F0`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:21C6 `root 06A1:21C6`
 
-asm, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `root+0x8C0C` `push cs` (runtime-library)
 
 ### root 06A1:23A8 `root 06A1:23A8`
 
-asm, reached by cards cards-day cards-variants: blocks 3/6, outcomes 2/6
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/6, outcomes 2/6
 
 - `root+0x8DDD` `cmp al, 0x17` (runtime-library)
 - `root+0x8DE1` `mov dx, bx` (runtime-library)
@@ -1234,11 +1235,11 @@ asm, reached by cards cards-day cards-variants: blocks 3/6, outcomes 2/6
 
 ### root 06A1:23FC `root 06A1:23FC`
 
-asm, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 06A1:240E `root 06A1:240E`
 
-asm, reached by cards cards-day cards-variants: blocks 3/14, outcomes 1/14
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/14, outcomes 1/14
 
 - `root+0x8E35` `cmp byte ptr [si], 0` (runtime-library)
 - `root+0x8E3A` `jmp 0x24b2` (runtime-library)
@@ -1254,7 +1255,7 @@ asm, reached by cards cards-day cards-variants: blocks 3/14, outcomes 1/14
 
 ### root 06A1:24B6 `root 06A1:24B6`
 
-asm, reached by cards cards-day cards-variants: blocks 4/23, outcomes 1/28
+asm, reached by cards cards-day cards-flip cards-variants: blocks 4/23, outcomes 1/28
 
 - `root+0x8EDA` `cmp word ptr [si + 8], 9` (runtime-library)
 - `root+0x8EE0` `jmp 0x2577` (runtime-library)
@@ -1278,59 +1279,59 @@ asm, reached by cards cards-day cards-variants: blocks 4/23, outcomes 1/28
 
 ### root 06A1:2580 `root 06A1:2580`
 
-asm, reached by cards cards-day cards-variants: blocks 5/7, outcomes 4/8
+asm, reached by cards cards-day cards-flip cards-variants: blocks 5/7, outcomes 4/8
 
 - `root+0x8FDD` `inc di` (runtime-library)
 - `root+0x907D` `sub word ptr [bp - 0x16], 0xe10` (runtime-library)
 
 ### root 06A1:27CC `root 06A1:27CC`
 
-asm, reached by cards cards-day cards-variants: blocks 17/17, outcomes 19/22
+asm, reached by cards cards-day cards-flip cards-variants: blocks 17/17, outcomes 19/22
 
 ### root 06A1:287E `root 06A1:287E`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 5/5, outcomes 3/4
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/5, outcomes 3/4
 
 ### root 06A1:29A4 `root 06A1:29A4`
 
-asm, reached by cards cards-day cards-variants names trading: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants names trading: blocks 1/1, outcomes 0/0
 
 ### root 06A1:29B6 `root 06A1:29B6`
 
-asm, reached by battle cards cards-day cards-variants castle chargen city core enemy mine names rules sainthelp saints special trading wild: blocks 1/1, outcomes 0/0
+asm, reached by battle cards cards-day cards-flip cards-variants castle chargen city core enemy mine names rules sainthelp saints special trading wild: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2BD4 `root 06A1:2BD4`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2C28 `root 06A1:2C28`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2C3D `root 06A1:2C3D`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 3/5, outcomes 1/4
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/5, outcomes 1/4
 
 - `root+0x965E` `cmp ax, 0x50` (runtime-library)
 - `root+0x9664` `mov ah, 0x11` (runtime-library)
 
 ### root 06A1:2C6B `root 06A1:2C6B`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 3/3, outcomes 1/2
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/3, outcomes 1/2
 
 ### root 06A1:2C9E `root 06A1:2C9E`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2CB6 `root 06A1:2CB6`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 8/9, outcomes 2/4
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 8/9, outcomes 2/4
 
 - `root+0x96E0` `call word ptr [0x7cee]` (runtime-library)
 
 ### root 06A1:2CBD `root 06A1:2CBD`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2CE6 `root 06A1:2CE6`
 
@@ -1338,7 +1339,7 @@ asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2D28 `root 06A1:2D28`
 
-asm, reached by cards cards-day cards-variants tactics trading: blocks 9/17, outcomes 7/18
+asm, reached by cards cards-day cards-flip cards-variants tactics trading: blocks 9/17, outcomes 7/18
 
 - `root+0x9789` `mov bx, ax` (runtime-library)
 - `root+0x9794` `shr bx, 1` (runtime-library)
@@ -1351,11 +1352,11 @@ asm, reached by cards cards-day cards-variants tactics trading: blocks 9/17, out
 
 ### root 06A1:2DC2 `root 06A1:2DC2`
 
-asm, reached by battle cards cards-day cards-variants castle chargen city core enemy mine names rules sainthelp saints special trading wild: blocks 3/3, outcomes 2/2
+asm, reached by battle cards cards-day cards-flip cards-variants castle chargen city core enemy mine names rules sainthelp saints special trading wild: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2EB4 `root 06A1:2EB4`
 
-asm, reached by cards cards-day cards-variants path sainthelp: blocks 4/8, outcomes 3/8
+asm, reached by cards cards-day cards-flip cards-variants path sainthelp: blocks 4/8, outcomes 3/8
 
 - `root+0x98FF` `or si, si` (runtime-library)
 - `root+0x9903` `mov ax, ds` (runtime-library)
@@ -1364,7 +1365,7 @@ asm, reached by cards cards-day cards-variants path sainthelp: blocks 4/8, outco
 
 ### root 06A1:2F12 `root 06A1:2F12`
 
-asm, reached by cards cards-day cards-variants: blocks 6/6, outcomes 5/6
+asm, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 5/6
 
 ### root 06A1:2F94 `root 06A1:2F94`
 
@@ -1372,19 +1373,19 @@ asm, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/6
 
 ### root 06A1:2FBE `root 06A1:2FBE`
 
-asm, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### root 06A1:2FE8 `root 06A1:2FE8`
 
-asm, reached by battle cards cards-day cards-variants castle city enemy mine names rules sainthelp saints special wild: blocks 3/3, outcomes 2/2
+asm, reached by battle cards cards-day cards-flip cards-variants castle city enemy mine names rules sainthelp saints special wild: blocks 3/3, outcomes 2/2
 
 ### root 06A1:301E `root 06A1:301E`
 
-asm, reached by cards cards-day cards-variants names sainthelp: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants names sainthelp: blocks 3/3, outcomes 2/2
 
 ### root 06A1:3064 `root 06A1:3064`
 
-asm, reached by cards cards-day cards-variants sainthelp: blocks 6/7, outcomes 3/6
+asm, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 6/7, outcomes 3/6
 
 - `root+0x9AA3` `mov bx, es` (runtime-library)
 
@@ -1394,7 +1395,7 @@ asm, reached by cards cards-day cards-variants: blocks 7/7, outcomes 5/6
 
 ### R002+0x0000 `R002+0x0000 (0E76:0000)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/85, outcomes 0/76
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/85, outcomes 0/76
 
 - `R002+0x002C` `cmp byte ptr [0xa876], 0x4e`
 - `R002+0x0033` `lcall 0x47c, 0x791`
@@ -3725,31 +3726,31 @@ matched, reached by battle: blocks 6/9, outcomes 3/6
 
 ### R029+0x007C `R029+0x007C (0E76:007C)`
 
-draft, reached by cards cards-day cards-variants sainthelp saints: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants sainthelp saints: blocks 6/6, outcomes 6/6
 
 ### R029+0x013A `R029+0x013A (0E76:013A)`
 
-draft, reached by cards cards-day cards-variants: blocks 8/9, outcomes 7/8
+draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/8
 
 - `R029+0x0148` `mov al, byte ptr [0x907b]`
 
 ### R029+0x01A0 `R029+0x01A0 (0E76:01A0)`
 
-draft, reached by cards cards-day cards-variants rules sainthelp saints: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 3/3, outcomes 2/2
 
 ### R029+0x01C0 `R029+0x01C0 (0E76:01C0)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 8/9, outcomes 7/8
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/9, outcomes 7/8
 
 - `R029+0x0208` `mov byte ptr [0x99eb], 0` (dormant)
 
 ### R029+0x021E `R029+0x021E (0E76:021E)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 8/8, outcomes 8/8
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/8, outcomes 8/8
 
 ### R029+0x026A `R029+0x026A (0E76:026A)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 8/8, outcomes 8/8
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/8, outcomes 8/8
 
 ### R029+0x02B8 `R029+0x02B8 (0E76:02B8)`
 
@@ -3759,23 +3760,23 @@ draft, reached by sainthelp saints: blocks 2/3, outcomes 1/2
 
 ### R029+0x02EA `R029+0x02EA (0E76:02EA)`
 
-draft, reached by cards cards-day cards-variants rules sainthelp saints: blocks 26/27, outcomes 19/20
+draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 26/27, outcomes 19/20
 
 - `R029+0x03D2` `jmp 0x46b`
 
 ### R029+0x05EE `R029+0x05EE (0E76:05EE)`
 
-draft, reached by cards cards-day cards-variants sainthelp saints trading: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants sainthelp saints trading: blocks 3/3, outcomes 2/2
 
 ### R029+0x060E `R029+0x060E (0E76:060E)`
 
-draft, reached by cards cards-day cards-variants: blocks 6/7, outcomes 5/6
+draft, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcomes 5/6
 
 - `R029+0x0644` `mov bx, 1`
 
 ### R029+0x0656 `R029+0x0656 (0E76:0656)`
 
-draft, reached by cards cards-day cards-variants: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 6/6
 
 ### R029+0x0690 `R029+0x0690 (0E76:0690)`
 
@@ -3783,7 +3784,7 @@ draft, reached by cards cards-day cards-variants: blocks 6/6, outcomes 6/6
 
 ### R029+0x06DE `R029+0x06DE (0E76:06DE)`
 
-draft, reached by cards cards-day cards-variants: blocks 9/10, outcomes 7/8
+draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 7/8
 
 - `R029+0x0709` `pop si`
 
@@ -3815,28 +3816,28 @@ draft, reached by sainthelp saints: blocks 4/9, outcomes 3/8
 
 ### R029+0x0988 `R029+0x0988 (0E76:0988)`
 
-draft, reached by cards cards-day cards-variants saints: blocks 10/12, outcomes 10/12
+draft, reached by cards cards-day cards-flip cards-variants saints: blocks 10/12, outcomes 10/12
 
 - `R029+0x09E6` `push word ptr [bp + 8]`
 - `R029+0x0A57` `push di`
 
 ### R029+0x0A72 `R029+0x0A72 (0E76:0A72)`
 
-draft, reached by cards cards-day cards-variants rules sainthelp saints: blocks 13/13, outcomes 14/14
+draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 13/13, outcomes 14/14
 
 ### R029+0x0B64 `R029+0x0B64 (0E76:0B64)`
 
-draft, reached by cards cards-day cards-variants sainthelp saints: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants sainthelp saints: blocks 3/3, outcomes 2/2
 
 ### R029+0x0BB6 `R029+0x0BB6 (0E76:0BB6)`
 
-draft, reached by cards cards-day cards-variants: blocks 10/11, outcomes 8/10
+draft, reached by cards cards-day cards-flip cards-variants: blocks 10/11, outcomes 8/10
 
 - `R029+0x0BC4` `mov al, byte ptr [0x907b]`
 
 ### R029+0x0C76 `R029+0x0C76 (0E76:0C76)`
 
-draft, reached by cards cards-day cards-variants: blocks 20/30, outcomes 19/32
+draft, reached by cards cards-day cards-flip cards-variants: blocks 20/30, outcomes 19/32
 
 - `R029+0x0CF1` `mov al, byte ptr [0x907b]`
 - `R029+0x0D01` `cwde `
@@ -3851,7 +3852,7 @@ draft, reached by cards cards-day cards-variants: blocks 20/30, outcomes 19/32
 
 ### R029+0x0DD8 `R029+0x0DD8 (0E76:0DD8)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 22/28, outcomes 18/28
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 22/28, outcomes 18/28
 
 - `R029+0x0E73` `mov al, byte ptr [0x907b]`
 - `R029+0x0E83` `jmp 0xf4c`
@@ -3892,29 +3893,29 @@ draft, reached by cards cards-day cards-variants: blocks 12/37, outcomes 10/40
 
 ### R029+0x118E `R029+0x118E (0E76:118E)`
 
-draft, reached by cards cards-day cards-variants: blocks 8/8, outcomes 8/8
+draft, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 8/8
 
 ### R029+0x1260 `R029+0x1260 (0E76:1260)`
 
-draft, reached by cards cards-day cards-variants: blocks 11/13, outcomes 10/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 11/13, outcomes 10/12
 
 - `R029+0x12C1` `mov al, byte ptr [0x907b]`
 - `R029+0x12FE` `pop si`
 
 ### R029+0x1326 `R029+0x1326 (0E76:1326)`
 
-draft, reached by cards cards-day cards-variants trading: blocks 10/12, outcomes 10/14
+draft, reached by cards cards-day cards-flip cards-variants trading: blocks 10/12, outcomes 10/14
 
 - `R029+0x1336` `dec ax`
 - `R029+0x137A` `mov ax, word ptr [0x9078]`
 
 ### R029+0x1382 `R029+0x1382 (0E76:1382)`
 
-draft, reached by cards cards-day cards-variants: blocks 3/3, outcomes 1/2
+draft, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 1/2
 
 ### R029+0x1396 `R029+0x1396 (0E76:1396)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x13DE `R029+0x13DE (0E76:13DE)`
 
@@ -3926,7 +3927,7 @@ draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x14A4 `R029+0x14A4 (0E76:14A4)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x14EC `R029+0x14EC (0E76:14EC)`
 
@@ -3938,15 +3939,15 @@ draft, reached by rules: blocks 8/8, outcomes 8/8
 
 ### R029+0x15A2 `R029+0x15A2 (0E76:15A2)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x1600 `R029+0x1600 (0E76:1600)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 8/8, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/8, outcomes 6/6
 
 ### R029+0x164A `R029+0x164A (0E76:164A)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x1696 `R029+0x1696 (0E76:1696)`
 
@@ -3954,19 +3955,19 @@ draft, reached by rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x16FE `R029+0x16FE (0E76:16FE)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x174A `R029+0x174A (0E76:174A)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 7/7, outcomes 8/8
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 7/7, outcomes 8/8
 
 ### R029+0x179C `R029+0x179C (0E76:179C)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x1800 `R029+0x1800 (0E76:1800)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 8/8, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 8/8, outcomes 6/6
 
 ### R029+0x184A `R029+0x184A (0E76:184A)`
 
@@ -3974,41 +3975,41 @@ draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x18A8 `R029+0x18A8 (0E76:18A8)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 3/3, outcomes 2/2
 
 ### R029+0x1972 `R029+0x1972 (0E76:1972)`
 
-draft, reached by cards cards-day cards-variants: blocks 6/7, outcomes 4/6
+draft, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcomes 4/6
 
 - `R029+0x1992` `sub ax, ax`
 
 ### R029+0x199C `R029+0x199C (0E76:199C)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x19B4 `R029+0x19B4 (0E76:19B4)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x19D0 `R029+0x19D0 (0E76:19D0)`
 
-draft, reached by cards cards-day cards-variants rules sainthelp saints: blocks 6/6, outcomes 4/4
+draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 6/6, outcomes 4/4
 
 ### R029+0x1A7E `R029+0x1A7E (0E76:1A7E)`
 
-draft, reached by cards cards-day cards-variants trading: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants trading: blocks 1/1, outcomes 0/0
 
 ### R029+0x1A8E `R029+0x1A8E (0E76:1A8E)`
 
-draft, reached by cards cards-day cards-variants rules trading: blocks 73/73, outcomes 34/34
+draft, reached by cards cards-day cards-flip cards-variants rules trading: blocks 73/73, outcomes 34/34
 
 ### R029+0x1DFE `R029+0x1DFE (0E76:1DFE)`
 
-draft, reached by cards cards-day cards-variants rules: blocks 23/23, outcomes 8/8
+draft, reached by cards cards-day cards-flip cards-variants rules: blocks 23/23, outcomes 8/8
 
 ### R029+0x1FB8 `R029+0x1FB8 (0E76:1FB8)`
 
-draft, reached by cards cards-day cards-variants names: blocks 12/16, outcomes 1/4
+draft, reached by cards cards-day cards-flip cards-variants names: blocks 12/16, outcomes 1/4
 
 - `R029+0x1FC4` `jmp 0x20c3`
 - `R029+0x204C` `push word ptr [bp + 8]`
@@ -4017,21 +4018,21 @@ draft, reached by cards cards-day cards-variants names: blocks 12/16, outcomes 1
 
 ### R029+0x20C6 `R029+0x20C6 (0E76:20C6)`
 
-draft, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+draft, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R029+0x20FE` `sub ax, ax`
 
 ### R029+0x2116 `R029+0x2116 (0E76:2116)`
 
-draft, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R029+0x2180 `R029+0x2180 (0E76:2180)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x21AA `R029+0x21AA (0E76:21AA)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/4, outcomes 0/2
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/4, outcomes 0/2
 
 - `R029+0x21B9` `mov ax, word ptr [bp + 0xa]`
 - `R029+0x21C4` `mov es, word ptr [0x7e2e]`
@@ -4039,15 +4040,15 @@ draft, reached by cards cards-day cards-variants: blocks 1/4, outcomes 0/2
 
 ### R029+0x222A `R029+0x222A (0E76:222A)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x225C `R029+0x225C (0E76:225C)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x2278 `R029+0x2278 (0E76:2278)`
 
-draft, reached by cards cards-day cards-variants: blocks 19/27, outcomes 18/28
+draft, reached by cards cards-day cards-flip cards-variants: blocks 19/27, outcomes 18/28
 
 - `R029+0x2290` `push 2`
 - `R029+0x230C` `mov byte ptr [si], 0`
@@ -4060,7 +4061,7 @@ draft, reached by cards cards-day cards-variants: blocks 19/27, outcomes 18/28
 
 ### R029+0x23E2 `R029+0x23E2 (0E76:23E2)`
 
-draft, reached by cards cards-day cards-variants: blocks 4/5, outcomes 3/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 4/5, outcomes 3/4
 
 - `R029+0x23F5` `push 0x2238`
 
@@ -4072,7 +4073,7 @@ draft, reached by cards cards-day cards-variants: blocks 4/5, outcomes 3/4
 
 ### R029+0x255A `R029+0x255A (0E76:255A)`
 
-draft, reached by cards cards-day cards-variants: blocks 40/53, outcomes 40/54
+draft, reached by cards cards-day cards-flip cards-variants: blocks 40/53, outcomes 40/54
 
 - `R029+0x2570` `sub dx, dx`
 - `R029+0x2575` `cmp byte ptr [bx], 1`
@@ -4090,69 +4091,69 @@ draft, reached by cards cards-day cards-variants: blocks 40/53, outcomes 40/54
 
 ### R029+0x2930 `R029+0x2930 (0E76:2930)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 5/6, outcomes 3/4
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/6, outcomes 3/4
 
 - `R029+0x2952` `mov ax, 0xffff`
 
 ### R029+0x2A32 `R029+0x2A32 (0E76:2A32)`
 
-draft, reached by cards cards-day cards-variants: blocks 4/6, outcomes 2/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 4/6, outcomes 2/4
 
 - `R029+0x2A54` `mov ax, 0xffff`
 - `R029+0x2A8C` `push word ptr [bp - 2]`
 
 ### R029+0x2B36 `R029+0x2B36 (0E76:2B36)`
 
-draft, reached by cards cards-day cards-variants: blocks 12/12, outcomes 11/16
+draft, reached by cards cards-day cards-flip cards-variants: blocks 12/12, outcomes 11/16
 
 ### R029+0x2C4E `R029+0x2C4E (0E76:2C4E)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 5/6, outcomes 3/4
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 5/6, outcomes 3/4
 
 - `R029+0x2C70` `mov ax, 0xffff`
 
 ### R029+0x2D5C `R029+0x2D5C (0E76:2D5C)`
 
-draft, reached by cards cards-day cards-variants: blocks 13/15, outcomes 13/20
+draft, reached by cards cards-day cards-flip cards-variants: blocks 13/15, outcomes 13/20
 
 - `R029+0x2D95` `cmp di, -1`
 - `R029+0x2DCE` `mov ax, 0xffff`
 
 ### R029+0x2E74 `R029+0x2E74 (0E76:2E74)`
 
-draft, reached by cards cards-day cards-variants: blocks 26/28, outcomes 27/34
+draft, reached by cards cards-day cards-flip cards-variants: blocks 26/28, outcomes 27/34
 
 - `R029+0x2F25` `mov ax, 0xffff`
 - `R029+0x2FCA` `jmp 0x302a`
 
 ### R029+0x3034 `R029+0x3034 (0E76:3034)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### R029+0x30FE `R029+0x30FE (0E76:30FE)`
 
-draft, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R029+0x3144 `R029+0x3144 (0E76:3144)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 4/6, outcomes 3/4
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 4/6, outcomes 3/4
 
 - `R029+0x315F` `mov ax, 0x321a`
 - `R029+0x316E` `push 0x64`
 
 ### R029+0x3180 `R029+0x3180 (0E76:3180)`
 
-draft, reached by cards cards-day cards-variants: blocks 10/11, outcomes 10/16
+draft, reached by cards cards-day cards-flip cards-variants: blocks 10/11, outcomes 10/16
 
 - `R029+0x31A4` `sub ax, ax`
 
 ### R029+0x31E6 `R029+0x31E6 (0E76:31E6)`
 
-draft, reached by cards cards-day cards-variants: blocks 11/11, outcomes 13/16
+draft, reached by cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 13/16
 
 ### R029+0x324C `R029+0x324C (0E76:324C)`
 
-draft, reached by cards cards-day cards-variants rules sainthelp saints: blocks 9/9, outcomes 9/10
+draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 9/9, outcomes 9/10
 
 ### R029+0x32CE `R029+0x32CE (0E76:32CE)`
 
@@ -4163,14 +4164,14 @@ draft, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
 
 ### R029+0x32FE `R029+0x32FE (0E76:32FE)`
 
-draft, reached by cards cards-day cards-variants: blocks 6/8, outcomes 5/8
+draft, reached by cards cards-day cards-flip cards-variants: blocks 6/8, outcomes 5/8
 
 - `R029+0x3340` `jmp 0x334a`
 - `R029+0x3342` `mov ax, 1`
 
 ### R029+0x3350 `R029+0x3350 (0E76:3350)`
 
-draft, reached by cards cards-day cards-variants: blocks 3/8, outcomes 1/8
+draft, reached by cards cards-day cards-flip cards-variants: blocks 3/8, outcomes 1/8
 
 - `R029+0x336B` `push si`
 - `R029+0x3377` `mov es, word ptr [0x7e30]`
@@ -4180,7 +4181,7 @@ draft, reached by cards cards-day cards-variants: blocks 3/8, outcomes 1/8
 
 ### R029+0x3404 `R029+0x3404 (0E76:3404)`
 
-draft, reached by cards cards-day cards-variants: blocks 3/10, outcomes 1/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 3/10, outcomes 1/12
 
 - `R029+0x3420` `mov es, word ptr [0x7e30]`
 - `R029+0x343A` `mov ax, word ptr [bp + 0xa]`
@@ -4192,13 +4193,13 @@ draft, reached by cards cards-day cards-variants: blocks 3/10, outcomes 1/12
 
 ### R029+0x3470 `R029+0x3470 (0E76:3470)`
 
-draft, reached by cards cards-day cards-variants: blocks 8/9, outcomes 7/10
+draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/10
 
 - `R029+0x34C2` `jmp 0x34cc`
 
 ### R029+0x353E `R029+0x353E (0E76:353E)`
 
-draft, reached by cards cards-day cards-variants: blocks 6/10, outcomes 6/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 6/10, outcomes 6/12
 
 - `R029+0x357D` `mov ax, word ptr [bp + 8]`
 - `R029+0x3586` `push si`
@@ -4215,25 +4216,25 @@ draft, reached by cards cards-day cards-variants: blocks 6/9, outcomes 6/10
 
 ### R029+0x360C `R029+0x360C (0E76:360C)`
 
-draft, reached by cards cards-day cards-variants: blocks 9/10, outcomes 9/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 9/12
 
 - `R029+0x3666` `jmp 0x3670`
 
 ### R029+0x36D4 `R029+0x36D4 (0E76:36D4)`
 
-draft, reached by cards cards-day cards-variants: blocks 8/9, outcomes 8/10
+draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 8/10
 
 - `R029+0x3725` `jmp 0x373c`
 
 ### R029+0x3742 `R029+0x3742 (0E76:3742)`
 
-draft, reached by cards cards-day cards-variants: blocks 9/10, outcomes 9/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 9/12
 
 - `R029+0x379C` `jmp 0x37b2`
 
 ### R029+0x3878 `R029+0x3878 (0E76:3878)`
 
-draft, reached by cards cards-day cards-variants: blocks 8/9, outcomes 7/10
+draft, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 7/10
 
 - `R029+0x38C2` `jmp 0x38cc`
 
@@ -4249,13 +4250,13 @@ draft, reached by cards cards-day cards-variants: blocks 4/9, outcomes 2/10
 
 ### R029+0x392C `R029+0x392C (0E76:392C)`
 
-draft, reached by cards cards-day cards-variants: blocks 9/10, outcomes 8/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 9/10, outcomes 8/12
 
 - `R029+0x3985` `jmp 0x3990`
 
 ### R029+0x3A20 `R029+0x3A20 (0E76:3A20)`
 
-draft, reached by cards-day: blocks 6/9, outcomes 4/10
+draft, reached by cards-day cards-flip: blocks 6/9, outcomes 4/10
 
 - `R029+0x3A63` `inc si`
 - `R029+0x3A6A` `jmp 0x3a80`
@@ -4263,7 +4264,7 @@ draft, reached by cards-day: blocks 6/9, outcomes 4/10
 
 ### R029+0x3AEC `R029+0x3AEC (0E76:3AEC)`
 
-draft, reached by cards cards-day cards-variants: blocks 4/10, outcomes 2/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 4/10, outcomes 2/12
 
 - `R029+0x3B0D` `push si`
 - `R029+0x3B19` `mov ax, word ptr [bp + 8]`
@@ -4274,14 +4275,14 @@ draft, reached by cards cards-day cards-variants: blocks 4/10, outcomes 2/12
 
 ### R029+0x3B62 `R029+0x3B62 (0E76:3B62)`
 
-draft, reached by cards cards-day cards-variants: blocks 16/18, outcomes 19/24
+draft, reached by cards cards-day cards-flip cards-variants: blocks 16/18, outcomes 19/24
 
 - `R029+0x3BD9` `mov ax, word ptr [bp + 0x10]`
 - `R029+0x3C17` `jmp 0x3c20`
 
 ### R029+0x3CDE `R029+0x3CDE (0E76:3CDE)`
 
-draft, reached by cards cards-day cards-variants: blocks 14/16, outcomes 14/20
+draft, reached by cards cards-day cards-flip cards-variants: blocks 14/16, outcomes 15/20
 
 - `R029+0x3D3C` `mov ax, word ptr [bp + 0xc]`
 - `R029+0x3D85` `pop si`
@@ -4294,13 +4295,13 @@ draft, reached by cards-variants: blocks 9/10, outcomes 8/12
 
 ### R029+0x3E06 `R029+0x3E06 (0E76:3E06)`
 
-draft, reached by cards cards-day cards-variants: blocks 14/15, outcomes 10/14
+draft, reached by cards cards-day cards-flip cards-variants: blocks 14/15, outcomes 10/14
 
 - `R029+0x3E62` `jmp 0x3f0e`
 
 ### R029+0x3F30 `R029+0x3F30 (0E76:3F30)`
 
-draft, reached by cards cards-day cards-variants: blocks 7/9, outcomes 6/8
+draft, reached by cards cards-day cards-flip cards-variants: blocks 7/9, outcomes 6/8
 
 - `R029+0x3F5B` `push di`
 - `R029+0x3F82` `les bx, ptr [bp - 4]`
@@ -4335,7 +4336,7 @@ draft, reached by cards cards-day cards-variants sainthelp saints: blocks 16/21,
 
 ### R029+0x4E0C `R029+0x4E0C (0E76:4E0C)`
 
-draft, reached by cards cards-day cards-variants rules sainthelp saints: blocks 8/9, outcomes 9/10
+draft, reached by cards cards-day cards-flip cards-variants rules sainthelp saints: blocks 8/9, outcomes 9/10
 
 - `R029+0x4E5D` `pop si`
 
@@ -4345,51 +4346,51 @@ draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x4F1A `R029+0x4F1A (1367:000A)`
 
-matched, reached by cards cards-day cards-variants rules: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants rules: blocks 5/5, outcomes 4/4
 
 ### R029+0x4F38 `R029+0x4F38 (1367:0028)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R029+0x4F76 `R029+0x4F76 (1367:0066)`
 
-matched, reached by cards cards-day cards-variants chargen rules sainthelp saints trading: blocks 4/4, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants chargen rules sainthelp saints trading: blocks 4/4, outcomes 4/4
 
 ### R029+0x4F94 `R029+0x4F94 (1367:0084)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R029+0x4FA4 `R029+0x4FA4 (1367:0094)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R029+0x4FB4 `R029+0x4FB4 (1367:00A4)`
 
-matched, reached by cards cards-day cards-variants core: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
 
 ### R029+0x5002 `R029+0x5002 (1367:00F2)`
 
-matched, reached by cards cards-day cards-variants sainthelp saints trading: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants sainthelp saints trading: blocks 1/1, outcomes 0/0
 
 ### R029+0x5040 `R029+0x5040 (1367:0130)`
 
-matched, reached by cards cards-day cards-variants core: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
 
 ### R029+0x5090 `R029+0x5090 (1367:0180)`
 
-matched, reached by cards cards-day cards-variants core sainthelp saints: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R029+0x50DE `R029+0x50DE (1367:01CE)`
 
-matched, reached by cards cards-day cards-variants core: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants core: blocks 1/1, outcomes 0/0
 
 ### R029+0x50FC `R029+0x50FC (1367:01EC)`
 
-matched, reached by cards cards-day cards-variants core: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
 
 ### R029+0x514E `R029+0x514E (1367:023E)`
 
-matched, reached by cards cards-day cards-variants core: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, outcomes 4/4
 
 ### R029+0x51A0 `R029+0x51A0 (1367:0290)`
 
@@ -4397,30 +4398,30 @@ matched, reached by core: blocks 4/4, outcomes 4/4
 
 ### R029+0x51E4 `R029+0x51E4 (1367:02D4)`
 
-matched, reached by cards cards-day cards-variants core: blocks 9/9, outcomes 11/12
+matched, reached by cards cards-day cards-flip cards-variants core: blocks 9/9, outcomes 11/12
 
 ### R029+0x5286 `R029+0x5286 (1367:0376)`
 
-matched, reached by cards cards-day cards-variants: blocks 23/23, outcomes 18/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 23/23, outcomes 18/18
 
 ### R029+0x54D6 `R029+0x54D6 (1367:05C6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x54D8 `R029+0x54D8 (1367:05C8)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/9, outcomes 8/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/9, outcomes 8/14
 
 - `R029+0x552C` `mov ax, word ptr [bp - 2]`
 - `R029+0x5564` `inc word ptr [0xe6]`
 
 ### R029+0x5626 `R029+0x5626 (1367:0716)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x563A `R029+0x563A (1367:072A)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 4/4
 
 ### R029+0x5650 `R029+0x5650 (1367:0740)`
 
@@ -4428,11 +4429,11 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x5654 `R029+0x5654 (1367:0744)`
 
-matched, reached by cards cards-day cards-variants core: blocks 16/16, outcomes 14/14
+matched, reached by cards cards-day cards-flip cards-variants core: blocks 16/16, outcomes 14/14
 
 ### R029+0x56A6 `R029+0x56A6 (1367:0796)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/16, outcomes 6/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/16, outcomes 6/14
 
 - `R029+0x56B9` `sub ax, ax`
 - `R029+0x56C5` `mov ax, 1`
@@ -4445,7 +4446,7 @@ matched, reached by cards cards-day cards-variants: blocks 8/16, outcomes 6/14
 
 ### R029+0x56FE `R029+0x56FE (1367:07EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 9/16, outcomes 7/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 9/16, outcomes 7/14
 
 - `R029+0x5711` `mov ax, 2`
 - `R029+0x571D` `mov ax, 3`
@@ -4457,11 +4458,11 @@ matched, reached by cards cards-day cards-variants: blocks 9/16, outcomes 7/14
 
 ### R029+0x5756 `R029+0x5756 (1367:0846)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x577A `R029+0x577A (1367:086A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R029+0x57BE `R029+0x57BE (1367:08AE)`
 
@@ -4469,7 +4470,7 @@ matched, reached by cards cards-day cards-variants core: blocks 7/7, outcomes 8/
 
 ### R029+0x5848 `R029+0x5848 (1367:0938)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/7, outcomes 2/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/7, outcomes 2/8
 
 - `R029+0x5859` `mov ax, di`
 - `R029+0x5872` `sub di, word ptr [bp - 2]`
@@ -4478,7 +4479,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/7, outcomes 2/8
 
 ### R029+0x5892 `R029+0x5892 (1367:0982)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/7, outcomes 2/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/7, outcomes 2/8
 
 - `R029+0x58A3` `mov ax, di`
 - `R029+0x58BC` `sub di, word ptr [bp - 2]`
@@ -4487,7 +4488,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/7, outcomes 2/8
 
 ### R029+0x58FA `R029+0x58FA (1367:09EA)`
 
-matched, reached by cards cards-day cards-variants core sainthelp: blocks 7/7, outcomes 8/8
+matched, reached by cards cards-day cards-flip cards-variants core sainthelp: blocks 7/7, outcomes 8/8
 
 ### R029+0x5A2C `R029+0x5A2C (1367:0B1C)`
 
@@ -4502,7 +4503,7 @@ matched, reached by core: blocks 15/15, outcomes 15/16
 
 ### R029+0x5B62 `R029+0x5B62 (1367:0C52)`
 
-matched, reached by cards cards-day cards-variants: blocks 9/12, outcomes 5/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 9/12, outcomes 5/8
 
 - `R029+0x5B6F` `jmp 0xdaf`
 - `R029+0x5BA0` `push 0xa`
@@ -4510,7 +4511,7 @@ matched, reached by cards cards-day cards-variants: blocks 9/12, outcomes 5/8
 
 ### R029+0x5CC4 `R029+0x5CC4 (1367:0DB4)`
 
-matched, reached by cards cards-day cards-variants names: blocks 15/15, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants names: blocks 15/15, outcomes 2/2
 
 ### R030+0x0000 `R030+0x0000 (1462:0000)`
 
@@ -4522,30 +4523,30 @@ draft, reached by cards cards-day cards-variants: blocks 9/12, outcomes 6/10
 
 ### R030+0x271A `R030+0x271A (1462:271A)`
 
-draft, reached by cards cards-day cards-variants: blocks 11/11, outcomes 11/12
+draft, reached by cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 11/12
 
 ### R030+0x27AA `R030+0x27AA (1462:27AA)`
 
-draft, reached by cards cards-day cards-variants: blocks 12/12, outcomes 11/14
+draft, reached by cards cards-day cards-flip cards-variants: blocks 12/12, outcomes 11/14
 
 ### R030+0x2842 `R030+0x2842 (1462:2842)`
 
-draft, reached by cards cards-day cards-variants: blocks 15/15, outcomes 15/18
+draft, reached by cards cards-day cards-flip cards-variants: blocks 15/15, outcomes 15/18
 
 ### R030+0x28F2 `R030+0x28F2 (1462:28F2)`
 
-draft, reached by cards cards-day cards-variants: blocks 12/14, outcomes 12/16
+draft, reached by cards cards-day cards-flip cards-variants: blocks 12/14, outcomes 12/16
 
 - `R030+0x292A` `mov ax, word ptr [bp + 8]`
 - `R030+0x29A8` `push word ptr [bp + 0xa]`
 
 ### R030+0x29BC `R030+0x29BC (1462:29BC)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R030+0x29FA `R030+0x29FA (1462:29FA)`
 
-draft, reached by cards cards-day cards-variants: blocks 13/20, outcomes 12/22
+draft, reached by cards cards-day cards-flip cards-variants: blocks 13/20, outcomes 12/22
 
 - `R030+0x2A4E` `sub ax, ax`
 - `R030+0x2A5A` `mov bx, word ptr [bp - 2]`
@@ -5015,7 +5016,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R031+0x4978 `R031+0x4978 (18E7:0128)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/1, outcomes 0/0
 
 ### R031+0x49BE `R031+0x49BE (18E7:016E)`
 
@@ -5023,7 +5024,7 @@ draft, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R031+0x4A04 `R031+0x4A04 (18E7:01B4)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 41/45, outcomes 37/50
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 41/45, outcomes 37/50
 
 - `R031+0x4A56` `mov al, byte ptr es:[si + 4]`
 - `R031+0x4A92` `cwde `
@@ -5032,7 +5033,7 @@ draft, reached by cards cards-day cards-variants sainthelp: blocks 41/45, outcom
 
 ### R031+0x4C56 `R031+0x4C56 (18E7:0406)`
 
-draft, reached by cards cards-day cards-variants: blocks 4/4, outcomes 4/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 4/4
 
 ### R031+0x4CC4 `R031+0x4CC4 (18E7:0474)`
 
@@ -5043,7 +5044,7 @@ draft, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
 
 ### R031+0x4D24 `R031+0x4D24 (18E7:04D4)`
 
-draft, reached by cards cards-day cards-variants: blocks 25/35, outcomes 24/36
+draft, reached by cards cards-day cards-flip cards-variants: blocks 25/35, outcomes 24/36
 
 - `R031+0x4D32` `sub si, si`
 - `R031+0x4D46` `imul ax, di, 0x180`
@@ -5082,7 +5083,7 @@ draft, reached by cards-variants: blocks 14/33, outcomes 13/32
 
 ### R031+0x5024 `R031+0x5024 (18E7:07D4)`
 
-draft, reached by cards cards-day cards-variants: blocks 4/10, outcomes 2/8
+draft, reached by cards cards-day cards-flip cards-variants: blocks 4/10, outcomes 2/8
 
 - `R031+0x5032` `mov di, word ptr [bp + 8]`
 - `R031+0x5045` `sub si, si`
@@ -5093,7 +5094,7 @@ draft, reached by cards cards-day cards-variants: blocks 4/10, outcomes 2/8
 
 ### R031+0x50A4 `R031+0x50A4 (18E7:0854)`
 
-draft, reached by cards cards-day cards-variants: blocks 21/47, outcomes 19/50
+draft, reached by cards cards-day cards-flip cards-variants: blocks 21/47, outcomes 19/50
 
 - `R031+0x50B5` `mov al, byte ptr [0x907b]`
 - `R031+0x50F2` `jmp 0xab3`
@@ -5185,7 +5186,7 @@ draft, reached by cards-variants: blocks 10/22, outcomes 7/20
 
 ### R031+0x5B38 `R031+0x5B38 (18E7:12E8)`
 
-draft, reached by cards cards-day cards-variants: blocks 17/20, outcomes 18/26
+draft, reached by cards cards-day cards-flip cards-variants: blocks 17/20, outcomes 18/26
 
 - `R031+0x5B4A` `push di`
 - `R031+0x5C40` `mov al, byte ptr [bx - 0x6350]`
@@ -5193,11 +5194,11 @@ draft, reached by cards cards-day cards-variants: blocks 17/20, outcomes 18/26
 
 ### R031+0x5C5A `R031+0x5C5A (18E7:140A)`
 
-draft, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R031+0x5D06 `R031+0x5D06 (18E7:14B6)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 22/23, outcomes 20/22
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 22/23, outcomes 20/22
 
 - `R031+0x5D1F` `jmp 0x15ce`
 
@@ -5463,7 +5464,7 @@ draft, reached by cards-day cards-variants: blocks 1/22, outcomes 0/16
 
 ### R034+0x0000 `R034+0x0000 (1462:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/7, outcomes 0/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/7, outcomes 0/6
 
 - `R034+0x003F` `push word ptr [0x9c3d]`
 - `R034+0x0052` `push 0x64`
@@ -5538,7 +5539,7 @@ draft, reached by cards cards-day cards-variants: blocks 0/59, outcomes 0/52
 
 ### R037+0x2ACE `R037+0x2ACE (1462:2ACE)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 53/81, outcomes 37/66
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 53/81, outcomes 37/66
 
 - `R037+0x2AF9` `mov word ptr [bp - 0x64], ax`
 - `R037+0x2AFC` `mov bx, word ptr [bp - 0x64]`
@@ -5587,7 +5588,7 @@ draft, reached by cards cards-day cards-variants: blocks 5/10, outcomes 4/10
 
 ### R037+0x3F30 `R037+0x3F30 (1462:3F30)`
 
-draft, reached by cards cards-day cards-variants: blocks 14/18, outcomes 13/18
+draft, reached by cards cards-day cards-flip cards-variants: blocks 14/18, outcomes 13/18
 
 - `R037+0x3F53` `push si`
 - `R037+0x3F76` `push si`
@@ -5596,11 +5597,11 @@ draft, reached by cards cards-day cards-variants: blocks 14/18, outcomes 13/18
 
 ### R037+0x4048 `R037+0x4048 (1462:4048)`
 
-draft, reached by cards cards-day cards-variants: blocks 10/10, outcomes 10/10
+draft, reached by cards cards-day cards-flip cards-variants: blocks 10/10, outcomes 10/10
 
 ### R037+0x4184 `R037+0x4184 (1462:4184)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 12/12, outcomes 11/12
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 12/12, outcomes 11/12
 
 ### R037+0x43E6 `R037+0x43E6 (1462:43E6)`
 
@@ -5653,7 +5654,7 @@ draft, reached by chargen: blocks 8/11, outcomes 5/12
 
 ### R037+0x8ED4 `R037+0x8ED4 (1C7D:0D24)`
 
-matched, reached by cards cards-day cards-variants sainthelp: blocks 44/56, outcomes 26/38
+matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 44/56, outcomes 26/38
 
 - `R037+0x8F2E` `push 0x48a4`
 - `R037+0x9502` `or byte ptr [0x9081], 1`
@@ -6104,7 +6105,7 @@ draft, reached by cards-day cards-variants: blocks 1/369, outcomes 0/232
 
 ### R039+0x0000 `R039+0x0000 (1462:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/9, outcomes 4/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/9, outcomes 4/8
 
 - `R039+0x001D` `mov ax, si`
 - `R039+0x0039` `mov ax, si`
@@ -6113,49 +6114,49 @@ matched, reached by cards cards-day cards-variants: blocks 5/9, outcomes 4/8
 
 ### R039+0x00BA `R039+0x00BA (1462:00BA)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 4/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 4/8
 
 - `R039+0x00F2` `cmp si, -0xa`
 
 ### R039+0x0102 `R039+0x0102 (1462:0102)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 2/4
 
 - `R039+0x0117` `mov si, 2`
 - `R039+0x012C` `inc si`
 
 ### R039+0x0132 `R039+0x0132 (1462:0132)`
 
-matched, reached by cards cards-day cards-variants rules: blocks 21/21, outcomes 18/18
+matched, reached by cards cards-day cards-flip cards-variants rules: blocks 21/21, outcomes 18/18
 
 ### R039+0x026A `R039+0x026A (1462:026A)`
 
-matched, reached by cards cards-day cards-variants: blocks 11/13, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 11/13, outcomes 6/8
 
 - `R039+0x0285` `jmp 0x461`
 - `R039+0x0295` `jmp 0x371`
 
 ### R039+0x0470 `R039+0x0470 (1462:0470)`
 
-matched, reached by cards cards-day cards-variants rules: blocks 13/13, outcomes 12/12
+matched, reached by cards cards-day cards-flip cards-variants rules: blocks 13/13, outcomes 12/12
 
 ### R039+0x0A34 `R039+0x0A34 (1462:0A34)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 2/4
 
 - `R039+0x0A65` `mov ax, 0xffff`
 - `R039+0x0A70` `mov ax, 1`
 
 ### R039+0x0A7E `R039+0x0A7E (1462:0A7E)`
 
-matched, reached by cards-day cards-variants: blocks 5/7, outcomes 2/4
+matched, reached by cards-day cards-flip cards-variants: blocks 5/7, outcomes 2/4
 
 - `R039+0x0A8A` `mov si, word ptr [bp + 6]`
 - `R039+0x0AB7` `mov si, word ptr [bp + 6]`
 
 ### R039+0x0BF6 `R039+0x0BF6 (1462:0BF6)`
 
-matched, reached by cards cards-day cards-variants: blocks 35/47, outcomes 23/46
+matched, reached by cards cards-day cards-flip cards-variants: blocks 35/47, outcomes 23/46
 
 - `R039+0x0C05` `mov si, 2`
 - `R039+0x0C14` `inc si`
@@ -6172,7 +6173,7 @@ matched, reached by cards cards-day cards-variants: blocks 35/47, outcomes 23/46
 
 ### R039+0x0D46 `R039+0x0D46 (1462:0D46)`
 
-matched, reached by cards cards-day cards-variants: blocks 36/47, outcomes 23/46
+matched, reached by cards cards-day cards-flip cards-variants: blocks 36/47, outcomes 23/46
 
 - `R039+0x0D55` `mov si, 2`
 - `R039+0x0D72` `inc si`
@@ -6188,15 +6189,15 @@ matched, reached by cards cards-day cards-variants: blocks 36/47, outcomes 23/46
 
 ### R039+0x0E96 `R039+0x0E96 (1462:0E96)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R039+0x0EAA `R039+0x0EAA (1462:0EAA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R039+0x0EBE `R039+0x0EBE (1462:0EBE)`
 
-matched, reached by cards cards-day cards-variants: blocks 42/55, outcomes 40/60
+matched, reached by cards cards-day cards-flip cards-variants: blocks 42/55, outcomes 40/60
 
 - `R039+0x0ED3` `sub si, si`
 - `R039+0x0EE1` `mov si, 0xf`
@@ -6214,7 +6215,7 @@ matched, reached by cards cards-day cards-variants: blocks 42/55, outcomes 40/60
 
 ### R039+0x10B6 `R039+0x10B6 (1462:10B6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/9, outcomes 2/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/9, outcomes 2/8
 
 - `R039+0x10C4` `mov si, 4`
 - `R039+0x10E3` `push 3`
@@ -6225,7 +6226,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/9, outcomes 2/8
 
 ### R039+0x11FC `R039+0x11FC (1462:11FC)`
 
-matched, reached by cards cards-day cards-variants: blocks 24/28, outcomes 25/30
+matched, reached by cards cards-day cards-flip cards-variants: blocks 24/28, outcomes 25/30
 
 - `R039+0x1219` `jmp 0x150c`
 - `R039+0x1223` `push 0xf`
@@ -6252,19 +6253,19 @@ matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
 
 ### R039+0x16B4 `R039+0x16B4 (1462:16B4)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R039+0x16D0` `mov es, word ptr [0x7ed8]`
 
 ### R039+0x16E2 `R039+0x16E2 (1462:16E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R039+0x16FE` `mov es, word ptr [0x7ed8]`
 
 ### R039+0x1712 `R039+0x1712 (1462:1712)`
 
-matched, reached by cards cards-day cards-variants: blocks 12/66, outcomes 4/52
+matched, reached by cards cards-day cards-flip cards-variants: blocks 12/66, outcomes 4/52
 
 - `R039+0x171E` `push 5`
 - `R039+0x172C` `jmp 0x17ee`
@@ -6360,21 +6361,21 @@ matched, reached by cards cards-day cards-variants: blocks 8/18, outcomes 5/16
 
 ### R039+0x1CD2 `R039+0x1CD2 (1462:1CD2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R039+0x1CE8 `R039+0x1CE8 (1462:1CE8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R039+0x1CFE `R039+0x1CFE (1462:1CFE)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R039+0x1D1A` `mov es, word ptr [0x7ed8]`
 
 ### R039+0x1D2C `R039+0x1D2C (1462:1D2C)`
 
-matched, reached by cards cards-day cards-variants: blocks 11/17, outcomes 9/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 11/17, outcomes 9/18
 
 - `R039+0x1D3C` `mov ax, si`
 - `R039+0x1D57` `mov ax, si`
@@ -6385,11 +6386,11 @@ matched, reached by cards cards-day cards-variants: blocks 11/17, outcomes 9/18
 
 ### R039+0x1DE6 `R039+0x1DE6 (1462:1DE6)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R039+0x1E06 `R039+0x1E06 (1462:1E06)`
 
-matched, reached by cards cards-day cards-variants: blocks 12/18, outcomes 10/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 12/18, outcomes 10/16
 
 - `R039+0x1E25` `mov si, 0xa`
 - `R039+0x1E39` `mov si, 0x40`
@@ -6406,7 +6407,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
 
 ### R039+0x1FA0 `R039+0x1FA0 (165C:0000)`
 
-matched, reached by cards cards-day cards-variants saints: blocks 4/4, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants saints: blocks 4/4, outcomes 4/4
 
 ### R039+0x1FD4 `R039+0x1FD4 (165C:0034)`
 
@@ -6602,7 +6603,7 @@ matched, reached by cards-day cards-variants sainthelp saints: blocks 5/5, outco
 
 ### R039+0x4676 `R039+0x4676 (165C:26D6)`
 
-matched, reached by cards cards-day cards-variants sainthelp saints: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R039+0x4762 `R039+0x4762 (165C:27C2)`
 
@@ -6618,7 +6619,7 @@ matched, reached by sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R039+0x49C4 `R039+0x49C4 (165C:2A24)`
 
-matched, reached by cards cards-day cards-variants sainthelp saints: blocks 6/6, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants sainthelp saints: blocks 6/6, outcomes 4/4
 
 ### R039+0x4AD0 `R039+0x4AD0 (165C:2B30)`
 
@@ -7159,7 +7160,7 @@ matched, reached by cards cards-day cards-variants: blocks 18/64, outcomes 15/78
 
 ### R043+0x0100 `R043+0x0100 (1462:0100)`
 
-matched, reached by cards cards-day cards-variants sainthelp: blocks 38/47, outcomes 31/46
+matched, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 38/47, outcomes 31/46
 
 - `R043+0x0120` `push 0x5001`
 - `R043+0x02C4` `push 0x502c`
@@ -7173,7 +7174,7 @@ matched, reached by cards cards-day cards-variants sainthelp: blocks 38/47, outc
 
 ### R043+0x054E `R043+0x054E (1462:054E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/22, outcomes 0/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/22, outcomes 0/22
 
 - `R043+0x05BD` `mov si, dx`
 - `R043+0x05C5` `mov bx, dx`
@@ -7199,7 +7200,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/22, outcomes 0/22
 
 ### R043+0x078E `R043+0x078E (1462:078E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/9, outcomes 0/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/9, outcomes 0/6
 
 - `R043+0x080E` `mov si, word ptr [bp - 2]`
 - `R043+0x0817` `jmp 0x89c`
@@ -7212,13 +7213,13 @@ matched, reached by cards cards-day cards-variants: blocks 1/9, outcomes 0/6
 
 ### R043+0x09AE `R043+0x09AE (1462:09AE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R043+0x09BE` `push 1`
 
 ### R043+0x0A9A `R043+0x0A9A (150B:000A)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/6, outcomes 0/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/6, outcomes 0/4
 
 - `R043+0x0B37` `mov ax, 0xf`
 - `R043+0x0B3A` `mov word ptr [0xee59], ax`
@@ -7228,7 +7229,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/6, outcomes 0/4
 
 ### R043+0x0BA0 `R043+0x0BA0 (150B:0110)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/6, outcomes 0/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/6, outcomes 0/4
 
 - `R043+0x0C24` `mov ax, 0xf`
 - `R043+0x0C27` `mov word ptr [0xee59], ax`
@@ -7238,7 +7239,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/6, outcomes 0/4
 
 ### R043+0x0C9E `R043+0x0C9E (150B:020E)`
 
-draft, reached by cards cards-day cards-variants: blocks 10/15, outcomes 10/14
+draft, reached by cards cards-day cards-flip cards-variants: blocks 10/15, outcomes 10/14
 
 - `R043+0x0D07` `jmp 0x32a`
 - `R043+0x0D13` `jmp 0x32a`
@@ -7248,17 +7249,17 @@ draft, reached by cards cards-day cards-variants: blocks 10/15, outcomes 10/14
 
 ### R043+0x0E40 `R043+0x0E40 (150B:03B0)`
 
-draft, reached by cards cards-day cards-variants: blocks 6/7, outcomes 5/6
+draft, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcomes 5/6
 
 - `R043+0x0E9A` `mov word ptr [0xee55], 0`
 
 ### R043+0x0F2A `R043+0x0F2A (150B:049A)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R043+0x0F54 `R043+0x0F54 (150B:04C4)`
 
-draft, reached by cards cards-day cards-variants: blocks 26/33, outcomes 18/26
+draft, reached by cards cards-day cards-flip cards-variants: blocks 26/33, outcomes 18/26
 
 - `R043+0x0FAE` `cmp word ptr [bp + 0xa], 1`
 - `R043+0x0FB4` `jmp 0x5ac`
@@ -7270,11 +7271,11 @@ draft, reached by cards cards-day cards-variants: blocks 26/33, outcomes 18/26
 
 ### R043+0x118E `R043+0x118E (150B:06FE)`
 
-draft, reached by cards cards-day cards-variants: blocks 22/22, outcomes 26/28
+draft, reached by cards cards-day cards-flip cards-variants: blocks 22/22, outcomes 26/28
 
 ### R043+0x1316 `R043+0x1316 (150B:0886)`
 
-draft, reached by cards cards-day cards-variants: blocks 104/115, outcomes 24/30
+draft, reached by cards cards-day cards-flip cards-variants: blocks 104/115, outcomes 24/30
 
 - `R043+0x13CE` `mov ax, word ptr [0xed52]`
 - `R043+0x13EA` `mov ax, word ptr [0x9785]`
@@ -7290,11 +7291,11 @@ draft, reached by cards cards-day cards-variants: blocks 104/115, outcomes 24/30
 
 ### R043+0x1B8C `R043+0x1B8C (150B:10FC)`
 
-draft, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+draft, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R043+0x1BD2 `R043+0x1BD2 (150B:1142)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/38, outcomes 0/38
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/38, outcomes 0/38
 
 - `R043+0x1BE5` `push 0`
 - `R043+0x1BF5` `lcall 0, 0x1384`
@@ -7336,15 +7337,15 @@ draft, reached by cards cards-day cards-variants: blocks 1/38, outcomes 0/38
 
 ### R043+0x211C `R043+0x211C (150B:168C)`
 
-draft, reached by cards cards-day cards-variants: blocks 11/11, outcomes 11/14
+draft, reached by cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 11/14
 
 ### R043+0x2178 `R043+0x2178 (150B:16E8)`
 
-draft, reached by cards cards-day cards-variants: blocks 11/11, outcomes 11/14
+draft, reached by cards cards-day cards-flip cards-variants: blocks 11/11, outcomes 11/14
 
 ### R043+0x29D0 `R043+0x29D0 (150B:1F40)`
 
-draft, reached by cards cards-day cards-variants sainthelp: blocks 1/12, outcomes 0/14
+draft, reached by cards cards-day cards-flip cards-variants sainthelp: blocks 1/12, outcomes 0/14
 
 - `R043+0x29F1` `sub si, si`
 - `R043+0x29F3` `push word ptr [0xa628]`
@@ -7360,7 +7361,7 @@ draft, reached by cards cards-day cards-variants sainthelp: blocks 1/12, outcome
 
 ### R043+0x32B6 `R043+0x32B6 (150B:2826)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/19, outcomes 0/22
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/19, outcomes 0/22
 
 - `R043+0x32D6` `push 0`
 - `R043+0x32EA` `mov word ptr [0x9c46], 0`
@@ -7383,11 +7384,11 @@ draft, reached by cards cards-day cards-variants: blocks 1/19, outcomes 0/22
 
 ### R043+0x3376 `R043+0x3376 (150B:28E6)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R043+0x3494 `R043+0x3494 (150B:2A04)`
 
-draft, reached by cards cards-day cards-variants: blocks 1/29, outcomes 0/26
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/29, outcomes 0/26
 
 - `R043+0x34AB` `jmp 0x2d35`
 - `R043+0x34AE` `mov word ptr [bp + 6], si`
@@ -7420,7 +7421,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/29, outcomes 0/26
 
 ### R043+0x3838 `R043+0x3838 (17E5:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/27, outcomes 0/24
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/27, outcomes 0/24
 
 - `R043+0x3857` `push cs`
 - `R043+0x385E` `mov cx, 0x64`
@@ -7483,7 +7484,7 @@ matched, reached by cards cards-day cards-variants: blocks 0/1, outcomes 0/0
 
 ### R044+0x099E `R044+0x099E (18D1:000E)`
 
-asm, reached by cards cards-day cards-variants: blocks 24/29, outcomes 11/18
+asm, reached by cards cards-day cards-flip cards-variants: blocks 24/29, outcomes 13/18
 
 - `R044+0x0A32` `push word ptr [0x907e]`
 - `R044+0x0A55` `mov cx, 1`
@@ -7493,23 +7494,23 @@ asm, reached by cards cards-day cards-variants: blocks 24/29, outcomes 11/18
 
 ### R044+0x0C50 `R044+0x0C50 (18D1:02C0)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x0C56 `R044+0x0C56 (18D1:02C6)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x0C8E `R044+0x0C8E (18D1:02FE)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x0CA0 `R044+0x0CA0 (18D1:0310)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x0CD8 `R044+0x0CD8 (18D1:0348)`
 
-asm, reached by cards cards-day cards-variants: blocks 8/13, outcomes 6/12
+asm, reached by cards cards-day cards-flip cards-variants: blocks 8/13, outcomes 6/12
 
 - `R044+0x0CEB` `jmp 0x438`
 - `R044+0x0D2A` `mov si, 7`
@@ -7519,17 +7520,15 @@ asm, reached by cards cards-day cards-variants: blocks 8/13, outcomes 6/12
 
 ### R044+0x0E18 `R044+0x0E18 (18D1:0488)`
 
-asm, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R044+0x0E4F` `sub si, 0x19`
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R044+0x0F0C `R044+0x0F0C (18D1:057C)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x0F62 `R044+0x0F62 (18D1:05D2)`
 
-asm, reached by cards cards-day cards-variants: blocks 14/24, outcomes 8/18
+asm, reached by cards cards-day cards-flip cards-variants: blocks 14/24, outcomes 8/18
 
 - `R044+0x0FA1` `jmp 0x6ae`
 - `R044+0x0FA7` `dec ax`
@@ -7544,7 +7543,7 @@ asm, reached by cards cards-day cards-variants: blocks 14/24, outcomes 8/18
 
 ### R044+0x10CA `R044+0x10CA (18D1:073A)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x1102 `R044+0x1102 (18D1:0772)`
 
@@ -7575,25 +7574,23 @@ asm, reached by cards-day cards-variants: blocks 3/25, outcomes 2/18
 
 ### R044+0x12AC `R044+0x12AC (18D1:091C)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x12E4 `R044+0x12E4 (18D1:0954)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x132A `R044+0x132A (18D1:099A)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x1362 `R044+0x1362 (18D1:09D2)`
 
-asm, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+asm, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R044+0x1592 `R044+0x1592 (18D1:0C02)`
 
-asm, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R044+0x15C3` `sub si, 0x14`
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R044+0x15E8 `R044+0x15E8 (18D1:0C58)`
 
@@ -7601,15 +7598,8 @@ asm, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x1810 `R044+0x1810 (18D1:0E80)`
 
-asm, reached by cards cards-day cards-variants: blocks 12/35, outcomes 6/30
+asm, reached by cards cards-day cards-flip cards-variants: blocks 20/35, outcomes 15/30
 
-- `R044+0x1825` `mov word ptr [bp - 2], 0x56`
-- `R044+0x182C` `sub ax, 9`
-- `R044+0x1831` `dec ax`
-- `R044+0x1834` `sub ax, 0x17`
-- `R044+0x1839` `dec ax`
-- `R044+0x183C` `jmp 0xe95`
-- `R044+0x1846` `mov word ptr [bp - 2], 0x11`
 - `R044+0x184E` `mov word ptr [bp - 2], 0x15`
 - `R044+0x18C4` `dec ax`
 - `R044+0x18C7` `dec ax`
@@ -7619,7 +7609,6 @@ asm, reached by cards cards-day cards-variants: blocks 12/35, outcomes 6/30
 - `R044+0x18D3` `dec ax`
 - `R044+0x18D6` `jmp 0x1060`
 - `R044+0x18D9` `jmp 0x10a4`
-- `R044+0x192F` `mov word ptr [0xe48a], 0xc`
 - `R044+0x1938` `lcall 0xe76, 0x23e2`
 - `R044+0x198D` `mov ax, 0xc`
 - `R044+0x1992` `lcall 0x1367, 0x72a`
@@ -7629,11 +7618,9 @@ asm, reached by cards cards-day cards-variants: blocks 12/35, outcomes 6/30
 
 ### R044+0x1A50 `R044+0x1A50 (19DD:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 32/35, outcomes 19/24
+matched, reached by cards cards-day cards-flip cards-variants: blocks 34/35, outcomes 22/24
 
-- `R044+0x1BAF` `mov word ptr [0xee7a], 2`
 - `R044+0x1C03` `jmp 0x300`
-- `R044+0x1C96` `push 0x12`
 
 ### R044+0x1D58 `R044+0x1D58 (19DD:0308)`
 
@@ -7643,9 +7630,8 @@ matched, reached by cards-variants: blocks 3/4, outcomes 2/4
 
 ### R044+0x1DB6 `R044+0x1DB6 (19DD:0366)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/9, outcomes 5/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 6/8
 
-- `R044+0x1DE9` `mov si, 2`
 - `R044+0x1DF3` `mov ax, si`
 
 ### R044+0x1E2A `R044+0x1E2A (19DD:03DA)`
@@ -7659,7 +7645,7 @@ matched, reached by cards cards-day cards-variants: blocks 7/11, outcomes 5/8
 
 ### R044+0x1F02 `R044+0x1F02 (19DD:04B2)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 5/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 5/6
 
 ### R044+0x1F7E `R044+0x1F7E (19DD:052E)`
 
@@ -7667,11 +7653,11 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R044+0x202A `R044+0x202A (19DD:05DA)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R044+0x206C `R044+0x206C (19DD:061C)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/12, outcomes 3/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/12, outcomes 3/8
 
 - `R044+0x20D3` `dec ax`
 - `R044+0x20D6` `dec ax`
@@ -7682,7 +7668,7 @@ matched, reached by cards cards-day cards-variants: blocks 6/12, outcomes 3/8
 
 ### R044+0x21A8 `R044+0x21A8 (19DD:0758)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x21E0 `R044+0x21E0 (19DD:0790)`
 
@@ -7700,13 +7686,12 @@ matched, reached by cards-day cards-variants: blocks 3/12, outcomes 2/10
 
 ### R044+0x2284 `R044+0x2284 (19DD:0834)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x22BC `R044+0x22BC (19DD:086C)`
 
-matched, reached by cards cards-day cards-variants: blocks 9/24, outcomes 4/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 10/24, outcomes 5/16
 
-- `R044+0x22FA` `push 0`
 - `R044+0x2371` `push -9`
 - `R044+0x23A2` `dec ax`
 - `R044+0x23A5` `dec ax`
@@ -7724,26 +7709,23 @@ matched, reached by cards cards-day cards-variants: blocks 9/24, outcomes 4/16
 
 ### R044+0x24BA `R044+0x24BA (19DD:0A6A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x24F2 `R044+0x24F2 (19DD:0AA2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x2504 `R044+0x2504 (19DD:0AB4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x253C `R044+0x253C (19DD:0AEC)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R044+0x25F2 `R044+0x25F2 (19DD:0BA2)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
-
-- `R044+0x2615` `mov ax, word ptr [bp - 4]`
-- `R044+0x2635` `mov ax, word ptr [bp - 4]`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R044+0x2764 `R044+0x2764 (19DD:0D14)`
 
@@ -7751,11 +7733,9 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x28E8 `R044+0x28E8 (1AC6:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 21/25, outcomes 11/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 23/25, outcomes 13/16
 
 - `R044+0x2999` `mov ax, 0x64`
-- `R044+0x29EF` `mov word ptr [0xee76], 2`
-- `R044+0x2A07` `mov word ptr [0xee78], 2`
 - `R044+0x2A40` `jmp 0x278`
 
 ### R044+0x2B60 `R044+0x2B60 (1AC6:0280)`
@@ -7764,7 +7744,7 @@ matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 5/6
 
 ### R044+0x2C48 `R044+0x2C48 (1AC6:0368)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/7, outcomes 4/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcomes 4/6
 
 - `R044+0x2C8E` `sub ax, ax`
 
@@ -7776,7 +7756,7 @@ matched, reached by cards cards-day cards-variants: blocks 8/9, outcomes 5/6
 
 ### R044+0x2D8E `R044+0x2D8E (1AC6:04AE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R044+0x2DA9` `sub ax, ax`
 
@@ -7788,17 +7768,17 @@ matched, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### R044+0x2E60 `R044+0x2E60 (1AC6:0580)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R044+0x2E7A` `sub ax, ax`
 
 ### R044+0x2E8C `R044+0x2E8C (1AC6:05AC)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/7, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 4/4
 
 ### R044+0x2F8C `R044+0x2F8C (1AC6:06AC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x2FC4 `R044+0x2FC4 (1AC6:06E4)`
 
@@ -7812,25 +7792,23 @@ matched, reached by cards-day cards-variants: blocks 3/8, outcomes 2/6
 
 ### R044+0x305A `R044+0x305A (1AC6:077A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x3092 `R044+0x3092 (1AC6:07B2)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R044+0x3110 `R044+0x3110 (1AC6:0830)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R044+0x3148 `R044+0x3148 (1AC6:0868)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R044+0x31F2 `R044+0x31F2 (1AC6:0912)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R044+0x3227` `mov ax, word ptr [bp - 4]`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R044+0x3250 `R044+0x3250 (1AC6:0970)`
 
@@ -7962,12 +7940,11 @@ matched, reached by cards-variants: blocks 0/1, outcomes 0/0
 
 ### R045+0x0C40 `R045+0x0C40 (18FC:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 33/58, outcomes 18/52
+matched, reached by cards cards-day cards-flip cards-variants: blocks 40/58, outcomes 29/52
 
 - `R045+0x0CCD` `mov word ptr [0xee76], ax`
 - `R045+0x0CF7` `mov word ptr [0xee7a], ax`
 - `R045+0x0D0C` `mov word ptr [0xee82], ax`
-- `R045+0x0D23` `mov word ptr [0xee80], 2`
 - `R045+0x0D86` `push 0x64`
 - `R045+0x0D95` `mov es, word ptr [0x7f06]`
 - `R045+0x0DD0` `jmp 0x324`
@@ -7979,66 +7956,60 @@ matched, reached by cards cards-day cards-variants: blocks 33/58, outcomes 18/52
 - `R045+0x0FBE` `add si, 0xa`
 - `R045+0x0FC1` `push 0x64`
 - `R045+0x0FCF` `mov word ptr [0xe7d8], 6`
-- `R045+0x0FEF` `push word ptr [0x907e]`
-- `R045+0x1002` `push word ptr [0x907e]`
 - `R045+0x1014` `mov word ptr [0xe48a], 0xbd`
-- `R045+0x102E` `push word ptr [0x907e]`
-- `R045+0x1041` `push word ptr [0x907e]`
 - `R045+0x1053` `mov word ptr [0xe48a], 0xbe`
-- `R045+0x106D` `push word ptr [0x907e]`
 - `R045+0x1080` `mov word ptr [0xe48a], 0x80`
-- `R045+0x109A` `push word ptr [0x907e]`
 - `R045+0x10AD` `mov word ptr [0xe48a], 0x7b`
 
 ### R045+0x10BA `R045+0x10BA (18FC:047A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R045+0x10D2` `mov word ptr [0xe48a], 1`
 
 ### R045+0x10E2 `R045+0x10E2 (18FC:04A2)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x113A `R045+0x113A (18FC:04FA)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R045+0x1152` `mov word ptr [0xe48a], 1`
 
 ### R045+0x1162 `R045+0x1162 (18FC:0522)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x11BA `R045+0x11BA (18FC:057A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R045+0x11D2` `push 0`
 
 ### R045+0x11F4 `R045+0x11F4 (18FC:05B4)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x124C `R045+0x124C (18FC:060C)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
 - `R045+0x1264` `push 0`
 
 ### R045+0x1286 `R045+0x1286 (18FC:0646)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x12DE `R045+0x12DE (18FC:069E)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R045+0x12F6` `push 0`
 
 ### R045+0x1318 `R045+0x1318 (18FC:06D8)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x1370 `R045+0x1370 (18FC:0730)`
 
@@ -8048,47 +8019,47 @@ matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
 
 ### R045+0x13B8 `R045+0x13B8 (18FC:0778)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x1410 `R045+0x1410 (18FC:07D0)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 3/4
 
 ### R045+0x144A `R045+0x144A (18FC:080A)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x14A2 `R045+0x14A2 (18FC:0862)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R045+0x14B4 `R045+0x14B4 (18FC:0874)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x150C `R045+0x150C (18FC:08CC)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R045+0x1524` `mov word ptr [0xe48a], 1`
 
 ### R045+0x1542 `R045+0x1542 (18FC:0902)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x159A `R045+0x159A (18FC:095A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R045+0x15B2` `push 0`
 
 ### R045+0x15D4 `R045+0x15D4 (18FC:0994)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R045+0x162C `R045+0x162C (18FC:09EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R045+0x162E `R045+0x162E (199A:000E)`
 
@@ -8096,12 +8067,11 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0000 `R046+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 30/54, outcomes 16/48
+matched, reached by cards cards-day cards-flip cards-variants: blocks 35/54, outcomes 25/48
 
 - `R046+0x008D` `mov word ptr [0xee76], ax`
 - `R046+0x00B7` `mov word ptr [0xee7a], ax`
 - `R046+0x00CC` `mov word ptr [0xee82], ax`
-- `R046+0x00E3` `mov word ptr [0xee80], 2`
 - `R046+0x0125` `push 0`
 - `R046+0x0138` `jmp 0x2cc`
 - `R046+0x0228` `mov bx, word ptr [0xee6a]`
@@ -8112,71 +8082,67 @@ matched, reached by cards cards-day cards-variants: blocks 30/54, outcomes 16/48
 - `R046+0x0326` `add si, 0xa`
 - `R046+0x0329` `push 0x64`
 - `R046+0x0337` `mov word ptr [0xe7d8], 8`
-- `R046+0x0357` `push word ptr [0x907e]`
 - `R046+0x036A` `push word ptr [0x907e]`
 - `R046+0x037C` `mov word ptr [0xe48a], 0xbd`
-- `R046+0x0396` `push word ptr [0x907e]`
 - `R046+0x03A9` `push word ptr [0x907e]`
 - `R046+0x03BB` `mov word ptr [0xe48a], 0xbe`
-- `R046+0x03D5` `push word ptr [0x907e]`
 - `R046+0x03E8` `mov word ptr [0xe48a], 0x80`
-- `R046+0x0402` `push word ptr [0x907e]`
 - `R046+0x0415` `mov word ptr [0xe48a], 0x7b`
 
 ### R046+0x0422 `R046+0x0422 (1838:0422)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x0433` `cmp word ptr [0x57bc], 0`
 - `R046+0x043A` `mov word ptr [0xe7d8], 0x19`
 
 ### R046+0x0450 `R046+0x0450 (1838:0450)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0466 `R046+0x0466 (1838:0466)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x0477` `cmp word ptr [0x57bc], 0`
 - `R046+0x047E` `mov word ptr [0xe7d8], 0x1c`
 
 ### R046+0x0494 `R046+0x0494 (1838:0494)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x04AA `R046+0x04AA (1838:04AA)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x04BB` `cmp word ptr [0x57bc], 0`
 - `R046+0x04C2` `mov word ptr [0xe7d8], 0x16`
 
 ### R046+0x04D8 `R046+0x04D8 (1838:04D8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x04EE `R046+0x04EE (1838:04EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x04FF` `cmp word ptr [0x57bc], 0`
 - `R046+0x0506` `mov word ptr [0xe7d8], 0x13`
 
 ### R046+0x0524 `R046+0x0524 (1838:0524)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x053A `R046+0x053A (1838:053A)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x054B` `cmp word ptr [0x57bc], 0`
 - `R046+0x0552` `mov word ptr [0xe7d8], 0x14`
 
 ### R046+0x0568 `R046+0x0568 (1838:0568)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x057E `R046+0x057E (1838:057E)`
 
@@ -8184,58 +8150,58 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x05A8 `R046+0x05A8 (1838:05A8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x05BE `R046+0x05BE (1838:05BE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 2/4
 
 - `R046+0x05E4` `mov word ptr [0xe48a], 0x20`
 
 ### R046+0x05EC `R046+0x05EC (1838:05EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0602 `R046+0x0602 (1838:0602)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x0613` `cmp word ptr [0x57bc], 0`
 - `R046+0x061A` `mov word ptr [0xe7d8], 0xa`
 
 ### R046+0x0630 `R046+0x0630 (1838:0630)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0646 `R046+0x0646 (1838:0646)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x0657` `cmp word ptr [0x57bc], 0`
 - `R046+0x065E` `lcall 0x1367, 0x72a`
 
 ### R046+0x0690 `R046+0x0690 (1838:0690)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x06A6 `R046+0x06A6 (1838:06A6)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x06B7` `cmp word ptr [0x57bc], 0`
 - `R046+0x06BE` `mov word ptr [0xe7d8], 0x3a`
 
 ### R046+0x06D4 `R046+0x06D4 (1838:06D4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x06EA `R046+0x06EA (1838:06EA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0724 `R046+0x0724 (18AA:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 32/55, outcomes 17/48
+matched, reached by cards cards-day cards-flip cards-variants: blocks 36/55, outcomes 25/48
 
 - `R046+0x07E1` `mov word ptr [0xee78], ax`
 - `R046+0x080B` `mov word ptr [0xee7c], ax`
@@ -8250,118 +8216,114 @@ matched, reached by cards cards-day cards-variants: blocks 32/55, outcomes 17/48
 - `R046+0x0A72` `add si, 0xa`
 - `R046+0x0A75` `push 0x64`
 - `R046+0x0A83` `mov word ptr [0xe7d8], 9`
-- `R046+0x0AA3` `push word ptr [0x907e]`
 - `R046+0x0AB6` `push word ptr [0x907e]`
 - `R046+0x0AC8` `mov word ptr [0xe48a], 0xbd`
-- `R046+0x0AE2` `push word ptr [0x907e]`
 - `R046+0x0AF5` `push word ptr [0x907e]`
 - `R046+0x0B07` `mov word ptr [0xe48a], 0xbe`
-- `R046+0x0B21` `push word ptr [0x907e]`
 - `R046+0x0B34` `mov word ptr [0xe48a], 0x80`
-- `R046+0x0B4E` `push word ptr [0x907e]`
 - `R046+0x0B61` `mov word ptr [0xe48a], 0x7b`
 
 ### R046+0x0B6E `R046+0x0B6E (18AA:044E)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x0B86` `push 0`
 
 ### R046+0x0BB6 `R046+0x0BB6 (18AA:0496)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x0C0E `R046+0x0C0E (18AA:04EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x0C26` `push 0`
 
 ### R046+0x0C48 `R046+0x0C48 (18AA:0528)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x0CA0 `R046+0x0CA0 (18AA:0580)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x0CB8` `push 0`
 
 ### R046+0x0CDA `R046+0x0CDA (18AA:05BA)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x0D32 `R046+0x0D32 (18AA:0612)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x0D4A` `push 0`
 
 ### R046+0x0D6C `R046+0x0D6C (18AA:064C)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x0DC4 `R046+0x0DC4 (18AA:06A4)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x0DDC` `push 0`
 
 ### R046+0x0DFE `R046+0x0DFE (18AA:06DE)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x0E56 `R046+0x0E56 (18AA:0736)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x0E6E` `push 0`
 
 ### R046+0x0E90 `R046+0x0E90 (18AA:0770)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x0EE8 `R046+0x0EE8 (18AA:07C8)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 3/4
 
 ### R046+0x0F22 `R046+0x0F22 (18AA:0802)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x0F7A `R046+0x0F7A (18AA:085A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x0F92` `push 0`
 
 ### R046+0x0FB4 `R046+0x0FB4 (18AA:0894)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x100C `R046+0x100C (18AA:08EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x1024` `push 0`
 
 ### R046+0x1046 `R046+0x1046 (18AA:0926)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x109E `R046+0x109E (18AA:097E)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R046+0x10B6` `push 0`
 
 ### R046+0x10D8 `R046+0x10D8 (18AA:09B8)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x1130 `R046+0x1130 (18AA:0A10)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x1132 `R046+0x1132 (194B:0002)`
 
@@ -8566,9 +8528,8 @@ matched, reached by cards cards-day cards-variants: blocks 0/18, outcomes 0/14
 
 ### R047+0x01A6 `R047+0x01A6 (1852:0006)`
 
-matched, reached by cards cards-day cards-variants: blocks 30/40, outcomes 14/28
+matched, reached by cards cards-day cards-flip cards-variants: blocks 31/40, outcomes 15/28
 
-- `R047+0x026E` `mov ax, word ptr [0xe3d0]`
 - `R047+0x02A1` `mov word ptr [0xee7c], ax`
 - `R047+0x02AE` `push word ptr [0x907e]`
 - `R047+0x02C0` `push -1`
@@ -8585,7 +8546,7 @@ matched, reached by cards-variants: blocks 4/4, outcomes 2/2
 
 ### R047+0x0616 `R047+0x0616 (1852:0476)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/8, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/8, outcomes 3/6
 
 - `R047+0x0658` `cmp word ptr [0x8dee], 3`
 - `R047+0x065F` `push 0xe`
@@ -8593,17 +8554,17 @@ matched, reached by cards cards-day cards-variants: blocks 5/8, outcomes 3/6
 
 ### R047+0x068A `R047+0x068A (1852:04EA)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R047+0x06FC` `mov es, word ptr [0x7f12]`
 
 ### R047+0x0766 `R047+0x0766 (1852:05C6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x079E `R047+0x079E (1852:05FE)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/14, outcomes 4/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/14, outcomes 4/12
 
 - `R047+0x07AF` `push 9`
 - `R047+0x07BC` `mov es, word ptr [0x7f12]`
@@ -8616,30 +8577,30 @@ matched, reached by cards cards-day cards-variants: blocks 6/14, outcomes 4/12
 
 ### R047+0x0950 `R047+0x0950 (1852:07B0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x097A `R047+0x097A (1852:07DA)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/2
 
 - `R047+0x099C` `jmp 0x88c`
 - `R047+0x0A2C` `push 2`
 
 ### R047+0x0A8C `R047+0x0A8C (1852:08EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x0AAA `R047+0x0AAA (1852:090A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x0AC8 `R047+0x0AC8 (1852:0928)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x0B00 `R047+0x0B00 (1852:0960)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/7, outcomes 2/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/7, outcomes 2/6
 
 - `R047+0x0B07` `push 0xa`
 - `R047+0x0B74` `push 0xa`
@@ -8647,7 +8608,7 @@ matched, reached by cards cards-day cards-variants: blocks 4/7, outcomes 2/6
 
 ### R047+0x0BD2 `R047+0x0BD2 (1852:0A32)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x0C0A `R047+0x0C0A (1852:0A6A)`
 
@@ -8676,17 +8637,17 @@ matched, reached by cards-day cards-variants: blocks 5/25, outcomes 2/18
 
 ### R047+0x0E4A `R047+0x0E4A (1852:0CAA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x0E82 `R047+0x0E82 (1852:0CE2)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R047+0x0ED6` `mov word ptr [0xe48a], 0xd`
 
 ### R047+0x0EDE `R047+0x0EDE (1852:0D3E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x0F18 `R047+0x0F18 (1852:0D78)`
 
@@ -8694,11 +8655,11 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x0F74 `R047+0x0F74 (1852:0DD4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x0FAC `R047+0x0FAC (1852:0E0C)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R047+0x1062 `R047+0x1062 (1852:0EC2)`
 
@@ -8722,9 +8683,8 @@ matched, reached by cards-variants: blocks 3/10, outcomes 2/8
 
 ### R047+0x13CC `R047+0x13CC (1974:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 30/39, outcomes 19/26
+matched, reached by cards cards-day cards-flip cards-variants: blocks 31/39, outcomes 20/26
 
-- `R047+0x1470` `mov ax, 2`
 - `R047+0x1485` `mov word ptr [0xee7a], 2`
 - `R047+0x1536` `mov ax, 0x64`
 - `R047+0x15AE` `jmp 0x38e`
@@ -8740,7 +8700,7 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x17B6 `R047+0x17B6 (1974:03F6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x17EE `R047+0x17EE (1974:042E)`
 
@@ -8748,7 +8708,7 @@ matched, reached by cards-variants: blocks 3/3, outcomes 2/2
 
 ### R047+0x18F2 `R047+0x18F2 (1974:0532)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x1904 `R047+0x1904 (1974:0544)`
 
@@ -8759,20 +8719,17 @@ matched, reached by cards cards-day cards-variants: blocks 18/20, outcomes 13/16
 
 ### R047+0x1AF0 `R047+0x1AF0 (1974:0730)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/7, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 6/8
 
 ### R047+0x1B52 `R047+0x1B52 (1974:0792)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/7, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcomes 3/4
 
-- `R047+0x1B78` `cmp word ptr [0xee6a], 0`
 - `R047+0x1B7F` `push 0`
-- `R047+0x1B86` `push 0`
-- `R047+0x1B8A` `lcall 0x150b, 0x3b0`
 
 ### R047+0x1C3A `R047+0x1C3A (1974:087A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x1C72 `R047+0x1C72 (1974:08B2)`
 
@@ -8783,23 +8740,23 @@ matched, reached by cards-day cards-variants: blocks 4/6, outcomes 2/4
 
 ### R047+0x1D1E `R047+0x1D1E (1974:095E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x1D56 `R047+0x1D56 (1974:0996)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x1D68 `R047+0x1D68 (1974:09A8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x1E9A `R047+0x1E9A (1974:0ADA)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R047+0x1F74 `R047+0x1F74 (1974:0BB4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x1FAC `R047+0x1FAC (1974:0BEC)`
 
@@ -8807,10 +8764,9 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x20C0 `R047+0x20C0 (1A44:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 26/34, outcomes 16/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 27/34, outcomes 17/22
 
 - `R047+0x2156` `mov word ptr [0xee78], 2`
-- `R047+0x21BD` `mov word ptr [0xee7a], 2`
 - `R047+0x220B` `jmp 0x2dc`
 - `R047+0x230F` `jmp 0x2d2`
 - `R047+0x236A` `push word ptr [bp - 8]`
@@ -8826,11 +8782,11 @@ matched, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### R047+0x24A2 `R047+0x24A2 (1A44:03E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x24B4 `R047+0x24B4 (1A44:03F4)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/20, outcomes 1/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/20, outcomes 1/16
 
 - `R047+0x2550` `mov ax, word ptr [0xee8c]`
 - `R047+0x255E` `jmp 0x560`
@@ -8852,7 +8808,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/20, outcomes 1/16
 
 ### R047+0x26B0 `R047+0x26B0 (1A44:05F0)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/7, outcomes 5/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcomes 5/8
 
 - `R047+0x26F7` `mov word ptr [0xee8c], si`
 
@@ -8865,17 +8821,17 @@ matched, reached by cards cards-day cards-variants: blocks 4/6, outcomes 3/4
 
 ### R047+0x2838 `R047+0x2838 (1A44:0778)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 5/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 5/6
 
 ### R047+0x288E `R047+0x288E (1A44:07CE)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
 - `R047+0x294A` `push -4`
 
 ### R047+0x296C `R047+0x296C (1A44:08AC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x29A4 `R047+0x29A4 (1A44:08E4)`
 
@@ -8889,19 +8845,19 @@ matched, reached by cards-day cards-variants: blocks 5/10, outcomes 2/6
 
 ### R047+0x2A7E `R047+0x2A7E (1A44:09BE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x2AB6 `R047+0x2AB6 (1A44:09F6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x2AC8 `R047+0x2AC8 (1A44:0A08)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x2BDA `R047+0x2BDA (1A44:0B1A)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R047+0x2C90 `R047+0x2C90 (1A44:0BD0)`
 
@@ -8909,7 +8865,7 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x2CCC `R047+0x2CCC (1A44:0C0C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R047+0x2D08 `R047+0x2D08 (1A44:0C48)`
 
@@ -8917,19 +8873,11 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x0000 `R048+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 30/54, outcomes 17/42
+matched, reached by cards cards-day cards-flip cards-variants: blocks 38/54, outcomes 24/42
 
-- `R048+0x0095` `jmp 0x118`
-- `R048+0x00AC` `mov word ptr [0xee76], 2`
-- `R048+0x00C6` `mov word ptr [0xee7a], 2`
-- `R048+0x00E0` `mov ax, 2`
-- `R048+0x0118` `push word ptr [0x907e]`
 - `R048+0x012C` `mov word ptr [0xee76], 2`
-- `R048+0x0132` `push word ptr [0x907e]`
 - `R048+0x0146` `mov word ptr [0xee7a], 2`
-- `R048+0x014C` `push word ptr [0x907e]`
 - `R048+0x0160` `mov ax, 2`
-- `R048+0x0169` `push 0`
 - `R048+0x0194` `cmp word ptr [0xe3d0], 0`
 - `R048+0x019B` `sub ax, ax`
 - `R048+0x01BF` `cmp word ptr [0xe3d0], 0`
@@ -8946,19 +8894,17 @@ matched, reached by cards cards-day cards-variants: blocks 30/54, outcomes 17/42
 
 ### R048+0x03D6 `R048+0x03D6 (1838:03D6)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/11, outcomes 5/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 10/11, outcomes 7/8
 
-- `R048+0x0400` `push 1`
 - `R048+0x0446` `push 1`
-- `R048+0x046E` `push 2`
 
 ### R048+0x04A2 `R048+0x04A2 (1838:04A2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x0506 `R048+0x0506 (1838:0506)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/11, outcomes 3/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/11, outcomes 3/12
 
 - `R048+0x0532` `cmp word ptr [0xe3d0], 0`
 - `R048+0x054B` `cmp word ptr [0xe3d0], 0`
@@ -8970,7 +8916,7 @@ matched, reached by cards cards-day cards-variants: blocks 4/11, outcomes 3/12
 
 ### R048+0x05F0 `R048+0x05F0 (1838:05F0)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/13, outcomes 4/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/13, outcomes 4/16
 
 - `R048+0x0609` `cmp word ptr [0xe3d0], 0`
 - `R048+0x0610` `mov di, 0x4f48`
@@ -8982,7 +8928,7 @@ matched, reached by cards cards-day cards-variants: blocks 6/13, outcomes 4/16
 
 ### R048+0x06DE `R048+0x06DE (1838:06DE)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/6, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/6, outcomes 1/4
 
 - `R048+0x071E` `mov word ptr [0xee7a], 2`
 - `R048+0x072B` `push 2`
@@ -8991,50 +8937,46 @@ matched, reached by cards cards-day cards-variants: blocks 2/6, outcomes 1/4
 
 ### R048+0x077A `R048+0x077A (1838:077A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x07E0 `R048+0x07E0 (1838:07E0)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
-
-- `R048+0x0892` `push ax`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R048+0x08C0 `R048+0x08C0 (1838:08C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x0916 `R048+0x0916 (1838:0916)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/6, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
 - `R048+0x0930` `push 0xf`
-- `R048+0x0978` `push 2`
 
 ### R048+0x09C0 `R048+0x09C0 (1838:09C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x0B04 `R048+0x0B04 (1838:0B04)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x0B22 `R048+0x0B22 (1838:0B22)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x0B5A `R048+0x0B5A (1838:0B5A)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R048+0x0BF4 `R048+0x0BF4 (1838:0BF4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x0D6E `R048+0x0D6E (190E:000E)`
 
-matched, reached by cards cards-day cards-variants: blocks 22/37, outcomes 12/28
+matched, reached by cards cards-day cards-flip cards-variants: blocks 23/37, outcomes 13/28
 
-- `R048+0x0DEE` `push word ptr [0x907e]`
 - `R048+0x0E02` `mov ax, 2`
 - `R048+0x0E1E` `cmp word ptr [0xe3d0], 0`
 - `R048+0x0E25` `sub ax, ax`
@@ -9052,79 +8994,72 @@ matched, reached by cards cards-day cards-variants: blocks 22/37, outcomes 12/28
 
 ### R048+0x104C `R048+0x104C (190E:02EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R048+0x1104 `R048+0x1104 (190E:03A4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x113E `R048+0x113E (190E:03DE)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/11, outcomes 5/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/11, outcomes 6/12
 
 - `R048+0x1153` `cmp word ptr [0xe3d0], 0`
 - `R048+0x115A` `lcall 0x1367, 0x72a`
 - `R048+0x1188` `cmp word ptr [0xe3d0], 0`
-- `R048+0x120A` `push 2`
 
 ### R048+0x124E `R048+0x124E (190E:04EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/9, outcomes 3/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/9, outcomes 4/10
 
 - `R048+0x1267` `cmp word ptr [0xe3d0], 0`
 - `R048+0x126E` `mov di, 0x4f48`
 - `R048+0x12A3` `cmp word ptr [0xe3d0], 0`
-- `R048+0x12B8` `lcall 0x9c0, 0x2189`
 
 ### R048+0x1320 `R048+0x1320 (190E:05C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
-
-- `R048+0x13D2` `push ax`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R048+0x1400 `R048+0x1400 (190E:06A0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x1456 `R048+0x1456 (190E:06F6)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/8, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/8, outcomes 4/6
 
 - `R048+0x1478` `push -1`
-- `R048+0x14B6` `push 2`
 - `R048+0x151E` `lcall 0x1367, 0x72a`
 
 ### R048+0x153C `R048+0x153C (190E:07DC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x16D0 `R048+0x16D0 (190E:0970)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x16EE `R048+0x16EE (190E:098E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x1726 `R048+0x1726 (190E:09C6)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R048+0x1800 `R048+0x1800 (190E:0AA0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x1B18 `R048+0x1B18 (19E9:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 33/60, outcomes 21/54
+matched, reached by cards cards-day cards-flip cards-variants: blocks 41/60, outcomes 32/54
 
 - `R048+0x1B7E` `push word ptr [0x907e]`
 - `R048+0x1B90` `mov word ptr [0xe48a], 0xb2`
-- `R048+0x1C20` `mov word ptr [0xee7a], 1`
 - `R048+0x1CC5` `jmp 0x348`
 - `R048+0x1DB4` `mov bx, word ptr [0xee6a]`
 - `R048+0x1DC9` `jmp 0x33e`
-- `R048+0x1DFE` `push word ptr [bp - 4]`
 - `R048+0x1E08` `push word ptr [bp - 4]`
 - `R048+0x1E12` `push word ptr [bp - 4]`
 - `R048+0x1E44` `push word ptr [bp - 4]`
@@ -9135,24 +9070,18 @@ matched, reached by cards cards-day cards-variants: blocks 33/60, outcomes 21/54
 - `R048+0x1EB4` `push 3`
 - `R048+0x1EC3` `push 0x64`
 - `R048+0x1ED1` `mov word ptr [0xe7d8], 0x12`
-- `R048+0x1EF1` `push word ptr [0x907e]`
-- `R048+0x1F04` `push word ptr [0x907e]`
 - `R048+0x1F16` `mov word ptr [0xe48a], 0xbd`
-- `R048+0x1F30` `push word ptr [0x907e]`
-- `R048+0x1F43` `push word ptr [0x907e]`
 - `R048+0x1F55` `mov word ptr [0xe48a], 0xbe`
-- `R048+0x1F6F` `push word ptr [0x907e]`
 - `R048+0x1F82` `mov word ptr [0xe48a], 0x80`
-- `R048+0x1F9C` `push word ptr [0x907e]`
 - `R048+0x1FAF` `mov word ptr [0xe48a], 0x7b`
 
 ### R048+0x1FBC `R048+0x1FBC (19E9:04AC)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 4/4
 
 ### R048+0x1FFC `R048+0x1FFC (19E9:04EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x2046 `R048+0x2046 (19E9:0536)`
 
@@ -9164,53 +9093,65 @@ matched, reached by cards cards-day: blocks 3/4, outcomes 2/4
 
 matched, reached by cards cards-day: blocks 4/4, outcomes 2/2
 
+### R048+0x20CA `R048+0x20CA (19E9:05BA)`
+
+matched, reached by cards-flip: blocks 3/4, outcomes 2/4
+
+- `R048+0x20E2` `mov word ptr [0xe48a], 1`
+
+### R048+0x20F2 `R048+0x20F2 (19E9:05E2)`
+
+matched, reached by cards-flip: blocks 3/4, outcomes 1/2
+
+- `R048+0x212A` `mov ax, 0x64`
+
 ### R048+0x2244 `R048+0x2244 (19E9:0734)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R048+0x225C` `push 0`
 
 ### R048+0x227E `R048+0x227E (19E9:076E)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x22C8 `R048+0x22C8 (19E9:07B8)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R048+0x22E0` `push 0`
 
 ### R048+0x2310 `R048+0x2310 (19E9:0800)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x235A `R048+0x235A (19E9:084A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R048+0x2372` `push 0`
 
 ### R048+0x23A2 `R048+0x23A2 (19E9:0892)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x23EC `R048+0x23EC (19E9:08DC)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R048+0x2404` `push 0`
 
 ### R048+0x2434 `R048+0x2434 (19E9:0924)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x24CA `R048+0x24CA (19E9:09BA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x2504 `R048+0x2504 (1A88:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 36/59, outcomes 21/52
+matched, reached by cards cards-day cards-flip cards-variants: blocks 42/59, outcomes 31/52
 
 - `R048+0x2539` `mov ax, 1`
 - `R048+0x25F9` `mov word ptr [0xee7c], ax`
@@ -9225,82 +9166,75 @@ matched, reached by cards cards-day cards-variants: blocks 36/59, outcomes 21/52
 - `R048+0x281A` `add si, 0xa`
 - `R048+0x281D` `push 0x64`
 - `R048+0x282B` `mov word ptr [0xe7d8], 0x12`
-- `R048+0x284B` `push word ptr [0x907e]`
-- `R048+0x285E` `push word ptr [0x907e]`
 - `R048+0x2870` `mov word ptr [0xe48a], 0xbd`
-- `R048+0x288A` `push word ptr [0x907e]`
-- `R048+0x289D` `push word ptr [0x907e]`
 - `R048+0x28AF` `mov word ptr [0xe48a], 0xbe`
-- `R048+0x28C9` `push word ptr [0x907e]`
 - `R048+0x28DC` `mov word ptr [0xe48a], 0x80`
-- `R048+0x28F6` `push word ptr [0x907e]`
 - `R048+0x2909` `mov word ptr [0xe48a], 0x7b`
 
 ### R048+0x296C `R048+0x296C (1A88:046C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x298A `R048+0x298A (1A88:048A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x2A06 `R048+0x2A06 (1A88:0506)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x2A18 `R048+0x2A18 (1A88:0518)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R048+0x2A9A `R048+0x2A9A (1A88:059A)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R048+0x2AAA` `push 0`
 
 ### R048+0x2ADA `R048+0x2ADA (1A88:05DA)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x2B24 `R048+0x2B24 (1A88:0624)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R048+0x2B34` `push 0`
 
 ### R048+0x2B64 `R048+0x2B64 (1A88:0664)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x2BAE `R048+0x2BAE (1A88:06AE)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R048+0x2BBE` `push 0`
 
 ### R048+0x2BEE `R048+0x2BEE (1A88:06EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x2C38 `R048+0x2C38 (1A88:0738)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R048+0x2C48` `push 0`
 
 ### R048+0x2C78 `R048+0x2C78 (1A88:0778)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x2CC2 `R048+0x2CC2 (1A88:07C2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x0000 `R049+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 27/34, outcomes 13/20
+matched, reached by cards cards-day cards-flip cards-variants: blocks 28/34, outcomes 14/20
 
-- `R049+0x00EC` `mov word ptr [0xee7a], 2`
 - `R049+0x00FD` `jmp 0x290`
 - `R049+0x01EC` `mov bx, word ptr [0xee6a]`
 - `R049+0x0201` `jmp 0x286`
@@ -9310,19 +9244,19 @@ matched, reached by cards cards-day cards-variants: blocks 27/34, outcomes 13/20
 
 ### R049+0x0298 `R049+0x0298 (1838:0298)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x02AA `R049+0x02AA (1838:02AA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x02E2 `R049+0x02E2 (1838:02E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x02F4 `R049+0x02F4 (1838:02F4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x032C `R049+0x032C (1838:032C)`
 
@@ -9330,55 +9264,55 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x034A `R049+0x034A (1838:034A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x03CC `R049+0x03CC (1838:03CC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x03EA `R049+0x03EA (1838:03EA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x046C `R049+0x046C (1838:046C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x048A `R049+0x048A (1838:048A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x04C2 `R049+0x04C2 (1838:04C2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x04E0 `R049+0x04E0 (1838:04E0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x0518 `R049+0x0518 (1838:0518)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x052A `R049+0x052A (1838:052A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x0562 `R049+0x0562 (1838:0562)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x0574 `R049+0x0574 (1838:0574)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x05AE `R049+0x05AE (1838:05AE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x05B2 `R049+0x05B2 (1893:0002)`
 
-matched, reached by cards cards-day cards-variants: blocks 40/68, outcomes 24/58
+matched, reached by cards cards-day cards-flip cards-variants: blocks 45/68, outcomes 32/58
 
 - `R049+0x0618` `push word ptr [0x907e]`
 - `R049+0x062A` `mov word ptr [0xe48a], 0xb2`
@@ -9397,21 +9331,16 @@ matched, reached by cards cards-day cards-variants: blocks 40/68, outcomes 24/58
 - `R049+0x0905` `add si, 5`
 - `R049+0x0908` `push 0x64`
 - `R049+0x0916` `mov word ptr [0xe7d8], 0x12`
-- `R049+0x0936` `push word ptr [0x907e]`
 - `R049+0x0949` `push word ptr [0x907e]`
 - `R049+0x095B` `mov word ptr [0xe48a], 0xbd`
-- `R049+0x0975` `push word ptr [0x907e]`
 - `R049+0x0988` `push word ptr [0x907e]`
 - `R049+0x099A` `mov word ptr [0xe48a], 0xbe`
-- `R049+0x09B4` `push word ptr [0x907e]`
 - `R049+0x09C7` `mov word ptr [0xe48a], 0x80`
-- `R049+0x09E4` `push word ptr [0x907e]`
-- `R049+0x09F7` `jmp 0x8c`
 - `R049+0x09FA` `mov word ptr [0xe48a], 0x7b`
 
 ### R049+0x0A0A `R049+0x0A0A (1893:045A)`
 
-matched, reached by cards cards-day cards-variants: blocks 16/24, outcomes 11/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/24, outcomes 11/18
 
 - `R049+0x0A71` `push 0`
 - `R049+0x0B7B` `push 0`
@@ -9424,105 +9353,98 @@ matched, reached by cards cards-day cards-variants: blocks 16/24, outcomes 11/18
 
 ### R049+0x0E4A `R049+0x0E4A (1893:089A)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 2/2
 
 ### R049+0x0EA2 `R049+0x0EA2 (1893:08F2)`
 
-matched, reached by cards cards-day cards-variants: blocks 17/24, outcomes 11/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 19/24, outcomes 12/18
 
 - `R049+0x0F09` `push 0`
 - `R049+0x101B` `push 0`
 - `R049+0x1129` `jmp 0xd3e`
 - `R049+0x1140` `jmp 0xd3e`
-- `R049+0x1157` `jmp 0xd3e`
 - `R049+0x1162` `push ax`
-- `R049+0x12EE` `sub ax, ax`
 
 ### R049+0x12F4 `R049+0x12F4 (1893:0D44)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R049+0x134C `R049+0x134C (1893:0D9C)`
 
-matched, reached by cards cards-day cards-variants: blocks 15/24, outcomes 10/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 17/24, outcomes 11/18
 
 - `R049+0x1389` `push 0`
 - `R049+0x13B3` `push 7`
 - `R049+0x1503` `push 0`
 - `R049+0x1611` `jmp 0x120a`
 - `R049+0x1628` `jmp 0x120a`
-- `R049+0x163F` `jmp 0x120a`
 - `R049+0x164A` `mov es, word ptr [0x7f24]`
 - `R049+0x1716` `push 1`
-- `R049+0x17BA` `sub ax, ax`
 
 ### R049+0x17C0 `R049+0x17C0 (1893:1210)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R049+0x180A `R049+0x180A (1893:125A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R049+0x182B` `mov word ptr [0xe48a], 1`
 
 ### R049+0x183C `R049+0x183C (1893:128C)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R049+0x1886 `R049+0x1886 (1893:12D6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R049+0x18A7` `mov word ptr [0xe48a], 1`
 
 ### R049+0x18B8 `R049+0x18B8 (1893:1308)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R049+0x1902 `R049+0x1902 (1893:1352)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R049+0x1923` `mov word ptr [0xe48a], 1`
 
 ### R049+0x1934 `R049+0x1934 (1893:1384)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R049+0x1A8E `R049+0x1A8E (1893:14DE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R049+0x1AA6` `push 0`
 
 ### R049+0x1AD6 `R049+0x1AD6 (1893:1526)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R049+0x1B20 `R049+0x1B20 (1893:1570)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
 
 - `R049+0x1B38` `push 0`
 
 ### R049+0x1B68 `R049+0x1B68 (1893:15B8)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R049+0x1BB8 `R049+0x1BB8 (1893:1608)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x1BF2 `R049+0x1BF2 (19F7:0002)`
 
-asm, reached by cards cards-day cards-variants: blocks 28/37, outcomes 13/20
+asm, reached by cards cards-day cards-flip cards-variants: blocks 31/37, outcomes 16/20
 
 - `R049+0x1CA7` `mov cx, 0x30`
-- `R049+0x1CF4` `mov word ptr [0xee76], 2`
-- `R049+0x1D0C` `mov word ptr [0xee78], 2`
 - `R049+0x1D6C` `jmp 0x32e`
-- `R049+0x1E35` `push 0x13`
 - `R049+0x1E90` `jmp 0x324`
 - `R049+0x1EF6` `push word ptr [bp - 8]`
 - `R049+0x1F00` `push word ptr [bp - 8]`
@@ -9534,9 +9456,7 @@ asm, reached by cards cards-day cards-variants: blocks 7/7, outcomes 5/6
 
 ### R049+0x202A `R049+0x202A (19F7:043A)`
 
-asm, reached by cards cards-day cards-variants: blocks 7/8, outcomes 6/10
-
-- `R049+0x2074` `sub si, 0x14`
+asm, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 7/10
 
 ### R049+0x208C `R049+0x208C (19F7:049C)`
 
@@ -9546,11 +9466,11 @@ asm, reached by cards-variants: blocks 3/4, outcomes 2/4
 
 ### R049+0x2126 `R049+0x2126 (19F7:0536)`
 
-asm, reached by cards cards-day cards-variants: blocks 5/5, outcomes 3/4
+asm, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 3/4
 
 ### R049+0x2184 `R049+0x2184 (19F7:0594)`
 
-asm, reached by cards cards-day cards-variants: blocks 10/19, outcomes 4/12
+asm, reached by cards cards-day cards-flip cards-variants: blocks 10/19, outcomes 4/12
 
 - `R049+0x21B4` `dec ax`
 - `R049+0x21B7` `dec ax`
@@ -9564,7 +9484,7 @@ asm, reached by cards cards-day cards-variants: blocks 10/19, outcomes 4/12
 
 ### R049+0x2368 `R049+0x2368 (19F7:0778)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x23A0 `R049+0x23A0 (19F7:07B0)`
 
@@ -9584,11 +9504,11 @@ asm, reached by cards-day cards-variants: blocks 4/15, outcomes 2/12
 
 ### R049+0x24AA `R049+0x24AA (19F7:08BA)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x24E2 `R049+0x24E2 (19F7:08F2)`
 
-asm, reached by cards cards-day cards-variants: blocks 7/20, outcomes 3/14
+asm, reached by cards cards-day cards-flip cards-variants: blocks 7/20, outcomes 3/14
 
 - `R049+0x2525` `push -9`
 - `R049+0x254A` `dec ax`
@@ -9606,39 +9526,33 @@ asm, reached by cards cards-day cards-variants: blocks 7/20, outcomes 3/14
 
 ### R049+0x269A `R049+0x269A (19F7:0AAA)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R049+0x26D2 `R049+0x26D2 (19F7:0AE2)`
 
-asm, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R049+0x2712` `mov es, word ptr [0x7f2a]`
 
 ### R049+0x276C `R049+0x276C (19F7:0B7C)`
 
-asm, reached by cards cards-day cards-variants: blocks 7/8, outcomes 6/10
-
-- `R049+0x27B6` `sub si, 0x14`
+asm, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 7/10
 
 ### R049+0x27CE `R049+0x27CE (19F7:0BDE)`
 
-asm, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R049+0x2872 `R049+0x2872 (19F7:0C82)`
 
-asm, reached by cards cards-day cards-variants: blocks 9/10, outcomes 7/10
-
-- `R049+0x28C6` `sub si, 0x14`
+asm, reached by cards cards-day cards-flip cards-variants: blocks 10/10, outcomes 8/10
 
 ### R049+0x29E2 `R049+0x29E2 (19F7:0DF2)`
 
-asm, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+asm, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R049+0x2ABC `R049+0x2ABC (19F7:0ECC)`
 
-asm, reached by cards cards-day cards-variants: blocks 7/8, outcomes 6/10
-
-- `R049+0x2B08` `sub si, 0xa`
+asm, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 7/10
 
 ### R049+0x2C04 `R049+0x2C04 (19F7:1014)`
 
@@ -9718,11 +9632,8 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x0000 `R050+0x0000 (1838:0000)`
 
-asm, reached by cards cards-day cards-variants: blocks 35/45, outcomes 20/32
+asm, reached by cards cards-day cards-flip cards-variants: blocks 38/45, outcomes 23/32
 
-- `R050+0x00E2` `mov word ptr [0xee7e], 2`
-- `R050+0x016A` `push word ptr [0x907e]`
-- `R050+0x018C` `mov word ptr [0xee7a], 2`
 - `R050+0x01D3` `inc word ptr [bp - 4]`
 - `R050+0x021F` `jmp 0x3ae`
 - `R050+0x02A7` `jmp 0x36e`
@@ -9752,7 +9663,7 @@ asm, reached by cards-day: blocks 1/1, outcomes 0/0
 
 ### R050+0x0642 `R050+0x0642 (1838:0642)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x067C `R050+0x067C (1838:067C)`
 
@@ -9765,47 +9676,51 @@ asm, reached by cards-day: blocks 9/13, outcomes 6/12
 
 ### R050+0x079A `R050+0x079A (1838:079A)`
 
-asm, reached by cards-day: blocks 1/1, outcomes 0/0
+asm, reached by cards-day cards-flip: blocks 1/1, outcomes 0/0
 
 ### R050+0x07C8 `R050+0x07C8 (1838:07C8)`
 
-asm, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R050+0x07F6` `mov es, word ptr [0x7f2e]`
 
 ### R050+0x083C `R050+0x083C (1838:083C)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+
+### R050+0x0A26 `R050+0x0A26 (1838:0A26)`
+
+asm, reached by cards-flip: blocks 8/10, outcomes 6/10
+
+- `R050+0x0A77` `inc word ptr [bp - 2]`
+- `R050+0x0AAC` `mov es, word ptr [0x7f30]`
 
 ### R050+0x0AE2 `R050+0x0AE2 (1838:0AE2)`
 
-asm, reached by cards cards-day cards-variants: blocks 4/4, outcomes 3/4
+asm, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 3/4
 
 ### R050+0x0B5E `R050+0x0B5E (1838:0B5E)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x0B96 `R050+0x0B96 (1838:0B96)`
 
-asm, reached by cards cards-variants: blocks 3/3, outcomes 1/2
+asm, reached by cards cards-flip cards-variants: blocks 3/3, outcomes 1/2
 
 ### R050+0x0BB6 `R050+0x0BB6 (1838:0BB6)`
 
-asm, reached by cards cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x0BEE `R050+0x0BEE (1838:0BEE)`
 
-asm, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R050+0x0C48 `R050+0x0C48 (18FC:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 26/49, outcomes 16/44
+matched, reached by cards cards-day cards-flip cards-variants: blocks 33/49, outcomes 26/44
 
-- `R050+0x0D0D` `mov word ptr [0xee7a], 1`
 - `R050+0x0D43` `jmp 0x24e`
-- `R050+0x0DD6` `push 1`
 - `R050+0x0E12` `mov bx, word ptr [0xee6a]`
-- `R050+0x0E52` `push word ptr [bp - 4]`
 - `R050+0x0E5C` `push word ptr [bp - 4]`
 - `R050+0x0E66` `push word ptr [bp - 4]`
 - `R050+0x0E8B` `jmp 0x106`
@@ -9814,26 +9729,20 @@ matched, reached by cards cards-day cards-variants: blocks 26/49, outcomes 16/44
 - `R050+0x0ED6` `push 3`
 - `R050+0x0EE5` `push 0x64`
 - `R050+0x0EF3` `mov word ptr [0xe7d8], 0x12`
-- `R050+0x0F13` `push word ptr [0x907e]`
 - `R050+0x0F26` `push word ptr [0x907e]`
 - `R050+0x0F38` `mov word ptr [0xe48a], 0xbd`
-- `R050+0x0F52` `push word ptr [0x907e]`
 - `R050+0x0F65` `push word ptr [0x907e]`
 - `R050+0x0F77` `mov word ptr [0xe48a], 0xbe`
-- `R050+0x0F91` `push word ptr [0x907e]`
 - `R050+0x0FA4` `mov word ptr [0xe48a], 0x80`
-- `R050+0x0FBE` `push word ptr [0x907e]`
 - `R050+0x0FD1` `mov word ptr [0xe48a], 0x7b`
 
 ### R050+0x0FDE `R050+0x0FDE (18FC:039E)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R050+0x1028 `R050+0x1028 (18FC:03E8)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/8, outcomes 6/10
-
-- `R050+0x106E` `sub si, 0x14`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 7/10
 
 ### R050+0x1086 `R050+0x1086 (18FC:0446)`
 
@@ -9847,31 +9756,37 @@ matched, reached by cards cards-day: blocks 7/8, outcomes 6/10
 
 - `R050+0x1118` `sub si, 0x14`
 
+### R050+0x1130 `R050+0x1130 (18FC:04F0)`
+
+matched, reached by cards-flip: blocks 2/3, outcomes 1/2
+
+- `R050+0x1141` `mov word ptr [0xe48a], 0x11e`
+
+### R050+0x1174 `R050+0x1174 (18FC:0534)`
+
+matched, reached by cards-flip: blocks 8/8, outcomes 6/10
+
 ### R050+0x132E `R050+0x132E (18FC:06EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R050+0x135E` `push 0`
 
 ### R050+0x1388 `R050+0x1388 (18FC:0748)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/8, outcomes 6/10
-
-- `R050+0x13CE` `sub si, 0x14`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 7/10
 
 ### R050+0x13E6 `R050+0x13E6 (18FC:07A6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R050+0x1440 `R050+0x1440 (18FC:0800)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/8, outcomes 6/10
-
-- `R050+0x1486` `sub si, 0x14`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 7/10
 
 ### R050+0x149E `R050+0x149E (18FC:085E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x14A0 `R050+0x14A0 (1982:0000)`
 
@@ -9953,7 +9868,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x1CEE `R050+0x1CEE (1A06:000E)`
 
-matched, reached by cards cards-day cards-variants: blocks 17/24, outcomes 8/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 17/24, outcomes 8/10
 
 - `R050+0x1DB0` `jmp 0x264`
 - `R050+0x1EB5` `jmp 0x25a`
@@ -9965,35 +9880,29 @@ matched, reached by cards cards-day cards-variants: blocks 17/24, outcomes 8/10
 
 ### R050+0x1F4C `R050+0x1F4C (1A06:026C)`
 
-matched, reached by cards cards-day cards-variants: blocks 13/15, outcomes 8/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 14/15, outcomes 9/10
 
 - `R050+0x1F5F` `mov word ptr [0xe48a], 1`
-- `R050+0x1F7C` `mov es, word ptr [0x7f36]`
 
 ### R050+0x21F8 `R050+0x21F8 (1A06:0518)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/8, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/8, outcomes 5/6
 
 - `R050+0x220D` `mov word ptr [bp - 4], 0`
-- `R050+0x2260` `mov si, 1`
-- `R050+0x2275` `mov si, 0x63`
 
 ### R050+0x2298 `R050+0x2298 (1A06:05B8)`
 
-matched, reached by cards cards-day cards-variants: blocks 12/16, outcomes 8/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 13/16, outcomes 9/12
 
 - `R050+0x22AB` `mov word ptr [0xe48a], 1`
-- `R050+0x22C8` `mov es, word ptr [0x7f36]`
 - `R050+0x2333` `jmp 0x716`
 - `R050+0x23F6` `push 2`
 
 ### R050+0x24E0 `R050+0x24E0 (1A06:0800)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/8, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/8, outcomes 5/6
 
 - `R050+0x24F5` `mov word ptr [bp - 4], 0`
-- `R050+0x2548` `mov si, 1`
-- `R050+0x255D` `mov si, 0x63`
 
 ### R050+0x2580 `R050+0x2580 (1A06:08A0)`
 
@@ -10012,27 +9921,27 @@ matched, reached by cards-day cards-variants: blocks 4/14, outcomes 2/10
 
 ### R050+0x270E `R050+0x270E (1A06:0A2E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x289C `R050+0x289C (1A06:0BBC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x28B0 `R050+0x28B0 (1A06:0BD0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x28E8 `R050+0x28E8 (1A06:0C08)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x28FC `R050+0x28FC (1A06:0C1C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x2934 `R050+0x2934 (1A06:0C54)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R050+0x2AFE `R050+0x2AFE (1A06:0E1E)`
 
@@ -10077,7 +9986,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R051+0x091E `R051+0x091E (18C9:000E)`
 
-matched, reached by cards cards-day cards-variants: blocks 26/34, outcomes 12/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 26/34, outcomes 12/18
 
 - `R051+0x09B8` `mov word ptr [0xee80], 1`
 - `R051+0x09E4` `sub ax, ax`
@@ -10090,14 +9999,14 @@ matched, reached by cards cards-day cards-variants: blocks 26/34, outcomes 12/18
 
 ### R051+0x0C00 `R051+0x0C00 (18C9:02F0)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/10, outcomes 6/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/10, outcomes 6/10
 
 - `R051+0x0C71` `push 0x64`
 - `R051+0x0C80` `mov es, word ptr [0x7f3c]`
 
 ### R051+0x0CE6 `R051+0x0CE6 (18C9:03D6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R051+0x0D12` `mov ax, 0xfff6`
 
@@ -10110,65 +10019,63 @@ matched, reached by cards-variants: blocks 6/8, outcomes 6/8
 
 ### R051+0x0E22 `R051+0x0E22 (18C9:0512)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x0E5A `R051+0x0E5A (18C9:054A)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
-
-- `R051+0x0E76` `mov ax, 0xb5`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R051+0x0EA8 `R051+0x0EA8 (18C9:0598)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x0EE0 `R051+0x0EE0 (18C9:05D0)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R051+0x0F94 `R051+0x0F94 (18C9:0684)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x0FCC `R051+0x0FCC (18C9:06BC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1040 `R051+0x1040 (18C9:0730)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1128 `R051+0x1128 (18C9:0818)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1146 `R051+0x1146 (18C9:0836)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x117E `R051+0x117E (18C9:086E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x119C `R051+0x119C (18C9:088C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x11D4 `R051+0x11D4 (18C9:08C4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x11F2 `R051+0x11F2 (18C9:08E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1280 `R051+0x1280 (18C9:0970)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R051+0x12F0 `R051+0x12F0 (1967:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 23/31, outcomes 10/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 23/31, outcomes 10/16
 
 - `R051+0x1378` `sub ax, ax`
 - `R051+0x13BC` `mov word ptr [0xee80], 1`
@@ -10181,14 +10088,14 @@ matched, reached by cards cards-day cards-variants: blocks 23/31, outcomes 10/16
 
 ### R051+0x15C4 `R051+0x15C4 (1967:02D4)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/8, outcomes 5/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/8, outcomes 5/8
 
 - `R051+0x160D` `push 0x64`
 - `R051+0x161C` `mov es, word ptr [0x7f3e]`
 
 ### R051+0x1682 `R051+0x1682 (1967:0392)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R051+0x16AE` `mov ax, 0xfff6`
 
@@ -10201,65 +10108,63 @@ matched, reached by cards-variants: blocks 5/7, outcomes 5/8
 
 ### R051+0x17B0 `R051+0x17B0 (1967:04C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x17E8 `R051+0x17E8 (1967:04F8)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
-
-- `R051+0x1804` `mov ax, 0xb5`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R051+0x1836 `R051+0x1836 (1967:0546)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x186E `R051+0x186E (1967:057E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x18B8 `R051+0x18B8 (1967:05C8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x18F0 `R051+0x18F0 (1967:0600)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1964 `R051+0x1964 (1967:0674)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1A10 `R051+0x1A10 (1967:0720)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1A2E `R051+0x1A2E (1967:073E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1A66 `R051+0x1A66 (1967:0776)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1A84 `R051+0x1A84 (1967:0794)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1ABC `R051+0x1ABC (1967:07CC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1ADA `R051+0x1ADA (1967:07EA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1B6C `R051+0x1B6C (1967:087C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x1BA6 `R051+0x1BA6 (19F2:0006)`
 
-matched, reached by cards cards-day cards-variants: blocks 39/69, outcomes 24/46
+matched, reached by cards cards-day cards-flip cards-variants: blocks 39/69, outcomes 24/46
 
 - `R051+0x1CC7` `mov bx, word ptr es:[bx + 0x4e]`
 - `R051+0x1CFA` `mov bx, word ptr es:[bx + 0x50]`
@@ -10294,39 +10199,39 @@ matched, reached by cards cards-day cards-variants: blocks 39/69, outcomes 24/46
 
 ### R051+0x21A4 `R051+0x21A4 (19F2:0604)`
 
-matched, reached by cards cards-day cards-variants: blocks 10/10, outcomes 8/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 10/10, outcomes 8/8
 
 ### R051+0x2332 `R051+0x2332 (19F2:0792)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/7, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 4/4
 
 ### R051+0x23B8 `R051+0x23B8 (19F2:0818)`
 
-matched, reached by cards cards-day cards-variants: blocks 10/10, outcomes 8/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 10/10, outcomes 8/8
 
 ### R051+0x2546 `R051+0x2546 (19F2:09A6)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/7, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 4/4
 
 ### R051+0x2D0A `R051+0x2D0A (19F2:116A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x2D1E `R051+0x2D1E (19F2:117E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x2D56 `R051+0x2D56 (19F2:11B6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x2D6A `R051+0x2D6A (19F2:11CA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x2E4E `R051+0x2E4E (19F2:12AE)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R052+0x0000 `R052+0x0000 (1838:0000)`
 
@@ -10511,7 +10416,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R052+0x16A8 `R052+0x16A8 (19A2:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 16/26, outcomes 6/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/26, outcomes 6/10
 
 - `R052+0x172C` `push 2`
 - `R052+0x1748` `jmp 0x23c`
@@ -10526,47 +10431,44 @@ matched, reached by cards cards-day cards-variants: blocks 16/26, outcomes 6/10
 
 ### R052+0x18E4 `R052+0x18E4 (19A2:0244)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R052+0x1902 `R052+0x1902 (19A2:0262)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R052+0x193A `R052+0x193A (19A2:029A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R052+0x1960 `R052+0x1960 (19A2:02C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R052+0x1C7E `R052+0x1C7E (19A2:05DE)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
-
-- `R052+0x1CEA` `push 2`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R052+0x1D34 `R052+0x1D34 (19A2:0694)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R052+0x1D6C `R052+0x1D6C (19A2:06CC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R052+0x1D80 `R052+0x1D80 (19A2:06E0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R052+0x1DB8 `R052+0x1DB8 (19A2:0718)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R053+0x0000 `R053+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 29/40, outcomes 14/30
+matched, reached by cards cards-day cards-flip cards-variants: blocks 32/40, outcomes 20/30
 
-- `R053+0x001C` `push 0x20`
 - `R053+0x00B5` `mov ax, dx`
 - `R053+0x00CA` `push 0x4f`
 - `R053+0x00D8` `cmp word ptr [0xa891], 3`
@@ -10574,24 +10476,16 @@ matched, reached by cards cards-day cards-variants: blocks 29/40, outcomes 14/30
 - `R053+0x00E9` `push 1`
 - `R053+0x00F9` `mov word ptr [0x907e], 0xffff`
 - `R053+0x0105` `mov ax, word ptr [0xe7d8]`
-- `R053+0x0113` `mov di, 2`
 - `R053+0x0176` `jmp 0x2bc`
-- `R053+0x02C3` `mov word ptr [0x907e], 0xffff`
 
 ### R053+0x02D6 `R053+0x02D6 (1838:02D6)`
 
-matched, reached by cards cards-day cards-variants: blocks 16/48, outcomes 9/40
+matched, reached by cards cards-day cards-flip cards-variants: blocks 23/48, outcomes 18/40
 
-- `R053+0x02E2` `push word ptr [0xe3d2]`
-- `R053+0x0309` `cmp word ptr [bp + 6], 1`
-- `R053+0x0318` `sub ax, 9`
-- `R053+0x031D` `dec ax`
 - `R053+0x0320` `sub ax, 0x17`
 - `R053+0x0325` `dec ax`
 - `R053+0x0328` `jmp 0x309`
-- `R053+0x0338` `cmp word ptr [bp + 6], 1`
 - `R053+0x0346` `cmp word ptr [bp + 6], 1`
-- `R053+0x0359` `cmp word ptr [bp + 6], 1`
 - `R053+0x03B5` `dec ax`
 - `R053+0x03B8` `jmp 0x57a`
 - `R053+0x03BB` `dec ax`
@@ -10601,7 +10495,6 @@ matched, reached by cards cards-day cards-variants: blocks 16/48, outcomes 9/40
 - `R053+0x03C7` `dec ax`
 - `R053+0x03CA` `jmp 0x506`
 - `R053+0x03CD` `pop si`
-- `R053+0x03E6` `mov es, word ptr [0x7f4e]`
 - `R053+0x043A` `dec ax`
 - `R053+0x043D` `push 2`
 - `R053+0x0444` `push 2`
@@ -10617,38 +10510,33 @@ matched, reached by cards cards-day cards-variants: blocks 16/48, outcomes 9/40
 
 ### R053+0x057E `R053+0x057E (1838:057E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x05A8 `R053+0x05A8 (1838:05A8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x05E2 `R053+0x05E2 (1838:05E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/10, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/10, outcomes 5/6
 
 - `R053+0x05FA` `jmp 0x696`
-- `R053+0x0604` `push -1`
-- `R053+0x063F` `mov es, word ptr [0x7f4e]`
 - `R053+0x0696` `mov es, word ptr [0x7f4e]`
 
 ### R053+0x06E2 `R053+0x06E2 (1838:06E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
-
-- `R053+0x0711` `push 0x10`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R053+0x074E `R053+0x074E (1838:074E)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/9, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/9, outcomes 4/6
 
 - `R053+0x0770` `push 0`
-- `R053+0x07B6` `mov es, word ptr [0x7f4e]`
 - `R053+0x0804` `mov es, word ptr [0x7f4e]`
 
 ### R053+0x0854 `R053+0x0854 (1838:0854)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x0874 `R053+0x0874 (1838:0874)`
 
@@ -10662,43 +10550,42 @@ matched, reached by cards-day cards-variants: blocks 3/8, outcomes 2/6
 
 ### R053+0x08EE `R053+0x08EE (1838:08EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x0926 `R053+0x0926 (1838:0926)`
 
-matched, reached by cards cards-day cards-variants: blocks 12/15, outcomes 7/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 13/15, outcomes 8/10
 
 - `R053+0x093D` `mov es, word ptr [0x7f4e]`
 - `R053+0x09AA` `mov es, word ptr [0x7f4e]`
-- `R053+0x09F9` `mov es, word ptr [0x7f4e]`
 
 ### R053+0x0A56 `R053+0x0A56 (1838:0A56)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R053+0x0AA8 `R053+0x0AA8 (1838:0AA8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x0AEE `R053+0x0AEE (1838:0AEE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x0B26 `R053+0x0B26 (1838:0B26)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x0B30 `R053+0x0B30 (1838:0B30)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x0B68 `R053+0x0B68 (1838:0B68)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R053+0x0C36 `R053+0x0C36 (1838:0C36)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R053+0x0D26 `R053+0x0D26 (1838:0D26)`
 
@@ -11008,14 +10895,10 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R054+0x1A78 `R054+0x1A78 (19DF:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/28, outcomes 10/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 23/28, outcomes 12/14
 
-- `R054+0x1B3D` `mov word ptr [0xee78], 2`
-- `R054+0x1B55` `mov ax, 1`
 - `R054+0x1B65` `jmp 0x290`
 - `R054+0x1C71` `jmp 0x286`
-- `R054+0x1CB0` `push word ptr [bp - 4]`
-- `R054+0x1CBA` `push word ptr [bp - 4]`
 - `R054+0x1CC4` `push word ptr [bp - 4]`
 - `R054+0x1CCE` `push word ptr [bp - 4]`
 - `R054+0x1CD8` `push word ptr [bp - 4]`
@@ -11034,18 +10917,15 @@ matched, reached by cards cards-day cards-variants: blocks 10/17, outcomes 4/10
 
 ### R054+0x2018 `R054+0x2018 (19DF:05A8)`
 
-matched, reached by cards cards-day cards-variants: blocks 13/15, outcomes 8/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 14/15, outcomes 9/10
 
 - `R054+0x202B` `mov word ptr [0xe48a], 1`
-- `R054+0x2048` `push 0`
 
 ### R054+0x221C `R054+0x221C (19DF:07AC)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/11, outcomes 5/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 9/11, outcomes 7/10
 
 - `R054+0x2231` `mov word ptr [bp - 4], 0`
-- `R054+0x2295` `mov si, 1`
-- `R054+0x22AA` `mov si, 0x63`
 - `R054+0x22D5` `mov si, 0x63`
 
 ### R054+0x22F8 `R054+0x22F8 (19DF:0888)`
@@ -11060,11 +10940,9 @@ matched, reached by cards cards-day cards-variants: blocks 15/20, outcomes 9/14
 
 ### R054+0x2526 `R054+0x2526 (19DF:0AB6)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/8, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/8, outcomes 5/6
 
 - `R054+0x253B` `mov word ptr [bp - 4], 0`
-- `R054+0x258E` `mov si, 1`
-- `R054+0x25A3` `mov si, 0x63`
 
 ### R054+0x25C6 `R054+0x25C6 (19DF:0B56)`
 
@@ -11083,27 +10961,54 @@ matched, reached by cards-day cards-variants: blocks 4/14, outcomes 2/10
 
 ### R054+0x2758 `R054+0x2758 (19DF:0CE8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+
+### R054+0x2790 `R054+0x2790 (19DF:0D20)`
+
+matched, reached by cards-flip: blocks 3/6, outcomes 2/6
+
+- `R054+0x279A` `push 0x64`
+- `R054+0x27B9` `mov es, word ptr [0x7f60]`
+- `R054+0x27FF` `mov es, word ptr [0x7f60]`
+
+### R054+0x2880 `R054+0x2880 (19DF:0E10)`
+
+matched, reached by cards-flip: blocks 3/4, outcomes 1/2
+
+- `R054+0x28AC` `push 0xf`
+
+### R054+0x28CE `R054+0x28CE (19DF:0E5E)`
+
+matched, reached by cards-flip: blocks 2/4, outcomes 1/4
+
+- `R054+0x28D9` `push 0x64`
+- `R054+0x290D` `mov es, word ptr [0x7f60]`
+
+### R054+0x2996 `R054+0x2996 (19DF:0F26)`
+
+matched, reached by cards-flip: blocks 3/4, outcomes 1/2
+
+- `R054+0x29C2` `push 4`
 
 ### R054+0x2CFA `R054+0x2CFA (19DF:128A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x2D0E `R054+0x2D0E (19DF:129E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x2D46 `R054+0x2D46 (19DF:12D6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x2D5A `R054+0x2D5A (19DF:12EA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R054+0x2D92 `R054+0x2D92 (19DF:1322)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R054+0x2F5C `R054+0x2F5C (19DF:14EC)`
 
@@ -11155,9 +11060,8 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R055+0x08FC `R055+0x08FC (18C7:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 15/22, outcomes 11/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/22, outcomes 12/18
 
-- `R055+0x0972` `push 0`
 - `R055+0x0998` `push 0`
 - `R055+0x09FD` `jmp 0x1e2`
 - `R055+0x0A80` `mov bx, word ptr [0xee6a]`
@@ -11197,16 +11101,15 @@ matched, reached by cards cards-day cards-variants: blocks 6/11, outcomes 4/8
 
 ### R055+0x0FA0 `R055+0x0FA0 (1932:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/23, outcomes 15/20
+matched, reached by cards cards-day cards-flip cards-variants: blocks 20/23, outcomes 16/20
 
-- `R055+0x103A` `mov word ptr [0xee78], 2`
 - `R055+0x1079` `jmp 0x18e`
 - `R055+0x1104` `jmp 0x184`
 - `R055+0x112B` `jmp 0xdc`
 
 ### R055+0x1136 `R055+0x1136 (1932:0196)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/12, outcomes 4/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/12, outcomes 4/8
 
 - `R055+0x1184` `push 1`
 - `R055+0x11BC` `jmp 0x26c`
@@ -11215,7 +11118,7 @@ matched, reached by cards cards-day cards-variants: blocks 8/12, outcomes 4/8
 
 ### R055+0x122C `R055+0x122C (1932:028C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x1264 `R055+0x1264 (1932:02C4)`
 
@@ -11225,11 +11128,11 @@ matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
 
 ### R055+0x12EC `R055+0x12EC (1932:034C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x1316 `R055+0x1316 (1932:0376)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/18, outcomes 3/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/18, outcomes 3/14
 
 - `R055+0x138D` `push -9`
 - `R055+0x13D0` `dec ax`
@@ -11244,15 +11147,15 @@ matched, reached by cards cards-day cards-variants: blocks 8/18, outcomes 3/14
 
 ### R055+0x146C `R055+0x146C (1932:04CC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x14A4 `R055+0x14A4 (1932:0504)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R055+0x153E `R055+0x153E (1932:059E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x156C `R055+0x156C (1932:05CC)`
 
@@ -11342,13 +11245,8 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x088C `R056+0x088C (18C0:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 24/36, outcomes 14/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 29/36, outcomes 19/22
 
-- `R056+0x0975` `mov word ptr [0xee76], 2`
-- `R056+0x098F` `mov word ptr [0xee78], 2`
-- `R056+0x09A9` `mov word ptr [0xee7a], 2`
-- `R056+0x09C3` `mov word ptr [0xee7c], 2`
-- `R056+0x09DD` `mov word ptr [0xee7e], 2`
 - `R056+0x0A08` `jmp 0x322`
 - `R056+0x0B00` `mov bx, word ptr [0xee6a]`
 - `R056+0x0B15` `jmp 0x318`
@@ -11397,30 +11295,29 @@ matched, reached by cards-day: blocks 1/1, outcomes 0/0
 
 ### R056+0x143E `R056+0x143E (18C0:0BBE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x1452 `R056+0x1452 (18C0:0BD2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x148A `R056+0x148A (18C0:0C0A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x149E `R056+0x149E (18C0:0C1E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x14D6 `R056+0x14D6 (18C0:0C56)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R056+0x18C8 `R056+0x18C8 (19C4:0008)`
 
-asm, reached by cards cards-day cards-variants: blocks 33/40, outcomes 21/34
+asm, reached by cards cards-day cards-flip cards-variants: blocks 34/40, outcomes 22/34
 
 - `R056+0x1A3C` `mov word ptr [0xee86], 1`
-- `R056+0x1A84` `mov word ptr [0xee7e], 0`
 - `R056+0x1A95` `jmp 0x34c`
 - `R056+0x1B78` `mov bx, word ptr [0xee6a]`
 - `R056+0x1BC6` `push word ptr [bp - 8]`
@@ -11429,7 +11326,7 @@ asm, reached by cards cards-day cards-variants: blocks 33/40, outcomes 21/34
 
 ### R056+0x1C14 `R056+0x1C14 (19C4:0354)`
 
-asm, reached by cards cards-day cards-variants: blocks 8/18, outcomes 5/14
+asm, reached by cards cards-day cards-flip cards-variants: blocks 8/18, outcomes 5/14
 
 - `R056+0x1C52` `mov word ptr [bp - 2], 1`
 - `R056+0x1C5A` `cmp di, si`
@@ -11444,11 +11341,11 @@ asm, reached by cards cards-day cards-variants: blocks 8/18, outcomes 5/14
 
 ### R056+0x1D9C `R056+0x1D9C (19C4:04DC)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x1DD4 `R056+0x1DD4 (19C4:0514)`
 
-asm, reached by cards cards-day cards-variants: blocks 8/23, outcomes 4/18
+asm, reached by cards cards-day cards-flip cards-variants: blocks 8/23, outcomes 4/18
 
 - `R056+0x1DF4` `push 0`
 - `R056+0x1E14` `push word ptr [0x907e]`
@@ -11468,7 +11365,7 @@ asm, reached by cards cards-day cards-variants: blocks 8/23, outcomes 4/18
 
 ### R056+0x2044 `R056+0x2044 (19C4:0784)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x207C `R056+0x207C (19C4:07BC)`
 
@@ -11488,7 +11385,7 @@ asm, reached by cards-variants: blocks 3/3, outcomes 1/2
 
 ### R056+0x25FE `R056+0x25FE (19C4:0D3E)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x2636 `R056+0x2636 (19C4:0D76)`
 
@@ -11496,19 +11393,19 @@ asm, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x2648 `R056+0x2648 (19C4:0D88)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x2680 `R056+0x2680 (19C4:0DC0)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x2692 `R056+0x2692 (19C4:0DD2)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R056+0x27C8 `R056+0x27C8 (19C4:0F08)`
 
-asm, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R056+0x2800 `R056+0x2800 (19C4:0F40)`
 
@@ -11761,13 +11658,8 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 2/2
 
 ### R057+0x0F72 `R057+0x0F72 (192F:0002)`
 
-matched, reached by cards cards-day cards-variants: blocks 28/43, outcomes 16/26
+matched, reached by cards cards-day cards-flip cards-variants: blocks 33/43, outcomes 21/26
 
-- `R057+0x1007` `mov word ptr [0xee76], 2`
-- `R057+0x101F` `mov word ptr [0xee78], 2`
-- `R057+0x1037` `mov word ptr [0xee78], 2`
-- `R057+0x104F` `mov word ptr [0xee7a], 2`
-- `R057+0x1067` `mov word ptr [0xee7c], 2`
 - `R057+0x10A4` `jmp 0x382`
 - `R057+0x1177` `jmp 0x33e`
 - `R057+0x1196` `jmp 0x33e`
@@ -11785,7 +11677,7 @@ matched, reached by cards-variants: blocks 6/6, outcomes 4/6
 
 ### R057+0x140C `R057+0x140C (192F:049C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x1446 `R057+0x1446 (192F:04D6)`
 
@@ -11796,7 +11688,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 1/2
 
 ### R057+0x15E2 `R057+0x15E2 (192F:0672)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R057+0x1666 `R057+0x1666 (192F:06F6)`
 
@@ -11809,10 +11701,9 @@ matched, reached by cards cards-day cards-variants: blocks 2/6, outcomes 1/4
 
 ### R057+0x17CC `R057+0x17CC (192F:085C)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/7, outcomes 4/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/7, outcomes 5/6
 
 - `R057+0x17EE` `mov ax, word ptr [0xee74]`
-- `R057+0x180B` `add word ptr [bp - 4], 0x19`
 
 ### R057+0x1834 `R057+0x1834 (192F:08C4)`
 
@@ -11824,33 +11715,33 @@ matched, reached by cards cards-day cards-variants: blocks 9/12, outcomes 7/12
 
 ### R057+0x1986 `R057+0x1986 (192F:0A16)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/9, outcomes 6/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 6/10
 
 - `R057+0x19DC` `mov word ptr [bp - 2], 0`
 
 ### R057+0x1A10 `R057+0x1A10 (192F:0AA0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x1A4C `R057+0x1A4C (192F:0ADC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x1BAC `R057+0x1BAC (192F:0C3C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x1BB4 `R057+0x1BB4 (192F:0C44)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x1C46 `R057+0x1C46 (192F:0CD6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R057+0x1CA0 `R057+0x1CA0 (1A02:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 21/26, outcomes 10/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 21/26, outcomes 10/14
 
 - `R057+0x1D86` `jmp 0x27a`
 - `R057+0x1E8B` `jmp 0x270`
@@ -11860,13 +11751,8 @@ matched, reached by cards cards-day cards-variants: blocks 21/26, outcomes 10/14
 
 ### R057+0x1F22 `R057+0x1F22 (1A02:0282)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/25, outcomes 2/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 12/25, outcomes 9/18
 
-- `R057+0x1F2C` `dec ax`
-- `R057+0x1F30` `dec ax`
-- `R057+0x1F33` `dec ax`
-- `R057+0x1F36` `jmp 0x357`
-- `R057+0x1F39` `push 0`
 - `R057+0x205E` `dec ax`
 - `R057+0x2061` `jmp 0x539`
 - `R057+0x2064` `dec ax`
@@ -11883,23 +11769,21 @@ matched, reached by cards cards-day cards-variants: blocks 7/25, outcomes 2/18
 
 ### R057+0x21DC `R057+0x21DC (1A02:053C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x2232 `R057+0x2232 (1A02:0592)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x225C `R057+0x225C (1A02:05BC)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
 - `R057+0x22BD` `push 0`
 
 ### R057+0x2312 `R057+0x2312 (1A02:0672)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R057+0x2350` `push 0xb`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R057+0x2380 `R057+0x2380 (1A02:06E0)`
 
@@ -11907,21 +11791,21 @@ matched, reached by cards-variants: blocks 4/4, outcomes 2/2
 
 ### R057+0x2450 `R057+0x2450 (1A02:07B0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x2490 `R057+0x2490 (1A02:07F0)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R057+0x24A1` `push 0`
 
 ### R057+0x2504 `R057+0x2504 (1A02:0864)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x2522 `R057+0x2522 (1A02:0882)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/14, outcomes 3/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/14, outcomes 3/10
 
 - `R057+0x254F` `dec ax`
 - `R057+0x2552` `dec ax`
@@ -11933,7 +11817,7 @@ matched, reached by cards cards-day cards-variants: blocks 7/14, outcomes 3/10
 
 ### R057+0x25C6 `R057+0x25C6 (1A02:0926)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x25FE `R057+0x25FE (1A02:095E)`
 
@@ -11946,23 +11830,23 @@ matched, reached by cards-day cards-variants: blocks 4/8, outcomes 1/6
 
 ### R057+0x265C `R057+0x265C (1A02:09BC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x2694 `R057+0x2694 (1A02:09F4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x26A4 `R057+0x26A4 (1A02:0A04)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x27AC `R057+0x27AC (1A02:0B0C)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R057+0x2886 `R057+0x2886 (1A02:0BE6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R057+0x28DE `R057+0x28DE (1A02:0C3E)`
 
@@ -11970,10 +11854,8 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x0000 `R058+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 9/34, outcomes 7/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 11/34, outcomes 9/18
 
-- `R058+0x0095` `mov word ptr [0xee76], 2`
-- `R058+0x00AD` `mov word ptr [0xee7c], 2`
 - `R058+0x00EA` `jmp 0x2e6`
 - `R058+0x01A8` `jmp 0x2a8`
 - `R058+0x01C9` `lcall 0x47c, 0x1293`
@@ -12000,7 +11882,7 @@ matched, reached by cards cards-day cards-variants: blocks 9/34, outcomes 7/18
 
 ### R058+0x08CE `R058+0x08CE (1838:08CE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R058+0x0928 `R058+0x0928 (18CA:0008)`
 
@@ -12038,15 +11920,14 @@ matched, reached by cards-variants: blocks 0/1, outcomes 0/0
 
 ### R058+0x0E24 `R058+0x0E24 (191A:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 17/18, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 17/18, outcomes 6/8
 
 - `R058+0x0ED7` `jmp 0x1ec`
 
 ### R058+0x1014 `R058+0x1014 (191A:01F4)`
 
-matched, reached by cards-day cards-variants: blocks 12/26, outcomes 6/18
+matched, reached by cards-day cards-flip cards-variants: blocks 13/26, outcomes 7/18
 
-- `R058+0x102B` `push 0`
 - `R058+0x10A8` `push -9`
 - `R058+0x110F` `jmp 0x453`
 - `R058+0x1115` `dec ax`
@@ -12063,27 +11944,23 @@ matched, reached by cards-day cards-variants: blocks 12/26, outcomes 6/18
 
 ### R058+0x1290 `R058+0x1290 (191A:0470)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/5, outcomes 3/6
-
-- `R058+0x12AB` `push 0x64`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 6/6
 
 ### R058+0x1306 `R058+0x1306 (191A:04E6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x133E `R058+0x133E (191A:051E)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R058+0x141E `R058+0x141E (191A:05FE)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/8, outcomes 5/8
-
-- `R058+0x147D` `sub si, 0x19`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 6/8
 
 ### R058+0x1496 `R058+0x1496 (191A:0676)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/13, outcomes 3/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/13, outcomes 3/8
 
 - `R058+0x1565` `dec ax`
 - `R058+0x1568` `dec ax`
@@ -12095,7 +11972,7 @@ matched, reached by cards cards-day cards-variants: blocks 6/13, outcomes 3/8
 
 ### R058+0x1666 `R058+0x1666 (191A:0846)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x169E `R058+0x169E (191A:087E)`
 
@@ -12112,11 +11989,11 @@ matched, reached by cards-day cards-variants: blocks 5/13, outcomes 3/10
 
 ### R058+0x17A2 `R058+0x17A2 (191A:0982)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x17DA `R058+0x17DA (191A:09BA)`
 
-matched, reached by cards cards-day cards-variants: blocks 10/23, outcomes 5/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 10/23, outcomes 5/16
 
 - `R058+0x1849` `push -9`
 - `R058+0x18AF` `jmp 0xbe7`
@@ -12134,34 +12011,31 @@ matched, reached by cards cards-day cards-variants: blocks 10/23, outcomes 5/16
 
 ### R058+0x1A24 `R058+0x1A24 (191A:0C04)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1A5C `R058+0x1A5C (191A:0C3C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1A64 `R058+0x1A64 (191A:0C44)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1A9C `R058+0x1A9C (191A:0C7C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1AA4 `R058+0x1AA4 (191A:0C84)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1ADC `R058+0x1ADC (191A:0CBC)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R058+0x1B9E `R058+0x1B9E (191A:0D7E)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
-
-- `R058+0x1BC1` `mov ax, word ptr [bp - 4]`
-- `R058+0x1BE1` `mov ax, word ptr [bp - 4]`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R058+0x1CD8 `R058+0x1CD8 (191A:0EB8)`
 
@@ -12169,14 +12043,10 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1E76 `R058+0x1E76 (1A1F:0006)`
 
-matched, reached by cards cards-day cards-variants: blocks 31/41, outcomes 18/26
+matched, reached by cards cards-day cards-flip cards-variants: blocks 35/41, outcomes 22/26
 
-- `R058+0x1F04` `mov ax, 2`
-- `R058+0x1F1F` `mov word ptr [0xee7a], 2`
 - `R058+0x1F2E` `mov word ptr [0xee7c], 2`
 - `R058+0x1F6A` `mov ax, 0x64`
-- `R058+0x1F8B` `shl si, 1`
-- `R058+0x1FED` `mov ax, 2`
 - `R058+0x204C` `jmp 0x370`
 - `R058+0x2151` `jmp 0x366`
 - `R058+0x217C` `push word ptr [bp - 4]`
@@ -12188,7 +12058,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R058+0x22FE `R058+0x22FE (1A1F:048E)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 5/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 5/6
 
 ### R058+0x247E `R058+0x247E (1A1F:060E)`
 
@@ -12200,13 +12070,11 @@ matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 3/4
 
 ### R058+0x25E0 `R058+0x25E0 (1A1F:0770)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x2708 `R058+0x2708 (1A1F:0898)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R058+0x2733` `mov cx, 2`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R058+0x274C `R058+0x274C (1A1F:08DC)`
 
@@ -12232,9 +12100,7 @@ matched, reached by cards cards-day cards-variants: blocks 11/15, outcomes 8/14
 
 ### R058+0x2A7E `R058+0x2A7E (1A1F:0C0E)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R058+0x2AA9` `mov cx, 2`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R058+0x2AC2 `R058+0x2AC2 (1A1F:0C52)`
 
@@ -12262,11 +12128,11 @@ matched, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### R058+0x2D16 `R058+0x2D16 (1A1F:0EA6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x2D28 `R058+0x2D28 (1A1F:0EB8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x2D60 `R058+0x2D60 (1A1F:0EF0)`
 
@@ -12281,19 +12147,19 @@ matched, reached by cards-day cards-variants: blocks 6/12, outcomes 3/10
 
 ### R058+0x2E50 `R058+0x2E50 (1A1F:0FE0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x2E88 `R058+0x2E88 (1A1F:1018)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x2E9C `R058+0x2E9C (1A1F:102C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x2ED4 `R058+0x2ED4 (1A1F:1064)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R058+0x2F6E `R058+0x2F6E (1A1F:10FE)`
 
@@ -12301,9 +12167,8 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R059+0x0000 `R059+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 21/29, outcomes 10/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 22/29, outcomes 12/14
 
-- `R059+0x009E` `mov word ptr [0x8e04], 1`
 - `R059+0x0155` `jmp 0x2ea`
 - `R059+0x025B` `jmp 0x2e0`
 - `R059+0x02AE` `push word ptr [bp - 4]`
@@ -12314,16 +12179,9 @@ matched, reached by cards cards-day cards-variants: blocks 21/29, outcomes 10/14
 
 ### R059+0x02F2 `R059+0x02F2 (1838:02F2)`
 
-matched, reached by cards cards-day cards-variants: blocks 11/32, outcomes 5/26
+matched, reached by cards cards-day cards-flip cards-variants: blocks 18/32, outcomes 14/26
 
-- `R059+0x0307` `mov word ptr [bp - 2], 0x56`
-- `R059+0x030E` `sub ax, 9`
-- `R059+0x0313` `dec ax`
-- `R059+0x0316` `sub ax, 0x17`
-- `R059+0x031B` `dec ax`
 - `R059+0x031E` `jmp 0x307`
-- `R059+0x0328` `mov word ptr [bp - 2], 0x11`
-- `R059+0x0330` `mov word ptr [bp - 2], 0x15`
 - `R059+0x0396` `dec ax`
 - `R059+0x0399` `jmp 0x41e`
 - `R059+0x039C` `dec ax`
@@ -12344,25 +12202,25 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R059+0x0530 `R059+0x0530 (1838:0530)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R059+0x056A `R059+0x056A (1838:056A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R059+0x0642 `R059+0x0642 (1838:0642)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R059+0x066A `R059+0x066A (1838:066A)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R059+0x0690` `push 3`
 
 ### R059+0x0736 `R059+0x0736 (1838:0736)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R059+0x076E `R059+0x076E (1838:076E)`
 
@@ -12373,18 +12231,18 @@ matched, reached by cards-day cards-variants: blocks 3/5, outcomes 2/4
 
 ### R059+0x082C `R059+0x082C (1838:082C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R059+0x0864 `R059+0x0864 (1838:0864)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/8, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/8, outcomes 3/6
 
 - `R059+0x0880` `neg si`
 - `R059+0x08EB` `mov es, word ptr [0x7f8e]`
 
 ### R059+0x093A `R059+0x093A (1838:093A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R059+0x09E6 `R059+0x09E6 (1838:09E6)`
 
@@ -12395,11 +12253,11 @@ matched, reached by cards cards-day cards-variants: blocks 1/3, outcomes 0/0
 
 ### R059+0x0B22 `R059+0x0B22 (1838:0B22)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R059+0x0BFC `R059+0x0BFC (1838:0BFC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R059+0x0CEC `R059+0x0CEC (1838:0CEC)`
 
@@ -12667,11 +12525,10 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R060+0x1FEC `R060+0x1FEC (1A36:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 33/50, outcomes 20/38
+matched, reached by cards cards-day cards-flip cards-variants: blocks 34/50, outcomes 21/38
 
 - `R060+0x202E` `mov es, word ptr [0x7fa4]`
 - `R060+0x20AD` `push 0`
-- `R060+0x2123` `mov word ptr [0xee7a], 0`
 - `R060+0x2151` `mov word ptr [0xee7a], 0`
 - `R060+0x2175` `jmp 0x390`
 - `R060+0x223D` `jmp 0x352`
@@ -12698,7 +12555,7 @@ matched, reached by cards-variants: blocks 1/5, outcomes 0/4
 
 ### R060+0x2514 `R060+0x2514 (1A36:0534)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R060+0x254E `R060+0x254E (1A36:056E)`
 
@@ -12715,23 +12572,23 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R060+0x2ACC `R060+0x2ACC (1A36:0AEC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R060+0x2AE0 `R060+0x2AE0 (1A36:0B00)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R060+0x2B18 `R060+0x2B18 (1A36:0B38)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R060+0x2B2C `R060+0x2B2C (1A36:0B4C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R060+0x2C10 `R060+0x2C10 (1A36:0C30)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R061+0x0000 `R061+0x0000 (1838:0000)`
 
@@ -12764,11 +12621,10 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R061+0x0978 `R061+0x0978 (18CF:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 28/44, outcomes 17/32
+matched, reached by cards cards-day cards-flip cards-variants: blocks 29/44, outcomes 18/32
 
 - `R061+0x09DA` `mov word ptr [0xee53], 2`
 - `R061+0x0A36` `push 0`
-- `R061+0x0AAF` `mov word ptr [0xee7a], 0`
 - `R061+0x0ADD` `mov word ptr [0xee7a], 0`
 - `R061+0x0AF4` `jmp 0x370`
 - `R061+0x0BB7` `jmp 0x332`
@@ -12794,7 +12650,7 @@ matched, reached by cards-variants: blocks 1/5, outcomes 0/4
 
 ### R061+0x0E76 `R061+0x0E76 (18CF:0506)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x0EAE `R061+0x0EAE (18CF:053E)`
 
@@ -12811,23 +12667,23 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x13B6 `R061+0x13B6 (18CF:0A46)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x13D4 `R061+0x13D4 (18CF:0A64)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x140C `R061+0x140C (18CF:0A9C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x142A `R061+0x142A (18CF:0ABA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x150E `R061+0x150E (18CF:0B9E)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R061+0x1900 `R061+0x1900 (19C8:0000)`
 
@@ -12860,9 +12716,8 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R061+0x2278 `R061+0x2278 (1A5F:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 27/42, outcomes 16/30
+matched, reached by cards cards-day cards-flip cards-variants: blocks 28/42, outcomes 17/30
 
-- `R061+0x2352` `sub ax, ax`
 - `R061+0x2382` `sub ax, ax`
 - `R061+0x239E` `cmp word ptr [0xa88d], 1`
 - `R061+0x23A5` `mov ax, 0x15`
@@ -12880,7 +12735,7 @@ matched, reached by cards cards-day cards-variants: blocks 27/42, outcomes 16/30
 
 ### R061+0x260A `R061+0x260A (1A5F:039A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/9, outcomes 2/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/9, outcomes 2/6
 
 - `R061+0x2624` `jmp 0x4ea`
 - `R061+0x2635` `jmp 0x478`
@@ -12891,11 +12746,11 @@ matched, reached by cards cards-day cards-variants: blocks 3/9, outcomes 2/6
 
 ### R061+0x27DA `R061+0x27DA (1A5F:056A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x2812 `R061+0x2812 (1A5F:05A2)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/9, outcomes 2/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/9, outcomes 2/6
 
 - `R061+0x282C` `jmp 0x6f2`
 - `R061+0x283D` `jmp 0x680`
@@ -12906,37 +12761,35 @@ matched, reached by cards cards-day cards-variants: blocks 3/9, outcomes 2/6
 
 ### R061+0x29D8 `R061+0x29D8 (1A5F:0768)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x30BC `R061+0x30BC (1A5F:0E4C)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/7, outcomes 4/6
-
-- `R061+0x3168` `push 1`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 5/6
 
 ### R061+0x31A4 `R061+0x31A4 (1A5F:0F34)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x31D6 `R061+0x31D6 (1A5F:0F66)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x31EA `R061+0x31EA (1A5F:0F7A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x3222 `R061+0x3222 (1A5F:0FB2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x3236 `R061+0x3236 (1A5F:0FC6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R061+0x326E `R061+0x326E (1A5F:0FFE)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R062+0x0000 `R062+0x0000 (1838:0000)`
 
@@ -13033,7 +12886,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R062+0x1C68 `R062+0x1C68 (19FE:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 16/35, outcomes 7/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/35, outcomes 7/22
 
 - `R062+0x1CF0` `push word ptr [0x907e]`
 - `R062+0x1D04` `mov word ptr [0xee78], 2`
@@ -13057,15 +12910,15 @@ matched, reached by cards cards-day cards-variants: blocks 16/35, outcomes 7/22
 
 ### R062+0x1F42 `R062+0x1F42 (19FE:02E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R062+0x1F74 `R062+0x1F74 (19FE:0314)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R062+0x217A `R062+0x217A (19FE:051A)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/19, outcomes 3/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/19, outcomes 5/16
 
 - `R062+0x21BB` `push word ptr [0x907e]`
 - `R062+0x21D0` `jmp 0x5f8`
@@ -13082,22 +12935,22 @@ matched, reached by cards cards-day cards-variants: blocks 7/19, outcomes 3/16
 
 ### R062+0x23C4 `R062+0x23C4 (19FE:0764)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 1/4
 
 - `R062+0x23DF` `push word ptr [0x907e]`
 - `R062+0x23F1` `mov di, 0x4f48`
 
 ### R062+0x2A5E `R062+0x2A5E (19FE:0DFE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R062+0x2A70 `R062+0x2A70 (19FE:0E10)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R062+0x2B4A `R062+0x2B4A (19FE:0EEA)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R063+0x0000 `R063+0x0000 (1838:0000)`
 
@@ -13324,7 +13177,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R063+0x2032 `R063+0x2032 (1A3B:0002)`
 
-matched, reached by cards cards-day cards-variants: blocks 16/35, outcomes 7/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/35, outcomes 7/22
 
 - `R063+0x20BC` `push word ptr [0x907e]`
 - `R063+0x20D0` `mov word ptr [0xee78], 2`
@@ -13348,15 +13201,15 @@ matched, reached by cards cards-day cards-variants: blocks 16/35, outcomes 7/22
 
 ### R063+0x230E `R063+0x230E (1A3B:02DE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R063+0x2340 `R063+0x2340 (1A3B:0310)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R063+0x2548 `R063+0x2548 (1A3B:0518)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/17, outcomes 2/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/17, outcomes 3/14
 
 - `R063+0x2589` `push word ptr [0x907e]`
 - `R063+0x259E` `jmp 0x5f8`
@@ -13373,22 +13226,22 @@ matched, reached by cards cards-day cards-variants: blocks 5/17, outcomes 2/14
 
 ### R063+0x2756 `R063+0x2756 (1A3B:0726)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 1/4
 
 - `R063+0x2771` `push word ptr [0x907e]`
 - `R063+0x2784` `mov di, 0x4f48`
 
 ### R063+0x2ED8 `R063+0x2ED8 (1A3B:0EA8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R063+0x2EEA `R063+0x2EEA (1A3B:0EBA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R063+0x2FC4 `R063+0x2FC4 (1A3B:0F94)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R064+0x0000 `R064+0x0000 (1838:0000)`
 
@@ -13445,7 +13298,7 @@ matched, reached by cards-variants: blocks 0/1, outcomes 0/0
 
 ### R064+0x0D48 `R064+0x0D48 (190C:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 16/35, outcomes 7/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/35, outcomes 7/22
 
 - `R064+0x0DD4` `push word ptr [0x907e]`
 - `R064+0x0DE8` `mov word ptr [0xee78], 2`
@@ -13469,15 +13322,15 @@ matched, reached by cards cards-day cards-variants: blocks 16/35, outcomes 7/22
 
 ### R064+0x1026 `R064+0x1026 (190C:02E6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R064+0x1058 `R064+0x1058 (190C:0318)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R064+0x1260 `R064+0x1260 (190C:0520)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/19, outcomes 3/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/19, outcomes 5/16
 
 - `R064+0x12A2` `push word ptr [0x907e]`
 - `R064+0x12B7` `jmp 0x606`
@@ -13494,22 +13347,22 @@ matched, reached by cards cards-day cards-variants: blocks 7/19, outcomes 3/16
 
 ### R064+0x14B4 `R064+0x14B4 (190C:0774)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 1/4
 
 - `R064+0x14CF` `push word ptr [0x907e]`
 - `R064+0x14E2` `mov di, 0x4f48`
 
 ### R064+0x1B46 `R064+0x1B46 (190C:0E06)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R064+0x1B58 `R064+0x1B58 (190C:0E18)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R064+0x1C32 `R064+0x1C32 (190C:0EF2)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R064+0x1FF4 `R064+0x1FF4 (1A37:0004)`
 
@@ -13709,7 +13562,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R065+0x0C3A `R065+0x0C3A (18FB:000A)`
 
-matched, reached by cards cards-day cards-variants: blocks 16/35, outcomes 7/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/35, outcomes 7/22
 
 - `R065+0x0CC6` `push word ptr [0x907e]`
 - `R065+0x0CDA` `mov word ptr [0xee78], 2`
@@ -13733,15 +13586,15 @@ matched, reached by cards cards-day cards-variants: blocks 16/35, outcomes 7/22
 
 ### R065+0x0F18 `R065+0x0F18 (18FB:02E8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R065+0x0F4A `R065+0x0F4A (18FB:031A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R065+0x1152 `R065+0x1152 (18FB:0522)`
 
-matched, reached by cards cards-day cards-variants: blocks 12/24, outcomes 8/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 12/24, outcomes 9/22
 
 - `R065+0x1193` `push word ptr [0x907e]`
 - `R065+0x11A8` `jmp 0x602`
@@ -13758,22 +13611,22 @@ matched, reached by cards cards-day cards-variants: blocks 12/24, outcomes 8/22
 
 ### R065+0x13CE `R065+0x13CE (18FB:079E)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 1/4
 
 - `R065+0x13E9` `push word ptr [0x907e]`
 - `R065+0x13FC` `mov di, 0x4f48`
 
 ### R065+0x1A6C `R065+0x1A6C (18FB:0E3C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R065+0x1A7E `R065+0x1A7E (18FB:0E4E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R065+0x1B58 `R065+0x1B58 (18FB:0F28)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R065+0x1F1A `R065+0x1F1A (1A29:000A)`
 
@@ -13927,14 +13780,11 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R066+0x0D48 `R066+0x0D48 (190C:0008)`
 
-asm, reached by cards cards-day cards-variants: blocks 37/53, outcomes 21/30
+asm, reached by cards cards-day cards-flip cards-variants: blocks 41/53, outcomes 24/30
 
 - `R066+0x0DF4` `push 0x21`
 - `R066+0x0EFE` `sub ax, ax`
-- `R066+0x0F0F` `mov word ptr [0xe896], 1`
-- `R066+0x0F69` `mov word ptr [0xee7c], 2`
 - `R066+0x0F76` `jmp 0x424`
-- `R066+0x1042` `jmp 0x402`
 - `R066+0x104B` `jmp 0x41e`
 - `R066+0x109C` `mov bx, word ptr [0xee6a]`
 - `R066+0x10B1` `jmp 0x3f6`
@@ -13943,7 +13793,6 @@ asm, reached by cards cards-day cards-variants: blocks 37/53, outcomes 21/30
 - `R066+0x110E` `push word ptr [bp - 8]`
 - `R066+0x1118` `push word ptr [bp - 8]`
 - `R066+0x1122` `push word ptr [bp - 8]`
-- `R066+0x1142` `push 0`
 - `R066+0x115E` `push ax`
 
 ### R066+0x116C `R066+0x116C (190C:042C)`
@@ -14005,13 +13854,12 @@ asm, reached by cards-day: blocks 1/1, outcomes 0/0
 
 ### R066+0x178C `R066+0x178C (190C:0A4C)`
 
-asm, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+asm, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R066+0x1B4E `R066+0x1B4E (19EC:000E)`
 
-matched, reached by cards cards-day cards-variants: blocks 46/68, outcomes 28/46
+matched, reached by cards cards-day cards-flip cards-variants: blocks 48/68, outcomes 30/46
 
-- `R066+0x1B82` `jmp 0x4f6`
 - `R066+0x1B8A` `jmp 0x4f6`
 - `R066+0x1C86` `mov bx, word ptr es:[bx + 0x4e]`
 - `R066+0x1CB9` `mov bx, word ptr es:[bx + 0x50]`
@@ -14032,11 +13880,10 @@ matched, reached by cards cards-day cards-variants: blocks 46/68, outcomes 28/46
 - `R066+0x2006` `push word ptr [bp - 8]`
 - `R066+0x2010` `push word ptr [bp - 8]`
 - `R066+0x201A` `push word ptr [bp - 8]`
-- `R066+0x2036` `lcall 0x1367, 0x72a`
 
 ### R066+0x204A `R066+0x204A (19EC:050A)`
 
-matched, reached by cards cards-day cards-variants: blocks 22/37, outcomes 15/30
+matched, reached by cards cards-day cards-flip cards-variants: blocks 22/37, outcomes 15/30
 
 - `R066+0x20D5` `mov bx, word ptr es:[bx + 0x4e]`
 - `R066+0x2108` `mov bx, word ptr es:[bx + 0x50]`
@@ -14056,79 +13903,78 @@ matched, reached by cards cards-day cards-variants: blocks 22/37, outcomes 15/30
 
 ### R066+0x22B8 `R066+0x22B8 (19EC:0778)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R066+0x230E` `mov ax, 0x73`
 
 ### R066+0x2336 `R066+0x2336 (19EC:07F6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R066+0x236E `R066+0x236E (19EC:082E)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R066+0x242E `R066+0x242E (19EC:08EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/9, outcomes 5/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 6/8
 
-- `R066+0x2469` `mov si, 2`
 - `R066+0x247A` `push 0`
 
 ### R066+0x24B4 `R066+0x24B4 (19EC:0974)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
 - `R066+0x2538` `mov es, word ptr [0x7fec]`
 
 ### R066+0x25AC `R066+0x25AC (19EC:0A6C)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 4/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/6
 
 ### R066+0x263E `R066+0x263E (19EC:0AFE)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R066+0x273E `R066+0x273E (19EC:0BFE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R066+0x2762` `sub ax, si`
 
 ### R066+0x2786 `R066+0x2786 (19EC:0C46)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 2/4
 
 - `R066+0x27A4` `sub ax, ax`
 - `R066+0x27BB` `push 0xa`
 
 ### R066+0x285E `R066+0x285E (19EC:0D1E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R066+0x2896 `R066+0x2896 (19EC:0D56)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R066+0x296E `R066+0x296E (19EC:0E2E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R066+0x29A6 `R066+0x29A6 (19EC:0E66)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R066+0x2A7E `R066+0x2A7E (19EC:0F3E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R066+0x2D10 `R066+0x2D10 (19EC:11D0)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R066+0x2DB4 `R066+0x2DB4 (19EC:1274)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R066+0x2FDC `R066+0x2FDC (1B35:000C)`
 
@@ -14847,40 +14693,52 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R069+0x175A `R069+0x175A (19AD:000A)`
 
-matched, reached by cards cards-day cards-variants: blocks 15/31, outcomes 8/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 19/31, outcomes 10/16
 
 - `R069+0x17E1` `push word ptr [0x907e]`
 - `R069+0x17F3` `mov word ptr [0xee76], 1`
-- `R069+0x180D` `mov ax, 1`
 - `R069+0x186F` `jmp 0x2b0`
 - `R069+0x195E` `mov bx, word ptr [0xee6a]`
 - `R069+0x1973` `jmp 0x2a6`
 - `R069+0x1992` `push word ptr [bp - 4]`
-- `R069+0x199C` `push word ptr [bp - 4]`
-- `R069+0x19A6` `push word ptr [bp - 4]`
 - `R069+0x19B0` `push word ptr [bp - 4]`
 - `R069+0x19BA` `push word ptr [bp - 4]`
 - `R069+0x19C4` `push word ptr [bp - 4]`
 - `R069+0x19CE` `push word ptr [bp - 4]`
 - `R069+0x19D8` `push word ptr [bp - 4]`
 - `R069+0x19E2` `push word ptr [bp - 4]`
-- `R069+0x19FD` `jmp 0x122`
 
 ### R069+0x1A10 `R069+0x1A10 (19AD:02C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+
+### R069+0x1A48 `R069+0x1A48 (19AD:02F8)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
+### R069+0x1A7E `R069+0x1A7E (19AD:032E)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
+### R069+0x1AB6 `R069+0x1AB6 (19AD:0366)`
+
+matched, reached by cards-flip: blocks 4/4, outcomes 2/2
+
+### R069+0x1AFC `R069+0x1AFC (19AD:03AC)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
 
 ### R069+0x1C94 `R069+0x1C94 (19AD:0544)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R069+0x1CA6 `R069+0x1CA6 (19AD:0556)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R069+0x1CDE `R069+0x1CDE (19AD:058E)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R070+0x0000 `R070+0x0000 (1838:0000)`
 
@@ -15080,10 +14938,8 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x177A `R070+0x177A (19AF:000A)`
 
-matched, reached by cards cards-day cards-variants: blocks 26/47, outcomes 18/38
+matched, reached by cards cards-day cards-flip cards-variants: blocks 30/47, outcomes 25/38
 
-- `R070+0x1818` `mov word ptr [0xee76], 1`
-- `R070+0x183C` `push word ptr [0x907e]`
 - `R070+0x1852` `mov word ptr [0xee78], 2`
 - `R070+0x186B` `push word ptr [0xe3d0]`
 - `R070+0x187A` `sub ax, ax`
@@ -15095,8 +14951,6 @@ matched, reached by cards cards-day cards-variants: blocks 26/47, outcomes 18/38
 - `R070+0x1968` `jmp 0x38c`
 - `R070+0x1A58` `mov bx, word ptr [0xee6a]`
 - `R070+0x1A6D` `jmp 0x382`
-- `R070+0x1A8E` `push word ptr [bp - 4]`
-- `R070+0x1A98` `push word ptr [bp - 4]`
 - `R070+0x1AAC` `push word ptr [bp - 4]`
 - `R070+0x1AB6` `push word ptr [bp - 4]`
 - `R070+0x1AC0` `push word ptr [bp - 4]`
@@ -15104,29 +14958,53 @@ matched, reached by cards cards-day cards-variants: blocks 26/47, outcomes 18/38
 - `R070+0x1AD4` `push word ptr [bp - 4]`
 - `R070+0x1ADE` `push word ptr [bp - 4]`
 
+### R070+0x1B04 `R070+0x1B04 (19AF:0394)`
+
+matched, reached by cards-flip: blocks 16/16, outcomes 11/12
+
+### R070+0x1C50 `R070+0x1C50 (19AF:04E0)`
+
+matched, reached by cards-flip: blocks 3/5, outcomes 1/4
+
+- `R070+0x1C6C` `push word ptr [0x907e]`
+- `R070+0x1C7F` `mov si, 0x64`
+
+### R070+0x1CCE `R070+0x1CCE (19AF:055E)`
+
+matched, reached by cards-flip: blocks 7/11, outcomes 3/6
+
+- `R070+0x1CED` `jmp 0x6c2`
+- `R070+0x1D03` `push 0`
+- `R070+0x1E24` `push 0`
+- `R070+0x1E32` `push -1`
+
+### R070+0x1E8C `R070+0x1E8C (19AF:071C)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
 ### R070+0x1F82 `R070+0x1F82 (19AF:0812)`
 
 matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x1FFE `R070+0x1FFE (19AF:088E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x2460 `R070+0x2460 (19AF:0CF0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x2468 `R070+0x2468 (19AF:0CF8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x24A2 `R070+0x24A2 (19AF:0D32)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R070+0x2894 `R070+0x2894 (1AC1:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/22, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 19/22, outcomes 6/8
 
 - `R070+0x2957` `jmp 0x258`
 - `R070+0x2A5B` `jmp 0x24e`
@@ -15134,14 +15012,8 @@ matched, reached by cards cards-day cards-variants: blocks 19/22, outcomes 6/8
 
 ### R070+0x2AF0 `R070+0x2AF0 (1AC1:0260)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/26, outcomes 4/20
+matched, reached by cards cards-day cards-flip cards-variants: blocks 13/26, outcomes 11/20
 
-- `R070+0x2AFA` `dec ax`
-- `R070+0x2AFE` `dec ax`
-- `R070+0x2B01` `dec ax`
-- `R070+0x2B04` `jmp 0x330`
-- `R070+0x2B07` `push 0`
-- `R070+0x2BC0` `push 0`
 - `R070+0x2C27` `dec ax`
 - `R070+0x2C2A` `dec ax`
 - `R070+0x2C2D` `dec ax`
@@ -15158,21 +15030,21 @@ matched, reached by cards cards-day cards-variants: blocks 7/26, outcomes 4/20
 
 ### R070+0x2DC2 `R070+0x2DC2 (1AC1:0532)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R070+0x2E04` `push 2`
 
 ### R070+0x2E72 `R070+0x2E72 (1AC1:05E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R070+0x2EDE `R070+0x2EDE (1AC1:064E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x2F56 `R070+0x2F56 (1AC1:06C6)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/13, outcomes 1/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/13, outcomes 1/12
 
 - `R070+0x2F7C` `mov ax, word ptr [0xee6a]`
 - `R070+0x2F83` `dec ax`
@@ -15188,73 +15060,73 @@ matched, reached by cards cards-day cards-variants: blocks 2/13, outcomes 1/12
 
 ### R070+0x2FF0 `R070+0x2FF0 (1AC1:0760)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x3028 `R070+0x3028 (1AC1:0798)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x3048 `R070+0x3048 (1AC1:07B8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x3082 `R070+0x3082 (1AC1:07F2)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R070+0x3093` `push 1`
 
 ### R070+0x30A0 `R070+0x30A0 (1AC1:0810)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x30C6 `R070+0x30C6 (1AC1:0836)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x30D0 `R070+0x30D0 (1AC1:0840)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x3108 `R070+0x3108 (1AC1:0878)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x311A `R070+0x311A (1AC1:088A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x3148 `R070+0x3148 (1AC1:08B8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x315A `R070+0x315A (1AC1:08CA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x3188 `R070+0x3188 (1AC1:08F8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x319A `R070+0x319A (1AC1:090A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x31C8 `R070+0x31C8 (1AC1:0938)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x31DA `R070+0x31DA (1AC1:094A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R070+0x325C `R070+0x325C (1AC1:09CC)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R070+0x3336 `R070+0x3336 (1AC1:0AA6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R071+0x0000 `R071+0x0000 (1838:0000)`
 
@@ -15687,37 +15559,36 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R072+0x1494 `R072+0x1494 (1981:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 25/30, outcomes 19/24
+matched, reached by cards cards-day cards-flip cards-variants: blocks 26/30, outcomes 20/24
 
 - `R072+0x14CF` `jmp 0x7c`
-- `R072+0x1551` `mov word ptr [0xee7c], 2`
 - `R072+0x1562` `jmp 0x1c6`
 - `R072+0x15F8` `mov bx, word ptr [0xee6a]`
 - `R072+0x1618` `jmp 0x1bc`
 
 ### R072+0x165E `R072+0x165E (1981:01CE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R072+0x16B0 `R072+0x16B0 (1981:0220)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R072+0x16F6 `R072+0x16F6 (1981:0266)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R072+0x1726 `R072+0x1726 (1981:0296)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R072+0x176C `R072+0x176C (1981:02DC)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R072+0x179E `R072+0x179E (1981:030E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R072+0x17D6 `R072+0x17D6 (1981:0346)`
 
@@ -15739,32 +15610,25 @@ matched, reached by cards cards-day cards-variants: blocks 7/20, outcomes 6/16
 
 ### R072+0x19A2 `R072+0x19A2 (1981:0512)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R072+0x19C4 `R072+0x19C4 (1981:0534)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R072+0x19D6 `R072+0x19D6 (1981:0546)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R072+0x1A0E `R072+0x1A0E (1981:057E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x0000 `R073+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 25/37, outcomes 12/20
+matched, reached by cards cards-day cards-flip cards-variants: blocks 32/37, outcomes 18/20
 
-- `R073+0x00A8` `push 0x64`
-- `R073+0x00E7` `push 2`
-- `R073+0x0120` `push -2`
-- `R073+0x019E` `push 0`
-- `R073+0x01E8` `mov word ptr [0xee78], 0`
-- `R073+0x0224` `jmp 0x3b8`
 - `R073+0x0329` `jmp 0x3ae`
-- `R073+0x035E` `push word ptr [bp - 4]`
 - `R073+0x037C` `push word ptr [bp - 4]`
 - `R073+0x0386` `push word ptr [bp - 4]`
 - `R073+0x039A` `push word ptr [bp - 4]`
@@ -15772,22 +15636,17 @@ matched, reached by cards cards-day cards-variants: blocks 25/37, outcomes 12/20
 
 ### R073+0x03C0 `R073+0x03C0 (1838:03C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/7, outcomes 4/6
-
-- `R073+0x03F0` `push 0`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 6/6
 
 ### R073+0x03FE `R073+0x03FE (1838:03FE)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/6, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
-- `R073+0x0428` `push 0`
 - `R073+0x0458` `push 0`
 
 ### R073+0x046A `R073+0x046A (1838:046A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
-
-- `R073+0x047E` `lcall 0x9c0, 0x1f3b`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R073+0x04CC `R073+0x04CC (1838:04CC)`
 
@@ -15800,16 +15659,26 @@ matched, reached by cards cards-day cards-variants: blocks 4/6, outcomes 2/4
 
 matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
+### R073+0x05B0 `R073+0x05B0 (1838:05B0)`
+
+matched, reached by cards-flip: blocks 4/6, outcomes 2/4
+
+- `R073+0x05D1` `push 0`
+- `R073+0x060A` `push 0`
+
+### R073+0x061C `R073+0x061C (1838:061C)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
 ### R073+0x0694 `R073+0x0694 (1838:0694)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/6, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
-- `R073+0x06BE` `push 0`
 - `R073+0x06EE` `push 0`
 
 ### R073+0x0700 `R073+0x0700 (1838:0700)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x0778 `R073+0x0778 (1838:0778)`
 
@@ -15828,19 +15697,19 @@ matched, reached by cards-day cards-variants: blocks 3/13, outcomes 2/14
 
 ### R073+0x0832 `R073+0x0832 (1838:0832)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x08F2 `R073+0x08F2 (1838:08F2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x0904 `R073+0x0904 (1838:0904)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x09C4 `R073+0x09C4 (1838:09C4)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R073+0x0D36 `R073+0x0D36 (190B:0006)`
 
@@ -16045,11 +15914,9 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x2460 `R073+0x2460 (1A7E:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 31/36, outcomes 21/26
+matched, reached by cards cards-day cards-flip cards-variants: blocks 33/36, outcomes 23/26
 
 - `R073+0x2502` `mov di, word ptr [bp - 4]`
-- `R073+0x2532` `mov word ptr [0xee7a], 2`
-- `R073+0x254A` `mov word ptr [0xee80], 2`
 - `R073+0x2577` `mov ax, 0x64`
 - `R073+0x25F4` `jmp 0x2ca`
 
@@ -16059,15 +15926,15 @@ matched, reached by cards-variants: blocks 5/5, outcomes 4/4
 
 ### R073+0x27BE `R073+0x27BE (1A7E:035E)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/7, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 6/8
 
 ### R073+0x2820 `R073+0x2820 (1A7E:03C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R073+0x28AA `R073+0x28AA (1A7E:044A)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/7, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 6/8
 
 ### R073+0x290C `R073+0x290C (1A7E:04AC)`
 
@@ -16077,11 +15944,11 @@ matched, reached by cards cards-day cards-variants: blocks 4/5, outcomes 3/4
 
 ### R073+0x29A8 `R073+0x29A8 (1A7E:0548)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 5/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 5/6
 
 ### R073+0x29FE `R073+0x29FE (1A7E:059E)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/11, outcomes 4/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/11, outcomes 4/8
 
 - `R073+0x2A37` `push 1`
 - `R073+0x2A61` `jmp 0x634`
@@ -16091,7 +15958,7 @@ matched, reached by cards cards-day cards-variants: blocks 6/11, outcomes 4/8
 
 ### R073+0x2AB4 `R073+0x2AB4 (1A7E:0654)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x2AEC `R073+0x2AEC (1A7E:068C)`
 
@@ -16102,7 +15969,7 @@ matched, reached by cards-day cards-variants: blocks 6/8, outcomes 4/6
 
 ### R073+0x2B6E `R073+0x2B6E (1A7E:070E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x2BA6 `R073+0x2BA6 (1A7E:0746)`
 
@@ -16112,29 +15979,29 @@ matched, reached by cards-variants: blocks 3/4, outcomes 2/4
 
 ### R073+0x2C3A `R073+0x2C3A (1A7E:07DA)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R073+0x2C54` `sub ax, ax`
 
 ### R073+0x2C66 `R073+0x2C66 (1A7E:0806)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x2C78 `R073+0x2C78 (1A7E:0818)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x2CB0 `R073+0x2CB0 (1A7E:0850)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R073+0x2D2E `R073+0x2D2E (1A7E:08CE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x2D66 `R073+0x2D66 (1A7E:0906)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R073+0x2D94 `R073+0x2D94 (1A7E:0934)`
 
@@ -16146,10 +16013,8 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x0000 `R074+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 24/27, outcomes 12/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 26/27, outcomes 14/16
 
-- `R074+0x009A` `mov word ptr [0xee76], 2`
-- `R074+0x00B2` `mov word ptr [0xee78], 2`
 - `R074+0x0119` `jmp 0x25a`
 
 ### R074+0x0262 `R074+0x0262 (1838:0262)`
@@ -16158,7 +16023,7 @@ matched, reached by cards cards-day cards-variants: blocks 9/9, outcomes 8/8
 
 ### R074+0x0328 `R074+0x0328 (1838:0328)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/7, outcomes 6/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/7, outcomes 6/6
 
 ### R074+0x0376 `R074+0x0376 (1838:0376)`
 
@@ -16166,7 +16031,7 @@ matched, reached by cards cards-day cards-variants: blocks 8/8, outcomes 6/6
 
 ### R074+0x043C `R074+0x043C (1838:043C)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/8, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 6/8
 
 ### R074+0x04DC `R074+0x04DC (1838:04DC)`
 
@@ -16174,11 +16039,11 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x0514 `R074+0x0514 (1838:0514)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x054C `R074+0x054C (1838:054C)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/12, outcomes 3/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/12, outcomes 3/8
 
 - `R074+0x05B3` `dec ax`
 - `R074+0x05B6` `dec ax`
@@ -16189,7 +16054,7 @@ matched, reached by cards cards-day cards-variants: blocks 6/12, outcomes 3/8
 
 ### R074+0x061A `R074+0x061A (1838:061A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x0652 `R074+0x0652 (1838:0652)`
 
@@ -16206,11 +16071,11 @@ matched, reached by cards-day cards-variants: blocks 3/11, outcomes 2/8
 
 ### R074+0x06FC `R074+0x06FC (1838:06FC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x0734 `R074+0x0734 (1838:0734)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/21, outcomes 3/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/21, outcomes 3/14
 
 - `R074+0x079E` `push -7`
 - `R074+0x07FB` `dec ax`
@@ -16229,23 +16094,23 @@ matched, reached by cards cards-day cards-variants: blocks 7/21, outcomes 3/14
 
 ### R074+0x0932 `R074+0x0932 (1838:0932)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x096A `R074+0x096A (1838:096A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x097C `R074+0x097C (1838:097C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x09B4 `R074+0x09B4 (1838:09B4)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R074+0x0A6A `R074+0x0A6A (1838:0A6A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x0AD6 `R074+0x0AD6 (1838:0AD6)`
 
@@ -16253,23 +16118,20 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x0BEA `R074+0x0BEA (18F6:000A)`
 
-matched, reached by cards cards-day cards-variants: blocks 20/29, outcomes 9/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 22/29, outcomes 10/14
 
 - `R074+0x0CA4` `mov ax, 1`
-- `R074+0x0CB0` `push 0`
 - `R074+0x0CD9` `jmp 0x28c`
 - `R074+0x0DC8` `mov bx, word ptr [0xee6a]`
 - `R074+0x0DDD` `jmp 0x282`
 - `R074+0x0E30` `push word ptr [bp - 4]`
 - `R074+0x0E3A` `push word ptr [bp - 4]`
-- `R074+0x0E44` `push word ptr [bp - 4]`
 - `R074+0x0E4E` `push word ptr [bp - 4]`
 
 ### R074+0x0E74 `R074+0x0E74 (18F6:0294)`
 
-matched, reached by cards cards-day cards-variants: blocks 22/34, outcomes 14/32
+matched, reached by cards cards-day cards-flip cards-variants: blocks 26/34, outcomes 17/32
 
-- `R074+0x1053` `lcall 0x9c0, 0x1f3b`
 - `R074+0x1069` `cmp word ptr [0xe3d0], 0`
 - `R074+0x1070` `push 0x18`
 - `R074+0x107E` `mov byte ptr [0x9c30], 1`
@@ -16277,58 +16139,63 @@ matched, reached by cards cards-day cards-variants: blocks 22/34, outcomes 14/32
 - `R074+0x108D` `mov byte ptr [0x9c31], 1`
 - `R074+0x1094` `mov byte ptr [0x9c32], 1`
 - `R074+0x1099` `push 0`
-- `R074+0x10A0` `cmp word ptr [0xe3d0], 0`
-- `R074+0x10A7` `push 0`
 - `R074+0x10AE` `push 0`
-- `R074+0x10B2` `lcall 0x150b, 0x3b0`
 
 ### R074+0x10C4 `R074+0x10C4 (18F6:04E4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x10FC `R074+0x10FC (18F6:051C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x1110 `R074+0x1110 (18F6:0530)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x1148 `R074+0x1148 (18F6:0568)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x115C `R074+0x115C (18F6:057C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x1194 `R074+0x1194 (18F6:05B4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x11A8 `R074+0x11A8 (18F6:05C8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x11E0 `R074+0x11E0 (18F6:0600)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x11F4 `R074+0x11F4 (18F6:0614)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+
+### R074+0x12AC `R074+0x12AC (18F6:06CC)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
+### R074+0x12B4 `R074+0x12B4 (18F6:06D4)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
 
 ### R074+0x1330 `R074+0x1330 (18F6:0750)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x1338 `R074+0x1338 (18F6:0758)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x1370 `R074+0x1370 (18F6:0790)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R074+0x15D2 `R074+0x15D2 (1995:0002)`
 
@@ -16424,22 +16291,15 @@ matched, reached by cards cards-day cards-variants: blocks 6/20, outcomes 2/12
 
 ### R074+0x20A6 `R074+0x20A6 (1A42:0006)`
 
-matched, reached by cards cards-day cards-variants: blocks 11/21, outcomes 6/20
+matched, reached by cards cards-day cards-flip cards-variants: blocks 18/21, outcomes 15/20
 
 - `R074+0x216F` `jmp 0x1a2`
-- `R074+0x21B7` `test di, 0x1e`
-- `R074+0x21C4` `test di, 0xe0`
-- `R074+0x21D6` `mov byte ptr [0xe99e], 1`
-- `R074+0x2212` `dec ax`
-- `R074+0x2215` `dec ax`
 - `R074+0x2218` `jmp 0x198`
 - `R074+0x2224` `push word ptr [bp - 6]`
-- `R074+0x222E` `push word ptr [bp - 6]`
-- `R074+0x223F` `jmp 0xd5`
 
 ### R074+0x224A `R074+0x224A (1A42:01AA)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/15, outcomes 1/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/15, outcomes 1/10
 
 - `R074+0x2289` `dec ax`
 - `R074+0x228C` `jmp 0x30c`
@@ -16456,15 +16316,23 @@ matched, reached by cards cards-day cards-variants: blocks 3/15, outcomes 1/10
 
 ### R074+0x23AE `R074+0x23AE (1A42:030E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+
+### R074+0x2442 `R074+0x2442 (1A42:03A2)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
+### R074+0x2444 `R074+0x2444 (1A42:03A4)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
 
 ### R074+0x246E `R074+0x246E (1A42:03CE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R075+0x0000 `R075+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 14/30, outcomes 7/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 14/30, outcomes 7/16
 
 - `R075+0x0082` `push word ptr [0x907e]`
 - `R075+0x0096` `mov word ptr [0xee76], 1`
@@ -16485,23 +16353,23 @@ matched, reached by cards cards-day cards-variants: blocks 14/30, outcomes 7/16
 
 ### R075+0x0586 `R075+0x0586 (1838:0586)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R075+0x05A4 `R075+0x05A4 (1838:05A4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R075+0x05DC `R075+0x05DC (1838:05DC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R075+0x05FA `R075+0x05FA (1838:05FA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R075+0x0636 `R075+0x0636 (1838:0636)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R075+0x0A28 `R075+0x0A28 (18DA:0008)`
 
@@ -16745,18 +16613,16 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R076+0x0000 `R076+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 20/26, outcomes 13/22
+matched, reached by cards cards-day cards-flip cards-variants: blocks 22/26, outcomes 18/22
 
-- `R076+0x00EA` `mov byte ptr [0x8e12], 1`
 - `R076+0x00FB` `jmp 0x19f`
-- `R076+0x012E` `push 0`
 - `R076+0x0166` `mov bx, word ptr [0xee6a]`
 - `R076+0x017D` `jmp 0x194`
 - `R076+0x019C` `jmp 0xfe`
 
 ### R076+0x01A6 `R076+0x01A6 (1838:01A6)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/18, outcomes 2/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/18, outcomes 3/12
 
 - `R076+0x020F` `dec ax`
 - `R076+0x0212` `jmp 0x328`
@@ -16766,7 +16632,6 @@ matched, reached by cards cards-day cards-variants: blocks 5/18, outcomes 2/12
 - `R076+0x021E` `dec ax`
 - `R076+0x0221` `jmp 0x2e4`
 - `R076+0x0224` `pop si`
-- `R076+0x023D` `push 0`
 - `R076+0x0270` `lcall 0xe76, 0x23e2`
 - `R076+0x02B2` `push 2`
 - `R076+0x02E4` `push 2`
@@ -16774,19 +16639,19 @@ matched, reached by cards cards-day cards-variants: blocks 5/18, outcomes 2/12
 
 ### R076+0x032C `R076+0x032C (1838:032C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R076+0x0364 `R076+0x0364 (1838:0364)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R076+0x03AE `R076+0x03AE (1838:03AE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R076+0x03D6 `R076+0x03D6 (1838:03D6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R076+0x0430 `R076+0x0430 (187B:0000)`
 
@@ -16956,11 +16821,9 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x0000 `R077+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/23, outcomes 9/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 21/23, outcomes 11/14
 
 - `R077+0x0078` `mov word ptr [0xee7a], 2`
-- `R077+0x0092` `mov word ptr [0xee7c], 2`
-- `R077+0x00AC` `mov word ptr [0xee7e], 2`
 - `R077+0x00EC` `jmp 0x205`
 
 ### R077+0x020C `R077+0x020C (1838:020C)`
@@ -16969,11 +16832,11 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x02D8 `R077+0x02D8 (1838:02D8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x0310 `R077+0x0310 (1838:0310)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/16, outcomes 2/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/16, outcomes 2/12
 
 - `R077+0x032E` `sub ax, ax`
 - `R077+0x0339` `mov ax, word ptr [0xee6a]`
@@ -16990,15 +16853,15 @@ matched, reached by cards cards-day cards-variants: blocks 4/16, outcomes 2/12
 
 ### R077+0x04AC `R077+0x04AC (1838:04AC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x04E4 `R077+0x04E4 (1838:04E4)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R077+0x0626 `R077+0x0626 (1838:0626)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/10, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/10, outcomes 6/8
 
 - `R077+0x0637` `jmp 0x6f2`
 - `R077+0x0647` `jmp 0x6e3`
@@ -17012,7 +16875,7 @@ matched, reached by cards cards-day cards-variants: blocks 8/10, outcomes 4/6
 
 ### R077+0x08C8 `R077+0x08C8 (1838:08C8)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R077+0x08F1` `mov word ptr [bp - 8], si`
 
@@ -17024,19 +16887,19 @@ matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
 
 ### R077+0x0A74 `R077+0x0A74 (1838:0A74)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x0AB0 `R077+0x0AB0 (1838:0AB0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x0AF6 `R077+0x0AF6 (1838:0AF6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x0B2E `R077+0x0B2E (1838:0B2E)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R077+0x0BE4 `R077+0x0BE4 (1838:0BE4)`
 
@@ -17048,46 +16911,46 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x0CAA `R077+0x0CAA (1838:0CAA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x0E48 `R077+0x0E48 (191C:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 21/23, outcomes 10/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 21/23, outcomes 11/14
 
 - `R077+0x0F02` `mov si, 3`
 - `R077+0x0F68` `jmp 0x241`
 
 ### R077+0x1088 `R077+0x1088 (191C:0248)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x109A `R077+0x109A (191C:025A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x10D2 `R077+0x10D2 (191C:0292)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x10E4 `R077+0x10E4 (191C:02A4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x111C `R077+0x111C (191C:02DC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x112E `R077+0x112E (191C:02EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1166 `R077+0x1166 (191C:0326)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1178 `R077+0x1178 (191C:0338)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x11B0 `R077+0x11B0 (191C:0370)`
 
@@ -17110,19 +16973,19 @@ matched, reached by cards-day cards-variants: blocks 4/18, outcomes 2/14
 
 ### R077+0x129E `R077+0x129E (191C:045E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x12D6 `R077+0x12D6 (191C:0496)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x12E8 `R077+0x12E8 (191C:04A8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1320 `R077+0x1320 (191C:04E0)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R077+0x13C4 `R077+0x13C4 (191C:0584)`
 
@@ -17130,17 +16993,15 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x15EC `R077+0x15EC (1996:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/22, outcomes 15/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 20/22, outcomes 16/18
 
-- `R077+0x1660` `mov word ptr [0xee78], 2`
 - `R077+0x1692` `jmp 0x1a7`
 - `R077+0x1748` `jmp 0x19c`
 
 ### R077+0x178E `R077+0x178E (1996:01AE)`
 
-matched, reached by cards cards-day cards-variants: blocks 9/14, outcomes 6/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 10/14, outcomes 7/10
 
-- `R077+0x17AA` `push 0`
 - `R077+0x180C` `jmp 0x2f0`
 - `R077+0x1823` `jmp 0x2f0`
 - `R077+0x1835` `jmp 0x2f0`
@@ -17148,7 +17009,7 @@ matched, reached by cards cards-day cards-variants: blocks 9/14, outcomes 6/10
 
 ### R077+0x1920 `R077+0x1920 (1996:0340)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1958 `R077+0x1958 (1996:0378)`
 
@@ -17160,7 +17021,7 @@ matched, reached by cards cards-day cards-variants: blocks 8/11, outcomes 4/6
 
 ### R077+0x1A64 `R077+0x1A64 (1996:0484)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1A9C `R077+0x1A9C (1996:04BC)`
 
@@ -17173,13 +17034,12 @@ matched, reached by cards-day cards-variants: blocks 4/8, outcomes 2/6
 
 ### R077+0x1B8A `R077+0x1B8A (1996:05AA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1BC2 `R077+0x1BC2 (1996:05E2)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/16, outcomes 1/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/16, outcomes 3/12
 
-- `R077+0x1BD8` `mov es, word ptr [0x804a]`
 - `R077+0x1C7A` `dec ax`
 - `R077+0x1C7D` `jmp 0x790`
 - `R077+0x1C80` `dec ax`
@@ -17188,26 +17048,24 @@ matched, reached by cards cards-day cards-variants: blocks 3/16, outcomes 1/12
 - `R077+0x1C89` `dec ax`
 - `R077+0x1C8C` `jmp 0x74c`
 - `R077+0x1C8F` `jmp 0x790`
-- `R077+0x1C92` `mov es, word ptr [0x804a]`
 - `R077+0x1CE0` `lcall 0xe76, 0x2434`
 - `R077+0x1D2C` `mov es, word ptr [0x804a]`
-- `R077+0x1D70` `mov es, word ptr [0x804c]`
 
 ### R077+0x1DDC `R077+0x1DDC (1996:07FC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1E14 `R077+0x1E14 (1996:0834)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1E26 `R077+0x1E26 (1996:0846)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R077+0x1E5E `R077+0x1E5E (1996:087E)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R077+0x1F02 `R077+0x1F02 (1996:0922)`
 
@@ -17273,7 +17131,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R078+0x0244 `R078+0x0244 (185C:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/24, outcomes 9/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 19/24, outcomes 9/12
 
 - `R078+0x031C` `jmp 0x231`
 - `R078+0x03E8` `mov bx, word ptr [0xee6a]`
@@ -17281,13 +17139,28 @@ matched, reached by cards cards-day cards-variants: blocks 19/24, outcomes 9/12
 - `R078+0x0448` `push word ptr [bp - 6]`
 - `R078+0x0452` `push word ptr [bp - 6]`
 
+### R078+0x0478 `R078+0x0478 (185C:0238)`
+
+matched, reached by cards-flip: blocks 5/15, outcomes 3/12
+
+- `R078+0x0480` `push 0`
+- `R078+0x052C` `jmp 0x381`
+- `R078+0x0533` `dec ax`
+- `R078+0x0536` `jmp 0x381`
+- `R078+0x0539` `dec ax`
+- `R078+0x053C` `jmp 0x381`
+- `R078+0x058C` `push 1`
+- `R078+0x059A` `push 0`
+- `R078+0x05A0` `push 0`
+- `R078+0x05A4` `lcall 0x150b, 0x3b0`
+
 ### R078+0x05DA `R078+0x05DA (185C:039A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x064C `R078+0x064C (185C:040C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x0684 `R078+0x0684 (185C:0444)`
 
@@ -17299,37 +17172,35 @@ matched, reached by cards-variants: blocks 4/7, outcomes 2/6
 
 ### R078+0x072C `R078+0x072C (185C:04EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x0764 `R078+0x0764 (185C:0524)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
-
-- `R078+0x0780` `push 0`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R078+0x07C4 `R078+0x07C4 (185C:0584)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x07FC `R078+0x07FC (185C:05BC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x082C `R078+0x082C (185C:05EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x09E6 `R078+0x09E6 (185C:07A6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x09F8 `R078+0x09F8 (185C:07B8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x0A30 `R078+0x0A30 (185C:07F0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x0A6A `R078+0x0A6A (18DE:000A)`
 
@@ -17382,14 +17253,14 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R078+0x0E4A `R078+0x0E4A (191C:000A)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/21, outcomes 9/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 19/21, outcomes 9/12
 
 - `R078+0x0F26` `jmp 0x205`
 - `R078+0x0FD4` `mov bx, word ptr [0xee6a]`
 
 ### R078+0x104C `R078+0x104C (191C:020C)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/11, outcomes 1/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/11, outcomes 1/8
 
 - `R078+0x105D` `push word ptr [0x907e]`
 - `R078+0x106F` `push 8`
@@ -17401,28 +17272,25 @@ matched, reached by cards cards-day cards-variants: blocks 4/11, outcomes 1/8
 
 ### R078+0x1152 `R078+0x1152 (191C:0312)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x118A `R078+0x118A (191C:034A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
-
-- `R078+0x11C4` `push 1`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R078+0x1232 `R078+0x1232 (191C:03F2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x126C `R078+0x126C (191C:042C)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/6, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
-- `R078+0x127E` `mov es, word ptr [0x8058]`
 - `R078+0x12BE` `mov es, word ptr [0x8058]`
 
 ### R078+0x1340 `R078+0x1340 (191C:0500)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x1378 `R078+0x1378 (191C:0538)`
 
@@ -17433,7 +17301,7 @@ matched, reached by cards-variants: blocks 5/7, outcomes 2/4
 
 ### R078+0x145C `R078+0x145C (191C:061C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x1494 `R078+0x1494 (191C:0654)`
 
@@ -17445,15 +17313,15 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x14D4 `R078+0x14D4 (191C:0694)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x14DC `R078+0x14DC (191C:069C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R078+0x1514 `R078+0x1514 (191C:06D4)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R079+0x0000 `R079+0x0000 (1838:0000)`
 
@@ -17534,14 +17402,14 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x0A08 `R079+0x0A08 (18D8:0008)`
 
-asm, reached by cards cards-day cards-variants: blocks 14/16, outcomes 10/12
+asm, reached by cards cards-day cards-flip cards-variants: blocks 14/16, outcomes 10/12
 
 - `R079+0x0AA6` `jmp 0x15d`
 - `R079+0x0B32` `jmp 0x152`
 
 ### R079+0x0B64 `R079+0x0B64 (18D8:0164)`
 
-asm, reached by cards cards-day cards-variants: blocks 6/13, outcomes 3/10
+asm, reached by cards cards-day cards-flip cards-variants: blocks 6/13, outcomes 3/10
 
 - `R079+0x0C0A` `jmp 0x2d8`
 - `R079+0x0C11` `dec ax`
@@ -17553,7 +17421,7 @@ asm, reached by cards cards-day cards-variants: blocks 6/13, outcomes 3/10
 
 ### R079+0x0CF6 `R079+0x0CF6 (18D8:02F6)`
 
-asm, reached by cards cards-day cards-variants: blocks 37/60, outcomes 27/46
+asm, reached by cards cards-day cards-flip cards-variants: blocks 37/60, outcomes 27/46
 
 - `R079+0x0D99` `mov ax, 0x32`
 - `R079+0x0E01` `mov si, 3`
@@ -17581,21 +17449,21 @@ asm, reached by cards cards-day cards-variants: blocks 37/60, outcomes 27/46
 
 ### R079+0x10DA `R079+0x10DA (18D8:06DA)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x10E4 `R079+0x10E4 (18D8:06E4)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x111C `R079+0x111C (18D8:071C)`
 
-asm, reached by cards cards-day cards-variants: blocks 4/5, outcomes 3/6
+asm, reached by cards cards-day cards-flip cards-variants: blocks 4/5, outcomes 3/6
 
 - `R079+0x11C0` `inc si`
 
 ### R079+0x11F4 `R079+0x11F4 (18D8:07F4)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x1212 `R079+0x1212 (18D8:0812)`
 
@@ -17615,11 +17483,11 @@ asm, reached by cards-day cards-variants: blocks 6/17, outcomes 2/12
 
 ### R079+0x1386 `R079+0x1386 (18D8:0986)`
 
-asm, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+asm, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x13BE `R079+0x13BE (18D8:09BE)`
 
-asm, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+asm, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R079+0x1462 `R079+0x1462 (18D8:0A62)`
 
@@ -17627,14 +17495,13 @@ asm, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x168A `R079+0x168A (19A0:000A)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/21, outcomes 9/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 20/21, outcomes 10/12
 
-- `R079+0x1704` `mov word ptr [0xee76], 2`
 - `R079+0x175D` `jmp 0x1f5`
 
 ### R079+0x187C `R079+0x187C (19A0:01FC)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/15, outcomes 1/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/15, outcomes 1/10
 
 - `R079+0x18D9` `dec ax`
 - `R079+0x18DC` `jmp 0x3b7`
@@ -17663,11 +17530,11 @@ matched, reached by cards cards-day cards-variants: blocks 5/11, outcomes 4/10
 
 ### R079+0x1BAA `R079+0x1BAA (19A0:052A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x1BCC `R079+0x1BCC (19A0:054C)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/12, outcomes 4/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/12, outcomes 4/8
 
 - `R079+0x1BF7` `jmp 0x6c6`
 - `R079+0x1BFD` `dec ax`
@@ -17677,7 +17544,7 @@ matched, reached by cards cards-day cards-variants: blocks 7/12, outcomes 4/8
 
 ### R079+0x1D4A `R079+0x1D4A (19A0:06CA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x1D82 `R079+0x1D82 (19A0:0702)`
 
@@ -17691,7 +17558,7 @@ matched, reached by cards-day cards-variants: blocks 6/11, outcomes 3/8
 
 ### R079+0x1EA0 `R079+0x1EA0 (19A0:0820)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x1ED8 `R079+0x1ED8 (19A0:0858)`
 
@@ -17699,33 +17566,33 @@ matched, reached by cards-variants: blocks 3/3, outcomes 2/2
 
 ### R079+0x1FC4 `R079+0x1FC4 (19A0:0944)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x1FE6 `R079+0x1FE6 (19A0:0966)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R079+0x2038` `mov es, word ptr [0x8060]`
 
 ### R079+0x2082 `R079+0x2082 (19A0:0A02)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x20B2 `R079+0x20B2 (19A0:0A32)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x20BA `R079+0x20BA (19A0:0A3A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x20F2 `R079+0x20F2 (19A0:0A72)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R079+0x21A8 `R079+0x21A8 (19A0:0B28)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R079+0x21E0 `R079+0x21E0 (19A0:0B60)`
 
@@ -17934,12 +17801,9 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R080+0x06DC `R080+0x06DC (18A5:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 22/32, outcomes 16/26
+matched, reached by cards cards-day cards-flip cards-variants: blocks 25/32, outcomes 19/26
 
-- `R080+0x0717` `push 0x64`
 - `R080+0x0733` `mov es, word ptr [0x8072]`
-- `R080+0x0766` `mov es, word ptr [0x8072]`
-- `R080+0x0859` `sub ax, ax`
 - `R080+0x0882` `jmp 0x2a9`
 - `R080+0x091A` `mov bx, word ptr [0xee6a]`
 - `R080+0x093A` `jmp 0x29e`
@@ -17949,7 +17813,7 @@ matched, reached by cards cards-day cards-variants: blocks 22/32, outcomes 16/26
 
 ### R080+0x0980 `R080+0x0980 (18A5:02B0)`
 
-matched, reached by cards cards-day cards-variants: blocks 11/20, outcomes 7/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 11/20, outcomes 7/16
 
 - `R080+0x0A25` `jmp 0x450`
 - `R080+0x0A2B` `dec ax`
@@ -17963,11 +17827,11 @@ matched, reached by cards cards-day cards-variants: blocks 11/20, outcomes 7/16
 
 ### R080+0x0B24 `R080+0x0B24 (18A5:0454)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x0B3E `R080+0x0B3E (18A5:046E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x0C2A `R080+0x0C2A (18A5:055A)`
 
@@ -17975,13 +17839,13 @@ matched, reached by cards-day cards-variants: blocks 7/7, outcomes 4/6
 
 ### R080+0x0C78 `R080+0x0C78 (18A5:05A8)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 1/2
 
 - `R080+0x0D18` `mov es, word ptr [0x8072]`
 
 ### R080+0x0D56 `R080+0x0D56 (18A5:0686)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x0DAA `R080+0x0DAA (18A5:06DA)`
 
@@ -17997,18 +17861,17 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x0EA6 `R080+0x0EA6 (18A5:07D6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R080+0x0F16 `R080+0x0F16 (1929:0006)`
 
-matched, reached by cards cards-day cards-variants: blocks 24/26, outcomes 11/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 25/26, outcomes 12/14
 
-- `R080+0x0FAD` `mov word ptr [0xee7a], 2`
 - `R080+0x1058` `jmp 0x2a1`
 
 ### R080+0x11B8 `R080+0x11B8 (1929:02A8)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/20, outcomes 1/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/20, outcomes 1/14
 
 - `R080+0x11ED` `dec ax`
 - `R080+0x11F0` `jmp 0x4e3`
@@ -18028,7 +17891,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/20, outcomes 1/14
 
 ### R080+0x13F6 `R080+0x13F6 (1929:04E6)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/17, outcomes 2/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/17, outcomes 2/12
 
 - `R080+0x1436` `push 0`
 - `R080+0x146B` `dec ax`
@@ -18046,17 +17909,17 @@ matched, reached by cards cards-day cards-variants: blocks 4/17, outcomes 2/12
 
 ### R080+0x155A `R080+0x155A (1929:064A)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/4
 
 - `R080+0x1627` `mov es, word ptr [0x8074]`
 
 ### R080+0x16A0 `R080+0x16A0 (1929:0790)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x16CA `R080+0x16CA (1929:07BA)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/15, outcomes 4/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 7/15, outcomes 4/10
 
 - `R080+0x170B` `dec ax`
 - `R080+0x170E` `jmp 0x976`
@@ -18069,7 +17932,7 @@ matched, reached by cards cards-day cards-variants: blocks 7/15, outcomes 4/10
 
 ### R080+0x1966 `R080+0x1966 (1929:0A56)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x199E `R080+0x199E (1929:0A8E)`
 
@@ -18080,29 +17943,29 @@ matched, reached by cards cards-day cards-variants: blocks 10/12, outcomes 8/10
 
 ### R080+0x1ADE `R080+0x1ADE (1929:0BCE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x1B16 `R080+0x1B16 (1929:0C06)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R080+0x1C46 `R080+0x1C46 (1929:0D36)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x1C86 `R080+0x1C86 (1929:0D76)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/5, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/5, outcomes 3/4
 
 - `R080+0x1D20` `mov es, word ptr [0x8074]`
 
 ### R080+0x1D70 `R080+0x1D70 (1929:0E60)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R080+0x1DC4 `R080+0x1DC4 (1929:0EB4)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/13, outcomes 2/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/13, outcomes 2/10
 
 - `R080+0x1DE2` `sub ax, ax`
 - `R080+0x1DF3` `mov ax, word ptr [0xee6a]`
@@ -18115,7 +17978,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/13, outcomes 2/10
 
 ### R080+0x1EEA `R080+0x1EEA (1929:0FDA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x1F22 `R080+0x1F22 (1929:1012)`
 
@@ -18123,23 +17986,23 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x1F5A `R080+0x1F5A (1929:104A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x1F92 `R080+0x1F92 (1929:1082)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x1F9A `R080+0x1F9A (1929:108A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x1FD2 `R080+0x1FD2 (1929:10C2)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R080+0x20A0 `R080+0x20A0 (1929:1190)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x20DC `R080+0x20DC (1929:11CC)`
 
@@ -18151,11 +18014,11 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x21DE `R080+0x21DE (1929:12CE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R081+0x0000 `R081+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 17/20, outcomes 13/16
+matched, reached by cards cards-day cards-flip cards-variants: blocks 17/20, outcomes 13/16
 
 - `R081+0x015E` `mov bx, word ptr [0xee6a]`
 - `R081+0x017B` `jmp 0x1a6`
@@ -18163,7 +18026,7 @@ matched, reached by cards cards-day cards-variants: blocks 17/20, outcomes 13/16
 
 ### R081+0x01B8 `R081+0x01B8 (1838:01B8)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/12, outcomes 1/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/12, outcomes 1/10
 
 - `R081+0x021A` `sub ax, 3`
 - `R081+0x021F` `dec ax`
@@ -18176,7 +18039,7 @@ matched, reached by cards cards-day cards-variants: blocks 4/12, outcomes 1/10
 
 ### R081+0x0438 `R081+0x0438 (1838:0438)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/6, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/6, outcomes 1/4
 
 - `R081+0x0498` `push 0xa`
 - `R081+0x04D4` `mov es, word ptr [0x8078]`
@@ -18184,13 +18047,11 @@ matched, reached by cards cards-day cards-variants: blocks 3/6, outcomes 1/4
 
 ### R081+0x054E `R081+0x054E (1838:054E)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R081+0x059F` `add si, 0x32`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R081+0x05D0 `R081+0x05D0 (1838:05D0)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/8, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/8, outcomes 2/4
 
 - `R081+0x05E9` `jmp 0x6ce`
 - `R081+0x0680` `mov es, word ptr [0x8078]`
@@ -18198,27 +18059,27 @@ matched, reached by cards cards-day cards-variants: blocks 5/8, outcomes 2/4
 
 ### R081+0x0716 `R081+0x0716 (1838:0716)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R081+0x0738 `R081+0x0738 (1838:0738)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R081+0x0742 `R081+0x0742 (1838:0742)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R081+0x077A `R081+0x077A (1838:077A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R081+0x078C `R081+0x078C (1838:078C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R081+0x07C4 `R081+0x07C4 (1838:07C4)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R081+0x0834 `R081+0x0834 (18BB:0004)`
 
@@ -18312,19 +18173,12 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R081+0x12AC `R081+0x12AC (1962:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/102, outcomes 13/84
+matched, reached by cards cards-day cards-flip cards-variants: blocks 26/102, outcomes 18/84
 
 - `R081+0x1324` `jmp 0x1d8`
 - `R081+0x1335` `mov ax, word ptr [0xa88d]`
-- `R081+0x134A` `push word ptr [0x907e]`
-- `R081+0x1366` `dec ax`
-- `R081+0x1369` `dec ax`
 - `R081+0x136C` `jmp 0xe6`
 - `R081+0x136E` `push 1`
-- `R081+0x1374` `push 1`
-- `R081+0x137A` `push 1`
-- `R081+0x137E` `lcall 0x150b, 0x3b0`
-- `R081+0x1386` `mov word ptr [0xe48a], 0x86`
 - `R081+0x1395` `jmp 0x18a`
 - `R081+0x139D` `jmp 0x18a`
 - `R081+0x13A6` `push 1`
@@ -18400,7 +18254,7 @@ matched, reached by cards cards-day cards-variants: blocks 19/102, outcomes 13/8
 
 ### R081+0x17D8 `R081+0x17D8 (1962:0538)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R081+0x1848 `R081+0x1848 (19BC:0008)`
 
@@ -19707,12 +19561,11 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R087+0x13CE `R087+0x13CE (1974:000E)`
 
-matched, reached by cards cards-day cards-variants: blocks 14/21, outcomes 12/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 15/21, outcomes 13/18
 
 - `R087+0x1428` `push 1`
 - `R087+0x143C` `push 1`
 - `R087+0x1440` `lcall 0x150b, 0x3b0`
-- `R087+0x1470` `push 1`
 - `R087+0x1488` `push 1`
 - `R087+0x14A4` `push 1`
 - `R087+0x14CE` `push 1`
@@ -19970,12 +19823,8 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R089+0x0000 `R089+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 10/30, outcomes 6/24
+matched, reached by cards cards-day cards-flip cards-variants: blocks 14/30, outcomes 11/24
 
-- `R089+0x0105` `dec ax`
-- `R089+0x0108` `dec ax`
-- `R089+0x0110` `mov di, 7`
-- `R089+0x0116` `mov di, 8`
 - `R089+0x0125` `jmp 0x226`
 - `R089+0x0168` `push di`
 - `R089+0x0194` `mov bx, si`
@@ -19999,57 +19848,48 @@ matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 4/6
 
 ### R089+0x0264 `R089+0x0264 (1838:0264)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 4/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 4/6
 
 - `R089+0x0296` `sub ax, ax`
 
 ### R089+0x0488 `R089+0x0488 (1838:0488)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R089+0x04F8 `R089+0x04F8 (1887:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 7/46, outcomes 3/36
+matched, reached by cards cards-day cards-flip cards-variants: blocks 38/46, outcomes 28/36
 
-- `R089+0x0559` `dec ax`
-- `R089+0x055C` `sub ax, 5`
-- `R089+0x0561` `sub ax, 0x66`
-- `R089+0x056E` `push word ptr [0x907e]`
-- `R089+0x0576` `push word ptr [0x907e]`
-- `R089+0x057E` `push word ptr [0x907e]`
-- `R089+0x0598` `dec ax`
-- `R089+0x059B` `sub ax, 5`
-- `R089+0x05A0` `jmp 0x1a4`
-- `R089+0x05A3` `sub ax, 0x66`
-- `R089+0x05A8` `jmp 0x2c8`
 - `R089+0x05AF` `push -3`
-- `R089+0x05DA` `or si, si`
 - `R089+0x05DE` `push -3`
-- `R089+0x0650` `push -0x10`
-- `R089+0x0694` `or si, si`
 - `R089+0x0698` `push -3`
-- `R089+0x06CA` `push -0x10`
-- `R089+0x06EC` `lcall 0x150b, 0x3b0`
-- `R089+0x06F4` `push 0xee9c`
-- `R089+0x0705` `mov word ptr [0xee76], 2`
-- `R089+0x070B` `push cs`
 - `R089+0x0717` `jmp 0x2c1`
-- `R089+0x071A` `mov al, byte ptr [0xee76]`
-- `R089+0x076D` `mov bx, si`
 - `R089+0x0778` `mov bx, word ptr [0xee6a]`
-- `R089+0x0783` `mov word ptr [bp - 4], ax`
-- `R089+0x078C` `dec ax`
 - `R089+0x078F` `jmp 0x2b6`
-- `R089+0x0792` `push word ptr [bp - 4]`
-- `R089+0x079C` `push word ptr [bp - 4]`
-- `R089+0x07A3` `add sp, 2`
-- `R089+0x07A6` `cmp word ptr [0xe48a], 0xb5`
 - `R089+0x07AE` `jmp 0x22a`
-- `R089+0x07B1` `mov ax, word ptr [0xe48a]`
-- `R089+0x07B8` `or si, si`
 - `R089+0x07BC` `mov es, word ptr [0x80e2]`
-- `R089+0x07EC` `push 1`
-- `R089+0x07F0` `lcall 0x150b, 0x3b0`
+
+### R089+0x0800 `R089+0x0800 (1887:0310)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
+### R089+0x0838 `R089+0x0838 (1887:0348)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
+### R089+0x0872 `R089+0x0872 (1887:0382)`
+
+matched, reached by cards-flip: blocks 3/4, outcomes 1/2
+
+- `R089+0x089A` `push -0x59`
+
+### R089+0x08D6 `R089+0x08D6 (1887:03E6)`
+
+matched, reached by cards-flip: blocks 1/1, outcomes 0/0
+
+### R089+0x0910 `R089+0x0910 (1887:0420)`
+
+matched, reached by cards-flip: blocks 3/3, outcomes 2/2
 
 ### R089+0x096A `R089+0x096A (18CE:000A)`
 
@@ -20381,10 +20221,8 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x161E `R090+0x161E (1999:000E)`
 
-matched, reached by cards cards-day cards-variants: blocks 26/33, outcomes 14/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 28/33, outcomes 16/18
 
-- `R090+0x172A` `mov ax, 2`
-- `R090+0x1751` `mov ax, 2`
 - `R090+0x179A` `jmp 0x31f`
 - `R090+0x189F` `jmp 0x314`
 - `R090+0x18D4` `push word ptr [bp - 4]`
@@ -20393,7 +20231,7 @@ matched, reached by cards cards-day cards-variants: blocks 26/33, outcomes 14/18
 
 ### R090+0x1936 `R090+0x1936 (1999:0326)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/13, outcomes 1/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/13, outcomes 1/10
 
 - `R090+0x1975` `dec ax`
 - `R090+0x1978` `jmp 0x40e`
@@ -20409,13 +20247,13 @@ matched, reached by cards cards-day cards-variants: blocks 2/13, outcomes 1/10
 
 ### R090+0x1A20 `R090+0x1A20 (1999:0410)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R090+0x1A50` `push 2`
 
 ### R090+0x1A90 `R090+0x1A90 (1999:0480)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1AE6 `R090+0x1AE6 (1999:04D6)`
 
@@ -20425,7 +20263,7 @@ matched, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### R090+0x1B62 `R090+0x1B62 (1999:0552)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1C52 `R090+0x1C52 (1999:0642)`
 
@@ -20441,45 +20279,45 @@ matched, reached by cards-day cards-variants: blocks 3/10, outcomes 2/8
 
 ### R090+0x1D0A `R090+0x1D0A (1999:06FA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1D42 `R090+0x1D42 (1999:0732)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R090+0x1D72` `push 0xa`
 
 ### R090+0x1D9E `R090+0x1D9E (1999:078E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1DCC `R090+0x1DCC (1999:07BC)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R090+0x1E5A `R090+0x1E5A (1999:084A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1E92 `R090+0x1E92 (1999:0882)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1EA4 `R090+0x1EA4 (1999:0894)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1EDC `R090+0x1EDC (1999:08CC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1F2A `R090+0x1F2A (1999:091A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x1FDA `R090+0x1FDA (1999:09CA)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R090+0x209C `R090+0x209C (1999:0A8C)`
 
@@ -20487,7 +20325,7 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x20B4 `R090+0x20B4 (1999:0AA4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x20CC `R090+0x20CC (1999:0ABC)`
 
@@ -20495,9 +20333,8 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x22EC `R090+0x22EC (1A66:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 22/29, outcomes 11/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 23/29, outcomes 12/14
 
-- `R090+0x23F8` `mov ax, 2`
 - `R090+0x244A` `jmp 0x2ff`
 - `R090+0x254F` `jmp 0x2f4`
 - `R090+0x2598` `push word ptr [bp - 4]`
@@ -20507,7 +20344,7 @@ matched, reached by cards cards-day cards-variants: blocks 22/29, outcomes 11/14
 
 ### R090+0x25E6 `R090+0x25E6 (1A66:0306)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/13, outcomes 1/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/13, outcomes 1/10
 
 - `R090+0x2625` `dec ax`
 - `R090+0x2628` `jmp 0x3e8`
@@ -20529,7 +20366,7 @@ matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
 
 ### R090+0x273A `R090+0x273A (1A66:045A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2790 `R090+0x2790 (1A66:04B0)`
 
@@ -20539,17 +20376,17 @@ matched, reached by cards-variants: blocks 2/3, outcomes 1/2
 
 ### R090+0x280C `R090+0x280C (1A66:052C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2858 `R090+0x2858 (1A66:0578)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outcomes 1/2
 
 - `R090+0x2896` `mov word ptr [0xee7a], 2`
 
 ### R090+0x28C6 `R090+0x28C6 (1A66:05E6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R090+0x2956 `R090+0x2956 (1A66:0676)`
 
@@ -20560,35 +20397,35 @@ matched, reached by cards-day cards-variants: blocks 3/5, outcomes 2/4
 
 ### R090+0x29CE `R090+0x29CE (1A66:06EE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2B10 `R090+0x2B10 (1A66:0830)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2B3A `R090+0x2B3A (1A66:085A)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 6/6, outcomes 4/4
 
 ### R090+0x2BDA `R090+0x2BDA (1A66:08FA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2C24 `R090+0x2C24 (1A66:0944)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2C5C `R090+0x2C5C (1A66:097C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2C94 `R090+0x2C94 (1A66:09B4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2D44 `R090+0x2D44 (1A66:0A64)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R090+0x2DFA `R090+0x2DFA (1A66:0B1A)`
 
@@ -20596,7 +20433,7 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2E12 `R090+0x2E12 (1A66:0B32)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R090+0x2E2A `R090+0x2E2A (1A66:0B4A)`
 
@@ -20604,11 +20441,9 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R091+0x0000 `R091+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 17/29, outcomes 9/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 19/29, outcomes 11/14
 
-- `R091+0x00AE` `push 0x29`
 - `R091+0x00BD` `mov ax, 2`
-- `R091+0x00C2` `sub ax, ax`
 - `R091+0x00EC` `jmp 0x26f`
 - `R091+0x01E0` `jmp 0x264`
 - `R091+0x0214` `push word ptr [bp - 4]`
@@ -20621,49 +20456,48 @@ matched, reached by cards cards-day cards-variants: blocks 17/29, outcomes 9/14
 
 ### R091+0x0276 `R091+0x0276 (1838:0276)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R091+0x027E `R091+0x027E (1838:027E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R091+0x02B6 `R091+0x02B6 (1838:02B6)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 1/2
 
 ### R091+0x02F4 `R091+0x02F4 (1838:02F4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R091+0x034A `R091+0x034A (1838:034A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R091+0x0382 `R091+0x0382 (1838:0382)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R091+0x0394 `R091+0x0394 (1838:0394)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R091+0x03DE `R091+0x03DE (1838:03DE)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R091+0x056A `R091+0x056A (1838:056A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R091+0x05C4 `R091+0x05C4 (1894:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 8/22, outcomes 4/18
+matched, reached by cards cards-day cards-flip cards-variants: blocks 9/22, outcomes 5/18
 
 - `R091+0x066D` `mov dx, word ptr [0xa88d]`
 - `R091+0x0676` `cmp dx, 8`
 - `R091+0x067B` `sub di, di`
 - `R091+0x0680` `mov di, 1`
-- `R091+0x069A` `push 1`
 - `R091+0x06B4` `push 1`
 - `R091+0x06EB` `mov al, byte ptr [0xee76]`
 - `R091+0x074A` `dec ax`
@@ -20676,19 +20510,16 @@ matched, reached by cards cards-day cards-variants: blocks 8/22, outcomes 4/18
 
 ### R091+0x0838 `R091+0x0838 (1894:0278)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R091+0x0892 `R091+0x0892 (18C1:0002)`
 
-matched, reached by cards cards-day cards-variants: blocks 13/29, outcomes 7/24
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/29, outcomes 11/24
 
-- `R091+0x094D` `cmp word ptr [0xa88d], 8`
-- `R091+0x0954` `push 0x2e38`
 - `R091+0x0983` `mov dx, word ptr [0xa88d]`
 - `R091+0x098C` `cmp dx, 8`
 - `R091+0x0991` `sub di, di`
 - `R091+0x0996` `mov di, 1`
-- `R091+0x09B0` `push 1`
 - `R091+0x09CA` `push 1`
 - `R091+0x0A01` `mov al, byte ptr [0xee76]`
 - `R091+0x0A60` `dec ax`
@@ -20701,7 +20532,7 @@ matched, reached by cards cards-day cards-variants: blocks 13/29, outcomes 7/24
 
 ### R091+0x0B4E `R091+0x0B4E (18C1:02BE)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R091+0x0BA8 `R091+0x0BA8 (18F2:0008)`
 
@@ -21485,7 +21316,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R095+0x03F0 `R095+0x03F0 (1877:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 15/18, outcomes 11/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 15/18, outcomes 11/14
 
 - `R095+0x045B` `jmp 0x141`
 - `R095+0x04DE` `mov bx, word ptr [0xee6a]`
@@ -21493,48 +21324,46 @@ matched, reached by cards cards-day cards-variants: blocks 15/18, outcomes 11/14
 
 ### R095+0x0538 `R095+0x0538 (1877:0148)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 2/4
 
 - `R095+0x054A` `mov word ptr [0xe48a], 0xe7`
 - `R095+0x0552` `mov word ptr [0xe48a], 0xea`
 
 ### R095+0x055A `R095+0x055A (1877:016A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R095+0x05A2 `R095+0x05A2 (1877:01B2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R095+0x05DC `R095+0x05DC (1877:01EC)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R095+0x05F0` `mov es, word ptr [0x8120]`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R095+0x0692 `R095+0x0692 (1877:02A2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R095+0x06CC `R095+0x06CC (1877:02DC)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R095+0x0782 `R095+0x0782 (1877:0392)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R095+0x07BC `R095+0x07BC (1877:03CC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R095+0x07CA `R095+0x07CA (1877:03DA)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R095+0x0804 `R095+0x0804 (1877:0414)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R095+0x0874 `R095+0x0874 (18BF:0004)`
 
@@ -21907,7 +21736,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R097+0x0000 `R097+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 15/18, outcomes 11/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 15/18, outcomes 11/14
 
 - `R097+0x006B` `jmp 0x141`
 - `R097+0x00EE` `mov bx, word ptr [0xee6a]`
@@ -21915,48 +21744,46 @@ matched, reached by cards cards-day cards-variants: blocks 15/18, outcomes 11/14
 
 ### R097+0x0148 `R097+0x0148 (1838:0148)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/5, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 2/4
 
 - `R097+0x0164` `mov word ptr [0xe48a], 0xe7`
 - `R097+0x016C` `mov word ptr [0xe48a], 0xea`
 
 ### R097+0x0174 `R097+0x0174 (1838:0174)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/3, outcomes 1/2
-
-- `R097+0x0188` `mov es, word ptr [0x812e]`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R097+0x022A `R097+0x022A (1838:022A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R097+0x0264 `R097+0x0264 (1838:0264)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R097+0x031A `R097+0x031A (1838:031A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R097+0x0354 `R097+0x0354 (1838:0354)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R097+0x039C `R097+0x039C (1838:039C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R097+0x03D6 `R097+0x03D6 (1838:03D6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R097+0x03E4 `R097+0x03E4 (1838:03E4)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R097+0x041C `R097+0x041C (1838:041C)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R097+0x048C `R097+0x048C (1880:000C)`
 
@@ -23037,10 +22864,8 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R101+0x11F4 `R101+0x11F4 (1957:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 39/126, outcomes 37/126
+matched, reached by cards cards-day cards-flip cards-variants: blocks 46/126, outcomes 42/126
 
-- `R101+0x124B` `jmp 0x49a`
-- `R101+0x1257` `jmp 0x49a`
 - `R101+0x1260` `jmp 0x49a`
 - `R101+0x1269` `jmp 0x49a`
 - `R101+0x1272` `jmp 0x49a`
@@ -23117,15 +22942,10 @@ matched, reached by cards cards-day cards-variants: blocks 39/126, outcomes 37/1
 - `R101+0x162D` `cmp word ptr [bp - 2], 0`
 - `R101+0x1633` `jmp 0x4d7`
 - `R101+0x1636` `mov word ptr [bp - 0xc], 0x22`
-- `R101+0x168A` `push 0`
-- `R101+0x16A7` `dec ax`
-- `R101+0x16AA` `dec ax`
-- `R101+0x16AD` `jmp 0x4d7`
 - `R101+0x16B0` `push 0`
 - `R101+0x16B6` `push 0`
 - `R101+0x16BC` `push 0`
 - `R101+0x16BF` `lcall 0x150b, 0x3b0`
-- `R101+0x16C7` `mov word ptr [0xa766], 1`
 
 ### R102+0x0000 `R102+0x0000 (1838:0000)`
 
@@ -23133,10 +22953,8 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R102+0x06E8 `R102+0x06E8 (18A6:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 27/40, outcomes 21/34
+matched, reached by cards cards-day cards-flip cards-variants: blocks 29/40, outcomes 23/34
 
-- `R102+0x075E` `mov word ptr [0xee76], 2`
-- `R102+0x0778` `mov word ptr [0xee78], 2`
 - `R102+0x0791` `mov word ptr [0xee43], 0x74`
 - `R102+0x07A5` `mov word ptr [0xee7c], 0`
 - `R102+0x07BB` `mov word ptr [0xee78], 0`
@@ -23155,7 +22973,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R102+0x0982 `R102+0x0982 (18A6:02A2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R102+0x0998 `R102+0x0998 (18A6:02B8)`
 
@@ -23163,7 +22981,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R102+0x0A04 `R102+0x0A04 (18A6:0324)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R102+0x0A26 `R102+0x0A26 (18A6:0346)`
 
@@ -23173,23 +22991,23 @@ matched, reached by cards-day cards-variants: blocks 3/4, outcomes 1/2
 
 ### R102+0x0A5A `R102+0x0A5A (18A6:037A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R102+0x0B24 `R102+0x0B24 (18A6:0444)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R102+0x0B5C `R102+0x0B5C (18A6:047C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R102+0x0B6A `R102+0x0B6A (18A6:048A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R102+0x0BA2 `R102+0x0BA2 (18A6:04C2)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R102+0x0CB8 `R102+0x0CB8 (18A6:05D8)`
 
@@ -23286,35 +23104,31 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R103+0x0000 `R103+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/9, outcomes 4/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 5/6
 
-- `R103+0x00DC` `push 0xc`
-- `R103+0x011C` `lcall 0x150b, 0x3b0`
 - `R103+0x014C` `mov es, word ptr [0x8164]`
 
 ### R103+0x0256 `R103+0x0256 (1838:0256)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R103+0x029C `R103+0x029C (1838:029C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R103+0x0344 `R103+0x0344 (186C:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 6/9, outcomes 4/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 5/6
 
-- `R103+0x0420` `push 0xc`
-- `R103+0x0460` `lcall 0x150b, 0x3b0`
 - `R103+0x0490` `mov es, word ptr [0x8166]`
 
 ### R103+0x059A `R103+0x059A (186C:025A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R103+0x05E0 `R103+0x05E0 (186C:02A0)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R103+0x0688 `R103+0x0688 (18A0:0008)`
 
@@ -23533,10 +23347,8 @@ matched, reached by cards: blocks 0/1, outcomes 0/0
 
 ### R104+0x14A0 `R104+0x14A0 (1982:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 20/29, outcomes 10/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 22/29, outcomes 12/14
 
-- `R104+0x1525` `mov word ptr [0xee76], 2`
-- `R104+0x153D` `mov word ptr [0xee78], 2`
 - `R104+0x1569` `jmp 0x26d`
 - `R104+0x167D` `jmp 0x262`
 - `R104+0x16C6` `push word ptr [bp - 4]`
@@ -23551,7 +23363,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R104+0x1794 `R104+0x1794 (1982:02F4)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R104+0x1804 `R104+0x1804 (1982:0364)`
 
@@ -23559,7 +23371,7 @@ matched, reached by cards cards-day cards-variants: blocks 6/6, outcomes 4/4
 
 ### R104+0x18E8 `R104+0x18E8 (1982:0448)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R104+0x1952 `R104+0x1952 (1982:04B2)`
 
@@ -23572,27 +23384,27 @@ matched, reached by cards-day cards-variants: blocks 4/8, outcomes 2/6
 
 ### R104+0x19BA `R104+0x19BA (1982:051A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R104+0x19F2 `R104+0x19F2 (1982:0552)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R104+0x1A10 `R104+0x1A10 (1982:0570)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R104+0x1B9C `R104+0x1B9C (1982:06FC)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R104+0x1BAE `R104+0x1BAE (1982:070E)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R104+0x1BE6 `R104+0x1BE6 (1982:0746)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R104+0x1DB0 `R104+0x1DB0 (1982:0910)`
 
@@ -23790,10 +23602,8 @@ matched, reached by cards: blocks 0/1, outcomes 0/0
 
 ### R105+0x11C8 `R105+0x11C8 (1954:0008)`
 
-matched, reached by cards cards-day cards-variants: blocks 19/29, outcomes 10/14
+matched, reached by cards cards-day cards-flip cards-variants: blocks 21/29, outcomes 12/14
 
-- `R105+0x124A` `mov ax, 2`
-- `R105+0x1265` `mov word ptr [0xee78], 2`
 - `R105+0x1297` `jmp 0x27d`
 - `R105+0x13AD` `jmp 0x272`
 - `R105+0x13EC` `push word ptr [bp - 4]`
@@ -23817,7 +23627,7 @@ matched, reached by cards cards-day cards-variants: blocks 10/17, outcomes 8/16
 
 ### R105+0x1610 `R105+0x1610 (1954:0450)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 3/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 3/6
 
 - `R105+0x165C` `push 0`
 
@@ -23833,7 +23643,7 @@ matched, reached by cards cards-day cards-variants: blocks 4/9, outcomes 2/8
 
 ### R105+0x17B8 `R105+0x17B8 (1954:05F8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x1814 `R105+0x1814 (1954:0654)`
 
@@ -23848,19 +23658,19 @@ matched, reached by cards-day cards-variants: blocks 4/10, outcomes 2/8
 
 ### R105+0x18DC `R105+0x18DC (1954:071C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x1A24 `R105+0x1A24 (1954:0864)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x1A2C `R105+0x1A2C (1954:086C)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x1AEC `R105+0x1AEC (1954:092C)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R105+0x1B86 `R105+0x1B86 (1954:09C6)`
 
@@ -23868,12 +23678,10 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x1DA6 `R105+0x1DA6 (1A12:0006)`
 
-matched, reached by cards cards-day cards-variants: blocks 23/33, outcomes 12/20
+matched, reached by cards cards-day cards-flip cards-variants: blocks 25/33, outcomes 14/20
 
 - `R105+0x1E8C` `mov ax, bx`
 - `R105+0x1E96` `mov word ptr [0xee78], 0`
-- `R105+0x1EC0` `mov word ptr [0xee7c], 2`
-- `R105+0x1ED8` `mov word ptr [0xee7a], 2`
 - `R105+0x1EEA` `jmp 0x2df`
 - `R105+0x1FDA` `mov bx, word ptr [0xee6a]`
 - `R105+0x1FEF` `jmp 0x2d4`
@@ -23883,15 +23691,15 @@ matched, reached by cards cards-day cards-variants: blocks 23/33, outcomes 12/20
 
 ### R105+0x2086 `R105+0x2086 (1A12:02E6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x2096 `R105+0x2096 (1A12:02F6)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x20D0 `R105+0x20D0 (1A12:0330)`
 
-matched, reached by cards cards-day cards-variants: blocks 4/7, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/7, outcomes 1/4
 
 - `R105+0x20FE` `mov ax, word ptr [0x907e]`
 - `R105+0x2109` `push 0x400`
@@ -23899,7 +23707,7 @@ matched, reached by cards cards-day cards-variants: blocks 4/7, outcomes 1/4
 
 ### R105+0x212A `R105+0x212A (1A12:038A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x2162 `R105+0x2162 (1A12:03C2)`
 
@@ -23907,7 +23715,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 1/2
 
 ### R105+0x21C6 `R105+0x21C6 (1A12:0426)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 1/2
 
 ### R105+0x2230 `R105+0x2230 (1A12:0490)`
 
@@ -23915,7 +23723,7 @@ matched, reached by cards cards-day: blocks 3/3, outcomes 2/2
 
 ### R105+0x22E2 `R105+0x22E2 (1A12:0542)`
 
-matched, reached by cards cards-day: blocks 3/3, outcomes 1/2
+matched, reached by cards cards-day cards-flip: blocks 3/3, outcomes 1/2
 
 ### R105+0x234C `R105+0x234C (1A12:05AC)`
 
@@ -23931,29 +23739,29 @@ matched, reached by cards-variants: blocks 7/14, outcomes 5/12
 
 ### R105+0x2472 `R105+0x2472 (1A12:06D2)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x25C0 `R105+0x25C0 (1A12:0820)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/6, outcomes 5/6
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/6, outcomes 5/6
 
 - `R105+0x2639` `push 1`
 
 ### R105+0x2688 `R105+0x2688 (1A12:08E8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x26C0 `R105+0x26C0 (1A12:0920)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x2702 `R105+0x2702 (1A12:0962)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R105+0x273A `R105+0x273A (1A12:099A)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R105+0x27AA `R105+0x27AA (1AB2:000A)`
 
@@ -24258,7 +24066,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R107+0x0000 `R107+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 38/49, outcomes 25/36
+matched, reached by cards cards-day cards-flip cards-variants: blocks 38/49, outcomes 25/36
 
 - `R107+0x00EB` `dec ax`
 - `R107+0x00EE` `dec ax`
@@ -24639,7 +24447,7 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R108+0x0000 `R108+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 16/26, outcomes 9/12
+matched, reached by cards cards-day cards-flip cards-variants: blocks 16/26, outcomes 9/12
 
 - `R108+0x00D5` `mov word ptr [0xee78], 2`
 - `R108+0x0115` `jmp 0x2a9`
@@ -27472,7 +27280,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R117+0x0000 `R117+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 13/22, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 13/22, outcomes 6/8
 
 - `R117+0x00B0` `jmp 0x247`
 - `R117+0x01B7` `jmp 0x23c`
@@ -27486,13 +27294,11 @@ matched, reached by cards cards-day cards-variants: blocks 13/22, outcomes 6/8
 
 ### R117+0x024E `R117+0x024E (1838:024E)`
 
-matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
-
-- `R117+0x026A` `push 0`
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R117+0x0290 `R117+0x0290 (1838:0290)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R117+0x02C8 `R117+0x02C8 (1838:02C8)`
 
@@ -27503,19 +27309,19 @@ matched, reached by cards-day cards-variants: blocks 4/6, outcomes 2/4
 
 ### R117+0x030A `R117+0x030A (1838:030A)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R117+0x0342 `R117+0x0342 (1838:0342)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R117+0x0356 `R117+0x0356 (1838:0356)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R117+0x03AA `R117+0x03AA (1838:03AA)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R117+0x044C `R117+0x044C (1838:044C)`
 
@@ -27523,7 +27329,7 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R117+0x066C `R117+0x066C (189E:000C)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/26, outcomes 1/24
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/26, outcomes 1/24
 
 - `R117+0x06FA` `lcall 0x9c0, 0x1c1b`
 - `R117+0x0704` `jmp 0x1c2`
@@ -30612,10 +30418,8 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R130+0x0000 `R130+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 2/10, outcomes 1/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/10, outcomes 2/2
 
-- `R130+0x0051` `shl ax, 1`
-- `R130+0x0076` `or byte ptr [0x160c], 1`
 - `R130+0x007E` `or byte ptr [0x160c], 8`
 - `R130+0x0086` `or byte ptr [0x160c], 2`
 - `R130+0x008E` `or byte ptr [0x160c], 4`

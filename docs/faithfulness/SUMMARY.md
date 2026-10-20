@@ -9,6 +9,8 @@ No known divergence, strong evidence, published coverage:
 
 * every original function the C# cites is compared with it statically, and no lead is open;
 * every oracle agrees with the original wherever it runs, or differs for a listed reason;
+* whole scripted game sessions, played in the original and in the C# side by side, give the same
+  game state at every step (the battle's own drawing aside, see below);
 * the branch coverage of the original reached by the oracles is published below with its gaps;
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
@@ -34,9 +36,9 @@ including paths no oracle case reaches. Its findings are leads to review; a revi
 
 | | |
 |---|---:|
-| original functions compared | 5,540 |
+| original functions compared | 5,541 |
 | comparisons without a finding | 3,128 of 3,421 |
-| leads reviewed (each with its reason) | 340 |
+| leads reviewed (each with its reason) | 344 |
 | leads open | 0 |
 
 The first review of its leads fixed about twenty divergences in the card scripts and the rules (the
@@ -53,12 +55,12 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| all 4,771 functions the oracles reach | 72.2% (27,972 / 38,769) | 62.8% (18,080 / 28,796) |
+| all 4,800 functions the oracles reach | 73.0% (28,389 / 38,892) | 64.0% (18,486 / 28,882) |
 
-21,513 items were never exercised: 1,231 are justified in `unreachable.csv` (dormant branches —
+20,899 items were never exercised: 1,231 are justified in `unreachable.csv` (dormant branches —
 tautologies, repeated tests, unused thresholds —, compiled forms, the C run-time library, drivers,
-memory and file helpers, the copy protection, code nothing reaches), 20,282 are open. By area, the
-open items lie in the card scripts (about 12,700), the battlefield generators (about 2,700), the
+memory and file helpers, the copy protection, code nothing reaches), 19,668 are open. By area, the
+open items lie in the card scripts (about 12,100), the battlefield generators (about 2,700), the
 inventory and other screens (about 1,400), the rules (about 1,000) and code the C# has only in its
 screens, which also carry game behaviour (about 1,100).
 
@@ -80,6 +82,36 @@ changes, next card).
   handlers, a merchant's price bound, a joining member's weapon quality and record bytes), two
   original bugs the C# had not reproduced (the university's formulas line, the altar boy's hour),
   and faults of the oracle itself. Every run now agrees or differs for a listed reason.
+* Start states aimed at the branches no run reaches (`tools/oracle/branch_flip.py`, applied with
+  `DARKLANDS_CARD_ORACLE_MUTATIONS`): where a missed branch tests a value the saved game holds (a
+  word of the save, a started event), the state takes the other side. On all cards they reached
+  614 more branches; the C# agreed on every run.
+
+## Whole game sessions (lockstep)
+
+`tools/oracle/lockstep.py` plays a scripted session of the whole original game in the emulator,
+from its own start through its own load screen, with keys and mouse from the script and the clock
+driven by the instruction count, and the same session in the C# (the headless host). After each
+step both write the saved game with their own writers, and the sections, the random generator's
+state and the current card are compared. The sessions (`tools/oracle/lockstep-sessions/`) start
+from a saved game in Pressburg:
+
+| session | | |
+|---|---|---|
+| pressburg-map | the inn, eight hours' rest, the streets, the gate at night, the map, a walk | 10 states identical |
+| tyrnau | as above, then the walk to Tyrnau, its chapel and its priest | 15 states identical |
+| residence | taking up residence, days passing | 8 states identical |
+| save-load | saving with Alt-S, resting, loading it back with Alt-L | 6 states identical; the saved file is identical |
+| gate-battle | fighting the gate's guards | differs once the battle runs |
+
+They found six divergences the per-function checks could not see, now fixed: leaving the map
+(the previous card and the hour pass after it), entering it (the party's square), the click to
+walk (kept in screen coordinates), the map's scrolling (with an original quirk at its bottom edge),
+arriving at a place (the party keeps its square), and Save and Load switched off in the camp,
+the character sheet and barter. The battle's first difference is the original's drawing: when it
+redraws a wall piece it draws its picture variant from the game's random generator, which the C#,
+drawing whole frames, does not; registered as a divergence. With those draws held out, the two
+battles agree for 750 combat ticks; the next difference (tick 760) is being investigated.
 
 ## Saint oracle
 
