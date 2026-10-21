@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <!-- the release version of every project and of the program players start (shown on the start screen) -->
-    <Version>0.9.0</Version>
+    <Version>0.9.1</Version>
     <Copyright>Darklands Restoration Project contributors, GPL-3.0-or-later</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
