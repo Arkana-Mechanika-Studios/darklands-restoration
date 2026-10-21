@@ -58,31 +58,31 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 5,342 functions the oracles enter | 73.6% (37,387 / 50,821) | 64.0% (25,541 / 39,896) |
-| **every function the C# implements (9,281)** | | **57.9% (24,761 / 42,778)** |
+| the 5,354 functions the oracles enter | 73.6% (37,486 / 50,949) | 64.0% (25,617 / 40,020) |
+| **every function the C# implements (9,281)** | | **58.1% (24,837 / 42,778)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 24,761 against 25,541 exercised. By area:
+differ slightly on the resident code, hence 24,837 against 25,617 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 6,787 / 8,524 | 80% |
-| rules | 313 / 358 | 1,733 / 2,584 | 67% |
-| battles (tactical combat) | 235 / 314 | 4,630 / 7,516 | 62% |
-| card engine | 35 / 36 | 399 / 686 | 58% |
-| travel (overland map) | 23 / 24 | 550 / 982 | 56% |
-| resident code | 125 / 160 | 856 / 1,640 | 52% |
-| card scripts | 4,033 / 7,949 | 7,177 / 14,614 | 49% |
-| screens (inventory, barter, creation ...) | 141 / 202 | 2,566 / 6,070 | 42% |
+| rules | 313 / 358 | 1,737 / 2,584 | 67% |
+| battles (tactical combat) | 236 / 314 | 4,647 / 7,516 | 62% |
+| card engine | 35 / 36 | 400 / 686 | 58% |
+| travel (overland map) | 23 / 24 | 554 / 982 | 56% |
+| resident code | 129 / 160 | 876 / 1,640 | 53% |
+| card scripts | 4,033 / 7,949 | 7,185 / 14,614 | 49% |
+| screens (inventory, barter, creation ...) | 148 / 202 | 2,588 / 6,070 | 43% |
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-27,789 items of the functions the oracles enter were never exercised: 1,204 are justified in
+27,866 items of the functions the oracles enter were never exercised: 1,204 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 26,585 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 26,662 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
 lie in the card scripts (about 12,100), the screens (about 4,400), the battles (about 3,700), the
 battlefield generators (about 3,000), the rules (about 900) and the overland map (about 800).
@@ -146,8 +146,8 @@ from a saved game in Pressburg:
 | roster, roster4 | the inn's party screen: finding somebody, retiring members | identical |
 | wien-rathaus | Vienna's town hall: the audience, the clerk | identical |
 | mapsave | saving on the map with Alt-S, loading it back | identical |
-| banks | the Fugger and Medici offices, the Hanse hall | **open lead**: differs from the second market visit on (written before the tester's font metrics were real) |
-| menubar, menubar2 | the menu bar's keys and the keyboard menu | **open lead**: differs from the state `expert` on (as banks) |
+| banks | the Fugger and Medici offices, the Hanse hall | identical (it found the hour of the Hanse hall passing before its options instead of after, R061+0x2278, now fixed) |
+| menubar, menubar2 | the menu bar's keys and the keyboard menu | identical |
 | orders-select, -walk, -missile, -attack-a, -attack-b, -attack-b2, -attack-v, -attacks, -sheet, -save | the player's orders in the gate battle: selecting, pausing, walking, missiles, the attack orders, berserk, the combat sheet, saving in battle | identical, and the 13 combatant records at every battle pass |
 | luebeck-potion | the Lübeck gate: potions thrown in battle | identical, records at every pass included |
 | orders-potion | as luebeck-potion, with the combat sheet opened for long | differs after the sheet: the original's timer ticks while the sheet is open, which the C# does not model |
@@ -162,7 +162,7 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-84 runs, 76 agreeing).
+84 runs, 79 agreeing, the other five for the reasons listed above).
 
 
 They found six divergences the per-function checks could not see, now fixed: leaving the map
@@ -196,7 +196,7 @@ start (R018+0x093C, R014+0x469E; an original bug, reproduced); and on a keep's f
 party starts at (0, 0) and members stand outside the level, the collision test reads the cells past
 the edge as empty ones, with the party's sizes still 0 until R014+0x0258 sets them (R014+0x5ECA).
 
-The fights brought the battle code run against the original from 32 to 235 of 314 functions (the battle sessions with the player's orders included). The
+The fights brought the battle code run against the original from 32 to 236 of 314 functions (the battle sessions with the player's orders included). The
 first five found one divergence in the C# (the first frame also turns whoever just got an action
 toward its target, so enemies face their targets from the start); the other differences they showed
 were the tester's own (fields the original has not set yet, the pause, the set-up and the clock's

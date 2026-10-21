@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 50821,
-  "blocks_hit": 37387,
-  "functions": 5342,
-  "outcomes": 39896,
-  "outcomes_hit": 25541,
+  "blocks": 50949,
+  "blocks_hit": 37486,
+  "functions": 5354,
+  "outcomes": 40020,
+  "outcomes_hit": 25617,
   "runs": null
  },
  "battle": {
@@ -391,6 +391,14 @@
   "outcomes_hit": 1999,
   "runs": 1
  },
+ "lockstep-banks": {
+  "blocks": 5644,
+  "blocks_hit": 3412,
+  "functions": 374,
+  "outcomes": 4238,
+  "outcomes_hit": 1902,
+  "runs": 1
+ },
  "lockstep-cache": {
   "blocks": 4991,
   "blocks_hit": 2974,
@@ -461,6 +469,22 @@
   "functions": 319,
   "outcomes": 4160,
   "outcomes_hit": 1802,
+  "runs": 1
+ },
+ "lockstep-menubar": {
+  "blocks": 4957,
+  "blocks_hit": 2960,
+  "functions": 310,
+  "outcomes": 3636,
+  "outcomes_hit": 1587,
+  "runs": 1
+ },
+ "lockstep-menubar2": {
+  "blocks": 4949,
+  "blocks_hit": 2949,
+  "functions": 308,
+  "outcomes": 3632,
+  "outcomes_hit": 1582,
   "runs": 1
  },
  "lockstep-notices": {
