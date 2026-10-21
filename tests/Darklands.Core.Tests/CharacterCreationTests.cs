@@ -22,8 +22,13 @@ public sealed class CharacterCreationTests
     internal static List<ItemDefinition> Items() =>
         [.. Enumerable.Range(0, 200).Select(c => new ItemDefinition(c, $"item {c}", "", c & 0xFF, 0, 2, 20, 1))];
 
-    private static CharacterCreation New(uint seed = 7, uint clock = 1000) =>
-        new(Tables(), Items(), new MscRandom(seed), partySeed: 33, clock: () => clock);
+    // the generator screen resets (and so draws the first name) when it opens; the constructor draws nothing
+    private static CharacterCreation New(uint seed = 7, uint clock = 1000)
+    {
+        var c = new CharacterCreation(Tables(), Items(), new MscRandom(seed), partySeed: 33, clock: () => clock);
+        c.Reset();
+        return c;
+    }
 
     [Fact]
     public void ResetMakesAYoungManWithBaseAttributes()
