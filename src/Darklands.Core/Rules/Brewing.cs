@@ -91,17 +91,17 @@ public sealed class BrewingBench
     }
 
     // orig: R033+0x1390 (1462:1390) draft (register-level diffs); tests: CampAndSheetRulesTests
-    // UNCERTAIN: the original calls event_renew with nine arguments; the tenth (the tag it matches on) is whatever lies on the caller's stack. 0 here.
-    // C: event_renew extends a matching brew (same formula, place, owner) by 0 hours and keeps its old chance and batches.
+    // C: the original calls event_renew with nine arguments; the tenth (the tag it matches on and stores) is the caller's saved SI (R033+0x060E): the key code that confirmed (0x1F73 for s, 0x1F53 for S).
+    // C: event_renew extends a matching brew (same formula, place, owner, key) by 0 hours and keeps its old chance and batches.
     /// <summary>
     /// Brews the batches of a row: records the brew (ending at once, so the next passage of
     /// time completes it) and takes the ingredients from the party, the alchemist first.
     /// </summary>
-    public void Brew(Batch b, int place)
+    public void Brew(Batch b, int place, int key)
     {
         var log = _s.Events;
         log.Renew(Alchemist, _s.CurrentLocation, b.Count, EventKinds.Brew, b.Formula.Index, Chance(b),
-            (int)ExpiryHandler.AlchemyResult, 0, (int)EventFlags.CallExpiryHandler, 0);
+            (int)ExpiryHandler.AlchemyResult, 0, (int)EventFlags.CallExpiryHandler, key);
         // C: event_renew's return is not used: the place and risk go to events[last_event]. With the log full (renew returns -1
         // C: without setting it) that is the last brew event its scan visited; last_event -1 or 300 (no brew event at all, or
         // C: the scan ran past slot 299) points at events[-1]/[300], outside the table (the tail of var_named[4] and the word after

@@ -91,6 +91,9 @@ public interface ICardScreen
     /// <summary>Shows a short message beside a member's portrait (or the whole panel) and waits.</summary>
     void Tell(string message, int member = OptionHint.WholeParty);
 
+    /// <summary>A framed message for <paramref name="ticks"/> timer ticks, no key waited for (root 0000:24BC); a screen without one tells it.</summary>
+    void ShowMessage(string text, int ticks) => Tell(text);
+
     /// <summary>Shows the hourglass while time passes.</summary>
     void PassTime(int hours);
 }

@@ -96,6 +96,7 @@ public static class EventExpiry
     /// </summary>
     // orig: R029+0x3FB2 (0E76:3FB2) matched; tests: PracticeAndItemsTests
     // C: rand_mod(4 - f2c) is drawn before rand_mod(2), and both before the cur_loc test.
+    // C: the messages are root 0000:24BC(text, 100): a framed box for 100 ticks (R029+0x3FB2, no key waited for).
     // C: the stack takes the item record's type (+1E, a signed char), quality (+26) + 10 x grade and weight (+25).
     public static void AlchemyResult(GameState s, TimedEvent e)
     {

@@ -366,7 +366,8 @@ public sealed class CampStay
         var cost = DayCost();
         if (cost > 0 && Place != CampPlace.Wilderness && _s.Party.Purse < Money.FromPfennigs(cost))
         {
-            _s.Messages.Show("Not Enough Money");
+            // orig: R036+0x147A: root 0000:24BC("Not Enough Money", 0x50)
+            _s.Messages.Show("Not Enough Money", 0x50);
             return;
         }
         for (var i = 0; i < Party.MaxMembers; i++)

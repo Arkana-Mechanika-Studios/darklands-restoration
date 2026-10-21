@@ -310,11 +310,12 @@ public sealed class CampAndSheetRulesTests
         var bench = new BrewingBench(s, Book, 0);
         var batch = bench.Batches[0];
         batch.Count = 2;
-        bench.Brew(batch, 1);
+        bench.Brew(batch, 1, 0x1F73);
         Assert.Empty(s.Party.Members[0].Pack);
         Assert.Equal(1, s.Party.Members[1].Pack.Single().Count);
         var brew = s.Events.All().Single(e => e.Event.Kind == EventKinds.Brew).Event;
         Assert.Equal((0, 4, 2, 1, 1), (brew.Owner, brew.Type, brew.Extra, brew.Data1, brew.Data2));
+        Assert.Equal(0x1F73, brew.Tag);
         Assert.Equal(Brewing.SuccessChance(s.Party.Members[0][Attribute.Intelligence], s.Party.Members[0][Skill.Alchemy], 0, 0, 2), brew.Value);
         Assert.Equal(2, Brewing.BatchesBrewing(s, 0));
     }
@@ -327,7 +328,7 @@ public sealed class CampAndSheetRulesTests
         Give(s, 0, 0x49, 25, 2);
         var bench = new BrewingBench(s, Book, 0);
         bench.Batches[0].Count = 2;
-        bench.Brew(bench.Batches[0], 0);
+        bench.Brew(bench.Batches[0], 0, 0x1F73);
         var again = new BrewingBench(s, Book, 0);
         Assert.Equal(2, again.Batches[0].Count);
         Assert.Equal(4, again.Stock(0x48));
@@ -342,7 +343,7 @@ public sealed class CampAndSheetRulesTests
         Give(s, 0, 0x48, 25, 2);
         var bench = new BrewingBench(s, Book, 0);
         bench.Batches[1].Count = 2;
-        bench.Brew(bench.Batches[1], 0);
+        bench.Brew(bench.Batches[1], 0, 0x1F73);
         var roll = TestGame.Twin(s).Below(100);
         TimePassage.Advance(s, 1);
         var potions = s.Party.Members[0].Pack.Where(st => st.Code == Potions.FirstPotion + 10 / 3).ToList();
@@ -368,7 +369,7 @@ public sealed class CampAndSheetRulesTests
         var bench = new BrewingBench(s, Book, 0);
         var batch = bench.Batches.Single(b => b.Formula.Index == 7);
         batch.Count = 3;
-        bench.Brew(batch, 1);
+        bench.Brew(batch, 1, 0x1F73);
         Brewing.CallOff(s, Book, 0);
         var pack = s.Party.Members[0].Pack;
         Assert.Equal(3, pack.Where(st => st.Code == 0x4A).Sum(st => st.Count));
@@ -386,7 +387,7 @@ public sealed class CampAndSheetRulesTests
         var bench = new BrewingBench(s, Book, 0);
         var batch = bench.Batches.Single(b => b.Formula.Index == 7);
         batch.Count = 1;
-        bench.Brew(batch, 1);
+        bench.Brew(batch, 1, 0x1F73);
         Brewing.CallOff(s, Book, 0);
         Assert.DoesNotContain(s.Party.Members[0].Pack, st => st.Code == 0);
     }
@@ -398,7 +399,7 @@ public sealed class CampAndSheetRulesTests
         Give(s, 0, 0x48, 25, 1);
         var bench = new BrewingBench(s, Book, 0);
         bench.Batches[1].Count = 1;
-        bench.Brew(bench.Batches[1], 1);
+        bench.Brew(bench.Batches[1], 1, 0x1F73);
         Brewing.AbandonAll(s);
         Assert.DoesNotContain(s.Events.All(), e => e.Event.Kind == EventKinds.Brew);
     }
