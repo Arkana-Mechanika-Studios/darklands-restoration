@@ -22,7 +22,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### rules (81)
 
-- **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:274` `CharacterCreation.Back`  
+- **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:282` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
   why: Esc from the childhood attributes goes back to the background list at age 15; a background row then serves the adult occupation of that number (Recruit..Knight), as in the original.
 - **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:160` `GameState.HanseStanding`  
@@ -37,10 +37,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-459e15** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:114` `CampStay.TeacherList`  
   original: `R036+0x1D24` (1462:1D24, draft), `R036+0x0082` (1462:0082, draft), `R036+0x147A` (1462:147A, draft)  
   why: j counts every teacher event met, so rows are numbered by log position and the scan stops after "count here" events of any town.
-- **B-c0e7af** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:439` `CampStay.DoTheActivity`  
+- **B-c0e7af** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:440` `CampStay.DoTheActivity`  
   original: `R036+0x147A` (1462:147A, draft)  
   why: no limit at the teacher's ability, which a guild text says a pupil "cannot progress beyond" (MSGFILES): any teacher can take a skill to 99.
-- **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:479` `CampStay.GrowRisk`  
+- **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:480` `CampStay.GrowRisk`  
   original: `R036+0x1B80` (1462:1B80, draft)  
   why: the weapon-skill test reads +0x57, +0x5C, +0x59, +0x5A, +0x5B, +0x5D: Impact Weapons (+0x58) is not among them.
 - **B-ea8f8b** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:214` `CityPolitics.DailyPolitics`  
@@ -424,16 +424,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### events (7)
 
-- **B-ace31b** `bug`, no fix flag - `src/Darklands.Core/Events/EventExpiry.cs:104` `EventExpiry.AlchemyResult`  
+- **B-ace31b** `bug`, no fix flag - `src/Darklands.Core/Events/EventExpiry.cs:105` `EventExpiry.AlchemyResult`  
   original: `R029+0x3FB2` (0E76:3FB2, draft)  
   why: the formula's risk works backwards: the explosion (longer = 1, the inn barred 120 days) comes when rand_mod(4 - risk) is not 0, so a low-risk formula (0) explodes three times in four and a high-risk one (2) half the time.
-- **B-024865** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:134` `EventExpiry.UndoBoost`  
+- **B-024865** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:135` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: boosts given to the whole party are never taken back (FixEverybodyBoostsUndone).
-- **B-2c6441** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:135` `EventExpiry.UndoBoost`  
+- **B-2c6441** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:136` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: the weapon potions' kind 0x4A events (Deadly Blade, Strongedge, Great Power: PotionEffects.Drink) run out here and nothing is undone: only kinds 0x48 and 0x49 are, so the bonus byte (+0x34) keeps them for good.
-- **B-dcf1be** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:137` `EventExpiry.UndoBoost`  
+- **B-dcf1be** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:138` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: the recorded amount is taken off whatever the attribute is by then (add_attr(owner, type, -value)): a boost that a night's rest (Endurance back to its maximum) or wounds (Strength) have already used up is taken off again and leaves the attribute below where it was; a saint's lowering (a negative value) is given back the same way.
 - **B-e1b48f** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:97` `EventLog.Reload`  

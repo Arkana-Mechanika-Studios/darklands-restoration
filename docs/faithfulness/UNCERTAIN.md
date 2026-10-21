@@ -11,19 +11,19 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 
 | area | kind | uncertain |
 |---|---|---|
-| rules | core | 19 |
+| rules | core | 18 |
 | cards | core | 215 |
 | events | core | 1 |
 | travel | core | 5 |
-| battles | core | 30 |
+| battles | core | 28 |
 | persistence | core | 5 |
 | screens/presentation | other | 25 |
 | host/audio | other | 4 |
-| total |  | 304 |
+| total |  | 301 |
 
-## Core logic (275)
+## Core logic (272)
 
-### rules (19)
+### rules (18)
 
 - **U-0599b0** `uncertain` - `src/Darklands.Core/Characters/Character.cs:62` `Character`  
   original: `R136+0x33FC` (20A5:33FC, data)  
@@ -34,11 +34,11 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-ff8cd2** `uncertain` - `src/Darklands.Core/Characters/Character.cs:125` `Character.CharmStrength`  
   original: `R136+0x33FC` (20A5:33FC, data)  
   why: named after the potion and saint that set it; no reader of it is known.
-- **U-c43d50** `uncertain` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:629` `CharacterCreation.SpentWord`  
+- **U-c43d50** `uncertain` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:637` `CharacterCreation.SpentWord`  
   original: `R037+0x4BEE` (18C8:058E, draft)  
   why: a picture handle is the DOS segment pic_load returned, taken as at least 0x28 (so '+' stops there) and kept as a counter here.
-- **U-8dd8f5** `uncertain` - `src/Darklands.Core/Characters/Creation/CreationRoster.cs:80` `CreationRoster.AddToParty`  
-  original: `R037+0x0444` (1462:0444, draft)  
+- **U-8dd8f5** `uncertain` - `src/Darklands.Core/Characters/Creation/CreationRoster.cs:95` `CreationRoster.AddToParty`  
+  original: `R038+0x02F8` (1462:02F8, draft)  
   why: equip_weight_vec(il) recomputes the encumbrance from the equipped items; the copy keeps the record's value (0 for made characters, who have nothing equipped; the ready-made four carry the game's own values).
 - **U-833e1d** `uncertain` - `src/Darklands.Core/Characters/Creation/Occupation.cs:14` `Occupation`  
   original: `R136+0xB1F5` (290E:2B65, data), `R136+0xB351` (290E:2CC1, data)  
@@ -52,9 +52,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-4471e9** `uncertain` - `src/Darklands.Core/Economy/Money.cs:144` `Money.ToString`  
   original: `root 0265:09B2` (0265:09B2, draft), `R029+0x5286` (1367:0376, matched)  
   why: itoa_commas (root 0265:09B2, assembly only) is taken to group thousands with ','.
-- **U-226966** `uncertain` - `src/Darklands.Core/Rules/Brewing.cs:94` `BrewingBench.Brew`  
-  original: `R033+0x1390` (1462:1390, draft)  
-  why: the original calls event_renew with nine arguments; the tenth (the tag it matches on) is whatever lies on the caller's stack. 0 here.
 - **U-881f6b** `uncertain` - `src/Darklands.Core/Rules/CampStay.cs:165` `CampStay.CanDoAlchemy`  
   original: `R036+0x1E80` (1462:1E80, draft)  
   why: a byte is tested whole, so its top five bits (not formulas; kept in Character.OriginalRecord) would count too; nothing in the game sets them, and Formulas is the set of the low three bits.
@@ -755,7 +752,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R030+0x2D44` (1462:2D44, draft)  
   why: what scripts create the 0x2A and 0x2B events was not searched; their meaning (an encounter weight, a message number) is read from the use here.
 
-### battles (30)
+### battles (28)
 
 - **U-a48e31** `uncertain` - `src/Darklands.Core/Battles/BattleOrders.cs:12` `BattleOrders`  
   original: `root 03A1:000A` (03A1:000A, matched)  
@@ -823,12 +820,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-2f2a8f** `uncertain` - `src/Darklands.Core/Battles/Tactics/Combatant.Tactics.cs:237` `Combatant.EngagedByAi`  
   original: `R014+0x3D0C` (0E76:3D0C, draft)  
   why: what reads it.
-- **U-a85e10** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Ai.cs:531` `TacticalBattle.IndexOfMinimumCost`  
-  original: `root 0410:02A8` (0410:02A8, asm)  
-  why: the tie-break, spec D §9.5)
-- **U-48d5f1** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Ai.cs:546` `TacticalBattle.IndexOfMinimum`  
-  original: `root 0410:01DC` (0410:01DC, asm)  
-  why: the tie-break)
 - **U-95aa32** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:266` `EffectField.private`  
   original: `R017+0x0000` (1EF8:0000, draft)  
   why: the lists are made anew each frame here; the original makes them when it redraws the whole view (the camera moved, a door or wall changed), which shows the same cells.
@@ -879,7 +870,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1543` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1562` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:52` `BuySellPage.DrawParty`  
@@ -888,7 +879,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:74` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
-- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:88` `CharacterCreationScreen.FigureImages`  
+- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:89` `CharacterCreationScreen.FigureImages`  
   original: `R037+0x0000` (1462:0000, draft), `R037+0x0444` (1462:0444, draft), `R037+0x0390` (1462:0390, draft) +5 more  
   why: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
 - **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  

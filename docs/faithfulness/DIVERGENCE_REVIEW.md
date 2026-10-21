@@ -174,7 +174,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### not-modelled (2)
 
-- **D-d29a2c** `not-modelled` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:165` `CharacterCreation.Reset`  
+- **D-d29a2c** `not-modelled` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:169` `CharacterCreation.Reset`  
   original: `R037+0x675A` (18C8:20FA, draft)  
   divergence: the record bytes the reset also writes and nothing in the clean model reads are not kept: +0x04 = 0x110, +0x06 = 0x50, +0x0E = 0, +0x16 = 0, +0x18 = -1, +0x19..+0x1C = 0, +0x49 = 10, +0x4A = -1, the equipment types -1 and qualities 0 (the made character has nothing equipped).  
   recommendation: **justify** - The reset also writes record bytes nothing in the model reads (+0x04, +0x06, +0x0E, +0x16, +0x18..+0x1C, +0x49, +0x4A, equipment). They would appear in the saved record; confirm that CharacterRecords.Write emits the same constants so saved games stay byte-identical.
@@ -851,7 +851,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R018+0x0706` (1F43:0256, draft)  
   divergence: the original's n would be whatever the stack held (spec D §9.5).  
   deterministic: **no** (checked against the original); action: **keep** - n_m is the local at [bp-6Eh] of enemy_turn (enter 7Ah); it is assigned only in the loop that finds a candidate with a different count and is read at random_n(n_m). When all five sorted candidates have equal counts (all visible and equally threatened) it holds whatever the stack contained at that depth, overwritten arbitrarily by the many calls the main loop makes between ticks; not reproducible, keep the C# stand-in.
-- **D-6ab284** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:208` `TacticalBattle.Approach`  
+- **D-6ab284** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:209` `TacticalBattle.Approach`  
   original: `R014+0x2CCA` (0E76:2CCA, draft)  
   divergence: DS:D6FB is a byte; an index past 249 reads the next combatant's path in the original (wrapped here).  
   deterministic: **n/a** (checked against the original); action: **document** - DS:D6FB[i] advances once per completed step (0E76 line 1151) and the walk stops at the 0xFF terminator that path copy 1554/15D0 writes at index DS:E118<=249 (the search is limited to 249 steps), so the index never exceeds 249 and cbt_paths[i][idx] never reads the next combatant's 250-byte row.
@@ -863,15 +863,15 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R018+0x0000` (1EF8:0000, matched)  
   divergence: the speed and sprite of an unknown weapon (uninitialised in the original) are 15 / 5 here.  
   deterministic: **n/a**; action: **justify** - missile_launch leaves speed/sprite uninitialised only for a weapon type outside the missile types (0x17..0x21); a missile is only launched for a readied missile weapon or a trap weapon, all inside that range, so the case does not occur.
-- **D-d12abf** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:61` `TacticalBattle.PlaceParty`  
+- **D-d12abf** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:72` `TacticalBattle.PlaceParty`  
   original: `R014+0x4188` (0E76:4188, draft)  
   divergence: directions above 7 leave the offsets uninitialised in the original; the north formation is used.  
   deterministic: **n/a** (checked against the original); action: **document** - effect_start (0E76:4188) leaves dx/dy unset only for dir outside 0..7. Its callers pass the level's party facing (x1f50) or trigger-record dirs: all 143 IMAPS maps have x1f50 in {0,2,4,6} and every non-placeholder 3350/3382 trigger record has dir 0..7, and the generators write 0,2,4,6 (dir_between, gate side), so dir>7 does not occur.
-- **D-ec9a18** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:161` `TacticalBattle.PlaceAround`  
+- **D-ec9a18** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:172` `TacticalBattle.PlaceAround`  
   original: `R024+0x08F2` (1EF8:08F2, draft)  
   divergence: odd directions read stack garbage in the original; the next even direction's offsets are used.  
   deterministic: **n/a** (checked against the original); action: **document** - place_around (R024 1EF8:08F2) takes dir from the exit/activation record (+0xC); in the 143 shipped maps exit dirs are 0,2,4,6 only, and across the generated levels (all battlefield types, 100 seeds each) the only odd value is dir 1 in 7 all-zero placeholder exits of the special mine variants 0x82/0x84-0x86 (area 0,0,0,0, never entered), so the garbage dx/dy path cannot be triggered in play.
-- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:297` `TacticalBattle.PlaceEnemies`  
+- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:308` `TacticalBattle.PlaceEnemies`  
   original: `R025+0x0000` (1EF8:0000, draft)  
   divergence: the palettes (ENEMYPAL.DAT ranges) are the screen's; in mode 1 the original adds money from an uninitialised encounter pointer — no money is added here.  
   deterministic: **no** (checked against the original); action: **keep** - enemies_place mode 1 is called as enemies_place_vec(1) from the death handler 0E76:2324 (push 1 only), so enc is the caller's saved SI:DI pair (offset=SI, segment=DI of the death handler's caller) and who the next word; after placing, R136+0xE4E0.pf/gr/fl += enc->pf/gr/fl read through that pseudo-pointer (low memory), i.e. an unpredictable money change depending on register contents and DOS memory. Not reproducible, so adding no money is the sane model (the palette note is a presentation divergence, not memory).

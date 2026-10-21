@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 48891,
-  "blocks_hit": 35231,
-  "functions": 5236,
-  "outcomes": 38152,
-  "outcomes_hit": 23736,
+  "blocks": 49181,
+  "blocks_hit": 35682,
+  "functions": 5263,
+  "outcomes": 38414,
+  "outcomes_hit": 24114,
   "runs": null
  },
  "battle": {
@@ -16,147 +16,203 @@
   "runs": 1048
  },
  "battle-oracle-castle": {
-  "blocks": 13378,
-  "blocks_hit": 7773,
-  "functions": 586,
-  "outcomes": 11996,
-  "outcomes_hit": 5330,
+  "blocks": 13288,
+  "blocks_hit": 7681,
+  "functions": 581,
+  "outcomes": 11908,
+  "outcomes_hit": 5253,
   "runs": 1
  },
  "battle-oracle-castle04": {
-  "blocks": 14532,
-  "blocks_hit": 8505,
-  "functions": 635,
-  "outcomes": 13198,
-  "outcomes_hit": 5963,
+  "blocks": 14442,
+  "blocks_hit": 8413,
+  "functions": 630,
+  "outcomes": 13110,
+  "outcomes_hit": 5886,
   "runs": 1
  },
  "battle-oracle-castle07": {
-  "blocks": 14897,
-  "blocks_hit": 9205,
-  "functions": 655,
-  "outcomes": 13526,
-  "outcomes_hit": 6636,
+  "blocks": 14807,
+  "blocks_hit": 9113,
+  "functions": 650,
+  "outcomes": 13438,
+  "outcomes_hit": 6558,
   "runs": 1
  },
  "battle-oracle-castle7c": {
-  "blocks": 13319,
-  "blocks_hit": 7823,
-  "functions": 587,
-  "outcomes": 11934,
-  "outcomes_hit": 5351,
+  "blocks": 13229,
+  "blocks_hit": 7731,
+  "functions": 582,
+  "outcomes": 11846,
+  "outcomes_hit": 5270,
+  "runs": 1
+ },
+ "battle-oracle-cave60": {
+  "blocks": 10628,
+  "blocks_hit": 5883,
+  "functions": 545,
+  "outcomes": 9210,
+  "outcomes_hit": 3672,
+  "runs": 1
+ },
+ "battle-oracle-city13": {
+  "blocks": 11775,
+  "blocks_hit": 6817,
+  "functions": 589,
+  "outcomes": 10334,
+  "outcomes_hit": 4519,
   "runs": 1
  },
  "battle-oracle-city15": {
-  "blocks": 11566,
-  "blocks_hit": 6809,
-  "functions": 591,
-  "outcomes": 10190,
-  "outcomes_hit": 4564,
+  "blocks": 11476,
+  "blocks_hit": 6717,
+  "functions": 586,
+  "outcomes": 10102,
+  "outcomes_hit": 4486,
   "runs": 1
  },
  "battle-oracle-city1c": {
-  "blocks": 10010,
-  "blocks_hit": 5394,
-  "functions": 513,
-  "outcomes": 8604,
-  "outcomes_hit": 3262,
+  "blocks": 9920,
+  "blocks_hit": 5302,
+  "functions": 508,
+  "outcomes": 8516,
+  "outcomes_hit": 3184,
   "runs": 1
  },
  "battle-oracle-city1f": {
-  "blocks": 11430,
-  "blocks_hit": 6877,
-  "functions": 579,
-  "outcomes": 10044,
-  "outcomes_hit": 4643,
+  "blocks": 11340,
+  "blocks_hit": 6785,
+  "functions": 574,
+  "outcomes": 9956,
+  "outcomes_hit": 4564,
   "runs": 1
  },
  "battle-oracle-city24": {
-  "blocks": 11835,
-  "blocks_hit": 6818,
-  "functions": 592,
-  "outcomes": 10394,
-  "outcomes_hit": 4498,
+  "blocks": 11745,
+  "blocks_hit": 6723,
+  "functions": 587,
+  "outcomes": 10306,
+  "outcomes_hit": 4416,
   "runs": 1
  },
  "battle-oracle-city2b": {
-  "blocks": 10673,
-  "blocks_hit": 5738,
-  "functions": 534,
-  "outcomes": 9206,
-  "outcomes_hit": 3523,
+  "blocks": 10583,
+  "blocks_hit": 5646,
+  "functions": 529,
+  "outcomes": 9118,
+  "outcomes_hit": 3446,
   "runs": 1
  },
  "battle-oracle-fort5e": {
-  "blocks": 10025,
-  "blocks_hit": 5624,
-  "functions": 520,
-  "outcomes": 8578,
-  "outcomes_hit": 3431,
+  "blocks": 9935,
+  "blocks_hit": 5532,
+  "functions": 515,
+  "outcomes": 8490,
+  "outcomes_hit": 3352,
   "runs": 1
  },
  "battle-oracle-gate": {
-  "blocks": 12088,
-  "blocks_hit": 7150,
-  "functions": 601,
-  "outcomes": 10650,
-  "outcomes_hit": 4806,
+  "blocks": 11998,
+  "blocks_hit": 7057,
+  "functions": 596,
+  "outcomes": 10562,
+  "outcomes_hit": 4726,
   "runs": 1
  },
  "battle-oracle-mine": {
-  "blocks": 11578,
-  "blocks_hit": 5674,
-  "functions": 546,
-  "outcomes": 9998,
-  "outcomes_hit": 3455,
+  "blocks": 11488,
+  "blocks_hit": 5582,
+  "functions": 541,
+  "outcomes": 9910,
+  "outcomes_hit": 3374,
   "runs": 1
  },
  "battle-oracle-mine0b": {
-  "blocks": 11963,
-  "blocks_hit": 6589,
-  "functions": 554,
-  "outcomes": 10326,
-  "outcomes_hit": 4194,
+  "blocks": 11873,
+  "blocks_hit": 6497,
+  "functions": 549,
+  "outcomes": 10238,
+  "outcomes_hit": 4114,
+  "runs": 1
+ },
+ "battle-oracle-mine10": {
+  "blocks": 12175,
+  "blocks_hit": 6720,
+  "functions": 561,
+  "outcomes": 10506,
+  "outcomes_hit": 4305,
   "runs": 1
  },
  "battle-oracle-mine80": {
-  "blocks": 12211,
-  "blocks_hit": 6911,
-  "functions": 605,
-  "outcomes": 10770,
-  "outcomes_hit": 4560,
+  "blocks": 12121,
+  "blocks_hit": 6819,
+  "functions": 600,
+  "outcomes": 10682,
+  "outcomes_hit": 4477,
   "runs": 1
  },
  "battle-oracle-street": {
-  "blocks": 11790,
-  "blocks_hit": 6858,
-  "functions": 587,
-  "outcomes": 10364,
-  "outcomes_hit": 4581,
+  "blocks": 11700,
+  "blocks_hit": 6766,
+  "functions": 582,
+  "outcomes": 10276,
+  "outcomes_hit": 4501,
+  "runs": 1
+ },
+ "battle-oracle-tombs5f": {
+  "blocks": 11014,
+  "blocks_hit": 6224,
+  "functions": 561,
+  "outcomes": 9652,
+  "outcomes_hit": 4020,
   "runs": 1
  },
  "battle-oracle-wild": {
-  "blocks": 11943,
-  "blocks_hit": 6839,
-  "functions": 582,
-  "outcomes": 10404,
-  "outcomes_hit": 4503,
+  "blocks": 11853,
+  "blocks_hit": 6747,
+  "functions": 577,
+  "outcomes": 10316,
+  "outcomes_hit": 4423,
   "runs": 1
  },
  "battle-oracle-wild30": {
-  "blocks": 11577,
-  "blocks_hit": 6323,
-  "functions": 559,
-  "outcomes": 9986,
-  "outcomes_hit": 3997,
+  "blocks": 11487,
+  "blocks_hit": 6231,
+  "functions": 554,
+  "outcomes": 9898,
+  "outcomes_hit": 3916,
+  "runs": 1
+ },
+ "battle-oracle-wild40": {
+  "blocks": 11818,
+  "blocks_hit": 6663,
+  "functions": 575,
+  "outcomes": 10282,
+  "outcomes_hit": 4333,
+  "runs": 1
+ },
+ "battle-oracle-wild50": {
+  "blocks": 12165,
+  "blocks_hit": 7071,
+  "functions": 590,
+  "outcomes": 10606,
+  "outcomes_hit": 4665,
+  "runs": 1
+ },
+ "battle-oracle-wild6f": {
+  "blocks": 11955,
+  "blocks_hit": 6574,
+  "functions": 579,
+  "outcomes": 10398,
+  "outcomes_hit": 4196,
   "runs": 1
  },
  "battle-oracle-wild75": {
-  "blocks": 11992,
-  "blocks_hit": 6871,
-  "functions": 583,
-  "outcomes": 10446,
-  "outcomes_hit": 4532,
+  "blocks": 11902,
+  "blocks_hit": 6779,
+  "functions": 578,
+  "outcomes": 10358,
+  "outcomes_hit": 4452,
   "runs": 1
  },
  "cards": {
@@ -231,12 +287,20 @@
   "outcomes_hit": 321,
   "runs": 738
  },
+ "lockstep-alchemy": {
+  "blocks": 6121,
+  "blocks_hit": 3659,
+  "functions": 380,
+  "outcomes": 4766,
+  "outcomes_hit": 1992,
+  "runs": 1
+ },
  "lockstep-cache": {
-  "blocks": 4972,
-  "blocks_hit": 2974,
-  "functions": 316,
-  "outcomes": 3668,
-  "outcomes_hit": 1604,
+  "blocks": 4950,
+  "blocks_hit": 2963,
+  "functions": 314,
+  "outcomes": 3652,
+  "outcomes_hit": 1595,
   "runs": 1
  },
  "lockstep-gate-battle": {
@@ -248,27 +312,27 @@
   "runs": 1
  },
  "lockstep-pressburg-map": {
-  "blocks": 6453,
-  "blocks_hit": 3952,
-  "functions": 392,
-  "outcomes": 5090,
-  "outcomes_hit": 2294,
+  "blocks": 6363,
+  "blocks_hit": 3874,
+  "functions": 387,
+  "outcomes": 5002,
+  "outcomes_hit": 2230,
   "runs": 1
  },
  "lockstep-residence": {
-  "blocks": 5756,
-  "blocks_hit": 3503,
-  "functions": 361,
-  "outcomes": 4392,
-  "outcomes_hit": 1897,
+  "blocks": 5668,
+  "blocks_hit": 3429,
+  "functions": 358,
+  "outcomes": 4304,
+  "outcomes_hit": 1836,
   "runs": 1
  },
  "lockstep-saints": {
-  "blocks": 6091,
-  "blocks_hit": 3402,
-  "functions": 353,
-  "outcomes": 4610,
-  "outcomes_hit": 1887,
+  "blocks": 6069,
+  "blocks_hit": 3392,
+  "functions": 351,
+  "outcomes": 4594,
+  "outcomes_hit": 1880,
   "runs": 1
  },
  "lockstep-save-load": {
@@ -288,11 +352,11 @@
   "runs": 1
  },
  "lockstep-shop": {
-  "blocks": 5805,
-  "blocks_hit": 3473,
-  "functions": 361,
-  "outcomes": 4504,
-  "outcomes_hit": 1966,
+  "blocks": 5717,
+  "blocks_hit": 3406,
+  "functions": 358,
+  "outcomes": 4416,
+  "outcomes_hit": 1909,
   "runs": 1
  },
  "lockstep-stay": {
@@ -304,11 +368,11 @@
   "runs": 1
  },
  "lockstep-tyrnau": {
-  "blocks": 6802,
-  "blocks_hit": 4214,
-  "functions": 414,
-  "outcomes": 5412,
-  "outcomes_hit": 2466,
+  "blocks": 6453,
+  "blocks_hit": 4008,
+  "functions": 399,
+  "outcomes": 5060,
+  "outcomes_hit": 2320,
   "runs": 1
  },
  "lockstep-wildcamp": {
