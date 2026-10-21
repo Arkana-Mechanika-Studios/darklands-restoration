@@ -333,6 +333,13 @@ public sealed partial class TacticalBattle : IBattleEndActions
         // combat_flags 0x10 (R024 0000, mode 0) and 0x20 (R014+0x0058, modes 2 and 3) place the party at the level's start before the
         // timers are cleared; mode 1 (combat_flags 2) places nobody: each member stands where the last battle left it.
         // orig: R002+0x0098..0x00EE (R002+0x0000's modes) and R014+0x0058..0x0104, checked against the asm; tests: RevisitTests
+        // C: the party's collision sizes are still the tables' bytes from the last battle (zeros in a fresh program) while the party is
+        // placed; R014+0x0258 sets them from the animation sets below
+        // orig: DS:C80F / DS:C831 [slot], written at R014+0x0258 (0E76:0258) after the placement
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            (Battle[i].HalfWidth, Battle[i].HalfHeight) = ProgramMemory.PartySizes?[i] ?? (0, 0);
+        }
         if (keptPlaces is null)
         {
             PlaceParty(Level.PartyStart.X, Level.PartyStart.Y, Level.PartyFacing);

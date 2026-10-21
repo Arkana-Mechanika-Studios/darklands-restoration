@@ -348,10 +348,15 @@ public sealed partial class TacticalBattle
             return;
         }
         var candidates = new (int Who, int Count, int Dist)[Combatant.PartySlots];
+        // BUG: the loop sets only the line's end (DS:E0A9/E0A7, R018+0x09D5/0x09DC) and relies on its start (DS:E0A5/E0A3, set to the caster
+        // at R018+0x0851); the area test it calls for the enemies (R014+0x469E, 0E76:469E) writes the start itself, from its first
+        // instruction on (0E76:46E5/46EC: the centre = the member), so after a member's count the next member's line starts at the previous
+        // member, not at the caster. Kept (found by f2witch2f: a member behind a wall counted as seen, the target chosen differed).
+        var lineStart = en.Position;
         for (var j = 0; j < Combatant.PartySlots; j++)
         {
             var m = Battle[j];
-            if (m.IsAble && seen[j] && Map.LineBlocked(en.Position, m.Position) == 0)
+            if (m.IsAble && seen[j] && Map.LineBlocked(lineStart, m.Position) == 0)
             {
                 var dist = candidates[j].Dist;
                 for (var k = 0; k < Combatant.PartySlots; k++)
@@ -368,9 +373,13 @@ public sealed partial class TacticalBattle
                     var n = 0;
                     for (var k = Combatant.PartySlots; k < Combatant.Count; k++)
                     {
-                        if (Battle[k].IsAble && Effects.InArea(m.Position, type, k))
+                        if (Battle[k].IsAble)
                         {
-                            n++;
+                            lineStart = m.Position;
+                            if (Effects.InArea(m.Position, type, k))
+                            {
+                                n++;
+                            }
                         }
                     }
                     candidates[j].Count = n;

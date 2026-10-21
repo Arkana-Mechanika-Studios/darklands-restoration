@@ -62,10 +62,14 @@ public sealed class BattlefieldLevel
 
     public BattlefieldLevel Clone() => new((byte[])Image.Clone());
 
-    /// <summary>The cell at column <paramref name="x"/>, row <paramref name="y"/>; void outside the level.</summary>
+    /// <summary>The cell at column <paramref name="x"/>, row <paramref name="y"/>; outside the level the flat cell array is read on, as the original does.</summary>
+    // orig: cbt_collisions R014+0x5ECA (1462:000A) reads the 3 x 3 cells around a spot without a bounds check: cell (x, y) is the four bytes
+    // at floor_img + (x * 40 + y) * 4 (R136+0x0000, segment 20A5), so a row off the column's end is the next column's, a column off the
+    // level reads on into the level's other records and, before the image's start, the zero bytes at the segment's end (20A5:FE00..FFFF
+    // are zeros when the first battle starts); a negative column therefore gives an ordinary empty cell, not a void one
     public BattlefieldCell this[int x, int y]
     {
-        get => (uint)x < Size && (uint)y < Size ? new BattlefieldCell(BinaryPrimitives.ReadUInt32LittleEndian(Image.AsSpan(CellAt(x, y)))) : BattlefieldCell.Void;
+        get => (uint)x < Size && (uint)y < Size ? new BattlefieldCell(BinaryPrimitives.ReadUInt32LittleEndian(Image.AsSpan(CellAt(x, y)))) : OutsideCell(x, y);
         set
         {
             if ((uint)x < Size && (uint)y < Size)
@@ -228,6 +232,18 @@ public sealed class BattlefieldLevel
     public bool IsInside(int x, int y) => !this[x, y].IsVoid;
 
     private static int CellAt(int x, int y) => (x * Size + y) * 4;
+
+    /// <summary>The four bytes at a flat cell offset outside the cells (a 16-bit offset in the segment); zeros beyond the image.</summary>
+    private BattlefieldCell OutsideCell(int x, int y)
+    {
+        var at = (ushort)CellAt(x, y);
+        uint bits = 0;
+        for (var k = 3; k >= 0; k--)
+        {
+            bits = (bits << 8) | (at + k < ImageSize ? Image[at + k] : (uint)0);
+        }
+        return new BattlefieldCell(bits);
+    }
 
     private short Word(int at) => BinaryPrimitives.ReadInt16LittleEndian(Image.AsSpan(at));
 

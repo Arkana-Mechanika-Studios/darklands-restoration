@@ -541,6 +541,8 @@ public sealed class BattleScreen : ITacticalView
         }
         // floor_img keeps the level shown at the end for the next battle's empty battlefield.
         _owner.GenerationMemory.FloorImage = (byte[])_battle.Level.Image.Clone();
+        // the party's collision sizes (DS:C80F / DS:C831) stay in the program's tables for the next battle's placement
+        _owner.GenerationMemory.PartySizes = [.. Enumerable.Range(0, Combatant.PartySlots).Select(i => (b[i].HalfWidth, b[i].HalfHeight))];
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             if (b[i].Member is { } member)

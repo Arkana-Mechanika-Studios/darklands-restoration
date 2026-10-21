@@ -48,6 +48,12 @@ public sealed class GenerationProcessMemory
     /// </summary>
     public byte[]? FloorImage { get; set; }
 
+    /// <summary>
+    /// DS:C80F / DS:C831 for the party's slots 0..4 (half the collision box, width and height) as the last battle left them, or null in a
+    /// fresh program (zeros): the party is placed (R014+0x0017) before combat_main sets them (R014+0x0258, 5 and 2 from the animation sets).
+    /// </summary>
+    public (int Width, int Height)[]? PartySizes { get; set; }
+
     /// <summary>DS:C925 / DS:C978 / DS:C989 / DS:CA1B: the trigger whose alarm ended the last battle (x −1: none).</summary>
     public (int X, int Y, int Width, int Height) AlarmTrigger { get; set; } = (-1, 0, 0, 0);
 }
