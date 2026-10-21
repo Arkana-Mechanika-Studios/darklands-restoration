@@ -36,6 +36,9 @@ public sealed class GameSettings
 
     public bool? Intro { get; set; }
 
+    /// <summary>The launcher (the settings screen) at every start; else only when needed.</summary>
+    public bool? Launcher { get; set; }
+
     /// <summary>The words of the game's DOS command line.</summary>
     public List<string>? CommandLine { get; set; }
 

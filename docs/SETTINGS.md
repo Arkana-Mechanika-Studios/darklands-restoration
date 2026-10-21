@@ -48,6 +48,7 @@ not meant for players.
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
 | `sound.configDrk` | absent (commented out in the template) | | replaces CONFIG.DRK's words (below) |
+| `startup.launcher` | false | `--setup` (once), `--no-launcher` | the launcher at every start; false: only when needed (below) |
 | `startup.banner` | true | `--no-banner` | the BANNER.DAT banner and the start-up checks |
 | `startup.intro` | true | `--no-intro` | the opening animation |
 | `startup.commandLine` | `[]` | `-- <words>` | the game's own DOS command line (`-Q`, `-O`, `-A<letter>`), a list of words or one string |
@@ -118,9 +119,34 @@ installed programs (an entry named Darklands); then `C:\GOG Games\Darklands`, GO
 or its `DARKLAND` subfolder, holds `DARKLAND.EXE`. The folder found is written into the settings file's `gameFolder`, so
 the next start goes straight there and the choice can be seen and changed.
 
-When nothing is found, or the folder named does not hold the game, Windows shows a message and the folder picker; the
-folder chosen is checked and written into the settings file. Cancelling ends the program with the same message on the
-console.
+When nothing is found, or the folder named does not hold the game, the launcher comes up (below) to ask for it. With
+`--no-launcher` the program ends instead, with a message on the console.
+
+## Launcher (SDL host)
+
+The launcher is the settings screen shown before the game: the game folder, the window size, fullscreen, the HD pack,
+the sound card and the Roland ROM folder (MT-32 and/or CM-32L; with a sound test: ten seconds of the game's music through the drivers the game
+will use) and the start-up screen and opening animation. Beside them: the release notes (`RELEASE_NOTES.md` next to the
+program, copied there by the build from `releases/<version>/release-notes.md` when that is there), a link to the version's
+page on GitHub (the only place the notes are when the file is missing), and a word on the project. It comes up:
+
+* on the first run (no settings file was found);
+* when the game cannot be found;
+* when the game could not start (a damaged HD pack, a missing file …), with the reason;
+* with `--setup`, or while **Shift** is held as the program starts;
+* at every start when `startup.launcher` is true (the launcher's "Show launcher at every start").
+
+`--no-launcher` turns it off. The game folder can be chosen with **Change…** (Windows' folder dialog; on other systems
+Change… lets you type it), typed or pasted (Ctrl+V), dropped on the window, or chosen among the folders found with ←/→.
+The Roland ROM folder is chosen the same way on its row (Enter or a click opens the dialog) or by dropping the folder with
+the ROM files on the window; an HD pack is chosen by dropping its folder on the window. **Play** and **Save and quit** write
+the changed keys into the settings file, keeping its comments and everything else; closing the window or Esc saves as
+well. A setting the command line or an environment variable overrides is shown but cannot be changed there (its
+explanation says what sets it).
+
+The launcher is its own project, `Darklands.Launcher`, which references `Darklands.Platform` only and draws into its own
+pixels; the SDL host gives it the window (`SdlLauncherSurface`) and its services (`LauncherHost`). Another launcher fits
+in by implementing `ILauncher`.
 
 ## Developer console (SDL host)
 

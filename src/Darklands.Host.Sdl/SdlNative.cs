@@ -31,6 +31,13 @@ internal static class SdlNative
     internal const uint EventMouseButtonUp = 0x402;
     internal const uint EventMouseWheel = 0x403;
     internal const uint EventTextInput = 0x303;
+    internal const uint EventWindow = 0x200;
+    internal const uint EventDropFile = 0x1000;
+    internal const uint EventUser = 0x8000;
+    internal const byte WindowEventSizeChanged = 6;
+    internal const int WindowCentered = 0x2FFF0000;
+    internal const int KeyTab = 9;
+    internal const int KeyV = 118;
     internal const int ScancodeF11 = 68;
     internal const byte MouseButtonLeft = 1;
     internal const byte MouseButtonRight = 3;
@@ -329,6 +336,103 @@ internal static class SdlNative
         internal IntPtr Userdata;
     }
 
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_WaitEvent(out SdlEvent @event);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_PumpEvents();
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_FlushEvents(uint minType, uint maxType);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_SetWindowSize(IntPtr window, int width, int height);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_SetWindowPosition(IntPtr window, int x, int y);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_SetWindowFullscreen(IntPtr window, uint flags);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_GetWindowDisplayIndex(IntPtr window);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_GetDesktopDisplayMode(int displayIndex, out SdlDisplayMode mode);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_GetDisplayUsableBounds(int displayIndex, out SdlRect rectangle);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    internal static extern int SDL_OpenURL([MarshalAs(UnmanagedType.LPUTF8Str)] string url);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern IntPtr SDL_GetClipboardText();
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_free(IntPtr memory);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL_UpdateTexture")]
+    internal static extern int SDL_UpdateTextureFrom(IntPtr texture, IntPtr rectangle, IntPtr pixels, int pitch);
+
+    /// <summary>A string SDL allocated (clipboard text, a dropped file's path), read as UTF-8 and freed.</summary>
+    internal static string? TakeString(IntPtr text)
+    {
+        if (text == IntPtr.Zero)
+        {
+            return null;
+        }
+        var value = Marshal.PtrToStringUTF8(text);
+        SDL_free(text);
+        return value;
+    }
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_GetVersion(out SdlVersion version);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_GetWindowWMInfo(IntPtr window, ref SdlSysWmInfo info);
+
+    /// <summary>The window's Windows handle (HWND), or zero elsewhere or when SDL cannot tell.</summary>
+    internal static IntPtr WindowsHandle(IntPtr window)
+    {
+        var info = new SdlSysWmInfo();
+        SDL_GetVersion(out info.Version);
+        return SDL_GetWindowWMInfo(window, ref info) != 0 && info.Subsystem == 1 ? info.Window : IntPtr.Zero;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct SdlVersion
+    {
+        internal byte Major;
+        internal byte Minor;
+        internal byte Patch;
+    }
+
+    // SDL_SysWMinfo: the version, the subsystem (1: Windows), then a union whose Windows member starts with the HWND
+    [StructLayout(LayoutKind.Explicit, Size = 72)]
+    internal struct SdlSysWmInfo
+    {
+        [FieldOffset(0)]
+        internal SdlVersion Version;
+
+        [FieldOffset(4)]
+        internal int Subsystem;
+
+        [FieldOffset(8)]
+        internal IntPtr Window;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct SdlDisplayMode
+    {
+        internal uint Format;
+        internal int Width;
+        internal int Height;
+        internal int RefreshRate;
+        internal IntPtr DriverData;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     internal struct SdlRect
     {
@@ -418,6 +522,14 @@ internal static class SdlNative
 
         [FieldOffset(0)]
         internal SdlMouseWheelEvent Wheel;
+
+        // SDL_DropEvent: char *file after type and timestamp (the receiver frees it)
+        [FieldOffset(8)]
+        internal IntPtr DropFile;
+
+        // SDL_WindowEvent: Uint8 event after type, timestamp and window id
+        [FieldOffset(12)]
+        internal byte WindowEvent;
 
         // SDL_TextInputEvent: char text[32] (UTF-8, zero-terminated) after type, timestamp and window id
         [FieldOffset(12)]

@@ -30,7 +30,7 @@ is kept machine-local (`local/reference-map.csv`, `tools/source-map/resolve.py`)
 ## Layers (dependencies point down)
 
 ```
-Hosts                    Darklands.Host.Sdl (SDL2 window, audio device, developer console)
+Hosts                    Darklands.Host.Sdl (SDL2 window, audio device, developer console, launcher)
                          Darklands.Host.Headless (scripted play, screenshots, traces)
         │
 Darklands.Presentation   screens and the game loop's presentation (platform-agnostic: draws into a
@@ -50,6 +50,8 @@ Darklands.Platform       host interfaces (video, input, audio, clock, game timer
 Darklands.Audio          the player's sound drivers in an emulated PC; Darklands.Audio.Mt32 adds mt32emu
 Darklands.Rendering      replacement graphics (HD packs) over the 320x200 screen, for the hosts (needs Platform only)
 Darklands.DevConsole     the developer console (references Core only; no game project references it)
+Darklands.Launcher       the settings screen before the game (references Platform only; draws into its own pixels;
+                         only the SDL host references it, through ILauncher)
 ```
 
 ## Core domain (Darklands.Core)

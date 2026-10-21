@@ -37,6 +37,40 @@ public sealed class CommandLineOptions
     public string? SdlLibrary { get; set; }
 
     public bool NoConsole { get; set; }
+
+    /// <summary>
+    /// The settings-file keys this command line (or an environment variable) overrides, each with what overrides it
+    /// ("--fullscreen", "DARKLANDS_DIR"): a settings screen shows them as fixed, since changing the file would not change them.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> Overrides(Func<string, string?> environment)
+    {
+        var fixedKeys = new Dictionary<string, string>(StringComparer.Ordinal);
+        void By(string key, bool overridden, string by)
+        {
+            if (overridden)
+            {
+                fixedKeys.TryAdd(key, by);
+            }
+        }
+        static bool Given(string? text) => !string.IsNullOrWhiteSpace(text);
+        By("gameFolder", Given(GameFolder), "the command line");
+        By("gameFolder", Given(environment("DARKLANDS_DIR")), "DARKLANDS_DIR");
+        By("savesFolder", Given(SavesFolder), "--saves");
+        By("savesFolder", Given(environment("DARKLANDS_SAVES")), "DARKLANDS_SAVES");
+        var size = Scale is not null ? "--scale" : Resolution is not null ? "--resolution" : null;
+        By("display.scale", size is not null, size ?? "");
+        By("display.resolution", size is not null, size ?? "");
+        By("display.fullscreen", Fullscreen, "--fullscreen");
+        By("display.hdPack", Given(HdPack), "--hd-pack");
+        By("sound.card", NoAudio, "--no-audio");
+        By("sound.card", Given(Sound), "--sound");
+        By("sound.mt32Roms", Given(Mt32Roms), "--mt32-roms");
+        By("sound.mt32Roms", Given(environment("DARKLANDS_MT32_ROMS")), "DARKLANDS_MT32_ROMS");
+        By("startup.banner", NoBanner, "--no-banner");
+        By("startup.intro", NoIntro, "--no-intro");
+        By("startup.commandLine", GameCommandLine is not null, "--");
+        return fixedKeys;
+    }
 }
 
 /// <summary>
@@ -70,6 +104,9 @@ public sealed class ResolvedSettings
     public bool ShowBanner { get; private init; }
 
     public bool PlayIntro { get; private init; }
+
+    /// <summary>The launcher at every start (the settings file's startup.launcher).</summary>
+    public bool AlwaysLaunch { get; private init; }
 
     public IReadOnlyList<string> CommandLine { get; private init; } = [];
 
@@ -132,6 +169,7 @@ public sealed class ResolvedSettings
             ConfigDrk = file.ConfigDrk,
             ShowBanner = !cli.NoBanner && (file.Banner ?? true),
             PlayIntro = !cli.NoIntro && (file.Intro ?? true),
+            AlwaysLaunch = file.Launcher ?? false,
             CommandLine = cli.GameCommandLine ?? file.CommandLine ?? [],
             TextFont = Pick(cli.TextFont, "DARKLANDS_TEXT_FONT", file.TextFont),
             ScreenshotsFolder = Pick(cli.ScreenshotsFolder, null, file.ScreenshotsFolder),
