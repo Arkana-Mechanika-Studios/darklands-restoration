@@ -1,13 +1,19 @@
 """Lockstep: one scripted session played by the ORIGINAL DARKLAND.EXE and by the C# rewrite, states compared.
 
 usage: python -I -B lockstep.py <DARKLAND.EXE> <game folder> <script> <out folder> [--save <DKSAVEn.SAV>]
-           [--headless <Darklands.Host.Headless.exe>] [--battle-trace] [--no-wall-draws] [--coverage]
+           [--headless <Darklands.Host.Headless.exe>] [--battle-trace] [--no-wall-draws] [--coverage] [--live] [--replay-only]
 
 The sessions are in lockstep-sessions/ (each from the player's SAVES/DKSAVE0.SAV, given with --save).
 
 The script holds the C# headless host's steps (src/Darklands.Host.Headless/Program.cs), one per line, `#` comments:
 key:<c>|enter|esc|space|up|...|alt<c>|f<n>, move:<x>,<y>, click:<x>,<y>, option:<n> (the pointer onto line n of
-the card menu shown), state:<name>; wait/shot steps are for the C# only. With --save both start from that saved game
+the card menu shown), state:<name>, bwait:<n>; wait/shot steps are for the C# only.
+bwait:<n> is for orders in a battle (the idle test below never passes where animated pieces draw random numbers, and a running battle is
+never idle): the steps after it are given n + 1 battle passes after the previous one (the original) / after wait:<n - 3> frames (the C#
+host, a frame being a pass there). A menu or a sheet (a loop that does not pass combat_input) is idle after IDLE_POLLS polls, as before.
+Keep the pointer off the battle view's edges (x < 68, y < 8 or > 191, x > 311): the original reads Shift held there (the keyboard flags
+byte 0040:0017 is a code byte of the root image outside R031) and scrolls the view, which the C# does not. State steps inside a battle do
+not compare (the C# writes the party, the original the battle's save). --battle-records adds the combatant records to every pass. With --save both start from that saved game
 (the script loads it from the start screen: key:t, key:l).
 
 1. The original runs from its own start (R000+0x0022, command line -Q) in the DOS machine of dosmachine.py,
@@ -46,6 +52,11 @@ battle pass in original-battle.trace / rewrite-battle.trace (the combat clock DS
 random state; compare them by clock value: the start-of-battle pause lasts a different number of passes).
 With --coverage the original's executed blocks and branch outcomes over the whole session go to <out>/cov/cov-0.jsonl (the
 format of card_oracle's and battle_oracle's; block_coverage.py takes such a folder as a source), only if every state agrees.
+The original side is recorded (recording.py): the first run stores what the comparison reads and the coverage in
+local/oracle-recordings/, later runs run only the C# against it, if the SHA-256 of the EXE, the game files, the arguments and the
+source of the tester modules are the same (else a live run, which replaces the recording). --live forces the live run,
+--replay-only refuses one, --recordings DIR moves the folder. rerun_all.py runs everything with N workers. A full --live rerun
+is made before every release and periodically.
 The C# side has its own debugging aids: DARKLANDS_TRACE_MAP (each step of the map's marker),
 DARKLANDS_RANDOM_TRACE (each seed and draw with its callers), DARKLANDS_STEP_TRACE (each combatant's step).
 """
@@ -53,6 +64,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import struct
 import sys
 
@@ -81,9 +93,12 @@ CARD, HOLDRAND = 0xA772, 0x7B20     # the card being run; the random generator's
 SAVE_ITEM, LOAD_ITEM = 0x9920, 0x9934  # the Game menu's Save Game / Load Saved Game flags (1 on), which hot_keys obeys
 SAV_WRITE = (0x1462, 0x2ACE)        # R037+0x2ACE (comment): the saved-game writer
 MACHINE_STATE = ("resident", "trampolines", "call_stack", "mcbs", "dta", "scratch_sp", "count", "next_irq", "irqs", "pit_divisor",
-                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "ivt", "waits", "pic_size", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases")
+                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "ivt", "waits", "pic_size", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases")
 IDLE_MS = 3000                      # and as long without a random number drawn, a card change or a step
 IDLE_POLLS = 2000
+BATTLE_PAUSE_PASSES = 296           # the battle's start pause (it waits for Space, the combat clock standing still): the key is given after this many passes at one
+                                    # clock value, the C# host's pause under the script's wait:300 (298 passes at one value with one more set-up tick); the original's
+                                    # ms-based idle test would give it after however many passes IDLE_MS takes at the speed the text drawn in them runs
 BATTLE_PASS_LIN = 0x0E76 * 16 + 0x3166   # R014+0x3166 combat_input, called once a pass of the battle's loop
 CLEAR_TIMERS_VEC = (0x09C0, 0x1C61)  # R014+0x010B's vector to R020+0x06B6 (combat_state_clear: the combat clock back to 0)
 STOCK_LOOP = (0x1462, 0x0A4C, 0x0AE2)   # R032+0x0A4C..0x0AE2: draw_barter_screen's stock listing (the loop that calls shop_has_item for every item)
@@ -96,6 +111,8 @@ ACTIVATIONS_AT = 0xDA4F     # DS word: the combat clock of the next activations 
 TIMER_CALLBACK = (0x047C, 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
 BATTLE_QUIET = 5_000_000            # bytes of code without the time-based timer after a battle pass began
 POLL_POINTS = {0x00000}             # root 0000:0000, the menu bar's handler: every screen's loop calls it each pass
+BWAIT_ACTUAL: list[int] = []         # per bwait step in script order: the passes the original really waited (run_original fills it; the C# waits as long)
+BWAIT_FRAMES = 3                    # the C# host's frames a step costs beyond its wait (see run_rewrite)
 CLICK_MS = 300                      # how long a scripted click holds the left button                   # key polls with no key before the script's next key is due
 
 
@@ -148,9 +165,11 @@ class Session(Machine):
         self.pic_size = 0
         self.stub(*PIC_OPEN, lambda m: (setattr(m, "pic_size", m.arg(0) * m.arg(1)), (0, 0))[1], "pic_open")
         self.stub(*PIC_CLOSE, lambda m: (m.alloc((m.pic_size + 15) // 16 or 1) or 0, 0), "pic_close")
-        # the driver's font metrics, fixed as in card_oracle: the menus' hot spots (DS:E96E) need lines of some height
-        self.stub(*CHAR_WIDTH, lambda m: (6, 0), "char_width")
-        self.stub(*FONT_HEIGHT, lambda m: (8, 0), "font_height")
+        # the driver's font metrics (char_width 047C:04E3(font, ch), font_height 047C:051B(font)): the wrapping of the card texts and so the
+        # menus' hot spots (DS:E96E) follow the real fonts.
+        self.fonts = self._read_fonts(game)
+        self.stub(*CHAR_WIDTH, self._char_width, "char_width")
+        self.stub(*FONT_HEIGHT, self._font_height, "font_height")
         # the copy-protection question (R041+0x0000, asked by the first visit to the map): it passes at once, as the C# has it (no
         # question, no random draws: see COVERAGE.md R041); a wrong answer would end the program
         self.stub(*COPY_PROTECTION, lambda m: (m.log.append("copy protection passed (stubbed) at %d ms" % m.ms), (0, 0))[1],
@@ -166,6 +185,8 @@ class Session(Machine):
             self._hook_address(lin)
         self._ticked = False
         self.battle_passes = 0
+        self.still_clock, self.still_passes = None, 0      # the combat clock of the last pass and the passes at that value
+        self.battle_pause = 0           # lockstep.py's sessions: the passes a battle's start pause lasts before the script's key is given (battle_oracle gives its own)
         self.battle_trace = None        # a list: a line at the head of each battle pass (--battle-trace)
         # the clock ticks each battle's set-up took (the loads before the enemies' turn, then up to the first pass): the C# is given them
         # (the loads, up to the clock's read at R014+0x0311 that sets the first tick's time DS:D9E4 = read + 8, from there to the first pass)
@@ -188,12 +209,17 @@ class Session(Machine):
         # 0x417, inside the root image's code here: a read gives 0 (no modifier held), the code byte is put back at the next block
         self._flags_code = None
         self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._flags_read, begin=KEYBOARD_FLAGS, end=KEYBOARD_FLAGS)
+        self._buffered = False
         self.idle_mark = None
         self.idle_since = 0
         self.mouse = [160, 100, 0]
         self.presses, self.releases = [0, 0], [0, 0]
         self.on_key = None              # called (outside the emulation) before a key of the script is given
         self.waits = 0                  # key polls with nothing to give
+        self.bwait_polls, self.bwait_seen = 0, -1
+        self.bwait_log = []             # per bwait step in script order: [n, passes the original really waited] (None while waiting)
+        self.bwait_at = None            # the entry of bwait_log being waited for, and the battle pass it began at
+        self.bwait = None               # bwait:<n>: the battle pass number the steps after it wait for (orders given mid-fight)
         self.progress = 0
         self.stub(*KEY_PRESSED, self._key_pressed, "key_pressed")
         self.stub(*GET_KEY, self._get_key, "get_key")
@@ -276,13 +302,39 @@ class Session(Machine):
         left button (let go at the next poll); after either the game waits again before the next step."""
         if self.held:
             return None
+        # a key handed to the game stays in the keyboard buffer until a get_key takes it (a message panel looks at it with key_pressed
+        # and goes on without taking it, as R021+0x01E2 does; the box and flush_keys R002+0x0769 after it then find it): without this
+        # the next panel waited for another idle period and the key was taken later than in the real buffer (orders-attack-b)
+        if self._buffered:
+            if self.script and self.script[0][0] == "key":
+                return key_code(self.script[0][1])
+            self._buffered = False
         mark = (self.read(DS, HOLDRAND, 4), self.word(DS, CARD))
+        # bwait:<n> (orders in a battle that is running: the idle test below never passes there): the steps after it wait for n more
+        # battle passes instead, then are given at once (the C# host's wait:<n> frames, a frame being a pass there)
+        while self.script and self.script[0][0] == "bwait":
+            self._end_bwait()
+            self.bwait = self.battle_passes + int(self.script[0][1])
+            self.bwait_at = (len(self.bwait_log), self.battle_passes)
+            self.bwait_log.append([int(self.script.pop(0)[1]), None])
+        if self.bwait is not None:
+            if self.battle_passes < self.bwait:
+                # a loop that polls without passing combat_input (a menu, a sheet) is idle: the passes to wait for would never come
+                self.bwait_polls = self.bwait_polls + 1 if self.battle_passes == self.bwait_seen else 0
+                self.bwait_seen = self.battle_passes
+                if self.bwait_polls < IDLE_POLLS:
+                    return None
+            self._end_bwait()
+            self.bwait = None
+            self.idle_mark = mark
+            self.waits, self.idle_since = IDLE_POLLS, -IDLE_MS
         if mark != self.idle_mark:
             # the game is still at work (it drew random numbers or moved to another card): not idle yet
             self.idle_mark = mark
             self.waits = 0
             self.idle_since = self.ms
-        if self.waits < IDLE_POLLS or self.ms < self.idle_since + IDLE_MS:
+        paused = bool(self.battle_pause) and 14 in self.resident and self.still_passes >= self.battle_pause
+        if not paused and (self.waits < IDLE_POLLS or self.ms < self.idle_since + IDLE_MS):
             self.waits += 1
             return None
         while self.script and self.script[0][0] not in ("key", "move", "click", "option"):
@@ -316,6 +368,7 @@ class Session(Machine):
             self.waits = 0
             self.idle_since = self.ms
             return None
+        self._buffered = True
         return key_code(value)
 
     def capture(self, name: str):
@@ -361,6 +414,8 @@ class Session(Machine):
                 self._ticked = True
                 self.next_irq = self.count + BATTLE_QUIET
                 self.battle_passes += 1
+                clock = self.word(DS, COMBAT_CLOCK)
+                self.still_clock, self.still_passes = clock, (self.still_passes + 1 if clock == self.still_clock else 1)
                 if self._setting_up is not None:
                     loads = self._setting_up[0] or 0
                     read = (self.word(DS, NEXT_TICK) - 8) & 0xFFFF
@@ -393,6 +448,19 @@ class Session(Machine):
         self._next_key()
         return None
 
+    def _end_bwait(self):
+        # the passes the original really waited for this bwait (less than n where a blocking read or a modal loop ended the wait): the C# waits as long
+        if self.bwait_at is not None:
+            self.bwait_log[self.bwait_at[0]][1] = self.battle_passes - self.bwait_at[1]
+            self.bwait_at = None
+
+    def _drop_bwait(self):
+        # a read that blocks (a message waiting for a key) is idle already: the passes to wait for would never come
+        self._end_bwait()
+        self.bwait = None
+        while self.script and self.script[0][0] == "bwait":
+            self.bwait_log.append([int(self.script.pop(0)[1]), 0])
+
     def _dos_key(self, function: int):
         """INT 21h 0Bh: AL = FFh when a key is due; 07h / 08h: its character (an extended key: 0, then its scan code)."""
         if function == 0x0B:
@@ -413,6 +481,15 @@ class Session(Machine):
 
     def _key_pressed(self, m):
         # the waiting key's code without taking it (as INT 16h function 1): hot_keys (root 0000:0CAA) looks at it and takes only its own
+        # the overland map's own loop (R030+0x0540 and R030+0x056D, return 1462:0545 / 1462:0572) looks at the keyboard before it
+        # calls the menu bar (hot_keys looks second, root 0000:0CAF) and throws away a key it does not know: an Alt key (the hot keys
+        # Alt-S, Alt-L ...) delivered to it is lost, whereas the rewrite handles hot keys first. A real key press goes to whichever
+        # look follows it; the script's Alt keys are delivered to hot_keys' look.
+        due = next((s for s in self.script if s[0] in ("key", "move", "click", "option")), None)
+        if (due and due[0] == "key" and due[1].lower().startswith("alt")
+                and self.call_stack and self.call_stack[-1].startswith("R030+")
+                and self.word(self.reg("SS"), self.reg("SP")) in (0x0545, 0x0572)):
+            return (0, 0)
         k = self._next_key()
         return (0 if k is None else k, 0)
 
@@ -420,17 +497,21 @@ class Session(Machine):
         # get_key waits for a key: the game is idle at once (a click still held is let go first)
         if self.held:
             self._release()
+        self._drop_bwait()
         self.waits, self.idle_since, self.idle_mark = IDLE_POLLS, -IDLE_MS, (self.read(DS, HOLDRAND, 4), self.word(DS, CARD))
         k = self._next_key()
         while k is None:                # the steps before the key (moves, clicks, states)
             if self.held:
                 self._release()
+            self._drop_bwait()
             self.waits, self.idle_since = IDLE_POLLS, -IDLE_MS
             k = self._next_key()
         self.script.pop(0)
+        self._buffered = False
         self.waits = 0
         self.idle_since = self.ms
-        self.log.append("key %04X at %d ms in %s" % (k, self.ms, " < ".join(self.call_stack[-4:])))
+        self.still_passes = 0           # a key ends the battle's pause
+        self.log.append("key %04X at %d ms (battle pass %d, clock %d) in %s" % (k, self.ms, self.battle_passes, self.word(DS, COMBAT_CLOCK), " < ".join(self.call_stack[-4:])))
         return (k, 0)
 
     # ---- the clock ---------------------------------------------------------------------
@@ -507,6 +588,41 @@ class Session(Machine):
         return 0
 
     # ---- drivers -----------------------------------------------------------------------
+    @staticmethod
+    def _read_fonts(game: str) -> list:
+        """FONTS.FNT: per font (first, last, data width, fixed width, height, spacing, line spacing, width table)."""
+        path = next((os.path.join(game, f) for f in os.listdir(game) if f.lower() == "fonts.fnt"), None)
+        if path is None:
+            return []
+        data = open(path, "rb").read()
+        fonts = []
+        for i in range(struct.unpack_from("<H", data, 0)[0]):
+            head = struct.unpack_from("<H", data, 2 + 2 * i)[0] - 8
+            first, last, _w, fixed, height, spacing, line, _u = data[head:head + 8]
+            fonts.append((first, last, fixed, height, spacing, line, data[head - (last - first + 1):head]))
+        return fonts
+
+    def _font_of(self, slot: int):
+        if not self.fonts:
+            return None
+        idx = slot - 1      # the loader (047C:07CE) puts font n of FONTS.FNT into slot n + 1
+        return self.fonts[min(max(idx, 0), len(self.fonts) - 1)]
+
+    def _char_width(self, m):
+        # orig: char_width drv+0x11A9: 0 for a byte with the top bit set or outside first..last; the fixed width (header -5) when
+        # non-zero, else the width table; plus the spacing (header -3)
+        f, ch = self._font_of(m.arg(0)), m.arg(1) & 0xFF
+        if f is None:
+            return (6, 0)
+        if ch == 0 or ch >= 0x80 or not f[0] <= ch <= f[1]:
+            return (0, 0)
+        return ((f[2] or f[6][ch - f[0]]) + f[4], 0)
+
+    def _font_height(self, m):
+        # orig: font_height drv+0x11FA: the glyph height (header -4) plus the line spacing (header -2)
+        f = self._font_of(m.arg(0))
+        return (8, 0) if f is None else (f[3] + f[5], 0)
+
     def _driver(self, coord: str):
         def h(m):
             m.driver_calls[coord] = m.driver_calls.get(coord, 0) + 1
@@ -701,6 +817,48 @@ SRAND = (0x06A1, 0x29A4)
 HEADLESS = HERE.parent.parent / "src" / "Darklands.Host.Headless" / "bin" / "Release" / "net10.0" / "Darklands.Host.Headless.exe"
 
 
+class ClockTrace(list):
+    """The original's battle passes, a line each (the lines clock_jumps reads), with the combat clock at each random draw (rand, root
+    06A1:29B6) and where a tick's scheduler (1DB7:0D36) or melee exchanges (0E76:2A4A) begin: what each pass did before the next one's head."""
+
+    def __init__(self):
+        super().__init__()
+        self.draw_clocks, self.draws_at = [], []            # the combat clock at each draw; the draws made before each pass head
+        self.phase_clocks, self.phases_at = [], []          # (-1 or -2, combat clock); the phase marks made before each pass head
+
+    def append(self, line):
+        self.draws_at.append(len(self.draw_clocks))
+        self.phases_at.append(len(self.phase_clocks))
+        super().append(line)
+
+
+def clock_jumps(lines):
+    """[(clock at a pass head, timer callbacks beyond its one, "draw:rise" ...)] where the original's clock rose by more than one to the next
+    pass: a pass that computes for long (R014+0x4BFA..0x66FE) lets the time-based timer callbacks come, which the C# (one tick a pass) does not
+    have. The rises that came between the pass's random draws (a draw that reads the clock, a re-path time, sees them) are listed by the
+    draw's number in the pass; the callbacks beyond those come after the pass. The rises before the tick's scheduler and melee exchanges (which
+    test the clock against re-path and engage times before any draw) are listed as "-1:n" and "-2:n"."""
+    clocks = [int(l.split()[2]) for l in lines]
+    draw_clocks, draws_at = getattr(lines, "draw_clocks", []), getattr(lines, "draws_at", [])
+    phase_clocks, phases_at = getattr(lines, "phase_clocks", []), getattr(lines, "phases_at", [])
+    out = []
+    for k, (a, b) in enumerate(zip(clocks, clocks[1:])):
+        if b - a <= 1:
+            continue
+        cur, rises = a + 1, []
+        if k + 1 < len(draws_at):
+            for phase, c in phase_clocks[phases_at[k]:phases_at[k + 1]]:
+                if c > cur:
+                    rises.append("%d:%d" % (phase, c - cur))
+                    cur = c
+            for n, c in enumerate(draw_clocks[draws_at[k]:draws_at[k + 1]]):
+                if c > cur:
+                    rises.append("%d:%d" % (n, c - cur))
+                    cur = c
+        out.append((a, b - cur) + tuple(rises))
+    return out
+
+
 def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, battle_trace=None, no_wall_draws=False, cov_out: dict | None = None):
     """The session in the original: (states {name: (sav, random, card)}, clock seeds in order, log, how it ended, saved files,
     each battle's set-up ticks). cov_out, when given, is filled with the coverage record."""
@@ -721,6 +879,13 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         s.vfs.put("saves/default", (Path(game) / "SAVES" / "DEFAULT").read_bytes())
     s.script = list(steps)
     s.battle_trace = battle_trace
+    s.battle_pause = BATTLE_PAUSE_PASSES
+    if getattr(battle_trace, "records", False):
+        battle_trace.session = s
+    if isinstance(battle_trace, ClockTrace):
+        s.hook(0x1DB7, 0x0D36, lambda m: battle_trace.phase_clocks.append((-1, m.word(DS, COMBAT_CLOCK))), record="R014")
+        s.hook(0x0E76, 0x2A4A, lambda m: battle_trace.phase_clocks.append((-2, m.word(DS, COMBAT_CLOCK))), record="R014")
+        s.hook(0x06A1, 0x29B6, lambda m: battle_trace.draw_clocks.append(m.word(DS, COMBAT_CLOCK)))
     seeds = []
     def srand(m):
         # a clock seed when the call follows `call time` (06A1:23A8; push ax): srand((unsigned)time(0)); other seeds come from the game
@@ -738,9 +903,52 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         end = str(e)[:600]
     if cov_out is not None:
         cov_out.update(s.coverage_result())
+    # the saved games the session wrote; DKSAVE0 (the one --save put there) only if the session changed it (an Alt-S over it)
+    given = {"dksave0.sav": save.read_bytes() if save else None,
+             "dksave0.bsv": save.with_suffix(".BSV").read_bytes() if save and save.with_suffix(".BSV").exists() else None}
     files = {k.rpartition("\\")[2].upper(): bytes(v) for k, v in s.vfs.files.items()
-             if k.startswith("saves") and k.endswith((".sav", ".bsv")) and k.rpartition("\\")[2] not in ("dksave0.sav", "dksave0.bsv")}
+             if k.startswith("saves") and k.endswith((".sav", ".bsv")) and given.get(k.rpartition("\\")[2], None) != bytes(v)}
+    BWAIT_ACTUAL[:] = [min(n, a) if a is not None else n for n, a in s.bwait_log]
     return s.states, seeds, [line for line in s.log if not line.startswith("INT")], end, files, s.set_up_ticks
+
+
+class TraceList(ClockTrace):
+    """The battle's trace lines of --battle-records: every pass line also carries the 13 combatant records (DS:9C55), the queued damage
+    (DS:D70C) and the attack rates (DS:D493), as battle_oracle.py's lines do (plus ClockTrace's clock marks for the clock jumps)."""
+    def __init__(self, records=True):
+        super().__init__()
+        self.records, self.session = records, None
+
+    def append(self, line):
+        s = self.session
+        if s is not None:
+            line = "%s cbt %s q %s ar %s" % (line, s.read(DS, 0x9C55, 13 * 0x80).hex().upper(), s.read(DS, 0xD70C, 26).hex().upper(),
+                                            s.read(DS, 0xD493, 13).hex().upper())
+        super().append(line)
+
+
+def stale_destinations(lines):
+    """[(record, x, y)] of the enemy records (5..12): the destination (+0x08..+0x0B) at the first pass where the record is in use (the
+    --battle-records lines). The original copies the enemy file's record whole into the combatant (R025+0x0267) and the destination keeps
+    the stack bytes it held until the enemy first moves; the C# leaves it 0 (DARKLANDS_BATTLE_STALE_DEST)."""
+    import battle_oracle
+    return battle_oracle.stale_destinations(lines)
+
+
+def trace_difference(original, rewrite) -> dict:
+    """The first combat clock (first pass at each clock value) at which the random states of the two traces part, by clock."""
+    def first(lines):
+        d = {}
+        for l in lines:
+            w = l.split()
+            d.setdefault(int(w[2]), w[4])
+        return d
+    a, b = first(original), first(rewrite)
+    common = [c for c in a if c in b]
+    for k, c in enumerate(common):
+        if a[c] != b[c]:
+            return {"clock": c, "ticks agreeing": k, "original": a[c], "rewrite": b[c]}
+    return {"clock": None, "ticks agreeing": len(common), "clocks": {"original": len(a), "rewrite": len(b)}}
 
 
 def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None):
@@ -757,11 +965,22 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     shots = out / "cs"
     shutil.rmtree(shots, ignore_errors=True)
     args = [str(headless), game, str(shots), "clock:" + ",".join(str(v) for v in (seeds or [1])), "saves:" + str(saves)]
-    args += ["%s:%s" % (k, v) if v else k for k, v in steps]
+    # bwait:<n>: the original gives the step n + 1 battle passes after the previous one was taken; the C# host takes three frames more
+    # than its wait (the key's two idle frames and the step's own), so the same pass is wait:<n - 3>
+    seen = iter(BWAIT_ACTUAL)
+    # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames)
+    for i, (k, v) in enumerate(steps):
+        if k == "bwait":
+            cost = BWAIT_FRAMES + (2 if i and steps[i - 1][0] == "click" else 0)
+            if i >= 3 and steps[i - 1] == ("key", "esc") and steps[i - 3][0] == "key" and steps[i - 3][1] in ("f1", "f2", "f3", "f4", "f5"):
+                cost -= 1                   # the sheet that Esc closes passes no battle pass in the frame it ends in
+            args.append("wait:%d" % max(0, min(int(v), next(seen, int(v))) - cost))
+        else:
+            args.append("%s:%s" % (k, v) if v else k)
     import os
     env = dict(os.environ, DARKLANDS_BATTLE_TICK_PER_PASS="1")   # one 60 Hz tick a battle pass, as the original is run here
     if battle_trace:
-        env["DARKLANDS_BATTLE_TRACE"] = "1"
+        env["DARKLANDS_BATTLE_TRACE"] = "records" if battle_trace == "records" else "1"
     if set_up_ticks:
         # the clock the original's battle set-ups took here (its loads run at the emulator's speed): the C#'s set-up takes none
         env["DARKLANDS_BATTLE_SETUP_TICKS"] = ";".join("%d,%d,%d,%d" % p for p in set_up_ticks)
@@ -834,28 +1053,56 @@ def main():
     ap.add_argument("--headless", default=str(HEADLESS))
     ap.add_argument("--budget", type=int, default=2_000_000_000)
     ap.add_argument("--battle-trace", action="store_true", help="original-battle.trace / rewrite-battle.trace: each battle pass")
+    ap.add_argument("--battle-records", action="store_true", help="as --battle-trace, each pass line with the combatant records, queued damage and attack rates (battle_oracle.py's), compared by combat clock: report.json's battle")
     ap.add_argument("--no-wall-draws", action="store_true", help="experiment: R014+0x827A's random_n(2) leaves the generator as it was")
     ap.add_argument("--coverage", action="store_true", help="<out>/cov/cov-0.jsonl: the original's blocks and branch outcomes (kept only if all states agree)")
+    import recording
+    recording.add_arguments(ap)
     a = ap.parse_args()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     steps = read_script(Path(a.script))
     save = Path(a.save) if a.save else None
     import time
-    t = time.time()
-    trace = [] if a.battle_trace else None
+    import recording
+    if a.battle_records:
+        a.battle_trace = True
+    parts = {"kind": "session", "steps": steps, "budget": a.budget, "battle_trace": a.battle_trace, "battle_records": a.battle_records,
+             "no_wall_draws": a.no_wall_draws, **recording.common_parts(Path(a.exe), a.game, "lockstep", save)}
+    rec = recording.Recording(a.recordings, "sessions", Path(a.script).stem, parts, a.live, a.replay_only)
+    got = rec.load(need_coverage=a.coverage)
     cov = {} if a.coverage else None
-    original, seeds, log, end, files, set_up = run_original(Path(a.exe), a.game, steps, save, a.budget, trace, a.no_wall_draws, cov)
-    if trace is not None:
+    if got is None:
+        t = time.time()
+        trace = TraceList() if a.battle_records else ClockTrace()   # always a ClockTrace: the clock jumps of a battle's long passes are given to the C# (the trace files only with --battle-trace)
+        original, seeds, log, end, files, set_up = run_original(Path(a.exe), a.game, steps, save, a.budget, trace, a.no_wall_draws, cov)
+        got = {"states": original, "seeds": seeds, "log": log, "end": end, "files": files, "set_up": set_up, "trace": list(trace),
+               "jumps": clock_jumps(trace), "stale": stale_destinations(trace) if a.battle_records else None, "cov": cov, "seconds": time.time() - t}
+        rec.store(got)
+        replayed = False
+    else:
+        original, seeds, log, end, files, set_up, trace = (got[k] for k in ("states", "seeds", "log", "end", "files", "set_up", "trace"))
+        cov = dict(got["cov"]) if a.coverage else None
+        replayed = True
+    jumps = got["jumps"]
+    t_original = got["seconds"]
+    if a.battle_trace:
         (out / "original-battle.trace").write_text(chr(10).join(trace), encoding="utf-8")
-    t_original = time.time() - t
     (out / "original.log").write_text(chr(10).join(log + ["end: " + end]), encoding="utf-8")
     for name, (sav, _, _) in original.items():
         (out / ("original-%s.sav" % name)).write_bytes(sav)
     t = time.time()
-    rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, a.battle_trace, set_up)
+    rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
+                                  got["stale"] if a.battle_records else None)
+    battle = None
     if a.battle_trace:
-        (out / "rewrite-battle.trace").write_text(chr(10).join(l for l in output.splitlines() if l.startswith("pass ")), encoding="utf-8")
+        lines = [l for l in output.splitlines() if l.startswith("pass ")]
+        (out / "rewrite-battle.trace").write_text(chr(10).join(lines), encoding="utf-8")
+        if a.battle_records:
+            import battle_oracle
+            battle = battle_oracle.first_difference(battle_oracle.parse(trace), battle_oracle.parse(lines))
+        else:
+            battle = trace_difference(trace, lines)
     t_rewrite = time.time() - t
     (out / "rewrite.log").write_text(output, encoding="utf-8")
     rows = compare(steps, original, rewrite, save is None)
@@ -882,14 +1129,17 @@ def main():
             (out / "cov" / "cov-0.jsonl").write_text(json.dumps({"unit": Path(a.script).stem, **cov}, separators=(",", ":")) + "\n", encoding="utf-8")
         else:
             print("coverage not written: the states differ")
-    report = {"script": a.script, "save": a.save, "clock seeds": seeds, "battle set-up ticks": set_up, "original end": end,
-              "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)}, "states": rows}
+    if battle is not None:
+        print("battle: " + json.dumps(battle)[:700])
+    report = {"battle": battle, "script": a.script, "save": a.save, "clock seeds": seeds, "battle set-up ticks": set_up, "original end": end,
+              "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)},
+              "original run": "replayed" if replayed else "live", "states": rows}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     first = next((r for r in rows if set(r) - {"state", "file", "text state", "texts", "party seed"}), None)
     for r in rows:
         print("%-12s %s" % (r.get("state") or r["file"], "same" if set(r) <= {"state", "file", "text state", "texts", "party seed"} else json.dumps(
             {k: v for k, v in r.items() if k not in ("state", "file")})[:300]))
-    print("original: %s (%d s); rewrite %d s; first divergence: %s" % (end, t_original, t_rewrite,
+    print("original: %s (%d s, %s); rewrite %d s; first divergence: %s" % (end, t_original, "replayed" if replayed else "live", t_rewrite,
                                                                        (first.get("state") or first["file"]) if first else "none"))
 
 

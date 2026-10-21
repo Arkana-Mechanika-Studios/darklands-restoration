@@ -1,4 +1,4 @@
-# Lockstep session (a lead: the first P in the shop buys nothing in the original): load DKSAVE0, the Stadtplatz and the Universitat: the staff searched for saints and formulas (failed), then for rare alchemical materials (found: the seller's goods, buy and sell), then a teacher
+# Lockstep session (a lead: the first P in the shop buys nothing in the original): load DKSAVE0, the Stadtplatz and the Universitat: the staff searched for saints (found: the library of saints, the gift declined), then for rare alchemical materials (found: the seller's goods, buy and sell), then the main street
 key:t
 wait:5
 key:l
@@ -45,7 +45,7 @@ wait:200
 key:enter
 wait:200
 state:saints
-option:0
+option:1
 wait:5
 key:enter
 wait:200
@@ -54,7 +54,7 @@ wait:200
 key:enter
 wait:200
 state:formulas
-option:0
+option:2
 wait:5
 key:enter
 wait:200

@@ -684,6 +684,8 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         "altd" => Keys.AltD,
         "altc" => Keys.AltC,
         "alto" => Keys.AltO,
+        "altm" => Keys.AltM,
+        "altf" => Keys.AltF,
         "f10" => Keys.F10,
         _ => Keys.ForCharacter(name[0]),
     };

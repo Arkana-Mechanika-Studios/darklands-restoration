@@ -1,7 +1,7 @@
 """Battle oracle (pilot): one battle fought by the ORIGINAL DARKLAND.EXE and by the C# rewrite, compared at every combat tick.
 
 usage: python -I -B battle_oracle.py <DARKLAND.EXE> <game folder> <out folder> --save <DKSAVEn.SAV>
-           [--fights name,name] [--passes N] [--coverage] [--headless <Darklands.Host.Headless.exe>]
+           [--fights name,name] [--passes N] [--coverage] [--headless <Darklands.Host.Headless.exe>] [--live] [--replay-only]
 
 Both start as lockstep.py's gate-battle session does (the player's saved game, the inn, the street, the city gate at night,
 "attack the guards"); that path agrees in both up to the battle. At the battle's entry (the main loop's call of R002+0x0000,
@@ -18,6 +18,11 @@ pass at each clock value), over the record bytes the C# models; the first differ
 With --coverage the original's executed blocks and branch outcomes go to <out>/<fight>/cov/cov-0.jsonl (as card_oracle's;
 block_coverage.py takes such a folder as a further source).
 
+The original side is recorded (recording.py): the first run stores what the comparison reads and the coverage in
+local/oracle-recordings/, later runs run only the C# against it, if the SHA-256 of the EXE, the game files, the arguments and the
+source of the tester modules are the same (else a live run, which replaces the recording). --live forces the live run,
+--replay-only refuses one, --recordings DIR moves the folder. rerun_all.py runs everything with N workers. A full --live rerun
+is made before every release and periodically.
 Out folder: report.json, per fight original.log, original-battle.trace, rewrite-battle.trace, rewrite.log.
 """
 from __future__ import annotations
@@ -184,6 +189,31 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
     return s.battle_trace, given, seeds, [l for l in s.log if not l.startswith("INT")], end, s.set_up_ticks, cov
 
 
+class Recorded(list):
+    """A recorded run's pass lines with the clock marks the original made (the attributes of run_original's Trace)."""
+
+
+def original_side(rec_parts, folder, name, exe, game, steps, save, request, passes, coverage, paused, live, replay_only):
+    """run_original, or its recording when one with the same key exists: (the same tuple, seconds, replayed)."""
+    import recording
+    rec = recording.Recording(folder, "fights", name, {"kind": "fight", "name": name, "request": request, "passes": passes, "paused": paused,
+                                                      "steps": steps, **rec_parts}, live, replay_only, "p%d" % paused)
+    got = rec.load(need_coverage=coverage)
+    if got is not None:
+        trace = Recorded(got["lines"])
+        trace.draw_clocks, trace.draws_at = got["draw_clocks"], got["draws_at"]
+        trace.phase_clocks, trace.phases_at = got["phase_clocks"], got["phases_at"]
+        cov = got["cov"] if coverage else None
+        return (trace, got["given"], got["seeds"], got["log"], got["end"], got["set_up"], cov), got["seconds"], True
+    t = time.time()
+    trace, given, seeds, log, end, set_up, cov = run_original(exe, game, steps, save, request, passes, coverage, paused)
+    seconds = time.time() - t
+    rec.store({"lines": list(trace), "draw_clocks": trace.draw_clocks, "draws_at": trace.draws_at, "phase_clocks": trace.phase_clocks,
+               "phases_at": trace.phases_at, "given": given, "seeds": seeds, "log": log, "end": end, "set_up": set_up, "cov": cov,
+               "seconds": seconds})
+    return (trace, given, seeds, log, end, set_up, cov), seconds, False
+
+
 def parse(lines):
     """{clock: (rand, records, queued, rates)} of the first pass at each clock."""
     out = {}
@@ -197,31 +227,7 @@ def parse(lines):
     return out
 
 
-def clock_jumps(lines):
-    """[(clock at a pass head, timer callbacks beyond its one, "draw:rise" ...)] where the original's clock rose by more than one to the next
-    pass: a pass that computes for long (R014+0x4BFA..0x66FE) lets the time-based timer callbacks come, which the C# (one tick a pass) does not
-    have. The rises that came between the pass's random draws (a draw that reads the clock, a re-path time, sees them) are listed by the
-    draw's number in the pass; the callbacks beyond those come after the pass. The rises before the tick's scheduler and melee exchanges (which
-    test the clock against re-path and engage times before any draw) are listed as "-1:n" and "-2:n"."""
-    clocks = [int(l.split()[2]) for l in lines]
-    draw_clocks, draws_at = getattr(lines, "draw_clocks", []), getattr(lines, "draws_at", [])
-    phase_clocks, phases_at = getattr(lines, "phase_clocks", []), getattr(lines, "phases_at", [])
-    out = []
-    for k, (a, b) in enumerate(zip(clocks, clocks[1:])):
-        if b - a <= 1:
-            continue
-        cur, rises = a + 1, []
-        if k + 1 < len(draws_at):
-            for phase, c in phase_clocks[phases_at[k]:phases_at[k + 1]]:
-                if c > cur:
-                    rises.append("%d:%d" % (phase, c - cur))
-                    cur = c
-            for n, c in enumerate(draw_clocks[draws_at[k]:draws_at[k + 1]]):
-                if c > cur:
-                    rises.append("%d:%d" % (n, c - cur))
-                    cur = c
-        out.append((a, b - cur) + tuple(rises))
-    return out
+clock_jumps = lockstep.clock_jumps            # moved to lockstep.py (its sessions with a battle pass the jumps too)
 
 
 def stale_destinations(lines):
@@ -326,17 +332,22 @@ def main():
     ap.add_argument("--passes", type=int, default=1500)
     ap.add_argument("--coverage", action="store_true")
     ap.add_argument("--headless", default=str(lockstep.HEADLESS))
+    import recording
+    recording.add_arguments(ap)
     a = ap.parse_args()
     out = Path(a.out)
     steps = battle_steps(a.passes)
+    exe, save = Path(a.exe), Path(a.save)
+    rec_parts = recording.common_parts(exe, a.game, "battle_oracle", save)
+
+    def original(name, request, paused):
+        return original_side(rec_parts, a.recordings, name, exe, a.game, steps, save, request, a.passes, a.coverage, paused, a.live, a.replay_only)
     report = {}
     for name in a.fights.split(","):
         request = FIGHTS[name]
         folder = out / name
         folder.mkdir(parents=True, exist_ok=True)
-        t = time.time()
-        trace, given, seeds, log, end, set_up, cov = run_original(Path(a.exe), a.game, steps, Path(a.save), request, a.passes, a.coverage)
-        t_original = time.time() - t
+        (trace, given, seeds, log, end, set_up, cov), t_original, replayed = original(name, request, PAUSED)
         (folder / "original-battle.trace").write_text("\n".join(trace), encoding="utf-8")
         (folder / "original.log").write_text("\n".join(log + ["end: " + end]), encoding="utf-8")
         if cov is not None:
@@ -356,9 +367,9 @@ def main():
         # ends one pass apart shifts every later draw against the passes
         shift = pause_length(lines) - pause_length(trace)
         if shift:
-            t = time.time()
-            trace, given, seeds, log, end, set_up, cov = run_original(Path(a.exe), a.game, steps, Path(a.save), request, a.passes, a.coverage, PAUSED + shift)
-            t_original += time.time() - t
+            (trace, given, seeds, log, end, set_up, cov), seconds, again = original(name, request, PAUSED + shift)
+            t_original += seconds
+            replayed = replayed and again
             (folder / "original-battle.trace").write_text("\n".join(trace), encoding="utf-8")
             (folder / "original.log").write_text("\n".join(log + ["end: " + end]), encoding="utf-8")
             if clock_jumps(trace) != jumps:
@@ -372,7 +383,8 @@ def main():
         result = first_difference(parse(trace), parse(lines))
         report[name] = {"request": request, "card's arguments": given, "set-up ticks": set_up, "original end": end,
                         "passes": {"original": len(trace), "rewrite": len(lines)},
-                        "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)}, **result}
+                        "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)},
+                        "original run": "replayed" if replayed else "live", **result}
         print(name, json.dumps(report[name])[:600], flush=True)
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
 
