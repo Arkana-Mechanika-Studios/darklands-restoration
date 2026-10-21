@@ -48,8 +48,8 @@ public interface ITacticalView : IBattleViewport
     /// <summary>
     /// The battle's set-up takes time while the combat clock runs (the timer callback counts it whenever DS:07D3 is 0): stage 0 when
     /// the timers are cleared, 1 before the enemies' turn (after the activations' and the weapons' file loads), 2 after the first
-    /// frame (before DS:D9E4 is set), 3 once the first tick's time is taken (R014+0x0311) until the first pass; at stages 1 and 2 the clock
-    /// moves on by the time that passed (at 3 only when the ticks are given).
+    /// frame (before DS:D9E4 is set), 3 once the first tick's time is taken (R014+0x0311) until the clock for the next activations check is read (R014+0x0332),
+    /// 4 from there until the first pass; at stages 1 and 2 the clock moves on by the time that passed (at 3 and 4 only when the ticks are given).
     /// </summary>
     void SetUpTime(int stage)
     {
@@ -424,10 +424,11 @@ public sealed partial class TacticalBattle : IBattleEndActions
         // C: mouse_show and root 047C:1293 (R014+0x030C) take time before R014+0x0311 reads the clock
         _view.SetUpTime(2);
         NextTickAt = (ushort)(Clock + TickLength);
-        // orig: R014+0x0311 reads the clock for DS:D9E4 (next tick); the ticks up to the first pass of R014+0x3166 follow it
+        // orig: R014+0x0311 reads the clock for DS:D9E4 (next tick); R014+0x0332 reads it again for DS:DA4F (the next activations check,
+        // 120 later), after a call that can take a tick; the ticks up to the first pass of R014+0x3166 follow, and can make that pass check at once
         _view.SetUpTime(3);
-        // orig: the next activations check is 120 after the clock of the first pass, the late set-up ticks included (R014+0x3166)
         ActivationsAt = (ushort)(Clock + 120);
+        _view.SetUpTime(4);
         SaveRulesMessage(newBattlefield);
     }
 
@@ -639,6 +640,10 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         Effects.Rebase(R);
     }
+
+    /// <summary>A debugging aid: called where a tick's phases begin (-1 the scheduler, -2 the melee exchanges), as MscRandom.BeforeDraw is before a draw
+    /// (tools/oracle/battle_oracle.py gives the C# the clock the original's long passes had reached there, DARKLANDS_BATTLE_CLOCK_JUMPS).</summary>
+    public static Action<int>? ClockPhase { get; set; }
 
     /// <summary>One combat tick when due: AI, places, melee exchanges, speed masks, actions.</summary>
     /// <returns>True when a tick ran.</returns>

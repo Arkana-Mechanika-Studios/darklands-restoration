@@ -519,7 +519,7 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>A path is found and immediately cut (the first byte set to 0xFF): the enemy does not actually walk.</summary>
+    /// <summary>A path is found and cut after 20 steps (byte 20 set to 0xFF): the enemy walks at most 20 steps before it arrives.</summary>
     private bool TryWalkCut(int e)
     {
         var en = Battle[e];
@@ -528,8 +528,8 @@ public sealed partial class TacticalBattle
             return false;
         }
         GivePath(e);
-        // C: cbt_paths[e][0] = 0xFF right after path_give.
-        en.Path[0] = 0xFF;
+        // orig: R018+0x113A (1F43:0C8A) 0E00: `es:[e * 0xFA + 0x624C] = 0xFF` right after path_give, the path array starting at 20A5:6238: byte 20.
+        en.Path[20] = 0xFF;
         en.Action = CombatAction.Walk;
         en.PathIndex = 0;
         en.Moving = true;

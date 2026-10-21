@@ -119,9 +119,12 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
     class Trace(list):
         draw_clocks: list = []      # the combat clock at each random draw (rand, root 06A1:29B6)
         draws_at: list = []         # the draws made before each pass head
+        phase_clocks: list = []     # (-1 or -2, combat clock) where a tick's scheduler (1DB7:0D36) or melee exchanges (0E76:2A4A) begin
+        phases_at: list = []        # the phase marks made before each pass head
 
         def append(self, line):
             self.draws_at.append(len(self.draw_clocks))
+            self.phases_at.append(len(self.phase_clocks))
             records = s.read(DS, COMBATANTS, COUNT * RECORD)
             super().append("%s cbt %s q %s ar %s" % (line, records.hex().upper(), s.read(DS, QUEUED, 2 * COUNT).hex().upper(),
                                                     s.read(DS, RATES, COUNT).hex().upper()))
@@ -129,6 +132,9 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
                 s.budget = 0            # the next block stops the run (Stop: instruction budget)
     s.battle_trace = Trace()
     s.battle_trace.draw_clocks, s.battle_trace.draws_at = [], []
+    s.battle_trace.phase_clocks, s.battle_trace.phases_at = [], []
+    s.hook(0x1DB7, 0x0D36, lambda m: s.battle_trace.phase_clocks.append((-1, m.word(DS, 0x07D4))), record="R014")
+    s.hook(0x0E76, 0x2A4A, lambda m: s.battle_trace.phase_clocks.append((-2, m.word(DS, 0x07D4))), record="R014")
     s.hook(0x06A1, 0x29B6, lambda m: s.battle_trace.draw_clocks.append(m.word(DS, 0x07D4)))
     # the battle's pause (after its first ticks) waits for Space; lockstep's idle test (no random draw for IDLE_MS) never passes on a
     # battlefield whose animated pieces draw at every frame: in a battle the key is given once the clock has stood still PAUSED passes
@@ -181,21 +187,44 @@ def clock_jumps(lines):
     """[(clock at a pass head, timer callbacks beyond its one, "draw:rise" ...)] where the original's clock rose by more than one to the next
     pass: a pass that computes for long (R014+0x4BFA..0x66FE) lets the time-based timer callbacks come, which the C# (one tick a pass) does not
     have. The rises that came between the pass's random draws (a draw that reads the clock, a re-path time, sees them) are listed by the
-    draw's number in the pass; the callbacks beyond those come after the pass."""
+    draw's number in the pass; the callbacks beyond those come after the pass. The rises before the tick's scheduler and melee exchanges (which
+    test the clock against re-path and engage times before any draw) are listed as "-1:n" and "-2:n"."""
     clocks = [int(l.split()[2]) for l in lines]
     draw_clocks, draws_at = getattr(lines, "draw_clocks", []), getattr(lines, "draws_at", [])
+    phase_clocks, phases_at = getattr(lines, "phase_clocks", []), getattr(lines, "phases_at", [])
     out = []
     for k, (a, b) in enumerate(zip(clocks, clocks[1:])):
         if b - a <= 1:
             continue
         cur, rises = a + 1, []
         if k + 1 < len(draws_at):
+            for phase, c in phase_clocks[phases_at[k]:phases_at[k + 1]]:
+                if c > cur:
+                    rises.append("%d:%d" % (phase, c - cur))
+                    cur = c
             for n, c in enumerate(draw_clocks[draws_at[k]:draws_at[k + 1]]):
                 if c > cur:
                     rises.append("%d:%d" % (n, c - cur))
                     cur = c
         out.append((a, b - cur) + tuple(rises))
     return out
+
+
+def stale_destinations(lines):
+    """[(record, x, y)] of the enemy records (5..12): the destination (+0x08..+0x0B) at the first pass where the record is in use. The original
+    copies the enemy file's record whole into the combatant (R025+0x0267) and the destination keeps the stack bytes it held until the enemy
+    first moves; the C# leaves it 0, and a dragon's breath at a spot (target -1, facing_to_target R014+0x306A) turns toward it."""
+    out = {}
+    for line in lines:
+        w = line.split()
+        if len(w) < 6 or "cbt" not in w:
+            continue
+        records = bytes.fromhex(w[w.index("cbt") + 1])
+        for i in range(5, COUNT):
+            r = records[i * RECORD:(i + 1) * RECORD]
+            if i not in out and r[0x14] != 0:
+                out[i] = tuple(v - 65536 if v >= 32768 else v for v in struct.unpack_from("<2H", r, 8))
+    return [(i,) + out[i] for i in sorted(out)]
 
 
 def first_difference(original: dict, rewrite: dict):
@@ -222,8 +251,13 @@ def first_difference(original: dict, rewrite: dict):
                 elif off == 0x1D:
                     # +0x1D starts as whatever the stack held when level_enemies_load (R020+0x0000) wrote the enemy file, which
                     # enemies_place (R025+0x0885) reads into DS:B899 and copies whole (R025+0x0267); it is compared once either side
-                    # has changed it (the aim sets it outright)
-                    if (o[off] != first[0] or c[off] != first[1]) and o[off] != c[off]:
+                    # has changed it (the aim sets it outright, from the readied skill +0x59 (R014+0xA492): -(agility >> 1) - ((skill >> 1) - 150),
+                    # so an enemy whose weapon was never readied (its +0x59 a stale byte in the original, 0 in the C#) aims 1 apart per 2 of skill)
+                    mine = c[off]
+                    if (o[0x59], c[0x59]) == ready[(i, 0x59)]:
+                        sar = lambda v: (v - 256 if v > 127 else v) >> 1
+                        mine = (mine - (sar(o[0x59]) - sar(c[0x59]))) & 0xFF
+                    if (o[off] != first[0] or c[off] != first[1]) and o[off] != mine:
                         diffs.append({"combatant": i, "field": name, "offset": "+1D", "original": o[off], "rewrite": c[off]})
                 elif 8 <= off < 12 and o[8:12] == kept[0] and c[8:12] == kept[1]:
                     # the destination is copied whole with the enemy file's record (R025+0x0267) and set by the enemy's first move; a
@@ -298,7 +332,7 @@ def main():
         os.environ["DARKLANDS_BATTLE_TRACE"] = "records"
         os.environ["DARKLANDS_BATTLE_REQUEST"] = ",".join(str(v) for v in request) if request else ""
         t = time.time()
-        _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up, jumps)
+        _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up, jumps, stale_destinations(trace))
         t_rewrite = time.time() - t
         lines = [l for l in output.splitlines() if l.startswith("pass ")]
         (folder / "rewrite-battle.trace").write_text("\n".join(lines), encoding="utf-8")
@@ -316,7 +350,7 @@ def main():
             if clock_jumps(trace) != jumps:
                 # the long passes (and so the clock jumps) of the original moved with its key: the C# is run again with this run's
                 t = time.time()
-                _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up, clock_jumps(trace))
+                _, output = lockstep.run_rewrite(Path(a.headless), a.game, steps, Path(a.save), seeds, folder, False, set_up, clock_jumps(trace), stale_destinations(trace))
                 t_rewrite += time.time() - t
                 lines = [l for l in output.splitlines() if l.startswith("pass ")]
                 (folder / "rewrite-battle.trace").write_text("\n".join(lines), encoding="utf-8")

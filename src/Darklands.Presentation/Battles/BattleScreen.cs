@@ -53,15 +53,17 @@ public sealed class BattleScreen : ITacticalView
 
     public static bool OneTickPerPass { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TICK_PER_PASS") is not null;
 
-    /// <summary>A debugging aid: the clock ticks each battle's set-up takes (stages 1, 2 and 3, see ITacticalView.SetUpTime), in place of
-    /// the time that passed, battle after battle ("704,41,1;650,40,0"; the last triple goes on), as tools/oracle/lockstep.py measures them
+    /// <summary>A debugging aid: the clock ticks each battle's set-up takes (stages 1 to 4, see ITacticalView.SetUpTime), in place of
+    /// the time that passed, battle after battle ("704,41,1,0;650,40,0"; the last entry goes on; the optional fourth number is the part of the
+    /// third that comes before the activations check's clock is read, R014+0x0332), as tools/oracle/lockstep.py measures them
     /// in the original (DARKLANDS_BATTLE_SETUP_TICKS).</summary>
-    public static Queue<(int Loads, int FirstFrame, int Late)>? SetUpTicks { get; set; } = ParseSetUpTicks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_SETUP_TICKS"));
+    public static Queue<(int Loads, int FirstFrame, int Late, int BeforeActivations)>? SetUpTicks { get; set; } = ParseSetUpTicks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_SETUP_TICKS"));
 
-    private static Queue<(int, int, int)>? ParseSetUpTicks(string? text) => text is null ? null
+    private static Queue<(int, int, int, int)>? ParseSetUpTicks(string? text) => text is null ? null
         : new(text.Split(';').Select(p => p.Split(',')).Select(p => (int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
             int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture),
-            p.Length > 2 ? int.Parse(p[2], System.Globalization.CultureInfo.InvariantCulture) : 0)));
+            p.Length > 2 ? int.Parse(p[2], System.Globalization.CultureInfo.InvariantCulture) : 0,
+            p.Length > 3 ? int.Parse(p[3], System.Globalization.CultureInfo.InvariantCulture) : 0)));
 
     /// <summary>A debugging aid: timer callbacks that came within a pass beyond its one, by the combat clock at the pass's head ("1382,69;1452,67":
     /// the clock was 1382 at the head, 69 more callbacks came during the pass), as tools/oracle/battle_oracle.py measures them in the original
@@ -75,7 +77,9 @@ public sealed class BattleScreen : ITacticalView
 
     /// <summary>A debugging aid: the same jumps' part that came between the pass's random draws ("1452,67,4:4,5:2": before the pass's 4th draw
     /// (counted from 0 at the pass's head) 4 callbacks came, before the 5th 2 more, the rest after the pass), as battle_oracle.py measures them:
-    /// the draws that read the clock (a re-path time) see the clock the original had then (DARKLANDS_BATTLE_CLOCK_JUMPS).</summary>
+    /// the draws that read the clock (a re-path time) see the clock the original had then (DARKLANDS_BATTLE_CLOCK_JUMPS). The keys -1 and -2 are the
+    /// callbacks that came before the tick's scheduler (R014+0xF418's 1DB7:0D36) and melee exchanges (R014+0x2A4A), which test the clock against the
+    /// re-path and engage times before any draw.</summary>
     public static Dictionary<int, Dictionary<int, int>>? ClockRises { get; set; } = ParseClockRises(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CLOCK_JUMPS"));
 
     private static Dictionary<int, Dictionary<int, int>>? ParseClockRises(string? text)
@@ -93,7 +97,7 @@ public sealed class BattleScreen : ITacticalView
         return all;
     }
 
-    private (int Loads, int FirstFrame, int Late) _setUpTicks;
+    private (int Loads, int FirstFrame, int Late, int BeforeActivations) _setUpTicks;
     private long _setUpMark;
 
     private readonly GameUi _ui;
@@ -161,6 +165,7 @@ public sealed class BattleScreen : ITacticalView
             {
                 var now = _ui.Clock.Milliseconds;
                 Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
+                TacticalBattle.ClockPhase = null;
                 // orig: R014+0x0000 (0E76:0000) runs the end test (R014+0x08FE) and the endurance recovery (R014+0x45AE), then R014+0x3166
                 // (the head the tester compares, the player's input); the timer callbacks of a pass come after them
                 if (_battle!.IterateHead())
@@ -185,6 +190,14 @@ public sealed class BattleScreen : ITacticalView
                         Darklands.Core.Randomness.MscRandom.BeforeDraw = () =>
                         {
                             if (rises.TryGetValue(draws++, out var rise))
+                            {
+                                _clockFraction = rise;
+                                Advance(0);
+                            }
+                        };
+                        TacticalBattle.ClockPhase = phase =>
+                        {
+                            if (rises.TryGetValue(phase, out var rise))
                             {
                                 _clockFraction = rise;
                                 Advance(0);
@@ -690,10 +703,16 @@ public sealed class BattleScreen : ITacticalView
         }
         if (SetUpTicks is not null)
         {
-            _clockFraction = stage switch { 1 => _setUpTicks.Loads, 2 => _setUpTicks.FirstFrame, _ => _setUpTicks.Late };
+            _clockFraction = stage switch
+            {
+                1 => _setUpTicks.Loads,
+                2 => _setUpTicks.FirstFrame,
+                3 => _setUpTicks.BeforeActivations,
+                _ => _setUpTicks.Late - _setUpTicks.BeforeActivations,
+            };
             Advance(0);
         }
-        else if (stage == 3)
+        else if (stage >= 3)
         {
             return;
         }
@@ -1619,8 +1638,8 @@ public sealed class BattleScreen : ITacticalView
     }
 
     /// <summary>F1..F5 or a click on a portrait: the member's character sheet over the battle (only for an able member still on the field).</summary>
-    // orig: combat_char_sheet R022+0x0000 (1EF8:0000) draft; R022+0x04E4 matched
-    // (the "You can't view … at this time." message)
+    // orig: combat_char_sheet R022+0x0000 (1EF8:0000) draft
+    // C: CannotView is R022+0x04E4's message (the "You can't view … at this time." message)
     private void CharacterSheet(int member)
     {
         var tb = _battle!;

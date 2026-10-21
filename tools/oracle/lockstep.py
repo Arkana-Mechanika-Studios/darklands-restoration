@@ -71,6 +71,7 @@ MAIN = (0x0E76, 0x0022)             # R000+0x0022
 SAVE_RECT = (0x047C, 0x04D5)
 EMS_CHECK, MOUSE_INIT = (0x05F8, 0x0064), (0x047C, 0x11F6)
 MOUSE_X, MOUSE_Y, MOUSE_BUTTONS, MOUSE_PRESSES, MOUSE_SHIFT, MOUSE_ON = 0x6EEC, 0x6EEE, 0x6EF0, 0x6EF2, 0x6EFA, 0x6EFB
+KEYBOARD_FLAGS = 0x417              # 0040:0017, the BIOS keyboard flags
 COPY_PROTECTION = (0x1462, 0x0000)  # R041+0x0000 (thunk 09C0:1FD1)
 CHAR_WIDTH, FONT_HEIGHT = (0x047C, 0x04E3), (0x047C, 0x051B)
 HOTSPOTS = 0xE96E                   # the card menu's hot spots: count, highlight, width, x, y[20], height[20] (bytes)
@@ -89,6 +90,7 @@ ENEMY_TURN_VEC = (0x09C0, 0x1C43)    # R014+0x0280's vector to R018+0x0706 (the 
 WALL_DRAWS = ((0x8381, 0x838B), (0x8438, 0x8442), (0x84AE, 0x84BE))   # R014+0x827A: push 2; call random_n; (after)
 NEXT_TICK = 0xD9E4                 # the clock value of the battle's next combat tick (set at R014+0x0311)
 COMBAT_CLOCK = 0x07D4               # the combat clock the timer callback counts while the battle runs
+ACTIVATIONS_AT = 0xDA4F     # DS word: the combat clock of the next activations check (R014+0x0332 sets it to the clock + 120)
 TIMER_CALLBACK = (0x047C, 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
 BATTLE_QUIET = 5_000_000            # bytes of code without the time-based timer after a battle pass began
 POLL_POINTS = {0x00000}             # root 0000:0000, the menu bar's handler: every screen's loop calls it each pass
@@ -165,12 +167,16 @@ class Session(Machine):
         self.battle_trace = None        # a list: a line at the head of each battle pass (--battle-trace)
         # the clock ticks each battle's set-up took (the loads before the enemies' turn, then up to the first pass): the C# is given them
         # (the loads, up to the clock's read at R014+0x0311 that sets the first tick's time DS:D9E4 = read + 8, from there to the first pass)
-        self.set_up_ticks: list[tuple[int, int, int]] = []
+        self.set_up_ticks: list[tuple[int, int, int, int]] = []
         self._setting_up = None
         self.hook(*CLEAR_TIMERS_VEC, lambda m: setattr(m, "_setting_up", [None]) if 14 in m.resident else None)
         self.hook(*ENEMY_TURN_VEC, self._enemy_turn)
         self._hook_address(BATTLE_PASS_LIN)
         self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._button_read, begin=DS * 16 + MOUSE_BUTTONS, end=DS * 16 + MOUSE_BUTTONS + 1)
+        # the BIOS keyboard flags (0040:0017: Shift, Ctrl, Alt held; R031+0x10AE tests them: give one against give the stack) lie at linear
+        # 0x417, inside the root image's code here: a read gives 0 (no modifier held), the code byte is put back at the next block
+        self._flags_code = None
+        self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._flags_read, begin=KEYBOARD_FLAGS, end=KEYBOARD_FLAGS)
         self.idle_mark = None
         self.idle_since = 0
         self.mouse = [160, 100, 0]
@@ -209,6 +215,14 @@ class Session(Machine):
         self.releases[0] += 1
         self.waits = 0
         self.idle_since = self.ms
+
+    def _flags_read(self, uc, access, address, size, value, data):
+        # only R031's test (R031+0x10AE) gets the zero: the card engine's Shift test (R043+0x21D4, 150B:1BB8/1BBE, polled ~3900 times in the
+        # Alt-L reload) and the start-up read (044A:01A2) must see the code byte, and the write splits the translated block read in, which
+        # counts its remainder twice and so moves the clock of the original
+        if self._flags_code is None and self.function_at(self.reg("CS") * 16 + self.reg("IP")).startswith("R031+"):
+            self._flags_code = bytes(uc.mem_read(KEYBOARD_FLAGS, 1))
+            uc.mem_write(KEYBOARD_FLAGS, b"\x00")
 
     def _button_read(self, uc, access, address, size, value, data):
         if self.held:
@@ -339,7 +353,10 @@ class Session(Machine):
                 if self._setting_up is not None:
                     loads = self._setting_up[0] or 0
                     read = (self.word(DS, NEXT_TICK) - 8) & 0xFFFF
-                    self.set_up_ticks.append((loads, read - loads, self.word(DS, COMBAT_CLOCK) - read))
+                    # the fourth number: the part of the late ticks before R014+0x0332 read the clock for the next activations check
+                    # (DS:DA4F, 120 later)
+                    self.set_up_ticks.append((loads, read - loads, self.word(DS, COMBAT_CLOCK) - read,
+                                              (self.word(DS, ACTIVATIONS_AT) - 120 - read) & 0xFFFF))
                     self._setting_up = None
                 if self.battle_trace is not None:
                     self.battle_trace.append("pass clock %d rand %08X" % (self.word(DS, COMBAT_CLOCK), struct.unpack("<I", self.read(DS, HOLDRAND, 4))[0]))
@@ -421,6 +438,9 @@ class Session(Machine):
         self.put_word(0x40, 0x6C, self.word(0x40, 0x6C) + 1)
 
     def _on_block(self, uc, address, size, _):
+        if self._flags_code is not None:
+            uc.mem_write(KEYBOARD_FLAGS, self._flags_code)
+            self._flags_code = None
         if (self.count >= self.next_irq and self.uc.reg_read(REG["EFLAGS"]) & 0x200 and address not in self._hooked
                 and address < SENTINEL_SEG * 16):
             self.next_irq += self._period()
@@ -705,7 +725,7 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
     return s.states, seeds, [line for line in s.log if not line.startswith("INT")], end, files, s.set_up_ticks
 
 
-def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=()):
+def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -726,10 +746,13 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
         env["DARKLANDS_BATTLE_TRACE"] = "1"
     if set_up_ticks:
         # the clock the original's battle set-ups took here (its loads run at the emulator's speed): the C#'s set-up takes none
-        env["DARKLANDS_BATTLE_SETUP_TICKS"] = ";".join("%d,%d,%d" % p for p in set_up_ticks)
+        env["DARKLANDS_BATTLE_SETUP_TICKS"] = ";".join("%d,%d,%d,%d" % p for p in set_up_ticks)
     if clock_jumps:
         # the clock a long pass of the original took beyond its one tick (the timer's time-based callbacks): the C# has no emulated time
         env["DARKLANDS_BATTLE_CLOCK_JUMPS"] = ";".join(",".join(str(v) for v in p) for p in clock_jumps)
+    if stale_dest:
+        # the destination bytes a record keeps from the enemy file's stack bytes, by record (DARKLANDS_BATTLE_STALE_DEST)
+        env["DARKLANDS_BATTLE_STALE_DEST"] = ";".join("%d:%d,%d" % p for p in stale_dest)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():

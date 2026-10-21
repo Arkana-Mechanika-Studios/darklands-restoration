@@ -349,6 +349,7 @@ public sealed partial class TacticalBattle
         {
             return;
         }
+        ClockPhase?.Invoke(-1);
         var list = new List<int>(4);
         if (_partyRethinkAt < Clock)
         {
@@ -527,14 +528,14 @@ public sealed partial class TacticalBattle
         _best[i] = (best, i);
     }
 
-    /// <summary>index_of_min_int over row i (13 words): the first minimum.</summary>
-    // orig: index_of_min_int root 0410:02A8 (UNCERTAIN: the tie-break, spec D §9.5)
+    /// <summary>index_of_min_int over row i (13 words): the last minimum.</summary>
+    // orig: index_of_min_int root 0410:02A8 (the tie-break read in the asm: 0410:02B9 jg skips only a greater word, so an equal one replaces the minimum)
     private int IndexOfMinimumCost(int i)
     {
         var k = 0;
         for (var j = 1; j < 13; j++)
         {
-            if (Battle.Reaches.Cost(i * 5 + j) < Battle.Reaches.Cost(i * 5 + k))
+            if (Battle.Reaches.Cost(i * 5 + j) <= Battle.Reaches.Cost(i * 5 + k))
             {
                 k = j;
             }
@@ -542,14 +543,14 @@ public sealed partial class TacticalBattle
         return k;
     }
 
-    /// <summary>index_of_min_byte: the first minimum.</summary>
-    // orig: index_of_min_byte root 0410:01DC (UNCERTAIN: the tie-break)
+    /// <summary>index_of_min_byte: the last minimum.</summary>
+    // orig: index_of_min_byte root 0410:01DC (the tie-break read in the asm: 0410:01EC ja skips only a greater byte, so an equal one replaces the minimum)
     private static int IndexOfMinimum(byte[] values)
     {
         var k = 0;
         for (var j = 1; j < values.Length; j++)
         {
-            if (values[j] < values[k])
+            if (values[j] <= values[k])
             {
                 k = j;
             }

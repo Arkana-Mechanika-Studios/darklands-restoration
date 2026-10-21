@@ -18,6 +18,7 @@ public sealed partial class TacticalBattle
     // orig: melee_exchanges R014+0x2A4A (0E76:2A4A) draft (spec D §3.1, asm-verified)
     private void MeleeExchanges()
     {
+        ClockPhase?.Invoke(-2);
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];

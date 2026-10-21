@@ -13,6 +13,17 @@ public sealed partial class TacticalBattle
     private static readonly sbyte[] BoxSideX = [-15, -15, -15, -15, 0, -16, -15, -15, -15, -15, -16, 0];
     private static readonly sbyte[] BoxSideY = [-15, -16, 0, -15, -15, -15, -15, 0, -16, -15, -15, -15];
 
+    /// <summary>A debugging aid (DARKLANDS_BATTLE_STALE_DEST, "5:-256,511;7:..."): the destination a record keeps when its enemy is first placed,
+    /// by record. The original copies the enemy file's record whole (R025+0x0267) and its destination bytes (+0x08..+0x0B) are whatever the
+    /// stack held; until the enemy first moves they steer what reads them (the facing of a spell at a spot, R014+0x306A). The oracle reads
+    /// them off the original's run; the C# leaves them 0.</summary>
+    public static Dictionary<int, MapPoint>? StaleDestinations { get; set; } = ParseStaleDestinations(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_STALE_DEST"));
+
+    private static Dictionary<int, MapPoint>? ParseStaleDestinations(string? text) => string.IsNullOrEmpty(text) ? null
+        : text.Split(';').Select(p => p.Split(':', ',')).ToDictionary(
+            p => int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
+            p => new MapPoint(int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture), int.Parse(p[2], System.Globalization.CultureInfo.InvariantCulture)));
+
     /// <summary>DS:DA34: the levels whose encounters were met (kept by the battlefield memory: they do not come back).</summary>
     public int EncounteredLevels { get; private set; }
 
@@ -471,6 +482,10 @@ public sealed partial class TacticalBattle
                     DragonWeaponForFight(si);
                 }
                 c.Home = c.Position;
+                if (StaleDestinations is not null && StaleDestinations.Remove(si, out var stale))
+                {
+                    c.Destination = stale;
+                }
             }
         }
         if (!placed)
