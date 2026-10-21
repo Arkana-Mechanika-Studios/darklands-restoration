@@ -321,7 +321,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0x0694` (0E76:0694, draft)  
   divergence: saving the changed floor and activations and ending the temporary modifiers (DS:A532) belong to the battle screen.  
   recommendation: **justify** - The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
-- **D-b616cc** `not-modelled` - `src/Darklands.Core/Battles/CombatantSetup.cs:124` `CombatantSetup.FromEnemy`  
+- **D-b616cc** `not-modelled` - `src/Darklands.Core/Battles/CombatantSetup.cs:134` `CombatantSetup.FromEnemy`  
   original: `R020+0x0000` (1EF8:0000, draft), `R025+0x0000` (1EF8:0000, draft)  
   divergence: the head bytes +0x1E/+0x1F (both 8) are not modelled; the slot's other head fields are whatever the .enm buffer held (0 for a fresh load), reset here.  
   recommendation: **justify** - Head bytes +0x1E/+0x1F (both 8) and stale head fields are not read by the clean model. They matter only when a battle is written to the .BSV file; revisit with battle saving (OriginalSaves).
@@ -355,11 +355,11 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R025+0x09A6` (1EF8:09A6, draft), `R025+0x0A84` (1EF8:0A84, draft)  
   divergence: when a higher slot's buffer lies above this one in memory the original frees both enemy slots and sets every enemy's current pose again keeping its frame (a heap-layout case); here the plain branch is always taken.  
   recommendation: **keep** (checked against the original) - enemy_anim_load (R025 09A6) takes the reload branch when a higher enemy slot's buffer has a higher segment than this slot's: it frees both slots, reallocates them and sets every enemy's current pose again with the frame kept (DS:C3CC), instead of setting the moving enemy's walking pose. Which branch runs depends on the order the DOS heap handed out the buffers over the whole program run (other screens allocate and free in between), which the C# does not model; the plain branch is the one taken when the slots were allocated in order.
-- **D-01c621** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:536` `TacticalBattle.Triggers`  
+- **D-01c621** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:539` `TacticalBattle.Triggers`  
   original: `R014+0xD6DA` (19CD:216A, draft)  
   divergence: a record whose handler word is not one of the eight types (a marker the generator left) would be called through its raw words in the original; here nothing happens.  
   recommendation: **justify** - triggers (R014 19CD 1E92 and the trigger loop) call the record's handler word through the far pointer the level loader set; the generators only write the eight handler types (0 secret door .. 8 wall alarm) into trigger records, so a record with another word does not occur in generated levels. Calling raw words would jump into arbitrary code; nothing to reproduce.
-- **D-e70eea** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:975` `TacticalBattle.MissileTrap`  
+- **D-e70eea** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:978` `TacticalBattle.MissileTrap`  
   original: `R023+0x0E30` (1EF8:0E30, draft)  
   divergence: an odd direction leaves the line's globals as the last test left them in the original.  
   recommendation: **keep** - missile_trap (R014 19CD 3258): the direction comes from the trap record written by the generators, which use the even directions 0/2/4/6 only; an odd one would reuse the line globals of the last line_blocked call (deterministic in principle, but it needs a corrupt record). Kept as a guard.

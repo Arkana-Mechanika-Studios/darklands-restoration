@@ -16,10 +16,9 @@ No known divergence, strong evidence, published coverage:
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 56% of the branch outcomes have run in a comparison with the original, and the
+implements, about 58% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
-are the battlefield generators and the rules; the least covered are the screens, and in battle the
-player's orders (see below). In the card scripts, the open branches lie behind particular quest
+are the battlefield generators, the rules and the battles; the least covered are the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
 after 1.0.
 
@@ -59,33 +58,33 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 5,287 functions the oracles enter | 72.7% (36,288 / 49,904) | 63.1% (24,611 / 38,980) |
-| **every function the C# implements (9,281)** | | **55.8% (23,866 / 42,778)** |
+| the 5,342 functions the oracles enter | 73.6% (37,387 / 50,821) | 64.0% (25,541 / 39,896) |
+| **every function the C# implements (9,281)** | | **57.9% (24,761 / 42,778)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 23,866 against 24,611 exercised. By area:
+differ slightly on the resident code, hence 24,761 against 25,541 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 6,787 / 8,524 | 80% |
-| rules | 312 / 358 | 1,731 / 2,584 | 67% |
-| card engine | 34 / 36 | 384 / 686 | 56% |
-| battles (tactical combat) | 211 / 314 | 4,108 / 7,516 | 55% |
-| travel (overland map) | 23 / 24 | 526 / 982 | 54% |
-| card scripts | 4,030 / 7,949 | 7,164 / 14,614 | 49% |
-| resident code | 117 / 160 | 725 / 1,640 | 44% |
-| screens (inventory, barter, creation ...) | 132 / 202 | 2,378 / 6,070 | 39% |
+| rules | 313 / 358 | 1,733 / 2,584 | 67% |
+| battles (tactical combat) | 235 / 314 | 4,630 / 7,516 | 62% |
+| card engine | 35 / 36 | 399 / 686 | 58% |
+| travel (overland map) | 23 / 24 | 550 / 982 | 56% |
+| resident code | 125 / 160 | 856 / 1,640 | 52% |
+| card scripts | 4,033 / 7,949 | 7,177 / 14,614 | 49% |
+| screens (inventory, barter, creation ...) | 141 / 202 | 2,566 / 6,070 | 42% |
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-27,985 items of the functions the oracles enter were never exercised: 1,174 are justified in
+27,789 items of the functions the oracles enter were never exercised: 1,204 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 26,811 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 26,585 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 12,100), the screens (about 4,400), the battles (about 4,000), the
+lie in the card scripts (about 12,100), the screens (about 4,400), the battles (about 3,700), the
 battlefield generators (about 3,000), the rules (about 900) and the overland map (about 800).
 
 ## Card oracle
@@ -143,10 +142,28 @@ from a saved game in Pressburg:
 | healer | the physician's house | identical |
 | churches | a donation into the night, the altar boy, Mass | identical |
 | wharves | the boat to Olmütz, the wharf toll, the gate and main street there | identical |
+| stables, pawnshop, foreigntrader | barter at the stablemaster, the pawnbroker and the foreign traders | identical |
+| roster, roster4 | the inn's party screen: finding somebody, retiring members | identical |
+| wien-rathaus | Vienna's town hall: the audience, the clerk | identical |
+| mapsave | saving on the map with Alt-S, loading it back | identical |
+| banks | the Fugger and Medici offices, the Hanse hall | **open lead**: differs from the second market visit on (written before the tester's font metrics were real) |
+| menubar, menubar2 | the menu bar's keys and the keyboard menu | **open lead**: differs from the state `expert` on (as banks) |
+| orders-select, -walk, -missile, -attack-a, -attack-b, -attack-b2, -attack-v, -attacks, -sheet, -save | the player's orders in the gate battle: selecting, pausing, walking, missiles, the attack orders, berserk, the combat sheet, saving in battle | identical, and the 13 combatant records at every battle pass |
+| luebeck-potion | the Lübeck gate: potions thrown in battle | identical, records at every pass included |
+| orders-potion | as luebeck-potion, with the combat sheet opened for long | differs after the sheet: the original's timer ticks while the sheet is open, which the C# does not model |
+| orders-potion2, orders-potion3, orders-prague-missile | the Prague gate (DKSAVE40): potions and missiles | the battles agree; the saved game differs where the original's writer drops empty slots and recounts the party (R037+0x2ACE), a registered divergence |
 
 In one more session (the character sheet from DKSAVE0) the original itself stops with its "Buffer
 dealloc error" (R031+0x0B22) where the C# goes on. Only the sessions that agree throughout count as
 coverage.
+
+The oracles record the original's side (`tools/oracle/recording.py`) and replay it against the C# for
+day-to-day checks; a recording is used only when the hashes of the EXE, the game files, the arguments,
+the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
+(`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
+weekly during active work); the published verdicts and coverage come from such a live run (this one:
+84 runs, 76 agreeing).
+
 
 They found six divergences the per-function checks could not see, now fixed: leaving the map
 (the previous card and the hour pass after it), entering it (the party's square), the click to
@@ -179,14 +196,19 @@ start (R018+0x093C, R014+0x469E; an original bug, reproduced); and on a keep's f
 party starts at (0, 0) and members stand outside the level, the collision test reads the cells past
 the edge as empty ones, with the party's sizes still 0 until R014+0x0258 sets them (R014+0x5ECA).
 
-The fights brought the battle code run against the original from 32 to 211 of 314 functions. The
+The fights brought the battle code run against the original from 32 to 235 of 314 functions (the battle sessions with the player's orders included). The
 first five found one divergence in the C# (the first frame also turns whoever just got an action
 toward its target, so enemies face their targets from the start); the other differences they showed
 were the tester's own (fields the original has not set yet, the pause, the set-up and the clock's
 jumps during long passes), passed to the C# by opt-in hooks that leave normal play unchanged. The
 next round put the end test and the endurance recovery of a battle pass before the player's input,
-as the original's R014+0x0000 runs them (a reordering within the pass, in normal play too). Not yet
-compared: the player's orders (the party's spells and potions among them).
+as the original's R014+0x0000 runs them (a reordering within the pass, in normal play too). The player's orders are compared in the whole-game sessions above (orders-*, luebeck-potion), with the
+13 combatant records at every pass. They found six more divergences in the C#, now fixed: the combat
+flags of a loaded battle (the original never clears DS:A696, so a record's no-target bit from the battle
+file keeps it out of the enemies' first turn, R018+0x1069); the sheet's end draws once more (R022+0x03B0);
+freeing an enemy slot keeps its header tables (R025+0x0C02); a member's destination and +0x1D come
+from the loaded record; the armour qualities of record 0 are not rewritten after the combat sheet; and
+the loot screen shows the fight's wounds.
 
 ## Saint oracle
 
