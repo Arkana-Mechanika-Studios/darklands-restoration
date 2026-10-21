@@ -180,7 +180,7 @@ public sealed partial class TacticalBattle
             EnemySlotIdentity[kind - 5] = -1;
             foreach (var s in new[] { kind, kind + 2, kind + 4 })
             {
-                Slots[s] = new AnimationSlot();
+                Slots[s].Free();
             }
         }
     }
@@ -192,7 +192,7 @@ public sealed partial class TacticalBattle
         EnemySlotIdentity[0] = EnemySlotIdentity[1] = -1;
         for (var s = 5; s < Slots.Length; s++)
         {
-            Slots[s] = new AnimationSlot();
+            Slots[s].Free();
         }
     }
 

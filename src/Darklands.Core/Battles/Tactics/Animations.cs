@@ -51,6 +51,17 @@ public sealed class AnimationSlot
     /// <summary>The file name cleared, the header values and the buffers kept (loot_screen R014+0xE6C0).</summary>
     public void ForgetFile() => FileName = "";
 
+    /// <summary>
+    /// The slot's buffers freed and its file name cleared; the header values (DS:C799 and the other per-slot tables) stay as the last file
+    /// left them, which the next fight in the slot reads until it loads another file.
+    /// </summary>
+    // orig: enemy_anim_free6 R025+0x0C02 (1EF8:0C02) matched: frees the buffers (DS:CA45) and writes 0 to the first byte of the names (DS:11B2 ..)
+    public void Free()
+    {
+        FileName = "";
+        HasBuffer = false;
+    }
+
     public int HalfWidth { get; private set; } = 5;
 
     public int HalfHeight { get; private set; } = 2;

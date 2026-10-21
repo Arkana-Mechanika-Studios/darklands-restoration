@@ -19,6 +19,13 @@ public static class CombatantSetup
         c.Status = member.Status;
         // C: +0x00 (the roster's location word) and +0x02 are scrx and scry until a frame draws the member
         c.ScreenPlace = (member.RosterLocation, member.OriginalRecord is { Length: >= 4 } r ? (short)(r[2] | r[3] << 8) : 0);
+        // orig: the record is copied whole, so the destination (+0x08..+0x0B) and the aim delay (+0x1D) are what the saved game held (the last
+        // fight's) until the member walks or aims, and a saved game written afterwards keeps them
+        if (member.OriginalRecord is { Length: > 0x1D } held)
+        {
+            c.Destination = new MapPoint((short)(held[0x08] | held[0x09] << 8), (short)(held[0x0A] | held[0x0B] << 8));
+            c.AimDelay = (sbyte)held[0x1D];
+        }
         for (var k = 0; k < Character.AttributeCount; k++)
         {
             c.Attributes[k] = (sbyte)member.Attributes[k];
@@ -106,8 +113,11 @@ public static class CombatantSetup
         // C: the record's +0x22 / +0x5A as the battle left them (an empty slot keeps its quality byte)
         member.MissileWeapon = new EquippedItem(c.ReadiedWeapon < 0 ? -1 : c.ReadiedWeapon, c.MissileQuality);
         // The effects wear armour down and throw it away when it is worn through (R019 0968 / 0914).
-        member.VitalArmor = c.ArmourType[0] < 0 ? EquippedItem.None : new EquippedItem(c.ArmourType[0], c.ArmourQuality[0]);
-        member.LimbArmor = c.ArmourType[1] < 0 ? EquippedItem.None : new EquippedItem(c.ArmourType[1], c.ArmourQuality[1]);
+        // orig: the party record is the combatant record: an empty armour slot keeps its quality byte (+0x4F / +0x50) as it was: the
+        // loaded file's (a stale 0 for a member who never wore armour) until R019+0x0914 sets 0x19 on a piece worn through; the combat
+        // character sheet (R022+0x0000) does not touch it, so its close leaves it (the quality of None, 25, would replace a 0)
+        member.VitalArmor = new EquippedItem(c.ArmourType[0] < 0 ? -1 : c.ArmourType[0], c.ArmourQuality[0]);
+        member.LimbArmor = new EquippedItem(c.ArmourType[1] < 0 ? -1 : c.ArmourType[1], c.ArmourQuality[1]);
         member.WeaponPotions = c.WeaponBonus;
         member.ArmourPotions = c.Protection;
         member.FirewallStrength = (byte)c.PiercingResistance;

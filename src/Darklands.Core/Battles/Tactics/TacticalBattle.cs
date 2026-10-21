@@ -305,6 +305,13 @@ public sealed partial class TacticalBattle : IBattleEndActions
         // orig: R002+0x1830 (0E76:1830) draft, the part of the battle's reset a battle taken up from a saved game skips (DS:9081 bit 0):
         // DS:D6F0 = 1 (hidden encounters are checked from the start), the alarm DS:D6F4, real combat DS:A6C1, DS:C600 and DS:CA29 = 0,
         // the result card DS:CA3D = -1.
+        // orig: R002+0x1830+0x1BD (0E76:19ED): the flags table (DS:A696, a word per combatant) is not cleared: `and word, 0x6E00` keeps the
+        // bits 0x200, 0x400, 0x800, 0x2000 and 0x4000 of whatever the last battle or the last load (the battle file's) left there, so an
+        // enemy can begin with NoTarget (0x400), which makes the enemy turn (R018+0x1069) let it act only on its turn of the rotation.
+        for (var i = 0; i < Combatant.Count; i++)
+        {
+            Battle[i].Flags = (TacticalFlags)(StaleFlags is { } stale && i < stale.Count ? stale[i] & 0x6E00 : 0);
+        }
         ActivationsEnabled = true;
         Battle.Alarm = 0;
         Battle.RealCombat = false;

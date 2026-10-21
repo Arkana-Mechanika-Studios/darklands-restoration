@@ -219,7 +219,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         var c = context();
         var text = TextVariables.Expand(b.Text, c);
         var layout = new CardTextLayout(ui.CardText);
-        return _lastAreas = layout.Draw(_canvas, text, WindowX + b.X + 5, b.Y + 5, b.Width - 10, new CardTextLayout.Settings
+        var areas = layout.Draw(_canvas, text, WindowX + b.X + 5, b.Y + 5, b.Width - 10, new CardTextLayout.Settings
         {
             Options = options,
             Conditions = c.Variables.Conditions,
@@ -228,6 +228,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
             OptionMode = TextMode.Xor,
             DropCap = DropCap,
         });
+        // orig: draw_text_wrapped leaves the option lines in the hotspot list DS:E96E as soon as it has laid the text out (before wait_continue), which is what a scripted host's option:<n> step reads
+        _choosing = new OptionLayout(areas, WindowX + b.X + 5, b.Width - 10);
+        return _lastAreas = areas;
     }
 
     private Content.Formats.Graphics.IndexedImage? DropCap(byte letter) => DropCaps.Get(ui.Assets, letter);

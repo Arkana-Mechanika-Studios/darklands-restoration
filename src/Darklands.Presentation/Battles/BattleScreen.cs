@@ -387,6 +387,7 @@ public sealed class BattleScreen : ITacticalView
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed,
+            StaleFlags = _state.BattleFile is { } program ? [.. Enumerable.Range(0, Combatant.Count).Select(i => (ushort)(program.Variables[BattleVariables.Flags + 2 * i] | program.Variables[BattleVariables.Flags + 2 * i + 1] << 8))] : null,
         };
         _view.PieceFrame = (layer, x, y) => _battle?.Effects.PieceFrame(layer, x, y) ?? -1;
         for (var i = 0; i < Combatant.PartySlots; i++)
@@ -763,6 +764,9 @@ public sealed class BattleScreen : ITacticalView
         // palette_restore(DS:CA53, DS:CA55) after it; then loot_pile_open R014+0xE278 redraws the battle:
         // floor_view_draw_vec(DS:17B0) (the view centred on the active member) and combat_draw.
         var palette = (uint[])_ui.Canvas.Screen.Palette.Clone();
+        // orig: the party records are the combatants, so the loot screen (R040) and its panel see the wounds and skills of the fight at once (as the
+        // character sheet does, see CharacterSheet)
+        _battle!.MembersFromCombat();
         PacksToMembers();
         _owner.TakeLoot(list, money);
         PacksFromMembers();
