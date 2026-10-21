@@ -27,11 +27,11 @@ state:changes
 key:altd
 wait:300
 state:difficulty
-key:down
-wait:100
 key:enter
 wait:300
 state:expert
+key:altc
+wait:100
 key:altp
 wait:300
 key:enter

@@ -1077,7 +1077,7 @@ def main():
         trace = TraceList() if a.battle_records else ClockTrace()   # always a ClockTrace: the clock jumps of a battle's long passes are given to the C# (the trace files only with --battle-trace)
         original, seeds, log, end, files, set_up = run_original(Path(a.exe), a.game, steps, save, a.budget, trace, a.no_wall_draws, cov)
         got = {"states": original, "seeds": seeds, "log": log, "end": end, "files": files, "set_up": set_up, "trace": list(trace),
-               "jumps": clock_jumps(trace), "stale": stale_destinations(trace) if a.battle_records else None, "cov": cov, "seconds": time.time() - t}
+               "jumps": clock_jumps(trace), "bwait": list(BWAIT_ACTUAL), "stale": stale_destinations(trace) if a.battle_records else None, "cov": cov, "seconds": time.time() - t}
         rec.store(got)
         replayed = False
     else:
@@ -1085,6 +1085,7 @@ def main():
         cov = dict(got["cov"]) if a.coverage else None
         replayed = True
     jumps = got["jumps"]
+    BWAIT_ACTUAL[:] = got["bwait"]          # the passes each bwait of the original waited (run_original fills it on a live run)
     t_original = got["seconds"]
     if a.battle_trace:
         (out / "original-battle.trace").write_text(chr(10).join(trace), encoding="utf-8")

@@ -35,8 +35,6 @@ wait:100
 key:altd
 wait:300
 state:difficulty
-key:down
-wait:100
 key:enter
 wait:300
 state:expert

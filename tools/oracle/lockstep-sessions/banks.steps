@@ -1,4 +1,4 @@
-# Lockstep session: load DKSAVE0, the Markt: the Fugger office (letter of credit greyed; the audience is refused for lack of charisma), the Medici office, the Hanseatic League hall (special services, fame, clerks)
+# Lockstep session: load DKSAVE0, the Markt: the Fugger office (letter of credit greyed; an audience), the Medici office, the Hanseatic League hall (a commission asked for, the guide taken along, then out); the card texts need one key more than the old 6x8 stub layout (real font metrics)
 key:t
 wait:5
 key:l
@@ -38,6 +38,8 @@ wait:2500
 state:fugger
 option:0
 wait:5
+key:enter
+wait:2500
 key:enter
 wait:2500
 key:enter
@@ -86,6 +88,16 @@ option:0
 wait:5
 key:enter
 wait:2500
+key:enter
+wait:2500
+key:enter
+wait:2500
+state:hanse1
+key:enter
+wait:2500
+state:commission
+option:0
+wait:5
 key:enter
 wait:2500
 key:enter
