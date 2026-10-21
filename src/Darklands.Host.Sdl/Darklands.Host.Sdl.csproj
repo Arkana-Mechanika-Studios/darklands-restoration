@@ -7,6 +7,7 @@
     <ProjectReference Include="..\Darklands.Audio\Darklands.Audio.csproj" />
     <ProjectReference Include="..\Darklands.Audio.Mt32\Darklands.Audio.Mt32.csproj" />
     <ProjectReference Include="..\Darklands.DevConsole\Darklands.DevConsole.csproj" />
+    <ProjectReference Include="..\Darklands.Launcher\Darklands.Launcher.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +39,14 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <!-- this version's release notes (releases/<version>/release-notes.md beside the repository, when there) next to the program,
+       for the launcher's "What's new"; without them the launcher links to the release's page -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\releases\$(Version)\release-notes.md" Link="RELEASE_NOTES.md"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
+          Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\releases\$(Version)\release-notes.md')" />
+  </ItemGroup>
 
   <!-- a release carries an empty MT32_ROMS folder beside the program, where the player puts MT-32 / CM-32L ROM files -->
   <Target Name="CreateMt32RomFolder" AfterTargets="Publish">

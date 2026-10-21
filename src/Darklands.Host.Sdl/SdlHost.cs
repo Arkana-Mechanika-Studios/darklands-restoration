@@ -459,6 +459,56 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public bool TryReadKey(out int key) => _keys.TryDequeue(out key);
 
+    /// <summary>The SDL window and renderer, for another user of the window before the game (the launcher).</summary>
+    internal IntPtr Window => _window;
+
+    internal IntPtr SdlRenderer => _renderer;
+
+    /// <summary>The system's mouse pointer (the game draws its own, so it is hidden while the game runs).</summary>
+    internal static void ShowPointer(bool on) => SdlNative.SDL_ShowCursor(on ? 1 : 0);
+
+    /// <summary>Gives the window a new size (centred) or the whole screen.</summary>
+    internal void Resize(int width, int height, bool fullscreen)
+    {
+        SdlNative.SDL_SetWindowFullscreen(_window, 0);
+        SdlNative.SDL_SetWindowSize(_window, width, height);
+        SdlNative.SDL_SetWindowPosition(_window, SdlNative.WindowCentered, SdlNative.WindowCentered);
+        if (fullscreen)
+        {
+            SdlNative.SDL_SetWindowFullscreen(_window, SdlNative.WindowFullscreenDesktop);
+        }
+        UpdateViewport();
+        Clear();
+    }
+
+    /// <summary>Both buffers black, so nothing of a previous picture (or of no picture yet) shows until the next frame.</summary>
+    internal void Clear()
+    {
+        SdlNative.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+        for (var i = 0; i < 2; i++)
+        {
+            SdlNative.SDL_RenderClear(_renderer);
+            SdlNative.SDL_RenderPresent(_renderer);
+        }
+    }
+
+    /// <summary>The usable part of the main screen before any window is open, or null.</summary>
+    internal static (int Width, int Height)? MainScreen()
+    {
+        if (SdlNative.SDL_Init(SdlNative.InitVideo | SdlNative.InitEvents) != 0)
+        {
+            return null;
+        }
+        return SdlNative.SDL_GetDisplayUsableBounds(0, out var r) == 0 ? (r.Width, r.Height) : null;
+    }
+
+    /// <summary>The usable part of the screen the window is on (without the task bar), or null.</summary>
+    internal (int Width, int Height)? UsableScreen()
+    {
+        var display = SdlNative.SDL_GetWindowDisplayIndex(_window);
+        return display >= 0 && SdlNative.SDL_GetDisplayUsableBounds(display, out var r) == 0 ? (r.Width, r.Height) : null;
+    }
+
     public void Dispose()
     {
         foreach (var (texture, _) in _hdTextures.Values)

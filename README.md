@@ -27,11 +27,14 @@ the game is included here: the program reads your installation.
 
 ## Getting started
 
-1. Get a release (`DarklandsRP.exe` with `SDL2.dll`, `libmt32emu.dll` and an empty `MT32_ROMS` folder) and unpack it into a folder of
-   its own.
-2. Start `DarklandsRP.exe`. It finds your Darklands by itself (GOG, Steam, or a folder next to it) and
-   remembers it in `darklands.settings.json`, which it creates next to itself on the first run. If it
-   can't find the game, it asks you for the folder.
+1. Get a release (`DarklandsRP.exe` with `SDL2.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md` and an empty `MT32_ROMS`
+   folder) and unpack it into a folder of its own.
+2. Start `DarklandsRP.exe`. On the first run it opens the launcher, a settings screen before the game: it has found
+   your Darklands by itself (GOG, Steam, or a folder next to it), and you can check the game folder, the window, the
+   sound card and the Roland ROM folder, and try the sound, then press **Play**. The choices go into
+   `darklands.settings.json`, next to the program. Later starts go straight to the game; hold **Shift** while starting
+   it (or start it with `--setup`) to see the launcher again. If the game can't be found or can't start, the launcher
+   comes up by itself and says why.
 3. Play. It starts like the original: the banner, the opening, then the start screen with Quickstart,
    a new world or a saved game.
 
@@ -53,9 +56,10 @@ this program's own: **F12** saves a screenshot, and **F11** opens a developer co
 
 The game's own sound drivers play, as on a 1992 PC: by default the card set up in your copy's
 `CONFIG.DRK`, usually a Roland MT-32 for music with a Sound Blaster for speech. For the MT-32 put your
-MT-32 or CM-32L ROM files in the `MT32_ROMS` folder that comes with the program. Without them the
-Sound Blaster Pro's FM music plays instead, and the program says so. `"card"` in the settings chooses
-another card: AdLib, Sound Blaster, Sound Blaster Pro 2, MT-32 or CM-32L.
+MT-32 or CM-32L ROM files in the `MT32_ROMS` folder that comes with the program, or choose their folder in the
+launcher (it shows whether the ROMs of the chosen module are there). Without them the Sound Blaster Pro's FM music
+plays instead, and the program says so. The launcher's sound card (`"card"` in the settings) chooses another card:
+AdLib, Sound Blaster, Sound Blaster Pro 2, MT-32 or CM-32L.
 
 ## Settings
 
@@ -111,12 +115,16 @@ dotnet build
 dotnet run --project src/Darklands.Host.Sdl -- "C:/GOG Games/Darklands"
 ```
 
-A release for Windows (`DarklandsRP.exe`, self-contained, with `SDL2.dll`, `libmt32emu.dll` and an empty
-`MT32_ROMS` folder beside it, in `artifacts/win-x64`; no .NET installation needed to run it):
+A release for Windows (`DarklandsRP.exe`, self-contained, with `SDL2.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md` and an
+empty `MT32_ROMS` folder beside it, in `artifacts/win-x64`; no .NET installation needed to run it):
 
 ```
 dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=win-x64
 ```
+
+The launcher shows the release notes: write `releases/<version>/release-notes.md` (beside the repository) before
+publishing, and the build puts it next to the program as `RELEASE_NOTES.md`; without it the launcher only links to the
+release's page, `releases/tag/v<version>` on GitHub, so tag each release `v<version>`.
 
 The version is set once, in `Directory.Build.props` (`DarklandsRP --version` prints it).
 

@@ -2,6 +2,7 @@ using Darklands.Platform;
 using Darklands.Audio;
 using Darklands.Content;
 using Darklands.Host.Sdl;
+using Darklands.Launcher;
 using Darklands.Presentation;
 using Darklands.Rendering;
 
@@ -9,7 +10,7 @@ using Darklands.Rendering;
 //   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console]
-//                      [--hd-pack folder]
+//                      [--hd-pack folder] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
 //                      [--version] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
 // The options come from the command line, else the environment variables, else the settings file darklands.settings.json
 // (--settings, else next to the program, else %APPDATA%\DarklandsRestoration; without one a commented template is written on the
@@ -71,6 +72,11 @@ if (writeSettings is not null)
     (written ? Console.Out : Console.Error).WriteLine(writeMessage);
     return written ? 0 : 1;
 }
+// the launcher (Darklands.Launcher, the settings screen before the game): --setup, Shift held as the program starts or the
+// settings file's startup.launcher show it, --no-launcher never; else it comes on the first run, when the game cannot be
+// found and when the game could not start
+var setup = arguments.Remove("--setup");
+var noLauncher = arguments.Remove("--no-launcher");
 var cli = new CommandLineOptions
 {
     SdlLibrary = Option("--sdl"),
@@ -91,6 +97,7 @@ var cli = new CommandLineOptions
     GameFolder = arguments.FirstOrDefault(),
 };
 var settingsPath = SettingsFile.Locate(settingsFile);
+var firstRun = settingsPath is null;
 GameSettings fileSettings = new();
 if (settingsPath is null)
 {
@@ -105,19 +112,17 @@ else
     }
     fileSettings = load.Settings;
 }
-ResolvedSettings settings;
-try
+if (Resolve(fileSettings) is not { } settings)
 {
-    settings = ResolvedSettings.Resolve(cli, Environment.GetEnvironmentVariable, fileSettings);
-}
-catch (Exception e) when (e is FormatException or ArgumentException or OverflowException)
-{
-    Console.Error.WriteLine(e.Message);
     return 1;
 }
-var window = settings.Window ?? DisplayLayout.WindowSize(null, null);
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
-if (folder is null)
+LauncherReason? launch = noLauncher ? null
+    : setup || settings.AlwaysLaunch || StartKeys.ShiftHeldBeforeWindow() ? LauncherReason.Asked
+    : folder is null ? LauncherReason.GameNotFound
+    : firstRun ? LauncherReason.FirstRun
+    : null;
+if (folder is null && launch is null)
 {
     Console.Error.WriteLine("Darklands needs the original game files (DARKLAND.EXE and its data).");
     Console.Error.WriteLine("Usage: DarklandsRP <game folder>, or set gameFolder in the settings file or DARKLANDS_DIR.");
@@ -128,57 +133,122 @@ if (folder is null)
 // local/paths.json "sdl", else the system's
 var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
 SdlNative.ConfigureLibrary(settings.SdlLibrary ?? (File.Exists(besideProgram) ? besideProgram : LocalPaths.Get("sdl", "DARKLANDS_SDL2_PATH")));
-using var host = new SdlHost("Darklands Restoration Project " + version, window.Width, window.Height, settings.Fullscreen);
-if (settings.HdPack is { } hdPack)
+var title = "Darklands Restoration Project " + version;
+var window = settings.Window ?? DisplayLayout.WindowSize(null, null);
+using var host = launch is null ? new SdlHost(title, window.Width, window.Height, settings.Fullscreen) : LauncherHost.Open(title);
+if (launch is null && !noLauncher && StartKeys.ShiftHeldInWindow())
 {
-    // replacement graphics (docs/SETTINGS.md, display.hdPack): drawn by Darklands.Rendering, the game plays the same
-    var pack = HdPack.Load(hdPack);
-    pack.Problems.ToList().ForEach(Console.Error.WriteLine);
-    _ = pack.PreloadAsync();
-    host.Renderer = new HdRenderer(pack);
+    // where the keyboard can only be read through the window (not Windows): the window becomes the launcher's
+    launch = LauncherReason.Asked;
+    LauncherHost.Fit(host);
 }
-var textFont = settings.TextFont ?? LocalPaths.Get("textfont", "DARKLANDS_TEXT_FONT");
-if (textFont is not null)
+string? startProblem = null;
+while (true)
 {
-    host.TextFont = Darklands.Platform.TextFont.Load(textFont);
+    if (launch is { } reason)
+    {
+        if (LauncherHost.Run(host, reason, startProblem, fileSettings, cli, settingsPath, version) is not { } chosen)
+        {
+            return 0;
+        }
+        fileSettings = chosen;
+        if (Resolve(fileSettings) is not { } resolved)
+        {
+            return 1;
+        }
+        settings = resolved;
+        folder = FindGameFolder(settings.GameFolder, settingsPath);
+        if (folder is null)
+        {
+            (launch, startProblem) = (LauncherReason.GameNotFound, null);
+            continue;
+        }
+        window = settings.Window ?? DisplayLayout.WindowSize(null, null);
+        host.Resize(window.Width, window.Height, settings.Fullscreen);
+    }
+    var start = new StartProgress();
+    try
+    {
+        return Play(host, settings, folder!, version, start);
+    }
+    catch (Exception e) when (!start.Running && !noLauncher)
+    {
+        // the game could not start (a damaged HD pack, a missing file ...): back to the launcher, which says why
+        Console.Error.WriteLine("Start: " + e.Message);
+        (launch, startProblem) = (LauncherReason.StartFailed, "The game could not start: " + e.Message);
+        LauncherHost.Fit(host);
+    }
 }
-var files = new GameFiles(folder);
-if (settings.ConfigDrk is { } config)
+
+ResolvedSettings? Resolve(GameSettings file)
 {
-    // the game and the sound selection then read these words as CONFIG.DRK's
-    files.OverrideConfig(config.Card, config.Port, config.Irq, config.Dma);
+    try
+    {
+        return ResolvedSettings.Resolve(cli, Environment.GetEnvironmentVariable, file);
+    }
+    catch (Exception e) when (e is FormatException or ArgumentException or OverflowException)
+    {
+        Console.Error.WriteLine(e.Message);
+        return null;
+    }
 }
-// DARKLANDS_AUDIO_TRACE=<file>: the requests the drivers carry out and the MIDI they send, as the headless host's trace: writes them
-var audioTrace = Environment.GetEnvironmentVariable("DARKLANDS_AUDIO_TRACE") is { Length: > 0 } tracePath
-    ? TextWriter.Synchronized(new StreamWriter(tracePath) { AutoFlush = true })
-    : null;
-using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.CommandLine, audioTrace);
-var game = new DarklandsGame(host, files)
+
+// The game in the window, with its sound, console and saves; returns the program's exit code.
+static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start)
 {
-    ShowStartUp = settings.ShowBanner,
-    PlayOpening = settings.PlayIntro,
-    CommandLine = settings.CommandLine,
-};
-if (audioTrace is not null)
-{
-    game.Ui.Trace = audioTrace.WriteLine;
+    host.Renderer = null;
+    if (settings.HdPack is { } hdPack)
+    {
+        // replacement graphics (docs/SETTINGS.md, display.hdPack): drawn by Darklands.Rendering, the game plays the same
+        var pack = HdPack.Load(hdPack);
+        pack.Problems.ToList().ForEach(Console.Error.WriteLine);
+        _ = pack.PreloadAsync();
+        host.Renderer = new HdRenderer(pack);
+    }
+    var textFont = settings.TextFont ?? LocalPaths.Get("textfont", "DARKLANDS_TEXT_FONT");
+    if (textFont is not null)
+    {
+        host.TextFont = Darklands.Platform.TextFont.Load(textFont);
+    }
+    var files = new GameFiles(folder);
+    if (settings.ConfigDrk is { } config)
+    {
+        // the game and the sound selection then read these words as CONFIG.DRK's
+        files.OverrideConfig(config.Card, config.Port, config.Irq, config.Dma);
+    }
+    // DARKLANDS_AUDIO_TRACE=<file>: the requests the drivers carry out and the MIDI they send, as the headless host's trace: writes them
+    var audioTrace = Environment.GetEnvironmentVariable("DARKLANDS_AUDIO_TRACE") is { Length: > 0 } tracePath
+        ? TextWriter.Synchronized(new StreamWriter(tracePath) { AutoFlush = true })
+        : null;
+    using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.CommandLine, audioTrace);
+    var game = new DarklandsGame(host, files)
+    {
+        ShowStartUp = settings.ShowBanner,
+        PlayOpening = settings.PlayIntro,
+        CommandLine = settings.CommandLine,
+    };
+    if (audioTrace is not null)
+    {
+        game.Ui.Trace = audioTrace.WriteLine;
+    }
+    using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version) : null;
+    host.Console = console;
+    using var corner = new CornerText(() => game.OnStartScreen ? "v" + version : null);
+    host.Corner = corner;
+    game.Ui.ScreenshotFolder = settings.ScreenshotsFolder ?? Environment.CurrentDirectory;
+    var saves = SaveLocation.Choose(settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
+    if (saves.FellBack)
+    {
+        Directory.CreateDirectory(saves.Folder);
+        Console.Error.WriteLine("Saves: the game folder's " + game.SaveDirectory + " cannot be written; saved games go to " + saves.Folder
+            + " (set savesFolder in the settings file, DARKLANDS_SAVES or --saves to choose another folder).");
+    }
+    game.SaveDirectory = saves.Folder;
+    start.Running = true;
+    game.Run();
+    audioTrace?.Dispose();
+    return 0;
 }
-using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version) : null;
-host.Console = console;
-using var corner = new CornerText(() => game.OnStartScreen ? "v" + version : null);
-host.Corner = corner;
-game.Ui.ScreenshotFolder = settings.ScreenshotsFolder ?? Environment.CurrentDirectory;
-var saves = SaveLocation.Choose(settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
-if (saves.FellBack)
-{
-    Directory.CreateDirectory(saves.Folder);
-    Console.Error.WriteLine("Saves: the game folder's " + game.SaveDirectory + " cannot be written; saved games go to " + saves.Folder
-        + " (set savesFolder in the settings file, DARKLANDS_SAVES or --saves to choose another folder).");
-}
-game.SaveDirectory = saves.Folder;
-game.Run();
-audioTrace?.Dispose();
-return 0;
 
 // The game's sound (chosen by Darklands.Audio.Mt32.SoundSelection, as any host does) through an SDL audio device.
 static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, string? romFolder, IReadOnlyList<string> commandLine,
@@ -220,7 +290,7 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
 /// <summary>
 /// The game folder: the one named (command line, DARKLANDS_DIR, settings file; the GOG or Steam install folder is fine, its DARKLAND
 /// subfolder is taken), else the developer's local/paths.json "game", else a search of the usual places, written into the settings
-/// file; when nothing is found (or the named folder is wrong), on Windows a message box and the folder picker.
+/// file; null when nothing is found (or the named folder is wrong): the launcher then asks for it.
 /// </summary>
 static string? FindGameFolder(string? named, string? settingsPath)
 {
@@ -244,30 +314,6 @@ static string? FindGameFolder(string? named, string? settingsPath)
             Remember(found, replace: false);
             return found;
         }
-    }
-    if (!OperatingSystem.IsWindows())
-    {
-        return null;
-    }
-    const string Caption = "Darklands Restoration Project";
-    var question = named is null
-        ? "Darklands Restoration Project needs your copy of Darklands (DARKLAND.EXE and its data), but could not find it.\n\n"
-          + "Choose its folder now? The GOG or Steam install folder is fine."
-        : $"The game folder in the settings, {named}, does not hold Darklands (DARKLAND.EXE).\n\nChoose the right folder now? "
-          + "The GOG or Steam install folder is fine.";
-    while (WindowsDialogs.Ask(Caption, question))
-    {
-        var picked = WindowsDialogs.PickFolder("Choose your Darklands folder (the one with DARKLAND.EXE, or the GOG or Steam install folder)");
-        if (picked is null)
-        {
-            break;
-        }
-        if (GameFolderSearch.GameFolderIn(picked, GameFiles.IsGameFolder) is { } chosen)
-        {
-            Remember(chosen, replace: true);
-            return chosen;
-        }
-        question = $"{picked} does not hold Darklands (DARKLAND.EXE, directly or in its DARKLAND subfolder).\n\nChoose another folder?";
     }
     return null;
 
@@ -346,6 +392,12 @@ sealed file class TracedCalls(IAudio audio, IGameTimer timer, TextWriter trace) 
         trace.WriteLine($"call current gives {ax}");
         return ax;
     }
+}
+
+/// <summary>Whether the game got as far as running (a failure before is a failed start, shown on the launcher).</summary>
+sealed file class StartProgress
+{
+    public bool Running { get; set; }
 }
 
 /// <summary>Closes the audio device, then the synthesiser it pulled from.</summary>

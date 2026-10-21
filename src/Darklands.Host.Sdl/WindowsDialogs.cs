@@ -3,32 +3,30 @@ using System.Runtime.Versioning;
 
 namespace Darklands.Host.Sdl;
 
-/// <summary>Windows' own message box and folder picker, for the start when the game cannot be found (no window exists yet).</summary>
+/// <summary>Windows' own folder picker, for the launcher's Change… (SDL2 has none; SDL3's would serve every system).</summary>
 [SupportedOSPlatform("windows")]
 internal static class WindowsDialogs
 {
-    private const uint OkCancel = 0x01;
-    private const uint IconInformation = 0x40;
-    private const uint IconWarning = 0x30;
-    private const int IdOk = 1;
-
-    /// <summary>A question with OK and Cancel; true for OK.</summary>
-    public static bool Ask(string caption, string text, bool warning = false) =>
-        MessageBoxW(IntPtr.Zero, text, caption, OkCancel | (warning ? IconWarning : IconInformation)) == IdOk;
-
-    /// <summary>The folder picker; null when the player cancels.</summary>
-    public static string? PickFolder(string title)
+    /// <summary>
+    /// The folder picker over <paramref name="owner"/> (a window handle, or zero); null when the player cancels.
+    /// <paramref name="whileOpen"/> runs over and over on this thread meanwhile: it must handle the owner's window messages,
+    /// which the dialog sends it (else both wait for each other).
+    /// </summary>
+    public static string? PickFolder(string title, IntPtr owner, Action whileOpen)
     {
         string? chosen = null;
         // the shell's dialogs want a single-threaded apartment
-        var thread = new Thread(() => chosen = PickFolderHere(title));
+        var thread = new Thread(() => chosen = PickFolderHere(title, owner));
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
-        thread.Join();
+        while (!thread.Join(15))
+        {
+            whileOpen();
+        }
         return chosen;
     }
 
-    private static string? PickFolderHere(string title)
+    private static string? PickFolderHere(string title, IntPtr owner)
     {
         var dialog = (IFileDialog)new FileOpenDialog();
         try
@@ -36,7 +34,7 @@ internal static class WindowsDialogs
             dialog.GetOptions(out var options);
             dialog.SetOptions(options | PickFolders | ForceFileSystem | PathMustExist);
             dialog.SetTitle(title);
-            if (dialog.Show(IntPtr.Zero) != 0)
+            if (dialog.Show(owner) != 0)
             {
                 return null; // cancelled (or failed)
             }
@@ -63,9 +61,6 @@ internal static class WindowsDialogs
             Marshal.ReleaseComObject(dialog);
         }
     }
-
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    private static extern int MessageBoxW(IntPtr owner, string text, string caption, uint type);
 
     private const uint PickFolders = 0x20;
     private const uint ForceFileSystem = 0x40;

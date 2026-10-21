@@ -70,9 +70,33 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 Except as contained in this notice, the names of Gnome, the Gnome Foundation, and Bitstream Inc., shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Font Software without prior written authorization from the Gnome Foundation or Bitstream Inc., respectively. For further information, contact: fonts at gnome dot org.
 ```
 
+## EB Garamond (launcher)
+
+`src/Darklands.Launcher/Resources/EBGaramond12-Regular.ttf` is EB Garamond 12 by Georg Duffner, unmodified
+(https://github.com/georgd/EB-Garamond). The launcher draws its text with it. Copyright 2010-2013 Georg A. Duffner,
+2013 Siva Kalyan; licensed under the SIL Open Font License, Version 1.1 (https://openfontlicense.org): the font may be
+used, embedded and redistributed with any software, and may not be sold by itself.
+
+## Pirata One, Grenze Gotisch, MedievalSharp and VT323 (launcher)
+
+The launcher's titles, headings, settings and folder fields are drawn with these fonts, unmodified, from the Google Fonts repository
+(https://github.com/google/fonts, folder `ofl/`), each licensed under the SIL Open Font License, Version 1.1
+(https://openfontlicense.org): they may be used, embedded and redistributed with any software, and may not be sold by
+themselves.
+
+* `src/Darklands.Launcher/Resources/PirataOne-Regular.ttf`: Pirata One. Copyright (c) 2012, Rodrigo Fuenzalida,
+  Nicolas Massi (www.taip.com.ar / abc.taip.com.ar), with Reserved Font Name 'Pirata'.
+* `src/Darklands.Launcher/Resources/GrenzeGotisch-Regular.ttf`: Grenze Gotisch (the variable font
+  `GrenzeGotisch[wght].ttf`, renamed). Copyright 2020 The Grenze Gotisch Project Authors
+  (https://github.com/Omnibus-Type/Grenze-Gotisch).
+* `src/Darklands.Launcher/Resources/MedievalSharp-Regular.ttf`: MedievalSharp (`MedievalSharp.ttf`, renamed).
+  Copyright (c) 2011, wmk69 (wmk69@o2.pl), with Reserved Font Name MedievalSharp.
+* `src/Darklands.Launcher/Resources/VT323-Regular.ttf`: VT323, for the folder fields. Copyright 2011, The VT323 Project
+  Authors (peter.hull@oikoi.com).
+
 ## StbTrueTypeSharp
 
-The developer console rasterises its font with StbTrueTypeSharp (https://github.com/rds1983/StbSharp,
+The developer console and the launcher rasterise their fonts with StbTrueTypeSharp (https://github.com/rds1983/StbSharp,
 NuGet package), a C# port of Sean Barrett's stb_truetype, which is in the public domain (or under the
 MIT licence, at the user's choice). No source of it is included in this repository.
 
