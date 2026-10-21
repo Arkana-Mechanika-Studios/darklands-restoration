@@ -86,6 +86,8 @@ IDLE_MS = 3000                      # and as long without a random number drawn,
 IDLE_POLLS = 2000
 BATTLE_PASS_LIN = 0x0E76 * 16 + 0x3166   # R014+0x3166 combat_input, called once a pass of the battle's loop
 CLEAR_TIMERS_VEC = (0x09C0, 0x1C61)  # R014+0x010B's vector to R020+0x06B6 (combat_state_clear: the combat clock back to 0)
+STOCK_LOOP = (0x1462, 0x0A4C, 0x0AE2)   # R032+0x0A4C..0x0AE2: draw_barter_screen's stock listing (the loop that calls shop_has_item for every item)
+STOCK_LOOP_STACK = 0x400             # the dead stack below the loop's SP that a timer interrupt there leaves as it found it
 ENEMY_TURN_VEC = (0x09C0, 0x1C43)    # R014+0x0280's vector to R018+0x0706 (the enemies' turn), after the set-up's file loads
 WALL_DRAWS = ((0x8381, 0x838B), (0x8438, 0x8442), (0x84AE, 0x84BE))   # R014+0x827A: push 2; call random_n; (after)
 NEXT_TICK = 0xD9E4                 # the clock value of the battle's next combat tick (set at R014+0x0311)
@@ -172,6 +174,15 @@ class Session(Machine):
         self.hook(*CLEAR_TIMERS_VEC, lambda m: setattr(m, "_setting_up", [None]) if 14 in m.resident else None)
         self.hook(*ENEMY_TURN_VEC, self._enemy_turn)
         self._hook_address(BATTLE_PASS_LIN)
+        # The stock listing reads an uninitialised stack word of shop_has_item ([bp-2], R032+0x1D18, the draw_barter_screen frame's dead
+        # stack) that a timer interrupt taken inside this loop overwrites with its own frame and pushes (university-shop.steps: a tick
+        # wrote 0 there, so the first item was tested with the city-size row instead of row 1 and the stock differed: the first
+        # P bought nothing). On a real PC that is the chance of the tick's phase, not behaviour the C# can follow, so an interrupt taken
+        # inside the loop leaves the dead stack below its SP as it found it (stock_irq_restore) and the word keeps what the listing left.
+        self.in_stock_loop = False
+        self._restore_stack = None
+        self.hook(STOCK_LOOP[0], STOCK_LOOP[1], lambda m: setattr(m, "in_stock_loop", True), record="R032")
+        self.hook(STOCK_LOOP[0], STOCK_LOOP[2], lambda m: setattr(m, "in_stock_loop", False), record="R032")
         self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._button_read, begin=DS * 16 + MOUSE_BUTTONS, end=DS * 16 + MOUSE_BUTTONS + 1)
         # the BIOS keyboard flags (0040:0017: Shift, Ctrl, Alt held; R031+0x10AE tests them: give one against give the stack) lie at linear
         # 0x417, inside the root image's code here: a read gives 0 (no modifier held), the code byte is put back at the next block
@@ -449,6 +460,8 @@ class Session(Machine):
             ip = (address - cs * 16) & 0xFFFF
             sp = (self.reg("SP") - 6) & 0xFFFF
             ss = self.reg("SS")
+            if self.in_stock_loop:
+                self._restore_stack = (address, ss, self.reg("SP"), self.read(ss, (self.reg("SP") - STOCK_LOOP_STACK) & 0xFFFF, STOCK_LOOP_STACK))
             self.write(ss, sp, struct.pack("<HHH", ip, cs, self.uc.reg_read(REG["EFLAGS"]) & 0xFFFF))
             self.set_reg("SP", sp)
             seg, off = self.ivt[8]
@@ -456,6 +469,11 @@ class Session(Machine):
             self.uc.reg_write(REG["CS"], seg)
             self.uc.reg_write(REG["IP"], off)
             return
+        if self._restore_stack is not None and address == self._restore_stack[0] and self.reg("SP") == self._restore_stack[2]:
+            # the interrupt taken in the stock loop has returned: its frame and pushes below SP are put back as they were
+            _, ss, sp, dead = self._restore_stack
+            self._restore_stack = None
+            self.write(ss, (sp - STOCK_LOOP_STACK) & 0xFFFF, dead)
         if self.held and self.button_read and self.ms >= self.press_ms + CLICK_MS:
             self._release()
         if self.count > self.progress:
@@ -764,7 +782,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     return states, run.stdout + run.stderr
 
 
-def compare(steps, original: dict, rewrite: dict) -> list[dict]:
+def compare(steps, original: dict, rewrite: dict, fresh: bool = False) -> list[dict]:
     """Per state step in the script's order: the differences (savdiff sections, the random state, the card)."""
     import savdiff
     rows = []
@@ -784,6 +802,16 @@ def compare(steps, original: dict, rewrite: dict) -> list[dict]:
                 head = {k: v for k, v in head.items() if k not in ("20", "21")}
                 if head:
                     d["head"]["0"] = head
+                else:
+                    del d["head"]
+            # +0x64 (party_seed): a game begun from the start screen (no saved game) takes it from the BIOS timer word at 0040:006C
+            # (R037+0x9DB2, keys C and Q), a read of the original's time that the C# host (whose clock is the srand seeds) cannot repeat:
+            # it is reported apart ("party seed"), not as a difference
+            if fresh and "0" in d.get("head", {}) and ("0" in d["head"]["0"] or "1" in d["head"]["0"]):
+                row["party seed"] = {k: v for k, v in d["head"]["0"].items() if k in ("0", "1")}
+                rest = {k: v for k, v in d["head"]["0"].items() if k not in ("0", "1")}
+                if rest:
+                    d["head"]["0"] = rest
                 else:
                     del d["head"]
             if d:
@@ -830,7 +858,7 @@ def main():
         (out / "rewrite-battle.trace").write_text(chr(10).join(l for l in output.splitlines() if l.startswith("pass ")), encoding="utf-8")
     t_rewrite = time.time() - t
     (out / "rewrite.log").write_text(output, encoding="utf-8")
-    rows = compare(steps, original, rewrite)
+    rows = compare(steps, original, rewrite, save is None)
     # the saved games each game wrote itself (Alt-S): the same names, the same bytes by savdiff section
     import savdiff
     for name, data in sorted(files.items()):
@@ -849,7 +877,7 @@ def main():
                 row["texts"] = {"original": data[:0x64].hex(), "rewrite": theirs.read_bytes()[:0x64].hex()}
         rows.append(row)
     if cov is not None:
-        if all(set(r) <= {"state", "file", "text state", "texts"} for r in rows):
+        if all(set(r) <= {"state", "file", "text state", "texts", "party seed"} for r in rows):
             (out / "cov").mkdir(exist_ok=True)
             (out / "cov" / "cov-0.jsonl").write_text(json.dumps({"unit": Path(a.script).stem, **cov}, separators=(",", ":")) + "\n", encoding="utf-8")
         else:
@@ -857,9 +885,9 @@ def main():
     report = {"script": a.script, "save": a.save, "clock seeds": seeds, "battle set-up ticks": set_up, "original end": end,
               "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)}, "states": rows}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
-    first = next((r for r in rows if set(r) - {"state", "file", "text state", "texts"}), None)
+    first = next((r for r in rows if set(r) - {"state", "file", "text state", "texts", "party seed"}), None)
     for r in rows:
-        print("%-12s %s" % (r.get("state") or r["file"], "same" if set(r) <= {"state", "file", "text state", "texts"} else json.dumps(
+        print("%-12s %s" % (r.get("state") or r["file"], "same" if set(r) <= {"state", "file", "text state", "texts", "party seed"} else json.dumps(
             {k: v for k, v in r.items() if k not in ("state", "file")})[:300]))
     print("original: %s (%d s); rewrite %d s; first divergence: %s" % (end, t_original, t_rewrite,
                                                                        (first.get("state") or first["file"]) if first else "none"))

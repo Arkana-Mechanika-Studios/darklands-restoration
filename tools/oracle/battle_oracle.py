@@ -74,6 +74,20 @@ FIGHTS = {
     "fort5e": (0, 0x5E, 4545, 37, 2, 4, 1, 2, 4, -1, 0, 0),     # templar fortress: templars, sergeants
     "tombs5f": (0, 0x5F, 5656, 47, 2, 5, 52, 2, 2, -1, 0, 0),   # tombs: skeletons, undead
     "cave60": (0, 0x60, 6767, 69, 2, 1, -1, 0, 0, -1, 0, 0),    # dragon cave: the cave dragon
+    # fights2: casters (enemy types with the spell flag, enemy file type +0x16 bit 0x80), potion carriers (template +0x32), new battlefields
+    "f2alch16": (0, 0x16, 1101, 24, 2, 3, 3, 2, 2, -1, 0, 0),    # city: alchemists (casters, potions), guards
+    "f2witch2f": (0, 0x2F, 1202, 39, 2, 2, 42, 2, 3, -1, 0, 0),  # wilderness: witches, wolves (a caster tests its lines of sight from the previous member, R018+0x093C)
+    "f2hwitch41": (0, 0x41, 1303, 28, 3, 1, 39, 2, 2, 60, 2, 1), # wilderness: high witch, witches, wild hunter
+    "f2friar19": (0, 0x19, 1404, 32, 2, 3, 30, 2, 2, 31, 2, 2),  # city: friars, evil monks, bad friars (casters, potions)
+    "f2kking0c": (0, 0x0C, 1505, 25, 3, 1, 48, 2, 4, 51, 2, 1),  # mine: kobold king (caster, potions), kobolds, overseer (potions)
+    "f2vulcan0e": (0, 0x0E, 1606, 49, 2, 2, 44, 2, 3, -1, 0, 0), # mine: vulcans, dwarves (casters)
+    "f2demon61": (0, 0x61, 1707, 55, 3, 1, 53, 2, 3, 54, 2, 2),  # demon lord (caster), demons, demon knights
+    "f2precept05": (0, 0x05, 1808, 71, 3, 2, 40, 2, 3, 81, 2, 2), # castle: preceptors, templars, acolytes (casters)
+    "f2leader14": (0, 0x14, 1909, 77, 3, 1, 65, 3, 1, 29, 2, 2),  # city: leaders (casters), monks
+    "f2magic58": (0, 0x58, 2010, 24, 2, 2, 39, 2, 2, 40, 2, 2),  # mixed casters: alchemists, witches, templars
+    "f2hell62": (0, 0x62, 2111, 56, 2, 4, 61, 2, 3, 64, 3, 1),   # hell locusts, hellhounds, Baphomet
+    # keep (two levels, 0x2C/0x2D): the party starts at (0, 0) of level 0 (R010 keep build leaves it unset), where cell reads go off the level
+    "f2archwitch2c": (0, 0x2C, 2212, 2, 2, 3, 39, 2, 2, 34, 2, 2),  # archers, witches, gallants
 }
 
 # the record bytes CombatantRecords.Write fills, by name

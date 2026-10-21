@@ -1,4 +1,4 @@
-# Lockstep session: sheet.steps with give (2) and drop (D) in the pack, and the saints box at the end: three differences from the original (given, dropped, saints)
+# Lockstep session: sheet.steps with give (2) and drop (D) in the pack, and the camp screen at the end (the Gasthaus menu's line 2 chosen with option:2: the pointer at rest picks a line by the line layout, which the tester's fixed font metrics change; its sheets by F3 and F4)
 key:t
 wait:5
 key:l
@@ -70,7 +70,7 @@ wait:30
 key:enter
 wait:30
 state:formulae
-key:down
+option:2
 wait:30
 key:enter
 wait:30
