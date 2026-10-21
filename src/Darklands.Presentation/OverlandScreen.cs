@@ -508,7 +508,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 
     /// <summary>The palette of the canvas as 6-bit bytes: colour n is bytes 3n (red), 3n + 1, 3n + 2.</summary>
     // C: the game keeps the VGA DAC values (6 bits); the canvas holds 8-bit colours made from them as (v << 2) | (v >> 4), which v = c >> 2 undoes exactly.
-    private sealed class CanvasPaletteBytes(Canvas canvas) : SeasonPalette.IPaletteBytes
+    public sealed class CanvasPaletteBytes(Canvas canvas) : SeasonPalette.IPaletteBytes
     {
         public int this[int offset]
         {
@@ -526,7 +526,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             }
         }
 
-        private static int ShiftOf(int offset) => offset % 3 switch { 0 => 16, 1 => 8, _ => 0 };
+        private static int ShiftOf(int offset) => (offset % 3) switch { 0 => 16, 1 => 8, _ => 0 };
     }
 
     // orig: R030+0x2BB0 (1462:2BB0) draft (bytes match): waits for the left button to be released, reads record `message` (400 bytes) of darkland.msg, saves the area (100, 50, 180x115), fills it with colour 7 under a dark frame (colour 8), draws the text in colour 0 at (105, 55) in a column 170 wide, and waits for a key or either mouse button
