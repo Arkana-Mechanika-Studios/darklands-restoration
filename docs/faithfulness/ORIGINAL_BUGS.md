@@ -14,11 +14,11 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | rules | 81 | 17 | 64 |
 | cards | 51 | 2 | 49 |
 | events | 7 | 4 | 3 |
-| battles | 15 | 3 | 12 |
+| battles | 16 | 3 | 13 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 156 | 27 | 129 |
+| total | 157 | 27 | 130 |
 
-## Core logic (154)
+## Core logic (155)
 
 ### rules (81)
 
@@ -446,7 +446,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
 
-### battles (15)
+### battles (16)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -490,6 +490,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:897` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: a missed box reloads the line from the saved words, which are the stack residue until a box was hit: the clouds after it are tested against that line (3, 17405)-(state words), not a → t. Kept.
+- **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:351` `TacticalBattle.Cast`  
+  original: `R018+0x0706` (1F43:0256, draft)  
+  why: the loop sets only the line's end (DS:E0A9/E0A7, R018+0x09D5/0x09DC) and relies on its start (DS:E0A5/E0A3, set to the caster at R018+0x0851); the area test it calls for the enemies (R014+0x469E, 0E76:469E) writes the start itself, from its first instruction on (0E76:46E5/46EC: the centre = the member), so after a member's count the next member's line starts at the previous member, not at the caster. Kept (found by f2witch2f: a member behind a wall counted as seen, the target chosen differed).
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:37` `TacticalBattle.WriteBattleFile`  
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.

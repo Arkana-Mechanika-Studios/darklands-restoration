@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 46 entries; recommendations: document: 1, justify: 39, keep: 6.
-- Part B (undefined-memory in core logic): 119 entries; determinism: n/a: 79, no: 27, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 118 entries; determinism: n/a: 78, no: 27, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -761,7 +761,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original keeps a window of the map (50 rows by 19 columns) in G and refills it as the view scrolls; this class answers for any cell of the whole decoded map, so the rows are never evicted. A cell outside the map reads 0 here (in the original, whatever the buffer held).  
   deterministic: **partly** (checked against the original); action: **keep** - The original G is R136+0xFCCC[50][19] (index imul 13h + col, asm 159A2), refilled by R030+0x20D2 from the run-length rows (0xD2 bytes per map row) as the view scrolls, with the place-icon list overlaid. Inside the window the content equals this whole-map answer; a column outside it wraps into the neighbouring row and a row outside it shows whatever an earlier refill left, i.e. history dependent. Keep the whole-map semantics unless a read at the map border outside the window is shown to matter (not verified).
 
-### battles (29)
+### battles (28)
 
 - **D-89585b** `undefined-memory` - `src/Darklands.Core/Battles/Attacks.cs:189` `Attacks.MissileChance`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -815,10 +815,6 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R008+0x2ADC` (1432:2ADC, draft)  
   divergence: the original writes into the next group slot even when it is the last (into the next level's groups); the C# list grows.  
   deterministic: **n/a** (checked against the original); action: **document** - Wilderness 2ADC has a single call site (the loop i<5 over DS:DF8F[], so at most 5 groups) writing bf_groups[group_count++] of level 0 (a scalar group_count), so the 11th slot is never reached; the C# wilderness run gave at most 4 groups.
-- **D-0567a6** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:90` `BattleMap.Collides`  
-  original: `R014+0x5ECA` (1462:000A, draft)  
-  divergence: the original reads the 3 × 3 cells without a bounds check (edge cells read neighbouring memory); outside the level is void here.  
-  deterministic: **n/a** (checked against the original); action: **document** - cbt_collisions reads c[i-41..i+41] with i=cx*40+cy before testing the centre cell, but returns -1 for a void centre first, and the 3x3 ring only matters if the centre is inside. I checked all 143 IMAPS maps and the levels generated for every battlefield type (150 random seeds each): none has a non-void cell in row/column 0 or 39, so any combatant with a usable centre cell has all eight neighbours inside the 40x40 grid and the unchecked reads never leave the image.
 - **D-d6a5dc** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:256` `BattleMap.LineBlocked`  
   original: `R014+0xEF3C` (1D69:000C, draft)  
   divergence: with a two-argument call the original's mode is stack garbage; callers here pass 0.  
@@ -847,7 +843,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0x9E92` (14F7:3682, draft)  
   divergence: a size above 4 (the trap kinds 10..15 have sizes 6 and 9: the low nibble) writes past the 16-puff arrays on the original's stack; the random numbers are drawn, the extra puffs are not kept.  
   deterministic: **no** (checked against the original); action: **keep** - effect_layout with a size above 4 writes past its 16-puff locals on the stack (return address and saved registers of its caller); the outcome depends on the stack frame (a crash or corrupted locals), not a state that can be modelled. The random numbers are drawn as in the original.
-- **D-c3845f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:400` `TacticalBattle.Cast`  
+- **D-c3845f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:409` `TacticalBattle.Cast`  
   original: `R018+0x0706` (1F43:0256, draft)  
   divergence: the original's n would be whatever the stack held (spec D §9.5).  
   deterministic: **no** (checked against the original); action: **keep** - n_m is the local at [bp-6Eh] of enemy_turn (enter 7Ah); it is assigned only in the loop that finds a candidate with a different count and is read at random_n(n_m). When all five sorted candidates have equal counts (all visible and equally threatened) it holds whatever the stack contained at that depth, overwritten arbitrarily by the many calls the main loop makes between ticks; not reproducible, keep the C# stand-in.
