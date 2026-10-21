@@ -230,6 +230,10 @@ public sealed class CardMenu
     /// <summary>Runs at the start of every round, before the lines are offered; when it moves the card on, nothing is offered.</summary>
     public Action? EachRound { get; set; }
 
+    /// <summary>Run each round between the text block and its lines being shown and the choice (the card script's calls between card_options and card_menu).</summary>
+    // orig: e.g. R061+0x2278 `card_options(1); advance_hours(1);`
+    public Action? AfterOptions { get; set; }
+
     /// <summary>Runs once the player has chosen, before the choice is rated.</summary>
     public Action? OnChoice { get; set; }
 
@@ -258,7 +262,7 @@ public sealed class CardMenu
                 _c.OptionHandlers[k] = lines[k].AskHint;
             }
             var choice = DrawsOptions
-                ? _c.Screen.Choose(Block, states, Handler, k => PopupHint(Line(k)))
+                ? _c.Screen.Choose(Block, states, Handler, k => PopupHint(Line(k)), AfterOptions)
                 : _c.Screen.ChooseOnLastLayout(states, Handler, k => PopupHint(Line(k)));
             OnChoice?.Invoke();
             var line = Line(choice);

@@ -70,19 +70,21 @@ public sealed class HanseaticLeague : Card
             c.State.HanseStanding++;
         }
 
+        var waits = false;
         menu.EachRound = () =>
         {
             // C: DS:9082 is the party's fame; the test is made at the top of every round and the hour passes after
-            // card_options(1) (text block 1) was chosen.
-            if (c.State.Party.Fame / 10 + c.State.HanseStanding + standing <= 20)
+            // card_options(1) (text block 1) was shown and continued, before card_menu (AfterOptions).
+            // orig: R061+0x2278 (1A5F:0008): `if (fame / 10 + favour + cur_rep <= 20) { card_options(1); advance_hours(1); } else card_options(0);`
+            // A long wait before a snotty clerk sees the party.
+            waits = c.State.Party.Fame / 10 + c.State.HanseStanding + standing <= 20;
+            menu.Block = waits ? 1 : 0;
+        };
+        menu.AfterOptions = () =>
+        {
+            if (waits)
             {
-                // A long wait before a snotty clerk sees the party.
-                menu.Block = 1;
                 c.PassHours(1);
-            }
-            else
-            {
-                menu.Block = 0;
             }
         };
         var charm = () => new OptionHint(Math.Clamp((c.Attribute(c.Leader, (int)Attribute.Charisma) << 1) + c.State.HanseStanding + standing, 0, 99), "", c.Leader);

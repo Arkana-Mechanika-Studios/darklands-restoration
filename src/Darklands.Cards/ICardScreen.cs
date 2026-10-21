@@ -78,6 +78,18 @@ public interface ICardScreen
         Choose(block, options, hint);
 
     /// <summary>
+    /// <see cref="Choose(int, IReadOnlyList{OptionState}, Func{int, OptionHint}?, Func{int, OptionHint}?)"/> with a step the card
+    /// takes between card_options (the text drawn, waited out and the lines faded in) and card_menu (the choice).
+    /// </summary>
+    // orig: R061+0x2278 (1A5F:0008) `card_options(1); advance_hours(1);` before `card_menu(...)`: the hour passes after the text block was shown and continued, not before it
+    // C: a screen that does not separate the two (the scripted test screens) takes the step first.
+    int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Action? afterOptions)
+    {
+        afterOptions?.Invoke();
+        return Choose(block, options, hint, popupHint);
+    }
+
+    /// <summary>
     /// Runs the menu without drawing a text: on the option lines of the last text the screen laid out
     /// (any card's, a result text's too), each choosable when its line's state here is enabled. For a
     /// card whose loop calls card_menu without card_options.

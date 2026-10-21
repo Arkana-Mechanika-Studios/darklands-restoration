@@ -114,7 +114,11 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     /// <summary>The option lines of the last text laid out (DS:E96E), kept for a menu that draws none.</summary>
     private List<OptionArea> _lastAreas = [];
 
-    public int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint)
+    public int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint) =>
+        Choose(block, options, hint, popupHint, null);
+
+    // orig: card_options (draw, wait_continue, fade), then whatever the card script calls (R061+0x2278: advance_hours(1)), then card_menu
+    public int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Action? afterOptions)
     {
         ui.FlushKeys();
         PrepareWindow(TextFrame.OnPicture);
@@ -125,6 +129,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         WaitToContinue();
         GreyThePicture(areas, animate: true);
         _mode = Mode.OptionsFaded;
+        afterOptions?.Invoke();
         ui.FlushKeys();
         return Select(areas, hint, popupHint);
     }
