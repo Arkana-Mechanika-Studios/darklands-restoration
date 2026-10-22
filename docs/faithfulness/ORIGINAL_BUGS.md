@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 81 | 17 | 64 |
+| rules | 82 | 18 | 64 |
 | cards | 51 | 2 | 49 |
 | events | 7 | 4 | 3 |
 | battles | 16 | 3 | 13 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 157 | 27 | 130 |
+| total | 158 | 28 | 130 |
 
-## Core logic (155)
+## Core logic (156)
 
-### rules (81)
+### rules (82)
 
-- **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:282` `CharacterCreation.Back`  
+- **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:288` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
   why: Esc from the childhood attributes goes back to the background list at age 15; a background row then serves the adult occupation of that number (Recruit..Knight), as in the original.
 - **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:160` `GameState.HanseStanding`  
@@ -31,9 +31,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-9224b7** `bug`, no fix flag - `src/Darklands.Core/Rules/Brewing.cs:149` `BrewingBench.TakeFromParty`  
   original: `R033+0x1630` (1462:1630, draft)  
   why: the stack that slides into slot j is skipped (j still goes up), and whatever is still owed when the loop ends is forgotten: a batch whose ingredient is spread over several stacks costs only part of it.
-- **B-9d2829** `bug`, flag `FixUnbrewEmptyIngredientSlots` - `src/Darklands.Core/Rules/Brewing.cs:262` `Brewing.CallOff`  
+- **B-9d2829** `bug`, flag `FixCallOffScansEveryEvent`, `FixUnbrewEmptyIngredientSlots` - `src/Darklands.Core/Rules/Brewing.cs:262` `Brewing.CallOff`  
   original: `R036+0x1EC2` (1462:1EC2, draft)  
   why: all five ingredient slots are returned (FixUnbrewEmptyIngredientSlots).
+- **B-9d82a1** `bug`, flag `FixCallOffScansEveryEvent`, `FixUnbrewEmptyIngredientSlots` - `src/Darklands.Core/Rules/Brewing.cs:263` `Brewing.CallOff`  
+  original: `R036+0x1EC2` (1462:1EC2, draft)  
+  why: the scan for the member's brews starts at the slot numbered as many as there are formulas (1462:1F71 `mov di, [bp - 8]`: the formula count the table loop of 1462:1F4A..1F6F added up is the scan's first slot), so a brew in a lower slot (every one in a game with fewer events than formulas) is never found: the brew goes on and its ingredients stay used (FixCallOffScansEveryEvent).
 - **B-459e15** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:114` `CampStay.TeacherList`  
   original: `R036+0x1D24` (1462:1D24, draft), `R036+0x0082` (1462:0082, draft), `R036+0x147A` (1462:147A, draft)  
   why: j counts every teacher event met, so rows are numbered by log position and the scan stops after "count here" events of any town.
@@ -298,8 +301,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-86c8e5** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:217` `FortressByDay.SeekService`  
   original: `R050+0x2298` (1A06:05B8, matched)  
   why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
-- **B-a73a8e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/Docks.cs:152` `Docks.PassageHint`  
-  original: `R051+0x2E16` (19F2:1276, matched), `R051+0x2DF8` (19F2:1258, matched)  
+- **B-a73a8e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/Docks.cs:153` `Docks.PassageHint`  
+  original: `R051+0x2332` (19F2:0792, matched), `R051+0x2546` (19F2:09A6, matched), `R051+0x275A` (19F2:0BBA, matched) +2 more  
   why: the hint shows R136+0x8690+0x1E5F ("You need a missile weapon") where "Not enough money" was surely meant.
 - **B-e95c32** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/InnByDay.cs:178` `InnByDay.VisitTheStables`  
   original: `R051+0x0EE0` (18C9:05D0, matched)  
@@ -358,8 +361,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-ce730c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S068/ClimbingTheWallPastTheGuards.cs:45` `ClimbingTheWallPastTheGuards.Run`  
   original: `R068+0x2422` (19F9:0812, matched), `R068+0x2424` (19F9:0814, matched)  
   why: the rope line is greyed unless the last member carries a rope, whoever else has one.
-- **B-fa0f93** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:73` `AffairsElsewhere.Run`  
-  original: `R071+0x1BC4` (1992:0624, matched)  
+- **B-fa0f93** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:75` `AffairsElsewhere.Run`  
+  original: `R071+0x15A4` (1992:0004, matched)  
   why: outside a city the news test misses a negation: unlike the branch above, this one tests the mine quest without it, so the "nothing of interest" text appears here only while the mine quest runs (and not the robber knight's).
 - **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:93` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
   original: `R071+0x02A8` (1838:02A8, matched)  
@@ -388,8 +391,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-418c61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:93` `CityLordsReward.LearnTheFormula`  
   original: `R089+0x0C08` (18CE:02A8, matched)  
   why: see the summary; the formula table's byte is set to 7 (bits 0-2: the group's three formulas).
-- **B-65bf20** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelMarch.cs:50` `RebelMarch.Run`  
-  original: `R090+0x1366` (18E0:08E6, matched)  
+- **B-65bf20** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelMarch.cs:51` `RebelMarch.Run`  
+  original: `R090+0x0A82` (18E0:0002, matched)  
   why: the bribe line's flag is set from saints_usable() (meant for line 2, the prayer, which stays enabled); it also overrides the 0 set just above for the far squads.
 - **B-45b1b4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelsBeforeTheFortress.cs:54` `RebelsBeforeTheFortress.Run`  
   original: `R090+0x161E` (1999:000E, matched)  

@@ -518,7 +518,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R029+0x1260` (0E76:1260, draft)  
   divergence: who >= 5 returns whatever AX holds in the original; here that slot is empty (false).  
   deterministic: **n/a** (checked against the original); action: **document** - member_bit's who>=5 path jumps to the epilogue with AX still = 0x80>>(bit&7) (computed at entry), i.e. non-zero = 'true', not arbitrary; but all callers (R043 seg 150B loop members, R060/s086/s089 with -2) pass -2 or 0..4, so who>=5 does not occur. If ever wanted: return true.
-- **D-f3db18** `undefined-memory` - `src/Darklands.Core/Rules/Saints.cs:90` `Saints.ChanceLow`  
+- **D-f3db18** `undefined-memory` - `src/Darklands.Core/Rules/Saints.cs:92` `Saints.ChanceLow`  
   original: `R029+0x20C6` (0E76:20C6, draft)  
   divergence: the original indexes the records with who as given (−1 reads before the party); callers resolve it.  
   deterministic: **n/a** (checked against the original); action: **document** - saint_chance_lo (20c6) is called with menu_member (DS:EE6C) = (table byte)/4, i.e. 0..4, from the ~120 saint cards (R044..R135), never -1; saint_screen/saint_finish pass the praying member ch. party[-1] would be the unrelated DS:9BE9.. area. Keep callers resolving.
@@ -609,8 +609,8 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R060+0x0FF4` (18CF:0684, matched)  
   divergence: the original returns the uninitialised r.a (a stack leftover) as the chance when not everybody rides; here the effective Agility that party_min_eff_attr2() returns is used.  
   deterministic: **partly** (checked against the original); action: **keep** - Asm 18CF:0684: the not-all-mounted branch calls party_min_eff_attr2 and returns AX=[bp-4], never stored (enter 4,0). This is a real gameplay value: the main loop passes l_8.a to the action (R060 18CF:055C), which rolls rand_mod(100) <= p_6, so for a party on foot the outrun chance is that stack word. It is the slot S-10 below the caller's SP, last written during the preceding card_menu call (its saved BP = the card main's BP, a DGROUP stack address >= 0x8000, i.e. a NEGATIVE chance => always fails, hint shows garbage) unless the mouse_hide chain (root 12C3 -> overlay thunk 052E) overwrites it; the exact word needs a trace of the whole call chain from the startup code, so it is deterministic but unconfirmed. Do not change the C# without such a trace; high impact (walking parties).
-- **D-e12eea** `undefined-memory` - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:103` `AffairsElsewhere.NearestCityTo`  
-  original: `R071+0x1BC4` (1992:0624, matched)  
+- **D-e12eea** `undefined-memory` - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:105` `AffairsElsewhere.NearestCityTo`  
+  original: `R071+0x15A4` (1992:0004, matched)  
   divergence: a location number outside the table reads garbage in the original; here it is position 0, 0.  
   deterministic: **no** (checked against the original); action: **keep** - The cited 0624 is the init helper; the read is nearest_city(*(long far*)(locations[var_loc]+4)) in the card main with var_loc = event_find_loc(0x1C,...,0xC,..), which is -1 only if the kind-8 quest 0xC exists without its kind-0x1C fact; then locations[-1] is normally null and (x,y) are the INT 1 vector offset/segment words from the IVT, so the 'nearest city' depends on the machine. The cur_loc branch is guarded by cur_loc != -1 and the wilderness branch uses party_x/y. Normal play creates both events together; keep (0,0).
 - **D-bfb840** `undefined-memory` - `src/Darklands.Cards/Scripts/S073/FactionLeadersRecruitment.cs:79` `FactionLeadersRecruitment.Run`  

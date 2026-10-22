@@ -34,7 +34,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-ff8cd2** `uncertain` - `src/Darklands.Core/Characters/Character.cs:125` `Character.CharmStrength`  
   original: `R136+0x33FC` (20A5:33FC, data)  
   why: named after the potion and saint that set it; no reader of it is known.
-- **U-c43d50** `uncertain` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:637` `CharacterCreation.SpentWord`  
+- **U-c43d50** `uncertain` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:643` `CharacterCreation.SpentWord`  
   original: `R037+0x4BEE` (18C8:058E, draft)  
   why: a picture handle is the DOS segment pic_load returned, taken as at least 0x28 (so '+' stops there) and kept as a counter here.
 - **U-8dd8f5** `uncertain` - `src/Darklands.Core/Characters/Creation/CreationRoster.cs:95` `CreationRoster.AddToParty`  
@@ -870,7 +870,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1568` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1585` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:52` `BuySellPage.DrawParty`  
