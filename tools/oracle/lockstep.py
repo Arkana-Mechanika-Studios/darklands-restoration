@@ -208,7 +208,18 @@ class Session(Machine):
         # the BIOS keyboard flags (0040:0017: Shift, Ctrl, Alt held; R031+0x10AE tests them: give one against give the stack) lie at linear
         # 0x417, inside the root image's code here: a read gives 0 (no modifier held), the code byte is put back at the next block
         self._flags_code = None
+        self.shift = 0                  # shift:on gives R031's flags test the two Shift bits (0040:0017 & 3), shift:off none
         self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._flags_read, begin=KEYBOARD_FLAGS, end=KEYBOARD_FLAGS)
+        # the game's own writes to the vector table (the keyboard handler's install and removal, root 044A:0x1EC and root 044A:0x214: INT 9 at 0000:0024)
+        # land on root code, which sits at linear 0 here: they are undone at the next block (the table itself is kept apart, see above; the
+        # game's handlers are never run, the keys come from the script). Without it the menu bar's handler (root 0000:0000+0x24) ran the
+        # vector's bytes as code from the first map screen on and added to DS:50AE, the file name "charactr.tmp" of the battle's start
+        # not the first four bytes (INT 0): the C runtime's divide routine (root 047C:0B94) installs its divide-error handler there (047C:0D41) and the divide that follows needs it
+        self._vector_writes: list = []
+        # opt-in ("rootguard:on", the first line of a script): the restore splits the translated block, which moves the original's clock and so
+        # the random numbers of every session recorded without it (university: its teacher); battle_oracle.py leaves it off
+        self.vector_guard = False
+        self.uc.hook_add(unicorn.UC_HOOK_MEM_WRITE, self._vector_write, begin=4, end=0x3FF)
         self._buffered = False
         self.idle_mark = None
         self.idle_since = 0
@@ -254,12 +265,13 @@ class Session(Machine):
         self.idle_since = self.ms
 
     def _flags_read(self, uc, access, address, size, value, data):
-        # only R031's test (R031+0x10AE) gets the zero: the card engine's Shift test (R043+0x21D4, 150B:1BB8/1BBE, polled ~3900 times in the
+        # only R031's test (R031+0x10AE) and the battle's arrow keys' (R016+0x0294, an arrow key moves the member unless Shift is held, else it
+        # scrolls the view) get the zero: the card engine's Shift test (R043+0x21D4, 150B:1BB8/1BBE, polled ~3900 times in the
         # Alt-L reload) and the start-up read (044A:01A2) must see the code byte, and the write splits the translated block read in, which
         # counts its remainder twice and so moves the clock of the original
-        if self._flags_code is None and self.function_at(self.reg("CS") * 16 + self.reg("IP")).startswith("R031+"):
+        if self._flags_code is None and self.function_at(self.reg("CS") * 16 + self.reg("IP")).startswith(("R031+", "R016+")):
             self._flags_code = bytes(uc.mem_read(KEYBOARD_FLAGS, 1))
-            uc.mem_write(KEYBOARD_FLAGS, b"\x00")
+            uc.mem_write(KEYBOARD_FLAGS, bytes([self.shift]))
 
     def _button_read(self, uc, access, address, size, value, data):
         if self.held:
@@ -341,6 +353,8 @@ class Session(Machine):
             kind, value = self.script.pop(0)
             if kind == "state":
                 self.capture(value)
+            elif kind == "shift":
+                self.shift = 3 if value == "on" else 0
         if not self.script:
             raise Stop("script ended")
         kind, value = self.script[0]
@@ -490,6 +504,11 @@ class Session(Machine):
                 and self.call_stack and self.call_stack[-1].startswith("R030+")
                 and self.word(self.reg("SS"), self.reg("SP")) in (0x0545, 0x0572)):
             return (0, 0)
+        # likewise the card menu's own look (R043+0x1BD2, return 150B:11DC, which only knows Enter, Space and the cursor keys and drops the rest) comes after the
+        # menu bar's pass in the same loop: an Alt key the script has due waits for hot_keys' look of the next pass (menubar: Alt-O)
+        if (due and due[0] == "key" and due[1].lower().startswith("alt")
+                and self.word(self.reg("SS"), self.reg("SP") + 2) == 0x150B and self.word(self.reg("SS"), self.reg("SP")) == 0x11DC):
+            return (0, 0)
         k = self._next_key()
         return (0 if k is None else k, 0)
 
@@ -529,7 +548,18 @@ class Session(Machine):
     def _bios_tick(self, m):
         self.put_word(0x40, 0x6C, self.word(0x40, 0x6C) + 1)
 
+    def _vector_write(self, uc, access, address, size, value, _):
+        if not self.vector_guard:
+            return
+        self._vector_writes.append((address, size))
+
     def _on_block(self, uc, address, size, _):
+        if self._vector_writes:
+            for at, n in self._vector_writes:
+                uc.mem_write(at, bytes(self.rt.root[at:at + n]))
+                uc.ctl_remove_cache(at, at + n)
+                self._decoded = {k: v for k, v in self._decoded.items() if not (at <= k < at + n)}
+            self._vector_writes = []
         if self._flags_code is not None:
             uc.mem_write(KEYBOARD_FLAGS, self._flags_code)
             self._flags_code = None
@@ -878,6 +908,9 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         # a session from the start screen without a saved game: the character creation reads SAVES\DEFAULT (R037+0x4184), hidden from the game folder
         s.vfs.put("saves/default", (Path(game) / "SAVES" / "DEFAULT").read_bytes())
     s.script = list(steps)
+    if ("rootguard", "on") in s.script:
+        s.vector_guard = True
+    s.script = [(k, v) for k, v in s.script if k != "rootguard"]
     s.battle_trace = battle_trace
     s.battle_pause = BATTLE_PAUSE_PASSES
     if getattr(battle_trace, "records", False):

@@ -29,6 +29,12 @@ sys.path.insert(0, str(HERE))
 REPO = HERE.parent.parent
 GAME = REPO.parent / "game" / "DARKLAND"
 
+# DKSAVE40 (written by another tool: party size 6, party slots whose status is 0) as a normalised copy under local/ (divergence D-72509c: the
+# original'"'"'s writer R037+0x2ACE recounts the party and skips a status-0 slot): the copy is made by local/overnight/dk40/normalise.py when missing
+NORMALISED = "local/oracle-saves/DKSAVE40N.SAV"
+NORMALISING = {NORMALISED: ("DKSAVE40.SAV", "local/overnight/dk40/normalise.py")}
+LOCAL = Path(os.environ.get("DARKLANDS_LOCAL", REPO / "local"))     # the git-ignored local/ folder (shared by worktrees through the variable)
+
 # the saved game each session starts from (None: the start screen, no saved game)
 SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence": "DKSAVE0.SAV", "save-load": "DKSAVE0.SAV",
             "gate-battle": "DKSAVE0.SAV", "shop": "DKSAVE0.SAV", "cache": "Dksave10.sav", "saints": "Dksave10.sav",
@@ -39,15 +45,26 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "stables": "DKSAVE0.SAV", "pawnshop": "DKSAVE0.SAV", "foreigntrader": "DKSAVE0.SAV", "banks": "DKSAVE0.SAV",
             "menubar": "DKSAVE0.SAV", "menubar2": "DKSAVE0.SAV", "roster": "DKSAVE0.SAV", "roster4": "DKSAVE0.SAV",
             "wien-rathaus": "DKSAVE0.SAV", "mapsave": "DKSAVE17.SAV",
+            # the inn's roster screen (local/overnight/roster2): DKSAVE0 (five listed), DKSAVE8 (Hamburg, four rows), Dksave10 (Ulm, nine rows)
+            "roster-colours": "DKSAVE0.SAV", "roster-moves": "DKSAVE0.SAV", "roster-wrap": "DKSAVE8.SAV", "roster-mouse": "DKSAVE8.SAV",
+            "roster-create2": "DKSAVE8.SAV", "roster-ulm": "Dksave10.sav",
             # the player's orders in a battle (local/overnight/orders): Prague's gate DKSAVE40, Luebeck's Dksave21, the others the gate of DKSAVE0
             "orders-select": "DKSAVE0.SAV", "orders-walk": "DKSAVE0.SAV", "orders-missile": "DKSAVE0.SAV", "orders-attack-a": "DKSAVE0.SAV",
             "orders-attack-b": "DKSAVE0.SAV", "orders-attack-b2": "DKSAVE0.SAV", "orders-attack-v": "DKSAVE0.SAV", "orders-attacks": "DKSAVE0.SAV",
-            "orders-sheet": "DKSAVE0.SAV", "orders-save": "DKSAVE0.SAV", "orders-potion": "Dksave21.sav", "luebeck-potion": "Dksave21.sav", "orders-potion2": "DKSAVE40.SAV",
-            "orders-potion3": "DKSAVE40.SAV", "orders-prague-missile": "DKSAVE40.SAV",
-            "sheet-dksave0": "DKSAVE0.SAV"}
+            "orders-sheet": "DKSAVE0.SAV", "orders-save": "DKSAVE0.SAV", "orders-potion": "Dksave21.sav", "luebeck-potion": "Dksave21.sav", "orders-potion2": NORMALISED,
+            "orders-potion3": NORMALISED, "orders-prague-missile": NORMALISED,
+            "sheet-dksave0": "DKSAVE0.SAV",
+            # the loot screen after the gate fight of DKSAVE0 (local/overnight/loot): keys, mouse, capital keys and Esc
+            "loot-keys": "DKSAVE0.SAV", "loot-mouse": "DKSAVE0.SAV", "loot-esc": "DKSAVE0.SAV",
+            # the camp and the pack outside a battle (local/overnight/camp): DKSAVE99 and Dksave22 are parties on the map, DKSAVE0 is at the Pressburg inn
+            "camp-wild-brew": "DKSAVE99.SAV", "camp-wild-risk": "Dksave22.sav", "camp-inn-broke": "DKSAVE0.SAV", "camp-rough": "DKSAVE0.SAV", "camp-mouse": "DKSAVE99.SAV",
+            "pack-potions": "DKSAVE99.SAV", "pack-stacks": "DKSAVE99.SAV",
+            # the mine of Rammelsburg (local/overnight/dungeon): DKSAVE99 on the map, the walk to the town, the mine's battle
+            "dungeon-mine-doors": "DKSAVE99.SAV", "dungeon-mine-orders": "DKSAVE99.SAV", "dungeon-mine-group": "DKSAVE99.SAV"}
 # the sessions run with --battle-records (the combatant records of every battle pass compared: report.json's battle)
 BATTLE_RECORDS = {"orders-select", "orders-walk", "orders-missile", "orders-attack-a", "orders-attack-b", "orders-attack-b2", "orders-attack-v",
-                  "orders-attacks", "orders-sheet", "orders-save", "orders-potion", "luebeck-potion", "orders-potion2", "orders-potion3", "orders-prague-missile"}      # the minimal case of the sheet's allocation error (R031+0x0B22): ends, does not agree
+                  "orders-attacks", "orders-sheet", "orders-save", "orders-potion", "luebeck-potion", "orders-potion2", "orders-potion3", "orders-prague-missile",
+                  "dungeon-mine-doors", "dungeon-mine-orders", "dungeon-mine-group"}      # the minimal case of the sheet's allocation error (R031+0x0B22): ends, does not agree
 IGNORED = {"state", "file", "text state", "texts", "party seed"}
 RESERVE_MB, JOB_MB = 1500, 450
 
@@ -67,6 +84,19 @@ def free_mb() -> int:
         if line.startswith("MemAvailable"):
             return int(line.split()[1]) // 1024
     return 1 << 20
+
+
+def resolve_save(name: str, saves: Path) -> Path:
+    """A saved game of the game folder, or a normalised copy under local/ (made when missing)."""
+    if not name.startswith("local/"):
+        return saves / name
+    target = LOCAL / name[len("local/"):]
+    if not target.exists():
+        source, script = NORMALISING[name]
+        subprocess.run([sys.executable, "-I", "-B", str(LOCAL / script[len("local/"):]), str(saves / source), str(target)], check=False)
+        if not target.exists():
+            raise SystemExit("%s is missing and %s could not make it from SAVES/%s" % (target, script, source))
+    return target
 
 
 def verdict_fight(folder: Path, name: str):
@@ -118,7 +148,7 @@ def main():
         jobs.append(("fight", f, py + [str(HERE / "battle_oracle.py"), a.exe, a.game, str(out / "fights" / f), "--save", str(saves / "DKSAVE0.SAV"),
                                        "--fights", f] + common))
     for s in sessions:
-        save = ["--save", str(saves / SESSIONS[s])] if SESSIONS[s] else []
+        save = ["--save", str(resolve_save(SESSIONS[s], saves))] if SESSIONS[s] else []
         jobs.append(("session", s, py + [str(HERE / "lockstep.py"), a.exe, a.game, str(HERE / "lockstep-sessions" / (s + ".steps")),
                                          str(out / "sessions" / s)] + save + (["--battle-records"] if s in BATTLE_RECORDS else []) + common))
     workers = max(1, min(a.workers, (free_mb() - RESERVE_MB) // JOB_MB))

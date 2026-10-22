@@ -113,6 +113,10 @@ FIELDS = {0x04: "x", 0x05: "x", 0x06: "y", 0x07: "y",
 def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, coverage: bool, paused: int = PAUSED):
     """(trace lines, the battle's arguments as the card gave them, log, how it ended, set-up ticks, coverage)."""
     s = lockstep.Session(exe.read_bytes(), game, max_instructions=4_000_000_000, coverage=coverage)
+    # the root-image guard of the vector table writes (lockstep.py) is left off here: it makes the original run the keyboard handler's install as the
+    # game does and so moves the original's timer phases; the clock rises of f2precept05's long passes then fall where the C# does not place them (see
+    # local/overnight/precept/README.md); the earlier passes of this oracle were all made with the table's bytes left in the code
+    s.vector_guard = False
     s.vfs.put("saves/dksave0.sav", save.read_bytes())
     if save.with_suffix(".BSV").exists():
         s.vfs.put("saves/dksave0.bsv", save.with_suffix(".BSV").read_bytes())

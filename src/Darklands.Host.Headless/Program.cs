@@ -12,7 +12,7 @@ using Darklands.Rendering;
 //   the startup keys; the steps win over it.
 //
 // Input and output steps:
-//   key:<c>                      a character; key:enter|space|esc|up|down|f1..f6|f10|alto (Alt-O, the marching order)
+//   key:<c>                      a character; key:enter|space|esc|tab|backspace|up|down|left|right|home|end|pgup|pgdn|f1..f6|f10|alto (Alt-O, the marching order)
 //   click:<x>,<y>                a left click; move:<x>,<y> moves the pointer (and drags a held button)
 //   ldown:<x>,<y> / lup          the left button held and let go; rdown:<x>,<y> / rup the right one (the menu bar)
 //   shift:on|off, ctrl:on|off    the modifier keys; kdown:<hex> / kup:<hex> a key's make or break scan code
@@ -671,6 +671,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         "down" => Keys.Down,
         "left" => Keys.Left,
         "right" => Keys.Right,
+        "home" => Keys.Home,
+        "end" => Keys.End,
+        "pgup" => Keys.PageUp,
+        "pgdn" => Keys.PageDown,
+        "tab" => Keys.Tab,
+        "backspace" => Keys.Backspace,
         "f1" => Keys.F1,
         "f2" => Keys.F2,
         "f3" => Keys.F3,
