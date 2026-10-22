@@ -19,8 +19,8 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 45 entries; recommendations: document: 1, justify: 38, keep: 6.
-- Part B (undefined-memory in core logic): 120 entries; determinism: n/a: 78, no: 29, partly: 9, yes: 4.
+- Part A (not-modelled, deliberate-fix, other in core logic): 47 entries; recommendations: document: 1, justify: 40, keep: 6.
+- Part B (undefined-memory in core logic): 121 entries; determinism: n/a: 77, no: 31, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -41,7 +41,7 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### implement-later (0)
 
 
-## Done (60)
+## Done (62)
 
 Entries made faithful (the marker was replaced by the original behaviour, or reworded where a part stays out of reach): what changed, then the review's analysis.
 
@@ -75,6 +75,8 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
   analysis: agk=(age-25)/5 indexes R136+0xBBB1[agk][ih] (6 signed bytes per row, 9 rows 3521..3556); the bytes after the table are static in the EXE image: row 9 (age 70-74) = 00 00 40 00 01 00, row 10 (75-79) = c1 00 0a 00 be 0c, row 11 (80-84) = 00 00 01 00 c1 0a, rows 12-14 = 0. Pure function of age, so trivially reproducible (extend AgingPenalties with these rows) if a character can reach age 70+ (the term list has no general age cap; not fully traced). Related and more consequential: the same table feeds the real aging at the end of a term (C# CharacterCreation line ~398, row (age-30)/5, row 9 from age 75), where row 9 would give +64 to attribute 2 - check that site too.
 - **D-3ef51a** (was `reproduce`) - LocationRules.AdjustReputation(-1) reads the null record (NullPage.Int4Segment, |rep| > 100): one rand_mod(100) drawn, nothing written; St.Cecilia no longer skips it in the open country; test OriginalMemoryTests.  
   analysis: loc_reputation_adj(-1,..) (St. Cecilia, prayer in the open country) evaluates `100-abs(rep) >= rand_mod(100)` with rep = locations[-1]->rep, i.e. the word at 0000:0012 if the far pointer 2e38:10BA is null (INT 4 vector segment, normally 0xF000-ish so abs>=100 and the test fails); so the rep write almost surely does not happen but rand_mod(100) is ALWAYS drawn once (a second draw only if the garbage rep were small). The C# draws nothing in the wilderness, which desynchronises the random stream: reproduce by consuming one rand_mod(100) there and writing nothing.
+- **D-40780d** (was `keep`) - ItemStores keeps CACHE.TMP as its bytes (CacheFile only copies them in and out of the saved game): cache_save(-1)'s append has no limit (the 99th store's offset overwrites store 1), the rewrite of a known store writes the 101-byte header and keeps the bytes past the new end, and later rewrites copy the other stores from the file as the original walks it. The cache-revisit lockstep session agrees throughout. Only stores copied from outside the file (heap memory) stay a divergence: D-7ca3a3.  
+  analysis: cache_save(-1) (R035+0x1468) writes the new store's offset at (ncache+1)*2 with no limit, and the file load_saved_game writes (R037+0x4184) has only 0x62 offset words (198 bytes header). For the 99th store (ncache=98) the word lands at 198..199 = the first two data bytes of store 1 (its count byte and the low byte of its first item code) and byte 1 becomes 99; a pure function of the file contents, but it needs a byte-level CACHE.TMP image because Write(ItemStores) cannot express the clobbered store 1. Needs 98 separate stashes, very rare. Rechecked (R035): CACHE.TMP is the live file every store visit reads and writes, so the clobber of store 1 acts at once, not only after a save; and cache_save of a known store (the screen's normal save) rebuilds the file with a 101-byte header starting from p += (char)*q, which for the 198-byte header of a game's file (first offset 0xC6, a negative char) reads 58 bytes before its heap buffer: once a known store was saved the file's content depends on heap memory. Reproducing the 99th-store case would need the file as bytes and that heap residue; keep. Lockstep (tools/oracle/lockstep-sessions/cache-revisit.steps, Dksave10 at the Gasthaus: store, put, leave, back in, put, leave): every state agrees up to the revisit; at left2 the original's CACHE.TMP (in the .SAV) is the 101-byte header (offset word 0x0065), the store at 0x65 (01 1800 19 02), and the old bytes 0x6A..0xCA left as they were (the file is reopened by handle, fdopen "wb", no truncation: 203 bytes, the stale store at 0xC6 01 1800 19 01), where the C# writes the 198-byte layout (cache section offsets 2, 0x65..0x69, 0xCA differ). This is the community's 'inn cache bug' (groups.io #3470/#3471, archive/research/reports/BUG-VERIFICATION.md section 7). With one store (ncache 1, handle 1) the rewrite is deterministic: k = *p reads before the buffer but only to skip, no other store is copied; with two or more the others come from heap memory. Once a file has the 101-byte header later rewrites find store 1 correctly (0x65 is positive) but walk the stores as contiguous, so a store appended after the stale tail is read from the tail: also deterministic. Modelling the deterministic cases needs CacheFile to keep CACHE.TMP as bytes (cache_save's two branches on the file), not ItemStores alone.
 - **D-469e10** (was `reproduce`) - EventLog.Remove returns the AX the asm leaves when slot 299 holds the kind (299, or the last argument loaded by a passing test, or 0 after event_free); test OriginalMemoryTests. Checked against the original bytes: Oracle:memory.json (tools/oracle/build_memory_corpus.py, MemoryOracleTests).  
   analysis: In R029+0x3CDE, when event_next returns slot 299 the loop ends by falling out with AX as left by the last test: 299 if type0!=t (t!=-1); else a if f1c!=a; else b if f1a!=b; else c if f28!=c; if all match event_free runs (AX=0) so it returns 0 (the count n is lost either way). Reproduce: when the slot-299 event has the kind (kind==k, or k==0x1C and kind==8) return those values instead of n; needs 299 other live events, so very rare.
 - **D-4cef3d** (was `document`) - RivalDragonSlayer.Attack calls item_take_one with the item code as the index for any code (−1 too): the entry there of the member's 64 (stale, or another member's / the formula bytes through the flat model) loses one and at 0 is unequipped and deleted (the stack count goes down whatever the index), as R082+0x1324; with the battle's removals stale entries of count 1 can now exist; test OriginalMemoryTests.  
@@ -137,6 +139,8 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
   analysis: event_next (asm 119CC-119D7) does les si,[bx]; ax=es:[si+22h]; cmp ax,k for every slot, with free slots holding NULL (event_free stores 0; far BSS is zero), so it reads the word at 0000:0022 = INT 8 vector segment. That value is host dependent but is a code segment (BIOS F000h or the game's own, >=0x70) and can never equal an event kind (<=0x4A), so the observable result (the empty slot never matches) is fixed and the C# is equivalent.
 - **D-a9d9ab** (was `justify`) - TacticalBattle.RanOutOfAmmunition sets DS:A3D8 = 2 (the panel letter e, BattleScreen.StatusLetter), the action state 0x0D is the caller's after use_ammo; the marker in Attacks.UseAmmunition is a C: note now.  
   analysis: The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
+- **D-b3f8c3** (was `document`) - ItemStores.Open reads the offset word at 2h of the file's bytes for any handle but -1, as cache_load does: handle 0 reads bytes 0..1, a handle past the table the bytes there. Only a store read past the file's end (heap memory) is still an empty store: D-92e987.  
+  analysis: cache_load only guards handle==-1; handle h reads the 16-bit offset at file bytes 2h,2h+1 (byte0 = offset-area size, byte1 = store count), so handle 0 would read bytes 0-1 as an offset and h>count reads past the offset area into the stores / past the buffer. The handle is locations[].+0x18, which is -1 or the number cache_save assigns (ncache, 1..N), so 0 or past-the-table cannot occur; if it did, the result is a function of cache.tmp bytes and heap beyond the buffer. Keep the empty store. Checked: all 414 records of DARKLAND.LOC have cache handle +0x18 = -1.
 - **D-b82bf3** (was `reproduce-later`) - CharacterCreation.RecordBufferWord = DS:8BD2[-1] (DS:8BD0, the last word of DS:8B52): the creation menu's list sets it from the last roster record (+0x7E item count, +0x7F); ShownEntry(-1) reads it and the panel's entries past the tables come from the image (CreationTables.EntryAt); test CharacterCreationTests.  
   analysis: DS:8BD2[-1] is the word at DS:8BD0, which lies inside the 0x80-byte buffer DS:8B52 (8B52..8BD1) that R037 seg 1462 (~1462:16E0A) fills with __dos_read of a roster record, so it is that record's last word (+0x7E/+0x7F; for a record written from the combatant table that is the item count). BSS-zero until a roster record has been read (then prn=0, same as the C#); afterwards prn is that word (an item count) and the panel previews R136+0xB1F5/2cc1[that] - cosmetic only, no character data changes. DS:43EE is initialised to -1 (static 0xFFFF), so this happens on every redraw without a hovered row. Reproduce needs the roster-screen record buffer modelled; low priority (display only). Whether the roster screen can run before character creation in one session was not traced.
 - **D-bdd0d1** (was `document`) - Not a divergence: the original's outcome is fixed and equals the C#'s (see the analysis); the marker is now a C: note, no behaviour change.  
@@ -170,7 +174,7 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
 
 Each is a core-logic divergence where the C# does something the original does not. Action: `implement` (make it as the original), `justify` (keep, with the reason given), `implement-later` (blocked on a missing subsystem), `remove-marker` (the divergence is gone; the marker is to be removed).
 
-### rules (8)
+### rules (9)
 
 #### not-modelled (2)
 
@@ -183,8 +187,12 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: who >= 5 counts the 16-entry lists at R136+0xE68E (with the quantities read from inventories[who - 5], an original bug); not modelled, 0. The lists are enemy_items (the last battle's enemies' items, battle state); no caller passes who >= 5 (the cards pass -2, -1 or a member).  
   recommendation: **justify** (checked against the original) - who >= 5 counts R136+0xE68E[who - 5][0..15] = enemy_items (2E38:0D5E, 9 enemies x 16 six-byte items of the last battle: battle state, not fixed data) with the quantities of inventories[who - 5]. Every caller in the C (80 x count_items(-2, ..), the R068/s073/s107 member loops v_si/l_2/i over 0..4, R043 150b's pop-up list over members) passes -2, -1 or 0..4, so the branch is unreachable; implementing it needs the battle's enemy item table (battle code).
 
-#### deliberate-fix (2)
+#### deliberate-fix (3)
 
+- **D-3a3c6c** `deliberate-fix` - `src/Darklands.Core/Items/ItemStores.cs:101` `ItemStores.Normalise`  
+  original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
+  divergence: with OriginalBehaviour.FixInnCacheRewrite (data safety, switchable; on in the player's game) the rewrite of a known store and the append read every store by its offset and write the file again as load_saved_game R037+0x4184 and cache_save(-1) R035+0x1468 lay it out. The stores read by their offsets, then the file laid out as the original lays out a game's file: the 198-byte header (0x63, the count, 0x62 offset words), the stores after it in handle order, every offset where its store is (what the original's own cache_load reads). Null when the file cannot be read that way (more stores than offset words).  
+  recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixInnCacheRewrite, on in the player's game; the testers and the lockstep oracle stay faithful): the original's rewrite of a known store loses or garbles the other stores of the file; fixed, the file is laid out as a game's file is (198-byte header, stores in handle order) and the original reads it.
 - **D-444756** `deliberate-fix` - `src/Darklands.Core/Rules/CityPolitics.cs:173` `CityPolitics.SetUpCity`  
   original: `R039+0x0558` (1462:0558, matched)  
   divergence: `while (!loc_query(loc, d + 3))` loops forever in a city without any shop; here the search stops after seven days.  
@@ -372,7 +380,14 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant tables' bytes left by earlier battles (path tails, slots not used since), are this program's (zeros) for a battlefield made here.  
   recommendation: **keep** - The bytes are what earlier activity of the whole session left in buffers the battle-state save copies whole: the level loader's record buffer at DS:A896 (also used for .atv files) and the per-combatant tables of earlier battles (path tails past the end byte, slots not used since). No game code reads them; reproducing them would need the buffer history of the session. Files written by the original are kept byte for byte (their .enm data is carried as read); only a battlefield made by this program has zeros there.
 
-### persistence (4)
+### persistence (5)
+
+#### deliberate-fix (1)
+
+- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:367` `OriginalSaves.static`  
+  original: `R037+0x2ACE` (1462:2ACE, draft)  
+  divergence: with the fix (data safety, switchable; on in the player's game) the record of the status-0 slot is written like the others and the count is true.  
+  recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixSaveWriterSkipsEmptySlots, on in the player's game): the original writes a short file for a party slot of status 0 (the Wild Hunt) that it can crash loading; fixed, every roster record is written and the count is true. The faithful short file is reproduced (D-be90b2).
 
 #### other (4)
 
@@ -388,7 +403,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.
-- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:393` `OriginalSaves.static`  
+- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:389` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the original always writes 414 records; a state with another number of places (tests) writes what it has.  
   recommendation: **justify** - Only tests use a state with another number of places; the game always has 414.
@@ -397,12 +412,20 @@ Each is a core-logic divergence where the C# does something the original does no
 
 Where the original reads or writes outside its defined data, the outcome can still be a fixed function of the program state (a table that follows in the data image, a known stack leftover, a global the previous card left), in which case it can be reproduced exactly. `deterministic`: `yes` (a fixed value or a pure function of modelled state), `partly` (fixed in the shipped data or reachable states, unreproducible elsewhere), `no` (depends on unmodelled memory such as heap addresses or machine state), `n/a` (not reachable in play).
 
-### rules (31)
+### rules (33)
 
-- **D-b3f8c3** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:26` `ItemStores.Open`  
+- **D-92e987** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:47` `ItemStores.Open`  
   original: `R035+0x1350` (1462:1350, matched)  
-  divergence: handle 0 or a handle past the table reads a garbage offset in the original; an empty store here.  
-  deterministic: **n/a** (checked against the original); action: **document** - cache_load only guards handle==-1; handle h reads the 16-bit offset at file bytes 2h,2h+1 (byte0 = offset-area size, byte1 = store count), so handle 0 would read bytes 0-1 as an offset and h>count reads past the offset area into the stores / past the buffer. The handle is locations[].+0x18, which is -1 or the number cache_save assigns (ncache, 1..N), so 0 or past-the-table cannot occur; if it did, the result is a function of cache.tmp bytes and heap beyond the buffer. Keep the empty store. Checked: all 414 records of DARKLAND.LOC have cache handle +0x18 = -1.
+  divergence: a store read past the file's end reads the heap after its buffer in the original (handle 0's offset is bytes 0..1, a handle past the table a zero offset word or the stores' bytes); an empty store here.  
+  deterministic: **no** (checked against the original); action: **keep** - cache_load (R035+0x1350) reads the store at the offset word 2h of a buffer of the file's size (alloc_buffer(ft.size)); an offset or a count that goes past the file's end reads the heap after the buffer. Handles are -1 or what cache_save assigned (1..ncache), whose offsets are inside the file, so it needs a file damaged by the 99th-store overwrite or edited by hand. Keep the empty store.
+- **D-7ca3a3** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:156` `ItemStores.Rewrite`  
+  original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
+  divergence: a store copied from bytes outside the file (that read before the buffer, or past its end) copies heap memory in the original; here such a store is written as its offset reads it. With only the store being saved (one store, the usual first revisit) nothing is copied and the file is the original's; once the header is 101 bytes p starts at store 1 and the copies read the file.  
+  deterministic: **partly** (checked against the original); action: **keep** - cache_save of a known store (R035+0x1468) starts its copy at buf + (char)buf[2]: for the 198-byte header of a new or loaded game's file (0xC6) that is offset 0xFFC6 of the buffer's segment, heap memory; every store but the one saved is then copied from there (merle's inn cache bug, groups.io #3470/#3471). With one store nothing is copied and the file is the original's (lockstep cache-revisit agrees); once the header is 101 bytes the copy reads the file. With two or more stores at the first rewrite the copied bytes are heap residue: written here as each store's offset reads it.
+- **D-05b2a4** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:212` `ItemStores.Put`  
+  original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
+  divergence: a write past the file's end (an offset word of a file shorter than its offset area) leaves DOS's undefined bytes before it; zeros here.  
+  deterministic: **no** (checked against the original); action: **keep** - cache_save writes offset words at (i+1)*2 / (ncache+1)*2 through fseek; a file shorter than that (only a saved game whose tail was cut or edited) is extended by DOS with whatever the clusters held. Zeros here.
 - **D-c9e64e** `undefined-memory` - `src/Darklands.Core/Rules/CampStay.cs:62` `CampStay.CampStay`  
   original: `R036+0x0082` (1462:0082, draft)  
   divergence: the detail words (DS:8A4E) are global in the original and keep the last stay's text; here each stay starts empty (only shown once an activity sets them).  
@@ -869,12 +892,8 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: a member who was not in that battle has whatever bytes the record held in the original; here such members are placed in the level's start formation (the others then put back where they stood).  
   deterministic: **partly** (checked against the original); action: **keep** - Mode 1 runs no effect_start (R014+0x0058 is skipped without combat_flags 0x20), so each party record keeps x +4, y +6 and the facings +0x19/+0x1A as the last battle left them. A member who joined since that battle has the record bytes of the slot's last occupant (party_add copies the roster record, whose x/y are those of its own last battle, or zero for a new character): a function of play history that the C# does not keep per slot. Placing such a member in the start formation keeps the battle playable; only a party changed between two battles on one battlefield with mode 1 can see it.
 
-### persistence (5)
+### persistence (4)
 
-- **D-40780d** `undefined-memory` - `src/Darklands.Persistence/CacheFile.cs:68` `CacheFile.Write`  
-  original: `R035+0x1350` (1462:1350, matched), `R035+0x1468` (1462:1468, matched), `R037+0x4184` (1462:4184, draft)  
-  divergence: the file has room for 0x62 offsets and a count byte; the original has no limit check, a 99th store would overwrite its first entry. Here the table stops at 0x62.  
-  deterministic: **partly** (checked against the original); action: **keep** - cache_save(-1) (R035+0x1468) writes the new store's offset at (ncache+1)*2 with no limit, and the file load_saved_game writes (R037+0x4184) has only 0x62 offset words (198 bytes header). For the 99th store (ncache=98) the word lands at 198..199 = the first two data bytes of store 1 (its count byte and the low byte of its first item code) and byte 1 becomes 99; a pure function of the file contents, but it needs a byte-level CACHE.TMP image because Write(ItemStores) cannot express the clobbered store 1. Needs 98 separate stashes, very rare. Rechecked (R035): CACHE.TMP is the live file every store visit reads and writes, so the clobber of store 1 acts at once, not only after a save; and cache_save of a known store (the screen's normal save) rebuilds the file with a 101-byte header starting from p += (char)*q, which for the 198-byte header of a game's file (first offset 0xC6, a negative char) reads 58 bytes before its heap buffer: once a known store was saved the file's content depends on heap memory. Reproducing the 99th-store case would need the file as bytes and that heap residue; keep. Lockstep (tools/oracle/lockstep-sessions/cache-revisit.steps, Dksave10 at the Gasthaus: store, put, leave, back in, put, leave): every state agrees up to the revisit; at left2 the original's CACHE.TMP (in the .SAV) is the 101-byte header (offset word 0x0065), the store at 0x65 (01 1800 19 02), and the old bytes 0x6A..0xCA left as they were (the file is reopened by handle, fdopen "wb", no truncation: 203 bytes, the stale store at 0xC6 01 1800 19 01), where the C# writes the 198-byte layout (cache section offsets 2, 0x65..0x69, 0xCA differ). This is the community's 'inn cache bug' (groups.io #3470/#3471, archive/research/reports/BUG-VERIFICATION.md section 7). With one store (ncache 1, handle 1) the rewrite is deterministic: k = *p reads before the buffer but only to skip, no other store is copied; with two or more the others come from heap memory. Once a file has the 101-byte header later rewrites find store 1 correctly (0x65 is positive) but walk the stores as contiguous, so a store appended after the stale tail is read from the tail: also deterministic. Modelling the deterministic cases needs CacheFile to keep CACHE.TMP as bytes (cache_save's two branches on the file), not ItemStores alone.
 - **D-be90b2** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:97` `OriginalSaves.Read`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: depending on those bytes the original either goes on with the garbled game (DKSAVE40's re-save) or stops with run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.  
@@ -883,7 +902,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: more than 300 events would overrun the original's table; the rest are dropped.  
   deterministic: **n/a** (checked against the original); action: **document** - R037+0x8ED4 reads nevents from the save and does events[id]=alloc_buffer(0x30)+read for id<n with no bound; the game itself writes only non-empty slots (at most 300), so only a hand-edited or corrupt .sav can exceed 300, and then events[300..] would run on into 2E38:1FDC.. (the data before the R136+0xF92C icon table). Cannot occur with the game's own saves; keep the C# truncation.
-- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:279` `OriginalSaves.static`  
+- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:273` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but save_game's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.

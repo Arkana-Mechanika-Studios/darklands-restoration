@@ -85,7 +85,7 @@ back byte for byte, and each of the 18 .BSV files with its .SAV.
 | 0x189 | n × 0x22A | the roster's records | `Roster.Characters` (party slots: the same objects as `Party.Members`) | see below |
 | … | 2 + m × 0x30 | the events in slot order | `Events` (loaded into slots 0..m−1) | all 24 words named |
 | … | 2 + 414 × 0x3A | the places | `Locations` | see below |
-| … | rest | CACHE.TMP | `ItemStores` | named (layout kept as read while the stores are unchanged) |
+| … | rest | CACHE.TMP | `ItemStores` | the file's bytes, read and written as the original's cache_load / cache_save do |
 
 Not in the file (as in the original): the random generator's state, the bankers' standings
 (`DS:4BB6..4BBA`), the saintly-changes option, `city_rec` and `city_desc` (reread from

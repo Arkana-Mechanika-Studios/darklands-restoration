@@ -799,8 +799,8 @@ Darklands.Core.Rules.Storing.AddOne(),R035+0x10D2,R035+0x10D2,matched,TradingAnd
 Darklands.Core.Rules.Storing.TakeOne(),R035+0x114A,R035+0x114A,matched,TradingAndLootTests,cache_take
 Darklands.Core.Rules.Storing.Put(),R035+0x0A46,R035+0x0A46,matched,TradingAndLootTests,cache_key case P; a row past the pack stores the stale entry
 Darklands.Core.Rules.Storing.Get(),R035+0x0A46,R035+0x0A46,matched,TradingAndLootTests,cache_key case G; a row past the store hands out what an earlier store left (StoreTable)
-Darklands.Core.Items.ItemStores.Open(),R035+0x1350,R035+0x1350,matched,TradingAndLootTests,cache_load; dormant: missing cache.tmp exit; divergence: unknown handle gives an empty store
-Darklands.Core.Items.ItemStores.Close(),R035+0x04BC;R035+0x1468,R035+0x04BC,matched,TradingAndLootTests,cache_close + cache_save; divergence: file layout left to persistence
+Darklands.Core.Items.ItemStores.Open(),R035+0x1350,R035+0x1350,matched,TradingAndLootTests,cache_load on the file's bytes; dormant: missing cache.tmp exit; divergence: a store read past the file's end gives an empty store
+Darklands.Core.Items.ItemStores.Close(),R035+0x04BC;R035+0x1468,R035+0x04BC,matched,TradingAndLootTests,cache_close + cache_save on the file's bytes (the append without a limit; the known store's rewrite: the 101-byte header and the tail kept); divergence: a store copied from outside the file (heap memory) is written as its offset reads it
 Darklands.Presentation.ItemStoreScreen.Run(),R035+0x0000;R035+0x04BC,R035+0x0000,matched,Host.Headless screen:store,divergence: no screen in the open country; clicks act on press
 Darklands.Presentation.ItemStoreScreen.HandleKey(),R035+0x0A46,R035+0x0A46,matched,Host.Headless screen:store,all cases kept; per-member list state persists between visits (module statics)
 Darklands.Presentation.ItemStoreScreen.DrawScreen(),R035+0x0510,R035+0x0510,matched,Host.Headless screen:store,
@@ -1969,7 +1969,7 @@ Darklands.Persistence.OriginalSaves.Saved(),R037+0x2ACE,R037+0x2ACE,draft,LoadSc
 Darklands.Persistence.CharacterRecords,R037+0x2ACE;R037+0x8ED4,R037+0x2ACE;R037+0x8ED4,draft,OriginalSaveTests,uncertain: unnamed bytes kept as read (Character.OriginalRecord)
 Darklands.Persistence.LocationRecords,R037+0x2ACE,R037+0x2ACE,draft,OriginalSaveTests,uncertain: +0x02 +0x10 +0x22..+0x25 kept as read (Location.OriginalRecord)
 Darklands.Persistence.EventRecords,R029+0x3034,R029+0x3034,matched,OriginalSaveTests,all 24 words named
-Darklands.Persistence.CacheFile,R035+0x1350;R035+0x1468;R037+0x4184,R035+0x1350;R035+0x1468;R037+0x4184,matched,OriginalSaveTests,writes the 198-byte header plus appended stores (cache_save(-1) layout); divergence: at most 0x62 stores
+Darklands.Core.Items.ItemStores,R037+0x4184,R037+0x4184,matched,TradingAndLootTests,the empty file (0x63; 0; 0x62 zero words) of a new or loaded game; a saved game's tail replaces it byte for byte
 Darklands.Persistence.Explode,R003+0x2707;R003+0x26AE;R003+0x2801;R003+0x28CC;R003+0x2A0A;R003+0x2A72;R003+0x2AF5;R003+0x2B2B,R003+0x2707,asm,ImplodeOracleTests;OriginalSaveTests,ported from the library's assembly (PKWARE DCL 1.02); return codes 0..4 as the original
 Darklands.Persistence.BattleSaveFile,R003+0x00DC;R003+0x0CE8;R003+0x0000;R003+0x00A0;R003+0x19CA;R003+0x19E8,R003+0x00DC;R003+0x0CE8,draft,OriginalSaveTests;BattleSaveTests,variables 0x1978 bytes; levels flr/atv/enm; files terrain.fil then the loot file; stale header words kept; divergence: the end-of-data and corrupt-block exits throw
 Darklands.Persistence.SaveFolder,R037+0x8896;R037+0x9C10;R037+0x9B76;R037+0x2ACE,R037+0x8896;R037+0x9C10;R037+0x9B76;R037+0x2ACE,draft,LoadScreenTests,divergence: name order instead of DOS directory order; stale .bsv of a new name removed

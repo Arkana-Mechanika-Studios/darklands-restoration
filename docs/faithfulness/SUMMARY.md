@@ -5,7 +5,9 @@ its bytes, never against another reimplementation.
 
 ## The claim for 1.0
 
-No known divergence, strong evidence, published coverage:
+The rules are identical to the original's in the faithful mode (`OriginalBehaviour.Faithful`, which the
+oracles and the headless host use). By default the player's game differs from it only in the 2 listed,
+switchable data-safety fixes below. No known divergence, strong evidence, published coverage:
 
 * every original function the C# cites is compared with it statically, and no lead is open;
 * every oracle agrees with the original wherever it runs, or differs for a listed reason;
@@ -21,6 +23,25 @@ rest is listed (`branches-missed.csv` for the functions the oracles enter). The 
 are the battlefield generators, the rules and the battles; the least covered are the card scripts and the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
 after 1.0.
+
+## Rule: quirks stay, data-damaging bugs are switchable
+
+* A gameplay quirk of the original (a wrong price formula, a skipped check, a card that misbehaves) is
+  reproduced exactly and stays so by default; where a fix flag exists it is off.
+* A bug that damages the player's data (saved games, the item stores in CACHE.TMP) is reproduced exactly
+  behind a switch in `OriginalBehaviour` (marked `BUG:` at the reproduction, with the original's
+  coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
+  the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
+  fixes go into `DataSafe`, and only those.
+* The two fixes now in `DataSafe` (registered as deliberate fixes, `divergences.csv`; the bugs in
+  `original_bugs.csv`):
+  * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (cache_save R035+0x1468, the inn
+    cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
+    memory it should not read; fixed, the file keeps the layout of a new game (R037+0x4184).
+  * `FixSaveWriterSkipsEmptySlots`: the save writer (R037+0x2ACE) leaves out the record of a party slot of
+    status 0 but writes the full count, a short file the original can crash loading (the Wild Hunt causes
+    it); fixed, every roster record is written.
+* The switches are not exposed in the settings; the player's host sets the profile.
 
 ## Coverage of the original functions
 
@@ -128,7 +149,7 @@ from a saved game in Pressburg:
 | gate-battle | fighting the gate's guards | identical in every state, every battle pass and both saves after it |
 | shop | a merchant: buying, selling, dropping, barter for the next member | identical |
 | cache | the innkeeper's cache: putting and getting items | identical |
-| cache-revisit | the innkeeper's cache visited again: put, leave, back in, put, leave | differs at the second leave: the original rewrites a known store's CACHE.TMP with a 101-byte header and leaves the old bytes behind (cache_save R035+0x1468, the community's inn cache bug), the C# keeps the 198-byte layout (D-40780d) |
+| cache-revisit | the innkeeper's cache visited again: put, leave, back in, put, leave | identical (it found the rewrite of a known store's CACHE.TMP: a 101-byte header, the old bytes left behind, cache_save R035+0x1468, the community's inn cache bug; the C# now keeps the file as bytes and does the same) |
 | saints | the character sheet's saints, praying to two saints | identical |
 | stay | the residence: each member's work over five days | identical |
 | wildcamp | camping on the map, work choices, three days | identical |

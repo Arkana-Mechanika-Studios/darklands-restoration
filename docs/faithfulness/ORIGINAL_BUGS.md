@@ -11,16 +11,17 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 82 | 18 | 64 |
+| rules | 83 | 19 | 64 |
 | cards | 59 | 2 | 57 |
 | events | 7 | 4 | 3 |
 | battles | 17 | 3 | 14 |
+| persistence | 1 | 1 | 0 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 167 | 28 | 139 |
+| total | 169 | 30 | 139 |
 
-## Core logic (165)
+## Core logic (167)
 
-### rules (82)
+### rules (83)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:288` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -28,6 +29,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:160` `GameState.HanseStanding`  
   original: `R029+0x4650` (0E76:4650, draft)  
   why: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0).
+- **B-85e0e4** `bug`, flag `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:69` `ItemStores.Close`  
+  original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
+  why: OriginalBehaviour.FixInnCacheRewrite - a known store's rewrite (cache_save R035+0x1468) lays the file out with a 101-byte header over offsets of a 198-byte one.
 - **B-9224b7** `bug`, no fix flag - `src/Darklands.Core/Rules/Brewing.cs:149` `BrewingBench.TakeFromParty`  
   original: `R033+0x1630` (1462:1630, draft)  
   why: the stack that slides into slot j is skipped (j still goes up), and whatever is still owed when the loop ends is forgotten: a batch whose ingredient is spread over several stacks costs only part of it.
@@ -527,14 +531,20 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
 
+### persistence (1)
+
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:366` `OriginalSaves.static`  
+  original: `R037+0x2ACE` (1462:2ACE, draft)  
+  why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
+
 ## Presentation and host (2)
 
 ### screens/presentation (2)
 
-- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:232` `DarklandsGame.LoadInGame`  
+- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:236` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:349` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:353` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party_delete_vec runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 
