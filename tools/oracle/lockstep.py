@@ -122,10 +122,14 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     # bwait:<n>: the original gives the step n + 1 battle passes after the previous one was taken; the C# host takes three frames more
     # than its wait (the key's two idle frames and the step's own), so the same pass is wait:<n - 3>
     seen = iter(BWAIT_ACTUAL)
-    # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames)
+    # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames), a move one frame less
     for i, (k, v) in enumerate(steps):
         if k == "bwait":
             cost = BWAIT_FRAMES + (2 if i and steps[i - 1][0] == "click" else 0)
+            if i and steps[i - 1][0] == "move":
+                # a move has no idle frames in the host (one frame, the step's own); the original takes the bwait at once at the poll after the move,
+                # in the same pass (a key: at the poll after the get_key that takes it), so the next step comes n passes after the move: wait:<n - 2>
+                cost -= 1
             if i >= 3 and steps[i - 1] == ("key", "esc") and steps[i - 3][0] == "key" and steps[i - 3][1] in ("f1", "f2", "f3", "f4", "f5"):
                 cost -= 1                   # the sheet that Esc closes passes no battle pass in the frame it ends in
             args.append("wait:%d" % max(0, min(int(v), next(seen, int(v))) - cost))

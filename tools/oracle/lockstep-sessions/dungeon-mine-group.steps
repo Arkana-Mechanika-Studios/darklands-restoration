@@ -1,4 +1,4 @@
-# Lockstep session (dungeon 3, a lead): the mine as dungeon-mine-orders, but travelling as a group (G) with two moves given by the pointer and the Enter key (the keyboard click): the original acts on the click one pass after the rewrite (lead 1 of local/overnight/dungeon/README.md); then single file (Q), halt (H), the diagonal arrow keys (bwait:<n> = n battle passes in both games)
+# Lockstep session (dungeon 3, a lead): the mine as dungeon-mine-orders, but travelling as a group (G) with two moves given by the pointer and the Enter key (the keyboard click: R016+0x0734 sets DS:D73B, the mouse handler R014+0xB838 acts on it at the next pass); then single file (Q), halt (H), the diagonal arrow keys (bwait:<n> = n battle passes in both games)
 key:t
 wait:5
 key:l
