@@ -75,7 +75,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         finally
         {
             // orig: cache_close R035+0x04BC (1462:04BC) matched: save (or forget an empty store) and leader = DS:89EE; fonts are host state (not modelled).
-            state.ItemStores.Close(place, _store);
+            state.ItemStores.Close(place, _store, state.Behaviour);
             Party.LeaderIndex = leaderBefore;
         }
     }

@@ -49,6 +49,9 @@ public sealed class DarklandsGame
     // orig: the save/load code opens saves\ relative to the game's folder (R037); the folder name is matched case-insensitively.
     public string SaveDirectory { get; set; } = "";
 
+    /// <summary>The bugs the games played here have fixed: the player's host sets <see cref="OriginalBehaviour.DataSafe"/>, testers keep the faithful game.</summary>
+    public OriginalBehaviour Behaviour { get; set; } = OriginalBehaviour.Faithful;
+
     /// <summary>The game folder's SAVES folder (an existing one in any letter case, else SAVES).</summary>
     public static string DefaultSaveDirectory(string gameFolder) =>
         Directory.Exists(gameFolder)
@@ -187,6 +190,7 @@ public sealed class DarklandsGame
             try
             {
                 _session = state;
+                state.Behaviour = Behaviour;
                 Playing = state;
                 Play(state);
                 return;

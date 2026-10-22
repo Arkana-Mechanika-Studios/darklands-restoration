@@ -180,6 +180,32 @@ public sealed class OriginalSaveTests
     }
 
     [Fact]
+    public void WithTheFixAPartySlotOfStatusZeroKeepsItsRecordAndTheFileIsComplete()
+    {
+        // FixSaveWriterSkipsEmptySlots: every roster record is written, so the count is true and the loader's layout holds.
+        var state = SampleGame();
+        state.Behaviour = OriginalBehaviour.DataSafe;
+        var bench = DefaultParty.Create(seed: 78).Members[0];
+        state.Roster.Characters.Add(bench);
+        state.Party.Members[1].Status = CharacterStatus.Empty;
+        var sav = OriginalSaves.Write(state).Sav;
+        byte[] Record(int k) => sav[(0x189 + k * SaveFile.CharacterSize)..(0x189 + (k + 1) * SaveFile.CharacterSize)];
+        Assert.Equal(5, BitConverter.ToInt16(sav, 0xF1));
+        Assert.Equal(CharacterRecords.Write(state.Party.Members[1]), Record(1));
+        Assert.Equal(CharacterRecords.Write(bench), Record(4));
+        Assert.Equal(state.Events.All().Count(), BitConverter.ToInt16(sav, 0x189 + 5 * SaveFile.CharacterSize));
+
+        // the loader's reading: as many records as the count, then the events and the block of 414 places, nothing out of step
+        var file = SaveFile.Parse(sav);
+        Assert.Equal(5, file.Characters.Count);
+        Assert.Equal(state.Locations.Count, file.Locations.Count);
+        Assert.Equal(state.Events.All().Count(), file.Events.Count);
+        var loaded = OriginalSaves.Read(sav, OriginalSaves.Write(state).Bsv, "DKSAVE1.SAV", NoGameData.Instance).State;
+        Assert.Equal(5, loaded.Roster.Characters.Count);
+        Assert.Equal(CharacterStatus.Empty, loaded.Party.Members[1].Status);
+    }
+
+    [Fact]
     public void AFileShortOfItsRecordsIsReadOutOfStepLikeTheOriginalWithoutFailing()
     {
         // The original's loader (R037+0x8ED4) reads as many character records as the count says and then the location table as one

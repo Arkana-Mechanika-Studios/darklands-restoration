@@ -196,11 +196,7 @@ public static class OriginalSaves
         {
             state.Events.Put(i, EventRecords.Read(file.Events[i]));
         }
-        var stores = CacheFile.Read(file.Cache);
-        foreach (var store in stores.All)
-        {
-            state.ItemStores.Add(store);
-        }
+        state.ItemStores.Load(file.Cache);
         LoadCityRecord(state, running);
 
         BattleSaveFile? battle = null;
@@ -233,8 +229,6 @@ public static class OriginalSaves
             Header = (byte[])h.Clone(),
             Images = (byte[])file.Images.Clone(),
             Palettes = (byte[])file.Palettes.Clone(),
-            Cache = file.Cache,
-            CacheAsRead = CacheFile.Write(stores),
         };
         return new LoadedGame(state, h[MusicAt] == 1, h[SoundAt] == 1, Text(h, CommentAt, CommentLength));
     }
@@ -369,7 +363,9 @@ public static class OriginalSaves
                 var member = state.Party.Members[slot];
                 var fighting = inBattle is not null && slot < Core.Battles.Combatant.PartySlots && inBattle[slot].Member == member;
                 // C: `if (party[je][0])`: the status byte of the slot's record in memory (its combatant record in a battle).
-                if ((fighting ? inBattle![slot].Status : member.Status) == CharacterStatus.Empty)
+                // BUG: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
+                // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) the record of the status-0 slot is written like the others and the count is true.
+                if ((fighting ? inBattle![slot].Status : member.Status) == CharacterStatus.Empty && !state.Behaviour.FixSaveWriterSkipsEmptySlots)
                 {
                     continue;
                 }
@@ -395,8 +391,7 @@ public static class OriginalSaves
         {
             file.Locations.Add(LocationRecords.Write(l));
         }
-        var cache = CacheFile.Write(state.ItemStores);
-        file.Cache = image is not null && cache.AsSpan().SequenceEqual(image.CacheAsRead) ? image.Cache : cache;
+        file.Cache = CacheFile.Write(state.ItemStores);
         // C: a program that has fought no battle and loaded no battle file writes its zero globals (no levels, no work files).
         return (file.ToBytes(), BattleSaveFile.Write(state.BattleFile ?? new Core.Battles.BattleFile()));
     }
@@ -452,8 +447,6 @@ public static class OriginalSaves
             Header = file.Header,
             Images = file.Images,
             Palettes = file.Palettes,
-            Cache = file.Cache,
-            CacheAsRead = CacheFile.Write(state.ItemStores),
         };
     }
 
@@ -499,9 +492,5 @@ public static class OriginalSaves
         public required byte[] Images { get; init; }
 
         public required byte[] Palettes { get; init; }
-
-        public required byte[] Cache { get; init; }
-
-        public required byte[] CacheAsRead { get; init; }
     }
 }

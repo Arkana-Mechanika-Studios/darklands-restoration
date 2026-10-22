@@ -46,6 +46,28 @@ public sealed class OriginalBehaviour
     /// <summary>The faithful game: every bug as in the original.</summary>
     public static OriginalBehaviour Faithful => new();
 
+    /// <summary>
+    /// The faithful game with the data-safety fixes on: the original's bugs that damage the player's data (saved games, the item
+    /// stores in CACHE.TMP) are fixed, every other quirk stays. The fixed files are still read by the original. The player's game
+    /// uses this; future data-safety fixes go here (and only these).
+    /// </summary>
+    public static OriginalBehaviour DataSafe => new() { FixInnCacheRewrite = true, FixSaveWriterSkipsEmptySlots = true };
+
+    /// <summary>
+    /// Leaving an item store that already has a stored list rewrites CACHE.TMP with a 101-byte header over the 198-byte header's
+    /// offsets, copying the other stores from the wrong place (heap bytes, store data lost or garbled); fixed: the file is laid out
+    /// as a game's file is, every store kept.
+    /// </summary>
+    // orig: cache_save R035+0x1468 (1462:1468), data safety, data-damaging; the clean layout is load_saved_game R037+0x4184 (0x63, 0, 0x62 zero words) with cache_save(-1) appending after it
+    public bool FixInnCacheRewrite { get; set; }
+
+    /// <summary>
+    /// The save writer leaves out the record of a party slot whose status is 0 but writes the full record count, so the file is
+    /// short and the original can crash loading it (the Wild Hunt's victim causes it); fixed: every roster record is written.
+    /// </summary>
+    // orig: save writer R037+0x2ACE (1462:2ACE), data safety, data-damaging
+    public bool FixSaveWriterSkipsEmptySlots { get; set; }
+
     /// <summary><c>event_update</c> with "add" on a new event leaves 2 × value; fixed: the value.</summary>
     public bool FixNewEventAddDoubles { get; set; }
 

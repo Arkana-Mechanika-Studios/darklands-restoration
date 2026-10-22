@@ -226,6 +226,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
         ShowStartUp = settings.ShowBanner,
         PlayOpening = settings.PlayIntro,
         CommandLine = settings.CommandLine,
+        // The player's game fixes the original's data-damaging bugs (saves and item stores); the files stay readable by the original.
+        Behaviour = Darklands.Core.OriginalBehaviour.DataSafe,
     };
     if (audioTrace is not null)
     {
