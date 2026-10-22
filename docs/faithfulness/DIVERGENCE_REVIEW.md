@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 45 entries; recommendations: document: 1, justify: 38, keep: 6.
-- Part B (undefined-memory in core logic): 119 entries; determinism: n/a: 78, no: 28, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 120 entries; determinism: n/a: 78, no: 29, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -388,7 +388,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.
-- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:388` `OriginalSaves.static`  
+- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:393` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the original always writes 414 records; a state with another number of places (tests) writes what it has.  
   recommendation: **justify** - Only tests use a state with another number of places; the game always has 414.
@@ -869,17 +869,21 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: a member who was not in that battle has whatever bytes the record held in the original; here such members are placed in the level's start formation (the others then put back where they stood).  
   deterministic: **partly** (checked against the original); action: **keep** - Mode 1 runs no effect_start (R014+0x0058 is skipped without combat_flags 0x20), so each party record keeps x +4, y +6 and the facings +0x19/+0x1A as the last battle left them. A member who joined since that battle has the record bytes of the slot's last occupant (party_add copies the roster record, whose x/y are those of its own last battle, or zero for a new character): a function of play history that the C# does not keep per slot. Placing such a member in the start formation keeps the battle playable; only a party changed between two battles on one battlefield with mode 1 can see it.
 
-### persistence (4)
+### persistence (5)
 
 - **D-40780d** `undefined-memory` - `src/Darklands.Persistence/CacheFile.cs:68` `CacheFile.Write`  
   original: `R035+0x1350` (1462:1350, matched), `R035+0x1468` (1462:1468, matched), `R037+0x4184` (1462:4184, draft)  
   divergence: the file has room for 0x62 offsets and a count byte; the original has no limit check, a 99th store would overwrite its first entry. Here the table stops at 0x62.  
   deterministic: **partly** (checked against the original); action: **keep** - cache_save(-1) (R035+0x1468) writes the new store's offset at (ncache+1)*2 with no limit, and the file load_saved_game writes (R037+0x4184) has only 0x62 offset words (198 bytes header). For the 99th store (ncache=98) the word lands at 198..199 = the first two data bytes of store 1 (its count byte and the low byte of its first item code) and byte 1 becomes 99; a pure function of the file contents, but it needs a byte-level CACHE.TMP image because Write(ItemStores) cannot express the clobbered store 1. Needs 98 separate stashes, very rare. Rechecked (R035): CACHE.TMP is the live file every store visit reads and writes, so the clobber of store 1 acts at once, not only after a save; and cache_save of a known store (the screen's normal save) rebuilds the file with a 101-byte header starting from p += (char)*q, which for the 198-byte header of a game's file (first offset 0xC6, a negative char) reads 58 bytes before its heap buffer: once a known store was saved the file's content depends on heap memory. Reproducing the 99th-store case would need the file as bytes and that heap residue; keep.
-- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:189` `OriginalSaves.Read`  
+- **D-be90b2** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:97` `OriginalSaves.Read`  
+  original: `R037+0x8ED4` (1C7D:0D24, matched)  
+  divergence: depending on those bytes the original either goes on with the garbled game (DKSAVE40's re-save) or stops with run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.  
+  deterministic: **no** (checked against the original); action: **keep** - Checked against the original: losing to the Wild Hunt (card 0x41, card oracle with the battle lost, 24 runs) makes 483.07 write a save one record short; loading that file in the lockstep oracle ends in run-time error R6001 (null pointer assignment, exit 255) inside R037+0x8ED4, while DKSAVE40's own short re-save loads garbled. Which happens depends on heap and file bytes; a crash to DOS is not reproduced on purpose (user decision 2026-10-22): the rewrite loads the garbled game. A later 'fixed' mode would stop the Wild Hunt writing such files.
+- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:194` `OriginalSaves.Read`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: more than 300 events would overrun the original's table; the rest are dropped.  
   deterministic: **n/a** (checked against the original); action: **document** - R037+0x8ED4 reads nevents from the save and does events[id]=alloc_buffer(0x30)+read for id<n with no bound; the game itself writes only non-empty slots (at most 300), so only a hand-edited or corrupt .sav can exceed 300, and then events[300..] would run on into 2E38:1FDC.. (the data before the R136+0xF92C icon table). Cannot occur with the game's own saves; keep the C# truncation.
-- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:274` `OriginalSaves.static`  
+- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:279` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but save_game's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.

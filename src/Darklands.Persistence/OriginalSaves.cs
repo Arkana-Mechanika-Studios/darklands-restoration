@@ -92,6 +92,11 @@ public static class OriginalSaves
     public static LoadedGame Read(ReadOnlySpan<byte> sav, ReadOnlySpan<byte> bsv, string fileName, IGameData data,
         GameState? running = null, IRandomSource? random = null)
     {
+        // C: a file whose character count runs past its records (written with a party slot of status 0: the Wild Hunt's victim, Wild
+        // C: Hunt card 0x41, or another tool's DKSAVE40) is read out of step: the records, events and places come from the wrong bytes.
+        // DIVERGENCE: depending on those bytes the original either goes on with the garbled game (DKSAVE40's re-save) or stops with
+        // run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the
+        // lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.
         var file = SaveFile.Parse(sav, fixedLocationTable: true);
         var h = file.Header;
         var state = new GameState(random ?? running?.Random ?? new MscRandom()) { Data = data };
