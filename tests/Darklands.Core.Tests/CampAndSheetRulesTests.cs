@@ -364,6 +364,7 @@ public sealed class CampAndSheetRulesTests
     public void CallingOffABrewGivesBackEveryIngredientSlotEvenEmptyOnes()
     {
         var s = Alchemists();
+        s.Behaviour.FixCallOffScansEveryEvent = true;
         Give(s, 0, 0x4A, 25, 3);
         s.Party.Members[0].Formulas.Add(7);
         var bench = new BrewingBench(s, Book, 0);
@@ -377,11 +378,28 @@ public sealed class CampAndSheetRulesTests
         Assert.Equal(0, Brewing.BatchesBrewing(s, 0));
     }
 
+    // orig: R036+0x1EC2: the scan starts at the slot numbered as many as there are formulas (1462:1F71)
+    [Fact]
+    public void CallingOffABrewMissesEveryBrewInAnEventSlotBelowTheFormulaCount()
+    {
+        var s = Alchemists();
+        Give(s, 0, 0x4A, 25, 3);
+        s.Party.Members[0].Formulas.Add(7);
+        var bench = new BrewingBench(s, Book, 0);
+        var batch = bench.Batches.Single(b => b.Formula.Index == 7);
+        batch.Count = 3;
+        bench.Brew(batch, 1, 0x1F73);
+        Brewing.CallOff(s, Book, 0);
+        Assert.NotEqual(0, Brewing.BatchesBrewing(s, 0));
+        Assert.Equal(0, s.Party.Members[0].Pack.Where(st => st.Code == 0x4A).Sum(st => st.Count));
+    }
+
     [Fact]
     public void FixedCallingOffGivesBackOnlyTheIngredients()
     {
         var s = Alchemists();
         s.Behaviour.FixUnbrewEmptyIngredientSlots = true;
+        s.Behaviour.FixCallOffScansEveryEvent = true;
         Give(s, 0, 0x4A, 25, 1);
         s.Party.Members[0].Formulas.Add(7);
         var bench = new BrewingBench(s, Book, 0);

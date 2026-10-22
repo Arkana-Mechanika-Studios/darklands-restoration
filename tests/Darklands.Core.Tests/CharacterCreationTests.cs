@@ -255,7 +255,7 @@ public sealed class CharacterCreationTests
         Assert.Contains(made.Pack, s => s.Code == Potions.FirstPotion + 5);
         Assert.Equal([6, 7], made.Formulas.Order());
         Assert.Equal(c.Attributes, made.AttributeMaximums);
-        Assert.Equal(CharacterStatus.Able, made.Status);
+        Assert.Equal(CharacterStatus.Empty, made.Status);   // 0 in the file (lockstep roster-create2); "A" in the roster makes it 1
         Assert.Equal('A', made.ShieldLetter);
     }
 

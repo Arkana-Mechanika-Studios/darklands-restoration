@@ -53,6 +53,8 @@ public static class Saints
     // C: `saints_known[who][bit >> 3] |= 0x80 >> (bit & 7)` at 2E38:082C + who * 0x14: saints_known[-1] = 2E38:0818..082B, the
     // C: formula bytes 2..21 of member 4 (2E38:07BE + 4 * 0x16 = 0816), absent or not (Party.SetMemoryByte).
     // BUG: "learn the saint of this place" (R056 19c4) and the teaching saints pass -1 and teach nobody (FixSaintLearnedByLeader).
+    // C: St.Cosmas (R039+0x3744) and St.Damian (R039+0x3928) do not call R029+0x1302: they write saints_known[who][3] themselves
+    // C: with the member they are given; SaintBook.Teach routes them through here, which writes the same bytes.
     public static void Learn(GameState s, int who, int saint)
     {
         if (who == Who.Leader && s.Behaviour.FixSaintLearnedByLeader)

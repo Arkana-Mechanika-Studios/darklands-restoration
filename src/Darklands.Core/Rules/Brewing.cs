@@ -260,15 +260,19 @@ public static class Brewing
 
     // orig: R036+0x1EC2 (1462:1EC2) draft (bytes match); tests: CampAndSheetRulesTests
     // BUG: all five ingredient slots are returned (FixUnbrewEmptyIngredientSlots).
+    // BUG: the scan for the member's brews starts at the slot numbered as many as there are formulas (1462:1F71 `mov di, [bp - 8]`: the
+    //   formula count the table loop of 1462:1F4A..1F6F added up is the scan's first slot), so a brew in a lower slot (every one in a
+    //   game with fewer events than formulas) is never found: the brew goes on and its ingredients stay used (FixCallOffScansEveryEvent).
     /// <summary>
     /// Calls off the member's brews (a camp activity changes): each brew's ingredients return
     /// to the member at quality 25, one set per batch. Faithful quirk: all five ingredient slots
     /// are given back, so an empty slot adds an empty stack of item 0
-    /// (<see cref="OriginalBehaviour.FixUnbrewEmptyIngredientSlots"/>).
+    /// (<see cref="OriginalBehaviour.FixUnbrewEmptyIngredientSlots"/>). Faithful quirk: only brews in event slots from the number
+    /// of formulas up are found (<see cref="OriginalBehaviour.FixCallOffScansEveryEvent"/>).
     /// </summary>
     public static void CallOff(GameState s, IReadOnlyList<Formula> formulas, int member)
     {
-        for (var i = 0; i < EventLog.Capacity; i++)
+        for (var i = s.Behaviour.FixCallOffScansEveryEvent ? 0 : formulas.Count; i < EventLog.Capacity; i++)
         {
             i = s.Events.Next(EventKinds.Brew, i);
             if (i == -1)

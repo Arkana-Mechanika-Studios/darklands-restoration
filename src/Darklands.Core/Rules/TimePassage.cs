@@ -29,7 +29,11 @@ public static class TimePassage
         {
             hourglass?.Invoke(hours);
         }
-        state.Date = Calendar.AdvanceHours(state.Date, hours, month => NewMonth(state, month));
+        state.Date = Calendar.AdvanceHours(state.Date, hours, (date, month) =>
+        {
+            state.Date = date;
+            NewMonth(state, month);
+        });
         EventExpiry.Run(state);
         Reseed(state);
     }
@@ -41,7 +45,11 @@ public static class TimePassage
         state.Date = state.Date with { Day = (short)(state.Date.Day + days) };
         // C: hours_pass(n * 24) multiplies in 16 bits.
         Recover(state, (short)(days * GameDate.HoursPerDay));
-        state.Date = Calendar.AdvanceDays(state.Date, 0, month => NewMonth(state, month));
+        state.Date = Calendar.AdvanceDays(state.Date, 0, (date, month) =>
+        {
+            state.Date = date;
+            NewMonth(state, month);
+        });
         EventExpiry.Run(state);
         Reseed(state);
     }

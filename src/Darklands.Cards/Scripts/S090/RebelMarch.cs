@@ -47,6 +47,7 @@ public sealed class RebelMarch : Card
         menu.Block = c.SidePercent(-1) >= 50 ? 0 : c.HereQuery(0x18) != 0 ? 2 : 1;
         // orig: R090+0x1366 (18E0:08E6) matched (handlers and card_saints only)
         c.SetCardSaints(0x0C, 0x3D, 0x36);
+        // orig: the card's entry R090+0x0A82 (18E0:0002) matched, just after the call above
         // BUG: the bribe line's flag is set from saints_usable() (meant for line 2, the prayer, which
         // stays enabled); it also overrides the 0 set just above for the far squads.
         menu[1] = c.SaintsUsable();

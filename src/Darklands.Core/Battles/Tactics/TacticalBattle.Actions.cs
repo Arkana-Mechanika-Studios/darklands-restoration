@@ -205,7 +205,9 @@ public sealed partial class TacticalBattle
                 b.RepathAt = (ushort)(Scaled(60) + Clock + 30);
                 b.Moving = true;
                 b.Action = CombatAction.Walk;
-                b.QueuedStep = b.Path[b.PathIndex];
+                // orig: cbt_step R014+0x1738..0x1747 DS:CA30[b] = the path byte; 0xFF (the path ended at once: the follower stands next to the
+                // one in front) is the byte of "no step", which cbt_step's first test (R014+0x162D) returns on: QueuedStep is −1 for that here
+                b.QueuedStep = b.Path[b.PathIndex] == 0xFF ? -1 : b.Path[b.PathIndex];
             }
         }
         if (!Battle.RealCombat)

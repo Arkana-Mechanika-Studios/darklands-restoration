@@ -70,6 +70,8 @@ public sealed class AffairsElsewhere : Card
             {
                 TellOfTheUnrest(c);
             }
+            // orig: the card's entry R071+0x15A4 (1992:0004) matched (the test is here, not in the handler setup)
+            // C: reached outside a city too: the merchant caravan on the road (R109+0x0614) and the wayside shrine (R106+0x25F4) go on to card 0x6E.
             // BUG: outside a city the news test misses a negation: unlike the branch above, this one tests the mine
             // quest without it, so the "nothing of interest" text appears here only while the mine quest runs (and not
             // the robber knight's).

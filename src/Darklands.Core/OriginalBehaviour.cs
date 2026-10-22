@@ -121,6 +121,12 @@ public sealed class OriginalBehaviour
     public bool FixUnbrewEmptyIngredientSlots { get; set; }
 
     /// <summary>
+    /// Changing a camp activity looks for the member's brews from event slot (number of formulas) up, not from slot 0, so it
+    /// finds none in a game with fewer events and the brew goes on; fixed: every slot is scanned.
+    /// </summary>
+    public bool FixCallOffScansEveryEvent { get; set; }
+
+    /// <summary>
     /// The shop stock test reads the city size from an uninitialised stack slot, so the first
     /// item and the item after each of the first four goods use the stock table's row 1; fixed:
     /// always the city size − 1.

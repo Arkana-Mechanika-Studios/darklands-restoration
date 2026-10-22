@@ -161,6 +161,7 @@ public sealed class BattleScreen : ITacticalView
             _ui.TakeLeftReleases();
             _releases = 0;
             var lateTicks = 0;
+            Dictionary<int, int>? pendingRises = null;
             while (true)
             {
                 var now = _ui.Clock.Milliseconds;
@@ -187,17 +188,20 @@ public sealed class BattleScreen : ITacticalView
                     if (ClockRises is not null && ClockRises.Remove(_battle!.Battle.Clock, out var rises))
                     {
                         var draws = 0;
+                        pendingRises = new Dictionary<int, int>(rises);
                         Darklands.Core.Randomness.MscRandom.BeforeDraw = () =>
                         {
-                            if (rises.TryGetValue(draws++, out var rise))
+                            if (rises.TryGetValue(draws, out var rise))
                             {
+                                pendingRises.Remove(draws);
                                 _clockFraction = rise;
                                 Advance(0);
                             }
+                            draws++;
                         };
                         TacticalBattle.ClockPhase = phase =>
                         {
-                            if (rises.TryGetValue(phase, out var rise))
+                            if (pendingRises is not null && pendingRises.Remove(phase, out var rise))
                             {
                                 _clockFraction = rise;
                                 Advance(0);
@@ -227,9 +231,18 @@ public sealed class BattleScreen : ITacticalView
                 }
                 PanelRelease();
                 EdgeScroll();
+                var keyHandled = false;
                 if (_ui.KeyWaiting || _ui.Directions.X != 0 || _ui.Directions.Y != 0)
                 {
                     CombatKeys();
+                    keyHandled = true;
+                }
+                if (keyHandled && pendingRises is not null && pendingRises.Remove(-2, out var keyRise))
+                {
+                    // the original's long computation of a key's order (the path searches of Q, single file) came before the tick tests the clock
+                    // (the tester lists it as the rise at the tick's first clock read, the melee exchanges)
+                    _clockFraction = keyRise;
+                    Advance(0);
                 }
                 if (_resyncClock)
                 {
@@ -237,6 +250,13 @@ public sealed class BattleScreen : ITacticalView
                     _resyncClock = false;
                 }
                 _battle!.IterateRest();
+                if (pendingRises is { Count: > 0 })
+                {
+                    // the rises of the original's pass that this pass did not reach (a draw or a phase it does not make, as when the loot screen
+                    // or a path search took the time there): they come after it
+                    lateTicks += pendingRises.Values.Sum();
+                }
+                pendingRises = null;
                 if (lateTicks > 0)
                 {
                     // the callbacks of the time a long tick took came during it: after what the tick read of the clock
@@ -674,18 +694,6 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
-    private void PacksFromMembers()
-    {
-        for (var i = 0; i < Combatant.PartySlots; i++)
-        {
-            var c = _battle!.Battle[i];
-            if (c.Member is { } m)
-            {
-                c.Items.CopyFrom(m.Pack);
-            }
-        }
-    }
-
     public void RowChanged(int member)
     {
     }
@@ -769,7 +777,16 @@ public sealed class BattleScreen : ITacticalView
         _battle!.MembersFromCombat();
         PacksToMembers();
         _owner.TakeLoot(list, money);
-        PacksFromMembers();
+        // orig: the party record is the combatant record: what the screen changed in a member comes back whole, not only the pack: an item
+        // put on the pile that was the equipped one is unequipped (R031+0x5B38 through item_take_one) in the record itself (+0x22, +0x51,
+        // +0x4B/+0x4C, +0x5C and the encumbrance +0x49), which the battle reads afterwards
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            if (_battle!.Battle[i].Member is { } m)
+            {
+                CombatantSetup.Refresh(_battle.Battle[i], m);
+            }
+        }
         _battle!.TakeUpEnemyAnimations();
         // orig: R014+0xE5E3: the releases made on the loot screen are taken from the driver and forgotten
         _ui.TakeLeftReleases();

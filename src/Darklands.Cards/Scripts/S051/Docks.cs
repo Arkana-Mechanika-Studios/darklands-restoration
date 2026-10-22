@@ -149,6 +149,7 @@ public sealed class Docks : Card
     /// Hint of a passage: the quay safety in a hostile city; else "Success is assured", or (when
     /// the fare is more than the purse) the EXE's next message, "You need a missile weapon".
     /// </summary>
+    // orig: the five passage hints R051+0x2332 (19F2:0792), R051+0x2546 (19F2:09A6), R051+0x275A (19F2:0BBA), R051+0x2970 (19F2:0DD0), R051+0x2B84 (19F2:0FE4) matched
     // BUG: the hint shows R136+0x8690+0x1E5F ("You need a missile weapon") where "Not enough money" was surely meant.
     private static OptionHint PassageHint(CardContext c, int port) =>
         c.Hostile()
