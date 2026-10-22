@@ -12,13 +12,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 82 | 18 | 64 |
-| cards | 51 | 2 | 49 |
+| cards | 59 | 2 | 57 |
 | events | 7 | 4 | 3 |
-| battles | 16 | 3 | 13 |
+| battles | 17 | 3 | 14 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 158 | 28 | 130 |
+| total | 167 | 28 | 139 |
 
-## Core logic (156)
+## Core logic (165)
 
 ### rules (82)
 
@@ -269,9 +269,15 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (51)
+### cards (59)
 
-- **B-ed73b9** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/SideStreetAtNight.cs:100` `SideStreetAtNight.Run`  
+- **B-ae3eba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:93` `MainStreetAtNight.Walk`  
+  original: `R046+0x0422` (1838:0422, matched), `R046+0x0466` (1838:0466, matched), `R046+0x04AA` (1838:04AA, matched) +7 more  
+  why: the night places are fixed card numbers (only the gate and the inn ask the time), no hour passes on the way (advance_hours(0) at most), and the night encounter keeps the night place to return to after its hours: going between the main street and the side streets at night stays in the night cards at any hour, with the encounters of the night (card oracle at 12:00: 0x08 -> 0x0A -> 0x24 -> 0x08 -> 0x19).
+- **B-bdd6a8** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/SideStreetAtNight.cs:60` `SideStreetAtNight.Run`  
+  original: `R046+0x1460` (194B:0330, matched), `R046+0x1432` (194B:0302, matched)  
+  why: the main street is always the night one (0x08) and no hour passes: see MainStreetAtNight.Walk.
+- **B-ed73b9** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/SideStreetAtNight.cs:101` `SideStreetAtNight.Run`  
   original: `R046+0x18B4` (194B:0784, matched), `R046+0x1866` (194B:0736, matched)  
   why: by day, trouble on the way to the grove still leads back to the night grove: after the hour has passed the encounter always returns to card 0x22 (named OtherGateAtNight here), while the clear way and the day side street choose 0x21/0x22 by daylight.
 - **B-79145e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S047/CityWallsByNight.cs:33` `CityWallsByNight._climbing`  
@@ -313,9 +319,15 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-556a53** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:248` `Footpads.ThrowAPotion`  
   original: `R053+0x0C36` (1838:0C36, matched), `R053+0x0C72` (1838:0C72, matched), `R053+0x0CAE` (1838:0CAE, matched) +1 more  
   why: no take_item here: the potion stays in the pack.
+- **B-9ddbde** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:290` `Footpads.Fight`  
+  original: `R053+0x02D6` (1838:02D6, matched)  
+  why: the standing (and the battle's skill practice) is given before the thanks; a game saved at that text holds only this card (DS:A772 = 0x24), so loading it starts the card again (an hour, the ambush or the menu) with the gains kept, by day as by night: the fight can be repeated at will.
 - **B-227a55** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:391` `CouncilHall.AskForAnErrand`  
   original: `R054+0x22F8` (19DF:0888, matched)  
   why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
+- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:452` `CouncilHall.CallUponASaint`  
+  original: `R054+0x25C6` (19DF:0B56, matched)  
+  why: unlike the audience (ReceiveACommission), the saint's way in never asks for a finished commission (ev24_at_owner(3, 0x0A, cur_loc)): a party that prays its way in to be paid gets a new commission instead.
 - **B-0c78c7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:77` `CityWallSallyPort.ForceChance`  
   original: `R055+0x12EC` (1932:034C, matched)  
   why: the original passes the highest Strength VALUE (DS:8DFC) where the member NUMBER belongs, both in the Strength lookup and as the member the hint is about; the Strength of that slot is what counts (almost always an empty slot here: 0).
@@ -382,9 +394,21 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-166488** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightTaskRewarded.cs:59` `RobberKnightTaskRewarded.Run`  
   original: `R080+0x066C` (1870:02EC, matched), `R080+0x06A4` (1870:0324, matched)  
   why: text 1 says the Schulz departs from the party whether or not he joined it (RobberKnightTaskOffered); no member is removed here: one who joined stays until his 90 days are up.
+- **B-0ea525** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S081/InsideTheRobberKnightsTower.cs:108` `InsideTheRobberKnightsTower.Fight`  
+  original: `R081+0x01B8` (1838:01B8, matched)  
+  why: here the quest is not resolved (ev8_resolve is only called after a won battle): the knight is dead and the tower a ruin, but no patron ever pays for the quest (card oracle: result 1 with the target slain).
+- **B-a015b0** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S081/InsideTheRobberKnightsTower.cs:175` `InsideTheRobberKnightsTower.SetTheTowerOnFire`  
+  original: `R081+0x05D0` (1838:05D0, matched)  
+  why: the battle's next card (0x0C, the map, after the knight's death) is overwritten below: the party is back before the ruined tower (0x93) and can go in, fire it and kill the knight again, for his loot each time; the leader practises Artifice each time, though the chance was the best member's (card oracle, 0x94 option 1).
+- **B-881dd6** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S081/RobberKnightsAudience.cs:98` `RobberKnightsAudience.Fight`  
+  original: `R081+0x09D0` (18BB:01A0, matched)  
+  why: the quest is not resolved on this path: the knight is dead, but no patron ever pays for the quest (card oracle: result 1 with the target slain).
 - **B-19435f** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S084/WolfPackOnTheTrail.cs:150` `WolfPackOnTheTrail.RidingChance`  
   original: `R084+0x0536` (1838:0536, matched)  
   why: it tests item 0's flags.
+- **B-905fee** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S087/SchratsMagicFruit.cs:66` `SchratsMagicFruit.EatTheFruit`  
+  original: `R087+0x188E` (1986:03AE, matched), `R087+0x18A8` (1986:03C8, matched)  
+  why: the strength is given before the last text; a game saved at that text holds only the card (DS:A772 = 0xAF), so loading it runs this card again from its menu with the strength kept: the fruit can be eaten again and again (lockstep oracle: save at the text, load, eat: +4 then +8).
 - **B-ee49f7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:35` `CityLordsReward.Run`  
   original: `R089+0x0C5C` (18CE:02FC, matched)  
   why: the original looks for a saint nobody in the party knows, starting from the city's own, but has no return statement: AX holds the last member_bit answer, 0 (checked against asm). So saint 0.
@@ -449,7 +473,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
 
-### battles (16)
+### battles (17)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -463,6 +487,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-08f8dd** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:406` `Attacks.QueueDamage`  
   original: `R014+0xAD5A` (18BF:08CA, draft)  
   why: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's animation; traps) wraps past 127 to a negative queue, which damage_apply's signed test (jle 42) lets through: the target gains Endurance (and Strength, for the second byte) instead of losing it.
+- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:329` `BattleEnd.ImproveSkills`  
+  original: `R014+0x0694` (0E76:0694, draft)  
+  why: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or axe has weapon -1 (use_ammo), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
   original: `R004+0x1D90` (0E76:1D90, draft)  
   why: the original removes an empty group by shifting the later groups down but keeps testing the same (stale, zero) counter, so every group after the first empty one is removed too.

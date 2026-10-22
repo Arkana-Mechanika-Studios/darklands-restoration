@@ -95,7 +95,8 @@ public sealed class RobberKnightsAudience : Card
                     ShowPicture(c, 25);
                     c.Screen.Text(9);
                     c.PassHours(1);
-                    // C: the quest is not resolved on this path.
+                    // BUG: the quest is not resolved on this path: the knight is dead, but no patron ever pays for the
+                    // quest (card oracle: result 1 with the target slain).
                     TheTowerFalls(c);
                     c.Next = 0x0C;
                     return;

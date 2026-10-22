@@ -90,6 +90,10 @@ public sealed class MainStreetAtNight : Card
 
     /// <summary>An option that walks to a place; met trouble first leads to the night encounter, which remembers the place.</summary>
     // orig: action handlers R046+0x0422, R046+0x0466, R046+0x04AA, R046+0x04EE, R046+0x053A, R046+0x057E, R046+0x05BE, R046+0x0602, R046+0x0646, R046+0x06A6 (see the option lines); the inn option is written out in Run
+    // BUG: the night places are fixed card numbers (only the gate and the inn ask the time), no hour passes on the way
+    // (advance_hours(0) at most), and the night encounter keeps the night place to return to after its hours: going between
+    // the main street and the side streets at night stays in the night cards at any hour, with the encounters of the night
+    // (card oracle at 12:00: 0x08 -> 0x0A -> 0x24 -> 0x08 -> 0x19).
     private MenuLine Walk(CardContext c, Func<int> place, bool passTime = false) =>
         new(chance =>
             {

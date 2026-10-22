@@ -105,7 +105,8 @@ public sealed class InsideTheRobberKnightsTower : Card
                 ShowPicture(c, 38);
                 c.Screen.Text(7);
                 c.PassHours(1);
-                // C: here the quest is not resolved (ev8_resolve is only called after a won battle).
+                // BUG: here the quest is not resolved (ev8_resolve is only called after a won battle): the knight is dead
+                // and the tower a ruin, but no patron ever pays for the quest (card oracle: result 1 with the target slain).
                 TheTowerFalls(c);
                 c.Next = 0x0C;
                 break;
@@ -171,7 +172,9 @@ public sealed class InsideTheRobberKnightsTower : Card
             {
                 ShowPicture(c, 31);
                 c.Screen.Text(1);
-                // C: the battle's next card is overwritten below: the party is back before the tower.
+                // BUG: the battle's next card (0x0C, the map, after the knight's death) is overwritten below: the party is
+                // back before the ruined tower (0x93) and can go in, fire it and kill the knight again, for his loot each time;
+                // the leader practises Artifice each time, though the chance was the best member's (card oracle, 0x94 option 1).
                 Fight(c, 0x75);
             }
             else

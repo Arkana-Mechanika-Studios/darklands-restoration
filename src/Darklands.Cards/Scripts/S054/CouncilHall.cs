@@ -449,6 +449,8 @@ public sealed class CouncilHall : Card
                     break;
             }
             // C: a slot outside 0..3 skips the texts and still gives the commission.
+            // BUG: unlike the audience (ReceiveACommission), the saint's way in never asks for a finished commission
+            // (ev24_at_owner(3, 0x0A, cur_loc)): a party that prays its way in to be paid gets a new commission instead.
             var here = c.State.Locations[c.Here];
             c.Variables.Location = c.NearestLocationOfType(here.X, here.Y, 2);
             c.StartQuest3(Lord, c.Variables.Location, c.City.Ordinal + 0x62, 0x0F, 2, 0);

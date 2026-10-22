@@ -57,6 +57,7 @@ public sealed class SideStreetAtNight : Card
         c.Next = Number;
         var next = menu.Run(
             // orig: R046+0x1460 (194B:0330) + R046+0x1432 (194B:0302) R046 seg 194B matched
+            // BUG: the main street is always the night one (0x08) and no hour passes: see MainStreetAtNight.Walk.
             new MenuLine(() =>
                 {
                     if (TroubleOnTheWay(c))
