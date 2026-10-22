@@ -47,6 +47,10 @@ public sealed class SaveFile
     /// <summary>The characters' records (+0x189), in roster order.</summary>
     public List<byte[]> Characters { get; } = [];
 
+    /// <summary>The record count written at +0xF1; null: the number of <see cref="Characters"/>.</summary>
+    // C: the original's writer copies charactr.tmp's count, also when it writes fewer records (a party slot of status 0, OriginalSaves.Write).
+    public int? CharacterCount { get; set; }
+
     /// <summary>The events' records, in slot order (the empty slots left out).</summary>
     public List<byte[]> Events { get; } = [];
 
@@ -91,7 +95,7 @@ public sealed class SaveFile
         using var out_ = new MemoryStream();
         out_.Write(Fixed(Header, HeaderSize));
         PutWord(out_, PartySize);
-        PutWord(out_, Characters.Count);
+        PutWord(out_, CharacterCount ?? Characters.Count);
         foreach (var id in PartyIds)
         {
             PutWord(out_, id);

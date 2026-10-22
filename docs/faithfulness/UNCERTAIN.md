@@ -853,7 +853,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-13995e** `uncertain` - `src/Darklands.Persistence/LocationRecords.cs:10` `LocationRecords`  
   original: unresolved (none)  
   why: +0x02, +0x10, +0x22..+0x25 and the bytes after the name's zero are not named; they are kept as read (Location.OriginalRecord).
-- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:399` `OriginalSaves.PartyRecordInBattle`  
+- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:404` `OriginalSaves.PartyRecordInBattle`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 

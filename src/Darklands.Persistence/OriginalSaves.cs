@@ -226,8 +226,6 @@ public static class OriginalSaves
         {
             FileName = fileName,
             Header = (byte[])h.Clone(),
-            PartySize = file.PartySize,
-            PartySizeFromSlots = PartySizeOf(file.PartyIds),
             Images = (byte[])file.Images.Clone(),
             Palettes = (byte[])file.Palettes.Clone(),
             Cache = file.Cache,
@@ -266,13 +264,13 @@ public static class OriginalSaves
     // box is drawn in colour 9; after the file is written every event is freed again (EventLog.ReleaseAfterSave): the battle goes on with an
     // empty table, and what it had added is lost (in slots n and up it was saved with the game).
     // C: in a battle the party's records are its combatant records (PartyRecordInBattle) and the battle file is written from the battle.
-    // C: party_size is recomputed from the slots of charactr.tmp; nd records follow in roster order: a party member's from memory
-    // (combatants, saints, formulas, pack), skipped when `party[je][0]` is 0, any other copied from charactr.tmp.
-    // DIVERGENCE: a party slot whose status is 0 (a loaded file can have one: DKSAVE40) is skipped by the original, which then copies the
-    // following roster records one place late and leaves the file a record short; its record is written here.
+    // C: party_size is recomputed from the slots of charactr.tmp every time (DKSAVE40, written by another tool with 6, is saved with 4);
+    // then charactr.tmp's count nd and, for each of the nd roster entries in order: a party member's record from memory (combatants,
+    // saints, formulas, pack) with one charactr.tmp record read past it, nothing at all when the slot's status `party[je][0]` is 0, any
+    // other entry the next record read from charactr.tmp. A status-0 slot (a loaded file can have them: DKSAVE40 has two) so leaves the
+    // entries after it that many records late and the file that many records short of nd, as the original writes it (lockstep oracle).
     // C: the events are written in slot order without the empty slots, then the word 0x19E and the 414 location records, then cache.tmp.
-    // C: values the original recomputes when saving (party_size from the slots, DS:A67C when a hireling joins) are written as read while
-    // what they are computed from is unchanged, so a file another tool wrote (DKSAVE40's party_size of 6) comes back as it was.
+    // C: DS:A67C, which the original recomputes when a hireling joins, is written as read while nobody has joined.
     // DIVERGENCE: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.
     // C: the .BSV: the battle-state save R003+0x00DC writes the program's battle file (GameState.BattleFile: the battle's variables and the last
     // battlefield's levels and files); before any battle or battle file (a new game) the variables are the program's zeros.
@@ -341,8 +339,7 @@ public static class OriginalSaves
 
         state.Roster.Reconcile(state.Party);
         state.Roster.PartySlots.CopyTo(file.PartyIds, 0);
-        var size = PartySizeOf(file.PartyIds);
-        file.PartySize = image is not null && image.PartySizeFromSlots == size ? image.PartySize : size;
+        file.PartySize = PartySizeOf(file.PartyIds);
         file.Images = image is null ? new byte[file.Images.Length] : (byte[])image.Images.Clone();
         file.Palettes = image is null ? new byte[file.Palettes.Length] : (byte[])image.Palettes.Clone();
         for (var slot = 0; slot < SaveFile.PartySlots; slot++)
@@ -357,21 +354,29 @@ public static class OriginalSaves
             member.ImagePalette.AsSpan(0, Math.Min(member.ImagePalette.Length, SaveFile.PaletteSize))
                 .CopyTo(file.Palettes.AsSpan(slot * SaveFile.PaletteSize, SaveFile.PaletteSize));
         }
+        // C: `next`: the charactr.tmp record the writer's next read gets.
+        var next = 0;
         for (var i = 0; i < state.Roster.Characters.Count; i++)
         {
             var slot = Array.IndexOf(state.Roster.PartySlots, i);
             if (slot >= 0 && slot < state.Party.Members.Count)
             {
                 var member = state.Party.Members[slot];
-                file.Characters.Add(inBattle is not null && slot < Core.Battles.Combatant.PartySlots && inBattle[slot].Member == member
-                    ? PartyRecordInBattle(member, inBattle[slot])
-                    : CharacterRecords.Write(member));
+                var fighting = inBattle is not null && slot < Core.Battles.Combatant.PartySlots && inBattle[slot].Member == member;
+                // C: `if (party[je][0])`: the status byte of the slot's record in memory (its combatant record in a battle).
+                if ((fighting ? inBattle![slot].Status : member.Status) == CharacterStatus.Empty)
+                {
+                    continue;
+                }
+                file.Characters.Add(fighting ? PartyRecordInBattle(member, inBattle![slot]) : CharacterRecords.Write(member));
+                next++;
             }
             else
             {
-                file.Characters.Add(CharacterRecords.Write(state.Roster.Characters[i]));
+                file.Characters.Add(CharacterRecords.Write(state.Roster.StoredRecord(next++)));
             }
         }
+        file.CharacterCount = state.Roster.Characters.Count;
         foreach (var (_, e) in state.Events.All())
         {
             file.Events.Add(EventRecords.Write(e));
@@ -440,8 +445,6 @@ public static class OriginalSaves
         {
             FileName = fileName,
             Header = file.Header,
-            PartySize = file.PartySize,
-            PartySizeFromSlots = PartySizeOf(file.PartyIds),
             Images = file.Images,
             Palettes = file.Palettes,
             Cache = file.Cache,
@@ -487,10 +490,6 @@ public static class OriginalSaves
         public required string FileName { get; init; }
 
         public required byte[] Header { get; init; }
-
-        public int PartySize { get; init; }
-
-        public int PartySizeFromSlots { get; init; }
 
         public required byte[] Images { get; init; }
 
