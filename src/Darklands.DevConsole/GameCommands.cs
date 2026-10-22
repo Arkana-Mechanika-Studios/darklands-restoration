@@ -175,9 +175,11 @@ public static class GameCommands
         && e.Location != 0
        ).ToArray();
 
+       var DS = s.Events.QuestsAll().ToArray();
+
        var resolvedeQuestOwners = s.Events.QuestsAll().Where(e => 
         e.Kind == EventKinds.ResolvedQuest 
-        && e.Owner <= 0
+        && e.Owner >= 0
        ).ToArray();
 
        var lines = new List<string>();

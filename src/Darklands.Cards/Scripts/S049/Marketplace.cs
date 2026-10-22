@@ -209,9 +209,8 @@ public sealed class Marketplace : Card
             m.Shop();
         }
 
-        // var roll = c.Random(100);
-        // changed roll, so that the quest is always offered.
-        var roll = 1;
+        var roll = c.Random(100);
+
         if (c.Events.QuestWithValue(0x0A, m.Owner, c.Here) || c.Events.QuestWithValue(3, m.Owner, c.Here) || c.EventTypeAtHere(MerchantBusy, m.Owner))
         {
             return;
