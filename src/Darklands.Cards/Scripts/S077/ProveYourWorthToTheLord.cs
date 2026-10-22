@@ -45,10 +45,11 @@ public sealed class ProveYourWorthToTheLord : Card
         menu[1] = c.SaintsUsable();
 
         return menu.Run(
-            // orig: R077+0x0BE4 (1838:0BE4) matched; tests: CardSmokeTests
+            // orig: R077+0x020C (line 0); R077+0x0BE4 (1838:0BE4) matched; tests: CardSmokeTests
             new MenuLine(() => TurnLeadIntoGold(c), OptionHint.Saying(CardTexts.SelectPotion),
                 () => c.MemberPopupHint(CardTexts.PotionWorks)),
-            // orig: R077+0x0C20 (1838:0C20) matched; R077+0x0CAA (1838:0CAA) matched; R077+0x0D34 (1838:0D34) matched; R077+0x0DBE (1838:0DBE) matched; tests: CardSmokeTests
+            // orig: R077+0x0310 (line 1); R077+0x0C20 (1838:0C20) matched; R077+0x0CAA (1838:0CAA) matched; R077+0x0D34 (1838:0D34) matched;
+            // R077+0x0DBE (1838:0DBE) matched; tests: CardSmokeTests
             new MenuLine(() => CallOnASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(() =>
             {
@@ -82,7 +83,8 @@ public sealed class ProveYourWorthToTheLord : Card
     /// The lord, impressed, sets the party on a robber knight near the city for a reward
     /// ($Money1) and sends it there, to return to <paramref name="returnCard"/> afterwards.
     /// </summary>
-    private static void GiveTheTask(CardContext c, int questType, int returnCard)
+    // C: the card to return to is asked after the hour has passed (is_daylight after advance_hours(1)).
+    private static void GiveTheTask(CardContext c, int questType, Func<int> returnCard)
     {
         c.Variables.Money[0] = Money.From(c.LocationQuery(c.Here, 2) * 7, 0, 0);
         c.RandomName(c.City.Ordinal + 0x0C, 0, 0);
@@ -90,7 +92,7 @@ public sealed class ProveYourWorthToTheLord : Card
         c.Variables.Location = c.NearestLocationOfType(city.X, city.Y, 2);
         c.StartQuest3(0x0A, c.Variables.Location, questType, 0x0F, 2, 0);
         c.PassHours(1);
-        c.State.SavedCard = returnCard;
+        c.State.SavedCard = returnCard();
         c.State.SavedCard2 = c.Variables.Location;
         c.Next = RobberKnight;
     }
@@ -101,7 +103,7 @@ public sealed class ProveYourWorthToTheLord : Card
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         c.Screen.Text(1);
         c.PassHours(0);
-        GiveTheTask(c, c.City.Ordinal + 1, 0x0C);
+        GiveTheTask(c, c.City.Ordinal + 1, () => 0x0C);
     }
 
     // orig: R077+0x0310 (1838:0310) matched; R077+0x04AC (1838:04AC) matched; tests: CardSmokeTests
@@ -121,7 +123,7 @@ public sealed class ProveYourWorthToTheLord : Card
             ShowPicture(c, 289);
             c.Screen.Text(3);
             c.PassHours(1);
-            GiveTheTask(c, c.City.Ordinal + 1, AfterTheAudience(c));
+            GiveTheTask(c, c.City.Ordinal + 1, () => AfterTheAudience(c));
             return;
         }
         ShowPicture(c, CourtPicture);
@@ -163,7 +165,7 @@ public sealed class ProveYourWorthToTheLord : Card
         {
             c.Screen.Text(4);
             c.PassHours(2);
-            GiveTheTask(c, c.City.Ordinal + 1, AfterTheAudience(c));
+            GiveTheTask(c, c.City.Ordinal + 1, () => AfterTheAudience(c));
             return true;
         }
         ShowPicture(c, CourtPicture);
@@ -212,7 +214,7 @@ public sealed class ProveYourWorthToTheLord : Card
             ShowPicture(c, 96);
             c.Screen.Text(6);
             c.PassHours(1);
-            GiveTheTask(c, c.City.Ordinal + 0x62, AfterTheAudience(c));
+            GiveTheTask(c, c.City.Ordinal + 0x62, () => AfterTheAudience(c));
             return true;
         }
         c.Screen.Text(7);
@@ -239,7 +241,7 @@ public sealed class ProveYourWorthToTheLord : Card
             ShowPicture(c, CourtPicture);
             c.Screen.Text(8);
             c.PassHours(1);
-            GiveTheTask(c, c.City.Ordinal + 1, AfterTheAudience(c));
+            GiveTheTask(c, c.City.Ordinal + 1, () => AfterTheAudience(c));
             return true;
         }
         ShowPicture(c, UnimpressedPicture);

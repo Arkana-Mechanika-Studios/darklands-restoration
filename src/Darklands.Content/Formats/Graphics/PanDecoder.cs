@@ -193,6 +193,8 @@ public sealed class PanDecoder
     {
         var framebuffer = new byte[FramebufferLength];
         var frames = new List<PanFrame>(records.Count);
+        // Not in the original: the frames' asset names ("INTRO.PAN#3", see IndexedImage.AssetName); callers name a PAN without its extension.
+        var file = assetName.ToUpperInvariant() + (Path.HasExtension(assetName) ? "" : ".PAN");
 
         // Each PAN frame mutates the same persistent VGA framebuffer.
         for (var index = 0; index < records.Count; index++)
@@ -208,7 +210,7 @@ public sealed class PanDecoder
             DecodeFrameRecord(assetName, index, logical.AsSpan(recordStart, recordEnd - recordStart), framebuffer);
             frames.Add(new PanFrame(
                 index,
-                new IndexedImage(IndexedImage.OriginalVgaWidth, IndexedImage.OriginalVgaHeight, framebuffer),
+                new IndexedImage(IndexedImage.OriginalVgaWidth, IndexedImage.OriginalVgaHeight, framebuffer, $"{file}#{index}"),
                 palette,
                 TimeSpan.Zero,
                 record));

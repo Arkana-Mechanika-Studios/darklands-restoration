@@ -81,7 +81,7 @@ public sealed class CityDungeon : Card
             var character = c.EventType(c.Events.Find(FellowPrisoner, -1, c.Here, -1, -1, -1));
             if (character != -1)
             {
-                c.Variables.Chosen[0] = c.JoinFromRoster(character);
+                c.Variables.Chosen[0] = c.CharacterJoins(character);
                 Show(c, _picture);
                 c.Screen.Text(0x12, TextFrame.BlankPage);
             }

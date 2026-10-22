@@ -39,8 +39,9 @@ public sealed class PublicExecution : Card
         return menu.Run(
             // orig: R079+0x10DA (18D8:06DA) asm; R079+0x10E4 (18D8:06E4) asm; tests: CardSmokeTests
             new MenuLine(() => Verdict(c, -1, ref standing), OptionHint.Saying(SuccessAssured)),
-            new MenuLine(() => BreakTheRopes(c, StrengthChance(c).Chance, ref standing), hint: () => StrengthChance(c)),
-            // orig: R079+0x1462 (18D8:0A62) asm; R079+0x14EC (18D8:0AEC) asm; R079+0x1576 (18D8:0B76) asm; R079+0x1600 (18D8:0C00) asm; tests: CardSmokeTests
+            new MenuLine(chance => BreakTheRopes(c, chance, ref standing), hint: () => StrengthChance(c)),
+            // orig: R079+0x1212 (line 2); R079+0x1462 (18D8:0A62) asm; R079+0x14EC (18D8:0AEC) asm; R079+0x1576 (18D8:0B76) asm;
+            // R079+0x1600 (18D8:0C00) asm; tests: CardSmokeTests
             new MenuLine(() => PrayForDeliverance(c, ref standing), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint));
     }
 

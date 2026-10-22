@@ -608,10 +608,20 @@ public sealed partial class TacticalBattle
     /// </summary>
     // orig: R014+0xCD66 (19CD:17F6) unmatched (the target part; the member cursor's
     // position is the screen's); called by combat_draw
-    // C: the cursor is only redone when the target has a hot spot (is drawn); the screen only shows it then.
+    // C: the cursor is only redone when the target has a hot spot (is drawn); without one the cursor sprite DS:E1BC = 0 (0xCECB),
+    // C: which also lifts a blocked line's refusal of the order.
     private void RefreshTargetCursor()
     {
-        if (CursorTarget < 0 || Selected < 0 || !_view.CombatantInView(CursorTarget))
+        if (CursorTarget < 0)
+        {
+            return;
+        }
+        if (!_view.CombatantInView(CursorTarget))
+        {
+            Cursor = OrderCursor.None;
+            return;
+        }
+        if (Selected < 0)
         {
             return;
         }

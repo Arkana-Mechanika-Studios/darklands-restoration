@@ -203,6 +203,9 @@ public sealed partial class TacticalBattle
             loot.ChestOffsets[idx] = loot.Append(contents, contents.Count);
         }
         _view.MapChanged();
+        // C: then combat_draw R014+0x6818, as each tick ends: the draw list (its random draws) and the target cursor.
+        Effects.Drawn(_view);
+        RefreshTargetCursor();
     }
 
     /// <summary>Member who disarms the trap of his chest: Artifice − 10 + 1d20 against its difficulty; failing, it goes off at him.</summary>

@@ -108,10 +108,10 @@ public static class Attacks
             damage = HitDamage(battle, a, t, result, location);
             reaction = damage <= 1 ? 1 : 2;
         }
-        if (battle.DemoMode && a == 5)
+        if (battle.DragonFight != 0 && a == 5)
         {
-            // DORMANT: demo mode is never set in a normal game.
-            battle.DemoAttackCount++;
+            // C: the dragon's blows are counted (a byte: it wraps at 256); melee_frame breathes every DS:C21F-th.
+            battle.DragonBlowCount++;
         }
         var missVariant = -1;
         if (result == HitResult.None)
@@ -134,9 +134,9 @@ public static class Attacks
     {
         location = 0;
         var roll = battle.RollOneTo(100);
-        if (battle.DemoMode && a == 5 && battle.DemoMissFlag == -1)
+        if (battle.DragonFight != 0 && a == 5 && battle[5].Target == -1)
         {
-            // DORMANT: demo mode only.
+            // C: the dragon without a victim (DS:9F1F, its record's +0x4A) misses; the roll is drawn first.
             return HitResult.None;
         }
         var ca = battle[a];
@@ -335,11 +335,18 @@ public static class Attacks
             return 0;
         }
         var ct = battle[t];
+        // BUG: the whole charm byte but bit 7 counts as armour: its high nibble (bits 4-6) is the fire charm that Firewall
+        // (+1 each), St.Polycarp, St.Charity and the other SetCharm saints set, so they give +16 to +112 armour that never
+        // wears off (the "invulnerable after Polycarp and Firewall" bug); only the low nibble is the potions' and saints' armour.
         var armour = ct.ArmourValue[location] + (ct.Protection & 0x7F);
+        // BUG: the weapon potions' bonus byte counts with any weapon the member strikes with (bows and fists too), where the
+        // manual and the potions' own descriptions limit Deadly Blade, Strongedge and Great Power to some kinds of weapon.
         var bonus = (ca.WeaponBonus >> 4) + ca.WeaponDamage;
         var fullStrength = ca.FullStrength & 0x7F;
         int minimumStrength = ca.MinimumStrength;
         // C: the bonus byte is added whole (not just its low nibble) before masking.
+        // BUG: the penetration wraps: (bonus + weapon) & 15, so Strongedge or Great Power on a weapon of high penetration
+        // gives almost none ("after Great Power my bows only do 3-5 damage").
         var penetration = (ca.WeaponBonus + ca.WeaponClass) & 0xF;
         if (ca.Action.Has(CombatAction.VulnerableAttack))
         {
@@ -394,6 +401,11 @@ public static class Attacks
         }
         var target = battle[t];
         // C: the queue is a signed byte: the addition wraps at 8 bits.
+        // C: the queue is added to (18BF:093F, 18BF:0982 `add byte ptr`), never overwritten by a blow; only damage_apply, the
+        //   battle setup and the knock-back's halving write it.
+        // BUG: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's
+        //   animation; traps) wraps past 127 to a negative queue, which damage_apply's signed test (jle 42) lets through: the
+        //   target gains Endurance (and Strength, for the second byte) instead of losing it.
         target.QueuedEndurance = (sbyte)(target.QueuedEndurance + damage);
         int factor;
         if (armour < penetration)
@@ -486,7 +498,7 @@ public static class Attacks
         c.ArmourValue[1] = tables.ArmourValue(Math.Max((int)c.ArmourType[1], 0));
         int skill = c.ReadiedSkill = c.Skills[tables.SkillCategory(weapon)];
         c.FullStrength = (byte)(fullStrength | missileFlag);
-        animationCode?.Invoke(tables.AnimationCode(weapon));
+        animationCode?.Invoke(battle.AnimationCode(weapon));
         int strength = c.MaximumStrength;
         int tooWeakFighting = 0, tooWeakAiming = 0, unskilledFighting = 0, unskilledAiming = 0;
         var d = minimumStrength - strength;
@@ -521,8 +533,8 @@ public static class Attacks
     /// <summary>Uses one ammunition (or the thrown weapon itself); when it runs out the combatant goes back to its hand weapon.</summary>
     /// <param name="ranOut">Called when the ammunition ran out (the battle screen updates the panel and the AI).</param>
     // orig: use_ammo R014+0xB0D8 (18BF:0C48) draft
-    // DIVERGENCE: the AI reset for enemies (R014 1DB7:05C8), cbt_action = 0x0D, DS:A3D8 = 2 and the panel redraw are
-    // done by the caller through ranOut.
+    // C: the AI reset for enemies (R014 1DB7:05C8), DS:A3D8 = 2 and the panel redraw are the caller's ranOut, the action state
+    // 0x0D (DS:CA64) the caller's after the call.
     public static int UseAmmunition(Battle battle, int i, Action<int>? ranOut = null)
     {
         var c = battle[i];

@@ -227,6 +227,7 @@ public static class Inventory
         }
         // C: appended while nitems < 0x40 (signed): a count of -1 (keep_items_pct on an empty pack) writes entry -1, which is the
         // C: previous member's entry 63 (2E38:0038 for member 0), and the count becomes 0: the item is lost.
+        // BUG: a 65th stack is dropped without a word (quest items too): nothing tries another member, and the callers do not test the pack.
         own.Add(stack);
         return own.Stacks;
     }

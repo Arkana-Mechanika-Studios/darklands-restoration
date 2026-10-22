@@ -55,12 +55,13 @@ public sealed partial class TacticalBattle
         {
             LeaveOrderMode();
         }
+        FollowsActive = true;
         Battle.ActiveMember = i;
         if (c.Floor != Battle.FloorShown)
         {
             SwitchLevel(c.Floor);
+            _view.Recentre(i);
         }
-        ViewOrigin = null;
         ResetOrderMenu();
         PendingOrderMember = i;
     }
@@ -78,13 +79,14 @@ public sealed partial class TacticalBattle
         {
             return;
         }
+        FollowsActive = true;
         Battle.ActiveMember = Battle.Leader = i;
         if (c.Floor != Battle.FloorShown)
         {
             SwitchLevel(c.Floor);
         }
-        ViewOrigin = null;
         _view.RowChanged(-1);
+        ResetOrderMenu();
     }
 
     /// <summary>An arrow key: the active member takes one step that way this tick (not when the party travels as a group).</summary>
@@ -111,18 +113,19 @@ public sealed partial class TacticalBattle
     /// <summary>DS:064A "USE STAIRS - your only option…".</summary>
     public const int UseStairsText = 0x064A;
 
-    /// <summary>G: travel as a group on or off.</summary>
-    // orig: R016+0x0BD6 (1EF8:0BD6) draft (byte-matched)
+    /// <summary>G: travel as a group on or off (the caller tests the menu entry's enable byte).</summary>
+    // orig: R016+0x0BD6 (1EF8:0BD6) draft (byte-matched; checked against the asm)
+    // C: move_mode = move_mode == 1 ? 0 : 1; on: the text DS:074A, the ticks of the Orders entries DS:07AA = 1 / DS:07BC = 2 (the first
+    // C: bytes of their texts; here read from MoveMode when drawn), DS:D7FE = 1, marching_order_rebuild(1), DS:A6D3[0..4] = 0 and for
+    // C: the five party records +0x4A = 0xFF, order_queue_clear(i), +0x10 = 0; off: the text DS:0768, both ticks 2, DS:D7FE = 0,
+    // C: DS:9681 = 2 when DS:D610 == 0, the same clears without order_queue_clear; then show_message(text, 60), order_menu_reset and
+    // C: DS:9609 = 1 when DS:A695 == 1
     public void ToggleGroup()
     {
-        if (!GroupMoveAllowed && MoveMode != 1)
-        {
-            return;
-        }
-        MoveMode = MoveMode != 1 ? 1 : 0;
-        CursorKeysOn = MoveMode == 1;
+        MoveMode = MoveMode == 1 ? 0 : 1;
         if (MoveMode == 1)
         {
+            CursorKeysOn = true;
             RebuildMarchingOrder();
             for (var i = 0; i < Combatant.PartySlots; i++)
             {
@@ -132,30 +135,61 @@ public sealed partial class TacticalBattle
                 c.ClearOrders();
                 c.Action = CombatAction.None;
             }
-            return;
         }
-        _view.Message(TravelIndividuallyText, 60);
-        StopMembers();
+        else
+        {
+            CursorKeysOn = false;
+            if (!GroupMoveAllowed)
+            {
+                Menus.Set(OrdersItem.Group, 2);
+            }
+            StopMembers();
+        }
+        _view.Message(MoveMode == 1 ? TravelAsGroupText : TravelIndividuallyText, 60);
+        AfterMoveModeChange();
     }
 
-    /// <summary>Q: single file on or off.</summary>
-    // orig: R016+0x0CDC (1EF8:0CDC) draft (byte-matched)
+    /// <summary>Q: single file on or off (the caller tests the menu entry's enable byte).</summary>
+    // orig: R016+0x0CDC (1EF8:0CDC) draft (byte-matched; checked against the asm)
+    // C: DS:D7FE = 0, move_mode = move_mode == 2 ? 0 : 2; on: the text DS:0788, the ticks DS:07AA = 2 / DS:07BC = 1,
+    // C: marching_order_rebuild(1), single_file; off: the text DS:0768, both ticks 2, DS:9695 = 2 when DS:D610 == 0, DS:A6D3[0..4] = 0 and
+    // C: for the five party records +0x4A = 0xFF, +0x10 = 0; then show_message(text, 60), order_menu_reset and DS:9609 = 1 when DS:A695 == 1
     public void ToggleSingleFile()
     {
-        if (!GroupMoveAllowed && MoveMode != 2)
-        {
-            return;
-        }
         CursorKeysOn = false;
-        MoveMode = MoveMode != 2 ? 2 : 0;
+        MoveMode = MoveMode == 2 ? 0 : 2;
         if (MoveMode == 2)
         {
             RebuildMarchingOrder();
             SingleFile();
-            return;
         }
-        _view.Message(TravelIndividuallyText, 60);
-        StopMembers();
+        else
+        {
+            if (!GroupMoveAllowed)
+            {
+                Menus.Set(OrdersItem.SingleFile, 2);
+            }
+            StopMembers();
+        }
+        _view.Message(MoveMode == 2 ? SingleFileText : TravelIndividuallyText, 60);
+        AfterMoveModeChange();
+    }
+
+    /// <summary>DS:074A "Party will travel as a group".</summary>
+    public const int TravelAsGroupText = 0x074A;
+
+    /// <summary>DS:0788 "Party will travel in single file".</summary>
+    public const int SingleFileText = 0x0788;
+
+    /// <summary>The end of both toggles: the order menu reset (its "(Ldr)" / "(All)" suffixes follow the new move mode), Resume on in order mode.</summary>
+    // C: R016+0x0BD6 at 0x0CC6..0x0CD2, R016+0x0CDC at 0x0D91..0x0D9D
+    private void AfterMoveModeChange()
+    {
+        ResetOrderMenu();
+        if (Paused)
+        {
+            Menus.Set(OrdersItem.Resume, 1);
+        }
     }
 
     private void StopMembers()

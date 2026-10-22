@@ -72,10 +72,22 @@ public interface ICardScreen
     /// <see cref="CardContext.MenuSlot"/> and <see cref="CardContext.MenuPopup"/> and returns the line.
     /// <paramref name="popupHint"/> is the hint of a choice in line k's box, asked with the member and slot set.
     /// </summary>
-    // orig: card_menu R043+0x1BD2 (150B:1142) draft (bytes match) with card_mouse R043+0x21D4 (150B:1744) draft (bytes match): the pop-up's handler table is item_fn / saint_fn (DS:EC00 / DS:ECF6), copied into the menu's own with the box layout
+    // orig: card_options R043+0x0F2A (150B:049A) draft (function matched) + card_menu R043+0x1BD2 (150B:1142) draft (bytes match) with card_mouse R043+0x21D4 (150B:1744) draft (bytes match): the pop-up's handler table is item_fn / saint_fn (DS:EC00 / DS:ECF6), copied into the menu's own with the box layout
     // C: a screen without pop-up boxes (the scripted test screens) chooses as the three-argument Choose does.
     int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint) =>
         Choose(block, options, hint);
+
+    /// <summary>
+    /// <see cref="Choose(int, IReadOnlyList{OptionState}, Func{int, OptionHint}?, Func{int, OptionHint}?)"/> with a step the card
+    /// takes between card_options (the text drawn, waited out and the lines faded in) and card_menu (the choice).
+    /// </summary>
+    // orig: R061+0x2278 (1A5F:0008) `card_options(1); advance_hours(1);` before `card_menu(...)`: the hour passes after the text block was shown and continued, not before it
+    // C: a screen that does not separate the two (the scripted test screens) takes the step first.
+    int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Action? afterOptions)
+    {
+        afterOptions?.Invoke();
+        return Choose(block, options, hint, popupHint);
+    }
 
     /// <summary>
     /// Runs the menu without drawing a text: on the option lines of the last text the screen laid out
@@ -90,6 +102,9 @@ public interface ICardScreen
 
     /// <summary>Shows a short message beside a member's portrait (or the whole panel) and waits.</summary>
     void Tell(string message, int member = OptionHint.WholeParty);
+
+    /// <summary>A framed message for <paramref name="ticks"/> timer ticks, no key waited for (root 0000:24BC); a screen without one tells it.</summary>
+    void ShowMessage(string text, int ticks) => Tell(text);
 
     /// <summary>Shows the hourglass while time passes.</summary>
     void PassTime(int hours);

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The launcher: the settings screen shown before the game. References Darklands.Platform only (the settings model and
+       file); it draws into its own pixels and reads input through ILauncherSurface, so it knows no window library. Only a
+       host references it. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Darklands.Platform\Darklands.Platform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Darklands.Launcher.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StbTrueTypeSharp" Version="1.26.12" />
+    <!-- fonts (SIL Open Font License 1.1, see THIRD_PARTY_NOTICES.md) and the project's badge -->
+    <EmbeddedResource Include="Resources/*.ttf" LogicalName="Darklands.Launcher.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Resources/badge.argb.gz" LogicalName="Darklands.Launcher.badge.argb.gz" />
+    <!-- full OFL text, shipped next to the launcher in build and publish output -->
+    <None Include="Resources/OFL.txt" Link="OFL.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+</Project>

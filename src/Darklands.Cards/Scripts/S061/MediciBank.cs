@@ -70,14 +70,14 @@ public sealed class MediciBank : Card
         // C: var_chosen1 = leader after every choice, before the handler runs.
         menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
         return menu.Run(
-            // orig: handler R061+0x0D6C (assured, 100%, leader)
+            // orig: R061+0x0CE8 (line 0); handler R061+0x0D6C (assured, 100%, leader)
             new MenuLine(_ => RedeemLetters(c, menu), () => new OptionHint(100, SuccessAssured, c.Leader)),
-            // orig: handler R061+0x0E76 (assured)
+            // orig: R061+0x0DA6 (line 1); handler R061+0x0E76 (assured)
             new MenuLine(_ => BuyALetter(c, menu), OptionHint.Saying(SuccessAssured)),
-            // orig: handler R061+0x1024: clamp(10, 50, party_get(4) + favour + cur_rep)
+            // orig: R061+0x0EAE (line 2); handler R061+0x1024: clamp(10, 50, party_get(4) + favour + cur_rep)
             new MenuLine(chance => AskForACommission(c, menu, chance),
                 () => new OptionHint(Math.Clamp(c.PartyGet(4) + c.State.MediciStanding + standing, 10, 50), "", c.Leader)),
-            // orig: handler R061+0x12D2 (assured)
+            // orig: R061+0x1056 (line 3); handler R061+0x12D2 (assured)
             new MenuLine(_ => ReportTheCommission(c, menu), OptionHint.Saying(SuccessAssured)),
             // DORMANT: lines 4 and 5 (opt_flag_4 = opt_flag_5 = 0, set nowhere): show the first text and leave for the city entry card.
             // orig: handler R061+0x1328, action 099a R061+0x130A

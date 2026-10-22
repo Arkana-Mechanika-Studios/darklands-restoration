@@ -81,15 +81,15 @@ public sealed class FuggerBank : Card
         // C: var_chosen1 = leader after every choice, before the handler runs.
         menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
         return menu.Run(
-            // orig: handler R060+0x240A (assured, 100%, leader)
+            // orig: R060+0x2378 (line 0); handler R060+0x240A (assured, 100%, leader)
             new MenuLine(_ => RedeemLetters(c, menu, picture), () => new OptionHint(100, SuccessAssured, c.Leader)),
-            // orig: handler R060+0x2514: clamp(0, 99, (Charisma << 1) + cur_rep + favour)
+            // orig: R060+0x2444 (line 1); handler R060+0x2514: clamp(0, 99, (Charisma << 1) + cur_rep + favour)
             new MenuLine(_ => BuyALetter(c, menu, picture),
                 () => new OptionHint(Math.Clamp((c.Attribute(c.Leader, (int)Attribute.Charisma) << 1) + standing + c.State.FuggerStanding, 0, 99), "", c.Leader)),
-            // orig: handler R060+0x26FE: clamp(10, 50, loc_query(cur_loc, 0) + (cur_loc_query(0xC) + party_get(4)))
+            // orig: R060+0x254E (line 2); handler R060+0x26FE: clamp(10, 50, loc_query(cur_loc, 0) + (cur_loc_query(0xC) + party_get(4)))
             new MenuLine(chance => AskForACommission(c, menu, picture, chance),
                 () => new OptionHint(Math.Clamp(c.LocationQuery(c.Here, 0) + (c.HereQuery(0xC) + c.PartyGet(4)), 10, 50), "", c.Leader)),
-            // orig: handler R060+0x29E8 (assured)
+            // orig: R060+0x2750 (line 3); handler R060+0x29E8 (assured)
             new MenuLine(_ => ReportTheCommission(c, menu, picture), OptionHint.Saying(SuccessAssured)),
             // DORMANT: lines 4 and 5 (opt_flag_4 = opt_flag_5 = 0, set nowhere): show the first text and leave for the city entry card.
             // orig: handler R060+0x2A3E, action 0a40 R060+0x2A20

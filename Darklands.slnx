@@ -8,9 +8,11 @@
     <Project Path="src/Darklands.DevConsole/Darklands.DevConsole.csproj" />
     <Project Path="src/Darklands.Host.Headless/Darklands.Host.Headless.csproj" />
     <Project Path="src/Darklands.Host.Sdl/Darklands.Host.Sdl.csproj" />
+    <Project Path="src/Darklands.Launcher/Darklands.Launcher.csproj" />
     <Project Path="src/Darklands.Persistence/Darklands.Persistence.csproj" />
     <Project Path="src/Darklands.Platform/Darklands.Platform.csproj" />
     <Project Path="src/Darklands.Presentation/Darklands.Presentation.csproj" />
+    <Project Path="src/Darklands.Rendering/Darklands.Rendering.csproj" />
     <Project Path="src/Darklands.Simulation/Darklands.Simulation.csproj" />
   </Folder>
   <Folder Name="/tests/">
@@ -20,9 +22,11 @@
     <Project Path="tests/Darklands.Core.Tests/Darklands.Core.Tests.csproj" />
     <Project Path="tests/Darklands.DevConsole.Tests/Darklands.DevConsole.Tests.csproj" />
     <Project Path="tests/Darklands.Host.Sdl.Tests/Darklands.Host.Sdl.Tests.csproj" />
+    <Project Path="tests/Darklands.Launcher.Tests/Darklands.Launcher.Tests.csproj" />
     <Project Path="tests/Darklands.Oracle.Tests/Darklands.Oracle.Tests.csproj" />
     <Project Path="tests/Darklands.Persistence.Tests/Darklands.Persistence.Tests.csproj" />
     <Project Path="tests/Darklands.Platform.Tests/Darklands.Platform.Tests.csproj" />
+    <Project Path="tests/Darklands.Rendering.Tests/Darklands.Rendering.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/tune/tune.csproj" />

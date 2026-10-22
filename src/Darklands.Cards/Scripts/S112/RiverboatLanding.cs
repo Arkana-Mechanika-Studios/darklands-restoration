@@ -28,8 +28,10 @@ public sealed class RiverboatLanding : Card
             // DORMANT: lines 0..8 are never offered. Their actions: R112+0x020E, R112+0x0288,
             // R112+0x0302 .. R112+0x03EA are empty; R112+0x0248 and R112+0x02C2 go to card 0x5A.
             new MenuLine(_ => { }, Unknown),
+            // orig: R112+0x0248 (1838:0248) matched
             new MenuLine(_ => c.Next = 0x5A, Unknown),
             new MenuLine(_ => { }, Unknown),
+            // orig: R112+0x02C2 (1838:02C2) matched
             new MenuLine(_ => c.Next = 0x5A, Unknown),
             new MenuLine(_ => { }, Unknown),
             new MenuLine(_ => { }, Unknown),

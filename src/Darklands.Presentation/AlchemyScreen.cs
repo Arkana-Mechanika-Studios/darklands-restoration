@@ -84,7 +84,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             }
             if (_formulaPage && Keys.IsLetter(key, 's') && Selected.Count != 0)
             {
-                _bench.Brew(Selected, place);
+                _bench.Brew(Selected, place, key);
                 return;
             }
             if (key != Keys.None)

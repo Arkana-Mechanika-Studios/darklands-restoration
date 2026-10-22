@@ -96,11 +96,14 @@ public static class EventExpiry
     /// </summary>
     // orig: R029+0x3FB2 (0E76:3FB2) matched; tests: PracticeAndItemsTests
     // C: rand_mod(4 - f2c) is drawn before rand_mod(2), and both before the cur_loc test.
+    // C: the messages are root 0000:24BC(text, 100): a framed box for 100 ticks (R029+0x3FB2, no key waited for).
     // C: the stack takes the item record's type (+1E, a signed char), quality (+26) + 10 x grade and weight (+25).
     public static void AlchemyResult(GameState s, TimedEvent e)
     {
         if (e.Value <= s.Random.Below(100))
         {
+            // BUG: the formula's risk works backwards: the explosion (longer = 1, the inn barred 120 days) comes when
+            // rand_mod(4 - risk) is not 0, so a low-risk formula (0) explodes three times in four and a high-risk one (2) half the time.
             var longer = s.Random.Below(4 - e.Data2) != 0 ? 1 : 0;
             if (s.Random.Below(2) != 0 && s.CurrentLocation != GameState.Wilderness)
             {
@@ -130,6 +133,11 @@ public static class EventExpiry
     // C: 14th combat potion sub-menu entry (DS:9A47[13], written only by R019+0x0C80's sprintf "q%d" for a list of 14 or more potions
     // C: and never cleared): 0 unless such a menu was built in this run (not modelled), so the undo is skipped.
     // BUG: boosts given to the whole party are never taken back (FixEverybodyBoostsUndone).
+    // BUG: the weapon potions' kind 0x4A events (Deadly Blade, Strongedge, Great Power: PotionEffects.Drink) run out here
+    // and nothing is undone: only kinds 0x48 and 0x49 are, so the bonus byte (+0x34) keeps them for good.
+    // BUG: the recorded amount is taken off whatever the attribute is by then (add_attr(owner, type, -value)): a boost that a
+    // night's rest (Endurance back to its maximum) or wounds (Strength) have already used up is taken off again and leaves the
+    // attribute below where it was; a saint's lowering (a negative value) is given back the same way.
     public static void UndoBoost(GameState s, TimedEvent e)
     {
         s.ReportSkillChanges = true;

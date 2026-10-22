@@ -100,10 +100,12 @@ public static class CharacterRecords
         return c;
     }
 
-    /// <summary>The record of a character: its own record's bytes (or zeros) with every field the model names written over them.</summary>
+    /// <summary>The record of a character: its own record's bytes (or zeros past them) with every field the model names written over them.</summary>
     public static byte[] Write(Character c)
     {
-        var r = c.OriginalRecord is { Length: Size } original ? (byte[])original.Clone() : new byte[Size];
+        var r = new byte[Size];
+        // a hireling's record is its member record only (PartyRules.AddMember): the rest of the record is zeros
+        c.OriginalRecord?.AsSpan(0, Math.Min(c.OriginalRecord.Length, Size)).CopyTo(r);
         PutWord(r, RosterLocationAt, c.RosterLocation);
         PutWord(r, AgeAt, c.Age);
         r[StatusAt] = (byte)c.Status;

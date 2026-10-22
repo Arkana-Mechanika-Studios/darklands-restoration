@@ -706,6 +706,118 @@ public sealed class TradingAndLootTests
         Assert.Equal([new StoredItem(6, 25, 1)], stores.Open(2, new StoreTable()));
     }
 
+    [Fact]
+    public void RevisitingTheOnlyStoreRewritesTheFileWithA101ByteHeaderAndKeepsItsTail()
+    {
+        // the lockstep session cache-revisit (Dksave10 at the Gasthaus): CACHE.TMP after the second leave
+        var stores = new ItemStores();
+        var inn = new Location();
+        stores.Close(inn, [new StoredItem(0x18, 0x19, 1)]);
+        Assert.Equal(1, inn.CacheHandle);
+        Assert.Equal(203, stores.File.Length);
+        Assert.Equal(198, BitConverter.ToUInt16(stores.File, 2));
+
+        stores.Close(inn, [new StoredItem(0x18, 0x19, 2)]);
+        var file = stores.File;
+        Assert.Equal(203, file.Length);                    // reopened without truncation
+        Assert.Equal(new byte[] { 0x63, 1, 0x65, 0 }, file[..4]);
+        Assert.All(file[4..0x65], b => Assert.Equal(0, b));
+        Assert.Equal(new byte[] { 1, 0x18, 0, 0x19, 2 }, file[0x65..0x6A]);
+        Assert.Equal(new byte[] { 1, 0x18, 0, 0x19, 1 }, file[0xC6..0xCB]);   // the old store stays behind
+        Assert.Equal([new StoredItem(0x18, 0x19, 2)], stores.Open(1, new StoreTable()));
+    }
+
+    [Fact]
+    public void AStoreAddedAfterTheTailIsReadFromTheTailByTheNextRewrite()
+    {
+        var stores = new ItemStores();
+        var a = new Location();
+        var b = new Location();
+        stores.Close(a, [new StoredItem(5, 25, 3)]);
+        stores.Close(a, [new StoredItem(5, 25, 2)]);       // the 101-byte header, store 1 at 0x65, the tail after it
+        stores.Close(b, [new StoredItem(6, 20, 1)]);       // appended after the tail
+        Assert.Equal(203, BitConverter.ToUInt16(stores.File, 4));
+        stores.Close(a, [new StoredItem(5, 25, 1)]);       // store 2 is copied from the bytes after store 1: the tail's zero
+        Assert.Equal([new StoredItem(5, 25, 1)], stores.Open(1, new StoreTable()));
+        Assert.Empty(stores.Open(2, new StoreTable()));
+    }
+
+    [Fact]
+    public void The99thStoresOffsetOverwritesTheFirstStore()
+    {
+        var stores = new ItemStores();
+        for (var i = 0; i < 98; i++)
+        {
+            stores.Add([new StoredItem(7, 30, 1)]);
+        }
+        var place = new Location();
+        stores.Close(place, [new StoredItem(9, 9, 9)]);
+        Assert.Equal(99, place.CacheHandle);
+        var file = stores.File;
+        Assert.Equal(99, file[1]);
+        var at = 198 + 98 * 5;
+        Assert.Equal(new byte[] { (byte)at, (byte)(at >> 8) }, file[198..200]);   // store 1's count and the low byte of its item
+        Assert.Equal([new StoredItem(9, 9, 9)], stores.Open(99, new StoreTable()));
+    }
+
+    [Fact]
+    public void TheFixedRewriteKeepsTheCompactLayoutAndEveryStore()
+    {
+        // FixInnCacheRewrite: the original's rewrite (a 101-byte header over a 198-byte header's offsets) is not made; the file is the compact one.
+        var fix = OriginalBehaviour.DataSafe;
+        var stores = new ItemStores();
+        var inn = new Location();
+        stores.Close(inn, [new StoredItem(0x18, 0x19, 1)], fix);
+        stores.Close(inn, [new StoredItem(0x18, 0x19, 2)], fix);
+        var file = stores.File;
+        Assert.Equal(131, file.Length);
+        Assert.Equal(new byte[] { 124, 1, 126, 0 }, file[..4]);
+        Assert.All(file[4..126], b => Assert.Equal(0, b));
+        Assert.Equal(new byte[] { 1, 0x18, 0, 0x19, 2 }, file[126..]);
+        Assert.Equal([new StoredItem(0x18, 0x19, 2)], stores.Open(1, new StoreTable()));
+    }
+
+    [Fact]
+    public void TheFixedFileIsWellFormedForTheOriginalsReaderAndKeepsTheOtherStores()
+    {
+        var fix = OriginalBehaviour.DataSafe;
+        var faithful = OriginalBehaviour.Faithful;
+        Location[] Play(OriginalBehaviour b, out ItemStores stores)
+        {
+            stores = new ItemStores();
+            var places = new[] { new Location(), new Location(), new Location() };
+            stores.Close(places[0], [new StoredItem(5, 25, 3)], b);
+            stores.Close(places[1], [new StoredItem(6, 20, 1), new StoredItem(7, 21, 2)], b);
+            stores.Close(places[2], [new StoredItem(8, 22, 4)], b);
+            stores.Close(places[1], [new StoredItem(6, 20, 9)], b);
+            return places;
+        }
+
+        var places = Play(fix, out var fixedStores);
+        Assert.Equal([1, 2, 3], places.Select(p => p.CacheHandle));
+        // cache_load's reading: byte 1 stores, the offset word of store h at 2h, a count byte, then {item word, quality, count}
+        var file = fixedStores.File;
+        Assert.Equal(124, file[0]);
+        Assert.Equal(3, file[1]);
+        var next = 126;
+        for (var h = 1; h <= 3; h++)
+        {
+            var at = BitConverter.ToUInt16(file, 2 * h);
+            Assert.Equal(next, at);
+            next = at + 1 + 4 * file[at];
+        }
+        Assert.Equal(file.Length, next);
+        var read = new ItemStores();
+        read.Load(file);
+        Assert.Equal([new StoredItem(5, 25, 3)], read.Open(1, new StoreTable()));
+        Assert.Equal([new StoredItem(6, 20, 9)], read.Open(2, new StoreTable()));
+        Assert.Equal([new StoredItem(8, 22, 4)], read.Open(3, new StoreTable()));
+
+        // the same visits in the faithful game lose the stores copied from the wrong place
+        Play(faithful, out var faithfulStores);
+        Assert.NotEqual(fixedStores.File, faithfulStores.File);
+    }
+
     // ---- loot -----------------------------------------------------------------------
 
     [Fact]

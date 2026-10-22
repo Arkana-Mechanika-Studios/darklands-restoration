@@ -174,6 +174,10 @@ public sealed class InnByDay : Card
     private void VisitTheStables(CardContext c, int picture)
     {
         ShowPicture(c, BackRoomPicture);
+        // orig: R051+0x0EE0
+        // BUG: the two stable texts look swapped: a party all of whose present members have a mount gets text 1, and
+        // any other party text 7, the only one in which the stablemaster asks whether the party's mounts are for sale
+        // (R051+0x0EE0).
         c.Screen.Text(c.PartyGet(5) != 0 ? 1 : 7);
         Show(c, picture);
         c.PassHours(1);

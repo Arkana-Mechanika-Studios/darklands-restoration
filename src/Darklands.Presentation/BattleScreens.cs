@@ -51,6 +51,13 @@ public sealed class BattleScreens
     /// </summary>
     public int Battle(BattleRequest request)
     {
+        // the battle tester (tools/oracle/battle_oracle.py): DARKLANDS_BATTLE_REQUEST="mode,battlefield,seed,a,b,c,a,b,c,a,b,c"
+        // replaces the battle's arguments, as the tester rewrites the original's at R002+0x0000's entry
+        if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_REQUEST") is { Length: > 0 } given)
+        {
+            var v = given.Split(',').Select(t => int.Parse(t, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
+            request = request with { Mode = v[0], Battlefield = v[1], Seed = v[2], Groups = [(v[3], v[4], v[5]), (v[6], v[7], v[8]), (v[9], v[10], v[11])] };
+        }
         var screen = new BattleScreen(_ui, Assets, _state(), this);
         Current = screen;
         Memory.BattlesFought++;
@@ -127,6 +134,12 @@ public sealed class BattleScreens
     public Core.Battles.Generation.GenerationProcessMemory GenerationMemory { get; } = new();
 
     public int LastFieldLocation { get; internal set; } = -1;
+
+    /// <summary>DS:C866 / DS:C886: the battle view's centre cell, a global the next battle's first view is drawn around (unless its
+    /// placement sets it).</summary>
+    // UNCERTAIN: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start,
+    // or a battle of the game played before) was not traced.
+    public (int Column, int Row) ViewCentre { get; internal set; }
 
     /// <summary>The card the last battle left for (battle_args: the level's card for its result).</summary>
     public int LastResultCard { get; private set; }

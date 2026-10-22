@@ -27,13 +27,13 @@ public sealed class PriestVisitsTheCell : Card
         var menu = Menu(c);
         menu.Enable(0, 1, 2, 3);
         return menu.Run(
-            // orig: R076+0x0E74 (1901:01E4) matched; tests: CardSmokeTests
+            // orig: R076+0x0DF4 (line 0); R076+0x0E74 (1901:01E4) matched; tests: CardSmokeTests
             new MenuLine(() => Confess(c, standing), () =>
             {
                 c.Variables.Chosen[0] = c.Leader;
                 return OptionHint.Say(SuccessAssured, c.Leader);
             }),
-            new MenuLine(() => AskForEscape(c, EscapeChance(c)), () => OptionHint.ChanceOf(EscapeChance(c), c.Leader)),
+            new MenuLine(chance => AskForEscape(c, chance), () => OptionHint.ChanceOf(EscapeChance(c), c.Leader)),
             new MenuLine(() => AskForAGoodWord(c), OptionHint.Saying(NoRisk)),
             // orig: R076+0x11A4 (1901:0514) matched; R076+0x11B6 (1901:0526) matched; tests: CardSmokeTests
             new MenuLine(() => { c.PassHours(0); c.Next = Dungeon; }, OptionHint.Saying(SuccessAssured)));

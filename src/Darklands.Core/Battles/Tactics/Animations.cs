@@ -45,6 +45,23 @@ public sealed class AnimationSlot
     /// <summary>DS:11B2[slot]: the file currently loaded ("" none).</summary>
     public string FileName { get; private set; } = "";
 
+    /// <summary>anim_buffers (DS:CA45[slot]) is not 0: the slot's buffers are allocated (from its first load until it is freed).</summary>
+    public bool HasBuffer { get; set; }
+
+    /// <summary>The file name cleared, the header values and the buffers kept (loot_screen R014+0xE6C0).</summary>
+    public void ForgetFile() => FileName = "";
+
+    /// <summary>
+    /// The slot's buffers freed and its file name cleared; the header values (DS:C799 and the other per-slot tables) stay as the last file
+    /// left them, which the next fight in the slot reads until it loads another file.
+    /// </summary>
+    // orig: enemy_anim_free6 R025+0x0C02 (1EF8:0C02) matched: frees the buffers (DS:CA45) and writes 0 to the first byte of the names (DS:11B2 ..)
+    public void Free()
+    {
+        FileName = "";
+        HasBuffer = false;
+    }
+
     public int HalfWidth { get; private set; } = 5;
 
     public int HalfHeight { get; private set; } = 2;
@@ -98,6 +115,7 @@ public sealed class AnimationSlot
     public void Load(AnimationInfo info)
     {
         FileName = info.Name;
+        HasBuffer = true;
         HalfWidth = info.Header[0];
         HalfHeight = info.Header[1];
         // DS:119A = w0 + w2, DS:11A6 = w1 + w3 (spec E §1.2).

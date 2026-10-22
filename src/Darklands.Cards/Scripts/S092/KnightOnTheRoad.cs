@@ -40,8 +40,8 @@ public sealed class KnightOnTheRoad : Card
             // orig: R092+0x16E4 (197B:02B4) matched
             // DORMANT: line 0 is hidden (flag 0): the party would simply ride on.
             new MenuLine(() => RideOn(c), () => OptionHint.ChanceOf(Renown(c), Who.Everybody)),
-            new MenuLine(() => Race(c, Renown(c)), () => OptionHint.ChanceOf(Renown(c), c.Variables.Chosen[1])),
-            new MenuLine(() => Joust(c, Renown(c)), () => OptionHint.ChanceOf(Renown(c), c.Variables.Chosen[0])),
+            new MenuLine(chance => Race(c, chance), () => OptionHint.ChanceOf(Renown(c), c.Variables.Chosen[1])),
+            new MenuLine(chance => Joust(c, chance), () => OptionHint.ChanceOf(Renown(c), c.Variables.Chosen[0])),
             // orig: R092+0x19D4 (197B:05A4); R092+0x19FC (197B:05CC) matched
             // DORMANT: line 3 is hidden: on a failed roll the party would ride on after text 10,
             // otherwise stay; its hint names $ChosenThreeName.

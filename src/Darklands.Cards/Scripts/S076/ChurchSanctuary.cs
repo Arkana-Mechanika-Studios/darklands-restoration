@@ -9,6 +9,8 @@ namespace Darklands.Cards.Scripts;
 // orig: R076+0x098E (187B:055E) matched; R076+0x09C6 (187B:0596) matched; tests: CardSmokeTests
 // DORMANT: the "screwed up." default handler of the unlisted lines 5..19 (never offered).
 // C: card_load with another picture reloads the same texts; ShowPicture shows the picture only.
+// UNCERTAIN: texts 4..8 (a second menu, the priest's warnings and the forced departure) and 12 (a failed escape
+// ending in capture) are never shown by this card, the only one that loads $Sanct00; an indirect loader is not excluded.
 public sealed class ChurchSanctuary : Card
 {
     public const int CardNumber = 0x81;

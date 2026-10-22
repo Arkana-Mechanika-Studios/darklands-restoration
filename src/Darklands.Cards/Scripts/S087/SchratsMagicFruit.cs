@@ -63,6 +63,9 @@ public sealed class SchratsMagicFruit : Card
     }
 
     /// <summary>The member eats the fruit: strength and its maximum grow by 4, for good.</summary>
+    // BUG: the strength is given before the last text; a game saved at that text holds only the card (DS:A772 = 0xAF), so
+    // loading it runs this card again from its menu with the strength kept: the fruit can be eaten again and again
+    // (lockstep oracle: save at the text, load, eat: +4 then +8).
     private static void EatTheFruit(CardContext c, int member)
     {
         c.Variables.Chosen[0] = member;

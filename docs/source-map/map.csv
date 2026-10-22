@@ -460,8 +460,6 @@ PartyRules.CharacterInSlot(),R037+0x3A8A,R037+0x3A8A,draft,PartyRosterRulesTests
 PartyRules.SlotOfCharacter(),R037+0x3AE2,R037+0x3AE2,draft,PartyRosterRulesTests,roster brought in step first (Reconcile)
 PartyRules.RemoveFromParty(),R037+0x3B58,R037+0x3B58,draft,PartyRosterRulesTests,record keeps status 5 and cur_loc; the slot gets an empty member
 PartyRules.AddFromRoster(),R037+0x3CD6,R037+0x3CD6,draft,PartyRosterRulesTests,divergence: an entry past the roster joins nobody
-PartyRules.DropAway(),R029+0x2434,R029+0x2434,matched,,
-PartyRules.OneOfTheAwayLeaves(),R029+0x2474,R029+0x2474,matched,,
 PartyRules.RejoinAway(),R029+0x251A,R029+0x251A,matched,,
 PartyRules.BattleSeed(),R029+0x2278,R029+0x2278,matched,,bug: seed -2 gets party_seed twice (FixBattleSeed).
 PartyRules.AfterBattle(),R029+0x2278,R029+0x2278,matched,,
@@ -602,8 +600,8 @@ CardContext.SaintChanceHigh(),R029+0x2116,R029+0x2116,matched,,divergence: -1 is
 CardContext.AddMember(),R029+0x4650,R029+0x4650,matched,,
 CardContext.EndTerms(),R029+0x4AA4,R029+0x4AA4,matched,,
 CardContext.ReportAway(),R029+0x23E2,R029+0x23E2,matched,,
-CardContext.DropAway(),R029+0x2434,R029+0x2434,matched,,
-CardContext.OneOfTheAwayLeaves(),R029+0x2474,R029+0x2474,matched,,
+CardContext.DropAway(),R029+0x2434,R029+0x2434,draft,,
+CardContext.OneOfTheAwayLeaves(),R029+0x2474,R029+0x2474,draft,,
 CardContext.RejoinAway(),R029+0x251A,R029+0x251A,matched,,
 CardContext.RunBattle(),R029+0x2278;R043+0x078E,R029+0x2278,matched,MusicCardTests,divergence: cards_shutdown's files and cards_startup's reloads not needed (only the shutdown's sound_play(1) is played); no 'after battle' log; the death film and the end of the game are the host's (AllDead)
 CardContext.LoadCity(),R029+0x4E68,R029+0x4E68,matched,,
@@ -801,8 +799,8 @@ Darklands.Core.Rules.Storing.AddOne(),R035+0x10D2,R035+0x10D2,matched,TradingAnd
 Darklands.Core.Rules.Storing.TakeOne(),R035+0x114A,R035+0x114A,matched,TradingAndLootTests,cache_take
 Darklands.Core.Rules.Storing.Put(),R035+0x0A46,R035+0x0A46,matched,TradingAndLootTests,cache_key case P; a row past the pack stores the stale entry
 Darklands.Core.Rules.Storing.Get(),R035+0x0A46,R035+0x0A46,matched,TradingAndLootTests,cache_key case G; a row past the store hands out what an earlier store left (StoreTable)
-Darklands.Core.Items.ItemStores.Open(),R035+0x1350,R035+0x1350,matched,TradingAndLootTests,cache_load; dormant: missing cache.tmp exit; divergence: unknown handle gives an empty store
-Darklands.Core.Items.ItemStores.Close(),R035+0x04BC;R035+0x1468,R035+0x04BC,matched,TradingAndLootTests,cache_close + cache_save; divergence: file layout left to persistence
+Darklands.Core.Items.ItemStores.Open(),R035+0x1350,R035+0x1350,matched,TradingAndLootTests,cache_load on the file's bytes; dormant: missing cache.tmp exit; divergence: a store read past the file's end gives an empty store
+Darklands.Core.Items.ItemStores.Close(),R035+0x04BC;R035+0x1468,R035+0x04BC,matched,TradingAndLootTests,cache_close + cache_save on the file's bytes (the append without a limit; the known store's rewrite: the 101-byte header and the tail kept); divergence: a store copied from outside the file (heap memory) is written as its offset reads it
 Darklands.Presentation.ItemStoreScreen.Run(),R035+0x0000;R035+0x04BC,R035+0x0000,matched,Host.Headless screen:store,divergence: no screen in the open country; clicks act on press
 Darklands.Presentation.ItemStoreScreen.HandleKey(),R035+0x0A46,R035+0x0A46,matched,Host.Headless screen:store,all cases kept; per-member list state persists between visits (module statics)
 Darklands.Presentation.ItemStoreScreen.DrawScreen(),R035+0x0510,R035+0x0510,matched,Host.Headless screen:store,
@@ -1688,7 +1686,7 @@ Darklands.Cards.Scripts.TemplarFortressGate,R118+0x14C2;R118+0x16FA;R118+0x177A;
 Darklands.Cards.Scripts.TemplarWritingDesk,R118+0x1F3C;R118+0x2174;R118+0x21DC;R118+0x23A4;R118+0x23FA;R118+0x246C;R118+0x24B2,R118+0x1F3C,matched,CardSmokeTests,BUG: formula search uses && not &; battles via return -2/-3; dormant: lines 5-9 and texts 2 8
 CardMenu,R043+0x0F2A;R043+0x1BD2;R044+0x1A50,R043+0x0F2A;R043+0x1BD2;R044+0x1A50,draft,GoldenTraceTests;CardSmokeTests,"card_options + card_menu and the do/while every card script runs (opt_flag_k 0 hidden 1 enabled 2 shown, options_block, the chosen handler's r.a); divergence: lines start hidden instead of the stale global flags"
 MenuLine,R044+0x25BA,R044+0x25BA,matched,GoldenTraceTests,"opt_fn / item_fn / saint_fn and the per-option action; the reset's 'screwed up.' handler for lines without one; divergence: lines whose action takes no chance are not rated again on the choice"
-CardMenu.ShowFirstTextAndEnd(),R119+0x1122,R119+0x1122,matched,GoldenTraceTests,the repeat-the-opening handler of option lines the text does not have (R119..R135)
+CardMenu.ShowFirstTextAndEnd(),R119+0x10C8,R119+0x10C8,matched,GoldenTraceTests,the repeat-the-opening handler of option lines the text does not have (R119..R135)
 CardContext.MemberPopupHint(),R059+0x0BFC;R119+0x0670,R059+0x0BFC;R119+0x0670,matched,GoldenTraceTests,the item pop-up handler most cards install (names the member)
 CardContext.SaintPopupHint(),R059+0x0CEC;R074+0x0AD6,R059+0x0CEC;R074+0x0AD6,matched,GoldenTraceTests,the saint pop-up handler most cards install (names the member; chance for the party)
 CardContext.SaintPopupChanceHint(),R119+0x0760,R119+0x0760,matched,GoldenTraceTests,the saint pop-up handler that only tells the chance beside the member
@@ -1971,7 +1969,7 @@ Darklands.Persistence.OriginalSaves.Saved(),R037+0x2ACE,R037+0x2ACE,draft,LoadSc
 Darklands.Persistence.CharacterRecords,R037+0x2ACE;R037+0x8ED4,R037+0x2ACE;R037+0x8ED4,draft,OriginalSaveTests,uncertain: unnamed bytes kept as read (Character.OriginalRecord)
 Darklands.Persistence.LocationRecords,R037+0x2ACE,R037+0x2ACE,draft,OriginalSaveTests,uncertain: +0x02 +0x10 +0x22..+0x25 kept as read (Location.OriginalRecord)
 Darklands.Persistence.EventRecords,R029+0x3034,R029+0x3034,matched,OriginalSaveTests,all 24 words named
-Darklands.Persistence.CacheFile,R035+0x1350;R035+0x1468;R037+0x4184,R035+0x1350;R035+0x1468;R037+0x4184,matched,OriginalSaveTests,writes the 198-byte header plus appended stores (cache_save(-1) layout); divergence: at most 0x62 stores
+Darklands.Core.Items.ItemStores,R037+0x4184,R037+0x4184,matched,TradingAndLootTests,the empty file (0x63; 0; 0x62 zero words) of a new or loaded game; a saved game's tail replaces it byte for byte
 Darklands.Persistence.Explode,R003+0x2707;R003+0x26AE;R003+0x2801;R003+0x28CC;R003+0x2A0A;R003+0x2A72;R003+0x2AF5;R003+0x2B2B,R003+0x2707,asm,ImplodeOracleTests;OriginalSaveTests,ported from the library's assembly (PKWARE DCL 1.02); return codes 0..4 as the original
 Darklands.Persistence.BattleSaveFile,R003+0x00DC;R003+0x0CE8;R003+0x0000;R003+0x00A0;R003+0x19CA;R003+0x19E8,R003+0x00DC;R003+0x0CE8,draft,OriginalSaveTests;BattleSaveTests,variables 0x1978 bytes; levels flr/atv/enm; files terrain.fil then the loot file; stale header words kept; divergence: the end-of-data and corrupt-block exits throw
 Darklands.Persistence.SaveFolder,R037+0x8896;R037+0x9C10;R037+0x9B76;R037+0x2ACE,R037+0x8896;R037+0x9C10;R037+0x9B76;R037+0x2ACE,draft,LoadScreenTests,divergence: name order instead of DOS directory order; stale .bsv of a new name removed

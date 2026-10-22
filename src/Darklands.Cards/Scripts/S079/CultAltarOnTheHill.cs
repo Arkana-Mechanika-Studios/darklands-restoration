@@ -49,7 +49,7 @@ public sealed class CultAltarOnTheHill : Card
             }, () => DefaceChance(c)),
             new MenuLine(() => BurnOutTheTaint(c), OptionHint.Saying(CardTexts.SelectPotion),
                 () => PotionHint(c, c.MenuMember, c.MenuSlot)),
-            // orig: R079+0x224C (19A0:0BCC) matched; R079+0x22D6 (19A0:0C56) matched; tests: CardSmokeTests
+            // orig: R079+0x1D82 (line 2); R079+0x224C (19A0:0BCC) matched; R079+0x22D6 (19A0:0C56) matched; tests: CardSmokeTests
             new MenuLine(() => CallASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(() =>
             {

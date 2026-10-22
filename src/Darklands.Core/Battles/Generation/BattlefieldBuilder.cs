@@ -48,6 +48,12 @@ public sealed class GenerationProcessMemory
     /// </summary>
     public byte[]? FloorImage { get; set; }
 
+    /// <summary>
+    /// DS:C80F / DS:C831 for the party's slots 0..4 (half the collision box, width and height) as the last battle left them, or null in a
+    /// fresh program (zeros): the party is placed (R014+0x0017) before combat_main sets them (R014+0x0258, 5 and 2 from the animation sets).
+    /// </summary>
+    public (int Width, int Height)[]? PartySizes { get; set; }
+
     /// <summary>DS:C925 / DS:C978 / DS:C989 / DS:CA1B: the trigger whose alarm ended the last battle (x −1: none).</summary>
     public (int X, int Y, int Width, int Height) AlarmTrigger { get; set; } = (-1, 0, 0, 0);
 }
@@ -81,6 +87,7 @@ public sealed class BattlefieldContext
     public int AbleMembers { get; init; } = 4;
 
     /// <summary>party_lore_level(): 1..10.</summary>
+    // orig: party_lore_level_impl R039+0x0470 (1462:0470) matched: supplied by the game (PartyQueries.LoreLevel)
     public Func<int> LoreLevel { get; init; } = () => 1;
 
     /// <summary>
@@ -191,6 +198,7 @@ public sealed class GenerationState
     public int Roll(int sides) => Forces.RollDice(1, sides);
 
     /// <summary>Saves a level under its level number.</summary>
+    // orig: R004+0x4BCA (1262:0D0A) draft (bytes match): R004+0x493C writes the level as "level%d.flr"; kept in memory here
     public void Save(BattlefieldLevel level) => SavedLevels[level.LevelNumber] = level.Clone();
 
     /// <summary>mark_persistent_battlefield: the battlefield persists; a new location forgets the cleared levels.</summary>

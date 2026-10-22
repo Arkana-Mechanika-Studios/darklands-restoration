@@ -48,7 +48,8 @@ public sealed class SuspiciousStranger : Card
         c.SetCardSaints();
 
         var assured = OptionHint.Saying(SuccessAssured);
-        // orig: R127+0x24FE .. R127+0x271A (hints R127+0x251C .. R127+0x2738) matched
+        // orig: lines 3..9 R127+0x24FE, R127+0x2558, R127+0x25B2, R127+0x260C, R127+0x2666, R127+0x26C0, R127+0x271A
+        //   (hints R127+0x251C, R127+0x2576, R127+0x25D0, R127+0x262A, R127+0x2684, R127+0x26DE, R127+0x2738) matched
         // DORMANT: lines 3..9 are never enabled; each shows text 0, passes 0 hours and goes to 0x62.
         Action<int> stayAWhile = _ =>
         {
@@ -73,7 +74,7 @@ public sealed class SuspiciousStranger : Card
     }
 
     /// <summary>Shows the answer's text, changes the suspicion, and returns to the card the party came from.</summary>
-    // orig: R127+0x23EE / _027a / _02dc matched (suspicion 0: the first one changes nothing)
+    // orig: R127+0x23EE / R127+0x243A / R127+0x249C matched (suspicion 0: the first one changes nothing)
     private static void GoOn(CardContext c, int block, int suspicion)
     {
         c.Screen.Text(block);

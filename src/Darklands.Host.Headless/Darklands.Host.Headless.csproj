@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Darklands.Presentation\Darklands.Presentation.csproj" />
+    <ProjectReference Include="..\Darklands.Rendering\Darklands.Rendering.csproj" />
     <ProjectReference Include="..\Darklands.Platform\Darklands.Platform.csproj" />
     <ProjectReference Include="..\Darklands.DevConsole\Darklands.DevConsole.csproj" />
     <ProjectReference Include="..\Darklands.Audio.Mt32\Darklands.Audio.Mt32.csproj" />

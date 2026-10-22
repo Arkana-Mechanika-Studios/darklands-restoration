@@ -33,10 +33,10 @@ public sealed class WalledCityApproach_CityE00 : Card
         menu.Popup = () => c.MemberPopupHint();
 
         return menu.Run(
-            // orig: R113+0x08C6 (189D:0276) matched (hint)
+            // orig: R113+0x0860 (line 0); hint R113+0x08C6 (189D:0276) matched
             new MenuLine(_ => ToTheGateByDay(c),
                 () => OptionHint.Say(c.IsDaylight ? NoRisk : "You'll sleep until dawn.")),
-            // orig: R113+0x093C (189D:02EC) matched (hint)
+            // orig: R113+0x090C (line 1); hint R113+0x093C (189D:02EC) matched
             new MenuLine(_ => ToTheGateByNight(c),
                 () => OptionHint.Say(c.IsDaylight ? "You'll wait for night." : NoRisk)),
             // orig: R113+0x0982 (189D:0332) matched; hint R113+0x09DE

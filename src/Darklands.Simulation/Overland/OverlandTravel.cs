@@ -84,13 +84,13 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
 
     /// <summary>The party moves onto the cell under map pixel (x, y).</summary>
     // orig: R030+0x1300 (1462:1300): returns -1 walked, 9999 blocked, a location index arrived, 1000 a road encounter, 2000 the place's own encounter - the four StepOutcomes
-    // C: whenever 1300 returns 0 or more, 0c44 puts the marker back (DS:2866 = oxo, DS:2868 = oyo, DS:8676 = 0); the screen keeps the old position for Blocked and takes the new one for Arrived and Encounter (see OverlandScreen.MoveOnce).
+    // C: whenever 1300 returns 0 or more, 0c44 puts the marker back (DS:2866 = oxo, DS:2868 = oyo, DS:8676 = 0); the cell (MapPosition) is the old one for Blocked and Arrived, the new one for Encounter (see OverlandScreen.MoveOnce).
     public StepResult Step(int x, int y)
     {
         var (column, row) = WorldMap.CellAt(x, y);
         if (_eventStarted(ForcedArrival))
         {
-            // C: advance_hours(1); return cur_loc = nearest_city_impl(party_x, party_y). party_x and party_y were set at the start of 0c44 from the cell the party stood on before this step, so the city nearest to the old position is chosen, not to the one stepped towards (the new MapPosition is only set below).
+            // C: advance_hours(1); return cur_loc = nearest_city_impl(party_x, party_y). party_x and party_y were set at the start of 0c44 from the cell the party stood on before this step, so the city nearest to the old position is chosen, not to the one stepped towards (the new MapPosition is only set below, and not for an arrival).
             HourPassed?.Invoke();
             return new StepResult(StepOutcome.Arrived, ArriveAt(LocationRules.NearestCity(state, state.MapPosition.X, state.MapPosition.Y)));
         }
@@ -103,15 +103,17 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
             return new StepResult(StepOutcome.Blocked);
         }
         _terrain = terrain;
-        state.MapPosition = new MapPosition(column, row);
         // orig: DS:8672 += R030+0x2AC8(t) = Terrain.MinutesPerStep (checked: all 18 terrain cases and the default 9 of 2ac8 agree with the table)
         PassMinutes(Terrain.MinutesPerStep(terrain));
 
         // C: t >= 25 && t != 27 && t != 25 (castle 28, city 29 and the other place icons); the reach is 4 around a city (29), 1 around anything else.
+        // C: an arrival returns with cur_loc set only (1462:158E): party_x / party_y keep the cell 0c44 took at the start of the pass, the one
+        //   stepped from (0c44 then puts the marker back); a walk is read from the marker by the next pass, an encounter sets them (1462:1672).
         if (Terrain.CanEnterPlace(terrain) && PlaceAt(column, row, terrain == Terrain.City ? 4 : 1) is { } place)
         {
             return new StepResult(StepOutcome.Arrived, ArriveAt(place));
         }
+        state.MapPosition = new MapPosition(column, row);
 
         var near = NearestNoticedPlace(column, row);
         // C: after the notice scan (which may show a map message even over water) a step onto deep water ends here.
@@ -270,7 +272,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     private const int NightHuntQuest = 7;
 
     /// <summary>Near the dragon's lair: what the party meets depends on the dragon quest's sort.</summary>
-    // orig: the cur_loc != -1 && ev8_at(4, cur_loc) arm of the sel == 1000 branch; thunk 09C0:1FE5() = Quests.DragonSort
+    // orig: the cur_loc != -1 && ev8_at(4, cur_loc) arm of the sel == 1000 branch of R030+0x02C0; the dragon sort 1fe5 (Quests.DragonSort)
     private int DragonLairEncounter()
     {
         var events = state.Events;

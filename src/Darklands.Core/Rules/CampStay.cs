@@ -110,7 +110,7 @@ public sealed class CampStay
     /// <summary>Whether any teacher is here.</summary>
     public bool TeachersHere => _s.Events.At(EventKinds.Teacher, _s.CurrentLocation);
 
-    // orig: R036+0x1D24 (1462:1D24) draft (bytes match); the same scan in R036+0x0082 and R036+0x147A
+    // orig: R036+0x1D24 (1462:1D24) draft (bytes match); the same scan repeated inline in R036+0x0082 and R036+0x147A
     // BUG: j counts every teacher event met, so rows are numbered by log position and the scan stops after "count here" events of any town.
     /// <summary>The names of the skills taught here, in list order (the teacher box).</summary>
     public List<int> TeacherList()
@@ -136,7 +136,11 @@ public sealed class CampStay
     private void ListTeachers() => TeacherList();
 
     // orig: event_find(0x28, skill, cur_loc, -1, -1, -1) as R036+0x08EC, R036+0x1858 and R036+0x147A use it
-    // DIVERGENCE: where the original then reads the record of slot -1 + 1 = 0 when no teacher is found (fee, skill, level), null here: no fee, no practice.
+    // C: R036+0x147A (the day itself) tests for -1 (1462:1589) and then neither pays nor practises.
+    // DIVERGENCE: with no teacher of the skill here (the list's rows stale: TeacherList) R036+0x08EC (key T) and R036+0x1858 (the day's
+    //   cost) read the fee of events[-1] unguarded (1462:0BAF, 1462:18ED: les bx, es:[bx+1B2C] with bx = -4): the far pointer at 2E38:1B28,
+    //   the tail of var_named[4], 0 in play, so the fee is the word at 0000:001E (the INT 7 vector's segment, F000 under DOSBox: the
+    //   "-4096pfs" players see); here no fee is shown or added. The day itself (R036+0x147A) finds no teacher and the member relaxes.
     /// <summary>The teacher of a skill here (−1: none).</summary>
     private TimedEvent? Teacher(int skill)
     {
@@ -362,7 +366,8 @@ public sealed class CampStay
         var cost = DayCost();
         if (cost > 0 && Place != CampPlace.Wilderness && _s.Party.Purse < Money.FromPfennigs(cost))
         {
-            _s.Messages.Show("Not Enough Money");
+            // orig: R036+0x147A: root 0000:24BC("Not Enough Money", 0x50)
+            _s.Messages.Show("Not Enough Money", 0x50);
             return;
         }
         for (var i = 0; i < Party.MaxMembers; i++)
@@ -432,6 +437,8 @@ public sealed class CampStay
                     {
                         _s.Party.Purse = _s.Party.Purse.Subtract(0, 0, teacher.Value);
                     }
+                    // BUG: no limit at the teacher's ability, which a guild text says a pupil "cannot progress beyond" (MSGFILES):
+                    // any teacher can take a skill to 99.
                     Practice.PracticeSkill(_s, i, teacher.Type, 1, teacher.Extra * 20 / 100, -1);
                 }
                 break;

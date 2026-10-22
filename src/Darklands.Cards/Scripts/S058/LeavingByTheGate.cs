@@ -289,6 +289,10 @@ public sealed class LeavingByTheGate : Card
     /// <summary>The standing falls by 40 and the guards stay on alert; returns the new standing.</summary>
     private static int SettleStanding(CardContext c, int result)
     {
+        // orig: R058+0x17DA
+        // BUG: a second fight at the gate does not lower the standing further: the standing is the one read when the
+        // card was entered (R058+0x0E24), and after a fight that keeps the party at the gate the menu runs again with
+        // it, so the second fight sets it to that value - 40 again (R058+0x17DA).
         var standing = c.StandingSeen;
         if (standing <= -0x28)
         {

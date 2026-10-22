@@ -126,13 +126,20 @@ public sealed class TextPainter(FntFont font)
                 if ((bits & 0x8000) != 0)
                 {
                     var under = canvas[x + column, y + row];
-                    canvas[x + column, y + row] = mode switch
+                    if (mode == TextMode.Copy)
                     {
-                        TextMode.And => (byte)(under & color),
-                        TextMode.Or => (byte)(under | color),
-                        TextMode.Xor => (byte)(under ^ color),
-                        _ => color,
-                    };
+                        canvas[x + column, y + row] = color;
+                    }
+                    else
+                    {
+                        // a recolour of what is there: the pixel keeps its owner (Screen.Owners)
+                        canvas.Repaint(x + column, y + row, mode switch
+                        {
+                            TextMode.And => (byte)(under & color),
+                            TextMode.Or => (byte)(under | color),
+                            _ => (byte)(under ^ color),
+                        });
+                    }
                 }
             }
         }

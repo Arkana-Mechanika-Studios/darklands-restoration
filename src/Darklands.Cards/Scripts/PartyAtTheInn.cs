@@ -80,6 +80,7 @@ public sealed class PartyAtTheInn : Card
             new MenuLine(() => c.PassHours(0), OptionHint.Saying(SuccessAssured)));           // 074c / 0740
 
         // The start-up cheat of the hidden option 4.
+        // orig: R054+0x0ECC (18D3:051C) matched
         void StartInTheCheatPlace()
         {
             c.PassHours(0);

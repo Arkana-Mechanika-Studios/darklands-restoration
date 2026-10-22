@@ -32,7 +32,7 @@ public sealed class GuestOfTheCastleLord : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R104+0x2290 (1A35:02C0) matched (hint)
+            // orig: R104+0x221C (line 0); hint R104+0x2290 (1A35:02C0) matched
             new MenuLine(_ => Trade(c), () => ConversationHint(c)),
             // orig: R104+0x238C (1A35:03BC) matched (hint)
             new MenuLine(p => LearnAboutThePlace(c, menu, p), () => ConversationHint(c)),
@@ -42,11 +42,15 @@ public sealed class GuestOfTheCastleLord : Card
             // DORMANT: line 4 is never offered (opt_flag_4 = 0). UNCERTAIN: its hint returns whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => { }, Assured),
             // DORMANT: lines 5, 6, 8, 9 are never offered; each only lets no time pass.
+            // orig: R104+0x262A (line 5)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R104+0x266E (line 6)
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R104+0x26B2 (1A35:06E2) matched (leaves at dawn without clearing cur_loc)
             new MenuLine(_ => { c.PassHours(c.HoursUntil(5) + 1); c.Next = CardContext.MapCard; }, Assured),
+            // orig: R104+0x2706 (line 8)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R104+0x274A (line 9)
             new MenuLine(_ => c.PassHours(0), Assured));
     }
 

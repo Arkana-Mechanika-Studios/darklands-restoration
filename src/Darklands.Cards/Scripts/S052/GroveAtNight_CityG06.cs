@@ -56,12 +56,15 @@ public sealed class GroveAtNight_CityG06 : Card
                 c.Next = GroveByDay;
             }, () => OptionHint.ChanceOf(100, c.Leader)),
             // DORMANT: options 3..7 are switched off by the entry (the MSG lines are the placeholders "3".."7"); each only lets no time pass and names no next card.
-            // option 3 R052+0x1444 (1942:03A4) (hint R052+0x1450 (1942:03B0)), option 4 R052+0x1488 (1942:03E8) (hint R052+0x1494 (1942:03F4): success assured for the leader),
-            // option 5 R052+0x14CE (1942:042E) (hint R052+0x14DA (1942:043A)), option 6 R052+0x1512 (1942:0472) (hint R052+0x151E (1942:047E): 100% for the leader), option 7 R052+0x1558 (1942:04B8) (hint R052+0x1564 (1942:04C4): 100% for the leader).
+            // orig: R052+0x1444 (1942:03A4) matched (option 3); hint R052+0x1450 (1942:03B0) matched
             new MenuLine(() => c.PassHours(0)),
+            // orig: R052+0x1488 (1942:03E8) matched (option 4); hint R052+0x1494 (1942:03F4) matched (success assured for the leader)
             new MenuLine(() => c.PassHours(0), () => OptionHint.Say(SuccessAssured, c.Leader)),
+            // orig: R052+0x14CE (1942:042E) matched (option 5); hint R052+0x14DA (1942:043A) matched
             new MenuLine(() => c.PassHours(0)),
+            // orig: R052+0x1512 (1942:0472) matched (option 6); hint R052+0x151E (1942:047E) matched (100% for the leader)
             new MenuLine(() => c.PassHours(0), () => OptionHint.ChanceOf(100, c.Leader)),
+            // orig: R052+0x1558 (1942:04B8) matched (option 7); hint R052+0x1564 (1942:04C4) matched (100% for the leader)
             new MenuLine(() => c.PassHours(0), () => OptionHint.ChanceOf(100, c.Leader)),
             // orig: R052+0x159E (1942:04FE) matched (option 8: leave by the main street); hint R052+0x15BC (1942:051C) (100% for the leader)
             new MenuLine(() =>

@@ -25,6 +25,9 @@ public sealed partial class TacticalBattle
         var pile = new LootPile { Level = Battle.FloorShown };
         if (slot.DropsLoot)
         {
+            // DIVERGENCE: n is the signed char +0x7E (cbw); for a pack left at -1 items (Inventory.KeepEach on an empty pack) the
+            // original copies n * 6 = 65530 bytes into DS:[C291] (_fmemcpy, 0E76:2629-262E: over the data segment and the stack)
+            // and the game dies; here the count is taken as 0 and the pile is empty.
             var n = c.Items.Count;
             var near = LootPiles.FindIndex(p => p.Level == Battle.FloorShown
                 && c.Position.X - 16 <= p.Position.X && p.Position.X < c.Position.X + 16
@@ -260,6 +263,10 @@ public sealed partial class TacticalBattle
                 }
             }
         }
-        _view.MapChanged();
+        // C: floor_view_draw(DS:17B0): the view drawn anew around the active member
+        _view.Recentre(Battle.ActiveMember);
+        // C: then combat_draw R014+0x6818, as each tick ends: the draw list (its random draws) and the target cursor.
+        Effects.Drawn(_view);
+        RefreshTargetCursor();
     }
 }

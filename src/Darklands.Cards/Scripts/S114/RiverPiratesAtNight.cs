@@ -34,14 +34,14 @@ public sealed class RiverPiratesAtNight : Card
         return menu.Run(
             // orig: R114+0x19A2 (1995:03D2) matched; hint R114+0x19A8
             new MenuLine(_ => { LeaderSpeaks(c); FightThePirates(c); }, () => OptionHint.Say("Enter Combat")),
-            // orig: R114+0x1A98 (1995:04C8) matched (hint)
+            // orig: R114+0x19E0 (line 1); hint R114+0x1A98 (1995:04C8) matched
             new MenuLine(_ => { LeaderSpeaks(c); PrayForAid(c, menu); }, () => OptionHint.Say("Select a person and a saint.")),
             // orig: R114+0x1AD0 (1995:0500) matched; hint R114+0x1B2A
             new MenuLine(_ => { LeaderSpeaks(c); c.LoseItems(Core.Characters.Who.Everybody); AtDawn(c, 3); }, () => OptionHint.Say(SuccessAssured)),
-            // orig: R114+0x1BFC (1995:062C) matched (hint)
+            // orig: R114+0x1B62 (line 3); hint R114+0x1BFC (1995:062C) matched
             new MenuLine(p => { LeaderSpeaks(c); EscapeIntoTheDark(c, menu, p); },
                 () => OptionHint.ChanceOf(c.PartyAverageEffectiveAgility() * 2, OptionHint.WholeParty)),
-            // orig: R114+0x1CAC (1995:06DC) matched (hint)
+            // orig: R114+0x1C12 (line 4); hint R114+0x1CAC (1995:06DC) matched
             new MenuLine(p => { LeaderSpeaks(c); CoverTheEscape(c, menu, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // DORMANT: lines 5..9 are never offered; actions R114+0x1CE4.. and hints R114+0x1CE6.. are empty
             // (UNCERTAIN: the hints return AX/DX; neutral hints are used).

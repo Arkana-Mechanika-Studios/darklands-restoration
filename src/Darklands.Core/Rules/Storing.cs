@@ -1,5 +1,6 @@
 using Darklands.Core.Characters;
 using Darklands.Core.Items;
+using Darklands.Core.World;
 
 namespace Darklands.Core.Rules;
 
@@ -22,6 +23,7 @@ public static class Storing
         if (at >= 0)
         {
             // C: cnt++ on a char: 255 + 1 wraps to 0.
+            // BUG: the count has no limit: the 256th item of one kind makes it 0, and the stored items are lost.
             store[at] = store[at] with { Count = (byte)(store[at].Count + 1) };
             return;
         }
@@ -48,6 +50,17 @@ public static class Storing
     /// </summary>
     // orig: cache_key R035+0x0A46 (1462:0A46) matched, case P (0x1950/0x1970): cache_add then item_take_one_vec; tests: TradingAndLootTests
     // C: the screen checks only that party[who].nitems is not 0 (a count of -1 passes); the entry is read whatever the count (Pack).
+    /// <summary>The message of a refused Put (a place cannot hold more stores or entries).</summary>
+    // DIVERGENCE: own text (the original has none, its Put never refuses): shown by the item store screen when OriginalBehaviour.FixCacheStoreLimit (data safety) refuses a Put; the item stays in the pack.
+    public const string NoRoomMessage = "The innkeeper has no room for more.";
+
+    /// <summary>Whether Put may go on (always, unless the compact CACHE.TMP layout is in use and the store or the file is full).</summary>
+    public static bool CanPut(GameState s, Location place, StoreTable store, int member, int index)
+    {
+        var item = s.Party.Slot(member).Pack[index];
+        return s.ItemStores.CanPut(place, s.Locations, store, item.Code & 0xFFF, item.Quality, s.Behaviour);
+    }
+
     public static int Put(GameState s, StoreTable store, int member, int index)
     {
         var pack = s.Party.Slot(member).Pack;
@@ -68,6 +81,8 @@ public static class Storing
     {
         var entry = store[index];
         var d = s.Item(entry.Code);
+        // BUG: taking from an inn store into a full pack loses the item: the store entry gives it up whatever AddStack
+        // did, and with 64 stacks and none that the item joins, AddStack adds nothing.
         var count = Inventory.AddStack(s, member, new ItemStack(entry.Code, (byte)d.Type, entry.Quality, 1, (byte)d.Weight));
         TakeOne(store, index);
         return count;

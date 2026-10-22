@@ -125,6 +125,12 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
 
     // ---- the loop -------------------------------------------------------------------
 
+    /// <summary>Sets the Save Game and Load Saved Game items of the hot keys and the menu bar (1 on, 2 off).</summary>
+    public Action<int>? SaveAndLoad { get; set; }
+
+    // C: member_sheet sets DS:9920 = DS:9934 = 2 once the member is there (R031+0x0144) (no Save Game, no Load Saved Game while the sheet is up); R031+0x08F6
+    //   on leaving (Esc, the member's own portrait or F key) sets both to 1, whatever they were before (a sheet opened from a stay leaves saving on); the return on an empty
+    //   member box skips it
     public void Show(GameState state, int who)
     {
         _s = state;
@@ -134,6 +140,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         {
             return;
         }
+        SaveAndLoad?.Invoke(2);
         _cursor = NameBox;
         _underPanel = null;
         // orig: R031+0x09B8 (1462:09B8) draft: fonts, pictures, then the sheet
@@ -249,6 +256,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         var m = y / PartyPanel.RowHeight;
         if (m == _who)
         {
+            // orig: R031+0x0635 to the clean-up (R031+0x08E1: R031+0x08F6, DS:9920 = DS:9934 = 1)
+            SaveAndLoad?.Invoke(1);
             return true;
         }
         if (_s.Party.Slot(m).Status == CharacterStatus.Able)
@@ -268,6 +277,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             var m = (key >> 8) - (Keys.F1 >> 8);
             if (m == _who)
             {
+                // orig: R031+0x0828 to the clean-up (R031+0x08E1)
+                SaveAndLoad?.Invoke(1);
                 return true;
             }
             if (_s.Party.Slot(m).Status == CharacterStatus.Able)
@@ -296,7 +307,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         if (key == Keys.Escape)
         {
             Outline(_cursor, Current.Color);
-            // orig: R031+0x08F6 (1462:08F6) draft: restores fonts and pointer (nothing to restore here)
+            // orig: R031+0x08F6 (1462:08F6) draft: restores fonts and pointer (nothing to restore here), DS:9920 = DS:9934 = 1
+            SaveAndLoad?.Invoke(1);
             return true;
         }
         if (MenuBarKey?.Invoke(key) == true)

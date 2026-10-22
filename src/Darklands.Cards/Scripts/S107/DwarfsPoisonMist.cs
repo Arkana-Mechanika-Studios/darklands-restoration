@@ -34,16 +34,16 @@ public sealed class DwarfsPoisonMist : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R107+0x11B6 (191F:0346) matched (hint)
+            // orig: R107+0x10B0 (line 0); hint R107+0x11B6 (191F:0346) matched
             new MenuLine(_ => ClimbDown(c), Unknown),
-            // orig: R107+0x1302 (191F:0492) matched (hint)
+            // orig: R107+0x11EE (line 1); hint R107+0x1302 (191F:0492) matched
             new MenuLine(_ => EdgeAlongTheCliff(c), Unknown),
-            // orig: R107+0x1514 (191F:06A4) matched (hint)
+            // orig: R107+0x133A (line 2); hint R107+0x1514 (191F:06A4) matched
             new MenuLine(_ => SearchForAnotherExit(c, menu), Unknown),
             // orig: R107+0x154C (191F:06DC) matched (empty); hint R107+0x154E (empty)
             // DORMANT: line 3 is never offered. UNCERTAIN: its empty hint returns whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => { }),
-            // orig: R107+0x165C (191F:07EC) matched (hint)
+            // orig: R107+0x1550 (line 4); hint R107+0x165C (191F:07EC) matched
             new MenuLine(_ => PrayForSalvation(c, menu), () => OptionHint.Say("Select a person and a saint.")),
             // DORMANT: lines 5..9 are never offered; their actions R107+0x1694.. and hints
             // R107+0x1696.. are empty functions (hints returning AX/DX; neutral hints used).

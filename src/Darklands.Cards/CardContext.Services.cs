@@ -84,14 +84,6 @@ public sealed partial class CardContext
 
     // ---- the party roster (charactr.tmp) ----------------------------------------------
 
-    /// <summary>
-    /// Brings a stored character into the first free party slot (R037 3cd6); the game's
-    /// character roster supplies it. Returns the slot, or −1 (also while no roster is connected).
-    /// </summary>
-    public Func<int, int>? RosterJoin { get; set; }
-
-    public int JoinFromRoster(int character) => RosterJoin?.Invoke(character) ?? -1;
-
     // DeleteMember (R037 3f30) is shared: see CardContext.Memory.cs.
 
     /// <summary>Told when a member leaves for good, so the roster can forget the character.</summary>

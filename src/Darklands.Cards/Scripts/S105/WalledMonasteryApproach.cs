@@ -36,22 +36,28 @@ public sealed class WalledMonasteryApproach : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R105+0x1610 (1954:0450) matched (hint)
+            // orig: R105+0x1444 (line 0); hint R105+0x1610 (1954:0450) matched
             new MenuLine(p => AskForAdmittance(c, menu, p), () => AdmittanceHint(c)),
-            // orig: R105+0x17B8 (1954:05F8) matched (hint)
+            // orig: R105+0x16BC (line 1); hint R105+0x17B8 (1954:05F8) matched
             new MenuLine(p => TalkInTheFields(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.Skill(Who.Leader, (int)Skill.SpeakCommon) + c.Attribute(Who.Leader, (int)Attribute.Charisma) * 2 + c.Skill(Who.Leader, (int)Skill.Woodwise) / 5,
                 1, 99), c.Leader)),
-            // orig: R105+0x18DC (1954:071C) matched (hint)
+            // orig: R105+0x1814 (line 2); hint R105+0x18DC (1954:071C) matched
             new MenuLine(_ => PrayForInsight(c), () => OptionHint.Say("Select a person and a saint.")),
-            // DORMANT: lines 3..6, 8 and 9 are never offered (opt_flag = 0); each lets no time pass (R105+0x1914..0820, 08a4, 08e8).
+            // DORMANT: lines 3..6, 8 and 9 are never offered (opt_flag = 0); each lets no time pass (cited per line below).
+            // orig: R105+0x1914 (line 3)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R105+0x1958 (line 4)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R105+0x199C (line 5)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R105+0x19E0 (line 6)
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R105+0x1A24 (1954:0864) matched (leaves without clearing cur_loc)
             new MenuLine(_ => c.Next = CardContext.MapCard, Assured),
+            // orig: R105+0x1A64 (line 8)
             new MenuLine(_ => c.PassHours(0), Assured),
+            // orig: R105+0x1AA8 (line 9)
             new MenuLine(_ => c.PassHours(0), Assured));
     }
 

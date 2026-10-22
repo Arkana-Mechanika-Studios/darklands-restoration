@@ -30,12 +30,12 @@ public sealed class MerchantsOfTheCity : Card
         var menu = Menu(c);
         menu.Enable(0, 1, 3, 7, 8, 9);
         return menu.Run(
-            new MenuLine(() => Trade(c, TradeHint(c).Chance), () => TradeHint(c)),
+            new MenuLine(chance => Trade(c, chance), () => TradeHint(c)),
             new MenuLine(() => SoundOutTheirPolitics(c), OptionHint.Saying(NoRisk)),
             // orig: R092+0x0BB8 (188F:0648) matched; hint R092+0x0BBA (r.a = 0, r.b = -2)
             // DORMANT: line 2 is hidden (flag 0) and does nothing; its hint is a 0 % chance.
             new MenuLine(() => { }, () => OptionHint.ChanceOf(0, Who.Everybody)),
-            new MenuLine(() => AskForTheirLeader(c, MeetingChance(c)), () => OptionHint.ChanceOf(MeetingChance(c), Who.Everybody)),
+            new MenuLine(chance => AskForTheirLeader(c, chance), () => OptionHint.ChanceOf(MeetingChance(c), Who.Everybody)),
             // orig: R092+0x0C8E (188F:071E) matched; hint R092+0x0C90 (r.a = 0, r.b = -2)
             // DORMANT: line 4 is hidden and does nothing.
             new MenuLine(() => { }, () => OptionHint.ChanceOf(0, Who.Everybody)),
@@ -55,7 +55,7 @@ public sealed class MerchantsOfTheCity : Card
     // it once when the line is chosen (and on each Shift hover), before the action draws its own.
     private static OptionHint TradeHint(CardContext c)
     {
-        var price = c.Hostile() ? c.LocalPrice(0x1E, 3) : 0;
+        var price = c.Hostile() ? c.LocalPrice(0x1E, 4) : 0;
         // C: ((p << 1) + p << 1) / -10 + 100: 6p divided by −10, truncated toward zero.
         return price == 0 ? new OptionHint(-1, SuccessAssured, Who.Everybody) : OptionHint.ChanceOf(6 * price / -10 + 100, Who.Everybody);
     }
@@ -63,8 +63,8 @@ public sealed class MerchantsOfTheCity : Card
     // orig: R092+0x0792 (188F:0222) matched
     private static void Trade(CardContext c, int chance)
     {
-        // C: LocalPrice(0x1E, 3, 4): the original passes a third argument the rule ignores.
-        var price = c.Hostile() ? c.LocalPrice(0x1E, 3) : 0;
+        // C: thunk 09C0:20E9(0x1E, 3, 4): the rule ignores its middle argument; the third is the low bound.
+        var price = c.Hostile() ? c.LocalPrice(0x1E, 4) : 0;
         // UNCERTAIN: $NamedOneName is set to a string of the far table seg 290E (filled at run time,
         // probably the merchant's title); that table is not read yet.
         c.Variables.Named[0] = "";
@@ -86,6 +86,8 @@ public sealed class MerchantsOfTheCity : Card
             c.Screen.Text(1);
             c.Variables.Location = NearestCastle(c);
             c.State.SavedCard = c.IsDaylight ? 0x15 : 0x16;
+            // BUG: $Raubi01 (RobberKnightTaskRewarded) takes saved_card2 as the quest giver, but this is the castle's location:
+            // the reward (tag 3, owner 0, tested above) is not found, the card reads and frees events[-1], and the reward stays to be claimed again.
             c.State.SavedCard2 = c.Variables.Location;
             c.Next = 0x91;
             c.Events.Create(Who.Everybody, c.Here, 0x5F, ErrandOffered, 0, 0, 0, 0x48, 0, 0);

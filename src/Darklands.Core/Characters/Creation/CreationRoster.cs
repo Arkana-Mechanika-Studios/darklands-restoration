@@ -18,11 +18,20 @@ public sealed class CreationRoster
     private readonly Character?[] _members = new Character?[Party.MaxMembers];
 
     /// <param name="slotPalettes">The five slots' figure colours (member_palette), kept per slot.</param>
-    public CreationRoster(IEnumerable<Character> characters, IReadOnlyList<byte[]> slotPalettes)
+    /// <param name="slotImages">The five slots' figure images (member_shield) as the menu starts, kept per slot.</param>
+    public CreationRoster(IEnumerable<Character> characters, IReadOnlyList<byte[]> slotPalettes, IReadOnlyList<string>? slotImages = null)
     {
         Characters.AddRange(characters);
         SlotPalettes = [.. slotPalettes.Select(p => (byte[])p.Clone())];
+        for (var i = 0; i < SlotImages.Length && slotImages is not null && i < slotImages.Count; i++)
+        {
+            SlotImages[i] = slotImages[i];
+        }
     }
+
+    /// <summary>Each slot's figure image: it stays with the slot after its member leaves.</summary>
+    // C: member_shield[il] is only written by the add and image commands; deleting from the party clears the id, not the image.
+    public string[] SlotImages { get; } = ["", "", "", "", ""];
 
     /// <summary>Each slot's figure colours: they stay with the slot, whoever joins it.</summary>
     public byte[][] SlotPalettes { get; }
@@ -76,6 +85,12 @@ public sealed class CreationRoster
         var member = Characters[character].Copy();
         member.Status = CharacterStatus.Able;
         member.Image = image;
+        SlotImages[slot] = image;
+        // orig: lockstep chargen-party: the added member's slot holds the inn's starting colours (R038+0x02F8 key 0x1E41 sets the same 24 bytes)
+        for (var k = 0; k < PortraitColours.InnStartPalette.Count; k++)
+        {
+            SlotPalettes[slot][k] = PortraitColours.InnStartPalette[k];
+        }
         member.ImagePalette = SlotPalettes[slot];
         // UNCERTAIN: equip_weight_vec(il) recomputes the encumbrance from the equipped items; the copy keeps the record's
         // value (0 for made characters, who have nothing equipped; the ready-made four carry the game's own values).
@@ -146,6 +161,7 @@ public sealed class CreationRoster
             return false;
         }
         member.Image = image;
+        SlotImages[slot] = image;
         return true;
     }
 
@@ -173,10 +189,12 @@ public sealed class CreationRoster
             return null;
         }
         var party = new Party { Seed = seed, Purse = Economy.Money.Zero };
-        for (var i = 0; i < size; i++)
+        for (var i = 0; i < Party.MaxMembers; i++)
         {
-            party.Members.Add(_members[i] ?? new Character { Status = CharacterStatus.Empty });
+            // C: an empty slot keeps the figure the slot held (member_shield / member_palette), which the saved game writes
+            party.Members.Add(_members[i] ?? new Character { Status = CharacterStatus.Empty, Image = SlotImages[i], ImagePalette = SlotPalettes[i] });
         }
+        party.TrimToSize();
         party.LeaderIndex = leader;
         return party;
     }

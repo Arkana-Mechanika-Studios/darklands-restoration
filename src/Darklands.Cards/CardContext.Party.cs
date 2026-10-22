@@ -208,6 +208,10 @@ public sealed partial class CardContext
     // orig: party_max_attr R029+0x16FE (0E76:16FE) matched
     public int PartyMaxAttribute(int attribute) => PartyQueries.MaxAttribute(State, attribute);
 
+    /// <summary><c>party_max_attr(0x0F)</c>, which reads skill 1.</summary>
+    // orig: party_max_attr R029+0x16FE (0E76:16FE) matched (with 0x0F)
+    public int PartyMaxAttributeAtSkillOne() => PartyQueries.MaxAttributeAtSkillOne(State);
+
     /// <summary><c>party_max_attr_sum</c> (records 2 × a: original bug).</summary>
     // orig: party_max_attr_sum R029+0x179C (0E76:179C) matched
     public int PartyMaxAttributeSum(int a, int b) => PartyQueries.MaxAttributeSum(State, a, b);
@@ -302,13 +306,66 @@ public sealed partial class CardContext
     // orig: party_report_away R029+0x23E2 (0E76:23E2) matched
     public int ReportAway() => PartyRules.ReportAway(State);
 
-    /// <summary><c>party_drop_away</c>.</summary>
-    // orig: party_drop_away R029+0x2434 (0E76:2434) matched
-    public int DropAway() => PartyRules.DropAway(State);
+    /// <summary>
+    /// <c>party_drop_away</c>: the members who went away leave the party for good, each deleted
+    /// (<see cref="DeleteMember"/>) in slot order. Returns how many.
+    /// </summary>
+    // orig: party_drop_away R029+0x2434 (0E76:2434) draft, checked against the asm
+    // C: each away member gets status 0 and party_delete (R037+0x3F30); then party_panel_rows(0x100) (the screen's).
+    public int DropAway()
+    {
+        var n = 0;
+        for (var i = 0; i < Party.MaxMembers; i++)
+        {
+            if (Status(i) != CharacterStatus.Away)
+            {
+                continue;
+            }
+            SetStatus(i, CharacterStatus.Empty);
+            DeleteMember(i);
+            n++;
+        }
+        return n;
+    }
 
-    /// <summary>R029 2474: one of the members away leaves, the others return.</summary>
-    // orig: R029+0x2474 (0E76:2474) matched
-    public int OneOfTheAwayLeaves() => PartyRules.OneOfTheAwayLeaves(State);
+    /// <summary>
+    /// R029 2474: of the members who went away, one leaves the party for good and the others come back. A coin
+    /// decides whether the first or the last of them leaves; that one is deleted (<see cref="DeleteMember"/>) before
+    /// the next ones are looked at and becomes <c>best_member</c>. Returns how many were away (not who left).
+    /// </summary>
+    // orig: R029+0x2474 (0E76:2474) draft, checked against the asm
+    // C: rand_mod(2) != 0 scans slots 0..4, else 4..0; the first away member gets status 0 and party_delete (R037+0x3F30), the
+    // C: others status 1; best_member = the one who left when any was away; party_panel_rows(0x100) (the screen's); the count is returned.
+    public int OneOfTheAwayLeaves()
+    {
+        var left = -1;
+        var away = 0;
+        var forward = Random(2) != 0;
+        for (var k = 0; k < Party.MaxMembers; k++)
+        {
+            var i = forward ? k : Party.MaxMembers - 1 - k;
+            if (Status(i) != CharacterStatus.Away)
+            {
+                continue;
+            }
+            if (away == 0)
+            {
+                SetStatus(i, CharacterStatus.Empty);
+                DeleteMember(i);
+                left = i;
+            }
+            else
+            {
+                SetStatus(i, CharacterStatus.Able);
+            }
+            away++;
+        }
+        if (away != 0)
+        {
+            State.Party.Last.Member = left;
+        }
+        return away;
+    }
 
     /// <summary><c>party_rejoin_away</c>.</summary>
     // orig: party_rejoin_away R029+0x251A (0E76:251A) matched
@@ -321,15 +378,19 @@ public sealed partial class CardContext
     /// </summary>
     // orig: run_battle R029+0x2278 (0E76:2278) matched
     // C: the side is drawn (rand_mod(2)) before the seed (rand_mod(1000)); the battle gets seed + party_seed.
-    // DIVERGENCE: cards_shutdown's files and frees and cards_startup's reloads are not needed (only the shutdown's sound_play(1) is played),
-    //   and the "after battle" log is not written; the death film and the end of the game are the host's (AllDead).
+    // DIVERGENCE: cards_shutdown's and cards_startup's other work files, frees and reloads (charactr.tmp's header read into DS:A668,
+    //   locs.tmp, card pictures, shields) are not modelled, and the "after battle" log is not written; the death film and the end of
+    //   the game are the host's (AllDead).
     // orig: cards_startup R043+0x078E (1462:078E) matched, called when somebody is left: srand((unsigned)time(0)),
     //   then the shields, card frames and timer pictures are loaded again, order_menu_reset_vec and world_load("locs.tmp") (the locations the
-    //   battle saw), party_panel_frames/rows; the C# keeps all of that in memory, the reseed is TimePassage.Reseed (before advance_hours(0)).
-    // orig: run_battle begins with cards_shutdown_vec (R043+0x054E), which ends with sound_play(1) (root 047C:078A): the music stops
-    //   before the battle driver is loaded; with nobody left after the battle: music_play(0x12), the death film and exit_(0) (AllDead).
+    //   battle saw, and the events: EventLog.Reload), party_panel_frames/rows; the reseed is TimePassage.Reseed (before advance_hours(0)).
+    // orig: run_battle begins with cards_shutdown_vec (R043+0x054E), which writes the events to events.tmp and empties the table
+    //   (EventLog.Shutdown: the battle and party_delete_vec after it run on an empty table) and ends with sound_play(1) (root 047C:078A):
+    //   the music stops before the battle driver is loaded; with nobody left after the battle: music_play(0x12), the death film and
+    //   exit_(0) (AllDead).
     public int RunBattle(int side, int seed, params int[] parameters)
     {
+        Events.Shutdown();
         PlaySound(1);
         if (side == -1)
         {
@@ -337,12 +398,13 @@ public sealed partial class CardContext
         }
         var battleSeed = PartyRules.BattleSeed(State, seed);
         var result = Battle?.Invoke(side, battleSeed, parameters) ?? 0;
-        PartyRules.AfterBattle(State);
+        PartyRules.AfterBattle(State, DeleteMember);
         if (!State.Party.Members.Any(m => m.IsPresent))
         {
             AllDead?.Invoke();
         }
         TimePassage.Reseed(State);
+        Events.Reload();
         TimePassage.Advance(State, 0);
         return result;
     }

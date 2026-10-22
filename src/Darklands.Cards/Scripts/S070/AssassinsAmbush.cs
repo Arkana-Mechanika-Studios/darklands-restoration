@@ -51,8 +51,10 @@ public sealed class AssassinsAmbush : Card
             new MenuLine(_ => PrayInTheFight(c, menu), OptionHint.Saying(CardTexts.SelectSaint), () => SaintHint(c)),
             new MenuLine(_ => Fight(c, menu), OptionHint.Saying(CardTexts.EnterCombat)),
             new MenuLine(chance => RideAway(c, menu, chance), () => MountedChance(c)),
+            // orig: R070+0x1164 (line 8: the potion taken, then RideAway)
             new MenuLine(chance => { c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]); RideAway(c, menu, chance); }, OptionHint.Saying(CardTexts.SelectPotion),
                 () => PotionHint(c, menu)),
+            // orig: R070+0x1238 (line 9: text 0x0F, then RideAway)
             new MenuLine(chance => { c.Screen.Text(0x0F); RideAway(c, menu, chance); }, () => MountedChance(c)));
     }
 

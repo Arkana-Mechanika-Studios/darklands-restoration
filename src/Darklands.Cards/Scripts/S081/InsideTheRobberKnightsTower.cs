@@ -42,7 +42,7 @@ public sealed class InsideTheRobberKnightsTower : Card
         menu.Enable(0, 1, 2, 3);
         return menu.Run(
             new MenuLine(() => FindTheKnight(c), hint: () => SurrenderHint(c)),
-            new MenuLine(() => SetTheTowerOnFire(c, FireChance(c).Chance), hint: () => FireChance(c)),
+            new MenuLine(chance => SetTheTowerOnFire(c, chance), hint: () => FireChance(c)),
             // orig: R081+0x0738 (1838:0738) matched; R081+0x0742 (1838:0742) matched; tests: CardSmokeTests
             new MenuLine(() => Fight(c, 1), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R081+0x077A (1838:077A) matched; R081+0x078C (1838:078C) matched; tests: CardSmokeTests
@@ -105,7 +105,8 @@ public sealed class InsideTheRobberKnightsTower : Card
                 ShowPicture(c, 38);
                 c.Screen.Text(7);
                 c.PassHours(1);
-                // C: here the quest is not resolved (ev8_resolve is only called after a won battle).
+                // BUG: here the quest is not resolved (ev8_resolve is only called after a won battle): the knight is dead
+                // and the tower a ruin, but no patron ever pays for the quest (card oracle: result 1 with the target slain).
                 TheTowerFalls(c);
                 c.Next = 0x0C;
                 break;
@@ -171,7 +172,9 @@ public sealed class InsideTheRobberKnightsTower : Card
             {
                 ShowPicture(c, 31);
                 c.Screen.Text(1);
-                // C: the battle's next card is overwritten below: the party is back before the tower.
+                // BUG: the battle's next card (0x0C, the map, after the knight's death) is overwritten below: the party is
+                // back before the ruined tower (0x93) and can go in, fire it and kill the knight again, for his loot each time;
+                // the leader practises Artifice each time, though the chance was the best member's (card oracle, 0x94 option 1).
                 Fight(c, 0x75);
             }
             else

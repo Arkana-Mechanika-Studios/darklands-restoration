@@ -48,9 +48,11 @@ public sealed class FactionPlanningSession : Card
             Talk(4),
             Talk(6),
             Talk(7),
-            // orig: R074+0x122C (18F6:064C) matched; R074+0x1234 (18F6:0654) matched; R074+0x126C (18F6:068C) matched; R074+0x1274 (18F6:0694) matched; R074+0x12AC (18F6:06CC) matched; R074+0x12B4 (18F6:06D4) matched; tests: CardSmokeTests
+            // orig: R074+0x122C (18F6:064C) matched; R074+0x1234 (18F6:0654) matched; tests: CardSmokeTests
             new MenuLine(() => c.Next = 0x70, OptionHint.Saying(NoRisk)),
+            // orig: R074+0x126C (18F6:068C) matched; R074+0x1274 (18F6:0694) matched; tests: CardSmokeTests
             new MenuLine(() => c.Next = 0x70, OptionHint.Saying(NoRisk)),
+            // orig: R074+0x12AC (18F6:06CC) matched; R074+0x12B4 (18F6:06D4) matched; tests: CardSmokeTests
             new MenuLine(() => c.Next = 0x70, OptionHint.Saying(NoRisk)),
             // orig: R074+0x12EC (18F6:070C) matched; R074+0x12F8 (18F6:0718) matched; tests: CardSmokeTests
             // DORMANT: a placeholder line ("8") that is never offered (flag 0); it would only let no time pass.

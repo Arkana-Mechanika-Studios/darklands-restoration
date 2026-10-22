@@ -50,16 +50,16 @@ public sealed class HussiteBand : Card
         menu.Popup = () => OptionHint.Say(SuccessAssured, c.MenuMember);
 
         return menu.Run(
-            // orig: R114+0x0E40 (18D3:0490) matched (hint)
+            // orig: R114+0x0DCC (line 0); hint R114+0x0E40 (18D3:0490) matched
             new MenuLine(p => ClaimFriendship(c, p), () => OptionHint.ChanceOf(
                 c.Attribute(Who.Leader, (int)Attribute.Charisma) + c.LocationQuery(c.Variables.Location, 0) + c.Skill(Who.Leader, (int)Skill.SpeakCommon) / 2, c.Leader)),
-            // orig: R114+0x0F78 (18D3:05C8) matched (hint)
+            // orig: R114+0x0E8A (line 1); hint R114+0x0F78 (18D3:05C8) matched
             new MenuLine(_ => PrayToABohemianSaint(c), () => OptionHint.Say("Select a person and a saint."), () => c.SaintPopupChanceHint()),
             // orig: R114+0x0FB0 (18D3:0600) matched; hint R114+0x0FB6
             new MenuLine(_ => FightTheHussites(c), () => OptionHint.Say("Enter Combat")),
-            // orig: R114+0x10C0 (18D3:0710) matched (hint)
+            // orig: R114+0x0FEE (line 3); hint R114+0x10C0 (18D3:0710) matched
             new MenuLine(p => RunForIt(c, p), () => OptionHint.ChanceOf(c.PartyGet(5) != 0 ? 100 : c.PartyAverageEffectiveAgility(), c.Leader)),
-            // orig: R114+0x1214 (18D3:0864) matched (hint)
+            // orig: R114+0x10F0 (line 4); hint R114+0x1214 (18D3:0864) matched
             new MenuLine(p => ThrowAPotionAndRun(c, p), () => OptionHint.Say("Select a person and a potion.")),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
@@ -218,7 +218,7 @@ public sealed class HussiteBand : Card
                 break;
             case 1:
             case 2:
-                c.OneAwayMemberLeaves();
+                c.OneOfTheAwayLeaves();
                 ShowPicture(c, 145);
                 c.Screen.Text(6);
                 c.PassHours(c.HoursUntil(5));

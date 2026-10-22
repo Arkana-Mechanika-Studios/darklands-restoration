@@ -287,6 +287,9 @@ public sealed class Footpads : Card
         switch (c.RunBattle(robbers, -1, 7, groups, count, -1, 0, 0, -1, 0, 0))
         {
             case 0:
+                // BUG: the standing (and the battle's skill practice) is given before the thanks; a game saved at that text
+                // holds only this card (DS:A772 = 0x24), so loading it starts the card again (an hour, the ambush or the
+                // menu) with the gains kept, by day as by night: the fight can be repeated at will.
                 AdjustStanding(c, place, 1, 5);
                 ShowPicture(c, onTheRoad ? Picture : AlleyPicture);
                 if (onTheRoad)

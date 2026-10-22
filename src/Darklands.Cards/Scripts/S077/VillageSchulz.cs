@@ -41,7 +41,8 @@ public sealed class VillageSchulz : Card
                 AskForHelp(c);
                 menu[1] = OptionState.Shown;
             }, OptionHint.Saying(NoRisk)),
-            // orig: R077+0x1F02 (1996:0922) matched; R077+0x1F8C (1996:09AC) matched; R077+0x2016 (1996:0A36) matched; R077+0x20A0 (1996:0AC0) matched; tests: CardSmokeTests
+            // orig: R077+0x1A9C (line 2); R077+0x1F02 (1996:0922) matched; R077+0x1F8C (1996:09AC) matched; R077+0x2016 (1996:0A36) matched;
+            // R077+0x20A0 (1996:0AC0) matched; tests: CardSmokeTests
             new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(() => AccuseTheHamlet(c), OptionHint.Saying(CardTexts.Unknown)),
             // orig: R077+0x1E14 (1996:0834) matched; R077+0x1E26 (1996:0846) matched; tests: CardSmokeTests
@@ -111,7 +112,7 @@ public sealed class VillageSchulz : Card
             }
             else
             {
-                // C: a full party gets the florin text but no florin (as in the original).
+                // BUG: a full party gets text 6 ("Please accept this florin") but no florin; the low-standing branch adds it.
                 c.Screen.Text(6);
             }
         }

@@ -25,6 +25,81 @@ public sealed class BattleScreen : ITacticalView
 {
     private const int FrameMilliseconds = 16;
 
+    /// <summary>A debugging aid: exactly one timer callback of the 60 Hz clock a pass of the loop, whatever the time (DARKLANDS_BATTLE_TICK_PER_PASS),
+    /// as tools/oracle/lockstep.py runs the original's battle.</summary>
+    /// <summary>A debugging aid: a line at the head of each pass, the combat clock and the random state (DARKLANDS_BATTLE_TRACE).</summary>
+    public static Action<string>? PassTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TRACE") is null ? null : Console.WriteLine;
+
+    /// <summary>DARKLANDS_BATTLE_TRACE=records (the battle tester): each pass's line also holds the combatants' records and tables.</summary>
+    public static bool RecordTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TRACE") == "records";
+
+    /// <summary>" cbt &lt;13 records, hex&gt; q &lt;queued endurance, strength per combatant&gt; ar &lt;attack rates&gt;", as the tester reads them in
+    /// the original's memory.</summary>
+    private static string CombatantDump(Battle battle)
+    {
+        var records = new byte[Combatant.Count * Darklands.Persistence.CombatantRecords.Size];
+        var queued = new byte[Combatant.Count * 2];
+        var rates = new byte[Combatant.Count];
+        for (var i = 0; i < Combatant.Count; i++)
+        {
+            var c = battle[i];
+            Darklands.Persistence.CombatantRecords.Write(c, records.AsSpan(i * Darklands.Persistence.CombatantRecords.Size));
+            queued[2 * i] = (byte)c.QueuedEndurance;
+            queued[2 * i + 1] = (byte)c.QueuedStrength;
+            rates[i] = c.AttackRate;
+        }
+        return $" cbt {Convert.ToHexString(records)} q {Convert.ToHexString(queued)} ar {Convert.ToHexString(rates)}";
+    }
+
+    public static bool OneTickPerPass { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TICK_PER_PASS") is not null;
+
+    /// <summary>A debugging aid: the clock ticks each battle's set-up takes (stages 1 to 4, see ITacticalView.SetUpTime), in place of
+    /// the time that passed, battle after battle ("704,41,1,0;650,40,0"; the last entry goes on; the optional fourth number is the part of the
+    /// third that comes before the activations check's clock is read, R014+0x0332), as tools/oracle/lockstep.py measures them
+    /// in the original (DARKLANDS_BATTLE_SETUP_TICKS).</summary>
+    public static Queue<(int Loads, int FirstFrame, int Late, int BeforeActivations)>? SetUpTicks { get; set; } = ParseSetUpTicks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_SETUP_TICKS"));
+
+    private static Queue<(int, int, int, int)>? ParseSetUpTicks(string? text) => text is null ? null
+        : new(text.Split(';').Select(p => p.Split(',')).Select(p => (int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
+            int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture),
+            p.Length > 2 ? int.Parse(p[2], System.Globalization.CultureInfo.InvariantCulture) : 0,
+            p.Length > 3 ? int.Parse(p[3], System.Globalization.CultureInfo.InvariantCulture) : 0)));
+
+    /// <summary>A debugging aid: timer callbacks that came within a pass beyond its one, by the combat clock at the pass's head ("1382,69;1452,67":
+    /// the clock was 1382 at the head, 69 more callbacks came during the pass), as tools/oracle/battle_oracle.py measures them in the original
+    /// (DARKLANDS_BATTLE_CLOCK_JUMPS): the original's emulated time passes during a pass that computes for long (R014+0x4BFA..0x66FE
+    /// in the wild fight), and the timer callbacks of that time count the clock on.</summary>
+    public static Dictionary<int, int>? ClockJumps { get; set; } = ParseClockJumps(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CLOCK_JUMPS"));
+
+    private static Dictionary<int, int>? ParseClockJumps(string? text) => string.IsNullOrEmpty(text) ? null
+        : text.Split(';').Select(p => p.Split(',')).ToDictionary(p => int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
+            p => int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture));
+
+    /// <summary>A debugging aid: the same jumps' part that came between the pass's random draws ("1452,67,4:4,5:2": before the pass's 4th draw
+    /// (counted from 0 at the pass's head) 4 callbacks came, before the 5th 2 more, the rest after the pass), as battle_oracle.py measures them:
+    /// the draws that read the clock (a re-path time) see the clock the original had then (DARKLANDS_BATTLE_CLOCK_JUMPS). The keys -1 and -2 are the
+    /// callbacks that came before the tick's scheduler (R014+0xF418's 1DB7:0D36) and melee exchanges (R014+0x2A4A), which test the clock against the
+    /// re-path and engage times before any draw.</summary>
+    public static Dictionary<int, Dictionary<int, int>>? ClockRises { get; set; } = ParseClockRises(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CLOCK_JUMPS"));
+
+    private static Dictionary<int, Dictionary<int, int>>? ParseClockRises(string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return null;
+        }
+        var all = new Dictionary<int, Dictionary<int, int>>();
+        foreach (var entry in text.Split(';').Select(p => p.Split(',')).Where(p => p.Length > 2))
+        {
+            all[int.Parse(entry[0], System.Globalization.CultureInfo.InvariantCulture)] = entry.Skip(2).Select(r => r.Split(':'))
+                .ToDictionary(r => int.Parse(r[0], System.Globalization.CultureInfo.InvariantCulture), r => int.Parse(r[1], System.Globalization.CultureInfo.InvariantCulture));
+        }
+        return all;
+    }
+
+    private (int Loads, int FirstFrame, int Late, int BeforeActivations) _setUpTicks;
+    private long _setUpMark;
+
     private readonly GameUi _ui;
     private readonly BattleAssets _assets;
     private readonly GameState _state;
@@ -69,7 +144,7 @@ public sealed class BattleScreen : ITacticalView
     /// lost, 4 surrendered, 5 all down, 6 fell into a pit, 7 timed exit; 8 "left before the
     /// fight" is reported as 2, as battle_run's callers read it).
     /// </summary>
-    // orig: battle_run R002+0x0000 (0E76:0000) draft
+    // orig: battle_run R002+0x0000 (0E76:0000) draft; its loop is combat_input R014+0x3166 (0E76:3166) draft
     public int Run(BattleRequest request)
     {
         Start(request);
@@ -85,10 +160,60 @@ public sealed class BattleScreen : ITacticalView
             // orig: R014+0x031E / 0x0326 (R014+0x0000, before its loop): the mouse driver's release count read and DS:C62A = 0
             _ui.TakeLeftReleases();
             _releases = 0;
+            var lateTicks = 0;
+            Dictionary<int, int>? pendingRises = null;
             while (true)
             {
                 var now = _ui.Clock.Milliseconds;
-                Advance(now - previous);
+                Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
+                TacticalBattle.ClockPhase = null;
+                // orig: R014+0x0000 (0E76:0000) runs the end test (R014+0x08FE) and the endurance recovery (R014+0x45AE), then R014+0x3166
+                // (the head the tester compares, the player's input); the timer callbacks of a pass come after them
+                if (_battle!.IterateHead())
+                {
+                    break;
+                }
+                if (PassTrace is { } trace)
+                {
+                    trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}"
+                        + (RecordTrace ? CombatantDump(_battle.Battle) : ""));
+                }
+                if (OneTickPerPass)
+                {
+                    _clockFraction = 1;
+                    if (ClockJumps is not null && ClockJumps.Remove(_battle!.Battle.Clock, out var jump))
+                    {
+                        lateTicks = jump;
+                    }
+                    if (ClockRises is not null && ClockRises.Remove(_battle!.Battle.Clock, out var rises))
+                    {
+                        var draws = 0;
+                        pendingRises = new Dictionary<int, int>(rises);
+                        Darklands.Core.Randomness.MscRandom.BeforeDraw = () =>
+                        {
+                            if (rises.TryGetValue(draws, out var rise))
+                            {
+                                pendingRises.Remove(draws);
+                                _clockFraction = rise;
+                                Advance(0);
+                            }
+                            draws++;
+                        };
+                        TacticalBattle.ClockPhase = phase =>
+                        {
+                            if (pendingRises is not null && pendingRises.Remove(phase, out var rise))
+                            {
+                                _clockFraction = rise;
+                                Advance(0);
+                            }
+                        };
+                    }
+                    Advance(0);
+                }
+                else
+                {
+                    Advance(now - previous);
+                }
                 previous = now;
                 _ui.Present();
                 // orig: R014+0x3166: the cursor keys (DS:D7FE), the mouse handler (the hover while the button is held, then a
@@ -106,25 +231,43 @@ public sealed class BattleScreen : ITacticalView
                 }
                 PanelRelease();
                 EdgeScroll();
+                var keyHandled = false;
                 if (_ui.KeyWaiting || _ui.Directions.X != 0 || _ui.Directions.Y != 0)
                 {
                     CombatKeys();
+                    keyHandled = true;
+                }
+                if (keyHandled && pendingRises is not null && pendingRises.Remove(-2, out var keyRise))
+                {
+                    // the original's long computation of a key's order (the path searches of Q, single file) came before the tick tests the clock
+                    // (the tester lists it as the rise at the tick's first clock read, the melee exchanges)
+                    _clockFraction = keyRise;
+                    Advance(0);
                 }
                 if (_resyncClock)
                 {
                     previous = _ui.Clock.Milliseconds;
                     _resyncClock = false;
                 }
-                if (_battle!.Iterate())
+                _battle!.IterateRest();
+                if (pendingRises is { Count: > 0 })
                 {
-                    break;
+                    // the rises of the original's pass that this pass did not reach (a draw or a phase it does not make, as when the loot screen
+                    // or a path search took the time there): they come after it
+                    lateTicks += pendingRises.Values.Sum();
+                }
+                pendingRises = null;
+                if (lateTicks > 0)
+                {
+                    // the callbacks of the time a long tick took came during it: after what the tick read of the clock
+                    _clockFraction = lateTicks;
+                    Advance(0);
+                    lateTicks = 0;
                 }
                 Draw();
                 _ui.Clock.Sleep(FrameMilliseconds);
             }
-            Finish();
-            // C: the battle's marching order is the game's (DS:C624 / DS:C629): it stays as the battle left it.
-            Darklands.Core.Rules.MarchingOrderChoice.Store(_battle.MarchingOrder, _state.MarchingOrder);
+            Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
             // orig: battle_run R002+0x0000 after thunk 09C0:1B03 (combat_main): mouse_hide (root 047C:12C3), mouse_set_cursor(0, 0, cursor_default)
             // (root 047C:124F), catalog_close (root 0000:262E), then "BattleResults - victory" … through show_message(DS:9085, 0x96) over the screen
             // as combat_main left it: the battle view in the battle palette (after a victory the loot screen has put both back, see OpenLoot).
@@ -135,6 +278,11 @@ public sealed class BattleScreen : ITacticalView
             {
                 new MessageBox(_ui).Show(BattleScreens.ResultText((int)ended), 0x96 * 1000 / 60);
             }
+            // C: R002+0x05C1: combat_recover, then the buffers freed and (R002+0x0710) the able and unconscious lose their action and target
+            _battle.RecoverAfterBattle();
+            Finish();
+            // C: the battle's marching order is the game's (DS:C624 / DS:C629): it stays as the battle left it.
+            Darklands.Core.Rules.MarchingOrderChoice.Store(_battle.MarchingOrder, _state.MarchingOrder);
         }
         finally
         {
@@ -259,6 +407,7 @@ public sealed class BattleScreen : ITacticalView
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed,
+            StaleFlags = _state.BattleFile is { } program ? [.. Enumerable.Range(0, Combatant.Count).Select(i => (ushort)(program.Variables[BattleVariables.Flags + 2 * i] | program.Variables[BattleVariables.Flags + 2 * i + 1] << 8))] : null,
         };
         _view.PieceFrame = (layer, x, y) => _battle?.Effects.PieceFrame(layer, x, y) ?? -1;
         for (var i = 0; i < Combatant.PartySlots; i++)
@@ -280,10 +429,10 @@ public sealed class BattleScreen : ITacticalView
         SetPalette(field.Terrain.BackgroundPalette);
         // orig: the marching order (DS:C624 / DS:C629) is the game's: the battle starts from it, R016+0x0DA6 keeping it while it is valid
         _battle.MarchingOrder.AddRange(Darklands.Core.Rules.MarchingOrderChoice.Entries(_state.MarchingOrder));
+        (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
         _battle.Start(arrivedThroughDoor: request.Mode >= 2, delayedStart: field.Timed && !reuse,
             combatFlags: request.CombatFlags | _state.BattleOrders.Flags, keptPlaces: reuse && request.Mode == 1 ? field.Store.PartyPlaces : null);
         _menuBar = BuildMenuBar();
-        Follow(force: true);
     }
 
     /// <summary>
@@ -291,9 +440,9 @@ public sealed class BattleScreen : ITacticalView
     /// from its records (where each member stood, its animation), the battle's variables, then the start of a fight
     /// taken up again.
     /// </summary>
-    // orig: R002+0x0000 (0E76:0000) draft with DS:9081 bit 0: mode 1 (no new battlefield, combat flag 2, the levels as the restore
-    // R003+0x0CE8 wrote them), the reset R002+0x1830 without its restored part; the party's records are its combatant records as
-    // R037+0x8ED4 (1C7D:0D24) read them; tests: BattleSaveTests
+    // orig: R002+0x0000 (0E76:0000) draft with DS:9081 bit 0: mode 1 (no new battlefield, combat flag 2), the reset R002+0x1830
+    // without its restored part; tests: BattleSaveTests; the levels as filled by the restore R003+0x0CE8;
+    // the party's records are its combatant records as filled by R037+0x8ED4 (1C7D:0D24)
     // C: the reset R002+0x1830 still clears each member's action (+0x10) and target (+0x4A) and empties records 5..12: the enemies of the
     // fight that was saved are not in the battle file (only those not met yet, in the activations).
     private void Resume(BattleRequest request, BattleFile file)
@@ -339,9 +488,9 @@ public sealed class BattleScreen : ITacticalView
         _battle.ReadBattleFile(file);
         _small = new TextPainter(_ui.Assets.Font(3));
         SetPalette(field.Terrain.BackgroundPalette);
+        (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
         _battle.Resume();
         _menuBar = BuildMenuBar();
-        Follow(force: true);
     }
 
     /// <summary>The battle palette: common colours, the party's colours, the terrain's background colours.</summary>
@@ -394,6 +543,7 @@ public sealed class BattleScreen : ITacticalView
     private void Finish()
     {
         var b = _battle!.Battle;
+        _owner.ViewCentre = (_view.CentreColumn, _view.CentreRow);
         // C: what the battle leaves in the program's battle file (variables, levels, terrain.fil, the loot file), as R002+0x0000 leaves
         // its globals: DS:907A = 0, the floor (DS:A6B4) of the members who were able or unconscious 0, the result 8 read as 2.
         var file = _state.BattleFile ??= new BattleFile();
@@ -412,6 +562,8 @@ public sealed class BattleScreen : ITacticalView
         }
         // floor_img keeps the level shown at the end for the next battle's empty battlefield.
         _owner.GenerationMemory.FloorImage = (byte[])_battle.Level.Image.Clone();
+        // the party's collision sizes (DS:C80F / DS:C831) stay in the program's tables for the next battle's placement
+        _owner.GenerationMemory.PartySizes = [.. Enumerable.Range(0, Combatant.PartySlots).Select(i => (b[i].HalfWidth, b[i].HalfHeight))];
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             if (b[i].Member is { } member)
@@ -424,6 +576,8 @@ public sealed class BattleScreen : ITacticalView
                     var record = (byte[])kept.Clone();
                     Persistence.CombatantRecords.Write(b[i], record);
                     Persistence.CombatantRecords.WriteAnimation(b[i], record);
+                    // C: R002+0x1830 set +0x1C to the slot at the battle's start
+                    record[0x1C] = (byte)i;
                     if (b[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious)
                     {
                         record[0x10] = record[0x11] = 0;
@@ -508,6 +662,10 @@ public sealed class BattleScreen : ITacticalView
     // orig: R014+0x465E (0E76:465E) draft (asm-verified per spec D §1.11)
     public void Sound(int n) => Darklands.Audio.GameSounds.PlayBattleSound(_ui.Audio, n, _ui.Options.SoundEffects, _ui.Options.Music);
 
+    // orig: R024+0x07A2 (1EF8:07A2) draft (the load and the tile's sprite and offsets; see BattlefieldTiles.Vary)
+    public FurnitureShape? VaryFurniture(int tile, string set, int record) =>
+        _tiles?.Vary(_assets.TileSets, set, tile, record) is { } f ? new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY) : null;
+
     public void Message(int text, int ticks)
     {
         _message = _assets.Executable.String(text);
@@ -536,24 +694,73 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
-    private void PacksFromMembers()
-    {
-        for (var i = 0; i < Combatant.PartySlots; i++)
-        {
-            var c = _battle!.Battle[i];
-            if (c.Member is { } m)
-            {
-                c.Items.CopyFrom(m.Pack);
-            }
-        }
-    }
-
     public void RowChanged(int member)
     {
     }
 
+    // orig: the timer callback root 047C:000A counts the combat clock (DS:07D4) while the set-up of combat_main R014+0x0000 loads its
+    // files: here the clock moves on by the real time the set-up took (next to nothing)
+    public void SetUpTime(int stage)
+    {
+        var now = _ui.Clock.Milliseconds;
+        if (stage == 0)
+        {
+            _setUpMark = now;
+            if (SetUpTicks is { Count: > 0 } given)
+            {
+                _setUpTicks = given.Count > 1 ? given.Dequeue() : given.Peek();
+            }
+            return;
+        }
+        if (SetUpTicks is not null)
+        {
+            _clockFraction = stage switch
+            {
+                1 => _setUpTicks.Loads,
+                2 => _setUpTicks.FirstFrame,
+                3 => _setUpTicks.BeforeActivations,
+                _ => _setUpTicks.Late - _setUpTicks.BeforeActivations,
+            };
+            Advance(0);
+        }
+        else if (stage >= 3)
+        {
+            return;
+        }
+        else
+        {
+            Advance(now - _setUpMark);
+        }
+        _setUpMark = now;
+    }
+
+    // orig: floor_view_draw R017+0x0000 (1EF8:0000) draft with who −1: the view around the centre kept (DS:C866 / DS:C886, which a
+    // placement may have set); DS:E160 = 1, so the next combat_draw forgets the last frame's logged sprites (DS:E176 = 0)
     public void MapChanged()
     {
+        ApplyViewOrigin();
+        _viewRedrawn = true;
+    }
+
+    // orig: floor_view_draw R017+0x0000 draft with who ≥ 0: the centre becomes the combatant's cell (DS:E233 = x >> 5, DS:E235 = y >> 4)
+    public void Recentre(int who)
+    {
+        var c = _battle!.Battle[who];
+        _battle.ViewOrigin = null;
+        _view.CentreColumn = c.Position.Column;
+        _view.CentreRow = c.Position.Row;
+        _viewRedrawn = true;
+    }
+
+    // orig: combat_tick R014+0x1065..0x10A7 (checked against the asm): scry < 0x14 or > 0xA0, or scrx < 0x14 or > 0xDC, of DS:17B0, as
+    // cbt_screen_pos R014+0x99F6 left them in the last frame (the sprite's top left in the view)
+    public void KeepInView(int who)
+    {
+        var (sx, sy) = _battle!.Battle[who].ScreenPlace;
+        if (sy < 0x14 || sy > 0xA0 || sx < 0x14 || sx > 0xDC)
+        {
+            Recentre(who);
+        }
     }
 
     /// <summary>The loot screen over the battle (the party records are the combatants): what the party leaves stays in the list.</summary>
@@ -565,9 +772,22 @@ public sealed class BattleScreen : ITacticalView
         // palette_restore(DS:CA53, DS:CA55) after it; then loot_pile_open R014+0xE278 redraws the battle:
         // floor_view_draw_vec(DS:17B0) (the view centred on the active member) and combat_draw.
         var palette = (uint[])_ui.Canvas.Screen.Palette.Clone();
+        // orig: the party records are the combatants, so the loot screen (R040) and its panel see the wounds and skills of the fight at once (as the
+        // character sheet does, see CharacterSheet)
+        _battle!.MembersFromCombat();
         PacksToMembers();
         _owner.TakeLoot(list, money);
-        PacksFromMembers();
+        // orig: the party record is the combatant record: what the screen changed in a member comes back whole, not only the pack: an item
+        // put on the pile that was the equipped one is unequipped (R031+0x5B38 through item_take_one) in the record itself (+0x22, +0x51,
+        // +0x4B/+0x4C, +0x5C and the encumbrance +0x49), which the battle reads afterwards
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            if (_battle!.Battle[i].Member is { } m)
+            {
+                CombatantSetup.Refresh(_battle.Battle[i], m);
+            }
+        }
+        _battle!.TakeUpEnemyAnimations();
         // orig: R014+0xE5E3: the releases made on the loot screen are taken from the driver and forgotten
         _ui.TakeLeftReleases();
         _releases = 0;
@@ -677,27 +897,31 @@ public sealed class BattleScreen : ITacticalView
             new(() => "Pause", true, "\u000fP", () => _hotKey?.Invoke(Keys.AltP)),
             new(() => "Quit to DOS", true, "\u000fQ", () => _hotKey?.Invoke(Keys.AltQ)),
         };
+        // C: every Orders text starts with its tick byte (font 1: 1 a tick, 2 none, both 6 pixels wide): 2, but Travel As Group's (DS:07AA) and
+        // C: Travel Single File's (DS:07BC), which R016+0x0BD6 / R016+0x0CDC set to 1 for the mode turned on and every other writer (R002+0x0000,
+        // C: R014+0x0000 at real combat, R037+0x8B76) to 2 with move_mode 0: the tick is move_mode's
+        static string Tick(bool on) => on ? "" : "";
         var orders = new List<MenuBar.Item>
         {
-            O(OrdersItem.Resume, () => "Resume", "\x13", Resume),
-            O(OrdersItem.Finished, () => m.Giver + S(BattleScreens.FinishedText), "\x12", () => tb.LeaveOrderMode()),
-            O(OrdersItem.EnemyInfo, () => "Enemy Info", " E", EnemyInfo),
-            O(OrdersItem.Walk, () => S(0x67C).TrimStart('\x02').TrimEnd(), " W", () => tb.ChooseOrder(1)),
-            O(OrdersItem.Flee, () => S(0x690).TrimStart('\x02').TrimEnd(), " F", () => tb.ChooseOrder(1, flee: true)),
-            O(OrdersItem.Halt, () => "Halt", " H", () => tb.Halt(tb.Battle.Leader)),
-            O(OrdersItem.Group, () => "Travel As Group", " G", tb.ToggleGroup),
-            O(OrdersItem.SingleFile, () => "Travel Single File", " Q", tb.ToggleSingleFile),
-            O(OrdersItem.UseDoor, () => With(0x6AA, 8, m.DoorSuffix), " U", () => tb.UseKey(tb.Selected)),
-            O(OrdersItem.UseStairs, () => With(0x6BA, 10, m.StairsSuffix), " U", () => tb.UseKey(tb.Selected)),
-            O(OrdersItem.OpenChest, () => With(0x6CC, 10, m.ChestSuffix), " O", () => tb.OpenKey(tb.Selected)),
-            O(OrdersItem.PickLock, () => With(0x6DE, 9, m.PickSuffix), " P", () => tb.PickKey(tb.Selected)),
-            O(OrdersItem.DissolveLock, () => With(0x6F0, 13, m.DissolveSuffix), " D", () => tb.DissolveKey(tb.Selected)),
-            O(OrdersItem.DisarmTrap, () => S(m.DisarmText).TrimStart('\x02'), " D", () => tb.DissolveKey(tb.Selected)),
-            O(OrdersItem.Surrender, () => "Surrender (All)", " S", Surrender),
+            O(OrdersItem.Resume, () => "Resume", "", Resume),
+            O(OrdersItem.Finished, () => "" + m.Giver + S(BattleScreens.FinishedText), "", () => tb.LeaveOrderMode()),
+            O(OrdersItem.EnemyInfo, () => "Enemy Info", " E", EnemyInfo),
+            O(OrdersItem.Walk, () => S(0x67C).TrimEnd(), " W", () => tb.ChooseOrder(1)),
+            O(OrdersItem.Flee, () => S(0x690).TrimEnd(), " F", () => tb.ChooseOrder(1, flee: true)),
+            O(OrdersItem.Halt, () => "Halt", " H", () => tb.Halt(tb.Battle.Leader)),
+            O(OrdersItem.Group, () => Tick(tb.MoveMode == 1) + "Travel As Group", " G", tb.ToggleGroup),
+            O(OrdersItem.SingleFile, () => Tick(tb.MoveMode == 2) + "Travel Single File", " Q", tb.ToggleSingleFile),
+            O(OrdersItem.UseDoor, () => "" + With(0x6AA, 8, m.DoorSuffix), " U", () => tb.UseKey(tb.Selected)),
+            O(OrdersItem.UseStairs, () => "" + With(0x6BA, 10, m.StairsSuffix), " U", () => tb.UseKey(tb.Selected)),
+            O(OrdersItem.OpenChest, () => "" + With(0x6CC, 10, m.ChestSuffix), " O", () => tb.OpenKey(tb.Selected)),
+            O(OrdersItem.PickLock, () => "" + With(0x6DE, 9, m.PickSuffix), " P", () => tb.PickKey(tb.Selected)),
+            O(OrdersItem.DissolveLock, () => "" + With(0x6F0, 13, m.DissolveSuffix), " D", () => tb.DissolveKey(tb.Selected)),
+            O(OrdersItem.DisarmTrap, () => S(m.DisarmText), " D", () => tb.DissolveKey(tb.Selected)),
+            O(OrdersItem.Surrender, () => "Surrender (All)", " S", Surrender),
             // orig: R016+0x13CA (1EF8:13CA) matched (R016+0x13CA): R016+0x1590 with 9
-            O(OrdersItem.LootBodies, () => "Loot Bodies", " L", () => tb.ChoosePlace(PlaceAction.TakeLoot)),
-            O(OrdersItem.Exit, () => With(0x726, 16, m.ExitSuffix), " X", tb.ExitKey),
-            O(OrdersItem.Cancel, () => "Cancel Giving Order", "\x03", tb.CancelOrder),
+            O(OrdersItem.LootBodies, () => "Loot Bodies", " L", () => tb.ChoosePlace(PlaceAction.TakeLoot)),
+            O(OrdersItem.Exit, () => "" + With(0x726, 16, m.ExitSuffix), " X", tb.ExitKey),
+            O(OrdersItem.Cancel, () => "Cancel Giving Order", "", tb.CancelOrder),
         };
         // orig: the Attack items' functions DS:97DB (R000+0x083E), each R016+0x156E(action), matched: R016+0x130A (0x12), R016+0x1314 (0x0A)
         // orig: R016+0x131E (6), R016+0x1328 (0x22), R016+0x136E (0x80), matched; the Throw item's own function does nothing
@@ -1151,11 +1375,10 @@ public sealed class BattleScreen : ITacticalView
             // within 1..0x27, then floor_view_draw
             _view.CentreColumn = Math.Clamp(_view.CentreColumn + dx[direction], 1, 0x27);
             _view.CentreRow = Math.Clamp(_view.CentreRow + dy[direction], 1, 0x27);
-            _following = false;
+            ViewScrolled();
             return;
         }
         _battle!.StepKey(direction);
-        _following = true;
     }
 
     /// <summary>The front-most combatant (any, and enemy) whose hot spot holds the point, −1 none.</summary>
@@ -1413,7 +1636,15 @@ public sealed class BattleScreen : ITacticalView
     {
         _view.CentreColumn = Math.Clamp(_view.CentreColumn + dc, 1, 0x27);
         _view.CentreRow = Math.Clamp(_view.CentreRow + dr, 1, 0x27);
-        _following = false;
+        ViewScrolled();
+    }
+
+    /// <summary>R016+0x0B92's end: floor_view_draw (DS:E160) and DS:11B1 = 0, the view no longer follows the active member.</summary>
+    private void ViewScrolled()
+    {
+        _battle!.ViewOrigin = null;
+        _battle.FollowsActive = false;
+        _viewRedrawn = true;
     }
 
     /// <summary>"You can't view … at this time.": a message box for 150 ticks, the battle waiting.</summary>
@@ -1430,8 +1661,8 @@ public sealed class BattleScreen : ITacticalView
     }
 
     /// <summary>F1..F5 or a click on a portrait: the member's character sheet over the battle (only for an able member still on the field).</summary>
-    // orig: combat_char_sheet R022+0x0000 (1EF8:0000) draft; R022+0x04E4 matched
-    // (the "You can't view … at this time." message)
+    // orig: combat_char_sheet R022+0x0000 (1EF8:0000) draft
+    // C: CannotView is R022+0x04E4's message (the "You can't view … at this time." message)
     private void CharacterSheet(int member)
     {
         var tb = _battle!;
@@ -1691,37 +1922,36 @@ public sealed class BattleScreen : ITacticalView
 
     // Drawing
 
-    private bool _following = true;
+    /// <summary>DS:E160: the view was drawn anew since the last combat_draw (which then forgets the logged sprites).</summary>
+    private bool _viewRedrawn;
 
-    /// <summary>The view follows the active member when it nears the edges.</summary>
-    // orig: combat_tick R014+0x0F58 (0E76:0F58) draft (DS:11B1: scry &lt; 0x14 or &gt; 0xA0, scrx &lt; 0x14 or &gt; 0xDC)
-    private void Follow(bool force = false)
+    /// <summary>A placement's view centre (effect_start's DS:C866 / DS:C886) becomes the view's.</summary>
+    private void ApplyViewOrigin()
     {
-        var tb = _battle!;
-        if (tb.ViewOrigin is { } origin)
+        if (_battle!.ViewOrigin is { } origin)
         {
             _view.CentreColumn = origin.Column;
             _view.CentreRow = origin.Row;
-            tb.ViewOrigin = null;
-            _following = false;
-            return;
+            _battle.ViewOrigin = null;
         }
-        var c = tb.Battle[tb.Battle.ActiveMember];
-        if (!_following && !force)
+    }
+
+    /// <summary>cbt_screen_pos's places: each combatant on the level shown (any status but empty) gets its sprite's top left.</summary>
+    // orig: cbt_screen_pos R014+0x99F6 (14F7:31E6) draft: scrx = foot x − DS:D505[set][facing], scry = DS:C8CA[set] − DS:D5D3[set] + y + 0x69
+    private void RecordScreenPlaces()
+    {
+        var tb = _battle!;
+        for (var i = 0; i < Combatant.Count; i++)
         {
-            return;
-        }
-        var (sx, sy) = _view.ToScreen(c.Position.X, c.Position.Y);
-        sx -= BattlefieldView.Left;
-        if (force || sy < 0x14 || sy > 0xA0 || sx < 0x14 || sx > 0xDC)
-        {
-            _view.CentreColumn = c.Position.Column;
-            _view.CentreRow = c.Position.Row;
+            if (tb.Battle[i].Status != CharacterStatus.Empty && tb.Battle[i].Floor == tb.Battle.FloorShown && SpriteBox(i) is { } box)
+            {
+                tb.Battle[i].ScreenPlace = (box.Left - BattlefieldView.Left, box.Top);
+            }
         }
     }
 
     /// <summary>Draws the whole screen.</summary>
-    // orig: combat_draw's sprite lists, list C (depth-sorted sprites) filled by R014+0x7BBE
+    // orig: combat_draw's sprite lists: list C (depth-sorted sprites), which R014+0x7BBE fills
     // unmatched (a sprite queued with its depth and screen tile) and R014+0x8724 matched (at most 157), list A
     // R014+0x87E4 matched, list B R014+0x8862 matched; the dirty screen tiles re-queued by
     // R014+0x88E6 unmatched and R014+0x827A unmatched (walls, furniture, floor objects); list C
@@ -1731,22 +1961,15 @@ public sealed class BattleScreen : ITacticalView
     // fallen first, then y and x), the missiles and the clouds are drawn in that order every frame.
     // DIVERGENCE: the whole view is redrawn each frame (no dirty tiles), the wall pieces are drawn by the view before the sprites rather
     // than sorted in among them, and the 157-sprite limit is not kept (see EffectField.Drawn for its effect on the random numbers).
+    // C: R014+0x827A's random_n(2) for each animated piece of the last full redraw (R017+0x0000's lists DS:E13D / DS:E178 / DS:E196) are
+    // drawn by EffectField.Drawn at each combat_draw, the first one at the battle's start (R014+0x0307).
     public void Draw()
     {
         var tb = _battle!;
         var canvas = _ui.Canvas;
         ApplyEnemyPalettes();
-        if (tb.PendingOrderMember >= 0)
-        {
-            // DS:D6F1: the next frame opens order mode for the member (combat_tick, once it has a hot spot).
-            var member = tb.PendingOrderMember;
-            tb.PendingOrderMember = -1;
-            if (tb.Battle[member].IsAble)
-            {
-                tb.EnterOrderMode(member);
-            }
-        }
-        Follow();
+        ApplyViewOrigin();
+        RecordScreenPlaces();
         _view.Draw(canvas, tb.Level, _tiles!);
         var clip = BattlefieldView.Area;
         foreach (var pile in tb.LootPiles)
@@ -1779,15 +2002,41 @@ public sealed class BattleScreen : ITacticalView
         _loggedSprites = _logged;
         DrawClouds(canvas);
         DrawGroundCursor(canvas);
+        OpenPendingOrderMode();
         DrawPanel(canvas);
         DrawMessage(canvas);
         DrawPointer(canvas);
     }
 
+    /// <summary>In the frame drawn after a combat tick: the member waiting for order mode (DS:D6F1 / DS:D6ED) enters it once it has a hot spot.</summary>
+    // orig: combat_tick R014+0x0F58 (0E76:0F58) draft (its end, 0x10AF..0x1125, checked against the asm)
+    // C: after the tick's combat_draw, if DS:D6F1 == 1 the hot spots (DS:D848[0..DS:E0A1 - 1]) are searched for the member DS:D6ED; with
+    // C: one: selected_member = it, the member cursor's place (DS:E09F / DS:E09D, drawn here from the member), order_mode_enter and
+    // C: DS:D6F1 = 0; without one D6F1 stays for the next tick (the member's status is not tested)
+    private void OpenPendingOrderMode()
+    {
+        var tb = _battle!;
+        if (tb.TakeTickToDraw() && tb.PendingOrderMember >= 0 && HotSpot(tb.PendingOrderMember) is not null)
+        {
+            var member = tb.PendingOrderMember;
+            tb.PendingOrderMember = -1;
+            tb.EnterOrderMode(member);
+        }
+    }
+
     /// <summary>The draw list's count and the sprites logged in the frame being drawn; the last frame's logged sprites (DS:E176).</summary>
     private int _listCount, _logged, _loggedSprites;
 
-    public int LoggedSprites => _loggedSprites;
+    // C: combat_draw reads DS:E160 once at its start: after a floor_view_draw DS:E176 = 0 (and DS:E160 = 0)
+    public int LoggedSprites
+    {
+        get
+        {
+            var logged = _viewRedrawn ? 0 : _loggedSprites;
+            _viewRedrawn = false;
+            return logged;
+        }
+    }
 
     /// <summary>A sprite after the combatants takes a place in the draw list while there is room; true when it has one.</summary>
     // orig: R014+0x7BD0 (13AE's `cmp word ptr [E162h], 9Dh / jl`), the ground cursor (R014+0x6B1C) and the missiles (R014+0x6D33) logged
@@ -2012,7 +2261,7 @@ public sealed class BattleScreen : ITacticalView
     }
 
     /// <summary>The clouds (edges, then the puffs on top, in the colours of their type) and the flash and blast markers.</summary>
-    // orig: R014+0x6FFC (14F7:07EC), R014+0x8CB4 (14F7:24A4) and R014+0x76AE (14F7:0E9E) draft
+    // orig: R014+0x6FFC (14F7:07EC), R014+0x8CB4 (14F7:24A4), R014+0x9542 (14F7:2D32; the markers) and R014+0x76AE (14F7:0E9E) draft
     // DIVERGENCE: the edges are drawn over the combatants (the original sorts them in with the sprites by depth) and the puffs
     // are clipped to the view, not to the cloud's box.
     private void DrawClouds(Canvas canvas)
@@ -2137,42 +2386,56 @@ public sealed class BattleScreen : ITacticalView
             Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2);
             var favour = (int)Core.Characters.Attribute.DivineFavor;
             Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E);
-            _small.Draw(canvas, 6, y + 0x1F, StatusLetter(i).ToString(), Palette.White);
+            if (StatusLetter(i) is { } letter)
+            {
+                _small.Draw(canvas, 6, y + 0x1F, letter.ToString(), Palette.White);
+            }
         }
     }
 
-    /// <summary>The order letter of a member (member_status_letter).</summary>
-    private char StatusLetter(int i)
+    /// <summary>The order letter of a member (member_status_letter); none for a member who left the field.</summary>
+    // orig: member_status_letter root 0000:18FA (0000:18FA) draft (checked against the asm): nothing outside a battle or for record +0x14 == 5;
+    // DS:A3D8[i] 1 'b' (no line of fire), 2 'e' (out of ammunition); else the order: order_action (DS:A6B0) when DS:A695 == 1, order_mode == 1,
+    // selected_member == i and it is not -1, else +0x10; 0x400 the place action: DS:A6D1 on the same conditions, else DS:A6C4[i]
+    // (cs:1A22: 1, 2 'U', 3, 6 'P', 4, 7 'D', 5 'O', 8 'X'); 0 '-', 1 'F' following else 'W', 6 'B', 0x0A 'V', 0x12 'A', 0x22 'P', 0x40 'R',
+    // 0x80 'M', 0x100 'T'
+    // DIVERGENCE: any other value (an A3D8, action or place the tables do not list) leaves the original's letter byte uninitialised (a stack
+    // byte drawn as it is); '-' here.
+    private char? StatusLetter(int i)
     {
-        var c = _battle!.Battle[i];
-        var order = i == _battle.Selected && _battle.OrderAction > 0 && _battle.OrderAction != 0x400 ? (CombatAction)_battle.OrderAction : c.Action;
-        if (i == _battle.Selected && _battle.OrderAction == 0x400)
+        var tb = _battle!;
+        var c = tb.Battle[i];
+        if (c.Status == CharacterStatus.Away)
         {
-            return _battle.PlaceOrder switch
+            return null;
+        }
+        if (tb.FireBlocked(i) != 0)
+        {
+            return tb.FireBlocked(i) switch
+            {
+                1 => 'b',
+                2 => 'e',
+                _ => '-',
+            };
+        }
+        var pending = tb.Paused && tb.InOrderMode && tb.Selected == i;
+        var order = pending && tb.OrderAction != -1 ? tb.OrderAction : (int)c.Action;
+        if (order == 0x400)
+        {
+            var place = pending && tb.PlaceOrder != -1 ? tb.PlaceOrder : (int)c.Place;
+            return place switch
             {
                 1 or 2 => 'U',
                 3 or 6 => 'P',
                 4 or 7 => 'D',
                 5 => 'O',
                 8 => 'X',
-                10 => 'H',
                 _ => '-',
             };
         }
-        if (c.Place != PlaceAction.None)
+        return order switch
         {
-            return c.Place switch
-            {
-                PlaceAction.UseDoor or PlaceAction.Stairs => 'U',
-                PlaceAction.PickDoorLock or PlaceAction.PickChestLock => 'P',
-                PlaceAction.DisarmChestTrap or PlaceAction.DissolveLock => 'D',
-                PlaceAction.OpenChest => 'O',
-                PlaceAction.Leave => 'X',
-                _ => '-',
-            };
-        }
-        return (int)order switch
-        {
+            0 => '-',
             1 => (c.Flags & TacticalFlags.Following) != 0 ? 'F' : 'W',
             6 => 'B',
             0x0A => 'V',

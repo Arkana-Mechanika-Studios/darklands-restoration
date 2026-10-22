@@ -35,6 +35,9 @@ public sealed class SallyPortInTheCityWall : Card
         menu.Enable(0, 1, 2, 3, 4, 5, 6);
         // C: the init helper sets opt_on[0..19] = 1 (with the "screwed up." handler) and the loop copies only flags 0..6: lines
         // 7..19 stay enabled; the card's text has ten option lines, so lines 7..9 are offered and do nothing (card oracle: CardOracleTests).
+        // BUG: the text's lines 1, 3 and 5 are "abandon the horses and ..." variants the script has no options for (MSGFILES): the
+        // lines are numbered in order, so from the second line on each runs another option (the second line climbs without ropes,
+        // the sewer-grate line prays, the alchemy line sneaks back), and the last three (pray, bribe, sneak back) do nothing.
         menu.Enable(Enumerable.Range(7, 13).ToArray());
         // C: cur_rep is the card's copy of the reputation; the bribe line's rating refreshes it.
         var standing = c.LocationQuery(c.Here, 0);
@@ -85,7 +88,11 @@ public sealed class SallyPortInTheCityWall : Card
             new MenuLine(_ => UseAPotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             new MenuLine(_ => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(_ => BribeAGuard(c, standing, bribe, menu), () => BribeHint(c, ref standing)),
-            new MenuLine(_ => { c.PassHours(0); c.Next = Wilderness; }, OptionHint.Saying(SuccessAssured)));
+            // C: a choice in a pop-up box is rated by the card's box handler for the slot (DS:EB0A[menu_slot]: item_fn or saint_fn),
+            // C: whatever line opened it: the text's line 6 (alchemy) opens the potion box and runs the sneak-back case, line 7
+            // C: (prayer) opens the saints' box and has no case; the saint handler still makes the praying member $ChosenOneName.
+            new MenuLine(_ => { c.PassHours(0); c.Next = Wilderness; }, OptionHint.Saying(SuccessAssured), () => PotionHint(c)),
+            new MenuLine(() => { }, MenuLine.ScrewedUp, c.SaintPopupHint));
     }
 
     private static int Inside(CardContext c) => c.IsDaylight ? 9 : 0x0A;

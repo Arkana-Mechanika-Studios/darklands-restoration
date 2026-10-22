@@ -87,7 +87,7 @@ public sealed class BattleMap
         int right = x + w - 1, left = x - w + 1, bottom = y + h - 1, top = y - h + 1;
         int cx = x >> 5, cy = y >> 4;
         int cellLeft = cx << 5, cellTop = cy << 4;
-        // DIVERGENCE: the original reads the 3 × 3 cells without a bounds check (edge cells read neighbouring memory); outside the level is void here.
+        // orig: the 3 × 3 cells are read without a bounds check (BattlefieldLevel's indexer reads on past the cells as the original does).
         var centre = Level[cx, cy];
         if (centre.IsVoid)
         {

@@ -332,6 +332,9 @@ public static class Trading
         }
         var d = s.Item(code);
         var stack = new ItemStack(code, (byte)d.Type, (byte)OfferedQuality(s, shop, code), 1, (byte)d.Weight);
+        // BUG: buying into a full pack loses the money: the price is paid before the item is added and the screen does
+        // not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not
+        // given back.
         s.Party.Purse = s.Party.Purse.Subtract(0, 0, BuyPrice(s, shop, code));
         return Inventory.AddStack(s, member, stack);
     }

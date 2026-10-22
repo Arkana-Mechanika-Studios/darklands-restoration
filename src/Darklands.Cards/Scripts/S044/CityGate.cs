@@ -162,7 +162,8 @@ public sealed class CityGate : Card
     // orig: R044+0x202A (19DD:05DA) matched
     private OptionHint SneakChance(CardContext c)
     {
-        var chance = (c.PartyAverageSkill(0x10) + c.PartyAverageEffectiveAgility()) / 2;
+        // C: the burdened Agility is asked first: the Streetwise average is the best_value the hint leaves.
+        var chance = (c.PartyAverageEffectiveAgility() + c.PartyAverageSkill(0x10)) / 2;
         if (_seenBanned)
         {
             chance /= 2;

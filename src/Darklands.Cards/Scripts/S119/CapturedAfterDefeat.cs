@@ -47,6 +47,8 @@ public sealed class CapturedAfterDefeat : Card
     // orig: R119+0x23E4 / _00be / _0118 / _0172 / _01cc / _0226 / _0280 / _02da / _0334 / _038e matched (actions)
     // orig: R119+0x2402 / _00dc / _0136 / _0190 / _01ea / _0244 / _029e / _02f8 / _0352 / _03ac matched (hints)
     // orig: R119+0x2768 (table set-up), R119+0x280A ("screwed up." default),
-    //   R119+0x2842 / _04fe / _053a / _0576 (item pop-up), R119+0x2932 / _063a / _06c2 / _074a (saint pop-up) matched
+    //   R119+0x2842 / _04fe / _053a / _0576 (item pop-up) matched
+    // C: the table's saint pop-up (R119+0x2932 and its twins R119+0x29BA, R119+0x2A42, R119+0x2ACA) is not ported:
+    //   FirstTextAndEndTable installs only the item pop-up; the table is never used, so nothing differs.
     internal static MenuLine[] DormantOptions(CardContext c) => CardMenu.FirstTextAndEndTable(c);
 }

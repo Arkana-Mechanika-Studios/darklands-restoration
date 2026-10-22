@@ -39,6 +39,8 @@ public static class PersonalNamesDecoder
     public static PersonalNameData Decode(byte[] exe)
     {
         var data = ProgramData.Load(exe, Segment);
+        // DORMANT: each table holds more names than the draw (R029+0x5CC4) reaches: 0x235F has 0x6E (Wiprecht, Wolfgang never
+        // drawn), 0x2517 has 0x5A (Suzanne, Viktoria), 0x267F has 0x93 (of Zähringen), 0x28CB has 0x11 (Welser).
         var people = new NameTables(
             data.StringTable(Segment, 0x235F, 0x6C),
             data.StringTable(Segment, 0x2517, 0x58),

@@ -6,8 +6,12 @@ vectors (an overlay call replaces the card and the card engine in memory and loa
 return), read and write files through the C run-time (INT 21h) and allocate DOS memory. This
 machine provides:
 
-* the root image, the data image (record 136, DGROUP 321A) and any chain of overlays at their
-  link-time addresses, unchanged EXE bytes (hash-pinned as in run_unit);
+* the root image, the data image (record 136, DGROUP link-time 321A) and any chain of overlays loaded where DOS and the
+  overlay manager would put them: the program's PSP at PSP_SEG, the image at LOAD_SEG = PSP_SEG + 0x10, every link-time
+  segment increased by LOAD_SEG through the EXE's own relocation items (the MZ table for the root, the section tables'
+  items for the overlays and the data), as DOS does; the vector table (0000:0000), the BIOS data area (0040:0000), the
+  PSP, the environment and the program's memory block exist as on a DOS machine. P(seg) turns a link-time segment of
+  the notation (root 0000:0CAA, "R014+0x3166" = 0E76:3166) into the segment in memory;
 * RTLink thunks (`thunk 09C0:XXXX` in the root): a call loads the target record and its parents
   over what was there and returns through a trampoline that loads the caller's records back (as
   the overlay manager does, from the EXE image);
@@ -37,11 +41,26 @@ from unicorn import x86_const as x86
 
 from run_unit import CONDITIONAL, EXE_SHA256, Rtlink, sha256
 
-DS = 0x321A
+# Where DOSBox-X puts DARKLAND.EXE (tools/dosbox-x/.../validation/gameplay-20261009/REPORT.txt: "the Darklands main MCB at 0812, owner
+# PSP 0813; the standard EXE loader base for that PSP is 0823", the environment block at 07C9, the same in two builds): above the vector
+# table (0000:0000..03FF), the BIOS data area (0040:0000..00FF), the DOS kernel and the command interpreter, ~584 KB of conventional memory
+# above it (the program block ends at 4A3D = 0823 + 421A, DGROUP's top; its blocks follow). DOS 5/6 with drivers gives 0600-0A00.
+PSP_SEG = 0x0813
+LOAD_SEG = PSP_SEG + 0x10
+ENV_SEG = 0x07CA                # the environment block 07C9 (72 paragraphs, its owner is the PSP)
+BASE = LOAD_SEG * 16            # linear address of the root image's first byte
+
+
+def P(seg: int) -> int:
+    """The segment in memory of a link-time segment (the notation's, the EXE's own): the load segment is added, as DOS's relocation does."""
+    return seg + LOAD_SEG
+
+
+DS = P(0x321A)
 STACK_TOP = 0xFE00              # the game's stack: SS = DGROUP, SP = (415A - 321A) * 16 + 0A00
 SENTINEL_SEG = 0xF000          # F000:00nn = return of a top-level/nested call at depth nn
 TRAMPOLINE_SEG = 0xF100        # F100:nnnn = return of an overlay call
-HEAP_START, HEAP_END = 0x4220, 0x9FF0    # DOS memory for mem_alloc (above the 64 KB of DGROUP)
+HEAP_START, HEAP_END = P(0x4220), 0x9FF0    # DOS memory for mem_alloc (above the 64 KB of DGROUP, up to the top of conventional memory)
 REG = {n: getattr(x86, "UC_X86_REG_" + n) for n in ("AX", "BX", "CX", "DX", "SI", "DI", "BP", "SP", "CS", "DS", "ES", "SS", "IP", "EFLAGS")}
 REPO = Path(__file__).resolve().parent.parent.parent
 
@@ -80,9 +99,18 @@ class Vfs:
             return self.files[n]
         if n in self.deleted or self.folder is None or self.hidden(n):
             return None
+        p = self.disk_path(n)
+        if p is None:
+            return None
+        self.files[n] = bytearray(p.read_bytes())
+        return self.files[n]
+
+    def disk_path(self, n: str) -> Path | None:
+        """The file of the game folder a normalised name stands for (DOS is case-insensitive), or None."""
+        if self.folder is None:
+            return None
         p = self.folder / n.replace("\\", os.sep)
         if not p.is_file():
-            # DOS is case-insensitive: find the file in its folder
             parent = p.parent
             if not parent.is_dir():
                 return None
@@ -90,8 +118,14 @@ class Vfs:
             if not hits or not hits[0].is_file():
                 return None
             p = hits[0]
-        self.files[n] = bytearray(p.read_bytes())
-        return self.files[n]
+        return p
+
+    def same_on_disk(self, n: str, data) -> bool:
+        """Whether a cached file still holds the game folder's bytes (a snapshot then need not keep them)."""
+        if self.hidden(n):
+            return False
+        p = self.disk_path(n)
+        return p is not None and p.read_bytes() == bytes(data)
 
     def put(self, name: str, data: bytes):
         n = self.norm(name)
@@ -137,7 +171,8 @@ class Machine:
         self.rt = Rtlink(exe)
         self.uc = unicorn.Uc(unicorn.UC_ARCH_X86, unicorn.UC_MODE_16)
         self.uc.mem_map(0, 0x100000)
-        self.uc.mem_write(0, self.rt.root)
+        self.root = self.relocated_root()
+        self.uc.mem_write(BASE, self.root)
         self.images = {}
         self.resident: list[int] = []
         self.vfs = Vfs(game_folder)
@@ -148,6 +183,8 @@ class Machine:
         self.thunks: dict[int, tuple] = {}       # thunk linear -> (record, target seg, target off, name)
         self.trampolines: dict[int, tuple] = {}
         self.pending = None
+        self.before_stub = None                  # handler(machine, stub handler) before a stub that runs outside the emulation (snapshots)
+        self._block = None
         self.depth = 0
         self.count = 0
         self.budget = max_instructions
@@ -165,6 +202,7 @@ class Machine:
         self.log: list[str] = []
         import collections
         self.recent = collections.deque(maxlen=64)
+        self.dos_memory()
         self.load(136)
         self.scratch_sp = self.crt_init()        # strings for arguments sit at the top of the stack
         self._load_thunks(index_csv or REPO / "docs" / "source-map" / "original-functions.csv")
@@ -182,6 +220,44 @@ class Machine:
         self.uc.reg_write(REG["SP"], STACK_TOP)
         self.uc.reg_write(REG["DS"], DS)
         self.uc.reg_write(REG["ES"], DS)
+
+    def relocated_root(self) -> bytes:
+        """The root image as DOS loads it: LOAD_SEG added to the word of each item of the MZ relocation table."""
+        root = bytearray(self.rt.root)
+        for off, seg in self.rt.reloc_table:
+            at = seg * 16 + off
+            struct.pack_into("<H", root, at, (struct.unpack_from("<H", root, at)[0] + LOAD_SEG) & 0xFFFF)
+        return bytes(root)
+
+    def dos_memory(self):
+        """What a DOS machine has around the program: the vector table (every vector an IRET at first), the BIOS data area, the program's PSP
+        (INT 20h, the top of memory, the environment, the handle table, the empty command tail), the environment with the program's name,
+        and the memory control blocks of both."""
+        self.uc.mem_write(linear(0xF800, 0x30), bytes([0xCF]))      # IRET (the machine's own segment, orig_side.py puts the rest)
+        for n in range(256):
+            self.set_vector(n, 0xF800, 0x30)
+        self.write(0x40, 0x13, struct.pack("<H", 640))               # memory size in KB
+        self.write(0x40, 0x10, struct.pack("<H", 0x0021))            # equipment: a diskette drive, the 80x25 colour adapter
+        env = b"COMSPEC=C:\\COMMAND.COM\0PATH=C:\\\0\0" + struct.pack("<H", 1) + b"C:\\DARKLAND\\DARKLAND.EXE\0"
+        self.write(ENV_SEG - 1, 0, b"M" + struct.pack("<HH", PSP_SEG, 72) + bytes(11))
+        self.write(ENV_SEG, 0, env)
+        self.write(PSP_SEG - 1, 0, b"M" + struct.pack("<HH", PSP_SEG, HEAP_START - PSP_SEG) + bytes(11))
+        psp = bytearray(0x100)
+        psp[0:2] = b"\xCD\x20"
+        struct.pack_into("<H", psp, 2, 0xA000)                       # the top of conventional memory
+        psp[0x50:0x53] = b"\xCD\x21\xCB"                             # the function dispatcher
+        struct.pack_into("<H", psp, 0x2C, ENV_SEG)
+        struct.pack_into("<HHH", psp, 0x32, 20, 0x0018, PSP_SEG)     # 20 handles, the table at PSP:0018
+        psp[0x18:0x38] = bytes([0, 1, 2, 3, 4]) + bytes([0xFF] * 15)
+        psp[0x80:0x82] = b"\x00\r"
+        self.write(PSP_SEG, 0, bytes(psp))
+
+    def set_vector(self, n: int, seg: int, off: int):
+        self.uc.mem_write(n * 4, struct.pack("<HH", off, seg))
+
+    def vector(self, n: int) -> tuple[int, int]:
+        off, seg = struct.unpack("<HH", bytes(self.uc.mem_read(n * 4, 4)))
+        return seg, off
 
     def crt_init(self) -> int:
         """What the C run-time start-up (root 06A1:0055..0095) leaves for the near heap: the heap
@@ -205,12 +281,17 @@ class Machine:
     def image(self, idx: int) -> bytes:
         if idx not in self.images:
             s = self.rt.sections[idx]
-            self.images[idx] = self.exe[s["file_offset"]:s["file_offset"] + s["length"]]
+            img = bytearray(self.exe[s["file_offset"]:s["file_offset"] + s["length"]])
+            for k in range(s["reloc_count"]):         # the section's own relocation items, as the overlay manager applies them
+                off, seg = struct.unpack_from("<HH", self.exe, s["reloc_offset"] + 4 * k)
+                at = seg * 16 + off - s["load_seg"] * 16
+                struct.pack_into("<H", img, at, (struct.unpack_from("<H", img, at)[0] + LOAD_SEG) & 0xFFFF)
+            self.images[idx] = bytes(img)
         return self.images[idx]
 
     def extent(self, idx: int):
         s = self.rt.sections[idx]
-        return s["load_seg"] * 16, s["load_seg"] * 16 + s["length"]
+        return BASE + s["load_seg"] * 16, BASE + s["load_seg"] * 16 + s["length"]
 
     def load(self, idx: int):
         """Load record idx (its parents must be resident); records it overlaps leave memory."""
@@ -240,12 +321,12 @@ class Machine:
         """Thunks and functions of the original index (docs/source-map/original-functions.csv), named by coordinate."""
         self.functions = {}
         for r in csv.DictReader(open(path, encoding="utf-8")):
-            seg, off = (int(x, 16) for x in r["linked"].split(":"))
+            seg, off = (int(x, 16) + (LOAD_SEG if i == 0 else 0) for i, x in enumerate(r["linked"].split(":")))
             if r["kind"] == "thunk" and r["target"]:
                 # target: "RNNN+0xPPPP (SSSS:OOOO)" or "root SSSS:OOOO"
                 t, rec = r["target"], r["target"][:4]
                 loc = t.split(" ")[1] if rec == "root" else t.split("(")[1].rstrip(")")
-                ts, to = (int(x, 16) for x in loc.split(":"))
+                ts, to = (int(x, 16) + (LOAD_SEG if i == 0 else 0) for i, x in enumerate(loc.split(":")))
                 self.thunks[linear(seg, off)] = (None if rec == "root" else int(rec[1:4]), ts, to, r["coordinate"],
                                                  t.split(" (")[0])
             if r["kind"] == "function":
@@ -266,7 +347,7 @@ class Machine:
         lin = linear(seg, off)
         if record is not None:
             return record
-        if lin < len(self.rt.root):
+        if BASE <= lin < BASE + len(self.root):
             return "root"
         recs = sorted({rec for rec, fs in self.functions.items() if rec != "root" and any(a == lin for a, _ in fs)})
         if len(recs) != 1:
@@ -277,7 +358,7 @@ class Machine:
         return owner == "root" or int(owner[1:]) in self.resident
 
     def stub(self, seg: int, off: int, handler, name: str | None = None, record=None):
-        """handler(machine) -> (AX, DX) at the entry of the far function seg:off (of its record only:
+        """handler(machine) -> (AX, DX) at the entry of the far function seg:off (a segment in memory, see P; of its record only:
         another overlay's code at that address runs as it is)."""
         lin = linear(seg, off)
         self.stubs.setdefault(lin, []).append((self.owner(seg, off, record), handler))
@@ -392,13 +473,14 @@ class Machine:
         self.uc.reg_write(REG["IP"], ret_ip)
 
     def valid(self, lin: int) -> bool:
-        if lin < len(self.rt.root) and lin >= 0x400:
+        if BASE <= lin < BASE + len(self.root):
             return True
         if SENTINEL_SEG * 16 <= lin < TRAMPOLINE_SEG * 16 + 0x10000:
             return True
         return any(self.extent(r)[0] <= lin < self.extent(r)[1] for r in self.resident if r != 136)
 
     def _on_block(self, uc, address, size, _):
+        self._block = (address, self.count, self._last_block_jcc)      # what a snapshot taken at this block's first instruction must undo
         self.recent.append(address)
         if not self.valid(address):
             self.pending = ("stop", "execution outside the loaded code at %05X (from %s)" % (
@@ -433,8 +515,8 @@ class Machine:
         resolved = {}
         for lin, code in self.cov_insns.items():
             rec, pay = None, lin
-            if lin + len(code) <= len(self.rt.root) and self.rt.root[lin:lin + len(code)] == code:
-                rec, pay = "root", lin
+            if BASE <= lin and lin - BASE + len(code) <= len(self.root) and self.root[lin - BASE:lin - BASE + len(code)] == code:
+                rec, pay = "root", lin - BASE
             else:
                 for idx in order + [s["index"] for s in self.rt.sections if s["index"] not in order and s["index"] != 136]:
                     lo, hi = self.extent(idx)
@@ -476,7 +558,7 @@ class Machine:
     def function_at(self, lin: int) -> str:
         """The original function holding linear address lin, among the root and the resident records."""
         import bisect
-        recs = ["root"] if lin < len(self.rt.root) else [
+        recs = ["root"] if BASE <= lin < BASE + len(self.root) else [
             "R%03d" % r for r in reversed(self.resident) if r != 136 and self.extent(r)[0] <= lin < self.extent(r)[1]]
         for rec in recs:
             fs = sorted(self.functions.get(rec, []))
@@ -630,10 +712,11 @@ class Machine:
         elif ah == 0x30:
             self.set_reg("AX", 0x0005)
         elif ah == 0x25:
-            pass
+            self.set_vector(al, self.reg("DS"), self.reg("DX"))
         elif ah == 0x35:
-            self.uc.reg_write(REG["ES"], 0)
-            self.set_reg("BX", 0)
+            seg, off = self.vector(al)
+            self.uc.reg_write(REG["ES"], seg)
+            self.set_reg("BX", off)
         elif ah == 0x09:
             seg, off = self.reg("DS"), self.reg("DX")
             v.console += self.read(seg, off, 512).split(b"$")[0]
@@ -692,21 +775,7 @@ class Machine:
         self.uc.reg_write(REG["CS"], seg)
         self.uc.reg_write(REG["IP"], off)
         try:
-            while True:
-                self.pending = None
-                start = linear(self.reg("CS"), self.reg("IP"))
-                self.uc.emu_start(start, 0x100000)
-                p = self.pending
-                if p is None:
-                    raise Stop("emulation ended at %04X:%04X" % (self.reg("CS"), self.reg("IP")))
-                if p[0] == "return":
-                    break
-                if p[0] == "stop":
-                    raise Stop(p[1] + self.where())
-                if p[0] == "stub":
-                    r = p[1](self)
-                    if r is not None:
-                        self.far_return(*r)
+            self._drive()
             ax, dx = self.reg("AX"), self.reg("DX")
             if buf is not None:
                 self.buffer = self.read(ss, buf, buffer)
@@ -716,6 +785,38 @@ class Machine:
                 for n, r in REG.items():
                     self.uc.reg_write(r, saved[n])
         return ax, dx
+
+    def _drive(self, first=None):
+        """Run the emulation until the current call returns; first: the handler of a stub that was about to run when a snapshot was taken."""
+        pending = ("stub", first) if first is not None else None
+        while True:
+            if pending is None:
+                self.pending = None
+                start = linear(self.reg("CS"), self.reg("IP"))
+                self.uc.emu_start(start, 0x100000)
+                p = self.pending
+                if p is None:
+                    raise Stop("emulation ended at %04X:%04X" % (self.reg("CS"), self.reg("IP")))
+            else:
+                p, pending = pending, None
+            if p[0] == "return":
+                break
+            if p[0] == "stop":
+                raise Stop(p[1] + self.where())
+            if p[0] == "stub":
+                if self.before_stub is not None:
+                    self.before_stub(self, p[1])
+                r = p[1](self)
+                if r is not None:
+                    self.far_return(*r)
+
+    def resume(self, first=None):
+        """Carry on the top-level call that a snapshot was taken in (the machine's state restored): (AX, DX) when it returns."""
+        try:
+            self._drive(first)
+            return self.reg("AX"), self.reg("DX")
+        finally:
+            self.depth -= 1
 
     def snapshot(self):
         """Everything a later run depends on: memory, registers, files, DOS memory, overlays."""

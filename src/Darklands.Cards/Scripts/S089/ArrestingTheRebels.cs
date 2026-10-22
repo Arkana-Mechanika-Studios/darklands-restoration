@@ -34,20 +34,20 @@ public sealed class ArrestingTheRebels : Card
         menu.EachRound = () => speaker = c.Variables.Chosen[0];
         return menu.Run(
             // orig: R089+0x1668 (197F:01F8); hint R089+0x16F8 matched
-            new MenuLine(() => UrgeTheCrowd(c, menu, StormChance(c, speaker)),
+            new MenuLine(chance => UrgeTheCrowd(c, menu, chance),
                 () => OptionHint.ChanceOf(StormChance(c, speaker), speaker)),
             // orig: R089+0x175E (197F:02EE); hint R089+0x17EE matched
-            new MenuLine(() => CallForSurrender(c, menu, SurrenderChance(c, speaker)),
+            new MenuLine(chance => CallForSurrender(c, menu, chance),
                 () => OptionHint.ChanceOf(SurrenderChance(c, speaker), speaker)),
             // orig: R089+0x1846 (197F:03D6); hint R089+0x18DE; saint hints R089+0x1BEC..091a matched
-            new MenuLine(() => Pray(c, menu), OptionHint.Saying(CardTexts.SelectSaint)),
+            new MenuLine(() => Pray(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R089+0x1916 (197F:04A6); hint R089+0x1A50 matched
             new MenuLine(() => StormTheBuilding(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R089+0x1A88 (197F:0618); hint R089+0x1A8A matched
             // DORMANT: line 4 (the text's "4" placeholder) is hidden and does nothing.
             new MenuLine(() => { }),
             // orig: R089+0x1AC6 (197F:0656); hint R089+0x1B30 matched
-            new MenuLine(() => SlipAway(c, SlipAwayChance(c)), () => OptionHint.ChanceOf(SlipAwayChance(c), Who.Everybody)));
+            new MenuLine(chance => SlipAway(c, chance), () => OptionHint.ChanceOf(SlipAwayChance(c), Who.Everybody)));
     }
 
     private static int StormChance(CardContext c, int speaker) =>
@@ -122,17 +122,20 @@ public sealed class ArrestingTheRebels : Card
             menu.Block = 2;
             return;
         }
-        c.PassHours(1);
+        // C: each case passes its hour itself (after the standing for saints 0 and 1); another slot passes none.
         switch (c.MenuSlot)
         {
             case 0 or 1:
                 c.AdjustReputation(c.Here, 15, 20);
+                c.PassHours(1);
                 c.Screen.Text(5);
                 break;
             case 2:
+                c.PassHours(1);
                 c.Screen.Text(6);
                 break;
             case 3:
+                c.PassHours(1);
                 c.Screen.Text(7);
                 break;
         }

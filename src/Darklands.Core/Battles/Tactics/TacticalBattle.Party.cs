@@ -215,5 +215,11 @@ public sealed partial class TacticalBattle
         {
             c.AttackRate = 0xFF;
         }
+        // orig: R022+0x03A6..0x03B0: floor_view_draw(-1) and combat_draw (R014+0x6818), the same two calls as the battle's set-up (R014+0x02FF /
+        // 0x0307): the draw list's random draws (the animated pieces of the view) come once more as the sheet closes
+        _view.MapChanged();
+        TurnTowardTargets();
+        Effects.Drawn(_view);
+        RefreshTargetCursor();
     }
 }

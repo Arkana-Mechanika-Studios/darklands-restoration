@@ -212,9 +212,10 @@ public static class BattleEnd
             {
                 b[i].Status = CharacterStatus.Empty;
             }
-            if (b.DemoMode)
+            if (b.DragonFight != 0)
             {
-                // DORMANT: the demonstration fight only.
+                // C: a dragon fight ends with the victory (R014+0x0C7C); for the seven-headed dragon the view is then drawn again
+                // (R014+0x0CB6: floor_view_draw(−1), combat_draw), which the screen does every frame here.
                 b.LeaveAfterVictory = true;
             }
             foreach (var m in party)
@@ -325,6 +326,9 @@ public static class BattleEnd
                 TryImprove(b, i, b.Tables.SkillCategory(m.DefaultWeapon), 0, changed);
                 used &= (SkillUse)0xFE;
             }
+            // BUG: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or
+            // axe has weapon -1 (use_ammo), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised
+            // instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
             if (used.HasFlag(SkillUse.MissileHit))
             {
                 TryImprove(b, i, b.Tables.SkillCategory(m.ReadiedWeapon), 1, changed);

@@ -38,7 +38,7 @@ _W = {}
 
 def saint_entries(o: Oracle):
     m = o.m
-    seg = m.word(0x321A, SAINT_FNS_SEG_SLOT)
+    seg = m.word(DS, SAINT_FNS_SEG_SLOT)
     out = []
     for i in range(136):
         off, sg = struct.unpack("<HH", m.read(seg, SAINT_FNS + 4 * i, 4))

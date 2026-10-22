@@ -31,7 +31,7 @@ public sealed class ForeignTraders : Card
             // orig: R092+0x1178 (1920:02F8) matched; hint R092+0x117A (r.a = 0, r.b = -2)
             // DORMANT: hidden line 2, no action, hint 0 %.
             new MenuLine(() => { }, () => OptionHint.ChanceOf(0, Who.Everybody)),
-            new MenuLine(() => AskForTheirLeader(c, MeetingChance(c)), () => OptionHint.ChanceOf(MeetingChance(c), Who.Everybody)),
+            new MenuLine(chance => AskForTheirLeader(c, chance), () => OptionHint.ChanceOf(MeetingChance(c), Who.Everybody)),
             // orig: R092+0x1244 (1920:03C4) matched
             // DORMANT: hidden line 4, no action.
             new MenuLine(() => { }, () => OptionHint.ChanceOf(100, Who.Everybody)),

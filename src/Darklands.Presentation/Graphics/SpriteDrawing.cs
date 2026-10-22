@@ -1,4 +1,5 @@
 using Darklands.Content.Formats.Battles;
+using Darklands.Platform;
 
 namespace Darklands.Presentation.Graphics;
 
@@ -12,13 +13,14 @@ public static class SpriteDrawing
 
     public static void Draw(Canvas canvas, RowRunSprite? sprite, int x, int y, Clip clip) => Draw(canvas, sprite, x, y, clip, null);
 
-    /// <summary>Draws a sprite through a colour table (the team-colour remaps of the effect sprites).</summary>
+    /// <summary>Draws a sprite through a colour table (the team-colour remaps of the effect sprites). The pixels drawn belong to the sprite's asset, remapped or not.</summary>
     public static void Draw(Canvas canvas, RowRunSprite? sprite, int x, int y, Clip clip, byte[]? remap)
     {
         if (sprite is null)
         {
             return;
         }
+        var owner = ScreenOwners.IdOf(sprite.AssetName, sprite.Width, sprite.Height);
         for (var row = 0; row < sprite.RowCount; row++)
         {
             var sy = y + row;
@@ -32,7 +34,7 @@ public static class SpriteDrawing
                 var sx = x + start + i;
                 if (pixels[i] != 0 && sx >= clip.Left && sx < clip.Right)
                 {
-                    canvas[sx, sy] = remap is null ? pixels[i] : remap[pixels[i]];
+                    canvas.Plot(sx, sy, remap is null ? pixels[i] : remap[pixels[i]], owner, ScreenTexel.Pack(start + i, row));
                 }
             }
         }

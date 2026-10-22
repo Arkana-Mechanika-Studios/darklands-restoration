@@ -65,9 +65,9 @@ public sealed class MaidenAtTheStake : Card
             // orig: R084+0x1AA2 (199A:0482) asm; R084+0x1AAC (199A:048C) asm; tests: CardSmokeTests
             new MenuLine(() => Fight(c, 1), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R084+0x1AE4 (199A:04C4) asm; R084+0x1BA4 (199A:0584) asm; tests: CardSmokeTests
-            new MenuLine(() => SneakHerAway(c, StealthChance(c).Chance), hint: () => StealthChance(c)),
+            new MenuLine(chance => SneakHerAway(c, chance), hint: () => StealthChance(c)),
             // orig: R084+0x1BC6 (199A:05A6) asm; R084+0x1C80 (199A:0660) asm; tests: CardSmokeTests
-            new MenuLine(() => CutHerLoose(c, SpeedChance(c).Chance), hint: () => SpeedChance(c)),
+            new MenuLine(chance => CutHerLoose(c, chance), hint: () => SpeedChance(c)),
 // orig: R084+0x1CA2 (199A:0682) asm; R084+0x1E1A (199A:07FA) asm; tests: CardSmokeTests
             // orig: R084+0x1F70 (199A:0950) asm; R084+0x1F8A (199A:096A) asm; R084+0x1FA4 (199A:0984) asm; R084+0x1FBE (199A:099E) asm; tests: CardSmokeTests
             new MenuLine(() => DistractThem(c), OptionHint.Saying(CardTexts.SelectPotion), () =>

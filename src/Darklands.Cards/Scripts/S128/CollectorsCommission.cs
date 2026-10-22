@@ -105,6 +105,8 @@ public sealed class CollectorsCommission : Card
                 break;
             case 10:
                 // Only the second and third kinds of owner here.
+                // BUG: debt notes name their holder by +0x2A % 2 (Medici, Fugger), but MerchantHouseOffices finds them in office
+                // +0x2A % 4, so the named office is often not the one that holds them.
                 switch (owner % 2)
                 {
                     case 0:
@@ -173,8 +175,10 @@ public sealed class CollectorsCommission : Card
     //   R128+0x1182 R128+0x11B0 R128+0x11C2 R128+0x11F0 R128+0x1202 R128+0x1230
     //   R128+0x1242 R128+0x1270 R128+0x1282 (lines 1..9); R128+0x12B0 (table set-up),
     //   R128+0x1352 ("screwed up."), R128+0x138A R128+0x13C6 R128+0x1402 R128+0x143E (item
-    //   pop-up), R128+0x147A R128+0x1504 R128+0x158E R128+0x1618 (saint pop-up); all matched
+    //   pop-up); all matched
     // C: the hints leave r uninitialised (stale stack): read as "Success is assured." for the whole party.
+    // C: the table's saint pop-up (R128+0x147A, R128+0x1504, R128+0x158E, R128+0x1618) is not ported: FirstTextAndEndTable
+    //   installs only the item pop-up; the table is never used, so nothing differs.
     internal static MenuLine[] DormantOptions(CardContext c)
     {
         var options = CardMenu.FirstTextAndEndTable(c, SuccessAssured, showFirstText: false);

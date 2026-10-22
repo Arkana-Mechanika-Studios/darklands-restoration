@@ -34,17 +34,17 @@ public sealed class PeatBog : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R113+0x0EA0 (18F0:0320) matched (hint)
+            // orig: R113+0x0E1A (line 0); hint R113+0x0EA0 (18F0:0320) matched
             new MenuLine(p => ThrowARope(c, menu, p), () => HaulHint(c, 3, true)),
-            // orig: R113+0x0F64 (18F0:03E4) matched (hint)
+            // orig: R113+0x0EEC (line 1); hint R113+0x0F64 (18F0:03E4) matched
             new MenuLine(p => PullByHand(c, menu, p), () => HaulHint(c, 2, true)),
-            // orig: R113+0x100E (18F0:048E) matched (hint)
+            // orig: R113+0x0FAC (line 2); hint R113+0x100E (18F0:048E) matched
             new MenuLine(p => StripAndPull(c, menu, p), () => HaulHint(c, 3, false)),
-            // orig: R113+0x10DA (18F0:055A) matched (hint)
+            // orig: R113+0x104A (line 3); hint R113+0x10DA (18F0:055A) matched
             new MenuLine(_ => CallASaint(c), () => OptionHint.Say("Select a person and a saint.")),
-            // orig: R113+0x1204 (18F0:0684) matched (hint)
+            // orig: R113+0x1112 (line 4); hint R113+0x1204 (18F0:0684) matched
             new MenuLine(p => UseAPotion(c, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
-            // orig: R113+0x12E0 (18F0:0760) matched (hint)
+            // orig: R113+0x123C (line 5); hint R113+0x12E0 (18F0:0760) matched
             new MenuLine(_ => LeaveThemToTheirFate(c, menu), () => OptionHint.Say(SuccessAssured)),
             // DORMANT: lines 6..9 are never offered; each lets no time pass (R113+0x1318, 07dc, 0820, 0864).
             new MenuLine(_ => c.PassHours(0)),

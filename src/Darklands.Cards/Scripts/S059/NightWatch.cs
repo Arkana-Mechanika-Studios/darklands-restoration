@@ -43,16 +43,16 @@ public sealed class NightWatch : Card
         menu[3] = c.SaintsUsable();
 
         return menu.Run(
-            // orig: handler R059+0x0530 (success assured, 100%, leader); action 0510
+            // orig: R059+0x0510 (line 0); handler R059+0x0530 (success assured, 100%, leader)
             new MenuLine(_ => PayTheFine(c), () => new OptionHint(100, SuccessAssured, c.Leader)),
-            // orig: handler R059+0x0642 (chance = (best Streetwise + weakest effective Agility) / 2, whole party)
+            // orig: R059+0x056A (line 1); handler R059+0x0642 (chance = (best Streetwise + weakest effective Agility) / 2, whole party)
             new MenuLine(chance => RunAway(c, menu, chance),
-                () => new OptionHint((c.PartyMaxSkill((int)Core.Characters.Skill.Streetwise) + c.PartyMinEffectiveAgility()) / 2, "", OptionHint.WholeParty)),
-            // orig: handler R059+0x0736 (success assured); pop-up handlers 0bfc..0cb0
+                () => new OptionHint((c.PartyMinEffectiveAgility() + c.PartyMaxSkill((int)Core.Characters.Skill.Streetwise)) / 2, "", OptionHint.WholeParty)),
+            // orig: R059+0x066A (line 2); handler R059+0x0736 (success assured); pop-up handlers 0bfc..0cb0
             new MenuLine(chance => ThrowAPotion(c, menu, chance), OptionHint.Saying(SuccessAssured), () => c.MemberPopupHint()),
-            // orig: handler R059+0x082C (select saint); pop-up handlers 0cec..0e8a
+            // orig: R059+0x076E (line 3); handler R059+0x082C (select saint); pop-up handlers 0cec..0e8a
             new MenuLine(_ => Pray(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
-            // orig: handler R059+0x093A (enter combat); action 0864
+            // orig: R059+0x0864 (line 4); handler R059+0x093A (enter combat)
             new MenuLine(_ => DrawWeapons(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // DORMANT: lines 5..9 (opt_flag_5..9 = 0): the card text lists no such lines; each shows the first text and leaves
             // for the city entry card. Line 5 passes an hour, lines 6..9 none. Handlers: assured (5), assured (6),

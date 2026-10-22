@@ -32,10 +32,10 @@ public sealed class ChasedByTheCityGuard : Card
         menu[4] = c.ItemsUsable();
 
         return menu.Run(
-            new MenuLine(() => KeepRunning(c, standing), () => RunningChance(c)),
+            new MenuLine(chance => KeepRunning(c, standing, chance), () => RunningChance(c)),
             new MenuLine(() => Fight(c, standing), OptionHint.Saying(CardTexts.EnterCombat)),
-            new MenuLine(() => LayAnAmbush(c, standing), () => AmbushChance(c)),
-            new MenuLine(() => Hide(c, standing), () => HidingChance(c)),
+            new MenuLine(chance => LayAnAmbush(c, standing, chance), () => AmbushChance(c)),
+            new MenuLine(chance => Hide(c, standing, chance), () => HidingChance(c)),
             new MenuLine(() => ThrowAPotion(c), OptionHint.Saying(CardTexts.SelectPotion),
                 () => PotionChance(c, c.MenuMember, c.MenuSlot)),
             new MenuLine(() => Surrender(c), OptionHint.Saying(SuccessAssured)));
@@ -52,9 +52,8 @@ public sealed class ChasedByTheCityGuard : Card
     }
 
     // orig: R074+0x1790 (1995:01C0) matched; tests: CardSmokeTests
-    private static void KeepRunning(CardContext c, int standing)
+    private static void KeepRunning(CardContext c, int standing, int chance)
     {
-        var chance = RunningChance(c).Chance;
         if (c.Random(100) >= chance)
         {
             c.PassHours(c.Random(4));
@@ -80,9 +79,8 @@ public sealed class ChasedByTheCityGuard : Card
     }
 
     // orig: R074+0x18B0 (1995:02E0) matched; tests: CardSmokeTests
-    private static void LayAnAmbush(CardContext c, int standing)
+    private static void LayAnAmbush(CardContext c, int standing, int chance)
     {
-        var chance = AmbushChance(c).Chance;
         var leader = c.Leader;
         if (c.Random(100) >= chance)
         {
@@ -124,9 +122,8 @@ public sealed class ChasedByTheCityGuard : Card
     }
 
     // orig: R074+0x19A4 (1995:03D4) matched; tests: CardSmokeTests
-    private static void Hide(CardContext c, int standing)
+    private static void Hide(CardContext c, int standing, int chance)
     {
-        var chance = HidingChance(c).Chance;
         if (c.Random(100) >= chance)
         {
             ShowPicture(c, 55);

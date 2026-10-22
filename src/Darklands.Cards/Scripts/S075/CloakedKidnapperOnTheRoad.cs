@@ -23,18 +23,20 @@ public sealed class CloakedKidnapperOnTheRoad : Card
         Show(c, 0);
         c.Next = CardNumber;
         c.SetCardSaints(0x36, 0x3D);
-        // orig: R075+0x0EBC (18DA:049C) matched; R075+0x0F44 (18DA:0524) matched; R075+0x0FCC (18DA:05AC) matched; R075+0x1054 (18DA:0634) matched; tests: CardSmokeTests
-        // C: the slot-3 pop-up handler is an empty function (its result is garbage); an empty hint here.
         var menu = Menu(c);
         menu.Enable(0, 2);
         menu[1] = c.SaintsUsable();
+        // C: the loop calls card_menu without card_options or card_text (card_load draws only the picture), so the menu works
+        // C: on the option lines the screen last laid out (the previous card's last text) with this card's states and handlers.
+        menu.DrawsOptions = false;
 
-        // C: the script never calls card_options: the option list shown is the card's first.
-        // UNCERTAIN: after a text, the engine might keep a different block up.
         return menu.Run(
             // orig: R075+0x0C76 (18DA:0256) matched; R075+0x0C7E (18DA:025E) matched; tests: CardSmokeTests
             // DORMANT: surrendering only stays on the card (the original never shows text 1).
             new MenuLine(() => c.Next = CardNumber, OptionHint.Saying(SuccessAssured)),
+            // orig: R075+0x0CB6 (line 1); saint pop-ups R075+0x0EBC (18DA:049C) matched; R075+0x0F44 (18DA:0524) matched;
+            // R075+0x0FCC (18DA:05AC) matched; R075+0x1054 (18DA:0634) matched; tests: CardSmokeTests
+            // C: the slot-3 pop-up handler is an empty function (its result is garbage); an empty hint here.
             new MenuLine(() => PrayForAid(c), OptionHint.Saying(CardTexts.SelectSaint), () => c.MenuSlot < 3
                 ? OptionHint.Say(c.ChanceText(c.SaintChanceLow(c.MenuMember, c.CardSaints[c.MenuSlot]), c.SaintChanceHigh(c.MenuMember, c.CardSaints[c.MenuSlot])), c.MenuMember)
                 : OptionHint.Say("", c.MenuMember)),

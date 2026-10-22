@@ -63,15 +63,15 @@ public sealed class NightAssaultOnTheKeep : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R105+0x06F0 (1838:06F0) matched (hint)
+            // orig: R105+0x060A (line 0); hint R105+0x06F0 (1838:06F0) matched
             new MenuLine(p => BribeAGuard(c, p), () => BribeHint(c)),
-            // orig: R105+0x0824 (1838:0824) matched (hint: DS:64B2 / DS:64B0)
+            // orig: R105+0x074C (line 1); hint R105+0x0824 (1838:0824) matched (DS:64B2 / DS:64B0)
             new MenuLine(p => ClimbWithARope(c, menu, p), () => OptionHint.ChanceOf(climb, _climber)),
-            // orig: R105+0x0910 (1838:0910) matched (hint)
+            // orig: R105+0x0836 (line 2); hint R105+0x0910 (1838:0910) matched
             new MenuLine(p => AllClimb(c, menu, p), () => WorstClimberHint(c)),
-            // orig: R105+0x0AB0 (1838:0AB0) matched (hint)
+            // orig: R105+0x096C (line 3); hint R105+0x0AB0 (1838:0AB0) matched
             new MenuLine(_ => PrayForAWayIn(c), () => OptionHint.Say("Select a person and a saint.")),
-            // orig: R105+0x0C94 (1838:0C94) matched (hint)
+            // orig: R105+0x0AE8 (line 4); hint R105+0x0C94 (1838:0C94) matched
             new MenuLine(p => UseAPotion(c, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // DORMANT: lines 5, 6, 8 and 9 are never offered (opt_flag = 0); each lets no time pass (R105+0x0CCC/0d10/0d94/0dd8).
             new MenuLine(_ => c.PassHours(0), Assured),

@@ -32,12 +32,35 @@ public sealed class MscRandom(uint seed = 1) : IRandomSource
     /// <summary>The state before the last draw (what rand()'s long multiply left on the stack; cloud_blocks_line reads it).</summary>
     public uint PreviousState() => _previous;
 
-    public void Seed(uint seed) => State = _previous = seed;
+    public void Seed(uint seed)
+    {
+        State = _previous = seed;
+        Trace?.Invoke($"seed {seed}");
+    }
 
+    /// <summary>A debugging aid (DARKLANDS_RANDOM_TRACE): each seed and each draw with the method that drew (tools/oracle/lockstep.py).</summary>
+    public static Action<string>? Trace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_RANDOM_TRACE") is null ? null : Console.WriteLine;
+
+    /// <summary>A debugging aid: called before each draw (tools/oracle/battle_oracle.py gives the C# the clock the original's long passes counted between draws).</summary>
+    public static Action? BeforeDraw { get; set; }
+
+    private static string Caller()
+    {
+        var frames = new System.Diagnostics.StackTrace(2, false).GetFrames();
+        return string.Join(" < ", frames.Select(f => f.GetMethod()).Where(m => m is not null && m.DeclaringType != typeof(MscRandom)).Take(3)
+            .Select(m => $"{m!.DeclaringType?.Name}.{m.Name}"));
+    }
+
+    // orig: _rand root 06A1:29B6 (MSC 6 run-time library) asm; tests: CoreValuesOracleTests (Oracle:core.json)
     public int NextRaw()
     {
+        BeforeDraw?.Invoke();
         _previous = State;
         State = unchecked(State * Multiplier + Increment);
+        if (Trace is { } trace)
+        {
+            trace($"draw {State:X8} {Caller()}");
+        }
         return (int)((State >> 16) & 0x7FFF);
     }
 

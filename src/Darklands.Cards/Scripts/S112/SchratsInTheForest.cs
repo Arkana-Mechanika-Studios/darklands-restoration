@@ -53,21 +53,21 @@ public sealed class SchratsInTheForest : Card
         return menu.Run(
             // orig: R112+0x2D00 (1AAE:05A0) matched; hint R112+0x2D76
             new MenuLine(_ => TheSchratsCome(c, menu), Unknown),
-            // orig: R112+0x2EE4 (1AAE:0784) matched (hint)
+            // orig: R112+0x2DAE (line 1); hint R112+0x2EE4 (1AAE:0784) matched
             new MenuLine(p => Plead(c, menu, p), () => PleadHint(c)),
-            // orig: R112+0x30C4 (1AAE:0964) matched (hint)
+            // orig: R112+0x2F66 (line 2); hint R112+0x30C4 (1AAE:0964) matched
             new MenuLine(p => ThrowAPotion(c, menu, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
-            // orig: R112+0x3228 (1AAE:0AC8) matched (hint)
+            // orig: R112+0x30FC (line 3); hint R112+0x3228 (1AAE:0AC8) matched
             new MenuLine(_ => PrayForDeliverance(c, menu), () => OptionHint.Say("Select a person and a saint.")),
-            // orig: R112+0x334E (1AAE:0BEE) matched (hint)
+            // orig: R112+0x3260 (line 4); hint R112+0x334E (1AAE:0BEE) matched
             new MenuLine(_ => Surrender(c, menu), () => OptionHint.Say(SuccessAssured)),
-            // orig: R112+0x3488 (1AAE:0D28) matched (hint)
+            // orig: R112+0x3386 (line 5); hint R112+0x3488 (1AAE:0D28) matched
             new MenuLine(p => SneakAround(c, menu, p), () => WoodcraftHint(c)),
             // orig: R112+0x34D6 (1AAE:0D76) matched (hint); action R112+0x34C0: fight (0316) with 1 when options_block is set, else 2
             new MenuLine(_ => FightTheSchrats(c, menu.Block != 0 ? 1 : 2), () => OptionHint.Say("Enter Combat")),
-            // orig: R112+0x362A (1AAE:0ECA) matched (hint)
+            // orig: R112+0x350E (line 7); hint R112+0x362A (1AAE:0ECA) matched
             new MenuLine(p => ScoutThem(c, menu, p), () => WoodcraftHint(c)),
-            // orig: R112+0x376C (1AAE:100C) matched (hint)
+            // orig: R112+0x3662 (line 8); hint R112+0x376C (1AAE:100C) matched
             new MenuLine(p => RunAway(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyGet(5) != 0 ? 100 : c.PartyMinEffectiveAgility(), 10, 95), OptionHint.WholeParty)),
             // orig: R112+0x37A4 (1AAE:1044) matched (empty); hint R112+0x37A6 (empty)

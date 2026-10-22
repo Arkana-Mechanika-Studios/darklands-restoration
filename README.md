@@ -27,11 +27,14 @@ the game is included here: the program reads your installation.
 
 ## Getting started
 
-1. Get a release (`DarklandsRP.exe` with `SDL2.dll`, `libmt32emu.dll` and an empty `MT32_ROMS` folder) and unpack it into a folder of
-   its own.
-2. Start `DarklandsRP.exe`. It finds your Darklands by itself (GOG, Steam, or a folder next to it) and
-   remembers it in `darklands.settings.json`, which it creates next to itself on the first run. If it
-   can't find the game, it asks you for the folder.
+1. Get a release (`DarklandsRP.exe` with `SDL2.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md` and an empty `MT32_ROMS`
+   folder) and unpack it into a folder of its own.
+2. Start `DarklandsRP.exe`. On the first run it opens the launcher, a settings screen before the game: it has found
+   your Darklands by itself (GOG, Steam, or a folder next to it), and you can check the game folder, the window, the
+   sound card and the Roland ROM folder, and try the sound, then press **Play**. The choices go into
+   `darklands.settings.json`, next to the program. Later starts go straight to the game; hold **Shift** while starting
+   it (or start it with `--setup`) to see the launcher again. If the game can't be found or can't start, the launcher
+   comes up by itself and says why.
 3. Play. It starts like the original: the banner, the opening, then the start screen with Quickstart,
    a new world or a saved game.
 
@@ -53,9 +56,10 @@ this program's own: **F12** saves a screenshot, and **F11** opens a developer co
 
 The game's own sound drivers play, as on a 1992 PC: by default the card set up in your copy's
 `CONFIG.DRK`, usually a Roland MT-32 for music with a Sound Blaster for speech. For the MT-32 put your
-MT-32 or CM-32L ROM files in the `MT32_ROMS` folder that comes with the program. Without them the
-Sound Blaster Pro's FM music plays instead, and the program says so. `"card"` in the settings chooses
-another card: AdLib, Sound Blaster, Sound Blaster Pro 2, MT-32 or CM-32L.
+MT-32 or CM-32L ROM files in the `MT32_ROMS` folder that comes with the program, or choose their folder in the
+launcher (it shows whether the ROMs of the chosen module are there). Without them the Sound Blaster Pro's FM music
+plays instead, and the program says so. The launcher's sound card (`"card"` in the settings) chooses another card:
+AdLib, Sound Blaster, Sound Blaster Pro 2, MT-32 or CM-32L.
 
 ## Settings
 
@@ -72,7 +76,7 @@ want:
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
 `--scale 2`, `--no-intro` and so on).
 
-## Status: version 0.9.0
+## Status: version 0.9.1
 
 The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and
 churches, the world map and its encounters, battles, camping, saints and alchemy, saving and loading.
@@ -81,6 +85,16 @@ they are part of Darklands), is listed in `docs/faithfulness`. Things not done y
 belong (battles: `docs/BATTLES.md`).
 
 Version 1.0 will come when the remaining faithfulness checks are finished.
+
+## License
+
+The Darklands Restoration Project is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software Foundation, either version 3
+of the License, or (at your option) any later version. See `LICENSE`.
+
+This covers the project's own code only. *Darklands* itself (© 1992 MicroProse) is not part of it and
+not licensed by it; you need your own copy of the game. Third-party components keep their own licences
+(see `THIRD_PARTY_NOTICES.md`).
 
 ## Community
 
@@ -101,12 +115,16 @@ dotnet build
 dotnet run --project src/Darklands.Host.Sdl -- "C:/GOG Games/Darklands"
 ```
 
-A release for Windows (`DarklandsRP.exe`, self-contained, with `SDL2.dll`, `libmt32emu.dll` and an empty
-`MT32_ROMS` folder beside it, in `artifacts/win-x64`; no .NET installation needed to run it):
+A release for Windows (`DarklandsRP.exe`, self-contained, with `SDL2.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md` and an
+empty `MT32_ROMS` folder beside it, in `artifacts/win-x64`; no .NET installation needed to run it):
 
 ```
 dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=win-x64
 ```
+
+The launcher shows the release notes: write `releases/<version>/release-notes.md` (beside the repository) before
+publishing, and the build puts it next to the program as `RELEASE_NOTES.md`; without it the launcher only links to the
+release's page, `releases/tag/v<version>` on GitHub, so tag each release `v<version>`.
 
 The version is set once, in `Directory.Build.props` (`DarklandsRP --version` prints it).
 
@@ -120,7 +138,9 @@ difference, every original bug kept, and every open question, each with its reas
 
 The rules are checked against the original itself: original-byte oracles run each original function
 (from your `DARKLAND.EXE`, in an emulated processor) and the C# on the same inputs, over tens of
-thousands of cases, and every card of the game runs against its original. See
+thousands of cases, and every card of the game runs against its original. A static check compares
+every cited function's calls, constants and branches with the executable's bytes, and whole scripted
+game sessions run in the original and in the rewrite side by side, compared after every step. See
 `docs/faithfulness/SUMMARY.md`.
 
 ### Layout
@@ -134,6 +154,7 @@ thousands of cases, and every card of the game runs against its original. See
 | `src/Darklands.Audio`, `src/Darklands.Audio.Mt32` | the sound drivers in an emulated PC; MT-32 |
 | `src/Darklands.Platform`, `src/Darklands.Host.*` | host interfaces and settings; the SDL and headless hosts |
 | `src/Darklands.DevConsole` | the developer console |
+| `src/Darklands.Rendering` | replacement graphics (HD packs) drawn over the game's frame, for any host |
 | `tests/` | unit tests, original-byte oracles, card traces |
 | `tools/` | oracle corpus builders, faithfulness reports, visual and timing comparisons |
 | `docs/` | architecture details, traceability, faithfulness registers, settings, saves, battles, screenshots |

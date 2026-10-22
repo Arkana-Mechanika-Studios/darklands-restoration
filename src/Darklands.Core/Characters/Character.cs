@@ -68,6 +68,9 @@ public sealed class Character
     public const int FormulaCount = 66;
     public const int PackSize = 64;
 
+    /// <summary>The member record's size (the combatant record of the party slot), the head of the character's record.</summary>
+    public const int MemberRecordSize = 0x80;
+
     public string Name { get; set; } = "";
 
     /// <summary>The short name shown in lists and on cards ("Gretch").</summary>
@@ -167,7 +170,9 @@ public sealed class Character
     /// <summary>
     /// The 0x22A-byte record this character was read from (CHARACTR.TMP / a saved game), kept by
     /// the persistence layer so that the bytes this model does not name are written back as
-    /// they were. The rules never read it; null for characters made by this program.
+    /// they were; for a hireling, the member record (at least <see cref="MemberRecordSize"/>
+    /// bytes) with what <c>add_member</c> stores there. What the model names is written over
+    /// it wherever it is used; the rules never read it. Null for characters made by this program.
     /// </summary>
     public byte[]? OriginalRecord { get; set; }
 

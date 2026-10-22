@@ -741,7 +741,7 @@ public static class CityBattlefield
     }
 
     /// <summary>The lord's kind gets byte +0x0C of its record set to 1.</summary>
-    // orig: city_build R010+0x0000 R010+0x1F8E (1432:1F8E) matched (`mov byte es:[bx+0A14h],1` with bx = kind*0xD6:
+    // orig: R010+0x1B22 (1432:1B22), the store at +0x1F8E, matched (`mov byte es:[bx+0A14h],1` with bx = kind*0xD6:
     // 0xA14 = 12*0xD6 + 0x0C, level 1's kind, byte +0x0C; the draft draft's x8c is wrong)
     private static void MarkLord(GenerationState g, int kind)
     {

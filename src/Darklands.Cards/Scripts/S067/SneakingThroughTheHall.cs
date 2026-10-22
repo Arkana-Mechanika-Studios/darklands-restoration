@@ -52,7 +52,10 @@ public sealed class SneakingThroughTheHall : Card
     {
         // C: is_daylight() != 1: the dark adds 45.
         var dark = c.IsDaylight ? 0 : 0x2D;
-        return (c.PartyMaxSkill((int)Skill.Stealth) + (c.PartyMaxEffectiveAgility() + c.PartyAverageSkill((int)Skill.Stealth)) + dark) / 3;
+        // C: the queries in the original's order (the last one leaves best_member and best_value).
+        var agility = c.PartyMaxEffectiveAgility();
+        var average = c.PartyAverageSkill((int)Skill.Stealth);
+        return (c.PartyMaxSkill((int)Skill.Stealth) + (agility + average) + dark) / 3;
     }
 
     // orig: R067+0x2418

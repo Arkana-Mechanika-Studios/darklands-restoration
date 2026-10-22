@@ -1,6 +1,7 @@
 """Original-byte corpus for the battle's attack rules (R014 18BF): attack_rate, to_hit_roll
 (with the hand-to-hand chance 0592 and the inline missile chance), hit_damage + damage_queue,
-damage_apply and weapon_ready.
+damage_apply and weapon_ready; and the dragon fights (DS:C21A 'I' / 'Z'): to_hit_roll with the dragon (record
+5) with or without a victim, weapon_ready of weapon type 40 with the animation code enemies_place gives it (20A5:763B).
 
 usage: python -I build_battle_corpus.py <DARKLAND.EXE> <out battle.json>
 
@@ -26,9 +27,10 @@ DS = 0x321A
 HOLDRAND = 0x7B20
 COMBATANTS = 0x9C55
 ATTACK_RATE, QUEUED, SHOWN = 0xD493, 0xD70C, 0xD4C7
-REAL_COMBAT, DEMO, CLOUDS = 0xA6C1, 0xC21A, 0xA33D
+REAL_COMBAT, DRAGON_FIGHT, CLOUDS = 0xA6C1, 0xC21A, 0xA33D
 REACH_SEG, REACH_OFF = 0x20A5, 0x7900
 ANIM_FILE_TABLE = 0x1174
+CODES_SEG, DRAGON_CODE = 0x20A5, 0x763B   # weapon type 40's animation code ("DG"; "D7" / "CD" in a dragon fight)
 SCRATCH = 0xFD00
 CRIT = 0xFE00
 SEG = "18BF"
@@ -105,7 +107,7 @@ def battle(r):
     memory = [ds(COMBATANTS + 0x80 * i, rec) for i, rec in enumerate(recs)]
     memory += [{"segment": "%04X" % REACH_SEG, "offset": "%04X" % REACH_OFF, "hex": reach.hex()},
                ds(ATTACK_RATE, rates), ds(QUEUED, queued), ds(SHOWN, shown), ds(REAL_COMBAT, bytes([real])),
-               ds(DEMO, b"\x00"), ds(CLOUDS, b"\x00"), ds(HOLDRAND, struct.pack("<I", state)),
+               ds(DRAGON_FIGHT, b"\x00"), ds(CLOUDS, b"\x00"), ds(HOLDRAND, struct.pack("<I", state)),
                ds(COMBATANTS + 13 * 0x80 + 0x14, b"\x00")]  # the 14th "status" the enemies' loop reads
     inputs = {"combatants": [x.hex() for x in recs], "reach": reach.hex(), "rates": rates.hex(),
               "queued": queued.hex(), "shown": shown.hex(), "state": state, "real": real}
@@ -159,20 +161,50 @@ def cases(r, counts=COUNTS):
     return out
 
 
+# the dragon fights: kept whatever their coverage (a generator of its own, after the others)
+DRAGON = (("to_hit_roll", 120), ("weapon_ready", 60))
+
+
+def dragon_cases(r):
+    out = []
+    for name, memory, args, inputs, results in cases(r, DRAGON):
+        fight = r.choice([0x49, 0x5A])
+        memory.append(ds(DRAGON_FIGHT, bytes([fight])))
+        inputs["dragon"] = fight
+        if name == "to_hit_roll":
+            a = r.choice([5, 5, int(args[0], 16)])
+            args[0] = h16(a)
+            inputs["args"][0] = a
+            rec5 = bytearray.fromhex(inputs["combatants"][5])
+            rec5[0x4A] = r.choice([0xFF, 0xFF, r.randint(0, 4)])
+            inputs["combatants"][5] = rec5.hex()
+            memory.append(ds(COMBATANTS + 5 * 0x80 + 0x4A, bytes([rec5[0x4A]])))
+        else:
+            args[1] = h16(40)
+            inputs["args"][1] = 40
+            code = r.choice([None, "D7", "CD"])
+            inputs["dragonCode"] = code
+            if code:
+                memory.append({"segment": "%04X" % CODES_SEG, "offset": "%04X" % DRAGON_CODE, "hex": code.encode().hex()})
+        out.append((name, memory, args, inputs, results))
+    return out
+
+
 def main() -> None:
     exe = Path(sys.argv[1]).read_bytes()
     r = random.Random(20261017)
     result, images = [], None
     seen = CoverageSet()
     base = cases(r)
-    for n, (name, memory, args, inputs, results) in enumerate(base + cases(random.Random(20261019), MORE)):
+    more = cases(random.Random(20261019), MORE)
+    for n, (name, memory, args, inputs, results) in enumerate(base + more + dragon_cases(random.Random(20261019 + 1))):
         seg, sections = ("1EF8", [136, 14, 21]) if name == "skill_try_improve" else (SEG, [136, 14])
         res = run(exe, {"unit": name, "entry": {"segment": seg, "offset": FN[name]}, "sections": sections,
                         "ds": DS, "memory": memory, "args": args, "follow": True, "callsites": CALLSITES,
                         "stub": list(CALLSITES.values()), "results": results, "coverage": True,
                         "coverage_defer": True})
         images = res["loadedImages"]
-        if not seen.adds(res) and n >= len(base):
+        if not seen.adds(res) and len(base) <= n < len(base) + len(more):
             continue   # the extra cases are kept when they exercise something new
         commit_coverage(res)
         result.append({"function": name, "inputs": inputs, "ax": res["final"]["ax"], "dx": res["final"]["dx"],

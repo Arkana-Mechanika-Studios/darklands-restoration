@@ -312,6 +312,8 @@ public sealed class CathedralByDay : Card
         {
             ShowPicture(c, CanonPicture);
             c.Screen.Text(0x0F);
+            // BUG: the errand is made for giver 0, the town's merchants, where the card's own tests (an errand open, one done: option
+            // 8) look for 3, the bishop: the merchants pay for it and the canon gives a new errand at every visit.
             c.State.SavedCard = c.StartQuest10(0);
             c.State.SavedCard2 = CathedralForTheHour(c);
             c.Next = Errand10Offered;
@@ -355,6 +357,7 @@ public sealed class CathedralByDay : Card
         c.Variables.Item = relic;
         if (c.StandingSeen > -10)
         {
+            // BUG: neither the thing fetched is taken nor the reward event ended: the relic can be taken again and again.
             c.AddItem(Who.Leader, relic);
             ShowPicture(c, CanonPicture);
             c.Screen.Text(0x11);

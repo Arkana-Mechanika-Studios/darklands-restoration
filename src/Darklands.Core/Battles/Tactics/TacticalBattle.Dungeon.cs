@@ -78,6 +78,9 @@ public sealed partial class TacticalBattle
     /// <summary>The program's globals the battles share (BattleScreens keeps one for the whole program).</summary>
     public Generation.GenerationProcessMemory ProgramMemory { get; set; } = new();
 
+    /// <summary>The flags table (DS:A696) as the program holds it when the battle starts (the last battle's, or the last load's battle file); null: zeros.</summary>
+    public IReadOnlyList<ushort>? StaleFlags { get; set; }
+
     private Generation.BattlefieldStore Store => Field.Store;
 
     private static bool Inside(MapPoint p, int x, int y, int w, int h) => x <= p.X && p.X < x + w && y <= p.Y && p.Y < y + h;

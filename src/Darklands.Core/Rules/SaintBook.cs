@@ -141,7 +141,7 @@ public static class SaintBook
     /// nearest to the party, if that place is one of <paramref name="places"/> (none: anywhere).
     /// </summary>
     // orig: what = cur_loc == -1 ? nearest_city(party_x, party_y) : cur_loc; [switch (what) case ...:]
-    //   loc_reputation_adj(what, a, b) R029+0x19D0
+    //   loc_reputation_adj(what, a, b) (19d0, LocationRules.AdjustReputation), repeated inline in the saint functions
     private static Boon Standing(int a, int b, params int[] places) => (s, _, _) =>
     {
         var where = s.CurrentLocation == GameState.Wilderness
@@ -166,11 +166,17 @@ public static class SaintBook
     /// <summary>The standing here changes when the member carries an item of the kinds <paramref name="mask"/> (St.Cecilia).</summary>
     // orig: if (count_items_flags(who, 0x20000000L)) loc_reputation_adj(cur_loc, 0x14, 0x3c)
     // C: in the open country cur_loc is -1: loc_reputation_adj reads the null record locations[-1], draws its chance and writes nothing.
+    // orig: R039+0x2FC4
+    // BUG: so St.Cecilia called on in the open country raises no town's standing: the other saints' standing goes to the nearest
+    //   city there (R039+0x2FC4 passes cur_loc as it is) (FixSaintStandingInOpenCountry).
     private static Boon StandingHereIfCarrying(uint mask, int a, int b) => (s, who, _) =>
     {
         if (Inventory.CountWithFlags(s, who, mask) != 0)
         {
-            LocationRules.AdjustReputation(s, s.CurrentLocation, a, b);
+            var where = s.CurrentLocation == GameState.Wilderness && s.Behaviour.FixSaintStandingInOpenCountry
+                ? LocationRules.NearestCity(s, s.MapPosition.X, s.MapPosition.Y)
+                : s.CurrentLocation;
+            LocationRules.AdjustReputation(s, where, a, b);
         }
     };
 
@@ -181,8 +187,11 @@ public static class SaintBook
     /// </summary>
     // orig: if (cur_loc == 0x46) loc_reputation_adj(u, 15, 0x19); else { what = ...; switch (what) { case 0x44..0x47,
     //   0x49, 0x4a: loc_reputation_adj(what, 10, 0x14); } } (R039+0x619A)
-    // DIVERGENCE: u is an uninitialised local in the original (whatever the stack slot holds, normally not
-    //   a valid location: a wild far-pointer write); here Prague's own standing changes.
+    // BUG: in Prague the standing goes to u, a local the function never sets (165C:42D4 pushes [bp-2]; its frame's other words
+    //   are the what-table), not to Prague: Prague's own standing never changes by this saint.
+    // DIVERGENCE: u is whatever the stack slot holds: for a prayer for the party (R034+0x0000) the return offset 0x0C84 that
+    //   rand_mod's call of rand left there, so loc_reputation_adj reads the far pointer at locations + 4 * 0x0C84, past the
+    //   414 places, draws its chance and may write a word through it (memory not modelled); here Prague's own standing changes.
     private static readonly Boon PragueStanding = (s, who, _) =>
     {
         const int prague = 0x46;
@@ -240,6 +249,7 @@ public static class SaintBook
     // orig: party[who].f41 = (party[who].f41 & 0xf) - 0x60
     // C: computed as int and stored into a char: (low nibble − 0x60) mod 256 = low nibble + 0xA0.
     // C: who as given: party[-1].f41 is DS:9C2A, the high byte of the UI word DS:9C29 (not modelled): no member changes.
+    // C: the only charm St.Charity, St.Erasmus and St.Pantaleon give (their rows have the BUG marker).
     private static Boon SetCharm(int high) => (s, _, given) =>
     {
         if (given == Who.Leader)
@@ -254,6 +264,7 @@ public static class SaintBook
     // orig: party[who].f41++ / party[who].f41 += 2
     // C: a char: wraps at 256; the carry runs into the high nibble.
     // C: who as given: for -1 the byte is DS:9C2A (see SetCharm): no member changes.
+    // C: St.Dunstan's and St.Patrick's help (their rows have the BUG marker).
     private static Boon AddCharm(int points) => (s, _, given) =>
     {
         if (given == Who.Leader)
@@ -279,6 +290,7 @@ public static class SaintBook
     // orig: for (i = 0; i < 5; i++) if (party[i].status) { party[i].f3b += 10; party[i].f3c += 10; }
     // C: +0x3b/+0x3c are the signed char qualities of the vital and limb armour (also when none is worn):
     //   125 + 10 wraps to −121.
+    // C: St.Crispin's row has the BUG marker.
     private static readonly Boon MendArmor = (s, _, _) =>
     {
         foreach (var m in s.Party.Present)
@@ -382,8 +394,13 @@ public static class SaintBook
     private static readonly SaintHelp[] Table =
     [
         // 0 St.Adrian
+        // orig: R039+0x1FD4
+        // BUG: the text (DARKLAND.SNT) gives Endurance as "healing only"; the code raises it for a day (raise_attr_temp), past its
+        // maximum when unhurt, and takes it back when the day ends (so do St.Agatha and St.Anthony).
         new("R039+0x1FD4", [Boost(Endurance, 8, 15), Boost(Charisma, 6, 11), .. AllWeapons(15, 29)]),
         // 1 St.Agatha
+        // orig: R039+0x2130
+        // BUG: Endurance "healing only" by the text (DARKLAND.SNT), a day's boost in the code (see St.Adrian).
         new("R039+0x2130", [IfWoman([Boost(Endurance, 12, 23)], [Boost(Endurance, 6, 11)]), Boost(Charisma, 6, 11)]),
         // 2 St.Agnes
         new("R039+0x21EC", [IfAbleWomen([Standing(10, 20), Boost(Charisma, 10, 29)])]),
@@ -402,6 +419,8 @@ public static class SaintBook
         new("R039+0x2642", [Boost(EdgedWeapons, 15, 29), Boost(ImpactWeapons, 15, 29), Boost(Polearms, 15, 29), Boost(ThrownWeapons, 15, 29),
             Boost(Bows, 15, 29)]),
         // 9 St.Anthony
+        // orig: R039+0x2732
+        // BUG: Strength and Endurance "healing only" by the text (DARKLAND.SNT), a day's boost of each in the code (see St.Adrian).
         new("R039+0x2732", [Boost(Endurance, 4, 9), Boost(Strength, 5, 10), Boost(Charisma, 1, 10), Boost(SpeakCommon, 10, 19),
             Boost(SpeakLatin, 10, 19), Boost(ReadWrite, 20, 39)]),
         // 10 St.Anthony of Padua
@@ -411,8 +430,14 @@ public static class SaintBook
         new("R039+0x2942", [Boost(Perception, 6, 11), Boost(Strength, 4, 7), Boost(Intelligence, 4, 7), .. AllWeapons(10, 19),
             Boost(Streetwise, 6, 11), Boost(SpeakLatin, 6, 11), Boost(ReadWrite, 8, 15), Boost(Riding, 8, 15)]),
         // 12 St.Apollinarius
+        // orig: R039+0x2B22
+        // BUG: the text (DARKLAND.SNT) heals "a small amount of lost Strength and a fair amount of lost Endurance"; the code raises both
+        // for a day (raise_attr_temp), past their maxima when unhurt (see St.Adrian).
         new("R039+0x2B22", [Boost(Strength, 2, 4), Boost(Endurance, 8, 23)]),
         // 13 St.Barbara
+        // orig: R039+0x2BC0
+        // BUG: her text (DARKLAND.SNT) also "prevents death from wounds for a period (strength never goes below 1)": nothing records
+        // it, and damage_apply (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
         new("R039+0x2BC0", [Boost(Artifice, 15, 29, hours: 5), Boost(MissileDevices, 20, 39, hours: 10)]),
         // 14 St.Bathildis
         new("R039+0x2C5E", [Boost(Intelligence, 4, 8), Boost(Perception, 3, 6)]),
@@ -428,10 +453,18 @@ public static class SaintBook
         new("R039+0x306A", [Boost(Perception, 3, 5), Boost(Strength, 6, 11), Boost(Intelligence, 3, 5), .. AllWeapons(6, 11),
             Boost(SpeakLatin, 6, 11)]),
         // 20 St.Charity
+        // orig: R039+0x31FA
+        // BUG: her text (DARKLAND.SNT) promises resistance to fire, as St.Erasmus's and St.Pantaleon's do; the code sets only the
+        // charm nibble (SetCharm(0xA0)): no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6 (0x20) count as
+        // +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection (Attacks.HitDamage),
+        // for good.
         new("R039+0x31FA", [Standing(10, 20), Boost(FlailWeapons, 15, 29), Boost(Charisma, 6, 11), SetCharm(0xA0)]),
         // 21 St.Christina, Astonish.
         new("R039+0x32DA", [Boost(Agility, 8, 15), Boost(Charisma, 1, 10)]),
         // 22 St.Christopher
+        // orig: R039+0x3374
+        // BUG: the text (DARKLAND.SNT) "improves travel speeds" and restores a little Strength and Endurance; the code starts no
+        // event and heals nothing.
         new("R039+0x3374", [Boost(Streetwise, 10, 19), Boost(Woodwise, 20, 39), Boost(Riding, 25, 74), Boost(Bows, 6, 11)]),
         // 23 St.Clare
         new("R039+0x3448", [Heal(Endurance, 100), Heal(Strength, 100)]),
@@ -444,6 +477,11 @@ public static class SaintBook
         // 27 St.Cosmas
         new("R039+0x3744", [Heal(Endurance, 10), Heal(Strength, 10), Boost(Healing, 40, 79), Boost(Perception, 4, 7), Teach(Damian)]),
         // 28 St.Crispin
+        // orig: R039+0x3808
+        // BUG: the quality is raised for good and on metal armour too (the text, DARKLAND.SNT: "all non-metal armor"), with no
+        // event (MendArmor); worn pieces are matched to their pack stacks by type and quality (Inventory.Unequip), so a mended
+        // piece no longer matches its stack: taking that piece out of the pack (Inventory.TakeAt, RemoveStackAt) leaves the
+        // armour worn.
         new("R039+0x3808", [MendArmor]),
         // 29 St.Cyprian
         new("R039+0x388A", [Boost(Alchemy, 5, 9), Boost(Intelligence, 5, 9)]),
@@ -452,12 +490,17 @@ public static class SaintBook
         // 31 St.David
         new("R039+0x39B8", [Boost(Intelligence, 4, 7), Boost(Charisma, 1, 6), Boost(Perception, 6, 11), WeaponSkills(8, 15), Boost(Riding, 6, 11)]),
         // 32 St.Denis
+        // orig: R039+0x3AA2
+        // BUG: the text (DARKLAND.SNT) also restores "a small amount of Endurance"; the code heals Strength only.
         new("R039+0x3AA2", [Heal(Strength, 100), Boost(SpeakCommon, 25, 49), Boost(Charisma, 15, 44)]),
         // 33 St.Derfel Gadarn
         new("R039+0x3B4C", [Boost(Strength, 5, 14), WeaponSkills(20, 59), Heal(Endurance, 30)]),
         // 34 St.Devota
         new("R039+0x3BF4", [Heal(Endurance, 100), Heal(Strength, 20), Boost(Charisma, 15, 29)]),
         // 35 St.Dismas
+        // orig: R039+0x3C92
+        // BUG: the text (DARKLAND.SNT) raises Agility, Woodwise and Stealth "for the entire party" and increases Charisma and Speak
+        // Common; the code boosts the one member only and gives neither Charisma nor Speak Common.
         new("R039+0x3C92", [Boost(Woodwise, 10, 19), Boost(Streetwise, 20, 39), Boost(Artifice, 20, 39), Boost(Agility, 10, 19),
             Boost(Stealth, 10, 19)]),
         // 36 St.Dominic
@@ -465,26 +508,44 @@ public static class SaintBook
         // 37 St.Dorothy of Montau
         new("R039+0x3E56", [Boost(Charisma, 10, 19), Boost(Perception, 6, 11), Boost(Healing, 10, 19), SwordForTheUnarmed]),
         // 38 St.Drogo
+        // orig: R039+0x3F2C
+        // BUG: the text (DARKLAND.SNT) "increases the party speed, but not the frequency of encounters"; the code starts event 0x4F
+        // here for a week, the kind that spares the party an ambush (Footpads), as St.Genevieve's does: no speed.
         new("R039+0x3F2C", [Boost(Perception, 6, 11), Boost(Healing, 10, 19), Boost(Woodwise, 20, 39), EventHere(0x4F, 168)]),
         // 39 St.Dunstan
+        // orig: R039+0x3FF2
+        // BUG: the text (DARKLAND.SNT) promises a better quality of the party's metal armour; the code adds 1 to the one member's
+        // Hardarmor nibble (AddCharm(1)): armour against every blow, with no event, so it never wears off and piles up with each
+        // prayer (past 15 into the fire-charm bits).
         new("R039+0x3FF2", [WeaponSkills(6, 11), Boost(Perception, 6, 11), Boost(Artifice, 25, 74), Boost(Streetwise, 6, 11), Boost(Alchemy, 5, 14),
             AddCharm(1)]),
         // 40 St.Dymphna
         new("R039+0x40E2", [Heal(Endurance, 30), Boost(Agility, 4, 7), Boost(Stealth, 15, 29), Boost(Healing, 10, 19)]),
         // 41 St.Edward, Confessor
+        // orig: R039+0x41A8
+        // BUG: the text (DARKLAND.SNT) "heals a small amount of Endurance"; the code raises it for a day (see St.Adrian).
         new("R039+0x41A8", [Boost(Endurance, 4, 7), Boost(Intelligence, 6, 11), Boost(Perception, 8, 15), Boost(Riding, 8, 15), .. AllWeapons(6, 11),
             VirtueForAllAtAPrice]),
         // 42 St.Eligius
+        // orig: R039+0x439E
+        // BUG: the text (DARKLAND.SNT) "may improve edged weapons, hammers, maces, halberds, crossbows and handguns"; the code
+        // touches no weapon (no quality, no skill).
         new("R039+0x439E", [Boost(Artifice, 25, 74), Boost(Alchemy, 8, 15)]),
         // 43 St.Emydius
         new("R039+0x443A", [Boost(SpeakCommon, 20, 39), Boost(Charisma, 15, 29)]),
         // 44 St.Engelbert
         new("R039+0x44D8", [Boost(Charisma, 5, 9), Boost(Riding, 10, 19), Boost(SpeakCommon, 6, 11), Boost(Woodwise, 10, 19), TravelBlessing]),
         // 45 St.Erasmus
+        // orig: R039+0x45C8
+        // BUG: resistance to fire by the text (DARKLAND.SNT), only the charm nibble in the code (see St.Charity).
         new("R039+0x45C8", [Boost(Agility, 6, 11), Boost(Perception, 6, 11), SetCharm(0xA0)]),
         // 46 St.Eric
         new("R039+0x4676", [Boost(Strength, 8, 23), Boost(Charisma, 4, 7), WeaponSkills(15, 24), Boost(Riding, 6, 11), Boost(SpeakCommon, 6, 11)]),
         // 47 St.Eustace
+        // orig: R039+0x4762
+        // BUG: the text (DARKLAND.SNT) gives "a large increase to all weapon skills except impact and flail" and "may speed travel
+        // through woods"; the code raises Edged, Thrown and Bow by 6..11 only (no Polearms, no Mechanical Missile) and starts
+        // no event.
         new("R039+0x4762", [Boost(Riding, 10, 19), Boost(Woodwise, 40, 69), Boost(EdgedWeapons, 6, 11), Boost(ThrownWeapons, 6, 11),
             Boost(Bows, 6, 11)]),
         // 48 St.Felix of Nola
@@ -497,6 +558,10 @@ public static class SaintBook
         // 51 St.Florian
         new("R039+0x4AD0", [Standing(15, 25, 0x43, 0x51, 0x52, 0x53, 0x54, 0x56), WeaponSkills(6, 11), Boost(Riding, 6, 11), TravelBlessing]),
         // 52 St.Francis
+        // orig: R039+0x9674
+        // BUG: the text (DARKLAND.SNT) gives Endurance, Perception, Charisma, Speak Common and "a very great increase to Virtue",
+        // and may cost 10% of the cash; the code heals, adds Healing, Artifice and Woodwise as St.Thomas the
+        // Apostle's text does, and gives no Virtue and takes no money.
         new("R039+0x9674", [Heal(Endurance, 30), Heal(Strength, 10), Boost(SpeakCommon, 4, 7), Boost(Healing, 10, 19), Boost(Artifice, 12, 23),
             Boost(Woodwise, 4, 7), Boost(Perception, 6, 11), Boost(Charisma, 15, 29), Boost(Endurance, 6, 11)]),
         // 53 St.Gabriel
@@ -504,13 +569,20 @@ public static class SaintBook
         // 54 St.Genevieve
         new("R039+0x4C68", [Heal(Endurance, 30), Heal(Strength, 20), EventHere(0x4F, 168)]),
         // 55 St.George
+        // orig: R039+0x4CF8
+        // BUG: the text (DARKLAND.SNT) "may improve the quality of weapons and armor"; the code changes no quality.
         new("R039+0x4CF8", [Boost(Strength, 10, 14), Boost(Agility, 5, 9), .. AllWeapons(25, 49), Boost(Riding, 25, 49)]),
         // 56 St.Gerlac
+        // orig: R039+0x4E6E
+        // BUG: the text (DARKLAND.SNT) also gives "a modest increase to Charisma"; the code gives none.
         new("R039+0x4E6E", [Heal(Endurance, 30), Heal(Strength, 20), Boost(Healing, 20, 39), WeaponSkills(15, 24)]),
         // 57 St.Gertrude o'Nivelles
         new("R039+0x4F22", [Boost(Riding, 5, 9), Boost(Woodwise, 15, 29), Boost(SpeakLatin, 15, 29), Boost(ReadWrite, 15, 29),
             Boost(Charisma, 6, 11), EventHere(0x5D, 1)]),
         // 58 St.Giles
+        // orig: R039+0x501E
+        // BUG: the text (DARKLAND.SNT) gives "a small increase to Streetwise" and "a tremendous increase to Woodwise", and money if
+        // needed; the code swaps them (Streetwise 50..89, Woodwise 5..9) and gives no money.
         new("R039+0x501E", [Heal(Endurance, 40), Heal(Strength, 10), LowerWeaponSkills(15, 24), Lower(Agility, 4, 7), Boost(Stealth, 30, 59),
             Boost(Woodwise, 5, 9), Boost(Streetwise, 50, 89)]),
         // 59 St.Giles of Portugal
@@ -524,6 +596,8 @@ public static class SaintBook
         // 63 St.Gregory Thaumaturg.
         new("R039+0x54DE", [Boost(Charisma, 8, 15), Boost(Alchemy, 10, 19), Boost(Artifice, 20, 39), Boost(SpeakCommon, 10, 19)]),
         // 64 St.Hedwig
+        // orig: R039+0x55B2
+        // BUG: the text (DARKLAND.SNT) also "heals a modest amount of Strength and Endurance"; the code heals nothing.
         new("R039+0x55B2", [Standing(30, 50, 0x25, 0x48, 0x49, 0x4B), Boost(Healing, 20, 29)]),
         // 65 St.Henry
         new("R039+0x5676", [.. AllWeapons(10, 19), Boost(Intelligence, 8, 23)]),
@@ -543,6 +617,9 @@ public static class SaintBook
         // 72 St.Ita
         new("R039+0x5C8C", [Heal(Endurance, 50), Heal(Strength, 100), Boost(Healing, 20, 39), Boost(Charisma, 8, 15)]),
         // 73 St.James
+        // orig: R039+0x948A
+        // BUG: the text (DARKLAND.SNT) "causes a temporary loss of a small amount of Intelligence"; the code lowers nothing (and heals
+        // Endurance and Strength, which the text does not give).
         new("R039+0x948A", [Heal(Endurance, 20), Heal(Strength, 10), Boost(Virtue, 20, 34), Boost(Strength, 4, 7), Boost(Charisma, 3, 5),
             Boost(Endurance, 4, 7)]),
         // 74 St.Januarius
@@ -556,13 +633,20 @@ public static class SaintBook
         // 76 St.John Chrysostom
         new("R039+0x5E8C", [Boost(SpeakCommon, 30, 59), Boost(SpeakLatin, 30, 59), Boost(Charisma, 8, 15), Lower(Perception, 6, 11)]),
         // 77 St.John Climacus
+        // orig: R039+0x5F62
+        // BUG: the text (DARKLAND.SNT) "enhances ALL skills"; the code leaves out the seven weapon skills and Riding.
         new("R039+0x5F62", [VirtueBoost(Alchemy), VirtueBoost(Religion), VirtueBoost(SpeakCommon), VirtueBoost(SpeakLatin), VirtueBoost(ReadWrite),
             VirtueBoost(Healing), VirtueBoost(Stealth), VirtueBoost(Artifice), VirtueBoost(Woodwise), VirtueBoost(Streetwise)]),
         // 78 St.John Nepolmuchen
         new("R039+0x619A", [Boost(SpeakCommon, 20, 39), Boost(Streetwise, 4, 7), Boost(Charisma, 8, 15), Boost(Intelligence, 6, 11), PragueStanding]),
         // 79 St.Joseph
+        // orig: R039+0x62C0
+        // BUG: the text (DARKLAND.SNT) gives Charisma "inside a city"; the code gives it everywhere.
         new("R039+0x62C0", [Boost(Artifice, 30, 59), Boost(Streetwise, 30, 59), Boost(Charisma, 6, 11)]),
         // 80 St.Jude
+        // orig: R039+0x6378
+        // BUG: the text (DARKLAND.SNT) improves "every skill by a modest amount"; the code raises only the equipped weapons' skills
+        // (WeaponSkills) of the seven, and not Riding.
         new("R039+0x6378", [Boost(Endurance, 4, 8), Boost(Charisma, 4, 8), Boost(Strength, 4, 8), Boost(Perception, 4, 8), Boost(Agility, 4, 8),
             Boost(Intelligence, 4, 8), WeaponSkills(15, 24), Boost(Alchemy, 6, 11), Boost(Religion, 6, 11),
             Boost(SpeakCommon, 6, 11), Boost(SpeakLatin, 6, 11), Boost(ReadWrite, 6, 11), Boost(Healing, 6, 11),
@@ -579,14 +663,20 @@ public static class SaintBook
         // 85 St.Lazarus
         new("R039+0x6902", [Heal(Endurance, 30), Heal(Strength, 100)]),
         // 86 St.Longinius
+        // orig: R039+0x6984
+        // BUG: the text (DARKLAND.SNT) "may increase the quality of one character's weapons"; the code changes no quality.
         new("R039+0x6984", [.. AllWeapons(10, 19)]),
         // 87 St.Lucy
         new("R039+0x6AAA", [Heal(Endurance, 100), Heal(Strength, 100), Boost(Perception, 6, 11)]),
         // 88 St.Luke
         new("R039+0x6B48", [Heal(Endurance, 50), Heal(Strength, 30), Boost(Healing, 20, 39)]),
         // 89 St.Lutgardis
+        // orig: R039+0x6BE6
+        // BUG: the text (DARKLAND.SNT): "Sharing her ecstasies in prayer costs Endurance"; the code raises Endurance for a day.
         new("R039+0x6BE6", [Boost(Charisma, 6, 11), Boost(Perception, 8, 15), Boost(Virtue, 6, 17), Boost(Endurance, 5, 9)]),
         // 90 St.Margaret
+        // orig: R039+0x6CBA
+        // BUG: the text (DARKLAND.SNT) also improves "the flame resistance of one person's armor"; the code sets no charm.
         new("R039+0x6CBA", [
             IfWoman(
                 [
@@ -607,14 +697,23 @@ public static class SaintBook
         // 94 St.Matthew
         new("R039+0x715A", [Boost(SpeakLatin, 15, 29), Boost(ReadWrite, 25, 49), Boost(Intelligence, 8, 15), BankersFavor]),
         // 95 St.Maurice
+        // orig: R039+0x7236
+        // BUG: the text (DARKLAND.SNT) "may improve the quality of any edged weapons carried"; the code changes no quality.
         new("R039+0x7236", [Boost(EdgedWeapons, 20, 39), Boost(Alchemy, 10, 19)]),
         // 96 St.Michael
+        // orig: R039+0x72D4
+        // BUG: the text (DARKLAND.SNT): "in combat, he may improve the party's weapons and armor"; the code changes no quality and
+        // sets no charm.
         new("R039+0x72D4", [WeaponSkillsBy(20), Boost(Healing, 20, 39), Boost(Charisma, 12, 19), Standing(20, 40)]),
         // 97 St.Milburga
         new("R039+0x73AA", [Boost(Healing, 20, 39), Boost(Charisma, 10, 19), TravelBlessing]),
         // 98 St.Moses the Black
         new("R039+0x7464", [.. AllWeapons(15, 29), Boost(Stealth, 20, 39), Boost(Woodwise, 10, 19), Boost(Streetwise, 10, 19)]),
         // 99 St.Nicholas
+        // orig: R039+0x75DA
+        // BUG: the text (DARKLAND.SNT) gives Agility, Charisma and "a tremendous increase to Riding", and reputation "in areas of
+        // his patronage"; the code gives Flail Weapons and Endurance instead of Riding and Agility (St.Charity's and
+        // St.Theodore Tiro's boosts), and the standing anywhere.
         new("R039+0x75DA", [Standing(10, 20), Boost(FlailWeapons, 15, 29), Boost(Charisma, 6, 11), Boost(Endurance, 4, 8)]),
         // 100 St.Odilia
         new("R039+0x76C4", [Boost(Perception, 6, 11), Standing(15, 25, 0x36, 0x4C)]),
@@ -623,12 +722,22 @@ public static class SaintBook
         // 102 St.Olaf
         new("R039+0x78F2", [Heal(Endurance, 30), .. AllWeapons(8, 22)]),
         // 103 St.Pantaleon
+        // orig: R039+0x7A24
+        // BUG: his text (DARKLAND.SNT) also promises resistance to fire; the code sets only the charm nibble (see St.Charity).
         new("R039+0x7A24", [Heal(Endurance, 30), Heal(Strength, 30), Boost(Alchemy, 10, 19), Boost(Healing, 15, 29), Boost(Charisma, 6, 11),
             TravelBlessing, SetCharm(0xA0)]),
         // 104 St.Patrick
+        // orig: R039+0x7B22
+        // BUG: the text (DARKLAND.SNT) promises armour against missiles in combat; the code adds 2 to the one member's Hardarmor
+        // nibble (AddCharm(2)), against every blow and for good (see St.Dunstan).
         new("R039+0x7B22", [Boost(EdgedWeapons, 15, 29), Boost(ImpactWeapons, 15, 29), Boost(Polearms, 15, 29), Boost(SpeakCommon, 15, 29),
             Boost(SpeakLatin, 15, 29), Boost(ReadWrite, 15, 29), Boost(Charisma, 15, 24), Boost(Strength, 12, 19), AddCharm(2)]),
         // 105 St.Paul
+        // orig: R039+0x7C6A; R039+0x7D0C
+        // BUG: the helps of the two Pauls are mixed up: St.Paul gets R039+0x7C6A, whose feast day (66) and help are
+        // those DARKLAND.SNT gives St.Paul the Simple; St.Paul the Simple (106) gets R039+0x7D0C, a copy of St.Thomas
+        // Aquinas's help (R039+0x8B58); the help described for St.Paul is R039+0x9578, which no saint number reaches
+        // (Z-9318d7).
         new("R039+0x7C6A", [Heal(Endurance, 100), Heal(Strength, 100), LowerByHalf(Intelligence)]),
         // 106 St.Paul the Simple
         new("R039+0x7D0C", [Boost(SpeakCommon, 12, 26), Boost(SpeakLatin, 12, 26), Boost(ReadWrite, 15, 29), Boost(Healing, 10, 19),
@@ -642,6 +751,9 @@ public static class SaintBook
         new("R039+0x7FA8", [Boost(Alchemy, 10, 19), Boost(Stealth, 40, 79), Boost(Riding, 10, 19), Boost(Intelligence, 6, 11),
             Boost(Perception, 6, 11), Standing(-1, -5)]),
         // 110 St.Polycarp
+        // orig: R039+0x80C2
+        // BUG: the saints' charms never wear off: FirewallForAll, like SetCharm and AddCharm, sets the charm byte
+        // (+0x41) and its strength (+0x10) with no event, and nothing takes them back.
         new("R039+0x80C2", [FirewallForAll]),
         // 111 St.Raphael
         new("R039+0x814A", [Heal(Endurance, 100), Heal(Strength, 100), Boost(Healing, 50, 139), Boost(Agility, 8, 15), Boost(Perception, 6, 11)]),
@@ -657,8 +769,12 @@ public static class SaintBook
         // 116 St.Sabas the Goth
         new("R039+0x854C", [Heal(Endurance, 100), Heal(Strength, 100), Boost(Charisma, 10, 19)]),
         // 117 St.Sebastian
+        // orig: R039+0x85EA
+        // BUG: the text (DARKLAND.SNT) also gives "a modest increase to all other weapon skills"; the code raises Bows only.
         new("R039+0x85EA", [Heal(Endurance, 10), Heal(Strength, 10), Boost(Bows, 20, 39), Boost(Riding, 10, 19), Boost(Agility, 12, 19)]),
         // 118 St.Stanislaus
+        // orig: R039+0x86BE
+        // BUG: the text (DARKLAND.SNT) "can increase local reputation in Poland and Cracow"; the code changes no standing.
         new("R039+0x86BE", [Heal(Endurance, 20), Heal(Strength, 10), Boost(SpeakCommon, 30, 59), Boost(SpeakLatin, 20, 39), Boost(Charisma, 6, 11)]),
         // 119 St.Stephen
         new("R039+0x8792", [WeaponSkills(15, 24), StandingOnlyAt(0x55, 15, 25), Boost(SpeakCommon, 6, 11), Boost(Riding, 10, 19),
@@ -670,11 +786,18 @@ public static class SaintBook
         // 122 St.Thalelaeus,Merciful
         new("R039+0x89EA", [Heal(Endurance, 40), Heal(Strength, 20), Boost(Healing, 30, 59)]),
         // 123 St.Theodore Tiro
+        // orig: R039+0x8A88
+        // BUG: St.Theodore Tiro raises Flail Weapons twice for a flail wielder: WeaponSkills already raises it for a
+        // member holding a flail, and the saint then raises it again; his help also does not match DARKLAND.SNT (all
+        // weapon skills, Charisma, Riding): no Riding, Endurance instead.
         new("R039+0x8A88", [WeaponSkills(15, 24), Boost(FlailWeapons, 15, 29), Boost(Charisma, 6, 11), Boost(Endurance, 4, 8)]),
         // 124 St.Thomas the Apostle
         new("R039+0x986A", [Boost(SpeakCommon, 4, 7), Boost(Healing, 10, 19), Boost(Artifice, 12, 23), Boost(Woodwise, 4, 7), Boost(Strength, 4, 8),
             Boost(Endurance, 4, 8)]),
         // 125 St.Thomas Aquinas
+        // orig: R039+0x8B58
+        // BUG: the text (DARKLAND.SNT) gives "a very great increase to Religion"; the code gives none (Healing 10..19 instead, which
+        // the text does not give).
         new("R039+0x8B58", [Boost(SpeakCommon, 12, 26), Boost(SpeakLatin, 12, 26), Boost(ReadWrite, 15, 29), Boost(Healing, 10, 19),
             Boost(Intelligence, 12, 23)]),
         // 126 St.Valentine
@@ -688,14 +811,21 @@ public static class SaintBook
         new("R039+0x8EAC", [Boost(Riding, 8, 15), WeaponSkills(8, 15), Boost(Perception, 6, 11), Boost(Intelligence, 8, 13), Boost(Strength, 6, 11),
             Standing(15, 25, 0x44, 0x45, 0x46, 0x47, 0x49, 0x4A)]),
         // 130 St.Wilfrid
+        // orig: R039+0x8FD8
+        // BUG: the text (DARKLAND.SNT) "may double party travel speed"; the code starts event 0x4F here for a week, the kind that
+        // spares the party an ambush (see St.Drogo): no speed.
         new("R039+0x8FD8", [Heal(Endurance, 20), Boost(Artifice, 6, 11), Boost(SpeakCommon, 20, 39), Boost(Charisma, 6, 11), EventHere(0x4F, 168)]),
         // 131 St.Willehad
         new("R039+0x90AA", [Boost(Woodwise, 8, 15), Boost(Riding, 10, 19), Boost(Agility, 8, 15), EventHere(0x4F, 168)]),
         // 132 St.Willebald
         new("R039+0x916E", [Boost(Woodwise, 6, 11), Boost(SpeakCommon, 25, 49), Boost(Charisma, 10, 19)]),
         // 133 St.Williborord
+        // orig: R039+0x9228
+        // BUG: the text (DARKLAND.SNT) "can enhance local reputation in northern Germany"; the code changes no standing.
         new("R039+0x9228", [Boost(Woodwise, 8, 15), Boost(SpeakCommon, 20, 39), Boost(Charisma, 10, 19)]),
         // 134 St.Wolfgang
+        // orig: R039+0x92E2
+        // BUG: the text (DARKLAND.SNT) "enhances local reputation in villages and with nobility"; the code changes no standing.
         new("R039+0x92E2", [Boost(Woodwise, 6, 11), Boost(Riding, 6, 11), Boost(SpeakCommon, 20, 39), Boost(Charisma, 8, 15),
             Boost(Intelligence, 6, 11)]),
         // 135 St.Zita

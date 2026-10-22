@@ -55,15 +55,15 @@ public sealed class MercenaryBanditAmbush : Card
         return menu.Run(
             // orig: R108+0x359A (1B3A:057A) matched; hint R108+0x35D8
             new MenuLine(_ => { ShowPicture(c, BanditsPicture); c.Screen.Text(17); Fight(c, true); }, Unknown),
-            // orig: R108+0x36BE (1B3A:069E) matched (hint)
+            // orig: R108+0x3610 (line 1); hint R108+0x36BE (1B3A:069E) matched
             new MenuLine(p => TalkYourWayPast(c, p), () => TalkHint(c)),
-            // orig: R108+0x37B2 (1B3A:0792) matched (hint)
+            // orig: R108+0x3712 (line 2); hint R108+0x37B2 (1B3A:0792) matched
             new MenuLine(p => FlushThemOut(c, p), () => OptionHint.Say("Of course the potion will work!"), () => PotionHint(c)),
-            // orig: R108+0x3908 (1B3A:08E8) matched (hint)
+            // orig: R108+0x37EA (line 3); hint R108+0x3908 (1B3A:08E8) matched
             new MenuLine(_ => PrayForPeacefulPassage(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R108+0x3940 (1B3A:0920) matched; hint R108+0x3996
             new MenuLine(_ => Surrender(c), () => OptionHint.Say(SuccessAssured)),
-            // orig: R108+0x3AB0 (1B3A:0A90) matched (hint)
+            // orig: R108+0x39CE (line 5); hint R108+0x3AB0 (1B3A:0A90) matched
             new MenuLine(p => SneakAway(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageEffectiveAgility() + c.PartyAverageSkill((int)Skill.Woodwise) * 2, 1, 99), OptionHint.WholeParty)),
             // orig: R108+0x3AE2 (1B3A:0AC2) matched; hint R108+0x3AEC

@@ -66,15 +66,15 @@ public sealed class WildHunt : Card
         }
 
         return menu.Run(
-            // orig: handler R060+0x0E6E
+            // orig: R060+0x0CE8 (line 0); handler R060+0x0E6E
             new MenuLine(chance => OfferADeer(c, chance), () => DeerChance(c)),
-            // orig: handler R060+0x0FF4
+            // orig: R060+0x0ECC (line 1); handler R060+0x0FF4
             new MenuLine(chance => Outrun(c, chance), () => OutrunChance(c)),
-            // orig: handler R060+0x1186 (select saint); action 06e2; pop-up handlers 0adc..0c7a
+            // orig: R060+0x1052 (line 2); handler R060+0x1186 (select saint); pop-up handlers 0adc..0c7a
             new MenuLine(_ => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
-            // orig: handler R060+0x11C4 (enter combat); action 084e (calls the fight, 0244)
+            // orig: R060+0x11BE (18CF:084E) matched (line 3's action: calls the fight, 0244); hint R060+0x11C4 (enter combat)
             new MenuLine(_ => Fight(c), OptionHint.Saying(CardTexts.EnterCombat)),
-            // orig: handler R060+0x124A (select saint); action 088c
+            // orig: R060+0x11FC (line 4); handler R060+0x124A (select saint)
             new MenuLine(_ => BanishTheHunt(c), OptionHint.Saying(CardTexts.SelectSaint)),
             // DORMANT: lines 5..9 keep the "screwed up." handler of the setup function (09b4); opt_on[5..9] stay 0
             // (the loop copies only opt_flag_0..4) and the action switch has no case for them.

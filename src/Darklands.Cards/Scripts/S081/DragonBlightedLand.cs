@@ -147,11 +147,12 @@ public sealed class DragonBlightedLand : Card
             // C: no roll: the hint's chance is shown, and the party always follows the dragon.
             new MenuLine(() => c.Next = 0x99, hint: () => OptionHint.ChanceOf(
                 CardContext.ClampRange(0, 99, (c.Attribute(Who.Leader, 5) + c.Skill(Who.Leader, 0x0B)) / 2), (sbyte)c.Leader)),
-            new MenuLine(() => RideAway(c, RidingChance(c).Chance), () => RidingChance(c)),
-            // orig: R081+0x293A (19BC:10FA) asm; R081+0x29CE (19BC:118E) asm; tests: CardSmokeTests
-            new MenuLine(() => UseAPotion(c), OptionHint.Saying(CardTexts.SelectPotion),
+            new MenuLine(chance => RideAway(c, chance), () => RidingChance(c)),
+            // orig: R081+0x24E2 (line 2); R081+0x293A (19BC:10FA) asm; R081+0x29CE (19BC:118E) asm; tests: CardSmokeTests
+            new MenuLine(chance => UseAPotion(c, chance), OptionHint.Saying(CardTexts.SelectPotion),
                 () => PotionHint(c, c.MenuMember)),
-            // orig: R081+0x2A62 (19BC:1222) asm; R081+0x2AEC (19BC:12AC) asm; R081+0x2B76 (19BC:1336) asm; tests: CardSmokeTests
+            // orig: R081+0x25FA (line 3); R081+0x2A62 (19BC:1222) asm; R081+0x2AEC (19BC:12AC) asm; R081+0x2B76 (19BC:1336) asm;
+            // tests: CardSmokeTests
             new MenuLine(() =>
             {
                 if (!CallOnASaint(c))
@@ -341,6 +342,7 @@ public sealed class DragonBlightedLand : Card
     }
 
     /// <summary>Mounted, the party's riding (each slot below party_size); on foot, its agility.</summary>
+    // orig: R081+0x293A (19BC:10FA) asm; R081+0x29CE (19BC:118E) asm
     // C: an empty slot below party_size counts too.
     private static OptionHint PotionHint(CardContext c, int member)
     {
@@ -367,10 +369,9 @@ public sealed class DragonBlightedLand : Card
     }
 
     // orig: R081+0x24E2 (19BC:0CA2) asm; R081+0x25C2 (19BC:0D82) asm; tests: CardSmokeTests
-    private static void UseAPotion(CardContext c)
+    private static void UseAPotion(CardContext c, int chance)
     {
-        // C: the option line itself gives chance -1: the potion then always fails.
-        var chance = c.MenuPopup ? PotionHint(c, c.MenuMember).Chance : -1;
+        // C: the chance is the menu's l_a.a: the pop-up hint's, or -1 from the option line itself (the potion then always fails).
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         if (c.Random(100) <= chance)
         {

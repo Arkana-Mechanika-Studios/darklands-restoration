@@ -45,9 +45,11 @@ public sealed class SiegeOfTheCityLord : Card
                     c.ConflictOutcome(1, -1, 1);
                     c.Next = Number;
                 }),
-            // orig: R091+0x032C; R091+0x0382; R091+0x03CC matched
+            // orig: R091+0x032C (1838:032C) matched
             new MenuLine(() => { c.PassHours(1); c.Next = c.IsDaylight ? 0x1F : 0x20; }),
+            // orig: R091+0x0382 (1838:0382) matched
             new MenuLine(() => { c.PassHours(1); c.Next = 0x3A; }),
+            // orig: R091+0x03CC (1838:03CC) matched
             new MenuLine(() => { c.PassHours(1); c.Next = 0x3B; }),
             // orig: R091+0x0416 and the four like it, matched
             // DORMANT: lines 5..9 are hidden (flags 0); they would only let no time pass.

@@ -49,6 +49,9 @@ public sealed class DarklandsGame
     // orig: the save/load code opens saves\ relative to the game's folder (R037); the folder name is matched case-insensitively.
     public string SaveDirectory { get; set; } = "";
 
+    /// <summary>The bugs the games played here have fixed: the player's host sets <see cref="OriginalBehaviour.DataSafe"/>, testers keep the faithful game.</summary>
+    public OriginalBehaviour Behaviour { get; set; } = OriginalBehaviour.Faithful;
+
     /// <summary>The game folder's SAVES folder (an existing one in any letter case, else SAVES).</summary>
     public static string DefaultSaveDirectory(string gameFolder) =>
         Directory.Exists(gameFolder)
@@ -187,6 +190,7 @@ public sealed class DarklandsGame
             try
             {
                 _session = state;
+                state.Behaviour = Behaviour;
                 Playing = state;
                 Play(state);
                 return;
@@ -226,7 +230,7 @@ public sealed class DarklandsGame
 
     /// <summary>Alt-L while playing: "Loading is irreversable. Proceed?", then the load screen; the game goes on with what it gives.</summary>
     // orig: load_game R037+0x8B76 (1C7D:09C6) matched: card_window->f10 = 3; the question;
-    // thunk 09C0:1905("load", "a") (the debug log); in a battle (DS:907A == 1) the battle's pictures, sounds and level buffers are freed and its
+    // the debug log 1905("load", "a"), not reproduced (see Card.ShowPicture); in a battle (DS:907A == 1) the battle's pictures, sounds and level buffers are freed and its
     // flags reset; the card picture freed; `party[i][0] = 0` for the five slots; with DS:A891 == 3 the map's buffers freed; the events
     // freed; the load screen (DS:E89A = 0: no Return button); longjmp(DS:A752, -1)
     // BUG: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
@@ -271,6 +275,8 @@ public sealed class DarklandsGame
         if (!state.Events.Started(CopyProtectionEvent))
         {
             // DIVERGENCE: copyprot_run_vec asks the copy-protection question (a code from the manual); it is not asked here. The event it leaves behind, for 0x3E80 hours (about 22 months), is created as in the original.
+            //   The question's own random numbers (R041+0x0000: rand_mod(4), rand_mod(20), rand_mod(7) ... to pick the symbols) are not drawn either, so
+            //   the generator differs from the original's until the next reseed from the clock (the map's next hour) (found by tools/oracle/lockstep.py).
             state.Events.CreateHere(CopyProtectionEvent, CopyProtectionHours);
         }
         return new OverlandScreen(_ui, panel, _map) { CharacterSheet = sheet, Camp = camp }.Travel(state);
@@ -314,13 +320,17 @@ public sealed class DarklandsGame
     //   combat_flags |= 4 (−3) / 8 (−5) / 0x80 (−6) / 0xC (−4), |= 1, battle_run(battle_mode, battle_enemy, battle_seed,
     //   −1, A76C, 0, −1, A76E, 0, −1, A770, 0), status 3 → 0 with party_delete_vec, others but 0 and 5 → 1,
     //   none left or battle_result == 5 → music 0x12, "death", exit; else cards_startup_vec and the result is the next screen.
-    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; cards_shutdown and cards_startup's reloads are not needed.
-    // orig: cards_startup R043+0x078E (1462:078E) matched begins with srand((unsigned)time(0)): TimePassage.Reseed.
+    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; cards_shutdown and cards_startup's reloads of the
+    //   other work files are kept in memory (see CardContext.RunBattle).
+    // orig: cards_shutdown R043+0x054E writes the events to events.tmp and empties the table (EventLog.Shutdown); cards_startup
+    //   R043+0x078E (1462:078E) matched begins with srand((unsigned)time(0)): TimePassage.Reseed, and its world_load reads the events
+    //   back (EventLog.Reload). A load in the battle leaves it by the jump (LoadGameRequestedException): no cards_startup.
     // C: with DS:9081 bit 0 (GameState.ResumeBattle: a game saved in a battle) the card was skipped and the code is the DS:A764 the loop
     // holds (not a battle code after a load); R002+0x0000 takes the battle up from the battle file and clears the bit at its end.
     private int FightTheBattle(GameState state, CardContext context, BattleScreens battles, int code)
     {
         // orig: root 03A1:000A calls cards_shutdown_vec (R043+0x054E) before the battle; it ends with sound_play(1) (root 047C:078A)
+        state.Events.Shutdown();
         _ui.Audio.PlayMusic(Darklands.Audio.GameSounds.Stop);
         var orders = state.BattleOrders;
         orders.Flags |= code switch { -3 => 4, -5 => 8, -6 => 0x80, -4 => 0xC, _ => 0 };
@@ -338,7 +348,10 @@ public sealed class DarklandsGame
             orders.Flags &= 0xFE10;
         }
         var members = state.Party.Members;
+        // orig: root 03A1:000A (matched per the byte match): party_delete_vec for each slot of status 3, before cards_startup
         // C: the dead are deleted first (slot by slot, highest first here because DeleteMember trims empty slots at the end).
+        // BUG: party_delete_vec runs while the events are in events.tmp, so a member who died in the battle keeps the term and
+        //   "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
         for (var i = members.Count - 1; i >= 0; i--)
         {
             if (members[i].Status == Core.Characters.CharacterStatus.Dead)
@@ -360,6 +373,7 @@ public sealed class DarklandsGame
         }
         state.Party.EnsureAbleLeader();
         Core.Rules.TimePassage.Reseed(state);
+        state.Events.Reload();
         return battles.LastResultCard;
     }
 
@@ -437,10 +451,19 @@ public sealed class DarklandsGame
                 }
                 if (card == CardDispatcher.OverlandMap)
                 {
-                    state.PreviousCard = card;
                     // orig: C / F8 on the map: thunk 09C0:1FF9 = R036+0x0000 (1462:0000) with the party's watch value (R030+0x25BE): the
                     //   wilderness stay with the day's poaching risk (CampScreen.CampInTheWild)
-                    state.CurrentCard = Travel(state, panel, context.Screens.CharacterSheet, screens.CampInTheWild);
+                    // orig: the map is card 0x0C of the table: root 03A1:000A ends its pass as any card's (03A1:0442..0463): the previous-screen
+                    //   word becomes 0x0C only after the map returns (a game saved on the map keeps the card before), then advance_hours(0)
+                    var afterMap = Travel(state, panel, context.Screens.CharacterSheet, screens.CampInTheWild);
+                    if (CardDispatcher.IsBattle(afterMap))
+                    {
+                        CardDispatcher.FinishPass(state, FightTheBattle(state, context, battles, afterMap));
+                    }
+                    else
+                    {
+                        CardDispatcher.FinishPass(state, afterMap);
+                    }
                     continue;
                 }
                 // orig: root 03A1:000A runs the card (the table at 2DAE:0000) only while DS:9081 bit 0 is clear: a game saved in a battle skips its

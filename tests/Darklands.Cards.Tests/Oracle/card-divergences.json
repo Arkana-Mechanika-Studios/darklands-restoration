@@ -1,5 +1,17 @@
 [
   {
+    "card": "074",
+    "run": "*",
+    "contains": "original '<end>', C# 'prayer ",
+    "why": "FactionLeadersRecruitment DIVERGENCE: the card installs no saint pop-up handlers, so a prayer calls whatever saint_fn the previous card left; run from a start state no card installed them in, the original calls 0000:0000. The C# uses the standard saint rating."
+  },
+  {
+    "card": "0B6",
+    "run": "*",
+    "contains": "original '<end>', C# 'menu 2 ",
+    "why": "CityLordsReward DIVERGENCE: the search for a saint nobody in the party knows (R089+0x0C5C) never ends when the party knows all 0x88 saints (the original hangs; the oracle stops at its instruction budget); the C# offers the boons with saint 0."
+  },
+  {
     "card": "005",
     "run": "*",
     "contains": "end: original 'next 0', C# 'next ",

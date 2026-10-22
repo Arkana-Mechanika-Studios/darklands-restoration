@@ -53,11 +53,11 @@ public sealed class AbbotsClerk : Card
         return menu.Run(
             // orig: R105+0x2086 (1A12:02E6) matched; hint R105+0x2096
             new MenuLine(_ => { c.State.SavedCard = 246; c.State.SavedCard2 = 246; c.Next = 0x6E; }, NoRiskForTheLeader(c)),
-            // orig: R105+0x212A (1A12:038A) matched (hint)
+            // orig: R105+0x20D0 (line 1); hint R105+0x212A (1A12:038A) matched
             new MenuLine(_ => Trade(c), Assured),
-            // orig: R105+0x21C6 (1A12:0426) matched (hint)
+            // orig: R105+0x2162 (line 2); hint R105+0x21C6 (1A12:0426) matched
             new MenuLine(p => UseTheLibrary(c, p), () => LibraryHint(c)),
-            // orig: R105+0x22E2 (1A12:0542) matched (hint)
+            // orig: R105+0x2230 (line 3); hint R105+0x22E2 (1A12:0542) matched
             new MenuLine(p => MeetTheAlchemists(c, menu, p), () => AlchemistsHint(c)),
             // orig: R105+0x234C (1A12:05AC) matched; hint R105+0x2472
             new MenuLine(_ => PayForPrayers(c, donation), NoRiskForTheLeader(c)),

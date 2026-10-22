@@ -60,5 +60,5 @@ public sealed class CommonSprites
     /// <summary>The shield of a dead member (<c>DS:A2E5</c>).</summary>
     public RowRunSprite DeadShield => Bank[13];
 
-    public static CommonSprites Decode(byte[] file) => new(ImageBank.Decode(file, Count));
+    public static CommonSprites Decode(byte[] file) => new(ImageBank.Decode(file, Count, "COMMONSP.IMG"));
 }

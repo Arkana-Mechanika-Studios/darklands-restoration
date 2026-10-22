@@ -92,7 +92,12 @@ public static class OriginalSaves
     public static LoadedGame Read(ReadOnlySpan<byte> sav, ReadOnlySpan<byte> bsv, string fileName, IGameData data,
         GameState? running = null, IRandomSource? random = null)
     {
-        var file = SaveFile.Parse(sav);
+        // C: a file whose character count runs past its records (written with a party slot of status 0: the Wild Hunt's victim, Wild
+        // C: Hunt card 0x41, or another tool's DKSAVE40) is read out of step: the records, events and places come from the wrong bytes.
+        // DIVERGENCE: depending on those bytes the original either goes on with the garbled game (DKSAVE40's re-save) or stops with
+        // run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the
+        // lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.
+        var file = SaveFile.Parse(sav, fixedLocationTable: true);
         var h = file.Header;
         var state = new GameState(random ?? running?.Random ?? new MscRandom()) { Data = data };
         if (running is not null)
@@ -191,11 +196,7 @@ public static class OriginalSaves
         {
             state.Events.Put(i, EventRecords.Read(file.Events[i]));
         }
-        var stores = CacheFile.Read(file.Cache);
-        foreach (var store in stores.All)
-        {
-            state.ItemStores.Add(store);
-        }
+        state.ItemStores.Load(file.Cache);
         LoadCityRecord(state, running);
 
         BattleSaveFile? battle = null;
@@ -226,13 +227,8 @@ public static class OriginalSaves
         {
             FileName = fileName,
             Header = (byte[])h.Clone(),
-            Place = PlaceName(state),
-            PartySize = file.PartySize,
-            PartySizeFromSlots = PartySizeOf(file.PartyIds),
             Images = (byte[])file.Images.Clone(),
             Palettes = (byte[])file.Palettes.Clone(),
-            Cache = file.Cache,
-            CacheAsRead = CacheFile.Write(stores),
         };
         return new LoadedGame(state, h[MusicAt] == 1, h[SoundAt] == 1, Text(h, CommentAt, CommentLength));
     }
@@ -263,31 +259,33 @@ public static class OriginalSaves
     /// <param name="comment">The comment typed in the save dialog; null keeps the one the game was read with.</param>
     // orig: R037+0x2ACE (1462:2ACE) draft (unmatched: the `nel > ixn` loop test's operand order)
     // C: `if (DS:907A == 1)` (saving in a battle): the members' readied items are put away (thunk 09C0:1CCF/1cc5/1cbb), game_difficulty |= 0x80,
-    // locs.tmp and events.tmp are read back into memory first, and the box is drawn in colour 9.
+    // locs.tmp and events.tmp are read back into memory first (the events into slots 0..n-1 over the battle's: EventLog.Reload), and the
+    // box is drawn in colour 9; after the file is written every event is freed again (EventLog.ReleaseAfterSave): the battle goes on with an
+    // empty table, and what it had added is lost (in slots n and up it was saved with the game).
     // C: in a battle the party's records are its combatant records (PartyRecordInBattle) and the battle file is written from the battle.
-    // C: party_size is recomputed from the slots of charactr.tmp; nd records follow in roster order: a party member's from memory
-    // (combatants, saints, formulas, pack), skipped when `party[je][0]` is 0, any other copied from charactr.tmp.
-    // DIVERGENCE: a party slot whose status is 0 (a loaded file can have one: DKSAVE40) is skipped by the original, which then copies the
-    // following roster records one place late and leaves the file a record short; its record is written here.
+    // C: party_size is recomputed from the slots of charactr.tmp every time (DKSAVE40, written by another tool with 6, is saved with 4);
+    // then charactr.tmp's count nd and, for each of the nd roster entries in order: a party member's record from memory (combatants,
+    // saints, formulas, pack) with one charactr.tmp record read past it, nothing at all when the slot's status `party[je][0]` is 0, any
+    // other entry the next record read from charactr.tmp. A status-0 slot (a loaded file can have them: DKSAVE40 has two) so leaves the
+    // entries after it that many records late and the file that many records short of nd, as the original writes it (lockstep oracle).
     // C: the events are written in slot order without the empty slots, then the word 0x19E and the 414 location records, then cache.tmp.
-    // C: values the original recomputes when saving (party_size from the slots, DS:A67C when a hireling joins) are written as read while
-    // what they are computed from is unchanged, so a file another tool wrote (DKSAVE40's party_size of 6) comes back as it was.
+    // C: DS:A67C, which the original recomputes when a hireling joins, is written as read while nobody has joined.
     // DIVERGENCE: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.
     // C: the .BSV: the battle-state save R003+0x00DC writes the program's battle file (GameState.BattleFile: the battle's variables and the last
     // battlefield's levels and files); before any battle or battle file (a new game) the variables are the program's zeros.
     public static (byte[] Sav, byte[] Bsv) Write(GameState state, string? comment = null, bool music = true, bool soundEffects = true,
         Core.Battles.Battle? inBattle = null)
     {
+        if (inBattle is not null)
+        {
+            state.Events.Reload();
+        }
         var image = state.OriginalSave as SaveImage;
         var file = new SaveFile { Header = image is null ? new byte[SaveFile.HeaderSize] : (byte[])image.Header.Clone() };
         var h = file.Header;
-        // C: the saved games of the player's folder do not all name cur_loc's place (DKSAVE0: "Prag" at cur_loc 85, Pressburg); the name is
-        // written as read while the place it would be taken from is unchanged.
-        var place = PlaceName(state);
-        if (image is null || image.Place != place)
-        {
-            PutText(h, PlaceAt, PlaceLength, place);
-        }
+        // orig: the saved game's writer R037+0x2ACE writes the current location's name (or "Wilderness") every time
+        // C: so a file whose header named another place (DKSAVE0: "Prag" at cur_loc 85, Pressburg) names cur_loc's after a save, as in the original.
+        PutText(h, PlaceAt, PlaceLength, PlaceName(state));
         PutText(h, CommentAt, CommentLength, comment ?? (image is null ? DefaultComment : Text(h, CommentAt, CommentLength)));
         PutWord(h, SeedAt, state.Party.Seed);
         PutWord(h, VersionAt, Version);
@@ -340,8 +338,7 @@ public static class OriginalSaves
 
         state.Roster.Reconcile(state.Party);
         state.Roster.PartySlots.CopyTo(file.PartyIds, 0);
-        var size = PartySizeOf(file.PartyIds);
-        file.PartySize = image is not null && image.PartySizeFromSlots == size ? image.PartySize : size;
+        file.PartySize = PartySizeOf(file.PartyIds);
         file.Images = image is null ? new byte[file.Images.Length] : (byte[])image.Images.Clone();
         file.Palettes = image is null ? new byte[file.Palettes.Length] : (byte[])image.Palettes.Clone();
         for (var slot = 0; slot < SaveFile.PartySlots; slot++)
@@ -356,32 +353,45 @@ public static class OriginalSaves
             member.ImagePalette.AsSpan(0, Math.Min(member.ImagePalette.Length, SaveFile.PaletteSize))
                 .CopyTo(file.Palettes.AsSpan(slot * SaveFile.PaletteSize, SaveFile.PaletteSize));
         }
+        // C: `next`: the charactr.tmp record the writer's next read gets.
+        var next = 0;
         for (var i = 0; i < state.Roster.Characters.Count; i++)
         {
             var slot = Array.IndexOf(state.Roster.PartySlots, i);
             if (slot >= 0 && slot < state.Party.Members.Count)
             {
                 var member = state.Party.Members[slot];
-                file.Characters.Add(inBattle is not null && slot < Core.Battles.Combatant.PartySlots && inBattle[slot].Member == member
-                    ? PartyRecordInBattle(member, inBattle[slot])
-                    : CharacterRecords.Write(member));
+                var fighting = inBattle is not null && slot < Core.Battles.Combatant.PartySlots && inBattle[slot].Member == member;
+                // C: `if (party[je][0])`: the status byte of the slot's record in memory (its combatant record in a battle).
+                // BUG: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
+                // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) the record of the status-0 slot is written like the others and the count is true.
+                if ((fighting ? inBattle![slot].Status : member.Status) == CharacterStatus.Empty && !state.Behaviour.FixSaveWriterSkipsEmptySlots)
+                {
+                    continue;
+                }
+                file.Characters.Add(fighting ? PartyRecordInBattle(member, inBattle![slot]) : CharacterRecords.Write(member));
+                next++;
             }
             else
             {
-                file.Characters.Add(CharacterRecords.Write(state.Roster.Characters[i]));
+                file.Characters.Add(CharacterRecords.Write(state.Roster.StoredRecord(next++)));
             }
         }
+        file.CharacterCount = state.Roster.Characters.Count;
         foreach (var (_, e) in state.Events.All())
         {
             file.Events.Add(EventRecords.Write(e));
+        }
+        if (inBattle is not null)
+        {
+            state.Events.ReleaseAfterSave();
         }
         // DIVERGENCE: the original always writes 414 records; a state with another number of places (tests) writes what it has.
         foreach (var l in state.Locations)
         {
             file.Locations.Add(LocationRecords.Write(l));
         }
-        var cache = CacheFile.Write(state.ItemStores);
-        file.Cache = image is not null && cache.AsSpan().SequenceEqual(image.CacheAsRead) ? image.Cache : cache;
+        file.Cache = CacheFile.Write(state.ItemStores);
         // C: a program that has fought no battle and loaded no battle file writes its zero globals (no levels, no work files).
         return (file.ToBytes(), BattleSaveFile.Write(state.BattleFile ?? new Core.Battles.BattleFile()));
     }
@@ -435,13 +445,8 @@ public static class OriginalSaves
         {
             FileName = fileName,
             Header = file.Header,
-            Place = PlaceName(state),
-            PartySize = file.PartySize,
-            PartySizeFromSlots = PartySizeOf(file.PartyIds),
             Images = file.Images,
             Palettes = file.Palettes,
-            Cache = file.Cache,
-            CacheAsRead = CacheFile.Write(state.ItemStores),
         };
     }
 
@@ -484,19 +489,8 @@ public static class OriginalSaves
 
         public required byte[] Header { get; init; }
 
-        /// <summary>The place name the state gave when the file was read (the header's may differ).</summary>
-        public required string Place { get; init; }
-
-        public int PartySize { get; init; }
-
-        public int PartySizeFromSlots { get; init; }
-
         public required byte[] Images { get; init; }
 
         public required byte[] Palettes { get; init; }
-
-        public required byte[] Cache { get; init; }
-
-        public required byte[] CacheAsRead { get; init; }
     }
 }

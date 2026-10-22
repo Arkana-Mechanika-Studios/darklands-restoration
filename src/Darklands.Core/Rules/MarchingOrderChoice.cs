@@ -42,7 +42,8 @@ public sealed class MarchingOrderChoice
         [.. Enumerable.Range(0, Math.Min((int)order[LengthAt], LengthAt + 1)).Select(k => (int)order[k])];
 
     /// <summary>A battle's order written back into the six bytes: the first five entries and the length (entries past the length stay).</summary>
-    // orig: the battle works on DS:C624 / DS:C629 themselves (R016+0x0E2E, R022+0x07AA): the game's order is the battle's when it ends or saves
+    // orig: the battle works on DS:C624 / DS:C629 themselves: the game's order is the battle's when it ends or saves
+    // (the bytes written by e.g. R016+0x0E2E, R022+0x07AA)
     public static void Store(IReadOnlyList<int> entries, byte[] order)
     {
         for (var k = 0; k < entries.Count && k < LengthAt; k++)

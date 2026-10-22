@@ -82,7 +82,13 @@ internal static class Hourglass
     }
 
     /// <summary>One frame of the hourglass with the bell, the day and the month under it.</summary>
-    // orig: hourglass_frame(k) R043+0x37CA (150B:2D3A) draft (code identical, only the jump table's place differs): root 047C:055F(card_window, 0x6c, 0x53, w, h, pic) with (w, h, pic) = (0x18, -0x14, DS:A62E) for 0, (-0x18, -0x14, DS:A630), (-0x18, 0x14, DS:A632), (-0x18, 0x14, DS:A630), (0x18, 0x14, DS:A62E), (0x18, 0x14, DS:A630), (0x18, 0x14, DS:A632), (0x18, -0x14, DS:A630) for 7 (DS:A62E/DS:A630/DS:A632 = pics	imer03/04/05.pic); then in 2a04: gfx_fill_rect colour 0 at (0x48, 0x82, 0x28, 8), (0x84, 0x82, 0xc, 8), (0xa0, 0x82, 0xc, 8) and draw_text_far of bell_names[hour_band(k * 3)], itoa(day), itoa(month + 1) at x 0x48, 0x84, 0xa0, y 0x82, colour 14
+    // orig: hourglass_frame(k) R043+0x37CA (150B:2D3A) draft (code identical, only the jump table's place differs):
+    // root 047C:055F(card_window, 0x6c, 0x53, w, h, pic) with (w, h, pic) = (0x18, -0x14, DS:A62E) for 0,
+    // (-0x18, -0x14, DS:A630), (-0x18, 0x14, DS:A632), (-0x18, 0x14, DS:A630), (0x18, 0x14, DS:A62E),
+    // (0x18, 0x14, DS:A630), (0x18, 0x14, DS:A632), (0x18, -0x14, DS:A630) for 7 (DS:A62E/DS:A630/DS:A632 = pics	imer03/04/05.pic);
+    // then pass_hours_hourglass R043+0x3494 (150B:2A04) after each frame (0x35A5..0x3655, 0x3697..0x3746):
+    // gfx_fill_rect colour 0 at (0x48, 0x82, 0x28, 8), (0x84, 0x82, 0xc, 8), (0xa0, 0x82, 0xc, 8) and draw_text_far
+    // of bell_names[hour_band(k * 3)], itoa(day), itoa(month + 1) at x 0x48, 0x84, 0xa0, y 0x82, colour 14
     // C: root 047C:055F is the driver's scaled picture draw drv+0x0C12 / drv+0x0E3F (asm): the picture is stretched to |w| x |h| (here its own
     //   24 x 20), a negative width draws the columns right to left and a negative height the rows bottom to top, colour 0 transparent. checked against asm
     private static void DrawHourglass(GameUi ui, int frame, int day, int month)

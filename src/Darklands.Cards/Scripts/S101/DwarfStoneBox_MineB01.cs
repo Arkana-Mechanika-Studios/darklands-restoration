@@ -39,10 +39,10 @@ public sealed class DwarfStoneBox_MineB01 : Card
         c.SetCardItems(0x66, 0x63);
         menu[1] = c.ItemsUsable();
         return menu.Run(
-            new MenuLine(() => Hammer(c, HammerChance(c)), () => OptionHint.ChanceOf(HammerChance(c), Who.Everybody)),
-            new MenuLine(() => BlowItOpen(c, PotionChance(c)), OptionHint.Saying(CardTexts.SelectPotion)),
+            new MenuLine(chance => Hammer(c, chance), () => OptionHint.ChanceOf(HammerChance(c), Who.Everybody)),
+            new MenuLine(chance => BlowItOpen(c, chance), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             new MenuLine(() => PickTheLock(c, -1, menu), OptionHint.Saying(SuccessAssured)),
-            new MenuLine(() => ForceIt(c, ForceChance(c), menu), () => OptionHint.ChanceOf(ForceChance(c), Who.Everybody)),
+            new MenuLine(chance => ForceIt(c, chance, menu), () => OptionHint.ChanceOf(ForceChance(c), Who.Everybody)),
             // orig: R101+0x0504 (1838:0504) matched
             new MenuLine(() =>
                 {
@@ -120,16 +120,12 @@ public sealed class DwarfStoneBox_MineB01 : Card
         }
     }
 
-    /// <summary>A potion chosen in the pop-up has a 35 % chance (and names its user); chosen any other way none.</summary>
+    /// <summary>The potion pop-up's hint: 35 %, and the potion's user becomes the chosen one (a choice made without the box has the line's −1).</summary>
     // orig: R101+0x05EE (1838:05EE); R101+0x0608 (1838:0608) matched
-    private static int PotionChance(CardContext c)
+    private static OptionHint PotionHint(CardContext c)
     {
-        if (!c.MenuPopup)
-        {
-            return -1;
-        }
         c.Variables.Chosen[0] = c.MenuMember;
-        return 0x23;
+        return OptionHint.ChanceOf(0x23, c.MenuMember);
     }
 
     // orig: R101+0x02DC (1838:02DC) matched

@@ -305,8 +305,9 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         return load(_names[_cursor]);
     }
 
-    // orig: case 0x2044/0x2064: the three labels' highlight off (0x45, 0x2f, 0x80 x 0x2d, 9 -> 8), buttnCR2 at (0x41, 0x3b), s[1] at
-    // (0x52, 0x3f); ask_yes_no("Delete this Game?"): R037+0x9B76(R136+0x1145E[DS:8C50]) and the list again; then the button area
+    // orig: R037+0x84BA (1C7D:030A) case 0x2044/0x2064: the three labels' highlight off (0x45, 0x2f, 0x80 x 0x2d, 9 -> 8), buttnCR2 at
+    // (0x41, 0x3b), s[1] at (0x52, 0x3f); ask_yes_no("Delete this Game?"): 9b76(R136+0x1145E[DS:8C50]) (SaveFolder.Delete) and the
+    // list again; then the button area
     // (0x41, 0x3b, 0x82 x 0xe) from the page, s[1] at (0x52, 0x3f) and its highlight (0x45, 0x3e, 0x80 x 8, 8 -> 9)
     // C: the label comes back one pixel lower (0x3f) than the first drawing put it (0x3e).
     // C: there is no test that a row is shown: with an empty list the name is a stale one (whose file is gone).

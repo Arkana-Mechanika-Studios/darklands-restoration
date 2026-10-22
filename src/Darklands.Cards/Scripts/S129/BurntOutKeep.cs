@@ -41,7 +41,8 @@ public sealed class BurntOutKeep : Card
         c.SetCardSaints();
 
         var assured = OptionHint.Saying(SuccessAssured);
-        // orig: R129+0x1350 .. R129+0x15C6 (hints R129+0x136E .. R129+0x15E4) matched
+        // orig: lines 2..9 R129+0x1350, R129+0x13AA, R129+0x1404, R129+0x145E, R129+0x14B8, R129+0x1512, R129+0x156C, R129+0x15C6
+        //   (hints R129+0x136E, R129+0x13C8, R129+0x1422, R129+0x147C, R129+0x14D6, R129+0x1530, R129+0x158A, R129+0x15E4) matched
         // DORMANT: lines 2..9 are enabled but block 0 has no text for them, so the menu never shows them; each would
         //   show text 0, pass 0 hours and go to 0x62.
         Action<int> stayAWhile = _ =>

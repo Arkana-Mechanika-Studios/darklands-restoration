@@ -88,7 +88,8 @@ public sealed class CharacterCreation
         _random = random;
         _partySeed = partySeed;
         _clock = clock;
-        Reset();
+        // orig: the screen draws the first name when the generator opens (R037+0x675A), not when the party screen starts
+        Reset(drawName: false);
     }
 
     public CreationTables Tables => _tables;
@@ -160,19 +161,26 @@ public sealed class CharacterCreation
     /// <summary>Marks an occupation as held before (tests set up characters with it).</summary>
     internal void SetTaken(int occupation, bool taken) => _taken[occupation] = taken;
 
+    /// <summary>Starts again, drawing the first name.</summary>
+    public void Reset() => Reset(drawName: true);
+
     /// <summary>Starts again (<c>R037+0x675A</c>): a random man's name, age 0, base attributes, nothing learned.</summary>
     // orig: R037+0x675A (18C8:20FA) matched; tests: CharacterCreationTests
     // DIVERGENCE: the record bytes the reset also writes and nothing in the clean model reads are not kept:
     // +0x04 = 0x110, +0x06 = 0x50, +0x0E = 0, +0x16 = 0, +0x18 = -1, +0x19..+0x1C = 0, +0x49 = 10, +0x4A = -1,
     // the equipment types -1 and qualities 0 (the made character has nothing equipped).
     // C: the cursor DS:8BFC is not reset: after "Kill character" it keeps the last skill row (see Raise).
-    public void Reset()
+    private void Reset(bool drawName)
     {
         Background = -1;
         ThirdLastOccupation = -1;
         PreviousOccupation = -1;
         LastOccupation = -1;
-        NewRandomName(NameKind.Man);
+        if (drawName)
+        {
+            NewRandomName(NameKind.Man);
+        }
+
         Age = 0;
         IsFemale = false;
         ManAttributes.CopyTo(Attributes, 0);
@@ -194,11 +202,15 @@ public sealed class CharacterCreation
 
     // orig: random_name(time(0), sex, 0) in R037+0x675A and R037+0x4BEE cases 2 and 3
     // C: time(0) is passed as an int (its low 16 bits); random_name reads the clock again to reseed.
+    // DIVERGENCE: the two reads are one here (the same second: the seed is party seed + time and the reseed is that time again, see lockstep roster-create), so a scripted clock gives one value a name.
     private void NewRandomName(NameKind kind)
     {
         NameIsRandom = true;
-        Name = RandomNames.Make(_random, _tables.Names, _partySeed, (short)_clock(), kind, _clock());
+        var now = _clock();
+        Name = RandomNames.Make(_random, _tables.Names, _partySeed, (short)now, kind, now);
         Nickname = RandomNames.Nickname(Name);
+        Keep(s_nameBuffer, Name, MaxNameLength);
+        Keep(s_nickBuffer, Nickname, MaxNicknameLength);
     }
 
     // orig: R037+0x4BEE case 4 (E, "Enter a new name"): text_input of at most 23 letters; an Esc leaves the name empty
@@ -206,6 +218,7 @@ public sealed class CharacterCreation
     {
         NameIsRandom = false;
         Name = name.Length > MaxNameLength ? name[..MaxNameLength] : name;
+        Keep(s_nameBuffer, Name, MaxNameLength);
     }
 
     // orig: R037+0x4BEE case 5 (C, "Create a nickname"): text_input of at most 9 letters
@@ -213,6 +226,7 @@ public sealed class CharacterCreation
     {
         NameIsRandom = false;
         Nickname = nickname.Length > MaxNicknameLength ? nickname[..MaxNicknameLength] : nickname;
+        Keep(s_nickBuffer, Nickname, MaxNicknameLength);
     }
 
     /// <summary>"Make him a woman" / "Make her a man": base attributes of the new sex, a new random name if it was random.</summary>
@@ -768,6 +782,37 @@ public sealed class CharacterCreation
 
     // ----- the end -----
 
+    /// <summary>The record bytes the generator's reset leaves that the model does not name.</summary>
+    // orig: R037+0x675A (reset): DS:E80E = 0x110, DS:E810 = 0x50 (record +4, +6), DS:E822 = 0xFF (+0x18), DS:E854 = 0xFF (+0x4A), the encumbrance
+    // DS:E853 = 0x0A; the record is the buffer DS:E80A, written by R037+0x38AA (the first word = DS:907E, then 0x80 bytes from there)
+    // C: status +0x14 is 1 after the reset (DS:E81E) but 0 in the file the character is appended to (lockstep roster-create2): "A" in the roster makes it 1.
+    // orig: the name (record +0x25, DS:E82F) and the nickname (+0x3E) are strcpy'd or typed over the same buffers each time, so the bytes after the zero are what
+    // the previous text left there (lockstep roster-create2: "zed", zero, then the rest of the random name it replaced)
+    // C: the buffers are shared by the generators of one process, as the original's globals are; a new game does not clear them.
+    private static readonly byte[] s_nameBuffer = new byte[0x19];
+    private static readonly byte[] s_nickBuffer = new byte[0x0B];
+
+    private static void Keep(byte[] buffer, string text, int max)
+    {
+        var bytes = System.Text.Encoding.Latin1.GetBytes(text);
+        var n = Math.Min(Math.Min(bytes.Length, max), buffer.Length - 1);
+        Array.Copy(bytes, buffer, n);
+        buffer[n] = 0;
+    }
+
+    private static byte[] ResetRecord()
+    {
+        var r = new byte[Character.MemberRecordSize];
+        s_nameBuffer.CopyTo(r, 0x25);
+        s_nickBuffer.CopyTo(r, 0x3E);
+        r[0x04] = 0x10;
+        r[0x05] = 0x01;
+        r[0x06] = 0x50;
+        r[0x18] = 0xFF;
+        r[0x4A] = 0xFF;
+        return r;
+    }
+
     /// <summary>
     /// "Begin adventuring": the attributes become the maximums, a weapon for the best weapon
     /// skill and a potion for every potion with formula bits join the kit, and the character
@@ -801,8 +846,15 @@ public sealed class CharacterCreation
             ShortName = Nickname,
             Age = Age,
             IsFemale = IsFemale,
-            Status = CharacterStatus.Able,
+            Status = CharacterStatus.Empty,
             ShieldLetter = 'A',
+            Encumbrance = 0x0A,
+            Weapon = new EquippedItem(-1, 0),
+            MissileWeapon = new EquippedItem(-1, 0),
+            VitalArmor = new EquippedItem(-1, 0),
+            LimbArmor = new EquippedItem(-1, 0),
+            Shield = new EquippedItem(-1, 0),
+            OriginalRecord = ResetRecord(),
         };
         Attributes.CopyTo(c.Attributes, 0);
         Attributes.CopyTo(c.AttributeMaximums, 0);

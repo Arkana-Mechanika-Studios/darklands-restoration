@@ -34,7 +34,8 @@ public sealed class CityLordsReward : Card
         // orig: R089+0x0C5C (18CE:02FC) matched
         // BUG: the original looks for a saint nobody in the party knows, starting from the city's own,
         // but has no return statement: AX holds the last member_bit answer, 0 (checked against asm). So
-        // saint 0. (If the party knew all 136 saints the search would never end.)
+        // saint 0.
+        // DIVERGENCE: if the party knows all 0x88 saints the original's search never ends (the game hangs); saint 0 here too.
         c.SetCardSaints(0);
 
         // C: DS:5204 = 1 for the menu loop (back to 0 after): the pop-ups list the formula and the saint for every member.

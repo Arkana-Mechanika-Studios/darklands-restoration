@@ -100,6 +100,7 @@ public static class TextVariables
     }
 
     /// <summary>The value of one variable, or null when it is not one the game knows.</summary>
+    // orig: var_expand R043+0x1316 (150B:0886) draft (its switch on the variable index)
     // C: the cases below are in the original's order of index; each reads its source unchecked, a few are guarded here (DIVERGENCE per case).
     public static string? Value(string name, CardContext c)
     {
@@ -325,7 +326,7 @@ public static class TextVariables
     private static string SabbatTime(CardContext c) =>
         MonthNames[GameDate.Mod12(Quests.SabbatMonth(c.State))] + " " + Quests.SabbatDayOfMonth(c.State).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-    // orig: case 69: "<direction> of <nearest city>" for the site of the next sabbat (thunk 09C0:20FD)
+    // orig: case 69 of R043+0x1316: "<direction> of <nearest city>" for the site of the next sabbat (20fd, Quests.SabbatSite)
     private static string SabbatLocation(CardContext c) => RelativeToNearestCity(c, Quests.SabbatSite(c.State));
 
     // orig: case 71 / 72: the nearest monastery / last castle (nearest_loc_type from the party's map position), "<direction> of <nearest city>"

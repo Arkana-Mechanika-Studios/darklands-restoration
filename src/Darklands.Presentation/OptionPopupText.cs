@@ -123,7 +123,7 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
         return line;
     }
 
-    // orig: R136+0x114F4, the second name list of the saints in darkland.lst (world_load R043+0x0100): the short names
+    // orig: R136+0x114F4, the second name list of the saints in darkland.lst (filled by world_load R043+0x0100): the short names
     private static string SaintName(CardContext c, int saint) =>
         saint >= 0 && saint < c.World.Items.Saints.Count ? c.World.Items.Saints[saint].ShortName : "";
 }

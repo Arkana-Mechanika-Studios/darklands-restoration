@@ -27,7 +27,7 @@ public sealed class ArmyOnTheMarch : Card
             new MenuLine(_ => c.Next = CardContext.MapCard, () => OptionHint.Say("You can always encounter the unknown")),
             // orig: R110+0x1818 (1991:0288) matched; hint R110+0x1820
             new MenuLine(_ => c.Next = CardContext.MapCard, () => OptionHint.Say(SuccessAssured)),
-            // orig: R110+0x18AA (1991:031A) matched (hint)
+            // orig: R110+0x1858 (line 2); hint R110+0x18AA (1991:031A) matched
             new MenuLine(_ => PrayForSafePassage(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R110+0x18E2 (1991:0352) matched; hint R110+0x1900
             new MenuLine(_ => { c.Screen.Text(3); c.PassHours(0x5F); c.Next = CardContext.MapCard; }, () => OptionHint.Say("You can always encounter the unknown")),

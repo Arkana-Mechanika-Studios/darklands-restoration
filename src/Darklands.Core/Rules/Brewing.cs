@@ -91,17 +91,17 @@ public sealed class BrewingBench
     }
 
     // orig: R033+0x1390 (1462:1390) draft (register-level diffs); tests: CampAndSheetRulesTests
-    // UNCERTAIN: the original calls event_renew with nine arguments; the tenth (the tag it matches on) is whatever lies on the caller's stack. 0 here.
-    // C: event_renew extends a matching brew (same formula, place, owner) by 0 hours and keeps its old chance and batches.
+    // C: the original calls event_renew with nine arguments; the tenth (the tag it matches on and stores) is the caller's saved SI (R033+0x060E): the key code that confirmed (0x1F73 for s, 0x1F53 for S).
+    // C: event_renew extends a matching brew (same formula, place, owner, key) by 0 hours and keeps its old chance and batches.
     /// <summary>
     /// Brews the batches of a row: records the brew (ending at once, so the next passage of
     /// time completes it) and takes the ingredients from the party, the alchemist first.
     /// </summary>
-    public void Brew(Batch b, int place)
+    public void Brew(Batch b, int place, int key)
     {
         var log = _s.Events;
         log.Renew(Alchemist, _s.CurrentLocation, b.Count, EventKinds.Brew, b.Formula.Index, Chance(b),
-            (int)ExpiryHandler.AlchemyResult, 0, (int)EventFlags.CallExpiryHandler, 0);
+            (int)ExpiryHandler.AlchemyResult, 0, (int)EventFlags.CallExpiryHandler, key);
         // C: event_renew's return is not used: the place and risk go to events[last_event]. With the log full (renew returns -1
         // C: without setting it) that is the last brew event its scan visited; last_event -1 or 300 (no brew event at all, or
         // C: the scan ran past slot 299) points at events[-1]/[300], outside the table (the tail of var_named[4] and the word after
@@ -146,6 +146,8 @@ public sealed class BrewingBench
                     return;
                 }
                 count -= st.Count;
+                // BUG: the stack that slides into slot j is skipped (j still goes up), and whatever is still owed when the loop
+                // ends is forgotten: a batch whose ingredient is spread over several stacks costs only part of it.
                 Inventory.RemoveStack(_s, m, code);
             }
         }
@@ -258,15 +260,19 @@ public static class Brewing
 
     // orig: R036+0x1EC2 (1462:1EC2) draft (bytes match); tests: CampAndSheetRulesTests
     // BUG: all five ingredient slots are returned (FixUnbrewEmptyIngredientSlots).
+    // BUG: the scan for the member's brews starts at the slot numbered as many as there are formulas (1462:1F71 `mov di, [bp - 8]`: the
+    //   formula count the table loop of 1462:1F4A..1F6F added up is the scan's first slot), so a brew in a lower slot (every one in a
+    //   game with fewer events than formulas) is never found: the brew goes on and its ingredients stay used (FixCallOffScansEveryEvent).
     /// <summary>
     /// Calls off the member's brews (a camp activity changes): each brew's ingredients return
     /// to the member at quality 25, one set per batch. Faithful quirk: all five ingredient slots
     /// are given back, so an empty slot adds an empty stack of item 0
-    /// (<see cref="OriginalBehaviour.FixUnbrewEmptyIngredientSlots"/>).
+    /// (<see cref="OriginalBehaviour.FixUnbrewEmptyIngredientSlots"/>). Faithful quirk: only brews in event slots from the number
+    /// of formulas up are found (<see cref="OriginalBehaviour.FixCallOffScansEveryEvent"/>).
     /// </summary>
     public static void CallOff(GameState s, IReadOnlyList<Formula> formulas, int member)
     {
-        for (var i = 0; i < EventLog.Capacity; i++)
+        for (var i = s.Behaviour.FixCallOffScansEveryEvent ? 0 : formulas.Count; i < EventLog.Capacity; i++)
         {
             i = s.Events.Next(EventKinds.Brew, i);
             if (i == -1)

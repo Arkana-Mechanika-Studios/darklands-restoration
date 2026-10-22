@@ -34,6 +34,8 @@ public sealed partial class TacticalBattle
     // always current); tests: BattleSaveTests
     // DIVERGENCE: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant
     // tables' bytes left by earlier battles (path tails, slots not used since), are this program's (zeros) for a battlefield made here.
+    // BUG: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never
+    // touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
     // C: the function pointers of a level's objects are written as numbers: the secret door search 0 (a null pointer), thunk 09C0:17F7 1,
     // the spell trap 2, the missile trap 4, thunk 09C0:181F 5, thunk 09C0:1815 6, thunk 09C0:1833 7, thunk 09C0:1829 8 (as longs); another value is left as it is.
     public void WriteBattleFile(BattleFile file, bool inBattle, int clearedLevels, int lastCastleFlags)
@@ -410,6 +412,7 @@ public sealed partial class TacticalBattle
     // level is prepared again; the battle's other start-up runs as for any battle.
     public void Resume()
     {
+        ResetDragonFight();
         Ticks = 0;
         InitMenus();
         RebuildMarchingOrder();
@@ -435,6 +438,8 @@ public sealed partial class TacticalBattle
                 SetPose(i, Pose.Walking);
             }
         }
+        _view.SetUpTime(0);
+        _view.SetUpTime(1);
         EnemyTurn();
         Battle.Result = BattleResult.Running;
         foreach (var c in Battle.Combatants)
@@ -447,7 +452,14 @@ public sealed partial class TacticalBattle
         SelectMember(Battle.Leader);
         PendingOrderMember = Battle.ActiveMember;
         MoveMode = 0;
+        // C: R014+0x02FF / 0x0307 as for any battle: floor_view_draw(−1) around the centre kept (DS:C866 / DS:C886), combat_draw
+        _view.MapChanged();
+        Effects.Drawn(_view);
+        RefreshTargetCursor();
+        _view.SetUpTime(2);
         NextTickAt = (ushort)(Clock + TickLength);
+        _view.SetUpTime(3);
+        // orig: the next activations check is 120 after the clock of the first pass, the late set-up ticks included (R014+0x3166)
         ActivationsAt = (ushort)(Clock + 120);
         SaveRulesMessage(true);
     }

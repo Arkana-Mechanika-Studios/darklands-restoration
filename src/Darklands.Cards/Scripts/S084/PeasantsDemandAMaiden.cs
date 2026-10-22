@@ -49,18 +49,19 @@ public sealed class PeasantsDemandAMaiden : Card
             return c.Next;
         }
         return menu.Run(
-            new MenuLine(() =>
+            new MenuLine(chance =>
             {
-                if (!TalkThemOutOfIt(c, PersuasionChance(c).Chance))
+                if (!TalkThemOutOfIt(c, chance))
                 {
                     menu[0] = OptionState.Shown;
                 }
             }, () => PersuasionChance(c)),
-            new MenuLine(() => OutrunThem(c, RunningChance(c).Chance), hint: () => RunningChance(c)),
+            new MenuLine(chance => OutrunThem(c, chance), hint: () => RunningChance(c)),
             // orig: R084+0x1080 (18DB:0650) matched; R084+0x1134 (18DB:0704) matched; tests: CardSmokeTests
             new MenuLine(() => GiveHerUp(c), OptionHint.Saying("You dog!")),
-            new MenuLine(() => Hide(c, HidingChance(c).Chance), hint: () => HidingChance(c)),
-            // orig: R084+0x1484 (18DB:0A54) matched; R084+0x150E (18DB:0ADE) matched; R084+0x1598 (18DB:0B68) matched; tests: CardSmokeTests
+            new MenuLine(chance => Hide(c, chance), hint: () => HidingChance(c)),
+            // orig: R084+0x123A (line 4); R084+0x1484 (18DB:0A54) matched; R084+0x150E (18DB:0ADE) matched; R084+0x1598 (18DB:0B68) matched;
+            // tests: CardSmokeTests
             new MenuLine(() => CallASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R084+0x136C (18DB:093C) matched; R084+0x13B2 (18DB:0982) matched; tests: CardSmokeTests
             new MenuLine(() =>

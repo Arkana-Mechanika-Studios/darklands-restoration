@@ -54,9 +54,9 @@ public sealed class WildHuntQuarry : Card
             // orig: R086+0x060E (1838:060E) matched; R086+0x0614 (1838:0614) matched; tests: CardSmokeTests
             new MenuLine(() => FightTheHounds(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R086+0x064C (1838:064C) matched; R086+0x0724 (1838:0724) matched; tests: CardSmokeTests
-            new MenuLine(() => LeadThemOff(c, LeadChance(c).Chance), () => LeadChance(c)),
+            new MenuLine(chance => LeadThemOff(c, chance), () => LeadChance(c)),
             // orig: R086+0x0742 (1838:0742) matched; R086+0x082C (1838:082C) matched; tests: CardSmokeTests
-            new MenuLine(() => HideTheQuarry(c, HideChance(c).Chance), () => HideChance(c)));
+            new MenuLine(chance => HideTheQuarry(c, chance), () => HideChance(c)));
     }
 
     /// <summary>The pop-up line hint of items: success assured for the member, who becomes $ChosenOneName.</summary>

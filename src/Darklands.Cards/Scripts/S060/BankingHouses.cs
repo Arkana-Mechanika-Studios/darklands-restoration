@@ -116,7 +116,7 @@ internal static class BankingHouses
     }
 
     /// <summary>The raubritter castle nearest to the current place (map icon 2).</summary>
-    // orig: nearest_loc_type(locations[cur_loc]->x/y, 2) in R060+0x2750, R061+0x1056, R061+0x2A00/0a7c
+    // orig: nearest_loc_type(locations[cur_loc]->x/y, 2), repeated inline in R060+0x2750, R061+0x1056, R061+0x2A00/0a7c
     // (R060+0x2750, R061+0x1056, R061+0x2A00, R061+0x2CEC); the delivery castle for the commission and for the reward errand.
     public static int NearestCastle(CardContext c)
     {

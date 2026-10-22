@@ -126,11 +126,11 @@ public sealed class GameUi
     public System.Runtime.CompilerServices.StrongBox<int> SavedMusic { get; } = new(0);
 
     /// <summary>DS:9C3D = music_play(5): the piece playing is kept.</summary>
-    // orig: thunk 09C0:18F1(5) with its result stored to DS:9C3D (R034+0x0000, R034+0x0102, R036+0x0082, R030+0x00A8)
+    // orig: thunk 09C0:18F1(5) with its result stored to DS:9C3D, repeated inline in R034+0x0000, R034+0x0102, R036+0x0082, R030+0x00A8
     public void SaveMusic() => SavedMusic.Value = MusicPlaying();
 
     /// <summary>music_play(DS:9C3D): the kept piece again.</summary>
-    // orig: thunk 09C0:18F1(DS:9C3D) (R034+0x0000, R034+0x0102, R036+0x082C)
+    // orig: thunk 09C0:18F1(DS:9C3D), repeated inline in R034+0x0000, R034+0x0102, R036+0x082C
     public void RestoreMusic() => PlayMusic(SavedMusic.Value);
 
     /// <summary>As <see cref="PlayMusic"/>, carried out at a tick of the game timer (the animations' tunes).</summary>
@@ -220,6 +220,7 @@ public sealed class GameUi
         }
         _screen.Pixels.CopyTo(_shown.Pixels, 0);
         _screen.Palette.CopyTo(_shown.Palette, 0);
+        _screen.CopyOwnershipTo(_shown);
         if (PointerVisible)
         {
             // orig: mouse_set_cursor(0, 0, cursor_default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left corner
@@ -382,7 +383,7 @@ public sealed class GameUi
     /// One pass of a loop that reads the keyboard itself (no menu bar, no hot keys): the screen is shown and a waiting key
     /// taken (0: none, and a frame passes).
     /// </summary>
-    // orig: `if (root 047C:073D()) key = root 047C:0744();` in loops without root 0000:0000 (R034+0x0EE6, ...)
+    // orig: `if (root 047C:073D()) key = root 047C:0744();` repeated inline in loops without root 0000:0000 (R034+0x0EE6, ...)
     public int PollKeyOnly()
     {
         Present();

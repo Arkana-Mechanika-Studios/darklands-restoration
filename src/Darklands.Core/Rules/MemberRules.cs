@@ -181,12 +181,15 @@ public static class MemberRules
         {
             var m = s.Party.Members[i];
             var a = m.Attributes[attribute];
+            // BUG: healing works from above the maximum too: an attribute boosted past it (Ironarm, New-wind, a saint) is brought
+            // most of the way down to it, so Essence o'Grace drunk while Ironarm runs takes most of the boost away.
             m.Attributes[attribute] = Math.Clamp(a + (m.AttributeMaximums[attribute] - a) * percent / 100, 1, 99);
         }
     }
 
     /// <summary>The members a <c>who</c> argument covers (one member: only if <paramref name="presentOnly"/> allows).</summary>
-    // orig: set_attr R029+0x0988 (0E76:0988) matched; add_attr R029+0x0A72 (0E76:0A72) matched
+    // orig: the who-resolution (-1 the leader, -2 everyone present) repeated inline in set_attr R029+0x0988, add_attr R029+0x0A72,
+    // repeated inline in heal_attr_pct R029+0x08F2 and add_attr_max R029+0x0BB6
     // C: -2 loops over the five slots with party[i][0] != 0; one member: -1 resolves to the leader.
     private static IEnumerable<int> Targets(GameState s, int who, bool presentOnly)
     {
@@ -307,6 +310,11 @@ public static class MemberRules
             }
             return;
         }
+        // BUG: a temporary attribute boost that is not wholly applied lowers the attribute for good: the boost is cut
+        // only by the excess over the maximum and then recorded in full, but AddAttribute keeps the attribute within
+        // 1..99 and under the maximum plus the largest single boost (R029+0x4E0C); the expiry takes back the recorded
+        // amount, so a boost cut short (an attribute near 99, or a second boost overlapping a larger one, in either
+        // order) leaves the attribute lower than before. The whole-party path above does the same.
         var gap = Attribute(s, who, attribute) - AttributeMaximum(s, who, attribute);
         if (gap > 0 && points < gap)
         {

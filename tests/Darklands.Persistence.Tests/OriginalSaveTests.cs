@@ -46,7 +46,21 @@ public sealed class OriginalSaveTests
 
         var loaded = OriginalSaves.Read(sav, bsv, name, NoGameData.Instance);
         var (written, battle) = OriginalSaves.Write(loaded.State, null, loaded.Music, loaded.SoundEffects);
-        Assert.True(sav.AsSpan().SequenceEqual(written), $"{name}: {sav.Length} bytes read, {written.Length} written, first difference at 0x{FirstDifference(sav, written):X}");
+        // The original's writer names the current place in the header every time; a file that named another place (DKSAVE0, DKSAVE1:
+        // "Prag" while the party is in Pressburg) comes back naming the party's place, and every other byte as it was read, except
+        // what the writer recomputes from a file another tool wrote (DKSAVE40: AsTheOriginalWritesIt).
+        var state = loaded.State;
+        var place = state.CurrentLocation >= 0 && state.CurrentLocation < state.Locations.Count
+            ? state.Locations[state.CurrentLocation].Name
+            : OriginalSaves.Wilderness;
+        var nameEnd = Array.IndexOf(written, (byte)0, 0, 0x15);
+        Assert.Equal(place, System.Text.Encoding.Latin1.GetString(written, 0, nameEnd < 0 ? 0x15 : nameEnd));
+        var expectedSav = AsTheOriginalWritesIt(sav);
+        if (!sav.AsSpan(0, 0x15).SequenceEqual(written.AsSpan(0, 0x15)))
+        {
+            written.AsSpan(0, 0x15).CopyTo(expectedSav);
+        }
+        Assert.True(expectedSav.AsSpan().SequenceEqual(written), $"{name}: {sav.Length} bytes read, {written.Length} written, first difference at 0x{FirstDifference(expectedSav, written):X}");
         if (bsv.Length > 0)
         {
             // The battle file comes back as the original writes it after a load: a work file saved empty was removed by the
@@ -109,6 +123,110 @@ public sealed class OriginalSaveTests
     }
 
     private const int BattlefieldImageSize = 0x33FC;
+
+    /// <summary>
+    /// A saved game as the original's writer (R037+0x2ACE) writes it straight after loading it: party_size recounted from the slots,
+    /// and a party slot whose status is 0 written as nothing, without the charactr.tmp read past it, so the entries after it come that
+    /// many records late and the file that many records short of the count (DKSAVE40, from another tool: party_size 6 for four slots,
+    /// slots 0 and 1 of status 0; written by 483.07 in the lockstep oracle with party_size 4 and records 0, 1, 2, 3, 4, 7 of 8).
+    /// A file the original wrote itself comes back as it was.
+    /// </summary>
+    private static byte[] AsTheOriginalWritesIt(byte[] sav)
+    {
+        var file = SaveFile.Parse(sav);
+        var records = file.Characters.ToList();
+        file.PartySize = Array.FindLastIndex(file.PartyIds, id => id != -1) + 1;
+        file.CharacterCount = records.Count;
+        file.Characters.Clear();
+        var next = 0;
+        for (var i = 0; i < records.Count; i++)
+        {
+            var slot = Array.IndexOf(file.PartyIds, i);
+            if (slot < 0)
+            {
+                file.Characters.Add(records[next++]);
+            }
+            else if (records[i][0x14] != 0)
+            {
+                file.Characters.Add(records[i]);
+                next++;
+            }
+        }
+        return file.ToBytes();
+    }
+
+    [Fact]
+    public void APartySlotOfStatusZeroIsSkippedAndTheRosterRecordsAfterItComeLate()
+    {
+        // The original's writer (R037+0x2ACE): `if (party[je][0])` writes the member from memory and reads one charactr.tmp record past
+        // it; a slot of status 0 writes nothing and reads nothing, so the bench entry after it gets the record charactr.tmp holds for
+        // member 3 (as it was written there) and the file says five records where four follow.
+        var state = SampleGame();
+        var bench = DefaultParty.Create(seed: 78).Members[0];
+        state.Roster.Characters.Add(bench);
+        var stored = CharacterRecords.Write(state.Party.Members[3]);
+        state.Party.Members[3].Attributes[0]++;
+        state.Party.Members[1].Status = CharacterStatus.Empty;
+        var sav = OriginalSaves.Write(state).Sav;
+        byte[] Record(int k) => sav[(0x189 + k * SaveFile.CharacterSize)..(0x189 + (k + 1) * SaveFile.CharacterSize)];
+        Assert.Equal(4, BitConverter.ToInt16(sav, 0xEF));
+        Assert.Equal(5, BitConverter.ToInt16(sav, 0xF1));
+        Assert.Equal(CharacterRecords.Write(state.Party.Members[0]), Record(0));
+        Assert.Equal(CharacterRecords.Write(state.Party.Members[2]), Record(1));
+        Assert.Equal(CharacterRecords.Write(state.Party.Members[3]), Record(2));
+        Assert.Equal(stored, Record(3));
+        // then the events: their count word follows the fourth record
+        Assert.Equal(state.Events.All().Count(), BitConverter.ToInt16(sav, 0x189 + 4 * SaveFile.CharacterSize));
+    }
+
+    [Fact]
+    public void WithTheFixAPartySlotOfStatusZeroKeepsItsRecordAndTheFileIsComplete()
+    {
+        // FixSaveWriterSkipsEmptySlots: every roster record is written, so the count is true and the loader's layout holds.
+        var state = SampleGame();
+        state.Behaviour = OriginalBehaviour.DataSafe;
+        var bench = DefaultParty.Create(seed: 78).Members[0];
+        state.Roster.Characters.Add(bench);
+        state.Party.Members[1].Status = CharacterStatus.Empty;
+        var sav = OriginalSaves.Write(state).Sav;
+        byte[] Record(int k) => sav[(0x189 + k * SaveFile.CharacterSize)..(0x189 + (k + 1) * SaveFile.CharacterSize)];
+        Assert.Equal(5, BitConverter.ToInt16(sav, 0xF1));
+        Assert.Equal(CharacterRecords.Write(state.Party.Members[1]), Record(1));
+        Assert.Equal(CharacterRecords.Write(bench), Record(4));
+        Assert.Equal(state.Events.All().Count(), BitConverter.ToInt16(sav, 0x189 + 5 * SaveFile.CharacterSize));
+
+        // the loader's reading: as many records as the count, then the events and the block of 414 places, nothing out of step
+        var file = SaveFile.Parse(sav);
+        Assert.Equal(5, file.Characters.Count);
+        Assert.Equal(state.Locations.Count, file.Locations.Count);
+        Assert.Equal(state.Events.All().Count(), file.Events.Count);
+        var loaded = OriginalSaves.Read(sav, OriginalSaves.Write(state).Bsv, "DKSAVE1.SAV", NoGameData.Instance).State;
+        Assert.Equal(5, loaded.Roster.Characters.Count);
+        Assert.Equal(CharacterStatus.Empty, loaded.Party.Members[1].Status);
+    }
+
+    [Fact]
+    public void AFileShortOfItsRecordsIsReadOutOfStepLikeTheOriginalWithoutFailing()
+    {
+        // The original's loader (R037+0x8ED4) reads as many character records as the count says and then the location table as one
+        // block of 414 records whatever its count word holds. A file written with a status-0 party slot is records short of its count
+        // (DKSAVE40's re-save, as 483.07 writes it: two short), so the load reads into the events and takes the block from there on.
+        // 483.07 loads that file (lockstep oracle, its own re-save of DKSAVE40) and goes on; the rewrite must not fail on it either.
+        var name = SaveFolderCopy.Names.FirstOrDefault(n => n.Equals("DKSAVE40.SAV", StringComparison.OrdinalIgnoreCase));
+        if (name is null)
+        {
+            return;
+        }
+        var bsv = SaveFolderCopy.Read(Path.ChangeExtension(name, ".BSV"));
+        var first = OriginalSaves.Read(SaveFolderCopy.Read(name), bsv, name, NoGameData.Instance).State;
+        var shortSave = OriginalSaves.Write(first).Sav;
+        Assert.Equal(8, BitConverter.ToInt16(shortSave, 0xF1));
+
+        var loaded = OriginalSaves.Read(shortSave, bsv, name, NoGameData.Instance).State;
+
+        Assert.Equal(SaveFile.LocationCount, loaded.Locations.Count);
+        Assert.Equal(8, loaded.Roster.Characters.Count);
+    }
 
     private static int FirstDifference(byte[] a, byte[] b)
     {

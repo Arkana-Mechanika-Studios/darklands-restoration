@@ -6,6 +6,7 @@ using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Characters.Creation;
 using Darklands.Core.Randomness;
+using Darklands.Persistence;
 using Darklands.Platform;
 using Darklands.Presentation.Graphics;
 using Darklands.Simulation;
@@ -96,6 +97,32 @@ public sealed class CharacterCreationScreen
         return codes.Count > 0 ? codes : ["F01"];
     }
 
+    /// <summary>The four ready-made characters: the records of SAVES\DEFAULT as the menu's load reads them.</summary>
+    // orig: R037+0x0000: load_saved_game("default") (R037+0x4184) fills charactr.tmp with the file's four records, byte for byte
+    // DIVERGENCE: without the file the Quickstart party stands in (its item types differ from the file's in a few bytes); the figure
+    // images and colours come from it either way (the same as the file's, see DefaultParty).
+    private (List<Character> Characters, string[] SlotImages) ReadyMade(int partySeed)
+    {
+        var stand = DefaultParty.Create(partySeed).Members;
+        if (!_ui.Assets.Files.Exists("SAVES/DEFAULT"))
+        {
+            return ([.. stand], [.. stand.Select(m => m.Image), ""]);
+        }
+        var file = SaveFile.Parse(_ui.Assets.Files.Read("SAVES/DEFAULT"));
+        // orig: the load also fills member_shield (DS:A668, 4 bytes a slot, all five) from the file; member_palette it does not touch
+        var images = Enumerable.Range(0, SaveFile.PartySlots)
+            .Select(k => new string([.. file.Images.AsSpan(k * SaveFile.ImageSize, SaveFile.ImageSize).ToArray().Select(b => (char)b)])).ToArray();
+        var made = new List<Character>();
+        foreach (var record in file.Characters.Take(stand.Count))
+        {
+            var character = CharacterRecords.Read(record);
+            character.Image = stand[made.Count].Image;
+            character.ImagePalette = stand[made.Count].ImagePalette;
+            made.Add(character);
+        }
+        return (made, images);
+    }
+
     public GameState? Run()
     {
         // orig: R037+0x9DB2 case 'C': party_seed = BIOS ticks; the city was drawn at start-up (root 03A1) from the same clock
@@ -103,12 +130,16 @@ public sealed class CharacterCreationScreen
         var random = new MscRandom(seed);
         random.Below(NewGame.StartingCities);
         // orig: R037+0x0000: thunk 09C0:18F1(0x14) (music), R037+0x4562, load_saved_game("default"), party[k][0] = 0
+        // DIVERGENCE (host): the original reads SAVES\DEFAULT here too (R037+0x4184, the open not checked; see D-66e575 for
+        // Quickstart); without the file it reads through an unset handle, and the 483.07 notes say characters can then not be
+        // created. Here the ready-made characters come with the game (DefaultParty), so the file is not needed.
         _ui.PlayMusic(0x14);
         if (Shared.Image >= _images.Count)
         {
             Shared.Image = 0;
         }
-        _roster = new CreationRoster(DefaultParty.Create(NewGame.PartySeed(seed)).Members, _data.SlotPalettes);
+        var (readyMade, slotImages) = ReadyMade(NewGame.PartySeed(seed));
+        _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages);
         var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, NewGame.PartySeed(seed), _seed);
         DrawAll();
         while (true)

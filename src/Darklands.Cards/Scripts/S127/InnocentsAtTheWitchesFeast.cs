@@ -65,7 +65,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
 
         var assured = OptionHint.Saying(SuccessAssured);
         Func<OptionHint> persuasion = () => PersuasionChance(c);
-        // orig: R127+0x14AA / _0d44 / _0d9e (hints R127+0x14C8 / _0d62 / _0dbc) matched
+        // orig: R127+0x14AA / R127+0x1504 / R127+0x155E (hints R127+0x14C8 / R127+0x1522 / R127+0x157C) matched
         // DORMANT: lines 7..9 are never enabled in the card's own menu (the ointment's box shows lines 7 and 8 of
         //   block 11, but runs no handler); each shows text 0, passes 0 hours and goes to 0x62.
         Action<int> stayAWhile = _ =>
@@ -96,7 +96,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
     }
 
     /// <summary>The mean of the best Speak Common and the best Charisma; the Charisma query is the last, so its member speaks.</summary>
-    // orig: R127+0x0D94 matched (also _08c0, _0cb4)
+    // orig: R127+0x0D94 (18B4:05D4) matched (also R127+0x1080 (18B4:08C0), R127+0x1474 (18B4:0CB4))
     // C: checked against the asm: party_max_skill(Speak Common) is called first, party_max_attr(Charisma) second, so
     //   best_member (read as unsigned char) is the Charisma query's member. The halving truncates toward zero.
     private static OptionHint PersuasionChance(CardContext c)
@@ -107,7 +107,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
     }
 
     /// <summary>The party denounces the witches: they repent (text 6), or they attack (text 7).</summary>
-    // orig: R127+0x0C1E matched (also _074a, _0b3e)
+    // orig: R127+0x0C1E (18B4:045E) matched (also R127+0x0F0A (18B4:074A), R127+0x12FE (18B4:0B3E))
     private void Denounce(CardContext c, int chance)
     {
         if (c.Random(100) <= chance)

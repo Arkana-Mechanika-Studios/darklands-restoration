@@ -67,10 +67,40 @@ public sealed class BattleScreenTests
         Assert.True(piles > 0, "the fallen left a pile");
     }
 
-    internal static (BattleScreen Screen, TacticalBattle Tactics) Start(GameFiles files, BattleRequest request)
+    [Fact]
+    public void AHirelingInASlotNeverHeldFightsAndIsSavedInTheBattle()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        Core.GameState? state = null;
+        var (_, tactics) = Start(files, new BattleRequest(0x14, 863, [(34, 4, 8), (18, 5, 2), (34, 1, 2)]), s =>
+        {
+            state = s;
+            Assert.Equal(4, Core.Rules.PartyRules.AddMember(s, "Wolf Bauer", "Wolf", 100, 1));
+        });
+        var b = tactics.Battle;
+        var member = state!.Party.Members[4];
+        Assert.Equal(CharacterStatus.Able, b[4].Status);
+        Assert.Equal(member.Attributes.Select(v => (sbyte)v), b[4].Attributes);
+        Assert.NotEqual(new MapPoint(0, 0), b[4].Position);
+        BattleSaveTests.Run(tactics, 120);
+        var (sav, bsv) = BattleSaveTests.SaveInBattle(state, tactics);
+        var loaded = Persistence.OriginalSaves.Read(sav, bsv, "dksave1.sav", WorldData.Load(files)).State.Party.Members[4];
+        var record = loaded.OriginalRecord!;
+        // C: the record is the combatant record: where the hireling stands, and add_member's +0x1C (the slot) the battle keeps
+        Assert.Equal(b[4].Position, new MapPoint((short)(record[4] | record[5] << 8), (short)(record[6] | record[7] << 8)));
+        Assert.Equal(4, record[0x1C]);
+        Assert.Equal(member.Attributes, loaded.Attributes);
+    }
+
+    internal static (BattleScreen Screen, TacticalBattle Tactics) Start(GameFiles files, BattleRequest request,
+        Action<Core.GameState>? prepare = null)
     {
         var ui = new GameUi(new SilentHost(), new GameAssets(files));
         var state = Simulation.NewGame.Quickstart(WorldData.Load(files), 7);
+        prepare?.Invoke(state);
         var screens = new BattleScreens(ui, () => state);
         var screen = new BattleScreen(ui, new BattleAssets(files), state, screens);
         screen.Start(request);

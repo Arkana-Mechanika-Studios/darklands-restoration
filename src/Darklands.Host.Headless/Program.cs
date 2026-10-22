@@ -3,6 +3,7 @@ using Darklands.Content;
 using Darklands.Platform;
 using Darklands.Presentation;
 using Darklands.Presentation.Graphics;
+using Darklands.Rendering;
 
 // Plays a scripted session without a window and saves screenshots.
 //   Darklands.Host.Headless [--settings <file>] <game folder> <output folder> <step> [<step> ...]
@@ -11,12 +12,16 @@ using Darklands.Presentation.Graphics;
 //   the startup keys; the steps win over it.
 //
 // Input and output steps:
-//   key:<c>                      a character; key:enter|space|esc|up|down|f1..f6|f10|alto (Alt-O, the marching order)
+//   key:<c>                      a character; key:enter|space|esc|tab|backspace|up|down|left|right|home|end|pgup|pgdn|f1..f6|f10|alto (Alt-O, the marching order)
 //   click:<x>,<y>                a left click; move:<x>,<y> moves the pointer (and drags a held button)
 //   ldown:<x>,<y> / lup          the left button held and let go; rdown:<x>,<y> / rup the right one (the menu bar)
 //   shift:on|off, ctrl:on|off    the modifier keys; kdown:<hex> / kup:<hex> a key's make or break scan code
 //   wait:<frames>                lets frames pass; shot:<name> saves <name>.png; rec:<n> saves the next n frames
 //   seed:<n>                     the game's random seed
+//   clock:<n>,<n>,...            the clock's seeds in turn instead (srand((unsigned)time(0)) at the start and wherever the game
+//                                reseeds: tools/oracle/lockstep.py gives the original's); the last one stays
+//   hdpack:<folder>              replacement graphics (an HD pack, docs/SETTINGS.md display.hdPack; also from --settings): each
+//                                shot also saves <name>.hd.png, the frame with the replacements at hdscale:<n> (default 4) x 320x200
 //
 // Game steps:
 //   saves:<folder>               the saved games' folder (default: SAVES beside the program, never the game folder)
@@ -29,6 +34,9 @@ using Darklands.Presentation.Graphics;
 //
 // Debug steps:
 //   card:<hex>                   starts a Quickstart game at that card (key:q still chooses Quickstart)
+//   option:<n>                   the pointer onto line n of the card menu being chosen from (then key:enter chooses it)
+//   state:<name>                 writes the game being played as a saved game, <name>.sav in the output folder (the comment
+//                                "Darklands"; tools/oracle/lockstep.py compares it with the original's at the same point)
 //   load:<file>                  starts with that saved game of the saves folder; a game saved in a battle resumes it
 //   console:<command>            a developer console command on the game being played ("console:money add 10" as one argument)
 //   screen:barter|store|loot     opens that screen on a Quickstart game instead of playing
@@ -97,6 +105,24 @@ if (seedStep is not null)
     seed = uint.Parse(seedStep[5..], System.Globalization.CultureInfo.InvariantCulture);
     steps.Remove(seedStep);
 }
+// clock:<n>,<n>,... - the seeds the clock gives in turn (each reseed takes the next; the last stays).
+var clockStep = steps.FirstOrDefault(s => s.StartsWith("clock:", StringComparison.Ordinal));
+var clockSeeds = new Queue<uint>();
+if (clockStep is not null)
+{
+    steps.Remove(clockStep);
+    foreach (var v in clockStep[6..].Split(','))
+    {
+        clockSeeds.Enqueue(uint.Parse(v, System.Globalization.CultureInfo.InvariantCulture));
+    }
+    seed = clockSeeds.Peek();
+}
+uint NextSeed()
+{
+    var value = clockSeeds.Count > 1 ? clockSeeds.Dequeue() : clockSeeds.Count == 1 ? clockSeeds.Peek() : seed;
+    Console.WriteLine($"clock seed {value}");
+    return value;
+}
 // saves:<folder> - the folder of the saved games (default for scripted runs: SAVES beside the program, never the game folder).
 var savesStep = steps.FirstOrDefault(s => s.StartsWith("saves:", StringComparison.Ordinal));
 if (savesStep is not null)
@@ -116,6 +142,15 @@ var soundStep = TakeStep("sound:") ?? (fileSettings.SoundCard is { } card and no
 var wavStep = TakeStep("wav:");
 var traceStep = TakeStep("trace:");
 var romsStep = TakeStep("mt32roms:") ?? resolved.Mt32Roms;
+var hdPackStep = TakeStep("hdpack:") ?? fileSettings.HdPack;
+var hdScaleStep = TakeStep("hdscale:");
+if (hdPackStep is not null)
+{
+    var pack = HdPack.Load(hdPackStep);
+    pack.Problems.ToList().ForEach(Console.Error.WriteLine);
+    ScriptedHost.HdRenderer = new HdRenderer(pack);
+    ScriptedHost.HdScale = hdScaleStep is null ? 4 : int.Parse(hdScaleStep, System.Globalization.CultureInfo.InvariantCulture);
+}
 var host = new ScriptedHost(steps, output);
 var battleStep = steps.FirstOrDefault(s => s.StartsWith("battle:", StringComparison.Ordinal));
 if (battleStep is not null)
@@ -288,7 +323,7 @@ List<string> commandLine = [.. resolved.CommandLine, .. TakeArguments(steps)];
 using var sound = soundStep is null ? null : HeadlessSound.Attach(host, OpenGame(), soundStep, romsStep, wavStep, traceStep, commandLine);
 var game = new DarklandsGame(host, OpenGame())
 {
-    Seed = () => seed,
+    Seed = clockStep is null ? () => seed : NextSeed,
     PlayOpening = steps.Remove("intro") || fileSettings.Intro == true,
     ShowStartUp = steps.Remove("banner") || fileSettings.Banner == true,
     CommandLine = commandLine,
@@ -314,6 +349,20 @@ if (sound?.Trace is { } traceWriter)
 }
 var developerConsole = new Darklands.DevConsole.GameConsole();
 Darklands.DevConsole.GameCommands.Register(developerConsole, () => game.Playing);
+host.State = name =>
+{
+    if (game.Playing is { } playing)
+    {
+        var (sav, _) = Darklands.Persistence.OriginalSaves.Write(playing, "Darklands", game.Options.Music, game.Options.SoundEffects);
+        File.WriteAllBytes(Path.Combine(output, name + ".sav"), sav);
+        var random = playing.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?";
+        Console.WriteLine($"state {name}: card 0x{playing.CurrentCard:X2} random {random}");
+    }
+    else
+    {
+        Console.WriteLine($"state {name}: no game");
+    }
+};
 host.ConsoleCommand = line =>
 {
     foreach (var text in developerConsole.Execute(line).Lines)
@@ -338,6 +387,9 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     /// <summary>Runs a console:&lt;command&gt; step (the developer console's commands on the game being played).</summary>
     public Action<string>? ConsoleCommand { get; set; }
 
+    /// <summary>Runs a state:&lt;name&gt; step (the game being played written as a saved game).</summary>
+    public Action<string>? State { get; set; }
+
     private readonly Queue<string> _steps = new(steps);
     private readonly Queue<int> _keys = new();
     private readonly Queue<(int, bool)> _transitions = new();
@@ -354,6 +406,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     }
     /// <summary>The text font of --settings (the environment variable and local/paths.json come after it).</summary>
     public static string? SettingsTextFont { get; set; }
+
+    /// <summary>The hdpack step's replacement graphics (null: none): each shot also saves the frame drawn with them.</summary>
+    public static HdRenderer? HdRenderer { get; set; }
+
+    /// <summary>The HD shots' size: this many times 320x200.</summary>
+    public static int HdScale { get; set; } = 4;
 
     private readonly TextFont _font = TextFont.FromEnvironment(SettingsTextFont ?? LocalPaths.Get("textfont", "DARKLANDS_TEXT_FONT"));
     private Screen? _last;
@@ -454,6 +512,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         {
             PngWriter.Write(_last, Path.Combine(output, name + ".png"));
             WriteIndexed(_last, Path.Combine(output, name + ".idx"));
+            if (HdRenderer is not null)
+            {
+                var (width, height) = (Screen.Width * HdScale, Screen.Height * HdScale);
+                var frame = HdRenderer.Render(_last, new DisplayRectangle(0, 0, width, height));
+                PngCodec.Write(FrameCompositor.Compose(frame, width, height), Path.Combine(output, name + ".hd.png"));
+            }
             ShotsTaken++;
         }
     }
@@ -547,6 +611,20 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             case "console":
                 ConsoleCommand?.Invoke(value);
                 break;
+            case "state":
+                State?.Invoke(value);
+                break;
+            case "option":
+                // the pointer onto line n of the card menu being chosen from (tools/oracle/lockstep.py does the same in the original)
+                if (CardScreen.OptionPoint(int.Parse(value, System.Globalization.CultureInfo.InvariantCulture)) is { } point)
+                {
+                    Mouse = Mouse with { X = point.X, Y = point.Y };
+                }
+                else
+                {
+                    Console.WriteLine($"option {value}: no menu");
+                }
+                break;
             case "tail":
                 _tailSize = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
                 break;
@@ -593,6 +671,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         "down" => Keys.Down,
         "left" => Keys.Left,
         "right" => Keys.Right,
+        "home" => Keys.Home,
+        "end" => Keys.End,
+        "pgup" => Keys.PageUp,
+        "pgdn" => Keys.PageDown,
+        "tab" => Keys.Tab,
+        "backspace" => Keys.Backspace,
         "f1" => Keys.F1,
         "f2" => Keys.F2,
         "f3" => Keys.F3,
@@ -606,6 +690,8 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         "altd" => Keys.AltD,
         "altc" => Keys.AltC,
         "alto" => Keys.AltO,
+        "altm" => Keys.AltM,
+        "altf" => Keys.AltF,
         "f10" => Keys.F10,
         _ => Keys.ForCharacter(name[0]),
     };

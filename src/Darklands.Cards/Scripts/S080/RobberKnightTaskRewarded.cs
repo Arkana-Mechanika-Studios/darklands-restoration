@@ -47,6 +47,7 @@ public sealed class RobberKnightTaskRewarded : Card
                 break;
             case 0x47:
                 ShowPicture(c, 194);
+                // BUG: text 6 (the Hanse guide leaves) or 7 is chosen by a coin toss, not by whether the guide came along; nobody is removed.
                 c.Screen.Text(c.Random(2) != 0 ? 6 : 7);
                 break;
             case 0x59:
@@ -55,6 +56,8 @@ public sealed class RobberKnightTaskRewarded : Card
                 break;
             case 0x86:
                 ShowPicture(c, 345);
+                // BUG: text 1 says the Schulz departs from the party whether or not he joined it (RobberKnightTaskOffered); no member is
+                // removed here: one who joined stays until his 90 days are up.
                 c.Screen.Text(1);
                 break;
             default:

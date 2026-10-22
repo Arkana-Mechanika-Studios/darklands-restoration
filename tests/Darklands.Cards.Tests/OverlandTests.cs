@@ -235,13 +235,9 @@ public sealed class OverlandTests
     }
 
     [Fact]
-    public void TheMarkerKeepsInsideTheBordersOfTheMap()
+    public void TheMarkersEdgePixelsReadTheEdgeCells()
     {
-        var map = MapOf(327, 931, (_, _) => Terrain.Plains);
-        Assert.Equal((11, 17), map.ClampPosition(-50, -50));
-        Assert.Equal((11, 17), map.ClampPosition(11, 17));
-        Assert.Equal((16 * 327 - 25, 4 * 931 - 15), map.ClampPosition(99999, 99999));
-        // the westernmost village of the game (column 3) can be reached: 11 pixels is column 0 or 1
+        // the marker is kept in the view's 11 .. 247 pixels (OverlandScreen.MoveOnce); the westernmost village of the game (column 3) can be reached: 11 pixels is column 0 or 1
         Assert.True(WorldMap.CellAt(11, 100).Column <= 1);
         Assert.True(WorldMap.CellAt(16 * 327 - 25, 100).Column <= 326);
         Assert.True(WorldMap.CellAt(16 * 327 - 25, 100).Column >= 325);

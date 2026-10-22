@@ -49,7 +49,7 @@ public sealed class AlchemistsRobberPavilion : Card
             // orig: R085+0x16B4 (1973:0304) matched; R085+0x16C2 (1973:0312) matched; tests: CardSmokeTests
             new MenuLine(() => { c.Variables.Chosen[0] = c.Leader; LeaveTheScene(c); }, OptionHint.Saying(SuccessAssured)),
             // orig: R085+0x16FA (1973:034A) matched; R085+0x1782 (1973:03D2) matched; tests: CardSmokeTests
-            new MenuLine(() => { c.Variables.Chosen[0] = c.Leader; PleadForMercy(c, PleaChance(c).Chance); }, () => PleaChance(c)),
+            new MenuLine(chance => { c.Variables.Chosen[0] = c.Leader; PleadForMercy(c, chance); }, () => PleaChance(c)),
             // orig: R085+0x17C2 (1973:0412) matched; R085+0x17C8 (1973:0418) matched; tests: CardSmokeTests
             new MenuLine(() => { c.Variables.Chosen[0] = c.Leader; FightTheAlchemist(c); }, OptionHint.Saying(CardTexts.EnterCombat)));
     }

@@ -16,12 +16,12 @@ R001+0x0000,R001,0x0000,0E76:0000,2513,C,draft,yes,thunk 09C0:1ADB,implemented,c
 R002+0x0000,R002,0x0000,0E76:0000,2054,C,draft,yes,thunk 09C0:18BF,implemented,cite:coordinate,R000+0x052A;R029+0x2278;root 03A1:000A,,map.csv;src/Darklands.Audio/SoundCard.cs;src/Darklands.Audio/SynthAudio.cs
 R002+0x0806,R002,0x0806,0E76:0806,247,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000,,map.csv;src/Darklands.Presentation/Battles/BattleScreen.cs
 R002+0x08FE,R002,0x08FE,0E76:08FE,910,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000,,map.csv;src/Darklands.Content/Formats/Battles/BattleGraphics.cs
-R002+0x0C8C,R002,0x0C8C,0E76:0C8C,2557,C,draft,yes,thunk 09C0:1AE5,implemented,cite:coordinate,R002+0x0000;R014+0xE3C0;R022+0x0000,,map.csv;src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.cs
+R002+0x0C8C,R002,0x0C8C,0E76:0C8C,2557,C,draft,yes,thunk 09C0:1AE5,implemented,cite:coordinate,R002+0x0000;R014+0xE3C0;R022+0x0000,,map.csv;src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs
 R002+0x168A,R002,0x168A,0E76:168A,197,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,excluded:memory,R002+0x168A,R002+0x0000,,
 R002+0x1750,R002,0x1750,0E76:1750,18,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000,,map.csv;src/Darklands.Content/Formats/Battles/BattleGraphics.cs
 R002+0x1762,R002,0x1762,0E76:1762,135,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000,,src/Darklands.Presentation/Battles/BattleScreen.cs
 R002+0x17EA,R002,0x17EA,0E76:17EA,70,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/Animations.cs
-R002+0x1830,R002,0x1830,0E76:1830,586,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000,,map.csv;src/Darklands.Core/Battles/CombatantSetup.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs
+R002+0x1830,R002,0x1830,0E76:1830,586,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000,,map.csv;src/Darklands.Core/Battles/Battle.cs;src/Darklands.Core/Battles/CombatantSetup.cs
 R002+0x1A7A,R002,0x1A7A,0E76:1A7A,44,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000,,src/Darklands.Core/Battles/Generation/BattlefieldBuilder.cs
 R003+0x0000,R003,0x0000,0E76:0000,64,asm,draft,yes,thunk 09C0:1B21 <- R003+0x00DC,implemented,cite:coordinate,R003+0x00DC;R003+0x0CE8,,map.csv;src/Darklands.Persistence/BattleSaveFile.cs;src/Darklands.Persistence/Explode.cs
 R003+0x0040,R003,0x0040,0E76:0040,41,asm,draft,no,,excluded:unreferenced,,,,
@@ -95,11 +95,11 @@ R004+0x473A,R004,0x473A,1262:087A,153,C,draft,yes,table DS:13F8 <- R004+0x44C2,e
 R004+0x47D4,R004,0x47D4,1262:0914,153,C,draft,yes,table DS:13F8 <- R004+0x44C2,excluded:memory,R004+* (1262:*),R004+0x40D0;R004+0x44C2;R004+0x49C8;R004+0x4A6C;R004+0x4B0E,,
 R004+0x486E,R004,0x486E,1262:09AE,106,C,draft,yes,thunk 09C0:1AEF <- R004+0x415A,excluded:memory,R004+* (1262:*),R004+0x415A,,
 R004+0x48D8,R004,0x48D8,1262:0A18,100,C,draft,yes,thunk 09C0:1AEF <- R004+0x486E,excluded:memory,R004+* (1262:*),R004+0x486E,,
-R004+0x493C,R004,0x493C,1262:0A7C,139,C+asm?,draft,yes,thunk 09C0:1AEF <- R004+0x4BCA,excluded:memory,R004+* (1262:*),R004+0x4BCA,,
+R004+0x493C,R004,0x493C,1262:0A7C,139,C+asm?,draft,yes,thunk 09C0:1AEF <- R004+0x4BCA,implemented,cite:coordinate,R004+0x4BCA,,src/Darklands.Core/Battles/Generation/BattlefieldBuilder.cs
 R004+0x49C8,R004,0x49C8,1262:0B08,163,C+asm?,draft,no,,excluded:memory,R004+* (1262:*),,,
 R004+0x4A6C,R004,0x4A6C,1262:0BAC,162,C+asm?,draft,no,,excluded:memory,R004+* (1262:*),R004+0x4BF4,,
 R004+0x4B0E,R004,0x4B0E,1262:0C4E,188,C+asm?,draft,no,,excluded:memory,R004+* (1262:*),R004+0x4BE2,,
-R004+0x4BCA,R004,0x4BCA,1262:0D0A,24,C,draft,yes,thunk 09C0:1AEF <- R004+0x0000,implemented,cite:coordinate,R004+0x0000;R007+0x0000;R008+0x0000;R008+0x2D62;R009+0x3E1C;R010+0x2DE0;...,,src/Darklands.Core/Battles/Generation/CityBattlefield.cs
+R004+0x4BCA,R004,0x4BCA,1262:0D0A,24,C,draft,yes,thunk 09C0:1AEF <- R004+0x0000,implemented,cite:coordinate,R004+0x0000;R007+0x0000;R008+0x0000;R008+0x2D62;R009+0x3E1C;R010+0x2DE0;...,,src/Darklands.Core/Battles/Generation/BattlefieldBuilder.cs;src/Darklands.Core/Battles/Generation/CityBattlefield.cs
 R004+0x4BE2,R004,0x4BE2,1262:0D22,18,C,draft,no,,excluded:memory,R004+* (1262:*),,,
 R004+0x4BF4,R004,0x4BF4,1262:0D34,18,C,draft,no,,excluded:memory,R004+* (1262:*),,,
 R004+0x4C06,R004,0x4C06,1336:0006,240,C,draft,yes,table DS:13F8 <- R004+0x4342,excluded:memory,R004+* (1336:*),R004+0x4342,,
@@ -357,7 +357,7 @@ R014+0x27AC,R014,0x27AC,0E76:27AC,31,C,draft,yes,thunk 09C0:19F5 <- R016+0x0F76,
 R014+0x27CC,R014,0x27CC,0E76:27CC,54,C,draft,yes,thunk 09C0:19D7 <- R016+0x1242,implemented,cite:coordinate,R014+0x2170;R016+0x1242;R023+0x1618,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Actions.cs
 R014+0x2802,R014,0x2802,0E76:2802,513,C,draft,yes,thunk 09C0:1B03 <- R014+0x2324,implemented,cite:coordinate,R014+0x2324,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Loot.cs
 R014+0x2A04,R014,0x2A04,0E76:2A04,69,C,draft,yes,thunk 09C0:1B03 <- R014+0x199C,implemented,cite:coordinate,R014+0x199C,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs
-R014+0x2A4A,R014,0x2A4A,0E76:2A4A,639,C,draft,yes,thunk 09C0:1B03 <- R014+0x0F58,implemented,cite:coordinate,R014+0x0F58,,map.csv;src/Darklands.Core/Battles/Tactics/Combatant.Effects.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs
+R014+0x2A4A,R014,0x2A4A,0E76:2A4A,639,C,draft,yes,thunk 09C0:1B03 <- R014+0x0F58,implemented,cite:coordinate,R014+0x0F58,,map.csv;src/Darklands.Core/Battles/Tactics/Combatant.Effects.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dragons.cs
 R014+0x2CCA,R014,0x2CCA,0E76:2CCA,728,C,draft,yes,thunk 09C0:1B03 <- R014+0x2A4A,implemented,cite:coordinate,R014+0x2A4A,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs
 R014+0x2FA2,R014,0x2FA2,0E76:2FA2,200,C,draft,yes,thunk 09C0:1B03 <- R014+0x1624,implemented,cite:coordinate,R014+0x1624;R014+0x2CCA,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs
 R014+0x306A,R014,0x306A,0E76:306A,252,C,draft,yes,thunk 09C0:1B03 <- R014+0x99F6,implemented,cite:coordinate,R014+0x99F6,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs
@@ -367,7 +367,7 @@ R014+0x35FC,R014,0x35FC,0E76:35FC,698,C,draft,yes,thunk 09C0:1B03 <- R014+0x3166
 R014+0x38B6,R014,0x38B6,0E76:38B6,975,C,draft,yes,thunk 09C0:1B03 <- R014+0x0000,implemented,cite:coordinate,R014+0x0000;R014+0x08FE;R014+0x10232;R014+0x116E;R014+0x1624;R014+0x199C;...,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.cs
 R014+0x3C86,R014,0x3C86,0E76:3C86,61,C,draft,yes,thunk 09C0:1A59 <- R014+0xBCA8,implemented,cite:coordinate,R014+0x1003A;R014+0x10232;R014+0x116E;R014+0xBCA8;R018+0x0706,,map.csv;src/Darklands.Core/Battles/Tactics/Combatant.Tactics.cs
 R014+0x3CC4,R014,0x3CC4,0E76:3CC4,71,C,draft,yes,thunk 09C0:1B03 <- R014+0x2FA2,implemented,cite:coordinate,R014+0x2FA2,,map.csv;src/Darklands.Core/Battles/Tactics/Combatant.Tactics.cs
-R014+0x3D0C,R014,0x3D0C,0E76:3D0C,31,C,draft,yes,thunk 09C0:1B03 <- R014+0x0000,implemented,cite:coordinate,R014+0x0000;R014+0x1003A;R014+0x10232;R014+0x116E;R014+0x2CCA;R014+0xFADC;...,,map.csv;src/Darklands.Core/Battles/Tactics/Combatant.Tactics.cs
+R014+0x3D0C,R014,0x3D0C,0E76:3D0C,31,C,draft,yes,thunk 09C0:1B03 <- R014+0x0000,implemented,cite:coordinate,R014+0x0000;R014+0x1003A;R014+0x10232;R014+0x116E;R014+0x2CCA;R014+0xFADC;...,,map.csv;src/Darklands.Core/Battles/Tactics/Combatant.Tactics.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs
 R014+0x3D2C,R014,0x3D2C,0E76:3D2C,1116,C,draft,yes,thunk 09C0:1B03 <- R014+0x38B6,implemented,cite:coordinate,R014+0x38B6,,map.csv;src/Darklands.Content/Formats/Battles/BattleGraphics.cs;src/Darklands.Content/Formats/Battles/CombatAnimation.cs
 R014+0x4188,R014,0x4188,0E76:4188,697,C,draft,yes,thunk 09C0:1B03 <- R014+0x0000,implemented,cite:coordinate,R014+0x0000;R014+0xD882;R014+0xD966;R014+0xDA18;R024+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs
 R014+0x4442,R014,0x4442,0E76:4442,364,C,draft,yes,thunk 09C0:1B03 <- R014+0x0000,implemented,cite:coordinate,R014+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs
@@ -392,7 +392,7 @@ R014+0x5CA4,R014,0x5CA4,12F7:1494,95,C,draft,yes,thunk 09C0:1DE7 <- R014+0x4BFA,
 R014+0x5D04,R014,0x5D04,12F7:14F4,95,C,draft,yes,thunk 09C0:1DE7 <- R014+0x4BFA,implemented,cite:coordinate,R014+0x4BFA;R014+0x52C4,,src/Darklands.Core/Battles/Tactics/PathFinder.cs
 R014+0x5D64,R014,0x5D64,12F7:1554,72,C,draft,yes,thunk 09C0:1DE7 <- R016+0x0E7E,implemented,cite:coordinate,R014+0x1003A;R014+0x10232;R014+0x116E;R014+0x1624;R014+0x2CCA;R014+0xB576;...,,map.csv;src/Darklands.Core/Battles/Tactics/PathFinder.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
 R014+0x5DAC,R014,0x5DAC,12F7:159C,51,C,draft,yes,thunk 09C0:1B03 <- R014+0xC33C,implemented,cite:coordinate,R014+0xC33C,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs
-R014+0x5DE0,R014,0x5DE0,12F7:15D0,74,C,draft,yes,thunk 09C0:1A59 <- R014+0xBCA8,implemented,cite:coordinate,R014+0xBCA8,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs
+R014+0x5DE0,R014,0x5DE0,12F7:15D0,74,C,draft,yes,thunk 09C0:1A59 <- R014+0xBCA8,implemented,cite:coordinate,R014+0xBCA8,,map.csv;src/Darklands.Core/Battles/Tactics/PathFinder.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs
 R014+0x5E2A,R014,0x5E2A,12F7:161A,137,asm,draft,yes,thunk 09C0:1A59 <- R014+0x5DE0,implemented,cite:coordinate,R014+0x5D64;R014+0x5DE0,,map.csv;src/Darklands.Core/Battles/Tactics/PathFinder.cs
 R014+0x5EB4,R014,0x5EB4,12F7:16A4,22,C,draft,yes,thunk 09C0:1DE7 <- R014+0x481A,implemented,cite:coordinate,R014+0x481A,,src/Darklands.Core/Battles/Tactics/PathFinder.cs
 R014+0x5ECA,R014,0x5ECA,1462:000A,486,C,draft,yes,thunk 09C0:1AF9 <- R014+0x0DEE,implemented,cite:coordinate,R014+0x0DEE;R014+0x116E;R014+0x1624;R014+0x2CCA;R014+0x4188;R014+0x481A;...,,map.csv;src/Darklands.Core/Battles/Tactics/BattleMap.cs
@@ -400,7 +400,7 @@ R014+0x60B0,R014,0x60B0,1462:01F0,796,asm,draft,yes,thunk 09C0:1AF9 <- R014+0x5E
 R014+0x63CC,R014,0x63CC,1462:050C,563,asm,draft,yes,thunk 09C0:1AF9 <- R014+0x5ECA,implemented,cite:coordinate,R014+0x5ECA,,src/Darklands.Core/Battles/Tactics/BattleMap.cs
 R014+0x6600,R014,0x6600,1462:0740,252,asm,draft,yes,thunk 09C0:1AF9 <- R014+0x5ECA,implemented,cite:coordinate,R014+0x5ECA,,src/Darklands.Core/Battles/Tactics/BattleMap.cs
 R014+0x66FE,R014,0x66FE,1462:083E,281,asm,draft,yes,thunk 09C0:1AF9 <- R014+0x5ECA,implemented,cite:coordinate,R014+0x5ECA,,src/Darklands.Core/Battles/Tactics/BattleMap.cs
-R014+0x6818,R014,0x6818,14F7:0008,2020,C,draft,yes,thunk 09C0:1B03 <- R014+0x0000,implemented,cite:coordinate,R014+0x0000;R014+0x08FE;R014+0x0F58;R014+0xE278;R015+0x00DC;R022+0x0000;...,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Missiles.cs
+R014+0x6818,R014,0x6818,14F7:0008,2020,C,draft,yes,thunk 09C0:1B03 <- R014+0x0000,implemented,cite:coordinate,R014+0x0000;R014+0x08FE;R014+0x0F58;R014+0xE278;R015+0x00DC;R022+0x0000;...,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs
 R014+0x6FFC,R014,0x6FFC,14F7:07EC,417,C,draft,yes,thunk 09C0:1B03 <- R014+0x6818,implemented,cite:coordinate,R014+0x6818,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0x719E,R014,0x719E,14F7:098E,772,C,draft,yes,thunk 09C0:1B03 <- R014+0x6818,implemented,cite:coordinate,R014+0x6818,,map.csv;src/Darklands.Core/Battles/Tactics/Combatant.Effects.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs
 R014+0x74A2,R014,0x74A2,14F7:0C92,523,C,draft,yes,thunk 09C0:1B03 <- R014+0x6818,implemented,cite:coordinate,R014+0x6818,,src/Darklands.Presentation/Battles/BattleScreen.cs
@@ -415,7 +415,7 @@ R014+0x8862,R014,0x8862,14F7:2052,132,C,draft,yes,thunk 09C0:1B03 <- R014+0x88E6
 R014+0x88E6,R014,0x88E6,14F7:20D6,973,C,draft,yes,thunk 09C0:1B03 <- R014+0x6818,implemented,cite:coordinate,R014+0x6818,,src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0x8CB4,R014,0x8CB4,14F7:24A4,1226,C,draft,yes,thunk 09C0:1B03 <- R014+0x6FFC,implemented,cite:coordinate,R014+0x6FFC,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0x917E,R014,0x917E,14F7:296E,964,C,draft,yes,thunk 09C0:1B03 <- R014+0x6FFC,implemented,cite:coordinate,R014+0x6FFC,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
-R014+0x9542,R014,0x9542,14F7:2D32,611,C,draft,yes,thunk 09C0:1B03 <- R014+0x6FFC,implemented,cite:shorthand,R014+0x6FFC,,src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs
+R014+0x9542,R014,0x9542,14F7:2D32,611,C,draft,yes,thunk 09C0:1B03 <- R014+0x6FFC,implemented,cite:coordinate,R014+0x6FFC,,src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0x97A6,R014,0x97A6,14F7:2F96,180,C,draft,yes,thunk 09C0:1B03 <- R014+0x6818,implemented,cite:coordinate,R014+0x6818,,src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0x985A,R014,0x985A,14F7:304A,411,C,draft,no,,excluded:unreferenced,,,,
 R014+0x99F6,R014,0x99F6,14F7:31E6,541,C,draft,yes,thunk 09C0:1B03 <- R014+0x6818,implemented,cite:coordinate,R014+0x6818,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
@@ -433,7 +433,7 @@ R014+0xA738,R014,0xA738,18BF:02A8,745,C,draft,yes,thunk 09C0:1B03 <- R014+0xA592
 R014+0xAA22,R014,0xAA22,18BF:0592,485,C,draft,yes,thunk 09C0:1B03 <- R014+0xA738,implemented,cite:coordinate,R014+0xA738,,map.csv;src/Darklands.Core/Battles/Attacks.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs
 R014+0xAC08,R014,0xAC08,18BF:0778,337,C,draft,yes,thunk 09C0:1B03 <- R014+0xA592,implemented,cite:coordinate,R014+0xA592,,map.csv;src/Darklands.Core/Battles/Attacks.cs
 R014+0xAD5A,R014,0xAD5A,18BF:08CA,195,C,draft,yes,thunk 09C0:180B <- R023+0x0E30,implemented,cite:coordinate,R014+0xAC08;R019+0x0300;R019+0x058A;R023+0x0E30,,map.csv;src/Darklands.Core/Battles/Attacks.cs;src/Darklands.Core/Battles/CombatTables.cs
-R014+0xAE1E,R014,0xAE1E,18BF:098E,178,C,draft,yes,thunk 09C0:1DC9 <- R019+0x0300,implemented,cite:coordinate,R014+0x199C;R014+0xED10;R019+0x0300;R019+0x058A,,map.csv;src/Darklands.Core/Battles/Attacks.cs
+R014+0xAE1E,R014,0xAE1E,18BF:098E,178,C,draft,yes,thunk 09C0:1DC9 <- R019+0x0300,implemented,cite:coordinate,R014+0x199C;R014+0xED10;R019+0x0300;R019+0x058A,,map.csv;src/Darklands.Core/Battles/Attacks.cs;src/Darklands.Core/Rules/SaintBook.cs
 R014+0xAED0,R014,0xAED0,18BF:0A40,449,C,draft,yes,thunk 09C0:1B03 <- R014+0x0000,implemented,cite:coordinate,R014+0x0000;R014+0xB0D8;R014+0xBCA8;R014+0xF88E;R014+0xF9D8;R014+0xFADC;...,,map.csv;src/Darklands.Content/Formats/Exe/CombatTablesReader.cs;src/Darklands.Core/Battles/Attacks.cs
 R014+0xB092,R014,0xB092,18BF:0C02,69,C,draft,yes,thunk 09C0:1B03 <- R014+0xDF28,implemented,cite:coordinate,R014+0xDF28,,map.csv;src/Darklands.Core/Battles/Attacks.cs;src/Darklands.Core/Battles/CombatTables.cs
 R014+0xB0D8,R014,0xB0D8,18BF:0C48,182,C,draft,yes,thunk 09C0:1B03 <- R014+0x1BA0,implemented,cite:coordinate,R014+0x1BA0,,map.csv;src/Darklands.Core/Battles/Attacks.cs
@@ -441,7 +441,7 @@ R014+0xB18E,R014,0xB18E,18BF:0CFE,181,C,draft,yes,thunk 09C0:1B03 <- R014+0xB092
 R014+0xB244,R014,0xB244,18BF:0DB4,496,C,draft,yes,thunk 09C0:1CF7 <- R019+0x0DFE,implemented,cite:coordinate,R014+0xB0D8;R019+0x0914;R019+0x0DFE,,map.csv;src/Darklands.Core/Battles/Attacks.cs;src/Darklands.Core/Characters/Pack.cs
 R014+0xB434,R014,0xB434,18BF:0FA4,322,C,draft,yes,thunk 09C0:19F5 <- R016+0x0F76,implemented,cite:coordinate,R014+0x2170;R016+0x0F76,,map.csv;src/Darklands.Core/Battles/Attacks.cs;src/Darklands.Core/Characters/Pack.cs
 R014+0xB576,R014,0xB576,19CD:0006,1685,C,draft,yes,thunk 09C0:1B03 <- R014+0x3166,implemented,cite:coordinate,R014+0x3166,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Party.cs
-R014+0xBC0C,R014,0xBC0C,19CD:069C,156,C,draft,yes,thunk 09C0:1B03 <- R014+0x0F58,implemented,cite:coordinate,R014+0x0F58;R014+0xB576;R016+0x0ABA,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs
+R014+0xBC0C,R014,0xBC0C,19CD:069C,156,C,draft,yes,thunk 09C0:1B03 <- R014+0x0F58,implemented,cite:coordinate,R014+0x0F58;R014+0xB576;R016+0x0ABA,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0xBCA8,R014,0xBCA8,19CD:0738,924,C,draft,yes,thunk 09C0:1A59,implemented,cite:coordinate,R000+0x083E;R014+0xC33C;R016+0x0000;R016+0x0A2C;R016+0x1436,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0xC044,R014,0xC044,19CD:0AD4,759,C,draft,yes,thunk 09C0:1B03 <- R014+0xB576,implemented,cite:coordinate,R014+0xB576,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0xC33C,R014,0xC33C,19CD:0DCC,1056,C,draft,yes,thunk 09C0:1B03 <- R014+0xB576,implemented,cite:coordinate,R014+0xB576,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
@@ -464,10 +464,10 @@ R014+0xD966,R014,0xD966,19CD:23F6,178,C,draft,yes,thunk 09C0:1833,implemented,ci
 R014+0xDA18,R014,0xDA18,19CD:24A8,178,C,draft,yes,thunk 09C0:1829,implemented,cite:coordinate,R003+0x0CE8;R024+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs
 R014+0xDACA,R014,0xDACA,19CD:255A,330,asm,draft,yes,thunk 09C0:17F7,implemented,cite:coordinate,R003+0x0CE8;R024+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs
 R014+0xDC14,R014,0xDC14,19CD:26A4,510,C,draft,yes,thunk 09C0:1B03 <- R014+0x0F58,implemented,cite:coordinate,R014+0x0F58,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs
-R014+0xDE12,R014,0xDE12,19CD:28A2,277,C,draft,yes,thunk 09C0:18D3,implemented,cite:coordinate,R002+0x0000;R014+0x0000;R014+0xBCA8;R014+0xDF28;R016+0x0000;R016+0x09BC;...,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Menus.cs
+R014+0xDE12,R014,0xDE12,19CD:28A2,277,C,draft,yes,thunk 09C0:18D3,implemented,cite:coordinate,R002+0x0000;R014+0x0000;R014+0xBCA8;R014+0xDF28;R016+0x0000;R016+0x09BC;...,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Menus.cs
 R014+0xDF28,R014,0xDF28,19CD:29B8,847,C,draft,yes,thunk 09C0:1B03 <- R014+0xBC0C,implemented,cite:coordinate,R014+0xBC0C,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Menus.cs
 R014+0xE278,R014,0xE278,19CD:2D08,328,asm,draft,yes,thunk 09C0:1B03 <- R014+0x08FE,implemented,cite:coordinate,R014+0x08FE;R014+0x2170,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Loot.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
-R014+0xE3C0,R014,0xE3C0,19CD:2E50,948,C,draft,yes,thunk 09C0:1D01 <- R023+0x13D0,implemented,cite:coordinate,R014+0xE278;R023+0x13D0,,map.csv;src/Darklands.Presentation/Battles/BattleScreen.cs
+R014+0xE3C0,R014,0xE3C0,19CD:2E50,948,C,draft,yes,thunk 09C0:1D01 <- R023+0x13D0,implemented,cite:coordinate,R014+0xE278;R023+0x13D0,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
 R014+0xE774,R014,0xE774,19CD:3204,84,C,draft,yes,thunk 09C0:1D01 <- R023+0x13D0,implemented,cite:coordinate,R014+0x2324;R014+0xE278;R014+0xEA10;R023+0x13D0;R024+0x0000,,src/Darklands.Core/Battles/Tactics/LootStore.cs
 R014+0xE7C8,R014,0xE7C8,19CD:3258,360,asm,draft,yes,thunk 09C0:1D01 <- R023+0x13D0,implemented,cite:coordinate,R014+0x2324;R014+0xE278;R014+0xEA10;R023+0x13D0,,src/Darklands.Core/Battles/Tactics/LootStore.cs
 R014+0xE930,R014,0xE930,19CD:33C0,223,C,draft,yes,thunk 09C0:1D01 <- R014+0xE7C8,implemented,cite:coordinate,R014+0x2324;R014+0xE7C8,,src/Darklands.Core/Battles/Tactics/LootStore.cs
@@ -571,10 +571,10 @@ R018+0x027E,R018,0x027E,1EF8:027E,63,C,matched,yes,thunk 09C0:1D79,implemented,c
 R018+0x02BE,R018,0x02BE,1EF8:02BE,240,C,matched,yes,thunk 09C0:1CED <- R018+0x0000,implemented,cite:coordinate,R018+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Missiles.cs
 R018+0x03AE,R018,0x03AE,1EF8:03AE,264,C,matched,yes,thunk 09C0:1CE3,implemented,cite:coordinate,R014+0x1BA0,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Missiles.cs
 R018+0x04B6,R018,0x04B6,1F43:0006,591,C,draft,yes,thunk 09C0:1C43 <- R018+0x0706,implemented,cite:coordinate,R018+0x0706,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
-R018+0x0706,R018,0x0706,1F43:0256,2612,C,draft,yes,thunk 09C0:1C43,implemented,cite:coordinate,R014+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
+R018+0x0706,R018,0x0706,1F43:0256,2612,C,draft,yes,thunk 09C0:1C43,implemented,cite:coordinate,R014+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dragons.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
 R018+0x113A,R018,0x113A,1F43:0C8A,632,C,draft,yes,thunk 09C0:1C43 <- R018+0x0706,implemented,cite:coordinate,R018+0x0706,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
 R018+0x13B2,R018,0x13B2,1F43:0F02,192,C,draft,yes,thunk 09C0:1C43 <- R018+0x0706,implemented,cite:coordinate,R018+0x0706,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
-R018+0x1472,R018,0x1472,1F43:0FC2,137,C,draft,yes,thunk 09C0:1C9D,implemented,cite:coordinate,R014+0x0000;R018+0x0706;R018+0x14FC,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
+R018+0x1472,R018,0x1472,1F43:0FC2,137,C,draft,yes,thunk 09C0:1C9D,implemented,cite:coordinate,R014+0x0000;R018+0x0706;R018+0x14FC,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dragons.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
 R018+0x14FC,R018,0x14FC,1F43:104C,66,C,draft,yes,thunk 09C0:1C25,implemented,cite:coordinate,R014+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs
 R019+0x0000,R019,0x0000,1EF8:0000,482,C,matched,yes,thunk 09C0:1DC9,implemented,cite:coordinate,R014+0xED10;R023+0x0D88;R023+0x153E,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs
 R019+0x01E2,R019,0x01E2,1EF8:01E2,125,C,matched,yes,thunk 09C0:1D83,implemented,cite:coordinate,R014+0x76AE;R019+0x0000,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs
@@ -624,9 +624,9 @@ R023+0x1618,R023,0x1618,1EF8:1618,441,asm,draft,yes,thunk 09C0:1CD9,implemented,
 R023+0x17D2,R023,0x17D2,1EF8:17D2,761,C,draft,yes,thunk 09C0:1CD9 <- R023+0x1618,implemented,cite:coordinate,R023+0x1618,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs
 R024+0x0000,R024,0x0000,1EF8:0000,1434,C,draft,yes,thunk 09C0:1C6B,implemented,cite:coordinate,R014+0x0000,,map.csv;src/Darklands.Core/Battles/Generation/BattlefieldBuilder.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs
 R024+0x059A,R024,0x059A,1EF8:059A,520,C,draft,yes,thunk 09C0:1B3F,implemented,cite:coordinate,R003+0x00DC;R003+0x0CE8;R014+0x0000;R014+0x08FE;R016+0x09BC;R016+0x0A2C;...,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs
-R024+0x07A2,R024,0x07A2,1EF8:07A2,335,C,draft,yes,thunk 09C0:1DBF,implemented,cite:alias,R014+0xE3C0;R022+0x0000;R024+0x059A,,src/Darklands.Core/Battles/TerrainDescription.cs
+R024+0x07A2,R024,0x07A2,1EF8:07A2,335,C,draft,yes,thunk 09C0:1DBF,implemented,cite:coordinate,R014+0xE3C0;R022+0x0000;R024+0x059A,,src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs;src/Darklands.Core/Battles/Tactics/TacticalBattle.cs;src/Darklands.Core/Battles/TerrainDescription.cs
 R024+0x08F2,R024,0x08F2,1EF8:08F2,927,C,draft,yes,thunk 09C0:1E05,implemented,cite:coordinate,R023+0x1618;R025+0x0CFC,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs
-R025+0x0000,R025,0x0000,1EF8:0000,2470,C,draft,yes,thunk 09C0:1D29,implemented,cite:coordinate,R014+0x2324;R014+0x4442;R023+0x00B8,,map.csv;src/Darklands.Content/Formats/Battles/BattleGraphics.cs;src/Darklands.Core/Battles/CombatantSetup.cs
+R025+0x0000,R025,0x0000,1EF8:0000,2470,C,draft,yes,thunk 09C0:1D29,implemented,cite:coordinate,R014+0x2324;R014+0x4442;R023+0x00B8,,map.csv;src/Darklands.Content/Formats/Battles/BattleGraphics.cs;src/Darklands.Core/Battles/Battle.cs
 R025+0x09A6,R025,0x09A6,1EF8:09A6,221,C,draft,yes,thunk 09C0:1DDD,implemented,cite:coordinate,R014+0xF88E;R014+0xF9D8;R025+0x0000,,src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs
 R025+0x0A84,R025,0x0A84,1EF8:0A84,352,C,draft,yes,thunk 09C0:1DB5,implemented,cite:coordinate,R014+0xE3C0;R022+0x0000;R025+0x09A6,,src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs
 R025+0x0BE4,R025,0x0BE4,1EF8:0BE4,29,C,draft,yes,thunk 09C0:1CB1,implemented,cite:coordinate,R014+0x0694;R014+0x08FE;R014+0xE3C0;R022+0x0000;R023+0x17D2;R025+0x09A6;...,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs
@@ -774,8 +774,8 @@ R029+0x2246,R029,0x2246,0E76:2246,21,C,draft,yes,table R136 2DAE:0000 <- R086+0x
 R029+0x225C,R029,0x225C,0E76:225C,27,C,draft,yes,table R136 2DAE:0000 <- R051+0x0FCC,implemented,cite:coordinate,R051+0x0FCC;R051+0x1078;R051+0x18F0;R051+0x199C;R078+0x0864;R078+0x08FC;...,,map.csv;src/Darklands.Cards/CardContext.Services.cs
 R029+0x2278,R029,0x2278,0E76:2278,361,C,draft,yes,table R136 2DAE:0000 <- R081+0x1848,implemented,cite:coordinate,R044+0x1810;R044+0x22BC;R047+0x12A2;R049+0x24E2;R053+0x02D6;R055+0x1316;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Cards/Scripts/S059/NightWatch.cs
 R029+0x23E2,R029,0x23E2,0E76:23E2,82,C,draft,yes,table R136 2DAE:0000 <- R044+0x22BC,implemented,cite:coordinate,R044+0x1810;R044+0x22BC;R047+0x12A2;R049+0x24E2;R055+0x1316;R057+0x1F22;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/PartyRules.cs
-R029+0x2434,R029,0x2434,0E76:2434,63,C,draft,yes,table R136 2DAE:0000 <- R081+0x1848,implemented,cite:coordinate,R059+0x1082;R060+0x0BB4;R070+0x0C24;R077+0x1BC2;R078+0x0478;R079+0x187C;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/PartyRules.cs
-R029+0x2474,R029,0x2474,0E76:2474,165,C,draft,yes,table R136 2DAE:0000 <- R083+0x0EAE,implemented,cite:coordinate,R083+0x0EAE;R106+0x1C28;R114+0x0C70,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/PartyRules.cs
+R029+0x2434,R029,0x2434,0E76:2434,63,C,draft,yes,table R136 2DAE:0000 <- R081+0x1848,implemented,cite:coordinate,R059+0x1082;R060+0x0BB4;R070+0x0C24;R077+0x1BC2;R078+0x0478;R079+0x187C;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs
+R029+0x2474,R029,0x2474,0E76:2474,165,C,draft,yes,table R136 2DAE:0000 <- R083+0x0EAE,implemented,cite:coordinate,R083+0x0EAE;R106+0x1C28;R114+0x0C70,,map.csv;src/Darklands.Cards/CardContext.Party.cs
 R029+0x251A,R029,0x251A,0E76:251A,63,C,draft,yes,table R136 2DAE:0000 <- R053+0x02D6,implemented,cite:coordinate,R053+0x02D6;R065+0x0300;R070+0x2AF0;R075+0x1B9E;R081+0x09D0;R082+0x1324;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/PartyRules.cs
 R029+0x255A,R029,0x255A,0E76:255A,705,C,draft,yes,thunk 09C0:190F <- R029+0x54D8,implemented,cite:coordinate,R029+0x54D8;R029+0x5590,,map.csv;src/Darklands.Core/Characters/Party.cs;src/Darklands.Core/Rules/TimePassage.cs
 R029+0x281C,R029,0x281C,0E76:281C,275,C,draft,yes,thunk 09C0:190F <- R029+0x54D8,implemented,cite:coordinate,R029+0x54D8;R029+0x5590,,map.csv;src/Darklands.Core/Rules/MonthlyUpdate.cs
@@ -821,8 +821,8 @@ R029+0x3B62,R029,0x3B62,0E76:3B62,197,C,draft,yes,thunk 09C0:18B5 <- R037+0x3F30
 R029+0x3C28,R029,0x3C28,0E76:3C28,181,C,draft,yes,table R136 2DAE:0000 <- R071+0x15A4,implemented,cite:coordinate,R071+0x15A4;R071+0x17BC,,map.csv;src/Darklands.Core/Events/EventLog.cs
 R029+0x3CDE,R029,0x3CDE,0E76:3CDE,179,C,draft,yes,table R136 2DAE:0000 <- R073+0x0000,implemented,cite:coordinate,R030+0x1300;R036+0x082C;R038+0x02F8;R073+0x0000;R079+0x02AC;R079+0x0662;...,,map.csv;src/Darklands.Core/Events/EventLog.cs;src/Darklands.Core/Rules/Brewing.cs
 R029+0x3D92,R029,0x3D92,0E76:3D92,115,C,draft,yes,thunk 09C0:190F <- R029+0x3F30,implemented,cite:coordinate,R029+0x3E06;R029+0x3F30;R060+0x0BB4;R060+0x11FC;R086+0x0152,,map.csv;src/Darklands.Core/Events/EventLog.cs
-R029+0x3E06,R029,0x3E06,0E76:3E06,297,C,draft,yes,thunk 09C0:217F <- R039+0x0EBE,implemented,cite:coordinate,R039+0x0EBE;R039+0x159A;R039+0x1AB0;R054+0x13F8;R055+0x0D08;R080+0x11B8;...,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Cards/Scripts/S081/InsideTheRobberKnightsTower.cs
-R029+0x3F30,R029,0x3F30,0E76:3F30,128,C,draft,yes,thunk 09C0:190F <- R029+0x54D8,implemented,cite:coordinate,R029+0x54D8;R029+0x5590,,map.csv;src/Darklands.Core/Events/EventExpiry.cs
+R029+0x3E06,R029,0x3E06,0E76:3E06,297,C,draft,yes,thunk 09C0:217F <- R039+0x0EBE,implemented,cite:coordinate,R039+0x0EBE;R039+0x159A;R039+0x1AB0;R054+0x13F8;R055+0x0D08;R080+0x11B8;...,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs
+R029+0x3F30,R029,0x3F30,0E76:3F30,128,C,draft,yes,thunk 09C0:190F <- R029+0x54D8,implemented,cite:coordinate,R029+0x54D8;R029+0x5590,,map.csv;src/Darklands.Cards/Scripts/S050/FortressByDay.cs;src/Darklands.Cards/Scripts/S054/CouncilHall.cs
 R029+0x3FB0,R029,0x3FB0,0E76:3FB0,1,C,draft,yes,table R136 290E:290F,implemented,cite:coordinate,,,map.csv;src/Darklands.Core/Events/EventExpiry.cs;src/Darklands.Core/Events/EventKinds.cs
 R029+0x3FB2,R029,0x3FB2,0E76:3FB2,462,C,draft,yes,table R136 290E:290F,implemented,cite:coordinate,,,map.csv;src/Darklands.Core/Events/EventExpiry.cs;src/Darklands.Core/Events/EventKinds.cs
 R029+0x4180,R029,0x4180,0E76:4180,504,C,draft,yes,table R136 290E:290F,implemented,cite:coordinate,,,map.csv;src/Darklands.Core/Events/EventKinds.cs;src/Darklands.Core/Rules/CityPolitics.cs
@@ -885,13 +885,13 @@ R029+0x5B62,R029,0x5B62,1367:0C52,353,C,matched,yes,table R136 2DAE:0000 <- R044
 R029+0x5CC4,R029,0x5CC4,1367:0DB4,499,C,matched,yes,table R136 2DAE:0000 <- R044+0x0000,implemented,cite:coordinate,R037+0x4BEE;R037+0x675A;R044+0x0000;R048+0x0000;R049+0x0A0A;R049+0x0EA2;...,,map.csv;src/Darklands.Cards/CardContext.Memory.cs;src/Darklands.Cards/Scripts/S044/InitialTestCard.cs
 R030+0x0000,R030,0x0000,1462:0000,168,C,draft,yes,table R136 2DAE:0000,implemented,cite:coordinate,,,map.csv;src/Darklands.Presentation/DarklandsGame.cs
 R030+0x00A8,R030,0x00A8,1462:00A8,536,C,draft,yes,table R136 2DAE:0000 <- R030+0x0000,implemented,cite:coordinate,R030+0x0000,,map.csv;src/Darklands.Audio/GameSounds.cs;src/Darklands.Presentation/DarklandsGame.cs
-R030+0x02C0,R030,0x02C0,1462:02C0,2435,C,draft,yes,table R136 2DAE:0000 <- R030+0x00A8,implemented,cite:coordinate,R030+0x00A8,,map.csv;src/Darklands.Content/WorldData.cs;src/Darklands.Presentation/OverlandScreen.cs
+R030+0x02C0,R030,0x02C0,1462:02C0,2435,C,draft,yes,table R136 2DAE:0000 <- R030+0x00A8,implemented,cite:coordinate,R030+0x00A8,,map.csv;src/Darklands.Content/WorldData.cs;src/Darklands.Core/World/CityFile.cs
 R030+0x0C44,R030,0x0C44,1462:0C44,1724,C,draft,yes,table R136 2DAE:0000 <- R030+0x02C0,implemented,cite:coordinate,R030+0x02C0,,map.csv;src/Darklands.Platform/Keys.cs;src/Darklands.Presentation/GameUi.cs
 R030+0x1300,R030,0x1300,1462:1300,965,C,draft,yes,table R136 2DAE:0000 <- R030+0x0C44,implemented,cite:coordinate,R030+0x0C44,,map.csv;src/Darklands.Content/WorldData.cs;src/Darklands.Core/World/Terrain.cs
 R030+0x16C6,R030,0x16C6,1462:16C6,1415,C,draft,yes,table R136 2DAE:0000 <- R030+0x0C44,implemented,cite:coordinate,R030+0x0C44,,map.csv;src/Darklands.Presentation/OverlandScreen.cs;src/Darklands.Simulation/Overland/OverlandTravel.cs
 R030+0x1C4E,R030,0x1C4E,1462:1C4E,40,C,draft,yes,table R136 2DAE:0000 <- R030+0x00A8,implemented,cite:coordinate,R030+0x00A8,,map.csv;src/Darklands.Content/Formats/Maps/WorldMapData.cs
 R030+0x1C76,R030,0x1C76,1462:1C76,349,C,draft,yes,table R136 2DAE:0000 <- R030+0x00A8,implemented,cite:coordinate,R030+0x00A8,,map.csv;src/Darklands.Core/World/Terrain.cs;src/Darklands.Simulation/Overland/WorldMap.cs
-R030+0x1DD4,R030,0x1DD4,1462:1DD4,347,C,draft,yes,table R136 2DAE:0000 <- R030+0x1C76,implemented,cite:coordinate,R030+0x0C44;R030+0x1C76,,src/Darklands.Simulation/Overland/WorldMap.cs
+R030+0x1DD4,R030,0x1DD4,1462:1DD4,347,C,draft,yes,table R136 2DAE:0000 <- R030+0x1C76,implemented,cite:coordinate,R030+0x0C44;R030+0x1C76,,src/Darklands.Presentation/OverlandScreen.cs;src/Darklands.Simulation/Overland/WorldMap.cs
 R030+0x1F30,R030,0x1F30,1462:1F30,417,C,draft,yes,table R136 2DAE:0000 <- R030+0x00A8,implemented,cite:coordinate,R030+0x00A8;R030+0x02C0;R030+0x0C44,,map.csv;src/Darklands.Presentation/OverlandScreen.cs
 R030+0x20D2,R030,0x20D2,1462:20D2,1260,C,draft,yes,table R136 2DAE:0000 <- R030+0x00A8,implemented,cite:coordinate,R030+0x00A8;R030+0x02C0;R030+0x0C44;R030+0x1300,,map.csv;src/Darklands.Presentation/OverlandScreen.cs;src/Darklands.Simulation/Overland/WorldMap.cs
 R030+0x25BE,R030,0x25BE,1462:25BE,348,C,draft,yes,table R136 2DAE:0000 <- R030+0x0C44,implemented,cite:coordinate,R030+0x0C44,,map.csv;src/Darklands.Presentation/DarklandsGame.cs;src/Darklands.Presentation/OverlandScreen.cs
@@ -959,7 +959,7 @@ R031+0x5E48,R031,0x5E48,18E7:15F8,291,asm,draft,yes,thunk 09C0:205D,implemented,
 R031+0x5F6C,R031,0x5F6C,18E7:171C,375,asm,draft,yes,thunk 09C0:2071,implemented,cite:coordinate,R060+0x0FF4;R084+0x0536,,map.csv;src/Darklands.Cards/CardContext.Items.cs;src/Darklands.Core/Rules/Inventory.cs
 R031+0x60E4,R031,0x60E4,18E7:1894,135,C,draft,yes,thunk 09C0:207B,implemented,cite:coordinate,R101+0x11F4,,map.csv;src/Darklands.Cards/CardContext.Items.cs;src/Darklands.Core/Rules/Inventory.cs
 R032+0x0000,R032,0x0000,1462:0000,1899,C,draft,yes,thunk 09C0:1EFF,implemented,cite:coordinate,R029+0x21AA,,map.csv;src/Darklands.Core/Rules/Trading.cs;src/Darklands.Presentation/BarterScreen.cs
-R032+0x076C,R032,0x076C,1462:076C,34,C,draft,yes,thunk 09C0:1EFF <- R032+0x0000,implemented,cite:coordinate,R032+0x0000;R032+0x0F60,,map.csv;src/Darklands.Presentation/BarterScreen.cs
+R032+0x076C,R032,0x076C,1462:076C,34,C,draft,yes,thunk 09C0:1EFF <- R032+0x0000,implemented,cite:coordinate,R032+0x0000;R032+0x0F60,,map.csv;src/Darklands.Presentation/BarterScreen.cs;src/Darklands.Presentation/GameScreens2.cs
 R032+0x078E,R032,0x078E,1462:078E,929,C,draft,yes,thunk 09C0:1EFF <- R032+0x0000,implemented,cite:coordinate,R032+0x0000,,map.csv;src/Darklands.Core/Rules/Trading.cs;src/Darklands.Presentation/BarterScreen.cs
 R032+0x0B30,R032,0x0B30,1462:0B30,969,C,draft,yes,thunk 09C0:1EFF <- R032+0x0000,implemented,cite:coordinate,R032+0x0000;R032+0x0F60,,map.csv;src/Darklands.Presentation/BarterScreen.cs
 R032+0x0EFA,R032,0x0EFA,1462:0EFA,102,C,draft,yes,thunk 09C0:1EFF <- R032+0x078E,implemented,cite:coordinate,R032+0x078E;R032+0x0B30;R032+0x0F60;R032+0x1870;R032+0x192E;R032+0x1D18,,map.csv;src/Darklands.Core/Rules/Trading.cs
@@ -1012,10 +1012,10 @@ R034+0x11DC,R034,0x11DC,1550:02FC,623,C,matched,yes,thunk 09C0:185B <- R034+0x0E
 R034+0x144C,R034,0x144C,1550:056C,545,C,matched,yes,thunk 09C0:185B <- R034+0x0EE6,implemented,cite:coordinate,R034+0x0EE6,,map.csv;src/Darklands.Core/Rules/PartyStanding.cs;src/Darklands.Presentation/PartyInfoScreen.cs
 R034+0x166E,R034,0x166E,1550:078E,865,C,matched,yes,thunk 09C0:185B <- R034+0x11DC,implemented,cite:coordinate,R034+0x11DC,,map.csv;src/Darklands.Presentation/PartyInfoScreen.cs
 R034+0x19D0,R034,0x19D0,1550:0AF0,181,C,matched,yes,thunk 09C0:185B <- R034+0x11DC,implemented,cite:coordinate,R034+0x11DC,,map.csv;src/Darklands.Presentation/PartyInfoScreen.cs
-R034+0x1A86,R034,0x1A86,1550:0BA6,182,C,matched,yes,thunk 09C0:185B <- R034+0x0EE6,implemented,cite:coordinate,R034+0x0EE6,,map.csv;src/Darklands.Core/Rules/PartyStanding.cs;src/Darklands.Presentation/PartyInfoScreen.cs
+R034+0x1A86,R034,0x1A86,1550:0BA6,182,C,matched,yes,thunk 09C0:185B <- R034+0x0EE6,implemented,cite:coordinate,R034+0x0EE6,,map.csv;src/Darklands.Core/Rules/LocationRules.cs;src/Darklands.Core/Rules/PartyStanding.cs
 R034+0x1B3C,R034,0x1B3C,1550:0C5C,48,asm,matched,yes,thunk 09C0:185B <- R034+0x0EE6,implemented,cite:coordinate,R034+0x0EE6;R034+0x11DC;R034+0x144C;R034+0x166E,,map.csv;src/Darklands.Presentation/PartyInfoScreen.cs
 R035+0x0000,R035,0x0000,1462:0000,1211,C,matched,yes,thunk 09C0:1ED7,implemented,cite:coordinate,R029+0x225C,,map.csv;src/Darklands.Presentation/BuySellPage.cs;src/Darklands.Presentation/GameScreens.cs
-R035+0x04BC,R035,0x04BC,1462:04BC,83,C,matched,yes,thunk 09C0:1ED7 <- R035+0x0000,implemented,cite:coordinate,R035+0x0000;R035+0x0A46,,map.csv;src/Darklands.Core/Items/ItemStores.cs
+R035+0x04BC,R035,0x04BC,1462:04BC,83,C,matched,yes,thunk 09C0:1ED7 <- R035+0x0000,implemented,cite:coordinate,R035+0x0000;R035+0x0A46,,map.csv;src/Darklands.Core/Items/ItemStores.cs;src/Darklands.Presentation/ItemStoreScreen.cs
 R035+0x0510,R035,0x0510,1462:0510,626,C,matched,yes,thunk 09C0:1ED7 <- R035+0x0000,implemented,cite:coordinate,R035+0x0000,,map.csv;src/Darklands.Presentation/ItemStoreScreen.cs
 R035+0x0782,R035,0x0782,1462:0782,708,C,matched,yes,thunk 09C0:1ED7 <- R035+0x0000,implemented,cite:coordinate,R035+0x0000;R035+0x0A46,,map.csv;src/Darklands.Presentation/ItemStoreScreen.cs
 R035+0x0A46,R035,0x0A46,1462:0A46,1676,C,matched,yes,thunk 09C0:1ED7 <- R035+0x0000,implemented,cite:coordinate,R035+0x0000,,map.csv;src/Darklands.Core/Rules/Storing.cs;src/Darklands.Presentation/ItemStoreScreen.cs
@@ -1056,14 +1056,14 @@ R037+0x0444,R037,0x0444,1462:0444,8988,C,draft,yes,thunk 09C0:18DD <- R037+0x000
 R037+0x2760,R037,0x2760,1462:2760,450,C,draft,yes,thunk 09C0:18DD <- R037+0x03D4,implemented,cite:coordinate,R037+0x03D4;R037+0x0444,,map.csv;src/Darklands.Core/Characters/Creation/CharacterCreation.cs;src/Darklands.Presentation/CharacterCreationScreen.cs
 R037+0x2922,R037,0x2922,1462:2922,326,C,draft,yes,thunk 09C0:18DD <- R037+0x03D4,implemented,cite:coordinate,R037+0x03D4,,map.csv;src/Darklands.Presentation/CharacterCreationScreen.cs
 R037+0x2A68,R037,0x2A68,1462:2A68,101,C,draft,yes,thunk 09C0:1847,implemented,cite:coordinate,R000+0x083E;root 0000:0CAA,,map.csv;src/Darklands.Persistence/OriginalSaves.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
-R037+0x2ACE,R037,0x2ACE,1462:2ACE,3547,C,draft,yes,thunk 09C0:1847 <- R037+0x2A68,implemented,cite:coordinate,R037+0x2A68,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs;src/Darklands.Core/GameState.cs
+R037+0x2ACE,R037,0x2ACE,1462:2ACE,3547,C,draft,yes,thunk 09C0:1847 <- R037+0x2A68,implemented,cite:coordinate,R037+0x2A68,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs;src/Darklands.Core/Events/EventLog.cs
 R037+0x38AA,R037,0x38AA,1462:38AA,232,C,draft,yes,thunk 09C0:20CB <- R037+0x4BEE,implemented,cite:coordinate,R037+0x4BEE,,map.csv;src/Darklands.Core/Characters/Character.cs;src/Darklands.Core/Characters/CharacterRoster.cs
 R037+0x3992,R037,0x3992,1462:3992,247,C,draft,no,,excluded:unreferenced,,,,
 R037+0x3A8A,R037,0x3A8A,1462:3A8A,88,C,draft,yes,thunk 09C0:1ECD,implemented,cite:coordinate,R029+0x23E2,,map.csv;src/Darklands.Core/Rules/PartyRules.cs
 R037+0x3AE2,R037,0x3AE2,1462:3AE2,118,C,draft,yes,thunk 09C0:20AD,implemented,cite:coordinate,R038+0x23EC,,map.csv;src/Darklands.Core/Rules/InnRoster.cs;src/Darklands.Core/Rules/PartyRules.cs
 R037+0x3B58,R037,0x3B58,1462:3B58,382,C,draft,yes,thunk 09C0:1EC3,implemented,cite:coordinate,R029+0x23E2;R086+0x114C,,map.csv;src/Darklands.Cards/CardContext.Helpers.cs;src/Darklands.Cards/Scripts/S086/InnRetireOrRecruit.cs
 R037+0x3CD6,R037,0x3CD6,1462:3CD6,601,C,draft,yes,thunk 09C0:20A3,implemented,cite:coordinate,R047+0x01A6;R115+0x0F8A;R116+0x0000,,map.csv;src/Darklands.Cards/CardContext.Battles.cs;src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
-R037+0x3F30,R037,0x3F30,1462:3F30,280,C,draft,yes,thunk 09C0:18B5,implemented,cite:coordinate,R029+0x2278;R029+0x2434;R029+0x2474;R052+0x029C;R059+0x1082;R066+0x3216;...,,map.csv;src/Darklands.Cards/CardContext.Memory.cs;src/Darklands.Cards/Scripts/S059/GargoylesAttack.cs
+R037+0x3F30,R037,0x3F30,1462:3F30,280,C,draft,yes,thunk 09C0:18B5,implemented,cite:coordinate,R029+0x2278;R029+0x2434;R029+0x2474;R052+0x029C;R059+0x1082;R066+0x3216;...,,map.csv;src/Darklands.Cards/CardContext.Memory.cs;src/Darklands.Cards/CardContext.Party.cs
 R037+0x4048,R037,0x4048,1462:4048,315,C,draft,yes,thunk 09C0:18B5 <- R037+0x3F30,implemented,cite:coordinate,R037+0x0444;R037+0x3F30,,map.csv;src/Darklands.Cards/CardContext.Memory.cs;src/Darklands.Core/Characters/CharacterRoster.cs
 R037+0x4184,R037,0x4184,1462:4184,609,C,draft,yes,thunk 09C0:18DD <- R037+0x9DB2,implemented,cite:coordinate,R037+0x0000;R037+0x8ED4;R037+0x9DB2,,map.csv;src/Darklands.Core/Characters/CharacterRoster.cs;src/Darklands.Core/Characters/DefaultParty.cs
 R037+0x43E6,R037,0x43E6,1462:43E6,379,C,draft,yes,thunk 09C0:20B7,implemented,cite:coordinate,R037+0x2A68;R037+0x4BEE;R060+0x2444;R061+0x0DA6,,map.csv;src/Darklands.Cards/CardContext.Memory.cs;src/Darklands.Core/Characters/Creation/CharacterCreation.cs
@@ -1090,7 +1090,7 @@ R037+0x847E,R037,0x847E,1C7D:02CE,59,C,matched,yes,thunk 09C0:1851 <- R037+0x81B
 R037+0x84BA,R037,0x84BA,1C7D:030A,988,C,matched,yes,thunk 09C0:1851 <- R037+0x81B2,implemented,cite:coordinate,R037+0x81B2,,map.csv;src/Darklands.Presentation/LoadGameScreen.cs
 R037+0x8896,R037,0x8896,1C7D:06E6,632,C,matched,yes,thunk 09C0:1851 <- R037+0x847E,implemented,cite:coordinate,R037+0x847E;R037+0x84BA,,map.csv;src/Darklands.Persistence/SaveFolder.cs;src/Darklands.Presentation/LoadGameScreen.cs
 R037+0x8B0E,R037,0x8B0E,1C7D:095E,103,C,matched,yes,thunk 09C0:1851 <- R037+0x847E,implemented,cite:coordinate,R037+0x847E,,map.csv;src/Darklands.Content/Formats/Saves/LoadScreenTexts.cs;src/Darklands.Presentation/LoadGameScreen.cs
-R037+0x8B76,R037,0x8B76,1C7D:09C6,861,C,matched,yes,thunk 09C0:1851,implemented,cite:coordinate,R000+0x083E;root 0000:0CAA,,map.csv;src/Darklands.Audio/SynthAudio.cs;src/Darklands.Core/OriginalBehaviour.cs
+R037+0x8B76,R037,0x8B76,1C7D:09C6,861,C,matched,yes,thunk 09C0:1851,implemented,cite:coordinate,R000+0x083E;root 0000:0CAA,,map.csv;src/Darklands.Audio/SynthAudio.cs;src/Darklands.Core/Battles/Battle.cs
 R037+0x8ED4,R037,0x8ED4,1C7D:0D24,3233,C,matched,yes,thunk 09C0:1851 <- R037+0x84BA,implemented,cite:coordinate,R037+0x84BA,,map.csv;src/Darklands.Content/WorldData.cs;src/Darklands.Core/GameState.cs
 R037+0x9B76,R037,0x9B76,1C7D:19C6,153,C,matched,yes,thunk 09C0:1851 <- R037+0x84BA,implemented,cite:coordinate,R037+0x84BA,,map.csv;src/Darklands.Persistence/SaveFolder.cs;src/Darklands.Presentation/LoadGameScreen.cs
 R037+0x9C10,R037,0x9C10,1C7D:1A60,56,C,matched,yes,thunk 09C0:1851 <- R037+0x83FE,implemented,cite:coordinate,R037+0x83FE,,map.csv;src/Darklands.Persistence/SaveFolder.cs;src/Darklands.Presentation/LoadGameScreen.cs
@@ -1120,7 +1120,7 @@ R039+0x00BA,R039,0x00BA,1462:00BA,71,C,matched,yes,thunk 09C0:20F3,implemented,c
 R039+0x0102,R039,0x0102,1462:0102,47,C,matched,yes,thunk 09C0:2107,implemented,cite:coordinate,R049+0x202A;R049+0x276C;R049+0x2872;R049+0x2ABC;R049+0x2B20;R049+0x2B84;...,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Core/Rules/LocationRules.cs
 R039+0x0132,R039,0x0132,1462:0132,312,C,matched,yes,thunk 09C0:1F63,implemented,cite:coordinate,R029+0x3FB2;R036+0x147A;R044+0x0CD8;R044+0x1E2A;R044+0x1F7E;R044+0x2CAA;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/CampStay.cs
 R039+0x026A,R039,0x026A,1462:026A,518,C,matched,yes,thunk 09C0:2143,implemented,cite:coordinate,R047+0x04FE;R047+0x079E;R047+0x12A2;R047+0x17EE;R047+0x1904;R047+0x23A4;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/MemberRules.cs
-R039+0x0470,R039,0x0470,1462:0470,147,C,matched,yes,thunk 09C0:1C1B,implemented,cite:coordinate,R007+0x1BFE;R008+0x1790;R008+0x294E;R009+0x0218;R009+0x0398;R009+0x05E4;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/PartyQueries.cs
+R039+0x0470,R039,0x0470,1462:0470,147,C,matched,yes,thunk 09C0:1C1B,implemented,cite:coordinate,R007+0x1BFE;R008+0x1790;R008+0x294E;R009+0x0218;R009+0x0398;R009+0x05E4;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Battles/Generation/BattlefieldBuilder.cs
 R039+0x0504,R039,0x0504,1462:0504,83,C,matched,no,,implemented,cite:coordinate,,,map.csv;src/Darklands.Core/Rules/LocationRules.cs
 R039+0x0558,R039,0x0558,1462:0558,1244,C,matched,no,,implemented,cite:coordinate,,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Core/Rules/CityPolitics.cs
 R039+0x0A34,R039,0x0A34,1462:0A34,74,C,matched,yes,thunk 09C0:1F59,implemented,cite:coordinate,R029+0x4180;R039+0x0B12;R039+0x0BF6;R039+0x0D46;R053+0x11E8;R062+0x1C68;...,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Core/Rules/CityPolitics.cs
@@ -1152,7 +1152,7 @@ R039+0x1B0C,R039,0x1B0C,1462:1B0C,278,C,matched,yes,thunk 09C0:1F1D,implemented,
 R039+0x1C22,R039,0x1C22,1462:1C22,176,C,matched,yes,thunk 09C0:1F81,implemented,cite:coordinate,R029+0x4534;R039+0x1B0C,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Core/Rules/Quests.cs
 R039+0x1CD2,R039,0x1CD2,1462:1CD2,22,C,matched,yes,thunk 09C0:21A7,implemented,cite:coordinate,R043+0x1316,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Cards/TextVariables.cs
 R039+0x1CE8,R039,0x1CE8,1462:1CE8,22,C,matched,yes,thunk 09C0:20DF,implemented,cite:coordinate,R043+0x1316,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Cards/TextVariables.cs
-R039+0x1CFE,R039,0x1CFE,1462:1CFE,46,C,matched,yes,thunk 09C0:20FD,implemented,cite:coordinate,R043+0x1316;R116+0x2226;R117+0x0A80;R118+0x0000,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Cards/TextVariables.cs
+R039+0x1CFE,R039,0x1CFE,1462:1CFE,46,C,matched,yes,thunk 09C0:20FD,implemented,cite:coordinate,R043+0x1316;R116+0x2226;R117+0x0A80;R118+0x0000,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Core/Rules/Quests.cs
 R039+0x1D2C,R039,0x1D2C,1462:1D2C,185,C,matched,yes,thunk 09C0:2099,implemented,cite:coordinate,R036+0x10D0;R036+0x147A;R036+0x1858;R051+0x091E;R051+0x12F0,,map.csv;src/Darklands.Cards/CardContext.World.cs;src/Darklands.Core/Rules/CampStay.cs
 R039+0x1DE6,R039,0x1DE6,1462:1DE6,32,C,matched,yes,thunk 09C0:2161,implemented,cite:coordinate,R039+0x1D2C;R044+0x1810;R047+0x01A6;R053+0x02D6;R054+0x09B8;R056+0x0000;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/PartyQueries.cs
 R039+0x1E06,R039,0x1E06,1462:1E06,137,C,matched,yes,thunk 09C0:1F31,implemented,cite:coordinate,R029+0x3E06;R039+0x0EBE;R092+0x0792;R105+0x035E;R107+0x1C40;R107+0x1E48;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Core/Rules/Practice.cs
@@ -1297,7 +1297,7 @@ R039+0x9578,R039,0x9578,165C:75D8,252,C,matched,no,,implemented,cite:coordinate,
 R039+0x9674,R039,0x9674,165C:76D4,317,C,matched,yes,table R136 290E:290F,implemented,cite:coordinate,,,map.csv;src/Darklands.Core/Rules/SaintBook.cs
 R039+0x97B2,R039,0x97B2,165C:7812,184,C,matched,no,,implemented,cite:coordinate,,,map.csv;src/Darklands.Core/Rules/SaintBook.cs
 R039+0x986A,R039,0x986A,165C:78CA,266,C,matched,yes,table R136 290E:290F,implemented,cite:coordinate,,,map.csv;src/Darklands.Core/Rules/SaintBook.cs
-R040+0x0000,R040,0x0000,1462:0000,455,asm,draft,yes,thunk 09C0:1DAB,implemented,cite:coordinate,R014+0xE3C0,,map.csv;src/Darklands.Core/Rules/LootSharing.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
+R040+0x0000,R040,0x0000,1462:0000,455,asm,draft,yes,thunk 09C0:1DAB,implemented,cite:coordinate,R014+0xE3C0,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Animation.cs;src/Darklands.Core/Rules/LootSharing.cs
 R040+0x01C8,R040,0x01C8,1462:01C8,1279,C,draft,yes,thunk 09C0:1DAB <- R040+0x0000,implemented,cite:coordinate,R040+0x0000,,map.csv;src/Darklands.Core/Rules/LootSharing.cs;src/Darklands.Presentation/BuySellPage.cs
 R040+0x06C8,R040,0x06C8,1462:06C8,26,C,draft,yes,thunk 09C0:1DAB <- R040+0x01C8,implemented,cite:coordinate,R040+0x01C8;R040+0x0C22,,map.csv;src/Darklands.Presentation/LootScreen.cs
 R040+0x06E2,R040,0x06E2,1462:06E2,623,C,draft,yes,thunk 09C0:1DAB <- R040+0x01C8,implemented,cite:coordinate,R040+0x01C8,,map.csv;src/Darklands.Presentation/LootScreen.cs
@@ -1307,7 +1307,7 @@ R040+0x1242,R040,0x1242,1462:1242,169,C,draft,yes,thunk 09C0:1DAB <- R040+0x0C22
 R040+0x12EC,R040,0x12EC,1462:12EC,134,asm,draft,yes,thunk 09C0:1DAB <- R040+0x0C22,implemented,cite:coordinate,R040+0x0C22,,map.csv;src/Darklands.Core/Rules/LootSharing.cs
 R040+0x1372,R040,0x1372,1462:1372,236,C,draft,yes,thunk 09C0:1DAB <- R040+0x0C22,implemented,cite:coordinate,R040+0x0C22,,map.csv;src/Darklands.Presentation/LootScreen.cs
 R040+0x145E,R040,0x145E,1462:145E,196,C,draft,yes,thunk 09C0:1DAB <- R040+0x0C22,implemented,cite:coordinate,R040+0x0C22,,map.csv;src/Darklands.Presentation/LootScreen.cs
-R041+0x0000,R041,0x0000,1462:0000,1242,C,matched,yes,thunk 09C0:1FD1,excluded:copy-protection,R041+*,R030+0x0000,,
+R041+0x0000,R041,0x0000,1462:0000,1242,C,matched,yes,thunk 09C0:1FD1,implemented,cite:coordinate,R030+0x0000,,src/Darklands.Presentation/DarklandsGame.cs
 R041+0x04DA,R041,0x04DA,1462:04DA,52,C,matched,yes,thunk 09C0:1FD1 <- R041+0x0000,excluded:copy-protection,R041+*,R041+0x0000;R041+0x050E,,
 R041+0x050E,R041,0x050E,1462:050E,133,C,matched,yes,thunk 09C0:1FD1 <- R041+0x0000,excluded:copy-protection,R041+*,R041+0x0000,,
 R041+0x0594,R041,0x0594,1462:0594,55,C,matched,yes,thunk 09C0:1FD1 <- R041+0x0000,excluded:copy-protection,R041+*,R041+0x0000;R041+0x050E,,
@@ -2424,7 +2424,7 @@ R054+0x18DA,R054,0x18DA,1952:073A,137,C,matched,yes,table R136 2DAE:0000 <- R054
 R054+0x1964,R054,0x1964,1952:07C4,137,C,matched,yes,table R136 2DAE:0000 <- R054+0x1686,implemented,cite:coordinate,R054+0x1686,,map.csv;src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs
 R054+0x19EE,R054,0x19EE,1952:084E,137,C,matched,yes,table R136 2DAE:0000 <- R054+0x1686,implemented,cite:coordinate,R054+0x1686,,map.csv;src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs
 R054+0x1A78,R054,0x1A78,19DF:0008,655,C,matched,yes,table R136 2DAE:0000,implemented,cite:coordinate,,,map.csv;src/Darklands.Cards/OptionFlagCopies.cs;src/Darklands.Cards/Scripts/S054/CouncilHall.cs
-R054+0x1D08,R054,0x1D08,19DF:0298,783,C,matched,yes,table R136 2DAE:0000 <- R054+0x2018,implemented,cite:coordinate,R054+0x2018;R054+0x22F8,,map.csv;src/Darklands.Cards/Scripts/S054/CouncilHall.cs
+R054+0x1D08,R054,0x1D08,19DF:0298,783,C,matched,yes,table R136 2DAE:0000 <- R054+0x2018,implemented,cite:coordinate,R054+0x2018;R054+0x22F8,,map.csv;src/Darklands.Cards/Scripts/S050/FortressByDay.cs;src/Darklands.Cards/Scripts/S054/CouncilHall.cs
 R054+0x2018,R054,0x2018,19DF:05A8,516,C,matched,yes,table R136 2DAE:0000 <- R054+0x1A78,implemented,cite:coordinate,R054+0x1A78,,map.csv;src/Darklands.Cards/Scripts/S054/CouncilHall.cs
 R054+0x221C,R054,0x221C,19DF:07AC,219,C,matched,yes,table R136 2DAE:0000 <- R054+0x1A78,implemented,cite:coordinate,R054+0x1A78,,map.csv;src/Darklands.Cards/Scripts/S054/CouncilHall.cs
 R054+0x22F8,R054,0x22F8,19DF:0888,557,C,matched,yes,table R136 2DAE:0000 <- R054+0x1A78,implemented,cite:coordinate,R054+0x1A78,,map.csv;src/Darklands.Cards/Scripts/S054/CouncilHall.cs
@@ -2922,7 +2922,7 @@ R060+0x0ECC,R060,0x0ECC,18CF:055C,296,C,matched,yes,table R136 2DAE:0000 <- R060
 R060+0x0FF4,R060,0x0FF4,18CF:0684,93,C,matched,yes,table R136 2DAE:0000 <- R060+0x0978,implemented,cite:coordinate,R060+0x0978,,map.csv;src/Darklands.Cards/Scripts/S060/WildHunt.cs
 R060+0x1052,R060,0x1052,18CF:06E2,308,C,matched,yes,table R136 2DAE:0000 <- R060+0x0978,implemented,cite:coordinate,R060+0x0978,,map.csv;src/Darklands.Cards/Scripts/S060/WildHunt.cs
 R060+0x1186,R060,0x1186,18CF:0816,55,C,matched,yes,table R136 2DAE:0000 <- R060+0x0978,implemented,cite:coordinate,R060+0x0978,,src/Darklands.Cards/Scripts/S060/WildHunt.cs
-R060+0x11BE,R060,0x11BE,18CF:084E,5,C,matched,yes,table R136 2DAE:0000 <- R060+0x0978,implemented,cite:shorthand,R060+0x0978,,src/Darklands.Cards/Scripts/S060/WildHunt.cs
+R060+0x11BE,R060,0x11BE,18CF:084E,5,C,matched,yes,table R136 2DAE:0000 <- R060+0x0978,implemented,cite:coordinate,R060+0x0978,,src/Darklands.Cards/Scripts/S060/WildHunt.cs
 R060+0x11C4,R060,0x11C4,18CF:0854,55,C,matched,yes,table R136 2DAE:0000 <- R060+0x0978,implemented,cite:coordinate,R060+0x0978,,src/Darklands.Cards/Scripts/S060/WildHunt.cs
 R060+0x11FC,R060,0x11FC,18CF:088C,77,C,matched,yes,table R136 2DAE:0000 <- R060+0x0978,implemented,cite:coordinate,R060+0x0978,,map.csv;src/Darklands.Cards/Scripts/S060/WildHunt.cs
 R060+0x124A,R060,0x124A,18CF:08DA,55,C,matched,yes,table R136 2DAE:0000 <- R060+0x0978,implemented,cite:coordinate,R060+0x0978,,src/Darklands.Cards/Scripts/S060/WildHunt.cs
@@ -3280,21 +3280,21 @@ R063+0x0F60,R063,0x0F60,190C:0220,37,C,matched,yes,table R136 2DAE:0000 <- R063+
 R063+0x0F86,R063,0x0F86,190C:0246,57,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x0FC0,R063,0x0FC0,190C:0280,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,map.csv;src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x0FDE,R063,0x0FDE,190C:029E,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R044+0x0306,R063+0x0D40,,
-R063+0x1016,R063,0x1016,190C:02D6,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:shorthand,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
+R063+0x1016,R063,0x1016,190C:02D6,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x1034,R063,0x1034,190C:02F4,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R044+0x0306,R063+0x0D40,,
-R063+0x106C,R063,0x106C,190C:032C,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R045+0x0848,R063+0x0D40,,
+R063+0x106C,R063,0x106C,190C:032C,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x108A,R063,0x108A,190C:034A,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R044+0x0306,R063+0x0D40,,
-R063+0x10C2,R063,0x10C2,190C:0382,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R045+0x0848,R063+0x0D40,,
+R063+0x10C2,R063,0x10C2,190C:0382,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x10E0,R063,0x10E0,190C:03A0,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R044+0x0306,R063+0x0D40,,
-R063+0x1118,R063,0x1118,190C:03D8,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R045+0x0848,R063+0x0D40,,
+R063+0x1118,R063,0x1118,190C:03D8,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x1136,R063,0x1136,190C:03F6,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R044+0x0306,R063+0x0D40,,
-R063+0x116E,R063,0x116E,190C:042E,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R045+0x0848,R063+0x0D40,,
+R063+0x116E,R063,0x116E,190C:042E,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x118C,R063,0x118C,190C:044C,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R044+0x0306,R063+0x0D40,,
-R063+0x11C4,R063,0x11C4,190C:0484,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R045+0x0848,R063+0x0D40,,
+R063+0x11C4,R063,0x11C4,190C:0484,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x11E2,R063,0x11E2,190C:04A2,57,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
-R063+0x121C,R063,0x121C,190C:04DC,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R045+0x0848,R063+0x0D40,,
+R063+0x121C,R063,0x121C,190C:04DC,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x123A,R063,0x123A,190C:04FA,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R044+0x0306,R063+0x0D40,,
-R063+0x1272,R063,0x1272,190C:0532,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:shorthand,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
+R063+0x1272,R063,0x1272,190C:0532,29,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x1290,R063,0x1290,190C:0550,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,clone:R044+0x0306,R063+0x0D40,,
 R063+0x12C8,R063,0x12C8,190C:0588,162,C,matched,yes,table R136 2DAE:0000 <- R063+0x0D40,implemented,cite:coordinate,R063+0x0D40,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
 R063+0x136A,R063,0x136A,190C:062A,55,C,matched,yes,table R136 2DAE:0000 <- R063+0x12C8,implemented,cite:coordinate,R063+0x12C8,,src/Darklands.Cards/Scripts/S063/SoldiersStreet.cs
@@ -4168,11 +4168,11 @@ R071+0x0000,R071,0x0000,1838:0000,621,C,matched,yes,table R136 2DAE:0000,impleme
 R071+0x026E,R071,0x026E,1838:026E,58,C,matched,yes,table R136 2DAE:0000 <- R071+0x068E,implemented,cite:coordinate,R071+0x068E;R071+0x06C2;R071+0x07B8;R071+0x07CC,,map.csv;src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
 R071+0x02A8,R071,0x02A8,1838:02A8,127,C,matched,yes,table R136 2DAE:0000 <- R071+0x0328,implemented,cite:coordinate,R071+0x0328;R071+0x06A0;R071+0x06D4,,map.csv;src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
 R071+0x0328,R071,0x0328,1838:0328,869,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:coordinate,R071+0x0000,,map.csv;src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
-R071+0x068E,R071,0x068E,1838:068E,18,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:shorthand,R071+0x0000,,src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
+R071+0x068E,R071,0x068E,1838:068E,18,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:coordinate,R071+0x0000,,src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
 R071+0x06A0,R071,0x06A0,1838:06A0,34,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:coordinate,R071+0x0000,,map.csv;src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
-R071+0x06C2,R071,0x06C2,1838:06C2,18,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:shorthand,R071+0x0000,,src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
+R071+0x06C2,R071,0x06C2,1838:06C2,18,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:coordinate,R071+0x0000,,src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
 R071+0x06D4,R071,0x06D4,1838:06D4,228,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:coordinate,R071+0x0000,,map.csv;src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
-R071+0x07B8,R071,0x07B8,1838:07B8,18,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:shorthand,R071+0x0000,,src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
+R071+0x07B8,R071,0x07B8,1838:07B8,18,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:coordinate,R071+0x0000,,src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
 R071+0x07CA,R071,0x07CA,1838:07CA,1,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:shorthand,R071+0x0000,,src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
 R071+0x07CC,R071,0x07CC,1838:07CC,18,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:coordinate,R071+0x0000,,src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
 R071+0x07DE,R071,0x07DE,1838:07DE,17,C,matched,yes,table R136 2DAE:0000 <- R071+0x0000,implemented,cite:coordinate,R071+0x0000,,map.csv;src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs
@@ -4895,7 +4895,7 @@ R079+0x27EC,R079,0x27EC,1A6E:048C,62,C,matched,yes,table R136 2DAE:0000 <- R079+
 R079+0x282A,R079,0x282A,1A6E:04CA,57,C,matched,yes,table R136 2DAE:0000 <- R079+0x2360,implemented,cite:coordinate,R079+0x2360,,map.csv;src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs
 R079+0x2864,R079,0x2864,1A6E:0504,33,C,matched,yes,table R136 2DAE:0000 <- R079+0x2360,implemented,cite:coordinate,R079+0x2360,,map.csv;src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs
 R079+0x2886,R079,0x2886,1A6E:0526,128,C,matched,yes,table R136 2DAE:0000 <- R079+0x2360,implemented,cite:coordinate,R079+0x2360,,map.csv;src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs
-R079+0x2906,R079,0x2906,1A6E:05A6,33,C,matched,yes,table R136 2DAE:0000 <- R079+0x2360,implemented,cite:coordinate,R079+0x2360,,map.csv;src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs
+R079+0x2906,R079,0x2906,1A6E:05A6,33,C,matched,yes,table R136 2DAE:0000 <- R079+0x2360,implemented,cite:coordinate,R079+0x2360,,map.csv;src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs;src/Darklands.Core/Rules/PartyQueries.cs
 R079+0x2928,R079,0x2928,1A6E:05C8,167,C,matched,yes,table R136 2DAE:0000 <- R079+0x2360,implemented,cite:coordinate,R079+0x2360,,map.csv;src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs
 R079+0x29D0,R079,0x29D0,1A6E:0670,55,C,matched,yes,table R136 2DAE:0000 <- R079+0x2360,implemented,cite:coordinate,R079+0x2360,,map.csv;src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs
 R079+0x2A08,R079,0x2A08,1A6E:06A8,189,C,matched,yes,table R136 2DAE:0000 <- R079+0x2360,implemented,cite:coordinate,R079+0x2360,,map.csv;src/Darklands.Cards/Scripts/S079/CultistSacrifice.cs
@@ -5517,7 +5517,7 @@ R090+0x1322,R090,0x1322,18E0:08A2,11,C,matched,yes,table R136 2DAE:0000 <- R090+
 R090+0x132E,R090,0x132E,18E0:08AE,55,C,matched,yes,table R136 2DAE:0000 <- R090+0x0A82,implemented,clone:R044+0x0306,R090+0x0A82,,
 R090+0x1366,R090,0x1366,18E0:08E6,87,C,matched,yes,table R136 2DAE:0000 <- R090+0x0A82,implemented,cite:coordinate,R090+0x0A82,,map.csv;src/Darklands.Cards/Scripts/S090/RebelMarch.cs
 R090+0x13BE,R090,0x13BE,18E0:093E,55,C,matched,yes,table R136 2DAE:0000 <- R090+0x1366,implemented,clone:R044+0x064E,R090+0x1366,,
-R090+0x13F6,R090,0x13F6,18E0:0976,138,C,matched,yes,table R136 2DAE:0000 <- R090+0x1366,implemented,cite:coordinate,R090+0x1366,,map.csv;src/Darklands.Cards/Scripts/S090/RebelMarch.cs
+R090+0x13F6,R090,0x13F6,18E0:0976,138,C,matched,yes,table R136 2DAE:0000 <- R090+0x1366,implemented,cite:coordinate,R090+0x1366,,map.csv;src/Darklands.Cards/CardMenu.cs;src/Darklands.Cards/Scripts/S090/RebelMarch.cs
 R090+0x1480,R090,0x1480,18E0:0A00,138,C,matched,yes,table R136 2DAE:0000 <- R090+0x1366,implemented,clone:R047+0x1FAC,R090+0x1366,,
 R090+0x150A,R090,0x150A,18E0:0A8A,138,C,matched,yes,table R136 2DAE:0000 <- R090+0x1366,implemented,clone:R047+0x1FAC,R090+0x1366,,
 R090+0x1594,R090,0x1594,18E0:0B14,138,C,matched,no,,excluded:unreferenced,,,,
@@ -6295,8 +6295,8 @@ R102+0x0BA2,R102,0x0BA2,18A6:04C2,114,C,matched,yes,table R136 2DAE:0000 <- R102
 R102+0x0C14,R102,0x0C14,18A6:0534,55,C,matched,yes,table R136 2DAE:0000 <- R102+0x0BA2,implemented,clone:R044+0x064E,R102+0x0BA2,,
 R102+0x0C4C,R102,0x0C4C,18A6:056C,108,C,matched,yes,table R136 2DAE:0000 <- R102+0x0BA2,implemented,cite:coordinate,R102+0x0BA2,,map.csv;src/Darklands.Cards/Scripts/S102/SourceOfTheHorrors_MineH01.cs
 R102+0x0CB8,R102,0x0CB8,18A6:05D8,137,C,matched,yes,table R136 2DAE:0000 <- R102+0x0BA2,implemented,cite:coordinate,R102+0x0BA2,,map.csv;src/Darklands.Cards/Scripts/S102/SourceOfTheHorrors_MineH01.cs
-R102+0x0D42,R102,0x0D42,18A6:0662,137,C,matched,yes,table R136 2DAE:0000 <- R102+0x0BA2,implemented,clone:R044+0x0776,R102+0x0BA2,,
-R102+0x0DCC,R102,0x0DCC,18A6:06EC,137,C,matched,yes,table R136 2DAE:0000 <- R102+0x0BA2,implemented,cite:shorthand,R102+0x0BA2,,src/Darklands.Cards/Scripts/S102/SourceOfTheHorrors_MineH01.cs
+R102+0x0D42,R102,0x0D42,18A6:0662,137,C,matched,yes,table R136 2DAE:0000 <- R102+0x0BA2,implemented,cite:coordinate,R102+0x0BA2,,src/Darklands.Cards/Scripts/S102/SourceOfTheHorrors_MineH01.cs
+R102+0x0DCC,R102,0x0DCC,18A6:06EC,137,C,matched,yes,table R136 2DAE:0000 <- R102+0x0BA2,implemented,cite:coordinate,R102+0x0BA2,,src/Darklands.Cards/Scripts/S102/SourceOfTheHorrors_MineH01.cs
 R102+0x0E56,R102,0x0E56,191D:0006,346,C,matched,yes,table R136 2DAE:0000,implemented,cite:coordinate,,,map.csv;src/Darklands.Cards/OptionFlagCopies.cs;src/Darklands.Cards/Scripts/S102/SurlyDwarf_MineR06.cs
 R102+0x0FB0,R102,0x0FB0,191D:0160,65,C,matched,yes,table R136 2DAE:0000 <- R102+0x0E56,implemented,cite:coordinate,R102+0x0E56,,map.csv;src/Darklands.Cards/Scripts/S102/SurlyDwarf_MineR06.cs
 R102+0x0FF2,R102,0x0FF2,191D:01A2,55,C,matched,yes,table R136 2DAE:0000 <- R102+0x0E56,implemented,clone:R044+0x0CA0,R102+0x0E56,,
@@ -6425,15 +6425,15 @@ R104+0x1952,R104,0x1952,1982:04B2,104,C,matched,yes,table R136 2DAE:0000 <- R104
 R104+0x19BA,R104,0x19BA,1982:051A,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R044+0x12AC,R104+0x14A0,,
 R104+0x19F2,R104,0x19F2,1982:0552,29,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,cite:coordinate,R104+0x14A0,,map.csv;src/Darklands.Cards/Scripts/S104/CastleOnTheKnoll.cs
 R104+0x1A10,R104,0x1A10,1982:0570,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R044+0x0306,R104+0x14A0,,
-R104+0x1A48,R104,0x1A48,1982:05A8,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R048+0x0A38,R104+0x14A0,,
+R104+0x1A48,R104,0x1A48,1982:05A8,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,cite:coordinate,R104+0x14A0,,src/Darklands.Cards/Scripts/S104/CastleOnTheKnoll.cs
 R104+0x1A54,R104,0x1A54,1982:05B4,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R044+0x0306,R104+0x14A0,,
-R104+0x1A8C,R104,0x1A8C,1982:05EC,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R048+0x0A38,R104+0x14A0,,
+R104+0x1A8C,R104,0x1A8C,1982:05EC,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,cite:coordinate,R104+0x14A0,,src/Darklands.Cards/Scripts/S104/CastleOnTheKnoll.cs
 R104+0x1A98,R104,0x1A98,1982:05F8,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R044+0x0306,R104+0x14A0,,
-R104+0x1AD0,R104,0x1AD0,1982:0630,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R048+0x0A38,R104+0x14A0,,
+R104+0x1AD0,R104,0x1AD0,1982:0630,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,cite:coordinate,R104+0x14A0,,src/Darklands.Cards/Scripts/S104/CastleOnTheKnoll.cs
 R104+0x1ADC,R104,0x1ADC,1982:063C,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R044+0x0306,R104+0x14A0,,
-R104+0x1B14,R104,0x1B14,1982:0674,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R048+0x0A38,R104+0x14A0,,
+R104+0x1B14,R104,0x1B14,1982:0674,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,cite:coordinate,R104+0x14A0,,src/Darklands.Cards/Scripts/S104/CastleOnTheKnoll.cs
 R104+0x1B20,R104,0x1B20,1982:0680,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R044+0x0306,R104+0x14A0,,
-R104+0x1B58,R104,0x1B58,1982:06B8,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R048+0x0A38,R104+0x14A0,,
+R104+0x1B58,R104,0x1B58,1982:06B8,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,cite:coordinate,R104+0x14A0,,src/Darklands.Cards/Scripts/S104/CastleOnTheKnoll.cs
 R104+0x1B64,R104,0x1B64,1982:06C4,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R044+0x0306,R104+0x14A0,,
 R104+0x1B9C,R104,0x1B9C,1982:06FC,17,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,cite:coordinate,R104+0x14A0,,map.csv;src/Darklands.Cards/Scripts/S104/CastleOnTheKnoll.cs
 R104+0x1BAE,R104,0x1BAE,1982:070E,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x14A0,implemented,clone:R044+0x0306,R104+0x14A0,,
@@ -6458,15 +6458,15 @@ R104+0x2500,R104,0x2500,1A35:0530,237,C,matched,yes,table R136 2DAE:0000 <- R104
 R104+0x25EE,R104,0x25EE,1A35:061E,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R044+0x0CA0,R104+0x1FD0,,
 R104+0x2626,R104,0x2626,1A35:0656,1,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,cite:coordinate,R104+0x1FD0,,src/Darklands.Cards/Scripts/S104/GuestOfTheCastleLord.cs
 R104+0x2628,R104,0x2628,1A35:0658,1,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,cite:coordinate,R104+0x1FD0,,src/Darklands.Cards/Scripts/S104/GuestOfTheCastleLord.cs
-R104+0x262A,R104,0x262A,1A35:065A,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R048+0x0A38,R104+0x1FD0,,
+R104+0x262A,R104,0x262A,1A35:065A,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,cite:coordinate,R104+0x1FD0,,src/Darklands.Cards/Scripts/S104/GuestOfTheCastleLord.cs
 R104+0x2636,R104,0x2636,1A35:0666,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R044+0x0306,R104+0x1FD0,,
-R104+0x266E,R104,0x266E,1A35:069E,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R048+0x0A38,R104+0x10AE;R104+0x1FD0,,
+R104+0x266E,R104,0x266E,1A35:069E,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,cite:coordinate,R104+0x10AE;R104+0x1FD0,,src/Darklands.Cards/Scripts/S104/GuestOfTheCastleLord.cs
 R104+0x267A,R104,0x267A,1A35:06AA,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R044+0x0306,R104+0x1FD0,,
 R104+0x26B2,R104,0x26B2,1A35:06E2,27,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,cite:coordinate,R104+0x1FD0,,map.csv;src/Darklands.Cards/Scripts/S104/GuestOfTheCastleLord.cs
 R104+0x26CE,R104,0x26CE,1A35:06FE,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R044+0x0306,R104+0x1FD0,,
-R104+0x2706,R104,0x2706,1A35:0736,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R048+0x0A38,R104+0x1FD0,,
+R104+0x2706,R104,0x2706,1A35:0736,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,cite:coordinate,R104+0x1FD0,,src/Darklands.Cards/Scripts/S104/GuestOfTheCastleLord.cs
 R104+0x2712,R104,0x2712,1A35:0742,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R044+0x0306,R104+0x1FD0,,
-R104+0x274A,R104,0x274A,1A35:077A,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R048+0x0A38,R104+0x1FD0,,
+R104+0x274A,R104,0x274A,1A35:077A,11,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,cite:coordinate,R104+0x1FD0,,src/Darklands.Cards/Scripts/S104/GuestOfTheCastleLord.cs
 R104+0x2756,R104,0x2756,1A35:0786,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,clone:R044+0x0306,R104+0x1FD0,,
 R104+0x278E,R104,0x278E,1A35:07BE,162,C,matched,yes,table R136 2DAE:0000 <- R104+0x1FD0,implemented,cite:coordinate,R104+0x1FD0,,src/Darklands.Cards/Scripts/S104/GuestOfTheCastleLord.cs
 R104+0x2830,R104,0x2830,1A35:0860,55,C,matched,yes,table R136 2DAE:0000 <- R104+0x278E,implemented,clone:R044+0x064E,R104+0x278E,,
@@ -6519,17 +6519,17 @@ R105+0x1814,R105,0x1814,1954:0654,200,C,matched,yes,table R136 2DAE:0000 <- R105
 R105+0x18DC,R105,0x18DC,1954:071C,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x1914,R105,0x1914,1954:0754,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x1920,R105,0x1920,1954:0760,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R044+0x0306,R105+0x11C8,,
-R105+0x1958,R105,0x1958,1954:0798,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R048+0x0A38,R105+0x11C8,,
+R105+0x1958,R105,0x1958,1954:0798,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x1964,R105,0x1964,1954:07A4,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R044+0x0306,R105+0x11C8,,
-R105+0x199C,R105,0x199C,1954:07DC,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R048+0x0A38,R105+0x11C8,,
+R105+0x199C,R105,0x199C,1954:07DC,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x19A8,R105,0x19A8,1954:07E8,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R044+0x0306,R105+0x11C8,,
-R105+0x19E0,R105,0x19E0,1954:0820,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R048+0x0A38,R105+0x11C8,,
+R105+0x19E0,R105,0x19E0,1954:0820,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x19EC,R105,0x19EC,1954:082C,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R044+0x0306,R105+0x11C8,,
 R105+0x1A24,R105,0x1A24,1954:0864,7,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x1A2C,R105,0x1A2C,1954:086C,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R044+0x0306,R105+0x11C8,,
-R105+0x1A64,R105,0x1A64,1954:08A4,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:shorthand,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
+R105+0x1A64,R105,0x1A64,1954:08A4,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x1A70,R105,0x1A70,1954:08B0,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R044+0x0306,R105+0x11C8,,
-R105+0x1AA8,R105,0x1AA8,1954:08E8,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:shorthand,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
+R105+0x1AA8,R105,0x1AA8,1954:08E8,11,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x1AB4,R105,0x1AB4,1954:08F4,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,clone:R044+0x0306,R105+0x11C8,,
 R105+0x1AEC,R105,0x1AEC,1954:092C,97,C,matched,yes,table R136 2DAE:0000 <- R105+0x11C8,implemented,cite:coordinate,R105+0x11C8,,src/Darklands.Cards/Scripts/S105/WalledMonasteryApproach.cs
 R105+0x1B4E,R105,0x1B4E,1954:098E,55,C,matched,yes,table R136 2DAE:0000 <- R105+0x1AEC,implemented,clone:R044+0x064E,R105+0x1AEC,,
@@ -7694,13 +7694,13 @@ R115+0x12E0,R115,0x12E0,1901:0650,20,C,matched,yes,table R136 2DAE:0000 <- R115+
 R115+0x12F4,R115,0x12F4,1901:0664,55,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
 R115+0x132C,R115,0x132C,1901:069C,11,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
 R115+0x1338,R115,0x1338,1901:06A8,55,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
-R115+0x1370,R115,0x1370,1901:06E0,11,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,clone:R048+0x0A38,R115+0x0C9A,,
+R115+0x1370,R115,0x1370,1901:06E0,11,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
 R115+0x137C,R115,0x137C,1901:06EC,55,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,clone:R044+0x0306,R115+0x0C9A,,
 R115+0x13B4,R115,0x13B4,1901:0724,20,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
 R115+0x13C8,R115,0x13C8,1901:0738,55,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
-R115+0x1400,R115,0x1400,1901:0770,11,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,clone:R048+0x0A38,R115+0x0C9A,,
+R115+0x1400,R115,0x1400,1901:0770,11,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
 R115+0x140C,R115,0x140C,1901:077C,55,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,clone:R044+0x0306,R115+0x0C9A,,
-R115+0x1444,R115,0x1444,1901:07B4,11,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,clone:R048+0x0A38,R115+0x0C9A,,
+R115+0x1444,R115,0x1444,1901:07B4,11,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
 R115+0x1450,R115,0x1450,1901:07C0,55,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,clone:R044+0x0306,R115+0x0C9A,,
 R115+0x1488,R115,0x1488,1901:07F8,162,C,matched,yes,table R136 2DAE:0000 <- R115+0x0C9A,implemented,cite:coordinate,R115+0x0C9A,,src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs
 R115+0x152A,R115,0x152A,1901:089A,55,C,matched,yes,table R136 2DAE:0000 <- R115+0x1488,implemented,clone:R044+0x064E,R115+0x1488,,
@@ -8144,9 +8144,9 @@ R119+0x101C,R119,0x101C,18D0:069C,29,C,matched,yes,table R136 2DAE:0000 <- R119+
 R119+0x103A,R119,0x103A,18D0:06BA,55,C,matched,yes,table R136 2DAE:0000 <- R119+0x0980,implemented,cite:coordinate,R119+0x0980,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
 R119+0x1072,R119,0x1072,18D0:06F2,29,C,matched,yes,table R136 2DAE:0000 <- R119+0x0980,implemented,cite:coordinate,R119+0x0980,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
 R119+0x1090,R119,0x1090,18D0:0710,55,C,matched,yes,table R136 2DAE:0000 <- R119+0x0980,implemented,cite:coordinate,R119+0x0980,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
-R119+0x10C8,R119,0x10C8,18D0:0748,29,C,matched,yes,table R136 2DAE:0000 <- R119+0x0980,implemented,cite:coordinate,R119+0x0980,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
+R119+0x10C8,R119,0x10C8,18D0:0748,29,C,matched,yes,table R136 2DAE:0000 <- R119+0x0980,implemented,cite:coordinate,R119+0x0980,,map.csv;src/Darklands.Cards/CardMenu.cs;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
 R119+0x10E6,R119,0x10E6,18D0:0766,59,C,matched,yes,table R136 2DAE:0000 <- R119+0x0980,implemented,cite:coordinate,R119+0x0980,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
-R119+0x1122,R119,0x1122,18D0:07A2,162,C,matched,yes,table R136 2DAE:0000 <- R119+0x0980,implemented,cite:coordinate,R119+0x0980,,map.csv;src/Darklands.Cards/CardMenu.cs;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
+R119+0x1122,R119,0x1122,18D0:07A2,162,C,matched,yes,table R136 2DAE:0000 <- R119+0x0980,implemented,cite:coordinate,R119+0x0980,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
 R119+0x11C4,R119,0x11C4,18D0:0844,55,C,matched,yes,table R136 2DAE:0000 <- R119+0x1122,implemented,cite:coordinate,R119+0x1122,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
 R119+0x11FC,R119,0x11FC,18D0:087C,60,C,matched,yes,table R136 2DAE:0000 <- R119+0x1122,implemented,cite:coordinate,R119+0x1122,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
 R119+0x1238,R119,0x1238,18D0:08B8,60,C,matched,yes,table R136 2DAE:0000 <- R119+0x1122,implemented,cite:coordinate,R119+0x1122,,map.csv;src/Darklands.Cards/Scripts/S119/EerieFountain.cs
@@ -9800,12 +9800,12 @@ root 0000:1438,root,,0000:1438,187,C,draft,yes,thunk 09C0:1923 <- R000+0x083E,im
 root 0000:14F4,root,,0000:14F4,2,,draft,no,,excluded:empty,,,,
 root 0000:14F6,root,,0000:14F6,146,C,draft,yes,thunk 09C0:1AF9 <- root 0000:1716,implemented,cite:alias,root 0000:1716,,src/Darklands.Presentation/PartyPanel.cs
 root 0000:1588,root,,0000:1588,397,C,draft,yes,thunk 09C0:1A59 <- R014+0xBCA8,implemented,cite:coordinate,R014+0x08FE;R014+0xBC0C;R014+0xBCA8;R015+0x0046;R016+0x13D4;R017+0x0000;...,,map.csv;src/Darklands.Cards/Scripts/S059/GargoylesAttack.cs;src/Darklands.Core/Rules/MarchingOrderChoice.cs
-root 0000:1716,root,,0000:1716,483,C,draft,yes,thunk 09C0:1AF9 <- R014+0x0DEE,implemented,cite:coordinate,R014+0x0694;R014+0x08FE;R014+0x0DEE;R014+0x116E;R014+0x199C;R014+0x2170;...,,map.csv;src/Darklands.Cards/Scripts/S051/InnAtNight.cs;src/Darklands.Cards/Scripts/S051/InnByDay.cs
+root 0000:1716,root,,0000:1716,483,C,draft,yes,thunk 09C0:1AF9 <- R014+0x0DEE,implemented,cite:coordinate,R014+0x0694;R014+0x08FE;R014+0x0DEE;R014+0x116E;R014+0x199C;R014+0x2170;...,,map.csv;src/Darklands.Cards/CardContext.Party.cs;src/Darklands.Cards/Scripts/S051/InnAtNight.cs
 root 0000:18FA,root,,0000:18FA,417,C,draft,yes,thunk 09C0:1AF9 <- root 0000:1716,implemented,cite:coordinate,R014+0x1624;R014+0x2FA2;root 0000:1716,,src/Darklands.Presentation/Battles/BattleScreen.cs;src/Darklands.Presentation/PartyPanel.cs
 root 0000:1A9C,root,,0000:1A9C,2025,C,draft,yes,thunk 09C0:1AF9 <- root 0000:1716,implemented,cite:coordinate,root 0000:1716,,map.csv;src/Darklands.Presentation/Battles/BattleScreen.cs;src/Darklands.Presentation/PartyPanel.cs
 root 0000:2286,root,,0000:2286,352,C,draft,yes,thunk 09C0:1DF1 <- root 0000:23E6,implemented,cite:coordinate,root 0000:06C2;root 0000:07D4;root 0000:0984;root 0000:23E6,,map.csv;src/Darklands.Presentation/MenuBar.cs;src/Darklands.Presentation/MessageBox.cs
 root 0000:23E6,root,,0000:23E6,214,C,draft,yes,thunk 09C0:1DF1 <- R020+0x0000,implemented,cite:coordinate,R020+0x0000;R022+0x051C;R037+0x2ACE;R037+0x8ED4;root 0000:1080;root 0000:24BC;...,,map.csv;src/Darklands.Presentation/MarchingOrderScreen.cs;src/Darklands.Presentation/MessageBox.cs
-root 0000:24BC,root,,0000:24BC,101,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000;R014+0x0000;R014+0x2170;R014+0xBCA8;R014+0xC33C;R014+0xD882;...,,map.csv;src/Darklands.Presentation/Battles/BattleScreen.cs;src/Darklands.Presentation/GameUi.cs
+root 0000:24BC,root,,0000:24BC,101,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:coordinate,R002+0x0000;R014+0x0000;R014+0x2170;R014+0xBCA8;R014+0xC33C;R014+0xD882;...,,map.csv;src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs;src/Darklands.Presentation/Battles/BattleScreen.cs
 root 0000:2522,root,,0000:2522,205,C,draft,yes,thunk 09C0:19EB <- R022+0x03E4,implemented,cite:coordinate,R022+0x03E4;R037+0x84BA;R037+0x8B76;root 0000:13A0,,map.csv;src/Darklands.Presentation/HotKeys.cs;src/Darklands.Presentation/MessageBox.cs
 root 0000:25F0,root,,0000:25F0,1,C,draft,yes,table root 09C0:17E7,implemented,cite:coordinate,R000+0x083E,,src/Darklands.Presentation/MenuBar.cs
 root 0000:25F2,root,,0000:25F2,60,C,draft,yes,thunk 09C0:1AE5 <- R002+0x0C8C,implemented,cite:alias,R002+0x0C8C;R004+0x0000;R013+0x0000;R014+0x3D2C;R021+0x03FE;R024+0x07A2;...,,src/Darklands.Content/Formats/Battles/CitadelFiles.cs;src/Darklands.Content/Formats/Battles/PreparedMaps.cs;src/Darklands.Presentation/Battles/BattleAssets.cs
@@ -9813,7 +9813,7 @@ root 0000:262E,root,,0000:262E,24,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,imp
 root 0000:2646,root,,0000:2646,1,C,draft,yes,thunk 09C0:18BF <- R002+0x0000,excluded:empty,,R002+0x0000;R022+0x0000;R029+0x2278;root 03A1:000A,,
 root 0000:2648,root,,0000:2648,10,,draft,no,,excluded:unreferenced,,,,
 root 0265:0002,root,,0265:0002,1,C,draft,yes,thunk 09C0:1DFB <- R031+0x0000,excluded:empty,,R031+0x0000;R037+0x84BA;root 0000:2648;root 03A1:000A;root 05BA:0004,,
-root 0265:0004,root,,0265:0004,106,C,draft,yes,thunk 09C0:20B7 <- R037+0x43E6,implemented,cite:coordinate,R031+0x2B14;R031+0x39C6;R033+0x0796;R033+0x094A;R033+0x1116;R034+0x166E;...,,map.csv;src/Darklands.Presentation/Graphics/TextPainter.cs;src/Darklands.Presentation/Hourglass.cs
+root 0265:0004,root,,0265:0004,106,C,draft,yes,thunk 09C0:20B7 <- R037+0x43E6,implemented,cite:coordinate,R031+0x2B14;R031+0x39C6;R033+0x0796;R033+0x094A;R033+0x1116;R034+0x166E;...,,map.csv;src/Darklands.Presentation/Graphics/TextPainter.cs
 root 0265:006E,root,,0265:006E,85,C,draft,yes,thunk 09C0:1AF9 <- root 0000:1716,implemented,cite:coordinate,R015+0x0046;R015+0x01C6;R015+0x0708;R015+0x0C0E;R016+0x15BE;R021+0x03FE;...,,src/Darklands.Presentation/Graphics/TextPainter.cs;src/Darklands.Presentation/MessageBox.cs
 root 0265:00C4,root,,0265:00C4,44,C,draft,no,,excluded:unreferenced,,,,
 root 0265:00F0,root,,0265:00F0,67,C,draft,no,,excluded:unreferenced,,,,
@@ -9910,7 +9910,7 @@ root 047C:04EF,root,,047C:04EF,9,C,draft,yes,thunk 09C0:1C2F <- R017+0x0000,impl
 root 047C:04F8,root,,047C:04F8,5,C,draft,yes,thunk 09C0:1847 <- R037+0x2A68,excluded:driver,root 047C:*,R000+0x052A;R002+0x0806;R014+0xEC60;R021+0x03FE;R029+0x4650;R030+0x1F30;...,,
 root 047C:0504,root,,047C:0504,14,C,draft,no,,excluded:driver,root 047C:*,root 047C:12DD,,
 root 047C:0514,root,,047C:0514,5,C,draft,no,,implemented,clone:root 047C:04D5,root 0617:02F6,,
-root 047C:051B,root,,047C:051B,5,C,draft,yes,thunk 09C0:1E91 <- R043+0x29D0,implemented,cite:coordinate,R000+0x052A;R016+0x15BE;R021+0x01E2;R030+0x2BB0;R034+0x0D08;R043+0x0F54;...,,src/Darklands.Presentation/CardScreen.cs;src/Darklands.Presentation/Graphics/TextPainter.cs;src/Darklands.Presentation/MessageBox.cs
+root 047C:051B,root,,047C:051B,5,C,draft,yes,thunk 09C0:1E91 <- R043+0x29D0,implemented,cite:coordinate,R000+0x052A;R016+0x15BE;R021+0x01E2;R030+0x2BB0;R034+0x0D08;R043+0x0F54;...,,src/Darklands.Presentation/Graphics/TextPainter.cs;src/Darklands.Presentation/MessageBox.cs
 root 047C:052E,root,,047C:052E,14,C,draft,yes,table root 047C:1314,excluded:driver,root 047C:*,root 047C:12C3,,
 root 047C:053E,root,,047C:053E,5,C,draft,yes,thunk 09C0:1C2F <- R017+0x0000,excluded:driver,root 047C:*,R015+0x00DC;R017+0x0000;root 0265:0004;root 0265:006E;root 03EC:000E,,
 root 047C:0545,root,,047C:0545,5,C,draft,yes,thunk 09C0:1847 <- R037+0x2A68,excluded:driver,root 047C:*,R000+0x052A;R002+0x0806;R014+0xEC60;R021+0x03FE;R029+0x4650;R030+0x1F30;...,,
@@ -9948,7 +9948,7 @@ root 047C:0876,root,,047C:0876,82,asm,draft,yes,thunk 09C0:1923 <- root 047C:07C
 root 047C:08C8,root,,047C:08C8,49,asm,draft,yes,thunk 09C0:1923 <- R000+0x0022,implemented,cite:coordinate,R000+0x0022;R000+0x052A;R002+0x0000;R037+0x8B76,,map.csv;src/Darklands.Audio/Driver/SoundDriver.cs;src/Darklands.Presentation/StartUp.cs
 root 047C:08F9,root,,047C:08F9,208,asm,draft,yes,thunk 09C0:18BF <- R002+0x0000,excluded:driver,root 047C:*,R002+0x0000;R037+0x8B76,,
 root 047C:0912,root,,047C:0912,33,asm,draft,yes,thunk 09C0:1923 <- root 047C:07CE,excluded:driver,root 047C:*,root 047C:07CE,,
-root 047C:0952,root,,047C:0952,3,C,draft,yes,thunk 09C0:1C2F <- R017+0x0000,implemented,cite:alias,R014+0x9CE6;R015+0x0046;R015+0x01C6;R015+0x0708;R015+0x0C0E;R017+0x0000;...,,src/Darklands.Presentation/Hourglass.cs;src/Darklands.Presentation/ScreenDrawing.cs
+root 047C:0952,root,,047C:0952,3,C,draft,yes,thunk 09C0:1C2F <- R017+0x0000,implemented,cite:alias,R014+0x9CE6;R015+0x0046;R015+0x01C6;R015+0x0708;R015+0x0C0E;R017+0x0000;...,,src/Darklands.Presentation/ScreenDrawing.cs
 root 047C:09E6,root,,047C:09E6,54,asm,draft,yes,thunk 09C0:18BF <- root 047C:08F9,excluded:driver,root 047C:*,root 047C:08F9,,
 root 047C:0B94,root,,047C:0B94,396,asm,draft,yes,thunk 09C0:1AF9 <- root 047C:0D62,excluded:driver,root 047C:*,root 047C:0D62,,
 root 047C:0D20,root,,047C:0D20,33,asm,draft,yes,thunk 09C0:1AF9 <- root 047C:0B94,excluded:driver,root 047C:*,root 047C:0B94,,
@@ -9985,7 +9985,7 @@ root 05D9:002A,root,,05D9:002A,47,asm,asm,yes,thunk 09C0:1AE5 <- root 05D9:019A,
 root 05D9:0059,root,,05D9:0059,17,asm,asm,yes,thunk 09C0:1AE5 <- root 05D9:019A,excluded:dos-io,root 05D9:*,root 030B:0150;root 05D9:019A,,
 root 05D9:006A,root,,05D9:006A,6,C,asm,yes,thunk 09C0:1AE5 <- root 05D9:019A,excluded:dos-io,root 05D9:*,root 030B:0150;root 05D9:019A,,
 root 05D9:0070,root,,05D9:0070,298,asm,asm,yes,thunk 09C0:1AE5 <- root 05D9:019A,excluded:dos-io,root 05D9:*,root 030B:0150;root 05D9:019A,,
-root 05D9:019A,root,,05D9:019A,100,C,asm,yes,thunk 09C0:1AE5 <- R002+0x0C8C,implemented,cite:coordinate,R002+0x0C8C;R008+0x0172;R009+0x0D90;R010+0x08AA;R010+0x1516;R010+0x1B22;...,,map.csv;src/Darklands.Content/Formats/Battles/CitadelFiles.cs;src/Darklands.Content/Formats/Battles/PreparedMaps.cs
+root 05D9:019A,root,,05D9:019A,100,C,asm,yes,thunk 09C0:1AE5 <- R002+0x0C8C,implemented,cite:coordinate,R002+0x0C8C;R008+0x0172;R009+0x0D90;R010+0x08AA;R010+0x1516;R010+0x1B22;...,,map.csv;src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs;src/Darklands.Content/Formats/Battles/CitadelFiles.cs
 root 05F8:0064,root,,05F8:0064,40,C,asm,yes,table root 05F8:0013,implemented,cite:coordinate,R000+0x0022,,src/Darklands.Presentation/StartUp.cs
 root 05F8:00A9,root,,05F8:00A9,33,asm,asm,yes,thunk 09C0:1923 <- R000+0x052A,excluded:memory,root 05F8:*,R000+0x052A,,
 root 05F8:00CA,root,,05F8:00CA,41,asm,asm,yes,thunk 09C0:1923 <- R000+0x1150,excluded:memory,root 05F8:*,R000+0x1150,,
@@ -10103,7 +10103,7 @@ root 06A1:1A14,root,,06A1:1A14,58,lib,asm,yes,thunk 09C0:186F <- root 06A1:1B1C,
 root 06A1:1A4E,root,,06A1:1A4E,3,lib,asm,yes,table R136 2DAE:0000 <- R060+0x2444,excluded:crt,root 06A1:*,R060+0x2444;R061+0x0DA6,,
 root 06A1:1A52,root,,06A1:1A52,3,lib,asm,yes,table DS:7D08 <- root 06A1:240E,excluded:crt,root 06A1:*,root 06A1:240E,,
 root 06A1:1A56,root,,06A1:1A56,84,lib,asm,no,,excluded:crt,root 06A1:*,,,
-root 06A1:1AAA,root,,06A1:1AAA,3679,lib,asm,yes,thunk 09C0:1FD1 <- R041+0x0000,implemented,cite:crt-name,R021+0x0080;R029+0x02EA;R029+0x5B62;R031+0x0B22;R034+0x11DC;R034+0x166E;...,,src/Darklands.Persistence/OriginalSaves.cs;src/Darklands.Persistence/SaveFolder.cs;src/Darklands.Presentation/Hourglass.cs
+root 06A1:1AAA,root,,06A1:1AAA,3679,lib,asm,yes,thunk 09C0:1FD1 <- R041+0x0000,implemented,cite:crt-name,R021+0x0080;R029+0x02EA;R029+0x5B62;R031+0x0B22;R034+0x11DC;R034+0x166E;...,,src/Darklands.Persistence/OriginalSaves.cs;src/Darklands.Persistence/SaveFolder.cs
 root 06A1:1AC6,root,,06A1:1AC6,10,lib,asm,yes,table root 047C:002C <- root 030B:075A,excluded:crt,root 06A1:*,root 030B:075A,,
 root 06A1:1AD0,root,,06A1:1AD0,3558,lib,asm,yes,thunk 09C0:1937 <- R028+0x06FA,excluded:crt,root 06A1:*,R004+0x52F2;R004+0x5394;R028+0x06FA;R028+0x079C,,
 root 06A1:1ADA,root,,06A1:1ADA,11,lib,asm,no,,excluded:crt,root 06A1:*,,,
@@ -10136,7 +10136,7 @@ root 06A1:23FC,root,,06A1:23FC,17,lib,asm,yes,table DS:7D08 <- root 06A1:22A6,ex
 root 06A1:240E,root,,06A1:240E,167,lib,asm,yes,table DS:7D08 <- root 06A1:23FC,excluded:crt,root 06A1:*,root 06A1:23FC,,
 root 06A1:24B6,root,,06A1:24B6,201,lib,asm,yes,table DS:7D08 <- root 06A1:22A6,excluded:crt,root 06A1:*,root 06A1:22A6;root 06A1:2580,,
 root 06A1:2580,root,,06A1:2580,258,lib,asm,yes,thunk 09C0:190F <- root 06A1:23A8,excluded:crt,root 06A1:*,root 06A1:22A6;root 06A1:23A8,,
-root 06A1:2682,root,,06A1:2682,77,lib,asm,yes,thunk 09C0:1FEF <- R030+0x3096,implemented,cite:crt-name,R030+0x3096,,src/Darklands.Cards/Scripts/S114/HermitByTheFire.cs;src/Darklands.Core/Battles/Tactics/PathFinder.cs;src/Darklands.Presentation/GameUi.cs
+root 06A1:2682,root,,06A1:2682,77,lib,asm,yes,thunk 09C0:1FEF <- R030+0x3096,implemented,cite:crt-name,R030+0x3096,,src/Darklands.Cards/Scripts/S114/HermitByTheFire.cs;src/Darklands.Core/Battles/Tactics/PathFinder.cs;src/Darklands.Presentation/DarklandsGame.cs
 root 06A1:26D0,root,,06A1:26D0,13,lib,asm,yes,table DS:7D08,excluded:crt,root 06A1:*,,,
 root 06A1:26DE,root,,06A1:26DE,69,lib,asm,yes,thunk 09C0:18BF <- R002+0x0000,excluded:crt,root 06A1:*,R002+0x0000,,
 root 06A1:2724,root,,06A1:2724,59,lib,asm,yes,thunk 09C0:18BF <- R002+0x0000,excluded:crt,root 06A1:*,R002+0x0000,,
@@ -10159,7 +10159,7 @@ root 06A1:2C28,root,,06A1:2C28,13,lib,asm,yes,thunk 09C0:1B21 <- R003+0x00DC,exc
 root 06A1:2C36,root,,06A1:2C36,7,lib,asm,no,,excluded:crt,root 06A1:*,,,
 root 06A1:2C3D,root,,06A1:2C3D,35,lib,asm,yes,thunk 09C0:1B21 <- R003+0x00DC,excluded:crt,root 06A1:*,R003+0x00DC;R031+0x0000;R037+0x4184;R043+0x054E;root 0617:0080,,
 root 06A1:2C60,root,,06A1:2C60,11,lib,asm,yes,thunk 09C0:20C1 <- R037+0x4562,excluded:crt,root 06A1:*,R037+0x4562;R037+0x8896;R037+0x9C10,,
-root 06A1:2C6B,root,,06A1:2C6B,51,lib,asm,yes,thunk 09C0:1ADB <- R001+0x0000,implemented,cite:crt-name,R001+0x0000;R004+0x0000;R030+0x2BB0;R033+0x0000;R033+0x17F6;R034+0x0720;...,,src/Darklands.Persistence/SaveFolder.cs;src/Darklands.Presentation/StartUp.cs
+root 06A1:2C6B,root,,06A1:2C6B,51,lib,asm,yes,thunk 09C0:1ADB <- R001+0x0000,implemented,cite:crt-name,R001+0x0000;R004+0x0000;R030+0x2BB0;R033+0x0000;R033+0x17F6;R034+0x0720;...,,src/Darklands.Core/Events/EventLog.cs;src/Darklands.Persistence/SaveFolder.cs;src/Darklands.Presentation/StartUp.cs
 root 06A1:2C9E,root,,06A1:2C9E,23,lib,asm,yes,thunk 09C0:1B21 <- R003+0x00DC,implemented,cite:coordinate,R003+0x00DC;R003+0x0CE8;R029+0x4650;R029+0x4E68;R030+0x02C0;R035+0x1468;...,,src/Darklands.Persistence/BattleSaveFile.cs
 root 06A1:2CB6,root,,06A1:2CB6,47,lib,asm,yes,thunk 09C0:1B17 <- R003+0x0CE8,implemented,cite:crt-name,R003+0x0040;R003+0x0CE8;R029+0x4650;R029+0x4E68;R030+0x02C0;R037+0x0444;...,,src/Darklands.Content/WorldData.cs;src/Darklands.Persistence/OriginalSaves.cs;src/Darklands.Persistence/SaveFolder.cs
 root 06A1:2CBD,root,,06A1:2CBD,5,lib,asm,yes,thunk 09C0:1B21 <- R003+0x00DC,excluded:crt,root 06A1:*,R003+0x00A0;R003+0x00DC;R029+0x4650;R031+0x0000;R035+0x1468;R037+0x0444;...,,
@@ -10170,7 +10170,7 @@ root 06A1:2D28,root,,06A1:2D28,154,lib,asm,yes,table R136 2DAE:0000 <- R056+0x18
 root 06A1:2DC2,root,,06A1:2DC2,50,lib,asm,yes,thunk 09C0:1AEF <- root 06A1:29B6,excluded:compiler-helper,root 06A1:2DC2,R004+0x553A;R028+0x0942;R032+0x192E;R032+0x1B26;R043+0x3838;root 030B:07C2;...,,
 root 06A1:2DF4,root,,06A1:2DF4,160,lib,asm,no,,excluded:compiler-helper,root 06A1:2DF4,root 0265:0882,,
 root 06A1:2E94,root,,06A1:2E94,32,lib,asm,no,,excluded:compiler-helper,root 06A1:2E94,root 0265:0882,,
-root 06A1:2EB4,root,,06A1:2EB4,94,lib,asm,yes,thunk 09C0:18BF <- R002+0x0000,excluded:crt,root 06A1:*,R000+0x1010;R002+0x0000;R002+0x08FE;R002+0x0C8C;R003+0x0000;R003+0x006A;...,,
+root 06A1:2EB4,root,,06A1:2EB4,94,lib,asm,yes,thunk 09C0:18BF <- R002+0x0000,implemented,cite:crt-name,R000+0x1010;R002+0x0000;R002+0x08FE;R002+0x0C8C;R003+0x0000;R003+0x006A;...,,src/Darklands.Core/Battles/Tactics/TacticalBattle.Loot.cs
 root 06A1:2F12,root,,06A1:2F12,69,lib,asm,yes,thunk 09C0:1AE5 <- root 0000:25F2,excluded:crt,root 06A1:*,root 0000:25F2,,
 root 06A1:2F58,root,,06A1:2F58,59,lib,asm,yes,thunk 09C0:1937 <- R028+0x0B5A,excluded:crt,root 06A1:*,R004+0x5752;R028+0x0B5A,,
 root 06A1:2F94,root,,06A1:2F94,42,lib,asm,yes,table R136 2DAE:0000 <- R114+0x0000,implemented,cite:crt-name,R114+0x0000,,src/Darklands.Cards/Scripts/S114/HermitByTheFire.cs

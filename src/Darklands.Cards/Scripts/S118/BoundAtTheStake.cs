@@ -39,11 +39,11 @@ public sealed class BoundAtTheStake : Card
             new MenuLine(_ => { c.Screen.Text(1); c.Next = -0x63; }, () => OptionHint.Say(SuccessAssured)),
             // orig: R118+0x02BC (1838:02BC) matched; hint R118+0x0316
             new MenuLine(_ => BuyThemOff(c, menu), () => OptionHint.Say("You can always encounter the unknown")),
-            // orig: R118+0x0390 (1838:0390) matched (hint)
+            // orig: R118+0x034E (line 2); hint R118+0x0390 (1838:0390) matched
             new MenuLine(p => BreakTheRopes(c, menu, p), () => StrengthHint(c)),
-            // orig: R118+0x0444 (1838:0444) matched (hint)
+            // orig: R118+0x03B8 (line 3); hint R118+0x0444 (1838:0444) matched
             new MenuLine(p => SlipLooseAPotion(c, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
-            // orig: R118+0x04FC (1838:04FC) matched (hint)
+            // orig: R118+0x047C (line 4); hint R118+0x04FC (1838:04FC) matched
             new MenuLine(_ => CallOnASaint(c), () => OptionHint.Say("Select a person and a saint.")),
             // DORMANT: lines 5..9 are never offered; actions R118+0x0534.. and hints R118+0x0536.. are empty
             // (UNCERTAIN: the hints return AX/DX; neutral hints are used).

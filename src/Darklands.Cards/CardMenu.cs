@@ -230,6 +230,10 @@ public sealed class CardMenu
     /// <summary>Runs at the start of every round, before the lines are offered; when it moves the card on, nothing is offered.</summary>
     public Action? EachRound { get; set; }
 
+    /// <summary>Run each round between the text block and its lines being shown and the choice (the card script's calls between card_options and card_menu).</summary>
+    // orig: e.g. R061+0x2278 `card_options(1); advance_hours(1);`
+    public Action? AfterOptions { get; set; }
+
     /// <summary>Runs once the player has chosen, before the choice is rated.</summary>
     public Action? OnChoice { get; set; }
 
@@ -258,7 +262,7 @@ public sealed class CardMenu
                 _c.OptionHandlers[k] = lines[k].AskHint;
             }
             var choice = DrawsOptions
-                ? _c.Screen.Choose(Block, states, Handler, k => PopupHint(Line(k)))
+                ? _c.Screen.Choose(Block, states, Handler, k => PopupHint(Line(k)), AfterOptions)
                 : _c.Screen.ChooseOnLastLayout(states, Handler, k => PopupHint(Line(k)));
             OnChoice?.Invoke();
             var line = Line(choice);
@@ -280,7 +284,7 @@ public sealed class CardMenu
     /// The handler most card files keep for option lines their text does not have: the card's first text
     /// again (unless <paramref name="showFirstText"/> is false), then the end-of-game marker 0x62.
     /// </summary>
-    // orig: e.g. R119+0x1122 (the repeat-the-opening handler of the R119..R135 card files)
+    // orig: e.g. R119+0x10C8 (18D0:0748) matched (the repeat-the-opening handler of the R119..R135 card files)
     public static void ShowFirstTextAndEnd(CardContext c, bool showFirstText = true)
     {
         if (showFirstText)
@@ -342,6 +346,19 @@ public sealed partial class CardContext
     // orig: e.g. R119+0x0760 matched: saint_chance_lo, saint_chance_hi, chance_text; r.a = -1, r.b = menu_member
     public OptionHint SaintPopupChanceHint()
     {
+        var saint = CardSaints[MenuSlot];
+        var low = SaintChanceLow(MenuMember, saint);
+        return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)), MenuMember);
+    }
+
+    /// <summary>
+    /// The saint pop-up handler of the cards whose box makes the member who prays $ChosenOneName and
+    /// tells the chance of the prayer beside that member.
+    /// </summary>
+    // orig: e.g. R090+0x13F6 (18E0:0976) matched: var_chosen1 = menu_member; saint_chance_lo, saint_chance_hi, chance_text; r.a = -1, r.b = menu_member
+    public OptionHint SaintPopupMemberHint()
+    {
+        Variables.Chosen[0] = MenuMember;
         var saint = CardSaints[MenuSlot];
         var low = SaintChanceLow(MenuMember, saint);
         return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)), MenuMember);

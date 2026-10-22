@@ -67,17 +67,6 @@ public sealed class WorldMap
     public static (int X, int Y) PixelOf(int column, int row) => (column * TileWidth + (row % 2 == 1 ? 8 : 0), row * RowHeight);
 
     /// <summary>
-    /// How far the party's marker may go, in map pixels: the left edge at 11, the right edge 25 short
-    /// of the map's width in pixels, the top at 17 and the bottom 15 short of its height.
-    /// </summary>
-    // orig: the clamps of R030+0x0C44 (DS:2866 in [11, 0xf7], DS:2868 in [13, 0xb1]) combined with the view clamps there (DS:286A in [0, width - 17], DS:286C at least 1, DS:286E up to height - 0x83 with DS:286C then 0x53)
-    // C: x = DS:2866 + 16 * DS:286A gives 11 .. 247 + 16 * (width - 17) = 16 * width - 25; y = DS:2868 + 4 * (DS:286E + DS:286C) gives 13 + 4 = 17 .. 177 + 4 * (height - 0x83 + 0x53) = 4 * height - 15.
-    // C: checked against the disassembly of 0c44: the constants 0xB, 0xF7, 0xD, 0xB1 and the view clamps (0, W - 0x11, 1, H - 0x83, 0x53) are those of the draft. At the bottom edge the original corrects DS:2868 by (old - new DS:286C) * 5, not * 4 - its own arithmetic, so the marker jumps a little when the view hits the border; OverlandScreen.Scroll does not reproduce that jump.
-    // UNCERTAIN: the borders are derived from the view registers (the marker's absolute position is not a variable of the original), so the exact edge pixel could be off by the jump above. Earlier versions of OverlandScreen clamped to 11 and 13 TILES (176 and 52 pixels), which kept the party from the villages in the far west (location 213 at column 3).
-    public (int X, int Y) ClampPosition(int x, int y) =>
-        (Math.Clamp(x, 11, TileWidth * Width - 25), Math.Clamp(y, 17, RowHeight * Height - 15));
-
-    /// <summary>
     /// The party's watch value for camping on the map: three per member, more when a settlement
     /// icon lies in the ten-by-ten block that starts at the party's cell, less on rough terrain.
     /// </summary>

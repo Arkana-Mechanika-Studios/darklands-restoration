@@ -14,20 +14,24 @@ public sealed class RowRunSprite
 {
     private readonly (int X, byte[] Pixels)[] _rows;
 
-    private RowRunSprite(int width, int height, (int X, byte[] Pixels)[] rows)
+    private RowRunSprite(int width, int height, (int X, byte[] Pixels)[] rows, string? assetName)
     {
         Width = width;
         Height = height;
         _rows = rows;
+        AssetName = assetName;
     }
 
     /// <summary>An empty sprite (nothing to draw).</summary>
-    public static RowRunSprite Empty { get; } = new(0, 0, []);
+    public static RowRunSprite Empty { get; } = new(0, 0, [], null);
 
     /// <summary>The width the sprite's header gives (its widest row may be one less).</summary>
     public int Width { get; }
 
     public int Height { get; }
+
+    /// <summary>Where the sprite came from, for replacement graphics; the scheme of <see cref="Graphics.IndexedImage.AssetName"/>. Not in the original.</summary>
+    public string? AssetName { get; }
 
     public int RowCount => _rows.Length;
 
@@ -37,7 +41,7 @@ public sealed class RowRunSprite
     public (int X, byte[] Pixels) Row(int row) => _rows[row];
 
     /// <summary>Decodes the sprite that starts at <paramref name="offset"/>.</summary>
-    public static RowRunSprite Decode(ReadOnlySpan<byte> data, int offset)
+    public static RowRunSprite Decode(ReadOnlySpan<byte> data, int offset, string? assetName = null)
     {
         if (offset < 0 || offset + 2 > data.Length)
         {
@@ -63,10 +67,10 @@ public sealed class RowRunSprite
             rows[row] = (x, data.Slice(p, count).ToArray());
             p += count;
         }
-        return new RowRunSprite(width, height, rows);
+        return new RowRunSprite(width, height, rows, assetName);
     }
 
-    /// <summary>The same sprite with every colour passed through a 256-entry table (0 stays transparent).</summary>
+    /// <summary>The same sprite with every colour passed through a 256-entry table (0 stays transparent); it keeps its asset name.</summary>
     public RowRunSprite Recolored(ReadOnlySpan<byte> table)
     {
         var rows = new (int, byte[])[_rows.Length];
@@ -82,6 +86,6 @@ public sealed class RowRunSprite
             }
             rows[r] = (_rows[r].X, pixels);
         }
-        return new RowRunSprite(Width, Height, rows);
+        return new RowRunSprite(Width, Height, rows, AssetName);
     }
 }

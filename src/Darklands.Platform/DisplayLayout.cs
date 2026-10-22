@@ -81,8 +81,27 @@ public static class DisplayLayout
         return new DisplayRectangle((windowWidth - width) / 2, (windowHeight - height) / 2, width, height);
     }
 
-    /// <summary>A window position (in the same pixels as the rectangle) to a game screen pixel (0..319, 0..199).</summary>
+    /// <summary>
+    /// A window position (in the same pixels as the rectangle) to the game screen pixel (0..319, 0..199) shown there. A
+    /// stretched picture shows at each window pixel the game pixel under that pixel's centre, so the position is taken
+    /// at its centre too: at a scale that is not whole (1920x1080) its left edge would name the pixel before at every
+    /// boundary. MouseMappingTests checks this against the picture SDL draws.
+    /// </summary>
     public static (int X, int Y) ToScreen(DisplayRectangle graphics, int x, int y) =>
-        (Math.Clamp((int)((long)(x - graphics.X) * Screen.Width / Math.Max(1, graphics.Width)), 0, Screen.Width - 1),
-         Math.Clamp((int)((long)(y - graphics.Y) * Screen.Height / Math.Max(1, graphics.Height)), 0, Screen.Height - 1));
+        (Math.Clamp(Under(x - graphics.X, graphics.Width, Screen.Width), 0, Screen.Width - 1),
+         Math.Clamp(Under(y - graphics.Y, graphics.Height, Screen.Height), 0, Screen.Height - 1));
+
+    // Exact arithmetic. A centre exactly on the line between two game pixels (2.5 window pixels per game pixel, and the
+    // like) is a tie the GPU breaks by its own rounding, either way: it is taken as the pixel before. The game draws its
+    // pointer where it reads the mouse, so a click still lands where the pointer is shown.
+    internal static int Under(int offset, int shown, int pixels)
+    {
+        var position = (2L * offset + 1) * pixels;
+        var span = 2L * Math.Max(1, shown);
+        var under = Math.DivRem(position, span, out var rest);
+        return (int)(rest == 0 || rest < 0 ? under - 1 : under);
+    }
+
+    /// <summary>True when a window position's centre is exactly on the line between two game pixels (see <see cref="ToScreen"/>).</summary>
+    public static bool IsTie(int offset, int shown, int pixels) => (2L * offset + 1) * pixels % (2L * Math.Max(1, shown)) == 0;
 }

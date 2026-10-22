@@ -47,7 +47,7 @@ public sealed class SabbatBroomstickRiders : Card
         c.SetCardSaints();
 
         var assured = OptionHint.Saying(SuccessAssured);
-        // orig: R125+0x12A2 / _057c / _05d6 / _0630 / _068a / _06e4 matched — lines the text does not have.
+        // orig: R125+0x12A2, R125+0x12FC, R125+0x1356, R125+0x13B0, R125+0x140A, R125+0x1464 matched — lines the text does not have.
         var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured);
         return menu.Run(
             new MenuLine(_ => AttackTheRiders(c), assured),

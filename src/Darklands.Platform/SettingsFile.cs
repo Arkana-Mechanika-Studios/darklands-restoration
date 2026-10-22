@@ -220,6 +220,7 @@ public static class SettingsFile
                     }
                     break;
                 case "fullscreen": settings.Fullscreen = Boolean(key, property.Value) ?? settings.Fullscreen; break;
+                case "hdPack": settings.HdPack = FilePath(key, property.Value); break;
                 default: Unknown(key); break;
             }
         }
@@ -285,6 +286,7 @@ public static class SettingsFile
             {
                 case "banner": settings.Banner = Boolean(key, property.Value) ?? settings.Banner; break;
                 case "intro": settings.Intro = Boolean(key, property.Value) ?? settings.Intro; break;
+                case "launcher": settings.Launcher = Boolean(key, property.Value) ?? settings.Launcher; break;
                 case "commandLine": settings.CommandLine = Words(key, property.Value) ?? settings.CommandLine; break;
                 default: Unknown(key); break;
             }
@@ -462,7 +464,10 @@ public static class SettingsFile
             // Or any window size, "WIDTHxHEIGHT" such as "1440x800"; when set it replaces scale. Command line: --resolution WxH.
             "resolution": "",
             // Command line: --fullscreen.
-            "fullscreen": false
+            "fullscreen": false,
+            // A folder of replacement pictures (an HD pack: one PNG per picture of the game, named after it). Not part of the
+            // original; the game plays the same. "": the original pictures. Command line: --hd-pack <folder>.
+            "hdPack": ""
           },
 
           "sound": {
@@ -483,6 +488,9 @@ public static class SettingsFile
           },
 
           "startup": {
+            // The launcher (the settings screen before the game) at every start. false: only on the first run, when the game
+            // cannot be found or could not start, with --setup, or while Shift is held as the program starts.
+            "launcher": false,
             // The BANNER.DAT banner and the start-up checks. Command line: --no-banner.
             "banner": true,
             // The opening animation. Command line: --no-intro.

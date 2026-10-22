@@ -46,26 +46,26 @@ public sealed class BearCave : Card
         // C: the registration installs the standard pop-up handlers, which name the member picked in the box.
         menu.Popup = () => c.MemberPopupHint();
         return menu.Run(
-            // orig: R104+0x0342 (1838:0342) matched (hint)
+            // orig: R104+0x0318 (line 0); hint R104+0x0342 (1838:0342) matched
             new MenuLine(p => SearchForTracks(c, menu, p),
                 () => OptionHint.ChanceOf(Math.Clamp(c.PartyMaxSkill((int)Skill.Woodwise) + 15, 0, 99), c.BestMember)),
-            // orig: R104+0x0434 (1838:0434) matched (hint)
+            // orig: R104+0x0370 (line 1); hint R104+0x0434 (1838:0434) matched
             new MenuLine(p => SneakIntoTheCave(c, menu, p),
                 () => OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.Stealth), c.BestMember)),
-            // orig: R104+0x04A6 (1838:04A6) matched (hint)
+            // orig: R104+0x0452 (line 2); hint R104+0x04A6 (1838:04A6) matched
             new MenuLine(_ => FaceTheBear(c, menu, TunnelBlock), Unknown),
-            // orig: R104+0x0576 (1838:0576) matched (hint)
+            // orig: R104+0x04DE (line 3); hint R104+0x0576 (1838:0576) matched
             new MenuLine(p => CarryOffTheChest(c, menu, p),
                 () => OptionHint.ChanceOf(c.PartyAverageSkill((int)Skill.Stealth), OptionHint.WholeParty)),
-            // orig: R104+0x06A8 (1838:06A8) matched (hint)
+            // orig: R104+0x058C (line 4); hint R104+0x06A8 (1838:06A8) matched
             new MenuLine(_ => WaitForDaylight(c), Unknown),
             // orig: R104+0x06E0 (1838:06E0) matched; hint R104+0x06FA
             new MenuLine(_ => { c.Screen.Text(8); c.LeaveForTheMap(); }, Assured),
-            // orig: R104+0x084E (1838:084E) matched (hint)
+            // orig: R104+0x0732 (line 6); hint R104+0x084E (1838:084E) matched
             new MenuLine(_ => PrayToASaint(c), OptionHint.Saying(CardTexts.SelectSaint)),
             // orig: R104+0x0886 (1838:0886) matched; hint R104+0x08C4
             new MenuLine(_ => { ShowPicture(c, ChestPicture); FightTheBear(c, 16); c.LeaveForTheMap(); }, Assured),
-            // orig: R104+0x0916 (1838:0916) matched (hint)
+            // orig: R104+0x08FC (line 8); hint R104+0x0916 (1838:0916) matched
             new MenuLine(p => Flee(c, p),
                 () => OptionHint.ChanceOf(c.PartyAverageAttribute((int)Attribute.Agility), OptionHint.WholeParty)),
             // orig: R104+0x092C (1838:092C) matched; hint R104+0x0938

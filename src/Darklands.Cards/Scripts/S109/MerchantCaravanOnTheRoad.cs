@@ -49,11 +49,11 @@ public sealed class MerchantCaravanOnTheRoad : Card
             new MenuLine(_ => ExchangeNews(c, menu), Unknown),
             // orig: R109+0x069E (1838:069E) matched; hint R109+0x076C
             new MenuLine(_ => Trade(c, menu), Unknown),
-            // orig: R109+0x0820 (1838:0820) matched (hint)
+            // orig: R109+0x07A4 (line 2); hint R109+0x0820 (1838:0820) matched
             new MenuLine(p => AskToTravelAlong(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 (c.Skill(Who.Leader, (int)Skill.SpeakCommon) / 2 + c.Attribute(Who.Leader, (int)Attribute.Charisma) + c.PartyAverageSkill((int)Skill.Virtue)) / 2,
                 1, 99), c.Leader)),
-            // orig: R109+0x0980 (1838:0980) matched (hint: the placeholder str_saint_xxx)
+            // orig: R109+0x0880 (line 3); hint R109+0x0980 (1838:0980) matched (the placeholder str_saint_xxx)
             new MenuLine(_ => PrayForInsight(c, menu), () => OptionHint.Say("XXX Saint % success msg XXX.")),
             // orig: R109+0x09B8 (1838:09B8) matched; hint R109+0x0A04
             new MenuLine(_ => LetThemPass(c), () => OptionHint.Say(SuccessAssured)),
@@ -65,7 +65,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
             new MenuLine(_ => FightTheBandits(c, false), () => OptionHint.Say("Enter Combat")),
             // orig: R109+0x0B92 (1838:0B92) matched; hint R109+0x0BDE
             new MenuLine(_ => LetThemPass(c), Unknown),
-            // orig: R109+0x0C80 (1838:0C80) matched (hint)
+            // orig: R109+0x0C16 (line 9); hint R109+0x0C80 (1838:0C80) matched
             new MenuLine(p => RunAway(c, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageEffectiveAgility() + c.PartyMaxSkill((int)Skill.Woodwise), 1, 99), OptionHint.WholeParty)));
     }

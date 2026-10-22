@@ -46,11 +46,11 @@ public sealed class PaganAltarOnTheHill : Card
         menu.Popup = () => c.SaintPopupChanceHint();
 
         return menu.Run(
-            // orig: R107+0x24A0 (19CE:0B40) matched (hint)
+            // orig: R107+0x22F4 (line 0); hint R107+0x24A0 (19CE:0B40) matched
             new MenuLine(_ => DisturbTheAltar(c, menu), Unknown),
-            // orig: R107+0x25F0 (19CE:0C90) matched (hint)
+            // orig: R107+0x24D8 (line 1); hint R107+0x25F0 (19CE:0C90) matched
             new MenuLine(_ => PrayAgainstThePaganPowers(c), () => OptionHint.Say("Select a person and a saint.")),
-            // orig: R107+0x277E (19CE:0E1E) matched (hint)
+            // orig: R107+0x2628 (line 2); hint R107+0x277E (19CE:0E1E) matched
             new MenuLine(_ => CleanseTheAltar(c), () => OptionHint.Say("Select a person and a potion."), () => PotionPopupHint(c, menu)),
             // orig: R107+0x27B6 (19CE:0E56) matched (empty); hint R107+0x27B8 (empty)
             // DORMANT: lines 3 and 4 are never offered; their actions and hints (R107+0x27BA, R107+0x27BC) are empty.
@@ -61,9 +61,9 @@ public sealed class PaganAltarOnTheHill : Card
             new MenuLine(_ => { c.PassHours(1); c.LeaveForTheMap(); }, () => OptionHint.Say(SuccessAssured)),
             // orig: R107+0x280E (19CE:0EAE) matched; hint R107+0x283A
             new MenuLine(_ => FightTheBeasts(c), () => OptionHint.Say("Enter Combat")),
-            // orig: R107+0x2946 (19CE:0FE6) matched (hint)
+            // orig: R107+0x2872 (line 7); hint R107+0x2946 (19CE:0FE6) matched
             new MenuLine(_ => PrayAgainstTheBeasts(c), () => OptionHint.Say("Select a person and a saint.")),
-            // orig: R107+0x29FA (19CE:109A) matched (hint)
+            // orig: R107+0x297E (line 8); hint R107+0x29FA (19CE:109A) matched
             new MenuLine(_ => DriveThemOffWithAPotion(c), () => OptionHint.Say("Select a person and a potion."), () => PotionPopupHint(c, menu)),
             // orig: R107+0x2A32 (19CE:10D2) matched (empty); hint R107+0x2A34 (empty)
             // DORMANT: line 9 is never offered.
