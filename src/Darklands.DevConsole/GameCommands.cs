@@ -1,7 +1,9 @@
 using System.Globalization;
+using Darklands.Cards;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Economy;
+using Darklands.Core.Events;
 using Darklands.Core.Rules;
 using Darklands.Core.Time;
 using CharacterAttribute = Darklands.Core.Characters.Attribute;
@@ -36,6 +38,7 @@ public static class GameCommands
         console.Add(new ConsoleCommand("heal", "heal [slot 1..5|all]  (endurance and strength back to their maximums)", On(Heal)));
         console.Add(new ConsoleCommand("saint", "saint grant|remove <slot 1..5|all> <saint number>", On(Saint)));
         console.Add(new ConsoleCommand("item", "item grant <slot 1..5|all> <code> [quality] [count] | item find <text>", On(Item)));
+        console.Add(new ConsoleCommand("quests", "quests", On(QuestLocation)));
     }
 
     // ---- show
@@ -162,6 +165,51 @@ public static class GameCommands
                 lines.Add($"{m.Name}: {skill} {m[skill.Value]}");
             }
         }
+        return new ConsoleResult(lines);
+    }
+
+    private static ConsoleResult QuestLocation(GameState s, string[] w)
+    {
+       var activeQuestLocations = s.Events.QuestsAll().Where(e => 
+        e.Kind == EventKinds.Quest 
+        && e.Location != 0
+       ).ToArray();
+
+       var resolvedeQuestOwners = s.Events.QuestsAll().Where(e => 
+        e.Kind == EventKinds.ResolvedQuest 
+        && e.Owner <= 0
+       ).ToArray();
+
+       var lines = new List<string>();
+
+       string QuestAndNearestCityDirection(int x, int y) {
+            
+            var nearestCity = LocationRules.NearestCity(s, x, y);
+
+            var nearestCityInfo = s.Locations[nearestCity];
+
+            var ( currentX, currentY ) = s.Here != null ? ( s.Here.X, s.Here.Y ) : ( s.MapPosition.X, s.MapPosition.Y );
+
+            var directionToLocation = TextVariables.DirectionFromHere(currentX, currentY, x, y);
+
+            return $"{directionToLocation} of here near the city of {nearestCityInfo.Name}";
+        }
+
+
+        int i = 0; 
+        foreach (var qEvent in activeQuestLocations) 
+        { 
+            var location = qEvent.Location;
+            lines.Add($"Active quest {i} : {QuestAndNearestCityDirection(s.Locations[location].X, s.Locations[location].Y)}"); 
+        }
+        
+        i = 0;
+        foreach (var qEvent in resolvedeQuestOwners) 
+        { 
+            var home = qEvent.Location;
+            lines.Add($"Reolved quest {i} : Collect reward in the city of {s.Locations[home].Name} : {QuestAndNearestCityDirection(s.Locations[home].X, s.Locations[home].Y)}"); 
+        }
+
         return new ConsoleResult(lines);
     }
 

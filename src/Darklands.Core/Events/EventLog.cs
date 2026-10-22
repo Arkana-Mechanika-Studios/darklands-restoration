@@ -359,6 +359,8 @@ public sealed class EventLog
 
     // ---- quests (kind 8) and resolved quests (kind 0x24) ----------------------------
 
+    public IEnumerable<TimedEvent> QuestsAll() => _state.Events.All().Select(x => x.Event);
+
     /// <summary>A started quest with <paramref name="tag"/> (<c>ev8_exists</c>).</summary>
     // orig: ev8_exists R029+0x32FE (0E76:32FE) matched
     public bool QuestExists(int tag) => Any(EventKinds.Quest, e => e.Tag == tag, ignoreSuppression: true);

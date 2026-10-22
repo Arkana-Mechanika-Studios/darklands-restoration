@@ -265,6 +265,12 @@ public static class TextVariables
         return LocationName(c, city);
     }
 
+    public static string DirectionFromHere(int fromX, int fromY, int toX, int toY)
+    {
+        return Directions[Direction(fromX, fromY, toX, toY)];
+    }
+
+
     // orig: case 57: R136+0xA773[thunk 09C0:1FB3(var_loc)] = the direction from the current location to var_loc (R030+0x29BC)
     // C: thunk 09C0:1FB3 is R030+0x29BC (the direction from cur_loc to a location) and thunk 09C0:1FBD is R030+0x29FA (the direction between two points): both resolve through the atlas thunk table (vec_XXXX = thunk (XXXX - 0x17E3) / 10).
     private static string DirectionFromHere(CardContext c)
