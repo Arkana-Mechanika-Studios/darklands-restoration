@@ -156,8 +156,7 @@ from a saved game in Pressburg:
 | loot-keys, loot-mouse, loot-esc | the loot after a fight: taking, sharing, leaving, by keys and by mouse | identical |
 | camp-wild-brew, camp-wild-risk, camp-inn-broke, camp-rough, camp-mouse | camping in the wild, at the inn without money, in the slum: each member's work over days | identical |
 | pack-potions, pack-stacks | potions and the pack outside battle: drinking, splitting and joining stacks, giving one or the stack | identical |
-| dungeon-mine-doors, dungeon-mine-orders | a fight at the Rammelsburg mine: doors, single file, the attack orders | identical, records at every pass included |
-| dungeon-mine-group | as above, moving the party as a group | **open lead**: the original acts on the move one pass later (battle clock 3243) |
+| dungeon-mine-doors, dungeon-mine-orders, dungeon-mine-group | a fight at the Rammelsburg mine: doors, single file, the attack orders, moving the party as a group | identical, records at every pass included |
 
 In one more session (the character sheet from DKSAVE0) the original itself stops with its "Buffer
 dealloc error" (R031+0x0B22) where the C# goes on. Only the sessions that agree throughout count as
@@ -168,7 +167,10 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-103 runs, 100 agreeing; of the other three, two for the reasons listed above and one open lead).
+103 runs, 101 agreeing; the other two for the reasons listed above. The last open lead, a group move at
+the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
+click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
+(R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
 
 The emulator loads the original as DOS does: the PSP at 0813 and the root image at 0823 (where DOSBox-X
 puts DARKLAND.EXE), the EXE's relocation items applied, above a real vector table and BIOS data area, so
