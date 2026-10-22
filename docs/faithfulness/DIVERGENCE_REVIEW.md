@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 45 entries; recommendations: document: 1, justify: 38, keep: 6.
-- Part B (undefined-memory in core logic): 118 entries; determinism: n/a: 78, no: 27, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 119 entries; determinism: n/a: 78, no: 28, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -869,7 +869,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: a member who was not in that battle has whatever bytes the record held in the original; here such members are placed in the level's start formation (the others then put back where they stood).  
   deterministic: **partly** (checked against the original); action: **keep** - Mode 1 runs no effect_start (R014+0x0058 is skipped without combat_flags 0x20), so each party record keeps x +4, y +6 and the facings +0x19/+0x1A as the last battle left them. A member who joined since that battle has the record bytes of the slot's last occupant (party_add copies the roster record, whose x/y are those of its own last battle, or zero for a new character): a function of play history that the C# does not keep per slot. Placing such a member in the start formation keeps the battle playable; only a party changed between two battles on one battlefield with mode 1 can see it.
 
-### persistence (3)
+### persistence (4)
 
 - **D-40780d** `undefined-memory` - `src/Darklands.Persistence/CacheFile.cs:68` `CacheFile.Write`  
   original: `R035+0x1350` (1462:1350, matched), `R035+0x1468` (1462:1468, matched), `R037+0x4184` (1462:4184, draft)  
@@ -883,4 +883,8 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but save_game's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.
+- **D-23cc74** `undefined-memory` - `src/Darklands.Persistence/SaveFile.cs:132` `SaveFile.Take`  
+  original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched), `R037+0x4184` (1462:4184, draft)  
+  divergence: the original's buffers keep what they held before (a heap block's leftovers), not zeros.  
+  deterministic: **no**; action: **keep** - R037+0x8ED4 reads with _dos_read and goes on with a short read; the buffers keep a heap block's previous contents. Only a file read out of step that also ends early reaches it (none of the 72 community saves nor 483.07's own short re-save of DKSAVE40 does: the lockstep oracle loads both sides without it). Reproducing it would need the heap's residue; zeros keep the load from failing.
 

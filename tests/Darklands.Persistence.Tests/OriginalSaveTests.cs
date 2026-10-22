@@ -179,6 +179,29 @@ public sealed class OriginalSaveTests
         Assert.Equal(state.Events.All().Count(), BitConverter.ToInt16(sav, 0x189 + 4 * SaveFile.CharacterSize));
     }
 
+    [Fact]
+    public void AFileShortOfItsRecordsIsReadOutOfStepLikeTheOriginalWithoutFailing()
+    {
+        // The original's loader (R037+0x8ED4) reads as many character records as the count says and then the location table as one
+        // block of 414 records whatever its count word holds. A file written with a status-0 party slot is records short of its count
+        // (DKSAVE40's re-save, as 483.07 writes it: two short), so the load reads into the events and takes the block from there on.
+        // 483.07 loads that file (lockstep oracle, its own re-save of DKSAVE40) and goes on; the rewrite must not fail on it either.
+        var name = SaveFolderCopy.Names.FirstOrDefault(n => n.Equals("DKSAVE40.SAV", StringComparison.OrdinalIgnoreCase));
+        if (name is null)
+        {
+            return;
+        }
+        var bsv = SaveFolderCopy.Read(Path.ChangeExtension(name, ".BSV"));
+        var first = OriginalSaves.Read(SaveFolderCopy.Read(name), bsv, name, NoGameData.Instance).State;
+        var shortSave = OriginalSaves.Write(first).Sav;
+        Assert.Equal(8, BitConverter.ToInt16(shortSave, 0xF1));
+
+        var loaded = OriginalSaves.Read(shortSave, bsv, name, NoGameData.Instance).State;
+
+        Assert.Equal(SaveFile.LocationCount, loaded.Locations.Count);
+        Assert.Equal(8, loaded.Roster.Characters.Count);
+    }
+
     private static int FirstDifference(byte[] a, byte[] b)
     {
         var n = Math.Min(a.Length, b.Length);

@@ -60,33 +60,40 @@ public sealed class SaveFile
     /// <summary>The rest of the file: the game's CACHE.TMP.</summary>
     public byte[] Cache { get; set; } = [];
 
-    public static SaveFile Parse(ReadOnlySpan<byte> data)
+    /// <param name="fixedLocationTable">Read the location table as the loader R037+0x8ED4 does: one block of 414 records,
+    /// whatever its count word says (a file whose earlier counts do not match its records is read out of step, as in the original).</param>
+    public static SaveFile Parse(ReadOnlySpan<byte> data, bool fixedLocationTable = false)
     {
         var at = 0;
-        var file = new SaveFile { Header = Take(data, ref at, HeaderSize).ToArray() };
-        file.PartySize = Word(data, ref at);
-        var characters = Word(data, ref at);
+        var file = new SaveFile { Header = Take(data, ref at, fixedLocationTable, HeaderSize).ToArray() };
+        file.PartySize = Word(data, ref at, fixedLocationTable);
+        var characters = Word(data, ref at, fixedLocationTable);
         for (var slot = 0; slot < PartySlots; slot++)
         {
-            file.PartyIds[slot] = (short)Word(data, ref at);
+            file.PartyIds[slot] = (short)Word(data, ref at, fixedLocationTable);
         }
-        file.Images = Take(data, ref at, file.Images.Length).ToArray();
-        file.Palettes = Take(data, ref at, file.Palettes.Length).ToArray();
+        file.Images = Take(data, ref at, fixedLocationTable, file.Images.Length).ToArray();
+        file.Palettes = Take(data, ref at, fixedLocationTable, file.Palettes.Length).ToArray();
         for (var i = 0; i < characters; i++)
         {
-            file.Characters.Add(Take(data, ref at, CharacterSize).ToArray());
+            file.Characters.Add(Take(data, ref at, fixedLocationTable, CharacterSize).ToArray());
         }
-        var events = Word(data, ref at);
+        var events = Word(data, ref at, fixedLocationTable);
         for (var i = 0; i < events; i++)
         {
-            file.Events.Add(Take(data, ref at, EventSize).ToArray());
+            file.Events.Add(Take(data, ref at, fixedLocationTable, EventSize).ToArray());
         }
-        var locations = Word(data, ref at);
+        var locations = Word(data, ref at, fixedLocationTable);
+        // DIVERGENCE: a file too short for the 414-record block (only the tests' small worlds write one) is read by its count.
+        if (fixedLocationTable && data.Length - at >= LocationCount * LocationSize)
+        {
+            locations = LocationCount;
+        }
         for (var i = 0; i < locations; i++)
         {
-            file.Locations.Add(Take(data, ref at, LocationSize).ToArray());
+            file.Locations.Add(Take(data, ref at, fixedLocationTable, LocationSize).ToArray());
         }
-        file.Cache = data[at..].ToArray();
+        file.Cache = at < data.Length ? data[at..].ToArray() : [];
         return file;
     }
 
@@ -120,18 +127,32 @@ public sealed class SaveFile
         return out_.ToArray();
     }
 
-    private static ReadOnlySpan<byte> Take(ReadOnlySpan<byte> data, ref int at, int length)
+    // C: the loader's _dos_read returns what the file still holds and the game goes on; reading as the loader, the bytes past the end
+    // C: are zeros here.
+    // DIVERGENCE: the original's buffers keep what they held before (a heap block's leftovers), not zeros.
+    private static ReadOnlySpan<byte> Take(ReadOnlySpan<byte> data, ref int at, bool lenient, int length)
     {
         if (at + length > data.Length)
         {
-            throw new InvalidDataException($"the saved game ends at {data.Length} bytes, inside a section that needs {at + length}");
+            if (!lenient)
+            {
+                throw new InvalidDataException($"the saved game ends at {data.Length} bytes, inside a section that needs {at + length}");
+            }
+            var padded = new byte[length];
+            if (at < data.Length)
+            {
+                data[at..].CopyTo(padded);
+            }
+            at += length;
+            return padded;
         }
         var slice = data.Slice(at, length);
         at += length;
         return slice;
     }
 
-    private static int Word(ReadOnlySpan<byte> data, ref int at) => BinaryPrimitives.ReadUInt16LittleEndian(Take(data, ref at, 2));
+    private static int Word(ReadOnlySpan<byte> data, ref int at, bool lenient) =>
+        BinaryPrimitives.ReadUInt16LittleEndian(Take(data, ref at, lenient, 2));
 
     private static void PutWord(Stream s, int value)
     {

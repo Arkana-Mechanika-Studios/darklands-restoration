@@ -92,7 +92,7 @@ public static class OriginalSaves
     public static LoadedGame Read(ReadOnlySpan<byte> sav, ReadOnlySpan<byte> bsv, string fileName, IGameData data,
         GameState? running = null, IRandomSource? random = null)
     {
-        var file = SaveFile.Parse(sav);
+        var file = SaveFile.Parse(sav, fixedLocationTable: true);
         var h = file.Header;
         var state = new GameState(random ?? running?.Random ?? new MscRandom()) { Data = data };
         if (running is not null)
