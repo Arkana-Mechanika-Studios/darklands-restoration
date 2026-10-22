@@ -128,6 +128,7 @@ from a saved game in Pressburg:
 | gate-battle | fighting the gate's guards | identical in every state, every battle pass and both saves after it |
 | shop | a merchant: buying, selling, dropping, barter for the next member | identical |
 | cache | the innkeeper's cache: putting and getting items | identical |
+| cache-revisit | the innkeeper's cache visited again: put, leave, back in, put, leave | differs at the second leave: the original rewrites a known store's CACHE.TMP with a 101-byte header and leaves the old bytes behind (cache_save R035+0x1468, the community's inn cache bug), the C# keeps the 198-byte layout (D-40780d) |
 | saints | the character sheet's saints, praying to two saints | identical |
 | stay | the residence: each member's work over five days | identical |
 | wildcamp | camping on the map, work choices, three days | identical |

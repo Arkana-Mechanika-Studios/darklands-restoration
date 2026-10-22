@@ -10,7 +10,10 @@ state:menu
 option:4
 wait:5
 key:enter
-wait:200
+wait:300
+# the store's text (UseTheStore's Screen.Text) first: continue it
+key:enter
+wait:300
 state:cache
 key:p
 wait:50

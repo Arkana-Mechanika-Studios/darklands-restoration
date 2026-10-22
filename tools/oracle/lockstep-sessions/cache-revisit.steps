@@ -1,0 +1,41 @@
+# Lockstep session: load DKSAVE10 (a party at the Gasthaus, no store yet), store an item with the innkeeper (P), leave, go back in, store
+# another (P), leave. The first visit appends the store (cache_save(-1) R035+0x1468: the 198-byte header of the loaded game's file); the
+# revisit rewrites CACHE.TMP as a known store, with a 101-byte header (p += (char)*q): states left2 on diverge (D-40780d)
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:enter
+wait:100
+state:menu
+option:4
+wait:5
+key:enter
+wait:300
+# the store's text (UseTheStore's Screen.Text) first: continue it
+key:enter
+wait:300
+state:cache
+key:p
+wait:50
+state:put
+key:esc
+wait:200
+state:left
+# the inn's text page, then its menu
+key:enter
+wait:100
+option:4
+wait:5
+key:enter
+wait:300
+key:enter
+wait:300
+state:again
+key:p
+wait:50
+state:put2
+key:esc
+wait:200
+state:left2
