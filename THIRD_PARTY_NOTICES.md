@@ -94,6 +94,9 @@ themselves.
 * `src/Darklands.Launcher/Resources/VT323-Regular.ttf`: VT323, for the folder fields. Copyright 2011, The VT323 Project
   Authors (peter.hull@oikoi.com).
 
+The full licence text, with these copyright lines, is in `src/Darklands.Launcher/Resources/OFL.txt` and is copied next to the
+launcher in the build and publish output.
+
 ## StbTrueTypeSharp
 
 The developer console and the launcher rasterise their fonts with StbTrueTypeSharp (https://github.com/rds1983/StbSharp,
