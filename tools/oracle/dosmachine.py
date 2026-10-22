@@ -80,9 +80,18 @@ class Vfs:
             return self.files[n]
         if n in self.deleted or self.folder is None or self.hidden(n):
             return None
+        p = self.disk_path(n)
+        if p is None:
+            return None
+        self.files[n] = bytearray(p.read_bytes())
+        return self.files[n]
+
+    def disk_path(self, n: str) -> Path | None:
+        """The file of the game folder a normalised name stands for (DOS is case-insensitive), or None."""
+        if self.folder is None:
+            return None
         p = self.folder / n.replace("\\", os.sep)
         if not p.is_file():
-            # DOS is case-insensitive: find the file in its folder
             parent = p.parent
             if not parent.is_dir():
                 return None
@@ -90,8 +99,14 @@ class Vfs:
             if not hits or not hits[0].is_file():
                 return None
             p = hits[0]
-        self.files[n] = bytearray(p.read_bytes())
-        return self.files[n]
+        return p
+
+    def same_on_disk(self, n: str, data) -> bool:
+        """Whether a cached file still holds the game folder's bytes (a snapshot then need not keep them)."""
+        if self.hidden(n):
+            return False
+        p = self.disk_path(n)
+        return p is not None and p.read_bytes() == bytes(data)
 
     def put(self, name: str, data: bytes):
         n = self.norm(name)
@@ -148,6 +163,8 @@ class Machine:
         self.thunks: dict[int, tuple] = {}       # thunk linear -> (record, target seg, target off, name)
         self.trampolines: dict[int, tuple] = {}
         self.pending = None
+        self.before_stub = None                  # handler(machine, stub handler) before a stub that runs outside the emulation (snapshots)
+        self._block = None
         self.depth = 0
         self.count = 0
         self.budget = max_instructions
@@ -399,6 +416,7 @@ class Machine:
         return any(self.extent(r)[0] <= lin < self.extent(r)[1] for r in self.resident if r != 136)
 
     def _on_block(self, uc, address, size, _):
+        self._block = (address, self.count, self._last_block_jcc)      # what a snapshot taken at this block's first instruction must undo
         self.recent.append(address)
         if not self.valid(address):
             self.pending = ("stop", "execution outside the loaded code at %05X (from %s)" % (
@@ -692,21 +710,7 @@ class Machine:
         self.uc.reg_write(REG["CS"], seg)
         self.uc.reg_write(REG["IP"], off)
         try:
-            while True:
-                self.pending = None
-                start = linear(self.reg("CS"), self.reg("IP"))
-                self.uc.emu_start(start, 0x100000)
-                p = self.pending
-                if p is None:
-                    raise Stop("emulation ended at %04X:%04X" % (self.reg("CS"), self.reg("IP")))
-                if p[0] == "return":
-                    break
-                if p[0] == "stop":
-                    raise Stop(p[1] + self.where())
-                if p[0] == "stub":
-                    r = p[1](self)
-                    if r is not None:
-                        self.far_return(*r)
+            self._drive()
             ax, dx = self.reg("AX"), self.reg("DX")
             if buf is not None:
                 self.buffer = self.read(ss, buf, buffer)
@@ -716,6 +720,38 @@ class Machine:
                 for n, r in REG.items():
                     self.uc.reg_write(r, saved[n])
         return ax, dx
+
+    def _drive(self, first=None):
+        """Run the emulation until the current call returns; first: the handler of a stub that was about to run when a snapshot was taken."""
+        pending = ("stub", first) if first is not None else None
+        while True:
+            if pending is None:
+                self.pending = None
+                start = linear(self.reg("CS"), self.reg("IP"))
+                self.uc.emu_start(start, 0x100000)
+                p = self.pending
+                if p is None:
+                    raise Stop("emulation ended at %04X:%04X" % (self.reg("CS"), self.reg("IP")))
+            else:
+                p, pending = pending, None
+            if p[0] == "return":
+                break
+            if p[0] == "stop":
+                raise Stop(p[1] + self.where())
+            if p[0] == "stub":
+                if self.before_stub is not None:
+                    self.before_stub(self, p[1])
+                r = p[1](self)
+                if r is not None:
+                    self.far_return(*r)
+
+    def resume(self, first=None):
+        """Carry on the top-level call that a snapshot was taken in (the machine's state restored): (AX, DX) when it returns."""
+        try:
+            self._drive(first)
+            return self.reg("AX"), self.reg("DX")
+        finally:
+            self.depth -= 1
 
     def snapshot(self):
         """Everything a later run depends on: memory, registers, files, DOS memory, overlays."""

@@ -7,7 +7,9 @@ Outputs (as the two tools write them): <out>/fights/<fight>/report.json, <out>/f
 that agrees), <out>/sessions/<session>/report.json and cov/cov-0.jsonl (a session whose states all agree), <out>/<job>.log, and
 <out>/summary.json with one row per job: verdict, first-difference point, whether the original was replayed or run live, seconds.
 
-The original side is replayed from recordings (recording.py) when they are valid, else run live and recorded; --live forces live.
+The original side is replayed from recordings (recording.py) when they are valid, else run live and recorded; --live forces live (from the
+snapshot of the run's start point when there is one, else it makes it; --no-snapshot starts every live run from the beginning). The jobs are
+started slowest first (the last live durations, <recordings>/durations.json).
 RULE: a full --live rerun before every release, and periodically (the recordings only say what the original did; the live run is
 the proof that they still do).
 
@@ -140,7 +142,7 @@ def main():
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     py = [sys.executable, "-I", "-B", "-u"]
-    common = ["--recordings", a.recordings] + (["--live"] if a.live else []) + (["--replay-only"] if a.replay_only else []) \
+    common = ["--recordings", a.recordings] + (["--live"] if a.live else []) + (["--replay-only"] if a.replay_only else []) + (["--no-snapshot"] if a.no_snapshot else []) \
         + (["--coverage"] if not a.no_coverage else []) + (["--headless", a.headless] if a.headless else [])
     saves = Path(a.game) / "SAVES"
     jobs = []       # (kind, name, command)
@@ -151,6 +153,13 @@ def main():
         save = ["--save", str(resolve_save(SESSIONS[s], saves))] if SESSIONS[s] else []
         jobs.append(("session", s, py + [str(HERE / "lockstep.py"), a.exe, a.game, str(HERE / "lockstep-sessions" / (s + ".steps")),
                                          str(out / "sessions" / s)] + save + (["--battle-records"] if s in BATTLE_RECORDS else []) + common))
+    # the slowest jobs first (the last live durations kept in <recordings>/durations.json; a job never timed goes first, as it may be the slowest)
+    durations_file = Path(a.recordings) / "durations.json"
+    try:
+        known = json.loads(durations_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        known = {}
+    jobs.sort(key=lambda j: -known.get("%s/%s" % (j[0], j[1]), float("inf")))
     workers = max(1, min(a.workers, (free_mb() - RESERVE_MB) // JOB_MB))
     print("%d jobs, %d workers (%d MB free)" % (len(jobs), workers, free_mb()), flush=True)
     running, done, t0 = {}, [], time.time()
@@ -178,6 +187,11 @@ def main():
                 row.update(agrees=False, point="no report (%s)" % type(e).__name__, original="?")
             done.append(row)
             print("%-8s %-16s %-9s %s [%s, %ds]" % (kind, name, "agrees" if row["agrees"] else "DIFFERS", row["point"][:140], row["original"], row["wall"]), flush=True)
+    for row in done:
+        if row["original"] == "live":
+            known["%s/%s" % (row["kind"], row["name"])] = row["wall"]
+    durations_file.parent.mkdir(parents=True, exist_ok=True)
+    durations_file.write_text(json.dumps(dict(sorted(known.items())), indent=1), encoding="utf-8")
     summary = {"seconds": round(time.time() - t0), "workers": workers, "jobs": sorted(done, key=lambda r: (r["kind"], r["name"]))}
     (out / "summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     print("%d jobs in %d s; %d agree, %d differ" % (len(done), summary["seconds"], sum(r["agrees"] for r in done), sum(not r["agrees"] for r in done)))

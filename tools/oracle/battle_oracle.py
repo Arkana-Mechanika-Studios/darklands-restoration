@@ -37,16 +37,13 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+import battle_orig  # noqa: E402
 import lockstep  # noqa: E402
-from dosmachine import DS, Stop  # noqa: E402
+from battle_orig import BATTLE_ENTRY, COMBATANTS, COUNT, PAUSED, QUEUED, RATES, RECORD, stale_destinations  # noqa: E402,F401
 
-BATTLE_ENTRY = (0x0E76, 0x0000)     # R002+0x0000, called by the main loop root 03A1:000A with 12 words
-COMBATANTS, RECORD, COUNT = 0x9C55, 0x80, 13
-QUEUED, RATES = 0xD70C, 0xD493     # 2 bytes a combatant (endurance, strength); 1 byte a combatant
 # the fields the weapon-readying step sets: an enemy whose weapon is not readied before the fight keeps the
 # enemy file buffer's stack bytes there (R025+0x0267 copies the buffer whole), which the C# leaves 0
 STALE_READY = {0x0C, 0x0D, 0x20, 0x21, 0x23, 0x4D, 0x4E, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x59}
-PAUSED = 297                        # passes the battle stays paused before its key: the C# host's pause under the script's wait:300 (298 passes at one clock value)
 SESSION = HERE / "lockstep-sessions" / "gate-battle.steps"
 
 # mode, battlefield, seed, then (a, b, c) of the three enemy groups as the battle's arguments take them (the C#'s BattleRequest
@@ -110,112 +107,25 @@ FIELDS = {0x04: "x", 0x05: "x", 0x06: "y", 0x07: "y",
           **{0x6B + k: "skill %d" % k for k in range(19)}}
 
 
-def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, coverage: bool, paused: int = PAUSED):
-    """(trace lines, the battle's arguments as the card gave them, log, how it ended, set-up ticks, coverage)."""
-    s = lockstep.Session(exe.read_bytes(), game, max_instructions=4_000_000_000, coverage=coverage)
-    # the root-image guard of the vector table writes (lockstep.py) is left off here: it makes the original run the keyboard handler's install as the
-    # game does and so moves the original's timer phases; the clock rises of f2precept05's long passes then fall where the C# does not place them (see
-    # local/overnight/precept/README.md); the earlier passes of this oracle were all made with the table's bytes left in the code
-    s.vector_guard = False
-    s.vfs.put("saves/dksave0.sav", save.read_bytes())
-    if save.with_suffix(".BSV").exists():
-        s.vfs.put("saves/dksave0.bsv", save.with_suffix(".BSV").read_bytes())
-    s.script = list(steps)
-    given = []
-
-    def entry(m):
-        given.append([m.sarg(k) for k in range(12)])
-        if request is not None:
-            for k, v in enumerate(request):
-                m.put_word(m.reg("SS"), m.reg("SP") + 4 + 2 * k, v & 0xFFFF)
-        m.log.append("battle %s -> %s at %d ms" % (given[-1], request, m.ms))
-    s.hook(*BATTLE_ENTRY, entry, record="R002")
-
-    # The one-section mine arm (R009+0x01E0, 1432:01E0) reads its rotation from a stack word it never sets: the word R009+0x3FA2
-    # (182C:0002) left in the frame (the second wall-tile draw, 1..3). An interrupt that lands between that return and the arm (the
-    # emulator's timing, about one battle in 10^5 on a real machine) pushes a register over the word and turns the mine another way.
-    # The word is kept at the return and put back at the arm's entry, so the original runs as if no interrupt hit the window.
-    stale = []
-    s.hook(0x1432, 0x0087, lambda m: stale.append(m.word(m.reg("SS"), (m.reg("SP") - 8) & 0xFFFF)), record="R009")
-    s.hook(0x1432, 0x01E5, lambda m: stale and m.put_word(m.reg("SS"), (m.reg("BP") - 2) & 0xFFFF, stale[-1]), record="R009")
-
-    class Trace(list):
-        draw_clocks: list = []      # the combat clock at each random draw (rand, root 06A1:29B6)
-        draws_at: list = []         # the draws made before each pass head
-        phase_clocks: list = []     # (-1 or -2, combat clock) where a tick's scheduler (1DB7:0D36) or melee exchanges (0E76:2A4A) begin
-        phases_at: list = []        # the phase marks made before each pass head
-
-        def append(self, line):
-            self.draws_at.append(len(self.draw_clocks))
-            self.phases_at.append(len(self.phase_clocks))
-            records = s.read(DS, COMBATANTS, COUNT * RECORD)
-            super().append("%s cbt %s q %s ar %s" % (line, records.hex().upper(), s.read(DS, QUEUED, 2 * COUNT).hex().upper(),
-                                                    s.read(DS, RATES, COUNT).hex().upper()))
-            if len(self) >= passes:
-                s.budget = 0            # the next block stops the run (Stop: instruction budget)
-    s.battle_trace = Trace()
-    s.battle_trace.draw_clocks, s.battle_trace.draws_at = [], []
-    s.battle_trace.phase_clocks, s.battle_trace.phases_at = [], []
-    s.hook(0x1DB7, 0x0D36, lambda m: s.battle_trace.phase_clocks.append((-1, m.word(DS, 0x07D4))), record="R014")
-    s.hook(0x0E76, 0x2A4A, lambda m: s.battle_trace.phase_clocks.append((-2, m.word(DS, 0x07D4))), record="R014")
-    s.hook(0x06A1, 0x29B6, lambda m: s.battle_trace.draw_clocks.append(m.word(DS, 0x07D4)))
-    # the battle's pause (after its first ticks) waits for Space; lockstep's idle test (no random draw for IDLE_MS) never passes on a
-    # battlefield whose animated pieces draw at every frame: in a battle the key is given once the clock has stood still PAUSED passes
-    idle_test = s._next_key
-    given_keys = []
-
-    def next_key():
-        t = s.battle_trace
-        while len(t) > paused and s.script and s.script[0][0] in ("wait", "shot"):
-            s.script.pop(0)             # the C#'s steps
-        if (len(t) > paused and s.script and s.script[0][0] == "key"
-                and len({line.split()[2] for line in t[-paused:]}) == 1):
-            # peeked as key_pressed does; get_key takes it from the script
-            if not given_keys or given_keys[-1] != len(t):
-                given_keys.append(len(t))
-                s.log.append("%s due in the battle's pause at pass %d" % (s.script[0][1], len(t)))
-            return lockstep.key_code(s.script[0][1])
-        return idle_test()
-    s._next_key = next_key
-    seeds = []
-
-    def srand(m):
-        ret = lockstep.linear(m.word(m.reg("SS"), m.reg("SP") + 2), m.word(m.reg("SS"), m.reg("SP")))
-        if bytes(m.uc.mem_read(ret - 14, 5)) == bytes([0x9A, 0xA8, 0x23, 0xA1, 0x06]):
-            seeds.append(m.arg(0))
-    s.hook(*lockstep.SRAND, srand)
-    try:
-        s.start()
-        end = "the program ended"
-    except Stop as e:
-        end = str(e)[:300]
-    cov = s.coverage_result() if coverage else None
-    return s.battle_trace, given, seeds, [l for l in s.log if not l.startswith("INT")], end, s.set_up_ticks, cov
-
-
 class Recorded(list):
     """A recorded run's pass lines with the clock marks the original made (the attributes of run_original's Trace)."""
 
 
-def original_side(rec_parts, folder, name, exe, game, steps, save, request, passes, coverage, paused, live, replay_only):
-    """run_original, or its recording when one with the same key exists: (the same tuple, seconds, replayed)."""
+def original_side(rec_parts, folder, name, exe, game, steps, save, request, passes, coverage, paused, live, replay_only, snapshots=None):
+    """battle_orig.record_fight, or its recording when one with the same key exists: (the run_original tuple, seconds, replayed)."""
     import recording
     rec = recording.Recording(folder, "fights", name, {"kind": "fight", "name": name, "request": request, "passes": passes, "paused": paused,
                                                       "steps": steps, **rec_parts}, live, replay_only, "p%d" % paused)
     got = rec.load(need_coverage=coverage)
-    if got is not None:
-        trace = Recorded(got["lines"])
-        trace.draw_clocks, trace.draws_at = got["draw_clocks"], got["draws_at"]
-        trace.phase_clocks, trace.phases_at = got["phase_clocks"], got["phases_at"]
-        cov = got["cov"] if coverage else None
-        return (trace, got["given"], got["seeds"], got["log"], got["end"], got["set_up"], cov), got["seconds"], True
-    t = time.time()
-    trace, given, seeds, log, end, set_up, cov = run_original(exe, game, steps, save, request, passes, coverage, paused)
-    seconds = time.time() - t
-    rec.store({"lines": list(trace), "draw_clocks": trace.draw_clocks, "draws_at": trace.draws_at, "phase_clocks": trace.phase_clocks,
-               "phases_at": trace.phases_at, "given": given, "seeds": seeds, "log": log, "end": end, "set_up": set_up, "cov": cov,
-               "seconds": seconds})
-    return (trace, given, seeds, log, end, set_up, cov), seconds, False
+    replayed = got is not None
+    if got is None:
+        got = battle_orig.record_fight(exe, game, steps, save, request, passes, coverage, paused, snapshots)
+        rec.store(got)
+    trace = Recorded(got["lines"])
+    trace.draw_clocks, trace.draws_at = got["draw_clocks"], got["draws_at"]
+    trace.phase_clocks, trace.phases_at = got["phase_clocks"], got["phases_at"]
+    cov = got["cov"] if coverage else None
+    return (trace, got["given"], got["seeds"], got["log"], got["end"], got["set_up"], cov), got["seconds"], replayed
 
 
 def parse(lines):
@@ -231,24 +141,7 @@ def parse(lines):
     return out
 
 
-clock_jumps = lockstep.clock_jumps            # moved to lockstep.py (its sessions with a battle pass the jumps too)
-
-
-def stale_destinations(lines):
-    """[(record, x, y)] of the enemy records (5..12): the destination (+0x08..+0x0B) at the first pass where the record is in use. The original
-    copies the enemy file's record whole into the combatant (R025+0x0267) and the destination keeps the stack bytes it held until the enemy
-    first moves; the C# leaves it 0, and a dragon's breath at a spot (target -1, facing_to_target R014+0x306A) turns toward it."""
-    out = {}
-    for line in lines:
-        w = line.split()
-        if len(w) < 6 or "cbt" not in w:
-            continue
-        records = bytes.fromhex(w[w.index("cbt") + 1])
-        for i in range(5, COUNT):
-            r = records[i * RECORD:(i + 1) * RECORD]
-            if i not in out and r[0x14] != 0:
-                out[i] = tuple(v - 65536 if v >= 32768 else v for v in struct.unpack_from("<2H", r, 8))
-    return [(i,) + out[i] for i in sorted(out)]
+clock_jumps = lockstep.clock_jumps            # orig_side.py (its sessions with a battle pass the jumps too)
 
 
 def first_difference(original: dict, rewrite: dict):
@@ -342,10 +235,16 @@ def main():
     out = Path(a.out)
     steps = battle_steps(a.passes)
     exe, save = Path(a.exe), Path(a.save)
-    rec_parts = recording.common_parts(exe, a.game, "battle_oracle", save)
+    rec_parts = recording.common_parts(exe, a.game, ("battle_orig",), save)
+
+    # the snapshot at the battle's entry is the run up to the steps before the wait, the battle's key and the wait after it (the fight's request
+    # and passes come after the entry)
+    snapshots = None
+    if not a.no_snapshot and len(steps) > 3 and steps[-3][0] == "wait" and steps[-2] == ("key", "space") and steps[-1][0] == "wait":
+        snapshots = recording.Snapshot(a.recordings, "fight", {**{k: rec_parts[k] for k in recording.COMMON_KEYS}, "prefix": steps[:-3], "ahead": steps[-2], "coverage": a.coverage})
 
     def original(name, request, paused):
-        return original_side(rec_parts, a.recordings, name, exe, a.game, steps, save, request, a.passes, a.coverage, paused, a.live, a.replay_only)
+        return original_side(rec_parts, a.recordings, name, exe, a.game, steps, save, request, a.passes, a.coverage, paused, a.live, a.replay_only, snapshots)
     report = {}
     for name in a.fights.split(","):
         request = FIGHTS[name]
