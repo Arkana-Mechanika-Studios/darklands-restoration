@@ -29,7 +29,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R124+0x0896 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 9 are never enabled (every assignment sets their flag to 0).
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SentryWolfAtTheWatchfire : Card
 {
     public override int Number => 320;
@@ -50,6 +50,8 @@ public sealed class SentryWolfAtTheWatchfire : Card
 
         var assured = OptionHint.Saying(SuccessAssured);
         var unknown = OptionHint.Saying(CardTexts.Unknown);
+        // DORMANT: in text block 4 the option lines 0..3 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
+        // DORMANT: in text block 5 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             new MenuLine(chance => OfferAHand(c, menu, chance), () => VirtueChance(c)),
             // orig: R124+0x035A / R124+0x036C matched — refuse: text 2, the fight.

@@ -23,7 +23,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R129+0x16C2 ("screwed up.") and are never shown.
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
 // DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class BurntOutKeep : Card
 {
     public override int Number => 343;

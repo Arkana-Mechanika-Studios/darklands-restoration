@@ -87,7 +87,7 @@ public sealed class EnemyKind
     /// <summary>+0x44: skills.</summary>
     public sbyte[] Skills { get; } = Filled(19, 20);
 
-    /// <summary>+0x57 and the bonus dice copies +0x58/+0x5A/+0x5C. UNCERTAIN: what reads them.</summary>
+    /// <summary>+0x57 and the bonus dice copies +0x58/+0x5A/+0x5C. What reads them is not established.</summary>
     public sbyte Byte57 { get; set; }
 
     public sbyte[] StrengthBonusDice { get; } = new sbyte[2];

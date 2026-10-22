@@ -53,7 +53,7 @@ public sealed class TemplarsBurningAFriar : Card
             new MenuLine(_ => { c.Screen.Text(7); c.AddAttribute(Who.Everybody, (int)Attribute.DivineFavor, -5); c.PassHours(2); c.LeaveForTheMap(); },
                 () => OptionHint.ChanceOf(Math.Clamp(c.PartyMaxSkill((int)Skill.Woodwise) + c.PartyAverageEffectiveAgility() * 2, 1, 99), OptionHint.WholeParty)),
             // DORMANT: lines 8 and 9 are never offered; actions R117+0x114A/06ce and hints R117+0x114C/06d0 are
-            // empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }));
     }

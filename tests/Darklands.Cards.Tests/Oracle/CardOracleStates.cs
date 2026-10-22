@@ -40,7 +40,55 @@ public sealed class CardOracleStates
         var location = int.Parse(key[1..key.IndexOf('-')]);
         var option = int.Parse(key[(key.LastIndexOf("-O") + 2)..]);
         var v = key.IndexOf("-V", StringComparison.Ordinal);
-        return v < 0 ? New(location, option) : New(location, option, key[(v + 2)..key.LastIndexOf("-O")]);
+        if (v < 0)
+        {
+            return New(location, option);
+        }
+        // the parts "F<block>.<line>" (ForceOf) and "P<n>_<n>.." (PathOf) change no state
+        var variant = string.Join('+', key[(v + 2)..key.LastIndexOf("-O")].Split('+').Where(p => !IsForce(p) && !IsPath(p)));
+        return variant.Length == 0 ? New(location, option) : New(location, option, variant);
+    }
+
+    private static bool IsPath(string part) => part.Length > 1 && part[0] == 'P' && part[1..].Split('_').All(x => int.TryParse(x, out _));
+
+    /// <summary>
+    /// The choices a run makes in its first menus (the variant part <c>P2_0_1</c>: the first menu chooses the 2nd enabled line, the second
+    /// the 0th, the third the 1st; see tools/oracle/card_oracle.py split_key), or null.
+    /// </summary>
+    public static int[]? PathOf(string key)
+    {
+        var v = key.IndexOf("-V", StringComparison.Ordinal);
+        if (v < 0)
+        {
+            return null;
+        }
+        var part = key[(v + 2)..key.LastIndexOf("-O")].Split('+').FirstOrDefault(IsPath);
+        return part?[1..].Split('_').Select(int.Parse).ToArray();
+    }
+
+    private static bool IsForce(string part) =>
+        part.Length > 3 && part[0] == 'F' && part[1..].Split('.') is [var b, var l] && int.TryParse(b, out _) && int.TryParse(l, out _);
+
+    /// <summary>
+    /// The line a run is told to choose whatever its state (the variant part <c>F12.3</c>: in the first menu of text block 12 choose
+    /// line 3, hidden or not; the aim: to run the line's hint and action, see tools/oracle/card_oracle.py split_key), or null.
+    /// </summary>
+    public static (int Block, int Line)? ForceOf(string key)
+    {
+        var v = key.IndexOf("-V", StringComparison.Ordinal);
+        if (v < 0)
+        {
+            return null;
+        }
+        foreach (var part in key[(v + 2)..key.LastIndexOf("-O")].Split('+'))
+        {
+            if (IsForce(part))
+            {
+                var p = part[1..].Split('.');
+                return (int.Parse(p[0]), int.Parse(p[1]));
+            }
+        }
+        return null;
     }
 
     /// <summary>The golden-trace state with one variation applied.</summary>
@@ -129,7 +177,7 @@ public sealed class CardOracleStates
                 }
                 break;
             default:
-                if (!Mutate(state, variant))
+                if (!CardOracleAtoms.Apply(state, variant) && !Mutate(state, variant))
                 {
                     throw new ArgumentException(variant);
                 }

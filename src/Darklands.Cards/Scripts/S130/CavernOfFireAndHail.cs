@@ -17,7 +17,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R130+0x13F0, R130+0x1462
 // DORMANT (generated): option slots 10..19 keep the default handler R130+0x1462 ("screwed up.") and are never shown.
 // C (generated): opt_flag_5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class CavernOfFireAndHail : Card
 {

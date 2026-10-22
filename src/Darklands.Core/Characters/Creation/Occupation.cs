@@ -11,7 +11,7 @@ namespace Darklands.Core.Characters.Creation;
 /// <param name="SkillLimits">Most experience points one skill may receive in the term.</param>
 /// <param name="Savings">The table's savings word; the original generator never uses it.</param>
 // orig: R136+0xB1F5 (backgrounds, 6 x 0x3A) and R136+0xB351 (occupations, 37 x 0x3A) DS-far 290E:2B65 / 290E:2CC1 (data record R136) struct prof; tests: CreationOracleTests
-// UNCERTAIN: Savings is the word at +0x38 of the 0x0C bytes the draft calls _p2e; its meaning is a guess from the unused text "accumulated savings were".
+// C: Savings is the word at +0x38 of the 0x0C bytes the draft calls _p2e; its meaning is a guess from the unused text "accumulated savings were".
 public sealed record Occupation(
     int Index,
     string Name,

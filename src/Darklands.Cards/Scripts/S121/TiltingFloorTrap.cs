@@ -26,8 +26,8 @@ namespace Darklands.Cards.Scripts;
 //   other: R121+0x2302, R121+0x23A4
 // DORMANT (generated): option slots 10..19 keep the default handler R121+0x23A4 ("screwed up.") and are never shown.
 // C (generated): opt_flag_5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-// UNCERTAIN (generated): card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class TiltingFloorTrap : Card
 {
     public override int Number => 311;
@@ -50,7 +50,7 @@ public sealed class TiltingFloorTrap : Card
         //   option handlers stay as the previous card left them; nothing reads them before the next card sets its own.
         if (c.Events.FactAnywhere(1, TrapDisarmedFact))
         {
-            // UNCERTAIN: the original passes frame mode 2, read as drawing like mode 0.
+            // the original passes frame mode 2, drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
             c.Screen.Text(0);
             c.BattleMode = 1;
             return c.Next = -2;
@@ -122,7 +122,7 @@ public sealed class TiltingFloorTrap : Card
     {
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         ShowPicture(c, Picture);
-        c.Screen.Text(6); // UNCERTAIN: card_text(k, 2): frame mode 2 read as drawing like mode 0
+        c.Screen.Text(6); // card_text(k, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike)
         Across(c, 1);
     }
 

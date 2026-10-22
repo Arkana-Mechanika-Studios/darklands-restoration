@@ -9,7 +9,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R111+0x053C (1838:053C) matched (registration: an empty function; lines 10..19 keep an earlier card's handlers, all hidden)
 // C: the loop calls card_menu without card_options or card_text (card_load draws only the picture), so the menu works on the option
 // C: lines the screen last laid out (the previous card's last text) with this card's states and handlers (CardMenu.DrawsOptions = false).
-// UNCERTAIN: the five ports all lead to card 0x5A; nothing here records which port was chosen.
+// C: the five ports all lead to card 0x5A; nothing here records which port was chosen.
 public sealed class NorthSeaVoyage : Card
 {
     public override int Number => 268;

@@ -55,6 +55,7 @@ public sealed class CardOracleTests
             .Where(t => t.IsSubclassOf(typeof(Card)) && !t.IsAbstract && t.GetConstructor(Type.EmptyTypes) is not null)
             .Select(t => (Card)Activator.CreateInstance(t)!)
             .ToDictionary(c => c.Number);
+        var allDifferences = new System.Collections.Concurrent.ConcurrentBag<string>();
         var report = new System.Collections.Concurrent.ConcurrentBag<string>();
         var failures = new System.Collections.Concurrent.ConcurrentBag<string>();
         var entries = corpus.RootElement.GetProperty("cards").EnumerateObject().ToList();
@@ -117,6 +118,7 @@ public sealed class CardOracleTests
                 {
                     differ++;
                     differing.Add(run.Name);
+                    allDifferences.Add($"{entry.Name}\t{run.Name}\t{difference.Replace('\t', ' ').Replace('\n', ' ')}");
                     if (first.Length == 0)
                     {
                         first = $"{run.Name}: {difference}";
@@ -132,6 +134,10 @@ public sealed class CardOracleTests
         if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_REPORT") is { Length: > 0 } reportFile)
         {
             File.WriteAllLines(reportFile, report.OrderBy(l => l, StringComparer.Ordinal));
+        }
+        if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_DIFFS") is { Length: > 0 } diffsFile)
+        {
+            File.WriteAllLines(diffsFile, allDifferences.OrderBy(l => l, StringComparer.Ordinal));
         }
         Assert.True(failures.IsEmpty, $"{failures.Count} card(s) differ from the original:\n" +
             string.Join("\n", failures.OrderBy(f => f, StringComparer.Ordinal).Take(40)));
@@ -159,6 +165,22 @@ public sealed class CardOracleTests
                 if (dropped.StartsWith("show ", StringComparison.Ordinal) && next >= 0 && actual[next].StartsWith("picture ", StringComparison.Ordinal))
                 {
                     actual[next] = $"show {dropped.Split(' ')[1]} {actual[next]["picture ".Length..]}";
+                }
+            }
+        }
+        if (CardOracleStates.ForceOf(key) is { } forced)
+        {
+            // a hint asked of a line the card never offers (the forced line, see CardOracleStates.ForceOf): when its handler is an
+            // empty function the original's register leftovers come back ("0 '' 0"), which the C# words as its default hint; not compared
+            var want = expected.GetProperty("trace").EnumerateArray().Select(e => e.GetString()!).ToList();
+            var hint = $"hint {forced.Line}: ";
+            var wanted = want.Where(l => l.StartsWith(hint, StringComparison.Ordinal)).ToList();
+            var mine = Enumerable.Range(0, actual.Count).Where(i => actual[i].StartsWith(hint, StringComparison.Ordinal)).ToList();
+            for (var k = 0; k < Math.Min(wanted.Count, mine.Count); k++)
+            {
+                if (wanted[k] == hint + "0 '' 0" && actual[mine[k]].StartsWith(hint + "-1 '", StringComparison.Ordinal))
+                {
+                    actual[mine[k]] = wanted[k];
                 }
             }
         }
@@ -381,7 +403,7 @@ public sealed class CardOracleTests
         {
             character.OriginalRecord ??= Persistence.CharacterRecords.Write(character);
         }
-        var screen = new OracleScreen(option, probe);
+        var screen = new OracleScreen(option, probe) { Force = CardOracleStates.ForceOf(key), Path = CardOracleStates.PathOf(key) };
         var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames };
         c.Screens = new OracleScreens(screen.Log);
         // the oracle stubs the battle (result 0, as here without one) and the prayer screen (0, the prayer fails)

@@ -105,7 +105,7 @@ public static class PotionEffects
                 m.ArmourPotions = (byte)((m.ArmourPotions >> 4 << 4) + t + (m.ArmourPotions & 0xF));
                 break;
             // C: party_money++ increments the florin word alone (16-bit, no normalisation).
-            // UNCERTAIN: what Transformation is meant to do; the code adds one florin.
+            // C: what Transformation is meant to do; the code adds one florin.
             case Transformation:
                 s.Party.Purse = s.Party.Purse with { Florins = (short)(s.Party.Purse.Florins + 1) };
                 break;

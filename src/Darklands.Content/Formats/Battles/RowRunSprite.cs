@@ -7,7 +7,7 @@ namespace Darklands.Content.Formats.Battles;
 /// that many pixels. Colour 0 is transparent.
 /// </summary>
 // orig: gfx_draw_sprite root 047C (the graphics driver interface; the drawing itself is in MGRAPHIC.EXE, not in DARKLAND.EXE) asm
-// UNCERTAIN: the format is read from the data (every BC tile parses exactly within its record size, IMC frames as the
+// C: the format is read from the data (every BC tile parses exactly within its record size, IMC frames as the
 // old engine's CleanCombatPreparedPresentation does); whether the first byte is width − 1 or a hot spot for IMC frames is
 // not settled, so nothing relies on Width for frames.
 public sealed class RowRunSprite

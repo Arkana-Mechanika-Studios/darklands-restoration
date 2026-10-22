@@ -19,6 +19,12 @@ public sealed class OracleScreen(int option, bool probe) : ICardScreen
 
     public CardContext? Context { get; set; }
 
+    /// <summary>The line (block, line) to choose whatever its state, in the first menu of that block (once; see CardOracleStates.ForceOf).</summary>
+    public (int Block, int Line)? Force { get; set; }
+
+    /// <summary>The choices of the first menus (the variant part <c>P2_0_1</c>, see CardOracleStates.PathOf): the n-th menu chooses the (value modulo the count)-th enabled line; later menus follow the rotation policy.</summary>
+    public int[]? Path { get; set; }
+
     public List<string> Log { get; } = [];
 
     /// <summary>"show" when the texts are another card's than the ones shown, else "picture" (as the oracle words card_load and card_load_near).</summary>
@@ -82,17 +88,34 @@ public sealed class OracleScreen(int option, bool probe) : ICardScreen
         var states = options.Take(lines).ToList();
         Log.Add($"menu {block} [{string.Concat(states.Select(o => (int)o))}] {Expanded(block)}");
         var enabled = Enumerable.Range(0, states.Count).Where(i => states[i] == OptionState.Enabled).ToList();
-        if (enabled.Count == 0)
+        int choice;
+        var forced = Force is { } f && f.Block == block && f.Line < states.Count;
+        if (forced)
         {
-            throw new InvalidOperationException($"Menu {block} offers no option.");
+            choice = Force!.Value.Line;
+            Force = null;
         }
-        var first = option >= 0 && enabled.Contains(option) ? enabled.IndexOf(option) : 0;
-        var choice = enabled[(first + _menus - 1) % enabled.Count];
+        else
+        {
+            if (enabled.Count == 0)
+            {
+                throw new InvalidOperationException($"Menu {block} offers no option.");
+            }
+            if (Path is { } path && _menus - 1 < path.Length)
+            {
+                choice = enabled[path[_menus - 1] % enabled.Count];
+            }
+            else
+            {
+                var first = option >= 0 && enabled.Contains(option) ? enabled.IndexOf(option) : 0;
+                choice = enabled[(first + _menus - 1) % enabled.Count];
+            }
+        }
         if (probe && hint is not null)
         {
             for (var i = 0; i < states.Count; i++)
             {
-                if (states[i] != OptionState.Hidden)
+                if (states[i] != OptionState.Hidden || (forced && i == choice))
                 {
                     if (Context is { } cx)
                     {

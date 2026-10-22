@@ -83,7 +83,7 @@ public sealed class CityWallSallyPort : Card
     // orig: R055+0x153E (1932:059E) matched (slot 0: 2 x (45 - size))
     // orig: R055+0x156C (1932:05CC) matched (slot 1: 80 - 3 x size)
     // orig: R055+0x159E (1932:05FE) matched (slot 2: "you can always encounter the unknown")
-    // UNCERTAIN: slot 3 has no handler of this card (the init loop fills slots 0..2 only) and no item; it maps to the "screwed up." text here.
+    // C: slot 3 has no handler of this card (the init loop fills slots 0..2 only) and no item; it maps to the "screwed up." text here.
     private static OptionHint PotionHint(CardContext c, int slot)
     {
         c.Variables.Chosen[0] = c.MenuMember;

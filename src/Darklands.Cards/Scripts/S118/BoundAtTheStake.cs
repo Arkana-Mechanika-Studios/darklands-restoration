@@ -46,7 +46,7 @@ public sealed class BoundAtTheStake : Card
             // orig: R118+0x047C (line 4); hint R118+0x04FC (1838:04FC) matched
             new MenuLine(_ => CallOnASaint(c), () => OptionHint.Say("Select a person and a saint.")),
             // DORMANT: lines 5..9 are never offered; actions R118+0x0534.. and hints R118+0x0536.. are empty
-            // (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

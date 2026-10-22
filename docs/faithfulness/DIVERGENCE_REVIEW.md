@@ -689,7 +689,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R105+0x2A7C` (1AB2:02DC, matched), `R105+0x2A98` (1AB2:02F8, matched)  
   divergence: the original's block is stack garbage; here it follows $ChosenOneName's sex.  
   deterministic: **no** (checked against the original); action: **keep** - card_options(l_2) with l_2 = [bp-2] never written in the card main (enter n,0), i.e. the stack word 8 bytes below the caller's SP, left by the dispatcher's previous call (thunk 09C0:190F thunk/overlay-manager frames or the previous card); the block index is unrelated to the visitor and may even exceed the block count. Not modelled; the C# sex-based choice (block 0 woman, block 1 man) is a sensible stand-in.
-- **D-f3b037** `undefined-memory` - `src/Darklands.Cards/Scripts/S107/PaganAltarOnTheHill.cs:96` `PaganAltarOnTheHill.CloseThePlace`  
+- **D-f3b037** `undefined-memory` - `src/Darklands.Cards/Scripts/S107/PaganAltarOnTheHill.cs:97` `PaganAltarOnTheHill.CloseThePlace`  
   original: `R107+0x2B52` (19CE:11F2, matched), `R107+0x2B04` (19CE:11A4, matched)  
   divergence: the original writes locations[cur_loc] unguarded; in the wilderness (-1) nothing is written here.  
   deterministic: **n/a** (checked against the original); action: **document** - The altar is a location (guardians use party_seed+cur_loc, ClosedCard is written to the location record), so cur_loc is a valid index in play; locations[-1]+0x0C/+0x0E = 0x62 would write 0000:000C..000F (IVT INT 3 vector), which nothing reads, so the guard is equivalent. (Cited 11F2/11A4 are init helpers.)

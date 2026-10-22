@@ -87,7 +87,7 @@ public sealed class WildBoarsCharge : Card
     }
 
     /// <summary>The riding hint: the best rider, at a chance of 1%.</summary>
-    // UNCERTAIN: the original asks the party's best riding skill (skill 0x11) but then passes the
+    // C: the original asks the party's best riding skill (skill 0x11) but then passes the
     // constant 0 to clamp_range(1, 99, .) (checked against the assembly): the chance is always 1.
     private static OptionHint OutrunChance(CardContext c)
     {
@@ -175,7 +175,7 @@ public sealed class WildBoarsCharge : Card
             case 3:
             case 4:
                 ShowPicture(c, FightPicture);
-                // UNCERTAIN: items with flag 0x2000 are taken to be the horses (text 7 drives them away).
+                // items with flag 0x2000 are taken to be the horses (text 7 drives them away).
                 c.Screen.Text(c.CountItemsWithFlags(Who.Everybody, 0x2000) != 0 ? 7 : 8);
                 c.Injure(Who.Everybody, 1, 1, 0x0A);
                 LeaveTheScene(c);

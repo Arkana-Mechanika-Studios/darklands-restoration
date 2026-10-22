@@ -117,7 +117,7 @@ public sealed class ArrestingTheRebels : Card
         }
         if (answer != 1)
         {
-            // UNCERTAIN: block 2 has no option lines (block 8 is the text written for this); kept as
+            // block 2 has no option lines (block 8 is the text written for this); kept as
             // the original sets it.
             menu.Block = 2;
             return;

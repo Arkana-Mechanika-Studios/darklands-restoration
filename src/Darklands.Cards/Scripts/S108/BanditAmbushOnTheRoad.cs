@@ -63,6 +63,7 @@ public sealed class BanditAmbushOnTheRoad : Card
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
+        // DORMANT: option line 7 is never offered: no path of this card enables it (opt_flag / opt_on stay 0 in every block), so the action R108+0x2C14 and hint R108+0x2C9A never run in play.
         return menu.Run(
             // orig: R108+0x266C (1A3F:05FC) matched; hint R108+0x26AA
             new MenuLine(_ => { ShowPicture(c, BanditsPicture); c.Screen.Text(17); Fight(c, true); }, Unknown),
@@ -83,7 +84,7 @@ public sealed class BanditAmbushOnTheRoad : Card
             new MenuLine(p => ScoutThemOut(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageEffectiveAgility() + c.PartyMaxSkill((int)Skill.Woodwise) / 2, 0, 99), OptionHint.WholeParty)),
             // DORMANT: lines 8 and 9 are never offered; actions R108+0x2CD0/0c64 and hints R108+0x2CD2/0c66
-            // are empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: are empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }));
     }

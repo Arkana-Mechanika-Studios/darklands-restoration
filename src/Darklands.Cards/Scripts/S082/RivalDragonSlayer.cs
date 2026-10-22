@@ -38,7 +38,7 @@ public sealed class RivalDragonSlayer : Card
         // C: name kind 6 (the dragons' names) is read from the EXE's table (PersonalNames, NameToSlot).
         c.NameToSlot(6, c.DragonDetail(), 1);
         c.RandomName(c.DragonDetail() + 0x26, 0, 2);
-        // UNCERTAIN: options_block keeps an earlier card's value for meetings outside 0..5 (the card then leaves anyway).
+        // options_block keeps an earlier card's value for meetings outside 0..5 (the card then leaves anyway).
         var block = 0;
         meeting = c.Events.FactValueAnywhere(DragonQuest, 3);
         switch (meeting)

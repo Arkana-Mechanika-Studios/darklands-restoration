@@ -26,16 +26,10 @@ public sealed class ClothmakersStreet_Cloth00 : Card
     /// <summary>The guild's own faction bit in the side table (loc_side_get/set).</summary>
     private const int GuildBit = 0x40;
 
-    // UNCERTAIN: the meaning of the fact numbers is a guess from how the cards use them:
+    // the meaning of the fact numbers is a guess from how the cards use them:
     // 0 the guild's leaning (-1 hostile), 3 asked about the politics, 4 asked for the masters, 5 tried to sneak in,
     // 8 learnt the leader's secret, 9 holds the proof of it, 0x17 the guild's leader is in a special state (0x40).
     private const int Leaning = 0, AskedAbout = 3, AskedMasters = 4, TriedToSneak = 5, KnowsSecret = 8, HasProof = 9, Special = 0x17;
-
-    /// <summary>
-    /// $Support (the original's DS:ED5E) names the side the guild takes in the city's politics; the texts read it.
-    /// UNCERTAIN: the shared text variable does not exist in <see cref="TextVariables"/> yet, so the value is kept here.
-    /// </summary>
-    public int SupportIndex { get; private set; }
 
     public override int Number => CardNumber;
 
@@ -159,7 +153,8 @@ public sealed class ClothmakersStreet_Cloth00 : Card
     {
         c.Variables.Chosen[0] = c.Leader;
         var roll = c.Random(100);
-        SupportIndex = c.SideOf(GuildBit);
+        // R053+0x120D (1924:034D): the guild's side goes to $Support (DS:ED5E), the shared text variable.
+        c.Support[0] = c.SideOf(GuildBit);
         if (roll < chance)
         {
             chance -= roll;
@@ -329,8 +324,9 @@ public sealed class ClothmakersStreet_Cloth00 : Card
         if (c.Random(100) <= chance)
         {
             c.PracticeSkill(c.Leader, 0x0A, 7, 10, 0);
-            SupportIndex = c.Random(3) - 1;
-            c.SetSide(GuildBit, SupportIndex);
+            // R053+0x17D6 (1924:0916): the new side goes to $Support (DS:ED5E), which text 0x0B reads.
+            c.Support[0] = c.Random(3) - 1;
+            c.SetSide(GuildBit, c.Support[0]);
             c.Screen.Text(0x0B);
             c.StandingSeen--;
             c.LocationSet(c.Here, 0, c.StandingSeen);

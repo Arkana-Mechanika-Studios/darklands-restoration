@@ -16,7 +16,7 @@ public sealed partial class CardContext
 
     /// <summary>The last castle's progress (DS:160C, <see cref="GameState.LastCastleFlags"/>).</summary>
     // orig: DS:160C
-    // UNCERTAIN: the meaning of the bits is read from the LastC cards that set them.
+    // C: the meaning of the bits is read from the LastC cards that set them.
     public int LastCastleFlags { get => State.LastCastleFlags; set => State.LastCastleFlags = value; }
 
     /// <summary>The location record of the current place (null in the wilderness).</summary>

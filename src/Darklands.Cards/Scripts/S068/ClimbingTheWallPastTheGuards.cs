@@ -11,7 +11,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R068+0x1C14 (19F9:0004) matched; tests: CardSmokeTests
 // orig: handler setup R068+0x2422 (empty: nothing installed for pop-ups, so the item and
 // saint lists and pop-up handlers of the card before stay as they were); unused-line handler R068+0x2424 ("screwed up.")
-// UNCERTAIN: the card sets the window globals DS:EE72 = 7 and DS:EE70 = 0; they are not modelled (nothing reconstructed reads them).
+// C: the card sets the window globals DS:EE72 = 7 and DS:EE70 = 0; they are not modelled (nothing reconstructed reads them).
 // C: the card does not clear card_items/card_saints or install pop-up handlers (stale from the previous card); its text has no item or
 // saint line and it never asks for usable items or saints, so those stale tables are never consulted: nothing to reconstruct.
 public sealed class ClimbingTheWallPastTheGuards : Card

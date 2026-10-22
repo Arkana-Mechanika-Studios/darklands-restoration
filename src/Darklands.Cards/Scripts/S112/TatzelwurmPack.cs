@@ -51,6 +51,7 @@ public sealed class TatzelwurmPack : Card
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
+        // DORMANT: in text block 2 the option lines 0, 1, 4, 7 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R112+0x093C (1881:04AC) matched; hint R112+0x09C2
             new MenuLine(_ => { TheWurmsStrike(c, menu, OptionState.Enabled); c.Next = 273; }, Unknown),
@@ -87,7 +88,7 @@ public sealed class TatzelwurmPack : Card
 
     /// <summary>Hurling a potion: Perception plus half of Woodwise, plus 13 (slot 0) or 21 (slot 1).</summary>
     // orig: R112+0x1398 (1881:0F08) matched; slot 1 R112+0x13E8
-    // UNCERTAIN: slots 2 and 3 have empty pop-up handlers (R112+0x1438/0faa); the card has two potions, so they never show.
+    // C: slots 2 and 3 have empty pop-up handlers (R112+0x1438/0faa); the card has two potions, so they never show.
     private static OptionHint PotionHint(CardContext c)
     {
         var m = c.MenuMember;

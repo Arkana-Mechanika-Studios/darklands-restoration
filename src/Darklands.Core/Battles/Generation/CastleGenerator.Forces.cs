@@ -557,7 +557,7 @@ internal sealed partial class CastleGenerator
     // C: the original indexes the kind records with the absolute level (l * 12 + kind), which is the level's own record only when the lowest
     // level is 0; with a lowest level of 1 the mark lands on the record of level index 1, which may not exist yet. A kind made there later
     // keeps the mark (kind creation does not write the byte), so the marks are kept and applied once all kinds exist.
-    // UNCERTAIN: what the mark means (see WildBattlefield.MarkSlot); it is only ever set here for the leader's kind.
+    // C: what the mark means (see WildBattlefield.MarkSlot); it is only ever set here for the leader's kind.
     private void MarkKind(int l, int kind)
     {
         if (kind >= 0)

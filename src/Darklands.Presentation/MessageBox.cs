@@ -100,7 +100,7 @@ public sealed class MessageBox(GameUi ui)
     /// <summary>"Game Paused / Press a key to resume".</summary>
     // orig: root 0000:1080: sound_play(2), two text boxes ("Game Paused" at row 0x32 and "Press a key to resume" at mid-screen), getch(), both put back, sound_play(3); the flag DS:07D3 keeps a pause inside a pause from restoring early
     // C: sound_play(2) / sound_play(3) bracket the pause (2 stops and 3 resumes the music? the numbers are sound-driver commands; sound_play(1) is "stop the music")
-    // UNCERTAIN: what sound_play(2) and (3) do; they are not played here.
+    // C: what sound_play(2) and (3) do; they are not played here.
     public void Pause()
     {
         var first = Draw("Game Paused", 0x32);

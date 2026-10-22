@@ -32,7 +32,7 @@ public sealed class AstrologersManor : Card
             // orig: R117+0x0342 (1838:0342) matched; hint R117+0x0356 (leaves without clearing cur_loc)
             new MenuLine(_ => { c.Screen.Text(1, TextFrame.BlankPage); c.Next = CardContext.MapCard; }, () => OptionHint.Say(NoRisk)),
             // DORMANT: lines 3..9 are never offered; actions R117+0x038E.. and hints R117+0x0390.. are empty
-            // (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

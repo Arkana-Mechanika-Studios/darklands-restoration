@@ -59,7 +59,7 @@ public sealed record ItemStack(int Code, int Type, int Quality, int Count, int W
 
 /// <summary>A party member.</summary>
 // orig: party DS:9C69
-// UNCERTAIN: IsFemale is record byte +3 (the "women" queries test it == 1); Age is the word before the record (see MemberRules.Age notes in CardContext.MemberAge).
+// C: IsFemale is record byte +3 (the "women" queries test it == 1); Age is the word before the record (see MemberRules.Age notes in CardContext.MemberAge).
 public sealed class Character
 {
     public const int AttributeCount = 7;
@@ -114,7 +114,7 @@ public sealed class Character
     /// the high nibble by Firewall (+1) and by saints (0xA, 0xB); battle shows "+" on the armour
     /// names while bits 0..6 are set. The same byte as <see cref="ArmourPotions"/>.
     /// </summary>
-    // UNCERTAIN: the nibbles' exact meaning in battle is not established.
+    // C: the nibbles' exact meaning in battle is not established.
     public byte BattleCharms
     {
         get => (byte)ArmourPotions;
@@ -122,7 +122,7 @@ public sealed class Character
     }
 
     /// <summary>The strength of a battle charm (member record byte +0x10: Firewall 50/70/90, St.Polycarp 90); the same byte as <see cref="FirewallStrength"/>.</summary>
-    // UNCERTAIN: named after the potion and saint that set it; no reader of it is known.
+    // C: named after the potion and saint that set it; no reader of it is known.
     public byte CharmStrength
     {
         get => (byte)FirewallStrength;

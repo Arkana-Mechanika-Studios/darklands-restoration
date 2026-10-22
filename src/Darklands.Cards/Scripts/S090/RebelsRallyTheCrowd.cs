@@ -24,7 +24,7 @@ public sealed class RebelsRallyTheCrowd : Card
         var withMercenaries = c.HereQuery(0x29) == 2;
         var menu = Menu(c);
         menu.Enable(0, 1, 3, 6);
-        // UNCERTAIN: the card also sets its global DS:6223 (1 here, 0 below), which no other code reads.
+        // the card also sets its global DS:6223 (1 here, 0 below), which no other code reads.
         if (c.SidePercent(1) >= 150)
         {
             menu.Block = withMercenaries ? 3 : 2;

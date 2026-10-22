@@ -14,7 +14,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R065+0x0C3A (18FB:000A) matched; tests: CardSmokeTests
 // orig: handler setup R065+0x1B58 (18FB:0F28); unused-line handler R065+0x1BFA ("screwed up.");
 // saint pop-ups R065+0x1CF2/114c/11d6/1260 (standard, no saints listed: never offered)
-// UNCERTAIN: the card sets the window global DS:EE70 = 0xF where the blacksmiths' card sets 0 after the option flags; it is
+// C: the card sets the window global DS:EE70 = 0xF where the blacksmiths' card sets 0 after the option flags; it is
 // not modelled (it is not read by anything this port reconstructs).
 public sealed class BowyersGuild : Card
 {
@@ -37,7 +37,7 @@ public sealed class BowyersGuild : Card
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 4, 5, 6);
         // C: this card tests ev8_at(2, loc) != 1 (the blacksmiths' card uses !): the call yields 0 or 1, so it is the same test.
-        // UNCERTAIN: ev8_at (R029, not in the matched C) is taken to return exactly 0 or 1.
+        // C: ev8_at (R029, not in the matched C) is taken to return exactly 0 or 1. (agrees with the original: ev8_at R029+0x3470 returns mov ax,1 or sub ax,ax in the asm; 8 of 9 blocks hit in 80 agreeing oracles)
         if (!c.Events.QuestAt(PoliticsQuest, c.Here))
         {
             menu[1] = menu[3] = menu[4] = menu[5] = OptionState.Hidden;

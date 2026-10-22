@@ -39,7 +39,7 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
     private const int BannerSeconds = 3;
 
     /// <summary>633K: what DOSBox leaves free in a 640K PC.</summary>
-    // UNCERTAIN: the free memory of the machine the figures of the -O report describe.
+    // C: the free memory of the machine the figures of the -O report describe.
     private const int ConventionalMemoryFree = 633 * 1024;
 
     private readonly TextScreen _text = new();
@@ -212,7 +212,7 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
     }
 
     /// <summary>The program's own memory block: PSP, load module and minimum allocation from the EXE header.</summary>
-    // UNCERTAIN: the C start-up code may shrink or grow the block; the header's figures are taken as it is.
+    // C: the C start-up code may shrink or grow the block; the header's figures are taken as it is.
     private long ProgramBlockBytes()
     {
         if (!files.Exists("DARKLAND.EXE"))
@@ -400,7 +400,7 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
     }
 
     /// <summary>DOS (or printf) writing on the graphics screen: the BIOS teletype, 40×25 cells of 8×8 dots from the top left.</summary>
-    // UNCERTAIN: colour 7 (DOS's console output passes none; DOSBox's int 29h uses 7) and the BIOS's 8×8 font (TextFont.SmallRow).
+    // C: colour 7 (DOS's console output passes none; DOSBox's int 29h uses 7) and the BIOS's 8×8 font (TextFont.SmallRow).
     private void GraphicsPrint(string text)
     {
         foreach (var c in text)

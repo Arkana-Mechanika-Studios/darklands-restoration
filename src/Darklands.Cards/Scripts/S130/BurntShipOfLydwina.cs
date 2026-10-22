@@ -9,8 +9,8 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R130+0x1674 (199F:0004) matched; tests: CardSmokeTests
 //   other: R130+0x183C, R130+0x1874
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-// UNCERTAIN (generated): card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class BurntShipOfLydwina : Card
 {
@@ -28,7 +28,7 @@ public sealed class BurntShipOfLydwina : Card
         //   R130+0x1874) is never called; it would only clear the option table and the item/saint lists.
         if (!c.Events.FactAnywhere(1, 0x17))
         {
-            // UNCERTAIN: card_text(k, 2): frame mode 2 read as drawing like mode 0.
+            // card_text(k, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
             c.Screen.Text(0);
             c.Screen.Text(1);
             c.Screen.Text(2);

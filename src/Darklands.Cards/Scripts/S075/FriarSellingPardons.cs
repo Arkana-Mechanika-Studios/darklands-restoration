@@ -46,6 +46,8 @@ public sealed class FriarSellingPardons : Card
         // orig: R075+0x2276 (19BE:0A16) matched; R075+0x22FE (19BE:0A9E) matched; R075+0x2386 (19BE:0B26) matched; R075+0x240E (19BE:0BAE) matched; tests: CardSmokeTests
         menu[1] = c.SaintsUsable();
 
+        // DORMANT: in text block 2 the option lines 0..2 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
+        // DORMANT: in text block 3 the option line 1 is never offered (an Offer for this block lists other lines); it can be offered in other blocks only.
         return menu.Run(
             new MenuLine(() => BuyAPardon(c), OptionHint.Saying(SuccessAssured)),
             // orig: R075+0x1D06 (19BE:04A6) matched; R075+0x1DD2 (19BE:0572) matched; tests: CardSmokeTests

@@ -152,7 +152,7 @@ public sealed class RevolutionHouseAtNight : Card
         {
             // BUG: the original copies "Success is assured." but returns 0 instead of -1, so the
             // hint shows a chance of 0 (and the member is whatever the register held).
-            // UNCERTAIN: the member of the hint (stale register) is shown as the whole party.
+            // C: the member of the hint (stale register) is shown as the whole party.
             return OptionHint.ChanceOf(0, OptionHint.WholeParty);
         }
         var strength = firstSide ? c.SideStrength(-1) : c.SideStrength(1);

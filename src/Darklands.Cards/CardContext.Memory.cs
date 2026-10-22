@@ -261,7 +261,7 @@ public sealed partial class CardContext
     /// over while its third local value (record byte 0x17) is not 0.
     /// </summary>
     // orig: R030+0x27AA thunk 09C0:1FC7) (1462:27AA) draft (function matched per file header)
-    // UNCERTAIN: record byte 0x17 (unk17) is read as Location.LocalValues[2] (bytes 0x15..0x17 are the three local values).
+    // C: record byte 0x17 (unk17) is read as Location.LocalValues[2] (bytes 0x15..0x17 are the three local values).
     public int NearestCityPassingOverOneHere(int x, int y)
     {
         var best = -1;
@@ -306,7 +306,7 @@ public sealed partial class CardContext
     /// it in <c>party_y</c>, the party's map row (DS:E3D2).
     /// </summary>
     // orig: party_y DS:E3D2 read as a location-fact type by $Polit00 (R070+0x2D1A)
-    // UNCERTAIN: which card sets it before $Polit00 is not established.
+    // C: which card sets it before $Polit00 is not established.
     public int GuildFact
     {
         get => State.MapPosition.Y;

@@ -34,7 +34,7 @@ public sealed partial class CardContext
 
     /// <summary><c>member_age</c> (years).</summary>
     // orig: member_age R029+0x00A2 (0E76:00A2) matched
-    // UNCERTAIN: member_age returns the word before the record / 365 (unsigned, checked against the asm), while the monthly update and add_member treat that word as years; here the years.
+    // C: member_age returns the word before the record / 365 (unsigned, checked against the asm), while the monthly update and add_member treat that word as years; here the years.
     // DORMANT: no card calls member_age.
     public int MemberAge(int who) => State.Party.Slot(who).Age;
 

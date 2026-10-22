@@ -263,7 +263,7 @@ public sealed class EffectField : IEffectClouds
     /// </summary>
     // orig: R017+0x0000 draft: the cells x = centre + DS:1FC6[k], y = centre + DS:2052[k] (k = row × 10 + column), skipped
     // at the map's edge or void; `if (obj < DS:C12E && DS:E15B < 15)`, `if (fl < DS:C12D && DS:E15D < 15)`, `if (furn < DS:C17F && DS:E15C < 15)`
-    // UNCERTAIN: the lists are made anew each frame here; the original makes them when it redraws the whole view (the camera moved, a door
+    // C: the lists are made anew each frame here; the original makes them when it redraws the whole view (the camera moved, a door
     // or wall changed), which shows the same cells.
     private (List<(int X, int Y, int Piece)> Floor, List<(int X, int Y, int Piece)> North, List<(int X, int Y, int Piece)> West) AnimatedPieces(IBattleViewport viewport)
     {

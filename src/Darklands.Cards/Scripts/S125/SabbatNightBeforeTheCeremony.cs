@@ -24,7 +24,7 @@ namespace Darklands.Cards.Scripts;
 //     R125+0x298E, R125+0x29CA, R125+0x29E8,
 //     R125+0x2A24, R125+0x2A42, R125+0x2A7E,
 //     R125+0x2B20
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatNightBeforeTheCeremony : Card
 {
     public override int Number => 327;

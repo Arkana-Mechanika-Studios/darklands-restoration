@@ -18,7 +18,7 @@ switchable data-safety fixes below. No known divergence, strong evidence, publis
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 61% of the branch outcomes have run in a comparison with the original, and the
+implements, about 63% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
 are the battlefield generators, the rules and the battles; the least covered are the card scripts and the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
@@ -94,33 +94,33 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 5,408 functions the oracles enter | 74.8% (39,127 / 52,304) | 65.3% (26,932 / 41,264) |
-| **every function the C# implements (9,281)** | | **61.1% (26,146 / 42,782)** |
+| the 6,228 functions the oracles enter | 75.5% (41,220 / 54,595) | 64.9% (27,606 / 42,506) |
+| **every function the C# implements (9,281)** | | **62.7% (26,820 / 42,782)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 26,146 against 26,932 exercised. By area:
+differ slightly on the resident code, hence 26,820 against 27,606 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 6,787 / 8,524 | 80% |
-| rules | 316 / 358 | 1,779 / 2,584 | 69% |
+| rules | 318 / 358 | 1,796 / 2,584 | 70% |
 | battles (tactical combat) | 252 / 314 | 4,970 / 7,516 | 66% |
-| travel (overland map) | 23 / 24 | 602 / 982 | 61% |
-| screens (inventory, barter, creation ...) | 177 / 202 | 3,483 / 6,070 | 57% |
+| travel (overland map) | 23 / 24 | 603 / 982 | 61% |
+| screens (inventory, barter, creation ...) | 177 / 202 | 3,485 / 6,070 | 57% |
 | resident code | 131 / 160 | 904 / 1,644 | 55% |
-| card engine | 34 / 36 | 376 / 686 | 55% |
-| card scripts | 4,037 / 7,949 | 7,182 / 14,614 | 49% |
+| card engine | 34 / 36 | 377 / 686 | 55% |
+| card scripts | 4,787 / 7,949 | 7,835 / 14,614 | 54% |
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-27,509 items of the functions the oracles enter were never exercised: 1,201 are justified in
+28,275 items of the functions the oracles enter were never exercised: 1,241 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 26,308 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 27,034 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 12,100), the screens (about 4,400), the battles (about 3,600), the
+lie in the card scripts (about 12,800), the screens (about 4,400), the battles (about 3,600), the
 battlefield generators (about 3,000), the rules (about 800) and the overland map (about 700).
 
 ## Card oracle
@@ -145,6 +145,18 @@ changes, next card).
   `DARKLANDS_CARD_ORACLE_MUTATIONS`): where a missed branch tests a value the saved game holds (a
   word of the save, a started event), the state takes the other side. On all cards they reached
   614 more branches; the C# agreed on every run.
+* Option lines never offered by any earlier state (883 lines of 156 cards): start states aimed at
+  the condition that offers a line (a quest or event started, a saint known, a location fact, the
+  hour) turned 81 lines on; the other 802 are run by forcing the line's choice in both games (the
+  original's action and hint handlers run for real; 794 of 802 forced runs agree, the 8 others are
+  the picture redrawn after a prayer from a line never offered, listed). Of the forced lines, 521
+  are never offered on any path (marked `DORMANT` with the reason; their handlers listed in
+  `unreachable.csv`), 12 are reachable under a condition no state builds yet, 269 are unsettled.
+  The 1,278 aimed and forced runs reached about 800 branch outcomes no run had reached (card
+  scripts 49% -> 54%); their coverage counts as the original's code compared with the C#, the forced
+  part from a choice the player cannot make. They found one divergence, now fixed: the cloth
+  makers' street (card 0x25) kept the side a faction takes in its own variable instead of the
+  shared one the text reads (R053+0x120D, R053+0x17D6).
 
 ## Whole game sessions (lockstep)
 
@@ -282,9 +294,10 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 158 original bugs the game
-reproduces (each can be fixed by its own `OriginalBehaviour` flag), 307 registered divergences,
-849 dormant branches kept as the original has them, 301 uncertain readings.
+markers in the code, each with its reason and original coordinate: 171 original bugs the game
+reproduces (each can be fixed by its own `OriginalBehaviour` flag), 316 registered divergences,
+907 dormant branches kept as the original has them, 58 uncertain readings (of 301: 234 were
+naming only, 8 settled by an agreeing oracle or the code, now closed).
 
 ## Presentation
 

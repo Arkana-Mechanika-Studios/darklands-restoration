@@ -31,6 +31,9 @@ public sealed class RiverPiratesAtNight : Card
 
         // C: after every choice the loop sets var_chosen1 = leader before the handler; a pop-up
         // handler then names its own member. Each action does this first for line choices.
+        // DORMANT: in text block 5 the option lines 1, 3, 4 are never offered (the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 6 the option lines 1, 3, 4 are never offered (the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 8 the option lines 1, 3, 4 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R114+0x19A2 (1995:03D2) matched; hint R114+0x19A8
             new MenuLine(_ => { LeaderSpeaks(c); FightThePirates(c); }, () => OptionHint.Say("Enter Combat")),
@@ -44,7 +47,7 @@ public sealed class RiverPiratesAtNight : Card
             // orig: R114+0x1C12 (line 4); hint R114+0x1CAC (1995:06DC) matched
             new MenuLine(p => { LeaderSpeaks(c); CoverTheEscape(c, menu, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // DORMANT: lines 5..9 are never offered; actions R114+0x1CE4.. and hints R114+0x1CE6.. are empty
-            // (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => LeaderSpeaks(c)),
             new MenuLine(_ => LeaderSpeaks(c)),
             new MenuLine(_ => LeaderSpeaks(c)),

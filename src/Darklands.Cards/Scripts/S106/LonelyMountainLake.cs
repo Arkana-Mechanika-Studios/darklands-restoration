@@ -59,7 +59,7 @@ public sealed class LonelyMountainLake : Card
             // DORMANT: line 3 is never offered (opt_flag_3 = 0).
             new MenuLine(_ => { c.PassHours(0); c.Next = CardContext.MapCard; }, () => OptionHint.Say(SuccessAssured)),
             // DORMANT: lines 4..8 are never offered; actions R106+0x1534.. and hints R106+0x1536.. are bare retf.
-            // UNCERTAIN: those hints return whatever is in AX/DX; a neutral hint is used.
+            // C: those hints return whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

@@ -183,7 +183,7 @@ public sealed class MinePitTrap_MineP00 : Card
         {
             0 => OptionHint.Say(SuccessAssured, c.MenuMember),
             1 => OptionHint.ChanceOf(c.PartyAverageAttribute(2) + 0x28, c.MenuMember),
-            // UNCERTAIN: item_fn[k][2..3] are never installed (stale handlers); card_items has only two entries, so the slots stay empty.
+            // item_fn[k][2..3] are never installed (stale handlers); card_items has only two entries, so the slots stay empty.
             _ => OptionHint.Say(CardTexts.ScrewedUp),
         };
     }

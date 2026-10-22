@@ -58,11 +58,11 @@ public sealed partial class Combatant
     /// <summary>
     /// +0x20: fighting value with the readied weapon (skill adjusted for strength and the
     /// weapon's minimum skill), used by the close-combat chance on both sides.
-    /// UNCERTAIN: the name (the draft calls it "def").
+    /// C: The name is not established (the draft calls it "def").
     /// </summary>
     public byte FightingValue { get; set; }
 
-    /// <summary>+0x21: the lesser-penalised skill value, used by the missile chance. UNCERTAIN: the name (the draft's "atk").</summary>
+    /// <summary>+0x21: the lesser-penalised skill value, used by the missile chance. The name is not established (the draft's "atk").</summary>
     public byte AimingValue { get; set; }
 
     /// <summary>+0x22: the readied weapon's type (−1 none); for party members the missile weapon slot.</summary>
@@ -71,7 +71,7 @@ public sealed partial class Combatant
     /// <summary>+0x23: minimum skill of the readied weapon.</summary>
     public sbyte ReadiedMinimumSkill { get; set; }
 
-    /// <summary>+0x24: halved and added to the armour quality against armour-piercing blows. UNCERTAIN: meaning.</summary>
+    /// <summary>+0x24: halved and added to the armour quality against armour-piercing blows. Meaning not established.</summary>
     public sbyte PiercingResistance { get; set; }
 
     /// <summary>+0x0C: the readied weapon's last table value (missile range?). UNCERTAIN.</summary>

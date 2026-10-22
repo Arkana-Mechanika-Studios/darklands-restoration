@@ -26,7 +26,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R134+0x1D00 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 4, 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C: clamp_range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
 public sealed class BanditsNearTheCamp : Card
 {
@@ -65,7 +65,7 @@ public sealed class BanditsNearTheCamp : Card
             new MenuLine(chance => LayAnAmbush(c, chance), () => AmbushChance(c)),
             // orig: R134+0x1A8C .. R134+0x1C4E (hints R134+0x1AAA .. R134+0x1C6C) matched
             // DORMANT: lines 4..9 are never enabled; their handlers show text 0 and go to 0x62 ("Success is assured.").
-            // UNCERTAIN: this card never sets item_fn, so an item pop-up would run whatever the previous card left there;
+            // C: this card never sets item_fn, so an item pop-up would run whatever the previous card left there;
             //   the table's generic item hint stands in for it (unreachable: no item line).
             .. CardMenu.FirstTextAndEndTable(c, SuccessAssured)[4..]]);
     }

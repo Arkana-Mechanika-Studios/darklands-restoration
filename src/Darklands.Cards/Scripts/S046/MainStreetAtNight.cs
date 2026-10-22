@@ -26,7 +26,7 @@ public sealed class MainStreetAtNight : Card
     // orig: R046+0x0000 (1838:0000) matched (entry: music, the option flags, the danger draw, the optional notice and the menu loop; the politics tail is StreetPolitics.AfterTheChoice)
     // orig: R046+0x06EA (1838:06EA) matched (init helper: empty in the original, it sets no option defaults)
     // DORMANT: R046+0x06EC (1838:06EC) matched: a "screwed up." default handler that nothing installs (the empty init helper never points opt_fn at it), so it never runs; the card has no items or saints, so there is no pop-up handler either.
-    // UNCERTAIN: the original keeps option lines 10..19 untouched (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
+    // C: the original keeps option lines 10..19 untouched (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
     // C: ten options; hint and action pair up one to one in opt_fn and the dispatch switch. Every hint is 100 minus the danger drawn on arrival (the C# Safety).
     public override int Run(CardContext c)
     {

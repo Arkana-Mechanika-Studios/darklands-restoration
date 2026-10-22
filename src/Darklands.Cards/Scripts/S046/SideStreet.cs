@@ -26,7 +26,7 @@ public sealed class SideStreet : Card
     // orig: R046+0x0724 (18AA:0004) matched (entry: music, the option flags, the watchfulness, the optional poster and the menu loop; the politics tail is StreetPolitics.AfterTheChoice)
     // orig: R046+0x1130 (18AA:0A10) matched (init helper: empty in the original, it sets no option defaults)
     // DORMANT: the empty init helper installs no default "screwed up." handler and the card has no items or saints, so only option lines 0..9 exist; there is no pop-up handler.
-    // UNCERTAIN: the original keeps option lines 10..19 untouched (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
+    // C: the original keeps option lines 10..19 untouched (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
     // C: ten options; hint and action pair up one to one in opt_fn and the dispatch switch. Each action sets the next card to 1 (Challenged) when the draw is not under the chance and the watchfulness is not 0.
     public override int Run(CardContext c)
     {

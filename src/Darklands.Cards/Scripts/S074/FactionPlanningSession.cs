@@ -11,7 +11,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT: the registration routine is empty, so the "screwed up." default and the four saint
 // pop-up hints are never installed, and card_items/card_saints keep an earlier card's values
 // (no line of this card uses them).
-// UNCERTAIN: party_x (DS:E3D0, the map X) is read as the side taken in the city: see CardContext.CityMark.
+// C: party_x (DS:E3D0, the map X) is read as the side taken in the city: see CardContext.CityMark.
 public sealed class FactionPlanningSession : Card
 {
     public const int CardNumber = 0x79;

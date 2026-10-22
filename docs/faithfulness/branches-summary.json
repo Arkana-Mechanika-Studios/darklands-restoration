@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 52304,
-  "blocks_hit": 39127,
-  "functions": 5408,
-  "outcomes": 41264,
-  "outcomes_hit": 26932,
+  "blocks": 54595,
+  "blocks_hit": 41220,
+  "functions": 6228,
+  "outcomes": 42506,
+  "outcomes_hit": 27606,
   "runs": null
  },
  "battle": {
@@ -334,6 +334,38 @@
   "outcomes": 7654,
   "outcomes_hit": 3534,
   "runs": 1400
+ },
+ "cards-lines-aim": {
+  "blocks": 6274,
+  "blocks_hit": 3350,
+  "functions": 554,
+  "outcomes": 4464,
+  "outcomes_hit": 1916,
+  "runs": 263
+ },
+ "cards-lines-aim2": {
+  "blocks": 4114,
+  "blocks_hit": 2046,
+  "functions": 280,
+  "outcomes": 2910,
+  "outcomes_hit": 1099,
+  "runs": 140
+ },
+ "cards-lines-force": {
+  "blocks": 15540,
+  "blocks_hit": 9875,
+  "functions": 2659,
+  "outcomes": 9794,
+  "outcomes_hit": 4613,
+  "runs": 852
+ },
+ "cards-lines-force3": {
+  "blocks": 4327,
+  "blocks_hit": 2247,
+  "functions": 294,
+  "outcomes": 3110,
+  "outcomes_hit": 1243,
+  "runs": 23
  },
  "cards-variants": {
   "blocks": 28190,

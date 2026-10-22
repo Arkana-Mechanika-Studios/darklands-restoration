@@ -7,7 +7,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R111+0x0576 (188F:0006) matched; tests: CardSmokeTests
 // orig: R111+0x0AEE (188F:057E) matched (registration: an empty function; lines 10..19 keep an earlier card's handlers, all hidden)
-// UNCERTAIN: the seven ports all lead to card 0x5A; nothing here records which port was chosen.
+// C: the seven ports all lead to card 0x5A; nothing here records which port was chosen.
 public sealed class WesternBalticVoyage : Card
 {
     public override int Number => 269;

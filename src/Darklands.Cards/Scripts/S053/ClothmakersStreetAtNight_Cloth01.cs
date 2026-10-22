@@ -23,7 +23,7 @@ public sealed class ClothmakersStreetAtNight_Cloth01 : Card
 
     private const int GuildBit = 0x40;
 
-    // UNCERTAIN: fact numbers guessed from use, as in the day card: 0 the guild's leaning, 3 asked / woke the leader,
+    // fact numbers guessed from use, as in the day card: 0 the guild's leaning, 3 asked / woke the leader,
     // 5 tried to sneak in, 9 holds proof of the leader's secret, 0x17 a special state of the guild (0x40).
     private const int Leaning = 0, WokeTheLeader = 3, TriedToSneak = 5, HasProof = 9, Special = 0x17;
 

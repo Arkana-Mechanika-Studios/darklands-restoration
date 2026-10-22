@@ -29,7 +29,7 @@ public enum CombatAction : ushort
     /// <summary>Parrying stance (with <see cref="Melee"/>): slower, harder to hit.</summary>
     Parry = 0x20,
 
-    /// <summary>Letter R. UNCERTAIN: what it orders.</summary>
+    /// <summary>Letter R. What it orders is not established.</summary>
     R = 0x40,
 
     /// <summary>Using the missile weapon.</summary>

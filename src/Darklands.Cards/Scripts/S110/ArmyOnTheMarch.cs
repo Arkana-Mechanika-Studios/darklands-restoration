@@ -35,7 +35,7 @@ public sealed class ArmyOnTheMarch : Card
             // DORMANT: line 4 is never offered; it lets no time pass.
             new MenuLine(_ => c.PassHours(0), () => OptionHint.Say(SuccessAssured)),
             // DORMANT: lines 5..9 are never offered; actions R110+0x197C.. and hints R110+0x197E.. are
-            // empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

@@ -55,7 +55,7 @@ public sealed class SmallCaveUnderTheLedge : Card
             new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
             // DORMANT: lines 3..8 are never offered; their actions R106+0x1ED8.. and hints
             // R106+0x1EDA.. are empty functions.
-            // UNCERTAIN: those hints return whatever is in AX/DX; a neutral hint is used.
+            // C: those hints return whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
@@ -73,7 +73,7 @@ public sealed class SmallCaveUnderTheLedge : Card
     /// item and the tatzelwurm, or the item and the bandits.
     /// </summary>
     // orig: R106+0x1CDE (19BC:049E) matched; tests: CardSmokeTests
-    // UNCERTAIN: the function's stack frame is unusual (read from the disassembly); the behaviour is plain.
+    // C: the function's stack frame is unusual (read from the disassembly); the behaviour is plain.
     private static void EnterTheCave(CardContext c)
     {
         var guardian = c.State.SavedCard;

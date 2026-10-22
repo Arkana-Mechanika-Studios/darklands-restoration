@@ -19,7 +19,7 @@ namespace Darklands.Cards.Scripts;
 //     R130+0x02A0, R130+0x02CE, R130+0x02E0,
 //     R130+0x030E, R130+0x0320, R130+0x034E,
 //     R130+0x03F0
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
 public sealed class BackToTheApocalypseCourtyard : Card
 {

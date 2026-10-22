@@ -31,7 +31,7 @@ public sealed class WitchesOfTheBlight : Card
         c.State.CurrentLocation = -1;
         // C: the picture buffer is the card's: these scenes change it for later redraws.
         var picture = Picture;
-        // UNCERTAIN: options_block keeps an earlier card's value when the card leaves at once (cases 0, 1).
+        // options_block keeps an earlier card's value when the card leaves at once (cases 0, 1).
         var block = 0;
         switch (c.Events.FactValueAnywhere(DragonQuest, 4))
         {

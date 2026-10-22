@@ -38,6 +38,8 @@ public sealed class RefugeesFromThePlague : Card
         menu[1] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
+        // DORMANT: in text block 0 the option lines 5..8 are never offered (the switch to this block hides them, the first menu on this block never enables them); they can be offered in other blocks only.
+        // DORMANT: in text block 5 the option lines 0, 1 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R109+0x259C (line 0); hint R109+0x2716 (1A52:0576) matched
             new MenuLine(_ => GiveFoodAndClothing(c, menu, gift), Unknown),

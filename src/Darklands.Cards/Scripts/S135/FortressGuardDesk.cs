@@ -16,7 +16,7 @@ namespace Darklands.Cards.Scripts;
 //     R135+0x03A4, R135+0x03DC, R135+0x0418,
 //     R135+0x0454, R135+0x0490, R135+0x04CC,
 //     R135+0x0556, R135+0x05E0, R135+0x066A
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
 public sealed class FortressGuardDesk : Card
 {

@@ -24,7 +24,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R119+0x0596, R119+0x0638
 // DORMANT (generated): option slots 10..19 keep the default handler R119+0x0638 ("screwed up.") and are never shown.
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class ImprisonedMonk : Card
 {
     public override int Number => 300;
@@ -49,6 +49,8 @@ public sealed class ImprisonedMonk : Card
 
         var unknown = OptionHint.Saying(CardTexts.Unknown);
         // orig: R119+0x0760 / _07e8 / _0870 / _08f8 R119+0x0760..0x08F8 matched — saint pop-up chance text (c.SaintPopupChanceHint).
+        // DORMANT: in text block 1 the option lines 0..4 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
+        // DORMANT: in text block 7 the option lines 0..7 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             // orig: R119+0x023A / R119+0x0248 matched — leave the cell.
             new MenuLine(_ => Leave(c, -2), unknown),

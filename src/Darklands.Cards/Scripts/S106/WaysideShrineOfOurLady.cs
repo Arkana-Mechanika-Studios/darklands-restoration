@@ -58,7 +58,7 @@ public sealed class WaysideShrineOfOurLady : Card
             new MenuLine(_ => { LeaderSpeaks(c); c.Screen.Text(4); c.Next = CardContext.MapCard; }, NoRiskForAll),
             // DORMANT: lines 4..9 are never offered; their actions R106+0x26BE.. and hints
             // R106+0x26C0.. are empty functions.
-            // UNCERTAIN: those hints return whatever is in AX/DX; a neutral hint is used.
+            // C: those hints return whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => LeaderSpeaks(c)),
             new MenuLine(_ => LeaderSpeaks(c)),
             new MenuLine(_ => LeaderSpeaks(c)),

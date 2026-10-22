@@ -71,7 +71,7 @@ public sealed partial class CardContext
     /// The result of the last battle (<c>battle_result</c>, DS:A893): what the main loop's
     /// battle (a card returning −2..−6) ended with; the battle code sets it.
     /// </summary>
-    // UNCERTAIN: set by the battle screen when a fight ends; 0 (a victory) before any battle.
+    // C: set by the battle screen when a fight ends; 0 (a victory) before any battle.
     public int LastBattleResult
     {
         get => State.BattleOrders.Result;

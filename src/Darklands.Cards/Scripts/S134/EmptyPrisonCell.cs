@@ -17,7 +17,7 @@ namespace Darklands.Cards.Scripts;
 //     R134+0x210C, R134+0x213A, R134+0x214C,
 //     R134+0x217A, R134+0x218C, R134+0x21BA,
 //     R134+0x225C
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
 public sealed class EmptyPrisonCell : Card
 {

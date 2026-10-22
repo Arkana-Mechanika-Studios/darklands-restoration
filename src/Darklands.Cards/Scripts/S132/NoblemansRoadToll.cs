@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 //     R132+0x0E14
 // DORMANT (generated): option slots 10..19 keep the default handler R132+0x0C06 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 8, 9 are never enabled (every assignment sets their flag to 0).
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C: clamp_range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
 public sealed class NoblemansRoadToll : Card
 {
@@ -78,6 +78,10 @@ public sealed class NoblemansRoadToll : Card
         //   potions or saints here, so the pop-up never reaches them.
         var potionHint = AsLeader(() => PotionChance(c));
 
+        // DORMANT: in text block 4 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
+        // DORMANT: in text block 6 the option lines 0..5 are never offered (an Offer for this block lists other lines, the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 7 the option lines 0..5 are never offered (an Offer for this block lists other lines, the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 10 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             // orig: R132+0x0764 / R132+0x078C matched
             new MenuLine(_ => PayTheToll(c), assured),

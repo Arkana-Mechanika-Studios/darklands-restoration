@@ -118,7 +118,7 @@ public static class LootSharing
         }
         if (pile.Count < MaxPileEntries)
         {
-            // UNCERTAIN: the original sets only type (code), quality and count of the new entry and leaves its kind and weight bytes stale; nothing reads them afterwards (Get takes both from the item list), so the item list's values are stored.
+            // the original sets only type (code), quality and count of the new entry and leaves its kind and weight bytes stale; nothing reads them afterwards (Get takes both from the item list), so the item list's values are stored. (agrees with the original in lockstep-loot-esc, lockstep-loot-keys, lockstep-loot-mouse: R040+0x1242, 11 of 11 blocks hit)
             var d = s.Item(code);
             pile.Add(new ItemStack(code, (byte)d.Type, quality, 1, (byte)d.Weight));
         }

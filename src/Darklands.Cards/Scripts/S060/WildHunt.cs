@@ -109,7 +109,7 @@ public sealed class WildHunt : Card
     // (item_quality_flags(best_member, 0x2000, 0)), r.a = clamp99(r.a). Otherwise party_min_eff_attr2() is called and r.a is never written.
     // DIVERGENCE: the original returns the uninitialised r.a (a stack leftover) as the chance when not everybody rides;
     // here the effective Agility that party_min_eff_attr2() returns is used.
-    // UNCERTAIN: what the stack slot of r.a really holds at that point (not checked against the disassembly).
+    // C: the disassembly (R060+0x0FF4) leaves the chance word [bp-4] unwritten on that path: it is a stack leftover.
     private static OptionHint OutrunChance(CardContext c)
     {
         if (c.PartyGet(5) != 0)

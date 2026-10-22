@@ -70,7 +70,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
             // orig: R034+0x0EE6 matched C: `if (root 047C:073D()) key = root 047C:0744(); if ((key == 0 || key == 0x0F09 || key == 0x0F00) &&
             // !(mouse_buttons & 1)) { if (key) R034+0x144C(key); continue; } R034+0x119C(); return;` (no menu bar, no hot keys;
             // the button is a level test: held, the screen closes, Tab or not); tests: ScreenInputTests
-            // UNCERTAIN: hosts may not deliver Shift-Tab as 0x0F00 (the BIOS code); then only Tab steps.
+            // C: hosts may not deliver Shift-Tab as 0x0F00 (the BIOS code); then only Tab steps.
             var key = ui.PollKeyOnly();
             if ((key == 0 || key == Keys.Tab || key == ShiftTab) && !ui.Mouse.Left)
             {

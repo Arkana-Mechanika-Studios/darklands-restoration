@@ -22,7 +22,7 @@ namespace Darklands.Cards.Scripts;
 //     R127+0x1CE6, R127+0x1D22, R127+0x1D40,
 //     R127+0x1D7C, R127+0x1D9A, R127+0x1DD6,
 //     R127+0x1E78
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class WokenAfterTheSabbat : Card
 {
     public override int Number => 334;

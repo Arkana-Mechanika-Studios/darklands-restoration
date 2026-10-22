@@ -207,7 +207,7 @@ public static class SaintBook
 
     /// <summary>A day's travel blessing for the party (renewed while it is on water).</summary>
     // orig: event_new(-2, 0, 0x63, 0x4b, 0, 0, 9, 0x18, 1, 0) R029+0x2C4E
-    // UNCERTAIN: the meaning of kind 0x4B (EventKinds.TravelBlessing) is a guess from its expiry handler.
+    // C: the meaning of kind 0x4B (EventKinds.TravelBlessing) is a guess from its expiry handler.
     private static readonly Boon TravelBlessing = (s, _, _) =>
         s.Events.Create(Who.Everybody, 0, 0x63, EventKinds.TravelBlessing, 0, 0, (int)ExpiryHandler.RenewTravelBlessing, 24, 1, 0);
 
@@ -217,7 +217,7 @@ public static class SaintBook
 
     /// <summary>The help depends on whether the member is a woman (record byte +0x03).</summary>
     // orig: if (party[who].f03 == 0) ... else ...
-    // UNCERTAIN: +0x03 is taken as "is a woman" as elsewhere in the port (party_count_able counts it).
+    // C: +0x03 is taken as "is a woman" as elsewhere in the port (party_count_able counts it).
     // C: who as given: party[-1].f03 is DS:9BEC, inside the menu-item records, 0 unless the menu code stored there: the f03 == 0 branch.
     private static Boon IfWoman(Boon[] woman, Boon[] man) => (s, who, given) =>
         Grant(s, who, given, given != Who.Leader && s.Party.Slot(who).IsFemale ? woman : man);

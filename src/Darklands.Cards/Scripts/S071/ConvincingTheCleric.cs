@@ -12,7 +12,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R071+0x1FB6 (1A33:0006) matched; tests: CardSmokeTests
 // orig: handler setup R071+0x26AC (standard saint pop-ups 0796/081e/08a6/092e, unused-line handler
 // 075e "screwed up."; the card lists no items)
-// UNCERTAIN: the card sets the window globals DS:EE72 = 7 and DS:EE70 = 0; they are not modelled (nothing reconstructed reads them).
+// C: the card sets the window globals DS:EE72 = 7 and DS:EE70 = 0; they are not modelled (nothing reconstructed reads them).
 public sealed class ConvincingTheCleric : Card
 {
     private const int ClergySide = 0x400;

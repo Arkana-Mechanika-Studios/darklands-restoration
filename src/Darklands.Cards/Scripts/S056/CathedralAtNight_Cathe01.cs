@@ -69,7 +69,7 @@ public sealed class CathedralAtNight_Cathe01 : Card
             new MenuLine(() => TalkToAPriest(c), OptionHint.Saying(SuccessAssured)),
             // orig: R056+0x2DF8 (1ABB:05C8) matched (option 2 action, see DonateARelic); hint R056+0x2EC8 "success is assured"
             new MenuLine(() => DonateARelic(c),
-                // UNCERTAIN: the handler leaves its member word unset (r.b is stale); it is shown for the whole party.
+                // the handler leaves its member word unset (r.b is stale); it is shown for the whole party.
                 OptionHint.Saying(SuccessAssured)),
             // orig: R056+0x2EFA (1ABB:06CA) matched (option 3: sanctuary, no time passes); hint R056+0x2F0C "success is assured"
             new MenuLine(() => { c.PassHours(0); c.Next = Sanctuary; }, OptionHint.Saying(SuccessAssured)),

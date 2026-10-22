@@ -34,6 +34,7 @@ import argparse
 import gzip
 import json
 import os
+import re
 import struct
 import sys
 import time
@@ -144,6 +145,8 @@ class CardRun:
     def __init__(self, option: int, probe: bool, messages):
         self.option, self.probe, self.messages = option, probe, messages
         self.menus = 0
+        self.path = None                     # [n, ...]: the k-th menu chooses the (n mod count)-th enabled line (variant part "P2_0_1")
+        self.force = None                    # (block, line): the first menu of that block chooses that line whatever its state
         self.lines: list[str] = []
         self.card_name = ""
         self.texts_name = ""                 # the .MSG whose blocks are loaded (card_load, or the oracle's preload)
@@ -382,13 +385,22 @@ class Oracle:
         states = list(m.read(DS, OPT_ON, 20))[:lines]
         self.log("menu %d [%s] %s" % (block, "".join(str(s) for s in states), self.options_text or ""))
         enabled = [i for i, s in enumerate(states) if s == 1]
-        if not enabled:
-            raise Stop("Menu %d offers no option." % block)
-        first = enabled.index(run.option) if run.option in enabled else 0
-        choice = enabled[(first + run.menus - 1) % len(enabled)]
+        forced = run.force is not None and run.force[0] == block and run.force[1] < len(states)
+        if forced:
+            # a forced line (the start-state variant part "F<block>.<line>"): chosen whatever its state, once
+            choice = run.force[1]
+            run.force = None
+        else:
+            if not enabled:
+                raise Stop("Menu %d offers no option." % block)
+            if run.path is not None and run.menus - 1 < len(run.path):
+                choice = enabled[run.path[run.menus - 1] % len(enabled)]
+            else:
+                first = enabled.index(run.option) if run.option in enabled else 0
+                choice = enabled[(first + run.menus - 1) % len(enabled)]
         if run.probe:
             for i, s in enumerate(states):
-                if s != 0:
+                if s != 0 or (forced and i == choice):
                     self.log("hint %d: %s" % (i, self.hint(i)))
         m.put_word(DS, MENU_POPUP, 0)
         if run.probe:
@@ -464,11 +476,14 @@ class Oracle:
 
     # ---- a run -------------------------------------------------------------------------------
     def run_card(self, card: int, key: str, option: int, probe: bool) -> dict:
+        key, force, path = split_key(key)
         self.boot(key)
         m = self.m
         rec, seg, off, target = self.cards[card]
         m.put_word(DS, CARD, card)
         self.run = CardRun(option, probe, self.messages)
+        self.run.force = force
+        self.run.path = path
         self.options_block = 0
         self.pending = None
         self.options_text = None
@@ -529,6 +544,27 @@ class Oracle:
         out = bytes(m.vfs.files[SAVED])
         # the place name is compared as a text (the original writes stack bytes after it and after the comment)
         return {"place": out[:0x15].split(bytes(1))[0].decode("latin-1"), "sections": savdiff.diff(self.initial_sav, out)}
+
+
+def split_key(key: str):
+    """A run key "L3-Vfoo+F12.3-O5": the start state's key (the "F<block>.<line>" parts of the variant dropped: they change no state,
+    they force the choice of that line in the first menu of that block) and the forced (block, line) or None and the menu path (variant part "P<n>_<n>..") or None."""
+    if "-V" not in key:
+        return key, None, None
+    head, rest = key.split("-V", 1)
+    variant, option = rest.rsplit("-O", 1)
+    parts = variant.split("+")
+    force = None
+    path = None
+    keep = []
+    for p in parts:
+        if re.fullmatch(r"F\d+\.\d+", p):
+            force = tuple(int(x) for x in p[1:].split("."))
+        elif re.fullmatch(r"P\d+(_\d+)*", p):
+            path = [int(x) for x in p[1:].split("_")]
+        else:
+            keep.append(p)
+    return (head + ("-V" + "+".join(keep) if keep else "") + "-O" + option), force, path
 
 
 def card_names() -> dict[int, str]:

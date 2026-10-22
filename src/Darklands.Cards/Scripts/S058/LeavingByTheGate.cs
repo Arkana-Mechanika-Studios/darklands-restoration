@@ -122,7 +122,7 @@ public sealed class LeavingByTheGate : Card
     // orig: R058+0x1B9E (191A:0D7E) matched (slot 0: 2 x agility + 55)
     // orig: R058+0x1C08 (191A:0DE8) matched (slot 1: agility + 50)
     // orig: R058+0x1C70 (191A:0E50) matched (slot 2: agility + 40)
-    // UNCERTAIN: a slot above 2 is empty and has no handler installed; it is reported as "screwed up." (as the default handler would).
+    // C: a slot above 2 is empty and has no handler installed; it is reported as "screwed up." (as the default handler would).
     private static OptionHint PotionChance(CardContext c, int slot)
     {
         var agility = c.PartyAverageEffectiveAgility();

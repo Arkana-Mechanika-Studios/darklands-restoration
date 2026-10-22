@@ -20,8 +20,8 @@ namespace Darklands.Cards.Scripts;
 //     R128+0x1988, R128+0x19B6, R128+0x19C8,
 //     R128+0x19F6, R128+0x1A08, R128+0x1A36,
 //     R128+0x1AD8
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-// UNCERTAIN (generated): card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
 public sealed class CollectorReceivesTheItem : Card
 {
@@ -41,7 +41,7 @@ public sealed class CollectorReceivesTheItem : Card
         // C: the event record is read through the raw pointer (+0x2E item, +0x1E value).
         // DIVERGENCE: an empty slot (the card run without its quest) has a null pointer: the original reads the interrupt vectors at
         // 0000:002E / 0000:001E (whatever the machine holds there); 0 here (card oracle: such runs are marked "null pointer").
-        // UNCERTAIN: card_text(k, 2): frame mode 2 read as drawing like mode 0.
+        // C: card_text(k, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
         // C: the C's switch lists cases 0 and 1 and a default that all show text 0.
         c.Screen.Text(c.EventValue(quest) switch
         {

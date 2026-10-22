@@ -84,7 +84,7 @@ public sealed class GiantSpiderNest : Card
 
     /// <summary>Hurling a potion: Perception plus the potion's quality, plus 4 (slot 0) or 19 (slot 1); unclamped.</summary>
     // orig: R112+0x24B8 (199D:0E68) matched; slot 1 R112+0x24FA
-    // UNCERTAIN: slots 2 and 3 have empty pop-up handlers (R112+0x253C/0eee); only two potions, so they never show.
+    // C: slots 2 and 3 have empty pop-up handlers (R112+0x253C/0eee); only two potions, so they never show.
     private static OptionHint PotionHint(CardContext c)
     {
         var m = c.MenuMember;

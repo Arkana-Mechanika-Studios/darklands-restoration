@@ -70,7 +70,7 @@ public sealed class MercenaryBanditAmbush : Card
             new MenuLine(_ => Fight(c, false), () => OptionHint.Say(SuccessAssured)),
             // DORMANT: line 7 ("sneak up and see who they are", in text block 0) is never offered (opt_flag_7 = 0);
             // lines 7..9 have empty actions R108+0x3B24/0b08/0b0c and hints R108+0x3B26/0b0a/0b0e
-            // (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }));

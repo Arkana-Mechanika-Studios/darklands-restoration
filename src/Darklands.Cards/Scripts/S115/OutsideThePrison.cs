@@ -82,7 +82,7 @@ public sealed class OutsideThePrison : Card
     /// </summary>
     // orig: R115+0x1A92 (19BF:0222) asm; tests: CardSmokeTests
     // C: checked against the asm: result 1 falls through into result 2's code (two reports); saved_card = is_daylight() ? 9 : 10.
-    // UNCERTAIN: the function's case layout is unusual; the behaviour above is the disassembly's.
+    // C: the function's case layout is unusual; the behaviour above is the disassembly's.
     private static void FightTheGuards(CardContext c)
     {
         var guards = c.Random(5) + 3;

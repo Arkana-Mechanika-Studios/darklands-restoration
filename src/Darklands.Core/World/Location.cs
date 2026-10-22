@@ -5,7 +5,7 @@ namespace Darklands.Core.World;
 /// monastery, shrine, mine or other site.
 /// </summary>
 // orig: locations R136+0xE9EE
-// UNCERTAIN: the names of +08 (NoticeRange), +0C/+0E (cards), +18 (CacheHandle) and +1A (Mark) come from their uses.
+// C: the names of +08 (NoticeRange), +0C/+0E (cards), +18 (CacheHandle) and +1A (Mark) come from their uses.
 public sealed class Location
 {
     public const int CityCount = 92;

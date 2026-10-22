@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R123+0x1C7C, R123+0x1D1E
 // DORMANT (generated): option slots 10..19 keep the default handler R123+0x1D1E ("screwed up.") and are never shown.
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatFairFromTheHill : Card
 {
     public override int Number => 318;
@@ -62,6 +62,8 @@ public sealed class SabbatFairFromTheHill : Card
         menu[9] = c.SaintsUsable();
 
         var assured = OptionHint.Saying(SuccessAssured);
+        // DORMANT: in text block 1 the option lines 0..2 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
+        // DORMANT: in text block 2 the option lines 0..4 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => GoDownToThePath(c, menu), assured),
             // orig: R123+0x17CC / R123+0x17D4 matched — into the fair alone.
@@ -176,7 +178,7 @@ public sealed class SabbatFairFromTheHill : Card
     /// </summary>
     // orig: R123+0x1D56 / _08ce / _0906 / _093e matched
     // DORMANT: card_items stays all −1, so no line opens an item pop-up; kept unwired.
-    // UNCERTAIN: slot 0 shows whatever msg_buf still holds; "Success is assured." stands in for it here.
+    // C: slot 0 shows whatever msg_buf still holds; "Success is assured." stands in for it here.
     private static OptionHint ItemPopup(CardContext c, int slot) =>
         OptionHint.Say(SuccessAssured, c.MenuMember);
 }

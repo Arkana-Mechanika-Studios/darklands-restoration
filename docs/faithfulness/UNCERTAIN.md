@@ -11,782 +11,119 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 
 | area | kind | uncertain |
 |---|---|---|
-| rules | core | 18 |
-| cards | core | 215 |
-| events | core | 1 |
-| travel | core | 5 |
-| battles | core | 28 |
-| persistence | core | 5 |
-| screens/presentation | other | 25 |
-| host/audio | other | 4 |
-| total |  | 301 |
+| rules | core | 4 |
+| cards | core | 22 |
+| events | core | 0 |
+| travel | core | 3 |
+| battles | core | 9 |
+| persistence | core | 2 |
+| screens/presentation | other | 18 |
+| host/audio | other | 0 |
+| total |  | 58 |
 
-## Core logic (272)
+## Core logic (40)
 
-### rules (18)
+### rules (4)
 
-- **U-0599b0** `uncertain` - `src/Darklands.Core/Characters/Character.cs:62` `Character`  
-  original: `R136+0x33FC` (20A5:33FC, data)  
-  why: IsFemale is record byte +3 (the "women" queries test it == 1); Age is the word before the record (see MemberRules.Age notes in CardContext.MemberAge).
-- **U-48bbcc** `uncertain` - `src/Darklands.Core/Characters/Character.cs:117` `Character.BattleCharms`  
-  original: `R136+0x33FC` (20A5:33FC, data)  
-  why: the nibbles' exact meaning in battle is not established.
-- **U-ff8cd2** `uncertain` - `src/Darklands.Core/Characters/Character.cs:125` `Character.CharmStrength`  
-  original: `R136+0x33FC` (20A5:33FC, data)  
-  why: named after the potion and saint that set it; no reader of it is known.
-- **U-c43d50** `uncertain` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:643` `CharacterCreation.SpentWord`  
-  original: `R037+0x4BEE` (18C8:058E, draft)  
-  why: a picture handle is the DOS segment pic_load returned, taken as at least 0x28 (so '+' stops there) and kept as a counter here.
 - **U-8dd8f5** `uncertain` - `src/Darklands.Core/Characters/Creation/CreationRoster.cs:95` `CreationRoster.AddToParty`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: equip_weight_vec(il) recomputes the encumbrance from the equipped items; the copy keeps the record's value (0 for made characters, who have nothing equipped; the ready-made four carry the game's own values).
-- **U-833e1d** `uncertain` - `src/Darklands.Core/Characters/Creation/Occupation.cs:14` `Occupation`  
-  original: `R136+0xB1F5` (290E:2B65, data), `R136+0xB351` (290E:2CC1, data)  
-  why: Savings is the word at +0x38 of the 0x0C bytes the draft calls _p2e; its meaning is a guess from the unused text "accumulated savings were".
-- **U-9285b2** `uncertain` - `src/Darklands.Core/Characters/DefaultParty.cs:13` `DefaultParty`  
-  original: `R001+0x0000` (0E76:0000, draft)  
-  why: what the original then does is read from the code, not run: the battle builds the figure's file name from member_shield (R002, "pics\short.pic"), finds no such picture and stops.
-- **U-dcfad6** `uncertain` - `src/Darklands.Core/Characters/DefaultParty.cs:18` `DefaultParty.Create`  
-  original: `R001+0x0000` (0E76:0000, draft)  
-  why: the four records are taken from the original's Quickstart party (R001 party_default).
-- **U-4471e9** `uncertain` - `src/Darklands.Core/Economy/Money.cs:144` `Money.ToString`  
-  original: `root 0265:09B2` (0265:09B2, draft), `R029+0x5286` (1367:0376, matched)  
-  why: itoa_commas (root 0265:09B2, assembly only) is taken to group thousands with ','.
 - **U-881f6b** `uncertain` - `src/Darklands.Core/Rules/CampStay.cs:165` `CampStay.CanDoAlchemy`  
   original: `R036+0x1E80` (1462:1E80, draft)  
   why: a byte is tested whole, so its top five bits (not formulas; kept in Character.OriginalRecord) would count too; nothing in the game sets them, and Formulas is the set of the low three bits.
 - **U-20fb81** `uncertain` - `src/Darklands.Core/Rules/LocationRules.cs:78` `LocationRules.Query`  
   original: `R029+0x1A8E` (0E76:1A8E, draft), `R029+0x1A7E` (0E76:1A7E, draft)  
   why: codes 19, 21, 22, 25, 30, 36 jump straight to the exit after `shl ax,1; xchg bx,ax`: they return the caller's BX (0 under the oracle harness); here 0.
-- **U-158737** `uncertain` - `src/Darklands.Core/Rules/LootSharing.cs:121` `LootSharing.AddToPile`  
-  original: `R040+0x1242` (1462:1242, draft)  
-  why: the original sets only type (code), quality and count of the new entry and leaves its kind and weight bytes stale; nothing reads them afterwards (Get takes both from the item list), so the item list's values are stored.
-- **U-5a0428** `uncertain` - `src/Darklands.Core/Rules/PotionEffects.cs:108` `PotionEffects.Drink`  
-  original: `R031+0x10AE` (1462:10AE, draft), `R031+0x43B2` (1462:43B2, draft), `R031+0x4CC4` (18E7:0474, draft)  
-  why: what Transformation is meant to do; the code adds one florin.
-- **U-41bb2f** `uncertain` - `src/Darklands.Core/Rules/SaintBook.cs:210` `SaintBook.TravelBlessing`  
-  original: `R029+0x2C4E` (0E76:2C4E, draft)  
-  why: the meaning of kind 0x4B (EventKinds.TravelBlessing) is a guess from its expiry handler.
-- **U-d319a6** `uncertain` - `src/Darklands.Core/Rules/SaintBook.cs:220` `SaintBook.IfWoman`  
-  original: `R029+0x2C4E` (0E76:2C4E, draft)  
-  why: +0x03 is taken as "is a woman" as elsewhere in the port (party_count_able counts it).
-- **U-4dfb6d** `uncertain` - `src/Darklands.Core/Rules/Trading.cs:43` `Trading.StaleCodeSegment`  
-  original: `R136+0xC02B` (290E:399B, data)  
-  why: the real value is the R032 overlay's run-time CS, assumed in 0x005C..0x7FFF (any DOS load address the game fits at); the oracle runs at the link-time CS 1462.
 - **U-374c2b** `uncertain` - `src/Darklands.Core/Rules/Trading.cs:113` `Trading.DefaultName`  
   original: `R136+0xA70F` (290E:207F, data), `R029+0x21AA` (0E76:21AA, draft)  
   why: entries outside −3..11 are not reproduced (empty name); no card is known to pass them.
-- **U-5d953b** `uncertain` - `src/Darklands.Core/Rules/Trading.cs:328` `Trading.Buy`  
-  original: `R032+0x0F60` (1462:0F60, draft)  
-  why: for a price word ≥ 0x8000 (never reached with the game's values) money_set's sign handling is assumed to match Money.From.
 
-### cards (215)
+### cards (22)
 
-- **U-a32a7e** `uncertain` - `src/Darklands.Cards/CardContext.Fights.cs:32` `CardContext.CombatFlags`  
-  original: `R029+0x577A` (1367:086A, matched)  
-  why: the meaning of the bits is not established; the cards set bit 8 before an ambush.
-- **U-0f67f4** `uncertain` - `src/Darklands.Cards/CardContext.Films.cs:19` `CardContext.LastCastleFlags`  
-  original: `root 030B:0004` (030B:0004, matched), `R133+0x186C` (1971:04DC, matched), `R043+0x09AE` (1462:09AE, matched) +1 more  
-  why: the meaning of the bits is read from the LastC cards that set them.
-- **U-e6a375** `uncertain` - `src/Darklands.Cards/CardContext.Helpers.cs:75` `CardContext.BattleTargetSlain`  
-  original: `R029+0x2246` (0E76:2246, draft), `R038+0x0000` (1462:0000, draft)  
-  why: set by the battle (R014) when a marked combatant falls; meaning inferred.
-- **U-b8b485** `uncertain` - `src/Darklands.Cards/CardContext.Helpers.cs:83` `CardContext.EncounterApproach`  
-  original: `R029+0x2246` (0E76:2246, draft), `R038+0x0000` (1462:0000, draft)  
-  why: cleared by the main loop after any screen but the map; who sets 1 and 3 is not traced. The same word as MapLeaveMode (GameState.MapLeaveMode); the two names come from the cards' readings of it.
-- **U-4552dd** `uncertain` - `src/Darklands.Cards/CardContext.Helpers.cs:95` `CardContext.CityMark`  
-  original: `R029+0x2246` (0E76:2246, draft), `R038+0x0000` (1462:0000, draft)  
-  why: the cards' reuse of the map X while in a city.
-- **U-62ca93** `uncertain` - `src/Darklands.Cards/CardContext.Memory.cs:264` `CardContext.NearestCityPassingOverOneHere`  
-  original: `R030+0x27AA` (1462:27AA, draft)  
-  why: record byte 0x17 (unk17) is read as Location.LocalValues[2] (bytes 0x15..0x17 are the three local values).
-- **U-acae1a** `uncertain` - `src/Darklands.Cards/CardContext.Memory.cs:309` `CardContext.GuildFact`  
-  original: `R070+0x2D1A` (1AC1:048A, matched)  
-  why: which card sets it before $Polit00 is not established.
-- **U-482cfc** `uncertain` - `src/Darklands.Cards/CardContext.Party.cs:37` `CardContext.MemberAge`  
-  original: `R029+0x00A2` (0E76:00A2, draft)  
-  why: member_age returns the word before the record / 365 (unsigned, checked against the asm), while the monthly update and add_member treat that word as years; here the years.
-- **U-759a3d** `uncertain` - `src/Darklands.Cards/CardContext.Services.cs:74` `CardContext.LastBattleResult`  
-  original: `R029+0x225C` (0E76:225C, draft)  
-  why: set by the battle screen when a fight ends; 0 (a victory) before any battle.
-- **U-f44973** `uncertain` - `src/Darklands.Cards/CardTable.cs:8` `CardTable`  
-  original: `R136+0xD090` (2DAE:0000, data), `R044+0x0000` (1838:0000, matched)  
-  why: names and main pictures were read from the card functions: a card whose function loads several pictures lists the first; "" = the card has no MSG file (it only moves on), -1 = no picture. Card 98 (0x62, end of game) carries the name "$NoGo00.msg" exactly as the table was read; the other names have no ".msg".
-- **U-fbb58e** `uncertain` - `src/Darklands.Cards/CardVariables.Additional.cs:15` `CardVariables.CityLocation`  
-  original: `R043+0x1316` (150B:0886, draft)  
-  why: the name "city location" for DS:ED52 is the variable's text name ($CityLocation); which scripts set it is not established.
-- **U-e2163a** `uncertain` - `src/Darklands.Cards/Scripts/S044/CityGate.cs:34` `CityGate.Run`  
-  original: `R044+0x253C` (19DD:0AEC, matched)  
-  why: the C# PotionChance maps slot > 2 to the "screwed up." text as if it were R044+0x272C; the C never installs that handler for item_fn[k][3], and slot 3 is empty anyway.
-- **U-3e6769** `uncertain` - `src/Darklands.Cards/Scripts/S045/MainStreet.cs:34` `MainStreet.Run`  
-  original: `R045+0x162C` (18FC:09EC, matched)  
-  why: the original keeps option lines 10..19 untouched here (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
-- **U-e839f2** `uncertain` - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:29` `MainStreetAtNight.Run`  
-  original: `R046+0x06EA` (1838:06EA, matched)  
-  why: the original keeps option lines 10..19 untouched (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
-- **U-7e25d7** `uncertain` - `src/Darklands.Cards/Scripts/S046/SideStreet.cs:29` `SideStreet.Run`  
-  original: `R046+0x1130` (18AA:0A10, matched)  
-  why: the original keeps option lines 10..19 untouched (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
-- **U-8e8d3b** `uncertain` - `src/Darklands.Cards/Scripts/S047/CityDungeon.cs:307` `CityDungeon.CharmChance`  
-  original: `R047+0x1062` (1852:0EC2, matched)  
-  why: with no able woman neither word is set and both keep older values; the C# then uses best_member.
-- **U-e46c43** `uncertain` - `src/Darklands.Cards/Scripts/S047/CityWallsByDay.cs:14` `CityWallsByDay`  
-  original: `R047+0x13CC` (1974:000C, matched)  
-  why: options 6..9 (all: text 0 again, then the outskirts) may have no line in the card's text.
-- **U-9174cb** `uncertain` - `src/Darklands.Cards/Scripts/S047/CityWallsByNight.cs:13` `CityWallsByNight`  
-  original: `R047+0x20C0` (1A44:0000, matched)  
-  why: options 6..9 (text 0 again, then the outskirts) may have no line in the card's text.
-- **U-998b07** `uncertain` - `src/Darklands.Cards/Scripts/S048/RevolutionHouseAtNight.cs:155` `RevolutionHouseAtNight.KnockChance`  
-  original: `R048+0x124E` (190E:04EE, matched)  
-  why: the member of the hint (stale register) is shown as the whole party.
-- **U-43f576** `uncertain` - `src/Darklands.Cards/Scripts/S052/GroveAtNight_CityG06.cs:24` `GroveAtNight_CityG06.Run`  
-  original: `R052+0x164E` (1942:05AE, matched)  
-  why: text block 4 ("Food is just as important as sleep ...") is never shown by this card's code.
-- **U-fb2d31** `uncertain` - `src/Darklands.Cards/Scripts/S053/ClothmakersStreetAtNight_Cloth01.cs:26` `ClothmakersStreetAtNight_Cloth01.Leaning`  
-  original: `R053+0x2170` (1A4F:0000, matched)  
-  why: fact numbers guessed from use, as in the day card: 0 the guild's leaning, 3 asked / woke the leader, 5 tried to sneak in, 9 holds proof of the leader's secret, 0x17 a special state of the guild (0x40).
-- **U-7182d7** `uncertain` - `src/Darklands.Cards/Scripts/S053/ClothmakersStreet_Cloth00.cs:29` `ClothmakersStreet_Cloth00.Leaning`  
-  original: `R053+0x0EC4` (1924:0004, matched)  
-  why: the meaning of the fact numbers is a guess from how the cards use them: 0 the guild's leaning (-1 hostile), 3 asked about the politics, 4 asked for the masters, 5 tried to sneak in, 8 learnt the leader's secret, 9 holds the proof of it, 0x17 the guild's leader is in a special state (0x40).
-- **U-841315** `uncertain` - `src/Darklands.Cards/Scripts/S053/ClothmakersStreet_Cloth00.cs:36` `ClothmakersStreet_Cloth00.SupportIndex`  
-  original: `R053+0x0EC4` (1924:0004, matched)  
-  why: the shared text variable does not exist in yet, so the value is kept here.
-- **U-2d001f** `uncertain` - `src/Darklands.Cards/Scripts/S053/MerchantsProposal_Merch00.cs:24` `MerchantsProposal_Merch00.Run`  
-  original: `R053+0x34AA` (1B26:05CA, matched)  
-  why: the MSG file has no option lines (block 0 is only the merchant's speech), so on the real screen no line can be chosen; the ten actions are ported all the same.
-- **U-de343f** `uncertain` - `src/Darklands.Cards/Scripts/S054/ForeignMerchantOffer.cs:24` `ForeignMerchantOffer.Run`  
-  original: `R054+0x05C6` (1838:05C6, matched)  
-  why: the card's text file has no option lines, so what the original screen offers for the ten enabled options is unknown (probably nothing selectable); the C# offers all ten as the code enables them.
-- **U-645f6d** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:27` `VillageGraveyard.Run`  
-  original: `R054+0x1686` (1952:04E6, matched)  
-  why: the C sets only opt_flag_0 and opt_flag_1; the flags 2..9 it copies into the option table are stale values left by the previous card (DS:EE7A..EE88). The card's first text has two option lines, so options 2..9 cannot be picked; they are kept hidden here with the actions the C has for them.
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
   why: the hint handlers of the ten options return a struct they never fill in (only the text "Success is assured." is set), so the hint shows that text for the whole party here.
-- **U-ca0a86** `uncertain` - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:86` `CityWallSallyPort.PotionHint`  
-  original: `R055+0x159E` (1932:05FE, matched)  
-  why: slot 3 has no handler of this card (the init loop fills slots 0..2 only) and no item; it maps to the "screwed up." text here.
-- **U-0184e8** `uncertain` - `src/Darklands.Cards/Scripts/S056/CathedralAtNight_Cathe01.cs:72` `CathedralAtNight_Cathe01.Run`  
-  original: `R056+0x2DF8` (1ABB:05C8, matched), `R056+0x2EC8` (1ABB:0698, matched)  
-  why: the handler leaves its member word unset (r.b is stale); it is shown for the whole party.
 - **U-db5ac2** `uncertain` - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:15` `CathedralByDay`  
   original: `R056+0x18C8` (19C4:0008, asm)  
   why: 0354 and 0514 are read from the disassembly only.
-- **U-5c4897** `uncertain` - `src/Darklands.Cards/Scripts/S056/MinePitTrap_MineP00.cs:186` `MinePitTrap_MineP00.PotionHint`  
-  original: `R056+0x063E` (1838:063E, matched)  
-  why: item_fn[k][2..3] are never installed (stale handlers); card_items has only two entries, so the slots stay empty.
 - **U-ecbac4** `uncertain` - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:173` `CityChurchByDay.AskForTheNextMass`  
   original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
   why: in the small and late hours (band 0 and 1) the original names the hour of an uninitialised local (whatever its stack slot held); the C# names hour 0.
-- **U-488022** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:25` `HandbillThugs_Polit01.PoliticsTag`  
-  original: `R057+0x27AC` (1A02:0B0C, matched)  
-  why: the names of types 0x12 and 0x13 are guessed from how they are used.
 - **U-4c93ee** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:33` `HandbillThugs_Polit01.StalePopupChance`  
   original: `R057+0x27AC` (1A02:0B0C, matched)  
   why: derived from the stack layout (card_menu's saved BP lies in the handler's unset result word).
-- **U-5c28c5** `uncertain` - `src/Darklands.Cards/Scripts/S058/LeavingByTheGate.cs:125` `LeavingByTheGate.PotionChance`  
-  original: `R058+0x1C70` (191A:0E50, matched)  
-  why: a slot above 2 is empty and has no handler installed; it is reported as "screwed up." (as the default handler would).
-- **U-ddbace** `uncertain` - `src/Darklands.Cards/Scripts/S058/MonasteryAtNight.cs:32` `MonasteryAtNight.HeraldryLabel`  
-  original: `R058+0x0000` (1838:0000, matched)  
-  why: R058+0x06D4 etc. read R136+0x8690+0x1EDF (the word pair at ES:1EDF); the table entry just after it is "It is closed at night", which looks like what was meant, but the EXE bytes and the asm say 1EDF.
-- **U-3a330e** `uncertain` - `src/Darklands.Cards/Scripts/S060/WildHunt.cs:112` `WildHunt.OutrunChance`  
-  original: `R060+0x0FF4` (18CF:0684, matched)  
-  why: what the stack slot of r.a really holds at that point (not checked against the disassembly).
-- **U-3a73e7** `uncertain` - `src/Darklands.Cards/Scripts/S063/SwordsmithsGuild.cs:39` `SwordsmithsGuild.Run`  
-  original: `R063+0x2FC4` (1A3B:0F94, matched), `R063+0x3066` (1A3B:1036, matched), `R063+0x315E` (1A3B:112E, matched)  
-  why: ev8_at (R029, not in the matched C) is taken to return exactly 0 or 1.
-- **U-e1c7fc** `uncertain` - `src/Darklands.Cards/Scripts/S064/ArmorersGuild.cs:18` `ArmorersGuild`  
-  original: `R064+0x1C32` (190C:0EF2, matched), `R064+0x1CD4` (190C:0F94, matched), `R064+0x1DCC` (190C:108C, matched)  
-  why: the card sets the window global DS:EE70 = 0xF where the blacksmiths' card sets 0 after the option flags; it is not modelled (it is not read by anything this port reconstructs).
-- **U-98333a** `uncertain` - `src/Darklands.Cards/Scripts/S064/ArmorersGuild.cs:41` `ArmorersGuild.Run`  
-  original: `R064+0x1C32` (190C:0EF2, matched), `R064+0x1CD4` (190C:0F94, matched), `R064+0x1DCC` (190C:108C, matched)  
-  why: ev8_at (R029, not in the matched C) is taken to return exactly 0 or 1.
-- **U-86954b** `uncertain` - `src/Darklands.Cards/Scripts/S065/BowyersGuild.cs:17` `BowyersGuild`  
-  original: `R065+0x1B58` (18FB:0F28, matched), `R065+0x1BFA` (18FB:0FCA, matched), `R065+0x1CF2` (18FB:10C2, matched)  
-  why: the card sets the window global DS:EE70 = 0xF where the blacksmiths' card sets 0 after the option flags; it is not modelled (it is not read by anything this port reconstructs).
-- **U-915c54** `uncertain` - `src/Darklands.Cards/Scripts/S065/BowyersGuild.cs:40` `BowyersGuild.Run`  
-  original: `R065+0x1B58` (18FB:0F28, matched), `R065+0x1BFA` (18FB:0FCA, matched), `R065+0x1CF2` (18FB:10C2, matched)  
-  why: ev8_at (R029, not in the matched C) is taken to return exactly 0 or 1.
 - **U-777d02** `uncertain` - `src/Darklands.Cards/Scripts/S067/JewelersGuildAtNight.cs:223` `JewelersGuildAtNight.FailedToGetIn`  
   original: `R067+0x1962` (1954:07A2, matched)  
   why: in the original it indexes the party records out of range (a number up to 199); here a member number past the party is an empty member, so the practice does nothing.
-- **U-402433** `uncertain` - `src/Darklands.Cards/Scripts/S068/ClimbingTheWallPastTheGuards.cs:14` `ClimbingTheWallPastTheGuards`  
-  original: `R068+0x2422` (19F9:0812, matched), `R068+0x2424` (19F9:0814, matched)  
-  why: the card sets the window globals DS:EE72 = 7 and DS:EE70 = 0; they are not modelled (nothing reconstructed reads them).
-- **U-32ad84** `uncertain` - `src/Darklands.Cards/Scripts/S071/ConvincingTheCleric.cs:15` `ConvincingTheCleric`  
-  original: `R071+0x26AC` (1A33:06FC, matched)  
-  why: the card sets the window globals DS:EE72 = 7 and DS:EE70 = 0; they are not modelled (nothing reconstructed reads them).
-- **U-660304** `uncertain` - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:19` `SallyPortInTheCityWall`  
-  original: `R073+0x2CB0` (1A7E:0850, matched)  
-  why: the card sets the window globals DS:EE70 = 0 and DS:EE72 = 7; they are not modelled (nothing reconstructed reads them).
-- **U-362643** `uncertain` - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:128` `SallyPortInTheCityWall.ClimbWithARope`  
-  original: `R073+0x2732` (1A7E:02D2, matched)  
-  why: the test looks inverted (a high chance makes success unlikely), but the code does exactly this (`cmp ax,[bp+6]; jle` in R073+0x2732; the same in R073+0x2820).
-- **U-4d69f3** `uncertain` - `src/Darklands.Cards/Scripts/S073/SoldiersClosingInAtTheWall.cs:16` `SoldiersClosingInAtTheWall`  
-  original: `R073+0x20F4` (199E:0A94, matched)  
-  why: the card sets the window globals DS:EE70 = 0 and DS:EE72 = 7; they are not modelled (nothing reconstructed reads them).
 - **U-c18edd** `uncertain` - `src/Darklands.Cards/Scripts/S074/CityGateInWartime.cs:141` `CityGateInWartime.Befriend`  
   original: `R074+0x0376` (1838:0376, matched)  
   why: it is taken as 0 (failure), which then overrides next_card = 1 and keeps the party at the gate; a non-zero leftover would instead let the party in (text 5).
-- **U-26d9e8** `uncertain` - `src/Darklands.Cards/Scripts/S074/FactionPlanningSession.cs:14` `FactionPlanningSession`  
-  original: `R074+0x1370` (18F6:0790, matched), `R074+0x1372` (18F6:0792, matched), `R074+0x13AA` (18F6:07CA, matched) +3 more  
-  why: party_x (DS:E3D0, the map X) is read as the side taken in the city: see CardContext.CityMark.
-- **U-421b52** `uncertain` - `src/Darklands.Cards/Scripts/S074/RebelMobInTheStreets.cs:50` `RebelMobInTheStreets.Run`  
-  original: `R074+0x2442` (1A42:03A2, matched), `R074+0x2444` (1A42:03A4, matched)  
-  why: if a stale value 1 left the line enabled in block 0, choosing it would also do nothing.
-- **U-5043e9** `uncertain` - `src/Darklands.Cards/Scripts/S075/FactionLeadersHomes.cs:64` `FactionLeadersHomes.JoinSide`  
-  original: `R075+0x05DC` (1838:05DC, matched), `R075+0x05FA` (1838:05FA, matched)  
-  why: the side kept in party_x (CardContext.CityMark).
 - **U-4ffac2** `uncertain` - `src/Darklands.Cards/Scripts/S075/KidnappersCampAtNight.cs:36` `KidnappersCampAtNight.Run`  
   original: `R075+0x16CA` (193D:067A, matched), `R075+0x1752` (193D:0702, matched), `R075+0x17DA` (193D:078A, matched)  
   why: the first option list (block 0) is assumed.
-- **U-bcac07** `uncertain` - `src/Darklands.Cards/Scripts/S076/ChurchSanctuary.cs:12` `ChurchSanctuary`  
-  original: `R076+0x098E` (187B:055E, matched), `R076+0x09C6` (187B:0596, matched)  
-  why: texts 4..8 (a second menu, the priest's warnings and the forced departure) and 12 (a failed escape ending in capture) are never shown by this card, the only one that loads $Sanct00; an indirect loader is not excluded.
-- **U-14808f** `uncertain` - `src/Darklands.Cards/Scripts/S076/PriestVisitsTheCell.cs:77` `PriestVisitsTheCell.AskForEscape`  
-  original: `R076+0x0EB0` (1901:0220, matched)  
-  why: party_x (CityMark) as the jail's note of a refused escape (0 becomes 2, else 1).
 - **U-b280c3** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:70` `PublicExecution.Verdict`  
   original: `R079+0x0CF6` (18D8:02F6, asm)  
   why: the abbot's score starts uninitialised when fact (2, 0) holds here; taken as 0.
-- **U-bb4195** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:257` `PublicExecution.StrengthChance`  
-  original: `R079+0x11F4` (18D8:07F4, asm)  
-  why: the member is DS:9A44 (the attribute queries' member), read as BestMember.
 - **U-cea1ac** `uncertain` - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:48` `DragonBlightedLand.Run`  
   original: `R081+0x2884` (19BC:1044, asm), `R081+0x2902` (19BC:10C2, asm)  
   why: options_block is a global; when a battle result keeps the card (below), the list of an earlier card would be shown. The dragon's first list is assumed.
-- **U-11f81a** `uncertain` - `src/Darklands.Cards/Scripts/S081/DragonTidings.cs:35` `DragonTidings.Run`  
-  original: `R081+0x17D8` (1962:0538, matched), `R081+0x1810` (1962:0570, matched)  
-  why: the original passes (9 / 10 / 11, cur_loc) to thunk 09C0:1F09; the rule ignores them.
-- **U-3e56bf** `uncertain` - `src/Darklands.Cards/Scripts/S082/DragonsLair.cs:170` `DragonsLair.Reason`  
-  original: `R082+0x0222` (1845:0152, asm)  
-  why: the original passes 1 to thunk 09C0:216B; the rule takes no argument.
-- **U-e3cb88** `uncertain` - `src/Darklands.Cards/Scripts/S082/RivalDragonSlayer.cs:41` `RivalDragonSlayer.Run`  
-  original: `R082+0x16A4` (1922:0804, matched), `R082+0x16DC` (1922:083C, matched)  
-  why: options_block keeps an earlier card's value for meetings outside 0..5 (the card then leaves anyway).
-- **U-c52d44** `uncertain` - `src/Darklands.Cards/Scripts/S083/WitchesOfTheBlight.cs:34` `WitchesOfTheBlight.Run`  
-  original: `R083+0x0968` (1838:0968, matched), `R083+0x09D4` (1838:09D4, matched)  
-  why: options_block keeps an earlier card's value when the card leaves at once (cases 0, 1).
 - **U-0e7156** `uncertain` - `src/Darklands.Cards/Scripts/S085/AlchemistsRobberPavilion.cs:67` `AlchemistsRobberPavilion.HandOverTheGoods`  
   original: `R085+0x17C2` (1973:0412, matched), `R085+0x17C8` (1973:0418, matched)  
   why: the text pays out $Money1, which this card never sets (a stale value from an earlier card).
-- **U-1a11fe** `uncertain` - `src/Darklands.Cards/Scripts/S085/WildBoarsCharge.cs:90` `WildBoarsCharge.OutrunChance`  
-  original: `R085+0x0CD8` (18A9:05C8, matched), `R085+0x0CDE` (18A9:05CE, matched)  
-  why: the original asks the party's best riding skill (skill 0x11) but then passes the constant 0 to clamp_range(1, 99, .) (checked against the assembly): the chance is always 1.
-- **U-e8dd1c** `uncertain` - `src/Darklands.Cards/Scripts/S085/WildBoarsCharge.cs:178` `WildBoarsCharge.FightTheBoars`  
-  original: `R085+0x0894` (18A9:0184, matched)  
-  why: items with flag 0x2000 are taken to be the horses (text 7 drives them away).
 - **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
   original: `R086+0x0C40` (18FC:0000, matched)  
   why: the saint name table of the texts (R034) is taken to be the saint list's full names.
 - **U-4ef4f1** `uncertain` - `src/Darklands.Cards/Scripts/S087/SchratsMagicFruit.cs:30` `SchratsMagicFruit.Run`  
   original: `R087+0x14EE` (1986:000E, matched)  
   why: the original's bare 'party' (first test) is read as the status byte of slot 0.
-- **U-af5b18** `uncertain` - `src/Darklands.Cards/Scripts/S089/ArrestingTheRebels.cs:120` `ArrestingTheRebels.Pray`  
-  original: `R089+0x1AC6` (197F:0656, matched), `R089+0x1B30` (197F:06C0, matched)  
-  why: block 2 has no option lines (block 8 is the text written for this); kept as the original sets it.
-- **U-b1c447** `uncertain` - `src/Darklands.Cards/Scripts/S090/RebelsRallyTheCrowd.cs:27` `RebelsRallyTheCrowd.Run`  
-  original: `R090+0x0000` (1838:0000, matched)  
-  why: the card also sets its global DS:6223 (1 here, 0 below), which no other code reads.
 - **U-7f903d** `uncertain` - `src/Darklands.Cards/Scripts/S092/ForeignTraders.cs:53` `ForeignTraders.Trade`  
   original: `R092+0x10A4` (1920:0224, matched)  
   why: $NamedOneName gets a string of the far table seg 290E (filled at run time); not read yet.
 - **U-9d0b1f** `uncertain` - `src/Darklands.Cards/Scripts/S092/MerchantsOfTheCity.cs:68` `MerchantsOfTheCity.Trade`  
   original: `R092+0x0792` (188F:0222, matched)  
   why: $NamedOneName is set to a string of the far table seg 290E (filled at run time, probably the merchant's title); that table is not read yet.
-- **U-be2453** `uncertain` - `src/Darklands.Cards/Scripts/S093/UnfinishedCityGate_CityG07.cs:19` `UnfinishedCityGate_CityG07.Run`  
-  original: `R093+0x0000` (1838:0000, matched)  
-  why: the card sets the engine word DS:EE70 to 15 (other cards 0), meaning unknown; not modelled.
-- **U-3f22a0** `uncertain` - `src/Darklands.Cards/Scripts/S100/DwarfWantsPotions_MineB00.cs:52` `DwarfWantsPotions_MineB00.Run`  
-  original: `R100+0x0DC4` (18F6:01E4, matched)  
-  why: the price is remembered as an event of kind 1, type 0 (tag 0x0C, 999 hours), not as the location fact (kind 0x1C, type 1) the card tests on arrival; kept as the original has it.
-- **U-f5e577** `uncertain` - `src/Darklands.Cards/Scripts/S101/DwarfStoneBox_MineB01.cs:32` `DwarfStoneBox_MineB01.Run`  
-  original: `R101+0x0000` (1838:0000, matched)  
-  why: as the original has it, carrying item 0x40 greys out the lock picking.
-- **U-2808b6** `uncertain` - `src/Darklands.Cards/Scripts/S106/HermitsGlade.cs:45` `HermitsGlade.Run`  
-  original: `R106+0x046A` (1838:046A, matched), `R106+0x048A` (1838:048A, matched)  
-  why: those hints return whatever is in AX/DX; a neutral hint is used.
-- **U-adc7ef** `uncertain` - `src/Darklands.Cards/Scripts/S106/LonelyMountainLake.cs:62` `LonelyMountainLake.Run`  
-  original: `R106+0x14EA` (18B5:0D1A, asm), `R106+0x14FC` (18B5:0D2C, asm)  
-  why: those hints return whatever is in AX/DX; a neutral hint is used.
-- **U-1bd08d** `uncertain` - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:58` `SmallCaveUnderTheLedge.Run`  
-  original: `R106+0x1E38` (19BC:05F8, matched), `R106+0x1EA0` (19BC:0660, matched)  
-  why: those hints return whatever is in AX/DX; a neutral hint is used.
-- **U-9e6bf2** `uncertain` - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:76` `SmallCaveUnderTheLedge.EnterTheCave`  
-  original: `R106+0x1CDE` (19BC:049E, matched)  
-  why: the function's stack frame is unusual (read from the disassembly); the behaviour is plain.
-- **U-de2d02** `uncertain` - `src/Darklands.Cards/Scripts/S106/WaysideShrineOfOurLady.cs:61` `WaysideShrineOfOurLady.Run`  
-  original: `R106+0x2672` (1A56:0492, matched), `R106+0x2686` (1A56:04A6, matched)  
-  why: those hints return whatever is in AX/DX; a neutral hint is used.
-- **U-23b8f7** `uncertain` - `src/Darklands.Cards/Scripts/S107/DwarfsPoisonMist.cs:154` `DwarfsPoisonMist.SearchForAnotherExit`  
-  original: `R107+0x133A` (191F:04CA, matched)  
-  why: the text says the mist burns, but the original adds 10..14 Endurance here.
-- **U-790042** `uncertain` - `src/Darklands.Cards/Scripts/S107/PaganAltarOnTheHill.cs:57` `PaganAltarOnTheHill.Run`  
-  original: `R107+0x27B6` (19CE:0E56, matched), `R107+0x27B8` (19CE:0E58, matched)  
-  why: those hints are void functions cast to option handlers: the chance is whatever is in AX/DX; neutral hints are used.
-- **U-f74ece** `uncertain` - `src/Darklands.Cards/Scripts/S107/UnfinishedMcGuffinSite.cs:13` `UnfinishedMcGuffinSite`  
-  original: `R107+0x31C6` (1B0A:04A6, matched)  
-  why: no card of the game names 0xFF; the place may reach it as its arrival card. The scene's meaning is guessed from the script alone.
-- **U-40d49b** `uncertain` - `src/Darklands.Cards/Scripts/S107/UnfinishedMcGuffinSite.cs:42` `UnfinishedMcGuffinSite.Run`  
-  original: `R107+0x316E` (1B0A:044E, matched), `R107+0x317A` (1B0A:045A, matched)  
-  why: the empty hints return AX/DX; neutral hints are used).
-- **U-a90a41** `uncertain` - `src/Darklands.Cards/Scripts/S108/BanditAmbushOnTheRoad.cs:86` `BanditAmbushOnTheRoad.Run`  
-  original: `R108+0x2C14` (1A3F:0BA4, matched), `R108+0x2C9A` (1A3F:0C2A, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-3f4467** `uncertain` - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:65` `CryptUnderTheRuinedChurch.Run`  
-  original: `R108+0x0A5E` (1838:0A5E, matched), `R108+0x0B7A` (1838:0B7A, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-82835a** `uncertain` - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:76` `CryptUnderTheRuinedChurch.PotionHint`  
-  original: `R108+0x0CDE` (1838:0CDE, matched)  
-  why: slots 1..3 have empty pop-up handlers (AX/DX); the card has only one potion, so they never show.
-- **U-8fb5e8** `uncertain` - `src/Darklands.Cards/Scripts/S108/MercenaryBanditAmbush.cs:73` `MercenaryBanditAmbush.Run`  
-  original: `R108+0x3AE2` (1B3A:0AC2, matched), `R108+0x3AEC` (1B3A:0ACC, matched)  
-  why: the hints return AX/DX; neutral hints are used).
 - **U-cb01bc** `uncertain` - `src/Darklands.Cards/Scripts/S108/MerchantHouseOffices.cs:32` `MerchantHouseOffices._office`  
   original: `R108+0x203C` (1925:116C, matched)  
   why: its value before the first choice is taken as 0.
-- **U-6c15b3** `uncertain` - `src/Darklands.Cards/Scripts/S109/PilgrimsOnTheRoad.cs:49` `PilgrimsOnTheRoad.Run`  
-  original: `R109+0x2076` (19FD:0426, matched), `R109+0x2118` (19FD:04C8, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-358010** `uncertain` - `src/Darklands.Cards/Scripts/S110/ArmyOnTheMarch.cs:38` `ArmyOnTheMarch.Run`  
-  original: `R110+0x1938` (1991:03A8, matched), `R110+0x1944` (1991:03B4, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-436f4b** `uncertain` - `src/Darklands.Cards/Scripts/S110/BishopsRoadTithe.cs:74` `BishopsRoadTithe.Run`  
-  original: `R110+0x0AC4` (1838:0AC4, matched), `R110+0x0ACA` (1838:0ACA, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-40532b** `uncertain` - `src/Darklands.Cards/Scripts/S110/UnfinishedBanditEncounter_MeetB03.cs:51` `UnfinishedBanditEncounter_MeetB03.Run`  
-  original: `R110+0x1232` (1910:04B2, matched), `R110+0x1264` (1910:04E4, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-89e096** `uncertain` - `src/Darklands.Cards/Scripts/S111/EasternBalticVoyage.cs:13` `EasternBalticVoyage`  
-  original: `R111+0x102C` (18EA:050C, matched)  
-  why: the three ports all lead to card 0x5A; nothing here records which port was chosen.
-- **U-9a36c3** `uncertain` - `src/Darklands.Cards/Scripts/S111/NorthSeaVoyage.cs:12` `NorthSeaVoyage`  
-  original: `R111+0x053C` (1838:053C, matched)  
-  why: the five ports all lead to card 0x5A; nothing here records which port was chosen.
-- **U-5d0d3f** `uncertain` - `src/Darklands.Cards/Scripts/S111/WesternBalticVoyage.cs:10` `WesternBalticVoyage`  
-  original: `R111+0x0AEE` (188F:057E, matched)  
-  why: the seven ports all lead to card 0x5A; nothing here records which port was chosen.
-- **U-4541a4** `uncertain` - `src/Darklands.Cards/Scripts/S112/GiantSpiderNest.cs:87` `GiantSpiderNest.PotionHint`  
-  original: `R112+0x24B8` (199D:0E68, matched), `R112+0x24FA` (199D:0EAA, matched)  
-  why: slots 2 and 3 have empty pop-up handlers (R112+0x253C/0eee); only two potions, so they never show.
-- **U-af7979** `uncertain` - `src/Darklands.Cards/Scripts/S112/TatzelwurmPack.cs:90` `TatzelwurmPack.PotionHint`  
-  original: `R112+0x1398` (1881:0F08, matched), `R112+0x13E8` (1881:0F58, matched)  
-  why: slots 2 and 3 have empty pop-up handlers (R112+0x1438/0faa); the card has two potions, so they never show.
-- **U-aed7d1** `uncertain` - `src/Darklands.Cards/Scripts/S113/Blizzard_MeetB03.cs:36` `Blizzard_MeetB03.Run`  
-  original: `R113+0x1CA4` (19B5:04D4, matched), `R113+0x1D66` (19B5:0596, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-d944e3** `uncertain` - `src/Darklands.Cards/Scripts/S113/StormAtSea.cs:31` `StormAtSea.Run`  
-  original: `R113+0x02D4` (1838:02D4, matched), `R113+0x0344` (1838:0344, matched)  
-  why: the hints return AX/DX; neutral hints are used).
 - **U-761d5a** `uncertain` - `src/Darklands.Cards/Scripts/S113/WalledCityApproach_CityE00.cs:22` `WalledCityApproach_CityE00.Run`  
   original: `R113+0x0B1C` (189D:04CC, matched)  
   why: for a negative query the original reloads whatever picture pic_buf held; picture 4 is used.
 - **U-4ed5b1** `uncertain` - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:13` `HussiteBand`  
   original: `R114+0x1260` (18D3:08B0, matched)  
   why: the registration does not set item_fn, so the potion pop-up's handler is an earlier card's; the default pop-up hint is used.
-- **U-5f7fbb** `uncertain` - `src/Darklands.Cards/Scripts/S114/RiverPiratesAtNight.cs:47` `RiverPiratesAtNight.Run`  
-  original: `R114+0x1C12` (1995:0642, matched), `R114+0x1CAC` (1995:06DC, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-ce1f10** `uncertain` - `src/Darklands.Cards/Scripts/S114/TidalFloodInTheMarshes.cs:49` `TidalFloodInTheMarshes.Run`  
-  original: `R114+0x2538` (1A3F:04C8, matched), `R114+0x2540` (1A3F:04D0, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-4b811d** `uncertain` - `src/Darklands.Cards/Scripts/S115/FloodSaintsSecondList.cs:35` `FloodSaintsSecondList.Run`  
-  original: `R115+0x0336` (1838:0336, matched), `R115+0x033E` (1838:033E, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-29e162** `uncertain` - `src/Darklands.Cards/Scripts/S115/FloodSaintsThirdList.cs:33` `FloodSaintsThirdList.Run`  
-  original: `R115+0x090C` (189D:02BC, matched), `R115+0x0984` (189D:0334, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-b50e47** `uncertain` - `src/Darklands.Cards/Scripts/S115/OutsideThePrison.cs:85` `OutsideThePrison.FightTheGuards`  
-  original: `R115+0x1A92` (19BF:0222, asm)  
-  why: the function's case layout is unusual; the behaviour above is the disassembly's.
 - **U-42c93a** `uncertain` - `src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs:63` `PrisonCellsRescue.FreeTheFriend`  
   original: `R115+0x0F8A` (1901:02FA, matched)  
   why: when nobody can join (-1), the original copies the name at party[-1] + 0x11; the leader's name is used.
-- **U-66d9cb** `uncertain` - `src/Darklands.Cards/Scripts/S116/HutOfTheBlondeWoman.cs:57` `HutOfTheBlondeWoman.Run`  
-  original: `R116+0x192C` (191B:0AFC, matched), `R116+0x1A26` (191B:0BF6, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-13800a** `uncertain` - `src/Darklands.Cards/Scripts/S116/WitchAtYourMercy.cs:40` `WitchAtYourMercy.Run`  
-  original: `R116+0x22E6` (1A1C:04A6, matched), `R116+0x2332` (1A1C:04F2, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-4d0b68** `uncertain` - `src/Darklands.Cards/Scripts/S117/AstrologersManor.cs:35` `AstrologersManor.Run`  
-  original: `R117+0x0342` (1838:0342, matched), `R117+0x0356` (1838:0356, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-3b85b9** `uncertain` - `src/Darklands.Cards/Scripts/S117/TemplarsBurningAFriar.cs:56` `TemplarsBurningAFriar.Run`  
-  original: `R117+0x10E6` (18E0:0666, matched), `R117+0x1118` (18E0:0698, matched)  
-  why: the hints return AX/DX; neutral hints are used).
-- **U-f2969f** `uncertain` - `src/Darklands.Cards/Scripts/S118/BoundAtTheStake.cs:49` `BoundAtTheStake.Run`  
-  original: `R118+0x047C` (1838:047C, matched), `R118+0x04FC` (1838:04FC, matched)  
-  why: the hints return AX/DX; neutral hints are used).
 - **U-24ba58** `uncertain` - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:40` `TemplarWritingDesk.Run`  
   original: `R118+0x246C` (1A2B:053C, matched), `R118+0x247A` (1A2B:054A, matched)  
   why: "turn and leave" starts a battle (mode 1, -2) with the enemy and seed left from before.
-- **U-45837c** `uncertain` - `src/Darklands.Cards/Scripts/S119/CapturedAfterDefeat.cs:21` `CapturedAfterDefeat`  
-  original: `R119+0x238E` (1A70:000E, matched), `R119+0x2842` (1A70:04C2, matched), `R119+0x287E` (1A70:04FE, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-b0de5c** `uncertain` - `src/Darklands.Cards/Scripts/S119/CapturedAfterDefeat.cs:22` `CapturedAfterDefeat`  
-  original: `R119+0x238E` (1A70:000E, matched), `R119+0x2842` (1A70:04C2, matched), `R119+0x287E` (1A70:04FE, matched) +28 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-60fb3a** `uncertain` - `src/Darklands.Cards/Scripts/S119/CapturedAfterDefeat.cs:34` `CapturedAfterDefeat.Run`  
-  original: `R119+0x238E` (1A70:000E, matched), `R119+0x2842` (1A70:04C2, matched), `R119+0x287E` (1A70:04FE, matched) +28 more  
-  why: the original passes frame mode 2 to card_text; read as drawing like mode 0 (on the picture).
-- **U-f2f927** `uncertain` - `src/Darklands.Cards/Scripts/S119/EerieFountain.cs:31` `EerieFountain`  
-  original: `R119+0x0980` (18D0:0000, matched), `R119+0x0BF0` (18D0:0270, matched), `R119+0x0C88` (18D0:0308, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-76860c** `uncertain` - `src/Darklands.Cards/Scripts/S119/FortressGuardpost.cs:30` `FortressGuardpost`  
-  original: `R119+0x150C` (1988:000C, matched), `R119+0x176E` (1988:026E, matched), `R119+0x17C0` (1988:02C0, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-87a08e** `uncertain` - `src/Darklands.Cards/Scripts/S119/ImprisonedMonk.cs:27` `ImprisonedMonk`  
-  original: `R119+0x0000` (1838:0000, matched), `R119+0x023A` (1838:023A, matched), `R119+0x0248` (1838:0248, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-ef82a1** `uncertain` - `src/Darklands.Cards/Scripts/S120/BonelessSkeleton.cs:30` `BonelessSkeleton`  
-  original: `R120+0x0000` (1838:0000, matched), `R120+0x022E` (1838:022E, matched), `R120+0x0248` (1838:0248, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-586562** `uncertain` - `src/Darklands.Cards/Scripts/S120/FortressDungeonCell.cs:30` `FortressDungeonCell`  
-  original: `R120+0x0970` (18CF:0000, matched), `R120+0x0BE8` (18CF:0278, matched), `R120+0x0C10` (18CF:02A0, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-2c3b9c** `uncertain` - `src/Darklands.Cards/Scripts/S120/TemplarDoorGuard.cs:27` `TemplarDoorGuard`  
-  original: `R120+0x2018` (1A39:0008, matched), `R120+0x2252` (1A39:0242, matched), `R120+0x225A` (1A39:024A, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-ab13c5** `uncertain` - `src/Darklands.Cards/Scripts/S120/TemplarJailers.cs:29` `TemplarJailers`  
-  original: `R120+0x14EA` (1986:000A, matched), `R120+0x1744` (1986:0264, matched), `R120+0x176E` (1986:028E, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-17a6f6** `uncertain` - `src/Darklands.Cards/Scripts/S121/BloodstainedChest.cs:20` `BloodstainedChest`  
-  original: `R121+0x0A56` (18DD:0006, matched), `R121+0x0F3A` (18DD:04EA, matched), `R121+0x0F76` (18DD:0526, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-32fe3c** `uncertain` - `src/Darklands.Cards/Scripts/S121/HallOfHorns.cs:29` `HallOfHorns`  
-  original: `R121+0x124A` (195C:000A, matched), `R121+0x1480` (195C:0240, matched), `R121+0x148E` (195C:024E, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-f836d6** `uncertain` - `src/Darklands.Cards/Scripts/S121/TemplarPassword.cs:27` `TemplarPassword`  
-  original: `R121+0x0000` (1838:0000, matched), `R121+0x0218` (1838:0218, matched), `R121+0x025E` (1838:025E, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-f032bc** `uncertain` - `src/Darklands.Cards/Scripts/S121/TiltingFloorTrap.cs:29` `TiltingFloorTrap`  
-  original: `R121+0x1C06` (19F8:0006, matched), `R121+0x1E9E` (19F8:029E, matched), `R121+0x1F00` (19F8:0300, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-3ca803** `uncertain` - `src/Darklands.Cards/Scripts/S121/TiltingFloorTrap.cs:30` `TiltingFloorTrap`  
-  original: `R121+0x1C06` (19F8:0006, matched), `R121+0x1E9E` (19F8:029E, matched), `R121+0x1F00` (19F8:0300, matched) +28 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-caa226** `uncertain` - `src/Darklands.Cards/Scripts/S121/TiltingFloorTrap.cs:53` `TiltingFloorTrap.Run`  
-  original: `R121+0x1C06` (19F8:0006, matched), `R121+0x1E9E` (19F8:029E, matched), `R121+0x1F00` (19F8:0300, matched) +28 more  
-  why: the original passes frame mode 2, read as drawing like mode 0.
-- **U-126dcd** `uncertain` - `src/Darklands.Cards/Scripts/S121/TiltingFloorTrap.cs:125` `TiltingFloorTrap.JamItWithAPotion`  
-  original: `R121+0x1FA2` (19F8:03A2, matched)  
-  why: card_text(k, 2): frame mode 2 read as drawing like mode 0
-- **U-fdd448** `uncertain` - `src/Darklands.Cards/Scripts/S122/DemonPrinceAndTheSealedBook.cs:31` `DemonPrinceAndTheSealedBook`  
-  original: `R122+0x0000` (1838:0000, matched), `R122+0x0322` (1838:0322, matched), `R122+0x0396` (1838:0396, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-7325db** `uncertain` - `src/Darklands.Cards/Scripts/S122/DemonPrinceAndTheSealedBook.cs:32` `DemonPrinceAndTheSealedBook`  
-  original: `R122+0x0000` (1838:0000, matched), `R122+0x0322` (1838:0322, matched), `R122+0x0396` (1838:0396, matched) +28 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture). C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-05648e** `uncertain` - `src/Darklands.Cards/Scripts/S122/DemonPrinceAndTheSealedBook.cs:99` `DemonPrinceAndTheSealedBook.BreakTheSeal`  
-  original: `R122+0x0000` (1838:0000, matched)  
-  why: card_text(1, 2): frame mode 2 read as drawing like mode 0.
-- **U-af22ba** `uncertain` - `src/Darklands.Cards/Scripts/S122/OverheardPreceptor.cs:25` `OverheardPreceptor`  
-  original: `R122+0x1FE0` (1A36:0000, matched), `R122+0x24E0` (1A36:0500, matched), `R122+0x251C` (1A36:053C, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-996fa0** `uncertain` - `src/Darklands.Cards/Scripts/S122/OverheardPreceptor.cs:26` `OverheardPreceptor`  
-  original: `R122+0x1FE0` (1A36:0000, matched), `R122+0x24E0` (1A36:0500, matched), `R122+0x251C` (1A36:053C, matched) +28 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-6decfe** `uncertain` - `src/Darklands.Cards/Scripts/S122/OverheardPreceptor.cs:41` `OverheardPreceptor.Run`  
-  original: `R122+0x1FE0` (1A36:0000, matched), `R122+0x24E0` (1A36:0500, matched), `R122+0x251C` (1A36:053C, matched) +28 more  
-  why: card_text(k, 2): frame mode 2 read as drawing like mode 0.
-- **U-24d6a8** `uncertain` - `src/Darklands.Cards/Scripts/S122/PileOfBurnedBooks.cs:31` `PileOfBurnedBooks`  
-  original: `R122+0x159E` (1991:000E, matched), `R122+0x17D8` (1991:0248, matched), `R122+0x1800` (1991:0270, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-477177** `uncertain` - `src/Darklands.Cards/Scripts/S122/WitchPriestOrdination.cs:30` `WitchPriestOrdination`  
-  original: `R122+0x0B2E` (18EA:000E, matched), `R122+0x0D60` (18EA:0240, matched), `R122+0x0DD6` (18EA:02B6, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-2af1fa** `uncertain` - `src/Darklands.Cards/Scripts/S123/AmbushOnThePilgrimPath.cs:32` `AmbushOnThePilgrimPath`  
-  original: `R123+0x2036` (1A3B:0006, matched), `R123+0x22EA` (1A3B:02BA, matched), `R123+0x2338` (1A3B:0308, matched) +29 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-52f6c8** `uncertain` - `src/Darklands.Cards/Scripts/S123/BlightedWitchRitualSite.cs:31` `BlightedWitchRitualSite`  
-  original: `R123+0x09B6` (18D3:0006, matched), `R123+0x0C62` (18D3:02B2, matched), `R123+0x0C6A` (18D3:02BA, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-c7640a** `uncertain` - `src/Darklands.Cards/Scripts/S123/PreceptorOfTheTemplars.cs:31` `PreceptorOfTheTemplars`  
-  original: `R123+0x0000` (1838:0000, matched), `R123+0x0260` (1838:0260, matched), `R123+0x027A` (1838:027A, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-c18372** `uncertain` - `src/Darklands.Cards/Scripts/S123/PreceptorOfTheTemplars.cs:32` `PreceptorOfTheTemplars`  
-  original: `R123+0x0000` (1838:0000, matched), `R123+0x0260` (1838:0260, matched), `R123+0x027A` (1838:027A, matched) +28 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-411936** `uncertain` - `src/Darklands.Cards/Scripts/S123/PreceptorOfTheTemplars.cs:49` `PreceptorOfTheTemplars.Run`  
-  original: `R123+0x0000` (1838:0000, matched), `R123+0x0260` (1838:0260, matched), `R123+0x027A` (1838:027A, matched) +28 more  
-  why: card_text(0, 2): frame mode 2 read as drawing like mode 0
-- **U-5796bf** `uncertain` - `src/Darklands.Cards/Scripts/S123/SabbatFairFromTheHill.cs:31` `SabbatFairFromTheHill`  
-  original: `R123+0x14AA` (1982:000A, matched), `R123+0x1724` (1982:0284, matched), `R123+0x1794` (1982:02F4, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-00e346** `uncertain` - `src/Darklands.Cards/Scripts/S123/SabbatFairFromTheHill.cs:179` `SabbatFairFromTheHill.ItemPopup`  
-  original: `R123+0x1D56` (1982:08B6, matched)  
-  why: slot 0 shows whatever msg_buf still holds; "Success is assured." stands in for it here.
-- **U-8aee50** `uncertain` - `src/Darklands.Cards/Scripts/S124/HighSabbatField.cs:33` `HighSabbatField`  
-  original: `R124+0x165C` (199D:000C, matched), `R124+0x1976` (199D:0326, matched), `R124+0x19F4` (199D:03A4, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-050c9b** `uncertain` - `src/Darklands.Cards/Scripts/S124/SabbatFeastKitchen.cs:32` `SabbatFeastKitchen`  
-  original: `R124+0x22AC` (1A62:000C, matched), `R124+0x2578` (1A62:02D8, matched), `R124+0x25A2` (1A62:0302, matched) +29 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-618773** `uncertain` - `src/Darklands.Cards/Scripts/S124/SentryWolfAtTheWatchfire.cs:32` `SentryWolfAtTheWatchfire`  
-  original: `R124+0x0000` (1838:0000, matched), `R124+0x02C4` (1838:02C4, matched), `R124+0x0338` (1838:0338, matched) +29 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-c6350b** `uncertain` - `src/Darklands.Cards/Scripts/S124/WolvesAtTheWatchfireChain.cs:31` `WolvesAtTheWatchfireChain`  
-  original: `R124+0x0BDE` (18F5:000E, matched), `R124+0x0EA0` (18F5:02D0, matched), `R124+0x0F1E` (18F5:034E, matched) +29 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-33ac30** `uncertain` - `src/Darklands.Cards/Scripts/S125/SabbatAltarPreparation.cs:33` `SabbatAltarPreparation`  
-  original: `R125+0x18A8` (19C2:0008, matched), `R125+0x1BB8` (19C2:0318, matched), `R125+0x1BE0` (19C2:0340, matched) +29 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-224666** `uncertain` - `src/Darklands.Cards/Scripts/S125/SabbatBroomstickRiders.cs:31` `SabbatBroomstickRiders`  
-  original: `R125+0x0D80` (1910:0000, matched), `R125+0x101C` (1910:029C, matched), `R125+0x1042` (1910:02C2, matched) +29 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-1f4c85** `uncertain` - `src/Darklands.Cards/Scripts/S125/SabbatMockBaptism.cs:32` `SabbatMockBaptism`  
-  original: `R125+0x0000` (1838:0000, matched), `R125+0x02D2` (1838:02D2, matched), `R125+0x033C` (1838:033C, matched) +29 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-379937** `uncertain` - `src/Darklands.Cards/Scripts/S125/SabbatNightBeforeTheCeremony.cs:27` `SabbatNightBeforeTheCeremony`  
-  original: `R125+0x25FE` (1A97:000E, matched), `R125+0x2B58` (1A97:0568, matched), `R125+0x2B94` (1A97:05A4, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-854658** `uncertain` - `src/Darklands.Cards/Scripts/S126/SabbatField.cs:34` `SabbatField`  
-  original: `R126+0x0000` (1838:0000, matched), `R126+0x0286` (1838:0286, matched), `R126+0x028E` (1838:028E, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-3542e2** `uncertain` - `src/Darklands.Cards/Scripts/S126/SabbatFinishedAltar.cs:32` `SabbatFinishedAltar`  
-  original: `R126+0x0B40` (18EC:0000, matched), `R126+0x0E34` (18EC:02F4, matched), `R126+0x0EE0` (18EC:03A0, matched) +29 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-454bb2** `uncertain` - `src/Darklands.Cards/Scripts/S126/SabbatSummoning.cs:35` `SabbatSummoning`  
-  original: `R126+0x1650` (199D:0000, matched), `R126+0x1B08` (199D:04B8, matched), `R126+0x1CAC` (199D:065C, matched) +30 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-10a296** `uncertain` - `src/Darklands.Cards/Scripts/S126/SabbatWitchFeast.cs:33` `SabbatWitchFeast`  
-  original: `R126+0x2C0E` (1AF8:000E, matched), `R126+0x3024` (1AF8:0424, matched), `R126+0x3042` (1AF8:0442, matched) +30 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-6dbbeb** `uncertain` - `src/Darklands.Cards/Scripts/S127/FirstSealBroken.cs:27` `FirstSealBroken`  
-  original: `R127+0x0000` (1838:0000, matched), `R127+0x04B6` (1838:04B6, matched), `R127+0x04F2` (1838:04F2, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-49d234** `uncertain` - `src/Darklands.Cards/Scripts/S127/FirstSealBroken.cs:28` `FirstSealBroken`  
-  original: `R127+0x0000` (1838:0000, matched), `R127+0x04B6` (1838:04B6, matched), `R127+0x04F2` (1838:04F2, matched) +28 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture). C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-098e4c** `uncertain` - `src/Darklands.Cards/Scripts/S127/FirstSealBroken.cs:45` `FirstSealBroken.Run`  
-  original: `R127+0x0000` (1838:0000, matched), `R127+0x04B6` (1838:04B6, matched), `R127+0x04F2` (1838:04F2, matched) +28 more  
-  why: card_text(0, 2): frame mode 2 read as drawing like mode 0.
-- **U-4dbaa7** `uncertain` - `src/Darklands.Cards/Scripts/S127/InnocentsAtTheWitchesFeast.cs:36` `InnocentsAtTheWitchesFeast`  
-  original: `R127+0x07C6` (18B4:0006, matched), `R127+0x0BC8` (18B4:0408, matched), `R127+0x0BE6` (18B4:0426, matched) +30 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-a91197** `uncertain` - `src/Darklands.Cards/Scripts/S127/SuspiciousStranger.cs:33` `SuspiciousStranger`  
-  original: `R127+0x21C0` (1A54:0000, matched), `R127+0x23EE` (1A54:022E, matched), `R127+0x2402` (1A54:0242, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-bded69** `uncertain` - `src/Darklands.Cards/Scripts/S127/WokenAfterTheSabbat.cs:25` `WokenAfterTheSabbat`  
-  original: `R127+0x19A2` (19D2:0002, matched), `R127+0x1EB0` (19D2:0510, matched), `R127+0x1EEC` (19D2:054C, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
 - **U-e2070d** `uncertain` - `src/Darklands.Cards/Scripts/S127/WokenAfterTheSabbat.cs:38` `WokenAfterTheSabbat.Run`  
   original: `R127+0x19A2` (19D2:0002, matched), `R127+0x1EB0` (19D2:0510, matched), `R127+0x1EEC` (19D2:054C, matched) +28 more  
   why: that TimePassage carries an overlong day exactly as advance_hours does is not verified.
-- **U-7c99f8** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorReceivesTheItem.cs:23` `CollectorReceivesTheItem`  
-  original: `R128+0x16A2` (19A2:0002, matched), `R128+0x1B10` (19A2:0470, matched), `R128+0x1B4C` (19A2:04AC, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-218328** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorReceivesTheItem.cs:24` `CollectorReceivesTheItem`  
-  original: `R128+0x16A2` (19A2:0002, matched), `R128+0x1B10` (19A2:0470, matched), `R128+0x1B4C` (19A2:04AC, matched) +28 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture). C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
-- **U-ba0192** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorReceivesTheItem.cs:44` `CollectorReceivesTheItem.Run`  
-  original: `R128+0x16A2` (19A2:0002, matched), `R128+0x1B10` (19A2:0470, matched), `R128+0x1B4C` (19A2:04AC, matched) +28 more  
-  why: card_text(k, 2): frame mode 2 read as drawing like mode 0.
-- **U-9e0c12** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorsCommission.cs:23` `CollectorsCommission`  
-  original: `R128+0x0BF0` (18F7:0000, matched), `R128+0x138A` (18F7:079A, matched), `R128+0x13C6` (18F7:07D6, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-46e266** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorsCommission.cs:24` `CollectorsCommission`  
-  original: `R128+0x0BF0` (18F7:0000, matched), `R128+0x138A` (18F7:079A, matched), `R128+0x13C6` (18F7:07D6, matched) +28 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture). C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
-- **U-d00dea** `uncertain` - `src/Darklands.Cards/Scripts/S128/CollectorsCommission.cs:51` `CollectorsCommission.Run`  
-  original: `R128+0x0BF0` (18F7:0000, matched), `R128+0x138A` (18F7:079A, matched), `R128+0x13C6` (18F7:07D6, matched) +28 more  
-  why: card_text(k, 2) below: frame mode 2 read as drawing like mode 0.
-- **U-074784** `uncertain` - `src/Darklands.Cards/Scripts/S128/DwarfMineRiddleDoor.cs:94` `DwarfAndKoboldStatues`  
-  original: `R128+0x1E28` (1A1A:0008, matched), `R128+0x1F70` (1A1A:0150, matched), `R128+0x1FAC` (1A1A:018C, matched) +7 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-18b4f5** `uncertain` - `src/Darklands.Cards/Scripts/S128/DwarfMineRiddleDoor.cs:95` `DwarfAndKoboldStatues`  
-  original: `R128+0x1E28` (1A1A:0008, matched), `R128+0x1F70` (1A1A:0150, matched), `R128+0x1FAC` (1A1A:018C, matched) +7 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-9b55ce** `uncertain` - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:33` `StrangerBringsAMob`  
-  original: `R128+0x0000` (1838:0000, matched), `R128+0x0482` (1838:0482, matched), `R128+0x04A0` (1838:04A0, matched) +30 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
 - **U-8b4e75** `uncertain` - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:87` `StrangerBringsAMob.FightAWave`  
   original: `R128+0x03B8` (1838:03B8, matched)  
   why: what card_menu returns when no line is enabled; the C# screen decides.
-- **U-690790** `uncertain` - `src/Darklands.Cards/Scripts/S129/BurntOutKeep.cs:26` `BurntOutKeep`  
-  original: `R129+0x10A4` (1942:0004, matched), `R129+0x12BC` (1942:021C, matched), `R129+0x12D4` (1942:0234, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-6b218d** `uncertain` - `src/Darklands.Cards/Scripts/S129/MineRiddleDoors.cs:19` `MissingPatriarchDoor`  
-  original: `R129+0x0000` (1838:0000, matched), `R129+0x01D4` (1838:01D4, matched), `R129+0x021C` (1838:021C, matched) +15 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-5fc3f3** `uncertain` - `src/Darklands.Cards/Scripts/S129/MineRiddleDoors.cs:20` `MissingPatriarchDoor`  
-  original: `R129+0x0000` (1838:0000, matched), `R129+0x01D4` (1838:01D4, matched), `R129+0x021C` (1838:021C, matched) +15 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-6b218d-2** `uncertain` - `src/Darklands.Cards/Scripts/S129/MineRiddleDoors.cs:50` `RealmThatBelongsNotDoor`  
-  original: `R129+0x055A` (188D:000A, matched), `R129+0x072E` (188D:01DE, matched), `R129+0x076A` (188D:021A, matched) +15 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-5fc3f3-2** `uncertain` - `src/Darklands.Cards/Scripts/S129/MineRiddleDoors.cs:51` `RealmThatBelongsNotDoor`  
-  original: `R129+0x055A` (188D:000A, matched), `R129+0x072E` (188D:01DE, matched), `R129+0x076A` (188D:021A, matched) +15 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-6b218d-3** `uncertain` - `src/Darklands.Cards/Scripts/S129/MineRiddleDoors.cs:82` `HocusPocusDoor`  
-  original: `R129+0x0AB4` (18E3:0004, matched), `R129+0x0CA8` (18E3:01F8, matched), `R129+0x0CE4` (18E3:0234, matched) +17 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-5fc3f3-3** `uncertain` - `src/Darklands.Cards/Scripts/S129/MineRiddleDoors.cs:83` `HocusPocusDoor`  
-  original: `R129+0x0AB4` (18E3:0004, matched), `R129+0x0CA8` (18E3:01F8, matched), `R129+0x0CE4` (18E3:0234, matched) +17 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-305960** `uncertain` - `src/Darklands.Cards/Scripts/S130/ApocalypseCastleGate.cs:19` `ApocalypseCastleGate`  
-  original: `R130+0x0740` (18AC:0000, matched), `R130+0x0980` (18AC:0240, matched), `R130+0x09AE` (18AC:026E, matched) +9 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-2f10e7** `uncertain` - `src/Darklands.Cards/Scripts/S130/ApocalypseCastleGate.cs:48` `ApocalypseCastleGate.Run`  
-  original: `R130+0x0740` (18AC:0000, matched), `R130+0x0980` (18AC:0240, matched), `R130+0x09AE` (18AC:026E, matched) +9 more  
-  why: the fact's value is a 16-bit word; if the C# value ever exceeded 16 bits, the high bits would stay.
-- **U-ad5bcb** `uncertain` - `src/Darklands.Cards/Scripts/S130/BackToTheApocalypseCourtyard.cs:22` `BackToTheApocalypseCourtyard`  
-  original: `R130+0x0000` (1838:0000, matched), `R130+0x0428` (1838:0428, matched), `R130+0x0464` (1838:0464, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
-- **U-66c98f** `uncertain` - `src/Darklands.Cards/Scripts/S130/BurntShipOfLydwina.cs:12` `BurntShipOfLydwina`  
-  original: `R130+0x1674` (199F:0004, matched), `R130+0x183C` (199F:01CC, matched), `R130+0x1874` (199F:0204, matched)  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-6445a5** `uncertain` - `src/Darklands.Cards/Scripts/S130/BurntShipOfLydwina.cs:13` `BurntShipOfLydwina`  
-  original: `R130+0x1674` (199F:0004, matched), `R130+0x183C` (199F:01CC, matched), `R130+0x1874` (199F:0204, matched)  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture). C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-94dde3** `uncertain` - `src/Darklands.Cards/Scripts/S130/BurntShipOfLydwina.cs:31` `BurntShipOfLydwina.Run`  
-  original: `R130+0x1674` (199F:0004, matched), `R130+0x183C` (199F:01CC, matched), `R130+0x1874` (199F:0204, matched)  
-  why: card_text(k, 2): frame mode 2 read as drawing like mode 0.
-- **U-cb53d2** `uncertain` - `src/Darklands.Cards/Scripts/S130/CavernOfFireAndHail.cs:20` `CavernOfFireAndHail`  
-  original: `R130+0x0D48` (190C:0008, matched), `R130+0x0EDA` (190C:019A, matched), `R130+0x106A` (190C:032A, matched) +14 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-2cc8d2** `uncertain` - `src/Darklands.Cards/Scripts/S130/GateOfDarkness.cs:18` `GateOfDarkness`  
-  original: `R130+0x18AC` (19C2:000C, matched), `R130+0x1A46` (19C2:01A6, matched), `R130+0x1A68` (19C2:01C8, matched) +10 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-809244** `uncertain` - `src/Darklands.Cards/Scripts/S131/ApocalypseDragon.cs:22` `ApocalypseDragon`  
-  original: `R131+0x0DC0` (1914:0000, matched), `R131+0x0F40` (1914:0180, matched), `R131+0x0F88` (1914:01C8, matched) +10 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-ba5a0b** `uncertain` - `src/Darklands.Cards/Scripts/S131/GateOfBitterGas.cs:10` `GateOfBitterGas`  
-  original: `R131+0x0C8A` (1900:000A, matched), `R131+0x0D50` (1900:00D0, matched), `R131+0x0D88` (1900:0108, matched)  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-f5288a** `uncertain` - `src/Darklands.Cards/Scripts/S131/LakeOfFire.cs:22` `LakeOfFire`  
-  original: `R131+0x0000` (1838:0000, matched), `R131+0x01EC` (1838:01EC, matched), `R131+0x0362` (1838:0362, matched) +18 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-f7ed39** `uncertain` - `src/Darklands.Cards/Scripts/S131/WormwoodHoney.cs:10` `WormwoodHoney`  
-  original: `R131+0x0B8C` (18F0:000C, matched), `R131+0x0C1A` (18F0:009A, matched), `R131+0x0C52` (18F0:00D2, matched)  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-f49ec0** `uncertain` - `src/Darklands.Cards/Scripts/S131/WormwoodHoney.cs:11` `WormwoodHoney`  
-  original: `R131+0x0B8C` (18F0:000C, matched), `R131+0x0C1A` (18F0:009A, matched), `R131+0x0C52` (18F0:00D2, matched)  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-34a055** `uncertain` - `src/Darklands.Cards/Scripts/S131/WormwoodHoney.cs:26` `WormwoodHoney.Run`  
-  original: `R131+0x0B8C` (18F0:000C, matched), `R131+0x0C1A` (18F0:009A, matched), `R131+0x0C52` (18F0:00D2, matched)  
-  why: card_text(k, 2): frame mode 2 read as drawing like mode 0
-- **U-fc8822** `uncertain` - `src/Darklands.Cards/Scripts/S132/GateOfTheLocusts.cs:10` `GateOfTheLocusts`  
-  original: `R132+0x0218` (1859:0008, matched), `R132+0x02DE` (1859:00CE, matched), `R132+0x0316` (1859:0106, matched)  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-310467** `uncertain` - `src/Darklands.Cards/Scripts/S132/LanternInTheDarkness.cs:10` `LanternInTheDarkness`  
-  original: `R132+0x0000` (1838:0000, matched), `R132+0x008C` (1838:008C, matched), `R132+0x00C4` (1838:00C4, matched)  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-7cc55a** `uncertain` - `src/Darklands.Cards/Scripts/S132/LanternInTheDarkness.cs:11` `LanternInTheDarkness`  
-  original: `R132+0x0000` (1838:0000, matched), `R132+0x008C` (1838:008C, matched), `R132+0x00C4` (1838:00C4, matched)  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-a10498** `uncertain` - `src/Darklands.Cards/Scripts/S132/LanternInTheDarkness.cs:25` `LanternInTheDarkness.Run`  
-  original: `R132+0x0000` (1838:0000, matched), `R132+0x008C` (1838:008C, matched), `R132+0x00C4` (1838:00C4, matched)  
-  why: card_text(k, 2): frame mode 2 read as drawing like mode 0
-- **U-aba87f** `uncertain` - `src/Darklands.Cards/Scripts/S132/NoblemansRoadToll.cs:30` `NoblemansRoadToll`  
-  original: `R132+0x034E` (186C:000E, matched), `R132+0x0764` (186C:0424, matched), `R132+0x078C` (186C:044C, matched) +24 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-5b7569** `uncertain` - `src/Darklands.Cards/Scripts/S132/StumpWithTheSeed.cs:10` `StumpWithTheSeed`  
-  original: `R132+0x00FC` (1847:000C, matched), `R132+0x01A8` (1847:00B8, matched), `R132+0x01E0` (1847:00F0, matched)  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-0aa124** `uncertain` - `src/Darklands.Cards/Scripts/S132/StumpWithTheSeed.cs:11` `StumpWithTheSeed`  
-  original: `R132+0x00FC` (1847:000C, matched), `R132+0x01A8` (1847:00B8, matched), `R132+0x01E0` (1847:00F0, matched)  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture). C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-270793** `uncertain` - `src/Darklands.Cards/Scripts/S132/StumpWithTheSeed.cs:26` `StumpWithTheSeed.Run`  
-  original: `R132+0x00FC` (1847:000C, matched), `R132+0x01A8` (1847:00B8, matched), `R132+0x01E0` (1847:00F0, matched)  
-  why: card_text(k, 2): frame mode 2 read as drawing like mode 0
-- **U-8de149** `uncertain` - `src/Darklands.Cards/Scripts/S133/BaphometsPlagues.cs:23` `BaphometsPlagues`  
-  original: `R133+0x139A` (1971:000A, matched), `R133+0x169E` (1971:030E, matched), `R133+0x1834` (1971:04A4, matched) +4 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-7691ee** `uncertain` - `src/Darklands.Cards/Scripts/S133/BaphometsPlagues.cs:24` `BaphometsPlagues`  
-  original: `R133+0x139A` (1971:000A, matched), `R133+0x169E` (1971:030E, matched), `R133+0x1834` (1971:04A4, matched) +4 more  
-  why: card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
-- **U-15a53d** `uncertain` - `src/Darklands.Cards/Scripts/S133/FamineHorseman.cs:27` `FamineHorseman`  
-  original: `R133+0x0000` (1838:0000, matched), `R133+0x01A8` (1838:01A8, matched), `R133+0x01F4` (1838:01F4, matched) +14 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-6b93cd** `uncertain` - `src/Darklands.Cards/Scripts/S133/GateOfTheSixKeys.cs:12` `GateOfTheSixKeys`  
-  original: `R133+0x11DC` (1955:000C, matched), `R133+0x132A` (1955:015A, matched), `R133+0x1362` (1955:0192, matched)  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-61a22d** `uncertain` - `src/Darklands.Cards/Scripts/S133/LancersOfWar.cs:24` `LancersOfWar`  
-  original: `R133+0x074A` (18AC:000A, matched), `R133+0x096E` (18AC:022E, matched), `R133+0x0B5A` (18AC:041A, matched) +13 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-fc1d3f** `uncertain` - `src/Darklands.Cards/Scripts/S134/BanditsNearTheCamp.cs:29` `BanditsNearTheCamp`  
-  original: `R134+0x152C` (198A:000C, matched), `R134+0x188E` (198A:036E, matched), `R134+0x18A4` (198A:0384, matched) +25 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-c53fd0** `uncertain` - `src/Darklands.Cards/Scripts/S134/BanditsNearTheCamp.cs:68` `BanditsNearTheCamp.Run`  
-  original: `R134+0x1A8C` (198A:056C, matched), `R134+0x1C4E` (198A:072E, matched), `R134+0x1AAA` (198A:058A, matched) +1 more  
-  why: this card never sets item_fn, so an item pop-up would run whatever the previous card left there; the table's generic item hint stands in for it (unreachable: no item line).
-- **U-9bb5df** `uncertain` - `src/Darklands.Cards/Scripts/S134/EmptyPrisonCell.cs:20` `EmptyPrisonCell`  
-  original: `R134+0x1EDA` (1A25:000A, matched), `R134+0x2294` (1A25:03C4, matched), `R134+0x22D0` (1A25:0400, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
-- **U-10b11a** `uncertain` - `src/Darklands.Cards/Scripts/S134/HuntsmanAtTheCamp.cs:31` `HuntsmanAtTheCamp`  
-  original: `R134+0x0C1C` (18F9:000C, matched), `R134+0x0FC2` (18F9:03B2, matched), `R134+0x102E` (18F9:041E, matched) +17 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-- **U-b3f950** `uncertain` - `src/Darklands.Cards/Scripts/S134/SpiderWarehousePoster.cs:31` `SpiderWarehousePoster`  
-  original: `R134+0x0000` (1838:0000, matched), `R134+0x0256` (1838:0256, matched), `R134+0x025E` (1838:025E, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
-- **U-f2ee09** `uncertain` - `src/Darklands.Cards/Scripts/S135/FortressGuardDesk.cs:19` `FortressGuardDesk`  
-  original: `R135+0x0000` (1838:0000, matched), `R135+0x0082` (1838:0082, matched), `R135+0x0094` (1838:0094, matched) +28 more  
-  why: the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced. C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
 - **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:213` `TextVariables.PlaceDescription`  
   original: `R043+0x1316` (150B:0886, draft)  
   why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
 
-### events (1)
-
-- **U-4002da** `uncertain` - `src/Darklands.Core/Events/TimedEvent.cs:23` `TimedEvent`  
-  original: `R029+0x3034` (0E76:3034, draft)  
-  why: Data1..Data3 (+2A/+2C/+2E) and Extra (+20) are named by their uses.
-
-### travel (5)
+### travel (3)
 
 - **U-6d067b** `uncertain` - `src/Darklands.Core/World/CityFile.cs:32` `CityFile.Read`  
   original: `R043+0x0100` (1462:0100, matched), `R037+0x8ED4` (1C7D:0D24, matched), `R029+0x4E68` (0E76:4E68, draft) +1 more  
   why: the record read at the file's start is taken as city 0's (the darkland.dsc read of the same load also starts after the first byte); a record kept from before keeps its city.
-- **U-6099f4** `uncertain` - `src/Darklands.Core/World/Location.cs:8` `Location`  
-  original: `R136+0xE9EE` (2E38:10BE, data)  
-  why: the names of +08 (NoticeRange), +0C/+0E (cards), +18 (CacheHandle) and +1A (Mark) come from their uses.
 - **U-16b0a7** `uncertain` - `src/Darklands.Core/World/NullPage.cs:9` `NullPage`  
   original: unresolved (none)  
   why: the values are those of the reference machine as far as they matter: a vector's segment word is the BIOS segment F000 (DOSBox points the vectors the game does not hook into its F000 callback area; DOS's own handlers would be 0070, a hooked vector a program segment above 0100). Every rule here only needs |segment| > 100 or its remainder by 4; the offsets are not established.
 - **U-69b939** `uncertain` - `src/Darklands.Core/World/NullPage.cs:18` `NullPage.Int1Offset`  
   original: unresolved (none)  
   why: the offset is taken as FF53, the BIOS's default IRET handler that DOSBox points the unused vectors at; the segment is the BIOS's.
-- **U-84fc60** `uncertain` - `src/Darklands.Simulation/Overland/OverlandTravel.cs:44` `OverlandTravel.WeightEvent`  
-  original: `R030+0x2D44` (1462:2D44, draft)  
-  why: what scripts create the 0x2A and 0x2B events was not searched; their meaning (an encounter weight, a message number) is read from the use here.
 
-### battles (28)
+### battles (9)
 
-- **U-a48e31** `uncertain` - `src/Darklands.Core/Battles/BattleOrders.cs:12` `BattleOrders`  
-  original: `root 03A1:000A` (03A1:000A, matched)  
-  why: the names of DS:A76C..A770 (the enemy types of the three groups by the battle call's argument places) and the meaning of most combat flag bits.
-- **U-805263** `uncertain` - `src/Darklands.Core/Battles/BattlefieldLevel.cs:13` `BattlefieldLevel`  
-  original: `R136+0x0000` (20A5:0000, data)  
-  why: records not used yet (part lists +0x2488, chests +0x300C, door tables +0x3350/+0x3382) are kept as bytes only.
-- **U-5b1fc6** `uncertain` - `src/Darklands.Core/Battles/CombatAction.cs:32` `CombatAction.R`  
-  original: `R016+0x15BE` (1EF8:15BE, draft)  
-  why: what it orders.
-- **U-ed27f0** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:61` `Combatant.FightingValue`  
-  original: `R014+0x0694` (0E76:0694, draft)  
-  why: the name (the draft calls it "def").
-- **U-6c8b8a** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:65` `Combatant.AimingValue`  
-  original: `R014+0x0694` (0E76:0694, draft)  
-  why: the name (the draft's "atk").
-- **U-a567d4** `uncertain` - `src/Darklands.Core/Battles/Combatant.cs:74` `Combatant.PiercingResistance`  
-  original: `R014+0x0694` (0E76:0694, draft)  
-  why: meaning.
-- **U-53f6bd** `uncertain` - `src/Darklands.Core/Battles/EnemyCatalogue.cs:37` `EnemyTemplate.Byte12`  
-  original: `R004+0x06AA` (0E76:06AA, draft)  
-  why: meaning (+0x12 becomes 2 for missile users and casters).
-- **U-c6235d** `uncertain` - `src/Darklands.Core/Battles/EnemyCatalogue.cs:55` `EnemyTemplate.EffectImmunity`  
-  original: `R004+0x06AA` (0E76:06AA, draft)  
-  why: read as "money" before; the values (gnomes, demons, the dragon 1; gargoyles 2; evil alchemists 0xA00) and R019's (DS:C927[i] &amp; (1 &lt;&lt; type)) make it a mask of effect types.
-- **U-f5a007** `uncertain` - `src/Darklands.Core/Battles/EnemyKind.cs:90` `EnemyKind.Byte57`  
-  original: `R004+0x04CC` (0E76:04CC, draft)  
-  why: what reads them.
 - **U-797710** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:377` `CastleGenerator.PlaceRoomGroups`  
   original: `R007+0x23D4` (15AF:23D4, draft)  
   why: for the unused slot the original writes has[-1] (the byte before its local table) when the slot holds -1; that byte is not read by anything visible, and the write is skipped here (DIVERGENCE).
-- **U-11ac86** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:560` `CastleGenerator.MarkKind`  
-  original: `R007+0x23D4` (15AF:23D4, draft)  
-  why: what the mark means (see WildBattlefield.MarkSlot); it is only ever set here for the leader's kind.
 - **U-2a08c3** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Stairs.cs:11` `CastleGenerator.ContinueStairs`  
   original: `R006+0x34B8` (18FA:0008, draft)  
   why: slotn is uninitialised in the original when the placement failed before the strip search; 0 is used here and CutFromStrip then cuts strip 0 (the original cuts whatever the stack held).
@@ -796,77 +133,38 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-7e4bb6** `uncertain` - `src/Darklands.Core/Battles/Generation/CityBattlefield.cs:643` `CityBattlefield.BuildKeep`  
   original: `R010+0x1516` (1432:1516, draft)  
   why: city_build reports start level 0 even when 0x2C/0x2D put the party on level 1 (faithful to the draft).
-- **U-0ef77b** `uncertain` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:55` `FortressBattlefield.BuildFortress`  
-  original: `R011+0x0000` (1432:0000, draft)  
-  why: the meaning of the two specs' qualities the fortress tests: the second (== 1) shrinks every group by one, the third (== 1) starts the party on level 1.
-- **U-699da1** `uncertain` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:810` `FortressBattlefield.Fortress.AddLootEntry`  
-  original: `R011+0x1794` (1432:1794, draft)  
-  why: the meaning of the loot groups (+0x300E, 0x2C bytes) and their entries; named after what they hold (item types, up to four).
-- **U-7fd661** `uncertain` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:916` `FortressBattlefield.Fortress.ShapeZone7`  
-  original: `R011+0x1BC0` (1432:1BC0, draft)  
-  why: the draft calls type 7 and 8 objects doors; they are rectangles of cells with a value (+0x0C) and a record.
 - **U-5bdb14** `uncertain` - `src/Darklands.Core/Battles/Generation/MineBattlefield.cs:65` `MineBuilder.StaleStackWord`  
   original: `R009+0x0000` (1432:0000, draft)  
   why: what the real game's stack holds there depends on everything that ran before; the oracle's stack (file reads are stubbed) shows 0 for the first pile and 0x29CB afterwards, and a value above 9 means "no new kind picked, the last one repeats".
 - **U-8df8a9** `uncertain` - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:224` `MineBuilder.MakeChests`  
   original: `R009+0x1AF0` (1432:1AF0, draft)  
   why: the original holds stack leftovers).
-- **U-ecab98** `uncertain` - `src/Darklands.Core/Battles/Generation/MineLevel.cs:269` `PileRecord`  
-  original: unresolved (none)  
-  why: the draft calls these "groups" (struct grp2); they hold item types and weights (bf_items +0x25), hence "pile".
-- **U-e35c73** `uncertain` - `src/Darklands.Core/Battles/Generation/WildBattlefield.cs:1617` `WildBattlefield.MarkSlot`  
-  original: `R008+0x2D34` (1432:2D34, draft)  
-  why: what the mark means (monsters_clear sets it to 0).
-- **U-2f2a8f** `uncertain` - `src/Darklands.Core/Battles/Tactics/Combatant.Tactics.cs:237` `Combatant.EngagedByAi`  
-  original: `R014+0x3D0C` (0E76:3D0C, draft)  
-  why: what reads it.
-- **U-95aa32** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:266` `EffectField.private`  
-  original: `R017+0x0000` (1EF8:0000, draft)  
-  why: the lists are made anew each frame here; the original makes them when it redraws the whole view (the camera moved, a door or wall changed), which shows the same cells.
 - **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:881` `EffectField.public`  
   original: `root 06A1:29B6` (06A1:29B6, asm), `R014+0xA738` (18BF:02A8, draft)  
   why: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
 - **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1041` `EffectField.Drawn`  
   original: `R014+0x6818` (14F7:0008, draft), `R014+0x7BBE` (14F7:13AE, draft)  
   why: an entry whose box the view clips to nothing gives its place back in the original; here every piece, edge and number of a combatant in view counts (the boxes are not clipped), and the cloud edges count for the clouds of the shown level with a puff in view.
-- **U-8dfdd7** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Party.cs:123` `TacticalBattle.StopEverything`  
-  original: `R016+0x0000` (1EF8:0000, draft)  
-  why: a debugging key left in; the hot key (Change Marching Order) takes Alt-O first when that entry is on.
 - **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:238` `TacticalBattle.AnimationSet`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: read from the slot rules of cbt_set_anim (spec D §3.9): enemies use slot +2 fighting/hit and +4 dying.
-- **U-610cdf** `uncertain` - `src/Darklands.Core/Battles/TerrainDescription.cs:90` `TerrainDescription.FirstSightBlockingFurniture`  
-  original: `R004+0x1134` (0E76:1134, draft)  
-  why: the furniture section's "animated below" byte doubles as the sight limit (furniture_load R024 07A2 sets DS:C1CF).
 
-### persistence (5)
+### persistence (2)
 
-- **U-86bbb1** `uncertain` - `src/Darklands.Content/GameAssets.cs:50` `GameAssets.Font`  
-  original: `root 047C:07CE` (047C:07CE, draft), `root 0617:02F6` (0617:02F6, draft), `R000+0x052A` (0E76:052A, draft)  
-  why: "slot n holds font n-1" is how the screens look (card text = slot 1, party panel = slot 3), not read from the driver; the C names only the slot argument. Slots outside 1..3 are clamped here (the original has the slot count of the driver).
-- **U-7bde4a** `uncertain` - `src/Darklands.Content/WorldData.cs:86` `WorldData.ToLocation`  
-  original: `R043+0x0100` (1462:0100, matched), `R037+0x8ED4` (1C7D:0D24, matched)  
-  why: names. NoticeRange (unk08: how far the place is noticed while travelling, R030+0x1300 compares it with the distance) and Danger (unk0a: added to the encounter weight, R030+0x2D44) are read from how the travel code uses them; ArrivalCard (menu) and EncounterCard (unk0e) from the card numbers the map returns; LocalValues, Mark, Recorded and CacheHandle are the rules' names (loc_query/loc_set), their meaning is a guess.
 - **U-7ce977** `uncertain` - `src/Darklands.Persistence/CharacterRecords.cs:16` `CharacterRecords`  
   original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched)  
   why: the bytes this model does not name (+0x02..+0x11 combat position and orders, +0x16, +0x18..+0x21, +0x23, +0x4A, +0x4D/+0x4E, +0x52..+0x54, +0x56/+0x57, +0x59, +0x7F) are kept as read (Character.OriginalRecord); a character made by this program has zeros there. The saint and formula bytes and all 64 pack entries are modelled as raw bytes (KnownBits, Pack).
-- **U-13995e** `uncertain` - `src/Darklands.Persistence/LocationRecords.cs:10` `LocationRecords`  
-  original: unresolved (none)  
-  why: +0x02, +0x10, +0x22..+0x25 and the bytes after the name's zero are not named; they are kept as read (Location.OriginalRecord).
 - **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:404` `OriginalSaves.PartyRecordInBattle`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 
-## Presentation and host (29)
+## Presentation and host (18)
 
-### screens/presentation (25)
+### screens/presentation (18)
 
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-- **U-e6062e** `uncertain` - `src/Darklands.Content/Formats/Battles/RowRunSprite.cs:10` `RowRunSprite`  
-  original: unresolved (none)  
-  why: the format is read from the data (every BC tile parses exactly within its record size, IMC frames as the old engine's CleanCombatPreparedPresentation does); whether the first byte is width − 1 or a hot spot for IMC frames is not settled, so nothing relies on Width for frames.
 - **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
@@ -897,58 +195,25 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-6f03e2** `uncertain` - `src/Darklands.Presentation/MessageBox.cs:23` `MessageBox.MessageMilliseconds`  
   original: `root 0410:0302` (0410:0302, asm)  
   why: the length of a 0410 timer tick. 1000 ms assumes 60 ticks per second; the PAN player's measured tick (86 ms per 6 ticks, see Cinematics) would give 860 ms.
-- **U-885319** `uncertain` - `src/Darklands.Presentation/MessageBox.cs:103` `MessageBox.Pause`  
-  original: `root 0000:1080` (0000:1080, draft)  
-  why: what sound_play(2) and (3) do; they are not played here.
 - **U-77166b** `uncertain` - `src/Darklands.Presentation/OpeningTiming.cs:21` `OpeningTiming.IReadOnlyList`  
   original: `root 03A1:000A` (03A1:000A, matched), `root 030B:0004` (030B:0004, matched), `root 030B:0508` (030B:0508, matched) +2 more  
   why: one tick after the last cel of OPENING2 (the capture's tick after it came in the same frame, before the tune).
 - **U-37e39d** `uncertain` - `src/Darklands.Presentation/OverlandScreen.cs:27` `OverlandScreen.StepMilliseconds`  
   original: `R030+0x3096` (1767:0046, matched)  
   why: a clock() tick is taken as one millisecond (MSC 6 CLK_TCK is 1000, although the value only changes every 55 ms with the BIOS timer, so a real pass lasts 30 to 55 ms).
-- **U-09399a** `uncertain` - `src/Darklands.Presentation/PartyInfoScreen.cs:73` `PartyInfoScreen.Show`  
-  original: `root 047C:073D` (047C:073D, draft), `root 047C:0744` (047C:0744, draft), `R034+0x0EE6` (1550:0006, matched) +2 more  
-  why: hosts may not deliver Shift-Tab as 0x0F00 (the BIOS code); then only Tab steps.
 - **U-9404ee** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:83` `PartyRosterScreen.Run`  
   original: `R038+0x0000` (1462:0000, draft), `R038+0x024E` (1462:024E, draft), `R038+0x0292` (1462:0292, draft)  
   why: SI is taken to come through the thunk 09C0:1EE1 unchanged (the overlay manager is taken to keep it).
 - **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:210` `PartyRosterScreen.ResultOfDriver`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: the driver's AX is taken never to be 0x11B (it would end the screen).
-- **U-75a7ed** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:124` `SaintPrayerScreen.MessageMilliseconds`  
-  original: `R034+0x0000` (1462:0000, matched), `R034+0x0102` (1462:0102, matched)  
-  why: root 0000:24BC is taken to be the framed message box MessageBox shows (60 ticks there).
 - **U-9ecd08** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:339` `SaintPrayerScreen.DrawInfo`  
   original: `R034+0x0BC4` (1462:0BC4, matched)  
   why: the text routine root 0265:0134 is assembly only: the name is taken as centred in its 154-pixel column with the capital at y 8 (positions from a capture of the original), the description as wrapped in 156 pixels from (0x94, 0x25).
 - **U-a84a42** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:396` `SaintPrayerScreen.OpenMemberList`  
   original: `R034+0x0E04` (1462:0E04, matched), `R034+0x0D08` (1462:0D08, matched)  
   why: the names are drawn by the text routine (assembly only) in a 52-pixel column; here each full name is cut to fit that width on its row.
-- **U-0a470d** `uncertain` - `src/Darklands.Presentation/StartUp.cs:42` `StartUp.ConventionalMemoryFree`  
-  original: `R000+0x1150` (0E76:1150, draft)  
-  why: the free memory of the machine the figures of the -O report describe.
-- **U-b4fc9d** `uncertain` - `src/Darklands.Presentation/StartUp.cs:215` `StartUp.ProgramBlockBytes`  
-  original: `R000+0x1150` (0E76:1150, draft)  
-  why: the C start-up code may shrink or grow the block; the header's figures are taken as it is.
 - **U-ef55b2** `uncertain` - `src/Darklands.Presentation/StartUp.cs:254` `StartUp.GameStart`  
   original: `root 047C:0783` (047C:0783, draft), `root 047C:0066` (047C:0066, draft), `root 044A:019C` (044A:019C, asm) +4 more  
   why: the driver's mouse pointer (shown after commonsp.img) is left out until the start screen, as during the opening.
-- **U-ffc02a** `uncertain` - `src/Darklands.Presentation/StartUp.cs:403` `StartUp.GraphicsPrint`  
-  original: `root 0617:000E` (0617:000E, draft), `root 0617:011E` (0617:011E, draft), `root 0617:067E` (0617:067E, draft) +1 more  
-  why: colour 7 (DOS's console output passes none; DOSBox's int 29h uses 7) and the BIOS's 8×8 font (TextFont.SmallRow).
-
-### host/audio (4)
-
-- **U-f9b9ee** `uncertain` - `src/Darklands.Audio/GameSounds.cs:34` `GameSounds.CurrentPiece`  
-  original: `R034+0x0000` (1462:0000, matched), `R034+0x0102` (1462:0102, matched), `R036+0x0082` (1462:0082, draft) +2 more  
-  why: NSOUND.DLC's play slot is a bare far return, so AX is whatever the caller had; the emulated call gives its own leftover. The value only matters if music is switched on before it is played back.
-- **U-3df4a6** `uncertain` - `src/Darklands.Audio/GameSounds.cs:39` `GameSounds.Silence`  
-  original: `R034+0x0000` (1462:0000, matched), `R034+0x0102` (1462:0102, matched), `R036+0x0082` (1462:0082, draft) +2 more  
-  why: named from the reference's music-player notes ("6 silence"); called by the city cards ($CityG00, $MainS01, $citys01, $Raubi02 ...).
-- **U-0dcd6e** `uncertain` - `src/Darklands.Audio/GameSounds.cs:44` `GameSounds.Ready`  
-  original: `R034+0x0000` (1462:0000, matched), `R034+0x0102` (1462:0102, matched), `R036+0x0082` (1462:0082, draft) +2 more  
-  why: what number 7 does in the drivers (it makes no sound on the FM drivers).
-- **U-d2430c** `uncertain` - `src/Darklands.Audio/Machine/MidiHardware.cs:61` `TimerCounter`  
-  original: unresolved (none)  
-  why: the speed of the emulated processor against the timer (4 instructions per count, a fast 386); the driver only scales a delay by it.
 

@@ -12,6 +12,6 @@ public sealed partial class CardVariables
 
     /// <summary>Which of the city's 16 names $CityLocation stands for (index into the working city record's name table).</summary>
     // orig: DS:ED52 (DGROUP int), case 52 of R043+0x1316: city_rec->names[DS:ED52]; data
-    // UNCERTAIN: the name "city location" for DS:ED52 is the variable's text name ($CityLocation); which scripts set it is not established.
+    // C: the name "city location" for DS:ED52 is the variable's text name ($CityLocation); which scripts set it is not established.
     public int CityLocation { get; set; }
 }

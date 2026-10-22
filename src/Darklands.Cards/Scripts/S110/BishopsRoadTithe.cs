@@ -71,7 +71,7 @@ public sealed class BishopsRoadTithe : Card
             // orig: R110+0x0AC4 (1838:0AC4) matched; hint R110+0x0ACA
             new MenuLine(_ => { LeaderSpeaks(c); FightTheGuard(c); }, () => OptionHint.Say("Enter Combat")),
             // DORMANT: lines 8 and 9 are never offered; actions R110+0x0B02/0b06 and hints R110+0x0B04/0b08
-            // are empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: are empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => LeaderSpeaks(c)),
             new MenuLine(_ => LeaderSpeaks(c)));
     }

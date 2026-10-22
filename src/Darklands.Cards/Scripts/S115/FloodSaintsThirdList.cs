@@ -30,7 +30,7 @@ public sealed class FloodSaintsThirdList : Card
             // orig: R115+0x090C (189D:02BC) matched; hint R115+0x0984
             new MenuLine(_ => Pray(c), () => OptionHint.Say("Select a person and a saint.")),
             // DORMANT: lines 3..9 are never offered; actions R115+0x09BC.. and hints R115+0x09BE.. are empty
-            // (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

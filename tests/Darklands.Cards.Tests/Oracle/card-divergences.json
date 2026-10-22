@@ -164,5 +164,59 @@
     "run": "*",
     "contains": "original 'menu 0 [1111]",
     "why": "CityLeavingDirection DIVERGENCE: no line changes next_card, so the original offers the menu again for ever (its loop runs while next_card is 0x0C); the C# ends the card after one choice, with the same next card. The first menu and choice are compared."
+  },
+  {
+    "card": "0AB",
+    "run": "*",
+    "contains": "original 'menu 0 [0000]",
+    "why": "CityLeavingDirection DIVERGENCE: no line changes next_card, so the original offers the menu again for ever (its loop runs while next_card is 0x0C); the C# ends the card after one choice, with the same next card. The first menu and choice are compared (a run that forces a line of this menu ends in a menu with no line on: the original stops there too)."
+  },
+  {
+    "card": "100",
+    "run": "probe L3-Vfacts+F3.0-O2",
+    "contains": "original 'picture boom'",
+    "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
+  },
+  {
+    "card": "100",
+    "run": "probe L3-Vfacts+F3.1-O2",
+    "contains": "original 'picture boom'",
+    "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
+  },
+  {
+    "card": "100",
+    "run": "probe L3-Vfacts+F3.2-O2",
+    "contains": "original 'picture boom'",
+    "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
+  },
+  {
+    "card": "100",
+    "run": "probe L3-Vfacts+F4.0-O0",
+    "contains": "original 'picture xdungeon'",
+    "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
+  },
+  {
+    "card": "100",
+    "run": "probe L3-Vfacts+F4.2-O0",
+    "contains": "original 'picture xdungeon'",
+    "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
+  },
+  {
+    "card": "104",
+    "run": "probe L3-Vskilled+F12.3-O8",
+    "contains": "original 'picture xkntdemo'",
+    "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
+  },
+  {
+    "card": "107",
+    "run": "probe L3-Vrich+F5.4-O3",
+    "contains": "original 'picture robmen2'",
+    "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
+  },
+  {
+    "card": "108",
+    "run": "probe L3-Vrich+F4.2-O2",
+    "contains": "original 'picture robmen2'",
+    "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
   }
 ]

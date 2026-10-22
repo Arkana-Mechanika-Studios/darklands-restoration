@@ -323,7 +323,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-e95c32** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/InnByDay.cs:178` `InnByDay.VisitTheStables`  
   original: `R051+0x0EE0` (18C9:05D0, matched)  
   why: the two stable texts look swapped: a party all of whose present members have a mount gets text 1, and any other party text 7, the only one in which the stablemaster asks whether the party's mounts are for sale (R051+0x0EE0).
-- **B-ba6123** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/ClothmakersStreet_Cloth00.cs:373` `ClothmakersStreet_Cloth00.SneakIn`  
+- **B-ba6123** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/ClothmakersStreet_Cloth00.cs:369` `ClothmakersStreet_Cloth00.SneakIn`  
   original: `R053+0x191E` (1924:0A5E, matched)  
   why: practices everybody (who −2) once per able member, as the original does.
 - **B-556a53** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:248` `Footpads.ThrowAPotion`  
@@ -455,7 +455,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-759d5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S130/CavernOfFireAndHail.cs:102` `CavernOfFireAndHail.CreepAcrossUnderArmour`  
   original: `R130+0x107E` (190C:033E, matched)  
   why: the original adds rand(10)+8 Endurance and rand(6)+6 Strength although text 6 says everyone is hurt (the prayer's path subtracts the same kind of amounts); kept as the original does it (no OriginalBehaviour flag yet).
-- **B-f2c259** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S134/SpiderWarehousePoster.cs:142` `SpiderWarehousePoster.EnterTheWarehouse`  
+- **B-f2c259** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S134/SpiderWarehousePoster.cs:145` `SpiderWarehousePoster.EnterTheWarehouse`  
   original: `R134+0x0550` (1838:0550, matched), `R134+0x0692` (1838:0692, matched)  
   why: the original adds rand(10) Endurance although text 9 says many were bitten; kept as it is (no OriginalBehaviour flag for it).
 

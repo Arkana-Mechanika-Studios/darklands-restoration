@@ -45,6 +45,7 @@ public sealed class PaganAltarOnTheHill : Card
         menu[1] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
+        // DORMANT: in text block 13 the option lines 0..2, 5 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R107+0x22F4 (line 0); hint R107+0x24A0 (19CE:0B40) matched
             new MenuLine(_ => DisturbTheAltar(c, menu), Unknown),
@@ -54,7 +55,7 @@ public sealed class PaganAltarOnTheHill : Card
             new MenuLine(_ => CleanseTheAltar(c), () => OptionHint.Say("Select a person and a potion."), () => PotionPopupHint(c, menu)),
             // orig: R107+0x27B6 (19CE:0E56) matched (empty); hint R107+0x27B8 (empty)
             // DORMANT: lines 3 and 4 are never offered; their actions and hints (R107+0x27BA, R107+0x27BC) are empty.
-            // UNCERTAIN: those hints are void functions cast to option handlers: the chance is whatever is in AX/DX; neutral hints are used.
+            // C: those hints are void functions cast to option handlers: the chance is whatever is in AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             // orig: R107+0x27BE (19CE:0E5E) matched; hint R107+0x27D6
