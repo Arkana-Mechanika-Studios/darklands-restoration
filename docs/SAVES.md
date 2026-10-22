@@ -117,7 +117,14 @@ Named: icon +0x00, x/y +0x04/+0x06, notice range +0x08, danger +0x0A, arrival an
 
 Byte 0 = 0x63, byte 1 = number of stores, the store h's offset at 2h, stores of a count byte and
 {item word, quality, count}. Written as `cache_save(-1)` builds it: the 198-byte header of the
-empty file, then the stores in handle order (at most 0x62).
+empty file, then the stores in handle order. The original has no limit: the 99th store's offset
+overwrites store 1's first bytes, and its rewrite of a known store garbles any table of 128 bytes or more.
+
+The game the player runs (`FixCacheStoreLimit`, `FixInnCacheRewrite`) writes the compact layout
+instead, which the original reads, appends and rewrites with no loss: byte 0 = 124, byte 1 = the live
+store count (at most 62), offsets (16-bit little-endian) at 2h, a 126-byte table, store 1 at 126,
+the stores packed in handle order with nothing after the last, at most 127 entries a store, under
+64 KiB. Stores no place refers to are dropped and the places' cache handles (+0x18) renumbered.
 
 ## The .BSV file
 

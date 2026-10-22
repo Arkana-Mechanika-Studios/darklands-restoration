@@ -761,19 +761,19 @@ public sealed class TradingAndLootTests
     }
 
     [Fact]
-    public void TheFixedRewriteKeepsTheGamesLayoutAndEveryStore()
+    public void TheFixedRewriteKeepsTheCompactLayoutAndEveryStore()
     {
-        // FixInnCacheRewrite: the original's rewrite (a 101-byte header over a 198-byte header's offsets) is not made.
+        // FixInnCacheRewrite: the original's rewrite (a 101-byte header over a 198-byte header's offsets) is not made; the file is the compact one.
         var fix = OriginalBehaviour.DataSafe;
         var stores = new ItemStores();
         var inn = new Location();
         stores.Close(inn, [new StoredItem(0x18, 0x19, 1)], fix);
         stores.Close(inn, [new StoredItem(0x18, 0x19, 2)], fix);
         var file = stores.File;
-        Assert.Equal(203, file.Length);
-        Assert.Equal(new byte[] { 0x63, 1, 198, 0 }, file[..4]);
-        Assert.All(file[4..198], b => Assert.Equal(0, b));
-        Assert.Equal(new byte[] { 1, 0x18, 0, 0x19, 2 }, file[198..]);
+        Assert.Equal(131, file.Length);
+        Assert.Equal(new byte[] { 124, 1, 126, 0 }, file[..4]);
+        Assert.All(file[4..126], b => Assert.Equal(0, b));
+        Assert.Equal(new byte[] { 1, 0x18, 0, 0x19, 2 }, file[126..]);
         Assert.Equal([new StoredItem(0x18, 0x19, 2)], stores.Open(1, new StoreTable()));
     }
 
@@ -797,9 +797,9 @@ public sealed class TradingAndLootTests
         Assert.Equal([1, 2, 3], places.Select(p => p.CacheHandle));
         // cache_load's reading: byte 1 stores, the offset word of store h at 2h, a count byte, then {item word, quality, count}
         var file = fixedStores.File;
-        Assert.Equal(0x63, file[0]);
+        Assert.Equal(124, file[0]);
         Assert.Equal(3, file[1]);
-        var next = 198;
+        var next = 126;
         for (var h = 1; h <= 3; h++)
         {
             var at = BitConverter.ToUInt16(file, 2 * h);

@@ -6,7 +6,7 @@ its bytes, never against another reimplementation.
 ## The claim for 1.0
 
 The rules are identical to the original's in the faithful mode (`OriginalBehaviour.Faithful`, which the
-oracles and the headless host use). By default the player's game differs from it only in the 2 listed,
+oracles and the headless host use). By default the player's game differs from it only in the 3 listed,
 switchable data-safety fixes below. No known divergence, strong evidence, published coverage:
 
 * every original function the C# cites is compared with it statically, and no lead is open;
@@ -33,11 +33,26 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those.
-* The two fixes now in `DataSafe` (registered as deliberate fixes, `divergences.csv`; the bugs in
+* The three fixes now in `DataSafe` (registered as deliberate fixes, `divergences.csv`; the bugs in
   `original_bugs.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (cache_save R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
-    memory it should not read; fixed, the file keeps the layout of a new game (R037+0x4184).
+    memory it should not read; fixed, the file is laid out compactly (see the next item).
+  * `FixCacheStoreLimit`: the original's CACHE.TMP cannot grow past its 198-byte table: the 99th store's
+    offset is written over store 1's count byte and first item (the append at R035+0x1532), and its
+    rewrite finds store 1 by the signed low byte of its offset (R035+0x15A2, `cbw` R035+0x1615), so a
+    table of 128 bytes or more is garbled by the original's own next rewrite (emulated runs, kept under
+    `local/datasafe/cache-limit`). Fixed (this and `FixInnCacheRewrite` lay the file out the same way):
+    byte 0 = 124, byte 1 = the live store count, offsets at 2h, store 1 at 126, the stores packed in
+    handle order; at most 62 stores and 127 entries a store, under 64 KiB. Stores no place refers to are
+    dropped and the places' handles (location +0x18) renumbered when the file is laid out. The original
+    reads, appends and rewrites such a file with no loss (runs `compact60-*`, their output is a test
+    fixture). A Put (cache_key, R035 keys 0x1950/0x1970) that would need a 63rd live store or a 128th
+    entry is refused when it is made, with the message "The innkeeper has no room for more." (own text,
+    registered with the fix); the item stays in the member's pack, so closing the screen never loses
+    items. The faithful mode keeps the overwrite byte for byte. The original's own fault that remains
+    (it reopens the file without truncating it, leaving bytes after a shrunk store) is registered as an
+    original bug.
   * `FixSaveWriterSkipsEmptySlots`: the save writer (R037+0x2ACE) leaves out the record of a party slot of
     status 0 but writes the full count, a short file the original can crash loading (the Wild Hunt causes
     it); fixed, every roster record is written.

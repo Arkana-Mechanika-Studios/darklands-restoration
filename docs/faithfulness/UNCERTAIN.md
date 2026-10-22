@@ -873,10 +873,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1585` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
-- **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:52` `BuySellPage.DrawParty`  
+- **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:55` `BuySellPage.DrawParty`  
   original: `R032+0x0000` (1462:0000, draft), `R035+0x0000` (1462:0000, matched), `R040+0x01C8` (1462:01C8, draft)  
   why: argument 0x100's meaning is not modelled
-- **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:74` `BuySellPage.Text`  
+- **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:77` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
 - **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:89` `CharacterCreationScreen.FigureImages`  

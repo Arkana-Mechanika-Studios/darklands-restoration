@@ -59,6 +59,47 @@ public sealed class ItemStores
         return table;
     }
 
+    /// <summary>The most stores the compact layout holds: the last offset word (bytes 124..125) ends its 126-byte table.</summary>
+    public const int MaxStores = 62;
+
+    /// <summary>The most entries a store may hold in the compact layout: the original's rewrite reads a store's count as a signed byte.</summary>
+    public const int MaxEntries = 127;
+
+    // The compact layout's table: byte 0 = 124 (the original's rewrite writes byte 0 zero bytes after bytes 0..1), so 126 bytes.
+    private const int CompactTableSize = 126;
+
+    private int StoreCount => _file.Count > 1 ? _file[1] : 0;
+
+    /// <summary>Whether the place's handle names a store of the file (1..the count).</summary>
+    public bool HasStore(Location place) => place.CacheHandle >= 1 && place.CacheHandle <= StoreCount;
+
+    /// <summary>
+    /// Whether one more item (code, quality) may be put into the working table at <paramref name="place"/>. Always so unless
+    /// <see cref="OriginalBehaviour.CompactCache"/>: then no new entry past <see cref="MaxEntries"/> and no new store (a place without
+    /// one, its table still empty) past <see cref="MaxStores"/> live ones. <paramref name="places"/>: the places that refer to stores
+    /// (none given: every store counts as live).
+    /// </summary>
+    // DIVERGENCE: with OriginalBehaviour.FixCacheStoreLimit (or FixInnCacheRewrite) the original's Put never refuses; here a Put that would need a 63rd live
+    // store or a 128th entry of a store is refused when it is made (cache_key, R035 keys 0x1950/0x1970), the item staying in the member's pack, so that
+    // closing the screen cannot lose items.
+    public bool CanPut(Location place, IReadOnlyList<Location>? places, StoreTable table, int code, int quality, OriginalBehaviour? behaviour)
+    {
+        if (!(behaviour?.CompactCache ?? false) || table.FindIndex(e => e.Code == code && e.Quality == (byte)quality) >= 0)
+        {
+            return true;
+        }
+        if (table.Count >= MaxEntries)
+        {
+            return false;
+        }
+        return table.Count != 0 || HasStore(place) || Live(place, places).Count < MaxStores;
+    }
+
+    private SortedSet<int> Live(Location place, IReadOnlyList<Location>? places) =>
+        places is null
+            ? [.. Enumerable.Range(1, StoreCount)]
+            : [.. places.Append(place).Where(HasStore).Select(l => l.CacheHandle)];
+
     /// <summary>
     /// Writes a place's store back when the screen closes: an empty store makes the place
     /// forget it (handle −1); a place without a store gets a new one at the end of the file,
@@ -67,30 +108,20 @@ public sealed class ItemStores
     // orig: cache_close R035+0x04BC (1462:04BC) and cache_save R035+0x1468 (1462:1468) matched; tests: TradingAndLootTests
     // C: `if (DS:89F6 != 0) cache_save(locations[cur_loc]->cache); else locations[cur_loc]->cache = -1;` (DS:89F0, the count written, is DS:89F6).
     // BUG: OriginalBehaviour.FixInnCacheRewrite - a known store's rewrite (cache_save R035+0x1468) lays the file out with a 101-byte header over offsets of a 198-byte one.
-    public void Close(Location place, IReadOnlyList<StoredItem> items, OriginalBehaviour? behaviour = null)
+    // BUG: OriginalBehaviour.FixCacheStoreLimit - the append (cache_save(-1) R035+0x1468, the offset written at R035+0x1532) has no limit: the 99th store's offset lands at 198..199, over store 1's count byte and its first item.
+    public void Close(Location place, IReadOnlyList<StoredItem> items, OriginalBehaviour? behaviour = null, IReadOnlyList<Location>? places = null)
     {
-        var fix = behaviour?.FixInnCacheRewrite ?? false;
         if (items.Count == 0)
         {
             place.CacheHandle = -1;
         }
+        else if (behaviour?.CompactCache ?? false)
+        {
+            CloseCompact(place, items, places);
+        }
         else if (place.CacheHandle == -1)
         {
-            if (fix && Normalise() is { } stores && stores.Count < 0x62)
-            {
-                stores.Add([.. items]);
-                Lay(stores);
-                place.CacheHandle = stores.Count;
-            }
-            else
-            {
-                place.CacheHandle = Append(items);
-            }
-        }
-        else if (fix && Normalise() is { } known && place.CacheHandle >= 1 && place.CacheHandle <= known.Count)
-        {
-            known[place.CacheHandle - 1] = [.. items];
-            Lay(known);
+            place.CacheHandle = Append(items);
         }
         else
         {
@@ -98,32 +129,64 @@ public sealed class ItemStores
         }
     }
 
-    // DIVERGENCE: with OriginalBehaviour.FixInnCacheRewrite (data safety, switchable; on in the player's game) the rewrite of a known store
-    // and the append read every store by its offset and write the file again as load_saved_game R037+0x4184 and cache_save(-1) R035+0x1468 lay
-    // it out. The stores read by their offsets, then the file laid out as the original lays out a game's file: the 198-byte header
-    // (0x63, the count, 0x62 offset words), the stores after it in handle order, every offset where its store is (what the
-    // original's own cache_load reads). Null when the file cannot be read that way (more stores than offset words).
-    private List<List<StoredItem>>? Normalise()
+    // DIVERGENCE: with OriginalBehaviour.FixInnCacheRewrite or FixCacheStoreLimit (data safety, switchable; on in the player's game) the append and the
+    // rewrite of a known store (cache_save R035+0x1468) are not made: the stores the places refer to are read by their offsets and the file is laid out
+    // compactly, the way the original's own cache_save reads and rewrites it without loss: byte 0 = 124, byte 1 the store count, the offsets from 2 (store h at 2h),
+    // store 1 at 126, the stores packed in handle order and nothing after the last. At most 62 stores, 127 entries a store; stores no place refers to are dropped
+    // and the places' handles (Location +0x18) renumbered. The original lays out a 198-byte table, whose rewrite loses stores (cbw R035+0x1615), and
+    // has no limit (the append at R035+0x1532). Put is refused beyond the limits (CanPut). A file the original itself wrote can already hold more than
+    // 62 live stores or a store of more than 127 entries (or reach 64 KiB): closing in it never fails and loses nothing; the stores are laid out in
+    // a table large enough for them (the original's 198-byte one, or byte 0 = half the table with 2 bytes a store), a file beyond what the original's own
+    // rewrite handles, as its own files are. A place's handle that names no store (not -1, past the file's count) has nothing to drop: only the handle
+    // is reset to -1, which reads an empty store just as the invalid one does.
+    private void CloseCompact(Location place, IReadOnlyList<StoredItem> items, IReadOnlyList<Location>? places)
     {
-        var count = _file.Count > 1 ? _file[1] : 0;
-        if (count > 0x62)
+        var live = Live(place, places);
+        var isNew = !HasStore(place);
+        var map = new Dictionary<int, int>();
+        var stores = new List<List<StoredItem>>();
+        foreach (var h in live)
         {
-            return null;
+            map[h] = stores.Count + 1;
+            stores.Add(Read(h) ?? []);
         }
-        return [.. Enumerable.Range(1, count).Select(h => Read(h) ?? [])];
+        var newHandles = new List<(Location Place, int Handle)>();
+        foreach (var l in places ?? [])
+        {
+            newHandles.Add((l, HasStore(l) ? map[l.CacheHandle] : -1));
+        }
+        if (isNew)
+        {
+            stores.Add([.. items]);
+            newHandles.Add((place, stores.Count));
+        }
+        else
+        {
+            stores[map[place.CacheHandle] - 1] = [.. items];
+            newHandles.Add((place, map[place.CacheHandle]));
+        }
+        Lay(stores);
+        foreach (var (l, handle) in newHandles)
+        {
+            l.CacheHandle = handle;
+        }
     }
 
     private void Lay(List<List<StoredItem>> stores)
     {
-        _file = [.. EmptyFile()];
-        var at = EmptyFileSize;
+        var fits = stores.Count <= MaxStores && stores.All(x => x.Count <= MaxEntries)
+            && CompactTableSize + stores.Sum(x => 1 + 4 * x.Count) < 0x10000;
+        var table = fits ? CompactTableSize : Math.Max(EmptyFileSize, 2 * stores.Count + 2);
+        _file = [.. new byte[table]];
+        _file[0] = (byte)(fits ? CompactTableSize - 2 : table / 2);
+        _file[1] = (byte)stores.Count;
+        var at = table;
         for (var i = 0; i < stores.Count; i++)
         {
             Put((i + 1) * 2, (byte)at);
             Put((i + 1) * 2 + 1, (byte)(at >> 8));
             WriteStore(ref at, stores[i]);
         }
-        Put(1, (byte)stores.Count);
     }
 
     /// <summary>Adds a store at the end of the file (as a place without one does when its screen closes); returns its handle.</summary>
@@ -151,6 +214,7 @@ public sealed class ItemStores
     // C: writing: bytes past the new end stay), `n = *q++; ncache = *q++; p += (char)*q;`, n and ncache written, n zero bytes, then each store
     // C: i < ncache in turn at the file position reached, its offset written at (i + 1) * 2: store `handle` from the working table
     // C: (`k = *p++; p += k << 2;` skips its old bytes), the others copied from p (`k = *p; _dos_write(p, (k << 2) + 1); p += (k << 2) + 1;`).
+    // BUG: the rewrite finds store 1 by the signed low byte of its offset (p = buf + (signed char)buf[2], cbw R035+0x1615 after the load at R035+0x15A2): with store 1 at 0x80 or later (a table of 128 bytes or more, the 198-byte one of a game's file too) the other stores are copied from the wrong bytes; and it reopens the file without truncating it (R035+0x15DD, mode 1), so bytes left after a shrunk store stay and a store appended after them is later copied into an earlier one. The compact layout (126-byte table, store 1 at 126) avoids the first; the second is reproduced.
     // C: The header becomes n + 2 = 101 bytes; p starts at the low byte of store 1's offset taken as a signed char, which for the 198-byte
     // C: header of a game's file (0xC6) is offset 0xFFC6 of the buffer's segment, the heap 58 bytes before it.
     // DIVERGENCE: a store copied from bytes outside the file (that read before the buffer, or past its end) copies heap memory in the original;

@@ -51,15 +51,27 @@ public sealed class OriginalBehaviour
     /// stores in CACHE.TMP) are fixed, every other quirk stays. The fixed files are still read by the original. The player's game
     /// uses this; future data-safety fixes go here (and only these).
     /// </summary>
-    public static OriginalBehaviour DataSafe => new() { FixInnCacheRewrite = true, FixSaveWriterSkipsEmptySlots = true };
+    public static OriginalBehaviour DataSafe => new() { FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true };
 
     /// <summary>
     /// Leaving an item store that already has a stored list rewrites CACHE.TMP with a 101-byte header over the 198-byte header's
     /// offsets, copying the other stores from the wrong place (heap bytes, store data lost or garbled); fixed: the file is laid out
-    /// as a game's file is, every store kept.
+    /// as a game's file is, every store kept (the compact layout of <see cref="FixCacheStoreLimit"/>).
     /// </summary>
     // orig: cache_save R035+0x1468 (1462:1468), data safety, data-damaging; the clean layout is load_saved_game R037+0x4184 (0x63, 0, 0x62 zero words) with cache_save(-1) appending after it
     public bool FixInnCacheRewrite { get; set; }
+
+    /// <summary>
+    /// The 99th item store's offset is written over the first store's count byte and first item, so the file is damaged
+    /// (the original also reads, appends and rewrites only a small offset table correctly); fixed: the file is laid out compactly
+    /// (a 126-byte table, at most 62 stores, at most 127 entries a store, stores no place refers to dropped and the rest renumbered)
+    /// and Put at a place that would need more is refused, the item staying in the pack.
+    /// </summary>
+    // orig: cache_save R035+0x1468 (1462:1468), the append at R035+0x1532 and the rewrite at R035+0x15A2 (cbw R035+0x1615), data safety, data-damaging
+    public bool FixCacheStoreLimit { get; set; }
+
+    /// <summary>The item stores are laid out compactly and Put is limited (either of <see cref="FixInnCacheRewrite"/>, <see cref="FixCacheStoreLimit"/>).</summary>
+    public bool CompactCache => FixInnCacheRewrite || FixCacheStoreLimit;
 
     /// <summary>
     /// The save writer leaves out the record of a party slot whose status is 0 but writes the full record count, so the file is

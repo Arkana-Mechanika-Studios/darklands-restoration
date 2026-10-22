@@ -38,6 +38,9 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
 
     public Canvas Canvas => ui.Canvas;
 
+    /// <summary>A short message box over the page (put back afterwards).</summary>
+    public void ShowMessage(string text) => new MessageBox(ui).Show(text);
+
     /// <summary>Draws the picture (taking its colours), copies its right part to the screen and draws the party column.</summary>
     public void DrawBackground(Party party)
     {

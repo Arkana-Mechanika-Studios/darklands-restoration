@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 47 entries; recommendations: document: 1, justify: 40, keep: 6.
+- Part A (not-modelled, deliberate-fix, other in core logic): 49 entries; recommendations: document: 1, justify: 42, keep: 6.
 - Part B (undefined-memory in core logic): 121 entries; determinism: n/a: 77, no: 31, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -174,7 +174,7 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
 
 Each is a core-logic divergence where the C# does something the original does not. Action: `implement` (make it as the original), `justify` (keep, with the reason given), `implement-later` (blocked on a missing subsystem), `remove-marker` (the divergence is gone; the marker is to be removed).
 
-### rules (9)
+### rules (11)
 
 #### not-modelled (2)
 
@@ -187,12 +187,16 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: who >= 5 counts the 16-entry lists at R136+0xE68E (with the quantities read from inventories[who - 5], an original bug); not modelled, 0. The lists are enemy_items (the last battle's enemies' items, battle state); no caller passes who >= 5 (the cards pass -2, -1 or a member).  
   recommendation: **justify** (checked against the original) - who >= 5 counts R136+0xE68E[who - 5][0..15] = enemy_items (2E38:0D5E, 9 enemies x 16 six-byte items of the last battle: battle state, not fixed data) with the quantities of inventories[who - 5]. Every caller in the C (80 x count_items(-2, ..), the R068/s073/s107 member loops v_si/l_2/i over 0..4, R043 150b's pop-up list over members) passes -2, -1 or 0..4, so the branch is unreachable; implementing it needs the battle's enemy item table (battle code).
 
-#### deliberate-fix (3)
+#### deliberate-fix (5)
 
-- **D-3a3c6c** `deliberate-fix` - `src/Darklands.Core/Items/ItemStores.cs:101` `ItemStores.Normalise`  
+- **D-2a45ce** `deliberate-fix` - `src/Darklands.Core/Items/ItemStores.cs:82` `ItemStores.CanPut`  
+  original: `R035+0x1350` (1462:1350, matched)  
+  divergence: with OriginalBehaviour.FixCacheStoreLimit (or FixInnCacheRewrite) the original's Put never refuses; here a Put that would need a 63rd live store or a 128th entry of a store is refused when it is made (cache_key, R035 keys 0x1950/0x1970), the item staying in the member's pack, so that closing the screen cannot lose items.  
+  recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixCacheStoreLimit): the original's Put never refuses, but the compact layout holds 62 stores and 127 entries a store; Put is refused when it is made so that closing the screen cannot lose items.
+- **D-856386** `deliberate-fix` - `src/Darklands.Core/Items/ItemStores.cs:132` `ItemStores.CloseCompact`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
-  divergence: with OriginalBehaviour.FixInnCacheRewrite (data safety, switchable; on in the player's game) the rewrite of a known store and the append read every store by its offset and write the file again as load_saved_game R037+0x4184 and cache_save(-1) R035+0x1468 lay it out. The stores read by their offsets, then the file laid out as the original lays out a game's file: the 198-byte header (0x63, the count, 0x62 offset words), the stores after it in handle order, every offset where its store is (what the original's own cache_load reads). Null when the file cannot be read that way (more stores than offset words).  
-  recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixInnCacheRewrite, on in the player's game; the testers and the lockstep oracle stay faithful): the original's rewrite of a known store loses or garbles the other stores of the file; fixed, the file is laid out as a game's file is (198-byte header, stores in handle order) and the original reads it.
+  divergence: with OriginalBehaviour.FixInnCacheRewrite or FixCacheStoreLimit (data safety, switchable; on in the player's game) the append and the rewrite of a known store (cache_save R035+0x1468) are not made: the stores the places refer to are read by their offsets and the file is laid out compactly, the way the original's own cache_save reads and rewrites it without loss: byte 0 = 124, byte 1 the store count, the offsets from 2 (store h at 2h), store 1 at 126, the stores packed in handle order and nothing after the last. At most 62 stores, 127 entries a store; stores no place refers to are dropped and the places' handles (Location +0x18) renumbered. The original lays out a 198-byte table, whose rewrite loses stores (cbw R035+0x1615), and has no limit (the append at R035+0x1532). Put is refused beyond the limits (CanPut). A file the original itself wrote can already hold more than 62 live stores or a store of more than 127 entries (or reach 64 KiB): closing in it never fails and loses nothing; the stores are laid out in a table large enough for them (the original's 198-byte one, or byte 0 = half the table with 2 bytes a store), a file beyond what the original's own rewrite handles, as its own files are. A place's handle that names no store (not -1, past the file's count) has nothing to drop: only the handle is reset to -1, which reads an empty store just as the invalid one does.  
+  recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixCacheStoreLimit and FixInnCacheRewrite, on in the player's game; the testers and the lockstep oracle stay faithful): the original's rewrite of a known store loses or garbles the other stores of the file (it finds store 1 by the signed low byte of its offset), and its append has no limit (the 99th store's offset lands over store 1); fixed, the file is laid out compactly (byte 0 = 124, a 126-byte table, at most 62 stores, 127 entries a store, unreferenced stores dropped and the places' handles renumbered) and the original reads, appends and rewrites it with no loss (emulated runs compact60-*, kept in the tests).
 - **D-444756** `deliberate-fix` - `src/Darklands.Core/Rules/CityPolitics.cs:173` `CityPolitics.SetUpCity`  
   original: `R039+0x0558` (1462:0558, matched)  
   divergence: `while (!loc_query(loc, d + 3))` loops forever in a city without any shop; here the search stops after seven days.  
@@ -201,6 +205,10 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R039+0x0504` (1462:0504, matched)  
   divergence: the original loops forever when no place has the icon; here the scan stops after one round.  
   recommendation: **justify** - The original loops for ever when no place has the shop or icon searched for. The bound (seven days; one round) only replaces a hang; reachable only in modified data.
+- **D-508756** `deliberate-fix` - `src/Darklands.Core/Rules/Storing.cs:54` `Storing.NoRoomMessage`  
+  original: `R035+0x0A46` (1462:0A46, matched)  
+  divergence: own text (the original has none, its Put never refuses): shown by the item store screen when OriginalBehaviour.FixCacheStoreLimit (data safety) refuses a Put; the item stays in the pack.  
+  recommendation: **justify** (checked against the original) - The message of a refused Put: the original has no text for it (its Put never refuses); own text.
 
 #### other (4)
 
@@ -418,11 +426,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R035+0x1350` (1462:1350, matched)  
   divergence: a store read past the file's end reads the heap after its buffer in the original (handle 0's offset is bytes 0..1, a handle past the table a zero offset word or the stores' bytes); an empty store here.  
   deterministic: **no** (checked against the original); action: **keep** - cache_load (R035+0x1350) reads the store at the offset word 2h of a buffer of the file's size (alloc_buffer(ft.size)); an offset or a count that goes past the file's end reads the heap after the buffer. Handles are -1 or what cache_save assigned (1..ncache), whose offsets are inside the file, so it needs a file damaged by the 99th-store overwrite or edited by hand. Keep the empty store.
-- **D-7ca3a3** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:156` `ItemStores.Rewrite`  
+- **D-7ca3a3** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:220` `ItemStores.Rewrite`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   divergence: a store copied from bytes outside the file (that read before the buffer, or past its end) copies heap memory in the original; here such a store is written as its offset reads it. With only the store being saved (one store, the usual first revisit) nothing is copied and the file is the original's; once the header is 101 bytes p starts at store 1 and the copies read the file.  
   deterministic: **partly** (checked against the original); action: **keep** - cache_save of a known store (R035+0x1468) starts its copy at buf + (char)buf[2]: for the 198-byte header of a new or loaded game's file (0xC6) that is offset 0xFFC6 of the buffer's segment, heap memory; every store but the one saved is then copied from there (merle's inn cache bug, groups.io #3470/#3471). With one store nothing is copied and the file is the original's (lockstep cache-revisit agrees); once the header is 101 bytes the copy reads the file. With two or more stores at the first rewrite the copied bytes are heap residue: written here as each store's offset reads it.
-- **D-05b2a4** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:212` `ItemStores.Put`  
+- **D-05b2a4** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:276` `ItemStores.Put`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   divergence: a write past the file's end (an offset word of a file shorter than its offset area) leaves DOS's undefined bytes before it; zeros here.  
   deterministic: **no** (checked against the original); action: **keep** - cache_save writes offset words at (i+1)*2 / (ncache+1)*2 through fseek; a file shorter than that (only a saved game whose tail was cut or edited) is extended by DOS with whatever the clusters held. Zeros here.

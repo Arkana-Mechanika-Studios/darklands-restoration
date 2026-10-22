@@ -75,7 +75,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         finally
         {
             // orig: cache_close R035+0x04BC (1462:04BC) matched: save (or forget an empty store) and leader = DS:89EE; fonts are host state (not modelled).
-            state.ItemStores.Close(place, _store, state.Behaviour);
+            state.ItemStores.Close(place, _store, state.Behaviour, state.Locations);
             Party.LeaderIndex = leaderBefore;
         }
     }
@@ -188,6 +188,12 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         // C: only the list in use and `party[who].nitems == 0` are tested: a row past the pack's end puts its stale entry (Storing.Put).
         if (_usingStore[Member] || PackOf(Member).Stacks == 0)
         {
+            return;
+        }
+        // DIVERGENCE: data safety (OriginalBehaviour.FixCacheStoreLimit): a Put the compact CACHE.TMP layout cannot hold is refused here, with a message, the item staying in the pack.
+        if (!Storing.CanPut(state, state.Here!, _store, Member, index))
+        {
+            page.ShowMessage(Storing.NoRoomMessage);
             return;
         }
         _packCount[Member] = Storing.Put(state, _store, Member, index);
