@@ -92,7 +92,44 @@ public sealed class ItemStores
         {
             return false;
         }
-        return table.Count != 0 || HasStore(place) || Live(place, places).Count < MaxStores;
+        if (!(table.Count != 0 || HasStore(place) || Live(place, places).Count < MaxStores))
+        {
+            return false;
+        }
+        // DIVERGENCE: data safety (FixCacheStoreLimit): a new entry or store that no layout of the live stores can hold within 16-bit offsets and
+        // a file of at most 0xFFFF bytes is refused too (the file is then only ever written in place, see CloseCompact), the item staying in the pack.
+        var stores = LiveStores(place, places, [.. table, new StoredItem(code, quality, 1)]);
+        return LayoutTable(stores) > 0;
+    }
+
+    private List<List<StoredItem>> LiveStores(Location place, IReadOnlyList<Location>? places, List<StoredItem> items)
+    {
+        var stores = new List<List<StoredItem>>();
+        foreach (var h in Live(place, places))
+        {
+            stores.Add(HasStore(place) && h == place.CacheHandle ? items : Read(h) ?? []);
+        }
+        if (!HasStore(place))
+        {
+            stores.Add(items);
+        }
+        return stores;
+    }
+
+    /// <summary>The offset table size a layout of these stores uses (the 126-byte one if they fit it, else the enlarged one), 0 if none keeps every offset and the file size within 0xFFFF.</summary>
+    private static int LayoutTable(List<List<StoredItem>> stores)
+    {
+        var data = stores.Sum(x => 1 + 4 * x.Count);
+        if (stores.Any(x => x.Count > 255) || stores.Count > 254)
+        {
+            return 0;
+        }
+        if (stores.Count <= MaxStores && stores.All(x => x.Count <= MaxEntries) && CompactTableSize + data <= 0xFFFF)
+        {
+            return CompactTableSize;
+        }
+        var table = Math.Max(EmptyFileSize, 2 * stores.Count + 2);
+        return table + data <= 0xFFFF ? table : 0;
     }
 
     private SortedSet<int> Live(Location place, IReadOnlyList<Location>? places) =>
@@ -135,9 +172,9 @@ public sealed class ItemStores
     // store 1 at 126, the stores packed in handle order and nothing after the last. At most 62 stores, 127 entries a store; stores no place refers to are dropped
     // and the places' handles (Location +0x18) renumbered. The original lays out a 198-byte table, whose rewrite loses stores (cbw R035+0x1615), and
     // has no limit (the append at R035+0x1532). Put is refused beyond the limits (CanPut). A file the original itself wrote can already hold more than
-    // 62 live stores or a store of more than 127 entries (or reach 64 KiB): closing in it never fails and loses nothing; the stores are laid out in
+    // 62 live stores or a store of more than 127 entries: closing in it never fails and loses nothing; the stores are laid out in
     // a table large enough for them (the original's 198-byte one, or byte 0 = half the table with 2 bytes a store), a file beyond what the original's own
-    // rewrite handles, as its own files are. A place's handle that names no store (not -1, past the file's count) has nothing to drop: only the handle
+    // rewrite handles, as its own files are. A file whose stores cannot be laid out within 16-bit offsets and 0xFFFF bytes at all is never laid out again, see WriteInPlace. A place's handle that names no store (not -1, past the file's count) has nothing to drop: only the handle
     // is reset to -1, which reads an empty store just as the invalid one does.
     private void CloseCompact(Location place, IReadOnlyList<StoredItem> items, IReadOnlyList<Location>? places)
     {
@@ -165,6 +202,11 @@ public sealed class ItemStores
             stores[map[place.CacheHandle] - 1] = [.. items];
             newHandles.Add((place, map[place.CacheHandle]));
         }
+        if (LayoutTable(stores) == 0)
+        {
+            WriteInPlace(place, items);
+            return;
+        }
         Lay(stores);
         foreach (var (l, handle) in newHandles)
         {
@@ -172,11 +214,29 @@ public sealed class ItemStores
         }
     }
 
+    // DIVERGENCE: data safety (FixCacheStoreLimit): when no layout keeps every store offset and the file size within 16 bits (a file of at most 0xFFFF
+    // bytes: the original computes the next store's position, the file size, in 16 bits at cache_save R035+0x1468, so a size of 0x10000 or more wraps to
+    // 0 or low), the file is not laid out again. The store the screen is left from is written over its old bytes when it is no longer than they are
+    // (a Get only shrinks it, a Put onto an existing entry changes a count; the stale bytes after a shrunk store stay, as in the original's own rewrite,
+    // and no offset moves), else nothing is written. Places' handles stay. No offset past 0xFFFF is ever written; Put of a new entry or store is
+    // refused (CanPut, Storing.NoRoomMessage). Opened and left without a change, the file is byte-identical.
+    private void WriteInPlace(Location place, IReadOnlyList<StoredItem> items)
+    {
+        if (!HasStore(place))
+        {
+            return;
+        }
+        var at = _file[place.CacheHandle * 2] | _file[place.CacheHandle * 2 + 1] << 8;
+        if (at < _file.Count && 4 * items.Count <= 4 * _file[at] && at + 1 + 4 * _file[at] <= _file.Count)
+        {
+            WriteStore(ref at, items);
+        }
+    }
+
     private void Lay(List<List<StoredItem>> stores)
     {
-        var fits = stores.Count <= MaxStores && stores.All(x => x.Count <= MaxEntries)
-            && CompactTableSize + stores.Sum(x => 1 + 4 * x.Count) < 0x10000;
-        var table = fits ? CompactTableSize : Math.Max(EmptyFileSize, 2 * stores.Count + 2);
+        var table = LayoutTable(stores);
+        var fits = table == CompactTableSize;
         _file = [.. new byte[table]];
         _file[0] = (byte)(fits ? CompactTableSize - 2 : table / 2);
         _file[1] = (byte)stores.Count;

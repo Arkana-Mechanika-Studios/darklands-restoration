@@ -233,4 +233,69 @@ public sealed class CacheStoreLimitTests
         Assert.Equal([Item(7)], stores.Open(2, new StoreTable()));
         Assert.Equal([Item(2), Item(22)], stores.Open(3, new StoreTable()));
     }
+
+    // An original file of 81 stores of 200 entries and a last one of the given size, laid out as its append does (a 198-byte table).
+    private static (ItemStores Stores, List<Location> Places) NearFullFile(int lastEntries)
+    {
+        var stores = new ItemStores();
+        var places = Places(83);
+        for (var i = 0; i < 81; i++)
+        {
+            places[i].CacheHandle = stores.Add([.. Enumerable.Range(0, 200).Select(k => new StoredItem(1 + k, 1 + i, 1))]);
+        }
+        places[81].CacheHandle = stores.Add([.. Enumerable.Range(0, lastEntries).Select(k => new StoredItem(1 + k, 99, 2))]);
+        return (stores, places);
+    }
+
+    [Fact]
+    public void AFileJustUnder64KiBIsClosedLosslesslyAndNoNewEntryIsAccepted()
+    {
+        var (stores, places) = NearFullFile(113);
+        Assert.Equal(0xFFFC, stores.File.Length);
+        var original = stores.File;
+        var all = stores.All.Select(x => x.ToList()).ToList();
+        var table = stores.Open(places[3].CacheHandle, new StoreTable());
+        stores.Close(places[3], [.. table], Fix, places);                      // opened, nothing taken
+        Assert.Equal(original, stores.File);
+        Assert.False(stores.CanPut(places[3], places, table, 900, 1, Fix));    // a new entry would pass 0xFFFF
+        Assert.True(stores.CanPut(places[3], places, table, 1, 4, Fix));       // a stack of an entry (item 1, quality 4)
+        Assert.False(stores.CanPut(places[82], places, new StoreTable(), 5, 5, Fix));   // a new store
+        stores.Close(places[3], [.. table.Skip(1)], Fix, places);              // one taken
+        Assert.True(stores.File.Length <= 0xFFFF);
+        for (var i = 0; i < 82; i++)
+        {
+            var expected = i == 3 ? all[i].Skip(1).ToList() : all[i];
+            Assert.Equal(expected, stores.Open(places[i].CacheHandle, new StoreTable()));
+        }
+    }
+
+    [Fact]
+    public void AFileOver64KiBIsNeverLaidOutAgainAndItsStoresStayReadable()
+    {
+        var (stores, places) = NearFullFile(160);                              // the last store starts at 65079 and ends past 0xFFFF
+        var original = stores.File;
+        Assert.True(original.Length > 0xFFFF);
+        var all = stores.All.Select(x => x.ToList()).ToList();
+        var table = stores.Open(places[3].CacheHandle, new StoreTable());
+        stores.Close(places[3], [.. table], Fix, places);                      // opened and left
+        Assert.Equal(original, stores.File);
+        Assert.False(stores.CanPut(places[3], places, table, 900, 1, Fix));    // a new entry is refused
+        Assert.False(stores.CanPut(places[82], places, new StoreTable(), 5, 5, Fix));   // a new store is refused
+        Assert.True(stores.CanPut(places[3], places, table, 1, 4, Fix));       // a stack of an entry may
+        stores.Close(places[3], [.. table.Skip(1)], Fix, places);              // a Get: written over its old bytes, no offset moves
+        Assert.Equal(original.Length, stores.File.Length);
+        Assert.Equal(original[..166], stores.File[..166]);
+        stores.Close(places[81], [.. stores.Open(places[81].CacheHandle, new StoreTable()).Skip(5)], Fix, places);
+        Assert.Equal(original[..166], stores.File[..166]);
+        for (var i = 0; i < 82; i++)
+        {
+            var expected = i == 3 ? all[i].Skip(1).ToList() : i == 81 ? all[i].Skip(5).ToList() : all[i];
+            Assert.Equal(expected, stores.Open(places[i].CacheHandle, new StoreTable()));
+        }
+        Assert.Equal(Enumerable.Range(1, 82), places.Take(82).Select(p => p.CacheHandle));
+        // every place keeps its handle; a place that gives its store up forgets it as always
+        stores.Close(places[4], [], Fix, places);
+        Assert.Equal(-1, places[4].CacheHandle);
+        Assert.Equal(original.Length, stores.File.Length);
+    }
 }

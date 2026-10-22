@@ -29,13 +29,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:160` `GameState.HanseStanding`  
   original: `R029+0x4650` (0E76:4650, draft)  
   why: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0).
-- **B-85e0e4** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:110` `ItemStores.Close`  
+- **B-85e0e4** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:147` `ItemStores.Close`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   why: OriginalBehaviour.FixInnCacheRewrite - a known store's rewrite (cache_save R035+0x1468) lays the file out with a 101-byte header over offsets of a 198-byte one.
-- **B-3de49c** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:111` `ItemStores.Close`  
+- **B-3de49c** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:148` `ItemStores.Close`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   why: OriginalBehaviour.FixCacheStoreLimit - the append (cache_save(-1) R035+0x1468, the offset written at R035+0x1532) has no limit: the 99th store's offset lands at 198..199, over store 1's count byte and its first item.
-- **B-cf6bdb** `bug`, no fix flag - `src/Darklands.Core/Items/ItemStores.cs:217` `ItemStores.Rewrite`  
+- **B-cf6bdb** `bug`, no fix flag - `src/Darklands.Core/Items/ItemStores.cs:277` `ItemStores.Rewrite`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   why: the rewrite finds store 1 by the signed low byte of its offset (p = buf + (signed char)buf[2], cbw R035+0x1615 after the load at R035+0x15A2): with store 1 at 0x80 or later (a table of 128 bytes or more, the 198-byte one of a game's file too) the other stores are copied from the wrong bytes; and it reopens the file without truncating it (R035+0x15DD, mode 1), so bytes left after a shrunk store stay and a store appended after them is later copied into an earlier one. The compact layout (126-byte table, store 1 at 126) avoids the first; the second is reproduced.
 - **B-9224b7** `bug`, no fix flag - `src/Darklands.Core/Rules/Brewing.cs:149` `BrewingBench.TakeFromParty`  
