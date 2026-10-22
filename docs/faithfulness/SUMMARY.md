@@ -79,12 +79,12 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 5,396 functions the oracles enter | 74.9% (38,969 / 52,013) | 65.5% (26,815 / 40,960) |
-| **every function the C# implements (9,281)** | | **60.9% (26,033 / 42,782)** |
+| the 5,408 functions the oracles enter | 74.8% (39,127 / 52,304) | 65.3% (26,932 / 41,264) |
+| **every function the C# implements (9,281)** | | **61.1% (26,146 / 42,782)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 26,033 against 26,815 exercised. By area:
+differ slightly on the resident code, hence 26,146 against 26,932 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
@@ -92,20 +92,20 @@ differ slightly on the resident code, hence 26,033 against 26,815 exercised. By 
 | rules | 316 / 358 | 1,779 / 2,584 | 69% |
 | battles (tactical combat) | 252 / 314 | 4,970 / 7,516 | 66% |
 | travel (overland map) | 23 / 24 | 602 / 982 | 61% |
-| screens (inventory, barter, creation ...) | 166 / 202 | 3,371 / 6,070 | 56% |
-| resident code | 131 / 160 | 903 / 1,644 | 55% |
+| screens (inventory, barter, creation ...) | 177 / 202 | 3,483 / 6,070 | 57% |
+| resident code | 131 / 160 | 904 / 1,644 | 55% |
 | card engine | 34 / 36 | 376 / 686 | 55% |
 | card scripts | 4,037 / 7,949 | 7,182 / 14,614 | 49% |
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-27,189 items of the functions the oracles enter were never exercised: 1,206 are justified in
+27,509 items of the functions the oracles enter were never exercised: 1,201 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 25,983 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 26,308 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 12,100), the screens (about 4,100), the battles (about 3,600), the
+lie in the card scripts (about 12,100), the screens (about 4,400), the battles (about 3,600), the
 battlefield generators (about 3,000), the rules (about 800) and the overland map (about 700).
 
 ## Card oracle
@@ -189,7 +189,7 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-103 runs, 101 agreeing; the other two for the reasons listed above. The last open lead, a group move at
+104 runs, 102 agreeing; the other two for the reasons listed above. The last open lead, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).

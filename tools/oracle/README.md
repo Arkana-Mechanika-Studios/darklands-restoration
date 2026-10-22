@@ -38,6 +38,15 @@ side. The inputs a recording already covers by value (the steps, a fight's reque
 edited freely on the compare side: they are hashed as data, not as code. A change to an original-side file expires every recording; a change
 to a compare-side file expires none.
 
+## Which runs to make
+
+* A change to the C# only: `rerun_all.py <out>` in its default mode (the original replayed; live only for a recording whose key
+  expired).
+* A change to the tester's original side (`orig_side.py`, `battle_orig.py`, `dosmachine.py`, `run_unit.py`) or to a session's
+  inputs (steps, saved game, a fight's request): the same default mode; the tool runs live exactly the runs whose keys expired.
+* A full `--live` pass: only before a release, and as a periodic safety check (weekly, or after many original-side changes).
+* Iterating on one lead: only the affected session or fight (`--sessions` / `--fights`).
+
 **A full live pass is required before every release** (and periodically): `rerun_all.py <out> --live --workers 12`, then
 `rerun_all.py <out2> --replay-only` and `diff_runs.py <out> <out2>` (no differences). The recording only says what the original did; the
 live pass is the proof that it still does. `--live --no-snapshot` is the strictest form (every run from the beginning).
