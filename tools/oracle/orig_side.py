@@ -19,44 +19,45 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from dosmachine import DS, REG, SENTINEL_SEG, Machine, Stop, linear  # noqa: E402
+from dosmachine import BASE, DS, P, REG, SENTINEL_SEG, Machine, Stop, linear  # noqa: E402
 
 BYTES_PER_MS = 200                 # the machine's speed: executed code bytes per millisecond
 EMS_SEG, FRAME, EMS_PAGES = 0xF800, 0xD000, 256
-DRIVER_SEG, DRIVER_FIRST, DRIVER_LAST = 0x047C, 0x04C7, 0x0791
-DRIVER_LOAD, DRIVER_SLOTS = (0x047C, 0x07CE), (0x047C, 0x08C8)
-MAIN = (0x0E76, 0x0022)             # R000+0x0022
-SAVE_RECT = (0x047C, 0x04D5)
-EMS_CHECK, MOUSE_INIT = (0x05F8, 0x0064), (0x047C, 0x11F6)
+# Segments are the link-time ones of the notation (root 047C:0xxx, R014 = 0E76) put through P: the segment the image is loaded at is added
+DRIVER_SEG, DRIVER_FIRST, DRIVER_LAST = P(0x047C), 0x04C7, 0x0791
+DRIVER_LOAD, DRIVER_SLOTS = (P(0x047C), 0x07CE), (P(0x047C), 0x08C8)
+MAIN = (P(0x0E76), 0x0022)          # R000+0x0022
+SAVE_RECT = (P(0x047C), 0x04D5)
+EMS_CHECK, MOUSE_INIT = (P(0x05F8), 0x0064), (P(0x047C), 0x11F6)
 MOUSE_X, MOUSE_Y, MOUSE_BUTTONS, MOUSE_PRESSES, MOUSE_SHIFT, MOUSE_ON = 0x6EEC, 0x6EEE, 0x6EF0, 0x6EF2, 0x6EFA, 0x6EFB
-KEYBOARD_FLAGS = 0x417              # 0040:0017, the BIOS keyboard flags
-COPY_PROTECTION = (0x1462, 0x0000)  # R041+0x0000 (thunk 09C0:1FD1)
-CHAR_WIDTH, FONT_HEIGHT = (0x047C, 0x04E3), (0x047C, 0x051B)
+KEYBOARD_FLAGS = (0x40, 0x17)       # 0040:0017, the BIOS keyboard flags (Shift, Ctrl, Alt held): the BIOS data area
+COPY_PROTECTION = (P(0x1462), 0x0000)  # R041+0x0000 (thunk 09C0:1FD1)
+CHAR_WIDTH, FONT_HEIGHT = (P(0x047C), 0x04E3), (P(0x047C), 0x051B)
 HOTSPOTS = 0xE96E                   # the card menu's hot spots: count, highlight, width, x, y[20], height[20] (bytes)
-PIC_OPEN, PIC_CLOSE = (0x047C, 0x05BC), (0x047C, 0x05AE)
-KEY_PRESSED, GET_KEY = (0x047C, 0x073D), (0x047C, 0x0744)   # driver slots: a key waiting? / the next key (scan << 8 | char)
+PIC_OPEN, PIC_CLOSE = (P(0x047C), 0x05BC), (P(0x047C), 0x05AE)
+KEY_PRESSED, GET_KEY = (P(0x047C), 0x073D), (P(0x047C), 0x0744)   # driver slots: a key waiting? / the next key (scan << 8 | char)
 CARD, HOLDRAND = 0xA772, 0x7B20     # the card being run; the random generator's state (MSC holdrand)
 SAVE_ITEM, LOAD_ITEM = 0x9920, 0x9934  # the Game menu's Save Game / Load Saved Game flags (1 on), which hot_keys obeys
-SAV_WRITE = (0x1462, 0x2ACE)        # R037+0x2ACE (comment): the saved-game writer
+SAV_WRITE = (P(0x1462), 0x2ACE)        # R037+0x2ACE (comment): the saved-game writer
 MACHINE_STATE = ("resident", "trampolines", "call_stack", "mcbs", "dta", "scratch_sp", "count", "next_irq", "irqs", "pit_divisor",
-                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "ivt", "waits", "pic_size", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases")
+                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "waits", "pic_size", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases")
 IDLE_MS = 3000                      # and as long without a random number drawn, a card change or a step
 IDLE_POLLS = 2000
 BATTLE_PAUSE_PASSES = 296           # the battle's start pause (it waits for Space, the combat clock standing still): the key is given after this many passes at one
                                     # clock value, the C# host's pause under the script's wait:300 (298 passes at one value with one more set-up tick); the original's
                                     # ms-based idle test would give it after however many passes IDLE_MS takes at the speed the text drawn in them runs
-BATTLE_PASS_LIN = 0x0E76 * 16 + 0x3166   # R014+0x3166 combat_input, called once a pass of the battle's loop
-CLEAR_TIMERS_VEC = (0x09C0, 0x1C61)  # R014+0x010B's vector to R020+0x06B6 (combat_state_clear: the combat clock back to 0)
-STOCK_LOOP = (0x1462, 0x0A4C, 0x0AE2)   # R032+0x0A4C..0x0AE2: draw_barter_screen's stock listing (the loop that calls shop_has_item for every item)
+BATTLE_PASS_LIN = P(0x0E76) * 16 + 0x3166   # R014+0x3166 combat_input, called once a pass of the battle's loop
+CLEAR_TIMERS_VEC = (P(0x09C0), 0x1C61)  # R014+0x010B's vector to R020+0x06B6 (combat_state_clear: the combat clock back to 0)
+STOCK_LOOP = (P(0x1462), 0x0A4C, 0x0AE2)   # R032+0x0A4C..0x0AE2: draw_barter_screen's stock listing (the loop that calls shop_has_item for every item)
 STOCK_LOOP_STACK = 0x400             # the dead stack below the loop's SP that a timer interrupt there leaves as it found it
-ENEMY_TURN_VEC = (0x09C0, 0x1C43)    # R014+0x0280's vector to R018+0x0706 (the enemies' turn), after the set-up's file loads
+ENEMY_TURN_VEC = (P(0x09C0), 0x1C43)    # R014+0x0280's vector to R018+0x0706 (the enemies' turn), after the set-up's file loads
 WALL_DRAWS = ((0x8381, 0x838B), (0x8438, 0x8442), (0x84AE, 0x84BE))   # R014+0x827A: push 2; call random_n; (after)
 NEXT_TICK = 0xD9E4                 # the clock value of the battle's next combat tick (set at R014+0x0311)
 COMBAT_CLOCK = 0x07D4               # the combat clock the timer callback counts while the battle runs
 ACTIVATIONS_AT = 0xDA4F     # DS word: the combat clock of the next activations check (R014+0x0332 sets it to the clock + 120)
-TIMER_CALLBACK = (0x047C, 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
+TIMER_CALLBACK = (P(0x047C), 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
 BATTLE_QUIET = 5_000_000            # bytes of code without the time-based timer after a battle pass began
-POLL_POINTS = {0x00000}             # root 0000:0000, the menu bar's handler: every screen's loop calls it each pass
+POLL_POINTS = {BASE}                # root 0000:0000, the menu bar's handler: every screen's loop calls it each pass
 BWAIT_ACTUAL: list[int] = []         # per bwait step in script order: the passes the original really waited (run_original fills it; the C# waits as long)
 COMBATANTS, RECORD, COUNT = 0x9C55, 0x80, 13   # DS:9C55, 13 combatant records of 0x80 bytes
 CLICK_MS = 300                      # how long a scripted click holds the left button                   # key polls with no key before the script's next key is due
@@ -74,19 +75,19 @@ class Session(Machine):
         # a sound driver would be loaded by the stubbed misc.exe slots and unloaded (freed) by every battle start (R002+0x0025)
         self.vfs.deleted.add("config.drk")
         self.driver_calls: dict[str, int] = {}
-        # The root image sits at linear 0 (link-time addresses): the vectors cannot live at 0000:0000. They are kept here
-        # (INT 21h 25h/35h, the timer interrupt); the two readers of the vector table are given what they would find.
+        # The vector table (0000:0000) and the BIOS data area are the machine's (dosmachine.py): every vector an IRET (F800:0030) at first,
+        # the timer interrupt the BIOS tick (hooked) and IRET, INT 67h the EMM's entry. The game's own installs (INT 21h 25h and the direct
+        # writes of root 044A:01EC / 044A:0214, INT 9 at 0000:0024) change the table as on a DOS machine; its keyboard handler is never run.
         self.write(EMS_SEG, 0, bytes([0xCD, 0x67, 0xCF]))      # int 67h; iret
         self.write(EMS_SEG, 0x0A, b"EMMXXXX0")
         self.write(EMS_SEG, 0x122, bytes([0xFF] * 4))       # the list of lists' device chain: empty
         self.write(EMS_SEG, 0x30, bytes([0xCF]))                # IRET: every vector at first
         self.write(EMS_SEG, 0x40, bytes([0x90, 0xCF]))          # INT 8: the BIOS tick (hooked), IRET
-        self.ivt = {n: (EMS_SEG, 0x30) for n in range(256)}
-        self.ivt[8] = (EMS_SEG, 0x40)
-        self.ivt[0x67] = (EMS_SEG, 0)
+        self.set_vector(8, EMS_SEG, 0x40)
+        self.set_vector(0x67, EMS_SEG, 0)
         # root 05F8: the EMS functions call the far pointer at 05F8:000E, first 05F8:0012 (EMS check, then the int 67h
         # vector into the pointer): the pointer is the vector at once, and the check (05F8:0064) passes (DS:0942 = 0)
-        self.write(0x05F8, 0x0E, struct.pack("<HH", 0, EMS_SEG))
+        self.write(P(0x05F8), 0x0E, struct.pack("<HH", 0, EMS_SEG))
         self.stub(*EMS_CHECK, lambda m: (m.put_word(DS, 0x942, 0), (0, 0))[1], "ems_check")
         # root 047C:11F6, the mouse check (the int 33h vector, then the driver): present, 320 x 200 (shift 1), at the centre
         self.stub(*MOUSE_INIT, self._mouse_init, "mouse_init")
@@ -103,7 +104,7 @@ class Session(Machine):
         # the lazy slots' far pointers (called directly too, e.g. `lcall es:[0531]` in root 047C:1354): a RETF at F800:0050
         self.write(EMS_SEG, 0x50, bytes([0xCB]))
         for off in self.driver_slots():
-            if self.rt.root[DRIVER_SEG * 16 + off] == 0xE8:
+            if self.root[DRIVER_SEG * 16 - BASE + off] == 0xE8:
                 self.write(DRIVER_SEG, off + 3, struct.pack("<HH", 0x50, EMS_SEG))
         for off in [o for o in self.driver_slots() if (DRIVER_SEG, o) not in (KEY_PRESSED, GET_KEY, SAVE_RECT, PIC_OPEN, PIC_CLOSE, CHAR_WIDTH, FONT_HEIGHT)]:
             self.stub(DRIVER_SEG, off, self._driver("047C:%04X" % off), "driver 047C:%04X" % off)
@@ -153,21 +154,10 @@ class Session(Machine):
         self.hook(STOCK_LOOP[0], STOCK_LOOP[1], lambda m: setattr(m, "in_stock_loop", True), record="R032")
         self.hook(STOCK_LOOP[0], STOCK_LOOP[2], lambda m: setattr(m, "in_stock_loop", False), record="R032")
         self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._button_read, begin=DS * 16 + MOUSE_BUTTONS, end=DS * 16 + MOUSE_BUTTONS + 1)
-        # the BIOS keyboard flags (0040:0017: Shift, Ctrl, Alt held; R031+0x10AE tests them: give one against give the stack) lie at linear
-        # 0x417, inside the root image's code here: a read gives 0 (no modifier held), the code byte is put back at the next block
-        self._flags_code = None
-        self.shift = 0                  # shift:on gives R031's flags test the two Shift bits (0040:0017 & 3), shift:off none
-        self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._flags_read, begin=KEYBOARD_FLAGS, end=KEYBOARD_FLAGS)
-        # the game's own writes to the vector table (the keyboard handler's install and removal, root 044A:0x1EC and root 044A:0x214: INT 9 at 0000:0024)
-        # land on root code, which sits at linear 0 here: they are undone at the next block (the table itself is kept apart, see above; the
-        # game's handlers are never run, the keys come from the script). Without it the menu bar's handler (root 0000:0000+0x24) ran the
-        # vector's bytes as code from the first map screen on and added to DS:50AE, the file name "charactr.tmp" of the battle's start
-        # not the first four bytes (INT 0): the C runtime's divide routine (root 047C:0B94) installs its divide-error handler there (047C:0D41) and the divide that follows needs it
-        self._vector_writes: list = []
-        # opt-in ("rootguard:on", the first line of a script): the restore splits the translated block, which moves the original's clock and so
-        # the random numbers of every session recorded without it (university: its teacher); battle_oracle.py leaves it off
-        self.vector_guard = False
-        self.uc.hook_add(unicorn.UC_HOOK_MEM_WRITE, self._vector_write, begin=4, end=0x3FF)
+        # the BIOS keyboard flags (0040:0017: Shift, Ctrl, Alt held; R031+0x10AE and R016+0x0294 test them: give one against give the stack) are
+        # the BIOS data area's byte, 0 (nothing held) until the script's shift:on gives the two Shift bits
+        self.shift = 0
+        self.write(*KEYBOARD_FLAGS, bytes([self.shift]))
         self._buffered = False
         self.idle_mark = None
         self.idle_since = 0
@@ -189,7 +179,7 @@ class Session(Machine):
     def driver_slots(self) -> list[int]:
         """The slot table misc.exe fills: `jmp far 0:0` (EA 00 00 00 00) or `call 048A` (lazy entries) between 047C:04C7 and
         the driver loader."""
-        root, base = self.rt.root, DRIVER_SEG * 16
+        root, base = self.root, DRIVER_SEG * 16 - BASE
         out = []
         for off in range(DRIVER_FIRST, DRIVER_LOAD[1]):
             b = root[base + off:base + off + 5]
@@ -212,15 +202,6 @@ class Session(Machine):
         self.releases[0] += 1
         self.waits = 0
         self.idle_since = self.ms
-
-    def _flags_read(self, uc, access, address, size, value, data):
-        # only R031's test (R031+0x10AE) and the battle's arrow keys' (R016+0x0294, an arrow key moves the member unless Shift is held, else it
-        # scrolls the view) get the zero: the card engine's Shift test (R043+0x21D4, 150B:1BB8/1BBE, polled ~3900 times in the
-        # Alt-L reload) and the start-up read (044A:01A2) must see the code byte, and the write splits the translated block read in, which
-        # counts its remainder twice and so moves the clock of the original
-        if self._flags_code is None and self.function_at(self.reg("CS") * 16 + self.reg("IP")).startswith(("R031+", "R016+")):
-            self._flags_code = bytes(uc.mem_read(KEYBOARD_FLAGS, 1))
-            uc.mem_write(KEYBOARD_FLAGS, bytes([self.shift]))
 
     def _button_read(self, uc, access, address, size, value, data):
         if self.held:
@@ -304,6 +285,7 @@ class Session(Machine):
                 self.capture(value)
             elif kind == "shift":
                 self.shift = 3 if value == "on" else 0
+                self.write(*KEYBOARD_FLAGS, bytes([self.shift]))
         if not self.script:
             raise Stop("script ended")
         kind, value = self.script[0]
@@ -453,10 +435,11 @@ class Session(Machine):
                 and self.call_stack and self.call_stack[-1].startswith("R030+")
                 and self.word(self.reg("SS"), self.reg("SP")) in (0x0545, 0x0572)):
             return (0, 0)
-        # likewise the card menu's own look (R043+0x1BD2, return 150B:11DC, which only knows Enter, Space and the cursor keys and drops the rest) comes after the
-        # menu bar's pass in the same loop: an Alt key the script has due waits for hot_keys' look of the next pass (menubar: Alt-O)
+        # likewise the card menu's own look (R043+0x1BD2, return 150B:11DC, which only knows Enter, Space and the cursor keys and drops the rest) and the
+        # "press a key" wait's (wait_continue R043+0x32B6, return 150B:288E, which takes any key to go on) come after the menu bar's pass in the same
+        # loop: an Alt key the script has due waits for hot_keys' look of the next pass (menubar: Alt-O; save-load: Alt-L after the rest)
         if (due and due[0] == "key" and due[1].lower().startswith("alt")
-                and self.word(self.reg("SS"), self.reg("SP") + 2) == 0x150B and self.word(self.reg("SS"), self.reg("SP")) == 0x11DC):
+                and self.word(self.reg("SS"), self.reg("SP") + 2) == P(0x150B) and self.word(self.reg("SS"), self.reg("SP")) in (0x11DC, 0x288E)):
             return (0, 0)
         k = self._next_key()
         return (0 if k is None else k, 0)
@@ -497,21 +480,7 @@ class Session(Machine):
     def _bios_tick(self, m):
         self.put_word(0x40, 0x6C, self.word(0x40, 0x6C) + 1)
 
-    def _vector_write(self, uc, access, address, size, value, _):
-        if not self.vector_guard:
-            return
-        self._vector_writes.append((address, size))
-
     def _on_block(self, uc, address, size, _):
-        if self._vector_writes:
-            for at, n in self._vector_writes:
-                uc.mem_write(at, bytes(self.rt.root[at:at + n]))
-                uc.ctl_remove_cache(at, at + n)
-                self._decoded = {k: v for k, v in self._decoded.items() if not (at <= k < at + n)}
-            self._vector_writes = []
-        if self._flags_code is not None:
-            uc.mem_write(KEYBOARD_FLAGS, self._flags_code)
-            self._flags_code = None
         if (self.count >= self.next_irq and self.uc.reg_read(REG["EFLAGS"]) & 0x200 and address not in self._hooked
                 and address < SENTINEL_SEG * 16):
             self.next_irq += self._period()
@@ -524,7 +493,7 @@ class Session(Machine):
                 self._restore_stack = (address, ss, self.reg("SP"), self.read(ss, (self.reg("SP") - STOCK_LOOP_STACK) & 0xFFFF, STOCK_LOOP_STACK))
             self.write(ss, sp, struct.pack("<HHH", ip, cs, self.uc.reg_read(REG["EFLAGS"]) & 0xFFFF))
             self.set_reg("SP", sp)
-            seg, off = self.ivt[8]
+            seg, off = self.vector(8)
             self.uc.reg_write(REG["EFLAGS"], self.uc.reg_read(REG["EFLAGS"]) & ~0x300)
             self.uc.reg_write(REG["CS"], seg)
             self.uc.reg_write(REG["IP"], off)
@@ -610,7 +579,7 @@ class Session(Machine):
 
     def valid(self, lin: int) -> bool:
         # int86 runs `int nn; retf` built on the stack (root 06A1:1C58); root 0000:0000 (the menu bar) is code too
-        return DS * 16 <= lin < DS * 16 + 0x10000 or lin < len(self.rt.root) or super().valid(lin)
+        return DS * 16 <= lin < DS * 16 + 0x10000 or super().valid(lin)
 
     # ---- interrupts --------------------------------------------------------------------
     def _on_int(self, uc, intno, _):
@@ -631,14 +600,6 @@ class Session(Machine):
                 sec = 12 * 3600 + ms // 1000
                 self.set_reg("CX", ((sec // 3600 % 24) << 8) | (sec // 60 % 60))
                 self.set_reg("DX", ((sec % 60) << 8) | (ms // 10 % 100))
-                return
-            if ah == 0x25:
-                self.ivt[ax & 0xFF] = (self.reg("DS"), self.reg("DX"))
-                return
-            if ah == 0x35:
-                seg, off = self.ivt[ax & 0xFF]
-                self.uc.reg_write(REG["ES"], seg)
-                self.set_reg("BX", off)
                 return
             if ah == 0x52:
                 self.uc.reg_write(REG["ES"], EMS_SEG)
@@ -858,8 +819,9 @@ def key_code(name: str) -> int:
         return (ord(c) - ord("1") + 2) << 8 | ord(c)
     return {"0": 0x0B30, " ": 0x3920}[c]
 
-CARD_CALL = (0x03A1, 0x02CC)        # the main loop's `call far es:[bx]` of the card table (DS:A772 = the card)
-SRAND = (0x06A1, 0x29A4)
+CARD_CALL = (P(0x03A1), 0x02CC)        # the main loop's `call far es:[bx]` of the card table (DS:A772 = the card)
+SRAND = (P(0x06A1), 0x29A4)
+SRAND_CLOCK_CALL = bytes([0x9A, 0xA8, 0x23]) + struct.pack("<H", P(0x06A1))   # call far 06A1:23A8 (time), five bytes before the return into the srand call
 
 
 class ClockTrace(list):
@@ -907,9 +869,9 @@ def clock_jumps(lines):
 def session_start(steps) -> tuple[dict, int]:
     """(the key parts, the number of script steps) up to a session's snapshot point: the boot and, when the script loads a saved game first
     (key t, key l), the load; otherwise the start screen."""
-    script = [(k, v) for k, v in steps if k != "rootguard"]
+    script = list(steps)
     n = 3 if len(script) >= 3 and script[0] == ("key", "t") and script[1][0] == "wait" and script[2] == ("key", "l") else 0
-    return {"prefix": script[:n], "rootguard": ("rootguard", "on") in steps}, n
+    return {"prefix": script[:n]}, n
 
 
 def trace_state(t) -> dict:
@@ -932,8 +894,8 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         # it was (the C# makes those draws: it then parts from the original at the battle's first frame)
         kept = {}
         for before, after in WALL_DRAWS:
-            s.hook(0x0E76, before, lambda m: kept.__setitem__("r", m.read(DS, HOLDRAND, 4)), record="R014")
-            s.hook(0x0E76, after, lambda m: m.write(DS, HOLDRAND, kept["r"]), record="R014")
+            s.hook(P(0x0E76), before, lambda m: kept.__setitem__("r", m.read(DS, HOLDRAND, 4)), record="R014")
+            s.hook(P(0x0E76), after, lambda m: m.write(DS, HOLDRAND, kept["r"]), record="R014")
     if save:
         s.vfs.put("saves/dksave0.sav", save.read_bytes())
         if save.with_suffix(".BSV").exists():
@@ -942,22 +904,19 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         # a session from the start screen without a saved game: the character creation reads SAVES\DEFAULT (R037+0x4184), hidden from the game folder
         s.vfs.put("saves/default", (Path(game) / "SAVES" / "DEFAULT").read_bytes())
     s.script = list(steps)
-    if ("rootguard", "on") in s.script:
-        s.vector_guard = True
-    s.script = [(k, v) for k, v in s.script if k != "rootguard"]
     s.battle_trace = battle_trace
     s.battle_pause = BATTLE_PAUSE_PASSES
     if getattr(battle_trace, "records", False):
         battle_trace.session = s
     if isinstance(battle_trace, ClockTrace):
-        s.hook(0x1DB7, 0x0D36, lambda m: battle_trace.phase_clocks.append((-1, m.word(DS, COMBAT_CLOCK))), record="R014")
-        s.hook(0x0E76, 0x2A4A, lambda m: battle_trace.phase_clocks.append((-2, m.word(DS, COMBAT_CLOCK))), record="R014")
-        s.hook(0x06A1, 0x29B6, lambda m: battle_trace.draw_clocks.append(m.word(DS, COMBAT_CLOCK)))
+        s.hook(P(0x1DB7), 0x0D36, lambda m: battle_trace.phase_clocks.append((-1, m.word(DS, COMBAT_CLOCK))), record="R014")
+        s.hook(P(0x0E76), 0x2A4A, lambda m: battle_trace.phase_clocks.append((-2, m.word(DS, COMBAT_CLOCK))), record="R014")
+        s.hook(P(0x06A1), 0x29B6, lambda m: battle_trace.draw_clocks.append(m.word(DS, COMBAT_CLOCK)))
     seeds = []
     def srand(m):
         # a clock seed when the call follows `call time` (06A1:23A8; push ax): srand((unsigned)time(0)); other seeds come from the game
         ret = linear(m.word(m.reg("SS"), m.reg("SP") + 2), m.word(m.reg("SS"), m.reg("SP")))
-        clock = bytes(m.uc.mem_read(ret - 14, 5)) == bytes([0x9A, 0xA8, 0x23, 0xA1, 0x06])
+        clock = bytes(m.uc.mem_read(ret - 14, 5)) == SRAND_CLOCK_CALL
         if clock:
             seeds.append(m.arg(0))
         m.log.append("srand %d%s at %d ms in %s" % (m.arg(0), "" if clock else " (not the clock)", m.ms, " < ".join(m.call_stack[-2:])))

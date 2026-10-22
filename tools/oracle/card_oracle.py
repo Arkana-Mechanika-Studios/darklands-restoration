@@ -42,7 +42,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from dosmachine import DS, TRAMPOLINE_SEG as TRAMPOLINE, Machine, Stop, linear  # noqa: E402
+from dosmachine import DS, P, TRAMPOLINE_SEG as TRAMPOLINE, Machine, Stop, linear  # noqa: E402
 import savdiff  # noqa: E402
 from unicorn import UC_HOOK_MEM_READ  # noqa: E402
 from unicorn.x86_const import UC_X86_REG_CS, UC_X86_REG_IP  # noqa: E402
@@ -50,7 +50,7 @@ from unicorn.x86_const import UC_X86_REG_CS, UC_X86_REG_IP  # noqa: E402
 # ---- DGROUP ---------------------------------------------------------------------------------
 CUR_LOC, CARD, NEXT_CARD, HOLDRAND = 0x907E, 0xA772, 0xE48A, 0x7B20
 PREV_SCREEN, CARD_BEFORE_PREVIOUS, MAP_LEAVE = 0xA88D, 0xA88F, 0xA891
-ADVANCE_HOURS = (0x1367, 0x05C8)
+ADVANCE_HOURS = (P(0x1367), 0x05C8)
 CITY_REC, CITY_DESC = 0x9785, 0x978B
 OPT_ON, OPT_FN, OPT_FLAGS = 0xE99C, 0xEA14, 0xEE76
 CARD_ITEMS, CARD_SAINTS = 0xEE43, 0xEE4B
@@ -70,20 +70,20 @@ BANKERS = 0x4BB6
 REPORT_SKILLS = 0x26BC
 SAINT_MESSAGES = 0x01BD             # "show saintly changes" (Alt-C)
 PARTY, PARTY_SIZE = 0x9C69, 0xA67E
-CARD_TABLE = (0x2DAE, 0x0000)
+CARD_TABLE = (P(0x2DAE), 0x0000)
 SAVED = "saves/dksave0.sav".replace("/", "\\")   # what the original's writer creates (the folder is empty)
 # card engine (R043 150B) and services
-CARD_LOAD, CARD_LOAD_NEAR, MSG_LOAD = (0x150B, 0x000A), (0x150B, 0x0110), (0x150B, 0x020E)
-CARD_TEXT, CARD_OPTIONS, TEXT_EXPAND, CARD_MENU = (0x150B, 0x03B0), (0x150B, 0x049A), (0x150B, 0x06FE), (0x150B, 0x1142)
-HOURGLASS = (0x150B, 0x2A04)
-SAVE_RECT = (0x047C, 0x04D5)        # gfx_save_rect (screen under a box -> the segment of a DOS block)
-MESSAGE_BOX = (0x1367, 0x0C30)
-FILM_PAN = (0x030B, 0x0004)        # root: plays <name>.PAN (the films), presentation
-SHOW_MESSAGE = (0x0000, 0x24BC)     # show_message (text, ticks): a box for a while
-HAS_ITEM, MEMBER_BIT = (0x0E76, 0x118E), (0x0E76, 0x1260)
-RAND = (0x06A1, 0x29B6)
-TIME = (0x06A1, 0x23A8)             # time(long *)
-WORLD_LOAD, SAV_LOAD, SAV_WRITE = (0x1462, 0x0100), (0x1C7D, 0x0D24), (0x1462, 0x2ACE)
+CARD_LOAD, CARD_LOAD_NEAR, MSG_LOAD = (P(0x150B), 0x000A), (P(0x150B), 0x0110), (P(0x150B), 0x020E)
+CARD_TEXT, CARD_OPTIONS, TEXT_EXPAND, CARD_MENU = (P(0x150B), 0x03B0), (P(0x150B), 0x049A), (P(0x150B), 0x06FE), (P(0x150B), 0x1142)
+HOURGLASS = (P(0x150B), 0x2A04)
+SAVE_RECT = (P(0x047C), 0x04D5)        # gfx_save_rect (screen under a box -> the segment of a DOS block)
+MESSAGE_BOX = (P(0x1367), 0x0C30)
+FILM_PAN = (P(0x030B), 0x0004)        # root: plays <name>.PAN (the films), presentation
+SHOW_MESSAGE = (P(0x0000), 0x24BC)     # show_message (text, ticks): a box for a while
+HAS_ITEM, MEMBER_BIT = (P(0x0E76), 0x118E), (P(0x0E76), 0x1260)
+RAND = (P(0x06A1), 0x29B6)
+TIME = (P(0x06A1), 0x23A8)             # time(long *)
+WORLD_LOAD, SAV_LOAD, SAV_WRITE = (P(0x1462), 0x0100), (P(0x1C7D), 0x0D24), (P(0x1462), 0x2ACE)
 
 
 def zero(m):
@@ -91,7 +91,7 @@ def zero(m):
 
 
 # Presentation and input the card engine and the rules reach: they return at once with the value
-# given (name -> (segment, offset, AX)). Everything else runs from the original bytes.
+# given (name -> (link-time segment, offset, AX)). Everything else runs from the original bytes.
 PRESENTATION = {
     # root 0000: menu bar, party panel, boxes, keys
     "menu_bar_run": (0x0000, 0x0000, 0), "party_panel_frames": (0x0000, 0x1588, 0), "party_panel_rows": (0x0000, 0x1716, 0),
@@ -128,14 +128,14 @@ PRESENTATION = {
     "battle_restore_vec": (0x09C0, 0x1B17, 0), "battle_save_vec": (0x09C0, 0x1B21, 0),
     "mem_log": (0x1462, 0x0000, 0),
 }
-DRAW_TEXT_WRAPPED = (0x0265, 0x0134)
+DRAW_TEXT_WRAPPED = (P(0x0265), 0x0134)
 # the full screens and the world's moves the cards reach (recorded; the C# OracleScreens records its own)
-BARTER, CAMP, ITEM_STORE = (0x0E76, 0x21AA), (0x0E76, 0x222A), (0x0E76, 0x225C)   # R029 wrappers (screen + card redraw)
-PRAYER = (0x1462, 0x0000)          # R034 saint prayer screen (thunk 09C0:1EAF): (who, saint, 1) -> result
-BATTLE_RUN = (0x0E76, 0x0000)      # R002 battle_run (thunk 09C0:18BF)
-CARDS_SHUTDOWN, CARDS_STARTUP = (0x1462, 0x054E), (0x1462, 0x078E)   # R043: the world to locs.tmp/events.tmp and back
+BARTER, CAMP, ITEM_STORE = (P(0x0E76), 0x21AA), (P(0x0E76), 0x222A), (P(0x0E76), 0x225C)   # R029 wrappers (screen + card redraw)
+PRAYER = (P(0x1462), 0x0000)          # R034 saint prayer screen (thunk 09C0:1EAF): (who, saint, 1) -> result
+BATTLE_RUN = (P(0x0E76), 0x0000)      # R002 battle_run (thunk 09C0:18BF)
+CARDS_SHUTDOWN, CARDS_STARTUP = (P(0x1462), 0x054E), (P(0x1462), 0x078E)   # R043: the world to locs.tmp/events.tmp and back
 BATTLE_BYTE, BATTLE_RESULT = 0x907A, 0xA893   # DS:907A (cleared by battle_run), DS:A893
-SIDE_MESSAGE = (0x150B, 0x1F40)     # (who, colour): msg_buf beside a member's portrait, wait for a key
+SIDE_MESSAGE = (P(0x150B), 0x1F40)     # (who, colour): msg_buf beside a member's portrait, wait for a key
 
 
 class CardRun:
@@ -165,7 +165,7 @@ class Oracle:
         self.names = card_names()
         for name, (seg, off, ax) in PRESENTATION.items():
             rec = "R043" if seg in (0x150B, 0x17E5) or (seg, off) == (0x1462, 0x0000) else None
-            self.m.stub(seg, off, (lambda v: lambda m: (v, 0))(ax), name, record=rec)
+            self.m.stub(P(seg), off, (lambda v: lambda m: (v, 0))(ax), name, record=rec)
         self.install()
 
     # ---- the card table ----------------------------------------------------------------
@@ -233,7 +233,7 @@ class Oracle:
             m.write(DS, a, bytes(4))
         for a in VAR_TEXTS:
             m.write(DS, a, bytes(40))
-        m.write(0x2E38, 0x1A96, bytes(5 * 30))            # var_named
+        m.write(P(0x2E38), 0x1A96, bytes(5 * 30))            # var_named
         m.put_word(DS, VAR_ITEM, 0)
         m.put_word(DS, VAR_LOC, -1)
         m.put_word(DS, VAR_LOC2, -1)
@@ -262,8 +262,8 @@ class Oracle:
         m.hook(*RAND, self.rand)
         # reads through index -1 of the location and event tables: the original then reads memory that holds something
         # else (a card run without its quest); the run is marked
-        for lo, hi, what in ((linear(0x2E38, 0x10BE) - 4, linear(0x2E38, 0x10BE), "locations[-1]"),
-                             (linear(0x2E38, 0x1B2C) - 4, linear(0x2E38, 0x1B2C), "events[-1]")):
+        for lo, hi, what in ((linear(P(0x2E38), 0x10BE) - 4, linear(P(0x2E38), 0x10BE), "locations[-1]"),
+                             (linear(P(0x2E38), 0x1B2C) - 4, linear(P(0x2E38), 0x1B2C), "events[-1]")):
             m.uc.hook_add(UC_HOOK_MEM_READ, (lambda w: lambda uc, acc, addr, size, val, ud: self.stray_read(w))(what),
                           begin=lo, end=hi - 1)
         # the card's own code reading through a null far pointer (the record of an empty event slot, e.g. the quest slot
@@ -302,7 +302,7 @@ class Oracle:
     def barter(self, m):
         i, off, seg, x, y = m.sarg(0), m.arg(1), m.arg(2), m.arg(3), m.arg(4)
         if off == 0 and seg == 0:   # the shop slot's own name, R136+0xA70F[i]
-            off, seg = m.word(0x290E, 0x207F + 4 * i), m.word(0x290E, 0x207F + 4 * i + 2)
+            off, seg = m.word(P(0x290E), 0x207F + 4 * i), m.word(P(0x290E), 0x207F + 4 * i + 2)
         name = m.cstr(seg, off, 80).decode("latin-1")
         self.log("screen barter %d %X %s" % (i, (y << 16) | x, name))
         return (0, 0)
@@ -474,8 +474,7 @@ class Oracle:
         self.options_text = None
         self.pending_options = False
         m.ensure(rec)
-        section = self.m.rt.sections[rec]
-        self.card_code = (section["load_seg"] * 16, section["load_seg"] * 16 + section["length"])
+        self.card_code = self.m.extent(rec)
         name = self.names.get(card)
         if name and (name + ".msg")[:12].lower() in self.messages.entries:
             # the card's own texts, as the card before it would usually have left them (some cards never load

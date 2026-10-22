@@ -11,6 +11,17 @@ the EXE; every game-folder file the original can read (not `*.tmp`, `*.log`, `SA
 the steps (or the FIGHTS request words, passes, key pause) and the saved game bytes (.SAV and .BSV); the source of the
 **original-side modules** (below); the Python, unicorn and capstone versions.
 
+## The machine's memory layout
+
+The original is loaded as DOS loads it (dosmachine.py): the PSP at 0813 and the root image at 0823 (`LOAD_SEG`; where DOSBox-X puts
+DARKLAND.EXE: main MCB 0812, environment block 07C9), above a real vector table (0000:0000), BIOS data area (0040:0000), PSP and environment;
+the EXE's relocation items are applied (the MZ table to the root, each overlay's and the data record's own items to its image, as the overlay
+manager does). The notation's coordinates (root 0000:0CAA, R014+0x3166 = 0E76:3166, DS:7B20) are link-time segments: in the tools write
+`P(0x0E76)` for the segment in memory (`DS` is already `P(0x321A)`), never the sum by hand; payload offsets (R014+0x....) do not move.
+A hook or stub is given the segment in memory; the machine's own segments (EMS F800, its frame D000, the call sentinels F000/F100) and the
+BIOS data area (0040) are absolute. The game's own writes to the vector table (INT 9 at 0000:0024, the divide-error vector) are ordinary.
+The Shift/Ctrl/Alt flags (0040:0017) are 0 (nothing held) unless the script's `shift:on` is in force.
+
 ## Original side and compare side
 
 The testers are split so that editing the comparison never expires a recording:

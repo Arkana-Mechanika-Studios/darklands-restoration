@@ -14,20 +14,16 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import orig_side  # noqa: E402
-from dosmachine import DS, Stop  # noqa: E402
+from dosmachine import DS, P, Stop  # noqa: E402
 from orig_side import COMBATANTS, COUNT, RECORD, stale_destinations  # noqa: E402,F401
 
-BATTLE_ENTRY = (0x0E76, 0x0000)     # R002+0x0000, called by the main loop root 03A1:000A with 12 words
+BATTLE_ENTRY = (P(0x0E76), 0x0000)     # R002+0x0000, called by the main loop root 03A1:000A with 12 words
 QUEUED, RATES = 0xD70C, 0xD493     # 2 bytes a combatant (endurance, strength); 1 byte a combatant
 PAUSED = 297                        # passes the battle stays paused before its key: the C# host's pause under the script's wait:300 (298 passes at one clock value)
 
 def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, coverage: bool, paused: int = PAUSED, snapshots=None):
     """(trace lines, the battle's arguments as the card gave them, log, how it ended, set-up ticks, coverage)."""
     s = orig_side.Session(exe.read_bytes(), game, max_instructions=4_000_000_000, coverage=coverage)
-    # the root-image guard of the vector table writes (orig_side.py) is left off here: it makes the original run the keyboard handler's install as the
-    # game does and so moves the original's timer phases; the clock rises of f2precept05's long passes then fall where the C# does not place them (see
-    # local/overnight/precept/README.md); the earlier passes of this oracle were all made with the table's bytes left in the code
-    s.vector_guard = False
     s.vfs.put("saves/dksave0.sav", save.read_bytes())
     if save.with_suffix(".BSV").exists():
         s.vfs.put("saves/dksave0.bsv", save.with_suffix(".BSV").read_bytes())
@@ -57,8 +53,8 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
     # emulator's timing, about one battle in 10^5 on a real machine) pushes a register over the word and turns the mine another way.
     # The word is kept at the return and put back at the arm's entry, so the original runs as if no interrupt hit the window.
     stale = []
-    s.hook(0x1432, 0x0087, lambda m: stale.append(m.word(m.reg("SS"), (m.reg("SP") - 8) & 0xFFFF)), record="R009")
-    s.hook(0x1432, 0x01E5, lambda m: stale and m.put_word(m.reg("SS"), (m.reg("BP") - 2) & 0xFFFF, stale[-1]), record="R009")
+    s.hook(P(0x1432), 0x0087, lambda m: stale.append(m.word(m.reg("SS"), (m.reg("SP") - 8) & 0xFFFF)), record="R009")
+    s.hook(P(0x1432), 0x01E5, lambda m: stale and m.put_word(m.reg("SS"), (m.reg("BP") - 2) & 0xFFFF, stale[-1]), record="R009")
 
     class Trace(list):
         draw_clocks: list = []      # the combat clock at each random draw (rand, root 06A1:29B6)
@@ -77,9 +73,9 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
     s.battle_trace = Trace()
     s.battle_trace.draw_clocks, s.battle_trace.draws_at = [], []
     s.battle_trace.phase_clocks, s.battle_trace.phases_at = [], []
-    s.hook(0x1DB7, 0x0D36, lambda m: s.battle_trace.phase_clocks.append((-1, m.word(DS, 0x07D4))), record="R014")
-    s.hook(0x0E76, 0x2A4A, lambda m: s.battle_trace.phase_clocks.append((-2, m.word(DS, 0x07D4))), record="R014")
-    s.hook(0x06A1, 0x29B6, lambda m: s.battle_trace.draw_clocks.append(m.word(DS, 0x07D4)))
+    s.hook(P(0x1DB7), 0x0D36, lambda m: s.battle_trace.phase_clocks.append((-1, m.word(DS, 0x07D4))), record="R014")
+    s.hook(P(0x0E76), 0x2A4A, lambda m: s.battle_trace.phase_clocks.append((-2, m.word(DS, 0x07D4))), record="R014")
+    s.hook(P(0x06A1), 0x29B6, lambda m: s.battle_trace.draw_clocks.append(m.word(DS, 0x07D4)))
     # the battle's pause (after its first ticks) waits for Space; lockstep's idle test (no random draw for IDLE_MS) never passes on a
     # battlefield whose animated pieces draw at every frame: in a battle the key is given once the clock has stood still PAUSED passes
     idle_test = s._next_key
@@ -102,7 +98,7 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
 
     def srand(m):
         ret = orig_side.linear(m.word(m.reg("SS"), m.reg("SP") + 2), m.word(m.reg("SS"), m.reg("SP")))
-        if bytes(m.uc.mem_read(ret - 14, 5)) == bytes([0x9A, 0xA8, 0x23, 0xA1, 0x06]):
+        if bytes(m.uc.mem_read(ret - 14, 5)) == orig_side.SRAND_CLOCK_CALL:
             seeds.append(m.arg(0))
     s.hook(*orig_side.SRAND, srand)
     if snap is not None:

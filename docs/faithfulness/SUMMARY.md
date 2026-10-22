@@ -58,33 +58,33 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 5,399 functions the oracles enter | 75.0% (39,046 / 52,058) | 65.6% (26,908 / 40,998) |
-| **every function the C# implements (9,281)** | | **61.1% (26,128 / 42,784)** |
+| the 5,396 functions the oracles enter | 74.9% (38,969 / 52,013) | 65.5% (26,815 / 40,960) |
+| **every function the C# implements (9,281)** | | **60.9% (26,033 / 42,782)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 26,128 against 26,908 exercised. By area:
+differ slightly on the resident code, hence 26,033 against 26,815 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 6,787 / 8,524 | 80% |
-| rules | 316 / 358 | 1,773 / 2,584 | 69% |
-| battles (tactical combat) | 252 / 314 | 5,026 / 7,516 | 67% |
-| travel (overland map) | 23 / 24 | 595 / 982 | 61% |
-| card engine | 35 / 36 | 407 / 686 | 59% |
-| screens (inventory, barter, creation ...) | 166 / 202 | 3,369 / 6,070 | 56% |
-| resident code | 131 / 160 | 909 / 1,646 | 55% |
-| card scripts | 4,039 / 7,949 | 7,199 / 14,614 | 49% |
+| rules | 316 / 358 | 1,779 / 2,584 | 69% |
+| battles (tactical combat) | 252 / 314 | 4,970 / 7,516 | 66% |
+| travel (overland map) | 23 / 24 | 602 / 982 | 61% |
+| screens (inventory, barter, creation ...) | 166 / 202 | 3,371 / 6,070 | 56% |
+| resident code | 131 / 160 | 903 / 1,644 | 55% |
+| card engine | 34 / 36 | 376 / 686 | 55% |
+| card scripts | 4,037 / 7,949 | 7,182 / 14,614 | 49% |
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-27,102 items of the functions the oracles enter were never exercised: 1,206 are justified in
+27,189 items of the functions the oracles enter were never exercised: 1,206 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 25,896 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 25,983 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 12,100), the screens (about 4,100), the battles (about 3,500), the
+lie in the card scripts (about 12,100), the screens (about 4,100), the battles (about 3,600), the
 battlefield generators (about 3,000), the rules (about 800) and the overland map (about 700).
 
 ## Card oracle
@@ -170,10 +170,10 @@ the saved games and the tester's sources are unchanged. A full live rerun of eve
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
 103 runs, 100 agreeing; of the other three, two for the reasons listed above and one open lead).
 
-The emulator loads the original's root code at linear address 0, where a real PC keeps the interrupt
-vectors, so the game's own install of its keyboard handler writes into its code there. A session can
-have those writes undone (`rootguard:on`), which changes the emulated timing; each session is recorded
-and compared with one setting, and the fights without it.
+The emulator loads the original as DOS does: the PSP at 0813 and the root image at 0823 (where DOSBox-X
+puts DARKLAND.EXE), the EXE's relocation items applied, above a real vector table and BIOS data area, so
+the game's own install of its keyboard handler writes into the table; every fight and session runs
+with this one setting.
 
 The roster, loot, camp, pack and dungeon sessions found six more divergences in the C#, now fixed: a
 character created at the inn reads the clock once for each random name, and its record keeps the bytes

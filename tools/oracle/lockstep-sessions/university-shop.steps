@@ -87,7 +87,7 @@ wait:200
 key:enter
 wait:200
 state:teacher
-option:3
+option:1
 wait:5
 key:enter
 wait:200

@@ -1,5 +1,4 @@
 # Lockstep session: load DKSAVE0, the inn, save (Alt-S), 8 hours' rest, load the save back (Alt-L)
-rootguard:on
 key:t
 wait:5
 key:l

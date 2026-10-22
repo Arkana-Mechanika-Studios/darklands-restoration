@@ -1,4 +1,3 @@
-rootguard:on
 # Lockstep session: load DKSAVE0 (the party at the Pressburg inn, almost out of money), take up residence: the members earn money (jobs), pray, train (no teacher here), the purse runs out ("Not Enough Money"), the work changes, leave
 key:t
 wait:5

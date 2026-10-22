@@ -11,8 +11,7 @@ the card menu shown), state:<name>, bwait:<n>; wait/shot steps are for the C# on
 bwait:<n> is for orders in a battle (the idle test below never passes where animated pieces draw random numbers, and a running battle is
 never idle): the steps after it are given n + 1 battle passes after the previous one (the original) / after wait:<n - 3> frames (the C#
 host, a frame being a pass there). A menu or a sheet (a loop that does not pass combat_input) is idle after IDLE_POLLS polls, as before.
-Keep the pointer off the battle view's edges (x < 68, y < 8 or > 191, x > 311): the original reads Shift held there (the keyboard flags
-byte 0040:0017 is a code byte of the root image outside R031) and scrolls the view, which the C# does not. State steps inside a battle do
+Keep the pointer off the battle view's edges (x < 68, y < 8 or > 191, x > 311): the original scrolls the view there, which the C# does not. State steps inside a battle do
 not compare (the C# writes the party, the original the battle's save). --battle-records adds the combatant records to every pass. With --save both start from that saved game
 (the script loads it from the start screen: key:t, key:l).
 
@@ -20,8 +19,8 @@ not compare (the C# writes the party, the original the battle's save). --battle-
    extended here with what a whole session needs:
    * EMS through INT 67h (256 pages, the frame at D000; mapping copies pages in and out); the EMS functions'
      far pointer (root 05F8:000E) is the handler at once and the EMS check (05F8:0064) passes;
-   * the interrupt vectors kept here, not at 0000:0000 (the root image sits at linear 0 at its link-time
-     addresses); the timer interrupt is raised at the PIT's programmed rate from the instruction count
+   * the root image loaded as DOS loads it (PSP 0813, image 0823, the EXE's relocation items applied: dosmachine.py), the vector table
+     at 0000:0000 and the BIOS data area at 0040:0000 as on a DOS machine; the timer interrupt is raised at the PIT's programmed rate from the instruction count
      (BYTES_PER_MS bytes of code per millisecond), into the game's own handler (root 047C:01EB); the DOS time,
      the BIOS ticks and so time(0) follow the same count: every run is the same run;
    * no drivers: misc.exe is not loaded (root 047C:07CE, 047C:08C8 return) and no sound driver is chosen (no
@@ -232,7 +231,7 @@ def main():
             sparts, n = orig_side.session_start(steps)
             # key_pressed looks ahead at the next step that is a key, a move, a click or an option (an Alt key is let through only at some of the map
             # loop's looks), so the state at the start point depends on it: it is part of the key
-            ahead = next(((k, v) for k, v in [(k, v) for k, v in steps if k != "rootguard"][n:] if k in ("key", "move", "click", "option")), None)
+            ahead = next(((k, v) for k, v in list(steps)[n:] if k in ("key", "move", "click", "option")), None)
             snapshots = recording.Snapshot(a.recordings, "session", {**{k: parts[k] for k in recording.COMMON_KEYS}, **sparts, "ahead": ahead, "coverage": a.coverage})
         got = orig_side.record_session(Path(a.exe), a.game, steps, save, a.budget, a.battle_records, a.no_wall_draws, a.coverage, snapshots)
         rec.store(got)

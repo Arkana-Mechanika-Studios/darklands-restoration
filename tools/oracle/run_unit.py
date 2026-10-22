@@ -79,6 +79,7 @@ class Rtlink:
         self.hdr_size = hdr_paras * 16
         mz_size = (pages - 1) * 512 + (last or 512)
         self.root = data[self.hdr_size:mz_size]
+        self.reloc_table = [struct.unpack_from("<HH", data, hdr[12] + 4 * k) for k in range(hdr[3])]   # MZ relocations: (offset, segment)
         mgr = self.hdr_size + cs * 16
         rd = lambda o: struct.unpack_from("<H", data, mgr + o)[0]
         count_ptr, table_ptr, entsize = rd(0xB58), rd(0xB5A), rd(0xB5C)
@@ -89,7 +90,8 @@ class Rtlink:
             file_off = (w[2] | ((w[3] & 0xFF) << 16)) * 16
             img_off = (file_off + 4 * w[5] + 15) & ~15
             self.sections.append({"index": i, "load_seg": w[0], "mem_paras": w[4],
-                                  "parent": w[6], "file_offset": img_off, "length": w[8] * 16})
+                                  "parent": w[6], "file_offset": img_off, "length": w[8] * 16,
+                                  "reloc_offset": file_off, "reloc_count": w[5]})   # (offset, segment) pairs before the image
 
 
 class CoverageRecorder:

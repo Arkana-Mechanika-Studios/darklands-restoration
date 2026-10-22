@@ -1,4 +1,3 @@
-rootguard:on
 # Lockstep session: load Dksave22 (a party on the map, the camp's risk already high), camp in the wilderness (C): guards and prayers, the first day the camp is discovered (soldiers), the offer of money buys a week, camp again (safe camping: the risk stays 0), days pass, leave
 key:t
 wait:5

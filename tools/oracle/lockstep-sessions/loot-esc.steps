@@ -1,4 +1,3 @@
-rootguard:on
 # Lockstep session (loot screen, capital keys and Esc): the gate battle from DKSAVE0 fought and won; the upper-case G, P and D, P ignored on the pile list and G on the pack list, D around the whole party, every pack emptied onto the pile (equal stacks joined) and the pile emptied again, G on an empty pile, Esc leaves
 key:t
 wait:5

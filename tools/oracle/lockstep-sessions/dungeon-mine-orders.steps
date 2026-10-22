@@ -1,4 +1,3 @@
-rootguard:on
 # Lockstep session (dungeon 2): the same mine; Dietrich walks into the ambush, in the pauses he is ordered to attack (A on a kobold, B on another) and Karl, Godfrey and Hildegard to attack the third (A, B, V); the fight, the loot (L), then the travel modes: group (G on and off), single file (Q), halt (H), a walk order cancelled with Esc, then the diagonal arrow keys and keys that act on nothing here (E, O, P, D, 5, Tab, Backspace) (bwait:<n> = n battle passes in both games)
 key:t
 wait:5

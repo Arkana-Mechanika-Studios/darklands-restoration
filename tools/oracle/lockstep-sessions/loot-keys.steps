@@ -1,4 +1,3 @@
-rootguard:on
 # Lockstep session (loot screen, keys): the gate battle from DKSAVE0 fought and won; the pile scrolled with Up/Down, items got (G) and put back (P), the list switched with Left/Right, D through the members, the pile emptied, Right on an empty pile, other keys, L
 key:t
 wait:5

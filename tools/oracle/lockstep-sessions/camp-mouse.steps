@@ -1,4 +1,3 @@
-rootguard:on
 # Lockstep session: load DKSAVE99 (a party on the map), camp in the wilderness (C) with the mouse: the pointer over the activity menu and the party list lights the lines, a click chooses a member (the party list) or sets the activity (the menu), a click on a party panel row opens that member's sheet, "Spend a day" and "Leave" by clicks
 key:t
 wait:5

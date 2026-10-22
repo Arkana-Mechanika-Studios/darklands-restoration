@@ -36,114 +36,114 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 | castle | 116 | 102 | 3842/4486 (85.6%) | 3396/4280 (79.3%) | 3840/4462 (86.1%) | 3396/4278 (79.4%) | identical (110s) |
 | special | 161 | 49 | 886/1116 (79.4%) | 599/852 (70.3%) | 886/1099 (80.6%) | 599/852 (70.3%) | identical (84s) |
 | cards | 365 | 3932 | 14890/26268 (56.7%) | 7318/17312 (42.3%) |  |  |  |
-| battle-oracle-castle | 1 | 585 | 7771/13441 (57.8%) | 5337/12002 (44.5%) |  |  |  |
-| battle-oracle-castle04 | 1 | 634 | 8503/14595 (58.3%) | 5969/13204 (45.2%) |  |  |  |
-| battle-oracle-castle07 | 1 | 654 | 9203/14960 (61.5%) | 6641/13532 (49.1%) |  |  |  |
-| battle-oracle-castle7c | 1 | 586 | 7821/13382 (58.4%) | 5356/11940 (44.9%) |  |  |  |
-| battle-oracle-cave60 | 1 | 549 | 5973/10781 (55.4%) | 3754/9304 (40.3%) |  |  |  |
-| battle-oracle-city13 | 1 | 593 | 6907/11928 (57.9%) | 4601/10428 (44.1%) |  |  |  |
-| battle-oracle-city15 | 1 | 590 | 6807/11629 (58.5%) | 4571/10196 (44.8%) |  |  |  |
-| battle-oracle-city1c | 1 | 512 | 5392/10073 (53.5%) | 3265/8610 (37.9%) |  |  |  |
-| battle-oracle-city1f | 1 | 578 | 6875/11493 (59.8%) | 4647/10050 (46.2%) |  |  |  |
-| battle-oracle-city24 | 1 | 591 | 6813/11898 (57.3%) | 4497/10400 (43.2%) |  |  |  |
-| battle-oracle-city2b | 1 | 533 | 5736/10736 (53.4%) | 3526/9212 (38.3%) |  |  |  |
-| battle-oracle-f2alch16 | 1 | 612 | 7071/12095 (58.5%) | 4673/10620 (44.0%) |  |  |  |
-| battle-oracle-f2archwitch2c | 1 | 511 | 5274/10060 (52.4%) | 3144/8594 (36.6%) |  |  |  |
-| battle-oracle-f2demon61 | 1 | 582 | 6948/12015 (57.8%) | 4654/10418 (44.7%) |  |  |  |
-| battle-oracle-f2friar19 | 1 | 569 | 6361/11411 (55.7%) | 4083/9904 (41.2%) |  |  |  |
-| battle-oracle-f2hell62 | 1 | 582 | 6827/12015 (56.8%) | 4506/10418 (43.3%) |  |  |  |
-| battle-oracle-f2hwitch41 | 1 | 548 | 6239/11442 (54.5%) | 3914/9792 (40.0%) |  |  |  |
-| battle-oracle-f2kking0c | 1 | 583 | 6394/11860 (53.9%) | 3997/10280 (38.9%) |  |  |  |
-| battle-oracle-f2leader14 | 1 | 598 | 6864/12101 (56.7%) | 4469/10560 (42.3%) |  |  |  |
-| battle-oracle-f2magic58 | 1 | 565 | 6417/11080 (57.9%) | 4180/9650 (43.3%) |  |  |  |
-| battle-oracle-f2precept05 | 1 | 649 | 9122/14615 (62.4%) | 6632/13198 (50.3%) |  |  |  |
-| battle-oracle-f2vulcan0e | 1 | 554 | 6522/12037 (54.2%) | 4162/10318 (40.3%) |  |  |  |
-| battle-oracle-f2witch2f | 1 | 598 | 7181/12478 (57.5%) | 4723/10854 (43.5%) |  |  |  |
-| battle-oracle-fort5e | 1 | 519 | 5622/10088 (55.7%) | 3432/8584 (40.0%) |  |  |  |
-| battle-oracle-gate | 1 | 601 | 7195/12165 (59.1%) | 4863/10670 (45.6%) |  |  |  |
-| battle-oracle-mine | 1 | 545 | 5672/11641 (48.7%) | 3456/10004 (34.5%) |  |  |  |
-| battle-oracle-mine0b | 1 | 553 | 6587/12026 (54.8%) | 4198/10332 (40.6%) |  |  |  |
-| battle-oracle-mine10 | 1 | 565 | 6810/12328 (55.2%) | 4387/10600 (41.4%) |  |  |  |
-| battle-oracle-mine80 | 1 | 604 | 6909/12274 (56.3%) | 4564/10776 (42.4%) |  |  |  |
-| battle-oracle-street | 1 | 586 | 6856/11853 (57.8%) | 4582/10370 (44.2%) |  |  |  |
-| battle-oracle-tombs5f | 1 | 571 | 6440/11230 (57.3%) | 4208/9808 (42.9%) |  |  |  |
-| battle-oracle-wild | 1 | 581 | 6837/12006 (56.9%) | 4508/10410 (43.3%) |  |  |  |
-| battle-oracle-wild30 | 1 | 558 | 6321/11640 (54.3%) | 4000/9992 (40.0%) |  |  |  |
-| battle-oracle-wild40 | 1 | 579 | 6753/11971 (56.4%) | 4416/10376 (42.6%) |  |  |  |
-| battle-oracle-wild50 | 1 | 594 | 7161/12318 (58.1%) | 4749/10700 (44.4%) |  |  |  |
-| battle-oracle-wild6f | 1 | 582 | 6625/12101 (54.7%) | 4247/10482 (40.5%) |  |  |  |
-| battle-oracle-wild75 | 1 | 582 | 6869/12055 (57.0%) | 4534/10452 (43.4%) |  |  |  |
+| battle-oracle-castle | 1 | 581 | 7677/13349 (57.5%) | 5251/11912 (44.1%) |  |  |  |
+| battle-oracle-castle04 | 1 | 630 | 8409/14503 (58.0%) | 5884/13114 (44.9%) |  |  |  |
+| battle-oracle-castle07 | 1 | 650 | 9109/14868 (61.3%) | 6557/13442 (48.8%) |  |  |  |
+| battle-oracle-castle7c | 1 | 582 | 7727/13290 (58.1%) | 5268/11850 (44.5%) |  |  |  |
+| battle-oracle-cave60 | 1 | 545 | 5879/10689 (55.0%) | 3668/9214 (39.8%) |  |  |  |
+| battle-oracle-city13 | 1 | 589 | 6813/11836 (57.6%) | 4516/10338 (43.7%) |  |  |  |
+| battle-oracle-city15 | 1 | 586 | 6713/11537 (58.2%) | 4488/10106 (44.4%) |  |  |  |
+| battle-oracle-city1c | 1 | 508 | 5298/9981 (53.1%) | 3182/8520 (37.3%) |  |  |  |
+| battle-oracle-city1f | 1 | 574 | 6781/11401 (59.5%) | 4563/9960 (45.8%) |  |  |  |
+| battle-oracle-city24 | 1 | 587 | 6722/11806 (56.9%) | 4415/10310 (42.8%) |  |  |  |
+| battle-oracle-city2b | 1 | 529 | 5642/10644 (53.0%) | 3442/9122 (37.7%) |  |  |  |
+| battle-oracle-f2alch16 | 1 | 606 | 6885/11912 (57.8%) | 4509/10440 (43.2%) |  |  |  |
+| battle-oracle-f2archwitch2c | 1 | 507 | 5180/9968 (52.0%) | 3062/8504 (36.0%) |  |  |  |
+| battle-oracle-f2demon61 | 1 | 578 | 6841/11923 (57.4%) | 4558/10328 (44.1%) |  |  |  |
+| battle-oracle-f2friar19 | 1 | 565 | 6267/11319 (55.4%) | 3999/9814 (40.7%) |  |  |  |
+| battle-oracle-f2hell62 | 1 | 578 | 6729/11923 (56.4%) | 4419/10328 (42.8%) |  |  |  |
+| battle-oracle-f2hwitch41 | 1 | 544 | 6145/11350 (54.1%) | 3832/9702 (39.5%) |  |  |  |
+| battle-oracle-f2kking0c | 1 | 579 | 6300/11768 (53.5%) | 3915/10190 (38.4%) |  |  |  |
+| battle-oracle-f2leader14 | 1 | 594 | 6770/12009 (56.4%) | 4385/10470 (41.9%) |  |  |  |
+| battle-oracle-f2magic58 | 1 | 561 | 6323/10988 (57.5%) | 4098/9560 (42.9%) |  |  |  |
+| battle-oracle-f2precept05 | 1 | 645 | 8988/14523 (61.9%) | 6492/13108 (49.5%) |  |  |  |
+| battle-oracle-f2vulcan0e | 1 | 550 | 6428/11945 (53.8%) | 4079/10228 (39.9%) |  |  |  |
+| battle-oracle-f2witch2f | 1 | 594 | 7087/12386 (57.2%) | 4641/10764 (43.1%) |  |  |  |
+| battle-oracle-fort5e | 1 | 515 | 5528/9996 (55.3%) | 3348/8494 (39.4%) |  |  |  |
+| battle-oracle-gate | 1 | 597 | 7095/12073 (58.8%) | 4775/10580 (45.1%) |  |  |  |
+| battle-oracle-mine | 1 | 541 | 5578/11549 (48.3%) | 3375/9914 (34.0%) |  |  |  |
+| battle-oracle-mine0b | 1 | 549 | 6493/11934 (54.4%) | 4114/10242 (40.2%) |  |  |  |
+| battle-oracle-mine10 | 1 | 561 | 6716/12236 (54.9%) | 4305/10510 (41.0%) |  |  |  |
+| battle-oracle-mine80 | 1 | 600 | 6815/12182 (55.9%) | 4481/10686 (41.9%) |  |  |  |
+| battle-oracle-street | 1 | 582 | 6762/11761 (57.5%) | 4500/10280 (43.8%) |  |  |  |
+| battle-oracle-tombs5f | 1 | 561 | 6220/11075 (56.2%) | 4019/9656 (41.6%) |  |  |  |
+| battle-oracle-wild | 1 | 574 | 6682/11898 (56.2%) | 4356/10308 (42.3%) |  |  |  |
+| battle-oracle-wild30 | 1 | 554 | 6227/11548 (53.9%) | 3916/9902 (39.5%) |  |  |  |
+| battle-oracle-wild40 | 1 | 575 | 6659/11879 (56.1%) | 4333/10286 (42.1%) |  |  |  |
+| battle-oracle-wild50 | 1 | 590 | 7067/12226 (57.8%) | 4664/10610 (44.0%) |  |  |  |
+| battle-oracle-wild6f | 1 | 578 | 6531/12009 (54.4%) | 4163/10392 (40.1%) |  |  |  |
+| battle-oracle-wild75 | 1 | 578 | 6775/11963 (56.6%) | 4451/10362 (43.0%) |  |  |  |
 | cards-day | 22636 | 4214 | 16145/27720 (58.2%) | 8079/18276 (44.2%) |  |  |  |
 | cards-flip | 1400 | 1181 | 6461/10718 (60.3%) | 3534/7654 (46.2%) |  |  |  |
 | cards-variants | 18535 | 4347 | 16830/28189 (59.7%) | 8577/18562 (46.2%) |  |  |  |
-| lockstep-alchemy | 1 | 383 | 3673/6189 (59.3%) | 1999/4764 (42.0%) |  |  |  |
-| lockstep-banks | 1 | 374 | 3412/5689 (60.0%) | 1902/4244 (44.8%) |  |  |  |
-| lockstep-cache | 1 | 316 | 2974/5036 (59.1%) | 1604/3674 (43.7%) |  |  |  |
-| lockstep-camp-inn-broke | 1 | 369 | 3659/5950 (61.5%) | 2031/4532 (44.8%) |  |  |  |
-| lockstep-camp-mouse | 1 | 379 | 4096/6879 (59.5%) | 2345/5430 (43.2%) |  |  |  |
-| lockstep-camp-rough | 1 | 376 | 3618/5965 (60.7%) | 1975/4500 (43.9%) |  |  |  |
-| lockstep-camp-wild-brew | 1 | 372 | 4002/6808 (58.8%) | 2257/5448 (41.4%) |  |  |  |
-| lockstep-camp-wild-risk | 1 | 380 | 4001/6649 (60.2%) | 2292/5268 (43.5%) |  |  |  |
-| lockstep-chargen-party | 1 | 285 | 2825/4845 (58.3%) | 1496/3408 (43.9%) |  |  |  |
-| lockstep-churches | 1 | 365 | 3427/5559 (61.6%) | 1822/4122 (44.2%) |  |  |  |
-| lockstep-dungeon-mine-doors | 1 | 631 | 9027/14704 (61.4%) | 6366/13116 (48.5%) |  |  |  |
-| lockstep-dungeon-mine-group | 1 | 652 | 9409/14996 (62.7%) | 6699/13416 (49.9%) |  |  |  |
-| lockstep-dungeon-mine-orders | 1 | 648 | 9319/14895 (62.6%) | 6626/13320 (49.7%) |  |  |  |
-| lockstep-foreigntrader | 1 | 361 | 3467/5870 (59.1%) | 1961/4512 (43.5%) |  |  |  |
-| lockstep-gate-battle | 1 | 649 | 8074/13048 (61.9%) | 5601/11558 (48.5%) |  |  |  |
-| lockstep-healer | 1 | 365 | 3309/5532 (59.8%) | 1829/4098 (44.6%) |  |  |  |
-| lockstep-inventory | 1 | 352 | 3473/6308 (55.1%) | 1911/4746 (40.3%) |  |  |  |
-| lockstep-loot-esc | 1 | 661 | 8244/13293 (62.0%) | 5731/11808 (48.5%) |  |  |  |
-| lockstep-loot-keys | 1 | 661 | 8246/13293 (62.0%) | 5735/11808 (48.6%) |  |  |  |
-| lockstep-loot-mouse | 1 | 661 | 8262/13293 (62.2%) | 5763/11808 (48.8%) |  |  |  |
-| lockstep-luebeck-potion | 1 | 648 | 8121/13439 (60.4%) | 5711/11968 (47.7%) |  |  |  |
-| lockstep-mapsave | 1 | 319 | 3317/5412 (61.3%) | 1802/4166 (43.3%) |  |  |  |
-| lockstep-menubar | 1 | 312 | 2980/5013 (59.4%) | 1593/3650 (43.6%) |  |  |  |
-| lockstep-menubar2 | 1 | 310 | 2970/5005 (59.3%) | 1590/3646 (43.6%) |  |  |  |
-| lockstep-notices | 1 | 372 | 3342/5592 (59.8%) | 1841/4136 (44.5%) |  |  |  |
-| lockstep-orders-attack-a | 1 | 657 | 8273/13225 (62.6%) | 5794/11740 (49.4%) |  |  |  |
-| lockstep-orders-attack-b | 1 | 669 | 8576/14069 (61.0%) | 6022/12590 (47.8%) |  |  |  |
-| lockstep-orders-attack-b2 | 1 | 669 | 8603/14069 (61.1%) | 6050/12590 (48.1%) |  |  |  |
-| lockstep-orders-attack-v | 1 | 657 | 8233/13225 (62.3%) | 5744/11740 (48.9%) |  |  |  |
-| lockstep-orders-attacks | 1 | 654 | 8146/13011 (62.6%) | 5676/11490 (49.4%) |  |  |  |
-| lockstep-orders-missile | 1 | 673 | 8617/14093 (61.1%) | 6060/12612 (48.0%) |  |  |  |
-| lockstep-orders-potion2 | 1 | 633 | 7879/13096 (60.2%) | 5502/11610 (47.4%) |  |  |  |
-| lockstep-orders-potion3 | 1 | 629 | 7731/12990 (59.5%) | 5391/11496 (46.9%) |  |  |  |
-| lockstep-orders-prague-missile | 1 | 611 | 7377/12617 (58.5%) | 5074/11152 (45.5%) |  |  |  |
-| lockstep-orders-save | 1 | 649 | 8088/13048 (62.0%) | 5613/11558 (48.6%) |  |  |  |
-| lockstep-orders-select | 1 | 666 | 8484/13917 (61.0%) | 5938/12430 (47.8%) |  |  |  |
-| lockstep-orders-sheet | 1 | 662 | 8289/13482 (61.5%) | 5743/11906 (48.2%) |  |  |  |
-| lockstep-orders-walk | 1 | 656 | 8192/13222 (62.0%) | 5691/11738 (48.5%) |  |  |  |
-| lockstep-pack-potions | 1 | 331 | 3461/6018 (57.5%) | 1848/4586 (40.3%) |  |  |  |
-| lockstep-pack-stacks | 1 | 323 | 3465/5913 (58.6%) | 1858/4520 (41.1%) |  |  |  |
-| lockstep-pawnshop | 1 | 357 | 3444/5780 (59.6%) | 1947/4420 (44.0%) |  |  |  |
-| lockstep-pressburg-map | 1 | 393 | 3985/6545 (60.9%) | 2300/5108 (45.0%) |  |  |  |
-| lockstep-residence | 1 | 360 | 3487/5819 (59.9%) | 1883/4398 (42.8%) |  |  |  |
-| lockstep-roster | 1 | 354 | 3373/5821 (57.9%) | 1881/4296 (43.8%) |  |  |  |
-| lockstep-roster-colours | 1 | 351 | 3537/5814 (60.8%) | 1939/4292 (45.2%) |  |  |  |
-| lockstep-roster-create2 | 1 | 361 | 3837/7326 (52.4%) | 2196/5766 (38.1%) |  |  |  |
-| lockstep-roster-mouse | 1 | 361 | 3645/6115 (59.6%) | 2011/4606 (43.7%) |  |  |  |
-| lockstep-roster-moves | 1 | 353 | 3375/5835 (57.8%) | 1894/4316 (43.9%) |  |  |  |
-| lockstep-roster-ulm | 1 | 369 | 3616/5927 (61.0%) | 1987/4404 (45.1%) |  |  |  |
-| lockstep-roster-wrap | 1 | 343 | 3350/5782 (57.9%) | 1862/4288 (43.4%) |  |  |  |
-| lockstep-roster4 | 1 | 354 | 3373/5821 (57.9%) | 1881/4296 (43.8%) |  |  |  |
-| lockstep-saints | 1 | 354 | 3405/6156 (55.3%) | 1891/4616 (41.0%) |  |  |  |
-| lockstep-save-load | 1 | 348 | 3349/5418 (61.8%) | 1791/4018 (44.6%) |  |  |  |
-| lockstep-sheet | 1 | 331 | 3292/5821 (56.6%) | 1805/4304 (41.9%) |  |  |  |
-| lockstep-shop | 1 | 361 | 3470/5872 (59.1%) | 1962/4512 (43.5%) |  |  |  |
-| lockstep-smiths | 1 | 361 | 3428/5758 (59.5%) | 1923/4380 (43.9%) |  |  |  |
-| lockstep-stables | 1 | 349 | 3397/5691 (59.7%) | 1915/4324 (44.3%) |  |  |  |
-| lockstep-stay | 1 | 358 | 3499/5798 (60.3%) | 1887/4388 (43.0%) |  |  |  |
-| lockstep-tyrnau | 1 | 413 | 4180/6887 (60.7%) | 2430/5440 (44.7%) |  |  |  |
-| lockstep-university | 1 | 371 | 3428/5710 (60.0%) | 1927/4340 (44.4%) |  |  |  |
-| lockstep-university-shop | 1 | 381 | 3539/5958 (59.4%) | 2011/4578 (43.9%) |  |  |  |
-| lockstep-wharves | 1 | 374 | 3568/5759 (62.0%) | 1933/4302 (44.9%) |  |  |  |
-| lockstep-wien-rathaus | 1 | 382 | 3597/5801 (62.0%) | 1950/4326 (45.1%) |  |  |  |
-| lockstep-wildcamp | 1 | 337 | 3504/6009 (58.3%) | 1908/4744 (40.2%) |  |  |  |
+| lockstep-alchemy | 1 | 382 | 3663/6165 (59.4%) | 1993/4746 (42.0%) |  |  |  |
+| lockstep-banks | 1 | 375 | 3362/5737 (58.6%) | 1848/4256 (43.4%) |  |  |  |
+| lockstep-cache | 1 | 314 | 2961/5011 (59.1%) | 1594/3656 (43.6%) |  |  |  |
+| lockstep-camp-inn-broke | 1 | 367 | 3597/5860 (61.4%) | 1981/4442 (44.6%) |  |  |  |
+| lockstep-camp-mouse | 1 | 379 | 4094/6876 (59.5%) | 2345/5428 (43.2%) |  |  |  |
+| lockstep-camp-rough | 1 | 378 | 3580/5921 (60.5%) | 1938/4450 (43.6%) |  |  |  |
+| lockstep-camp-wild-brew | 1 | 372 | 4001/6805 (58.8%) | 2255/5446 (41.4%) |  |  |  |
+| lockstep-camp-wild-risk | 1 | 379 | 3991/6625 (60.2%) | 2285/5250 (43.5%) |  |  |  |
+| lockstep-chargen-party | 1 | 285 | 2823/4842 (58.3%) | 1496/3406 (43.9%) |  |  |  |
+| lockstep-churches | 1 | 362 | 3358/5465 (61.4%) | 1767/4030 (43.8%) |  |  |  |
+| lockstep-dungeon-mine-doors | 1 | 630 | 8990/14680 (61.2%) | 6326/13098 (48.3%) |  |  |  |
+| lockstep-dungeon-mine-group | 1 | 650 | 9324/14906 (62.6%) | 6615/13326 (49.6%) |  |  |  |
+| lockstep-dungeon-mine-orders | 1 | 646 | 9234/14805 (62.4%) | 6542/13230 (49.4%) |  |  |  |
+| lockstep-foreigntrader | 1 | 358 | 3405/5776 (59.0%) | 1913/4420 (43.3%) |  |  |  |
+| lockstep-gate-battle | 1 | 645 | 7975/12956 (61.6%) | 5501/11468 (48.0%) |  |  |  |
+| lockstep-healer | 1 | 365 | 3337/5743 (58.1%) | 1840/4322 (42.6%) |  |  |  |
+| lockstep-inventory | 1 | 351 | 3462/6284 (55.1%) | 1903/4728 (40.2%) |  |  |  |
+| lockstep-loot-esc | 1 | 657 | 8156/13201 (61.8%) | 5658/11718 (48.3%) |  |  |  |
+| lockstep-loot-keys | 1 | 657 | 8158/13201 (61.8%) | 5661/11718 (48.3%) |  |  |  |
+| lockstep-loot-mouse | 1 | 657 | 8160/13201 (61.8%) | 5673/11718 (48.4%) |  |  |  |
+| lockstep-luebeck-potion | 1 | 646 | 8139/13414 (60.7%) | 5748/11950 (48.1%) |  |  |  |
+| lockstep-mapsave | 1 | 319 | 3313/5409 (61.2%) | 1800/4164 (43.2%) |  |  |  |
+| lockstep-menubar | 1 | 312 | 2977/5010 (59.4%) | 1591/3648 (43.6%) |  |  |  |
+| lockstep-menubar2 | 1 | 310 | 2967/5002 (59.3%) | 1589/3644 (43.6%) |  |  |  |
+| lockstep-notices | 1 | 371 | 3286/5573 (59.0%) | 1796/4098 (43.8%) |  |  |  |
+| lockstep-orders-attack-a | 1 | 665 | 8464/13977 (60.6%) | 5912/12500 (47.3%) |  |  |  |
+| lockstep-orders-attack-b | 1 | 653 | 8133/13133 (61.9%) | 5640/11650 (48.4%) |  |  |  |
+| lockstep-orders-attack-b2 | 1 | 670 | 8558/14002 (61.1%) | 5992/12520 (47.9%) |  |  |  |
+| lockstep-orders-attack-v | 1 | 665 | 8453/13977 (60.5%) | 5896/12500 (47.2%) |  |  |  |
+| lockstep-orders-attacks | 1 | 658 | 8180/13155 (62.2%) | 5666/11670 (48.6%) |  |  |  |
+| lockstep-orders-missile | 1 | 667 | 8468/13996 (60.5%) | 5912/12520 (47.2%) |  |  |  |
+| lockstep-orders-potion2 | 1 | 634 | 7990/13168 (60.7%) | 5616/11690 (48.0%) |  |  |  |
+| lockstep-orders-potion3 | 1 | 638 | 7956/13150 (60.5%) | 5573/11666 (47.8%) |  |  |  |
+| lockstep-orders-prague-missile | 1 | 648 | 8240/13740 (60.0%) | 5707/12292 (46.4%) |  |  |  |
+| lockstep-orders-save | 1 | 645 | 7989/12956 (61.7%) | 5515/11468 (48.1%) |  |  |  |
+| lockstep-orders-select | 1 | 662 | 8368/13825 (60.5%) | 5824/12340 (47.2%) |  |  |  |
+| lockstep-orders-sheet | 1 | 658 | 8190/13390 (61.2%) | 5643/11816 (47.8%) |  |  |  |
+| lockstep-orders-walk | 1 | 642 | 7902/12892 (61.3%) | 5455/11378 (47.9%) |  |  |  |
+| lockstep-pack-potions | 1 | 331 | 3460/6015 (57.5%) | 1846/4584 (40.3%) |  |  |  |
+| lockstep-pack-stacks | 1 | 323 | 3464/5910 (58.6%) | 1858/4518 (41.1%) |  |  |  |
+| lockstep-pawnshop | 1 | 354 | 3376/5686 (59.4%) | 1893/4328 (43.7%) |  |  |  |
+| lockstep-pressburg-map | 1 | 387 | 3869/6424 (60.2%) | 2225/5006 (44.4%) |  |  |  |
+| lockstep-residence | 1 | 358 | 3424/5729 (59.8%) | 1832/4308 (42.5%) |  |  |  |
+| lockstep-roster | 1 | 361 | 3475/5813 (59.8%) | 1863/4266 (43.7%) |  |  |  |
+| lockstep-roster-colours | 1 | 358 | 3645/5806 (62.8%) | 1927/4262 (45.2%) |  |  |  |
+| lockstep-roster-create2 | 1 | 357 | 3762/7234 (52.0%) | 2132/5676 (37.6%) |  |  |  |
+| lockstep-roster-mouse | 1 | 357 | 3572/6023 (59.3%) | 1951/4516 (43.2%) |  |  |  |
+| lockstep-roster-moves | 1 | 360 | 3477/5827 (59.7%) | 1876/4286 (43.8%) |  |  |  |
+| lockstep-roster-ulm | 1 | 367 | 3601/5902 (61.0%) | 1973/4386 (45.0%) |  |  |  |
+| lockstep-roster-wrap | 1 | 339 | 3277/5690 (57.6%) | 1802/4198 (42.9%) |  |  |  |
+| lockstep-roster4 | 1 | 361 | 3475/5813 (59.8%) | 1863/4266 (43.7%) |  |  |  |
+| lockstep-saints | 1 | 351 | 3391/6130 (55.3%) | 1881/4598 (40.9%) |  |  |  |
+| lockstep-save-load | 1 | 346 | 3287/5328 (61.7%) | 1742/3928 (44.3%) |  |  |  |
+| lockstep-sheet | 1 | 329 | 3280/5796 (56.6%) | 1796/4286 (41.9%) |  |  |  |
+| lockstep-shop | 1 | 358 | 3402/5778 (58.9%) | 1907/4420 (43.1%) |  |  |  |
+| lockstep-smiths | 1 | 356 | 3358/5662 (59.3%) | 1869/4288 (43.6%) |  |  |  |
+| lockstep-stables | 1 | 347 | 3333/5601 (59.5%) | 1862/4234 (44.0%) |  |  |  |
+| lockstep-stay | 1 | 357 | 3488/5774 (60.4%) | 1879/4370 (43.0%) |  |  |  |
+| lockstep-tyrnau | 1 | 399 | 4003/6514 (61.5%) | 2315/5064 (45.7%) |  |  |  |
+| lockstep-university | 1 | 360 | 3226/5453 (59.2%) | 1768/4044 (43.7%) |  |  |  |
+| lockstep-university-shop | 1 | 362 | 3240/5457 (59.4%) | 1779/4046 (44.0%) |  |  |  |
+| lockstep-wharves | 1 | 375 | 3593/5892 (61.0%) | 1955/4440 (44.0%) |  |  |  |
+| lockstep-wien-rathaus | 1 | 375 | 3593/5892 (61.0%) | 1955/4440 (44.0%) |  |  |  |
+| lockstep-wildcamp | 1 | 337 | 3502/6006 (58.3%) | 1907/4742 (40.2%) |  |  |  |
 | sainthelp | 136 | 232 | 1385/3420 (40.5%) | 868/2352 (36.9%) |  |  |  |
-| ALL |  | 5399 | 39046/52058 (75.0%) | 26908/40998 (65.6%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
+| ALL |  | 5396 | 38969/52013 (74.9%) | 26815/40960 (65.5%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
 
-Never-exercised items: 27102, of which open 25896, justified in `unreachable.csv` 1206.
+Never-exercised items: 27189, of which open 25983, justified in `unreachable.csv` 1206.
 
 ## Per function
 
@@ -152,7 +152,7 @@ record; the outcomes are in `branches-missed.csv`).
 
 ### root 0000:0000 `root 0000:0000`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 37/45, outcomes 31/48
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 34/42, outcomes 29/46
 
 - `root+0x0026` `jmp 0x1bc`
 - `root+0x008D` `cmp byte ptr [0x907a], 1`
@@ -375,7 +375,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### root 0000:18FA `root 0000:18FA`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 32/57, outcomes 30/52
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 31/57, outcomes 29/52
 
 - `root+0x1918` `jmp 0x1a98`
 - `root+0x1922` `jmp 0x1a50`
@@ -385,6 +385,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 - `root+0x1979` `jmp 0x1a68`
 - `root+0x1993` `jmp 0x1a68`
 - `root+0x19D0` `mov byte ptr [bp - 2], 0x52`
+- `root+0x19D8` `mov byte ptr [bp - 2], 0x4d`
 - `root+0x19E8` `cmp byte ptr [0xa695], 1`
 - `root+0x19EF` `cmp byte ptr [0xa6b3], 1`
 - `root+0x19F6` `mov al, byte ptr [0xa6b2]`
@@ -405,7 +406,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### root 0000:1A9C `root 0000:1A9C`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 79/103, outcomes 77/108
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 78/103, outcomes 76/108
 
 - `root+0x1AB7` `push si`
 - `root+0x1B21` `mov word ptr [bp - 0xa], 0xffff`
@@ -422,6 +423,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 - `root+0x1F5D` `sub di, di`
 - `root+0x1F6F` `push 0x26e`
 - `root+0x2075` `jmp 0x2278`
+- `root+0x2086` `jmp 0x2278`
 - `root+0x20BE` `sub di, di`
 - `root+0x20D6` `push 0x272`
 - `root+0x2163` `sub di, di`
@@ -510,7 +512,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### root 0265:0654 `root 0265:0654`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-banks lockstep-camp-inn-broke lockstep-camp-rough lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-wrap lockstep-roster4 lockstep-save-load lockstep-shop lockstep-smiths lockstep-stables lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 54/66, outcomes 49/72
+draft, reached by lockstep-dungeon-mine-doors lockstep-wharves lockstep-wien-rathaus: blocks 54/66, outcomes 47/72
 
 - `root+0x2CDA` `mov ax, 0x15`
 - `root+0x2D27` `jmp 0x762`
@@ -610,11 +612,11 @@ matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-ca
 
 ### root 0410:0008 `root 0410:0008`
 
-matched, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-banks lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-mapsave lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-residence lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-ulm lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp names trading: blocks 1/1, outcomes 0/0
+matched, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-banks lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-mapsave lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-ulm lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp names trading: blocks 1/1, outcomes 0/0
 
 ### root 0410:001A `root 0410:001A`
 
-asm, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-churches lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-tyrnau lockstep-university lockstep-university-shop rules sainthelp saints: blocks 4/4, outcomes 4/4
+asm, reached by battle battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-tyrnau lockstep-university lockstep-university-shop rules sainthelp saints: blocks 4/4, outcomes 4/4
 
 ### root 0410:0038 `root 0410:0038`
 
@@ -634,11 +636,11 @@ asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle
 
 ### root 0410:01DC `root 0410:01DC`
 
-asm, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/5, outcomes 4/4
+asm, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/5, outcomes 4/4
 
 ### root 0410:02A8 `root 0410:02A8`
 
-asm, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/5, outcomes 4/4
+asm, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/5, outcomes 4/4
 
 ### root 0410:02CA `root 0410:02CA`
 
@@ -646,7 +648,7 @@ asm, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15
 
 ### root 0410:02E6 `root 0410:02E6`
 
-asm, reached by battle-oracle-castle07 battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 3/3, outcomes 2/2
+asm, reached by battle-oracle-castle07 battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 3/3, outcomes 2/2
 
 ### root 0410:0302 `root 0410:0302`
 
@@ -800,7 +802,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### root 047C:055F `root 047C:055F`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 047C:0568 `root 047C:0568`
 
@@ -1011,7 +1013,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### root 047C:1266 `root 047C:1266`
 
-draft, reached by lockstep-smiths: blocks 3/3, outcomes 1/2
+draft, reached by lockstep-smiths lockstep-university-shop: blocks 3/3, outcomes 1/2
 
 ### root 047C:1293 `root 047C:1293`
 
@@ -1130,7 +1132,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### root 0617:0264 `root 0617:0264`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 0617:045C `root 0617:045C`
 
@@ -1724,11 +1726,11 @@ asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle
 
 ### root 06A1:1CD8 `root 06A1:1CD8`
 
-asm, reached by lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 1/1, outcomes 0/0
+asm, reached by lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 1/1, outcomes 0/0
 
 ### root 06A1:1D04 `root 06A1:1D04`
 
-asm, reached by lockstep-camp-mouse lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-pressburg-map lockstep-tyrnau: blocks 6/6, outcomes 4/4
+asm, reached by lockstep-camp-mouse lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-tyrnau: blocks 6/6, outcomes 4/4
 
 ### root 06A1:1D2A `root 06A1:1D2A`
 
@@ -1811,7 +1813,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle
 
 ### root 06A1:22A6 `root 06A1:22A6`
 
-asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 7/11, outcomes 5/12
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 7/11, outcomes 5/12
 
 - `root+0x8CF8` `cmp byte ptr [bp - 9], 0` (runtime-library)
 - `root+0x8CFE` `lea ax, [bp - 6]` (runtime-library)
@@ -1879,7 +1881,7 @@ asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle
 
 ### root 06A1:2682 `root 06A1:2682`
 
-asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:26DE `root 06A1:26DE`
 
@@ -1970,11 +1972,11 @@ asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle
 
 ### root 06A1:2CF4 `root 06A1:2CF4`
 
-asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2D0E `root 06A1:2D0E`
 
-asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 1/1, outcomes 0/0
+asm, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### root 06A1:2D28 `root 06A1:2D28`
 
@@ -2038,7 +2040,7 @@ asm, reached by cards cards-day cards-variants: blocks 7/7, outcomes 5/6
 
 ### root 06A1:3108 `root 06A1:3108`
 
-asm, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/20, outcomes 4/22
+asm, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/20, outcomes 4/22
 
 - `root+0x9B3E` `sub ax, cx` (runtime-library)
 - `root+0x9B45` `dec cx` (runtime-library)
@@ -4807,19 +4809,20 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x0694 `R014+0x0694 (0E76:0694)`
 
-draft, reached by lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 26/33, outcomes 24/32
+draft, reached by lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 25/33, outcomes 23/32
 
 - `R014+0x0726` `push si`
 - `R014+0x0736` `push si`
 - `R014+0x0746` `push si`
 - `R014+0x0795` `jmp 0x8fa`
 - `R014+0x0822` `push 1`
+- `R014+0x0858` `push 0`
 - `R014+0x08AC` `push 1`
 - `R014+0x08D0` `push 0`
 
 ### R014+0x08FE `R014+0x08FE (0E76:08FE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 94/142, outcomes 92/162
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 94/142, outcomes 91/162
 
 - `R014+0x0921` `mov ax, word ptr [0xda4d]`
 - `R014+0x095C` `inc word ptr [bp - 6]`
@@ -4882,7 +4885,7 @@ draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockst
 
 ### R014+0x0F58 `R014+0x0F58 (0E76:0F58)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 41/53, outcomes 41/56
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 41/53, outcomes 42/56
 
 - `R014+0x0F65` `jmp 0x1153`
 - `R014+0x0FEA` `mov byte ptr [0xd610], 0`
@@ -4942,12 +4945,14 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ca
 
 ### R014+0x1BA0 `R014+0x1BA0 (0E76:1BA0)`
 
-draft, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 55/62, outcomes 52/66
+draft, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 53/62, outcomes 49/66
 
 - `R014+0x1BC3` `jmp 0x1efc`
 - `R014+0x1BFA` `mov bx, di`
 - `R014+0x1C06` `and byte ptr [bx - 0x5969], 0xfd`
+- `R014+0x1CAC` `mov bx, word ptr [bp - 4]`
 - `R014+0x1CC5` `mov al, byte ptr [bx - 0x6351]`
+- `R014+0x1D03` `cmp al, 0x41`
 - `R014+0x1D5B` `jmp 0x1efc`
 - `R014+0x1E11` `jmp 0x1efc`
 - `R014+0x1EE2` `jmp 0x1dce`
@@ -4962,7 +4967,7 @@ draft, reached by battle-oracle-cave60 battle-oracle-f2alch16 battle-oracle-f2hw
 
 ### R014+0x2324 `R014+0x2324 (0E76:2324)`
 
-draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 57/69, outcomes 55/74
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 59/69, outcomes 57/74
 
 - `R014+0x236D` `jmp 0x27a9`
 - `R014+0x240D` `mov byte ptr [0x9084], 1`
@@ -4973,9 +4978,7 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ca
 - `R014+0x2734` `mov byte ptr [0xd6ec], 0`
 - `R014+0x2744` `mov al, byte ptr es:[0xbfd]`
 - `R014+0x274D` `push 1`
-- `R014+0x2783` `cmp byte ptr [0xc21a], 0`
 - `R014+0x278A` `cmp word ptr [bp - 2], 5`
-- `R014+0x2790` `mov bx, word ptr [bp - 2]`
 
 ### R014+0x27AC `R014+0x27AC (0E76:27AC)`
 
@@ -4983,7 +4986,7 @@ draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city
 
 ### R014+0x2802 `R014+0x2802 (0E76:2802)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 27/27, outcomes 24/26
+draft, reached by battle-oracle-castle07 battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 27/27, outcomes 24/26
 
 ### R014+0x2A04 `R014+0x2A04 (0E76:2A04)`
 
@@ -5033,7 +5036,7 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ca
 
 ### R014+0x3166 `R014+0x3166 (0E76:3166)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 36/69, outcomes 37/94
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 14/69, outcomes 10/94
 
 - `R014+0x31B5` `mov bx, word ptr [0xc4fe]`
 - `R014+0x31BF` `mov si, 0x40`
@@ -5048,22 +5051,44 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 - `R014+0x3226` `mov ax, word ptr [bx + 6]`
 - `R014+0x3235` `add sp, 2`
 - `R014+0x3238` `mov word ptr [0xc62a], 0`
-- `R014+0x3252` `jmp 0x3382`
+- `R014+0x3255` `cmp word ptr [0x6eec], 0x7d`
+- `R014+0x325C` `cmp word ptr [0x6eec], 0xff`
+- `R014+0x3264` `cmp word ptr [0x6eee], 8`
 - `R014+0x326B` `dec byte ptr [0xc866]`
+- `R014+0x3272` `cmp word ptr [0x6eec], 0x7d`
+- `R014+0x3279` `cmp word ptr [0x6eec], 0xff`
+- `R014+0x3281` `cmp word ptr [0x6eee], 0xbf`
 - `R014+0x3289` `inc byte ptr [0xc866]`
+- `R014+0x3290` `cmp word ptr [0x6eec], 0x3c`
+- `R014+0x3297` `cmp word ptr [0x6eec], 0x44`
 - `R014+0x329E` `cmp word ptr [0x6eee], 0x32`
 - `R014+0x32A5` `cmp word ptr [0x6eee], 0x96`
 - `R014+0x32AD` `dec byte ptr [0xc866]`
+- `R014+0x32B4` `cmp word ptr [0x6eec], 0x137`
 - `R014+0x32BC` `cmp word ptr [0x6eee], 0x32`
 - `R014+0x32C3` `cmp word ptr [0x6eee], 0x96`
 - `R014+0x32CB` `inc byte ptr [0xc866]`
+- `R014+0x32D2` `cmp word ptr [0x6eec], 0x3c`
+- `R014+0x32D9` `cmp word ptr [0x6eec], 0x7d`
+- `R014+0x32E0` `cmp word ptr [0x6eee], 8`
+- `R014+0x32E7` `cmp word ptr [0x6eec], 0x3c`
+- `R014+0x32EE` `cmp word ptr [0x6eec], 0x44`
 - `R014+0x32F5` `cmp word ptr [0x6eee], 0x32`
 - `R014+0x32FC` `sub byte ptr [0xc866], 2`
+- `R014+0x3304` `cmp word ptr [0x6eec], 0xff`
 - `R014+0x330C` `cmp word ptr [0x6eee], 8`
+- `R014+0x3313` `cmp word ptr [0x6eec], 0x137`
 - `R014+0x331B` `cmp word ptr [0x6eee], 0x32`
 - `R014+0x3322` `dec byte ptr [0xc886]`
+- `R014+0x3328` `cmp word ptr [0x6eec], 0x3c`
+- `R014+0x332F` `cmp word ptr [0x6eec], 0x7d`
+- `R014+0x3336` `cmp word ptr [0x6eee], 0xbf`
+- `R014+0x333E` `cmp word ptr [0x6eec], 0x3c`
+- `R014+0x3345` `cmp word ptr [0x6eec], 0x44`
 - `R014+0x334C` `cmp word ptr [0x6eee], 0x96`
+- `R014+0x3354` `cmp word ptr [0x6eec], 0xff`
 - `R014+0x335C` `cmp word ptr [0x6eee], 0xbf`
+- `R014+0x3364` `cmp word ptr [0x6eec], 0x137`
 - `R014+0x336C` `cmp word ptr [0x6eee], 0x96`
 - `R014+0x3374` `add byte ptr [0xc866], 2`
 - `R014+0x3379` `inc byte ptr [0xc886]`
@@ -5265,7 +5290,7 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ca
 
 ### R014+0x4694 `R014+0x4694 (0E76:4694)`
 
-draft, reached by lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-orders-potion3: blocks 1/1, outcomes 0/0
 
 ### R014+0x469E `R014+0x469E (0E76:469E)`
 
@@ -5301,14 +5326,15 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ci
 
 ### R014+0x4BFA `R014+0x4BFA (12F7:03EA)`
 
-draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk path: blocks 67/69, outcomes 63/70
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk path: blocks 66/69, outcomes 62/70
 
+- `R014+0x4FF3` `jmp 0x960`
 - `R014+0x504E` `mov bx, word ptr [bp + 6]`
 - `R014+0x5061` `jmp 0x960`
 
 ### R014+0x519E `R014+0x519E (12F7:098E)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk path: blocks 19/19, outcomes 20/20
+draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk path: blocks 19/19, outcomes 20/20
 
 ### R014+0x52C4 `R014+0x52C4 (12F7:0AB4)`
 
@@ -5352,11 +5378,11 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ci
 
 ### R014+0x5DAC `R014+0x5DAC (12F7:159C)`
 
-draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-orders-attack-a lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-prague-missile lockstep-orders-walk: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attacks lockstep-orders-walk: blocks 1/1, outcomes 0/0
 
 ### R014+0x5DE0 `R014+0x5DE0 (12F7:15D0)`
 
-draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-orders-attack-a lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-prague-missile lockstep-orders-walk: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attacks lockstep-orders-walk: blocks 1/1, outcomes 0/0
 
 ### R014+0x5E2A `R014+0x5E2A (12F7:161A)`
 
@@ -5372,13 +5398,14 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x60B0 `R014+0x60B0 (1462:01F0)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards-day lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk tactics: blocks 82/87, outcomes 122/128
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards-day lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk tactics: blocks 81/87, outcomes 121/128
 
 - `R014+0x60F7` `pcmpeqb mm6, qword ptr [bx + si]`
 - `R014+0x611B` `mov ax, word ptr [0x851e]`
 - `R014+0x6127` `jmp 0x503`
 - `R014+0x61A9` `mov ax, cx`
 - `R014+0x61B4` `jmp 0x503`
+- `R014+0x628A` `jmp 0x503`
 
 ### R014+0x63CC `R014+0x63CC (1462:050C)`
 
@@ -5396,7 +5423,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x6818 `R014+0x6818 (14F7:0008)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 102/117, outcomes 75/86
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 101/117, outcomes 73/86
 
 - `R014+0x6B42` `imul bx, si, 0x1a`
 - `R014+0x6B54` `imul bx, si, 0x1a`
@@ -5412,6 +5439,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 - `R014+0x6C9A` `mov word ptr [bp - 0x16], 1`
 - `R014+0x6D89` `jmp 0x600`
 - `R014+0x6E31` `jmp 0x6a8`
+- `R014+0x6F5B` `cmp word ptr [0xc2bd], ax`
 - `R014+0x6F92` `mov bx, si`
 
 ### R014+0x6FFC `R014+0x6FFC (14F7:07EC)`
@@ -5438,7 +5466,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x76AE `R014+0x76AE (14F7:0E9E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 49/53, outcomes 47/58
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 49/53, outcomes 45/58
 
 - `R014+0x7749` `jmp 0xfce`
 - `R014+0x7757` `jmp 0xfce`
@@ -5447,10 +5475,9 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x799E `R014+0x799E (14F7:118E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 33/40, outcomes 26/36
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 34/40, outcomes 27/36
 
 - `R014+0x79C8` `jmp 0x1388`
-- `R014+0x7A29` `jmp 0x1388`
 - `R014+0x7AEF` `jmp 0x1388`
 - `R014+0x7AF8` `mov word ptr [bp - 6], 0`
 - `R014+0x7B03` `mov word ptr [bp - 8], 0`
@@ -5459,8 +5486,9 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x7BBE `R014+0x7BBE (14F7:13AE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 111/116, outcomes 101/108
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 110/116, outcomes 100/108
 
+- `R014+0x7CFC` `dec byte ptr [0xe166]`
 - `R014+0x7E05` `jmp 0x167a`
 - `R014+0x7E14` `jmp 0x1704`
 - `R014+0x7E8A` `mov bx, word ptr [bp + 6]`
@@ -5469,15 +5497,14 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x827A `R014+0x827A (14F7:1A6A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city13 battle-oracle-city24 battle-oracle-f2friar19 battle-oracle-f2leader14 battle-oracle-f2precept05 battle-oracle-gate battle-oracle-street battle-oracle-wild75 lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 38/41, outcomes 30/34
+draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-city13 battle-oracle-city24 battle-oracle-f2friar19 battle-oracle-f2leader14 battle-oracle-f2precept05 battle-oracle-gate battle-oracle-street battle-oracle-wild75 lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 39/41, outcomes 31/34
 
 - `R014+0x828D` `jmp 0x1e6c`
 - `R014+0x82B2` `jmp 0x1e6c`
-- `R014+0x84FD` `jmp 0x1e54`
 
 ### R014+0x8680 `R014+0x8680 (14F7:1E70)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 19/19, outcomes 19/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 19/19, outcomes 20/20
 
 ### R014+0x8724 `R014+0x8724 (14F7:1F14)`
 
@@ -5518,9 +5545,10 @@ draft, reached by battle-oracle-f2alch16 battle-oracle-f2kking0c battle-oracle-f
 
 ### R014+0x917E `R014+0x917E (14F7:296E)`
 
-draft, reached by battle-oracle-f2alch16 battle-oracle-f2hwitch41: blocks 49/57, outcomes 38/52
+draft, reached by battle-oracle-f2hwitch41: blocks 48/57, outcomes 36/52
 
 - `R014+0x924D` `jmp 0x2cf9`
+- `R014+0x939E` `sar ax, 5`
 - `R014+0x93CC` `sar ax, 4`
 - `R014+0x9412` `lea ax, [bx + 1]`
 - `R014+0x9427` `mov ax, word ptr [bp - 0x28]`
@@ -5531,7 +5559,7 @@ draft, reached by battle-oracle-f2alch16 battle-oracle-f2hwitch41: blocks 49/57,
 
 ### R014+0x9542 `R014+0x9542 (14F7:2D32)`
 
-draft, reached by battle-oracle-cave60 battle-oracle-f2leader14 battle-oracle-f2witch2f battle-oracle-wild30 battle-oracle-wild6f lockstep-luebeck-potion lockstep-orders-potion3: blocks 32/39, outcomes 28/36
+draft, reached by battle-oracle-cave60 battle-oracle-f2leader14 battle-oracle-f2witch2f battle-oracle-wild30 battle-oracle-wild6f lockstep-luebeck-potion lockstep-orders-potion3: blocks 31/39, outcomes 26/36
 
 - `R014+0x9554` `jmp 0x2f91`
 - `R014+0x956C` `jmp 0x2f7a`
@@ -5540,6 +5568,7 @@ draft, reached by battle-oracle-cave60 battle-oracle-f2leader14 battle-oracle-f2
 - `R014+0x969D` `dec word ptr [bp - 8]`
 - `R014+0x96B8` `jmp 0x2f7a`
 - `R014+0x96D6` `jmp 0x2f6b`
+- `R014+0x979E` `jmp 0x2d51`
 
 ### R014+0x97A6 `R014+0x97A6 (14F7:2F96)`
 
@@ -5556,7 +5585,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x9C14 `R014+0x9C14 (14F7:3404)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 4/4, outcomes 4/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 4/4, outcomes 3/4
 
 ### R014+0x9C4C `R014+0x9C4C (14F7:343C)`
 
@@ -5568,13 +5597,12 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x9CE6 `R014+0x9CE6 (14F7:34D6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 10/18, outcomes 8/20
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 11/18, outcomes 10/20
 
 - `R014+0x9CF2` `jmp 0x3596`
 - `R014+0x9CFB` `jmp 0x3596`
 - `R014+0x9D05` `add bx, dx`
 - `R014+0x9D0D` `sub ax, ax`
-- `R014+0x9D49` `mov di, word ptr [si + 8]`
 - `R014+0x9D54` `jmp 0x34fd`
 - `R014+0x9D56` `mov ax, word ptr [bp + 0xa]`
 - `R014+0x9D67` `jmp 0x34fd`
@@ -5585,13 +5613,12 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x9DDE `R014+0x9DDE (14F7:35CE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 7/12, outcomes 6/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 8/12, outcomes 8/16
 
 - `R014+0x9DEA` `add word ptr [bp + 0xc], dx`
 - `R014+0x9DF7` `sub ax, ax`
 - `R014+0x9E1A` `add word ptr [bp + 0xe], si`
 - `R014+0x9E27` `jmp 0x35e7`
-- `R014+0x9E41` `mov ax, word ptr [di + 8]`
 
 ### R014+0x9E92 `R014+0x9E92 (14F7:3682)`
 
@@ -5617,7 +5644,7 @@ draft, reached by battle-oracle-f2alch16 battle-oracle-f2kking0c battle-oracle-f
 
 ### R014+0xA256 `R014+0xA256 (14F7:3A46)`
 
-draft, reached by battle-oracle-f2alch16 battle-oracle-f2hwitch41: blocks 20/34, outcomes 19/38
+draft, reached by battle-oracle-f2hwitch41: blocks 17/34, outcomes 16/38
 
 - `R014+0xA2BB` `jmp 0x3c7d`
 - `R014+0xA35B` `sub ax, ax`
@@ -5626,8 +5653,11 @@ draft, reached by battle-oracle-f2alch16 battle-oracle-f2hwitch41: blocks 20/34,
 - `R014+0xA387` `cmp cx, 7`
 - `R014+0xA38C` `mov ax, word ptr [bp + si - 0x74]`
 - `R014+0xA393` `mov word ptr [bp + si - 0x74], ax`
+- `R014+0xA39C` `cmp word ptr [bp - 2], 4`
+- `R014+0xA3A2` `mov ax, word ptr [bp + si - 0x54]`
 - `R014+0xA3B3` `cmp word ptr [bp - 2], 0xa`
 - `R014+0xA3B9` `mov ax, word ptr [bp + si - 0x54]`
+- `R014+0xA3C0` `mov word ptr [bp + si - 0x54], ax`
 - `R014+0xA3DB` `cmp word ptr [bp - 2], 0xa`
 - `R014+0xA3E1` `mov ax, word ptr [bp + si - 0x54]`
 - `R014+0xA406` `sub ax, ax`
@@ -5683,7 +5713,7 @@ draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders locks
 
 ### R014+0xB0D8 `R014+0xB0D8 (18BF:0C48)`
 
-draft, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 8/10, outcomes 5/8
+draft, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 8/10, outcomes 5/8
 
 - `R014+0xB108` `mov bx, word ptr [bp - 6]`
 - `R014+0xB142` `mov bx, word ptr [bp - 6]`
@@ -5785,24 +5815,27 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0xBCA8 `R014+0xBCA8 (19CD:0738)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 46/58, outcomes 37/56
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 43/58, outcomes 34/56
 
 - `R014+0xBCD3` `mov al, byte ptr [0xa6b2]`
-- `R014+0xBCFD` `jmp 0xa94`
+- `R014+0xBD09` `jmp 0xa94`
 - `R014+0xBD38` `mov al, byte ptr [0xa6b2]`
 - `R014+0xBD53` `mov al, byte ptr [0xa6b2]`
+- `R014+0xBD72` `jmp 0x8d0`
 - `R014+0xBD87` `or dx, dx`
 - `R014+0xBDD8` `mov dx, word ptr [0xa6b0]`
 - `R014+0xBDE4` `jmp 0xa94`
 - `R014+0xBDE7` `mov word ptr [bx - 0x639b], dx`
 - `R014+0xBE2B` `jmp 0xa94`
+- `R014+0xBE48` `mov al, byte ptr [0xa6b2]`
 - `R014+0xBEA0` `jmp 0xa94`
 - `R014+0xBEE9` `mov word ptr [bx - 0x63a3], dx`
+- `R014+0xBF20` `mov al, byte ptr [0xa6b2]`
 - `R014+0xBF86` `push 0x96`
 
 ### R014+0xC044 `R014+0xC044 (19CD:0AD4)`
 
-draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-walk: blocks 50/63, outcomes 54/76
+draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-walk: blocks 50/63, outcomes 51/76
 
 - `R014+0xC0AF` `jmp 0xdc7`
 - `R014+0xC0C8` `mov al, byte ptr [0xa6b2]`
@@ -5812,15 +5845,15 @@ draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders locks
 - `R014+0xC0EE` `jmp 0xc61`
 - `R014+0xC13E` `mov al, byte ptr [0xa6b2]`
 - `R014+0xC150` `cmp ax, 0x100`
+- `R014+0xC1A1` `mov si, word ptr [0xc2bd]`
 - `R014+0xC1DF` `mov al, byte ptr [0xa6b2]`
 - `R014+0xC209` `jmp 0xdba`
-- `R014+0xC2DE` `mov cx, word ptr [0xc621]`
+- `R014+0xC2E4` `mov cx, word ptr [0xc4db]`
 - `R014+0xC2F0` `mov cx, word ptr [0xc244]`
-- `R014+0xC2FE` `mov byte ptr [0xd845], 0xfd`
 
 ### R014+0xC33C `R014+0xC33C (19CD:0DCC)`
 
-draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-walk: blocks 57/72, outcomes 56/78
+draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-walk: blocks 57/72, outcomes 54/78
 
 - `R014+0xC3AD` `cmp byte ptr [0xa6b2], 0xff`
 - `R014+0xC3B4` `push cs`
@@ -5831,12 +5864,12 @@ draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders locks
 - `R014+0xC418` `mov bx, word ptr [bp - 0xe]`
 - `R014+0xC425` `jmp 0x1022`
 - `R014+0xC42F` `jmp 0x1025`
+- `R014+0xC4F4` `lcall 0xe76, 0x4694`
 - `R014+0xC59C` `jmp 0x11e8`
 - `R014+0xC5AD` `mov al, byte ptr [0xa6b2]`
 - `R014+0xC5D7` `jmp 0x11e8`
-- `R014+0xC692` `mov cx, word ptr [0xc621]`
+- `R014+0xC69C` `mov si, word ptr [0xc4db]`
 - `R014+0xC700` `mov cx, word ptr [0xc244]`
-- `R014+0xC70E` `mov byte ptr [0xd845], 0xfd`
 
 ### R014+0xC75C `R014+0xC75C (19CD:11EC)`
 
@@ -5884,14 +5917,15 @@ draft, reached by lockstep-dungeon-mine-group: blocks 4/4, outcomes 3/4
 
 ### R014+0xCCD4 `R014+0xCCD4 (19CD:1764)`
 
-draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-walk: blocks 4/4, outcomes 2/2
+draft, reached by lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-luebeck-potion lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attacks lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-walk: blocks 4/4, outcomes 2/2
 
 ### R014+0xCD66 `R014+0xCD66 (19CD:17F6)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 24/26, outcomes 25/30
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 23/26, outcomes 23/30
 
 - `R014+0xCD8D` `jmp 0x187b`
 - `R014+0xCDFE` `jmp 0x1957`
+- `R014+0xCE98` `mov di, word ptr [0xc2bd]`
 
 ### R014+0xCF5E `R014+0xCF5E (19CD:19EE)`
 
@@ -5994,7 +6028,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle7c battle-oracle-city
 
 ### R014+0xDC14 `R014+0xDC14 (19CD:26A4)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 50/57, outcomes 51/62
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 49/57, outcomes 50/62
 
 - `R014+0xDC63` `and byte ptr [si], 0xda`
 - `R014+0xDC87` `and byte ptr [si], 0xd9`
@@ -6003,6 +6037,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 - `R014+0xDCBE` `and byte ptr [si], 0xdc`
 - `R014+0xDCCA` `test byte ptr [si], 4`
 - `R014+0xDCCF` `and byte ptr [si], 0xdc`
+- `R014+0xDD05` `and byte ptr [si], 0xf8`
 
 ### R014+0xDE12 `R014+0xDE12 (19CD:28A2)`
 
@@ -6057,7 +6092,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0xE278 `R014+0xE278 (19CD:2D08)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 14/18, outcomes 11/16
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 14/18, outcomes 11/16
 
 - `R014+0xE285` `jmp 0x2e4c`
 - `R014+0xE292` `mov al, byte ptr [si - 0x37e4]`
@@ -6066,7 +6101,7 @@ draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockst
 
 ### R014+0xE3C0 `R014+0xE3C0 (19CD:2E50)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 35/42, outcomes 24/40
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 35/42, outcomes 24/40
 
 - `R014+0xE448` `push 0x1be0`
 - `R014+0xE4E7` `push 0x1bff`
@@ -6078,24 +6113,24 @@ draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockst
 
 ### R014+0xE774 `R014+0xE774 (19CD:3204)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 1/1, outcomes 0/0
+draft, reached by battle-oracle-castle battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 1/1, outcomes 0/0
 
 ### R014+0xE7C8 `R014+0xE7C8 (19CD:3258)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 26/28, outcomes 22/26
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 26/28, outcomes 22/26
 
 - `R014+0xE806` `jmp 0x3395`
 - `R014+0xE8AD` `sub word ptr [bx], cx`
 
 ### R014+0xE930 `R014+0xE930 (19CD:33C0)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 15/16, outcomes 14/16
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 15/16, outcomes 14/16
 
 - `R014+0xE94D` `jmp 0x348b`
 
 ### R014+0xEA10 `R014+0xEA10 (19CD:34A0)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 27/31, outcomes 24/34
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 27/31, outcomes 24/34
 
 - `R014+0xEB81` `cmp byte ptr [0xc783], 0`
 - `R014+0xEB88` `mov byte ptr [0x1b98], 0`
@@ -6104,22 +6139,19 @@ draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockst
 
 ### R014+0xEC60 `R014+0xEC60 (19CD:36F0)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/5, outcomes 4/4
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 5/5, outcomes 4/4
 
 ### R014+0xECD6 `R014+0xECD6 (19CD:3766)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 4/6, outcomes 1/4
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 5/6, outcomes 3/4
 
-- `R014+0xECE2` `inc di`
 - `R014+0xECEB` `jmp 0x378f`
 
 ### R014+0xED10 `R014+0xED10 (1D47:0000)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 22/25, outcomes 20/26
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 24/25, outcomes 21/26
 
-- `R014+0xEDD3` `sub al, al`
-- `R014+0xEDE5` `push word ptr [bp - 2]`
-- `R014+0xEDF0` `push di`
+- `R014+0xEE47` `jmp 0x1a`
 
 ### R014+0xEE4E `R014+0xEE4E (1D47:013E)`
 
@@ -6148,7 +6180,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0xF438 `R014+0xF438 (1DB7:0028)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 21/23, outcomes 24/26
+draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 21/23, outcomes 24/26
 
 - `R014+0xF452` `jmp 0x144`
 - `R014+0xF47D` `jmp 0x144`
@@ -6166,7 +6198,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0xF828 `R014+0xF828 (1DB7:0418)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-gate battle-oracle-wild battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 14/14, outcomes 13/14
+draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-gate battle-oracle-wild battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 14/14, outcomes 13/14
 
 ### R014+0xF88E `R014+0xF88E (1DB7:047E)`
 
@@ -6177,7 +6209,7 @@ draft, reached by battle-oracle-f2friar19 battle-oracle-f2leader14: blocks 14/16
 
 ### R014+0xF9D8 `R014+0xF9D8 (1DB7:05C8)`
 
-draft, reached by battle-oracle-f2friar19 battle-oracle-f2leader14 lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 14/16, outcomes 14/16
+draft, reached by battle-oracle-f2friar19 battle-oracle-f2leader14 lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 14/16, outcomes 14/16
 
 - `R014+0xFA38` `mov bx, si`
 - `R014+0xFA85` `push 0`
@@ -6210,11 +6242,11 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ci
 
 ### R014+0x1003A `R014+0x1003A (1DB7:0C2A)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/5, outcomes 4/4
+draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 5/5, outcomes 4/4
 
 ### R014+0x1010A `R014+0x1010A (1DB7:0CFA)`
 
-draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 6/6, outcomes 4/4
+draft, reached by battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 6/6, outcomes 4/4
 
 ### R014+0x10146 `R014+0x10146 (1DB7:0D36)`
 
@@ -6224,7 +6256,7 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ca
 
 ### R014+0x10232 `R014+0x10232 (1DB7:0E22)`
 
-draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 59/62, outcomes 60/66
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2hell62 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 59/62, outcomes 58/66
 
 - `R014+0x10251` `cmp di, 5`
 - `R014+0x10256` `jmp 0x111c`
@@ -6244,7 +6276,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R014+0x10672 `R014+0x10672 (1EC9:0142)`
 
-draft, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 2/15, outcomes 1/12
+draft, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 2/15, outcomes 1/12
 
 - `R014+0x10686` `mov bx, word ptr [bp + 6]`
 - `R014+0x106BC` `mov bx, cx`
@@ -6729,11 +6761,11 @@ matched, reached by battle-oracle-cave60 battle-oracle-f2alch16 battle-oracle-f2
 
 ### R018+0x02BE `R018+0x02BE (1EF8:02BE)`
 
-matched, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 9/9, outcomes 8/8
+matched, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 9/9, outcomes 8/8
 
 ### R018+0x03AE `R018+0x03AE (1EF8:03AE)`
 
-matched, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 15/27, outcomes 12/30
+matched, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 14/27, outcomes 11/30
 
 - `R018+0x03D0` `jg 0x42d`
 - `R018+0x03D2` `sub al, 0x17`
@@ -6745,6 +6777,7 @@ matched, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lo
 - `R018+0x03F0` `mov word ptr [bp - 6], 0x18`
 - `R018+0x0400` `mov word ptr [bp - 6], 0x19`
 - `R018+0x040C` `mov word ptr [bp - 6], 1`
+- `R018+0x0424` `mov word ptr [bp - 6], 0x22`
 - `R018+0x0455` `add si, 6`
 - `R018+0x0463` `mov ax, 0x321a`
 
@@ -6769,13 +6802,12 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R018+0x0706 `R018+0x0706 (1F43:0256)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 163/179, outcomes 148/176
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 164/179, outcomes 149/176
 
 - `R018+0x0713` `jmp 0xc86`
 - `R018+0x071D` `mov ax, word ptr [0xc2bb]`
 - `R018+0x0726` `jmp 0xc86`
 - `R018+0x0750` `mov ax, word ptr [0x117e]`
-- `R018+0x0AF5` `push bx`
 - `R018+0x0D70` `jmp 0x7bf`
 - `R018+0x0F64` `jmp 0xb52`
 - `R018+0x1002` `mov word ptr [bp - 0x5c], 1`
@@ -6790,7 +6822,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R018+0x113A `R018+0x113A (1F43:0C8A)`
 
-draft, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 27/30, outcomes 25/32
+draft, reached by battle-oracle-gate lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 27/30, outcomes 26/32
 
 - `R018+0x133B` `inc si`
 - `R018+0x1346` `mov di, word ptr [bp + 6]`
@@ -6810,11 +6842,13 @@ draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-ca
 
 ### R019+0x0000 `R019+0x0000 (1EF8:0000)`
 
-matched, reached by battle-oracle-cave60 battle-oracle-f2alch16 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2witch2f battle-oracle-wild30 battle-oracle-wild50 battle-oracle-wild6f lockstep-luebeck-potion lockstep-orders-potion2 lockstep-orders-potion3: blocks 17/29, outcomes 11/24
+matched, reached by battle-oracle-cave60 battle-oracle-f2alch16 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2witch2f battle-oracle-wild30 battle-oracle-wild50 battle-oracle-wild6f lockstep-luebeck-potion lockstep-orders-potion2 lockstep-orders-potion3: blocks 15/29, outcomes 9/24
 
 - `R019+0x002C` `jmp 0x1de`
+- `R019+0x0068` `dec ax`
 - `R019+0x006B` `dec ax`
 - `R019+0x006E` `jmp 0x87`
+- `R019+0x007A` `mov byte ptr [bx - 0x5cb9], 5`
 - `R019+0x0082` `mov byte ptr [bx - 0x5cb9], 6`
 - `R019+0x00B3` `jmp 0x1de`
 - `R019+0x013A` `mov word ptr [bp + 0xe], di`
@@ -6834,7 +6868,10 @@ matched, reached by battle-oracle-f2alch16 battle-oracle-f2kking0c battle-oracle
 
 ### R019+0x02B4 `R019+0x02B4 (1EF8:02B4)`
 
-matched, reached by battle-oracle-cave60 battle-oracle-f2leader14 battle-oracle-f2witch2f battle-oracle-wild30 battle-oracle-wild6f lockstep-luebeck-potion lockstep-orders-potion3: blocks 6/6, outcomes 4/6
+matched, reached by battle-oracle-cave60 battle-oracle-f2leader14 battle-oracle-f2witch2f battle-oracle-wild30 battle-oracle-wild6f lockstep-luebeck-potion lockstep-orders-potion3: blocks 4/6, outcomes 2/6
+
+- `R019+0x02CD` `mov dx, si`
+- `R019+0x02E0` `mov bx, dx`
 
 ### R019+0x0300 `R019+0x0300 (1EF8:0300)`
 
@@ -6851,7 +6888,7 @@ matched, reached by battle-oracle-f2alch16 battle-oracle-f2kking0c battle-oracle
 
 ### R019+0x058A `R019+0x058A (1EF8:058A)`
 
-matched, reached by battle-oracle-cave60 battle-oracle-f2leader14 battle-oracle-f2witch2f battle-oracle-wild30 battle-oracle-wild6f lockstep-luebeck-potion lockstep-orders-potion3: blocks 56/68, outcomes 45/64
+matched, reached by battle-oracle-cave60 battle-oracle-f2leader14 battle-oracle-f2witch2f battle-oracle-wild30 battle-oracle-wild6f lockstep-luebeck-potion lockstep-orders-potion3: blocks 54/68, outcomes 43/64
 
 - `R019+0x05B6` `jmp 0x8f7`
 - `R019+0x05E2` `mov di, 2`
@@ -6865,6 +6902,8 @@ matched, reached by battle-oracle-cave60 battle-oracle-f2leader14 battle-oracle-
 - `R019+0x0710` `mov ax, word ptr [bp - 8]`
 - `R019+0x0718` `jmp 0x8f7`
 - `R019+0x07C8` `jmp 0x8f7`
+- `R019+0x07F6` `mov bx, word ptr [bp - 4]`
+- `R019+0x0824` `mov ax, di`
 
 ### R019+0x0914 `R019+0x0914 (1EF8:0914)`
 
@@ -6951,7 +6990,7 @@ matched, reached by battle lockstep-gate-battle lockstep-loot-esc lockstep-loot-
 
 ### R021+0x0080 `R021+0x0080 (1EF8:0080)`
 
-matched, reached by battle lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-potion3 lockstep-orders-save lockstep-orders-sheet lockstep-orders-walk: blocks 6/9, outcomes 3/6
+matched, reached by battle lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attacks lockstep-orders-save lockstep-orders-sheet lockstep-orders-walk: blocks 6/9, outcomes 3/6
 
 - `R021+0x008C` `jmp 0x1de`
 - `R021+0x0095` `mov al, byte ptr [0x907b]`
@@ -6959,7 +6998,7 @@ matched, reached by battle lockstep-gate-battle lockstep-loot-esc lockstep-loot-
 
 ### R021+0x01E2 `R021+0x01E2 (1EF8:01E2)`
 
-matched, reached by lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-potion3 lockstep-orders-save lockstep-orders-sheet lockstep-orders-walk: blocks 7/10, outcomes 7/12
+matched, reached by lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attacks lockstep-orders-save lockstep-orders-sheet lockstep-orders-walk: blocks 7/10, outcomes 7/12
 
 - `R021+0x0203` `sub si, si`
 - `R021+0x0205` `push word ptr [0xa628]`
@@ -7119,7 +7158,7 @@ draft, reached by battle-oracle-fort5e: blocks 4/5, outcomes 3/4
 
 ### R025+0x0000 `R025+0x0000 (1EF8:0000)`
 
-draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 114/125, outcomes 96/112
+draft, reached by battle-oracle-castle04 battle-oracle-castle07 battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2witch2f battle-oracle-gate battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 114/125, outcomes 94/112
 
 - `R025+0x002A` `dec ax`
 - `R025+0x002D` `jmp 0x190`
@@ -7484,7 +7523,7 @@ draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-mouse 
 
 ### R029+0x01A0 `R029+0x01A0 (0E76:01A0)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-churches lockstep-healer lockstep-notices lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus rules sainthelp saints: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-rough lockstep-churches lockstep-healer lockstep-notices lockstep-university lockstep-university-shop rules sainthelp saints: blocks 3/3, outcomes 2/2
 
 ### R029+0x01C0 `R029+0x01C0 (0E76:01C0)`
 
@@ -7508,7 +7547,7 @@ draft, reached by sainthelp saints: blocks 2/3, outcomes 1/2
 
 ### R029+0x02EA `R029+0x02EA (0E76:02EA)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-wild-risk rules sainthelp saints: blocks 26/27, outcomes 19/20
+draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-rough lockstep-camp-wild-risk rules sainthelp saints: blocks 26/27, outcomes 19/20
 
 - `R029+0x03D2` `jmp 0x46b`
 
@@ -7571,7 +7610,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R029+0x0A72 `R029+0x0A72 (0E76:0A72)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-churches lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 13/13, outcomes 14/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-tyrnau rules sainthelp saints: blocks 13/13, outcomes 14/14
 
 ### R029+0x0B64 `R029+0x0B64 (0E76:0B64)`
 
@@ -7600,7 +7639,7 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 20/30, outco
 
 ### R029+0x0DD8 `R029+0x0DD8 (0E76:0DD8)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-stables lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp sainthelp: blocks 22/28, outcomes 18/28
+draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-stables lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp sainthelp: blocks 22/28, outcomes 18/28
 
 - `R029+0x0E73` `mov al, byte ptr [0x907b]`
 - `R029+0x0E83` `jmp 0xf4c`
@@ -7641,7 +7680,7 @@ draft, reached by cards cards-day cards-variants: blocks 12/37, outcomes 10/40
 
 ### R029+0x118E `R029+0x118E (0E76:118E)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-tyrnau: blocks 8/8, outcomes 8/8
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus: blocks 8/8, outcomes 8/8
 
 ### R029+0x1260 `R029+0x1260 (0E76:1260)`
 
@@ -7652,7 +7691,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R029+0x1326 `R029+0x1326 (0E76:1326)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-banks lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-shop lockstep-smiths lockstep-stables lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wildcamp trading: blocks 10/12, outcomes 10/14
+draft, reached by cards cards-day cards-flip cards-variants lockstep-banks lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-healer lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-shop lockstep-smiths lockstep-stables lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wildcamp trading: blocks 10/12, outcomes 10/14
 
 - `R029+0x1336` `dec ax`
 - `R029+0x137A` `mov ax, word ptr [0x9078]`
@@ -7675,7 +7714,7 @@ draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x14A4 `R029+0x14A4 (0E76:14A4)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-healer lockstep-mapsave lockstep-notices lockstep-residence lockstep-roster-ulm lockstep-stay lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp rules: blocks 6/6, outcomes 6/6
+draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-healer lockstep-mapsave lockstep-notices lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x14EC `R029+0x14EC (0E76:14EC)`
 
@@ -7723,7 +7762,7 @@ draft, reached by cards cards-day cards-variants rules: blocks 6/6, outcomes 6/6
 
 ### R029+0x18A8 `R029+0x18A8 (0E76:18A8)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy rules: blocks 3/3, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-rough rules: blocks 3/3, outcomes 2/2
 
 ### R029+0x1972 `R029+0x1972 (0E76:1972)`
 
@@ -7753,7 +7792,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R029+0x1DFE `R029+0x1DFE (0E76:1DFE)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-rough rules: blocks 23/23, outcomes 8/8
+draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-rough lockstep-notices rules: blocks 23/23, outcomes 8/8
 
 ### R029+0x1FB8 `R029+0x1FB8 (0E76:1FB8)`
 
@@ -7776,11 +7815,11 @@ draft, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcome
 
 ### R029+0x2180 `R029+0x2180 (0E76:2180)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
 
 ### R029+0x21AA `R029+0x21AA (0E76:21AA)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university lockstep-university-shop: blocks 4/4, outcomes 2/2
+draft, reached by cards cards-day cards-flip cards-variants lockstep-foreigntrader lockstep-healer lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables: blocks 4/4, outcomes 2/2
 
 ### R029+0x2204 `R029+0x2204 (0E76:2204)`
 
@@ -7850,7 +7889,7 @@ draft, reached by lockstep-camp-inn-broke: blocks 13/18, outcomes 12/22
 
 ### R029+0x2930 `R029+0x2930 (0E76:2930)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-mouse lockstep-camp-wild-risk lockstep-chargen-party lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-healer lockstep-notices lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-select lockstep-pressburg-map lockstep-tyrnau sainthelp: blocks 5/6, outcomes 3/4
+draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-mouse lockstep-camp-wild-risk lockstep-chargen-party lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-select lockstep-orders-walk lockstep-pressburg-map lockstep-tyrnau sainthelp: blocks 5/6, outcomes 3/4
 
 - `R029+0x2952` `mov ax, 0xffff`
 
@@ -7902,7 +7941,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R029+0x3180 `R029+0x3180 (0E76:3180)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-banks lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-shop lockstep-smiths lockstep-stables lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 10/11, outcomes 11/16
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-banks lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-shop lockstep-smiths lockstep-stables lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 10/11, outcomes 11/16
 
 - `R029+0x31A4` `sub ax, ax`
 
@@ -7916,7 +7955,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R029+0x32CE `R029+0x32CE (0E76:32CE)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-variants lockstep-alchemy lockstep-banks lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster4 lockstep-save-load lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 4/4, outcomes 3/4
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-variants lockstep-alchemy lockstep-banks lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster4 lockstep-save-load lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 4/4, outcomes 3/4
 
 ### R029+0x32FE `R029+0x32FE (0E76:32FE)`
 
@@ -8084,7 +8123,7 @@ draft, reached by lockstep-camp-wild-risk: blocks 8/11, outcomes 4/8
 
 ### R029+0x450A `R029+0x450A (0E76:450A)`
 
-draft, reached by lockstep-camp-inn-broke lockstep-camp-rough lockstep-residence lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-camp-inn-broke lockstep-camp-rough lockstep-residence lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
 
 ### R029+0x4534 `R029+0x4534 (0E76:4534)`
 
@@ -8130,7 +8169,7 @@ draft, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x4F1A `R029+0x4F1A (1367:000A)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-wharves lockstep-wien-rathaus rules: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-rough rules: blocks 5/5, outcomes 4/4
 
 ### R029+0x4F38 `R029+0x4F38 (1367:0028)`
 
@@ -8154,19 +8193,19 @@ matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-ca
 
 ### R029+0x5002 `R029+0x5002 (1367:00F2)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-rough lockstep-churches lockstep-foreigntrader lockstep-menubar lockstep-menubar2 lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop sainthelp saints trading: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-rough lockstep-churches lockstep-foreigntrader lockstep-healer lockstep-menubar lockstep-menubar2 lockstep-pawnshop lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau sainthelp saints trading: blocks 1/1, outcomes 0/0
 
 ### R029+0x5040 `R029+0x5040 (1367:0130)`
 
-matched, reached by cards cards-day cards-flip cards-variants core lockstep-camp-inn-broke lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-shop lockstep-stables lockstep-stay lockstep-university-shop: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core lockstep-camp-inn-broke lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-pawnshop lockstep-shop lockstep-stables lockstep-stay: blocks 5/5, outcomes 4/4
 
 ### R029+0x5090 `R029+0x5090 (1367:0180)`
 
-matched, reached by cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-rough lockstep-foreigntrader lockstep-inventory lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-shop lockstep-stay lockstep-university-shop sainthelp saints: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-rough lockstep-foreigntrader lockstep-inventory lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-shop lockstep-stay sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R029+0x50DE `R029+0x50DE (1367:01CE)`
 
-matched, reached by cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-rough lockstep-churches lockstep-inventory lockstep-residence lockstep-stay lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-rough lockstep-churches lockstep-inventory lockstep-residence lockstep-stay: blocks 1/1, outcomes 0/0
 
 ### R029+0x50FC `R029+0x50FC (1367:01EC)`
 
@@ -8174,7 +8213,7 @@ matched, reached by cards cards-day cards-flip cards-variants core: blocks 5/5, 
 
 ### R029+0x514E `R029+0x514E (1367:023E)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-camp-wild-risk lockstep-gate-battle lockstep-healer lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-save-load lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus: blocks 5/5, outcomes 4/4
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-camp-wild-risk lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-save-load lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus: blocks 5/5, outcomes 4/4
 
 ### R029+0x51A0 `R029+0x51A0 (1367:0290)`
 
@@ -8182,7 +8221,7 @@ matched, reached by core: blocks 4/4, outcomes 4/4
 
 ### R029+0x51E4 `R029+0x51E4 (1367:02D4)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-cache lockstep-camp-inn-broke lockstep-camp-rough lockstep-camp-wild-risk lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 9/9, outcomes 11/12
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-cache lockstep-camp-inn-broke lockstep-camp-rough lockstep-camp-wild-risk lockstep-foreigntrader lockstep-gate-battle lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 9/9, outcomes 11/12
 
 ### R029+0x5286 `R029+0x5286 (1367:0376)`
 
@@ -8212,20 +8251,17 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R029+0x5654 `R029+0x5654 (1367:0744)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-menubar lockstep-menubar2 lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 16/16, outcomes 14/14
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants core lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-menubar lockstep-menubar2 lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 16/16, outcomes 14/14
 
 ### R029+0x56A6 `R029+0x56A6 (1367:0796)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 8/16, outcomes 6/14
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 11/16, outcomes 9/14
 
 - `R029+0x56B9` `sub ax, ax`
 - `R029+0x56C5` `mov ax, 1`
 - `R029+0x56D1` `mov ax, 2`
-- `R029+0x56E2` `cmp word ptr [0xe0], 0x12`
 - `R029+0x56E9` `mov ax, 4`
-- `R029+0x56EE` `cmp word ptr [0xe0], 0x15`
 - `R029+0x56F5` `mov ax, 5`
-- `R029+0x56FA` `mov ax, 6`
 
 ### R029+0x56FE `R029+0x56FE (1367:07EE)`
 
@@ -8254,14 +8290,14 @@ matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-ca
 
 ### R029+0x5848 `R029+0x5848 (1367:0938)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-tyrnau: blocks 5/7, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 5/7, outcomes 6/8
 
 - `R029+0x5859` `mov ax, di`
 - `R029+0x587B` `sub bx, bx`
 
 ### R029+0x5892 `R029+0x5892 (1367:0982)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-tyrnau: blocks 5/7, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 5/7, outcomes 6/8
 
 - `R029+0x58A3` `mov ax, di`
 - `R029+0x58C5` `sub bx, bx`
@@ -8299,13 +8335,13 @@ matched, reached by cards cards-day cards-flip cards-variants lockstep-banks loc
 
 ### R030+0x0000 `R030+0x0000 (1462:0000)`
 
-draft, reached by cards cards-day cards-variants lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 11/12, outcomes 9/10
+draft, reached by cards cards-day cards-variants lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 11/12, outcomes 9/10
 
 - `R030+0x0073` `mov ax, 0xf1`
 
 ### R030+0x00A8 `R030+0x00A8 (1462:00A8)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 20/29, outcomes 15/24
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 20/29, outcomes 15/24
 
 - `R030+0x011A` `mov word ptr [0x2860], 6`
 - `R030+0x014B` `push word ptr [0x775a]`
@@ -8319,7 +8355,7 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 
 ### R030+0x02C0 `R030+0x02C0 (1462:02C0)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 81/209, outcomes 69/198
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 68/209, outcomes 62/198
 
 - `R030+0x0302` `mov word ptr [bp - 0x46], 0`
 - `R030+0x031F` `push 0x28ab`
@@ -8331,7 +8367,6 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x03E2` `mov ax, word ptr [0x2866]`
 - `R030+0x03E8` `cdq `
 - `R030+0x0443` `mov word ptr [0x9c46], 0`
-- `R030+0x0518` `mov si, 0x4d00`
 - `R030+0x0527` `mov si, 0x4800`
 - `R030+0x0576` `lcall 0x47c, 0x744`
 - `R030+0x0587` `cmp byte ptr [0xe3fb], 0xc4`
@@ -8352,6 +8387,8 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x0652` `mov si, 0x5000`
 - `R030+0x065F` `mov si, 0x1c0d`
 - `R030+0x0687` `lea cx, [bp - 2]`
+- `R030+0x0768` `cmp word ptr [0x907e], -1`
+- `R030+0x076F` `push word ptr [0x907e]`
 - `R030+0x0781` `push 1`
 - `R030+0x0797` `mov ax, 0x97`
 - `R030+0x079E` `lcall 0x9c0, 0x1fe5`
@@ -8364,7 +8401,10 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x07CA` `mov ax, 0x9e`
 - `R030+0x07D0` `mov ax, 0x9b`
 - `R030+0x07D6` `mov ax, 0x9c`
+- `R030+0x07DC` `lcall 0x1367, 0x72a`
 - `R030+0x07E5` `jmp 0x8a4`
+- `R030+0x07E8` `push 3`
+- `R030+0x07F6` `jmp 0x8a4`
 - `R030+0x07F9` `push 7`
 - `R030+0x0807` `jmp 0x8a4`
 - `R030+0x080A` `push 1`
@@ -8379,8 +8419,11 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x086C` `push 1`
 - `R030+0x0884` `push 2`
 - `R030+0x089E` `mov ax, 0x41`
+- `R030+0x08A4` `lcall 0x1367, 0x72a`
+- `R030+0x08AD` `lcall 0x9c0, 0x1c1b`
 - `R030+0x08B7` `push 2`
 - `R030+0x08C7` `mov ax, 0x126`
+- `R030+0x08CE` `mov ax, word ptr [0xd843]`
 - `R030+0x08D4` `push 9`
 - `R030+0x08E2` `dec ax`
 - `R030+0x08E5` `dec ax`
@@ -8407,7 +8450,11 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x0978` `cmp ax, 0xd`
 - `R030+0x097D` `jmp 0xa4e`
 - `R030+0x0980` `shl ax, 1`
+- `R030+0x09A4` `push 0x1a`
+- `R030+0x09B0` `mov ax, 0x107`
 - `R030+0x09B6` `mov ax, 0x24`
+- `R030+0x09BC` `cmp ax, 0x18`
+- `R030+0x09C1` `shl ax, 1`
 - `R030+0x09FC` `push 0x11`
 - `R030+0x0A08` `mov ax, 0xa5`
 - `R030+0x0A0E` `mov ax, 0x106`
@@ -8448,20 +8495,20 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x0B6A` `cmp ax, 0x1a`
 - `R030+0x0B6F` `jmp 0x9b6`
 - `R030+0x0B72` `shl ax, 1`
+- `R030+0x0BB0` `dec ax`
+- `R030+0x0BB6` `shl ax, 1`
 - `R030+0x0BF5` `mov es, word ptr [0x7e40]`
 
 ### R030+0x0C44 `R030+0x0C44 (1462:0C44)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 71/153, outcomes 59/138
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 88/153, outcomes 73/138
 
 - `R030+0x0CD7` `jmp 0xfd8`
 - `R030+0x0CDF` `jmp 0xf52`
 - `R030+0x0CE7` `jmp 0xf52`
 - `R030+0x0CEF` `jmp 0xf06`
 - `R030+0x0D09` `mov word ptr [0x2866], 0xb`
-- `R030+0x0D18` `inc word ptr [0x2866]`
 - `R030+0x0D24` `mov word ptr [0x2866], 0xf7`
-- `R030+0x0D2A` `mov word ptr [0x8676], 3`
 - `R030+0x0D34` `mov ax, word ptr [0x290e]`
 - `R030+0x0D3F` `dec word ptr [0x2868]`
 - `R030+0x0D4A` `mov word ptr [0x2868], 0xd`
@@ -8492,12 +8539,8 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x0FD8` `push 0x2909`
 - `R030+0x1002` `push word ptr [0xe416]`
 - `R030+0x100E` `sub ax, ax`
-- `R030+0x1104` `mov ax, word ptr [0x2868]`
-- `R030+0x1114` `sub word ptr [0x286c], 0x17`
 - `R030+0x111C` `add word ptr [0x286c], 0x17`
-- `R030+0x1121` `mov ax, word ptr [0xe3f8]`
 - `R030+0x1133` `mov ax, cx`
-- `R030+0x1158` `cmp word ptr [0x286c], 0x53`
 - `R030+0x115F` `mov ax, word ptr [0x286e]`
 - `R030+0x1169` `mov ax, cx`
 - `R030+0x1174` `add word ptr [0x286e], 0x41`
@@ -8509,7 +8552,6 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x11AF` `cmp word ptr [0x286c], 0x53`
 - `R030+0x11B6` `jmp 0x123d`
 - `R030+0x11B9` `mov word ptr [0x286c], 0x53`
-- `R030+0x11C2` `cmp word ptr [0x286c], 1`
 - `R030+0x11C9` `cmp word ptr [0x286e], 0x41`
 - `R030+0x11D0` `mov word ptr [0x286e], 0`
 - `R030+0x11D8` `sub word ptr [0x286e], 0x41`
@@ -8520,42 +8562,34 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 - `R030+0x120F` `add word ptr [0x2868], ax`
 - `R030+0x1213` `cmp word ptr [0x286c], 1`
 - `R030+0x121A` `mov word ptr [0x286c], 1`
-- `R030+0x122A` `cmp word ptr [0x2868], 0x14`
 - `R030+0x1231` `mov ax, 0xffa4`
-- `R030+0x1236` `mov ax, 0x5c`
-- `R030+0x1239` `add word ptr [0x2868], ax`
-- `R030+0x124C` `mov ax, word ptr [0x2866]`
 - `R030+0x125C` `sub word ptr [0x286a], 8`
-- `R030+0x1264` `add word ptr [0x286a], 8`
-- `R030+0x1269` `mov ax, word ptr [0xe3f6]`
 - `R030+0x1275` `mov word ptr [0x286a], ax`
 - `R030+0x127D` `shl ax, 4`
-- `R030+0x1286` `cmp word ptr [0x286a], 0`
 - `R030+0x128D` `mov word ptr [0x286a], 0`
-- `R030+0x1298` `cmp word ptr [0x2866], 0x14`
 - `R030+0x129F` `add word ptr [0x2866], 0x80`
-- `R030+0x12A8` `sub word ptr [0x2866], 0x80`
-- `R030+0x12BF` `push word ptr [0x286c]`
 
 ### R030+0x1300 `R030+0x1300 (1462:1300)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-pressburg-map lockstep-tyrnau: blocks 64/75, outcomes 59/82
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-pressburg-map lockstep-tyrnau: blocks 62/75, outcomes 57/82
 
 - `R030+0x1314` `push 1`
 - `R030+0x141D` `push word ptr [0x286c]`
 - `R030+0x143C` `jmp 0x14cc`
 - `R030+0x1444` `jmp 0x14cc`
-- `R030+0x144C` `mov ax, 4`
 - `R030+0x15C2` `push -1`
 - `R030+0x160F` `push 0x18`
 - `R030+0x1621` `jmp 0x16be`
 - `R030+0x1629` `jmp 0x16be`
+- `R030+0x166B` `mov ax, word ptr [0x286a]`
+- `R030+0x168D` `mov es, word ptr [0x7e40]`
 - `R030+0x16A0` `push 0x64`
 - `R030+0x16AF` `mov ax, 0x7d0`
+- `R030+0x16B6` `mov ax, 0x3e8`
 
 ### R030+0x16C6 `R030+0x16C6 (1462:16C6)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 123/132, outcomes 119/156
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 123/132, outcomes 121/156
 
 - `R030+0x1759` `mov ax, 0x1c`
 - `R030+0x1774` `mov es, word ptr [0x7e44]`
@@ -8569,15 +8603,15 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 
 ### R030+0x1C4E `R030+0x1C4E (1462:1C4E)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R030+0x1C76 `R030+0x1C76 (1462:1C76)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 26/26, outcomes 8/8
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 26/26, outcomes 8/8
 
 ### R030+0x1DD4 `R030+0x1DD4 (1462:1DD4)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 14/18, outcomes 12/20
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 14/18, outcomes 12/20
 
 - `R030+0x1DE4` `jmp 0x1f2b`
 - `R030+0x1E00` `cmp si, di`
@@ -8586,11 +8620,11 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 
 ### R030+0x1F30 `R030+0x1F30 (1462:1F30)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 13/13, outcomes 12/12
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 13/13, outcomes 12/12
 
 ### R030+0x20D2 `R030+0x20D2 (1462:20D2)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 123/129, outcomes 125/152
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 123/129, outcomes 127/152
 
 - `R030+0x20DE` `mov word ptr [bp + 6], 1`
 - `R030+0x20E9` `mov word ptr [bp + 8], 1`
@@ -8634,30 +8668,31 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R030+0x28F2 `R030+0x28F2 (1462:28F2)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-inn-broke: blocks 13/14, outcomes 13/16
+draft, reached by cards cards-day cards-flip cards-variants lockstep-banks lockstep-camp-inn-broke: blocks 13/14, outcomes 13/16
 
 - `R030+0x292A` `mov ax, word ptr [bp + 8]`
 
 ### R030+0x29BC `R030+0x29BC (1462:29BC)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-banks: blocks 1/1, outcomes 0/0
+draft, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R030+0x29FA `R030+0x29FA (1462:29FA)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-banks: blocks 16/20, outcomes 16/22
+draft, reached by cards cards-day cards-flip cards-variants lockstep-banks: blocks 14/20, outcomes 14/22
 
 - `R030+0x2A4E` `sub ax, ax`
+- `R030+0x2A68` `mov ax, bx`
+- `R030+0x2A7A` `mov ax, 5`
 - `R030+0x2A98` `mov ax, word ptr [bp - 2]`
 - `R030+0x2AA4` `mov ax, 1`
 - `R030+0x2AC3` `mov ax, cx`
 
 ### R030+0x2AC8 `R030+0x2AC8 (1462:2AC8)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-pressburg-map lockstep-tyrnau: blocks 8/26, outcomes 3/6
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-pressburg-map lockstep-tyrnau: blocks 9/26, outcomes 3/6
 
 - `R030+0x2B16` `mov di, 0x28`
 - `R030+0x2B1C` `mov di, 0x1e`
-- `R030+0x2B22` `mov di, 0x32`
 - `R030+0x2B28` `mov di, 0x11`
 - `R030+0x2B2E` `mov di, 0xd`
 - `R030+0x2B34` `mov di, 0xb`
@@ -8676,14 +8711,13 @@ draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockst
 
 ### R030+0x2D44 `R030+0x2D44 (1462:2D44)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-pressburg-map lockstep-tyrnau: blocks 8/10, outcomes 5/8
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-pressburg-map lockstep-tyrnau: blocks 9/10, outcomes 5/8
 
-- `R030+0x2D88` `mov di, 3`
 - `R030+0x2DAD` `push si`
 
 ### R030+0x2DD6 `R030+0x2DD6 (1462:2DD6)`
 
-draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 11/35, outcomes 6/28
+draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 11/35, outcomes 6/28
 
 - `R030+0x2DE5` `jmp 0x3042`
 - `R030+0x2EC2` `cmp byte ptr [0xe5c1], 0x3f`
@@ -8712,11 +8746,11 @@ draft, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild
 
 ### R030+0x3096 `R030+0x3096 (1767:0046)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 5/5, outcomes 5/6
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 5/5, outcomes 5/6
 
 ### R030+0x3122 `R030+0x3122 (1767:00D2)`
 
-matched, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
+matched, reached by lockstep-camp-mouse lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-mapsave lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-select lockstep-pack-potions lockstep-pack-stacks lockstep-pressburg-map lockstep-tyrnau lockstep-wildcamp: blocks 1/1, outcomes 0/0
 
 ### R031+0x0000 `R031+0x0000 (1462:0000)`
 
@@ -9292,7 +9326,7 @@ draft, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R031+0x4A04 `R031+0x4A04 (18E7:01B4)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-wild-brew lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-stacks lockstep-shop lockstep-university-shop sainthelp: blocks 41/45, outcomes 37/50
+draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-wild-brew lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-stacks lockstep-shop sainthelp: blocks 41/45, outcomes 37/50
 
 - `R031+0x4A56` `mov al, byte ptr es:[si + 4]`
 - `R031+0x4A92` `cwde `
@@ -9301,11 +9335,11 @@ draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-wild-b
 
 ### R031+0x4C56 `R031+0x4C56 (18E7:0406)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-foreigntrader lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-shop lockstep-stables lockstep-university-shop: blocks 4/4, outcomes 4/4
+draft, reached by cards cards-day cards-flip cards-variants lockstep-foreigntrader lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-shop lockstep-stables: blocks 4/4, outcomes 4/4
 
 ### R031+0x4CC4 `R031+0x4CC4 (18E7:0474)`
 
-draft, reached by cards cards-day cards-variants lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-shop lockstep-stables lockstep-university-shop: blocks 4/5, outcomes 3/4
+draft, reached by cards cards-day cards-variants lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-shop lockstep-stables: blocks 4/5, outcomes 3/4
 
 - `R031+0x4CD1` `mov al, byte ptr [0x907b]`
 
@@ -9465,7 +9499,7 @@ draft, reached by lockstep-inventory lockstep-sheet: blocks 7/14, outcomes 6/16
 
 ### R031+0x5B38 `R031+0x5B38 (18E7:12E8)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-sheet lockstep-shop lockstep-stables lockstep-university-shop: blocks 17/20, outcomes 18/26
+draft, reached by cards cards-day cards-flip cards-variants lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-sheet lockstep-shop lockstep-stables: blocks 17/20, outcomes 18/26
 
 - `R031+0x5B4A` `push di`
 - `R031+0x5C40` `mov al, byte ptr [bx - 0x6350]`
@@ -9473,11 +9507,11 @@ draft, reached by cards cards-day cards-flip cards-variants lockstep-foreigntrad
 
 ### R031+0x5C5A `R031+0x5C5A (18E7:140A)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-chargen-party lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-roster lockstep-roster-colours lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-sheet lockstep-shop lockstep-stables lockstep-university-shop: blocks 5/5, outcomes 4/4
+draft, reached by cards cards-day cards-flip cards-variants lockstep-chargen-party lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-roster lockstep-roster-colours lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-sheet lockstep-shop lockstep-stables: blocks 5/5, outcomes 4/4
 
 ### R031+0x5D06 `R031+0x5D06 (18E7:14B6)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-mouse lockstep-camp-wild-brew lockstep-chargen-party lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-sheet lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-roster lockstep-roster-colours lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-saints lockstep-sheet lockstep-shop lockstep-stables lockstep-university-shop sainthelp: blocks 22/23, outcomes 20/22
+draft, reached by cards cards-day cards-flip cards-variants lockstep-camp-mouse lockstep-camp-wild-brew lockstep-chargen-party lockstep-foreigntrader lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-sheet lockstep-pack-potions lockstep-pack-stacks lockstep-pawnshop lockstep-roster lockstep-roster-colours lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-saints lockstep-sheet lockstep-shop lockstep-stables sainthelp: blocks 22/23, outcomes 20/22
 
 - `R031+0x5D1F` `jmp 0x15ce`
 
@@ -9523,7 +9557,7 @@ draft, reached by cards-variants: blocks 9/32, outcomes 6/38
 
 ### R032+0x0000 `R032+0x0000 (1462:0000)`
 
-draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university lockstep-university-shop: blocks 45/117, outcomes 35/142
+draft, reached by lockstep-foreigntrader lockstep-healer lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables: blocks 45/117, outcomes 36/142
 
 - `R032+0x004E` `mov es, word ptr [0x7e66]`
 - `R032+0x0107` `jmp 0x194`
@@ -9600,11 +9634,11 @@ draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockste
 
 ### R032+0x076C `R032+0x076C (1462:076C)`
 
-draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university lockstep-university-shop: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables: blocks 1/1, outcomes 0/0
 
 ### R032+0x078E `R032+0x078E (1462:078E)`
 
-draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university lockstep-university-shop trading: blocks 19/21, outcomes 15/18
+draft, reached by lockstep-foreigntrader lockstep-healer lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables trading: blocks 19/21, outcomes 15/18
 
 - `R032+0x0846` `mov ax, word ptr [0x2fac]`
 - `R032+0x086B` `mov di, word ptr [bp + 8]`
@@ -9621,11 +9655,11 @@ draft, reached by cards cards-day cards-variants lockstep-foreigntrader lockstep
 
 ### R032+0x0EFA `R032+0x0EFA (1462:0EFA)`
 
-draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university lockstep-university-shop trading: blocks 10/10, outcomes 16/16
+draft, reached by lockstep-foreigntrader lockstep-healer lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables trading: blocks 10/10, outcomes 16/16
 
 ### R032+0x0F60 `R032+0x0F60 (1462:0F60)`
 
-draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university-shop: blocks 81/128, outcomes 63/114
+draft, reached by lockstep-foreigntrader lockstep-healer lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables: blocks 81/128, outcomes 63/114
 
 - `R032+0x0F6E` `jmp 0x1384`
 - `R032+0x0F82` `jmp 0x101e`
@@ -9677,21 +9711,21 @@ draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockste
 
 ### R032+0x1770 `R032+0x1770 (1462:1770)`
 
-draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-stables lockstep-university-shop: blocks 7/8, outcomes 5/6
+draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-stables: blocks 7/8, outcomes 5/6
 
 - `R032+0x17AF` `jmp 0x1867`
 
 ### R032+0x192E `R032+0x192E (1462:192E)`
 
-draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university lockstep-university-shop trading: blocks 24/24, outcomes 23/24
+draft, reached by lockstep-foreigntrader lockstep-healer lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables trading: blocks 24/24, outcomes 23/24
 
 ### R032+0x1B26 `R032+0x1B26 (1462:1B26)`
 
-draft, reached by cards cards-day cards-variants lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university lockstep-university-shop trading: blocks 26/26, outcomes 25/26
+draft, reached by cards cards-day cards-variants lockstep-foreigntrader lockstep-healer lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables trading: blocks 26/26, outcomes 25/26
 
 ### R032+0x1D18 `R032+0x1D18 (1462:1D18)`
 
-draft, reached by lockstep-foreigntrader lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables lockstep-university lockstep-university-shop trading: blocks 29/29, outcomes 28/28
+draft, reached by lockstep-foreigntrader lockstep-healer lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-stables trading: blocks 29/29, outcomes 28/28
 
 ### R033+0x0000 `R033+0x0000 (1462:0000)`
 
@@ -9909,7 +9943,7 @@ draft, reached by lockstep-alchemy lockstep-camp-wild-brew: blocks 18/21, outcom
 
 ### R034+0x0000 `R034+0x0000 (1462:0000)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 1/7, outcomes 0/6
+matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 1/7, outcomes 0/6
 
 - `R034+0x003F` `push word ptr [0x9c3d]`
 - `R034+0x0052` `push 0x64`
@@ -9929,7 +9963,7 @@ matched, reached by lockstep-saints: blocks 13/17, outcomes 8/16
 
 ### R034+0x022C `R034+0x022C (1462:022C)`
 
-matched, reached by lockstep-saints lockstep-tyrnau: blocks 30/93, outcomes 24/110
+matched, reached by lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 30/93, outcomes 25/110
 
 - `R034+0x02BB` `mov word ptr [0x887c], 0`
 - `R034+0x02F5` `test byte ptr [0x6ef0], 1`
@@ -10003,7 +10037,7 @@ matched, reached by lockstep-saints: blocks 2/3, outcomes 1/2
 
 ### R034+0x0720 `R034+0x0720 (1462:0720)`
 
-matched, reached by lockstep-saints lockstep-tyrnau: blocks 7/21, outcomes 2/4
+matched, reached by lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 8/21, outcomes 2/4
 
 - `R034+0x076A` `push 0xe48c`
 - `R034+0x0772` `push 0xe48c`
@@ -10013,7 +10047,6 @@ matched, reached by lockstep-saints lockstep-tyrnau: blocks 7/21, outcomes 2/4
 - `R034+0x0792` `push 0xe48c`
 - `R034+0x07A2` `push 0xe48c`
 - `R034+0x07B2` `push 0xe48c`
-- `R034+0x07BA` `push 0xe48c`
 - `R034+0x07C2` `push 0xe48c`
 - `R034+0x07CA` `push 0xe48c`
 - `R034+0x07D2` `push 0xe48c`
@@ -10022,11 +10055,11 @@ matched, reached by lockstep-saints lockstep-tyrnau: blocks 7/21, outcomes 2/4
 
 ### R034+0x0878 `R034+0x0878 (1462:0878)`
 
-matched, reached by lockstep-saints lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
 
 ### R034+0x08D2 `R034+0x08D2 (1462:08D2)`
 
-matched, reached by lockstep-saints lockstep-tyrnau: blocks 19/29, outcomes 15/30
+matched, reached by lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 19/29, outcomes 15/30
 
 - `R034+0x08F1` `jmp 0x988`
 - `R034+0x08F9` `jmp 0x99e`
@@ -10041,13 +10074,13 @@ matched, reached by lockstep-saints lockstep-tyrnau: blocks 19/29, outcomes 15/3
 
 ### R034+0x09B2 `R034+0x09B2 (1462:09B2)`
 
-matched, reached by lockstep-saints lockstep-tyrnau: blocks 2/3, outcomes 1/2
+matched, reached by lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 2/3, outcomes 1/2
 
 - `R034+0x09C3` `mov word ptr [0x887e], 0`
 
 ### R034+0x0AA4 `R034+0x0AA4 (1462:0AA4)`
 
-matched, reached by lockstep-saints lockstep-tyrnau: blocks 5/10, outcomes 3/8
+matched, reached by lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 5/10, outcomes 3/8
 
 - `R034+0x0AB5` `cmp word ptr [0x887a], 0`
 - `R034+0x0ABC` `push word ptr [0x887a]`
@@ -10057,7 +10090,7 @@ matched, reached by lockstep-saints lockstep-tyrnau: blocks 5/10, outcomes 3/8
 
 ### R034+0x0BC4 `R034+0x0BC4 (1462:0BC4)`
 
-matched, reached by lockstep-saints lockstep-tyrnau: blocks 6/7, outcomes 3/4
+matched, reached by lockstep-saints lockstep-wharves lockstep-wien-rathaus: blocks 6/7, outcomes 3/4
 
 - `R034+0x0C09` `push 0`
 
@@ -11370,7 +11403,7 @@ draft, reached by lockstep-roster lockstep-roster-colours lockstep-roster-create
 
 ### R039+0x0000 `R039+0x0000 (1462:0000)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus: blocks 5/9, outcomes 4/8
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap lockstep-tyrnau: blocks 5/9, outcomes 4/8
 
 - `R039+0x001D` `mov ax, si`
 - `R039+0x0039` `mov ax, si`
@@ -11385,7 +11418,7 @@ matched, reached by cards cards-day cards-flip cards-variants lockstep-banks loc
 
 ### R039+0x0102 `R039+0x0102 (1462:0102)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 3/5, outcomes 2/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/5, outcomes 2/4
 
 - `R039+0x0117` `mov si, 2`
 - `R039+0x012C` `inc si`
@@ -11480,7 +11513,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 42/55, out
 
 ### R039+0x10B6 `R039+0x10B6 (1462:10B6)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-banks: blocks 3/9, outcomes 2/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/9, outcomes 2/8
 
 - `R039+0x10C4` `mov si, 4`
 - `R039+0x10E3` `push 3`
@@ -11528,7 +11561,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 2/3, outco
 
 ### R039+0x1712 `R039+0x1712 (1462:1712)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 12/66, outcomes 4/52
+matched, reached by cards cards-day cards-flip cards-variants lockstep-banks: blocks 19/66, outcomes 7/52
 
 - `R039+0x171E` `push 5`
 - `R039+0x172C` `jmp 0x17ee`
@@ -11542,13 +11575,9 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 12/66, out
 - `R039+0x176E` `mov word ptr [bp - 4], 0xb`
 - `R039+0x177C` `cmp ax, 8`
 - `R039+0x1781` `shl ax, 1`
-- `R039+0x179C` `push 9`
 - `R039+0x17A8` `mov word ptr [bp - 4], 1`
 - `R039+0x17B6` `mov word ptr [bp - 4], 3`
-- `R039+0x17C4` `cmp ax, 7`
-- `R039+0x17C9` `shl ax, 1`
 - `R039+0x17E2` `push 8`
-- `R039+0x17EE` `mov word ptr [bp - 4], 0`
 - `R039+0x180A` `mov word ptr [bp - 4], 7`
 - `R039+0x1818` `mov word ptr [bp - 4], 8`
 - `R039+0x1826` `cmp ax, 6`
@@ -11561,11 +11590,8 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 12/66, out
 - `R039+0x1880` `dec ax`
 - `R039+0x1883` `mov word ptr [bp - 4], 9`
 - `R039+0x1890` `mov word ptr [bp - 4], 5`
-- `R039+0x18C6` `push 3`
-- `R039+0x18D4` `dec ax`
 - `R039+0x18D7` `dec ax`
 - `R039+0x18DA` `jmp 0x19aa`
-- `R039+0x18DE` `mov word ptr [bp - 8], 5`
 - `R039+0x18E6` `mov word ptr [bp - 8], 0x11`
 - `R039+0x18EE` `mov word ptr [bp - 8], 0x12`
 - `R039+0x18F6` `push 4`
@@ -11587,15 +11613,15 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 12/66, out
 
 ### R039+0x1A68 `R039+0x1A68 (1462:1A68)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants lockstep-banks: blocks 1/1, outcomes 0/0
 
 ### R039+0x1A80 `R039+0x1A80 (1462:1A80)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants lockstep-banks: blocks 1/1, outcomes 0/0
 
 ### R039+0x1A98 `R039+0x1A98 (1462:1A98)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants lockstep-banks: blocks 1/1, outcomes 0/0
 
 ### R039+0x1AB0 `R039+0x1AB0 (1462:1AB0)`
 
@@ -11668,7 +11694,7 @@ matched, reached by cards cards-day cards-variants: blocks 3/4, outcomes 1/2
 
 ### R039+0x1FA0 `R039+0x1FA0 (165C:0000)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-tyrnau saints: blocks 4/4, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants lockstep-saints lockstep-wharves lockstep-wien-rathaus saints: blocks 4/4, outcomes 4/4
 
 ### R039+0x1FD4 `R039+0x1FD4 (165C:0034)`
 
@@ -11896,7 +11922,7 @@ matched, reached by cards-day cards-variants sainthelp saints: blocks 5/5, outco
 
 ### R039+0x4C68 `R039+0x4C68 (165C:2CC8)`
 
-matched, reached by cards-day cards-variants sainthelp saints: blocks 5/5, outcomes 4/4
+matched, reached by cards-day cards-variants lockstep-wharves lockstep-wien-rathaus sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R039+0x4CF8 `R039+0x4CF8 (165C:2D58)`
 
@@ -12161,7 +12187,7 @@ matched, reached by sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R039+0x85EA `R039+0x85EA (165C:664A)`
 
-matched, reached by lockstep-tyrnau sainthelp saints: blocks 5/5, outcomes 4/4
+matched, reached by sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R039+0x86BE `R039+0x86BE (165C:671E)`
 
@@ -12264,7 +12290,7 @@ matched, reached by sainthelp saints: blocks 5/5, outcomes 4/4
 
 ### R040+0x0000 `R040+0x0000 (1462:0000)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 25/35, outcomes 21/42
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 25/35, outcomes 21/42
 
 - `R040+0x002F` `sub dx, dx`
 - `R040+0x0034` `cmp byte ptr [si], 3`
@@ -12279,17 +12305,17 @@ draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockst
 
 ### R040+0x01C8 `R040+0x01C8 (1462:01C8)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 91/92, outcomes 113/120
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 91/92, outcomes 113/120
 
 - `R040+0x0394` `jmp 0x3ea`
 
 ### R040+0x06C8 `R040+0x06C8 (1462:06C8)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 1/1, outcomes 0/0
 
 ### R040+0x06E2 `R040+0x06E2 (1462:06E2)`
 
-draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 8/8, outcomes 9/10
+draft, reached by lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet: blocks 8/8, outcomes 9/10
 
 ### R040+0x0952 `R040+0x0952 (1462:0952)`
 
@@ -12330,7 +12356,7 @@ draft, reached by lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse: bloc
 
 ### R041+0x0000 `R041+0x0000 (1462:0000)`
 
-matched, reached by cards cards-day cards-variants lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-missile lockstep-orders-select lockstep-pressburg-map lockstep-tyrnau: blocks 18/64, outcomes 15/78
+matched, reached by cards cards-day cards-variants lockstep-orders-attack-a lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-missile lockstep-orders-select lockstep-pressburg-map lockstep-tyrnau: blocks 18/64, outcomes 15/78
 
 - `R041+0x003B` `mov word ptr [bp - 4], di` (excluded)
 - `R041+0x003E` `inc si` (excluded)
@@ -12455,7 +12481,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R043+0x1316 `R043+0x1316 (150B:0886)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 105/115, outcomes 26/30
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-risk lockstep-chargen-party lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 104/115, outcomes 24/30
 
 - `R043+0x13CE` `mov ax, word ptr [0xed52]`
 - `R043+0x13EA` `mov ax, word ptr [0x9785]`
@@ -12463,6 +12489,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 - `R043+0x15B4` `push 0xa`
 - `R043+0x15E6` `lcall 0x1367, 0x796`
 - `R043+0x1639` `pop si`
+- `R043+0x163E` `mov es, word ptr [0x7ee6]`
 - `R043+0x1662` `mov ax, word ptr [0x9785]`
 - `R043+0x17BC` `push 0x18`
 - `R043+0x17E6` `mov es, word ptr [0x7ef6]`
@@ -12492,11 +12519,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R043+0x1E04 `R043+0x1E04 (150B:1374)`
 
-draft, reached by lockstep-smiths: blocks 1/1, outcomes 0/0
+draft, reached by lockstep-smiths lockstep-university-shop: blocks 1/1, outcomes 0/0
 
 ### R043+0x1E30 `R043+0x1E30 (150B:13A0)`
 
-draft, reached by lockstep-camp-mouse lockstep-tyrnau: blocks 2/5, outcomes 1/6
+draft, reached by lockstep-camp-mouse: blocks 2/5, outcomes 1/6
 
 - `R043+0x1E38` `mov ax, word ptr [0x6eee]`
 - `R043+0x1E49` `mov bx, si`
@@ -12521,11 +12548,11 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R043+0x2178 `R043+0x2178 (150B:16E8)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-tyrnau: blocks 11/11, outcomes 12/14
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus: blocks 11/11, outcomes 12/14
 
 ### R043+0x21D4 `R043+0x21D4 (150B:1744)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 50/115, outcomes 50/140
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-menubar lockstep-menubar2 lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 39/115, outcomes 35/140
 
 - `R043+0x2260` `push word ptr [0xa776]`
 - `R043+0x2280` `push word ptr [0xee59]`
@@ -12576,6 +12603,17 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 - `R043+0x25DC` `lcall 0x47c, 0x12c3`
 - `R043+0x2620` `push 0x100`
 - `R043+0x2636` `lcall 0x47c, 0x1293`
+- `R043+0x2654` `cmp byte ptr [0xed6c], 1`
+- `R043+0x265B` `cmp byte ptr [0xe96f], 0xff`
+- `R043+0x2662` `mov si, 1`
+- `R043+0x266E` `mov dx, word ptr [0x5202]`
+- `R043+0x267A` `cmp dx, -0xa`
+- `R043+0x267F` `cmp byte ptr [0x906a], 2`
+- `R043+0x2686` `push 0x100`
+- `R043+0x269C` `mov al, byte ptr [0xe96f]`
+- `R043+0x26E4` `or si, si`
+- `R043+0x26E8` `mov word ptr [0x5202], 0xfff6`
+- `R043+0x26F5` `push 0x100`
 - `R043+0x2729` `mov byte ptr [0xed6c], 0`
 - `R043+0x2737` `mov si, ax`
 - `R043+0x2739` `mov ax, word ptr [0xe972]`
@@ -12593,21 +12631,13 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 - `R043+0x27A6` `cmp byte ptr [0xee42], 1`
 - `R043+0x27AD` `mov cl, 4`
 
-### R043+0x27E6 `R043+0x27E6 (150B:1D56)`
-
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-banks lockstep-cache lockstep-camp-inn-broke lockstep-camp-rough lockstep-camp-wild-risk lockstep-churches lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-foreigntrader lockstep-gate-battle lockstep-healer lockstep-inventory lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-notices lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pawnshop lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-moves lockstep-roster-ulm lockstep-roster-wrap lockstep-roster4 lockstep-saints lockstep-save-load lockstep-sheet lockstep-shop lockstep-smiths lockstep-stables lockstep-stay lockstep-tyrnau lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 18/21, outcomes 13/16
-
-- `R043+0x288E` `push 0xa`
-- `R043+0x293C` `mov ax, 0x9085`
-- `R043+0x298A` `sub si, si`
-
 ### R043+0x29CE `R043+0x29CE (150B:1F3E)`
 
 draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-luebeck-potion lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk: blocks 1/1, outcomes 0/0
 
 ### R043+0x29D0 `R043+0x29D0 (150B:1F40)`
 
-draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-wild-risk sainthelp: blocks 9/12, outcomes 7/14
+draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-rough lockstep-camp-wild-risk sainthelp: blocks 9/12, outcomes 7/14
 
 - `R043+0x29F1` `sub si, si`
 - `R043+0x29F3` `push word ptr [0xa628]`
@@ -12615,18 +12645,18 @@ draft, reached by cards cards-day cards-flip cards-variants lockstep-alchemy loc
 
 ### R043+0x2ACA `R043+0x2ACA (150B:203A)`
 
-draft, reached by lockstep-tyrnau: blocks 12/18, outcomes 6/12
+draft, reached by lockstep-wharves lockstep-wien-rathaus: blocks 12/18, outcomes 6/12
 
 - `R043+0x2B32` `mov ax, 0xc1`
 - `R043+0x2B55` `push 0x52d5`
+- `R043+0x2B70` `push 5`
 - `R043+0x2B78` `mov si, word ptr [bp - 6]`
-- `R043+0x2B7E` `push 5`
-- `R043+0x2BDA` `push 0`
+- `R043+0x2BD3` `push word ptr [0xee59]`
 - `R043+0x2C03` `jmp 0x21f6`
 
 ### R043+0x2CE2 `R043+0x2CE2 (150B:2252)`
 
-draft, reached by lockstep-tyrnau: blocks 44/85, outcomes 30/84
+draft, reached by lockstep-wharves lockstep-wien-rathaus: blocks 44/85, outcomes 29/84
 
 - `R043+0x2CF8` `sub si, si`
 - `R043+0x2CFC` `inc si`
@@ -12638,7 +12668,7 @@ draft, reached by lockstep-tyrnau: blocks 44/85, outcomes 30/84
 - `R043+0x2DA7` `cmp word ptr [bp - 2], 0`
 - `R043+0x2DAD` `cmp word ptr [0x5204], 0`
 - `R043+0x2DB4` `push si`
-- `R043+0x2DFA` `push si`
+- `R043+0x2DF3` `push si`
 - `R043+0x2EB1` `mov di, word ptr [bp - 0x3a]`
 - `R043+0x2EBD` `jmp 0x263c`
 - `R043+0x2EC0` `push word ptr [bp + di - 0x11e]`
@@ -12672,7 +12702,7 @@ draft, reached by lockstep-tyrnau: blocks 44/85, outcomes 30/84
 
 ### R043+0x3292 `R043+0x3292 (150B:2802)`
 
-draft, reached by lockstep-tyrnau: blocks 2/3, outcomes 1/2
+draft, reached by lockstep-wharves lockstep-wien-rathaus: blocks 2/3, outcomes 1/2
 
 - `R043+0x32AE` `mov ax, word ptr [0xee13]`
 
@@ -12689,7 +12719,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R043+0x33C6 `R043+0x33C6 (150B:2936)`
 
-draft, reached by lockstep-cache lockstep-inventory lockstep-menubar lockstep-menubar2 lockstep-orders-potion2 lockstep-orders-prague-missile lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap lockstep-saints lockstep-sheet lockstep-smiths lockstep-tyrnau lockstep-university lockstep-university-shop: blocks 18/24, outcomes 17/32
+draft, reached by lockstep-banks lockstep-cache lockstep-inventory lockstep-menubar lockstep-menubar2 lockstep-orders-potion2 lockstep-orders-potion3 lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap lockstep-saints lockstep-sheet lockstep-smiths lockstep-university lockstep-university-shop: blocks 18/24, outcomes 17/32
 
 - `R043+0x33D4` `jmp 0x29c8`
 - `R043+0x3458` `lcall 0x9c0, 0x185b`
@@ -12700,7 +12730,7 @@ draft, reached by lockstep-cache lockstep-inventory lockstep-menubar lockstep-me
 
 ### R043+0x3494 `R043+0x3494 (150B:2A04)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 23/29, outcomes 16/26
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 23/29, outcomes 16/26
 
 - `R043+0x34AB` `jmp 0x2d35`
 - `R043+0x3534` `mov si, di`
@@ -12711,7 +12741,7 @@ draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-cast
 
 ### R043+0x37CA `R043+0x37CA (150B:2D3A)`
 
-draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-residence lockstep-roster-ulm lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 17/17, outcomes 1/2
+draft, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 lockstep-alchemy lockstep-camp-inn-broke lockstep-camp-mouse lockstep-camp-rough lockstep-camp-wild-brew lockstep-camp-wild-risk lockstep-churches lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-residence lockstep-roster lockstep-roster-colours lockstep-roster-moves lockstep-roster-ulm lockstep-roster4 lockstep-save-load lockstep-stay lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus lockstep-wildcamp: blocks 17/17, outcomes 1/2
 
 ### R043+0x3838 `R043+0x3838 (17E5:0008)`
 
@@ -13259,13 +13289,13 @@ matched, reached by cards cards-day cards-flip cards-variants lockstep-notices l
 
 ### R045+0x113A `R045+0x113A (18FC:04FA)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outcomes 3/4
+matched, reached by cards cards-day cards-flip cards-variants lockstep-university lockstep-university-shop: blocks 3/4, outcomes 3/4
 
 - `R045+0x1152` `mov word ptr [0xe48a], 1`
 
 ### R045+0x1162 `R045+0x1162 (18FC:0522)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-banks lockstep-churches lockstep-foreigntrader lockstep-healer lockstep-notices lockstep-pawnshop lockstep-shop lockstep-smiths lockstep-university lockstep-university-shop lockstep-wharves lockstep-wien-rathaus: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants lockstep-university lockstep-university-shop: blocks 4/4, outcomes 2/2
 
 ### R045+0x11BA `R045+0x11BA (18FC:057A)`
 
@@ -13353,7 +13383,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0000 `R046+0x0000 (1838:0000)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus: blocks 35/54, outcomes 25/48
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap lockstep-tyrnau: blocks 35/54, outcomes 25/48
 
 - `R046+0x008D` `mov word ptr [0xee76], ax`
 - `R046+0x00B7` `mov word ptr [0xee7a], ax`
@@ -13377,14 +13407,14 @@ matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-ca
 
 ### R046+0x0422 `R046+0x0422 (1838:0422)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 2/4, outcomes 1/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outcomes 1/4
 
 - `R046+0x0433` `cmp word ptr [0x57bc], 0`
 - `R046+0x043A` `mov word ptr [0xe7d8], 0x19`
 
 ### R046+0x0450 `R046+0x0450 (1838:0450)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0466 `R046+0x0466 (1838:0466)`
 
@@ -13446,7 +13476,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outco
 
 ### R046+0x05EC `R046+0x05EC (1838:05EC)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0602 `R046+0x0602 (1838:0602)`
 
@@ -13457,7 +13487,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 2/4, outco
 
 ### R046+0x0630 `R046+0x0630 (1838:0630)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R046+0x0646 `R046+0x0646 (1838:0646)`
 
@@ -13483,11 +13513,11 @@ matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-ca
 
 ### R046+0x06EA `R046+0x06EA (1838:06EA)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap lockstep-tyrnau lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R046+0x0724 `R046+0x0724 (18AA:0004)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-camp-rough lockstep-luebeck-potion lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile: blocks 36/55, outcomes 25/48
+matched, reached by cards cards-day cards-flip cards-variants lockstep-camp-rough lockstep-luebeck-potion lockstep-notices lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-university lockstep-university-shop: blocks 36/55, outcomes 25/48
 
 - `R046+0x07E1` `mov word ptr [0xee78], ax`
 - `R046+0x080B` `mov word ptr [0xee7c], ax`
@@ -13537,7 +13567,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outco
 
 ### R046+0x0CDA `R046+0x0CDA (18AA:05BA)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-camp-rough: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x0D32 `R046+0x0D32 (18AA:0612)`
 
@@ -13595,7 +13625,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outco
 
 ### R046+0x1046 `R046+0x1046 (18AA:0926)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R046+0x109E `R046+0x109E (18AA:097E)`
 
@@ -13609,7 +13639,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outco
 
 ### R046+0x1130 `R046+0x1130 (18AA:0A10)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-camp-rough lockstep-luebeck-potion lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-camp-rough lockstep-luebeck-potion lockstep-notices lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-university lockstep-university-shop: blocks 1/1, outcomes 0/0
 
 ### R046+0x1132 `R046+0x1132 (194B:0002)`
 
@@ -14410,7 +14440,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/4, outco
 
 ### R048+0x227E `R048+0x227E (19E9:076E)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-notices: blocks 4/4, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 4/4, outcomes 2/2
 
 ### R048+0x22C8 `R048+0x22C8 (19E9:07B8)`
 
@@ -14906,10 +14936,6 @@ matched, reached by cards cards-day cards-variants lockstep-smiths: blocks 5/6, 
 
 matched, reached by cards cards-day cards-variants lockstep-smiths: blocks 1/1, outcomes 0/0
 
-### R049+0x340C `R049+0x340C (1B1A:05EC)`
-
-matched, reached by lockstep-smiths: blocks 1/1, outcomes 0/0
-
 ### R049+0x3444 `R049+0x3444 (1B1A:0624)`
 
 matched, reached by cards cards-day: blocks 5/6, outcomes 5/6
@@ -14918,7 +14944,7 @@ matched, reached by cards cards-day: blocks 5/6, outcomes 5/6
 
 ### R049+0x34F2 `R049+0x34F2 (1B1A:06D2)`
 
-matched, reached by cards cards-day lockstep-smiths: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day: blocks 1/1, outcomes 0/0
 
 ### R049+0x35BE `R049+0x35BE (1B1A:079E)`
 
@@ -14950,11 +14976,12 @@ matched, reached by cards cards-day cards-variants lockstep-smiths: blocks 1/1, 
 
 ### R050+0x0000 `R050+0x0000 (1838:0000)`
 
-asm, reached by cards cards-day cards-flip cards-variants lockstep-healer: blocks 41/45, outcomes 25/32
+asm, reached by cards cards-day cards-flip cards-variants lockstep-healer: blocks 40/45, outcomes 25/32
 
 - `R050+0x021F` `jmp 0x3ae`
 - `R050+0x02A7` `jmp 0x36e`
 - `R050+0x02F0` `mov bx, word ptr [0xee6a]`
+- `R050+0x0344` `push word ptr [bp - 0xa]`
 - `R050+0x036E` `mov es, word ptr [0x7f2e]`
 
 ### R050+0x03B6 `R050+0x03B6 (1838:03B6)`
@@ -14997,25 +15024,19 @@ asm, reached by cards-day cards-flip lockstep-healer: blocks 1/1, outcomes 0/0
 
 ### R050+0x07C8 `R050+0x07C8 (1838:07C8)`
 
-asm, reached by cards cards-day cards-flip cards-variants lockstep-healer: blocks 4/4, outcomes 2/2
+asm, reached by cards cards-day cards-flip cards-variants lockstep-healer: blocks 3/4, outcomes 1/2
+
+- `R050+0x07F6` `mov es, word ptr [0x7f2e]`
 
 ### R050+0x083C `R050+0x083C (1838:083C)`
 
 asm, reached by cards cards-day cards-flip cards-variants lockstep-healer: blocks 1/1, outcomes 0/0
 
-### R050+0x08A0 `R050+0x08A0 (1838:08A0)`
-
-asm, reached by lockstep-healer: blocks 16/20, outcomes 14/20
-
-- `R050+0x08D5` `jmp 0xa00`
-- `R050+0x09B8` `push 2`
-- `R050+0x0A00` `push 0`
-- `R050+0x0A0C` `push ds`
-
 ### R050+0x0A26 `R050+0x0A26 (1838:0A26)`
 
-asm, reached by cards-flip lockstep-healer: blocks 9/10, outcomes 7/10
+asm, reached by cards-flip: blocks 8/10, outcomes 6/10
 
+- `R050+0x0A77` `inc word ptr [bp - 2]`
 - `R050+0x0AAC` `mov es, word ptr [0x7f30]`
 
 ### R050+0x0AE2 `R050+0x0AE2 (1838:0AE2)`
@@ -15040,7 +15061,7 @@ asm, reached by cards cards-day cards-flip cards-variants lockstep-healer: block
 
 ### R050+0x0C48 `R050+0x0C48 (18FC:0008)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 33/49, outcomes 26/44
+matched, reached by cards cards-day cards-flip cards-variants: blocks 33/49, outcomes 26/44
 
 - `R050+0x0D43` `jmp 0x24e`
 - `R050+0x0E12` `mov bx, word ptr [0xee6a]`
@@ -15061,21 +15082,21 @@ matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves l
 
 ### R050+0x0FDE `R050+0x0FDE (18FC:039E)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R050+0x1028 `R050+0x1028 (18FC:03E8)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 8/8, outcomes 7/10
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outcomes 7/10
 
 ### R050+0x1086 `R050+0x1086 (18FC:0446)`
 
-matched, reached by cards cards-day lockstep-wien-rathaus: blocks 2/3, outcomes 1/2
+matched, reached by cards cards-day: blocks 2/3, outcomes 1/2
 
 - `R050+0x10A8` `push 0`
 
 ### R050+0x10D2 `R050+0x10D2 (18FC:0492)`
 
-matched, reached by cards cards-day lockstep-wien-rathaus: blocks 7/8, outcomes 6/10
+matched, reached by cards cards-day: blocks 7/8, outcomes 6/10
 
 - `R050+0x1118` `sub si, 0x14`
 
@@ -15109,7 +15130,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 8/8, outco
 
 ### R050+0x149E `R050+0x149E (18FC:085E)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R050+0x14A0 `R050+0x14A0 (1982:0000)`
 
@@ -15191,7 +15212,7 @@ matched, reached by cards cards-day cards-variants lockstep-healer: blocks 1/1, 
 
 ### R050+0x1CEE `R050+0x1CEE (1A06:000E)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 17/24, outcomes 8/10
+matched, reached by cards cards-day cards-flip cards-variants lockstep-university lockstep-university-shop: blocks 17/24, outcomes 8/10
 
 - `R050+0x1DB0` `jmp 0x264`
 - `R050+0x1EB5` `jmp 0x25a`
@@ -15256,15 +15277,15 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R050+0x28E8 `R050+0x28E8 (1A06:0C08)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-university lockstep-university-shop: blocks 1/1, outcomes 0/0
 
 ### R050+0x28FC `R050+0x28FC (1A06:0C1C)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-university lockstep-university-shop: blocks 1/1, outcomes 0/0
 
 ### R050+0x2934 `R050+0x2934 (1A06:0C54)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants lockstep-university lockstep-university-shop: blocks 5/5, outcomes 4/4
 
 ### R050+0x2AFE `R050+0x2AFE (1A06:0E1E)`
 
@@ -15341,7 +15362,7 @@ matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-ca
 
 ### R051+0x0E22 `R051+0x0E22 (18C9:0512)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-saints lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-save-load lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R051+0x0E5A `R051+0x0E5A (18C9:054A)`
 
@@ -15349,7 +15370,7 @@ matched, reached by cards cards-day cards-flip cards-variants lockstep-alchemy l
 
 ### R051+0x0EA8 `R051+0x0EA8 (18C9:0598)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-cache lockstep-camp-inn-broke lockstep-inventory lockstep-luebeck-potion lockstep-orders-potion2 lockstep-orders-potion3 lockstep-orders-prague-missile lockstep-residence lockstep-roster-ulm lockstep-saints lockstep-sheet lockstep-stay: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-alchemy lockstep-camp-inn-broke lockstep-inventory lockstep-residence lockstep-stay: blocks 1/1, outcomes 0/0
 
 ### R051+0x0EE0 `R051+0x0EE0 (18C9:05D0)`
 
@@ -15444,7 +15465,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R051+0x18B8 `R051+0x18B8 (1967:05C8)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-roster-create2 lockstep-roster-mouse lockstep-roster-wrap: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x18F0 `R051+0x18F0 (1967:0600)`
 
@@ -15543,7 +15564,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R051+0x2D6A `R051+0x2D6A (19F2:11CA)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R051+0x2E4E `R051+0x2E4E (19F2:12AE)`
 
@@ -16332,7 +16353,7 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x0000 `R055+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants lockstep-wien-rathaus: blocks 11/22, outcomes 4/8
+matched, reached by cards cards-day cards-variants: blocks 11/22, outcomes 4/8
 
 - `R055+0x007E` `jmp 0x212`
 - `R055+0x016E` `mov bx, word ptr [0xee6a]`
@@ -16348,19 +16369,19 @@ matched, reached by cards cards-day cards-variants lockstep-wien-rathaus: blocks
 
 ### R055+0x0426 `R055+0x0426 (1838:0426)`
 
-matched, reached by cards cards-day cards-variants lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x043A `R055+0x043A (1838:043A)`
 
-matched, reached by cards cards-day cards-variants lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x0472 `R055+0x0472 (1838:0472)`
 
-matched, reached by cards cards-day cards-variants lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x0486 `R055+0x0486 (1838:0486)`
 
-matched, reached by cards cards-day cards-variants lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x04BE `R055+0x04BE (1838:04BE)`
 
@@ -16372,7 +16393,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R055+0x050A `R055+0x050A (1838:050A)`
 
-matched, reached by cards cards-day cards-variants lockstep-wien-rathaus: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R055+0x08FC `R055+0x08FC (18C7:000C)`
 
@@ -16595,11 +16616,11 @@ matched, reached by cards-day lockstep-university lockstep-university-shop: bloc
 
 ### R056+0x0D14 `R056+0x0D14 (18C0:0494)`
 
-matched, reached by cards-day lockstep-university lockstep-university-shop: blocks 3/3, outcomes 2/2
+matched, reached by cards-day: blocks 3/3, outcomes 2/2
 
 ### R056+0x0DEE `R056+0x0DEE (18C0:056E)`
 
-matched, reached by cards-day lockstep-university lockstep-university-shop: blocks 1/1, outcomes 0/0
+matched, reached by cards-day: blocks 1/1, outcomes 0/0
 
 ### R056+0x0F68 `R056+0x0F68 (18C0:06E8)`
 
@@ -16607,7 +16628,9 @@ matched, reached by cards-day: blocks 1/1, outcomes 0/0
 
 ### R056+0x0FF6 `R056+0x0FF6 (18C0:0776)`
 
-matched, reached by cards-day lockstep-university lockstep-university-shop: blocks 4/4, outcomes 2/2
+matched, reached by cards-day lockstep-university lockstep-university-shop: blocks 3/4, outcomes 1/2
+
+- `R056+0x1007` `push 1`
 
 ### R056+0x10D6 `R056+0x10D6 (18C0:0856)`
 
@@ -17212,7 +17235,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outco
 
 ### R058+0x0928 `R058+0x0928 (18CA:0008)`
 
-matched, reached by cards cards-day cards-variants lockstep-university lockstep-university-shop: blocks 10/13, outcomes 7/10
+matched, reached by cards cards-day cards-variants: blocks 10/13, outcomes 7/10
 
 - `R058+0x0A3D` `jmp 0x1a4`
 - `R058+0x0AA1` `jmp 0x19a`
@@ -17228,15 +17251,15 @@ matched, reached by cards cards-day cards-variants: blocks 2/2, outcomes 0/0
 
 ### R058+0x0B64 `R058+0x0B64 (18CA:0244)`
 
-matched, reached by cards cards-day cards-variants lockstep-university lockstep-university-shop: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x0B76 `R058+0x0B76 (18CA:0256)`
 
-matched, reached by cards cards-day cards-variants lockstep-university lockstep-university-shop: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x0BB0 `R058+0x0BB0 (18CA:0290)`
 
-matched, reached by cards cards-day cards-variants lockstep-university lockstep-university-shop: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R058+0x0DEC `R058+0x0DEC (18CA:04CC)`
 
@@ -17348,7 +17371,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R058+0x1AA4 `R058+0x1AA4 (191A:0C84)`
 
-matched, reached by battle-oracle-castle battle-oracle-castle04 battle-oracle-castle07 battle-oracle-castle7c battle-oracle-cave60 battle-oracle-city13 battle-oracle-city15 battle-oracle-city1c battle-oracle-city1f battle-oracle-city24 battle-oracle-city2b battle-oracle-f2alch16 battle-oracle-f2archwitch2c battle-oracle-f2demon61 battle-oracle-f2friar19 battle-oracle-f2hell62 battle-oracle-f2hwitch41 battle-oracle-f2kking0c battle-oracle-f2leader14 battle-oracle-f2magic58 battle-oracle-f2precept05 battle-oracle-f2vulcan0e battle-oracle-f2witch2f battle-oracle-fort5e battle-oracle-gate battle-oracle-mine battle-oracle-mine0b battle-oracle-mine10 battle-oracle-mine80 battle-oracle-street battle-oracle-tombs5f battle-oracle-wild battle-oracle-wild30 battle-oracle-wild40 battle-oracle-wild50 battle-oracle-wild6f battle-oracle-wild75 cards cards-day cards-flip cards-variants lockstep-gate-battle lockstep-loot-esc lockstep-loot-keys lockstep-loot-mouse lockstep-orders-attack-a lockstep-orders-attack-b lockstep-orders-attack-b2 lockstep-orders-attack-v lockstep-orders-attacks lockstep-orders-missile lockstep-orders-save lockstep-orders-select lockstep-orders-sheet lockstep-orders-walk lockstep-pressburg-map lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
 
 ### R058+0x1ADC `R058+0x1ADC (191A:0CBC)`
 
@@ -17880,11 +17903,9 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R060+0x254E `R060+0x254E (1A36:056E)`
 
-matched, reached by cards cards-day cards-variants lockstep-banks: blocks 3/7, outcomes 2/4
+matched, reached by cards cards-day cards-variants lockstep-banks: blocks 5/7, outcomes 3/4
 
 - `R060+0x2565` `jmp 0x6bc`
-- `R060+0x2576` `jmp 0x64a`
-- `R060+0x262A` `push 1`
 - `R060+0x269C` `mov es, word ptr [0x7fa4]`
 
 ### R060+0x26FE `R060+0x26FE (1A36:071E)`
@@ -19173,7 +19194,7 @@ asm, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 
 
 ### R066+0x1B4E `R066+0x1B4E (19EC:000E)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 49/68, outcomes 31/46
+matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 48/68, outcomes 30/46
 
 - `R066+0x1B8A` `jmp 0x4f6`
 - `R066+0x1C86` `mov bx, word ptr es:[bx + 0x4e]`
@@ -19189,6 +19210,7 @@ matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves l
 - `R066+0x1DAB` `mov di, 2`
 - `R066+0x1E2E` `cmp word ptr [bp - 0x1a], 1`
 - `R066+0x1E46` `cmp word ptr [bp - 0x18], 1`
+- `R066+0x1E5A` `sub ax, ax`
 - `R066+0x1E96` `jmp 0x4ee`
 - `R066+0x1FA0` `jmp 0x4e4`
 - `R066+0x2006` `push word ptr [bp - 8]`
@@ -19227,11 +19249,11 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R066+0x236E `R066+0x236E (19EC:082E)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
 
 ### R066+0x242E `R066+0x242E (19EC:08EE)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 8/9, outcomes 6/8
+matched, reached by cards cards-day cards-flip cards-variants: blocks 8/9, outcomes 6/8
 
 - `R066+0x247A` `push 0`
 
@@ -19284,7 +19306,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R066+0x2D10 `R066+0x2D10 (19EC:11D0)`
 
-matched, reached by cards cards-day cards-flip cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
 
 ### R066+0x2DB4 `R066+0x2DB4 (19EC:1274)`
 
@@ -20553,7 +20575,7 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R071+0x0D82 `R071+0x0D82 (1910:0002)`
 
-matched, reached by cards cards-day cards-variants lockstep-notices lockstep-wharves lockstep-wien-rathaus: blocks 9/25, outcomes 7/22
+matched, reached by cards cards-day cards-variants lockstep-notices: blocks 9/25, outcomes 7/22
 
 - `R071+0x0DE1` `lcall 0x1367, 0x72a`
 - `R071+0x0DEA` `push 0`
@@ -20578,7 +20600,7 @@ matched, reached by cards-variants: blocks 1/1, outcomes 0/0
 
 ### R071+0x11B2 `R071+0x11B2 (1910:0432)`
 
-matched, reached by cards cards-day cards-variants lockstep-notices lockstep-wharves lockstep-wien-rathaus: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-variants lockstep-notices: blocks 5/5, outcomes 4/4
 
 ### R071+0x15A4 `R071+0x15A4 (1992:0004)`
 
@@ -22229,9 +22251,8 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R077+0x0E48 `R077+0x0E48 (191C:0008)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 21/23, outcomes 11/14
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 22/23, outcomes 12/14
 
-- `R077+0x0F02` `mov si, 3`
 - `R077+0x0F68` `jmp 0x241`
 
 ### R077+0x1088 `R077+0x1088 (191C:0248)`
@@ -22244,11 +22265,11 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R077+0x10D2 `R077+0x10D2 (191C:0292)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R077+0x10E4 `R077+0x10E4 (191C:02A4)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R077+0x111C `R077+0x111C (191C:02DC)`
 
@@ -22299,7 +22320,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R077+0x1320 `R077+0x1320 (191C:04E0)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 5/5, outcomes 4/4
 
 ### R077+0x13C4 `R077+0x13C4 (191C:0584)`
 
@@ -22567,14 +22588,14 @@ matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R078+0x0E4A `R078+0x0E4A (191C:000A)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 19/21, outcomes 9/12
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 19/21, outcomes 9/12
 
 - `R078+0x0F26` `jmp 0x205`
 - `R078+0x0FD4` `mov bx, word ptr [0xee6a]`
 
 ### R078+0x104C `R078+0x104C (191C:020C)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 4/11, outcomes 1/8
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 4/11, outcomes 1/8
 
 - `R078+0x105D` `push word ptr [0x907e]`
 - `R078+0x106F` `push 8`
@@ -22586,7 +22607,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 4/11, outc
 
 ### R078+0x1152 `R078+0x1152 (191C:0312)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 1/1, outcomes 0/0
 
 ### R078+0x118A `R078+0x118A (191C:034A)`
 
@@ -22635,7 +22656,7 @@ matched, reached by cards cards-day cards-flip cards-variants: blocks 1/1, outco
 
 ### R078+0x1514 `R078+0x1514 (191C:06D4)`
 
-matched, reached by cards cards-day cards-flip cards-variants: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-flip cards-variants lockstep-tyrnau: blocks 3/3, outcomes 2/2
 
 ### R079+0x0000 `R079+0x0000 (1838:0000)`
 
@@ -23032,7 +23053,7 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R080+0x0000 `R080+0x0000 (1838:0000)`
 
-matched, reached by cards cards-day cards-variants lockstep-banks: blocks 13/46, outcomes 9/44
+matched, reached by cards cards-day cards-variants: blocks 12/46, outcomes 8/44
 
 - `R080+0x00D2` `lcall 0x9c0, 0x2161`
 - `R080+0x00DC` `mov word ptr [0xe48a], 0x90`
@@ -23047,6 +23068,7 @@ matched, reached by cards cards-day cards-variants lockstep-banks: blocks 13/46,
 - `R080+0x0139` `push 2`
 - `R080+0x0140` `push 2`
 - `R080+0x0146` `push 2`
+- `R080+0x014C` `push 2`
 - `R080+0x0152` `push 2`
 - `R080+0x0158` `push 2`
 - `R080+0x015E` `push 2`
@@ -23070,7 +23092,7 @@ matched, reached by cards cards-day cards-variants lockstep-banks: blocks 13/46,
 
 ### R080+0x031C `R080+0x031C (1838:031C)`
 
-matched, reached by cards cards-day cards-variants lockstep-banks: blocks 3/3, outcomes 2/2
+matched, reached by cards cards-day cards-variants: blocks 3/3, outcomes 2/2
 
 ### R080+0x038C `R080+0x038C (1870:000C)`
 
@@ -30463,7 +30485,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R109+0x21A2 `R109+0x21A2 (1A52:0002)`
 
-matched, reached by cards cards-day cards-variants lockstep-pressburg-map lockstep-tyrnau: blocks 17/24, outcomes 8/10
+matched, reached by cards cards-day cards-variants: blocks 17/24, outcomes 8/10
 
 - `R109+0x2286` `jmp 0x27d`
 - `R109+0x238D` `jmp 0x272`
@@ -30505,7 +30527,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R109+0x274E `R109+0x274E (1A52:05AE)`
 
-matched, reached by cards-day cards-variants lockstep-tyrnau: blocks 8/11, outcomes 5/8
+matched, reached by cards-day cards-variants: blocks 8/11, outcomes 5/8
 
 - `R109+0x276F` `sub ax, ax`
 - `R109+0x278A` `mov es, word ptr [0x81a8]`
@@ -30513,7 +30535,7 @@ matched, reached by cards-day cards-variants lockstep-tyrnau: blocks 8/11, outco
 
 ### R109+0x28E6 `R109+0x28E6 (1A52:0746)`
 
-matched, reached by cards cards-day cards-variants lockstep-tyrnau: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R109+0x2BB0 `R109+0x2BB0 (1A52:0A10)`
 
@@ -30552,7 +30574,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R109+0x2DB8 `R109+0x2DB8 (1A52:0C18)`
 
-matched, reached by cards cards-day cards-variants lockstep-pressburg-map lockstep-tyrnau: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R109+0x2E5A `R109+0x2E5A (1A52:0CBA)`
 
@@ -32050,7 +32072,7 @@ matched, reached by cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R114+0x15D4 `R114+0x15D4 (1995:0004)`
 
-matched, reached by cards cards-day cards-variants: blocks 15/22, outcomes 6/8
+matched, reached by cards cards-day cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 15/22, outcomes 6/8
 
 - `R114+0x1694` `jmp 0x25f`
 - `R114+0x17A1` `jmp 0x254`
@@ -32084,14 +32106,14 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R114+0x19E0 `R114+0x19E0 (1995:0410)`
 
-matched, reached by cards-day cards-variants: blocks 3/5, outcomes 2/4
+matched, reached by cards-day cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 3/5, outcomes 2/4
 
 - `R114+0x19FE` `sub ax, ax`
 - `R114+0x1A05` `mov es, word ptr [0x81d8]`
 
 ### R114+0x1A98 `R114+0x1A98 (1995:04C8)`
 
-matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
+matched, reached by cards cards-day cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 1/1, outcomes 0/0
 
 ### R114+0x1AD0 `R114+0x1AD0 (1995:0500)`
 
@@ -32119,7 +32141,7 @@ matched, reached by cards cards-day cards-variants: blocks 1/1, outcomes 0/0
 
 ### R114+0x1CF8 `R114+0x1CF8 (1995:0728)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-variants lockstep-wharves lockstep-wien-rathaus: blocks 5/5, outcomes 4/4
 
 ### R114+0x1DC6 `R114+0x1DC6 (1995:07F6)`
 
@@ -35324,9 +35346,8 @@ matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
 
 ### R128+0x0BF0 `R128+0x0BF0 (18F7:0000)`
 
-matched, reached by cards cards-day cards-variants: blocks 10/89, outcomes 3/54, unresolved indirect jumps 1
+matched, reached by cards cards-day cards-variants lockstep-banks: blocks 11/89, outcomes 3/54, unresolved indirect jumps 1
 
-- `R128+0x0CDA` `push 0`
 - `R128+0x0CF8` `push 0`
 - `R128+0x0D16` `push 2`
 - `R128+0x0D1E` `push 0`
@@ -35408,7 +35429,7 @@ matched, reached by cards cards-day cards-variants: blocks 10/89, outcomes 3/54,
 
 ### R128+0x12B0 `R128+0x12B0 (18F7:06C0)`
 
-matched, reached by cards cards-day cards-variants: blocks 5/5, outcomes 4/4
+matched, reached by cards cards-day cards-variants lockstep-banks: blocks 5/5, outcomes 4/4
 
 ### R128+0x16A2 `R128+0x16A2 (19A2:0002)`
 
