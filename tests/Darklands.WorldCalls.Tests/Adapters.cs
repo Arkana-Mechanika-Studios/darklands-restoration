@@ -63,7 +63,7 @@ internal static class Adapters
         ["R030+0x25BE"] = c => c.Map.CampWatch(c.State.Party.Members.Count, c.State.MapPosition.X, c.State.MapPosition.Y),
         ["R030+0x2DD6"] = SeasonPaletteCall,
         ["R030+0x2AC8"] = c => Terrain.MinutesPerStep(c.S(0)),
-        ["R030+0x2D44"] = c => c.S(1) >= c.State.Locations.Count ? throw new WorldCallsTests.SkipJob("a place past the table (never a found index)") : (int)typeof(OverlandTravel).GetMethod("EncounterWeight", BindingFlags.Instance | BindingFlags.NonPublic)!
+        ["R030+0x2D44"] = c => c.S(1) >= c.State.Locations.Count ? throw new WorldCallsTests.SkipJob("place 414, past the table: unreachable (the only caller, the step R030+0x1300, passes `found`, -1 or a table index below 414)") : (int)typeof(OverlandTravel).GetMethod("EncounterWeight", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(new OverlandTravel(c.State, c.Map), [c.S(0), c.S(1)])!,
 
         // ---- city politics, quests
@@ -147,13 +147,11 @@ internal static class Adapters
         travel.HourPassed = () => TimePassage.Advance(c.State, 1);
         var x = c.U(0) + 16 * c.Job.Word(0x286A);
         var y = c.S(1) + 4 * (c.Job.Word(0x286E) + c.Job.Word(0x286C));
-        var cell = c.State.MapPosition;
         var result = travel.Step(x, y);
         switch (result.Outcome)
         {
             case StepOutcome.Walked:
-                // the original leaves party_x/party_y to the next pass of the key handler (R030+0x0C44 sets them from the marker); the rewrite's Step sets them now
-                c.State.MapPosition = cell;
+                // party_x/party_y are left to the next pass of the key handler (R030+0x0C44 sets them from the marker) in both
                 return -1;
             case StepOutcome.Blocked:
                 return 9999;
@@ -166,7 +164,11 @@ internal static class Adapters
                     return 2000;
                 }
                 // the road encounter's card is chosen by the loop's branch after the function, which the rewrite's Step includes
-                c.Lenient = true;
+                if (!WorldCallsTests.Context.Strict)
+                {
+                    c.Lenient = true;
+                    c.Tags.Add("lenient-road");
+                }
                 return 1000;
         }
     }

@@ -189,6 +189,24 @@ public sealed class OriginalSaveTests
     }
 
     [Fact]
+    public void ALoadedSlotOfStatusZeroPastThePartyKeepsItsIdAndIsSkippedToo()
+    {
+        // The writer tests ids[] of all five slots: the last slot of status 0 is past party_size after loading, keeps its id, and its
+        // record is left out like any status-0 slot's (B-1cec30).
+        var state = SampleGame();
+        state.Behaviour = OriginalBehaviour.DataSafe;
+        state.Party.Members[3].Status = CharacterStatus.Empty;
+        var full = OriginalSaves.Write(state).Sav;
+        Assert.Equal(4, BitConverter.ToInt16(full, 0xF1));
+        var loaded = OriginalSaves.Read(full, OriginalSaves.Write(state).Bsv, "DKSAVE1.SAV", NoGameData.Instance).State;
+        Assert.Equal(3, loaded.Party.Members.Count);
+        var sav = OriginalSaves.Write(loaded).Sav;
+        Assert.Equal(3, BitConverter.ToInt16(sav, 0xF3 + 3 * 2));
+        Assert.Equal(4, BitConverter.ToInt16(sav, 0xF1));
+        Assert.Equal(loaded.Events.All().Count(), BitConverter.ToInt16(sav, 0x189 + 3 * SaveFile.CharacterSize));
+    }
+
+    [Fact]
     public void WithTheFixAPartySlotOfStatusZeroKeepsItsRecordAndTheFileIsComplete()
     {
         // FixSaveWriterSkipsEmptySlots: every roster record is written, so the count is true and the loader's layout holds.

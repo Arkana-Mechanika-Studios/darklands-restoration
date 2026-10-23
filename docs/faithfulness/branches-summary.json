@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 57653,
-  "blocks_hit": 48521,
-  "functions": 8503,
-  "outcomes": 43226,
-  "outcomes_hit": 32222,
+  "blocks": 57686,
+  "blocks_hit": 48589,
+  "functions": 8506,
+  "outcomes": 43256,
+  "outcomes_hit": 32277,
   "runs": null
  },
  "battle": {
@@ -3054,5 +3054,13 @@
   "outcomes": 1974,
   "outcomes_hit": 943,
   "runs": 630
+ },
+ "world-calls-travel": {
+  "blocks": 2763,
+  "blocks_hit": 1407,
+  "functions": 128,
+  "outcomes": 1866,
+  "outcomes_hit": 906,
+  "runs": 1643
  }
 }

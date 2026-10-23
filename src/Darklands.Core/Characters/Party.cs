@@ -20,7 +20,12 @@ public sealed class Party
     /// <summary>Random seed fixed when the party is founded; it keeps cities and shops stable.</summary>
     public int Seed { get; set; }
 
-    public Character Leader => Members[LeaderIndex];
+    /// <summary>
+    /// The leader's slot. The leader byte may name a slot past <see cref="Members"/>: a leader removed from the last slot while no
+    /// other member is able keeps the index (party_remove / party_delete); that slot's record is then the emptied one (<see cref="Slot"/>).
+    /// </summary>
+    // C: party[leader] reads the fixed five-slot table (DS:9C69), whatever party_size is.
+    public Character Leader => LeaderIndex >= 0 && LeaderIndex < Members.Count ? Members[LeaderIndex] : Slot(LeaderIndex);
 
     public IEnumerable<Character> Able => Members.Where(m => m.IsAble);
 

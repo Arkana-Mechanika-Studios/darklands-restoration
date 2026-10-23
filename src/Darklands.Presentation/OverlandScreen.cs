@@ -125,6 +125,11 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             // C: the right button with a Shift key held shows "character X:%02d Y:%02d" at (0x58, 0x1f) in white, until the next redraw.
             _coordinates = ui.Mouse.Right && ui.ShiftHeld ? CoordinateText() : "";
 
+            // orig: the start of R030+0x0C44 (+0x54/+0x63), every pass: party_x / party_y = the cell under the marker (after the last pass's
+            //   scroll). The menu bar (Poll above) comes before it, as menu_bar_run does in overland_loop: a save there holds the cell of the
+            //   previous pass, the one the last walk stepped from.
+            var (cellColumn, cellRow) = WorldMap.CellAt(_x, _y);
+            state.MapPosition = new Core.World.MapPosition(cellColumn, cellRow);
             var (dx, dy) = key != Keys.None ? DirectionOf(key) : TowardTarget(target);
             if (key != Keys.None)
             {
@@ -283,7 +288,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         {
             _x = x;
             _y = y;
-            Scroll(state);
+            Scroll();
         }
         return result;
     }
@@ -348,8 +353,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     //   the shown rows are kept in 1 .. 0x53; at the bottom (height - top - 0x30 <= rows) the buffer is the last 0x83 rows and the marker moves by
     //   (old - new rows) * 5 pixels (rows are 4 pixels: the marker leaves its cell); with DS:2866 < 0x14 or > 0xE2 the view moves 8 columns and the
     //   marker 0x80 pixels, the view kept in 0 .. width - 0x11 with the marker corrected by 16 per column at the borders
-    // C: the marker's map pixel (_x, _y) is what the next pass reads the party's cell from (0c44 +0x54/+0x63): the bottom correction moves the party.
-    private void Scroll(GameState state)
+    // C: the marker's map pixel (_x, _y) is what the next pass reads the party's cell from (0c44 +0x54/+0x63, TravelLoop): the bottom correction moves the party.
+    private void Scroll()
     {
         var vx = _x - _originX;
         var vy = _y - _originY;
@@ -412,8 +417,6 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         }
         _x = _originX + vx;
         _y = _originY + vy;
-        var (column, row) = WorldMap.CellAt(_x, _y);
-        state.MapPosition = new Core.World.MapPosition(column, row);
     }
 
 

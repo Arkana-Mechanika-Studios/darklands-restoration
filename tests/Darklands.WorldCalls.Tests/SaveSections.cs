@@ -7,13 +7,47 @@ internal sealed class SaveSections
 
     public Dictionary<string, List<byte[]>> Parts { get; } = [];
 
-    public static SaveSections Cut(byte[] b)
+    public static SaveSections Cut(byte[] b) => Cut(b, out _);
+
+    /// <summary>
+    /// Cuts a saved game; <paramref name="missing"/> is the number of character records the file holds fewer than its count says.
+    /// The original's writer (R037+0x2ACE) leaves out the record of a party slot whose status is 0 and still writes the full count
+    /// (registered original bug B-1cec30, OriginalBehaviour.FixSaveWriterSkipsEmptySlots; off, i.e. faithful, in the oracles): such a
+    /// file is cut with that many records fewer, found as the one layout whose place count is the game's 414.
+    /// </summary>
+    public static SaveSections Cut(byte[] b, out int missing)
+    {
+        var n = BitConverter.ToUInt16(b, 0xF1);
+        SaveSections? first = null;
+        Exception? error = null;
+        for (missing = 0; missing <= n; missing++)
+        {
+            try
+            {
+                var s = Cut(b, n - missing);
+                if (s.Parts["places"].Count == Places)
+                {
+                    return s;
+                }
+                first ??= missing == 0 ? s : null;
+            }
+            catch (Exception e) when (e is ArgumentException or IndexOutOfRangeException)
+            {
+                error ??= e;
+            }
+        }
+        missing = 0;
+        return first ?? throw error!;
+    }
+
+    private const int Places = 0x19E;
+
+    private static SaveSections Cut(byte[] b, int characters)
     {
         var s = new SaveSections();
         s.Parts["head"] = [b[TextsEnd..HeadEnd]];
-        var n = BitConverter.ToUInt16(b, 0xF1);
         var at = HeadEnd;
-        s.Parts["chars"] = Records(b, ref at, n, Char);
+        s.Parts["chars"] = Records(b, ref at, characters, Char);
         var m = BitConverter.ToUInt16(b, at);
         at += 2;
         s.Parts["events"] = Records(b, ref at, m, Event);

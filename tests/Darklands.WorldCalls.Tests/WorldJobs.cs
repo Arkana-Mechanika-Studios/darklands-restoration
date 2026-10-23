@@ -77,6 +77,62 @@ internal sealed class WorldJob
     public int Word(int offset, bool signed = true) => Ds.TryGetValue(offset.ToString(), out var v) ? signed ? (short)v : v & 0xFFFF : throw new InvalidDataException($"no DS:{offset:X4} in the job");
 
     public byte[] Before => WorldJobs.Unpack(SavBefore);
+
+    /// <summary>
+    /// The saved game the original loaded for the call: the state's file with the job's edits (world_fuzz.py Save.apply; the "ds" edits are
+    /// memory, not file). Null when the job has no edits.
+    /// </summary>
+    public byte[]? Edited(byte[] stateSav)
+    {
+        if (Ops.ValueKind != System.Text.Json.JsonValueKind.Array || Ops.GetArrayLength() == 0)
+        {
+            return null;
+        }
+        const int HeadEnd = 0x189, Char = 0x22A, Event = 0x30, Place = 0x3A;
+        var b = stateSav;
+        var head = b[..HeadEnd];
+        var at = HeadEnd;
+        List<byte[]> Take(int count, int size)
+        {
+            var list = new List<byte[]>();
+            for (var k = 0; k < count; k++, at += size)
+            {
+                list.Add(b[at..(at + size)]);
+            }
+            return list;
+        }
+        var chars = Take(BitConverter.ToUInt16(b, 0xF1), Char);
+        var m = BitConverter.ToUInt16(b, at);
+        at += 2;
+        var events = Take(m, Event);
+        var p = BitConverter.ToUInt16(b, at);
+        at += 2;
+        var places = Take(p, Place);
+        var cache = b[at..];
+        static void Put(byte[] rec, System.Text.Json.JsonElement op) => Convert.FromHexString(op.GetProperty("hex").GetString()!).CopyTo(rec, op.GetProperty("o").GetInt32());
+        foreach (var op in Ops.EnumerateArray())
+        {
+            var i = op.TryGetProperty("i", out var iv) ? iv.GetInt32() : 0;
+            switch (op.GetProperty("s").GetString())
+            {
+                case "head": Put(head, op); break;
+                case "char" when i < chars.Count: Put(chars[i], op); break;
+                case "event" when i < events.Count: Put(events[i], op); break;
+                case "event+" when events.Count < 300: events.Add(Convert.FromHexString(op.GetProperty("hex").GetString()!)); break;
+                case "event-" when i < events.Count: events.RemoveAt(i); break;
+                case "place" when i < places.Count: Put(places[i], op); break;
+            }
+        }
+        var output = new MemoryStream();
+        output.Write(head);
+        chars.ForEach(c => output.Write(c));
+        output.Write(BitConverter.GetBytes((ushort)events.Count));
+        events.ForEach(e => output.Write(e));
+        output.Write(BitConverter.GetBytes((ushort)places.Count));
+        places.ForEach(r => output.Write(r));
+        output.Write(cache);
+        return output.ToArray();
+    }
 }
 
 internal sealed class OriginalOutcome

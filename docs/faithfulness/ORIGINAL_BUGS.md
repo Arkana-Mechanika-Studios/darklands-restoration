@@ -15,11 +15,11 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 60 | 2 | 58 |
 | events | 7 | 4 | 3 |
 | battles | 23 | 7 | 16 |
-| persistence | 1 | 1 | 0 |
+| persistence | 2 | 2 | 0 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 179 | 36 | 143 |
+| total | 180 | 37 | 143 |
 
-## Core logic (177)
+## Core logic (178)
 
 ### rules (86)
 
@@ -561,11 +561,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
 
-### persistence (1)
+### persistence (2)
 
 - **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:373` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
+- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:384` `OriginalSaves.static`  
+  original: `R037+0x2ACE` (1462:2ACE, draft)  
+  why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party_size: the writer tests all five ids, and a slot past party_size has status 0 (party_size is one past the last slot of status != 0), so its record is left out as well.
 
 ## Presentation and host (2)
 

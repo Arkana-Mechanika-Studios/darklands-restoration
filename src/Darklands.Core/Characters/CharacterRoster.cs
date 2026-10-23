@@ -98,7 +98,9 @@ public sealed class CharacterRoster
     {
         for (var slot = 0; slot < PartySlots.Length; slot++)
         {
-            var member = slot < party.Members.Count ? party.Members[slot] : null;
+            // C: ids[] is the five slots' whatever party_size is: a slot past it keeps its entry while it still holds that entry's record
+            //   (a loaded slot of status 0 after the last occupied one).
+            var member = slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot);
             var entry = PartySlots[slot];
             if (member is not null && entry >= 0 && entry < Characters.Count && ReferenceEquals(Characters[entry], member))
             {

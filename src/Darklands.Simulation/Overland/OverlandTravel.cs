@@ -84,7 +84,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
 
     /// <summary>The party moves onto the cell under map pixel (x, y).</summary>
     // orig: R030+0x1300 (1462:1300): returns -1 walked, 9999 blocked, a location index arrived, 1000 a road encounter, 2000 the place's own encounter - the four StepOutcomes
-    // C: whenever 1300 returns 0 or more, 0c44 puts the marker back (DS:2866 = oxo, DS:2868 = oyo, DS:8676 = 0); the cell (MapPosition) is the old one for Blocked and Arrived, the new one for Encounter (see OverlandScreen.MoveOnce).
+    // C: whenever 1300 returns 0 or more, 0c44 puts the marker back (DS:2866 = oxo, DS:2868 = oyo, DS:8676 = 0); the cell (MapPosition) is the old one for Walked, Blocked and Arrived, the new one for Encounter (see OverlandScreen.MoveOnce).
     public StepResult Step(int x, int y)
     {
         var (column, row) = WorldMap.CellAt(x, y);
@@ -113,7 +113,9 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         {
             return new StepResult(StepOutcome.Arrived, ArriveAt(place));
         }
-        state.MapPosition = new MapPosition(column, row);
+        // C: a walk (-1) does not write party_x / party_y either: they keep the cell 0c44 took at the start of this pass until the next pass
+        //   of 0c44 reads them from the marker (1462:0C44 +0x54/+0x63, OverlandScreen); a save from the menu bar in between (menu_bar_run comes
+        //   before 0c44 in overland_loop) holds the cell stepped from. Only an encounter sets them here (below).
 
         var near = NearestNoticedPlace(column, row);
         // C: after the notice scan (which may show a map message even over water) a step onto deep water ends here.
@@ -132,7 +134,8 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         {
             return new StepResult(StepOutcome.Walked);
         }
-        // C: party_x/party_y = the cell stepped to (MapPosition, set above); cur_loc = found (-1 when no place is near).
+        // C: party_x/party_y = the cell stepped to; cur_loc = found (-1 when no place is near).
+        state.MapPosition = new MapPosition(column, row);
         state.CurrentLocation = near;
         // C: found != -1 && unk0e != 0x62 && rand_mod(100) <= 60 -> 2000: the place's own encounter card (short-circuit: no draw unless the place has one that is not 0x62).
         if (near >= 0 && state.Locations[near].EncounterCard != 0x62 && state.Random.Below(100) <= 60)

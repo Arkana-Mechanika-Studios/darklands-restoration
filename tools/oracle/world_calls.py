@@ -22,6 +22,7 @@ import base64
 import copy
 import gzip
 import json
+import os
 import pickle
 import struct
 import sys
@@ -90,6 +91,34 @@ def capture(session: str, out: Path, game: str = str(GAME), recordings: str | No
     print("captured", session, sorted(WorldCapture.taken), "%.0f s" % (time.time() - t), flush=True)
 
 
+# ---------------------------------------------------------------------------------------------------- memory
+def private_mb() -> float:
+    """Private bytes of this process in MB (0 where it cannot be read)."""
+    try:
+        import ctypes
+        import ctypes.wintypes as W
+
+        class PMC(ctypes.Structure):
+            _fields_ = [("cb", W.DWORD), ("pf", W.DWORD), ("peak", ctypes.c_size_t), ("ws", ctypes.c_size_t), ("a", ctypes.c_size_t), ("b", ctypes.c_size_t),
+                        ("c", ctypes.c_size_t), ("d", ctypes.c_size_t), ("priv", ctypes.c_size_t), ("peakpf", ctypes.c_size_t)]
+        k, ps = ctypes.WinDLL("kernel32"), ctypes.WinDLL("psapi")
+        k.GetCurrentProcess.restype = ctypes.c_void_p
+        ps.GetProcessMemoryInfo.argtypes = [ctypes.c_void_p, ctypes.c_void_p, W.DWORD]
+        p = PMC()
+        p.cb = ctypes.sizeof(p)
+        ps.GetProcessMemoryInfo(k.GetCurrentProcess(), ctypes.byref(p), p.cb)
+        return p.priv / 1e6
+    except Exception:
+        return 0.0
+
+
+# The original's loader and writer (m.call of R037) leak native memory in the emulator (about 0.6 MB a call: the translated blocks it drops when
+# the code cache is flushed at every restore are not given back); a machine built afresh gives it all back. So the machine is rebuilt every
+# REBUILD_EVERY calls, and a process whose private memory still passes RSS_CAP_MB aborts (exit 3) instead of eating the computer.
+REBUILD_EVERY = int(os.environ.get("WORLD_REBUILD_EVERY", "20"))
+RSS_CAP_MB = float(os.environ.get("WORLD_RSS_CAP_MB", "1500"))
+
+
 # ---------------------------------------------------------------------------------------------------- calls
 class Catalog2(bc.Catalog):
     """battle_calls.Catalog plus the resident root's functions (`root 0000:0DD2`)."""
@@ -127,6 +156,7 @@ class WState(bc.State):
 
     def __init__(self, path: Path, game: str = str(GAME), coverage: bool = True, near=(), snap=None):
         self._init_args = (path, game, coverage, near)
+        self.calls_since_build = 0
         with gzip.open(path, "rb") as f:
             d = pickle.load(f)
         self.name = Path(path).name[:-len(".state")]
@@ -158,7 +188,11 @@ class WState(bc.State):
 
     def rebuild(self):
         """A fresh machine after the emulator itself failed (an access violation leaves the engine unusable)."""
+        import gc
+        self.m = None
+        gc.collect()
         self.__init__(*self._init_args)
+        gc.collect()
 
     def _srand(self, m):
         ret = linear(m.word(m.reg("SS"), m.reg("SP") + 2), m.word(m.reg("SS"), m.reg("SP")))
@@ -207,6 +241,12 @@ class WState(bc.State):
         """Restore; `sav_edit` (a whole edited saved game) is loaded by the original; call the function.
         out["sav_before"]: the saved game of the machine just before the call (the edited bytes as the original's writer holds them),
         out["sav_after"]: after it, out["random0"]: the generator's state before the call, out["seeds"]: the srand calls."""
+        self.calls_since_build += 1
+        if self.calls_since_build > REBUILD_EVERY:
+            self.rebuild()
+        if RSS_CAP_MB and private_mb() > RSS_CAP_MB:
+            print("ABORT: private memory %.0f MB over the cap of %.0f MB" % (private_mb(), RSS_CAP_MB), flush=True)
+            sys.exit(3)
         self.restore()
         m = self.m
         m.script = [("key", "enter")] * 40          # a message that waits for a key gets one

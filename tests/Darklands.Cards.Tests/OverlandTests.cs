@@ -130,6 +130,21 @@ public sealed class OverlandTests
     }
 
     [Fact]
+    public void AWalkLeavesThePartysCellToTheNextPassOfTheKeyHandler()
+    {
+        // R030+0x1300 returns -1 without writing party_x / party_y; 0c44 sets them from the marker at the start of its next pass.
+        var state = State();
+        var map = MapOf(60, 60, (_, _) => Terrain.Plains);
+        state.MapPosition = new MapPosition(20, 20);
+        var travel = new OverlandTravel(state, map, kind => false);
+        travel.Begin();
+        var (x, y) = PixelOf(21, 20);
+        var result = travel.Step(x, y);
+        Assert.Equal(StepOutcome.Walked, result.Outcome);
+        Assert.Equal(new MapPosition(20, 20), state.MapPosition);
+    }
+
+    [Fact]
     public void ANoticedPlaceShowsItsMapMessageOnceAndTheEventIsConsumed()
     {
         var state = State();

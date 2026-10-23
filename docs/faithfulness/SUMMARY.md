@@ -96,19 +96,19 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,503 functions the oracles enter | 84.2% (48,521 / 57,653) | 74.5% (32,222 / 43,226) |
-| **every function the C# implements (9,281)** | | **73.4% (31,419 / 42,790)** |
+| the 8,506 functions the oracles enter | 84.2% (48,589 / 57,686) | 74.6% (32,277 / 43,256) |
+| **every function the C# implements (9,281)** | | **73.6% (31,474 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 31,419 against 32,222 exercised. By area:
+differ slightly on the resident code, hence 31,474 against 32,277 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 329 / 358 | 2,058 / 2,590 | 79% |
+| rules | 332 / 358 | 2,087 / 2,590 | 81% |
 | battles (tactical combat) | 271 / 314 | 5,966 / 7,516 | 79% |
-| travel (overland map) | 23 / 24 | 654 / 982 | 67% |
+| travel (overland map) | 23 / 24 | 680 / 982 | 69% |
 | screens (inventory, barter, creation ...) | 190 / 202 | 4,570 / 6,070 | 75% |
 | resident code | 132 / 160 | 943 / 1,644 | 57% |
 | card engine | 35 / 36 | 435 / 686 | 63% |
@@ -116,17 +116,17 @@ differ slightly on the resident code, hence 31,419 against 32,222 exercised. By 
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`): 74.2% (31,748 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`): 74.3% (31,803 / 42,790). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the keyboard menu, the hot keys, the
 party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-20,136 items of the functions the oracles enter were never exercised: 2,308 are justified in
+20,076 items of the functions the oracles enter were never exercised: 2,308 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 17,828 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 17,768 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
 lie in the card scripts (about 9,100), the screens (about 2,600), the battles (about 2,100), the
 battlefield generators (about 2,100), the rules (about 650) and the overland map (about 650). A sweep
@@ -267,7 +267,7 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-104 runs, all agreeing (and 303 with the generated sessions, replayed). The last open lead before these, a group move at
+104 runs, all agreeing (and 304 with the generated sessions, replayed). The last open lead before these, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
@@ -361,9 +361,9 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 179 original bugs the game
+markers in the code, each with its reason and original coordinate: 180 original bugs the game
 reproduces (each can be fixed by its own `OriginalBehaviour` flag), 324 registered divergences,
-909 dormant branches kept as the original has them, 57 uncertain readings (of 301: 234 were
+909 dormant branches kept as the original has them, 58 uncertain readings (of 301: 234 were
 naming only, 8 settled by an agreeing oracle or the code, now closed).
 
 Open items (2026-10-23), listed honestly. The three reachable original bugs listed before are now
@@ -400,6 +400,15 @@ pressed during the map's pause waits for the next pass (R030+0x3096); the battle
 byte as the original at each place (the order pointer when it is 0, the clock held while it is not 0).
 The battle direct calls' old differences were the harness's (15 now agree, 13 unreachable states); all
 15,045 jobs that run agree.
+
+Travel functions called directly from map states (the step R030+0x1300, the camp watch, the minutes per
+step, the encounter weight, the season palette and three R029 helpers; 25 map states): about 80 more
+outcomes, and three divergences, now fixed: on a walk the step does not write the party's position, the
+key handler sets it from the marker at the start of its next pass, so a save made from the menu bar in
+between holds the cell the party stepped from; a leader index left past the party (the leader in the last
+slot removed while nobody else is able) reads the slot table, as R029+0x255A does; a slot of status 0
+past the party keeps its id, so the faithful writer leaves its record out as the original's does
+(B-0c7843). The road encounter's draw is the same draw in the same order (checked on the generator).
 
 ## Presentation
 

@@ -379,6 +379,12 @@ public static class OriginalSaves
                 file.Characters.Add(fighting ? PartyRecordInBattle(member, inBattle![slot]) : CharacterRecords.Write(member));
                 next++;
             }
+            else if (slot >= 0 && !state.Behaviour.FixSaveWriterSkipsEmptySlots)
+            {
+                // BUG: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party_size: the writer tests all five ids, and a
+                // slot past party_size has status 0 (party_size is one past the last slot of status != 0), so its record is left out as well.
+                continue;
+            }
             else
             {
                 file.Characters.Add(CharacterRecords.Write(state.Roster.StoredRecord(next++)));
