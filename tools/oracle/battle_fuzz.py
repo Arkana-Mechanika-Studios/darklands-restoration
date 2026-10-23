@@ -180,6 +180,11 @@ class Fuzzer:
 
     def gen_args(self) -> list[int]:
         args = [f(self.rng, self) for f in self.args_spec]
+        if self.coord in ("R014+0x1BA0", "R014+0x1F00") and args:
+            # the caller's animation set (combat_actions R014+0x11C4, 14F7:343C): the slot (+0x16), past the party's by the pose (+0x18)
+            rec = self.records[args[0] % 13]
+            slot, pose = rec[0x16] - (rec[0x16] >> 7 << 8), rec[0x18] - (rec[0x18] >> 7 << 8)
+            args.append(slot if slot < 5 else slot + 2 if pose in (2, 3) else slot + 4 if pose == 4 else slot)
         if self.coord in ("R014+0xB18E", "R014+0xB244") and self.rng.random() < 0.8:
             rec = self.records[args[0] % 13]                # the weapon it shoots or the ammunition type, with the quality it has
             args[1], args[2] = self.rng.choice([(rec[0x22], rec[0x5A]), (0x40, 25), (0x41, 25), (rec[0x22], 25)])

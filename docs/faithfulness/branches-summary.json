@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 57663,
-  "blocks_hit": 48444,
-  "functions": 8504,
-  "outcomes": 43236,
-  "outcomes_hit": 32178,
+  "blocks": 57653,
+  "blocks_hit": 48370,
+  "functions": 8503,
+  "outcomes": 43226,
+  "outcomes_hit": 32085,
   "runs": null
  },
  "battle": {
@@ -15,29 +15,37 @@
   "outcomes_hit": 224,
   "runs": 1048
  },
+ "battle-calls-a1": {
+  "blocks": 175,
+  "blocks_hit": 52,
+  "functions": 7,
+  "outcomes": 174,
+  "outcomes_hit": 35,
+  "runs": 556
+ },
  "battle-calls-pilot": {
-  "blocks": 5010,
-  "blocks_hit": 3462,
-  "functions": 253,
-  "outcomes": 4786,
-  "outcomes_hit": 2833,
-  "runs": 5350
+  "blocks": 4756,
+  "blocks_hit": 3034,
+  "functions": 247,
+  "outcomes": 4528,
+  "outcomes_hit": 2392,
+  "runs": 3643
  },
  "battle-calls-r3": {
-  "blocks": 7805,
-  "blocks_hit": 5641,
-  "functions": 375,
-  "outcomes": 7488,
-  "outcomes_hit": 4746,
-  "runs": 4924
+  "blocks": 7457,
+  "blocks_hit": 5335,
+  "functions": 353,
+  "outcomes": 7172,
+  "outcomes_hit": 4492,
+  "runs": 4770
  },
  "battle-calls-scale": {
-  "blocks": 3845,
-  "blocks_hit": 2713,
-  "functions": 200,
-  "outcomes": 3730,
-  "outcomes_hit": 2267,
-  "runs": 3691
+  "blocks": 3783,
+  "blocks_hit": 2691,
+  "functions": 199,
+  "outcomes": 3664,
+  "outcomes_hit": 2248,
+  "runs": 3455
  },
  "battle-oracle-castle": {
   "blocks": 13358,

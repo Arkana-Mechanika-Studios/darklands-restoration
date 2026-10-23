@@ -106,7 +106,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         Map = new BattleMap(battle, _levels[Math.Clamp(field.StartLevel, 0, _levels.Count - 1)], furniture, field.Terrain.FirstSightBlockingFurniture);
         Paths = new PathFinder(Map);
         Paths.UseHalfSizes(k => battle[k].HalfWidth, k => battle[k].HalfHeight);
-        Effects = new EffectField(battle, Map, n => _view.Sound(n), ReadyWeapon, slot => SlotWeapons[slot], () => Paused) { Terrain = field.Terrain };
+        Effects = new EffectField(battle, Map, n => _view.Sound(n), ReadyWeapon, slot => SlotWeapons[slot], () => PauseByte != 0) { Terrain = field.Terrain };
         Effects.Landed += () => DelayedStart = false;
         battle.Clouds = Effects;
         for (var k = 0; k < Slots.Length; k++)
@@ -161,7 +161,14 @@ public sealed partial class TacticalBattle : IBattleEndActions
     public int TimerCallbacks { get; set; }
 
     /// <summary>ai_paused (DS:A695): order mode; the AI, melee and actions are frozen.</summary>
-    public bool Paused { get; private set; }
+    public bool Paused { get => PauseByte == 1; private set => PauseByte = (byte)(value ? 1 : 0); }
+
+    /// <summary>The byte of <see cref="Paused"/> itself: 0 running, 1 paused; Esc with nobody selected can make it 0x11 (<see cref="OriginalBehaviour.FixEscapeWithoutSelectionPauseByte"/>).</summary>
+    // orig: DS:A695; the tests in R016 and R014+0x0F71/R014+0xF418/R018+0x070C read == 1, the others (R014+0x1035, R014+0x2C4C...) == 0
+    public byte PauseByte { get; set; }
+
+    /// <summary>DS:A695 == 0 (what most of the per-tick tests of the original require; 0x11 is neither this nor <see cref="Paused"/>).</summary>
+    private bool Running => PauseByte == 0;
 
     /// <summary>move_mode (DS:C102): 0 individually, 1 as a group, 2 single file.</summary>
     public int MoveMode { get; private set; }
@@ -335,6 +342,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         {
             // C: arrived through a door: its wall group is remembered as open (doors_opened) and its cells uncovered.
             RevealGroup(Level.PartyRoom);
+            LevelChanged = true;
             _redraw = true;
         }
         // combat_flags 0x10 (R024 0000, mode 0) and 0x20 (R014+0x0058, modes 2 and 3) place the party at the level's start before the
@@ -689,7 +697,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         GroupEntries();
         _arrivedShown.Clear();
-        if (!Paused)
+        // orig: R014+0x1035 (== 0)
+        if (Running)
         {
             AiTick();
             PartyLocations();
@@ -754,6 +763,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
     // DIVERGENCE: saving the level files belongs to the battlefield store (the levels stay in memory here).
     private void AfterBattle()
     {
+        SaveLevelOrLoseUnsaved();
         Effects.EndPartyModifiers();
         if (Battle.Result != BattleResult.FellIntoPit)
         {
@@ -768,6 +778,27 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>How many times a level was switched to (the harness of the single calls tells the original's file reloads by it).</summary>
     public int LevelSwitches { get; private set; }
 
+    /// <summary>DS:D4E4: the level in the buffer changed since it was loaded or saved (level_switch and the battle's end save it only then).</summary>
+    public bool LevelChanged { get; set; }
+
+    // stairs records' +0x07 writes of take_exit made while DS:D4E4 was clear (the level buffer's byte, the value it had)
+    private readonly List<(int At, byte Before)> _unsavedLevelBytes = [];
+
+    /// <summary>The level in the buffer is saved when DS:D4E4 is set, else what take_exit wrote since is lost; DS:D4E4 is cleared.</summary>
+    // orig: level_switch R024+0x05B4 (the save of the level left) and AfterBattle R014+0x069A
+    private void SaveLevelOrLoseUnsaved()
+    {
+        if (!LevelChanged)
+        {
+            foreach (var (at, before) in _unsavedLevelBytes)
+            {
+                Level.SetByte(at, before);
+            }
+        }
+        _unsavedLevelBytes.Clear();
+        LevelChanged = false;
+    }
+
     /// <summary>Shows another level (level_switch).</summary>
     // orig: level_switch R024+0x059A (1EF8:059A) draft (outline; the end checked against the asm: `if (DS:D6EE != 0) R024+0x07A2();`)
     // DIVERGENCE: the levels stay in memory (no .flr/.atv files); the hidden wall lists of unopened doors are applied by LevelShown.
@@ -778,6 +809,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
             return;
         }
         LevelSwitches++;
+        SaveLevelOrLoseUnsaved();
         Battle.FloorShown = floor;
         Map.Level = _levels[floor];
         Battle.ExitCards = Map.Level.ExitCards;

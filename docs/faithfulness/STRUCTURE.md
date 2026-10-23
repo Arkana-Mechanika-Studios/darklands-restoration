@@ -13,10 +13,10 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 
 | | count |
 |---|---:|
-| C# units with a trace (types left out) | 4477 |
+| C# units with a trace (types left out) | 4480 |
 | original functions compared | 5567 |
-| comparisons (functions one C# unit implements together are compared as one) | 3440 |
-| comparisons without a finding | 3170 |
+| comparisons (functions one C# unit implements together are compared as one) | 3439 |
+| comparisons without a finding | 3169 |
 | implemented functions not compared (cited only in statements, types or map.csv) | 2697 |
 
 ## Findings

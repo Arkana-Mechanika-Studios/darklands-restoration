@@ -145,7 +145,8 @@ public sealed partial class TacticalBattle
             PileNextTo(member);
         }
         BuildOrderMenu(member);
-        if (!Paused)
+        // orig: R014+0xBC87 (== 0)
+        if (Running)
         {
             Paused = true;
             _orderClock = Clock;
@@ -207,11 +208,14 @@ public sealed partial class TacticalBattle
         Battle[Selected].Flags &= ~TacticalFlags.Following;
     }
 
+    /// <summary>The flee bit (0x1000) of a member's flags in the high byte of its word: what an access to flags[-1] reaches in DS:A695.</summary>
+    private const int FlagsHighByte = (int)TacticalFlags.Following >> 8;
+
     /// <summary>A place action is chosen (Use Door, Stairs, Pick Lock …): it is given when order mode ends.</summary>
     // orig: R016+0x1590 (1EF8:1590) matched
     // C: R016+0x1590 has no test of DS:A6B2: H with Halt on outside order mode (R016+0x101E, individually) gives DS:A6B0 = 0x400,
     // C: DS:A6D1 = 10 and DS:E1CA = 0xFF with nobody selected. R016+0x15BE then clears 0x10 of flags[-1]'s high byte, which is DS:A695
-    // C: (ai_paused, 0 or 1): nothing changes.
+    // C: (ai_paused): nothing changes while it is 0 or 1; after Esc made it 0x11 (CancelOrder) it becomes 1 again.
     public void ChoosePlace(PlaceAction action)
     {
         OrderAction = 0x400;
@@ -224,6 +228,11 @@ public sealed partial class TacticalBattle
         if (Selected != -1)
         {
             Battle[Selected].Flags &= ~TacticalFlags.Following;
+        }
+        else if (!Battle.Behaviour.FixEscapeWithoutSelectionPauseByte)
+        {
+            // BUG: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - flags[-1]'s high byte is the pause byte DS:A695 (R016+0x15BE, bx = -2)
+            PauseByte = (byte)(PauseByte & ~FlagsHighByte);
         }
         _picker = Selected;
     }
@@ -595,8 +604,6 @@ public sealed partial class TacticalBattle
     /// <summary>Esc in order mode: the order is dropped and order mode ends (the game stays paused).</summary>
     // orig: R016+0x13D4 (1EF8:13D4) matched; DS:D7FE (the cursor keys) is not touched
     // C: no test of DS:A6B2: Esc while paused outside order mode runs it with nobody selected.
-    // DIVERGENCE: with nobody selected the original's flee bit goes to flags[-1]'s high byte, DS:A695 (ai_paused): with DS:D6EA = 1 the
-    // pause byte becomes 0x11, which its tests read as neither paused (== 1) nor running (== 0). Paused is a flag here: not reproduced.
     public void CancelOrder()
     {
         OrderAction = -1;
@@ -606,6 +613,13 @@ public sealed partial class TacticalBattle
             var c = Battle[Selected];
             c.Flags = _fleeBefore ? c.Flags | TacticalFlags.Following : c.Flags & ~TacticalFlags.Following;
             c.Selected = false;
+        }
+        else if (!Battle.Behaviour.FixEscapeWithoutSelectionPauseByte)
+        {
+            // BUG: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on
+            // flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the flee bit before order mode), so a pause byte
+            // of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
+            PauseByte = (byte)((PauseByte & ~FlagsHighByte) | (_fleeBefore ? FlagsHighByte : 0));
         }
         _orderMode = false;
         _targetChosen = false;
@@ -620,7 +634,8 @@ public sealed partial class TacticalBattle
     // orig: combat_keys R016+0x0000 (the Space case) and R016+0x1436 (1EF8:1436) matched
     public void TogglePause()
     {
-        if (!Paused)
+        // orig: R016+0x074E (== 0 pauses; any other value, 0x11 too, takes the resume path)
+        if (Running)
         {
             Paused = true;
             Menus.Set(OrdersItem.Resume, 1);

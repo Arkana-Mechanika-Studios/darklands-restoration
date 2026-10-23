@@ -343,20 +343,12 @@ public sealed partial class TacticalBattle
         return table[quad, s];
     }
 
-    /// <summary>path_find for combatant i (the AI's path hook runs on success).</summary>
+    /// <summary>path_find for combatant i (the AI's path hook runs once the trackers found a path, before the shortcuts).</summary>
     // orig: path_find R014+0x481A (12F7:000A) draft
     private bool FindPath(int i)
     {
         var set = Slots[AnimationSet(i)];
-        if (!Paths.Find(Battle, i, set.StepX, set.StepY, OpenDoorsForSearch))
-        {
-            return false;
-        }
-        if (Paths.PathLength > 0 && Paths.Path[0] != 0xFF)
-        {
-            AiPathHook(i);
-        }
-        return true;
+        return Paths.Find(Battle, i, set.StepX, set.StepY, OpenDoorsForSearch, () => AiPathHook(i));
     }
 
     /// <summary>path_give: the last path found becomes combatant i's (packed with facings).</summary>

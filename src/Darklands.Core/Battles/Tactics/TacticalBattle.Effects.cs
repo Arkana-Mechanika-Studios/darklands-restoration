@@ -108,7 +108,7 @@ public sealed class EffectField : IEffectClouds
     /// <param name="sound">R014+0x465E: a sound effect.</param>
     /// <param name="readyWeapon">weapon_ready(i, weapon, missile flag) with its animation code.</param>
     /// <param name="attackCode">anim_file[slot]: the weapon code of an animation slot ("PT" while casting).</param>
-    /// <param name="paused">ai_paused (DS:A695).</param>
+    /// <param name="paused">ai_paused (DS:A695) is not 0: every use here is a test == 0 of the original (R014+0x2C4C, R014+0x6A83, R014+0x7866).</param>
     public EffectField(Battle battle, BattleMap map, Action<int> sound, Action<int, int, int> readyWeapon, Func<int, string> attackCode, Func<bool> paused)
     {
         Battle = battle;

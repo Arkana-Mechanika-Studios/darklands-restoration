@@ -302,7 +302,13 @@ def export(fuzz_folders, states_folder: Path, out: Path):
                     s = pickle.load(fh)
                 states[name] = {"session": s["fight"], "sav": base64.b64encode(gzip.compress(s["sav"], 6)).decode(), "card": s["card"], "random": s["random"]}
             for item in d["kept"]:
-                jobs.append({"id": "%s|%s#%d" % (d["function"], name, item["iteration"]), "function": d["function"], "state": name, "args": item["args"],
+                args = item["args"]
+                if d["function"] == "R029+0x281C" and "derived" not in item:
+                    # runs kept before world_fuzz stored the derived argument: the original was called with the month of the
+                    # saved game it loaded (its header 0x6A), 12 for 11 and an odd raw argument
+                    month = struct.unpack_from("<H", gzip.decompress(base64.b64decode(item["sav_before"])), 0x6A)[0]
+                    args = [month + 1 if args[0] & 1 and month == 11 else month]
+                jobs.append({"id": "%s|%s#%d" % (d["function"], name, item["iteration"]), "function": d["function"], "state": name, "args": args,
                              "sav_before": item["sav_before"], "ds": item.get("ds", {}), "ops": item["ops"], "random0": item["random0"],
                              "orig": {"ax": item["ax"], "dx": item["dx"], "random": item["random"], "draws": item["draws"], "seeds": [[a, int(c)] for a, c in item["seeds"]],
                                       "sav_after": item["sav_after"], "changed": item.get("changed", {})}})

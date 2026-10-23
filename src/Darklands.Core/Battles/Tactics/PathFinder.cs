@@ -88,7 +88,8 @@ public sealed class PathFinder
     /// <param name="openDoors">For enemies: opens the unlocked closed doors for the search and restores them afterwards (spec D §4.5).</param>
     // orig: path_find R014+0x481A (12F7:000A) draft; tests: Oracle:path.json (60 searches)
     // DIVERGENCE: the busy cursor and the stopped clock (DS:07D3) during the search are the screen's.
-    public bool Find(Battle battle, int who, sbyte[] stepX, sbyte[] stepY, Action<bool>? openDoors = null)
+    /// <param name="tracked">Runs once the trackers found a path of at least one step (its straight waypoints dropped), before the shortcuts.</param>
+    public bool Find(Battle battle, int who, sbyte[] stepX, sbyte[] stepY, Action<bool>? openDoors = null, Action? tracked = null)
     {
         var c = battle[who];
         _who = who;
@@ -146,6 +147,8 @@ public sealed class PathFinder
                     _pathWaypoint[k] = _waypoint[_winner][k];
                 }
                 DropStraightWaypoints();
+                // R014+0x4AE4: the AI's path hook (1DB7:0158) runs here, on the trackers' waypoints, whatever the shortcuts give after it.
+                tracked?.Invoke();
                 // C: path_find returns the shortcut pass's result: a failed re-plan makes the whole search fail.
                 if (!Shortcuts((c.Position.X, c.Position.Y)))
                 {

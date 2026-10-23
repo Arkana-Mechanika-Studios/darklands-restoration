@@ -18,7 +18,10 @@ internal static class Adapters
 
         // ---- time passing
         ["R029+0x255A"] = c => { TimePassage.Recover(c.State, c.S(0)); return null; },
-        ["R029+0x281C"] = c => { MonthlyUpdate.Run(c.State, c.S(0)); return null; },
+        // R029+0x281C reads cur_month DS:00E4 for the birthdays; its callers (R029+0x5537, R029+0x55CD) pass DS:00E4 just incremented
+        ["R029+0x281C"] = c => c.S(0) != c.State.Date.Month
+            ? throw new WorldCallsTests.SkipJob("a month other than cur_month (its callers pass DS:00E4 itself)")
+            : Run(() => MonthlyUpdate.Run(c.State, c.S(0))),
         ["R029+0x54D8"] = c => { TimePassage.Advance(c.State, c.S(0)); return null; },
         ["R029+0x5590"] = c => { TimePassage.AdvanceDays(c.State, c.S(0)); return null; },
 
@@ -66,7 +69,10 @@ internal static class Adapters
         // ---- city politics, quests
         ["R039+0x0BF6"] = c => CityPolitics.Strength(c.State, 1),
         ["R039+0x0D46"] = c => CityPolitics.Strength(c.State, -1),
-        ["R039+0x0EBE"] = c => { CityPolitics.ConflictOutcome(c.State, c.S(0), c.S(1), c.S(2)); return null; },
+        // R039+0x0EBE: its 36 call sites (thunk 09C0:217F) are the uprising cards R065, R068, R074, R076, R089, R090, R091, run in a city
+        ["R039+0x0EBE"] = c => c.State.CurrentLocation < 0
+            ? throw new WorldCallsTests.SkipJob("in the open country (cur_loc -1): every caller runs in a city")
+            : Run(() => CityPolitics.ConflictOutcome(c.State, c.S(0), c.S(1), c.S(2))),
         ["R039+0x1C22"] = c => Quests.FeastDayNearThisMonth(c.State),
         ["R039+0x1712"] = c => Quests.StartQuest10(c.State, c.S(0), out _),
     };
@@ -118,6 +124,13 @@ internal static class Adapters
         {
             c.Notes.Add($"background original {background:X} rewrite {result.Background:X}");
         }
+        return null;
+    }
+
+    /// <summary>A call whose AX is not compared.</summary>
+    private static int? Run(Action call)
+    {
+        call();
         return null;
     }
 

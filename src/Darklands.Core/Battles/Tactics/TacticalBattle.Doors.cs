@@ -14,6 +14,7 @@ public sealed partial class TacticalBattle
     // (REVEAL, the open flags, the lock byte, the twin); R023+0x03CA (1EF8:03CA) draft
     private void ToggleDoor(int n, int who)
     {
+        LevelChanged = true;
         var c = Battle[who];
         var at = DoorsAt + 14 * n;
         var wall = (sbyte)Level.GetByte(at + 6);
@@ -100,6 +101,7 @@ public sealed partial class TacticalBattle
         Level.SetByte(DoorOpenAt + n, open ? 1 : 0);
         if (reveal)
         {
+            LevelChanged = true;
             var wall = (sbyte)Level.GetByte(at + 6);
             if (wall >= 0)
             {
@@ -202,6 +204,7 @@ public sealed partial class TacticalBattle
         Level.SetWord(at + 0x10, 0);
         Level.SetWord(at + 0x12, 0);
         Level.SetByte(at + 0x0B, contents.Count);
+        LevelChanged = true;
         if (contents.Count != 0 && idx < loot.ChestOffsets.Length)
         {
             loot.ChestOffsets[idx] = loot.Append(contents, contents.Count);
@@ -320,13 +323,19 @@ public sealed partial class TacticalBattle
         }
     }
 
+    /// <summary>DS:C77D: the byte before the members' stairs-exit table (DS:C77E, <see cref="Combatant.StairsExit"/>), which nothing reads.</summary>
+    public byte StairsExitBeforeTable { get; set; }
+
+    /// <summary>DS:C8B1: the byte before the members' stairs-back table (DS:C8B2, <see cref="Combatant.StairsBack"/>).</summary>
+    public byte StairsBackBeforeTable { get; set; }
+
     // ---- the keys of the place actions (not in order mode) ------------------------------------
 
     /// <summary>
     /// U outside order mode: the leader (or, travelling together, everybody) takes the stairs, or
     /// the leader uses the door; in order mode the selected member is ordered to.
     /// </summary>
-    // orig: R016+0x1182 (1EF8:1182) matched; the U case of combat_keys for a split party
+    // orig: R016+0x1182 (1EF8:1182) matched; the U case of combat_keys for a split party (R016+0x014E)
     public void UseKey(int selected)
     {
         if (Battle.PartyFloor != Battle.FloorShown)
@@ -335,12 +344,17 @@ public sealed partial class TacticalBattle
             if (Paused)
             {
                 // R016+0x014E..0x016E: no test of DS:A6B2 (the order is chosen with nobody selected too)
-                // DIVERGENCE: with nobody selected the original copies entry -1 (DS:C77D = DS:C8B1, the bytes before the two tables); not kept here.
                 if (Menus.On(OrdersItem.UseStairs))
                 {
                     if (selected >= 0)
                     {
                         Battle[selected].StairsExit = Battle[selected].StairsBack;
+                    }
+                    else if (!Battle.Behaviour.FixStairsKeyWithoutSelection)
+                    {
+                        // BUG: OriginalBehaviour.FixStairsKeyWithoutSelection - R016+0x0165..0x0169 copies entry [DS:A6B2] of the two member
+                        // tables without testing it: with nobody selected (0xFF) entry -1, DS:C77D = DS:C8B1 (the bytes before the tables).
+                        StairsExitBeforeTable = StairsBackBeforeTable;
                     }
                     ChoosePlace(PlaceAction.Stairs);
                 }
@@ -527,9 +541,14 @@ public sealed partial class TacticalBattle
         var at = StairsAt + 14 * n;
         var record = Level.Image.AsSpan(at, 14).ToArray();
         var wall = (sbyte)Level.GetByte(at + 7);
-        // DIVERGENCE: the levels stay in memory. The original's level_switch (R024+0x05B4) saves the level it leaves only when DS:D4E4 is set
-        // (any change of the level sets it; level_switch and the battle save clear it), and this write does not set it: after a switch
-        // with DS:D4E4 clear the original reloads the old level without the 0xFF here.
+        // BUG: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level_switch (R024+0x05B4, called
+        // at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level_switch
+        // and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original
+        // reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
+        if (wall != -1 && !Battle.Behaviour.FixStairsWallMarkLost)
+        {
+            _unsavedLevelBytes.Add((at + 7, (byte)wall));
+        }
         Level.SetByte(at + 7, 0xFF);
         int lvl = (sbyte)Level.GetByte(at + 6);
         Battle[who].Floor = lvl;
@@ -550,6 +569,8 @@ public sealed partial class TacticalBattle
         SwitchLevel(lvl);
         if (wall != -1)
         {
+            // orig: R023+0x1764: the wall group opened on the new level, DS:D4E4 = 1
+            LevelChanged = true;
             OpenGroupBit(lvl, wall);
             foreach (var (x, y) in WallGroup(wall))
             {
@@ -711,6 +732,7 @@ public sealed partial class TacticalBattle
             group.Counts[k] = (sbyte)counts[k + 4];
         }
         Activations[Battle.FloorShown].Add(group);
+        LevelChanged = true;
         WavesEnabled = false;
         for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
         {

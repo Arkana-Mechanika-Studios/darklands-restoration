@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 55 entries; recommendations: document: 1, justify: 44, keep: 7, reproduce-later: 3.
+- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 1, justify: 44, keep: 7, reproduce-later: 1.
 - Part B (undefined-memory in core logic): 124 entries; determinism: n/a: 79, no: 32, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -30,13 +30,11 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### reproduce (0)
 
 
-### reproduce-later (5)
+### reproduce-later (3)
 
 - **D-ba3c6e** `src/Darklands.Core/Rules/InnRoster.cs:86` `InnRoster.RowEntry` - original `R038+0x23EC`, `R038+0x02F8` (rules) - The highlight can go below the listed rows (DS:E7DC counts every record) and below row 19 only with more than 20 records; then DS:8D06[row] is a word of the record buffer DS:8D2E, i.e. a word of the last record R038+0x23EC read (deterministic: the last roster record). Row -1 needs an empty roster, which the game never has (the party is in it). Reproducing needs the record bytes in the core model (CharacterRecords is in Persistence).
 - **D-6f60dd** `src/Darklands.Core/Rules/InnRoster.cs:148` `InnRoster.AddOrRemove` - original `root 0000:1716`, `R038+0x02F8`, `R029+0x392C` (rules) - A stale row (DS:8D06 kept from an earlier listing) can name an entry past the roster only after a character was deleted from CHARACTR.TMP (R037+0x4048, a hireling dismissed or the dead after a battle) and the highlight is moved below the listed rows. The original then seeks past the records: fread returns nothing, the slot keeps its old bytes and gets status 1 (the previous occupant comes back unequipped), and the slot's id names a missing record. Deterministic; reproducing needs the slot residue as a member, which Party.Slot models.
-- **D-0e2c57** `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:338` `TacticalBattle.UseKey` - original `R016+0x1182` (battles) - With nobody selected the key code at R016+0x1182 copies entry -1 of the two tables (DS:C77D = DS:C8B1, the bytes before them). Reachable in play (a key with no member selected); the copy is of fixed memory and deterministic, so it can be reproduced: open item, listed in SUMMARY.
-- **D-9c5387** `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:530` `TacticalBattle.TakeExit` - original `R023+0x1618` (battles) - level_switch (R024+0x05B4) saves the level it leaves only when DS:D4E4 is set, so take_exit's +0x07 write (R023+0x1618) is lost after a switch while DS:D4E4 is clear. Reachable in play; deterministic; to be reproduced with the levels kept as the original saves them: open item, listed in SUMMARY.
-- **D-e8d85e** `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:598` `TacticalBattle.CancelOrder` - original `R016+0x13D4` (battles) - With nobody selected Esc at R016+0x13D4 writes the flee bit to flags[-1]'s high byte, which is DS:A695: with DS:D6EA = 1 the pause byte becomes 0x11, read as neither paused nor running. Reachable in play; deterministic; to be reproduced: open item, listed in SUMMARY.
+- **D-8bb04c** `src/Darklands.Core/Rules/SaintBook.cs:145` `SaintBook.EquippedWeaponSkills` - original `R029+0x0792`, `R031+0x5D06` (rules) - A prayer for the whole party hands member -1 to R031+0x5D06 (via R029+0x0792), which reads the bytes before the member records: the menu bar's words DS:9C26 / DS:9C53. Until a menu-bar sub-menu has been opened the count byte is 0 and no weapon skill is boosted (reproduced, FixSaintWeaponSkillsForParty); after one has been opened the original scans the memory before the pack table, which the C# does not model yet. Reachable in play: open item, listed in SUMMARY.
 
 ### implement (0)
 
@@ -177,9 +175,9 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
 
 Each is a core-logic divergence where the C# does something the original does not. Action: `implement` (make it as the original), `justify` (keep, with the reason given), `implement-later` (blocked on a missing subsystem), `remove-marker` (the divergence is gone; the marker is to be removed).
 
-### rules (13)
+### rules (14)
 
-#### not-modelled (2)
+#### not-modelled (3)
 
 - **D-d29a2c** `not-modelled` - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:169` `CharacterCreation.Reset`  
   original: `R037+0x675A` (18C8:20FA, draft)  
@@ -189,6 +187,10 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R029+0x0C76` (0E76:0C76, draft)  
   divergence: who >= 5 counts the 16-entry lists at R136+0xE68E (with the quantities read from inventories[who - 5], an original bug); not modelled, 0. The lists are enemy_items (the last battle's enemies' items, battle state); no caller passes who >= 5 (the cards pass -2, -1 or a member).  
   recommendation: **justify** (checked against the original) - who >= 5 counts R136+0xE68E[who - 5][0..15] = enemy_items (2E38:0D5E, 9 enemies x 16 six-byte items of the last battle: battle state, not fixed data) with the quantities of inventories[who - 5]. Every caller in the C (80 x count_items(-2, ..), the R068/s073/s107 member loops v_si/l_2/i over 0..4, R043 150b's pop-up list over members) passes -2, -1 or 0..4, so the branch is unreachable; implementing it needs the battle's enemy item table (battle code).
+- **D-8bb04c** `not-modelled` - `src/Darklands.Core/Rules/SaintBook.cs:145` `SaintBook.EquippedWeaponSkills`  
+  original: `R029+0x0792` (0E76:0792, draft), `R031+0x5D06` (18E7:14B6, draft)  
+  divergence: DS:9C26 is the menu bar's keyboard mode and DS:9C53 its last sub-menu's text column (MenuBar); until a sub-menu has been opened the count byte is 0 and both lookups return -1 (as in the oracle's states), afterwards the scan of the memory before the pack table may find a "weapon" (memory not modelled): here never.  
+  recommendation: **reproduce-later** (checked against the original) - A prayer for the whole party hands member -1 to R031+0x5D06 (via R029+0x0792), which reads the bytes before the member records: the menu bar's words DS:9C26 / DS:9C53. Until a menu-bar sub-menu has been opened the count byte is 0 and no weapon skill is boosted (reproduced, FixSaintWeaponSkillsForParty); after one has been opened the original scans the memory before the pack table, which the C# does not model yet. Reachable in play: open item, listed in SUMMARY.
 
 #### deliberate-fix (7)
 
@@ -332,9 +334,9 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (18)
+### battles (15)
 
-#### not-modelled (7)
+#### not-modelled (5)
 
 - **D-5c369e** `not-modelled` - `src/Darklands.Core/Battles/BattleEnd.cs:266` `BattleEnd.LeaveCombatMode`  
   original: `R014+0x0D86` (0E76:0D86, draft)  
@@ -356,14 +358,6 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R011+0x0000` (1432:0000, draft)  
   divergence: the four level buffers (alloc_buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept.  
   recommendation: **justify** (checked against the original) - DS:E049 is written and never read (verified by the note); dropping it changes nothing observable.
-- **D-0e2c57** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:338` `TacticalBattle.UseKey`  
-  original: `R016+0x1182` (1EF8:1182, draft)  
-  divergence: with nobody selected the original copies entry -1 (DS:C77D = DS:C8B1, the bytes before the two tables); not kept here.  
-  recommendation: **reproduce-later** (checked against the original) - With nobody selected the key code at R016+0x1182 copies entry -1 of the two tables (DS:C77D = DS:C8B1, the bytes before them). Reachable in play (a key with no member selected); the copy is of fixed memory and deterministic, so it can be reproduced: open item, listed in SUMMARY.
-- **D-e8d85e** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:598` `TacticalBattle.CancelOrder`  
-  original: `R016+0x13D4` (1EF8:13D4, draft)  
-  divergence: with nobody selected the original's flee bit goes to flags[-1]'s high byte, DS:A695 (ai_paused): with DS:D6EA = 1 the pause byte becomes 0x11, which its tests read as neither paused (== 1) nor running (== 0). Paused is a flag here: not reproduced.  
-  recommendation: **reproduce-later** (checked against the original) - With nobody selected Esc at R016+0x13D4 writes the flee bit to flags[-1]'s high byte, which is DS:A695: with DS:D6EA = 1 the pause byte becomes 0x11, read as neither paused nor running. Reachable in play; deterministic; to be reproduced: open item, listed in SUMMARY.
 
 #### deliberate-fix (1)
 
@@ -372,7 +366,7 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: gives up after 1000 draws and keeps the last room.  
   recommendation: **justify** - The original draws until the room differs from the gate room and never ends when only the gate room can be drawn (see the BUG note at the same function), so giving up after 1000 draws replaces an infinite loop; it keeps the same room.
 
-#### other (10)
+#### other (9)
 
 - **D-a4c2b1** `other` - `src/Darklands.Core/Battles/Attacks.cs:130` `Attacks.ToHit`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -390,19 +384,15 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R025+0x09A6` (1EF8:09A6, draft), `R025+0x0A84` (1EF8:0A84, draft)  
   divergence: when a higher slot's buffer lies above this one in memory the original frees both enemy slots and sets every enemy's current pose again keeping its frame (a heap-layout case); here the plain branch is always taken.  
   recommendation: **keep** (checked against the original) - enemy_anim_load (R025 09A6) takes the reload branch when a higher enemy slot's buffer has a higher segment than this slot's: it frees both slots, reallocates them and sets every enemy's current pose again with the frame kept (DS:C3CC), instead of setting the moving enemy's walking pose. Which branch runs depends on the order the DOS heap handed out the buffers over the whole program run (other screens allocate and free in between), which the C# does not model; the plain branch is the one taken when the slots were allocated in order.
-- **D-8db4e5** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:150` `TacticalBattle._doorsBeforeSearch`  
+- **D-8db4e5** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:152` `TacticalBattle._doorsBeforeSearch`  
   original: `R014+0x481A` (12F7:000A, draft), `R014+0x4B5A` (12F7:034A, draft)  
   divergence: the original never clears DS:E0C0 (nor saves it with the battle): a battle starts with what the last enemy search of an earlier battle of the session kept there, which matters only when an enemy's first search fails at its goal (see PathFinder.Find). Here each battle starts with every flag 0.  
   recommendation: **keep** (checked against the original) - DS:E0C0 has two references only (R014+0x48DE copies the open flags into it, R014+0x4B5A copies it back), so it carries over between battles and saved games within one run of the program. It matters only when an enemy search fails at its goal test before any enemy search of this battle has opened the doors; a per-battle buffer avoids process-wide state. The whole fights agree with it.
-- **D-9c5387** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:530` `TacticalBattle.TakeExit`  
-  original: `R023+0x1618` (1EF8:1618, draft)  
-  divergence: the levels stay in memory. The original's level_switch (R024+0x05B4) saves the level it leaves only when DS:D4E4 is set (any change of the level sets it; level_switch and the battle save clear it), and this write does not set it: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF here.  
-  recommendation: **reproduce-later** (checked against the original) - level_switch (R024+0x05B4) saves the level it leaves only when DS:D4E4 is set, so take_exit's +0x07 write (R023+0x1618) is lost after a switch while DS:D4E4 is clear. Reachable in play; deterministic; to be reproduced with the levels kept as the original saves them: open item, listed in SUMMARY.
 - **D-01c621** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:541` `TacticalBattle.Triggers`  
   original: `R014+0xD6DA` (19CD:216A, draft)  
   divergence: a record whose handler word is not one of the eight types (a marker the generator left) would be called through its raw words in the original; here nothing happens.  
   recommendation: **justify** - triggers (R014 19CD 1E92 and the trigger loop) call the record's handler word through the far pointer the level loader set; the generators only write the eight handler types (0 secret door .. 8 wall alarm) into trigger records, so a record with another word does not occur in generated levels. Calling raw words would jump into arbitrary code; nothing to reproduce.
-- **D-e70eea** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:980` `TacticalBattle.MissileTrap`  
+- **D-e70eea** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:985` `TacticalBattle.MissileTrap`  
   original: `R023+0x0E30` (1EF8:0E30, draft)  
   divergence: an odd direction leaves the line's globals as the last test left them in the original.  
   recommendation: **keep** - missile_trap (R014 19CD 3258): the direction comes from the trap record written by the generators, which use the even directions 0/2/4/6 only; an odd one would reuse the line globals of the last line_blocked call (deterministic in principle, but it needs a corrupt record). Kept as a guard.
@@ -565,7 +555,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R039+0x1AB0` (1462:1AB0, matched)  
   divergence: without a quest about the target the original gives events[-1]->f2e (undefined); here no item.  
   deterministic: **n/a** (checked against the original); action: **document** - FinishQuest10 first requires ev8_at(10,cur_loc) (a started kind-8 event with f28==10 and f1c==cur_loc) and then event_find(8,-1,b,-1,10,-1) with b the caller's argument; every caller of thunk 09C0:214D (R106*, R107*, R108*) pushes DS:907E = cur_loc, so the find matches the same event and never returns -1. events[-1] is not reachable in play.
-- **D-ed4cb2** `undefined-memory` - `src/Darklands.Core/Rules/SaintBook.cs:192` `SaintBook.PragueStanding`  
+- **D-ed4cb2** `undefined-memory` - `src/Darklands.Core/Rules/SaintBook.cs:210` `SaintBook.PragueStanding`  
   original: `R039+0x619A` (165C:41FA, matched)  
   divergence: u is whatever the stack slot holds: for a prayer for the party (R034+0x0000) the return offset 0x0C84 that rand_mod's call of rand left there, so loc_reputation_adj reads the far pointer at locations + 4 * 0x0C84, past the 414 places, draws its chance and may write a word through it (memory not modelled); here Prague's own standing changes.  
   deterministic: **no** (checked against the original); action: **keep** - `u` is the local at [bp-2] of R039+0x619A's frame (enter 10h; t[7] fills [bp-10h..bp-4]) and is never assigned; loc_reputation_adj(u,15,0x19) in Prague (cur_loc==0x46) indexes locations[u] (2e38:10BE+4u, 16-bit wrap) with whatever word the earlier prayer call chain left on that stack slot (a random rep/standing write somewhere, possibly outside the table). Not derivable from game state. Keep the sensible Prague change.
@@ -890,7 +880,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0xF284` (1D69:0354, draft), `R014+0xF3E2` (1D69:04B2, draft)  
   divergence: here it keeps the point of the previous clip test (a field starting at (0, 0)); that agrees with the original on Oracle:tactics.json, where each case starts on a clean stack.  
   deterministic: **no** (checked against the original); action: **keep** - 0354 leaves p (stack [bp-4]/[bp-2], frame 'enter 4') unassigned when c0 has neither bit 4 nor 8 (c0 in {1,2}) and uses it in the second outcode test: if that point is inside the box the result is 'hit'. The slot keeps whatever the stack held at that depth, i.e. the previous call's p within one line_blocked (the C# models this) but for the first test of a call it is residue of earlier calls at the same depth (other callers, library calls), which is not reproducible; keep the C# model.
-- **D-5411b0** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/PathFinder.cs:351` `PathFinder.Moved`  
+- **D-5411b0** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/PathFinder.cs:354` `PathFinder.Moved`  
   original: `R014+0x4BFA` (12F7:03EA, draft)  
   divergence: a 99 table entry (never used in the shipped tables per spec D) would index the step tables out of range.  
   deterministic: **n/a** (checked against the original); action: **document** - A follower's 'last' direction is always 1,2,5 or 6: DS:1900/DS:19A0 (read from the EXE image) only contain -1,1,2,5,6, spawned followers record that value, and every table output DS:18D4/DS:18E2/DS:18F0/DS:18F8 for those rows is again 1,2,5,6; the 99 entries sit in rows 0,3,4 (a straight tracker uses dir 0..9, which RX/RY cover). Hence nd is never 99 and no step table is indexed out of range.
@@ -930,11 +920,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R024+0x08F2` (1EF8:08F2, draft)  
   divergence: odd directions read stack garbage in the original; the next even direction's offsets are used.  
   deterministic: **n/a** (checked against the original); action: **document** - place_around (R024 1EF8:08F2) takes dir from the exit/activation record (+0xC); in the 143 shipped maps exit dirs are 0,2,4,6 only, and across the generated levels (all battlefield types, 100 seeds each) the only odd value is dir 1 in 7 all-zero placeholder exits of the special mine variants 0x82/0x84-0x86 (area 0,0,0,0, never entered), so the garbage dx/dy path cannot be triggered in play.
-- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:308` `TacticalBattle.PlaceEnemies`  
+- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:311` `TacticalBattle.PlaceEnemies`  
   original: `R025+0x0000` (1EF8:0000, draft)  
   divergence: the palettes (ENEMYPAL.DAT ranges) are the screen's; in mode 1 the original adds money from an uninitialised encounter pointer — no money is added here.  
   deterministic: **no** (checked against the original); action: **keep** - enemies_place mode 1 is called as enemies_place_vec(1) from the death handler 0E76:2324 (push 1 only), so enc is the caller's saved SI:DI pair (offset=SI, segment=DI of the death handler's caller) and who the next word; after placing, R136+0xE4E0.pf/gr/fl += enc->pf/gr/fl read through that pseudo-pointer (low memory), i.e. an unpredictable money change depending on register contents and DOS memory. Not reproducible, so adding no money is the sane model (the palette note is a presentation divergence, not memory).
-- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:262` `TacticalBattle.KeepPlaces`  
+- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:269` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   divergence: a member who was not in that battle has whatever bytes the record held in the original; here such members are placed in the level's start formation (the others then put back where they stood).  
   deterministic: **partly** (checked against the original); action: **keep** - Mode 1 runs no effect_start (R014+0x0058 is skipped without combat_flags 0x20), so each party record keeps x +4, y +6 and the facings +0x19/+0x1A as the last battle left them. A member who joined since that battle has the record bytes of the slot's last occupant (party_add copies the roster record, whose x/y are those of its own last battle, or zero for a new character): a function of play history that the C# does not keep per slot. Placing such a member in the start formation keeps the battle playable; only a party changed between two battles on one battlefield with mode 1 can see it.

@@ -417,7 +417,7 @@ public sealed class BattleScreen : ITacticalView
         var battle = new Battle(_assets.Tables, _state.Random)
         {
             Persistent = field.Persistent || request.Persistent, Difficulty = (int)_state.Difficulty, FloorShown = floor,
-            Leader = _state.Party.LeaderIndex, ActiveMember = _state.Party.LeaderIndex,
+            Leader = _state.Party.LeaderIndex, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
@@ -472,7 +472,7 @@ public sealed class BattleScreen : ITacticalView
         var battle = new Battle(_assets.Tables, _state.Random)
         {
             Persistent = true, Difficulty = (int)_state.Difficulty, FloorShown = file.Variables[BattleVariables.FloorShown],
-            Leader = _state.Party.LeaderIndex, ActiveMember = _state.Party.LeaderIndex,
+            Leader = _state.Party.LeaderIndex, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
@@ -1233,45 +1233,51 @@ public sealed class BattleScreen : ITacticalView
     {
         var tb = _battle!;
         var m = tb.Menus;
-        // R016+0x01F8.., 0x088A.., 0x08E4: combat_keys switches on the whole key word. The keypad's digits with Num Lock on (0x4737 .. 0x5133)
-        // are the arrows; its 5 (0x4C35) is no case, and only the top row's 1..5 (0x0231 .. 0x0635) choose a member.
-        key = key switch
+        // orig: R016+0x00FC.. (and R016+0x00B5.. with the party split) switch on the whole key word (checked against the asm, every case): a
+        // letter is its key's two words (scan code with the small and the capital letter, as Keys.ForCharacter makes them), F1..F5 and
+        // Ctrl-F1..F5 their own words, 1..5 the top row's (0x0231 .. 0x0635); the keypad's digits (Num Lock on, or Shift with it off:
+        // 0x4737 .. 0x5133) go to the scrolling part of the arrows' cases without the Shift test (R016+0x02A0, 0x0304, 0x0360, 0x03BC, 0x0418,
+        // 0x04C2, 0x04C7, 0x02A4), its 5 (0x4C35) is no case.
+        var scroll = key switch
         {
-            0x4737 => Keys.Home,
-            0x4838 => Keys.Up,
-            0x4939 => Keys.PageUp,
-            0x4B34 => Keys.Left,
-            0x4D36 => Keys.Right,
-            0x4F31 => Keys.End,
-            0x5032 => Keys.Down,
-            0x5133 => Keys.PageDown,
-            _ => key,
+            0x4838 => 0,
+            0x4939 => 1,
+            0x4D36 => 2,
+            0x5133 => 3,
+            0x5032 => 4,
+            0x4F31 => 5,
+            0x4B34 => 6,
+            0x4737 => 7,
+            _ => -1,
         };
-        if (key == Keys.Center)
-        {
-            return;
-        }
+        var function = (key & 0xFF) == 0 && key is >= Keys.F1 and <= Keys.F5;
+        var ctrlFunction = (key & 0xFF) == 0 && key is >= Keys.CtrlF1 and <= Keys.CtrlF5;
+        var digit = key is >= 0x0231 and <= 0x0635 && Keys.ForCharacter(Keys.CharacterOf(key)) == key;
+        var letter = char.IsAsciiLetter(Keys.CharacterOf(key)) && Keys.ForCharacter(Keys.CharacterOf(key)) == key ? char.ToUpperInvariant(Keys.CharacterOf(key)) : ' ';
         if (tb.Battle.PartyFloor != tb.Battle.FloorShown)
         {
-            // The party is split over two levels: the moves are refused, U takes the stairs back, a few keys work.
-            if (key is Keys.Up or Keys.Down or Keys.Left or Keys.Right or Keys.Home or Keys.End or Keys.PageUp or Keys.PageDown)
+            // The party is split over two levels (R016+0x00AC: DS:C623 != DS:11CA): every arrow word, the keypad's digits too and Shift or not,
+            // gives the message (R016+0x00EA), U takes the stairs back (R016+0x014E), a few keys go on to the switch.
+            if (scroll >= 0 || key is Keys.Up or Keys.Down or Keys.Left or Keys.Right or Keys.Home or Keys.End or Keys.PageUp or Keys.PageDown)
             {
-                if (!_ui.ShiftHeld)
-                {
-                    Message(TacticalBattle.UseStairsText, 0x96);
-                    return;
-                }
+                Message(TacticalBattle.UseStairsText, 0x96);
+                return;
             }
-            else if (Keys.IsLetter(key, 'u'))
+            if (letter == 'U')
             {
                 tb.UseKey(tb.Selected);
                 return;
             }
-            else if (!(key is Keys.Escape or Keys.Enter or Keys.Space || key is >= Keys.F1 and <= Keys.F5 || key is >= Keys.CtrlF1 and <= Keys.CtrlF1 + 0x400
-                       || Keys.CharacterOf(key) is >= '1' and <= '5'))
+            // DORMANT: 0x1000 (Alt-Q) asks "Quit to DOS?" here (R016+0x0194, root 0000:13A0): the hot keys take Alt-Q first.
+            if (!(key is Keys.Escape or Keys.Enter or Keys.Space || function || ctrlFunction || digit))
             {
                 return;
             }
+        }
+        if (scroll >= 0)
+        {
+            ScrollView(scroll);
+            return;
         }
         switch (key)
         {
@@ -1325,25 +1331,24 @@ public sealed class BattleScreen : ITacticalView
                 tb.StopEverything();
                 return;
         }
-        if (key is >= Keys.F1 and <= Keys.F1 + 0x400)
+        if (function)
         {
             CharacterSheet((key - Keys.F1) >> 8);
             return;
         }
-        if (key is >= Keys.CtrlF1 and <= Keys.CtrlF1 + 0x400)
+        if (ctrlFunction)
         {
             tb.ActivateMember((key - Keys.CtrlF1) >> 8);
             return;
         }
-        var selected = tb.Selected != -1;
-        switch (char.ToUpperInvariant(Keys.CharacterOf(key)))
+        if (digit)
         {
-            case >= '1' and <= '5':
-                if (key >> 8 == Keys.CharacterOf(key) - '1' + 2)
-                {
-                    tb.SelectMember(Keys.CharacterOf(key) - '1');
-                }
-                return;
+            tb.SelectMember(Keys.CharacterOf(key) - '1');
+            return;
+        }
+        var selected = tb.Selected != -1;
+        switch (letter)
+        {
             case 'A':
                 if (m.On(AttackItem.Standard) && selected)
                 {
@@ -1433,20 +1438,25 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
-    /// <summary>An arrow: the active member steps (Shift: the view scrolls by a cell, two sideways).</summary>
+    /// <summary>An arrow: the active member steps (Shift, BIOS 0040:0017 bit 0 or 1: the view scrolls by a cell, two sideways).</summary>
     private void Arrow(int direction)
     {
         if (_ui.ShiftHeld)
         {
-            int[] dx = [-1, 0, 1, 2, 1, 0, -1, -2], dy = [-1, -1, 0, 1, 1, 1, 0, -1];
-            // orig: R016+0x0B92 (1EF8:0B92) matched: the view centre DS:C866/DS:C886 kept
-            // within 1..0x27, then floor_view_draw
-            _view.CentreColumn = Math.Clamp(_view.CentreColumn + dx[direction], 1, 0x27);
-            _view.CentreRow = Math.Clamp(_view.CentreRow + dy[direction], 1, 0x27);
-            ViewScrolled();
+            ScrollView(direction);
             return;
         }
         _battle!.StepKey(direction);
+    }
+
+    // orig: R016+0x02A0.. (the arrows' scrolling parts): DS:C866 / DS:C886 moved, then R016+0x0B92 (1EF8:0B92) matched: the view centre kept
+    // within 1..0x27, then floor_view_draw
+    private void ScrollView(int direction)
+    {
+        int[] dx = [-1, 0, 1, 2, 1, 0, -1, -2], dy = [-1, -1, 0, 1, 1, 1, 0, -1];
+        _view.CentreColumn = Math.Clamp(_view.CentreColumn + dx[direction], 1, 0x27);
+        _view.CentreRow = Math.Clamp(_view.CentreRow + dy[direction], 1, 0x27);
+        ViewScrolled();
     }
 
     /// <summary>The front-most combatant (any, and enemy) whose hot spot holds the point, −1 none.</summary>

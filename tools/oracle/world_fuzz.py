@@ -196,14 +196,15 @@ class Fuzzer:
         return s.build()
 
     def derive(self, args, ops):
-        """Arguments that follow the state (the month the monthly update is called for is the date's)."""
+        """Arguments that follow the state (the month the monthly update is called for is the date's).
+        R029+0x281C: its callers (R029+0x5537, R029+0x55CD) increment cur_month DS:00E4 and pass it, and the function reads DS:00E4
+        itself for the birthdays: the argument is the loaded month (DS:00E4 = the header's), never another (12 would need DS:00E4 = 12)."""
         if self.coord == "R029+0x281C":
             head = bytearray(self.st.sav[:HEAD_END])
             for op in ops:
                 if op["s"] == "head":
                     head[op["o"]:op["o"] + len(op["hex"]) // 2] = bytes.fromhex(op["hex"])
-            month = struct.unpack_from("<H", head, 0x6A)[0]
-            return [month + 1 if args[0] & 1 and month == 11 else month]
+            return [struct.unpack_from("<H", head, 0x6A)[0]]
         return args
 
     def run(self, args, ops, saves=False) -> dict:
@@ -271,7 +272,7 @@ class Fuzzer:
                 r = self.run(args, ops, saves=True)           # the saved games before and after (only the kept runs need them)
                 if r["error"] or "sav_after" not in r:
                     continue
-                kept.append({"args": args, "ops": ops, "ax": r["ax"], "dx": r["dx"], "random": r["random"], "random0": r["random0"], "draws": r["draws"], "seeds": r["seeds"],
+                kept.append({"args": self.derive(args, ops), "derived": True, "ops": ops, "ax": r["ax"], "dx": r["dx"], "random": r["random"], "random0": r["random0"], "draws": r["draws"], "seeds": r["seeds"],
                              "sav_before": b64(r["sav_before"]), "sav_after": b64(r["sav_after"]) if r.get("sav_after") not in (None, r["sav_before"]) else None,
                              "ds": r["ds"], "changed": {str(a): v for a, v in r["changed"].items() if any(lo <= a < lo + n for lo, n in WATCH.get(self.coord, ()))}, "seconds": r["seconds"], "instructions": r["instructions"], "coverage": r["coverage"], "iteration": it, "novel": bool(novel)})
                 corpus.append({"args": args, "ops": ops})
@@ -407,6 +408,9 @@ FUNCTIONS = {
 }
 
 
+# functions whose every caller runs in a city (cur_loc a place): not called from a state in the open country.
+# R039+0x0EBE: its 36 call sites (thunk 09C0:217F) are all in the uprising cards R065, R068, R074, R076, R089, R090, R091.
+IN_A_CITY = {"R039+0x0EBE"}
 # functions that read the map view's buffer: the party stays where the view is
 MAP_STATE = {"R030+0x1300", "R030+0x25BE"}
 # DS words the jobs carry for the rewrite (read just before the call): the map view's registers, the travel counters ...
@@ -438,6 +442,9 @@ def main():
         for coord in funcs:
             folder = out / coord.replace("+", "_")
             if (folder / (name + ".json")).exists():
+                continue
+            if coord in IN_A_CITY and struct.unpack_from("<h", st.sav, 0x7C)[0] < 0:
+                print(coord, name, "skipped: called only in a city, the state is in the open country (cur_loc -1)", flush=True)
                 continue
             rng = random.Random("%s|%s|%d" % (name, coord, a.seed))
             try:

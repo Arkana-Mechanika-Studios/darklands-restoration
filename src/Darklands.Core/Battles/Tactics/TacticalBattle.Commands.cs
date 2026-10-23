@@ -458,8 +458,17 @@ public sealed partial class TacticalBattle
                 {
                     n--;
                 }
-                // C: with a path shorter than 3 steps the original reads before the path buffer; clamped here.
-                int At(int k) => FacingOfDirection[(p[Math.Max(0, n - k)] >> 4) % 10];
+                // R014+0xC833..0xC891: es:[0x6237 + lead * 0xFA + DS:E118] is path byte n - 1 (the paths start at 20A5:6238), its high
+                // nibble indexes DS:179C (bytes 0x0A..0x0F lie in DS:17A6, the next table: 0xFF reads DS:17AB).
+                // BUG: a path of fewer than 2 steps (a lead whose first step meets its target gives the bare 0xFF) is read before its start:
+                // the previous combatant's path bytes 248, 249 (for combatant 0 the last loot pile record's +10, +11, 20A5:6236, which no
+                // code writes: 0 here).
+                int Byte(int at) => at >= 0 ? p[at] : lead > 0 ? Battle[lead - 1].Path[Combatant.PathLength + at] : 0;
+                int At(int k)
+                {
+                    var f = Byte(n - k) >> 4;
+                    return f < FacingOfDirection.Length ? FacingOfDirection[f] : PushFacing[f - FacingOfDirection.Length];
+                }
                 // R014+0xC854..0xC8B9: a = root 0410:005A(At(2), last) = (At(2) - last) & 7; dir = root 0410:004C(last, (2a + 1) / 3) = (last + ..) & 7
                 var last = At(1);
                 var a1 = (At(2) - last) & 7;

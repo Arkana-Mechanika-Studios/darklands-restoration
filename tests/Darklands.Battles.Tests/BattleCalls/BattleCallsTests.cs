@@ -176,6 +176,10 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             {
                 throw new SkipJob("paused: the tick draws the renderer's random numbers, which depend on the view the rewrite's screen does not carry here");
             }
+            // the renderer's view (DS:C26C / DS:C293) lays out the clouds and areas; DS:E0AB set (a full redraw since the last frame) lays the
+            // areas out again (R014+0x682F), which the rewrite does on a changed view
+            ScreenOverlay.Camera(c.Screen, c.Input);
+            TacticsOverlay.Set(c.Tactics.Effects, "_lastCamera", c.Input.Ds[0xE0AB] != 0 ? (int.MinValue, 0) : (c.Screen.CameraX, c.Screen.CameraY));
             c.Tactics.Tick();
             return null;
         },
@@ -263,7 +267,14 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         },
         ["R014+0x1BA0"] = (c, job) =>
         {
-            Call(c.Tactics, "MissileAction", job.Args[0]);
+            var set = CallersSet(c, job);
+            var shooter = c.Battle[job.Args[0]];
+            if (shooter.State == ActionState.Swinging && shooter.NextFrameAt <= c.Battle.Clock && shooter.Frame + 1 == shooter.SequenceLength - 1
+                && shooter.ReadiedWeapon is < 0x17 or > 0x21)
+            {
+                throw new SkipJob("a shot without a missile weapon readied: the missile order needs one (the original's sprite and speed are then a stack word's)");
+            }
+            Call(c.Tactics, "MissileAction", job.Args[0], set);
             return null;
         },
         ["R014+0xD04E"] = (c, job) => Member(c, job, "DoorAt"),
@@ -474,6 +485,12 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                     throw new SkipJob("not a record of the level's encounter list");
                 }
                 group = list[k];
+                if (group.X < 0 || group.Y < 0)
+                {
+                    // R014+0x0620 places an encounter when a member enters its box: off the map no member does; there the original's collision
+                    // test reads the far segment past the level image (other battle data), the rewrite's zeros
+                    throw new SkipJob($"encounter {k} lies off the map ({group.X}, {group.Y}): no member reaches it");
+                }
             }
             return (bool)Call(c.Tactics, "PlaceEnemies", mode, group, job.Args[3])! ? 1 : 0;
         },
@@ -525,7 +542,11 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         ["R014+0xB18E"] = (c, job) => Member13(c, job, () => Attacks.Carries(c.Battle, job.Args[0], (byte)job.Args[1], (byte)job.Args[2]) ? 1 : 0),
         ["R014+0xB244"] = (c, job) => Member13(c, job, () => Attacks.ConsumeItem(c.Battle, job.Args[0], (byte)job.Args[1], (byte)job.Args[2])),
         ["R014+0x116E"] = (c, _) => Plain(c, "CombatActions"),
-        ["R014+0x1F00"] = (c, job) => Member13(c, job, () => 0) is null ? null : Plain1(c, "SpellAction", job.Args[0]),
+        ["R014+0x1F00"] = (c, job) =>
+        {
+            Call(c.Tactics, "SpellAction", job.Args[0], CallersSet(c, job));
+            return null;
+        },
         ["R014+0xF67A"] = (c, _) => Plain(c, "FollowMovedTargets"),
         ["R014+0xFC50"] = (c, _) => Plain(c, "FightBack"),
         ["R014+0x10146"] = (c, _) => Plain(c, "Schedule"),
@@ -596,10 +617,25 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         }
     }
 
-    private static int? Plain1(Context c, string method, int arg)
+    /// <summary>
+    /// The second argument of the missile and spell actions: the animation set combat_actions works out for the combatant at the head of its
+    /// pass (R014+0x11C4) and pushes (R014+0x1288 / 0x12A0). Jobs made with the combatant alone left the original reading a stack word there.
+    /// </summary>
+    private static int CallersSet(Context c, CallJob job)
     {
-        Call(c.Tactics, method, arg);
-        return null;
+        if (job.Args[0] is < 0 or >= 13)
+        {
+            throw new SkipJob("not a combatant");
+        }
+        if (job.Args.Length < 2)
+        {
+            throw new SkipJob("the caller's animation set (the second argument) was not passed: the original read a stack word for it");
+        }
+        if (job.Args[1] != c.Tactics.AnimationSet(job.Args[0]))
+        {
+            throw new SkipJob($"set {job.Args[1]} is not the combatant's animation set {c.Tactics.AnimationSet(job.Args[0])}: the caller passes that");
+        }
+        return job.Args[1];
     }
 
     private static int? Plain(Context c, string method)
@@ -887,6 +923,11 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             {
                 if (Environment.CurrentManagedThreadId == thread)
                 {
+                    if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_DRAWSTACK") is not null)
+                    {
+                        var frames = new System.Diagnostics.StackTrace(true).GetFrames().Skip(4).Take(3).Select(f => f.GetMethod()?.Name + ":" + f.GetFileLineNumber());
+                        Console.WriteLine($"DRAW {draws.Count} {random.State:X8} {string.Join(" < ", frames)}");
+                    }
                     draws.Add(random.State);
                 }
             };

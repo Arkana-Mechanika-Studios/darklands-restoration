@@ -77,8 +77,8 @@ internal static class ScreenOverlay
             throw new BattleCallsTests.SkipJob("the view origin is not a cell");
         }
         var view = Field<BattlefieldView>(screen, "_view");
-        view.CentreColumn = Word(ds, CameraX) / 32;
-        view.CentreRow = Word(ds, CameraY) / 16;
+        view.CentreColumn = (short)Word(ds, CameraX) / 32;
+        view.CentreRow = (short)Word(ds, CameraY) / 16;
     }
 
     /// <param name="driverReleases">The left-button releases the mouse driver has counted since the handler last asked (the original's INT 33h function 6).</param>
@@ -94,8 +94,8 @@ internal static class ScreenOverlay
         host.Mouse = new MouseState(x, y, (ds[MouseButtonsAt] & 1) != 0 ? MouseButtons.Left : MouseButtons.None);
         host.CtrlHeld = ctrl;
         var view = Field<BattlefieldView>(screen, "_view");
-        view.CentreColumn = Word(ds, CameraX) / 32;
-        view.CentreRow = Word(ds, CameraY) / 16;
+        view.CentreColumn = (short)Word(ds, CameraX) / 32;
+        view.CentreRow = (short)Word(ds, CameraY) / 16;
         SetField(screen, "_releases", (int)(short)Word(ds, Releases));
         SetField(screen, "_releaseX", x);
         SetField(screen, "_releaseY", y);

@@ -59,6 +59,8 @@ internal static class TacticsOverlay
         new("delayed start", 0xD842, 1, "DelayedStart"),
         new("group move allowed", 0xD610, 1, "GroupMoveAllowed"),
         new("paused", 0xA695, 1, "Paused"),
+        // DS:D4E4: the level in the buffer changed since it was loaded or saved (level_switch saves the level it leaves only then)
+        new("level changed", 0xD4E4, 1, "LevelChanged"),
         new("stopped", 0xCA29, 1, "_stopped"),
         new("lock is door", 0xCA99, 1, "LockIsDoor"),
         new("next to pile", 0xC865, 1, "NextToPile"),
