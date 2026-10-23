@@ -131,13 +131,20 @@ def stock_case(r: random.Random, table_seg: int) -> tuple[list, dict]:
               "citySeed": r.randint(0, 91), "partySeed": r.randint(0, 0x7FFF), "charisma": r.randint(1, 40),
               "fame": r.randint(0, 300), "shopQuality": r.randint(5, 50),
               "categories": r.choice([0xFFFFFFFF, 0x6, 0x1, 0x400]), "state": r.getrandbits(32), "items": []}
-    memory = []
-    records = bytearray()
     for k in range(200):
         item = {"type": r.choice([0x40, 0x17] + [3, 0x26, 9] * 6), "categories": r.choice([0x1, 0x2, 0x4, 0x400, 0x10]),
                 "tradeFlags": r.choice([0] * 9 + [0x80]), "weight": r.randint(0, 20), "quality": r.randint(5, 45),
                 "rarity": r.randint(0, 12), "value": r.randint(1, 900)}
         inputs["items"].append(item)
+    return stock_memory(table_seg, inputs), inputs
+
+
+def stock_memory(table_seg: int, inputs: dict) -> list:
+    """The seeded state of a stock case from its inputs."""
+    cur_loc, flags = inputs["curLoc"], inputs["flags"]
+    memory = []
+    records = bytearray()
+    for item in inputs["items"]:
         rec = bytearray(0x2E)
         struct.pack_into("<HIBbbbxxxxh", rec, 0x1E, item["type"], item["categories"], item["tradeFlags"],
                          item["weight"], item["quality"], item["rarity"], item["value"])
@@ -165,29 +172,47 @@ def stock_case(r: random.Random, table_seg: int) -> tuple[list, dict]:
         ds(PARTY_SEED, w(inputs["partySeed"])), ds(SHOP_CATEGORIES, struct.pack("<I", inputs["categories"]).hex()),
         ds(HOLDRAND, struct.pack("<I", inputs["state"]).hex()),
     ]
-    return memory, inputs
+    return memory
 
 
-def main() -> None:
-    exe = Path(sys.argv[1]).read_bytes()
-    table_seg = item_table_segment(exe)
-    r = random.Random(20261017)
-    result, images = [], None
-    for function, offset in FN.items():
-        for _ in range(250):
-            memory, args, inputs = case(r, table_seg, function)
-            res = run(exe, {"unit": function, "entry": {"segment": "1462", "offset": offset}, "sections": SECTIONS,
-                            "ds": DS, "memory": memory, "args": args, "follow": True,
-                            "read": [{"segment": "%04X" % DS, "offset": "%04X" % HOLDRAND, "length": 4},
-                                     {"segment": "%04X" % DS, "offset": "%04X" % STALE_SLOT, "length": 2}]})
-            images = res["loadedImages"]
-            holdrand, slot = res["reads"]
-            result.append({"function": function, "inputs": inputs, "ax": res["final"]["ax"],
-                           "holdrand": struct.unpack("<I", bytes.fromhex(holdrand))[0],
-                           "slot": struct.unpack("<h", bytes.fromhex(slot))[0], "changed": {}})
-    # targeted cases (docs/faithfulness/branches-missed.csv): the item types item_quality fixes at 25,
-    # rare goods (rarity above 5) in a place, the goods a shop always has, a city size past 9
-    tr = random.Random(20261018)
+READ_PLAIN = [{"segment": "%04X" % DS, "offset": "%04X" % HOLDRAND, "length": 4},
+              {"segment": "%04X" % DS, "offset": "%04X" % STALE_SLOT, "length": 2}]
+READ_STOCK = [{"segment": "%04X" % DS, "offset": "%04X" % HOLDRAND, "length": 4},
+              {"segment": "%04X" % DS, "offset": "%04X" % STOCK_COUNT, "length": 2},
+              {"segment": "%04X" % DS, "offset": "%04X" % STOCK_CODES, "length": 400}]
+
+
+def plain_spec(function: str, memory: list, args: list) -> dict:
+    return {"unit": function, "entry": {"segment": "1462", "offset": FN[function]}, "sections": SECTIONS,
+            "ds": DS, "memory": memory, "args": args, "follow": True, "read": READ_PLAIN}
+
+
+def stock_spec(memory: list, sites: dict) -> dict:
+    return {"unit": "draw_barter_screen", "entry": {"segment": "1462", "offset": "078E"}, "sections": SECTIONS,
+            "ds": DS, "memory": memory + [{"segment": "6F00", "offset": "0000", "hex": "00"}],
+            "args": ["0000", "0000", "6F00", "FFFF", "FFFF"],   # who 0, the shop name (an empty far string at 6F00:0000), the category long (set again below)
+            "follow": True, "callsites": sites, "stub": ["outside"], "stub_return_words": True,
+            "max_instructions": 3000000, "read": READ_STOCK}
+
+
+def plain_record(function: str, inputs: dict, res: dict) -> dict:
+    holdrand, slot = res["reads"]
+    return {"function": function, "inputs": inputs, "ax": res["final"]["ax"],
+            "holdrand": struct.unpack("<I", bytes.fromhex(holdrand))[0],
+            "slot": struct.unpack("<h", bytes.fromhex(slot))[0], "changed": {}}
+
+
+def stock_record(inputs: dict, res: dict) -> dict:
+    holdrand, count, codes = res["reads"]
+    n = struct.unpack("<h", bytes.fromhex(count))[0]
+    return {"function": "stock", "inputs": inputs, "ax": res["final"]["ax"],
+            "holdrand": struct.unpack("<I", bytes.fromhex(holdrand))[0],
+            "codes": list(struct.unpack("<%dh" % n, bytes.fromhex(codes)[:2 * n])), "changed": {}}
+
+
+def forced_cases() -> list:
+    """The targeted cases (docs/faithfulness/branches-missed.csv): the item types item_quality fixes at 25,
+    rare goods (rarity above 5) in a place, the goods a shop always has, a city size past 9."""
     forced = []
     for t in (0x40, 0x41, 0x42, 0x17, 0x18, 0x19, 3):
         forced += [("item_quality", {"item": {"type": t, "categories": 0x1}}), ("item_quality", {"item": {"type": 3, "categories": 0x400}})]
@@ -199,32 +224,38 @@ def main() -> None:
         for size in (5, 9, 10, 12):
             forced.append(("shop_has_item", {"categories": 0xFFFFFFFF, "citySize": size, "curLoc": 5, "slot": 5,
                                              "item": {"type": t, "categories": 0x1, "tradeFlags": 0}}))
-    for function, force in forced:
+    return forced
+
+
+def all_cases(table_seg: int):
+    """Every case of the corpus in generation order: ("plain", function, memory, args, inputs) or ("stock", None, memory, None, inputs)."""
+    r = random.Random(20261017)
+    for function in FN:
+        for _ in range(250):
+            memory, args, inputs = case(r, table_seg, function)
+            yield "plain", function, memory, args, inputs
+    tr = random.Random(20261018)
+    for function, force in forced_cases():
         memory, args, inputs = case(tr, table_seg, function, force)
-        res = run(exe, {"unit": function, "entry": {"segment": "1462", "offset": FN[function]}, "sections": SECTIONS,
-                        "ds": DS, "memory": memory, "args": args, "follow": True,
-                        "read": [{"segment": "%04X" % DS, "offset": "%04X" % HOLDRAND, "length": 4},
-                                 {"segment": "%04X" % DS, "offset": "%04X" % STALE_SLOT, "length": 2}]})
-        holdrand, slot = res["reads"]
-        result.append({"function": function, "inputs": inputs, "ax": res["final"]["ax"],
-                       "holdrand": struct.unpack("<I", bytes.fromhex(holdrand))[0],
-                       "slot": struct.unpack("<h", bytes.fromhex(slot))[0], "changed": {}})
-    sites = stub_sites(exe)
+        yield "plain", function, memory, args, inputs
     for _ in range(40):
         memory, inputs = stock_case(r, table_seg)
-        res = run(exe, {"unit": "draw_barter_screen", "entry": {"segment": "1462", "offset": "078E"}, "sections": SECTIONS,
-                        "ds": DS, "memory": memory + [{"segment": "6F00", "offset": "0000", "hex": "00"}],
-                        "args": ["0000", "0000", "6F00", "FFFF", "FFFF"],   # who 0, the shop name (an empty far string at 6F00:0000), the category long (set again below)
-                        "follow": True, "callsites": sites, "stub": ["outside"], "stub_return_words": True,
-                        "max_instructions": 3000000,
-                        "read": [{"segment": "%04X" % DS, "offset": "%04X" % HOLDRAND, "length": 4},
-                                 {"segment": "%04X" % DS, "offset": "%04X" % STOCK_COUNT, "length": 2},
-                                 {"segment": "%04X" % DS, "offset": "%04X" % STOCK_CODES, "length": 400}]})
-        holdrand, count, codes = res["reads"]
-        n = struct.unpack("<h", bytes.fromhex(count))[0]
-        result.append({"function": "stock", "inputs": inputs, "ax": res["final"]["ax"],
-                       "holdrand": struct.unpack("<I", bytes.fromhex(holdrand))[0],
-                       "codes": list(struct.unpack("<%dh" % n, bytes.fromhex(codes)[:2 * n])), "changed": {}})
+        yield "stock", None, memory, None, inputs
+
+
+def main() -> None:
+    exe = Path(sys.argv[1]).read_bytes()
+    table_seg = item_table_segment(exe)
+    result, images = [], None
+    sites = stub_sites(exe)
+    for kind, function, memory, args, inputs in all_cases(table_seg):
+        if kind == "plain":
+            res = run(exe, plain_spec(function, memory, args))
+            images = res["loadedImages"]
+            result.append(plain_record(function, inputs, res))
+        else:
+            res = run(exe, stock_spec(memory, sites))
+            result.append(stock_record(inputs, res))
     corpus = {
         "authority": "test_only_original_byte_execution",
         "originalExeSha256": hashlib.sha256(exe).hexdigest().upper(),

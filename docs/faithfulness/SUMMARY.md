@@ -18,7 +18,7 @@ switchable data-safety fixes below. No known divergence, strong evidence, publis
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 66% of the branch outcomes have run in a comparison with the original, and the
+implements, about 67% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
 are the battlefield generators, the rules and the battles; the least covered are the card scripts and the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
@@ -94,17 +94,17 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,376 functions the oracles enter | 79.9% (45,654 / 57,167) | 68.2% (29,234 / 42,872) |
-| **every function the C# implements (9,281)** | | **66.5% (28,440 / 42,790)** |
+| the 8,376 functions the oracles enter | 80.2% (45,861 / 57,167) | 68.8% (29,488 / 42,872) |
+| **every function the C# implements (9,281)** | | **67.1% (28,694 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 28,440 against 29,234 exercised. By area:
+differ slightly on the resident code, hence 28,694 against 29,488 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
-| battlefield generators | 222 / 226 | 6,787 / 8,524 | 80% |
-| rules | 321 / 358 | 1,882 / 2,590 | 73% |
+| battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
+| rules | 321 / 358 | 1,909 / 2,590 | 74% |
 | battles (tactical combat) | 252 / 314 | 4,970 / 7,516 | 66% |
 | travel (overland map) | 23 / 24 | 620 / 982 | 63% |
 | screens (inventory, barter, creation ...) | 177 / 202 | 3,512 / 6,070 | 58% |
@@ -112,16 +112,24 @@ differ slightly on the resident code, hence 28,440 against 29,234 exercised. By 
 | card engine | 34 / 36 | 380 / 686 | 55% |
 | card scripts | 6,776 / 7,949 | 9,321 / 14,616 | 64% |
 
+A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
+or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
+and listed in `unreachable.csv`): 67.9% (29,047 / 42,790). Most of what is open is reachable in
+play and not yet driven by an oracle (in the resident code: the keyboard menu, the hot keys, the
+party panel, the intro).
+
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-25,151 items of the functions the oracles enter were never exercised: 1,243 are justified in
+24,690 items of the functions the oracles enter were never exercised: 2,358 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 23,908 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 22,332 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
 lie in the card scripts (about 9,800), the screens (about 4,300), the battles (about 3,600), the
-battlefield generators (about 3,000), the rules (about 700) and the overland map (about 600).
+battlefield generators (about 2,100), the rules (about 650) and the overland map (about 650). A sweep
+of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
+tile contents and random draws, not inputs a sweep sets.
 
 ## Card oracle
 

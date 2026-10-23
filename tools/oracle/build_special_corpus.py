@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import os
 import json
 import random
 import struct
@@ -91,7 +92,7 @@ def spec_row(r: random.Random, special=None):
 
 
 def make_scenarios() -> list[dict]:
-    r = random.Random(20261022)
+    r = random.Random(20261022 + int(os.environ.get("DL_SWEEP_SEED", 0)))
     out = []
 
     def base(kind, bf, **extra):

@@ -17,6 +17,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import os
 import random
 import struct
 import sys
@@ -72,7 +73,7 @@ GAP_SECTIONS = {0x82: (3, 8, 10), 0x83: (1, 2, 7, 8, 11, 12), 0x84: (1, 2, 3, 4,
 
 
 def make_scenarios(count: int) -> list[dict]:
-    r = random.Random(20261022)
+    r = random.Random(20261022 + int(os.environ.get("DL_SWEEP_SEED", 0)))
     # (bf, section named by the third spec or None, turn named by its quality or None, debug switch, forceMap, forceSide)
     plan = [(t, None, None, 0, -1, -1) for t in MINE_TYPES]
     plan += [(0x82, lv, None, 0, -1, -1) for lv in list(range(0, 16)) + [20, -1]]

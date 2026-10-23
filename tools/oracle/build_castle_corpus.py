@@ -72,7 +72,7 @@ def init_worker(exe_path: str, game_path: str) -> None:
 
 
 def make_scenarios(count: int) -> list[dict]:
-    r = random.Random(int(os.environ.get("CASTLE_SEED", 20261022)))
+    r = random.Random(int(os.environ.get("CASTLE_SEED", 20261022)) + int(os.environ.get("DL_SWEEP_SEED", 0)))
     out = []
     for n in range(count):
         bf = CASTLE_TYPES[n % len(CASTLE_TYPES)] if n < len(CASTLE_TYPES) * 2 else r.choice(CASTLE_TYPES)

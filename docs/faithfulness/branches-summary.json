@@ -1,10 +1,10 @@
 {
  "ALL": {
   "blocks": 57167,
-  "blocks_hit": 45654,
+  "blocks_hit": 45861,
   "functions": 8376,
   "outcomes": 42872,
-  "outcomes_hit": 29234,
+  "outcomes_hit": 29488,
   "runs": null
  },
  "battle": {
@@ -526,6 +526,166 @@
   "outcomes": 364,
   "outcomes_hit": 321,
   "runs": 738
+ },
+ "flip-saints": {
+  "blocks": 1343,
+  "blocks_hit": 207,
+  "functions": 32,
+  "outcomes": 490,
+  "outcomes_hit": 151,
+  "runs": 17
+ },
+ "gensweep-castle-s1": {
+  "blocks": 4494,
+  "blocks_hit": 3796,
+  "functions": 102,
+  "outcomes": 4280,
+  "outcomes_hit": 3327,
+  "runs": 54
+ },
+ "gensweep-castle-s2": {
+  "blocks": 4494,
+  "blocks_hit": 3875,
+  "functions": 102,
+  "outcomes": 4280,
+  "outcomes_hit": 3419,
+  "runs": 104
+ },
+ "gensweep-castle-s3": {
+  "blocks": 4494,
+  "blocks_hit": 3843,
+  "functions": 102,
+  "outcomes": 4280,
+  "outcomes_hit": 3386,
+  "runs": 104
+ },
+ "gensweep-castle-s4": {
+  "blocks": 4494,
+  "blocks_hit": 3831,
+  "functions": 102,
+  "outcomes": 4280,
+  "outcomes_hit": 3380,
+  "runs": 102
+ },
+ "gensweep-city-s1": {
+  "blocks": 1676,
+  "blocks_hit": 1118,
+  "functions": 48,
+  "outcomes": 1382,
+  "outcomes_hit": 776,
+  "runs": 22
+ },
+ "gensweep-city-s2": {
+  "blocks": 1676,
+  "blocks_hit": 1203,
+  "functions": 48,
+  "outcomes": 1382,
+  "outcomes_hit": 856,
+  "runs": 42
+ },
+ "gensweep-city-s3": {
+  "blocks": 1676,
+  "blocks_hit": 1207,
+  "functions": 48,
+  "outcomes": 1382,
+  "outcomes_hit": 864,
+  "runs": 42
+ },
+ "gensweep-city-s4": {
+  "blocks": 1676,
+  "blocks_hit": 1243,
+  "functions": 48,
+  "outcomes": 1382,
+  "outcomes_hit": 913,
+  "runs": 102
+ },
+ "gensweep-city-s5": {
+  "blocks": 1676,
+  "blocks_hit": 1244,
+  "functions": 48,
+  "outcomes": 1382,
+  "outcomes_hit": 915,
+  "runs": 102
+ },
+ "gensweep-city-s6": {
+  "blocks": 1676,
+  "blocks_hit": 1234,
+  "functions": 48,
+  "outcomes": 1382,
+  "outcomes_hit": 904,
+  "runs": 102
+ },
+ "gensweep-city-s7": {
+  "blocks": 1676,
+  "blocks_hit": 1252,
+  "functions": 48,
+  "outcomes": 1382,
+  "outcomes_hit": 923,
+  "runs": 102
+ },
+ "gensweep-mine-s1": {
+  "blocks": 2973,
+  "blocks_hit": 2491,
+  "functions": 76,
+  "outcomes": 2500,
+  "outcomes_hit": 1916,
+  "runs": 346
+ },
+ "gensweep-special-s1": {
+  "blocks": 1117,
+  "blocks_hit": 887,
+  "functions": 49,
+  "outcomes": 852,
+  "outcomes_hit": 599,
+  "runs": 149
+ },
+ "gensweep-wild-g1": {
+  "blocks": 1460,
+  "blocks_hit": 739,
+  "functions": 30,
+  "outcomes": 1076,
+  "outcomes_hit": 450,
+  "runs": 137
+ },
+ "gensweep-wild-g2": {
+  "blocks": 1460,
+  "blocks_hit": 981,
+  "functions": 30,
+  "outcomes": 1076,
+  "outcomes_hit": 611,
+  "runs": 29
+ },
+ "gensweep-wild-s1": {
+  "blocks": 1460,
+  "blocks_hit": 1122,
+  "functions": 30,
+  "outcomes": 1076,
+  "outcomes_hit": 688,
+  "runs": 52
+ },
+ "gensweep-wild-s2": {
+  "blocks": 1460,
+  "blocks_hit": 1203,
+  "functions": 30,
+  "outcomes": 1076,
+  "outcomes_hit": 765,
+  "runs": 100
+ },
+ "gensweep-wild-s3": {
+  "blocks": 1460,
+  "blocks_hit": 1188,
+  "functions": 30,
+  "outcomes": 1076,
+  "outcomes_hit": 762,
+  "runs": 100
+ },
+ "gensweep-wild-s4": {
+  "blocks": 1460,
+  "blocks_hit": 1193,
+  "functions": 30,
+  "outcomes": 1076,
+  "outcomes_hit": 766,
+  "runs": 98
  },
  "lockstep-alchemy": {
   "blocks": 6167,
