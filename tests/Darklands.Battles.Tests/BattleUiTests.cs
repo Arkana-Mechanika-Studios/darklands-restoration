@@ -283,6 +283,39 @@ public sealed class BattleUiTests
         Assert.Equal(t0, tb.Ticks);
     }
 
+    /// <summary>
+    /// A release over a member's row of the party panel opens the combat sheet (R014+0x3198); a press on the member's own row closes it
+    /// at once (R031+0x0635), and its release, which in the original falls inside R022's reload and is forgotten at R022+0x03BE, does not
+    /// open the sheet again: the battle goes on (player report on 0.9.2; lockstep session orders-sheetclick).
+    /// </summary>
+    [Fact]
+    public void AClickOnTheOwnRowClosesTheCombatSheetBackToTheBattle()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var opened = 0;
+        using var run = new Session(files, Corridor, sheet: (ui, _) =>
+        {
+            opened++;
+            // the sheet: the opening click's button waited out, then it returns on the next press (the member's own row)
+            ui.WaitForButtonRelease();
+            while (!ui.Mouse.Left)
+            {
+                ui.Present();
+                ui.Clock.Sleep(16);
+            }
+        });
+        run.Play("wait:10", "click:30,20", "wait:5");
+        Assert.Equal(1, opened);
+        run.Play("click:30,20", "wait:20");
+        Assert.Equal(1, opened);
+        // the battle reads the panel again: a new click there opens the sheet a second time
+        run.Play("click:30,20", "wait:5", "click:30,20", "wait:20");
+        Assert.Equal(2, opened);
+    }
+
     /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
     private sealed class Session : IDisposable
     {

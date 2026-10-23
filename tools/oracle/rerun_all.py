@@ -53,7 +53,7 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             # the player's orders in a battle (local/overnight/orders): Prague's gate DKSAVE40, Luebeck's Dksave21, the others the gate of DKSAVE0
             "orders-select": "DKSAVE0.SAV", "orders-walk": "DKSAVE0.SAV", "orders-missile": "DKSAVE0.SAV", "orders-attack-a": "DKSAVE0.SAV",
             "orders-attack-b": "DKSAVE0.SAV", "orders-attack-b2": "DKSAVE0.SAV", "orders-attack-v": "DKSAVE0.SAV", "orders-attacks": "DKSAVE0.SAV",
-            "orders-sheet": "DKSAVE0.SAV", "orders-save": "DKSAVE0.SAV", "orders-potion": "Dksave21.sav", "luebeck-potion": "Dksave21.sav", "orders-potion2": NORMALISED,
+            "orders-sheet": "DKSAVE0.SAV", "orders-sheetclick": "DKSAVE0.SAV", "orders-save": "DKSAVE0.SAV", "orders-potion": "Dksave21.sav", "luebeck-potion": "Dksave21.sav", "orders-potion2": NORMALISED,
             "orders-potion3": NORMALISED, "orders-prague-missile": NORMALISED,
             "sheet-dksave0": "DKSAVE0.SAV",
             # the loot screen after the gate fight of DKSAVE0 (local/overnight/loot): keys, mouse, capital keys and Esc
@@ -274,7 +274,7 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "gen-roster-10": "DKSAVE0.SAV"}
 # the sessions run with --battle-records (the combatant records of every battle pass compared: report.json's battle)
 BATTLE_RECORDS = {"orders-select", "orders-walk", "orders-missile", "orders-attack-a", "orders-attack-b", "orders-attack-b2", "orders-attack-v",
-                  "orders-attacks", "orders-sheet", "orders-save", "orders-potion", "luebeck-potion", "orders-potion2", "orders-potion3", "orders-prague-missile",
+                  "orders-attacks", "orders-sheet", "orders-sheetclick", "orders-save", "orders-potion", "luebeck-potion", "orders-potion2", "orders-potion3", "orders-prague-missile",
                   "dungeon-mine-doors", "dungeon-mine-orders", "dungeon-mine-group"}      # the minimal case of the sheet's allocation error (R031+0x0B22): ends, does not agree
 IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept"}
 RESERVE_MB, JOB_MB = 1500, 450

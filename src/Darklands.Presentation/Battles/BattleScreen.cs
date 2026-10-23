@@ -1834,6 +1834,12 @@ public sealed class BattleScreen : ITacticalView
         tb.MembersFromCombat();
         _ui.PointerVisible = true;
         sheet(member);
+        // C: a click on the member's own row closes the sheet on its press (R031+0x0635 to R031+0x08E1, no wait for the button); R022 then
+        // reloads the battle's pictures and level (R022+0x01EA..0x03BE) before it reads the release count, so the closing click's release
+        // falls inside the reload and is taken and forgotten at R022+0x03BE (lockstep session orders-sheetclick: the original is back in
+        // the battle, R014+0x3198 does not open the sheet again). The reload takes no time here: the button is waited out in its place.
+        // UNCERTAIN: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
+        _ui.WaitForButtonRelease();
         // orig: R022+0x01EA after the sheet: the releases made on it taken from the driver and forgotten (DS:C62A = 0)
         _ui.TakeLeftReleases();
         _releases = 0;
