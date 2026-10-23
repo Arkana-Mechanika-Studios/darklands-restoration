@@ -127,4 +127,63 @@ public sealed class ScreenInputTests
         Assert.False(host.QuitRequested);
         Assert.InRange(host.Left, 0, 1);
     }
+
+    private static (int, MouseState) Key(int key) => (key, new MouseState(5, 5, MouseButtons.None));
+
+    /// <summary>The sheet played with keys (an idle frame after each) up to Esc: the box the cursor ended on and whether a box was open.</summary>
+    private static (int Cursor, bool Open)? Sheet(params int[] keys)
+    {
+        var frames = new List<(int, MouseState)> { Up(5, 5), Up(5, 5) };
+        foreach (var k in keys.Append(Keys.Escape))
+        {
+            frames.Add(Key(k));
+            // the scroll's unrolling (five waits of 20 ms) takes frames: idle ones after Enter
+            frames.AddRange(Enumerable.Repeat(Up(5, 5), k == Keys.Enter ? 60 : 1));
+        }
+        var host = new FrameHost([.. frames]);
+        if (Start(host) is not var (ui, state, panel, world))
+        {
+            return null;
+        }
+        var formulas = FormulaBook.Load(ui.Assets.Files, world);
+        var alchemy = new AlchemyScreen(ui, panel, formulas);
+        var sheet = new CharacterSheetScreen(ui, panel, formulas, world.Items.Saints.Select(s => s.FullName).ToList(), alchemy);
+        sheet.Show(state, 0);
+        Assert.False(host.QuitRequested);
+        var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+        return ((int)typeof(CharacterSheetScreen).GetField("_cursor", flags)!.GetValue(sheet)!,
+            (bool)typeof(CharacterSheetScreen).GetField("_open", flags)!.GetValue(sheet)!);
+    }
+
+    [Fact]
+    public void RightFromTheSecondMemberBoxGoesToTheEmptyTableEntry()
+    {
+        // R136+0xBBE7: box 13's Right neighbour is entry 17, all zero (every neighbour box 0); the cursor stands on it
+        // name box -Left-> 12 -Down-> 13 -Right-> 17
+        if (Sheet(Keys.Left, Keys.Down, Keys.Right) is not var (cursor, _))
+        {
+            return;
+        }
+        Assert.Equal(17, cursor);
+        // and from 17 every arrow goes back to box 0
+        Assert.Equal(0, Sheet(Keys.Left, Keys.Down, Keys.Right, Keys.Right)!.Value.Cursor);
+        Assert.Equal(0, Sheet(Keys.Left, Keys.Down, Keys.Right, Keys.Up)!.Value.Cursor);
+    }
+
+    [Fact]
+    public void PackKeysLeaveAnotherOpenBoxOpen()
+    {
+        // R031+0x1B2C (P) and R031+0x185E / 0x192E / 0x19E2 (D, A, U) return at R031+0x1D40 without the pack open: the saints list
+        // (box 11, five Downs from the name box) stays open and Up then scrolls it (at its top: nothing) instead of moving the cursor
+        foreach (var key in new[] { 0x1970, 0x1950, 0x2064, 0x1E61, 0x1675 })
+        {
+            if (Sheet(Keys.Down, Keys.Down, Keys.Down, Keys.Down, Keys.Down, Keys.Enter, key, Keys.Up) is not var (cursor, open))
+            {
+                return;
+            }
+            Assert.Equal((11, true), (cursor, open));
+        }
+        // any other key closes it (the default case R031+0x1C66)
+        Assert.Equal((10, false), Sheet(Keys.Down, Keys.Down, Keys.Down, Keys.Down, Keys.Down, Keys.Enter, 0x326D, Keys.Up)!.Value);
+    }
 }

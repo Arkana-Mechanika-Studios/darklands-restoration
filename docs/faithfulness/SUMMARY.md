@@ -94,12 +94,12 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,469 functions the oracles enter | 82.9% (47,596 / 57,403) | 72.7% (31,261 / 43,006) |
-| **every function the C# implements (9,281)** | | **71.2% (30,457 / 42,790)** |
+| the 8,479 functions the oracles enter | 82.9% (47,662 / 57,483) | 72.7% (31,316 / 43,076) |
+| **every function the C# implements (9,281)** | | **71.3% (30,512 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 30,457 against 31,261 exercised. By area:
+differ slightly on the resident code, hence 30,512 against 31,316 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
@@ -107,24 +107,24 @@ differ slightly on the resident code, hence 30,457 against 31,261 exercised. By 
 | rules | 323 / 358 | 1,912 / 2,590 | 74% |
 | battles (tactical combat) | 254 / 314 | 5,381 / 7,516 | 72% |
 | travel (overland map) | 23 / 24 | 621 / 982 | 63% |
-| screens (inventory, barter, creation ...) | 181 / 202 | 4,421 / 6,070 | 73% |
+| screens (inventory, barter, creation ...) | 190 / 202 | 4,464 / 6,070 | 74% |
 | resident code | 131 / 160 | 923 / 1,644 | 56% |
-| card engine | 34 / 36 | 406 / 686 | 59% |
+| card engine | 35 / 36 | 418 / 686 | 61% |
 | card scripts | 6,860 / 7,949 | 9,716 / 14,616 | 66% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`): 72.0% (30,797 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`): 72.1% (30,852 / 42,790). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the keyboard menu, the hot keys, the
 party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-21,552 items of the functions the oracles enter were never exercised: 2,321 are justified in
+21,581 items of the functions the oracles enter were never exercised: 2,321 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 19,231 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 19,260 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
 lie in the card scripts (about 9,100), the battles (about 2,900), the screens (about 2,600), the
 battlefield generators (about 2,100), the rules (about 650) and the overland map (about 650). A sweep
@@ -186,6 +186,10 @@ changes, next card).
   figure name and colours (R029+0x4650 .. +0x4AA3 writes neither); a slot loaded without a record is
   zero memory (its weapon and missile qualities 0); a slot without a roster entry that a card makes
   unconscious stays off the roster, as the save writer (R037+0x2ACE) writes roster records only.
+  Further reading of the joining code: a hireling added past the party keeps the bytes the departed
+  member left in that slot (the original clears only the status byte) and takes the figure name the
+  card passes (R029+0x48B1 copies it to DS:A668), keeping the slot's colours; a member rejoining from
+  the roster keeps the slot's figure (R037+0x3D91 .. +0x3E16).
 
 ## Whole game sessions (lockstep)
 
@@ -240,8 +244,11 @@ from a saved game in Pressburg:
 Generated sessions (`tools/oracle/gen_screen_sessions.py`: seeded walks of keys and pointer clicks over
 the sheet, the pack, the saints, barter and the stores, the camp, the roster, the party menu and the
 generator, from the start screen or a saved game; `gen-*.steps`) add 103 more sessions that agree
-throughout: about 1,800 outcomes, the screens from 58% to 73%. The generated sessions that differ are
-being judged.
+throughout: about 1,800 outcomes, the screens from 58% to 73%. Judging the ones that differed found two
+divergences on the character sheet, now fixed: its box table has 19 entries, the last two empty, and
+the cursor can stand on them (R136+0xBBE7; the C# failed there); D, A, U and P with the pack closed
+leave an open box open (R031+0x1D40; only the default case R031+0x1C66 closes). Twelve more sessions
+agree; the others are still being judged.
 
 Only the sessions that agree throughout count as coverage.
 
@@ -250,7 +257,7 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-104 runs, all agreeing (and 207 with the generated sessions, replayed). The last open lead before these, a group move at
+104 runs, all agreeing (and 219 with the generated sessions, replayed). The last open lead before these, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).

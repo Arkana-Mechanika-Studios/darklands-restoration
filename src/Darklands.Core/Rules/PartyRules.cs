@@ -8,15 +8,15 @@ public static class PartyRules
 {
     /// <summary>
     /// A hireling joins in the first free slot (<c>add_member</c>): the standard attributes
-    /// 37/34/31/29/32/34/99 and skills, age 25, a random shield picture 'A'..'O', three standard
-    /// items, and a <see cref="EventKinds.MemberTerm"/> event of <paramref name="hours"/> whose
-    /// end makes the member leave. Returns the slot, or −1 when the party is full. (The
-    /// original also writes the member into CHARACTR.TMP and loads the shield picture.)
+    /// 37/34/31/29/32/34/99 and skills, age 25, a random shield picture 'A'..'O', the figure
+    /// <paramref name="image"/>, three standard items, and a <see cref="EventKinds.MemberTerm"/> event of
+    /// <paramref name="hours"/> whose end makes the member leave. Returns the slot, or −1 when the party is
+    /// full. (The original also writes the member into CHARACTR.TMP and loads the shield picture.)
     /// </summary>
     // orig: add_member R029+0x4650 (0E76:4650) matched; tests: PracticeAndItemsTests
     // C: the shield letter rand_mod(15) is the only draw, before the three items.
     // DIVERGENCE: CHARACTR.TMP, the shield picture, party_size and the redraw are the host's.
-    public static int AddMember(GameState s, string name, string shortName, int hours, int term)
+    public static int AddMember(GameState s, string name, string shortName, string image, int hours, int term)
     {
         var party = s.Party;
         var slot = Enumerable.Range(0, Party.MaxMembers).FirstOrDefault(i => !party.Slot(i).IsPresent, -1);
@@ -24,15 +24,16 @@ public static class PartyRules
         {
             return -1;
         }
-        // C: the new member is written over the slot's record (a departed member's, or zeros): what add_member does not store stays.
-        var before = slot < party.Members.Count ? party.Members[slot] : party.DepartedRecords[slot];
-        var m = new Character { Name = name, ShortName = shortName, Status = CharacterStatus.Able, Age = 25 };
-        // C: add_member writes neither member_shield[slot] (DS:A668) nor member_palette[slot] (R136+0x33FC): the member is drawn with,
-        // C: and the saved game (R037+0x2ACE) writes, the figure the slot held (R029+0x4650..0x4AA3 stores only the party record).
-        if ((before ?? party.SpareRecord(slot)) is { } figure)
+        // C: the new member is written over the slot's record (a departed member's, a loaded slot's zeros): what add_member does not store
+        // C: stays. A slot past the party keeps the record of the member who left it (party_remove / party_delete clear the status byte).
+        var before = slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot);
+        var m = new Character { Name = name, ShortName = shortName, Status = CharacterStatus.Able, Age = 25, Image = image };
+        // C: R029+0x48B1 copies the argument at [bp+0xC] into member_shield[slot] (DS:A668 + slot * 4, written back to charactr.tmp);
+        // C: member_palette[slot] (R136+0x33FC) is not written: the member is drawn with, and the saved game (R037+0x2ACE) writes, the
+        // C: palette the slot held.
+        if (before is not null)
         {
-            m.Image = figure.Image;
-            m.ImagePalette = [.. figure.ImagePalette];
+            m.ImagePalette = [.. before.ImagePalette];
         }
         int[] maxima = [37, 34, 31, 29, 32, 34, 99];
         maxima.CopyTo(m.AttributeMaximums, 0);
@@ -60,9 +61,8 @@ public static class PartyRules
         m.OriginalRecord = record;
         while (party.Members.Count <= slot)
         {
-            // C: a slot between keeps the record a departed member left there (only its status byte is 0)
-            party.Members.Add(party.DepartedRecords[party.Members.Count] ?? new Character { Status = CharacterStatus.Empty });
-            party.DepartedRecords[party.Members.Count - 1] = null;
+            // C: a slot between keeps its memory (a slot past the party that a card gave a status is not free)
+            party.Members.Add(party.Slot(party.Members.Count));
         }
         party.Members[slot] = m;
         Inventory.AddWithQuality(s, slot, 0x2C, 10);
@@ -203,9 +203,18 @@ public static class PartyRules
         // C: the file keeps the record as it was read (CharacterRoster.StoredRecord).
         s.Roster.KeepStored(member, member.Copy());
         member.Status = CharacterStatus.Able;
+        // C: R037+0x3D91..0x3E16 read the record, saints, formulas and pack into the slot, R037+0x3E19 the status; member_shield[slot]
+        // C: (DS:A668, read back from the file's header) and member_palette[slot] (R136+0x33FC) are not written: the member takes the
+        // C: figure the slot held (a slot no member held since start-up: the member's own here).
+        if ((slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot)) is { } figure)
+        {
+            member.Image = figure.Image;
+            member.ImagePalette = [.. figure.ImagePalette];
+        }
         while (party.Members.Count <= slot)
         {
-            party.Members.Add(new Character { Status = CharacterStatus.Empty });
+            // C: a slot between keeps its memory (none in practice: every slot before the first free id holds a member)
+            party.Members.Add(party.Slot(party.Members.Count));
         }
         party.Members[slot] = member;
         party.TrimToSize();

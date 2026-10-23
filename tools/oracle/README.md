@@ -86,3 +86,11 @@ expires (they are not in any recording's key either).
   draws are compared. Differences are leads; jobs the rewrite cannot be asked about (state it does not carry, states the game never has) are
   reported as GAP / SKIP and are not credited.
 * `battle_calls_run.py` runs the three steps; `battle_calls_measure.py` counts the open outcomes of `branches-missed.csv` the agreeing runs reach.
+
+## What new coverage gains: `cov_gain.py`
+
+`cov_gain.py --baseline <dir | branches-work> [--baseline ...] --new <cov dir> [--new ...] [--exclude <file of 'unit|state' lines>] [--open branches-missed.csv] [--out gained.json]`
+lists the open items of `docs/faithfulness/branches-missed.csv` that the new cov folders reach and the baseline does not, per record and function.
+Use it instead of an ad-hoc script: it streams every `cov-*.jsonl` (recursively) line by line into one merged bytearray/edge set per record
+(about 60 MB for the whole 3.2 GB of `branches-work`, about 2 minutes), skips excluded runs, refuses to start under 2 GB free memory
+(`--min-free-gb`) and aborts past 3 GB of its own memory (`--max-rss-gb`). The item mapping is `battle_calls_measure.Items.reached` (cfg.py, as block_coverage.py).

@@ -55,7 +55,7 @@ public sealed class InnRosterTests
     public void AHirelingIsHiddenOnlyWhenTheStaleLocationWordNamesWhereTheTermBegan()
     {
         var s = WithRoster();
-        var slot = PartyRules.AddMember(s, "Hans Hired", "Hans", 100, 1);
+        var slot = PartyRules.AddMember(s, "Hans Hired", "Hans", "F01", 100, 1);
         Assert.Equal(4, slot);
         var menu = new PartyMenuState();
         Assert.Contains(InnRoster.List(s, menu, staleLocation: 3), r => r.Record.Name == "Hans Hired");

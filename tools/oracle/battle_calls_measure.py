@@ -69,13 +69,14 @@ def baseline(local: Path):
 class Items:
     """The open items and what a set of coverage reaches of them."""
 
-    def __init__(self):
-        exe = (GAME / "DARKLAND.EXE").read_bytes()
+    def __init__(self, records=BAT, csv_path=None, game=None):
+        """records: the record names whose open items are wanted (None: all); csv_path: the open list (default branches-missed.csv)."""
+        exe = ((Path(game) if game else GAME) / "DARKLAND.EXE").read_bytes()
         self.exe, self.rt = exe, Rtlink(exe)
         self.funcs = {f.name: f for f in cfgmod.load_functions(REPO / "docs" / "source-map" / "original-functions.csv", self.rt)}
         self.opens = collections.defaultdict(set)
-        for r in csv.DictReader(open(REPO / "docs" / "faithfulness" / "branches-missed.csv", encoding="utf-8")):
-            if r["status"] == "open" and r["record"] in BAT:
+        for r in csv.DictReader(open(csv_path or REPO / "docs" / "faithfulness" / "branches-missed.csv", encoding="utf-8")):
+            if r["status"] == "open" and (records is None or r["record"] in records):
                 self.opens[r["function"]].add((r["payload"], r["kind"]))
 
     def reached(self, ins, edg):
@@ -89,7 +90,8 @@ class Items:
             lo = fn.payload(fn.linear)
             hi = lo + fn.size
             base = fn.linear - lo
-            ex = {p for p in ins.get(rec, ()) if lo <= p < hi}
+            src = ins.get(rec, ())
+            ex = set(src.in_range(lo, hi)) if hasattr(src, "in_range") else {p for p in src if lo <= p < hi}
             if not ex:
                 continue
             g0 = cfgmod.build(self.exe, self.rt, fn)

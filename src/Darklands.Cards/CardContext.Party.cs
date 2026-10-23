@@ -301,7 +301,8 @@ public sealed partial class CardContext
 
     /// <summary><c>add_member</c>: a hireling joins for <paramref name="hours"/>; the slot or −1.</summary>
     // orig: add_member R029+0x4650 (0E76:4650) matched
-    public int AddMember(string name, string shortName, int hours, int term) => PartyRules.AddMember(State, name, shortName, hours, term);
+    public int AddMember(string name, string shortName, string image, int hours, int term) =>
+        PartyRules.AddMember(State, name, shortName, image, hours, term);
 
     /// <summary>Ends the hirelings' terms with value <paramref name="term"/> (R029 4aa4).</summary>
     // orig: R029+0x4AA4 (0E76:4AA4) matched

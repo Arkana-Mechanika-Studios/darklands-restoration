@@ -134,7 +134,7 @@ public sealed class RivalDragonSlayer : Card
     {
         c.RandomName(c.Random(1000), 0, 0);
         // The knight joins for good (shield picture "F01").
-        c.AddMember(c.Variables.Named[0], "Knight", 9999, 7);
+        c.AddMember(c.Variables.Named[0], "Knight", "F01", 9999, 7);
         c.State.CurrentLocation = -1;
         c.Next = 0x0C;
     }

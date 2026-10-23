@@ -440,7 +440,7 @@ public sealed class OriginalSaveTests
     }
 
     [Fact]
-    public void ALoadedSlotWithoutARecordStaysOffTheRosterAndAHirelingThereKeepsItsFigure()
+    public void ALoadedSlotWithoutARecordStaysOffTheRosterAndAHirelingThereKeepsItsZeroQualities()
     {
         var state = SampleGame();
         state.Party.Members[1].Status = CharacterStatus.Empty;
@@ -455,12 +455,12 @@ public sealed class OriginalSaveTests
         Assert.Equal([0, -1, 2, 3, -1], file.PartyIds);
         Assert.Equal(4, file.Characters.Count);
 
-        // add_member (R029+0x4650) there: a new entry, the slot's figure, and the zero slot memory's weapon qualities (+0x58/+0x5A)
+        // add_member (R029+0x4650) there: a new entry, the figure argument, and the zero slot memory's weapon qualities (+0x58/+0x5A)
         back = OriginalSaves.Read(sav, [], "x.sav", NoGameData.Instance).State;
-        Assert.Equal(1, Core.Rules.PartyRules.AddMember(back, "Wolf Bauer", "Wolf", 100, 1));
+        Assert.Equal(1, Core.Rules.PartyRules.AddMember(back, "Wolf Bauer", "Wolf", "F01", 100, 1));
         file = SaveFile.Parse(OriginalSaves.Write(back).Sav);
         Assert.Equal([0, 4, 2, 3, -1], file.PartyIds);
-        Assert.Equal("C00", System.Text.Encoding.Latin1.GetString(file.Images, 4, 3));
+        Assert.Equal("F01", System.Text.Encoding.Latin1.GetString(file.Images, 4, 3));
         Assert.Equal(0, file.Characters[4][0x58]);
         Assert.Equal(0, file.Characters[4][0x5A]);
     }

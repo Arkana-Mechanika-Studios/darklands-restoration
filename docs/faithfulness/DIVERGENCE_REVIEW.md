@@ -253,7 +253,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R037+0x3F30` (1462:3F30, draft)  
   divergence: the shield picture is the party panel's; no able member left keeps the old leader slot.  
   recommendation: **justify** - The shield picture is a presentation resource (the party panel loads it on demand). The second clause (no able member left keeps the old leader slot) was not compared with the asm of R037+0x3F30; check it, and implement the original's choice if it differs.
-- **D-9a94d4** `not-modelled` - `src/Darklands.Cards/CardContext.Party.cs:386` `CardContext.RunBattle`  
+- **D-9a94d4** `not-modelled` - `src/Darklands.Cards/CardContext.Party.cs:387` `CardContext.RunBattle`  
   original: `R029+0x2278` (0E76:2278, draft)  
   divergence: cards_shutdown's and cards_startup's other work files, frees and reloads (charactr.tmp's header read into DS:A668, locs.tmp, card pictures, shields) are not modelled, and the "after battle" log is not written; the death film and the end of the game are the host's (AllDead).  
   recommendation: **justify** - What is left of cards_shutdown/cards_startup around a card's battle after the event table was modelled (the event part is D-98f65a, done): locs.tmp is written and read back (the locations the battle saw, kept in memory here), the shields, card frames, timer pictures and order menus are freed and loaded again (presentation resources), and the "after battle" log line is debug output. Not analysed: cards_shutdown first reads charactr.tmp's header (2 + 10 bytes and 0x14 bytes into DS:A668) and copies the strings DS:1166[i] of the slots whose word is not -1 into DS:A668 + 4i (1462:0554-05EE); check what DS:A668 is and whether it is read after the battle.
