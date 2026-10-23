@@ -38,7 +38,7 @@ public static class GameCommands
         console.Add(new ConsoleCommand("heal", "heal [slot 1..5|all]  (endurance and strength back to their maximums)", On(Heal)));
         console.Add(new ConsoleCommand("saint", "saint grant|remove <slot 1..5|all> <saint number>", On(Saint)));
         console.Add(new ConsoleCommand("item", "item grant <slot 1..5|all> <code> [quality] [count] | item find <text>", On(Item)));
-        console.Add(new ConsoleCommand("quests", "quests", On(QuestLocation)));
+        console.Add(new ConsoleCommand("quests", "quests active | resolved | all", On(Quests)));
     }
 
     // ---- show
@@ -168,51 +168,69 @@ public static class GameCommands
         return new ConsoleResult(lines);
     }
 
-    private static ConsoleResult QuestLocation(GameState s, string[] w)
+      private static ConsoleResult Quests(GameState s, string[] w) => Word(w, 0) switch
     {
-       var activeQuestLocations = s.Events.QuestsAll().Where(e => 
-        e.Kind == EventKinds.Quest 
-        && e.Location != 0
-       ).ToArray();
+        "active" => new ConsoleResult(QuestLocationsActive(s)),
+        "resolved" =>  new ConsoleResult(QuestLocationsResolved(s)),
+        "all" =>   new ConsoleResult(QuestLocationsActive(s).Concat(QuestLocationsResolved(s)).ToList()),
+        _ => throw new ArgumentException("invalid param?"),
+    };
 
-       var DS = s.Events.QuestsAll().ToArray();
+    private static string DirectionToLocationString(GameState s, int curX, int curY) {
 
-       var resolvedeQuestOwners = s.Events.QuestsAll().Where(e => 
-        e.Kind == EventKinds.ResolvedQuest 
-        && e.Owner >= 0
-       ).ToArray();
+        var ( currentX, currentY ) = s.Here != null ? ( s.Here.X, s.Here.Y ) : ( s.MapPosition.X, s.MapPosition.Y );
 
-       var lines = new List<string>();
+        var directionToLocation = TextVariables.DirectionFromHere(currentX, currentY, curX, curY);
 
-       string QuestAndNearestCityDirection(int x, int y) {
-            
-            var nearestCity = LocationRules.NearestCity(s, x, y);
+        return directionToLocation;
+    }
 
-            var nearestCityInfo = s.Locations[nearestCity];
+    private static string NearestCityName(GameState s, int curX, int curY) {
+        
+        var nearestCity = LocationRules.NearestCity(s, curX, curY);
 
-            var ( currentX, currentY ) = s.Here != null ? ( s.Here.X, s.Here.Y ) : ( s.MapPosition.X, s.MapPosition.Y );
+        var nearestCityInfo = s.Locations[nearestCity];
 
-            var directionToLocation = TextVariables.DirectionFromHere(currentX, currentY, x, y);
+        return nearestCityInfo.Name;
+    }
 
-            return $"{directionToLocation} of here near the city of {nearestCityInfo.Name}";
-        }
+    private static List<string> QuestLocationsActive(GameState s)
+    {
+        var activeQuestLocations = s.Events.QuestsAll().Where(e => 
+            e.Kind == EventKinds.Quest 
+            && e.Location != 0
+        ).ToArray();
 
+        var lines = new List<string>();
 
         int i = 0; 
         foreach (var qEvent in activeQuestLocations) 
         { 
             var location = qEvent.Location;
-            lines.Add($"Active quest {i} : {QuestAndNearestCityDirection(s.Locations[location].X, s.Locations[location].Y)}"); 
+            lines.Add($"Active quest {i} : {DirectionToLocationString(s, s.Locations[location].X, s.Locations[location].Y)} of here near the city of {NearestCityName(s, s.Locations[location].X, s.Locations[location].Y)}"); 
         }
         
-        i = 0;
-        foreach (var qEvent in resolvedeQuestOwners) 
+        return lines;
+    }
+
+      private static List<string> QuestLocationsResolved(GameState s)
+    {
+
+        var resolvedQuestOwners = s.Events.QuestsAll().Where(e => 
+            e.Kind == EventKinds.ResolvedQuest 
+            && e.Owner >= 0
+        ).ToArray();
+
+        var lines = new List<string>();
+
+        var i = 0;
+        foreach (var qEvent in resolvedQuestOwners) 
         { 
             var home = qEvent.Location;
-            lines.Add($"Reolved quest {i} : Collect reward in the city of {s.Locations[home].Name} : {QuestAndNearestCityDirection(s.Locations[home].X, s.Locations[home].Y)}"); 
+            lines.Add($"Reolved quest {i} : Collect reward in the city of {s.Locations[home].Name} in direction of {DirectionToLocationString(s, s.Locations[home].X, s.Locations[home].Y)}"); 
         }
 
-        return new ConsoleResult(lines);
+        return lines;
     }
 
     private static ConsoleResult Heal(GameState s, string[] w)
