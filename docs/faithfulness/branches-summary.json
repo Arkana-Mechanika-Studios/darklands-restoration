@@ -1,10 +1,10 @@
 {
  "ALL": {
   "blocks": 57653,
-  "blocks_hit": 48370,
+  "blocks_hit": 48521,
   "functions": 8503,
   "outcomes": 43226,
-  "outcomes_hit": 32085,
+  "outcomes_hit": 32222,
   "runs": null
  },
  "battle": {
@@ -25,27 +25,27 @@
  },
  "battle-calls-pilot": {
   "blocks": 4756,
-  "blocks_hit": 3034,
+  "blocks_hit": 3047,
   "functions": 247,
   "outcomes": 4528,
-  "outcomes_hit": 2392,
-  "runs": 3643
+  "outcomes_hit": 2405,
+  "runs": 3658
  },
  "battle-calls-r3": {
   "blocks": 7457,
-  "blocks_hit": 5335,
+  "blocks_hit": 5379,
   "functions": 353,
   "outcomes": 7172,
-  "outcomes_hit": 4492,
-  "runs": 4770
+  "outcomes_hit": 4533,
+  "runs": 9569
  },
  "battle-calls-scale": {
-  "blocks": 3783,
-  "blocks_hit": 2691,
-  "functions": 199,
-  "outcomes": 3664,
-  "outcomes_hit": 2248,
-  "runs": 3455
+  "blocks": 3671,
+  "blocks_hit": 2590,
+  "functions": 190,
+  "outcomes": 3548,
+  "outcomes_hit": 2167,
+  "runs": 3453
  },
  "battle-oracle-castle": {
   "blocks": 13358,
@@ -1887,6 +1887,14 @@
   "outcomes_hit": 1975,
   "runs": 1
  },
+ "lockstep-gen-pawn-05-full": {
+  "blocks": 5820,
+  "blocks_hit": 3566,
+  "functions": 362,
+  "outcomes": 4466,
+  "outcomes_hit": 2081,
+  "runs": 1
+ },
  "lockstep-gen-roster-02": {
   "blocks": 5778,
   "blocks_hit": 3440,
@@ -2431,6 +2439,14 @@
   "outcomes_hit": 2015,
   "runs": 1
  },
+ "lockstep-gen-stay-08-full": {
+  "blocks": 6648,
+  "blocks_hit": 3873,
+  "functions": 387,
+  "outcomes": 5154,
+  "outcomes_hit": 2147,
+  "runs": 1
+ },
  "lockstep-gen-stay-09": {
   "blocks": 6544,
   "blocks_hit": 3820,
@@ -2445,6 +2461,14 @@
   "functions": 353,
   "outcomes": 5322,
   "outcomes_hit": 2169,
+  "runs": 1
+ },
+ "lockstep-gen-wild-02-full": {
+  "blocks": 6994,
+  "blocks_hit": 4157,
+  "functions": 375,
+  "outcomes": 5548,
+  "outcomes_hit": 2416,
   "runs": 1
  },
  "lockstep-gen-wild-03": {
@@ -2549,6 +2573,22 @@
   "functions": 646,
   "outcomes": 11950,
   "outcomes_hit": 5748,
+  "runs": 1
+ },
+ "lockstep-map-enter-above": {
+  "blocks": 6462,
+  "blocks_hit": 3974,
+  "functions": 390,
+  "outcomes": 5034,
+  "outcomes_hit": 2293,
+  "runs": 1
+ },
+ "lockstep-map-enter-below": {
+  "blocks": 6455,
+  "blocks_hit": 3950,
+  "functions": 388,
+  "outcomes": 5028,
+  "outcomes_hit": 2266,
   "runs": 1
  },
  "lockstep-mapsave": {
@@ -2815,6 +2855,14 @@
   "outcomes_hit": 1742,
   "runs": 1
  },
+ "lockstep-savemid-mine": {
+  "blocks": 14667,
+  "blocks_hit": 9051,
+  "functions": 638,
+  "outcomes": 13074,
+  "outcomes_hit": 6367,
+  "runs": 1
+ },
  "lockstep-sheet": {
   "blocks": 5798,
   "blocks_hit": 3280,
@@ -2990,6 +3038,14 @@
   "outcomes": 1076,
   "outcomes_hit": 761,
   "runs": 112
+ },
+ "world-calls-mapentry": {
+  "blocks": 149,
+  "blocks_hit": 101,
+  "functions": 10,
+  "outcomes": 134,
+  "outcomes_hit": 73,
+  "runs": 2448
  },
  "world-calls-rules": {
   "blocks": 2831,

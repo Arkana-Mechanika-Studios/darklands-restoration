@@ -143,8 +143,14 @@ public static class SaintBook
     //   the pack table (2E38:FEC0).
     // BUG: so for a prayer for the party (-1) the weapon-skill boost reaches nobody (FixSaintWeaponSkillsForParty: the leader's weapons).
     // DIVERGENCE: DS:9C26 is the menu bar's keyboard mode and DS:9C53 its last sub-menu's text column (MenuBar); until a sub-menu
-    //   has been opened the count byte is 0 and both lookups return -1 (as in the oracle's states), afterwards the scan of the
-    //   memory before the pack table may find a "weapon" (memory not modelled): here never.
+    //   has been opened the count (the low byte of DS:9C53, signed; root 0000:0000 sets it) is 0 and both lookups return -1 (as
+    //   in the oracle's states). Afterwards R031+0x5D06 scans the records
+    //   2E38:FEC0 + 6i (= DS:C0A0 + 6i, BSS) for type DS:9C26 (0/1; missile: DS:9BF7) and quality
+    //   DS:9C2D (missile: DS:9C2F), returning the word at DS:C09E + 6i (first exact match, else the last type match; DS:99EB = i).
+    //   DS:C09E..C3F3 are battle and battlefield-generation work variables left from the session's last battle (not saved; the
+    //   word DS:C105 is a DOS segment), and DS:9C2D is the segment word of an "alc mem" buffer (R033+0x00CC, R033+0x185E,
+    //   R036+0x1F12). What is found (and the item record R029+0x0792 then reads) depends on DOS memory and the session's past,
+    //   not on the game's state: not modelled, here never a weapon.
     private static void EquippedWeaponSkills(GameState s, int who, int given, int points)
     {
         if (given == Who.Leader && !s.Behaviour.FixSaintWeaponSkillsForParty)

@@ -73,6 +73,15 @@ public sealed class OriginalSaveTests
                     expected[2 * word] = expected[2 * word + 1] = 0xFF;
                 }
             }
+            // The seed word +0x16F1 is written from DS:D6CE, which the restore does not set (it reads the word into DS:DAD7): a program
+            // that has had no battle writes 0 there (lockstep session mapsave, DKSAVE17).
+            var parsed = BattleSaveFile.Parse(bsv);
+            if (parsed.Variables[Core.Battles.BattleVariables.Seed] != 0 || parsed.Variables[Core.Battles.BattleVariables.Seed + 1] != 0)
+            {
+                var file = parsed.ToBattleFile();
+                file.Variables[Core.Battles.BattleVariables.Seed] = file.Variables[Core.Battles.BattleVariables.Seed + 1] = 0;
+                expected = BattleSaveFile.Write(file);
+            }
             Assert.Equal(expected, battle);
         }
         else

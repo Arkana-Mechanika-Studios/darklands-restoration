@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 1, justify: 44, keep: 7, reproduce-later: 1.
+- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 1, justify: 44, keep: 8.
 - Part B (undefined-memory in core logic): 124 entries; determinism: n/a: 79, no: 32, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -30,11 +30,10 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### reproduce (0)
 
 
-### reproduce-later (3)
+### reproduce-later (2)
 
 - **D-ba3c6e** `src/Darklands.Core/Rules/InnRoster.cs:86` `InnRoster.RowEntry` - original `R038+0x23EC`, `R038+0x02F8` (rules) - The highlight can go below the listed rows (DS:E7DC counts every record) and below row 19 only with more than 20 records; then DS:8D06[row] is a word of the record buffer DS:8D2E, i.e. a word of the last record R038+0x23EC read (deterministic: the last roster record). Row -1 needs an empty roster, which the game never has (the party is in it). Reproducing needs the record bytes in the core model (CharacterRecords is in Persistence).
 - **D-6f60dd** `src/Darklands.Core/Rules/InnRoster.cs:148` `InnRoster.AddOrRemove` - original `root 0000:1716`, `R038+0x02F8`, `R029+0x392C` (rules) - A stale row (DS:8D06 kept from an earlier listing) can name an entry past the roster only after a character was deleted from CHARACTR.TMP (R037+0x4048, a hireling dismissed or the dead after a battle) and the highlight is moved below the listed rows. The original then seeks past the records: fread returns nothing, the slot keeps its old bytes and gets status 1 (the previous occupant comes back unequipped), and the slot's id names a missing record. Deterministic; reproducing needs the slot residue as a member, which Party.Slot models.
-- **D-8bb04c** `src/Darklands.Core/Rules/SaintBook.cs:145` `SaintBook.EquippedWeaponSkills` - original `R029+0x0792`, `R031+0x5D06` (rules) - A prayer for the whole party hands member -1 to R031+0x5D06 (via R029+0x0792), which reads the bytes before the member records: the menu bar's words DS:9C26 / DS:9C53. Until a menu-bar sub-menu has been opened the count byte is 0 and no weapon skill is boosted (reproduced, FixSaintWeaponSkillsForParty); after one has been opened the original scans the memory before the pack table, which the C# does not model yet. Reachable in play: open item, listed in SUMMARY.
 
 ### implement (0)
 
@@ -189,8 +188,8 @@ Each is a core-logic divergence where the C# does something the original does no
   recommendation: **justify** (checked against the original) - who >= 5 counts R136+0xE68E[who - 5][0..15] = enemy_items (2E38:0D5E, 9 enemies x 16 six-byte items of the last battle: battle state, not fixed data) with the quantities of inventories[who - 5]. Every caller in the C (80 x count_items(-2, ..), the R068/s073/s107 member loops v_si/l_2/i over 0..4, R043 150b's pop-up list over members) passes -2, -1 or 0..4, so the branch is unreachable; implementing it needs the battle's enemy item table (battle code).
 - **D-8bb04c** `not-modelled` - `src/Darklands.Core/Rules/SaintBook.cs:145` `SaintBook.EquippedWeaponSkills`  
   original: `R029+0x0792` (0E76:0792, draft), `R031+0x5D06` (18E7:14B6, draft)  
-  divergence: DS:9C26 is the menu bar's keyboard mode and DS:9C53 its last sub-menu's text column (MenuBar); until a sub-menu has been opened the count byte is 0 and both lookups return -1 (as in the oracle's states), afterwards the scan of the memory before the pack table may find a "weapon" (memory not modelled): here never.  
-  recommendation: **reproduce-later** (checked against the original) - A prayer for the whole party hands member -1 to R031+0x5D06 (via R029+0x0792), which reads the bytes before the member records: the menu bar's words DS:9C26 / DS:9C53. Until a menu-bar sub-menu has been opened the count byte is 0 and no weapon skill is boosted (reproduced, FixSaintWeaponSkillsForParty); after one has been opened the original scans the memory before the pack table, which the C# does not model yet. Reachable in play: open item, listed in SUMMARY.
+  divergence: DS:9C26 is the menu bar's keyboard mode and DS:9C53 its last sub-menu's text column (MenuBar); until a sub-menu has been opened the count (the low byte of DS:9C53, signed; root 0000:0000 sets it) is 0 and both lookups return -1 (as in the oracle's states). Afterwards R031+0x5D06 scans the records 2E38:FEC0 + 6i (= DS:C0A0 + 6i, BSS) for type DS:9C26 (0/1; missile: DS:9BF7) and quality DS:9C2D (missile: DS:9C2F), returning the word at DS:C09E + 6i (first exact match, else the last type match; DS:99EB = i). DS:C09E..C3F3 are battle and battlefield-generation work variables left from the session's last battle (not saved; the word DS:C105 is a DOS segment), and DS:9C2D is the segment word of an "alc mem" buffer (R033+0x00CC, R033+0x185E, R036+0x1F12). What is found (and the item record R029+0x0792 then reads) depends on DOS memory and the session's past, not on the game's state: not modelled, here never a weapon.  
+  recommendation: **keep** (checked against the original) - A prayer for the whole party hands member -1 to R031+0x5D06 (via R029+0x0792). Until a menu-bar sub-menu has been opened the count (low byte of DS:9C53, signed) is 0 and no weapon skill is boosted (reproduced, FixSaintWeaponSkillsForParty). Afterwards it scans 2E38:FEC0 + 6i = DS:C0A0 + 6i (BSS, checked with run_unit: [7E62] = 2E38, the code word read at DS:C09E + 6i) for type DS:9C26 (keyboard mode 0/1) and quality DS:9C2D, the segment word of an alc mem buffer (R033+0x00CC, R033+0x185E, R036+0x1F12). DS:C09E..C3F3 are battle and battlefield-generation work variables left from the session's last battle (not saved; DS:C105 a DOS segment). The outcome depends on DOS memory and session history, not game state: keep.
 
 #### deliberate-fix (7)
 
@@ -409,7 +408,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### deliberate-fix (1)
 
-- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:370` `OriginalSaves.static`  
+- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:374` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: with the fix (data safety, switchable; on in the player's game) the record of the status-0 slot is written like the others and the count is true.  
   recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixSaveWriterSkipsEmptySlots, on in the player's game): the original writes a short file for a party slot of status 0 (the Wild Hunt) that it can crash loading; fixed, every roster record is written and the count is true. The faithful short file is reproduced (D-be90b2).
@@ -428,7 +427,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.
-- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:392` `OriginalSaves.static`  
+- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:396` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the original always writes 414 records; a state with another number of places (tests) writes what it has.  
   recommendation: **justify** - Only tests use a state with another number of places; the game always has 414.
@@ -555,7 +554,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R039+0x1AB0` (1462:1AB0, matched)  
   divergence: without a quest about the target the original gives events[-1]->f2e (undefined); here no item.  
   deterministic: **n/a** (checked against the original); action: **document** - FinishQuest10 first requires ev8_at(10,cur_loc) (a started kind-8 event with f28==10 and f1c==cur_loc) and then event_find(8,-1,b,-1,10,-1) with b the caller's argument; every caller of thunk 09C0:214D (R106*, R107*, R108*) pushes DS:907E = cur_loc, so the find matches the same event and never returns -1. events[-1] is not reachable in play.
-- **D-ed4cb2** `undefined-memory` - `src/Darklands.Core/Rules/SaintBook.cs:210` `SaintBook.PragueStanding`  
+- **D-ed4cb2** `undefined-memory` - `src/Darklands.Core/Rules/SaintBook.cs:216` `SaintBook.PragueStanding`  
   original: `R039+0x619A` (165C:41FA, matched)  
   divergence: u is whatever the stack slot holds: for a prayer for the party (R034+0x0000) the return offset 0x0C84 that rand_mod's call of rand left there, so loc_reputation_adj reads the far pointer at locations + 4 * 0x0C84, past the 414 places, draws its chance and may write a word through it (memory not modelled); here Prague's own standing changes.  
   deterministic: **no** (checked against the original); action: **keep** - `u` is the local at [bp-2] of R039+0x619A's frame (enter 10h; t[7] fills [bp-10h..bp-4]) and is never assigned; loc_reputation_adj(u,15,0x19) in Prague (cur_loc==0x46) indexes locations[u] (2e38:10BE+4u, 16-bit wrap) with whatever word the earlier prayer call chain left on that stack slot (a random rep/standing write somewhere, possibly outside the table). Not derivable from game state. Keep the sensible Prague change.
@@ -939,7 +938,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: more than 300 events would overrun the original's table; the rest are dropped.  
   deterministic: **n/a** (checked against the original); action: **document** - R037+0x8ED4 reads nevents from the save and does events[id]=alloc_buffer(0x30)+read for id<n with no bound; the game itself writes only non-empty slots (at most 300), so only a hand-edited or corrupt .sav can exceed 300, and then events[300..] would run on into 2E38:1FDC.. (the data before the R136+0xF92C icon table). Cannot occur with the game's own saves; keep the C# truncation.
-- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:276` `OriginalSaves.static`  
+- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:280` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but save_game's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.

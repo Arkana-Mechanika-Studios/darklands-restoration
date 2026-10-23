@@ -22,6 +22,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private const int AreaWidth = 260;
     private const int AreaHeight = 184;
 
+    /// <summary>The map buffer's corner left out of the view: 20d2 draws the cells from (0, 0) of its 260x184 buffer and copies it from (8, 8) to (60, 16).</summary>
+    // orig: gfx_copy_rect(DS:284E, 8, 8, 0x104, 0xB8, screen, 0x3C, 0x10) at R030+0x2599..0x25AD; the view's first cell (column DS:286A, row DS:286E + DS:286C) is drawn at (0 or 8, 0) of the buffer
+    private const int BufferCrop = 8;
+
     /// <summary>The pause after every pass of the loop: R030+0x3096(delayc) with delayc = 30, a busy wait on clock().</summary>
     // orig: delayc = 30; R030+0x3096(delayc) at the bottom of overland_loop; the body is delay_ticks R030 seg 1767 in matched (spins until clock() has advanced by the argument)
     // UNCERTAIN: a clock() tick is taken as one millisecond (MSC 6 CLK_TCK is 1000, although the value only changes every 55 ms with the BIOS timer, so a real pass lasts 30 to 55 ms).
@@ -432,11 +436,16 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                     continue;
                 }
                 var (px, py) = WorldMap.PixelOf(column, row);
-                DrawClipped(canvas, TileFor(code, column, row), AreaX + px - _originX, AreaY + py - _originY);
+                DrawClipped(canvas, TileFor(code, column, row), AreaX - BufferCrop + px - _originX, AreaY - BufferCrop + py - _originY);
             }
         }
         var sprite = _partySprites![Math.Min(_direction, 9) * 8 + _frame];
-        DrawClipped(canvas, sprite, AreaX + _x - _originX - 6, AreaY + _y - _originY - 6);
+        // orig: 16c6 draws the sprite at (8 * row parity + px + 10, py - lift + 18) of its own buffer (px, py: the marker's pixel inside its cell) and copies
+        //   (8 * parity + 8 + px, py - lift + 14) of it to the screen at (DS:2866 + 0x34, DS:2868 - lift + 5) (R030+0x1B96..0x1C3C): the sprite's corner
+        //   is at (DS:2866 + 0x36, DS:2868 + 9 - lift)
+        // DIVERGENCE: the lift (16c6 raises the sprite on some terrains by three 4 x 16 tables indexed by the pixel inside the cell) and the tile rows
+        //   16c6 draws over the sprite (the rows below the party's, by terrain) are not reproduced: the sprite is drawn last, unlifted.
+        DrawClipped(canvas, sprite, AreaX + _x - _originX - 6, AreaY + _y - _originY - 7);
         DrawFrame(canvas, state);
         panel.Draw(canvas, state.Party);
         if (_coordinates.Length > 0)

@@ -88,6 +88,39 @@ public sealed class OriginalBugsOfTheKeysTests
         Assert.Equal(0, t.PauseByte);
     }
 
+    /// <summary>
+    /// The screen with the pause byte 0x11: the clock stands (DS:07D3 still held by the pause, R016+0x075A .. 0x144D), the pointer is the order
+    /// pointer (root 0000:00A0 tests == 0) and the Orders item Resume resumes (R016+0x1436 through root 09C0:1941, no test of the byte).
+    /// </summary>
+    [Fact]
+    public void TheScreenTreatsThePauseByte0x11AsAPause()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (screen, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x5E, 4545, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), state => state.Behaviour = new OriginalBehaviour());
+        t.PendingOrderMember = -1;
+        if (t.Selected != -1)
+        {
+            t.CancelOrder();
+        }
+        if (t.PauseByte == 0)
+        {
+            t.TogglePause();
+        }
+        typeof(TacticalBattle).GetField("_fleeBefore", Any)!.SetValue(t, true);
+        t.CancelOrder();
+        Assert.Equal(0x11, t.PauseByte);
+        var clock = t.Battle.Clock;
+        typeof(Darklands.Presentation.Battles.BattleScreen).GetMethod("Advance", Any)!.Invoke(screen, [1000L]);
+        Assert.Equal(clock, t.Battle.Clock);
+        typeof(Darklands.Presentation.Battles.BattleScreen).GetMethod("Resume", Any, Type.EmptyTypes)!.Invoke(screen, []);
+        Assert.Equal(0, t.PauseByte);
+        typeof(Darklands.Presentation.Battles.BattleScreen).GetMethod("Advance", Any)!.Invoke(screen, [1000L]);
+        Assert.NotEqual(clock, t.Battle.Clock);
+    }
+
     /// <summary>With D6EA = 0 Esc leaves the pause byte alone, and the place actions' clear of bit 0x10 (R016+0x15BE) brings 0x11 back to 1.</summary>
     [Fact]
     public void EscWithoutAFleeBitKeepsThePauseByteAndAPlaceActionClearsTheBit()

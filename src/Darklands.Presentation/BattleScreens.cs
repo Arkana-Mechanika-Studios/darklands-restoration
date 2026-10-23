@@ -141,6 +141,13 @@ public sealed class BattleScreens
     // or a battle of the game played before) was not traced.
     public (int Column, int Row) ViewCentre { get; internal set; }
 
+    /// <summary>seenpos (20A5:79A9): where each combatant last saw each other one near its path, a program global no battle start clears
+    /// (only a path found writes it, R014+0xF568): the last battle's (or the battle a load left) arrays, null before any battle.</summary>
+    public Darklands.Core.Battles.MapPoint[][]? SeenPositions { get; internal set; }
+
+    /// <summary>The view centre now: the running battle's while one runs, else <see cref="ViewCentre"/>.</summary>
+    public (int Column, int Row) CurrentViewCentre => Current?.ViewCentre ?? ViewCentre;
+
     /// <summary>The card the last battle left for (battle_args: the level's card for its result).</summary>
     public int LastResultCard { get; private set; }
 

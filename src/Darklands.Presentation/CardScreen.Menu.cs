@@ -211,6 +211,12 @@ public sealed partial class CardScreen
                     }
                     continue;
                 }
+                if (a.IsLeftClick)
+                {
+                    // C: card_mouse R043+0x21D4 follows the pointer before its click test in the same call (the click is the release INT 33h function 6 reports), so a click
+                    //   is judged with the line under the pointer highlighted, even when the pointer reached it in the frame of the press.
+                    Track(a.X, a.Y);
+                }
                 if (a.IsLeftClick && current.At(a.X, a.Y) >= 0 && current.Highlight >= 0)
                 {
                     // orig: the click part of card_mouse: the press position over a line of the list shown; outside the box (and no box up) the highlighted line is chosen; in the box menu_slot = opt % 4, menu_member = opt / 4, menu_popup = 1 and the main line is chosen; with a box up, a click on the main lines does nothing

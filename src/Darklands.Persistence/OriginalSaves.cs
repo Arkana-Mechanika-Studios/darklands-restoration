@@ -211,6 +211,10 @@ public static class OriginalSaves
             battle.MarchingOrder.CopyTo(state.MarchingOrder);
             state.LastCastleFlags = battle.LastCastleFlags;
             state.BattleFile = battle.ToBattleFile();
+            // C: the restore reads the seed word +0x16F1 into DS:DAD7, not into DS:D6CE, which the next save writes there: until a battle
+            // sets it, the program's DS:D6CE stays (0 in a program that has had no battle; lockstep session mapsave: DKSAVE17's 0x494C saved as 0).
+            var seed = running?.BattleFile is { } before ? before.Variables.AsSpan(Core.Battles.BattleVariables.Seed, 2) : stackalloc byte[2];
+            seed.CopyTo(state.BattleFile.Variables.AsSpan(Core.Battles.BattleVariables.Seed, 2));
             // C: the restore masks the combat flags with 0x10 (a byte operation: DS:9081, their high byte, is the loader's).
             state.BattleOrders.Flags = state.BattleOrders.Flags & ~0xFF | state.BattleOrders.Flags & 0x10;
         }

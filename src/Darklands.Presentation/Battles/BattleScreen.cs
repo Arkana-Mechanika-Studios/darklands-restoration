@@ -69,6 +69,11 @@ public sealed class BattleScreen : ITacticalView
     /// the clock was 1382 at the head, 69 more callbacks came during the pass), as tools/oracle/battle_oracle.py measures them in the original
     /// (DARKLANDS_BATTLE_CLOCK_JUMPS): the original's emulated time passes during a pass that computes for long (R014+0x4BFA..0x66FE
     /// in the wild fight), and the timer callbacks of that time count the clock on.</summary>
+    /// <summary>A debugging aid: the timer callbacks of the original's loot screens, by the combat clock it was opened at ("2731,7"), as
+    /// tools/oracle/lockstep.py takes them from the original's clock jumps (DARKLANDS_BATTLE_LOOT_TICKS): the end test R014+0x08FE runs
+    /// combat_recover R014+0x0DEE before the loot screen R040, during which the timer root 047C:000A counts the clock on.</summary>
+    public static Dictionary<int, int>? LootTicks { get; set; } = ParseClockJumps(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_LOOT_TICKS"));
+
     public static Dictionary<int, int>? ClockJumps { get; set; } = ParseClockJumps(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CLOCK_JUMPS"));
 
     private static Dictionary<int, int>? ParseClockJumps(string? text) => string.IsNullOrEmpty(text) ? null
@@ -110,6 +115,19 @@ public sealed class BattleScreen : ITacticalView
     private int _afterSheetCallbacks;
 
     private (int Loads, int FirstFrame, int Late, int BeforeActivations) _setUpTicks;
+
+    /// <summary>A debugging aid: for each battle taken up from a saved game in turn, the combat clock of the original's first pass after it
+    /// ("5720;...", an entry for every battle after the first): the restore R003+0x0CE8 reads the clock from the battle file and the timer callback root 047C:000A counts it on while
+    /// the levels are exploded and the set-up loads its files (emulated time), as tools/oracle/lockstep.py reads it from the original's trace
+    /// (DARKLANDS_BATTLE_RESUME_CLOCKS). The clock moves there after the set-up.</summary>
+    public static Queue<int>? ResumeClocks { get; set; } = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_RESUME_CLOCKS")) ? null
+        : new(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_RESUME_CLOCKS")!.Split(';').Select(t => int.Parse(t, System.Globalization.CultureInfo.InvariantCulture)));
+
+    private bool _resuming;
+
+    private int _resumeLate;
+
+    private static int _setUpsSeen;
     private long _setUpMark;
 
     private readonly GameUi _ui;
@@ -252,9 +270,19 @@ public sealed class BattleScreen : ITacticalView
                 if (keyHandled && pendingRises is not null && pendingRises.Remove(-2, out var keyRise))
                 {
                     // the original's long computation of a key's order (the path searches of Q, single file) came before the tick tests the clock
-                    // (the tester lists it as the rise at the tick's first clock read, the melee exchanges)
-                    _clockFraction = keyRise;
-                    Advance(0);
+                    // (the tester lists it as the rise at the tick's first clock read, the melee exchanges) but after the activations' test
+                    // (R014+0x05B4: the original's next check came a pass later, lockstep session savemid-mine): it is given there
+                    var held = TacticalBattle.ClockPhase;
+                    TacticalBattle.ClockPhase = phase =>
+                    {
+                        if (phase == -3)
+                        {
+                            _clockFraction = keyRise;
+                            Advance(0);
+                            keyRise = 0;
+                        }
+                        held?.Invoke(phase);
+                    };
                 }
                 if (_resyncClock)
                 {
@@ -352,6 +380,24 @@ public sealed class BattleScreen : ITacticalView
     public (int X, int Y)? HotSpotCentre(int i) => HotSpot(i) is { } h ? ((h.Left + h.Right) / 2, (h.Top + h.Bottom) / 2) : null;
 
     /// <summary>Combatant i's hot spot as last drawn (screen pixels, inclusive), null when it has none (tests, the headless host).</summary>
+    /// <summary>The battle's seen positions start as the program's (the last battle's, the one a load left) and are the program's from now.</summary>
+    // C: seenpos (20A5:79A9) is written only by R014+0xF568 (a path found) and read by the walkers' re-path test (R014+0xF418's 1DB7:0D36):
+    // no battle start, restore or load clears it
+    private void KeepSeenPositions(Battle battle)
+    {
+        if (_owner.SeenPositions is { } kept)
+        {
+            for (var i = 0; i < Combatant.Count; i++)
+            {
+                kept[i].CopyTo(battle[i].SeenPositions, 0);
+            }
+        }
+        _owner.SeenPositions = [.. Enumerable.Range(0, Combatant.Count).Select(i => battle[i].SeenPositions)];
+    }
+
+    /// <summary>The view's centre cell (DS:C866 / DS:C886).</summary>
+    public (int Column, int Row) ViewCentre => (_view.CentreColumn, _view.CentreRow);
+
     public (int Left, int Top, int Right, int Bottom)? HotSpot(int i)
     {
         foreach (var h in _hotSpots)
@@ -428,6 +474,7 @@ public sealed class BattleScreen : ITacticalView
             StaleFlags = _state.BattleFile is { } program ? [.. Enumerable.Range(0, Combatant.Count).Select(i => (ushort)(program.Variables[BattleVariables.Flags + 2 * i] | program.Variables[BattleVariables.Flags + 2 * i + 1] << 8))] : null,
         };
         _view.PieceFrame = (layer, x, y) => _battle?.Effects.PieceFrame(layer, x, y) ?? -1;
+        KeepSeenPositions(battle);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             var c = battle[i];
@@ -480,6 +527,7 @@ public sealed class BattleScreen : ITacticalView
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed,
         };
+        KeepSeenPositions(battle);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             var c = battle[i];
@@ -507,7 +555,15 @@ public sealed class BattleScreen : ITacticalView
         _small = new TextPainter(_ui.Assets.Font(3));
         SetPalette(field.Terrain.BackgroundPalette);
         (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
+        _resuming = true;
         _battle.Resume();
+        _resuming = false;
+        if (_resumeLate > 0)
+        {
+            _clockFraction = _resumeLate;
+            Advance(0);
+            _resumeLate = 0;
+        }
         _menuBar = BuildMenuBar();
     }
 
@@ -548,7 +604,9 @@ public sealed class BattleScreen : ITacticalView
         var ticks = (int)_clockFraction;
         _clockFraction -= ticks;
         CountCallbacks(ticks);
-        if (_battle!.Paused)
+        // C: the pause holds DS:07D3 from R016+0x075A / R014+0xBC9E (with DS:A695 = 1) to R016+0x144D (A695 = 0); Esc with nobody selected
+        // can turn A695 into 0x11 meanwhile (R016+0x13F9) without touching 07D3, so the clock stands while the byte is not 0
+        if (_battle!.PauseByte != 0)
         {
             return;
         }
@@ -750,13 +808,22 @@ public sealed class BattleScreen : ITacticalView
         if (stage == 0)
         {
             _setUpMark = now;
+            // the first battle has no entry; every later one takes its own, a battle taken up from a saved game uses it
+            if (_setUpsSeen++ > 0 && ResumeClocks is { Count: > 0 } clocks && clocks.Dequeue() is var first && _resuming)
+            {
+                // the restore's and the set-up's time comes after the set-up's clock reads (the original's first pass checks the
+                // activations at once: R014+0x05B4), up to the first pass
+                _setUpTicks = (0, 0, 0, 0);
+                _resumeLate = (ushort)(first - _battle!.Battle.Clock);
+                return;
+            }
             if (SetUpTicks is { Count: > 0 } given)
             {
                 _setUpTicks = given.Count > 1 ? given.Dequeue() : given.Peek();
             }
             return;
         }
-        if (SetUpTicks is not null)
+        if (SetUpTicks is not null || (_resuming && ResumeClocks is not null))
         {
             _clockFraction = stage switch
             {
@@ -812,6 +879,11 @@ public sealed class BattleScreen : ITacticalView
     // combat buffers freed and reloaded around it are the original's memory management)
     public void OpenLoot(int member, List<ItemStack> list, Money money)
     {
+        if (LootTicks is not null && LootTicks.Remove(_battle!.Battle.Clock, out var ticks))
+        {
+            _clockFraction = ticks;
+            Advance(0);
+        }
         // orig: loot_screen: palette_save(0, DS:CA55) before loot_distribute (R040, which shows BUYSELL.PIC and sets its palette),
         // palette_restore(DS:CA53, DS:CA55) after it; then loot_pile_open R014+0xE278 redraws the battle:
         // floor_view_draw_vec(DS:17B0) (the view centred on the active member) and combat_draw.
@@ -1049,7 +1121,9 @@ public sealed class BattleScreen : ITacticalView
     private void Resume()
     {
         var tb = _battle!;
-        if (tb.Paused)
+        // C: the Orders item Resume calls R016+0x1436 through root 09C0:1941 with no test of DS:A695; its menu state (DS:9609) is 1 from a
+        // pause to its resume, so it is chosen with A695 1 or 0x11 (after Esc with nobody selected), both of which TogglePause resumes
+        if (tb.PauseByte != 0)
         {
             tb.TogglePause();
         }
@@ -1775,7 +1849,7 @@ public sealed class BattleScreen : ITacticalView
         {
             var (during, after) = measured.Dequeue();
             CountCallbacks(during);
-            if (tb.Paused)
+            if (tb.PauseByte != 0)
             {
                 // a running battle's callbacks after the sheet raise the clock: the clock jumps list them
                 _afterSheetCallbacks += after;
@@ -2647,7 +2721,8 @@ public sealed class BattleScreen : ITacticalView
         }
         else
         {
-            image = _battle!.Paused ? BattleImages.OrderPointer : BattleImages.NormalPointer;
+            // C: root 0000:00A0 (and R022+0x0362 after the sheet): DS:A695 == 0 the normal pointer, any other value (0x11 too) the order pointer
+            image = _battle!.PauseByte == 0 ? BattleImages.NormalPointer : BattleImages.OrderPointer;
         }
         var sprite = _assets.Images[image];
         _underPointer = sprite is null ? null : canvas.Save(x - hx, y - hy, sprite.Width, sprite.Height);

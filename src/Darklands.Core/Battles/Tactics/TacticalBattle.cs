@@ -318,6 +318,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
         for (var i = 0; i < Combatant.Count; i++)
         {
             Battle[i].Flags = (TacticalFlags)(StaleFlags is { } stale && i < stale.Count ? stale[i] & 0x6E00 : 0);
+            // C: the same loop sets every combatant's exchange (DS:CA57) to 7 (0E76:19D0), the members' too; the tests of the exchange
+            // never take 7, but a battle file written in the battle keeps it (lockstep session savemid-mine).
+            Battle[i].Exchange = Exchange.Placed;
         }
         ActivationsEnabled = true;
         Battle.Alarm = 0;
@@ -598,6 +601,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
             }
             EnemyTurn();
         }
+        ClockPhase?.Invoke(-3);
         if (!ActivationsEnabled && DelayedStartAt < Clock)
         {
             PlaceInitialEnemies();
@@ -664,7 +668,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         Effects.Rebase(R);
     }
 
-    /// <summary>A debugging aid: called where a tick's phases begin (-1 the scheduler, -2 the melee exchanges), as MscRandom.BeforeDraw is before a draw
+    /// <summary>A debugging aid: called where a tick's phases begin (-1 the scheduler, -2 the melee exchanges; -3 after the activations' test), as MscRandom.BeforeDraw is before a draw
     /// (tools/oracle/battle_oracle.py gives the C# the clock the original's long passes had reached there, DARKLANDS_BATTLE_CLOCK_JUMPS).</summary>
     public static Action<int>? ClockPhase { get; set; }
 

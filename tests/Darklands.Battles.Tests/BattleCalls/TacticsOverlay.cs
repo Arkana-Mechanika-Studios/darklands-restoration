@@ -25,6 +25,12 @@ internal static class TacticsOverlay
     public const int Appearances = 0xC200, EnemyClasses = 0xC2BF, PreferredSlots = 0xD680, SlotIdentities = 0xD65F, SlotIdentity2 = 0xD67E, FireBlocked = 0xA3D8;
     public const int ActivationCount = 0xD6CC, SeenAt = 0x79A9, ReachAt = 0x7900, TimerCallbacksAt = 0x7D1, DoorsBeforeSearch = 0xE0C0;
 
+    /// <summary>The pack counts Apply left, for a state without the packs (see Extract).</summary>
+    [ThreadStatic]
+    private static int[]? s_stacksBefore;
+
+    private static int[] StacksBefore => s_stacksBefore ??= new int[Combatant.Count];
+
     private static readonly BindingFlags Any = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
     public static void Set(object target, string name, object? value)
@@ -187,6 +193,14 @@ internal static class TacticsOverlay
                     pack[n] = new ItemStack(Word(packs, at), packs[at + 2], packs[at + 3], packs[at + 4], packs[at + 5]);
                 }
                 pack.Stacks = (sbyte)ds[ImageOverlay.Combatants + ImageOverlay.Record * k + CountAt];
+            }
+        }
+        else
+        {
+            // a state without the packs (older rounds): the packs stay the rewrite's own start's; Extract writes back the counts the call changed
+            for (var k = 0; k < Combatant.Count; k++)
+            {
+                StacksBefore[k] = t.Battle[k].Items.Stacks;
             }
         }
         var fx = t.Effects;
@@ -356,6 +370,16 @@ internal static class TacticsOverlay
                     packs[at + 5] = (byte)e.Weight;
                 }
                 ds[ImageOverlay.Combatants + ImageOverlay.Record * k + CountAt] = (byte)pack.Stacks;
+            }
+        }
+        else
+        {
+            for (var k = 0; k < Combatant.Count; k++)
+            {
+                if (t.Battle[k].Items.Stacks != StacksBefore[k])
+                {
+                    ds[ImageOverlay.Combatants + ImageOverlay.Record * k + CountAt] = (byte)t.Battle[k].Items.Stacks;
+                }
             }
         }
         var fx = t.Effects;

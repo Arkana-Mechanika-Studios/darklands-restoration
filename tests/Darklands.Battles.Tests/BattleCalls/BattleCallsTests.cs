@@ -751,6 +751,19 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 throw new SkipJob($"flags[{k}] with the place-changed bit (0x08): R014+0xDC14 and R017+0x0000 clear it in the call that sets it");
             }
         }
+        // flag bytes the original writes as 0 or 1 only (and its saved games carry as written): DS:D610 (R014+0x0F9C, 0x0FEA), DS:D6F0 (R002+0x18E1,
+        // R023+0x18FA, R025+0x0CFE), DS:CA29 (R002+0x18F1, R014+0xD943/0xD9C5/0xDA77), moving DS:A6D3[i] (R014+0x0438, 0x0C96, 0x1228, 0x145B, 0x1720 ...),
+        // engaged DS:DA36[i] (R014+0x9A5D, 0xFBF3, 0xFD49). Some readers test == 1, others != 0, so another value splits them; the rewrite keeps bools
+        foreach (var (name, at, count) in new[] { ("DS:D610", 0xD610, 1), ("DS:D6F0", 0xD6F0, 1), ("DS:CA29", 0xCA29, 1), ("moving DS:A6D3", 0xA6D3, Combatant.Count), ("engaged DS:DA36", 0xDA36, Combatant.Count) })
+        {
+            for (var k = 0; k < count; k++)
+            {
+                if (ds[at + k] > 1)
+                {
+                    throw new SkipJob($"{name}[{k}] = 0x{ds[at + k]:X2}: the original writes this flag as 0 or 1 only");
+                }
+            }
+        }
         for (var k = 0; k < Combatant.Count; k++)
         {
             var record = ImageOverlay.Combatants + ImageOverlay.Record * k;
@@ -945,7 +958,27 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 CheckDoors(tactics);
                 CheckReachable(job, input, state.Ds);
                 var switches = tactics.LevelSwitches;
+                // a state captured without the loot file (older rounds): the C# store is its own start's, so a call that appends to the file
+                // (R014+0xE774: the new block's offset is the file's length) or cuts blocks out of it (R014+0xE7C8) works on another file
+                var lootStore = tactics.Field.Store.Loot;
+                var fileBefore = lootStore.FileExists;
+                if (!input.LootKnown)
+                {
+                    lootStore.FileExists = false;
+                }
                 var value = adapter(context, job);
+                if (!input.LootKnown)
+                {
+                    // a file without blocks (no pile holds one: the piles' blocks lie in it, R014+0xE774 / 0xE7C8) is the empty file the rewrite has
+                    var blocks = Enumerable.Range(0, Math.Min((int)input.Ds[LootOverlay.PileCount], LootOverlay.MaxPiles))
+                        .Any(k => (short)(input.Far[LootOverlay.PilesAt + LootOverlay.PileSize * k] | input.Far[LootOverlay.PilesAt + LootOverlay.PileSize * k + 1] << 8) >= 0
+                            && input.Far[LootOverlay.PilesAt + LootOverlay.PileSize * k + 2] != 0);
+                    if (lootStore.FileExists && blocks)
+                    {
+                        throw new SkipJob("the call appends to or cuts the loot file, which this state did not capture (its piles hold blocks)");
+                    }
+                    lootStore.FileExists = fileBefore;
+                }
                 if (tactics.LevelSwitches != switches)
                 {
                     // level_switch (R024+0x059A) saves the level it leaves (20A5:0000, its encounter list 20A5:47EE through DS:A895) only when

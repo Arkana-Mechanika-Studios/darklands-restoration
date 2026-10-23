@@ -23,6 +23,25 @@ public sealed class BattleSaveTests
     /// <summary>The battlefields tried: castles, cities, a mine, the Templar fortress (the main loop's battles persist).</summary>
     public static TheoryData<int, int> Battlefields() => new() { { 0x00, 1234 }, { 0x05, 4321 }, { 0x14, 863 }, { 0x0A, 777 }, { 0x29, 99 }, { 0x5E, 5 } };
 
+    /// <summary>The battle's reset R002+0x1830 sets every combatant's exchange (DS:CA57) to 7, the members' too (0E76:19D0): a battle
+    /// file written in the battle holds it (lockstep session savemid-mine).</summary>
+    [Fact]
+    public void ABattleBeginsWithEveryExchangeSeven()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var state = Simulation.NewGame.Quickstart(world, 7);
+        var (_, tactics) = StartBattle(ui, files, state, new BattleRequest(0x14, 863, NoGroups, Persistent: true));
+        Assert.All(Enumerable.Range(0, Combatant.Count), i => Assert.Equal(Exchange.Placed, tactics.Battle[i].Exchange));
+        var file = new BattleFile();
+        tactics.WriteBattleFile(file, inBattle: true, 0, 0);
+        Assert.All(Enumerable.Range(0, Combatant.Count), i => Assert.Equal(7, file.Variables[BattleVariables.Exchange + i]));
+    }
+
     [Theory]
     [MemberData(nameof(Battlefields))]
     public void ABattleSavedInsideItIsTakenUpAsItStood(int battlefield, int seed)

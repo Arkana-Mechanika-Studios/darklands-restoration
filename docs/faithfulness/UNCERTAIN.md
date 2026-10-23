@@ -145,7 +145,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-7ce977** `uncertain` - `src/Darklands.Persistence/CharacterRecords.cs:16` `CharacterRecords`  
   original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched)  
   why: the bytes this model does not name (+0x02..+0x11 combat position and orders, +0x16, +0x18..+0x21, +0x23, +0x4A, +0x4D/+0x4E, +0x52..+0x54, +0x56/+0x57, +0x59, +0x7F) are kept as read (Character.OriginalRecord); a character made by this program has zeros there. The saint and formula bytes and all 64 pack entries are modelled as raw bytes (KnownBits, Pack).
-- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:407` `OriginalSaves.PartyRecordInBattle`  
+- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:411` `OriginalSaves.PartyRecordInBattle`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 
@@ -159,7 +159,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1663` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1737` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:55` `BuySellPage.DrawParty`  
@@ -195,7 +195,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-77166b** `uncertain` - `src/Darklands.Presentation/OpeningTiming.cs:21` `OpeningTiming.IReadOnlyList`  
   original: `root 03A1:000A` (03A1:000A, matched), `root 030B:0004` (030B:0004, matched), `root 030B:0508` (030B:0508, matched) +2 more  
   why: one tick after the last cel of OPENING2 (the capture's tick after it came in the same frame, before the tune).
-- **U-37e39d** `uncertain` - `src/Darklands.Presentation/OverlandScreen.cs:27` `OverlandScreen.StepMilliseconds`  
+- **U-37e39d** `uncertain` - `src/Darklands.Presentation/OverlandScreen.cs:31` `OverlandScreen.StepMilliseconds`  
   original: `R030+0x3096` (1767:0046, matched)  
   why: a clock() tick is taken as one millisecond (MSC 6 CLK_TCK is 1000, although the value only changes every 55 ms with the BIOS timer, so a real pass lasts 30 to 55 ms).
 - **U-9404ee** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:83` `PartyRosterScreen.Run`  
