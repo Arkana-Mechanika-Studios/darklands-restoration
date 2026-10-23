@@ -18,7 +18,7 @@ namespace Darklands.Cards.Tests.Oracle;
 /// </summary>
 /// <remarks>
 /// Known differences that are not bugs are listed in Oracle/card-divergences.json (card, run or "*",
-/// what, why); everything else fails. DARKLANDS_CARD_ORACLE_REPORT=file writes the per-card agreement
+/// what, why, optionally how the original's run ended); everything else fails. DARKLANDS_CARD_ORACLE_REPORT=file writes the per-card agreement
 /// (docs/faithfulness/CARDS.md is made from it).
 /// </remarks>
 public sealed class CardOracleTests
@@ -110,7 +110,7 @@ public sealed class CardOracleTests
                     justified++;
                     stray++;
                 }
-                else if (Justified(divergences, entry.Name, run.Name, difference))
+                else if (Justified(divergences, entry.Name, run.Name, difference, run.Value.TryGetProperty("end", out var origEnd) ? origEnd.GetString() : null))
                 {
                     justified++;
                 }
@@ -148,10 +148,14 @@ public sealed class CardOracleTests
         IReadOnlyList<string>? dropCSharp = null, bool ignoreTexts = false)
     {
         var parts = runName.Split(' ');
-        var probe = parts[0] == "probe";
+        var probe = parts[0] is "probe" or "hand" or "direct";
         var key = parts[1];
+        // "hand <key> M1L7[H][S2]": a handler call (OracleScreen.Call)
+        var hand = parts[0] == "hand" ? HandCall.Parse(parts[2]) : null;
+        // "direct <key> D": the handlers of the card file's dormant option table are called directly (Direct)
+        var direct = parts[0] == "direct" ? parts[2] : null;
         var option = int.Parse(key[(key.LastIndexOf("-O") + 2)..]);
-        var (actual, end, random, sav) = Run(card, key, option, probe, clock);
+        var (actual, end, random, sav) = Run(card, key, option, probe, clock, hand, direct);
         foreach (var prefix in dropCSharp ?? [])
         {
             // a C# line the original has no counterpart for, listed in card-divergences.json
@@ -181,6 +185,28 @@ public sealed class CardOracleTests
                 if (wanted[k] == hint + "0 '' 0" && actual[mine[k]].StartsWith(hint + "-1 '", StringComparison.Ordinal))
                 {
                     actual[mine[k]] = wanted[k];
+                }
+            }
+        }
+        if (hand is not null || direct is not null)
+        {
+            // a hint asked of a line whose handler is an empty function: the original's register leftovers come back ("0 '' 0"),
+            // which the C# words as its default hint; not compared
+            var want = expected.GetProperty("trace").EnumerateArray().Select(e => e.GetString()!).Where(l => l.StartsWith("hint ", StringComparison.Ordinal)).ToList();
+            var mine = Enumerable.Range(0, actual.Count).Where(i => actual[i].StartsWith("hint ", StringComparison.Ordinal)).ToList();
+            for (var k = 0; k < Math.Min(want.Count, mine.Count); k++)
+            {
+                var number = want[k][..(want[k].IndexOf(':') + 2)];
+                if (want[k] == number + "0 '' 0" && actual[mine[k]].StartsWith(number + "-1 '", StringComparison.Ordinal))
+                {
+                    actual[mine[k]] = want[k];
+                }
+                // direct calls: a hint that leaves its result uninitialised (the original returns stale stack words, different on
+                // every card and machine; the C# reads them as "Success is assured."): not compared
+                else if (direct is not null && want[k].Contains(" '' ", StringComparison.Ordinal) && !want[k].StartsWith(number + "-1 ", StringComparison.Ordinal)
+                    && !want[k].StartsWith(number + "0 ", StringComparison.Ordinal) && actual[mine[k]].StartsWith(number + "-1 'Success is assured.'", StringComparison.Ordinal))
+                {
+                    actual[mine[k]] = want[k];
                 }
             }
         }
@@ -255,6 +281,14 @@ public sealed class CardOracleTests
             }
             var want2 = Without((JsonObject)JsonNode.Parse(s.GetProperty("sections").GetRawText())!);
             var got = Without((JsonObject)JsonNode.Parse(sav.Value.Sections.ToJsonString())!);
+            if (want.Any(l => l.StartsWith("battle ", StringComparison.Ordinal)))
+            {
+                // the oracle stubs cards_shutdown / cards_startup (R043+0x054E / R043+0x078E) with the battle: the original's table
+                // keeps the slots an expiry freed before the fight, the C#'s comes back compacted (EventLog.Shutdown / Reload), so a
+                // later event takes another slot and the saved list's order differs: the events are compared as a set
+                SortedEvents(want2);
+                SortedEvents(got);
+            }
             if (SaveSections.Canonical(want2) != SaveSections.Canonical(got))
             {
                 return $"saved game: {SaveSections.FirstDifference(want2, got)}";
@@ -387,11 +421,20 @@ public sealed class CardOracleTests
         return sections;
     }
 
+    private static void SortedEvents(JsonObject sections)
+    {
+        if (sections["events"] is JsonArray list)
+        {
+            sections["events"] = new JsonArray(list.Select(e => e!.GetValue<string>()).Order(StringComparer.Ordinal)
+                .Select(e => (JsonNode)JsonValue.Create(e)!).ToArray());
+        }
+    }
+
     private static string Short(string s) => s.Length > 160 ? s[..160] + "…" : s;
 
     /// <summary>Runs the C# card on a start state as the oracle did.</summary>
     public static (List<string> Trace, string End, string Random, (string Place, JsonObject Sections)? Sav) Run(
-        Card card, string key, int option, bool probe, uint clock)
+        Card card, string key, int option, bool probe, uint clock, HandCall? hand = null, string? direct = null)
     {
         var state = CardOracleStates.FromKey(key);
         // C: srand((unsigned)time(0)) of the oracle's machine: its DOS clock is fixed, time(0) gives the corpus's "clock"
@@ -403,7 +446,7 @@ public sealed class CardOracleTests
         {
             character.OriginalRecord ??= Persistence.CharacterRecords.Write(character);
         }
-        var screen = new OracleScreen(option, probe) { Force = CardOracleStates.ForceOf(key), Path = CardOracleStates.PathOf(key) };
+        var screen = new OracleScreen(option, probe, hand) { Force = CardOracleStates.ForceOf(key), Path = CardOracleStates.PathOf(key) };
         var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames };
         c.Screens = new OracleScreens(screen.Log);
         // the oracle stubs the battle (result 0, as here without one) and the prayer screen (0, the prayer fails)
@@ -428,14 +471,23 @@ public sealed class CardOracleTests
         };
         screen.Context = c;
         state.CurrentCard = card.Number;
-        string end;
+        var end = "";
         var ok = false;
         try
         {
-            var next = card.Run(c);
-            end = $"next {next}";
-            ok = true;
-            if (next is > -2 or < -6)
+            if (direct is not null)
+            {
+                Direct(card, c, screen, direct);
+                end = "ok";
+                ok = true;
+            }
+            var next = direct is not null ? -2 : card.Run(c);
+            if (direct is null)
+            {
+                end = $"next {next}";
+                ok = true;
+            }
+            if (direct is null && next is > -2 or < -6)
             {
                 // the main loop's step after a card that does not start a battle (as CardDispatcher.RunCard; the oracle runs the original's)
                 if (state.CurrentCard != Simulation.CardDispatcher.OverlandMap)
@@ -454,6 +506,43 @@ public sealed class CardOracleTests
         var random = state.Random is MscRandom msc ? msc.State.ToString("X8") : "?";
         var sav = ok ? SaveDiff(start, state) : ((string, JsonObject)?)null;
         return (screen.Log, end, random, sav);
+    }
+
+    /// <summary>
+    /// The handlers of a card file's dormant option table (the card function never installs or offers them), called directly as
+    /// card_oracle.py run_direct does; run group D: the hint handlers of lines 0..9 (menu_member, menu_slot = line / 4, line % 4), the table's
+    /// default ("screwed up."), the actions of lines 0..9 (each followed by the next card it set), group P: the item pop-up handlers of slots 0..3.
+    /// </summary>
+    private static void Direct(Card card, CardContext c, OracleScreen screen, string group)
+    {
+        var method = card.GetType().GetMethod("DormantOptions", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+            | System.Reflection.BindingFlags.Public) ?? throw new InvalidOperationException($"{card.GetType().Name} has no DormantOptions");
+        var lines = (MenuLine[])method.Invoke(null, [c])!;
+        screen.UseTexts(card.Name);
+        for (var k = 0; k < 10 && group == "D"; k++)
+        {
+            c.MenuMember = k / 4;
+            c.MenuSlot = k % 4;
+            screen.Log.Add($"hint {k}: {OracleScreen.Describe(lines[k].AskHint())}");
+        }
+        c.MenuMember = 0;
+        c.MenuSlot = 0;
+        if (group == "D")
+        {
+            screen.Log.Add($"default 0: {OracleScreen.Describe(MenuLine.ScrewedUp())}");
+        }
+        for (var k = 0; k < 10 && group == "D"; k++)
+        {
+            c.Next = 0;
+            lines[k].Choose(-1);
+            screen.Log.Add($"action {k}: next {c.Next}");
+        }
+        for (var slot = 0; slot < 4 && group == "P"; slot++)
+        {
+            c.MenuMember = 0;
+            c.MenuSlot = slot;
+            screen.Log.Add($"popup {slot}: {OracleScreen.Describe((lines[0].Popup ?? lines[0].AskHint)())}");
+        }
     }
 
     /// <summary>The saved game of the state against the start (from +0x64: the texts are compared as texts).</summary>
@@ -486,8 +575,14 @@ public sealed class CardOracleTests
         return "records (character 0x22A each, then events 0x30, places 0x3A, cache)";
     }
 
-    /// <summary>A listed difference: the runs whose first difference contains <see cref="Contains"/>, or a C# line to leave out (<see cref="DropCSharp"/>).</summary>
-    private sealed record Divergence(string Card, string Run, string Contains, string Why, string? DropCSharp = null, bool IgnoreTexts = false);
+    /// <summary>
+    /// A listed difference: the runs whose first difference contains <see cref="Contains"/> (with <see cref="End"/>, whose original run
+    /// ended with that prefix; with <see cref="OriginalEnd"/>, whose original end contains that text), or a C# line to leave out
+    /// (<see cref="DropCSharp"/>). Conditions on the run: <c>GuardNotAMember</c>, a start state whose saved_card (DS:E7D8) is not −1..4;
+    /// <c>LeaderAbsent</c>, a start state whose leader's slot holds nobody.
+    /// </summary>
+    private sealed record Divergence(string Card, string Run, string Contains, string Why, string? DropCSharp = null, bool IgnoreTexts = false,
+        string? End = null, bool GuardNotAMember = false, bool LeaderAbsent = false, string? OriginalEnd = null);
 
     private static List<Divergence> Divergences()
     {
@@ -495,7 +590,11 @@ public sealed class CardOracleTests
         return File.Exists(path) ? JsonSerializer.Deserialize<List<Divergence>>(File.ReadAllText(path), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [] : [];
     }
 
-    private static bool Justified(List<Divergence> list, string card, string run, string difference) =>
+    private static bool Justified(List<Divergence> list, string card, string run, string difference, string? originalEnd = null) =>
         list.Any(d => d.DropCSharp is null && (d.Card == "*" || d.Card == card) && (d.Run == "*" || d.Run == run)
-            && difference.Contains(d.Contains, StringComparison.Ordinal));
+            && difference.Contains(d.Contains, StringComparison.Ordinal)
+            && (d.End is null || (originalEnd ?? "").StartsWith(d.End, StringComparison.Ordinal))
+            && (d.OriginalEnd is null || (originalEnd ?? "").Contains(d.OriginalEnd, StringComparison.Ordinal))
+            && (!d.GuardNotAMember || CardOracleStates.FromKey(run.Split(' ')[1]).SavedCard is < -1 or > 4)
+            && (!d.LeaderAbsent || CardOracleStates.FromKey(run.Split(' ')[1]).Party is var party && !party.Leader.IsPresent));
 }

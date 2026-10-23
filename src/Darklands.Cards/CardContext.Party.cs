@@ -285,12 +285,17 @@ public sealed partial class CardContext
     /// <summary><c>saint_chance_lo</c>.</summary>
     // orig: saint_chance_lo R029+0x20C6 (0E76:20C6) matched
     // DIVERGENCE: -1 is resolved first; the original reads the Divine Favor byte and the Virtue byte of record -1 (cards pass a slot).
-    public int SaintChanceLow(int who, int saint) => Saints.ChanceLow(State, State.Party.Resolve(who), saint);
+    // DIVERGENCE: a saint outside the table (an empty pop-up slot, card_saints[k] = -1) gives 0: the original indexes its far table of
+    // saint functions with it (R029+0x20C6) and calls whatever lies there. Only a slot the pop-up box never lists holds -1.
+    public int SaintChanceLow(int who, int saint) =>
+        saint is < 0 or >= SaintTable.Count ? 0 : Saints.ChanceLow(State, State.Party.Resolve(who), saint);
 
     /// <summary><c>saint_chance_hi</c>.</summary>
     // orig: saint_chance_hi R029+0x2116 (0E76:2116) matched
     // DIVERGENCE: -1 is resolved first, as for SaintChanceLow.
-    public int SaintChanceHigh(int who, int saint) => Saints.ChanceHigh(State, State.Party.Resolve(who), saint);
+    // DIVERGENCE: a saint outside the table (an empty pop-up slot) gives 0, as for SaintChanceLow (R029+0x2116 calls through the same far table).
+    public int SaintChanceHigh(int who, int saint) =>
+        saint is < 0 or >= SaintTable.Count ? 0 : Saints.ChanceHigh(State, State.Party.Resolve(who), saint);
 
     // ---- joining and leaving --------------------------------------------------------
 

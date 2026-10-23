@@ -83,8 +83,9 @@ public sealed class FamineHorseman : Card
             {
                 Show(c, Balance);
                 c.Screen.Text(7);
-                c.State.Party.Purse = Money.Zero;
-                // C: DS:9072 = 0 clears only the florins word; DS:9074/DS:9076 (groschen, pfennigs) stay.
+                // BUG: "all money" is DS:906B = 0 and DS:9072 = 0 (R133+0x04D3), only the florins words of the purse and of the
+                //   bank notes: the groschen and pfennigs (DS:906D/DS:906F, DS:9074/DS:9076) stay.
+                c.State.Party.Purse = c.State.Party.Purse with { Florins = 0 };
                 c.State.Party.BankNotes = c.State.Party.BankNotes with { Florins = 0 };
                 c.AddItem(Who.Leader, TheBalance);
                 BackToTheCourtyard(c);

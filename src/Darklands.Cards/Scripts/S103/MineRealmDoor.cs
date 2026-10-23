@@ -47,14 +47,16 @@ public abstract class MineRealmDoor : Card
         // C: name kind 7 (the mine dwarf's name) is read from the EXE's table (PersonalNames, NameToSlot).
         c.NameToSlot(7, c.MineDetail(), 0);
         c.Next = Number;
-        var choice = 0;
+        // C: any line but 0 fights (R103+0x00B2 / R103+0x03F6: `if (k != 0)`), the unlisted lines 2..19 too.
+        var choice = 1;
         var menu = Menu(c, 5);
         menu.Enable(0, 1);
         // C: the original offers the menu once; the actions only note the choice. CardMenu.Run loops while
-        // c.Next is the card's own number, so the actions leave it for a moment and it is put back below.
+        // c.Next is the card's own number, so the choice leaves it for a moment and it is put back below.
+        menu.OnChoice = () => c.Next = 0;
         menu.Run(
-            new MenuLine(() => { choice = 0; c.Next = 0; }, OptionHint.Saying(CardTexts.Unknown)),
-            new MenuLine(() => { choice = 1; c.Next = 0; }, OptionHint.Saying(CardTexts.Unknown)));
+            new MenuLine(() => choice = 0, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => { }, OptionHint.Saying(CardTexts.Unknown)));
         c.Next = Number;
         if (choice != 0)
         {

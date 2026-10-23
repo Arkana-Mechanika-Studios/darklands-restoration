@@ -12,16 +12,16 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 4 |
-| cards | core | 22 |
+| cards | core | 19 |
 | events | core | 0 |
 | travel | core | 3 |
 | battles | core | 9 |
 | persistence | core | 2 |
 | screens/presentation | other | 18 |
 | host/audio | other | 0 |
-| total |  | 58 |
+| total |  | 55 |
 
-## Core logic (40)
+## Core logic (37)
 
 ### rules (4)
 
@@ -38,7 +38,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R136+0xA70F` (290E:207F, data), `R029+0x21AA` (0E76:21AA, draft)  
   why: entries outside −3..11 are not reproduced (empty name); no card is known to pass them.
 
-### cards (22)
+### cards (19)
 
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
@@ -76,18 +76,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-4ef4f1** `uncertain` - `src/Darklands.Cards/Scripts/S087/SchratsMagicFruit.cs:30` `SchratsMagicFruit.Run`  
   original: `R087+0x14EE` (1986:000E, matched)  
   why: the original's bare 'party' (first test) is read as the status byte of slot 0.
-- **U-7f903d** `uncertain` - `src/Darklands.Cards/Scripts/S092/ForeignTraders.cs:53` `ForeignTraders.Trade`  
-  original: `R092+0x10A4` (1920:0224, matched)  
-  why: $NamedOneName gets a string of the far table seg 290E (filled at run time); not read yet.
-- **U-9d0b1f** `uncertain` - `src/Darklands.Cards/Scripts/S092/MerchantsOfTheCity.cs:68` `MerchantsOfTheCity.Trade`  
-  original: `R092+0x0792` (188F:0222, matched)  
-  why: $NamedOneName is set to a string of the far table seg 290E (filled at run time, probably the merchant's title); that table is not read yet.
 - **U-cb01bc** `uncertain` - `src/Darklands.Cards/Scripts/S108/MerchantHouseOffices.cs:32` `MerchantHouseOffices._office`  
   original: `R108+0x203C` (1925:116C, matched)  
   why: its value before the first choice is taken as 0.
-- **U-761d5a** `uncertain` - `src/Darklands.Cards/Scripts/S113/WalledCityApproach_CityE00.cs:22` `WalledCityApproach_CityE00.Run`  
-  original: `R113+0x0B1C` (189D:04CC, matched)  
-  why: for a negative query the original reloads whatever picture pic_buf held; picture 4 is used.
 - **U-4ed5b1** `uncertain` - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:13` `HussiteBand`  
   original: `R114+0x1260` (18D3:08B0, matched)  
   why: the registration does not set item_fn, so the potion pop-up's handler is an earlier card's; the default pop-up hint is used.

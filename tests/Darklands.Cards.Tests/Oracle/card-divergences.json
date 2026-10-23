@@ -218,5 +218,104 @@
     "run": "probe L3-Vrich+F4.2-O2",
     "contains": "original 'picture robmen2'",
     "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
+  },
+  {
+    "card": "*",
+    "run": "*",
+    "contains": "original '<end>', C# '",
+    "end": "stops execution outside the loaded code at 00000",
+    "why": "Tester fault (forced handler calls): the original calls a far pointer 0000:0000, a handler slot nothing installed: opt_fn[k] of a line the card's text has no line for (its reset left it null), the hint of such a line, or the item_fn / saint_fn of a pop-up slot the card never fills (card_items / card_saints[k] = -1). The menu offers only the text's lines and the pop-up box lists only filled slots, so the game never makes that call; the C# goes on with its \"screwed up.\" default or the line's pop-up handler. Everything up to the call is compared."
+  },
+  {
+    "card": "*",
+    "run": "*",
+    "contains": "end: original 'stops execution outside the loaded code at 00000",
+    "end": "stops execution outside the loaded code at 00000",
+    "why": "Tester fault, as the entry above: the original's trace agrees up to its call through a null handler slot (a line or pop-up slot the card never offers), the C# then ends the run its own way."
+  },
+  {
+    "card": "0AA",
+    "run": "hand L3-O0 M1L0H",
+    "contains": "original '<end>', C# 'menu 0 ",
+    "end": "stops instruction budget; at R038+0x02F8",
+    "why": "Oracle limit: line 0 (recruit) opens the inn's party roster (R038+0x0000), whose key loop (R038+0x02F8) waits for input the card oracle does not give; the oracle stops at its instruction budget there. The C# stubs the roster screen (CardContext.PartyRosterScreen) and returns to the menu. Here the line is also greyed (the party is full)."
+  },
+  {
+    "card": "01F",
+    "run": "*",
+    "contains": "saved game: head record 0: original {\"1E\":\"0A\",\"26\":\"1F\",\"A\":\"02\"}, C# {\"1E\":\"0A\",\"26\":\"1F\",\"A\":\"01\"}",
+    "why": "Docks, unlisted lines 10..19 (forced; the text has 8 lines, the init R051+0x2E4E enables them with its \"screwed up.\" default): the switch has no case (R051+0x20D1), so the original goes round its loop again (R051+0x1F69), which lets an hour pass first (R051+0x201D); the C#'s CardMenu re-offers the menu without the outer round's hour. Unreachable: no lines 10..19 are ever offered."
+  },
+  {
+    "card": "036",
+    "run": "*",
+    "contains": "line 3: original 'menu 5 [211110001] ",
+    "why": "Monastery, unlisted lines 10..19 (forced; the text has 9 lines and the init R057+0x1C46 points their handlers at the \"screwed up.\" default R057+0x1C68): the switch has no case, so the original goes round its loop again and draws block 5 (the visit of the last twelve hours is now noted); the C#'s CardMenu re-offers block 0 without the outer round. Unreachable: no lines 10..19 are ever offered."
+  },
+  {
+    "card": "111",
+    "run": "*",
+    "contains": "original 'picture xms128', C# 'picture explshn'",
+    "why": "TatzelwurmPack, potion pop-up slots 2 and 3 (forced): their handlers R112+0x1438 / R112+0x143A are empty, so the throw takes the registers' leftovers as its chance and misses; the C# rates every slot with the potion hint. The card fills only two item slots (R112+0x12BE), so the box never lists slots 2 and 3."
+  },
+  {
+    "card": "112",
+    "run": "*",
+    "contains": "original 'picture xms129', C# 'picture explshn'",
+    "why": "GiantSpiderNest, potion pop-up slots 2 and 3 (forced): their handlers R112+0x253C / R112+0x253E are empty (the throw takes the registers' leftovers as its chance), the C# rates every slot with the potion hint. The card fills only two item slots (R112+0x23DE), so the box never lists slots 2 and 3."
+  },
+  {
+    "card": "*",
+    "run": "*",
+    "contains": "line 0: original 'error ",
+    "end": "error",
+    "why": "Tester fault: the emulator itself raised on the original's side (hand_run.py records the exception as the trace line 'error ...' and the end 'error'; seen as a host access violation, gone on a rerun of the same job). Nothing of the original's run is recorded, so there is nothing to compare."
+  },
+  {
+    "card": "169",
+    "run": "*",
+    "contains": "",
+    "guardNotAMember": true,
+    "why": "HuntsmanAtTheCamp: the card is reached only from the camp, whose discovery (R036, CampStay.SpendDay) sets saved_card (DS:E7D8) to the first guard or -1; it names that member ($ChosenOneName = party[saved_card]). A saved game's start state holds another saved_card (a card number), so the original reads a character record past the party (another member's text, or code: it stops), the C# an empty name. Not a state the card runs from in play."
+  },
+  {
+    "card": "16A",
+    "run": "*",
+    "contains": "",
+    "guardNotAMember": true,
+    "why": "BanditsNearTheCamp: the card is reached only from the camp, whose discovery (R036, CampStay.SpendDay) sets saved_card (DS:E7D8) to the first guard or -1; it names that member ($ChosenOneName = party[saved_card]). A saved game's start state holds another saved_card (a card number), so the original reads a character record past the party (another member's text, or code: it stops), the C# an empty name. Not a state the card runs from in play."
+  },
+  {
+    "card": "0BC",
+    "run": "*",
+    "contains": "end: original 'next 0', C# 'next 12'",
+    "why": "SiegeOfTheCityLord: line 0 goes back to prev_screen (DS:A88D, R091+0x0276); CardContext.CardBefore DIVERGENCE: a prev_screen of 0 (a game saved before its first card transition, francis0 at card 0x29) leads to the map in the C#, to card 0 in the original. The card is reached from the revolt cards, never with prev_screen 0."
+  },
+  {
+    "card": "041",
+    "run": "*",
+    "contains": "original 'hint 1: ",
+    "why": "WildHunt.OutrunChance DIVERGENCE: when not everybody rides the original's hint (R060+0x0FF4) returns the chance word [bp-4] unwritten, a stack leftover of the menu engine; the C# gives the least agile member's effective Agility."
+  },
+  {
+    "card": "0AA",
+    "run": "*",
+    "contains": "original '<end>', C# 'menu 0 [",
+    "originalEnd": "vectors ['R038+0x0000']",
+    "why": "InnRetireOrRecruit: looking for somebody to join opens the inn's roster (R029+0x2246, thunk 09C0:1EE1 = R038+0x0000), which the card oracle does not stub: the original's roster waits for a key until the instruction budget; the C# screen returns. The line is choosable only with fewer than 4 present, which no golden-trace state has."
+  },
+  {
+    "card": "0A1",
+    "run": "*",
+    "contains": "",
+    "leaderAbsent": true,
+    "why": "PeasantsDemandAMaiden: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party_delete on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours_pass, Party.EnsureAbleLeader)."
+  },
+  {
+    "card": "123",
+    "run": "*",
+    "contains": "",
+    "leaderAbsent": true,
+    "why": "WitchAtYourMercy: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party_delete on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours_pass, Party.EnsureAbleLeader)."
   }
 ]

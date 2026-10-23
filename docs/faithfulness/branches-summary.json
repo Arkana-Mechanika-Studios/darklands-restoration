@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 54595,
-  "blocks_hit": 41224,
-  "functions": 6228,
-  "outcomes": 42506,
-  "outcomes_hit": 27613,
+  "blocks": 57167,
+  "blocks_hit": 45654,
+  "functions": 8376,
+  "outcomes": 42872,
+  "outcomes_hit": 29234,
   "runs": null
  },
  "battle": {
@@ -16,32 +16,32 @@
   "runs": 1048
  },
  "battle-oracle-castle": {
-  "blocks": 13350,
-  "blocks_hit": 7677,
+  "blocks": 13358,
+  "blocks_hit": 7681,
   "functions": 581,
   "outcomes": 11912,
   "outcomes_hit": 5251,
   "runs": 1
  },
  "battle-oracle-castle04": {
-  "blocks": 14504,
-  "blocks_hit": 8409,
+  "blocks": 14512,
+  "blocks_hit": 8410,
   "functions": 630,
   "outcomes": 13114,
   "outcomes_hit": 5884,
   "runs": 1
  },
  "battle-oracle-castle07": {
-  "blocks": 14869,
-  "blocks_hit": 9109,
+  "blocks": 14877,
+  "blocks_hit": 9110,
   "functions": 650,
   "outcomes": 13442,
   "outcomes_hit": 6557,
   "runs": 1
  },
  "battle-oracle-castle7c": {
-  "blocks": 13291,
-  "blocks_hit": 7727,
+  "blocks": 13299,
+  "blocks_hit": 7731,
   "functions": 582,
   "outcomes": 11850,
   "outcomes_hit": 5268,
@@ -72,7 +72,7 @@
   "runs": 1
  },
  "battle-oracle-city1c": {
-  "blocks": 9982,
+  "blocks": 9984,
   "blocks_hit": 5298,
   "functions": 508,
   "outcomes": 8520,
@@ -80,7 +80,7 @@
   "runs": 1
  },
  "battle-oracle-city1f": {
-  "blocks": 11402,
+  "blocks": 11404,
   "blocks_hit": 6781,
   "functions": 574,
   "outcomes": 9960,
@@ -112,7 +112,7 @@
   "runs": 1
  },
  "battle-oracle-f2archwitch2c": {
-  "blocks": 9969,
+  "blocks": 9971,
   "blocks_hit": 5180,
   "functions": 507,
   "outcomes": 8504,
@@ -152,7 +152,7 @@
   "runs": 1
  },
  "battle-oracle-f2kking0c": {
-  "blocks": 11769,
+  "blocks": 11770,
   "blocks_hit": 6300,
   "functions": 579,
   "outcomes": 10190,
@@ -176,16 +176,16 @@
   "runs": 1
  },
  "battle-oracle-f2precept05": {
-  "blocks": 14524,
-  "blocks_hit": 8988,
+  "blocks": 14532,
+  "blocks_hit": 8992,
   "functions": 645,
   "outcomes": 13108,
   "outcomes_hit": 6492,
   "runs": 1
  },
  "battle-oracle-f2vulcan0e": {
-  "blocks": 11946,
-  "blocks_hit": 6428,
+  "blocks": 11949,
+  "blocks_hit": 6429,
   "functions": 550,
   "outcomes": 10228,
   "outcomes_hit": 4079,
@@ -200,7 +200,7 @@
   "runs": 1
  },
  "battle-oracle-fort5e": {
-  "blocks": 9997,
+  "blocks": 9998,
   "blocks_hit": 5528,
   "functions": 515,
   "outcomes": 8494,
@@ -216,7 +216,7 @@
   "runs": 1
  },
  "battle-oracle-mine": {
-  "blocks": 11550,
+  "blocks": 11551,
   "blocks_hit": 5578,
   "functions": 541,
   "outcomes": 9914,
@@ -224,23 +224,23 @@
   "runs": 1
  },
  "battle-oracle-mine0b": {
-  "blocks": 11935,
-  "blocks_hit": 6493,
+  "blocks": 11938,
+  "blocks_hit": 6494,
   "functions": 549,
   "outcomes": 10242,
   "outcomes_hit": 4114,
   "runs": 1
  },
  "battle-oracle-mine10": {
-  "blocks": 12237,
-  "blocks_hit": 6716,
+  "blocks": 12240,
+  "blocks_hit": 6717,
   "functions": 561,
   "outcomes": 10510,
   "outcomes_hit": 4305,
   "runs": 1
  },
  "battle-oracle-mine80": {
-  "blocks": 12183,
+  "blocks": 12184,
   "blocks_hit": 6815,
   "functions": 600,
   "outcomes": 10686,
@@ -312,31 +312,47 @@
   "runs": 1
  },
  "cards": {
-  "blocks": 26269,
-  "blocks_hit": 14890,
+  "blocks": 26277,
+  "blocks_hit": 14892,
   "functions": 3932,
-  "outcomes": 17312,
+  "outcomes": 17314,
   "outcomes_hit": 7318,
   "runs": 365
  },
  "cards-day": {
-  "blocks": 27721,
-  "blocks_hit": 16145,
+  "blocks": 27729,
+  "blocks_hit": 16147,
   "functions": 4214,
-  "outcomes": 18276,
+  "outcomes": 18278,
   "outcomes_hit": 8079,
   "runs": 22636
  },
  "cards-flip": {
-  "blocks": 10719,
+  "blocks": 10723,
   "blocks_hit": 6461,
   "functions": 1181,
   "outcomes": 7654,
   "outcomes_hit": 3534,
   "runs": 1400
  },
+ "cards-handlers-direct": {
+  "blocks": 2733,
+  "blocks_hit": 1469,
+  "functions": 363,
+  "outcomes": 1632,
+  "outcomes_hit": 596,
+  "runs": 17
+ },
+ "cards-handlers-full": {
+  "blocks": 28220,
+  "blocks_hit": 20325,
+  "functions": 6778,
+  "outcomes": 16614,
+  "outcomes_hit": 8528,
+  "runs": 6268
+ },
  "cards-lines-aim": {
-  "blocks": 6274,
+  "blocks": 6275,
   "blocks_hit": 3350,
   "functions": 554,
   "outcomes": 4464,
@@ -352,32 +368,128 @@
   "runs": 140
  },
  "cards-lines-force": {
-  "blocks": 15540,
-  "blocks_hit": 9875,
+  "blocks": 15548,
+  "blocks_hit": 9877,
   "functions": 2659,
-  "outcomes": 9794,
+  "outcomes": 9796,
   "outcomes_hit": 4613,
   "runs": 852
  },
  "cards-lines-force3": {
-  "blocks": 4327,
+  "blocks": 4328,
   "blocks_hit": 2247,
   "functions": 294,
   "outcomes": 3110,
   "outcomes_hit": 1243,
   "runs": 23
  },
+ "cards-places-a1-cov": {
+  "blocks": 15496,
+  "blocks_hit": 8838,
+  "functions": 2662,
+  "outcomes": 9098,
+  "outcomes_hit": 4159,
+  "runs": 365
+ },
+ "cards-places-b1-cov": {
+  "blocks": 15692,
+  "blocks_hit": 9060,
+  "functions": 2695,
+  "outcomes": 9248,
+  "outcomes_hit": 4344,
+  "runs": 6978
+ },
+ "cards-places-c1-cov": {
+  "blocks": 6503,
+  "blocks_hit": 3964,
+  "functions": 986,
+  "outcomes": 4096,
+  "outcomes_hit": 2048,
+  "runs": 1980
+ },
+ "cards-places-d1-cov": {
+  "blocks": 7729,
+  "blocks_hit": 5078,
+  "functions": 1292,
+  "outcomes": 4960,
+  "outcomes_hit": 2497,
+  "runs": 1980
+ },
+ "cards-places-e1-cov": {
+  "blocks": 1856,
+  "blocks_hit": 1307,
+  "functions": 286,
+  "outcomes": 1252,
+  "outcomes_hit": 710,
+  "runs": 6280
+ },
+ "cards-saves-A": {
+  "blocks": 24265,
+  "blocks_hit": 14104,
+  "functions": 3424,
+  "outcomes": 15980,
+  "outcomes_hit": 7806,
+  "runs": 5790
+ },
+ "cards-saves-B": {
+  "blocks": 25486,
+  "blocks_hit": 13999,
+  "functions": 3454,
+  "outcomes": 16980,
+  "outcomes_hit": 7724,
+  "runs": 5840
+ },
+ "cards-saves-R": {
+  "blocks": 4467,
+  "blocks_hit": 2297,
+  "functions": 335,
+  "outcomes": 3128,
+  "outcomes_hit": 1297,
+  "runs": 18
+ },
+ "cards-saves-f0": {
+  "blocks": 24268,
+  "blocks_hit": 13172,
+  "functions": 3427,
+  "outcomes": 15982,
+  "outcomes_hit": 6632,
+  "runs": 1270
+ },
+ "cards-seeds-p1": {
+  "blocks": 25809,
+  "blocks_hit": 15023,
+  "functions": 3938,
+  "outcomes": 16910,
+  "outcomes_hit": 7377,
+  "runs": 7411
+ },
+ "cards-seeds-p2a": {
+  "blocks": 13327,
+  "blocks_hit": 8177,
+  "functions": 1781,
+  "outcomes": 8988,
+  "outcomes_hit": 4288,
+  "runs": 2538
+ },
+ "cards-seeds-p2b": {
+  "blocks": 15534,
+  "blocks_hit": 9126,
+  "functions": 2025,
+  "outcomes": 10692,
+  "outcomes_hit": 4877,
+  "runs": 3809
+ },
  "cards-variants": {
-  "blocks": 28190,
-  "blocks_hit": 16830,
+  "blocks": 28198,
+  "blocks_hit": 16832,
   "functions": 4347,
-  "outcomes": 18562,
+  "outcomes": 18564,
   "outcomes_hit": 8577,
   "runs": 18535
  },
  "castle": {
-  "blocks": 4486,
-  "blocks_hit": 3842,
+  "blocks": 4494,
+  "blocks_hit": 3846,
   "functions": 102,
   "outcomes": 4280,
   "outcomes_hit": 3396,
@@ -392,7 +504,7 @@
   "runs": 4042
  },
  "city": {
-  "blocks": 1674,
+  "blocks": 1676,
   "blocks_hit": 1195,
   "functions": 48,
   "outcomes": 1382,
@@ -416,7 +528,7 @@
   "runs": 738
  },
  "lockstep-alchemy": {
-  "blocks": 6166,
+  "blocks": 6167,
   "blocks_hit": 3663,
   "functions": 382,
   "outcomes": 4746,
@@ -472,7 +584,7 @@
   "runs": 1
  },
  "lockstep-camp-wild-brew": {
-  "blocks": 6806,
+  "blocks": 6807,
   "blocks_hit": 4001,
   "functions": 372,
   "outcomes": 5446,
@@ -504,31 +616,31 @@
   "runs": 1
  },
  "lockstep-dungeon-mine-doors": {
-  "blocks": 14681,
-  "blocks_hit": 8990,
+  "blocks": 14684,
+  "blocks_hit": 8991,
   "functions": 630,
   "outcomes": 13098,
   "outcomes_hit": 6326,
   "runs": 1
  },
  "lockstep-dungeon-mine-group": {
-  "blocks": 14907,
-  "blocks_hit": 9324,
+  "blocks": 14910,
+  "blocks_hit": 9325,
   "functions": 650,
   "outcomes": 13326,
   "outcomes_hit": 6615,
   "runs": 1
  },
  "lockstep-dungeon-mine-orders": {
-  "blocks": 14806,
-  "blocks_hit": 9234,
+  "blocks": 14809,
+  "blocks_hit": 9235,
   "functions": 646,
   "outcomes": 13230,
   "outcomes_hit": 6542,
   "runs": 1
  },
  "lockstep-foreigntrader": {
-  "blocks": 5777,
+  "blocks": 5778,
   "blocks_hit": 3405,
   "functions": 358,
   "outcomes": 4420,
@@ -544,7 +656,7 @@
   "runs": 1
  },
  "lockstep-healer": {
-  "blocks": 5744,
+  "blocks": 5745,
   "blocks_hit": 3337,
   "functions": 365,
   "outcomes": 4322,
@@ -552,7 +664,7 @@
   "runs": 1
  },
  "lockstep-inventory": {
-  "blocks": 6285,
+  "blocks": 6286,
   "blocks_hit": 3462,
   "functions": 351,
   "outcomes": 4728,
@@ -752,7 +864,7 @@
   "runs": 1
  },
  "lockstep-pawnshop": {
-  "blocks": 5687,
+  "blocks": 5688,
   "blocks_hit": 3376,
   "functions": 354,
   "outcomes": 4328,
@@ -792,7 +904,7 @@
   "runs": 1
  },
  "lockstep-roster-create2": {
-  "blocks": 7235,
+  "blocks": 7236,
   "blocks_hit": 3762,
   "functions": 357,
   "outcomes": 5676,
@@ -856,7 +968,7 @@
   "runs": 1
  },
  "lockstep-sheet": {
-  "blocks": 5797,
+  "blocks": 5798,
   "blocks_hit": 3280,
   "functions": 329,
   "outcomes": 4286,
@@ -872,7 +984,7 @@
   "runs": 1
  },
  "lockstep-shop": {
-  "blocks": 5779,
+  "blocks": 5780,
   "blocks_hit": 3402,
   "functions": 358,
   "outcomes": 4420,
@@ -880,7 +992,7 @@
   "runs": 1
  },
  "lockstep-smiths": {
-  "blocks": 5663,
+  "blocks": 5664,
   "blocks_hit": 3358,
   "functions": 356,
   "outcomes": 4288,
@@ -888,7 +1000,7 @@
   "runs": 1
  },
  "lockstep-stables": {
-  "blocks": 5602,
+  "blocks": 5603,
   "blocks_hit": 3333,
   "functions": 347,
   "outcomes": 4234,
@@ -952,8 +1064,8 @@
   "runs": 1
  },
  "mine": {
-  "blocks": 2970,
-  "blocks_hit": 2497,
+  "blocks": 2973,
+  "blocks_hit": 2498,
   "functions": 76,
   "outcomes": 2500,
   "outcomes_hit": 1919,
@@ -984,23 +1096,23 @@
   "runs": 2336
  },
  "sainthelp": {
-  "blocks": 3421,
-  "blocks_hit": 1385,
+  "blocks": 3445,
+  "blocks_hit": 1397,
   "functions": 232,
-  "outcomes": 2352,
+  "outcomes": 2358,
   "outcomes_hit": 868,
   "runs": 136
  },
  "saints": {
-  "blocks": 2039,
+  "blocks": 2063,
   "blocks_hit": 781,
   "functions": 162,
-  "outcomes": 1056,
+  "outcomes": 1062,
   "outcomes_hit": 599,
   "runs": 1792
  },
  "special": {
-  "blocks": 1116,
+  "blocks": 1117,
   "blocks_hit": 886,
   "functions": 49,
   "outcomes": 852,
@@ -1016,7 +1128,7 @@
   "runs": 1200
  },
  "trading": {
-  "blocks": 621,
+  "blocks": 622,
   "blocks_hit": 412,
   "functions": 27,
   "outcomes": 374,

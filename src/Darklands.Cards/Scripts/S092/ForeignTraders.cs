@@ -50,8 +50,9 @@ public sealed class ForeignTraders : Card
     // C: the category mask is pushed as two words, −0x7BC1 and 3: 0x0003843F.
     private static void Trade(CardContext c)
     {
-        // UNCERTAIN: $NamedOneName gets a string of the far table seg 290E (filled at run time); not read yet.
-        c.Variables.Named[0] = "";
+        // C: _fstrcpy(2E38:1A96, the far pointer at 290E:2117) (R092+0x10A4, segment word DS:810A): $NamedOneName is the fifth
+        //   title, "foreign trader" (without the EXE's tables the slot keeps its text).
+        c.Variables.Named[0] = c.PersonalNames.Count(NameTable.Titles) > 0 ? c.PersonalNames.Name(NameTable.Titles, 4) : c.Variables.Named[0];
         c.Variables.Chosen[0] = c.Leader;
         c.Screens.Barter(-1, "Foreign Trader", 0x3843F);
     }

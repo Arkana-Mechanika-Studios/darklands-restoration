@@ -17,10 +17,17 @@ public sealed class WalledCityApproach_CityE00 : Card
     {
         // C: sound_play(6) (root 047C:078A) directly, not through the music setting.
         c.PlaySound(6);
-        // C: cur_loc_query(0x21) % 3 is a signed remainder; a negative value would match no case and keep the old picture.
+        // C: cur_loc_query(0x21) % 3 is a signed remainder; a negative value matches no case and card_load takes pic_buf as the
+        //   last card left it (the oracle's saved games: walled free cities, an empty pic_buf after the load).
         var picture = (c.HereQuery(0x21) % 3) switch { 0 => 4, 1 => 6, 2 => 7, _ => -1 };
-        // UNCERTAIN: for a negative query the original reloads whatever picture pic_buf held; picture 4 is used.
-        Show(c, picture == -1 ? 4 : picture);
+        if (picture < 0)
+        {
+            c.Screen.ShowWithTheLastPicture(Name);
+        }
+        else
+        {
+            Show(c, picture);
+        }
         c.Next = Number;
         // C: the option text is chosen anew before each menu; every choice leaves the card, so it cannot change.
         var menu = Menu(c, TextForTheRule(c));

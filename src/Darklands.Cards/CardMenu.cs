@@ -297,16 +297,17 @@ public sealed class CardMenu
 
     /// <summary>
     /// The ten-line handler table of a card file whose card function never runs a menu: every line is
-    /// <see cref="ShowFirstTextAndEnd"/> with the given hint, and the usual item pop-up. Cards keep it to
-    /// preserve the original's dormant handlers.
+    /// <see cref="ShowFirstTextAndEnd"/> with the given hint, and the usual item pop-up, which says the same
+    /// message. Cards keep it to preserve the original's dormant handlers.
     /// </summary>
+    // C: the file's item pop-up handlers copy the message its line hints copy: DS:4F9A (e.g. R119+0x0670) or DS:4F48 (e.g. R125+0x2B58).
     public static MenuLine[] FirstTextAndEndTable(CardContext c, string hint = CardTexts.Unknown, bool showFirstText = true)
     {
         var lines = new MenuLine[10];
         for (var k = 0; k < lines.Length; k++)
         {
             lines[k] = new MenuLine(_ => ShowFirstTextAndEnd(c, showFirstText), OptionHint.Saying(hint),
-                () => c.MemberPopupHint(CardTexts.Unknown));
+                () => c.MemberPopupHint(hint));
         }
         return lines;
     }

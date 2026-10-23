@@ -142,8 +142,9 @@ SIDE_MESSAGE = (P(0x150B), 0x1F40)     # (who, colour): msg_buf beside a member'
 class CardRun:
     """The policy and the trace of one run (the same policy as the C# TracingScreen)."""
 
-    def __init__(self, option: int, probe: bool, messages):
+    def __init__(self, option: int, probe: bool, messages, hand=None):
         self.option, self.probe, self.messages = option, probe, messages
+        self.hand = hand                     # a handler call (see Oracle.run_card), else None
         self.menus = 0
         self.path = None                     # [n, ...]: the k-th menu chooses the (n mod count)-th enabled line (variant part "P2_0_1")
         self.force = None                    # (block, line): the first menu of that block chooses that line whatever its state
@@ -384,6 +385,8 @@ class Oracle:
         lines = self.messages.option_lines(run.texts_name, block)
         states = list(m.read(DS, OPT_ON, 20))[:lines]
         self.log("menu %d [%s] %s" % (block, "".join(str(s) for s in states), self.options_text or ""))
+        if run.hand is not None and run.menus == run.hand["menu"]:
+            return self.hand_menu(block, run.hand)
         enabled = [i for i, s in enumerate(states) if s == 1]
         forced = run.force is not None and run.force[0] == block and run.force[1] < len(states)
         if forced:
@@ -415,6 +418,44 @@ class Oracle:
                     m.put_word(DS, MENU_SLOT, pc[1])
         self.log("choose %d" % choice)
         return (choice, 0)
+
+    def hand_menu(self, block: int, hand: dict):
+        """A handler call (DARKLANDS_CARD_ORACLE handler runs): at menu number hand["menu"] the card gets line hand["line"]
+        whatever the line's state, as the card loop's `k = card_menu(..)` would return it; the card then calls the line's
+        handler (opt_fn[k], or the pop-up's item_fn / saint_fn slot) and runs its action. With hand["hints"] every line's
+        hint handler (0..19) is asked first, as Shift over the line asks it. With hand["slot"] the choice is made in the
+        line's item or saint pop-up box (the box the line's marker in the text opens) on that slot, whoever holds the item."""
+        m = self.m
+        line = hand["line"]
+        if hand.get("hints"):
+            for i in range(20):
+                self.log("hint %d: %s" % (i, self.hint(i)))
+        m.put_word(DS, MENU_POPUP, 0)
+        slot = hand.get("slot")
+        if slot is not None:
+            kind = self.messages.popup_kind(self.run.texts_name, block, line)
+            if kind is not None:
+                member = self.popup_member(kind, slot)
+                m.write(DS, POPUP_LAYOUT, m.read(DS, SAINT_LAYOUT if kind else ITEM_LAYOUT, LAYOUT_SIZE))
+                m.put_word(DS, MENU_POPUP, 1)
+                m.put_word(DS, MENU_MEMBER, member)
+                m.put_word(DS, MENU_SLOT, slot)
+        self.log("choose %d" % line)
+        return (line, 0)
+
+    def popup_member(self, saints: bool, slot: int) -> int:
+        """The member the pop-up box gives a slot: the last who has the item / knows the saint, else the last present member."""
+        m = self.m
+        lst = struct.unpack("<4h", m.read(DS, CARD_SAINTS if saints else CARD_ITEMS, 8))
+        every = m.word(DS, POPUP_ALL) != 0
+        size = m.word(DS, PARTY_SIZE)
+        present = [i for i in range(size - 1, -1, -1) if m.byte(DS, PARTY + 0x80 * i) not in (0, 5)]
+        for i in present:
+            if lst[slot] == -1:
+                break
+            if every or (m.call(*MEMBER_BIT, [i, lst[slot]])[0] != 0 if saints else m.call(*HAS_ITEM, [i, lst[slot]])[0] == 1):
+                return i
+        return present[0] if present else 0
 
     def hint(self, k: int) -> str:
         """opt_fn[k]() as card_mouse asks it under Shift: menu_member/menu_slot = line / 4, line % 4."""
@@ -475,13 +516,14 @@ class Oracle:
         return ax
 
     # ---- a run -------------------------------------------------------------------------------
-    def run_card(self, card: int, key: str, option: int, probe: bool) -> dict:
+    def run_card(self, card: int, key: str, option: int, probe: bool, hand: dict | None = None) -> dict:
+        """hand: a handler call {"menu": n, "line": k, "hints": bool, "slot": s | None} (hand_menu); the other menus follow the policy."""
         key, force, path = split_key(key)
         self.boot(key)
         m = self.m
         rec, seg, off, target = self.cards[card]
         m.put_word(DS, CARD, card)
-        self.run = CardRun(option, probe, self.messages)
+        self.run = CardRun(option, probe, self.messages, hand)
         self.run.force = force
         self.run.path = path
         self.options_block = 0
@@ -516,6 +558,60 @@ class Oracle:
         if run.stray:
             result["stray"] = sorted(run.stray)
         if nxt is not None:
+            result["sav"] = self.final_sav()
+        return result
+
+    def run_direct(self, card: int, key: str, steps: list) -> dict:
+        """Direct calls (no card function, no menu) of the handlers of a card file's dormant option table, which the card never
+        installs or offers: steps = [["setup", addr], ["hint", k, addr], ["action", k, addr], ["popup", slot, addr], ["default", addr]],
+        addr "seg:off" as linked. Every call is a far call of the original's code on the booted state; a hint is formatted as the
+        probe's `hint` lines, a pop-up handler is asked with menu_member 0 and the slot, an action is followed by `next N`."""
+        self.boot(key)
+        m = self.m
+        rec = self.cards[card][0]
+        m.put_word(DS, CARD, card)
+        self.run = CardRun(0, True, self.messages)
+        self.options_block = 0
+        self.pending = None
+        self.options_text = None
+        self.pending_options = False
+        m.ensure(43)
+        name = self.names.get(card)
+        m.call(*MSG_LOAD, [m.push_string(name)])
+        self.run.texts_name = self.run.card_name = name
+        m.ensure(rec)
+        self.card_code = m.extent(rec)
+        end = "ok"
+        try:
+            self.in_card = True
+            for st in steps:
+                seg, off = (int(x, 16) for x in st[-1].split(":"))
+                if st[0] == "setup":
+                    m.call(P(seg), off, [])
+                elif st[0] in ("hint", "default", "popup"):
+                    if st[0] == "popup":
+                        m.put_word(DS, MENU_MEMBER, 0)
+                        m.put_word(DS, MENU_SLOT, st[1])
+                    else:
+                        m.put_word(DS, MENU_MEMBER, st[1] // 4 if st[0] == "hint" else 0)
+                        m.put_word(DS, MENU_SLOT, st[1] % 4 if st[0] == "hint" else 0)
+                    m.write(DS, MSG_BUF, b"\0")
+                    ax, dx = m.call(P(seg), off, [])
+                    chance = ax - 0x10000 if ax & 0x8000 else ax
+                    member = dx - 0x10000 if dx & 0x8000 else dx
+                    msg = m.cstr(DS, MSG_BUF, 300).decode("latin-1") if chance == -1 else ""
+                    self.log("%s %s: %d '%s' %d" % (st[0], st[1] if st[0] != "default" else 0, chance, msg, member))
+                elif st[0] == "action":
+                    m.put_word(DS, NEXT_CARD, 0)
+                    m.call(P(seg), off, [])
+                    nxt = m.word(DS, NEXT_CARD)
+                    self.log("action %d: next %d" % (st[1], nxt - 0x10000 if nxt & 0x8000 else nxt))
+        except Stop as e:
+            end = "stops %s" % str(e)[:300]
+        self.in_card = False
+        run, self.run = self.run, None
+        result = {"trace": run.lines, "end": end, "random": "%08X" % struct.unpack("<I", m.read(DS, HOLDRAND, 4))[0], "draws": run.draws}
+        if end == "ok":
             result["sav"] = self.final_sav()
         return result
 

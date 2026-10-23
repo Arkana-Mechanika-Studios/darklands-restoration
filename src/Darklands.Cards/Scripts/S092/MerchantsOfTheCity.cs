@@ -65,9 +65,9 @@ public sealed class MerchantsOfTheCity : Card
     {
         // C: thunk 09C0:20E9(0x1E, 3, 4): the rule ignores its middle argument; the third is the low bound.
         var price = c.Hostile() ? c.LocalPrice(0x1E, 4) : 0;
-        // UNCERTAIN: $NamedOneName is set to a string of the far table seg 290E (filled at run time,
-        // probably the merchant's title); that table is not read yet.
-        c.Variables.Named[0] = "";
+        // C: _fstrcpy(2E38:1A96, the far pointer at 290E:2107) (R092+0x07B1, segment word DS:8104): $NamedOneName is the first
+        //   title, "goods merchant" (without the EXE's tables the slot keeps its text).
+        c.Variables.Named[0] = c.PersonalNames.Count(NameTable.Titles) > 0 ? c.PersonalNames.Name(NameTable.Titles, 0) : c.Variables.Named[0];
         c.Variables.Chosen[0] = c.Leader;
         // C: the roll is drawn first, whatever the price.
         if (c.Random(100) >= chance && price != 0)

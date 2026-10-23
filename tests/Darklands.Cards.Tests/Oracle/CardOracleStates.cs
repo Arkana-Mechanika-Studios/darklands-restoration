@@ -23,7 +23,33 @@ public sealed class CardOracleStates
         var state = CardHarness.NewGame(seed: (uint)(option + 7), location: location);
         // the world's data before anything reads the city record (a CardContext connects it too; Export reads it first)
         state.Data = CardHarness.World!;
+        if (!Locations.Contains(location))
+        {
+            PlaceParty(state, location);
+        }
         return state;
+    }
+
+    /// <summary>
+    /// The other places the card oracle can start from (DARKLANDS_CARD_ORACLE_PLACES: location numbers, exported as
+    /// L&lt;location&gt;-O&lt;option&gt;; the default export is unchanged). A saved game holds the current location and the
+    /// party's map position, so the party stands on the place; the working city record (which a saved game does not hold)
+    /// is the place's own when it is a city, the nearest city's otherwise (the last city entered).
+    /// </summary>
+    private static void PlaceParty(Core.GameState state, int location)
+    {
+        state.CurrentLocation = location;
+        if (state.Here is not { } here)
+        {
+            return;
+        }
+        state.MapPosition = here.Position;
+        if (!state.InCity)
+        {
+            var near = Enumerable.Range(0, Core.World.Location.CityCount)
+                .MinBy(c => Math.Pow(state.Locations[c].X - here.X, 2) + Math.Pow(state.Locations[c].Y - here.Y, 2));
+            state.City = state.Data.LoadCity(near);
+        }
     }
 
     public static string Key(int location, int option) => $"L{location}-O{option}";
@@ -37,6 +63,11 @@ public sealed class CardOracleStates
     /// <summary>The state of a key: <c>L3-O5</c> or <c>L3-Vnight-O5</c>.</summary>
     public static Core.GameState FromKey(string key)
     {
+        if (key.StartsWith('S'))
+        {
+            // a community saved game: S<id>-O5 (DARKLANDS_CARD_ORACLE_SAVES/<id>/*.SAV)
+            return FromSave(key[1..key.LastIndexOf("-O", StringComparison.Ordinal)], int.Parse(key[(key.LastIndexOf("-O") + 2)..]));
+        }
         var location = int.Parse(key[1..key.IndexOf('-')]);
         var option = int.Parse(key[(key.LastIndexOf("-O") + 2)..]);
         var v = key.IndexOf("-V", StringComparison.Ordinal);
@@ -91,20 +122,51 @@ public sealed class CardOracleStates
         return null;
     }
 
+    /// <summary>DARKLANDS_CARD_ORACLE_SAVES: a folder of one folder per saved game (opt-in; the id is the folder's name).</summary>
+    public static string? SavesFolder => Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_SAVES") is { Length: > 0 } f ? f : null;
+
+    public static string KeyOfSave(string id, int option) => $"S{id}-O{option}";
+
+    /// <summary>
+    /// A saved game as the start state: the game is read from the file by the loader (at the save's own location, the card
+    /// the file holds is replaced by the one the run starts), with the random generator of the golden-trace states (seed option + 7).
+    /// The battle file is not read (cards do not use it).
+    /// </summary>
+    public static Core.GameState FromSave(string id, int option)
+    {
+        var dir = Path.Combine(SavesFolder ?? throw new InvalidOperationException("DARKLANDS_CARD_ORACLE_SAVES"), id);
+        var file = Directory.EnumerateFiles(dir).First(f => f.EndsWith(".sav", StringComparison.OrdinalIgnoreCase));
+        var data = CardHarness.World!;
+        var seed = (uint)(option + 7);
+        var running = Simulation.NewGame.StartUp(data, seed);
+        var state = OriginalSaves.Read(File.ReadAllBytes(file), [], Path.GetFileName(file), data, running, new MscRandom(seed)).State;
+        state.Data = data;
+        return state;
+    }
+
     /// <summary>The golden-trace state with one variation applied.</summary>
     public static Core.GameState New(int location, int option, string variant)
     {
         var state = New(location, option);
         foreach (var one in variant.Split('+'))
         {
-            Apply(state, one);
+            Apply(state, one, option);
         }
         return state;
     }
 
-    private static void Apply(Core.GameState state, string variant)
+    /// <summary>The generator state of sweep seed <paramref name="n"/> (s1, s2 ...) of an option.</summary>
+    public static uint SweepSeed(int option, int n) => unchecked((uint)(n * 2654435761u + (uint)(option + 7) * 40503u + 12345u));
+
+    private static void Apply(Core.GameState state, string variant, int option)
     {
         var members = state.Party.Members;
+        if (variant.Length > 1 && variant[0] == 's' && variant[1..].All(char.IsAsciiDigit))
+        {
+            // a sweep seed (DARKLANDS_CARD_ORACLE_SEEDS): the random generator starts from another state than option + 7
+            ((MscRandom)state.Random).Seed(SweepSeed(option, int.Parse(variant[1..])));
+            return;
+        }
         switch (variant)
         {
             case "day":
@@ -264,6 +326,20 @@ public sealed class CardOracleStates
                 File.WriteAllText(Path.Combine(folder, $"state-{key}.json"), JsonSerializer.Serialize(extra));
             }
         }
+        ExportSeedSweep(folder);
+        if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_PLACES") is { Length: > 0 } places)
+        {
+            foreach (var location in places.Split(',').Select(int.Parse).Where(l => !Locations.Contains(l)))
+            {
+                for (var option = 0; option < Options; option++)
+                {
+                    var (sav, extra) = Export(New(location, option));
+                    var key = Key(location, option);
+                    File.WriteAllBytes(Path.Combine(folder, $"state-{key}.sav"), sav);
+                    File.WriteAllText(Path.Combine(folder, $"state-{key}.json"), JsonSerializer.Serialize(extra));
+                }
+            }
+        }
         if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_VARIANTS") is not { Length: > 0 } only)
         {
             return;
@@ -280,6 +356,65 @@ public sealed class CardOracleStates
                     File.WriteAllBytes(Path.Combine(folder, $"state-{key}.sav"), sav);
                     File.WriteAllText(Path.Combine(folder, $"state-{key}.json"), JsonSerializer.Serialize(extra));
                 }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The seed sweep (DARKLANDS_CARD_ORACLE_SEEDS=N, from DARKLANDS_CARD_ORACLE_SEED_FROM, default 1): the states of the chosen
+    /// variants (DARKLANDS_CARD_ORACLE_SEED_VARIANTS, default "-,skilled,items,facts"; "-" is the plain state) once more with
+    /// the random generator started from sweep seeds s1 ... sN: L3-Vs1-O5, L3-Vskilled+s2-O5.
+    /// </summary>
+    private static void ExportSeedSweep(string folder)
+    {
+        if (!int.TryParse(Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_SEEDS"), out var count) || count <= 0)
+        {
+            return;
+        }
+        var from = int.TryParse(Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_SEED_FROM"), out var f) ? f : 1;
+        var chosen = (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_SEED_VARIANTS") ?? "-,skilled,items,facts").Split(',');
+        foreach (var variant in chosen)
+        {
+            for (var n = from; n < from + count; n++)
+            {
+                var name = variant == "-" ? $"s{n}" : $"{variant}+s{n}";
+                foreach (var location in Locations)
+                {
+                    for (var option = 0; option < Options; option++)
+                    {
+                        var (sav, extra) = Export(New(location, option, name));
+                        var key = Key(location, option, name);
+                        File.WriteAllBytes(Path.Combine(folder, $"state-{key}.sav"), sav);
+                        File.WriteAllText(Path.Combine(folder, $"state-{key}.json"), JsonSerializer.Serialize(extra));
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Writes a start state per saved game and option into DARKLANDS_CARD_ORACLE_EXPORT (state-S&lt;id&gt;-O3.sav and .json):
+    /// DARKLANDS_CARD_ORACLE_SAVES is the folder of saved-game folders, DARKLANDS_CARD_ORACLE_SAVE_OPTIONS a subset of the options (0..9 when unset).
+    /// </summary>
+    [Fact]
+    public void ExportSavesForTheOracle()
+    {
+        var folder = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_EXPORT");
+        if (folder is null || SavesFolder is not { } saves || !CardHarness.Available)
+        {
+            return;
+        }
+        Directory.CreateDirectory(folder);
+        var options = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_SAVE_OPTIONS") is { Length: > 0 } subset
+            ? subset.Split(',').Select(int.Parse).ToArray() : Enumerable.Range(0, Options).ToArray();
+        foreach (var id in Directory.GetDirectories(saves).Select(Path.GetFileName).OfType<string>().Order(StringComparer.Ordinal))
+        {
+            foreach (var option in options)
+            {
+                var (sav, extra) = Export(FromSave(id, option));
+                var key = KeyOfSave(id, option);
+                File.WriteAllBytes(Path.Combine(folder, $"state-{key}.sav"), sav);
+                File.WriteAllText(Path.Combine(folder, $"state-{key}.json"), JsonSerializer.Serialize(extra));
             }
         }
     }

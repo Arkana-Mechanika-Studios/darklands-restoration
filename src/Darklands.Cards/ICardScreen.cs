@@ -52,6 +52,11 @@ public interface ICardScreen
     /// <summary>Changes the picture behind the current card's texts.</summary>
     void ShowPicture(string picture);
 
+    /// <summary>Shows a card with the picture the last <see cref="Show"/> drew (pic_buf left as it was): its texts are loaded.</summary>
+    // orig: card_load(card_name, pic_buf) R043+0x0A9A with a pic_buf the card did not fill (R113+0x0656: no case of the picture switch matched)
+    // C: a screen that keeps no picture (the scripted test screens) shows the card without one.
+    void ShowWithTheLastPicture(string cardName) => Show(cardName, "");
+
     /// <summary>The card's picture and the party column drawn again after a full screen (the texts stay to be shown again).</summary>
     // orig: thunk 09C0:1EA5 = R043+0x0A9A (150B:000A) with the card's name and picture, as R029+0x2246 calls it after the inn's roster
     // C: a screen that keeps no picture (the scripted test screens) does nothing.

@@ -29,9 +29,14 @@ public sealed class BeforeTheCityWalls : Card
         // DIVERGENCE: the original only fills the name and picture buffers (no card_load): the screen
         // keeps the previous card ($CityE00, card 4, when the party comes from the city entry) until
         // the engine redraws it from these buffers. It is shown here at once.
+        // C: a negative remainder leaves pic_buf as the last card left it, and the engine draws the card's texts with it.
         if (picture >= 0)
         {
             Show(c, picture);
+        }
+        else
+        {
+            c.Screen.ShowWithTheLastPicture(Name);
         }
         c.Next = Number;
         // C: only opt_on[0..4] are copied each round; lines 5..9 keep the previous card's opt_on and

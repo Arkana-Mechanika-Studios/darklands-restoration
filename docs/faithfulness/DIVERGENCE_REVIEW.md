@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 51 entries; recommendations: document: 1, justify: 44, keep: 6.
-- Part B (undefined-memory in core logic): 121 entries; determinism: n/a: 77, no: 31, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 123 entries; determinism: n/a: 79, no: 31, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -253,7 +253,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R037+0x3F30` (1462:3F30, draft)  
   divergence: the shield picture is the party panel's; no able member left keeps the old leader slot.  
   recommendation: **justify** - The shield picture is a presentation resource (the party panel loads it on demand). The second clause (no able member left keeps the old leader slot) was not compared with the asm of R037+0x3F30; check it, and implement the original's choice if it differs.
-- **D-9a94d4** `not-modelled` - `src/Darklands.Cards/CardContext.Party.cs:381` `CardContext.RunBattle`  
+- **D-9a94d4** `not-modelled` - `src/Darklands.Cards/CardContext.Party.cs:386` `CardContext.RunBattle`  
   original: `R029+0x2278` (0E76:2278, draft)  
   divergence: cards_shutdown's and cards_startup's other work files, frees and reloads (charactr.tmp's header read into DS:A668, locs.tmp, card pictures, shields) are not modelled, and the "after battle" log is not written; the death film and the end of the game are the host's (AllDead).  
   recommendation: **justify** - What is left of cards_shutdown/cards_startup around a card's battle after the event table was modelled (the event part is D-98f65a, done): locs.tmp is written and read back (the locations the battle saw, kept in memory here), the shields, card frames, timer pictures and order menus are freed and loaded again (presentation resources), and the "after battle" log line is debug output. Not analysed: cards_shutdown first reads charactr.tmp's header (2 + 10 bytes and 0x14 bytes into DS:A668) and copies the strings DS:1166[i] of the slots whose word is not -1 into DS:A668 + 4i (1462:0554-05EE); check what DS:A668 is and whether it is read after the battle.
@@ -303,7 +303,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### other (3)
 
-- **D-932b91** `other` - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:90` `BeforeTheCityWalls.ExamineTheWalls`  
+- **D-932b91** `other` - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:95` `BeforeTheCityWalls.ExamineTheWalls`  
   original: `R072+0x176C` (1981:02DC, matched), `R072+0x179E` (1981:030E, matched)  
   divergence: $CityE00.msg has no block 9; the original prints what follows the last block (bytes 07 02 0A under the oracle), the C# nothing.  
   recommendation: **document** (checked against the original) - Checked with the card oracle (card 0x73, examine the walls at night): $CityE00.msg holds no block 9; card_text(9) reads past the last block of msg_file and prints its bytes (07 02 0A under the oracle). Host memory of the message buffer, not game state; listed in card-divergences.json.
@@ -563,7 +563,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original tests the 0x80 flag and prices item_defs[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item_defs[data_file[..].id] with the raw 16-bit id; item_defs is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
 
-### cards (55)
+### cards (57)
 
 - **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:136` `CardContext.ChanceText`  
   original: `R029+0x5B62` (1367:0C52, matched)  
@@ -601,10 +601,18 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R029+0x20C6` (0E76:20C6, draft)  
   divergence: -1 is resolved first; the original reads the Divine Favor byte and the Virtue byte of record -1 (cards pass a slot).  
   deterministic: **n/a** (checked against the original); action: **document** - Unreachable: every call site is saint_chance_lo(menu_member, card_saints[menu_slot]) where menu_member = DS:E9B0[line]/4 is 0..4 (set by the pop-up box before any hint/action runs); -1 never arrives. In the original -1 would read Divine Favor at DS:9C38 (= DS:9C30[8], a card condition-flag byte) and the Virtue of 'record -1', i.e. BSS flag bytes in front of the party table.
-- **D-f7c051** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:292` `CardContext.SaintChanceHigh`  
+- **D-90c7b3** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:288` `CardContext.SaintChanceLow`  
+  original: `R029+0x20C6` (0E76:20C6, draft)  
+  divergence: a saint outside the table (an empty pop-up slot, card_saints[k] = -1) gives 0: the original indexes its far table of saint functions with it (R029+0x20C6) and calls whatever lies there. Only a slot the pop-up box never lists holds -1.  
+  deterministic: **n/a** (checked against the original); action: **document** - Unreachable: a card passes card_saints[menu_slot], and the saint pop-up box lists only filled slots, so -1 (an empty slot) never arrives in play. The original would index its far table of saint functions at -1 and call whatever pointer lies in front of it (seen in the handler oracle: slot runs forced onto empty slots, e.g. card 0x37 slot 3). 0 keeps the C# from throwing; the chance is not shown on that path.
+- **D-f7c051** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:295` `CardContext.SaintChanceHigh`  
   original: `R029+0x2116` (0E76:2116, draft)  
   divergence: -1 is resolved first, as for SaintChanceLow.  
   deterministic: **n/a** (checked against the original); action: **document** - Same as SaintChanceLow: saint_chance_hi is only called as saint_chance_hi(menu_member, card_saints[menu_slot]) with menu_member 0..4, so who=-1 does not occur; the bytes read would be the BSS flag area in front of party[0] (DS:9C38).
+- **D-10c0b9** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:296` `CardContext.SaintChanceHigh`  
+  original: `R029+0x2116` (0E76:2116, draft)  
+  divergence: a saint outside the table (an empty pop-up slot) gives 0, as for SaintChanceLow (R029+0x2116 calls through the same far table).  
+  deterministic: **n/a** (checked against the original); action: **document** - Same as D-90c7b3 for saint_chance_hi: only an empty pop-up slot (never listed by the box) passes -1.
 - **D-c38f0b** `undefined-memory` - `src/Darklands.Cards/PictureNames.cs:57` `PictureNames.Of`  
   original: `R136+0xC0A0` (2CAF:0000, data)  
   divergence: a picture number outside the table gives "" (an empty name, which the card engine shows as a blank screen); the original indexes the far table unchecked.  

@@ -12,14 +12,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 85 | 20 | 65 |
-| cards | 59 | 2 | 57 |
+| cards | 60 | 2 | 58 |
 | events | 7 | 4 | 3 |
 | battles | 17 | 3 | 14 |
 | persistence | 1 | 1 | 0 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 171 | 31 | 140 |
+| total | 172 | 31 | 141 |
 
-## Core logic (169)
+## Core logic (170)
 
 ### rules (85)
 
@@ -279,7 +279,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (59)
+### cards (60)
 
 - **B-ae3eba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:93` `MainStreetAtNight.Walk`  
   original: `R046+0x0422` (1838:0422, matched), `R046+0x0466` (1838:0466, matched), `R046+0x04AA` (1838:04AA, matched) +7 more  
@@ -389,7 +389,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:93` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
   original: `R071+0x02A8` (1838:02A8, matched)  
   why: the original makes $ChosenOneName the least agile member's Agility value (party_min_attr's result), not the member; a value past the party names nobody.
-- **B-2ac103** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:162` `BeforeTheCityWalls.Disgrace`  
+- **B-2ac103** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:167` `BeforeTheCityWalls.Disgrace`  
   original: `R072+0x17D6` (1981:0346, matched)  
   why: at −40 or below the original draws improve_roll(v, −3, −9) and drops the result, so the standing stays as it is (the draw is still made).
 - **B-097711** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:38` `SallyPortInTheCityWall.Run`  
@@ -455,6 +455,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-759d5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S130/CavernOfFireAndHail.cs:102` `CavernOfFireAndHail.CreepAcrossUnderArmour`  
   original: `R130+0x107E` (190C:033E, matched)  
   why: the original adds rand(10)+8 Endurance and rand(6)+6 Strength although text 6 says everyone is hurt (the prayer's path subtracts the same kind of amounts); kept as the original does it (no OriginalBehaviour flag yet).
+- **B-676369** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S133/FamineHorseman.cs:86` `FamineHorseman.Run`  
+  original: `R133+0x049C` (1838:049C, matched), `R133+0x050E` (1838:050E, matched)  
+  why: "all money" is DS:906B = 0 and DS:9072 = 0 (R133+0x04D3), only the florins words of the purse and of the bank notes: the groschen and pfennigs (DS:906D/DS:906F, DS:9074/DS:9076) stay.
 - **B-f2c259** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S134/SpiderWarehousePoster.cs:145` `SpiderWarehousePoster.EnterTheWarehouse`  
   original: `R134+0x0550` (1838:0550, matched), `R134+0x0692` (1838:0692, matched)  
   why: the original adds rand(10) Endurance although text 9 says many were bitten; kept as it is (no OriginalBehaviour flag for it).
