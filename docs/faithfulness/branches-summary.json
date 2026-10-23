@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 57167,
-  "blocks_hit": 45861,
-  "functions": 8376,
-  "outcomes": 42872,
-  "outcomes_hit": 29488,
+  "blocks": 57347,
+  "blocks_hit": 46690,
+  "functions": 8464,
+  "outcomes": 42950,
+  "outcomes_hit": 30318,
   "runs": null
  },
  "battle": {
@@ -14,6 +14,22 @@
   "outcomes": 476,
   "outcomes_hit": 224,
   "runs": 1048
+ },
+ "battle-calls-pilot": {
+  "blocks": 5010,
+  "blocks_hit": 3462,
+  "functions": 253,
+  "outcomes": 4786,
+  "outcomes_hit": 2833,
+  "runs": 5350
+ },
+ "battle-calls-scale": {
+  "blocks": 3845,
+  "blocks_hit": 2713,
+  "functions": 200,
+  "outcomes": 3730,
+  "outcomes_hit": 2267,
+  "runs": 3691
  },
  "battle-oracle-castle": {
   "blocks": 13358,
@@ -350,6 +366,118 @@
   "outcomes": 16614,
   "outcomes_hit": 8528,
   "runs": 6268
+ },
+ "cards-handlers2-blocks": {
+  "blocks": 9199,
+  "blocks_hit": 5747,
+  "functions": 1302,
+  "outcomes": 6356,
+  "outcomes_hit": 3052,
+  "runs": 1232
+ },
+ "cards-handlers2-pilot-L120-O0": {
+  "blocks": 8137,
+  "blocks_hit": 4804,
+  "functions": 1251,
+  "outcomes": 5338,
+  "outcomes_hit": 2285,
+  "runs": 980
+ },
+ "cards-handlers2-pilot-L3-Vfacts-O0": {
+  "blocks": 8102,
+  "blocks_hit": 4835,
+  "functions": 1245,
+  "outcomes": 5320,
+  "outcomes_hit": 2337,
+  "runs": 960
+ },
+ "cards-handlers2-pilot-L3-Vitems-O0": {
+  "blocks": 8211,
+  "blocks_hit": 4864,
+  "functions": 1253,
+  "outcomes": 5398,
+  "outcomes_hit": 2346,
+  "runs": 980
+ },
+ "cards-handlers2-pilot-L3-Vskilled-O0": {
+  "blocks": 8143,
+  "blocks_hit": 4802,
+  "functions": 1253,
+  "outcomes": 5342,
+  "outcomes_hit": 2282,
+  "runs": 980
+ },
+ "cards-handlers2-pilot-L3-Vskilled-O3": {
+  "blocks": 8131,
+  "blocks_hit": 4770,
+  "functions": 1242,
+  "outcomes": 5340,
+  "outcomes_hit": 2259,
+  "runs": 965
+ },
+ "cards-handlers2-pilot-Scrashtool0-O0": {
+  "blocks": 7998,
+  "blocks_hit": 4737,
+  "functions": 1223,
+  "outcomes": 5258,
+  "outcomes_hit": 2303,
+  "runs": 956
+ },
+ "cards-handlers2-pilot-Sfrancis1-O0": {
+  "blocks": 7983,
+  "blocks_hit": 4728,
+  "functions": 1219,
+  "outcomes": 5248,
+  "outcomes_hit": 2305,
+  "runs": 956
+ },
+ "cards-handlers2-pilot-Smlq22-O0": {
+  "blocks": 8103,
+  "blocks_hit": 4833,
+  "functions": 1252,
+  "outcomes": 5320,
+  "outcomes_hit": 2350,
+  "runs": 980
+ },
+ "cards-handlers2-pilot-Spostwar40-O0": {
+  "blocks": 8138,
+  "blocks_hit": 4836,
+  "functions": 1234,
+  "outcomes": 5368,
+  "outcomes_hit": 2395,
+  "runs": 956
+ },
+ "cards-handlers2-scale-L3-Vskilled-O0": {
+  "blocks": 25011,
+  "blocks_hit": 17823,
+  "functions": 5848,
+  "outcomes": 14950,
+  "outcomes_hit": 7584,
+  "runs": 5809
+ },
+ "cards-handlers2-scale-Sfrancis1-O0": {
+  "blocks": 21347,
+  "blocks_hit": 14689,
+  "functions": 4694,
+  "outcomes": 13086,
+  "outcomes_hit": 6363,
+  "runs": 4437
+ },
+ "cards-handlers2-scale-Smlq22-O0": {
+  "blocks": 24360,
+  "blocks_hit": 17246,
+  "functions": 5713,
+  "outcomes": 14524,
+  "outcomes_hit": 7311,
+  "runs": 5677
+ },
+ "cards-handlers2-scale-Spostwar40-O0": {
+  "blocks": 25052,
+  "blocks_hit": 17901,
+  "functions": 5841,
+  "outcomes": 15002,
+  "outcomes_hit": 7785,
+  "runs": 5762
  },
  "cards-lines-aim": {
   "blocks": 6275,

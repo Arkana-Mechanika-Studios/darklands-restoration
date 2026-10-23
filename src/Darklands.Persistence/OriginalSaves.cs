@@ -175,7 +175,10 @@ public static class OriginalSaves
             else
             {
                 // C: a slot without a record keeps the status the load left (party[i][0] = 0): an empty slot.
-                member = new Character { Status = CharacterStatus.Empty };
+                // C: the load reads no record into it, so the slot memory is the program's (zero after start-up): add_member there keeps
+                // C: weapon and missile qualities 0 (record +0x58/+0x5A), not the 25 of an empty hand.
+                member = new Character { Status = CharacterStatus.Empty, Weapon = new EquippedItem(-1, 0), MissileWeapon = new EquippedItem(-1, 0) };
+                state.Roster.MarkOffRoster(member);
             }
             member.Image = Text(file.Images, slot * SaveFile.ImageSize, SaveFile.ImageSize);
             member.ImagePalette = file.Palettes[(slot * SaveFile.PaletteSize)..((slot + 1) * SaveFile.PaletteSize)];

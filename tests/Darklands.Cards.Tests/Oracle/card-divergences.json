@@ -173,6 +173,12 @@
   },
   {
     "card": "100",
+    "run": "*",
+    "contains": "line 4: original 'text 14 0 506c6163696e672074686520706f74696f6e206361726566756c6c792c20",
+    "why": "CryptUnderTheRuinedChurch, item pop-up slots 1..3 of line 2 (forced): the registration (R108+0x0C25) gives them the empty handlers R108+0x0D30/0D32/0D34 (retf), so $ChosenOneName (DS:EE8C) keeps what it held before (here Gretch: text 14, \"Placing the potion carefully, $ChosenOneName leads you ...\"), where the C# rates every slot with slot 0's handler R108+0x0CDE, which names the pop-up's member (Ebhard). The card fills only item slot 0 (card_items DS:EE43 = -1 x 4, then 0x66), so the box never lists slots 1..3."
+  },
+  {
+    "card": "100",
     "run": "probe L3-Vfacts+F3.0-O2",
     "contains": "original 'picture boom'",
     "why": "Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers."
@@ -247,10 +253,16 @@
     "why": "Docks, unlisted lines 10..19 (forced; the text has 8 lines, the init R051+0x2E4E enables them with its \"screwed up.\" default): the switch has no case (R051+0x20D1), so the original goes round its loop again (R051+0x1F69), which lets an hour pass first (R051+0x201D); the C#'s CardMenu re-offers the menu without the outer round's hour. Unreachable: no lines 10..19 are ever offered."
   },
   {
+    "card": "01F",
+    "run": "*",
+    "contains": "saved game: head record 0: original {\"1E\":\"06\",\"26\":\"1F\",\"3D\":\"02\",\"A\":\"0B\"}, C# {\"1E\":\"06\",\"26\":\"1F\",\"3D\":\"02\",\"A\":\"0A\"}",
+    "why": "Docks, unlisted lines 10..19 (forced), as the entry above on another start state (postwar40, the hour 0x0A): the switch has no case (R051+0x20D1), the original's loop (R051+0x1F69) lets an hour pass first (R051+0x201D), the C#'s CardMenu re-offers the menu without it. Unreachable: no lines 10..19 are ever offered."
+  },
+  {
     "card": "036",
     "run": "*",
-    "contains": "line 3: original 'menu 5 [211110001] ",
-    "why": "Monastery, unlisted lines 10..19 (forced; the text has 9 lines and the init R057+0x1C46 points their handlers at the \"screwed up.\" default R057+0x1C68): the switch has no case, so the original goes round its loop again and draws block 5 (the visit of the last twelve hours is now noted); the C#'s CardMenu re-offers block 0 without the outer round. Unreachable: no lines 10..19 are ever offered."
+    "contains": "line 3: original 'menu 5 [",
+    "why": "Monastery, unlisted lines 10..19 (forced; the text has 9 lines and the init R057+0x1C46 points their handlers at the \"screwed up.\" default R057+0x1C68): the switch has no case, so the original goes round its loop again and draws block 5 (the visit of the last twelve hours is now noted; its enabled lines depend on the state: [211110001], postwar40 [111110001]); the C#'s CardMenu re-offers block 0 without the outer round. Unreachable: no lines 10..19 are ever offered."
   },
   {
     "card": "111",
@@ -296,6 +308,18 @@
     "run": "*",
     "contains": "original 'hint 1: ",
     "why": "WildHunt.OutrunChance DIVERGENCE: when not everybody rides the original's hint (R060+0x0FF4) returns the chance word [bp-4] unwritten, a stack leftover of the menu engine; the C# gives the least agile member's effective Agility."
+  },
+  {
+    "card": "041",
+    "run": "*",
+    "contains": "original 'time 7', C# 'picture xhound'",
+    "why": "WildHunt.OutrunChance DIVERGENCE, line 1's action: when not everybody rides the hint (R060+0x0FF4..0x1050) never writes the chance word [bp-4], and the action (R060+0x0ECC) rolls against that leftover (here the oracle's menu stand-in left a high one: the party escapes, time 7, picture xms057, text 7); the C# rolls against the least agile member's effective Agility and fails (text 8, the fight). The leftover is the menu engine's stack, not a value of the game state."
+  },
+  {
+    "card": "041",
+    "run": "*",
+    "contains": "original 'picture xhound', C# 'time 7'",
+    "why": "WildHunt.OutrunChance DIVERGENCE, line 1's action, the other way round (see the entry above): the original rolls against the unwritten chance word of R060+0x0FF4 and fails, the C# against the least agile member's effective Agility and succeeds."
   },
   {
     "card": "0AA",

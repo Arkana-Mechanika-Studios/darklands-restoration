@@ -18,7 +18,7 @@ switchable data-safety fixes below. No known divergence, strong evidence, publis
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 67% of the branch outcomes have run in a comparison with the original, and the
+implements, about 69% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
 are the battlefield generators, the rules and the battles; the least covered are the card scripts and the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
@@ -94,39 +94,39 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,376 functions the oracles enter | 80.2% (45,861 / 57,167) | 68.8% (29,488 / 42,872) |
-| **every function the C# implements (9,281)** | | **67.1% (28,694 / 42,790)** |
+| the 8,464 functions the oracles enter | 81.4% (46,690 / 57,347) | 70.6% (30,318 / 42,950) |
+| **every function the C# implements (9,281)** | | **69.0% (29,523 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 28,694 against 29,488 exercised. By area:
+differ slightly on the resident code, hence 29,523 against 30,318 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 321 / 358 | 1,909 / 2,590 | 74% |
-| battles (tactical combat) | 252 / 314 | 4,970 / 7,516 | 66% |
-| travel (overland map) | 23 / 24 | 620 / 982 | 63% |
-| screens (inventory, barter, creation ...) | 177 / 202 | 3,512 / 6,070 | 58% |
-| resident code | 131 / 160 | 905 / 1,644 | 55% |
+| rules | 322 / 358 | 1,910 / 2,590 | 74% |
+| battles (tactical combat) | 254 / 314 | 5,381 / 7,516 | 72% |
+| travel (overland map) | 23 / 24 | 621 / 982 | 63% |
+| screens (inventory, barter, creation ...) | 177 / 202 | 3,516 / 6,070 | 58% |
+| resident code | 131 / 160 | 923 / 1,644 | 56% |
 | card engine | 34 / 36 | 380 / 686 | 55% |
-| card scripts | 6,776 / 7,949 | 9,321 / 14,616 | 64% |
+| card scripts | 6,860 / 7,949 | 9,715 / 14,616 | 66% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`): 67.9% (29,047 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`): 69.8% (29,863 / 42,790). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the keyboard menu, the hot keys, the
 party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-24,690 items of the functions the oracles enter were never exercised: 2,358 are justified in
+23,289 items of the functions the oracles enter were never exercised: 2,334 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 22,332 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 20,955 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 9,800), the screens (about 4,300), the battles (about 3,600), the
+lie in the card scripts (about 9,100), the screens (about 4,300), the battles (about 2,900), the
 battlefield generators (about 2,100), the rules (about 650) and the overland map (about 650). A sweep
 of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
 tile contents and random draws, not inputs a sweep sets.
@@ -181,6 +181,11 @@ changes, next card).
   empty saint slot (0x37); the rest is listed.
 * Further start states: other random seeds (about 200 outcomes) and states at 38 places of every
   kind (about 130, nearly all in cities). Neither is worth more runs.
+* The handlers run again from the skilled party and three community saves (about 730 more outcomes)
+  found three divergences in the party's records, now fixed: a hireling who joins keeps the slot's
+  figure name and colours (R029+0x4650 .. +0x4AA3 writes neither); a slot loaded without a record is
+  zero memory (its weapon and missile qualities 0); a slot without a roster entry that a card makes
+  unconscious stays off the roster, as the save writer (R037+0x2ACE) writes roster records only.
 
 ## Whole game sessions (lockstep)
 
@@ -289,6 +294,15 @@ start (R018+0x093C, R014+0x469E; an original bug, reproduced); and on a keep's f
 party starts at (0, 0) and members stand outside the level, the collision test reads the cells past
 the edge as empty ones, with the party's sizes still 0 until R014+0x0258 sets them (R014+0x5ECA).
 
+Single battle functions are also called directly, in the original and the C#, from machine states
+taken inside ten fights, with combatant records and battle tables varied within what the game
+writes (`tools/oracle/battle_calls.py`, `battle_fuzz.py`; about 70 functions): about 800 more
+outcomes. They found four divergences, now fixed: the recovery after a fight sets each member's
+recovery clock and clears the hit shown (R014+0x0DEE .. +0x0E19); a door wakes an encounter by its
+X (R023+0x0362 .. +0x0368); an enemy's path search that fails at its goal puts the doors back as the
+last opening search left them (R014+0x48CA, +0x4B5A, an original bug reproduced); a member's pass
+over the party's places always clears the place-changed bit (R014+0xDD17).
+
 The fights brought the battle code run against the original from 32 to 252 of 314 functions (the battle sessions with the player's orders included). The
 first five found one divergence in the C# (the first frame also turns whoever just got an action
 toward its target, so enemies face their targets from the start); the other differences they showed
@@ -317,8 +331,8 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 172 original bugs the game
-reproduces (each can be fixed by its own `OriginalBehaviour` flag), 318 registered divergences,
+markers in the code, each with its reason and original coordinate: 173 original bugs the game
+reproduces (each can be fixed by its own `OriginalBehaviour` flag), 319 registered divergences,
 908 dormant branches kept as the original has them, 55 uncertain readings (of 301: 234 were
 naming only, 8 settled by an agreeing oracle or the code, now closed).
 

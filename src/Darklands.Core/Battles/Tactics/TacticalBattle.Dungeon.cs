@@ -292,6 +292,8 @@ public sealed partial class TacticalBattle
                 Battle[i].Flags |= TacticalFlags.PlaceChanged;
             }
             _view.RowChanged(i);
+            // C: the row redraw (0000:1716, R014+0xDD09) and the triggers' path both fall through to R014+0xDD17 `and byte [si],0xF7`.
+            Battle[i].Flags &= ~TacticalFlags.PlaceChanged;
         }
     }
 

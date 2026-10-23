@@ -57,6 +57,42 @@ public sealed class PartyRosterRulesTests
     }
 
     [Fact]
+    public void ASlotLeftWithoutAnEntryIsNoRosterMemberWhenACardGivesItAStatus()
+    {
+        // BearCave (R104) sets a random member unconscious: a slot party_remove emptied (ids[1] = -1) gets status 2 and nothing else,
+        // so charactr.tmp and the saved game have no record for it (the oracle's card 0xF0 on a save with such a slot).
+        var s = WithRoster();
+        var count = s.Roster.Characters.Count;
+        PartyRules.RemoveFromParty(s, 1);
+        s.Party.Slot(1).Status = CharacterStatus.Unconscious;
+
+        Assert.Equal(-1, PartyRules.CharacterInSlot(s, 1));
+        Assert.Equal(count, s.Roster.Characters.Count);
+    }
+
+    [Fact]
+    public void AHirelingIsDrawnWithTheFigureTheSlotHeld()
+    {
+        // add_member (R029+0x4650) writes the party record only: member_shield / member_palette stay the slot's.
+        var s = WithRoster();
+        var last = s.Party.Members.Count - 1;
+        s.Party.Members[1].Image = "C00";
+        s.Party.Members[1].ImagePalette = Enumerable.Range(1, 24).Select(i => (byte)i).ToArray();
+        s.Party.Members[last].Image = "A00";
+        s.Party.Members[last].ImagePalette = Enumerable.Range(30, 24).Select(i => (byte)i).ToArray();
+        PartyRules.RemoveFromParty(s, last);
+        PartyRules.RemoveFromParty(s, 1);
+
+        Assert.Equal(1, PartyRules.AddMember(s, "Wolf Bauer", "Wolf", 100, 1));
+        Assert.Equal("C00", s.Party.Members[1].Image);
+        Assert.Equal(Enumerable.Range(1, 24).Select(i => (byte)i), s.Party.Members[1].ImagePalette);
+        Assert.Equal(last, PartyRules.AddMember(s, "Hans Bauer", "Hans", 100, 1));
+        Assert.Equal("A00", s.Party.Members[last].Image);
+        Assert.Equal(Enumerable.Range(30, 24).Select(i => (byte)i), s.Party.Members[last].ImagePalette);
+        Assert.True(PartyRules.CharacterInSlot(s, 1) >= 0);   // a hireling is a roster entry (idx[slot] = cnt++)
+    }
+
+    [Fact]
     public void NobodyJoinsAFullPartyOrFromPastTheRoster()
     {
         var s = WithRoster();

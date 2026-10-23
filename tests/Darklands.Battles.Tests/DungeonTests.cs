@@ -95,6 +95,83 @@ public sealed class DungeonTests
         Assert.Equal(opens ? 1 : 0, level.GetByte(DoorOpenAt + k));
     }
 
+    /// <summary>R023+0x0362..0x0368: a door wakes an encounter of its wall group only when the encounter's X (+0x00) is above 0; a disabled one (X negative) stays.</summary>
+    [Fact]
+    public void ADoorLeavesADisabledEncounterWaiting()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, tactics) = Start(0x5E, 4545);
+        var level = tactics.Level;
+        var door = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => (sbyte)level.GetByte(DoorsAt + 14 * d + 6) >= 0);
+        var wall = (sbyte)level.GetByte(DoorsAt + 14 * door + 6);
+        typeof(TacticalBattle).GetProperty(nameof(TacticalBattle.ActivationsEnabled))!.SetValue(tactics, true);
+        var list = tactics.Activations[tactics.Battle.FloorShown];
+        list.RemoveAll(g => g.Room == wall);
+        var disabled = new EnemyGroup { X = -528, Y = 200, Spread = 16, Room = wall };
+        list.Add(disabled);
+        void Toggle() => typeof(TacticalBattle).GetMethod("ToggleDoor", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .Invoke(tactics, [door, tactics.Battle.Leader]);
+        Toggle();
+        Assert.Contains(disabled, list);
+        disabled.X = 528;
+        Toggle();
+        Assert.DoesNotContain(disabled, list);
+    }
+
+    /// <summary>R014+0xDC4E..0xDC54: a member stepping into a door gets the place-changed bit 0x08; after the row redraw (R014+0xDD09) the
+    /// common tail R014+0xDD17 clears it again, as it does on every pass of a member.</summary>
+    [Fact]
+    public void EnteringADoorLeavesThePlaceChangedBitClear()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, tactics) = Start(0x5E, 4545);
+        var level = tactics.Level;
+        var door = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => (short)level.GetWord(DoorsAt + 14 * d) > 0
+            && level.GetByte(DoorsAt + 14 * d + 4) > 0 && level.GetByte(DoorsAt + 14 * d + 5) > 0);
+        var at = DoorsAt + 14 * door;
+        var c = tactics.Battle[Enumerable.Range(0, Combatant.PartySlots).First(i => tactics.Battle[i].IsAble)];
+        c.Position = new MapPoint(level.GetWord(at), level.GetWord(at + 2));
+        c.Flags &= ~(TacticalFlags.InDoorway | TacticalFlags.PlaceChanged);
+        typeof(TacticalBattle).GetMethod("PartyLocations", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.Invoke(tactics, []);
+        Assert.True((c.Flags & TacticalFlags.InDoorway) != 0);
+        Assert.Equal(door, c.Door);
+        Assert.True((c.Flags & TacticalFlags.PlaceChanged) == 0);
+    }
+
+    /// <summary>R014+0x48CA: an enemy's path search whose goal is blocked still leaves through R014+0x4B5A, which puts the doors back to the
+    /// flags DS:E0C0 kept at the last search that opened them (here none: every door shuts again).</summary>
+    [Fact]
+    public void AnEnemySearchWithABlockedGoalPutsTheDoorsBack()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, tactics) = Start(0x00, 1234);
+        var level = tactics.Level;
+        const System.Reflection.BindingFlags any = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var twins = (bool[])typeof(TacticalBattle).GetField("_twinDoor", any)!.GetValue(tactics)!;
+        var door = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => !twins[d] && level.GetWord(DoorsAt + 14 * d) > 0 && level.GetByte(DoorsAt + 14 * d + 7) == 0);
+        typeof(TacticalBattle).GetMethod("SetDoor", any)!.Invoke(tactics, [door, true, false]);
+        Assert.Equal(1, level.GetByte(DoorOpenAt + door));
+        var b = tactics.Battle;
+        var enemy = b[Combatant.PartySlots];
+        enemy.Status = CharacterStatus.Able;
+        enemy.Floor = b.FloorShown;
+        enemy.Target = -1;
+        enemy.Position = new MapPoint(b[b.Leader].Position.X + 40, b[b.Leader].Position.Y);
+        enemy.Destination = b[b.Leader].Position;
+        var found = (bool)typeof(TacticalBattle).GetMethod("FindPath", any)!.Invoke(tactics, [Combatant.PartySlots])!;
+        Assert.False(found);
+        Assert.Equal(0, level.GetByte(DoorOpenAt + door));
+    }
+
     /// <summary>A perceptive member steps on a secret door's trigger: the trigger goes off and the door's wall is cleared.</summary>
     [Fact]
     public void ASecretDoorIsFound()

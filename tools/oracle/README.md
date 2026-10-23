@@ -65,3 +65,24 @@ every live run from the beginning, and neither reads nor writes a snapshot. File
 - `rerun_all.py <out> [--workers N]`: every fight of FIGHTS and every session of lockstep-sessions, one process each, N workers (default the core count,
   bounded by free memory), the slowest first (the last live durations in `<recordings>/durations.json`); writes `<out>/summary.json`.
 - `diff_runs.py <A> <B>`: two such output folders compared, ignoring timings and live-or-replayed.
+
+## Direct calls of single battle functions
+
+`battle_calls.py`, `battle_fuzz.py`, `battle_calls_run.py` and `battle_calls_measure.py` call one original battle function (an action, a path
+search, an AI step, a door, the end test ...) straight from a machine state taken inside a whole fight, change the state's memory, and ask the
+rewrite to make the same call from the same bytes. They are new, additional testers: no original-side module above is touched, so no recording
+expires (they are not in any recording's key either).
+
+* `battle_calls.py capture` plays fights of `battle_oracle.FIGHTS` (from the battle-entry snapshot of the recordings) with a Session subclass
+  that copies the machine at the head of the asked passes. `State.call(coordinate, args, memory writes)` restores the state, calls the function
+  by its link-time far address (a near function with a return to its own entry that a hook ends; a function of an overlay that is not resident
+  through its thunk) and reports AX, the DS and far-segment bytes it wrote, the random generator's state and every draw, the coverage.
+* `battle_fuzz.py` makes the inputs: coverage-guided (a run is kept when it reaches a block or branch outcome the counted coverage folders and
+  the earlier runs did not), with changes to the combatant records' modelled fields, the battle's per-combatant tables and scalars, the level
+  image, the paths, the missiles, whole scenarios (statuses, floors, results, times, doors ...) and `branch_flip.py`'s aimed values.
+* `tests/Darklands.Battles.Tests/BattleCalls` (xUnit; `DARKLANDS_BATTLE_CALLS=<jobs.json.gz from battle_calls.py export>`): the rewrite's
+  battle is started from the saved game and the fight's request, then set from the state's bytes (`ImageOverlay`, `TacticsOverlay`: each entry
+  pairs a place of the original's memory with the rewrite's property), the call is made, and the result, the modelled memory and the random
+  draws are compared. Differences are leads; jobs the rewrite cannot be asked about (state it does not carry, states the game never has) are
+  reported as GAP / SKIP and are not credited.
+* `battle_calls_run.py` runs the three steps; `battle_calls_measure.py` counts the open outcomes of `branches-missed.csv` the agreeing runs reach.

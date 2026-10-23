@@ -39,7 +39,8 @@ public sealed partial class TacticalBattle
             var list = Activations[Battle.FloorShown];
             for (var k = 0; k < list.Count; k++)
             {
-                if (list[k].Room == wall && list[k].Spread > 0)
+                // C: R023+0x0362..0x0368: the encounter's +0x00 word (X; negative while disabled) must be > 0.
+                if (list[k].Room == wall && list[k].X > 0)
                 {
                     if (PlaceEnemies(0, list[k], who))
                     {
@@ -124,7 +125,7 @@ public sealed partial class TacticalBattle
     {
         if (open)
         {
-            _doorsBeforeSearch = Level.Image.AsSpan(DoorOpenAt, 40).ToArray();
+            Level.Image.AsSpan(DoorOpenAt, 40).CopyTo(_doorsBeforeSearch);
             for (var k = 0; k < Level.GetByte(DoorCountAt); k++)
             {
                 var at = DoorsAt + 14 * k;
@@ -146,7 +147,10 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>DS:E0C0: the open flags before an enemy's path search.</summary>
-    private byte[] _doorsBeforeSearch = new byte[40];
+    // DIVERGENCE: the original never clears DS:E0C0 (nor saves it with the battle): a battle starts with what the last enemy search of an
+    // earlier battle of the session kept there, which matters only when an enemy's first search fails at its goal (see PathFinder.Find).
+    // Here each battle starts with every flag 0.
+    private readonly byte[] _doorsBeforeSearch = new byte[40];
 
     /// <summary>The picker tries the lock at image offset <paramref name="lockAt"/> with his best… first lock picks (item 0x40): skill + quality − 25 + 1d10 against the lock.</summary>
     // orig: lock_pick R023+0x12C0 (1EF8:12C0) draft, checked against the asm

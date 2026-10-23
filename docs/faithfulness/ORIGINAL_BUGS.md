@@ -14,12 +14,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | rules | 85 | 20 | 65 |
 | cards | 60 | 2 | 58 |
 | events | 7 | 4 | 3 |
-| battles | 17 | 3 | 14 |
+| battles | 18 | 3 | 15 |
 | persistence | 1 | 1 | 0 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 172 | 31 | 141 |
+| total | 173 | 31 | 142 |
 
-## Core logic (170)
+## Core logic (171)
 
 ### rules (85)
 
@@ -110,7 +110,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-82a302** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:163` `PartyQueries.MaxAttributeSum`  
   original: `R029+0x179C` (0E76:179C, draft)  
   why: best_value = a * 2 (FixAttributeSums); DS:9A44 is not written here.
-- **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:228` `PartyRules.BattleSeed`  
+- **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:236` `PartyRules.BattleSeed`  
   original: `R029+0x2278` (0E76:2278, draft)  
   why: seed -2 gets party_seed twice (FixBattleSeed).
 - **B-11a75a** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:71` `PotionEffects.Drink`  
@@ -486,7 +486,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
 
-### battles (17)
+### battles (18)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -500,7 +500,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-08f8dd** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:406` `Attacks.QueueDamage`  
   original: `R014+0xAD5A` (18BF:08CA, draft)  
   why: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's animation; traps) wraps past 127 to a negative queue, which damage_apply's signed test (jle 42) lets through: the target gains Endurance (and Strength, for the second byte) instead of losing it.
-- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:329` `BattleEnd.ImproveSkills`  
+- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:334` `BattleEnd.ImproveSkills`  
   original: `R014+0x0694` (0E76:0694, draft)  
   why: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or axe has weapon -1 (use_ammo), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
@@ -521,6 +521,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-e080d4** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/LootStore.cs:154` `LootStore.Merge`  
   original: `R014+0xE930` (19CD:33C0, draft)  
   why: loot counts wrap at 255: the counts are added in a byte with no limit test, so equal items totalling more than 255 wrap and the excess is lost.
+- **B-e1ca2c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/PathFinder.cs:114` `PathFinder.Find`  
+  original: `R014+0x481A` (12F7:000A, draft)  
+  why: R014+0x48CA leaves through the common exit (R014+0x4B36): R014+0x4B5A (for an enemy) puts every door that is no twin back to the open flags DS:E0C0 kept at the last enemy search that opened them, though this search opened none, and copies those flags back (DS:E0C0 to the level's +0x33D3): a door opened or shut since then is set back.
 - **B-fd2f1c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:662` `EffectField.DropWornOut`  
   original: `R019+0x0914` (1EF8:0914, matched)  
   why: items are consumed until none of that type and quality is left: the spares stacked with the worn piece (worn down with it by WearItem) are thrown away with it.
@@ -542,7 +545,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### persistence (1)
 
-- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:366` `OriginalSaves.static`  
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:369` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
 

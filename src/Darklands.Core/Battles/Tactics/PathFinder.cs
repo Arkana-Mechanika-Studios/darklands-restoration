@@ -108,11 +108,18 @@ public sealed class PathFinder
             // DS:D697 is set only for the destination test: during the trackers moving combatants block again.
             var atGoal = _map.Collides(who, c.Destination.X, c.Destination.Y);
             _map.Searching = false;
+            var enemy = who >= Combatant.PartySlots;
             if (!atGoal.IsFree && !HitTarget())
             {
+                // BUG: R014+0x48CA leaves through the common exit (R014+0x4B36): R014+0x4B5A (for an enemy) puts every door that is no twin
+                // back to the open flags DS:E0C0 kept at the last enemy search that opened them, though this search opened none, and copies
+                // those flags back (DS:E0C0 to the level's +0x33D3): a door opened or shut since then is set back.
+                if (enemy)
+                {
+                    openDoors?.Invoke(false);
+                }
                 return false;
             }
-            var enemy = who >= Combatant.PartySlots;
             if (enemy)
             {
                 openDoors?.Invoke(true);

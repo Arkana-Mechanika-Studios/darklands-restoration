@@ -279,8 +279,13 @@ public static class BattleEnd
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             var m = b[i];
+            // C: R014+0x0E05: every slot's next endurance recovery (DS:DA55) is the combat clock (DS:07D4), before any status test.
+            m.RecoverAt = b.Clock;
             if (m.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
             {
+                // C: R014+0x0E15/0x0E19: the damage number (DS:D4E5) and the hit flag (DS:D4F2) cleared with the queued damage.
+                m.DamageNumber = 0;
+                m.WasHit = false;
                 m.QueuedEndurance = 0;
                 m.QueuedStrength = 0;
                 // C: maxend * 3 / 4 computed as int, stored in a char.

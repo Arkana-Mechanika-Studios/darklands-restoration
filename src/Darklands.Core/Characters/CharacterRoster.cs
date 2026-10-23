@@ -20,6 +20,17 @@ public sealed class CharacterRoster
     // the file's own record of a party member, where it is no longer the member as he or she is now (keyed by the member)
     private readonly Dictionary<Character, Character> _stored = new(ReferenceEqualityComparer.Instance);
 
+    // the slot memory of a slot whose id is -1 (a loaded slot without a record, what a member who left kept there): no entry of the roster
+    private readonly HashSet<Character> _offRoster = new(ReferenceEqualityComparer.Instance);
+
+    /// <summary>
+    /// <paramref name="residue"/> is what a slot without a roster entry holds: a status a card later gives it (a random member who is
+    /// nobody) does not make it a member of the roster.
+    /// </summary>
+    // C: only add_member (R029+0x4650), party_add (R037+0x3CD6) and the inn's roster write ids[slot]; party[slot][0] alone is not
+    // C: the roster, and the saved game (R037+0x2ACE) writes the records of charactr.tmp, so such a slot is saved as no member.
+    public void MarkOffRoster(Character residue) => _offRoster.Add(residue);
+
     /// <summary>
     /// The record CHARACTR.TMP holds for an entry: for a party member the record as it was when the file last
     /// had it written (the game was loaded, the character joined), not the member as he or she is now; for
@@ -52,6 +63,7 @@ public sealed class CharacterRoster
         var member = Characters[entry];
         Characters[entry] = _stored.TryGetValue(member, out var record) ? record : member.Copy();
         _stored.Remove(member);
+        MarkOffRoster(member);
     }
 
     /// <summary>A roster of just the party: its present members in slot order (a new game's charactr.tmp).</summary>
@@ -61,6 +73,7 @@ public sealed class CharacterRoster
     {
         Characters.Clear();
         _stored.Clear();
+        _offRoster.Clear();
         Array.Fill(PartySlots, -1);
         for (var slot = 0; slot < party.Members.Count && slot < PartySlots.Length; slot++)
         {
@@ -91,7 +104,7 @@ public sealed class CharacterRoster
             {
                 continue;
             }
-            if (member is null || !member.IsPresent)
+            if (member is null || !member.IsPresent || _offRoster.Contains(member))
             {
                 PartySlots[slot] = -1;
                 continue;

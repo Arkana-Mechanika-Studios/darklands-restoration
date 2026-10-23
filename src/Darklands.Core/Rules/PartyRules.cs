@@ -27,6 +27,13 @@ public static class PartyRules
         // C: the new member is written over the slot's record (a departed member's, or zeros): what add_member does not store stays.
         var before = slot < party.Members.Count ? party.Members[slot] : party.DepartedRecords[slot];
         var m = new Character { Name = name, ShortName = shortName, Status = CharacterStatus.Able, Age = 25 };
+        // C: add_member writes neither member_shield[slot] (DS:A668) nor member_palette[slot] (R136+0x33FC): the member is drawn with,
+        // C: and the saved game (R037+0x2ACE) writes, the figure the slot held (R029+0x4650..0x4AA3 stores only the party record).
+        if ((before ?? party.SpareRecord(slot)) is { } figure)
+        {
+            m.Image = figure.Image;
+            m.ImagePalette = [.. figure.ImagePalette];
+        }
         int[] maxima = [37, 34, 31, 29, 32, 34, 99];
         maxima.CopyTo(m.AttributeMaximums, 0);
         maxima.CopyTo(m.Attributes, 0);
@@ -169,6 +176,7 @@ public static class PartyRules
             var residue = record.Copy();
             residue.Status = CharacterStatus.Empty;
             party.Members[slot] = residue;
+            s.Roster.MarkOffRoster(residue);
         }
         party.TrimToSize();
     }
