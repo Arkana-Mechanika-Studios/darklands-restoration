@@ -38,7 +38,7 @@ public static class GameCommands
         console.Add(new ConsoleCommand("heal", "heal [slot 1..5|all]  (endurance and strength back to their maximums)", On(Heal)));
         console.Add(new ConsoleCommand("saint", "saint grant|remove <slot 1..5|all> <saint number>", On(Saint)));
         console.Add(new ConsoleCommand("item", "item grant <slot 1..5|all> <code> [quality] [count] | item find <text>", On(Item)));
-        console.Add(new ConsoleCommand("quests", "quests active | resolved | all", On(Quests)));
+        console.Add(new ConsoleCommand("quests", "quests active | resolved | all (show quests with locations)", On(Quests)));
     }
 
     // ---- show
