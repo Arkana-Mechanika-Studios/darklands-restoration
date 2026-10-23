@@ -1,4 +1,4 @@
-# Lockstep session: F1 at the city menu from DKSAVE0: the original stops (Buffer dealloc error in the sheet, R031+0x0B22), the minimal case
+# Lockstep session: F1 at the city menu from DKSAVE0: the sheet of a member who wears no armour (R031+0x0B22 frees the same picture block twice, which DOS allows; the emulator does as DOS does), the minimal case
 key:t
 wait:5
 key:l

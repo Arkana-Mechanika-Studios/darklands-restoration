@@ -1,10 +1,10 @@
 {
  "ALL": {
   "blocks": 54595,
-  "blocks_hit": 41220,
+  "blocks_hit": 41224,
   "functions": 6228,
   "outcomes": 42506,
-  "outcomes_hit": 27606,
+  "outcomes_hit": 27613,
   "runs": null
  },
  "battle": {
@@ -671,6 +671,14 @@
   "outcomes_hit": 5912,
   "runs": 1
  },
+ "lockstep-orders-potion": {
+  "blocks": 13840,
+  "blocks_hit": 8286,
+  "functions": 658,
+  "outcomes": 12290,
+  "outcomes_hit": 5815,
+  "runs": 1
+ },
  "lockstep-orders-potion2": {
   "blocks": 13169,
   "blocks_hit": 7990,
@@ -853,6 +861,14 @@
   "functions": 329,
   "outcomes": 4286,
   "outcomes_hit": 1796,
+  "runs": 1
+ },
+ "lockstep-sheet-dksave0": {
+  "blocks": 5095,
+  "blocks_hit": 2916,
+  "functions": 303,
+  "outcomes": 3700,
+  "outcomes_hit": 1536,
   "runs": 1
  },
  "lockstep-shop": {

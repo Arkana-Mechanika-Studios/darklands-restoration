@@ -97,6 +97,18 @@ public sealed class BattleScreen : ITacticalView
         return all;
     }
 
+    /// <summary>A debugging aid: for each combat sheet of the run in turn, the timer callbacks that came while it was open (R022+0x0066 ..
+    /// R022+0x03C6, DS:07D3 held) and those that came after it up to the next pass's head ("2310,9;40,0"), as tools/oracle/lockstep.py
+    /// measures them in the original (DARKLANDS_BATTLE_SHEET_CALLBACKS); the C# host has no time of its own there in OneTickPerPass.</summary>
+    public static Queue<(int During, int After)>? SheetCallbacks { get; set; } = ParseSheetCallbacks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_SHEET_CALLBACKS"));
+
+    private static Queue<(int, int)>? ParseSheetCallbacks(string? text) => string.IsNullOrEmpty(text) ? null
+        : new(text.Split(';').Select(p => p.Split(',')).Select(p => (int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
+            p.Length > 1 ? int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture) : 0)));
+
+    /// <summary>The callbacks the original had after the last sheet in its pass (SheetCallbacks), for the pass's end.</summary>
+    private int _afterSheetCallbacks;
+
     private (int Loads, int FirstFrame, int Late, int BeforeActivations) _setUpTicks;
     private long _setUpMark;
 
@@ -257,6 +269,12 @@ public sealed class BattleScreen : ITacticalView
                     lateTicks += pendingRises.Values.Sum();
                 }
                 pendingRises = null;
+                if (_afterSheetCallbacks > 0)
+                {
+                    // the callbacks the original had after a sheet in this pass (a paused pass: no clock rise lists them)
+                    lateTicks += _afterSheetCallbacks;
+                    _afterSheetCallbacks = 0;
+                }
                 if (lateTicks > 0)
                 {
                     // the callbacks of the time a long tick took came during it: after what the tick read of the clock
@@ -529,14 +547,38 @@ public sealed class BattleScreen : ITacticalView
         _clockFraction += milliseconds * 60 / 1000.0;
         var ticks = (int)_clockFraction;
         _clockFraction -= ticks;
-        _battle!.TimerCallbacks = Math.Min(_battle.TimerCallbacks + ticks, 0x7FFF);
-        // C: DS:07D6 counts every callback, paused or not (a word)
-        _keysHeldCallbacks = (ushort)(_keysHeldCallbacks + ticks);
-        if (_battle.Paused)
+        CountCallbacks(ticks);
+        if (_battle!.Paused)
         {
             return;
         }
         _battle.Battle.Clock = (ushort)(_battle.Battle.Clock + ticks);
+    }
+
+    /// <summary>Timer callbacks that came: the counters DS:07D1 and DS:07D6 go on (the combat clock is the caller's).</summary>
+    // orig: root 047C:000A: `inc byte [07D1]` and `inc word [07D6]` at every callback, whether DS:07D3 holds the clock or not; only
+    // combat_tick R014+0x0F85 clears DS:07D1 (and R014+0x0F7B compares it unsigned with 8), so it wraps at 256
+    private void CountCallbacks(int ticks)
+    {
+        _battle!.TimerCallbacks = (_battle.TimerCallbacks + ticks) & 0xFF;
+        // C: DS:07D6 counts every callback, paused or not (a word)
+        _keysHeldCallbacks = (ushort)(_keysHeldCallbacks + ticks);
+    }
+
+    /// <summary>A screen over the battle that holds the combat clock (DS:07D3) took <paramref name="milliseconds"/>: the timer callbacks of
+    /// that time count DS:07D1 and DS:07D6 on, the clock does not move; the loop's time starts again after it.</summary>
+    // C: the timer stays installed meanwhile (root 047C:0066 / 0x00A9 are not called), so a paused battle whose 07D1 reached 8 ticks at
+    // once after the screen (R014+0x0F7B), drawing its random numbers there rather than on the cadence of 8 passes
+    private void HeldClockTime(long milliseconds)
+    {
+        if (!OneTickPerPass)
+        {
+            _clockFraction += milliseconds * 60 / 1000.0;
+            var ticks = (int)_clockFraction;
+            _clockFraction -= ticks;
+            CountCallbacks(ticks);
+        }
+        _resyncClock = true;
     }
 
     /// <summary>After the battle: members' records back, loot handed over.</summary>
@@ -1037,9 +1079,11 @@ public sealed class BattleScreen : ITacticalView
 
     /// <summary>The bar's loop with the pointer of the screens shown (the battle's own cursor is not drawn meanwhile).</summary>
     // orig: root 0000:0000: `if (cursor_default != cursor_current && DS:907A == 1 && DS:9C4C == 1) root 047C:124F(0, 0, ...)` while the bar is up
+    // C: root 0000:0000 holds the combat clock (DS:07D3 = 1 at 0x003D, 0 at 0x01CB) while the bar is up; the timer callbacks go on
     private void RunMenu(Action run)
     {
         _ui.PointerVisible = true;
+        var opened = _ui.Clock.Milliseconds;
         try
         {
             run();
@@ -1048,6 +1092,7 @@ public sealed class BattleScreen : ITacticalView
         {
             _ui.PointerVisible = false;
         }
+        HeldClockTime(_ui.Clock.Milliseconds - opened);
     }
 
     /// <summary>root 0000:0CAA for a waiting key: a key it knows is taken and acted on, any other stays waiting for the battle's keys.</summary>
@@ -1677,6 +1722,8 @@ public sealed class BattleScreen : ITacticalView
             return;
         }
         var saved = _ui.Canvas.SaveScreen();
+        // orig: R022+0x0066: inc DS:07D3 (the combat clock held) before the sheet, R022+0x03C6: dec DS:07D3 at its end
+        var opened = _ui.Clock.Milliseconds;
         tb.MembersFromCombat();
         _ui.PointerVisible = true;
         sheet(member);
@@ -1690,6 +1737,17 @@ public sealed class BattleScreen : ITacticalView
         _paletteApplied.Clear();
         // orig: R022+0x03BE at the end: the release count read once more (DS:C62A untouched)
         _ui.TakeLeftReleases();
+        HeldClockTime(_ui.Clock.Milliseconds - opened);
+        if (OneTickPerPass && SheetCallbacks is { Count: > 0 } measured)
+        {
+            var (during, after) = measured.Dequeue();
+            CountCallbacks(during);
+            if (tb.Paused)
+            {
+                // a running battle's callbacks after the sheet raise the clock: the clock jumps list them
+                _afterSheetCallbacks += after;
+            }
+        }
     }
 
     /// <summary>S: "Do you really want to surrender?" in real combat; yes ends the battle (or, with members gone, only for those left).</summary>

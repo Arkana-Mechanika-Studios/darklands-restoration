@@ -105,7 +105,14 @@ def trace_difference(original, rewrite) -> dict:
     return {"clock": None, "ticks agreeing": len(common), "clocks": {"original": len(a), "rewrite": len(b)}}
 
 
-def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None):
+def sheet_callbacks(log) -> list[tuple[int, int]]:
+    """[(during, after)] for each combat sheet of the original's log ("sheet callbacks 5917,53"): the timer callbacks that came while the sheet held
+    the clock (R022+0x0066 .. 0x03C6) and after it up to the next battle pass; a recording made before these lines has none."""
+    return [tuple(int(v) for v in l.split()[2].split(",")) for l in log if l.startswith("sheet callbacks ")]
+
+
+def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
+                sheets=()):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -148,6 +155,9 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     if stale_dest:
         # the destination bytes a record keeps from the enemy file's stack bytes, by record (DARKLANDS_BATTLE_STALE_DEST)
         env["DARKLANDS_BATTLE_STALE_DEST"] = ";".join("%d:%d,%d" % p for p in stale_dest)
+    if sheets:
+        # the timer callbacks of the original's combat sheets (DS:07D1 counts on while the sheet holds the clock): the C# host has no time there
+        env["DARKLANDS_BATTLE_SHEET_CALLBACKS"] = ";".join("%d,%d" % p for p in sheets)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():
@@ -256,7 +266,7 @@ def main():
         (out / ("original-%s.sav" % name)).write_bytes(sav)
     t = time.time()
     rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
-                                  got["stale"] if a.battle_records else None)
+                                  got["stale"] if a.battle_records else None, sheet_callbacks(log))
     battle = None
     if a.battle_trace:
         lines = [l for l in output.splitlines() if l.startswith("pass ")]

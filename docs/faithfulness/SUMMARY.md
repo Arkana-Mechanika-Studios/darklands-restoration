@@ -94,12 +94,12 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 6,228 functions the oracles enter | 75.5% (41,220 / 54,595) | 64.9% (27,606 / 42,506) |
-| **every function the C# implements (9,281)** | | **62.7% (26,820 / 42,782)** |
+| the 6,228 functions the oracles enter | 75.5% (41,224 / 54,595) | 65.0% (27,613 / 42,506) |
+| **every function the C# implements (9,281)** | | **62.7% (26,827 / 42,782)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 26,820 against 27,606 exercised. By area:
+differ slightly on the resident code, hence 26,827 against 27,613 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
@@ -107,18 +107,18 @@ differ slightly on the resident code, hence 26,820 against 27,606 exercised. By 
 | rules | 318 / 358 | 1,796 / 2,584 | 70% |
 | battles (tactical combat) | 252 / 314 | 4,970 / 7,516 | 66% |
 | travel (overland map) | 23 / 24 | 603 / 982 | 61% |
-| screens (inventory, barter, creation ...) | 177 / 202 | 3,485 / 6,070 | 57% |
-| resident code | 131 / 160 | 904 / 1,644 | 55% |
-| card engine | 34 / 36 | 377 / 686 | 55% |
+| screens (inventory, barter, creation ...) | 177 / 202 | 3,490 / 6,070 | 57% |
+| resident code | 131 / 160 | 905 / 1,644 | 55% |
+| card engine | 34 / 36 | 378 / 686 | 55% |
 | card scripts | 4,787 / 7,949 | 7,835 / 14,614 | 54% |
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-28,275 items of the functions the oracles enter were never exercised: 1,241 are justified in
+28,264 items of the functions the oracles enter were never exercised: 1,241 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 27,034 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 27,023 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
 lie in the card scripts (about 12,800), the screens (about 4,400), the battles (about 3,600), the
 battlefield generators (about 3,000), the rules (about 800) and the overland map (about 700).
@@ -199,24 +199,23 @@ from a saved game in Pressburg:
 | menubar, menubar2 | the menu bar's keys and the keyboard menu | identical |
 | orders-select, -walk, -missile, -attack-a, -attack-b, -attack-b2, -attack-v, -attacks, -sheet, -save | the player's orders in the gate battle: selecting, pausing, walking, missiles, the attack orders, berserk, the combat sheet, saving in battle | identical, and the 13 combatant records at every battle pass |
 | luebeck-potion | the Lübeck gate: potions thrown in battle | identical, records at every pass included |
-| orders-potion | as luebeck-potion, with the combat sheet opened for long | differs after the sheet: the original's timer ticks while the sheet is open, which the C# does not model |
+| orders-potion | as luebeck-potion, with the combat sheet opened for long | identical (it found that the timer goes on counting while the sheet holds the battle clock, so a paused battle ticks as soon as the sheet closes: root 047C:000A, R022+0x0066 / +0x03C6, R014+0x0F7B; the C# now does the same) |
 | orders-potion2, orders-potion3, orders-prague-missile | the Prague gate: potions and missiles | identical, from a copy of DKSAVE40 made consistent (its true party size, no slot of status 0; the file as given comes from another tool, and the original's writer R037+0x2ACE recounts the size and skips the status-0 slots, which the C# now does too) |
 | roster-colours, roster-moves, roster-wrap, roster-mouse, roster-create2, roster-ulm | the inn's roster: hiring, retiring, the portrait colours, creating a character, by keys and by mouse | identical |
 | loot-keys, loot-mouse, loot-esc | the loot after a fight: taking, sharing, leaving, by keys and by mouse | identical |
 | camp-wild-brew, camp-wild-risk, camp-inn-broke, camp-rough, camp-mouse | camping in the wild, at the inn without money, in the slum: each member's work over days | identical |
 | pack-potions, pack-stacks | potions and the pack outside battle: drinking, splitting and joining stacks, giving one or the stack | identical |
 | dungeon-mine-doors, dungeon-mine-orders, dungeon-mine-group | a fight at the Rammelsburg mine: doors, single file, the attack orders, moving the party as a group | identical, records at every pass included |
+| sheet-dksave0 | the character sheet of a member who wears no armour | identical (the sheet frees the same picture block twice, R031+0x0B22 .. +0x0C8C, which DOS allows; the emulator now frees as DOS does, where it had stopped the original with its "Buffer dealloc error") |
 
-In one more session (the character sheet from DKSAVE0) the original itself stops with its "Buffer
-dealloc error" (R031+0x0B22) where the C# goes on. Only the sessions that agree throughout count as
-coverage.
+Only the sessions that agree throughout count as coverage.
 
 The oracles record the original's side (`tools/oracle/recording.py`) and replay it against the C# for
 day-to-day checks; a recording is used only when the hashes of the EXE, the game files, the arguments,
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-104 runs, 102 agreeing; the other two for the reasons listed above. The last open lead, a group move at
+104 runs, all agreeing. The last open lead before these, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).

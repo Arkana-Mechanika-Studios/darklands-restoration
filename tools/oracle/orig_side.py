@@ -54,6 +54,7 @@ ENEMY_TURN_VEC = (P(0x09C0), 0x1C43)    # R014+0x0280's vector to R018+0x0706 (t
 WALL_DRAWS = ((0x8381, 0x838B), (0x8438, 0x8442), (0x84AE, 0x84BE))   # R014+0x827A: push 2; call random_n; (after)
 NEXT_TICK = 0xD9E4                 # the clock value of the battle's next combat tick (set at R014+0x0311)
 COMBAT_CLOCK = 0x07D4               # the combat clock the timer callback counts while the battle runs
+CALLBACKS = 0x07D6                  # a word the timer callback counts at every call (root 047C:0048), held clock or not
 ACTIVATIONS_AT = 0xDA4F     # DS word: the combat clock of the next activations check (R014+0x0332 sets it to the clock + 120)
 TIMER_CALLBACK = (P(0x047C), 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
 BATTLE_QUIET = 5_000_000            # bytes of code without the time-based timer after a battle pass began
@@ -71,6 +72,7 @@ class Session(Machine):
     def __init__(self, exe: bytes, game: str, **kw):
         super().__init__(exe, game, **kw)
         self.seen_int: dict = {}
+        self.sheet_in = self.sheet_out = None   # the timer callbacks counted at the combat sheet (R022+0x0066 / +0x03C6; sessions hook them)
         # no sound card: without CONFIG.DRK the program takes nsound.dlc (DS:A876 = 'n'), as the C# headless host plays without sound;
         # a sound driver would be loaded by the stubbed misc.exe slots and unloaded (freed) by every battle start (R002+0x0025)
         self.vfs.deleted.add("config.drk")
@@ -359,6 +361,12 @@ class Session(Machine):
                 self._ticked = True
                 self.next_irq = self.count + BATTLE_QUIET
                 self.battle_passes += 1
+                if self.sheet_out is not None:
+                    # the timer callbacks of the combat sheet (R022+0x0066 .. 0x03C6, the clock held) and of the rest of its pass: the C#
+                    # has no emulated time there (DARKLANDS_BATTLE_SHEET_CALLBACKS)
+                    during, mark = self.sheet_out
+                    self.log.append("sheet callbacks %d,%d (battle pass %d)" % (during, (self.word(DS, CALLBACKS) - mark) & 0xFFFF, self.battle_passes - 1))
+                    self.sheet_out = None
                 clock = self.word(DS, COMBAT_CLOCK)
                 self.still_clock, self.still_passes = clock, (self.still_passes + 1 if clock == self.still_clock else 1)
                 if self._setting_up is not None:
@@ -725,7 +733,7 @@ class Session(Machine):
     # and hooks), puts this state back and carries on from the same point of the same call loop, so it is the run it would have been.
     SNAPSHOT_SKIP = frozenset((
         "exe", "rt", "uc", "md", "images", "stubs", "hooks", "names", "thunks", "functions", "_hooked", "_decoded", "fonts", "vfs",   # built alike by every Session
-        "script", "battle_trace", "_next_key", "on_key", "before_stub", "snap_plan", "coverage", "budget", "battle_pause", "_block", "pending"))      # the run's own wiring
+        "_cov_memo", "_valid_res", "_valid_memo", "script", "battle_trace", "_next_key", "on_key", "before_stub", "snap_plan", "coverage", "budget", "battle_pause", "_block", "pending"))      # the run's own wiring
 
     def _handler_kind(self, handler):
         if handler == self._poll:
@@ -905,6 +913,9 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         s.vfs.put("saves/default", (Path(game) / "SAVES" / "DEFAULT").read_bytes())
     s.script = list(steps)
     s.battle_trace = battle_trace
+    s.sheet_in = s.sheet_out = None
+    s.hook(P(0x1EF8), 0x0066, lambda m: setattr(m, "sheet_in", m.word(DS, CALLBACKS)), record="R022")
+    s.hook(P(0x1EF8), 0x03C6, lambda m: setattr(m, "sheet_out", ((m.word(DS, CALLBACKS) - m.sheet_in) & 0xFFFF, m.word(DS, CALLBACKS))), record="R022")
     s.battle_pause = BATTLE_PAUSE_PASSES
     if getattr(battle_trace, "records", False):
         battle_trace.session = s

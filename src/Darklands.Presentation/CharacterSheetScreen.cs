@@ -854,8 +854,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         }
         var last = "armsback";
         Draw(last);
-        // C: the original keeps the picture handle in one variable; an armour type outside its switch
-        // draws the previous picture again (its buffer was just freed but still holds it).
+        // C: the original keeps the picture handle in one variable; an armour type outside its switch draws the previous picture again and frees
+        // it again (R031+0x0BF6, +0x0C8C): DOS checks only the arena signature, which the freed block keeps, so the sheet goes on.
         last = LimbArmorPicture(m.LimbArmor.Type) ?? last;
         Draw(last);
         last = VitalArmorPicture(m.VitalArmor.Type) ?? last;
