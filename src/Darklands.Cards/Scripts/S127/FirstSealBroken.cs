@@ -24,8 +24,8 @@ namespace Darklands.Cards.Scripts;
 //     R127+0x0304, R127+0x0340, R127+0x0352,
 //     R127+0x038E, R127+0x03A0, R127+0x03DC,
 //     R127+0x047E
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-// UNCERTAIN (generated): card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class FirstSealBroken : Card
 {
@@ -42,7 +42,7 @@ public sealed class FirstSealBroken : Card
         // C: nearest_city(party_x) passes the long party_x, i.e. the two words party_x and party_y.
         c.AdjustReputation(c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y), 25, 50);
         c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, 1, 0, 0, EventLog.Forever, 0, 1);
-        // UNCERTAIN: card_text(0, 2): frame mode 2 read as drawing like mode 0.
+        // card_text(0, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
         c.Screen.Text(0);
         SabbatAftermath.MarkTheSiteAbandoned(c);
         // The original's option handlers (straight to 0x62) are never offered: see DormantOptions.

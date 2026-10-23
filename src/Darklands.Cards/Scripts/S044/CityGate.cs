@@ -31,7 +31,7 @@ public sealed class CityGate : Card
     // orig: R044+0x253C (19DD:0AEC) matched (init helper: enables all 20 option lines and clears the item and saint slots; the card then fills lines 0..6, 3 items and 2 saints)
     // DORMANT: R044+0x25BA (19DD:0B6A): the init helper points opt_fn[0..19] at this "screwed up." default; lines 7..19 stay enabled but the card's MSG has no line for them and the menu cannot select them, so it never runs.
     // DORMANT: R044+0x272C (19DD:0CDC), R044+0x2878 (19DD:0E28) and R044+0x28B0 (19DD:0E60): further "screwed up." handlers that nothing in this file installs; the pop-ups only hold 3 items (item_fn slots 0..2) and 2 saints (saint_fn slots 0..1), the other slots stay empty (-1).
-    // UNCERTAIN: the C# PotionChance maps slot > 2 to the "screwed up." text as if it were R044+0x272C; the C never installs that handler for item_fn[k][3], and slot 3 is empty anyway.
+    // C: the C# PotionChance maps slot > 2 to the "screwed up." text as if it were R044+0x272C; the C never installs that handler for item_fn[k][3], and slot 3 is empty anyway.
     // C: item_fn/saint_fn are set identically for all 5 member rows (k = 0..4); the handler reads the member from menu_member, so the C# keeps one handler per slot.
     public override int Run(CardContext c)
     {

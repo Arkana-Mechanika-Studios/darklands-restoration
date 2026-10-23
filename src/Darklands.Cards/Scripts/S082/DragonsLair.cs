@@ -167,7 +167,7 @@ public sealed class DragonsLair : Card
                     // DORMANT: no dragon sort beyond 3: no text.
                     break;
             }
-            // UNCERTAIN: the original passes 1 to thunk 09C0:216B; the rule takes no argument.
+            // the original passes 1 to thunk 09C0:216B; the rule takes no argument (R039+0x159A uses no argument: no bp in the asm).
             c.DragonSlain();
             c.Next = 0x0C;
             return;

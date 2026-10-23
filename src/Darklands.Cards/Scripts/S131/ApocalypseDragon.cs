@@ -19,7 +19,7 @@ namespace Darklands.Cards.Scripts;
 // C (generated): opt_flag_5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
 // DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // DIVERGENCE (generated): party_panel_rows(0x100) (root 0000:1716, a party-panel redraw) is left out; the screen redraws itself.
 public sealed class ApocalypseDragon : Card
 {
@@ -41,6 +41,9 @@ public sealed class ApocalypseDragon : Card
 
         var mostVirtuous = () => MostVirtuous(c);
         // C: every handler of this card redraws with card_load (the whole card, Show), not card_load_near.
+        // DORMANT: in text block 0 the option lines 2..4 are never offered (the first menu on this block never enables them); they can be offered in other blocks only.
+        // DORMANT: in text block 1 the option lines 0..2 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
+        // DORMANT: in text block 3 the option lines 3, 4 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             // orig: R131+0x0F40 / R131+0x0F88 matched
             new MenuLine(_ => Kneel(c, menu), OptionHint.Saying(CardTexts.Unknown)),

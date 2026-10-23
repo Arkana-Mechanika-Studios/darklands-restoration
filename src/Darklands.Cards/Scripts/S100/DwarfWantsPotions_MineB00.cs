@@ -49,7 +49,7 @@ public sealed class DwarfWantsPotions_MineB00 : Card
                     // orig: R100+0x0DC4 (18F6:01E4) matched
                     c.Screen.Text(1);
                     c.Screen.Text(2);
-                    // UNCERTAIN: the price is remembered as an event of kind 1, type 0 (tag 0x0C,
+                    // the price is remembered as an event of kind 1, type 0 (tag 0x0C,
                     // 999 hours), not as the location fact (kind 0x1C, type 1) the card tests on
                     // arrival; kept as the original has it.
                     c.Events.Renew(Who.Everybody, c.Here, 0, 1, 0, 0x63, 0, 0x3E7, 0, MineQuestTag);

@@ -10,7 +10,7 @@ namespace Darklands.Cards.Scripts;
 // C: the loop calls card_menu without card_options or card_text (card_load draws only the picture), so the menu works on the option
 // C: lines the screen last laid out (the previous card's last text) with this card's states and handlers (CardMenu.DrawsOptions = false).
 // C: its pop-up branch calls (*item_fn[menu_slot])(): a pop-up line of that stale layout would run the pop-up handler installed here.
-// UNCERTAIN: the three ports all lead to card 0x5A; nothing here records which port was chosen.
+// C: the three ports all lead to card 0x5A; nothing here records which port was chosen.
 public sealed class EasternBalticVoyage : Card
 {
     public override int Number => 270;

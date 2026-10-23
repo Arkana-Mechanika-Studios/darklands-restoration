@@ -47,7 +47,7 @@ public sealed class GameAssets(GameFiles files)
     /// of FONTS.FNT.
     /// </summary>
     // orig: the driver loader root 047C:07CE("mgraphic.exe", "fonts.fnt") (called from R000+0x052A (0E76:052A) game start) and font_load root 0617:02F6 (slot, idx, name) draft (the C copies font number idx of the file into the driver's slot); the driver itself (mgraphic.exe, asm) is not in the sources; status asm
-    // UNCERTAIN: "slot n holds font n-1" is how the screens look (card text = slot 1, party panel = slot 3), not read from the driver; the C names only the slot argument. Slots outside 1..3 are clamped here (the original has the slot count of the driver).
+    // C: "slot n holds font n-1" is how the screens look (card text = slot 1, party panel = slot 3), not read from the driver; the C names only the slot argument. Slots outside 1..3 are clamped here (the original has the slot count of the driver).
     public FntFont Font(int slot)
     {
         _fonts ??= new FntDecoder().Decode("FONTS.FNT", files.Read("FONTS.FNT"));

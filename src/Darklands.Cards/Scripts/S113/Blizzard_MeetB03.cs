@@ -33,7 +33,7 @@ public sealed class Blizzard_MeetB03 : Card
             // orig: R113+0x1CA4 (line 2); hint R113+0x1D66 (19B5:0596) matched
             new MenuLine(_ => WaitItOut(c), Unknown),
             // DORMANT: lines 3..9 are never offered; actions R113+0x1D9E.. and hints R113+0x1DA0.. are
-            // empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

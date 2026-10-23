@@ -21,7 +21,7 @@ public sealed class MerchantsProposal_Merch00 : Card
     // DORMANT: R053+0x354C (1B26:066C) (the "screwed up." default hint for opt_fn[0..19]); lines 0..9 have their own hints and lines 10..19 stay off.
     // DORMANT: R053+0x3584 (1B26:06A4), R053+0x35C0 (1B26:06E0), R053+0x35FC (1B26:071C), R053+0x3638 (1B26:0758) (item pop-up handlers: success assured for the chosen member) and
     // R053+0x3674 (1B26:0794), R053+0x36FE (1B26:081E), R053+0x3788 (1B26:08A8), R053+0x3812 (1B26:0932) (saint pop-up handlers: chance text of the chosen saint): no option opens an item or saint pop-up.
-    // UNCERTAIN: the MSG file has no option lines (block 0 is only the merchant's speech), so on the real screen no line can be chosen; the ten actions are ported all the same.
+    // C: the MSG file has no option lines (block 0 is only the merchant's speech), so on the real screen no line can be chosen; the ten actions are ported all the same.
     public override int Run(CardContext c)
     {
         Show(c, Picture);

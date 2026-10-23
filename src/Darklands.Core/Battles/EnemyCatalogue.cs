@@ -34,7 +34,7 @@ public sealed class EnemyTemplate
     /// <summary>+0x11: first palette in ENEMYPAL.DAT.</summary>
     public sbyte FirstPalette { get; init; }
 
-    /// <summary>+0x12 / +0x13: copied to the kind's +0x27 and +0x26. UNCERTAIN: meaning (+0x12 becomes 2 for missile users and casters).</summary>
+    /// <summary>+0x12 / +0x13: copied to the kind's +0x27 and +0x26. Meaning not established (+0x12 becomes 2 for missile users and casters).</summary>
     public sbyte Byte12 { get; init; }
 
     public sbyte Byte13 { get; init; }
@@ -52,7 +52,7 @@ public sealed class EnemyTemplate
     /// +0x30: the effects the enemy does not feel, a bit per effect type 0..11 (copied to the kind's +0x5E,
     /// then to DS:C927 of its combatant, which R019 effect_spell and cbt_step test).
     /// </summary>
-    // UNCERTAIN: read as "money" before; the values (gnomes, demons, the dragon 1; gargoyles 2; evil alchemists 0xA00) and
+    // C: read as "money" before; the values (gnomes, demons, the dragon 1; gargoyles 2; evil alchemists 0xA00) and
     // R019's (DS:C927[i] &amp; (1 &lt;&lt; type)) make it a mask of effect types.
     public short EffectImmunity { get; init; }
 

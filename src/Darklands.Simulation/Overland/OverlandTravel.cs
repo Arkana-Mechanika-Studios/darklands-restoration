@@ -41,7 +41,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
 
     /// <summary>An event of this kind at a place sets the encounter weight there (event_at / event_value_at 0x2A); one of kind 0x2B holds a message shown when the place is first noticed.</summary>
     // orig: event_at(0x2a, loc) / event_value_at(0x2a, loc) in R030+0x2D44; event_value_at(0x2b, i) / event_remove(0x2b, -1, i, -1, -1) / map_message in 1300
-    // UNCERTAIN: what scripts create the 0x2A and 0x2B events was not searched; their meaning (an encounter weight, a message number) is read from the use here.
+    // C: what scripts create the 0x2A and 0x2B events was not searched; their meaning (an encounter weight, a message number) is read from the use here.
     private const int WeightEvent = 0x2A;
     private const int NoticeMessageEvent = 0x2B;
 

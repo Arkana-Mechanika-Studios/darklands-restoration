@@ -10,12 +10,12 @@ namespace Darklands.Core.Characters;
 // DIVERGENCE: the original reads the images from SAVES\DEFAULT when Quickstart begins (the load R037+0x4184, whose
 // open is not checked); without that file member_shield keeps its start-up contents. Here the images come with the
 // party, so a folder without SAVES\DEFAULT still plays. The colours need no such choice (see Colours).
-// UNCERTAIN: what the original then does is read from the code, not run: the battle builds the figure's file name
+// C: what the original then does is read from the code, not run: the battle builds the figure's file name
 // from member_shield (R002, "pics\<code>short.pic"), finds no such picture and stops.
 public static class DefaultParty
 {
     // orig: party_default R001+0x0000 (0E76:0000) draft
-    // UNCERTAIN: the four records are taken from the original's Quickstart party (R001 party_default).
+    // C: the four records are taken from the original's Quickstart party (R001 party_default).
     public static Party Create(int seed)
     {
         var party = new Party { Seed = seed, Purse = Money.Zero };

@@ -31,17 +31,17 @@ public static class GameSounds
     //   [CA60h], the number last stored). With music off it plays 1 instead and AX is what the handler of 1 leaves: 0 on the FM
     //   and Roland drivers (the play slot clears AX before the handler, which does not set it; tests: DriverTests); the speaker
     //   driver's handler leaves a value of its own, which the emulated driver gives too.
-    // UNCERTAIN: NSOUND.DLC's play slot is a bare far return, so AX is whatever the caller had; the emulated call gives its own
+    // C: NSOUND.DLC's play slot is a bare far return, so AX is whatever the caller had; the emulated call gives its own
     //   leftover. The value only matters if music is switched on before it is played back.
     public const int CurrentPiece = 5;
 
     /// <summary>Silence (the city menus).</summary>
-    // UNCERTAIN: named from the reference's music-player notes ("6 silence"); called by the city cards
+    // C: named from the reference's music-player notes ("6 silence"); called by the city cards
     //   ($CityG00, $MainS01, $citys01, $Raubi02 ...).
     public const int Silence = 6;
 
     /// <summary>Played once after the driver is loaded at start-up and after a skipped opening.</summary>
-    // UNCERTAIN: what number 7 does in the drivers (it makes no sound on the FM drivers).
+    // C: what number 7 does in the drivers (it makes no sound on the FM drivers).
     public const int Ready = 7;
 
     /// <summary>Plays a piece of music if music is on; otherwise stops the music.</summary>

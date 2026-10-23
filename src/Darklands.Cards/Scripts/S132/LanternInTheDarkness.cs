@@ -7,8 +7,8 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R132+0x0000 (1838:0000) matched; tests: CardSmokeTests
 //   other: R132+0x008C, R132+0x00C4
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-// UNCERTAIN (generated): card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // DORMANT: the file's table set-up R132+0x008C and its "screwed up." default handler R132+0x00C4 are never called
 //   (the card runs no menu); they would only clear the option table and the item/saint lists.
 public sealed class LanternInTheDarkness : Card
@@ -22,7 +22,7 @@ public sealed class LanternInTheDarkness : Card
         Show(c, 294);
         c.Next = Number;
         // No option menu: the card's item and saint lists are left as they are.
-        c.Screen.Text(0); // UNCERTAIN: card_text(k, 2): frame mode 2 read as drawing like mode 0
+        c.Screen.Text(0); // card_text(k, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike)
         c.AddItem(-1, MagicLantern);
         c.LastCastleFlags |= 0x808;
         LastCastle.Fight(c, LastCastle.CourtyardEnemy);

@@ -32,7 +32,7 @@ public sealed class DragonTidings : Card
             {
                 return c.Next = previous;
             }
-            // UNCERTAIN: the original passes (9 / 10 / 11, cur_loc) to thunk 09C0:1F09; the rule ignores them.
+            // the original passes (9 / 10 / 11, cur_loc) to thunk 09C0:1F09; the rule ignores them (R039+0x11FC reads no argument: no [bp+n] operand in the asm; 24 of 28 blocks hit in the card oracle).
             switch (previous)
             {
                 case 0x86:

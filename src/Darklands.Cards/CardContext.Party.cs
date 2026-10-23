@@ -34,7 +34,7 @@ public sealed partial class CardContext
 
     /// <summary><c>member_age</c> (years).</summary>
     // orig: member_age R029+0x00A2 (0E76:00A2) matched
-    // UNCERTAIN: member_age returns the word before the record / 365 (unsigned, checked against the asm), while the monthly update and add_member treat that word as years; here the years.
+    // C: member_age returns the word before the record / 365 (unsigned, checked against the asm), while the monthly update and add_member treat that word as years; here the years.
     // DORMANT: no card calls member_age.
     public int MemberAge(int who) => State.Party.Slot(who).Age;
 
@@ -285,18 +285,24 @@ public sealed partial class CardContext
     /// <summary><c>saint_chance_lo</c>.</summary>
     // orig: saint_chance_lo R029+0x20C6 (0E76:20C6) matched
     // DIVERGENCE: -1 is resolved first; the original reads the Divine Favor byte and the Virtue byte of record -1 (cards pass a slot).
-    public int SaintChanceLow(int who, int saint) => Saints.ChanceLow(State, State.Party.Resolve(who), saint);
+    // DIVERGENCE: a saint outside the table (an empty pop-up slot, card_saints[k] = -1) gives 0: the original indexes its far table of
+    // saint functions with it (R029+0x20C6) and calls whatever lies there. Only a slot the pop-up box never lists holds -1.
+    public int SaintChanceLow(int who, int saint) =>
+        saint is < 0 or >= SaintTable.Count ? 0 : Saints.ChanceLow(State, State.Party.Resolve(who), saint);
 
     /// <summary><c>saint_chance_hi</c>.</summary>
     // orig: saint_chance_hi R029+0x2116 (0E76:2116) matched
     // DIVERGENCE: -1 is resolved first, as for SaintChanceLow.
-    public int SaintChanceHigh(int who, int saint) => Saints.ChanceHigh(State, State.Party.Resolve(who), saint);
+    // DIVERGENCE: a saint outside the table (an empty pop-up slot) gives 0, as for SaintChanceLow (R029+0x2116 calls through the same far table).
+    public int SaintChanceHigh(int who, int saint) =>
+        saint is < 0 or >= SaintTable.Count ? 0 : Saints.ChanceHigh(State, State.Party.Resolve(who), saint);
 
     // ---- joining and leaving --------------------------------------------------------
 
     /// <summary><c>add_member</c>: a hireling joins for <paramref name="hours"/>; the slot or −1.</summary>
     // orig: add_member R029+0x4650 (0E76:4650) matched
-    public int AddMember(string name, string shortName, int hours, int term) => PartyRules.AddMember(State, name, shortName, hours, term);
+    public int AddMember(string name, string shortName, string image, int hours, int term) =>
+        PartyRules.AddMember(State, name, shortName, image, hours, term);
 
     /// <summary>Ends the hirelings' terms with value <paramref name="term"/> (R029 4aa4).</summary>
     // orig: R029+0x4AA4 (0E76:4AA4) matched

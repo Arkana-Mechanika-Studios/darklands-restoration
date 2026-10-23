@@ -9,7 +9,7 @@ namespace Darklands.Core.Battles;
 /// </summary>
 // orig: main loop root 03A1:000A - on −2..−6: combat_flags |= 4 (−3),
 //   8 (−5), 0x80 (−6), 0xC (−4), |= 1, then battle_run(battle_mode, battle_enemy, battle_seed, −1, A76C, 0, −1, A76E, 0, −1, A770, 0)
-// UNCERTAIN: the names of DS:A76C..A770 (the enemy types of the three groups by the battle call's argument places)
+// C: the names of DS:A76C..A770 (the enemy types of the three groups by the battle call's argument places)
 //   and the meaning of most combat flag bits.
 public sealed class BattleOrders
 {

@@ -31,7 +31,7 @@ public sealed class MainStreet : Card
     // orig: R045+0x0C40 (18FC:0000) matched (entry: music, the option flags, the watchfulness, the optional notice, the menu loop; the politics tail is StreetPolitics.AfterTheChoice)
     // orig: R045+0x162C (18FC:09EC) matched (init helper: empty in the original, it sets no option defaults)
     // DORMANT: the empty init helper installs no default "screwed up." handler and the card has no items or saints, so only option lines 0..9 exist; there is no pop-up handler.
-    // UNCERTAIN: the original keeps option lines 10..19 untouched here (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
+    // C: the original keeps option lines 10..19 untouched here (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
     // C: the options use the order square 0, fortress 1, market 2, church 3, business 4, inn 5, docks 6, side street 7, other gate 8, Places 9 in both opt_fn and the dispatch switch; hint and action pair up one to one.
     public override int Run(CardContext c)
     {

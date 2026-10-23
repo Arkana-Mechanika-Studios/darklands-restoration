@@ -10,7 +10,7 @@ namespace Darklands.Core.Battles;
 /// generators and the battle read and write it; the accessors give its parts names.
 /// </summary>
 // orig: floor_img R136+0x0000 (0x33FC bytes, level%d.flr); layout as read by floor_view_draw, map_turn and the R010 generator
-// UNCERTAIN: records not used yet (part lists +0x2488, chests +0x300C, door tables +0x3350/+0x3382) are kept as bytes only.
+// C: records not used yet (part lists +0x2488, chests +0x300C, door tables +0x3350/+0x3382) are kept as bytes only.
 public sealed class BattlefieldLevel
 {
     public const int Size = 40;

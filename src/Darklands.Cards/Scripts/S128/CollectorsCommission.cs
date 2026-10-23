@@ -20,8 +20,8 @@ namespace Darklands.Cards.Scripts;
 //     R128+0x1202, R128+0x1230, R128+0x1242,
 //     R128+0x1270, R128+0x1282, R128+0x12B0,
 //     R128+0x1352
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
-// UNCERTAIN (generated): card_text(k, 2) (frame mode 2) is read as drawing like mode 0 (on the picture).
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
 public sealed class CollectorsCommission : Card
 {
@@ -48,7 +48,7 @@ public sealed class CollectorsCommission : Card
         // C: party_seed + cur_loc + 0x11C1.. is 16-bit int arithmetic; random_name takes it as it is.
         var nameSeed = c.State.Party.Seed + c.Here;
 
-        // UNCERTAIN: card_text(k, 2) below: frame mode 2 read as drawing like mode 0.
+        // card_text(k, 2) below: frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
         switch (c.EventType(quest))
         {
             case 0:

@@ -26,7 +26,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R120+0x1C2E, R120+0x1CD0
 // DORMANT (generated): option slots 10..19 keep the default handler R120+0x1CD0 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class TemplarJailers : Card
 {
     public override int Number => 306;
@@ -50,6 +50,7 @@ public sealed class TemplarJailers : Card
         menu[2] = c.SaintsUsable();
 
         var unknown = OptionHint.Saying(CardTexts.Unknown);
+        // DORMANT: in text block 0 the option line 4 is never offered (the first menu on this block never enables them); it can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => Submit(c), unknown),
             new MenuLine(_ => { c.CombatFlags |= 8; Escape(c); }, unknown),

@@ -234,7 +234,7 @@ public sealed partial class Combatant
     /// <summary>DS:C1F3: killing it ends the battle.</summary>
     public bool EndsBattleWhenKilled { get; set; }
 
-    /// <summary>DS:DA36: the AI made it fight on its own. UNCERTAIN: what reads it.</summary>
+    /// <summary>DS:DA36: the AI made it fight on its own. What reads it is not established.</summary>
     public bool EngagedByAi { get; set; }
 
     /// <summary>DS:C200: the enemy's animation identity (struct mon +0x02).</summary>

@@ -30,7 +30,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R125+0x22B6 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 8, 9 are never enabled (every assignment sets their flag to 0).
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatAltarPreparation : Card
 {
     public override int Number => 326;
@@ -53,6 +53,9 @@ public sealed class SabbatAltarPreparation : Card
         var assured = OptionHint.Saying(SuccessAssured);
         // orig: R125+0x2160 / R125+0x21BA matched — lines 8 and 9 (never enabled).
         var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured);
+        // DORMANT: in text block 1 the option lines 0, 1 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
+        // DORMANT: in text block 3 the option lines 0..3 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
+        // DORMANT: in text block 10 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             // orig: R125+0x1BB8 / R125+0x1BE0 matched — refuse (an int function returning options_block; ignored).
             new MenuLine(_ => menu.Offer(1, 2, 3), unknown),

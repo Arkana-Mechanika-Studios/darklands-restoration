@@ -304,7 +304,7 @@ public sealed class CityDungeon : Card
 
     /// <summary>The best Charisma among the able women; the member is the one the attribute query found.</summary>
     // C: the member is the attribute queries' own word (DS:9A44), which R029 174a sets together with best_member.
-    // UNCERTAIN: with no able woman neither word is set and both keep older values; the C# then uses best_member.
+    // C: with no able woman neither word is set and both keep older values; the C# then uses best_member.
     private static OptionHint CharmChance(CardContext c)
     {
         var chance = c.PartyMaxAttributeOfWomen(5);

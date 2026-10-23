@@ -61,6 +61,31 @@ public sealed class BattleEndTests
     }
 
     [Fact]
+    public void RecoveringSetsEveryRecoveryTimeAndClearsTheHitsShown()
+    {
+        // R014+0x0E05: DS:DA55 = clock for slots 0..4 whatever their status; R014+0x0E15/0x0E19: DS:D4E5 and DS:D4F2 cleared for the able and unconscious
+        var battle = NewBattle(CharacterStatus.Able);
+        battle[2].Status = CharacterStatus.Dead;
+        battle.Clock = 519;
+        for (var i = 0; i < 3; i++)
+        {
+            battle[i].RecoverAt = 3212;
+            battle[i].DamageNumber = 2;
+            battle[i].WasHit = true;
+        }
+        BattleEnd.Recover(battle, new Actions());
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            Assert.Equal(519, battle[i].RecoverAt);
+        }
+        Assert.Equal(0, battle[0].DamageNumber);
+        Assert.False(battle[1].WasHit);
+        Assert.Equal(2, battle[2].DamageNumber);
+        Assert.True(battle[2].WasHit);
+        Assert.Equal(0, battle[5].RecoverAt);
+    }
+
+    [Fact]
     public void APersistentBattlefieldStaysOpenAfterVictory()
     {
         var battle = NewBattle(CharacterStatus.Dead);

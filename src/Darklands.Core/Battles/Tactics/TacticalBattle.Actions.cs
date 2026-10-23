@@ -51,11 +51,11 @@ public sealed partial class TacticalBattle
                 }
                 if ((c.Action & CombatAction.Missile) != 0)
                 {
-                    MissileAction(i);
+                    MissileAction(i, set);
                 }
                 if ((c.Action & CombatAction.UseItem) != 0)
                 {
-                    SpellAction(i);
+                    SpellAction(i, set);
                 }
                 if (c.Place != PlaceAction.None)
                 {
@@ -290,8 +290,10 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The missile weapon: draw and loose, reload, aim.</summary>
-    // orig: cbt_missile_action R014+0x1BA0 (0E76:1BA0) draft (spec D §2.5, asm-verified)
-    private void MissileAction(int i)
+    /// <param name="set">The animation set combat_actions worked out at the head of the combatant's pass (R014+0x11C4, pushed at R014+0x1288).</param>
+    // orig: cbt_missile_action R014+0x1BA0 (0E76:1BA0) draft (spec D §2.5, asm-verified); the aim sequence and its length are the caller's set's
+    // (R014+0x1E3F: DS:C8A7[set], R014+0x1E67: DS:A3EC + 30 * set)
+    private void MissileAction(int i, int set)
     {
         var c = Battle[i];
         var now = Clock;
@@ -358,7 +360,7 @@ public sealed partial class TacticalBattle
             if (c.NextFrameAt <= now)
             {
                 c.NextFrameAt = (ushort)(c.FrameDelay + now);
-                var slot = Slots[AnimationSet(i)];
+                var slot = Slots[set];
                 if (!c.AimSetUp)
                 {
                     c.AimSetUp = true;
@@ -430,8 +432,9 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>A spell: chant, then the cast frames, then the spell flies.</summary>
-    // orig: spell_action R014+0x1F00 (0E76:1F00) draft (spec D §2.6, asm-verified)
-    private void SpellAction(int i)
+    /// <param name="set">The animation set combat_actions worked out at the head of the combatant's pass (R014+0x11C4, pushed at R014+0x12A0).</param>
+    // orig: spell_action R014+0x1F00 (0E76:1F00) draft (spec D §2.6, asm-verified); the cast sequence is the caller's set's (R014+0x203E)
+    private void SpellAction(int i, int set)
     {
         var c = Battle[i];
         if (c.State == ActionState.Swinging)
@@ -457,7 +460,7 @@ public sealed partial class TacticalBattle
         }
         if ((c.State == ActionState.Chanting && c.ReloadStartAt <= Clock) || c.State == ActionState.Casting)
         {
-            var slot = Slots[AnimationSet(i)];
+            var slot = Slots[set];
             if (c.State != ActionState.Casting)
             {
                 c.State = ActionState.Casting;
@@ -633,8 +636,8 @@ public sealed partial class TacticalBattle
         {
             c.Frame++;
         }
-        var slot = Slots[AnimationSet(i)];
-        _ = set;
+        // R014+0x2363 / 0x2415: the set the caller worked out before the dying pose (DS:C83F[set], DS:C803[set]), not the dying pose's
+        var slot = Slots[set];
         if (slot.CorpseKind == 2)
         {
             return;

@@ -50,6 +50,8 @@ public sealed class SchratsInTheForest : Card
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
+        // DORMANT: in text block 2 the option lines 0, 7 are never offered (the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 7 the option lines 0, 5 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R112+0x2D00 (1AAE:05A0) matched; hint R112+0x2D76
             new MenuLine(_ => TheSchratsCome(c, menu), Unknown),

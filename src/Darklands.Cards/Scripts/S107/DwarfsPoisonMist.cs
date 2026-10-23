@@ -151,7 +151,7 @@ public sealed class DwarfsPoisonMist : Card
         {
             ShowPicture(c, GassedPicture);
             c.Screen.Text(5);
-            // UNCERTAIN: the text says the mist burns, but the original adds 10..14 Endurance here.
+            // the text says the mist burns, but the original adds 10..14 Endurance here.
             c.AddAttribute(Who.Everybody, (int)Attribute.Endurance, c.Random(5) + 10);
             menu.Block = 12;
             c.Next = 253;

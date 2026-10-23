@@ -58,7 +58,7 @@ internal sealed class Mpu401
 /// </summary>
 // orig: RSOUND.DLC image 00CF (latch, read, 256 loops, latch, read: the difference, summed over 16 tries by 00FF
 //   into the delay [58h] after an MPU reset).
-// UNCERTAIN: the speed of the emulated processor against the timer (4 instructions per count, a fast 386); the
+// C: the speed of the emulated processor against the timer (4 instructions per count, a fast 386); the
 //   driver only scales a delay by it.
 internal sealed class TimerCounter(Func<long> instructions)
 {

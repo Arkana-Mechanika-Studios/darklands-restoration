@@ -4,7 +4,7 @@ namespace Darklands.Cards.Scripts;
 
 /// <summary>"$MineT08": Six numbered faces and four metal knobs. (The curse strikes Agility, though the text speaks of looks; the original's fight line is not in the text.)</summary>
 // orig: R094+0x0A92 (18E1:0002) matched; tests: CardSmokeTests
-// DORMANT: the original enables 10 lines and handles options [0, 1, 2, 3, 4, 5]; the text has only 5 option lines, so options [5] are never offered.
+// DORMANT: the original enables 10 lines and handles options [0, 1, 2, 3, 4, 5]; the text has only 5 option lines, so option 5 (the fight) is never offered.
 public sealed class RiddleDoor_MineT08 : DwarfRiddleDoor
 {
     public override int Number => 0xCB;
@@ -24,5 +24,7 @@ public sealed class RiddleDoor_MineT08 : DwarfRiddleDoor
         Wrong(c, 1, Attribute.Agility),
         // orig: R094+0x0E4C (18E1:03BC); hint R094+0x0E88 matched
         Wrong(c, 1, Attribute.Agility),
+        // DORMANT: line 5 R094+0x0EC2 (18E1:0432) (battle_mode = 1, next -2); hint R094+0x0ED0 (18E1:0440) "Success is assured.", party: the text has no line for it
+        TurnAway(c),
     ];
 }

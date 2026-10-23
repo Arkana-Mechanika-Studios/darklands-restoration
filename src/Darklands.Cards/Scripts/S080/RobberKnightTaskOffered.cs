@@ -81,11 +81,11 @@ public sealed class RobberKnightTaskOffered : Card
         // The Schulz joins for 90 days, the merchant for a year (shield picture "F01").
         if (patron == 0x86)
         {
-            c.AddMember(c.Variables.Named[0], "Schulz", 0x870, 9);
+            c.AddMember(c.Variables.Named[0], "Schulz", "F01", 0x870, 9);
         }
         else
         {
-            c.AddMember(c.Variables.Named[0], "Hanse", 0x21C0, 7);
+            c.AddMember(c.Variables.Named[0], "Hanse", "F01", 0x21C0, 7);
         }
         c.Next = patron;
     }

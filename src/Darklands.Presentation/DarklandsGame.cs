@@ -235,11 +235,17 @@ public sealed class DarklandsGame
     // freed; the load screen (DS:E89A = 0: no Return button); longjmp(DS:A752, -1)
     // BUG: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
     // C: the battle's and the map's buffers are their screens' own here; a load from a battle leaves the battle by the jump.
-    private void LoadInGame(GameState state)
+    // orig: load_game R037+0x8B76 (1C7D:09C6) matched: in a battle (DS:907A = 1) its buffers are freed and cards_startup_vec(0) runs
+    // (R043+0x078E: srand((unsigned)time(0)), TimePassage.Reseed) before the load screen
+    private void LoadInGame(GameState state, bool inBattle = false)
     {
         if (!new MessageBox(_ui).Ask("Loading is irreversable. Proceed?"))
         {
             return;
+        }
+        if (inBattle)
+        {
+            Core.Rules.TimePassage.Reseed(state);
         }
         if (!state.Behaviour.FixLoadScreenEscape)
         {
@@ -310,6 +316,12 @@ public sealed class DarklandsGame
 
     // orig: the do/while of root 03A1:000A: a screen function returns the next screen number; 0x0C is the overland map (overland_map), -2..-6 start a battle, 0x62 ends the game, -0x63 quits
     private TablePersonalNames? _personalNames;
+
+    /// <summary>The battle view's centre (DS:C866 / DS:C886), a program global: a game loaded keeps it.</summary>
+    private (int Column, int Row) _battleViewCentre;
+
+    /// <summary>The combatants' seen positions (20A5:79A9), a program global: a game loaded keeps them.</summary>
+    private Core.Battles.MapPoint[][]? _seenPositions;
 
     /// <summary>
     /// A card returned −2..−6: the battle it ordered is fought, the dead leave the party and the
@@ -389,9 +401,19 @@ public sealed class DarklandsGame
         {
             CharacterSheet = member => context!.Screens.CharacterSheet(member),
             PartyInfo = () => context!.Screens.PartyInfo(),
-            Load = () => LoadInGame(state),
         };
         battles.Save = battle => SaveGame(state, battles, battle);
+        // C: the view centre DS:C866 / DS:C886 is a global the load leaves as it was: a battle taken up from the file loaded in a battle is
+        // drawn around the centre the battle left had (R014+0x02FF), and so its members' screen positions (+0x00 / +0x02) as its next save
+        // writes them (lockstep session savemid-mine)
+        battles.ViewCentre = _battleViewCentre;
+        battles.SeenPositions = _seenPositions;
+        battles.Load = () =>
+        {
+            _battleViewCentre = battles.CurrentViewCentre;
+            _seenPositions = battles.SeenPositions;
+            LoadInGame(state, inBattle: true);
+        };
         // orig: run_battle R029+0x2278: a card's own battle (battle_run with mode 0).
         context.Battle = (side, seed, p) => battles.Battle(new BattleRequest(side, seed,
             [(p[0], p[1], p[2]), (p[3], p[4], p[5]), (p[6], p[7], p[8])]));
@@ -409,12 +431,20 @@ public sealed class DarklandsGame
         // orig: music_play(5) R043+0x09AE: the AX of driver command 5 (or of the stop with music off), which $Shell00 keeps in DS:9C3D
         context.MusicPlaying = _ui.MusicPlaying;
         context.SavedMusic = _ui.SavedMusic;
-        var screens = new GameScreens2(_ui, panel, state, World, new GameScreens(_ui, panel, state, new ScreensUnavailable(screen)));
+        var shops = new GameScreens(_ui, panel, state, new ScreensUnavailable(screen));
+        var screens = new GameScreens2(_ui, panel, state, World, shops);
+        // the barter, item store and loot screens open the character sheet from their party column
+        shops.Sheet = screens.CharacterSheet;
         context.Screens = screens;
         var hotKeys = new HotKeys(_ui, state, Options)
         {
             Save = () => SaveGame(state, battles),
-            Load = () => LoadInGame(state),
+            Load = () =>
+            {
+                _battleViewCentre = battles.CurrentViewCentre;
+                _seenPositions = battles.SeenPositions;
+                LoadInGame(state);
+            },
             PartyInfo = () => context.Screens.PartyInfo(),
             CharacterSheet = member => context.Screens.CharacterSheet(member),
             // orig: thunk 09C0:183D = R022+0x051C outside a battle (the battle has its own: BattleScreen)

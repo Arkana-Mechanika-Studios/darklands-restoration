@@ -5,7 +5,7 @@ public readonly record struct CardInfo(int Number, string Name, int Picture);
 
 /// <summary>The game's 366 cards (0, the developers' test card, and 1..365).</summary>
 // orig: R136+0xD090[] (366 far function pointers, index = card number; entry 0 is the developers' test card $Initi00, R044+0x0000) and, for each card function, strcpy(card_name, "$Xxxxnn") plus the first entry of pic_names it loads; the table below is derived from them and is data, not a function; tests: CardSmokeTests
-// UNCERTAIN: names and main pictures were read from the card functions: a card whose function loads several pictures lists the first; "" = the card has no MSG file (it only moves on), -1 = no picture. Card 98 (0x62, end of game) carries the name "$NoGo00.msg" exactly as the table was read; the other names have no ".msg".
+// C: names and main pictures were read from the card functions: a card whose function loads several pictures lists the first; "" = the card has no MSG file (it only moves on), -1 = no picture. Card 98 (0x62, end of game) carries the name "$NoGo00.msg" exactly as the table was read; the other names have no ".msg". Agrees with the original in the card oracle (CARDS.md: name and first picture of all 365 cards, 13542 runs agree, none differ).
 public static class CardTable
 {
     public static readonly CardInfo[] All =

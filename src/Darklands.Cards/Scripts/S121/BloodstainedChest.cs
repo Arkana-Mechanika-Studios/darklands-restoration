@@ -17,7 +17,7 @@ namespace Darklands.Cards.Scripts;
 //     R121+0x0D70, R121+0x0DAC, R121+0x0DCA,
 //     R121+0x0E06, R121+0x0E24, R121+0x0E60,
 //     R121+0x0F02
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class BloodstainedChest : Card
 {
     public override int Number => 309;

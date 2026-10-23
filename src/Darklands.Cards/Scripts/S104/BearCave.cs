@@ -45,6 +45,7 @@ public sealed class BearCave : Card
 
         // C: the registration installs the standard pop-up handlers, which name the member picked in the box.
         menu.Popup = () => c.MemberPopupHint();
+        // DORMANT: in text block 17 the option lines 0..2, 4, 5 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R104+0x0318 (line 0); hint R104+0x0342 (1838:0342) matched
             new MenuLine(p => SearchForTracks(c, menu, p),

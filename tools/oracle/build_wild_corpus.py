@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import random
 import struct
 import sys
@@ -56,7 +57,7 @@ def init_worker(exe_path: str, game_path: str) -> None:
 
 
 def make_scenarios(count: int) -> list[dict]:
-    r = random.Random(20261021)
+    r = random.Random(20261021 + int(os.environ.get("DL_SWEEP_SEED", 0)))
     out = []
     for n in range(count):
         bf = WILD_TYPES[n % len(WILD_TYPES)] if n < len(WILD_TYPES) else r.choice(WILD_TYPES)
@@ -77,6 +78,16 @@ def make_scenarios(count: int) -> list[dict]:
             if r.random() < 0.6:
                 sc["forceSide"] = r.randint(1, 4)
         out.append(sc)
+    if os.environ.get("DL_SWEEP_GRID"):
+        # opt-in aimed sweep (DL_SWEEP_GRID=n scenarios): forceMap (0..21) against forceSide (0..5) pairs; the branches on
+        # DS:C0FE of the party placement test 0, 2, 3 and 4, which the random plan only reaches by chance
+        pairs = [(fm, fs) for fm in range(0, 22) for fs in range(0, 6)]
+        r.shuffle(pairs)
+        for fm, fs in pairs[:int(os.environ["DL_SWEEP_GRID"])]:
+            sc = dict(out[0])
+            sc.update(bf=r.choice(WILD_TYPES), seed=r.randint(0, 0xFFFF), terrain=r.randint(0, 29),
+                      month=r.randint(0, 11), lore=r.randint(1, 10), forceMap=fm if fm else -1, forceSide=fs)
+            out.append(sc)
     return out
 
 

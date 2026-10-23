@@ -21,7 +21,7 @@ public sealed class GroveAtNight_CityG06 : Card
     // orig: R052+0x10A6 (1942:0006) matched (entry: music, picture, option states, menu loop)
     // orig: R052+0x164E (1942:05AE) matched (init helper: enables all 20 option lines and installs the "screwed up." default; the entry then sets lines 0..9, so lines 10..19 stay enabled but have no text line)
     // DORMANT: R052+0x1670 (1942:05D0): the "screwed up." default hint for opt_fn[0..19]; lines 0..9 have their own hints and lines 10..19 cannot be chosen.
-    // UNCERTAIN: text block 4 ("Food is just as important as sleep ...") is never shown by this card's code.
+    // C: text block 4 ("Food is just as important as sleep ...") is never shown by this card's code.
     public override int Run(CardContext c)
     {
         c.PlayMusic(Music);

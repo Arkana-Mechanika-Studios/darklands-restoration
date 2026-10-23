@@ -78,7 +78,7 @@ public sealed class BattleScreenTests
         var (_, tactics) = Start(files, new BattleRequest(0x14, 863, [(34, 4, 8), (18, 5, 2), (34, 1, 2)]), s =>
         {
             state = s;
-            Assert.Equal(4, Core.Rules.PartyRules.AddMember(s, "Wolf Bauer", "Wolf", 100, 1));
+            Assert.Equal(4, Core.Rules.PartyRules.AddMember(s, "Wolf Bauer", "Wolf", "F01", 100, 1));
         });
         var b = tactics.Battle;
         var member = state!.Party.Members[4];

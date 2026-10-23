@@ -39,7 +39,24 @@ public sealed class GameScreens : IGameScreens
 
     public void Alchemy(int member, int place) => _others.Alchemy(member, place);
 
-    public void CharacterSheet(int member) => _others.CharacterSheet(member);
+    /// <summary>
+    /// The character sheet the barter, item store and loot screens open from the party column (the game passes the sheet of
+    /// the screens that wrap these); null: the sheet of <c>others</c>.
+    /// </summary>
+    // orig: the party-column test of the barter loop R032+0x0000 and of the item store loop R035+0x0000 opens the sheet (R031+0x0124 in the call stack of the original)
+    public Action<int>? Sheet { get; set; }
+
+    public void CharacterSheet(int member)
+    {
+        if (Sheet is { } sheet)
+        {
+            sheet(member);
+        }
+        else
+        {
+            _others.CharacterSheet(member);
+        }
+    }
 
     public void PartyInfo() => _others.PartyInfo();
 

@@ -37,7 +37,7 @@ public sealed class WitchAtYourMercy : Card
             // orig: R116+0x22E6 (1A1C:04A6) matched; hint R116+0x2332
             new MenuLine(_ => HerPenance(c), Unknown),
             // DORMANT: lines 5..9 are never offered; actions R116+0x236A.. and hints R116+0x236C.. are empty
-            // (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

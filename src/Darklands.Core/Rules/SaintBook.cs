@@ -48,6 +48,7 @@ public sealed class SaintEffects : ISaintEffects
 //   records themselves do not: party[-1].f03 is DS:9BEC (in the menu-item records, 0) so the "man" branch is
 //   taken, party[-1].f41 is DS:9C2A (the high byte of the UI word DS:9C29: no member's charms change) and
 //   saints_known[-1] is member 4's formula bytes 2..21 (IfWoman, SetCharm, AddCharm, Teach).
+// C: equip_bonuses R029+0x0792 does not resolve -1 either (its equipped_item reads party[-1]): EquippedWeaponSkills.
 // DORMANT: R039+0x9578 and R039+0x97B2 are saint functions that saint_fns does not list
 //   (Unlisted below); `what` outside 0..8 returns t[what] past the 7-entry table (stack garbage) — no
 //   caller passes it.
@@ -126,15 +127,38 @@ public static class SaintBook
 
     /// <summary>The skills of the equipped weapons raised by <paramref name="least"/>..<paramref name="most"/> for a day.</summary>
     // orig: equip_bonuses R029+0x0792
-    private static Boon WeaponSkills(int least, int most) => (s, who, _) =>
-        MemberRules.BoostEquippedWeaponSkills(s, who, s.Random.Below(most - least + 1) + least);
+    private static Boon WeaponSkills(int least, int most) => (s, who, given) =>
+        EquippedWeaponSkills(s, who, given, s.Random.Below(most - least + 1) + least);
 
     /// <summary>A fixed weapon-skill boost (St.Michael: 20, no random draw).</summary>
-    private static Boon WeaponSkillsBy(int points) => (s, who, _) => MemberRules.BoostEquippedWeaponSkills(s, who, points);
+    private static Boon WeaponSkillsBy(int points) => (s, who, given) => EquippedWeaponSkills(s, who, given, points);
 
     /// <summary>The equipped weapons' skills lowered (St.Giles: −(rnd 10 + 15), the unsigned-constant form as in <see cref="Lower"/>).</summary>
-    private static Boon LowerWeaponSkills(int least, int most) => (s, who, _) =>
-        MemberRules.BoostEquippedWeaponSkills(s, who, -(s.Random.Below(most - least + 1) + least));
+    private static Boon LowerWeaponSkills(int least, int most) => (s, who, given) =>
+        EquippedWeaponSkills(s, who, given, -(s.Random.Below(most - least + 1) + least));
+
+    /// <summary>equip_bonuses for the member as given: the points are drawn by the saint body before the call either way.</summary>
+    // orig: R029+0x0792 passes who as it is to equipped_item (thunk 09C0:1E9B -> R031+0x5D06), which does not resolve -1: it reads
+    //   the record before the members' (weapon type DS:9C26, missile type DS:9BF7, pack count DS:9C53) and the pack bytes before
+    //   the pack table (2E38:FEC0).
+    // BUG: so for a prayer for the party (-1) the weapon-skill boost reaches nobody (FixSaintWeaponSkillsForParty: the leader's weapons).
+    // DIVERGENCE: DS:9C26 is the menu bar's keyboard mode and DS:9C53 its last sub-menu's text column (MenuBar); until a sub-menu
+    //   has been opened the count (the low byte of DS:9C53, signed; root 0000:0000 sets it) is 0 and both lookups return -1 (as
+    //   in the oracle's states). Afterwards R031+0x5D06 scans the records
+    //   2E38:FEC0 + 6i (= DS:C0A0 + 6i, BSS) for type DS:9C26 (0/1; missile: DS:9BF7) and quality
+    //   DS:9C2D (missile: DS:9C2F), returning the word at DS:C09E + 6i (first exact match, else the last type match; DS:99EB = i).
+    //   DS:C09E..C3F3 are battle and battlefield-generation work variables left from the session's last battle (not saved; the
+    //   word DS:C105 is a DOS segment), and DS:9C2D is the segment word of an "alc mem" buffer (R033+0x00CC, R033+0x185E,
+    //   R036+0x1F12). What is found (and the item record R029+0x0792 then reads) depends on DOS memory and the session's past,
+    //   not on the game's state: not modelled, here never a weapon.
+    private static void EquippedWeaponSkills(GameState s, int who, int given, int points)
+    {
+        if (given == Who.Leader && !s.Behaviour.FixSaintWeaponSkillsForParty)
+        {
+            return;
+        }
+        MemberRules.BoostEquippedWeaponSkills(s, who, points);
+    }
 
     /// <summary>
     /// The standing changes by <paramref name="a"/>/<paramref name="b"/> here, or at the city
@@ -207,7 +231,7 @@ public static class SaintBook
 
     /// <summary>A day's travel blessing for the party (renewed while it is on water).</summary>
     // orig: event_new(-2, 0, 0x63, 0x4b, 0, 0, 9, 0x18, 1, 0) R029+0x2C4E
-    // UNCERTAIN: the meaning of kind 0x4B (EventKinds.TravelBlessing) is a guess from its expiry handler.
+    // C: the meaning of kind 0x4B (EventKinds.TravelBlessing) is a guess from its expiry handler.
     private static readonly Boon TravelBlessing = (s, _, _) =>
         s.Events.Create(Who.Everybody, 0, 0x63, EventKinds.TravelBlessing, 0, 0, (int)ExpiryHandler.RenewTravelBlessing, 24, 1, 0);
 
@@ -217,7 +241,7 @@ public static class SaintBook
 
     /// <summary>The help depends on whether the member is a woman (record byte +0x03).</summary>
     // orig: if (party[who].f03 == 0) ... else ...
-    // UNCERTAIN: +0x03 is taken as "is a woman" as elsewhere in the port (party_count_able counts it).
+    // C: +0x03 is taken as "is a woman" as elsewhere in the port (party_count_able counts it).
     // C: who as given: party[-1].f03 is DS:9BEC, inside the menu-item records, 0 unless the menu code stored there: the f03 == 0 branch.
     private static Boon IfWoman(Boon[] woman, Boon[] man) => (s, who, given) =>
         Grant(s, who, given, given != Who.Leader && s.Party.Slot(who).IsFemale ? woman : man);

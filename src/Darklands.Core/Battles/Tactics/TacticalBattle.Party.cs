@@ -120,7 +120,7 @@ public sealed partial class TacticalBattle
 
     /// <summary>Alt-O in the battle's key switch: everybody stops and real combat ends.</summary>
     // orig: combat_keys R016+0x0000 (1EF8:0000) draft (case 0x1800)
-    // UNCERTAIN: a debugging key left in; the hot key (Change Marching Order) takes Alt-O first when that entry is on.
+    // C: a debugging key left in; the hot key (Change Marching Order) takes Alt-O first when that entry is on.
     public void StopEverything()
     {
         foreach (var c in Battle.Combatants)
@@ -220,6 +220,7 @@ public sealed partial class TacticalBattle
         _view.MapChanged();
         TurnTowardTargets();
         Effects.Drawn(_view);
+        RemoveArrivedMissiles();
         RefreshTargetCursor();
     }
 }

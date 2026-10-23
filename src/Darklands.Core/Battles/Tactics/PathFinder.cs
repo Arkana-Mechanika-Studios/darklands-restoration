@@ -88,7 +88,8 @@ public sealed class PathFinder
     /// <param name="openDoors">For enemies: opens the unlocked closed doors for the search and restores them afterwards (spec D §4.5).</param>
     // orig: path_find R014+0x481A (12F7:000A) draft; tests: Oracle:path.json (60 searches)
     // DIVERGENCE: the busy cursor and the stopped clock (DS:07D3) during the search are the screen's.
-    public bool Find(Battle battle, int who, sbyte[] stepX, sbyte[] stepY, Action<bool>? openDoors = null)
+    /// <param name="tracked">Runs once the trackers found a path of at least one step (its straight waypoints dropped), before the shortcuts.</param>
+    public bool Find(Battle battle, int who, sbyte[] stepX, sbyte[] stepY, Action<bool>? openDoors = null, Action? tracked = null)
     {
         var c = battle[who];
         _who = who;
@@ -108,11 +109,18 @@ public sealed class PathFinder
             // DS:D697 is set only for the destination test: during the trackers moving combatants block again.
             var atGoal = _map.Collides(who, c.Destination.X, c.Destination.Y);
             _map.Searching = false;
+            var enemy = who >= Combatant.PartySlots;
             if (!atGoal.IsFree && !HitTarget())
             {
+                // BUG: R014+0x48CA leaves through the common exit (R014+0x4B36): R014+0x4B5A (for an enemy) puts every door that is no twin
+                // back to the open flags DS:E0C0 kept at the last enemy search that opened them, though this search opened none, and copies
+                // those flags back (DS:E0C0 to the level's +0x33D3): a door opened or shut since then is set back.
+                if (enemy)
+                {
+                    openDoors?.Invoke(false);
+                }
                 return false;
             }
-            var enemy = who >= Combatant.PartySlots;
             if (enemy)
             {
                 openDoors?.Invoke(true);
@@ -139,6 +147,8 @@ public sealed class PathFinder
                     _pathWaypoint[k] = _waypoint[_winner][k];
                 }
                 DropStraightWaypoints();
+                // R014+0x4AE4: the AI's path hook (1DB7:0158) runs here, on the trackers' waypoints, whatever the shortcuts give after it.
+                tracked?.Invoke();
                 // C: path_find returns the shortcut pass's result: a failed re-plan makes the whole search fail.
                 if (!Shortcuts((c.Position.X, c.Position.Y)))
                 {

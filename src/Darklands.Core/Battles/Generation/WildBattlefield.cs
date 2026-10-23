@@ -1614,7 +1614,7 @@ public static class WildBattlefield
 
     /// <summary>Marks the kind's record (byte +0x0C) for battlefield type 0x75 when its template is one of 0x1E..0x22.</summary>
     // orig: R008+0x2D34 (1432:2D34) draft (byte-matched per the draft notes)
-    // UNCERTAIN: what the mark means (monsters_clear sets it to 0).
+    // C: what the mark means (monsters_clear sets it to 0).
     private static void MarkSlot(GenerationState g, int bf, int kind)
     {
         if (bf == 0x75 && g.Forces.Templates[0][kind] is >= 0x1E and <= 0x22)

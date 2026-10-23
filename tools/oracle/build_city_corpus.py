@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import random
 import struct
 import sys
@@ -99,7 +100,7 @@ def main() -> None:
     lst = (game / "DARKLAND.LST").read_bytes()
     imaps = cat_members(game / "IMAPS.CAT")
     count = int(sys.argv[4]) if len(sys.argv) > 4 else 80
-    r = random.Random(20261020)
+    r = random.Random(20261020 + int(os.environ.get("DL_SWEEP_SEED", 0)))
     base = Machine(exe, enm, lst)
     base.call("monsters_clear", [])
     base.call("groups_clear", [])

@@ -22,14 +22,6 @@ public sealed class Party
 
     public Character Leader => Members[LeaderIndex];
 
-    /// <summary>
-    /// The record a slot past the end of <see cref="Members"/> still holds: party_delete (R037 1462:3F30) only clears the
-    /// member's status byte, so the departed member's name and sex stay in party[slot] for the texts until a new member
-    /// takes the slot. Set when a trailing member is removed for good; cleared when the slot is filled again.
-    /// </summary>
-    // orig: party DS:9C69, 5 x 0x80: party_delete writes party[p][0] = 0 and nothing else of the record
-    public Character?[] DepartedRecords { get; } = new Character?[MaxMembers];
-
     public IEnumerable<Character> Able => Members.Where(m => m.IsAble);
 
     public IEnumerable<Character> Present => Members.Where(m => m.IsPresent);
@@ -103,7 +95,11 @@ public sealed class Party
 
     private readonly Character?[] _spare = new Character?[MaxMembers];
 
-    /// <summary>The record a slot past <see cref="Members"/> still holds (a departed member's), null if none was left there.</summary>
+    /// <summary>
+    /// The record a slot past <see cref="Members"/> still holds (a departed member's, or a loaded slot's), null if none was left there:
+    /// party_remove and party_delete clear only the status byte, so the name, sex, figure and record bytes stay until a member takes the slot.
+    /// </summary>
+    // C: party DS:9C69 (the 0x80-byte records from DS:9C55, the status byte at +0x14); party_delete R037+0x3F30 writes the status byte and nothing else of the record
     public Character? SpareRecord(int index) => index >= Members.Count && index < MaxMembers && _departed[index] ? _spare[index] : null;
 
     // the slots a member left (TrimToSize), as opposed to a slot only read past the party (Slot)

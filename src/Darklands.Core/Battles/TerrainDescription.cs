@@ -87,7 +87,7 @@ public sealed class TerrainDescription
 
     /// <summary>The tile numbers below which tiles of a decoration or furniture kind are animated (−1 for kinds without it).</summary>
     /// <summary>+0xA3: furniture tiles from this number on block sight (DS:C1CF once the tile set is loaded).</summary>
-    // UNCERTAIN: the furniture section's "animated below" byte doubles as the sight limit (furniture_load R024 07A2 sets DS:C1CF).
+    // C: the furniture section's "animated below" byte doubles as the sight limit (furniture_load R024 07A2 sets DS:C1CF).
     public int FirstSightBlockingFurniture => Bytes[0xA3];
 
     public int AnimatedBelow(TileKind kind) => AnimatedAt[(int)kind] < 0 ? -1 : Bytes[AnimatedAt[(int)kind]];

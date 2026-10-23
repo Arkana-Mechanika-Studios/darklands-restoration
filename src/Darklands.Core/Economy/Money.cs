@@ -141,7 +141,7 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
     /// <summary>"3 florins, 2 groschen and 1 pfennig".</summary>
     // orig: money_format R029+0x5286 (1367:0376) matched; itoa_commas root 0265:09B2 (0265:09B2) matched; tests: CoreValueRulesTests
     // C: in `if (fl == 1) if (m->pf) ", " else " and "` the else belongs to the inner if: after florins ", " when pfennigs follow, else " and ".
-    // UNCERTAIN: itoa_commas (root 0265:09B2, assembly only) is taken to group thousands with ','.
+    // C: itoa_commas (root 0265:09B2, assembly only) groups thousands with ',': the asm writes 0x2C before the third digit from the right; agrees with the original in the oracles (9 of 10 blocks hit).
     public override string ToString()
     {
         var text = new System.Text.StringBuilder();

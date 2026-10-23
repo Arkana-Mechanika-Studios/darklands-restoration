@@ -24,7 +24,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R133+0x05FE ("screwed up.") and are never shown.
 // C (generated): opt_flag_6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class FamineHorseman : Card
 {
@@ -51,6 +51,8 @@ public sealed class FamineHorseman : Card
 
         var unknown = OptionHint.Saying(CardTexts.Unknown);
         // C: every handler of this card redraws with card_load (the whole card, Show), not card_load_near.
+        // DORMANT: in text block 0 the option lines 2..4 are never offered (the first menu on this block never enables them); they can be offered in other blocks only.
+        // DORMANT: in text block 3 the option lines 0, 1 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             // orig: R133+0x01A8 / R133+0x01F4 matched — approach him: block 3 (line 5 keeps its flag 1).
             // C: the handler returns the value of var_chosen1 = leader; the menu ignores it.
@@ -81,8 +83,9 @@ public sealed class FamineHorseman : Card
             {
                 Show(c, Balance);
                 c.Screen.Text(7);
-                c.State.Party.Purse = Money.Zero;
-                // C: DS:9072 = 0 clears only the florins word; DS:9074/DS:9076 (groschen, pfennigs) stay.
+                // BUG: "all money" is DS:906B = 0 and DS:9072 = 0 (R133+0x04D3), only the florins words of the purse and of the
+                //   bank notes: the groschen and pfennigs (DS:906D/DS:906F, DS:9074/DS:9076) stay.
+                c.State.Party.Purse = c.State.Party.Purse with { Florins = 0 };
                 c.State.Party.BankNotes = c.State.Party.BankNotes with { Florins = 0 };
                 c.AddItem(Who.Leader, TheBalance);
                 BackToTheCourtyard(c);

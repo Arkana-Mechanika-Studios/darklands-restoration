@@ -52,7 +52,7 @@ public static class FortressBattlefield
 
     /// <summary>The Templar fortress: 16 levels; the party starts on level 0 (or 1 when the third spec's quality is 1).</summary>
     // orig: R011+0x0000 (1432:0000) draft (byte-matched per the draft notes); call order and arguments checked against asm; tests: Oracle:special.json
-    // UNCERTAIN: the meaning of the two specs' qualities the fortress tests: the second (== 1) shrinks every group by one, the third (== 1) starts the party on level 1.
+    // C: the meaning of the two specs' qualities the fortress tests: the second (== 1) shrinks every group by one, the third (== 1) starts the party on level 1.
     // DORMANT: Context.ForceMap (DS:C100, always -1) would force the start level to a number 0..15.
     // DIVERGENCE: the four level buffers (alloc_buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept.
     public static int BuildFortress(GenerationState g, int battlefield, out int start, (int Type, int Quality, int Count)[] specs)
@@ -807,7 +807,7 @@ public static class FortressBattlefield
 
         /// <summary>Adds an entry (an item type with three bytes and its weight) to loot group <paramref name="group"/> if it holds fewer than four.</summary>
         // orig: R011+0x1794 (1432:1794) draft (byte-matched per the draft notes); checked against asm
-        // UNCERTAIN: the meaning of the loot groups (+0x300E, 0x2C bytes) and their entries; named after what they hold (item types, up to four).
+        // C: the meaning of the loot groups (+0x300E, 0x2C bytes) and their entries; named after what they hold (item types, up to four).
         private void AddLootEntry(byte[] lv, int group, int type, int b, int c, int d)
         {
             var at = LootGroupAt(group);
@@ -913,7 +913,7 @@ public static class FortressBattlefield
 
         /// <summary>Gives the type-7 object <paramref name="k"/> its extent in cells and its value and record.</summary>
         // orig: R011+0x1BC0 (1432:1BC0) draft ("close"); checked against asm
-        // UNCERTAIN: the draft calls type 7 and 8 objects doors; they are rectangles of cells with a value (+0x0C) and a record.
+        // C: the draft calls type 7 and 8 objects doors; they are rectangles of cells with a value (+0x0C) and a record.
         // C: the width and height are bytes: (b − a + 1) × 32 and (d − c + 1) × 16 wrap at 256.
         private static void ShapeZone7(byte[] lv, int k, int a, int b, int c, int d, int value, int p16, bool flag, int p1a, int p1c, int p1e, int p20)
         {

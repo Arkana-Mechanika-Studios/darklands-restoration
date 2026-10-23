@@ -85,6 +85,30 @@ public sealed class SaintsOracleTests
     }
 
     /// <summary>
+    /// Cases aimed at branches the generated ones leave open (Corpus/saints-flip.json, tools/oracle/flip_units.py): the party in
+    /// the open country (nearest_city stubbed to the city next to it), the whole party (who -2), and the places the saints'
+    /// functions compare the current location with.
+    /// </summary>
+    [Fact]
+    public void TheFlippedCasesMatch()
+    {
+        var failures = new List<string>();
+        foreach (var c in Data.Value.FlipCases("help"))
+        {
+            try
+            {
+                CheckEvents(c);
+                CheckState(c);
+            }
+            catch (Exception e)
+            {
+                failures.Add($"flip case {c.Element.GetProperty("flip").GetProperty("n").GetInt32()}: {e.Message}");
+            }
+        }
+        Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
+    }
+
+    /// <summary>
     /// The events the help starts, in order, against the original's recorded event_new / event_here
     /// calls (an empty log, so each boost's event is made as in the original).
     /// </summary>
@@ -170,14 +194,22 @@ public sealed class SaintsOracleTests
     {
         var (s, records) = WithParty(i, State(i));
         s.Party.LeaderIndex = Int(i, "leader");
+        var locRecords = i.GetProperty("locations").EnumerateObject()
+            .ToDictionary(p => int.Parse(p.Name, CultureInfo.InvariantCulture), p => Convert.FromHexString(p.Value.GetString()!));
         for (var k = 0; k < 414; k++)
         {
-            s.Locations.Add(new Location { Index = k });
+            // the record's icon (+0), map position (+4, +6): nearest_city reads them when the party is in the open country
+            s.Locations.Add(locRecords.TryGetValue(k, out var rec)
+                ? new Location { Index = k, Icon = BitConverter.ToInt16(rec, 0), X = BitConverter.ToInt16(rec, 4), Y = BitConverter.ToInt16(rec, 6) }
+                : new Location { Index = k });
         }
-        foreach (var p in i.GetProperty("locations").EnumerateObject())
+        foreach (var (index, r) in locRecords)
         {
-            var r = Convert.FromHexString(p.Value.GetString()!);
-            s.Locations[int.Parse(p.Name, CultureInfo.InvariantCulture)].Reputation = BitConverter.ToInt16(r, 0x12);
+            s.Locations[index].Reputation = BitConverter.ToInt16(r, 0x12);
+        }
+        if (i.TryGetProperty("x", out var mapX))
+        {
+            s.MapPosition = new MapPosition(mapX.GetInt32(), Int(i, "y"));
         }
         s.CurrentLocation = Int(i, "curLoc");
         var purse = i.GetProperty("purse").EnumerateArray().Select(x => (short)x.GetInt32()).ToArray();

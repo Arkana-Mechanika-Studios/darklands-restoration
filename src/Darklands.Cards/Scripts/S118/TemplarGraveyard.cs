@@ -35,6 +35,7 @@ public sealed class TemplarGraveyard : Card
         menu[4] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
+        // DORMANT: in text block 2 the option lines 1, 4 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R118+0x0B7E (18C2:02DE) matched; hint R118+0x0BD4
             new MenuLine(_ => TheDoorOpens(c), Unknown),

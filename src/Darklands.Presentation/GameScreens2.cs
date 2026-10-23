@@ -84,7 +84,7 @@ public sealed class GameScreens2 : IGameScreens
     public void Barter(int shop, string name, long categories)
     {
         SetSaveAndLoad(2);
-        _others.Barter(shop, name, categories);
+        Up(() => _others.Barter(shop, name, categories));
         SetSaveAndLoad(1);
     }
 
@@ -97,9 +97,9 @@ public sealed class GameScreens2 : IGameScreens
         }
     }
 
-    public void ItemStore() => _others.ItemStore();
+    public void ItemStore() => Up(() => _others.ItemStore());
 
-    public void Loot(IList<ItemStack> items, Money money) => _others.Loot(items, money);
+    public void Loot(IList<ItemStack> items, Money money) => Up(() => _others.Loot(items, money));
 
     public int Battle(BattleRequest request) => _others.Battle(request);
 
@@ -108,12 +108,32 @@ public sealed class GameScreens2 : IGameScreens
         var saved = _ui.Canvas.SaveScreen();
         try
         {
-            screen();
+            Up(screen);
         }
         finally
         {
             _ui.Canvas.Restore(saved);
             _ui.Present();
+        }
+    }
+
+    /// <summary>A full screen: the hot keys leave F1..F5 and Ctrl-F to it (HotKeys.ScreensUp).</summary>
+    private void Up(Action screen)
+    {
+        if (HotKeys is { } keys)
+        {
+            keys.ScreensUp++;
+        }
+        try
+        {
+            screen();
+        }
+        finally
+        {
+            if (HotKeys is { } k)
+            {
+                k.ScreensUp--;
+            }
         }
     }
 }

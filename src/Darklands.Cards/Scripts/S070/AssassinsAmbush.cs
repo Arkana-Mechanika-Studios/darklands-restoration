@@ -42,6 +42,10 @@ public sealed class AssassinsAmbush : Card
             TheyCharge(c, menu);
         }
 
+        // DORMANT: option line 6 is never offered: no path of this card enables it (opt_flag / opt_on stay 0 in every block), so its action and hint never run in play.
+        // DORMANT: in text block 5 the option lines 0, 9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 6 the option lines 0, 9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 10 the option line 0 is never offered (the switch to this block hides them); it can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => TheyCharge(c, menu), OptionHint.Saying(CardTexts.Unknown)),
             new MenuLine(_ => PrayForInsight(c), OptionHint.Saying(CardTexts.SelectSaint), () => SaintHint(c)),

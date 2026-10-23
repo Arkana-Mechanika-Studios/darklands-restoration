@@ -32,7 +32,7 @@ public sealed class FloodSaintsSecondList : Card
             // C: next_card = 0x11C, this card itself (not 0x11D, the third list): the line does nothing.
             new MenuLine(_ => c.Next = 284, () => OptionHint.Say(NoRisk)),
             // DORMANT: lines 3..9 are never offered; actions R115+0x0376.. and hints R115+0x0378.. are empty
-            // (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

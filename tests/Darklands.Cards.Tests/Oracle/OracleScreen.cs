@@ -11,13 +11,19 @@ namespace Darklands.Cards.Tests.Oracle;
 /// menu_member = line / 4 and menu_slot = line % 4 before it calls the line's handler); an item or
 /// saint line is chosen in its pop-up box the way <see cref="TracingScreen"/> does.
 /// </summary>
-public sealed class OracleScreen(int option, bool probe) : ICardScreen
+public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) : ICardScreen
 {
     private static readonly object MessagesLock = new();
     private int _menus;
     private string _card = "";
 
     public CardContext? Context { get; set; }
+
+    /// <summary>The line (block, line) to choose whatever its state, in the first menu of that block (once; see CardOracleStates.ForceOf).</summary>
+    public (int Block, int Line)? Force { get; set; }
+
+    /// <summary>The choices of the first menus (the variant part <c>P2_0_1</c>, see CardOracleStates.PathOf): the n-th menu chooses the (value modulo the count)-th enabled line; later menus follow the rotation policy.</summary>
+    public int[]? Path { get; set; }
 
     public List<string> Log { get; } = [];
 
@@ -29,7 +35,13 @@ public sealed class OracleScreen(int option, bool probe) : ICardScreen
         // trace); the comparison reads this marker and drops it
         Log.Add($"main {picture.ToLowerInvariant()}");
         _card = cardName;
+        _main = picture;
     }
+
+    /// <summary>pic_buf: empty in the oracle's start states (the original's card runs first after the load).</summary>
+    private string _main = "";
+
+    public void ShowWithTheLastPicture(string cardName) => Show(cardName, _main);
 
     public void ShowPicture(string picture) => Log.Add($"picture {picture.ToLowerInvariant()}");
 
@@ -81,18 +93,39 @@ public sealed class OracleScreen(int option, bool probe) : ICardScreen
         var lines = Lines(block);
         var states = options.Take(lines).ToList();
         Log.Add($"menu {block} [{string.Concat(states.Select(o => (int)o))}] {Expanded(block)}");
-        var enabled = Enumerable.Range(0, states.Count).Where(i => states[i] == OptionState.Enabled).ToList();
-        if (enabled.Count == 0)
+        if (hand is { } call && _menus == call.Menu)
         {
-            throw new InvalidOperationException($"Menu {block} offers no option.");
+            return Call(block, call, hint);
         }
-        var first = option >= 0 && enabled.Contains(option) ? enabled.IndexOf(option) : 0;
-        var choice = enabled[(first + _menus - 1) % enabled.Count];
+        var enabled = Enumerable.Range(0, states.Count).Where(i => states[i] == OptionState.Enabled).ToList();
+        int choice;
+        var forced = Force is { } f && f.Block == block && f.Line < states.Count;
+        if (forced)
+        {
+            choice = Force!.Value.Line;
+            Force = null;
+        }
+        else
+        {
+            if (enabled.Count == 0)
+            {
+                throw new InvalidOperationException($"Menu {block} offers no option.");
+            }
+            if (Path is { } path && _menus - 1 < path.Length)
+            {
+                choice = enabled[path[_menus - 1] % enabled.Count];
+            }
+            else
+            {
+                var first = option >= 0 && enabled.Contains(option) ? enabled.IndexOf(option) : 0;
+                choice = enabled[(first + _menus - 1) % enabled.Count];
+            }
+        }
         if (probe && hint is not null)
         {
             for (var i = 0; i < states.Count; i++)
             {
-                if (states[i] != OptionState.Hidden)
+                if (states[i] != OptionState.Hidden || (forced && i == choice))
                 {
                     if (Context is { } cx)
                     {
@@ -115,6 +148,57 @@ public sealed class OracleScreen(int option, bool probe) : ICardScreen
         }
         Log.Add($"choose {choice}");
         return choice;
+    }
+
+    /// <summary>
+    /// A handler call (tools/oracle/card_oracle.py hand_menu): the card gets the line whatever its state, as its loop's
+    /// <c>k = card_menu(..)</c> would return it, and then calls the line's handler and runs its action. With
+    /// <see cref="HandCall.Hints"/> every line's hint (0..19) is asked first; with <see cref="HandCall.Slot"/> the choice is made in
+    /// the line's item or saint pop-up box on that slot, whoever holds the item.
+    /// </summary>
+    private int Call(int block, HandCall call, Func<int, OptionHint>? hint)
+    {
+        if (Context is { } c)
+        {
+            if (call.Hints && hint is not null)
+            {
+                for (var i = 0; i < CardMenu.MaxLines; i++)
+                {
+                    c.MenuMember = i / 4;
+                    c.MenuSlot = i % 4;
+                    Log.Add($"hint {i}: {Say(hint(i))}");
+                }
+            }
+            c.MenuPopup = false;
+            if (call.Slot is { } slot && PopupKind(block, call.Line) is { } saints)
+            {
+                c.MenuPopup = true;
+                c.MenuMember = PopupMember(c, saints, slot);
+                c.MenuSlot = slot;
+            }
+        }
+        Log.Add($"choose {call.Line}");
+        return call.Line;
+    }
+
+    /// <summary>The member a pop-up box gives a slot: the last who has the item / knows the saint, else the last present member.</summary>
+    private static int PopupMember(CardContext c, bool saints, int slot)
+    {
+        var list = saints ? c.CardSaints : c.CardItems;
+        var present = Enumerable.Range(0, c.State.Party.Members.Count).Reverse()
+            .Where(i => c.State.Party.Members[i].Status is not (CharacterStatus.Empty or CharacterStatus.Away)).ToList();
+        if (list[slot] != -1)
+        {
+            foreach (var i in present)
+            {
+                if (c.PopupListsAll || (saints ? Core.Rules.Saints.Knows(c.State, i, list[slot])
+                    : Core.Rules.Inventory.Has(c.State, i, list[slot]) == 1))
+                {
+                    return i;
+                }
+            }
+        }
+        return present.Count > 0 ? present[0] : 0;
     }
 
     private bool? PopupKind(int block, int line)
@@ -150,11 +234,31 @@ public sealed class OracleScreen(int option, bool probe) : ICardScreen
         return null;
     }
 
+    /// <summary>The texts are a card's, without a picture being shown (a direct handler call, see <see cref="CardOracleTests.Run"/>).</summary>
+    public void UseTexts(string cardName) => _card = cardName;
+
+    public static string Describe(OptionHint h) => Say(h);
+
     private static string Say(OptionHint h) => $"{h.Chance} '{(h.Chance == -1 ? h.Message : "")}' {h.Member}";
 
     public void Tell(string message, int member = OptionHint.WholeParty) => Log.Add($"tell {member} {message}");
 
     public void PassTime(int hours) => Log.Add($"time {hours}");
+}
+
+/// <summary>A handler call (run name <c>hand &lt;key&gt; M1L7[H][S2]</c>): at menu number <see cref="Menu"/> the card gets line <see cref="Line"/>.</summary>
+public sealed record HandCall(int Menu, int Line, bool Hints, int? Slot)
+{
+    public static HandCall Parse(string spec)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(spec, @"^M(\d+)L(\d+)(H)?(?:S(\d))?$");
+        if (!m.Success)
+        {
+            throw new ArgumentException(spec);
+        }
+        return new HandCall(int.Parse(m.Groups[1].Value), int.Parse(m.Groups[2].Value), m.Groups[3].Success,
+            m.Groups[4].Success ? int.Parse(m.Groups[4].Value) : null);
+    }
 }
 
 /// <summary>The full screens a card opens, recorded (the oracle stubs the original's).</summary>

@@ -9,7 +9,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R133+0x11DC (1955:000C) matched; tests: CardSmokeTests
 //   other: R133+0x132A, R133+0x1362
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // DORMANT: the file's table set-up R133+0x132A and its "screwed up." default handler R133+0x1362 are never called
 //   (the card runs no menu); they would only clear the option table and the item/saint lists.
 public sealed class GateOfTheSixKeys : Card

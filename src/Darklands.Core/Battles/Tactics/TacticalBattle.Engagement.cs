@@ -235,7 +235,7 @@ public sealed partial class TacticalBattle
             var saved = c.Position;
             c.Position = c.Destination;
             var r = Map.Collides(i, c.Position.X, c.Position.Y);
-            if (!r.IsFree && StandingOneBlocks(r))
+            if (!r.IsFree && StandingOneBlocks())
             {
                 // The destination is taken by somebody standing: give up (|x − tx| < 16 always holds here).
                 CancelAction(i);
@@ -255,16 +255,13 @@ public sealed partial class TacticalBattle
         c.RepathAt = (ushort)(Scaled(60) + Clock + 30);
     }
 
-    /// <summary>Some combatant in the mask stands still.</summary>
-    private bool StandingOneBlocks(Blocking r)
+    /// <summary>Some combatant in the mask of the last non-void test (DS:D708) stands still.</summary>
+    // C: R014+0x2DC5..0x2DE4 reads DS:D708 for any refusal: a void centre cell leaves the mask of the test before it.
+    private bool StandingOneBlocks()
     {
-        if (r.IsVoid)
-        {
-            return false;
-        }
         for (var k = 0; k < Combatant.Count; k++)
         {
-            if ((r.Mask & (1 << k)) != 0 && !Battle[k].Moving)
+            if ((Map.LastMask & (1 << k)) != 0 && !Battle[k].Moving)
             {
                 return true;
             }
@@ -346,20 +343,12 @@ public sealed partial class TacticalBattle
         return table[quad, s];
     }
 
-    /// <summary>path_find for combatant i (the AI's path hook runs on success).</summary>
+    /// <summary>path_find for combatant i (the AI's path hook runs once the trackers found a path, before the shortcuts).</summary>
     // orig: path_find R014+0x481A (12F7:000A) draft
     private bool FindPath(int i)
     {
         var set = Slots[AnimationSet(i)];
-        if (!Paths.Find(Battle, i, set.StepX, set.StepY, OpenDoorsForSearch))
-        {
-            return false;
-        }
-        if (Paths.PathLength > 0 && Paths.Path[0] != 0xFF)
-        {
-            AiPathHook(i);
-        }
-        return true;
+        return Paths.Find(Battle, i, set.StepX, set.StepY, OpenDoorsForSearch, () => AiPathHook(i));
     }
 
     /// <summary>path_give: the last path found becomes combatant i's (packed with facings).</summary>

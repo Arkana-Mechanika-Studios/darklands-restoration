@@ -54,7 +54,7 @@ public sealed class HutOfTheBlondeWoman : Card
             // orig: R116+0x192C (line 5); hint R116+0x1A26 (191B:0BF6) matched
             new MenuLine(p => { LeaderSpeaks(c); BurnTheHut(c, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // DORMANT: lines 6..8 are never offered; actions R116+0x1A5E/0c32/0c36 and hints R116+0x1A60/0c34/0c38
-            // are empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: are empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => LeaderSpeaks(c)),
             new MenuLine(_ => LeaderSpeaks(c)),
             new MenuLine(_ => LeaderSpeaks(c)),

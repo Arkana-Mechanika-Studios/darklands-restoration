@@ -7,7 +7,7 @@ namespace Darklands.Persistence;
 // orig: struct location as WorldData.ToLocation reads DARKLAND.LOC (icon +0x00, x +0x04, y +0x06, +0x08, +0x0A, cards +0x0C/+0x0E,
 // size +0x11, reputation +0x12, flags +0x14, local values +0x15..+0x17, cache +0x18, mark +0x1A, recorded words +0x1C..+0x21,
 // name +0x26); a saved game holds the 414 records as R037+0x2ACE writes locations[i]; tests: OriginalSaveTests
-// UNCERTAIN: +0x02, +0x10, +0x22..+0x25 and the bytes after the name's zero are not named; they are kept as read (Location.OriginalRecord).
+// C: +0x02, +0x10, +0x22..+0x25 and the bytes after the name's zero are not named; they are kept as read (Location.OriginalRecord).
 public static class LocationRecords
 {
     public const int Size = 0x3A;

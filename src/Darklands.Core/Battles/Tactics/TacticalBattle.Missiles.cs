@@ -248,8 +248,8 @@ public sealed partial class TacticalBattle
 
     /// <summary>Every missile flies on (homing on a target on its floor); on arrival a hit applies its damage.</summary>
     // orig: missiles_advance R014+0xED10 (1D47:0000) draft (spec D §4.9, asm-verified)
-    // C: an arrived missile is not skipped (only its done byte keeps a hit from counting twice); the renderer removes it
-    // after drawing it once, which RemoveArrivedMissiles does at the next tick.
+    // C: an arrived missile is not skipped (only its done byte keeps a hit from counting twice); the draw at the end of the tick removes
+    // it after drawing it once (RemoveArrivedMissiles).
     private void AdvanceMissiles()
     {
         foreach (var m in Missiles)
@@ -306,9 +306,20 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>The missiles that arrived last tick go (the renderer drew their last frame and called missile_remove).</summary>
-    // orig: combat_draw R014+0x6818 (14F7:0008) draft (the missile loop); missile_remove R018+0x027E (1EF8:027E) matched
-    private void RemoveArrivedMissiles() => Missiles.RemoveAll(m => m.Arrived);
+    /// <summary>The missiles that arrived go once drawn (the draw's missile loop calls missile_remove after queueing their sprite).</summary>
+    // orig: combat_draw R014+0x6818 (14F7:0008) draft (the missile loop R014+0x6B22..0x6D4A, from the last missile down: after the sprite
+    // R014+0x6D39 `if (done < 0) missile_remove(k)` via 09C0:1D79); missile_remove R018+0x027E (1EF8:027E) matched
+    // C: the renderer here draws later, from the state the tick left: the removed ones are kept for it until the next tick (ArrivedShown).
+    private void RemoveArrivedMissiles()
+    {
+        _arrivedShown.AddRange(Missiles.Where(m => m.Arrived));
+        Missiles.RemoveAll(m => m.Arrived);
+    }
+
+    private readonly List<Missile> _arrivedShown = [];
+
+    /// <summary>What the last draw showed of the missiles: those flying and those that arrived in it (removed by it).</summary>
+    public IEnumerable<Missile> MissilesDrawn => Missiles.Concat(_arrivedShown);
 
     /// <summary>Moves a point up to <paramref name="speed"/> pixels toward the goal along the major axis (the error restarts each tick).</summary>
     // orig: R014+0xEE4E (1D47:013E) draft (asm-verified per spec D §4.9)

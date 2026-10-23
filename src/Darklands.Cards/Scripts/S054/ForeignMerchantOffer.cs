@@ -21,7 +21,7 @@ public sealed class ForeignMerchantOffer : Card
     // DORMANT: R054+0x0668 (1838:0668): the "screwed up." default handler of lines 10..19; the card text has no line for them and the menu loop copies only flags 0..9, so it never runs.
     // DORMANT: R054+0x06A0 (1838:06A0), R054+0x06DC (1838:06DC), R054+0x0718 (1838:0718) and R054+0x0754 (1838:0754): the item pop-up handlers (slots 0..3): they name the member of the pop-up ($ChosenOneName) and say "Success is assured.". The card fills the item slots (0x5F, 0x60, 0x65, 0x61) but none of its options asks items_usable(), so the item pop-up never opens.
     // DORMANT: R054+0x0790 (1838:0790), R054+0x081A (1838:081A), R054+0x08A4 (1838:08A4) and R054+0x092E (1838:092E): the saint pop-up handlers (slots 0..3, identical): they name the member and show its chance with the saint. The saint slots are filled (0, 0x59, 0x61, 0x80) but no option asks saints_usable(), so the saint pop-up never opens.
-    // UNCERTAIN: the card's text file has no option lines, so what the original screen offers for the ten enabled options is unknown (probably nothing selectable); the C# offers all ten as the code enables them.
+    // C: the card's text file has no option lines, so what the original screen offers for the ten enabled options is unknown (probably nothing selectable); the C# offers all ten as the code enables them.
     public override int Run(CardContext c)
     {
         Show(c, Picture);

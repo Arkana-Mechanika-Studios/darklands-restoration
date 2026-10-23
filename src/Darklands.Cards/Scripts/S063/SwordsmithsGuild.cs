@@ -36,7 +36,7 @@ public sealed class SwordsmithsGuild : Card
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 4, 5, 6);
         // C: this card tests ev8_at(2, loc) != 1 (the others use !): the call yields 0 or 1, so it is the same test.
-        // UNCERTAIN: ev8_at (R029, not in the matched C) is taken to return exactly 0 or 1.
+        // C: ev8_at (R029, not in the matched C) is taken to return exactly 0 or 1. (agrees with the original: ev8_at R029+0x3470 returns mov ax,1 or sub ax,ax in the asm; 8 of 9 blocks hit in 80 agreeing oracles)
         if (!c.Events.QuestAt(PoliticsQuest, c.Here))
         {
             menu[1] = menu[3] = menu[4] = menu[5] = OptionState.Hidden;

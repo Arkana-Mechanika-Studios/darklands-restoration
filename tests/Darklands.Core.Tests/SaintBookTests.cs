@@ -93,6 +93,32 @@ public sealed class SaintBookTests
         }
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void StGilesForThePartyLowersNoWeaponSkillUnlessFixed(bool fixedGame)
+    {
+        const int giles = 58;
+        var s = TestGame.Create();
+        var m = s.Party.Members[s.Party.Resolve(Who.Leader)];
+        m.Pack.Clear();
+        m.Pack.Add(new ItemStack(3, 3, 30, 1, 4));            // a hand weapon (item 3, flags 1: edged), equipped
+        m.Weapon = new EquippedItem(3, 30);
+        s.Behaviour.FixSaintWeaponSkillsForParty = fixedGame;
+        var twin = TestGame.Twin(s);
+        SaintBook.Help(s, Who.Leader, giles);
+
+        // R039+0x501E draws rnd 10 for equip_bonuses either way; only a boost made draws its duration.
+        var lowered = Boosts(s, EventKinds.SkillBoost).Where(e => e.Type == (int)Skill.EdgedWeapons).ToList();
+        Assert.Equal(fixedGame ? 1 : 0, lowered.Count);
+        Assert.Contains(Boosts(s, EventKinds.SkillBoost), e => e.Type == (int)Skill.Stealth);
+        var points = twin.Below(10) + 15;
+        if (fixedGame)
+        {
+            Assert.Equal(-points, lowered[0].Value);
+        }
+    }
+
     [Fact]
     public void StCosmasAndStDamianTeachEachOther()
     {

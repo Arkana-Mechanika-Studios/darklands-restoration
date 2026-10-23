@@ -10,7 +10,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R107+0x2D28 (1B0A:0008) matched; tests: CardSmokeTests
 // orig: R107+0x31C6 (1B0A:04A6) matched (registration: saint pop-ups only, they do not name the member)
-// UNCERTAIN: no card of the game names 0xFF; the place may reach it as its arrival card. The scene's meaning is guessed from the script alone.
+// C: no card of the game names 0xFF; the place may reach it as its arrival card. The scene's meaning is guessed from the script alone.
 // DORMANT: R107+0x3260, R107+0x3262, R107+0x3264, R107+0x3266 are empty functions nothing calls.
 public sealed class UnfinishedMcGuffinSite : Card
 {
@@ -39,7 +39,7 @@ public sealed class UnfinishedMcGuffinSite : Card
             // DORMANT: line 4 is never offered; it lets no time pass.
             new MenuLine(_ => c.PassHours(0), () => OptionHint.Say(SuccessAssured)),
             // DORMANT: lines 5..9 are never offered; actions R107+0x31B2.. and hints R107+0x31B4.. are empty
-            // (UNCERTAIN: the empty hints return AX/DX; neutral hints are used).
+            // C: the empty hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

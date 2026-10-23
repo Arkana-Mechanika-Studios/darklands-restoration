@@ -13,7 +13,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R073+0x1668 (199E:0008) matched; tests: CardSmokeTests
 // orig: handler setup R073+0x20F4 (item pop-ups 0b56/0b9c, standard saint pop-ups 0bd8/0c62/0cec/0d76,
 // unused-line handler 0b1e "screwed up.")
-// UNCERTAIN: the card sets the window globals DS:EE70 = 0 and DS:EE72 = 7; they are not modelled (nothing reconstructed reads them).
+// C: the card sets the window globals DS:EE70 = 0 and DS:EE72 = 7; they are not modelled (nothing reconstructed reads them).
 public sealed class SoldiersClosingInAtTheWall : Card
 {
     private const int RopeItem = 0x3B;

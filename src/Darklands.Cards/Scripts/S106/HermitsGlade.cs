@@ -42,7 +42,7 @@ public sealed class HermitsGlade : Card
             // DORMANT: line 3 (rest eight hours, +1 Divine Favour, leave) is never offered (opt_flag_3 = 0).
             new MenuLine(_ => { c.PassHours(8); c.AddAttribute(Core.Characters.Who.Everybody, (int)Core.Characters.Attribute.DivineFavor, 1); c.Next = CardContext.MapCard; }, Assured),
             // DORMANT: lines 4..8 are never offered; their actions and hints (R106+0x04C6..04d8) are empty functions.
-            // UNCERTAIN: those hints return whatever is in AX/DX; a neutral hint is used.
+            // C: those hints return whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => { }, Assured),
             new MenuLine(_ => { }, Assured),
             new MenuLine(_ => { }, Assured),

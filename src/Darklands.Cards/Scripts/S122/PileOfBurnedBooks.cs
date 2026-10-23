@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R122+0x1C98 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class PileOfBurnedBooks : Card
 {
     public override int Number => 314;
@@ -49,6 +49,7 @@ public sealed class PileOfBurnedBooks : Card
         var unknown = OptionHint.Saying(CardTexts.Unknown);
         var leave = new MenuLine(_ => { c.BattleMode = 1; c.Next = -2; }, unknown);
         var showAgain = new MenuLine(_ => ShowTheRoomAgain(c), unknown);
+        // DORMANT: in text block 1 the option lines 0..2 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => menu.Offer(1, 3, 4), unknown),
             new MenuLine(_ => PurifyTheRoom(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),

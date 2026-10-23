@@ -108,7 +108,7 @@ public sealed class VillageSchulz : Card
                 ShowPicture(c, Picture);
                 c.RandomName(c.Here + 2000, 0, 0);
                 // The Schulz joins for 90 days (shield picture "F01" in the original).
-                c.AddMember(c.Variables.Named[0], "Schulz", 0x870, 9);
+                c.AddMember(c.Variables.Named[0], "Schulz", "F01", 0x870, 9);
             }
             else
             {

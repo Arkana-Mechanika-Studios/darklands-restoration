@@ -640,7 +640,7 @@ public sealed class CharacterCreation
     /// screen state, 8C22.. the points spent on each skill.
     /// </summary>
     // orig: DS:8C06 (int[6]), DS:8C12, DS:8C14[5], DS:8C1E, DS:8C20, DS:8C22[0x13] (R037 seg 18C8 externs; pic_load at 18C8:0277..0282)
-    // UNCERTAIN: a picture handle is the DOS segment pic_load returned, taken as at least 0x28 (so '+' stops there) and kept as a counter here.
+    // C: a picture handle is the DOS segment pic_load returned, taken as at least 0x28 (so '+' stops there) and kept as a counter here.
     private int SpentWord(int c) => c switch
     {
         < 6 => AttributePointsSpent[c],

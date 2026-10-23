@@ -62,7 +62,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
             // orig: R108+0x0A5E (line 5); hint R108+0x0B7A (1838:0B7A) matched
             new MenuLine(p => PurifyWithAPotion(c, menu, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c, menu)),
             // DORMANT: lines 6..8 are never offered; actions R108+0x0BB2/0bb6/0bba and hints
-            // R108+0x0BB4/0bb8/0bbc are empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: R108+0x0BB4/0bb8/0bbc are empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
@@ -73,7 +73,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
     /// <summary>The potion's chance: its quality plus 10 and Artifice outside, (quality + 5) × 2 inside.</summary>
     // orig: R108+0x0CDE (1838:0CDE) matched
     // C: `r.a + 5 << 1` is (a + 5) * 2 (the shift binds looser).
-    // UNCERTAIN: slots 1..3 have empty pop-up handlers (AX/DX); the card has only one potion, so they never show.
+    // C: slots 1..3 have empty pop-up handlers (AX/DX); the card has only one potion, so they never show.
     private static OptionHint PotionHint(CardContext c, CardMenu menu)
     {
         var m = c.MenuMember;

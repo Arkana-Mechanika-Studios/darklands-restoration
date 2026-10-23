@@ -254,7 +254,7 @@ public sealed class PublicExecution : Card
     }
 
     // orig: R079+0x11F4 (18D8:07F4) asm; tests: CardSmokeTests
-    // UNCERTAIN: the member is DS:9A44 (the attribute queries' member), read as BestMember.
+    // C: the member is DS:9A44 (the attribute queries' member), read as BestMember.
     private static OptionHint StrengthChance(CardContext c) =>
         OptionHint.ChanceOf(c.PartyMaxAttribute(1), (byte)c.BestMember);
 

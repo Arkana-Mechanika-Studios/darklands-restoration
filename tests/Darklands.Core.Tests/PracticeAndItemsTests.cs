@@ -219,7 +219,7 @@ public sealed class PracticeAndItemsTests
     public void AHirelingsTermEndsWithANote()
     {
         var s = TestGame.Create();
-        var slot = PartyRules.AddMember(s, "Wolf Bauer", "Wolf", 10, 3);
+        var slot = PartyRules.AddMember(s, "Wolf Bauer", "Wolf", "F01", 10, 3);
         Assert.Equal(4, slot);
         Assert.Equal(3, s.Party.Members[4].Pack.Count);
         Assert.Equal(1, s.Events.Count(EventKinds.MemberTerm));
@@ -228,7 +228,7 @@ public sealed class PracticeAndItemsTests
 
         Assert.Equal(0, s.Events.Count(EventKinds.MemberTerm));
         Assert.True(s.Events.HasType(EventKinds.MemberLeft, 4));
-        Assert.Equal(-1, PartyRules.AddMember(s, "Anna", "Anna", 10, 3));
+        Assert.Equal(-1, PartyRules.AddMember(s, "Anna", "Anna", "F01", 10, 3));
     }
 
     [Fact]

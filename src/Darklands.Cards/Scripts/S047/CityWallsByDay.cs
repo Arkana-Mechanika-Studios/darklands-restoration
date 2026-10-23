@@ -11,7 +11,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R047+0x13CC (1974:000C) matched; tests: CardSmokeTests
 // DORMANT: R047+0x1E9A (1974:0ADA), the init, enables option lines 10..19 with the
 //   "screwed up." handler R047+0x1F0C; they have no action and no text line.
-// UNCERTAIN: options 6..9 (all: text 0 again, then the outskirts) may have no line in the card's text.
+// C: options 6..9 (all: text 0 again, then the outskirts) may have no line in the card's text.
 public sealed class CityWallsByDay : Card
 {
     public const int CardNumber = 0x0E;

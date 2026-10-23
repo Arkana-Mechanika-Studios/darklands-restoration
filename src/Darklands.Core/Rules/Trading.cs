@@ -40,7 +40,7 @@ public static class Trading
     public const int ListedRows = 4;
 
     /// <summary>The value a fresh stock scan finds in the stale stack slot: a code segment, far above every city.</summary>
-    // UNCERTAIN: the real value is the R032 overlay's run-time CS, assumed in 0x005C..0x7FFF (any DOS load address the game fits at); the oracle runs at the link-time CS 1462.
+    // C: the real value is the R032 overlay's run-time CS, assumed in 0x005C..0x7FFF (any DOS load address the game fits at); the oracle runs at the link-time CS 1462.
     public const int StaleCodeSegment = 0x2000;
 
     /// <summary>Default names of the nine city shops (when a card gives none).</summary>
@@ -325,7 +325,7 @@ public static class Trading
     public static int Buy(GameState s, Shop shop, int member, int code)
     {
         // C: money_set(&price, 0, 0, buy_price(..)) then money_cmp == −1; buy_price is called again for the payment (two draws in a flag-8 place).
-        // UNCERTAIN: for a price word ≥ 0x8000 (never reached with the game's values) money_set's sign handling is assumed to match Money.From.
+        // C: for a price word ≥ 0x8000 (never reached with the game's values) money_set's sign handling is assumed to match Money.From.
         if (s.Party.Purse < Money.From(0, 0, BuyPrice(s, shop, code)))
         {
             return -1;

@@ -78,6 +78,9 @@ public interface IBattleViewport
     /// <summary>The renderer's clip test of combatant i's sprite box (14F7:347C, 4 pixels round it) against the view.</summary>
     bool CombatantInView(int i);
 
+    /// <summary>Combatant i has a hot spot in the last frame drawn (DS:D848[0..DS:E0A1 - 1]); a view that keeps none says yes.</summary>
+    bool HasHotSpot(int i) => true;
+
     /// <summary>
     /// DS:E176: the sprites the last frame logged for erasing (the ground cursor, the missiles, the damage numbers it queued), which
     /// take the first places of this frame's draw list.
@@ -105,7 +108,7 @@ public sealed class EffectField : IEffectClouds
     /// <param name="sound">R014+0x465E: a sound effect.</param>
     /// <param name="readyWeapon">weapon_ready(i, weapon, missile flag) with its animation code.</param>
     /// <param name="attackCode">anim_file[slot]: the weapon code of an animation slot ("PT" while casting).</param>
-    /// <param name="paused">ai_paused (DS:A695).</param>
+    /// <param name="paused">ai_paused (DS:A695) is not 0: every use here is a test == 0 of the original (R014+0x2C4C, R014+0x6A83, R014+0x7866).</param>
     public EffectField(Battle battle, BattleMap map, Action<int> sound, Action<int, int, int> readyWeapon, Func<int, string> attackCode, Func<bool> paused)
     {
         Battle = battle;
@@ -263,7 +266,7 @@ public sealed class EffectField : IEffectClouds
     /// </summary>
     // orig: R017+0x0000 draft: the cells x = centre + DS:1FC6[k], y = centre + DS:2052[k] (k = row × 10 + column), skipped
     // at the map's edge or void; `if (obj < DS:C12E && DS:E15B < 15)`, `if (fl < DS:C12D && DS:E15D < 15)`, `if (furn < DS:C17F && DS:E15C < 15)`
-    // UNCERTAIN: the lists are made anew each frame here; the original makes them when it redraws the whole view (the camera moved, a door
+    // C: the lists are made anew each frame here; the original makes them when it redraws the whole view (the camera moved, a door
     // or wall changed), which shows the same cells.
     private (List<(int X, int Y, int Piece)> Floor, List<(int X, int Y, int Piece)> North, List<(int X, int Y, int Piece)> West) AnimatedPieces(IBattleViewport viewport)
     {

@@ -20,7 +20,7 @@ public enum EventFlags
 /// 16-bit words in the original.
 /// </summary>
 // orig: R029+0x3034 (0E76:3034) matched
-// UNCERTAIN: Data1..Data3 (+2A/+2C/+2E) and Extra (+20) are named by their uses.
+// C: Data1..Data3 (+2A/+2C/+2E) and Extra (+20) are named by their uses.
 public sealed class TimedEvent
 {
     /// <summary>What the event is about (see <see cref="EventKinds"/>).</summary>

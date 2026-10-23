@@ -122,6 +122,13 @@ public sealed class OriginalBehaviour
     /// </summary>
     public bool FixSaintStandingInOpenCountry { get; set; }
 
+    /// <summary>
+    /// A saint's weapon-skill boost (<c>equip_bonuses</c>) for a prayer for the party (−1) looks up
+    /// the equipped weapons of the record before the members' (menu-bar words), finds none and
+    /// changes nothing; fixed: the leader's weapons.
+    /// </summary>
+    public bool FixSaintWeaponSkillsForParty { get; set; }
+
     /// <summary><c>keep_items_pct</c> starts one past the last stack; fixed: at the last stack.</summary>
     public bool FixKeepItemsOffByOne { get; set; }
 
@@ -172,6 +179,31 @@ public sealed class OriginalBehaviour
     /// effect cloud (an old cloud's copy) still blocks shots; fixed: only the clouds there are.
     /// </summary>
     public bool FixCloudLineOneTooMany { get; set; }
+
+    /// <summary>
+    /// With the party split over two levels and the game paused, the U key's stairs order copies entry [selected] of the member
+    /// table DS:C8B2 into DS:C77E whoever is selected; with nobody selected (−1) it copies the byte before the first entry,
+    /// DS:C8B1 into DS:C77D. Fixed: nothing is copied without a selection. (Nothing visible reads those two bytes: harmless.)
+    /// </summary>
+    // orig: R016+0x014E (1EF8:014E), the copy at R016+0x0165..0x0169, no test of DS:A6B2
+    public bool FixStairsKeyWithoutSelection { get; set; }
+
+    /// <summary>
+    /// Esc with nobody selected (paused, outside order mode) writes the flee bit to flags[−1]'s high byte, which is the pause
+    /// byte DS:A695: with DS:D6EA = 1 it becomes 0x11, which the tests for "paused" (== 1) and for "running" (== 0) both refuse
+    /// (the battle's tests of it are mixed: Space then resumes, the AI and melee stay frozen). Fixed: no flee bit is written.
+    /// </summary>
+    // orig: R016+0x13D4 (1EF8:13D4), the xor at R016+0x13F9 with bx = −2
+    public bool FixEscapeWithoutSelectionPauseByte { get; set; }
+
+    /// <summary>
+    /// <c>level_switch</c> saves the level it leaves only when DS:D4E4 is set, and <c>take_exit</c> writes the stairs record's
+    /// +0x07 byte (0xFF: its wall group is uncovered) before that switch without setting it: after a switch with DS:D4E4 clear
+    /// (and at the battle's end) the level comes back without the write, so the wall group opens again on the next use. Fixed: the
+    /// write always persists.
+    /// </summary>
+    // orig: take_exit R023+0x1618 (the write at R023+0x1657, the switch at R023+0x16C7, DS:D4E4 set at R023+0x1764), level_switch R024+0x05B4, battle save R003+0x0132
+    public bool FixStairsWallMarkLost { get; set; }
 
     /// <summary>
     /// Loading from inside a game (Alt-L) clears the party's slots and the events before the load

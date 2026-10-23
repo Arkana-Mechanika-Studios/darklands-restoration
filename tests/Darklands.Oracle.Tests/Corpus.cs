@@ -6,10 +6,12 @@ namespace Darklands.Oracle.Tests;
 internal sealed class Corpus
 {
     private readonly JsonDocument _document;
+    private readonly JsonDocument? _flip;
 
-    private Corpus(JsonDocument document)
+    private Corpus(JsonDocument document, JsonDocument? flip)
     {
         _document = document;
+        _flip = flip;
         var root = document.RootElement;
         if (root.GetProperty("authority").GetString() != "test_only_original_byte_execution")
         {
@@ -26,8 +28,13 @@ internal sealed class Corpus
     /// <summary>Linear address of the C run-time random state.</summary>
     public int HoldRand { get; }
 
-    public static Corpus Load(string file = "core.json") =>
-        new(JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Corpus", file))));
+    public static Corpus Load(string file = "core.json")
+    {
+        var dir = Path.Combine(AppContext.BaseDirectory, "Corpus");
+        var flip = Path.Combine(dir, Path.GetFileNameWithoutExtension(file) + "-flip.json");
+        return new(JsonDocument.Parse(File.ReadAllBytes(Path.Combine(dir, file))),
+            File.Exists(flip) ? JsonDocument.Parse(File.ReadAllBytes(flip)) : null);
+    }
 
     public JsonElement Root => _document.RootElement;
 
@@ -36,6 +43,14 @@ internal sealed class Corpus
             .Where(c => c.GetProperty("function").GetString() == function)
             .Select(c => new OracleCase(c))
             .ToList();
+
+    /// <summary>
+    /// The cases of a function in the corpus's flipped companion (&lt;name&gt;-flip.json, tools/oracle/flip_units.py: base cases
+    /// whose state was mutated until the original took a branch no earlier case took); empty without the file.
+    /// </summary>
+    public IReadOnlyList<OracleCase> FlipCases(string function) =>
+        _flip is null ? [] : _flip.RootElement.GetProperty("cases").EnumerateArray()
+            .Where(c => c.GetProperty("function").GetString() == function).Select(c => new OracleCase(c)).ToList();
 
     internal static int Hex(string value) => Convert.ToInt32(value, 16);
 }

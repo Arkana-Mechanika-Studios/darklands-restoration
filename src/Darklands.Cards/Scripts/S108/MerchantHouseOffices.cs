@@ -57,6 +57,8 @@ public sealed class MerchantHouseOffices : Card
 
         menu.Popup = () => c.MemberPopupHint();
 
+        // DORMANT: in text block 0 the option lines 0..2, 8 are never offered (the switch to this block hides them, the first menu on this block never enables them); they can be offered in other blocks only.
+        // DORMANT: in text block 1 the option lines 3..6, 9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R108+0x14C2 (line 0); hint R108+0x16DC (1925:080C) matched
             new MenuLine(p => PickTheLock(c, menu, p), () => PickHint(c)),

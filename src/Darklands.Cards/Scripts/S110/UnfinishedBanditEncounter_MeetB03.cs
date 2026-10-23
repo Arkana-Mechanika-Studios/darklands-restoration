@@ -48,7 +48,7 @@ public sealed class UnfinishedBanditEncounter_MeetB03 : Card
             // orig: R110+0x1232 (1910:04B2) matched; hint R110+0x1264
             new MenuLine(p => Scout(c, p), () => OptionHint.ChanceOf(100, OptionHint.WholeParty)),
             // DORMANT: lines 8 and 9 are never offered; actions R110+0x127A/04fe and hints R110+0x127C/0500
-            // are empty (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: are empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }));
     }

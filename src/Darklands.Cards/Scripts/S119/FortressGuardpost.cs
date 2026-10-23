@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R119+0x1FA4, R119+0x2046
 // DORMANT (generated): option slots 10..19 keep the default handler R119+0x2046 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class FortressGuardpost : Card
 {
@@ -58,6 +58,7 @@ public sealed class FortressGuardpost : Card
         // orig: R119+0x207E / _0bba / _0bf6 / _0c32 R119+0x207E..0x2132 matched — item pop-up ($ChosenOneName = member in the box).
         // orig: R119+0x216E / _0cf6 / _0d7e / _0e06 matched — saint pop-up chance text.
         var unknown = OptionHint.Saying(CardTexts.Unknown);
+        // DORMANT: in text block 6 the option lines 0..3 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => { menu.Offer(6, 4, 5, 6); ShowPicture(c, GuardsPicture); }, unknown),
             new MenuLine(_ => { c.CombatFlags |= 8; Leave(c, -3); }, unknown),

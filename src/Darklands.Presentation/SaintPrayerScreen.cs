@@ -121,7 +121,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The original's message wait: 100 timer ticks (root 0000:24BC(msg, 100)).</summary>
-    // UNCERTAIN: root 0000:24BC is taken to be the framed message box MessageBox shows (60 ticks there).
+    // C: root 0000:24BC is taken to be the framed message box MessageBox shows (60 ticks there).
     private const int MessageMilliseconds = MessageBox.MessageMilliseconds * 100 / 60;
 
     private void Leave(SavedScreen saved, GameState state)

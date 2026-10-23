@@ -46,7 +46,7 @@ public sealed class TidalFloodInTheMarshes : Card
             // orig: R114+0x2538 (1A3F:04C8) matched; hint R114+0x2540
             new MenuLine(_ => c.Next = 285, () => OptionHint.Say(NoRisk)),
             // DORMANT: lines 5..9 are never offered; actions R114+0x2578.. and hints R114+0x257A.. are empty
-            // (UNCERTAIN: the hints return AX/DX; neutral hints are used).
+            // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

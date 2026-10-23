@@ -43,6 +43,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     private MessageFile? _messages;
     private SavedScreen? _picture;
     private string _pictureName = "";
+
+    /// <summary>pic_buf (DS:E3E3): the picture of the last <see cref="Show"/>, which <see cref="ShowPicture"/> does not change.</summary>
+    private string _mainPicture = "";
     private byte _textColor;
     private Mode _mode = Mode.Text;
     private int _block = -1;
@@ -58,8 +61,12 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         _messages = ui.Assets.Messages(cardName);
         _block = -1;
         _mode = Mode.Text;
+        _mainPicture = picture;
         ShowPicture(picture);
     }
+
+    // orig: card_load(card_name, pic_buf) R043+0x0A9A with pic_buf as the last card_load left it
+    public void ShowWithTheLastPicture(string cardName) => Show(cardName, _mainPicture);
 
     // orig: R043+0x0A9A (150B:000A) again (thunk 09C0:1EA5) with the card's picture: the picture and the party column
     public void Reload() => ShowPicture(_pictureName);

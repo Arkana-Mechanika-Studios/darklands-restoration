@@ -43,6 +43,10 @@ public sealed class MerchantCaravanOnTheRoad : Card
         }
         menu.Popup = () => c.SaintPopupChanceHint();
 
+        // DORMANT: in text block 0 the option lines 5..9 are never offered (the first menu on this block never enables them); they can be offered in other blocks only.
+        // DORMANT: in text block 1 the option lines 1..4, 7..9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 12 the option lines 1..6, 8 are never offered (the switch to this block hides them); they can be offered in other blocks only.
+        // DORMANT: in text block 13 the option lines 3, 5..9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R109+0x0614 (1838:0614) matched; hint R109+0x0666
             // DORMANT: line 0 (news, on to card 0x6E) is never offered: opt_flag_0 is 0 on every path.

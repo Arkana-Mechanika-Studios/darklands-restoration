@@ -267,6 +267,7 @@ public sealed partial class TacticalBattle
         _view.Recentre(Battle.ActiveMember);
         // C: then combat_draw R014+0x6818, as each tick ends: the draw list (its random draws) and the target cursor.
         Effects.Drawn(_view);
+        RemoveArrivedMissiles();
         RefreshTargetCursor();
     }
 }

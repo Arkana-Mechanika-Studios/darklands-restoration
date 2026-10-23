@@ -72,7 +72,7 @@ public sealed partial class CardContext
     // ---- what other parts of the game report to cards ------------------------------
 
     // orig: DS:9084; tests: CardSmokeTests
-    // UNCERTAIN: set by the battle (R014) when a marked combatant falls; meaning inferred.
+    // C: set by the battle (R014) when a marked combatant falls; meaning inferred.
     /// <summary>
     /// Set by a battle when a combatant marked as its target fell (the robber knight, the
     /// dragon …); cards ask it after <see cref="RunBattle"/>.
@@ -80,7 +80,7 @@ public sealed partial class CardContext
     public bool BattleTargetSlain { get; set; }
 
     // orig: DS:A891; tests: CardSmokeTests
-    // UNCERTAIN: cleared by the main loop after any screen but the map; who sets 1 and 3 is not traced. The same word as MapLeaveMode (GameState.MapLeaveMode); the two names come from the cards' readings of it.
+    // C: cleared by the main loop after any screen but the map; who sets 1 and 3 is not traced. The same word as MapLeaveMode (GameState.MapLeaveMode); the two names come from the cards' readings of it.
     /// <summary>
     /// How the party came upon the place of an encounter: set by the travel map, 0 after any
     /// other screen (1: the party was on its guard / spotted it first; 3: night camp).
@@ -92,7 +92,7 @@ public sealed partial class CardContext
     }
 
     // orig: party_x DS:E3D0; tests: CardSmokeTests
-    // UNCERTAIN: the cards' reuse of the map X while in a city.
+    // C: the cards' reuse of the map X while in a city.
     /// <summary>
     /// A mark city cards keep while the party is in a city, in the map position's X (the reference's
     /// <c>party_x</c>), which the travel map sets again when the party leaves: the side taken

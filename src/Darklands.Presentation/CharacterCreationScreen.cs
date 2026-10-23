@@ -24,7 +24,6 @@ namespace Darklands.Presentation;
 // list R037+0x2760 matched; labels R037+0x2922 matched; figures R037+0x4562
 // matched; exit R037+0x0348 matched; tests: headless chargen session (PNG)
 // DORMANT: the save-game half of this overlay (save_game, R037+0x2ACE) is not part of this menu.
-// DIVERGENCE: clicking a party member's figure (x below 60) opens member_sheet in the original; there is no character sheet yet.
 // DIVERGENCE: the exit transition root 047C:1320(6, 0, 0, 0) is not reproduced.
 public sealed class CharacterCreationScreen
 {
@@ -71,6 +70,11 @@ public sealed class CharacterCreationScreen
     private readonly Canvas _back = new(new Screen());
     private readonly IReadOnlyList<string> _images;
     private CreationRoster _roster = null!;
+    private CharacterSheetScreen? _sheet;
+    private GameState? _sheetState;
+
+    /// <summary>The game's leader variable: the menu never writes it, the sheet's Leader box does.</summary>
+    private int _leader;
 
     /// <param name="seed">The clock the original reads: the party seed and city at the click, names and reseeds after.</param>
     public CharacterCreationScreen(GameUi ui, WorldData world, Func<uint> seed)
@@ -141,6 +145,7 @@ public sealed class CharacterCreationScreen
         var (readyMade, slotImages) = ReadyMade(NewGame.PartySeed(seed));
         _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages);
         var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, NewGame.PartySeed(seed), _seed);
+        _sheetState = new GameState(random) { Data = _world };
         DrawAll();
         while (true)
         {
@@ -205,7 +210,7 @@ public sealed class CharacterCreationScreen
                     DrawList();
                     break;
                 case 'b' when _roster.Characters.Count > 0:
-                    if (_roster.ToParty(NewGame.PartySeed(seed)) is { } party)
+                    if (_roster.ToParty(NewGame.PartySeed(seed), _leader) is { } party)
                     {
                         PressDown('b');
                         var game = NewParty.Create(_world, seed, party, random, _seed);
@@ -235,8 +240,45 @@ public sealed class CharacterCreationScreen
             {
                 Select(row, wrap: false);
             }
+            return Keys.None;
+        }
+        if (x < 0x3C)
+        {
+            MemberSheet(y / 0x28);
         }
         return Keys.None;
+    }
+
+    /// <summary>A click on a party member's figure in the party column: that member's character sheet, then the menu again.</summary>
+    // orig: R037+0x01C0: with the button down, `mouse_x < 0x3C` and the slot's party flag (DS:9C69 + 0x80 x slot, set by A, cleared by D and K) set:
+    // orig: member_sheet (thunk 09C0:1FDB = R031+0x0124) for slot y / 0x28; then root 047C:0568, PICS\CRETSCRN.PIC with its palette, DS:E753..DS:E76A
+    // orig: = the slot's member_palette (24 bytes), set_palette, R037+0x03D4, root 047C:056F and the button waited out (R037+0x02F0)
+    // C: the figure (PICS\XXXSMALL.PIC at 0x0C, 0xA4) is not drawn again: R037+0x03D4 copies the back window over it.
+    // DIVERGENCE: the sheet opens on the menu's slots as the party, all five counted (party_size is not written before Begin: 0 after start-up,
+    // so the original's Ctrl-F1..F5 leader keys do nothing there); the sheet's menu bar keys (root 0000:0000) are not passed.
+    // UNCERTAIN: a prayer from the sheet's Saints list reads the date and the place of the game the menu loaded (SAVES\DEFAULT); here those of a new game.
+    private void MemberSheet(int slot)
+    {
+        if (slot >= Party.MaxMembers || _roster.Member(slot) is null)
+        {
+            return;
+        }
+        if (_sheet is null)
+        {
+            var formulas = FormulaBook.Load(_ui.Assets.Files, _world);
+            _sheet = new CharacterSheetScreen(_ui, _panel, formulas, _world.Items.Saints.Select(s => s.FullName).ToList(), new AlchemyScreen(_ui, _panel, formulas));
+            _sheet.ShowSaint = (member, saint) => new SaintPrayerScreen(_ui, _panel) { InBattle = () => false }
+                .Pray(_sheetState!, member, saint, Core.Rules.PrayerMode.ForMember, Core.Rules.SaintEffects.Instance);
+        }
+        var party = PanelParty();
+        party.LeaderIndex = _leader;
+        _sheetState!.Party = party;
+        _sheet.Show(_sheetState, slot);
+        _leader = party.LeaderIndex;
+        DrawAll();
+        Shared.Colours.Load(_roster.SlotPalettes[slot]);
+        ApplyFigureColours();
+        ScreenDrawing.WaitForRelease(_ui);
     }
 
     /// <summary>The selection moves; the figure of the selected member (if in the first four slots) shows with its colours.</summary>

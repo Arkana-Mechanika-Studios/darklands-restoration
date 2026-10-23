@@ -196,6 +196,10 @@ class Machine:
         self._decoded = {}
         self.cov_insns, self.cov_edges = {}, set()   # linear -> code bytes; (jcc linear, next linear)
         self._last_block_jcc = None
+        self._cov_memo = {}                          # {resident order: {(address, bytes): (record, payload) or None}}
+        self._valid_res: list[int] = []              # valid(): the answers for this resident list
+        self._valid_memo: dict[int, bool] = {}
+        self._cov_epoch = 0                          # raised at every flush: a decoded block remembers the epoch it last added its instructions in
         self.cov_insn_rec: dict[str, set] = {}
         self.cov_edge_rec: dict[str, set] = {}
         self.call_stack: list[str] = []
@@ -473,6 +477,14 @@ class Machine:
         self.uc.reg_write(REG["IP"], ret_ip)
 
     def valid(self, lin: int) -> bool:
+        if self.resident != self._valid_res:            # the answer depends on the resident records only (the rest is fixed)
+            self._valid_res, self._valid_memo = list(self.resident), {}
+        r = self._valid_memo.get(lin)
+        if r is None:
+            r = self._valid_memo[lin] = self._valid(lin)
+        return r
+
+    def _valid(self, lin: int) -> bool:
         if BASE <= lin < BASE + len(self.root):
             return True
         if SENTINEL_SEG * 16 <= lin < TRAMPOLINE_SEG * 16 + 0x10000:
@@ -501,37 +513,57 @@ class Machine:
         if ent is None:
             code = bytes(uc.mem_read(address, size))
             ins = list(self.md.disasm(code, 0))
-            ent = self._decoded[address] = [(address + i.address, code[i.address:i.address + i.size], i.mnemonic) for i in ins]
-        for lin, code, mn in ent:
-            if lin not in self.cov_insns:
-                self.cov_insns[lin] = code
-        if ent and ent[-1][2] in CONDITIONAL:
-            self._last_block_jcc = ent[-1][0]
+            lst = [(address + i.address, code[i.address:i.address + i.size], i.mnemonic) for i in ins]
+            # [instructions, the block's closing conditional branch (or None), the coverage epoch the instructions were last added in]
+            ent = self._decoded[address] = [lst, lst[-1][0] if lst and lst[-1][2] in CONDITIONAL else None, -1]
+        if ent[2] != self._cov_epoch:       # a block already added since the last flush adds nothing
+            ci = self.cov_insns
+            for lin, code, mn in ent[0]:
+                if lin not in ci:
+                    ci[lin] = code
+            ent[2] = self._cov_epoch
+        if ent[1] is not None:
+            self._last_block_jcc = ent[1]
 
     def _flush_coverage(self):
         if not self.coverage or not self.cov_insns:
             return
-        order = list(reversed([r for r in self.resident if r != 136]))
+        order = tuple(reversed([r for r in self.resident if r != 136]))
+        # the record an instruction's bytes belong to is a function of (order, address, bytes) alone: kept per order, as the overlays
+        # come and go and the same code is run again after each reload
+        memo = self._cov_memo.get(order)
+        if memo is None:
+            if len(self._cov_memo) > 64 or sum(len(m) for m in self._cov_memo.values()) > 3_000_000:
+                self._cov_memo = {}
+            memo = self._cov_memo[order] = {}
+        cands = None
         resolved = {}
         for lin, code in self.cov_insns.items():
-            rec, pay = None, lin
-            if BASE <= lin and lin - BASE + len(code) <= len(self.root) and self.root[lin - BASE:lin - BASE + len(code)] == code:
-                rec, pay = "root", lin - BASE
-            else:
-                for idx in order + [s["index"] for s in self.rt.sections if s["index"] not in order and s["index"] != 136]:
-                    lo, hi = self.extent(idx)
-                    if lo <= lin and lin + len(code) <= hi and self.image(idx)[lin - lo:lin - lo + len(code)] == code:
-                        rec, pay = "R%03d" % idx, lin - lo
-                        break
-            if rec is None:
+            key = (lin, code)
+            hit = memo.get(key, memo)
+            if hit is memo:
+                rec, pay = None, lin
+                if BASE <= lin and lin - BASE + len(code) <= len(self.root) and self.root[lin - BASE:lin - BASE + len(code)] == code:
+                    rec, pay = "root", lin - BASE
+                else:
+                    if cands is None:
+                        cands = [(idx,) + self.extent(idx) for idx in list(order) + [s["index"] for s in self.rt.sections if s["index"] not in order and s["index"] != 136]]
+                    for idx, lo, hi in cands:
+                        if lo <= lin and lin + len(code) <= hi and self.image(idx)[lin - lo:lin - lo + len(code)] == code:
+                            rec, pay = "R%03d" % idx, lin - lo
+                            break
+                hit = memo[key] = None if rec is None else (rec, pay)
+            if hit is None:
                 continue
-            resolved[lin] = (rec, pay)
+            rec, pay = hit
+            resolved[lin] = hit
             self.cov_insn_rec.setdefault(rec, set()).add(pay)
         for j, n in self.cov_edges:
             if j in resolved and n in resolved and resolved[j][0] == resolved[n][0]:
                 self.cov_edge_rec.setdefault(resolved[j][0], set()).add((resolved[j][1], resolved[n][1]))
         self.cov_insns, self.cov_edges = {}, set()
         self._last_block_jcc = None
+        self._cov_epoch += 1
 
     def coverage_result(self):
         self._flush_coverage()
@@ -592,6 +624,10 @@ class Machine:
             seg = self.reg("ES")
             if seg in self.mcbs:
                 del self.mcbs[seg]
+                self._carry(False)
+            elif HEAP_START < seg < HEAP_END and self.byte(seg - 1, 0) in (0x4D, 0x5A):
+                # DOS checks only the arena signature at ES-1: a block freed again whose header is intact is freed without
+                # error (the sheet frees its picture segment twice for a member without limb or vital armour, R031+0x0BF6/+0x0C8C)
                 self._carry(False)
             else:
                 self._carry(True, 9)

@@ -130,26 +130,34 @@ def arguments(call) -> list[int]:
     return words[:10 if call["callee"] == "event_new" else 2]
 
 
+def run_case(exe: bytes, function: str, off: int, args: list, memory: list, inputs: dict, extra: dict | None = None):
+    """One case run on the original: (the corpus case, the loaded images)."""
+    spec = {"unit": "saint_%04x" % off, "entry": {"segment": "%04X" % SAINT_SEG, "offset": "%04X" % off},
+            "sections": SECTIONS, "ds": DS, "memory": memory, "args": args, "follow": True,
+            "stub_targets": {"0E76:2C4E": "event_new", "0E76:2930": "event_here"},
+            "arg_words": {"event_new": 11, "event_here": 3},
+            "track_all": function == "help"}
+    if extra:   # stubs a flipped case adds (the party in the open country: nearest_city)
+        spec["stub_targets"] = {**spec["stub_targets"], **extra.get("stub_targets", {})}
+        spec["results"] = extra["results"]
+    try:
+        res = run(exe, spec)
+    except SystemExit as e:
+        raise SystemExit("%s %04x %s: %s" % (function, off, inputs.get("saint"), e))
+    case = {"function": function, "inputs": inputs, "ax": res["final"]["ax"], "dx": res["final"]["dx"],
+            "changed": {c["linear"]: c["after"] for c in (res["memChanged"] or [])}}
+    if function == "help":
+        case["events"] = [[c["callee"]] + arguments(c) for c in res["calls"] if c["callee"] in ("event_new", "event_here")]
+    return case, res["loadedImages"]
+
+
 def main() -> None:
     exe = Path(sys.argv[1]).read_bytes()
     r = random.Random(20261017)
     table = saint_table(exe)
     result, images = [], None
     for function, off, args, memory, inputs in cases(r, table):
-        spec = {"unit": "saint_%04x" % off, "entry": {"segment": "%04X" % SAINT_SEG, "offset": "%04X" % off},
-                "sections": SECTIONS, "ds": DS, "memory": memory, "args": args, "follow": True,
-                "stub_targets": {"0E76:2C4E": "event_new", "0E76:2930": "event_here"},
-                "arg_words": {"event_new": 11, "event_here": 3},
-                "track_all": function == "help"}
-        try:
-            res = run(exe, spec)
-        except SystemExit as e:
-            raise SystemExit("%s %04x %s: %s" % (function, off, inputs.get("saint"), e))
-        images = res["loadedImages"]
-        case = {"function": function, "inputs": inputs, "ax": res["final"]["ax"], "dx": res["final"]["dx"],
-                "changed": {c["linear"]: c["after"] for c in (res["memChanged"] or [])}}
-        if function == "help":
-            case["events"] = [[c["callee"]] + arguments(c) for c in res["calls"] if c["callee"] in ("event_new", "event_here")]
+        case, images = run_case(exe, function, off, args, memory, inputs)
         result.append(case)
     corpus = {
         "authority": "test_only_original_byte_execution",

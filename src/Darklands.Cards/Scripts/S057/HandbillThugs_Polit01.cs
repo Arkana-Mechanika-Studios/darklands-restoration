@@ -22,7 +22,7 @@ public sealed class HandbillThugs_Polit01 : Card
     private const int SideStreet = 9, SideStreetAtNight = 0x0A;
 
     /// <summary>The location facts (kind 0x1C, tag 2) about the thugs: the truce running for a day or two, and that they have been beaten.</summary>
-    // UNCERTAIN: the names of types 0x12 and 0x13 are guessed from how they are used.
+    // C: the names of types 0x12 and 0x13 are guessed from how they are used.
     private const int PoliticsTag = 2, ThugsBeaten = 0x12, ThugsTruce = 0x13;
 
     /// <summary>

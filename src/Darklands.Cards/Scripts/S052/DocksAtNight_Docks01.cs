@@ -66,8 +66,8 @@ public sealed class DocksAtNight_Docks01 : Card
             // Their hints: R052+0x0542 (1838:0542), R052+0x0598 (1838:0598), R052+0x05EE (1838:05EE, 100% for the leader), R052+0x0646 (1838:0646), R052+0x069C (1838:069C).
             new MenuLine(() => LeaveForOutskirts(c)),
             new MenuLine(() => LeaveForOutskirts(c)),
-            new MenuLine(() => LeaveForOutskirts(c)),
             new MenuLine(() => LeaveForOutskirts(c), () => OptionHint.ChanceOf(100, c.Leader)),
+            new MenuLine(() => LeaveForOutskirts(c)),
             new MenuLine(() => LeaveForOutskirts(c)));
     }
 

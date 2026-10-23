@@ -292,6 +292,8 @@ public sealed partial class TacticalBattle
                 Battle[i].Flags |= TacticalFlags.PlaceChanged;
             }
             _view.RowChanged(i);
+            // C: the row redraw (0000:1716, R014+0xDD09) and the triggers' path both fall through to R014+0xDD17 `and byte [si],0xF7`.
+            Battle[i].Flags &= ~TacticalFlags.PlaceChanged;
         }
     }
 
@@ -346,7 +348,7 @@ public sealed partial class TacticalBattle
             }
             c.Flags &= ~TacticalFlags.InDoorway;
         }
-        if (Battle.Leader != i || Paused)
+        if (Battle.Leader != i || !Running)
         {
             return;
         }
@@ -418,7 +420,7 @@ public sealed partial class TacticalBattle
             }
             c.Flags &= ~TacticalFlags.OnStairs;
         }
-        if (Battle.Leader == i && !Paused)
+        if (Battle.Leader == i && Running)
         {
             if (Battle.PartyFloor != Battle.FloorShown)
             {
@@ -452,7 +454,7 @@ public sealed partial class TacticalBattle
             }
             c.Flags &= ~TacticalFlags.AtChest;
         }
-        if (Battle.Leader != i || Paused)
+        if (Battle.Leader != i || !Running)
         {
             return;
         }
@@ -528,7 +530,7 @@ public sealed partial class TacticalBattle
             }
             c.Flags &= ~TacticalFlags.InExitZone;
         }
-        if (Battle.Leader == i && !Paused)
+        if (Battle.Leader == i && Running)
         {
             Menus.Set(OrdersItem.Exit, (byte)((c.Flags & TacticalFlags.InExitZone) != 0 ? 1 : 2));
         }
@@ -601,7 +603,7 @@ public sealed partial class TacticalBattle
             && c.Position.X - 16 <= p.Position.X && p.Position.X < c.Position.X + 16
             && c.Position.Y - 16 <= p.Position.Y && p.Position.Y < c.Position.Y + 16);
         NextToPile = c.LootPile != -1;
-        if (Battle.Leader == i && !Paused)
+        if (Battle.Leader == i && Running)
         {
             Menus.Set(OrdersItem.LootBodies, (byte)(NextToPile && !Battle.RealCombat ? 1 : 2));
         }
@@ -623,6 +625,7 @@ public sealed partial class TacticalBattle
             }
         }
         Level.SetWord(TriggersAt + 14 * k, -1);
+        LevelChanged = true;
         var at = FurnitureRemovalAt + 10 * (n & 0xFF);
         // C: the direction byte is pushed zero-extended (checked against the asm).
         PlaceParty(Level.GetWord(at + 6), Level.GetWord(at + 8), Level.GetByte(at + 5));
@@ -729,6 +732,7 @@ public sealed partial class TacticalBattle
     private void OpenWalls(int who, int h, int n)
     {
         _ = who;
+        LevelChanged = true;
         if (n >= 0)
         {
             RevealGroup(n);
@@ -792,6 +796,7 @@ public sealed partial class TacticalBattle
                 break;
         }
         _view.Message(FindsSecretDoorText, 150, who);
+        LevelChanged = true;
         var wall = (sbyte)Level.GetByte(at + 6);
         if (wall >= 0)
         {
@@ -805,6 +810,7 @@ public sealed partial class TacticalBattle
     private void RemoveFurniture(int n, int h)
     {
         ToggleTrigger(h);
+        LevelChanged = true;
         var at = FurnitureRemovalAt + 10 * n;
         int x = Level.GetByte(at + 1), y = Level.GetByte(at + 2), x2 = Level.GetByte(at + 3), y2 = Level.GetByte(at + 4);
         if (x != 0)
@@ -823,6 +829,7 @@ public sealed partial class TacticalBattle
     private void RemoveWall(int n, int h)
     {
         ToggleTrigger(h);
+        LevelChanged = true;
         var at = WallRemovalAt + 10 * n;
         var wall = (sbyte)Level.GetByte(at + 3);
         if (wall > 0)

@@ -16,7 +16,7 @@ namespace Darklands.Cards.Scripts;
 // orig: handler setup R073+0x2CB0 (item pop-ups 0906/0934/0966, standard saint pop-ups 09a2/0a2c,
 // unused-line handler 08ce "screwed up.")
 // The card name is copied from DS:5ED2 ("$CityW04", the card table's name) instead of being a string literal.
-// UNCERTAIN: the card sets the window globals DS:EE70 = 0 and DS:EE72 = 7; they are not modelled (nothing reconstructed reads them).
+// C: the card sets the window globals DS:EE70 = 0 and DS:EE72 = 7; they are not modelled (nothing reconstructed reads them).
 public sealed class SallyPortInTheCityWall : Card
 {
     private const int Stealth = (int)Skill.Stealth;
@@ -125,7 +125,7 @@ public sealed class SallyPortInTheCityWall : Card
     /// the practice mode is 1 for the roll above the chance.
     /// </summary>
     // orig: R073+0x2732
-    // UNCERTAIN: the test looks inverted (a high chance makes success unlikely), but the code does exactly this
+    // C: the test looks inverted (a high chance makes success unlikely), but the code does exactly this
     // (`cmp ax,[bp+6]; jle` in R073+0x2732; the same in R073+0x2820).
     private void ClimbWithARope(CardContext c, int chance)
     {

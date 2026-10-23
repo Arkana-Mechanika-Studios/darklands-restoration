@@ -164,7 +164,9 @@ public static class CombatantSetup
             c.Maximums[k] = kind.Attributes[k];
         }
         kind.Skills.CopyTo(c.Skills, 0);
-        c.Items.Clear();
+        // R025+0x0314..0x035D: the kind's stacks (as many as the count the record copy brought, +0x7E) are copied over the slot's pack;
+        // the entries after them keep what an earlier enemy of the slot left
+        c.Items.Stacks = 0;
         c.Items.AddRange(kind.Items);
         c.EffectImmunity = kind.EffectImmunity;
         c.EnemyClass = activation ? kind.Class : 0;

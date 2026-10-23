@@ -73,6 +73,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         new(1, 81, 57, 38, 255, 0, 0, 81, 57, 38, 0, 0, 13, 15, 14, 6),
         new(1, 121, 57, 38, 255, 0, 0, 121, 57, 38, 0, 0, 14, 16, 15, 9),
         new(1, 161, 57, 37, 255, 0, 0, 161, 57, 37, 0, 0, 15, 16, 16, 10),
+        // C: entries 17 and 18 of the table are all zero (a 0x0 box at (0, 0), colour 0, every neighbour box 0). Box 13's Right
+        //   neighbour is 17 (R031+0x10AE case Left/Right reads the table byte), so the cursor can stand on it: the frame is one pixel at (0, 0),
+        //   Up/Down/Left/Right go back to box 0. The click scan (R031+0x0124: 18 entries, 19 when dropping) reaches both.
+        new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
     ];
 
     /// <summary>The brush pictures of the boxes that open (index <see cref="Box.Picture"/>).</summary>
@@ -92,8 +97,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     private static readonly string[] OtherLabels = ["Heal", "Artf", "Stlh", "StrW", "Ride", "WdWs"];
 
     /// <summary>The first visible line and the selected line of each list box, per member (kept between visits, as the game's table).</summary>
-    private readonly int[,] _top = new int[BoxCount, Party.MaxMembers];
-    private readonly int[,] _selected = new int[BoxCount, Party.MaxMembers];
+    private readonly int[,] _top = new int[19, Party.MaxMembers];
+    private readonly int[,] _selected = new int[19, Party.MaxMembers];
 
     /// <summary>The back page (the game's back_win) the sheet restores rectangles from.</summary>
     private readonly Screen _backScreen = new();
@@ -507,6 +512,10 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 DrawListPanel(PackBox);
                 DrawBoxText(EquipmentBox);
                 return;
+            case 'd' or 'a' or 'u' or 'p':
+                // orig: R031+0x185E (D), R031+0x192E (A), R031+0x19E2 (U), R031+0x1B2C (P): without the pack open (P: the cursor on
+                //   another box) the case returns at R031+0x1D40; the open box stays open (only the default case R031+0x1C66 closes it)
+                return;
         }
         if (key == Keys.AltQ)
         {
@@ -709,7 +718,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         for (var i = 0; i < limit; i++)
         {
             // C: the original scans 18 (19 when dropping) table entries; entries 17 and 18 are zero rectangles at (0, 0).
-            if (i >= Boxes.Length ? x == 0 && y == 0 : Boxes[i].Contains(x, y))
+            if (Boxes[i].Contains(x, y))
             {
                 return i;
             }
@@ -854,8 +863,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         }
         var last = "armsback";
         Draw(last);
-        // C: the original keeps the picture handle in one variable; an armour type outside its switch
-        // draws the previous picture again (its buffer was just freed but still holds it).
+        // C: the original keeps the picture handle in one variable; an armour type outside its switch draws the previous picture again and frees
+        // it again (R031+0x0BF6, +0x0C8C): DOS checks only the arena signature, which the freed block keeps, so the sheet goes on.
         last = LimbArmorPicture(m.LimbArmor.Type) ?? last;
         Draw(last);
         last = VitalArmorPicture(m.VitalArmor.Type) ?? last;

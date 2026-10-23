@@ -237,6 +237,52 @@ public sealed class BattleUiTests
         Assert.False(tb.InOrderMode);
     }
 
+    /// <summary>
+    /// The combat sheet holds the combat clock (R022+0x0066 / 0x03C6, DS:07D3) but the timer callbacks go on counting DS:07D1 (root 047C:000A):
+    /// a running battle's clock does not move over a long sheet, and a paused battle ticks (draws) at once after it when 07D1 reached 8
+    /// (R014+0x0F7B), unless the byte wrapped back below 8 (256 callbacks).
+    /// </summary>
+    [Fact]
+    public void TheCombatSheetHoldsTheClockButTheTimerCallbacksGoOn()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var sheetMs = 0;
+        using var run = new Session(files, Corridor, sheet: (ui, _) => ui.Clock.Sleep(sheetMs));
+        run.Play("wait:10", "key:space", "wait:5");
+        var tb = run.Screen.Tactics!;
+        Assert.False(tb.Paused);
+        // a running battle: two seconds on the sheet (120 callbacks) do not move the clock
+        sheetMs = 2000;
+        var clock = tb.Battle.Clock;
+        run.Play("key:f1");
+        Assert.InRange(tb.Battle.Clock - clock, 0, 5);
+
+        // paused: wait for a paused tick (07D1 back to 0), then a second on the sheet: the next tick comes in the sheet's own pass
+        run.Play("key:space", "wait:2");
+        Assert.True(tb.Paused);
+        int SyncToTick()
+        {
+            var ticks = tb.Ticks;
+            for (var n = 0; n < 20 && tb.Ticks == ticks; n++)
+            {
+                run.Play("wait:0");
+            }
+            return tb.Ticks;
+        }
+        sheetMs = 1000;
+        var t0 = SyncToTick();
+        run.Play("key:f1");
+        Assert.Equal(t0 + 1, tb.Ticks);
+        // 256 callbacks on the sheet: the byte is back where it was, no tick before the cadence's 8
+        sheetMs = 256 * 1000 / 60 + 1;
+        t0 = SyncToTick();
+        run.Play("key:f1");
+        Assert.Equal(t0, tb.Ticks);
+    }
+
     /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
     private sealed class Session : IDisposable
     {
@@ -246,7 +292,7 @@ public sealed class BattleUiTests
         private readonly GameState _state;
 
         public Session(GameFiles files, BattleRequest request, string? picture = null,
-            Action<GameScreens, IList<ItemStack>, Money>? loot = null)
+            Action<GameScreens, IList<ItemStack>, Money>? loot = null, Action<GameUi, int>? sheet = null)
         {
             _host = new StepHost();
             Ui = new GameUi(_host, new GameAssets(files));
@@ -255,6 +301,10 @@ public sealed class BattleUiTests
             _state.Data = world;
             var lootScreens = new GameScreens(Ui, new PartyPanel(Ui.Assets), _state, new NoScreens());
             _screens = new BattleScreens(Ui, () => _state, loot is null ? null : (items, money) => loot(lootScreens, items, money));
+            if (sheet is not null)
+            {
+                _screens.CharacterSheet = member => sheet(Ui, member);
+            }
             Assets = new BattleAssets(files);
             _host.Locate = who => _screens.Current?.HotSpotCentre(who);
             _request = request;
@@ -467,6 +517,7 @@ public sealed class BattleUiTests
                         "enter" => Keys.Enter,
                         "esc" => Keys.Escape,
                         "f10" => Keys.F10,
+                        "f1" => Keys.F1,
                         "down" => Keys.Down,
                         "up" => Keys.Up,
                         "right" => Keys.Right,

@@ -186,25 +186,28 @@ public sealed partial class TacticalBattle
                     return Placed();
                 }
             }
+            // R024+0x0B2E..0x0C17: 501 random spots (the count is raised after each, then tested: > 500 ends), then with the furniture
+            // around the spot cleared 501 more
             var cleared = false;
-            for (var i = 0; ; i++)
+            for (var i = 0; ;)
             {
                 c.Position = new MapPoint(Scaled(48) + spot.X, Scaled(24) + spot.Y);
                 if (Map.Collides(who, c.Position.X, c.Position.Y).IsFree && Map.LineBlocked(spot, c.Position) == 0)
                 {
                     return Placed();
                 }
-                if (i > 500 && !cleared)
+                if (++i <= 500)
                 {
-                    ClearFurnitureAround(spot.X, spot.Y);
-                    cleared = true;
-                    i = 0;
                     continue;
                 }
-                if (i > 500)
+                if (cleared)
                 {
                     break;
                 }
+                ClearFurnitureAround(spot.X, spot.Y);
+                LevelChanged = true;
+                cleared = true;
+                i = 0;
             }
         }
         else
@@ -257,7 +260,7 @@ public sealed partial class TacticalBattle
     {
         var result = false;
         var list = Activations[Battle.FloorShown];
-        if (Battle.PartyFloor == Battle.FloorShown && ActivationsEnabled && !Paused && list.Count != 0)
+        if (Battle.PartyFloor == Battle.FloorShown && ActivationsEnabled && Running && list.Count != 0)
         {
             var k = 0;
             while (k < list.Count)
@@ -495,6 +498,7 @@ public sealed partial class TacticalBattle
         _redraw = true;
         Menus.Set(OrdersItem.EnemyInfo, 1);
         EncounteredLevels |= 1 << Battle.FloorShown;
+        LevelChanged = true;
         if (mode == 0 && encounter is not null)
         {
             Purse = AddMoney(Purse, encounter.Florins, encounter.Groschen, encounter.Pfennigs);

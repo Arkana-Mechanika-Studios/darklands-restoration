@@ -26,7 +26,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R121+0x181C, R121+0x18BE
 // DORMANT (generated): option slots 10..19 keep the default handler R121+0x18BE ("screwed up.") and are never shown.
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class HallOfHorns : Card
 {

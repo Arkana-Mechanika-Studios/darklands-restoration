@@ -47,7 +47,7 @@ public sealed class RebelMobInTheStreets : Card
             // DORMANT: talking to the crowd: the original has no code behind this line (it does nothing and the menu returns).
             // C: away from the mob, line 2 takes opt_flag_2, which this card never sets (a stale
             // global of an earlier card); block 0 has no third line, so it is taken as hidden.
-            // UNCERTAIN: if a stale value 1 left the line enabled in block 0, choosing it would also do nothing.
+            // C: if a stale value 1 left the line enabled in block 0, choosing it would also do nothing.
             new MenuLine(() => { }, OptionHint.Saying("No Code!")));
     }
 

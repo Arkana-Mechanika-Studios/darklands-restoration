@@ -24,7 +24,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option line(s) 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
 // DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
 // DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class TemplarPassword : Card
 {
     public override int Number => 308;

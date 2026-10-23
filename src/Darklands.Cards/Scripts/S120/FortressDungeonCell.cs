@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R120+0x1100, R120+0x11A2
 // DORMANT (generated): option slots 10..19 keep the default handler R120+0x11A2 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 8, 9 are never enabled (every assignment sets their flag to 0).
-// UNCERTAIN (generated): the card-engine globals DS:EE70 / DS:EE72 the C sets (meaning unknown) are not reproduced.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class FortressDungeonCell : Card
 {
     public override int Number => 305;
@@ -63,6 +63,7 @@ public sealed class FortressDungeonCell : Card
         menu[3] = c.SaintsUsable();
 
         var unknown = OptionHint.Saying(CardTexts.Unknown);
+        // DORMANT: in text block 1 the option lines 0..4 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => menu.Offer(1, 5, 6, 7), unknown),
             new MenuLine(_ => c.Next = Jailers, unknown),

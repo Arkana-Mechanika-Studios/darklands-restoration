@@ -43,7 +43,7 @@ not compare (the C# writes the party, the original the battle's save). --battle-
    game being played through OriginalSaves.Write.
 3. Per state: savdiff sections, the random generator's state (DS:7B20 / MscRandom.State) and the card; header
    word +0x84 (DS:E898, the card screen's text state) is reported apart (the C# writes the loaded file's). The
-   saved games each wrote with Alt-S are compared too (the header's two texts apart).
+   saved games each wrote with Alt-S are compared too (the header's two texts apart), their battle files (.BSV) byte by byte.
 
 Out folder: report.json, original.log (keys, clicks, cards, clock seeds, states with the Save/Load flags),
 original-<state>.sav, cs/<state>.sav, original-file-*, cs-saves/, rewrite.log; with --battle-trace a line per
@@ -105,7 +105,68 @@ def trace_difference(original, rewrite) -> dict:
     return {"clock": None, "ticks agreeing": len(common), "clocks": {"original": len(a), "rewrite": len(b)}}
 
 
-def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None):
+def after_dialog(steps, i) -> bool:
+    """Step i is a bwait after the save's dialog (key:alts .. key:enter) or the load's (key:altl .. key:l), wait steps between."""
+    keys = [s for s in steps[:i] if s[0] not in ("wait", "shot")][-4:]
+    last = keys[-1] if keys else None
+    if last == ("key", "enter"):
+        return ("key", "alts") in keys
+    if last == ("key", "l"):
+        return ("key", "altl") in keys
+    return False
+
+
+def dialog_gaps(log, steps, logged: int) -> list[int]:
+    """The battle passes from the last key read in a save or load dialog (R037+0x2A68, R037+0x8B76) to the next key the battle took, in
+    order, when the bwaits after the dialogs are exactly those missing from BWAIT_ACTUAL (else none)."""
+    expected = [i for i, s in enumerate(steps) if s[0] == "bwait" and after_dialog(steps, i)]
+    if not expected or sum(1 for s in steps if s[0] == "bwait") - logged != len(expected):
+        return []
+    keys = []
+    for l in log:
+        if l.startswith("key ") and "(battle pass " in l:
+            keys.append((int(l.split("(battle pass ")[1].split(",")[0]), l.rpartition(" in ")[2].split(" < ")[-1]))
+    out = []
+    for (p, where), (q, nxt) in zip(keys, keys[1:]):
+        if where.startswith(("R037+0x2A68", "R037+0x8B76")) and not nxt.startswith(("R037+0x2A68", "R037+0x8B76")):
+            out.append(q - p)
+    return out if len(out) == len(expected) else []
+
+
+def resume_clocks(trace) -> list[int]:
+    """The clock of the original's first battle pass after each fall of the combat clock in its trace: each battle after the first (a new
+    one starts its clock again; one taken up from a saved game has the clock the restore R003+0x0CE8 read from the battle file, counted on by
+    the timer while the restore and the set-up ran at the emulator's speed). Given to the C# for sessions that load in a battle (Alt-L)."""
+    clocks = [int(l.split()[2]) for l in trace if l.startswith("pass clock ")]
+    return [b for a, b in zip(clocks, clocks[1:]) if b < a]
+
+
+def loot_ticks(jumps, log):
+    """(jumps, [(clock, ticks)]): the clock jumps of the passes followed by a loot screen (a key read in R040 at clock c, the jump of the pass
+    whose head had c - 1) without their ticks after the pass, those being given to the C# at the loot screen: the end test R014+0x08FE runs
+    combat_recover R014+0x0DEE (each member's next recovery = the clock) before the loot screen, whose emulated time the timer counts."""
+    at = set()
+    for l in log:
+        if l.startswith("key ") and "< R040+0x0000" in l and ", clock " in l:
+            at.add(int(l.split(", clock ")[1].split(")")[0]))
+    out, loot = [], []
+    for j in jumps:
+        if j[0] + 1 in at and j[1] > 0:
+            loot.append((j[0] + 1, j[1]))
+            at.discard(j[0] + 1)
+            j = (j[0], 0) + tuple(j[2:])
+        out.append(j)
+    return out, loot
+
+
+def sheet_callbacks(log) -> list[tuple[int, int]]:
+    """[(during, after)] for each combat sheet of the original's log ("sheet callbacks 5917,53"): the timer callbacks that came while the sheet held
+    the clock (R022+0x0066 .. 0x03C6) and after it up to the next battle pass; a recording made before these lines has none."""
+    return [tuple(int(v) for v in l.split()[2].split(",")) for l in log if l.startswith("sheet callbacks ")]
+
+
+def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
+                sheets=(), resume_clocks=(), loot=(), log=None):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -122,6 +183,9 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     # bwait:<n>: the original gives the step n + 1 battle passes after the previous one was taken; the C# host takes three frames more
     # than its wait (the key's two idle frames and the step's own), so the same pass is wait:<n - 3>
     seen = iter(BWAIT_ACTUAL)
+    # a bwait right after the save's or the load's dialog (Alt-S .. Enter, Alt-L .. L) is taken by the dialog's console reads in the original
+    # (no entry in BWAIT_ACTUAL): the next key there comes when the battle is idle; the C# waits the passes the original's log shows
+    gaps = iter(dialog_gaps(log or (), steps, len(BWAIT_ACTUAL)))
     # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames), a move one frame less
     for i, (k, v) in enumerate(steps):
         if k == "bwait":
@@ -132,6 +196,9 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
                 cost -= 1
             if i >= 3 and steps[i - 1] == ("key", "esc") and steps[i - 3][0] == "key" and steps[i - 3][1] in ("f1", "f2", "f3", "f4", "f5"):
                 cost -= 1                   # the sheet that Esc closes passes no battle pass in the frame it ends in
+            if after_dialog(steps, i) and (gap := next(gaps, None)) is not None:
+                args.append("wait:%d" % max(0, gap - 1 - cost))
+                continue
             args.append("wait:%d" % max(0, min(int(v), next(seen, int(v))) - cost))
         else:
             args.append("%s:%s" % (k, v) if v else k)
@@ -148,6 +215,15 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     if stale_dest:
         # the destination bytes a record keeps from the enemy file's stack bytes, by record (DARKLANDS_BATTLE_STALE_DEST)
         env["DARKLANDS_BATTLE_STALE_DEST"] = ";".join("%d:%d,%d" % p for p in stale_dest)
+    if loot:
+        # the ticks of the original's loot screens, by the clock it was opened at (applied when the C#'s opens)
+        env["DARKLANDS_BATTLE_LOOT_TICKS"] = ";".join("%d,%d" % p for p in loot)
+    if resume_clocks:
+        # the clock of the original's first pass after each battle taken up from a saved game (its restore and set-up at the emulator's speed)
+        env["DARKLANDS_BATTLE_RESUME_CLOCKS"] = ";".join(str(v) for v in resume_clocks)
+    if sheets:
+        # the timer callbacks of the original's combat sheets (DS:07D1 counts on while the sheet holds the clock): the C# host has no time there
+        env["DARKLANDS_BATTLE_SHEET_CALLBACKS"] = ";".join("%d,%d" % p for p in sheets)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():
@@ -246,7 +322,7 @@ def main():
         original, seeds, log, end, files, set_up, trace = (got[k] for k in ("states", "seeds", "log", "end", "files", "set_up", "trace"))
         cov = dict(got["cov"]) if a.coverage else None
         replayed = True
-    jumps = got["jumps"]
+    jumps, loot = loot_ticks(got["jumps"], got["log"])
     BWAIT_ACTUAL[:] = got["bwait"]          # the passes each bwait of the original waited (run_original fills it on a live run)
     t_original = got["seconds"]
     if a.battle_trace:
@@ -256,7 +332,8 @@ def main():
         (out / ("original-%s.sav" % name)).write_bytes(sav)
     t = time.time()
     rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
-                                  got["stale"] if a.battle_records else None)
+                                  got["stale"] if a.battle_records else None, sheet_callbacks(log),
+                                  resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log)
     battle = None
     if a.battle_trace:
         lines = [l for l in output.splitlines() if l.startswith("pass ")]
@@ -274,11 +351,19 @@ def main():
     for name, data in sorted(files.items()):
         (out / ("original-file-" + name)).write_bytes(data)
         theirs = out / "cs-saves" / name
-        if not name.endswith(".SAV"):
+        if not name.endswith((".SAV", ".BSV")):
             continue
         row = {"file": name}
         if not theirs.exists():
             row["missing"] = ["rewrite"]
+        elif name.endswith(".BSV"):
+            # the battle file (R003+0x00DC): byte by byte, by imploded block
+            given = save.with_suffix(".BSV") if save and save.with_suffix(".BSV").exists() else None
+            d = savdiff.bsv_diff(theirs.read_bytes(), data, given.read_bytes() if given else None)
+            if "kept" in d:
+                row["bsv kept"] = d.pop("kept")     # reported apart (savdiff.bsv_diff)
+            if d:
+                row["bsv"] = d
         else:
             d = savdiff.diff(theirs.read_bytes(), data)
             if d:
@@ -287,7 +372,7 @@ def main():
                 row["texts"] = {"original": data[:0x64].hex(), "rewrite": theirs.read_bytes()[:0x64].hex()}
         rows.append(row)
     if cov is not None:
-        if all(set(r) <= {"state", "file", "text state", "texts", "party seed"} for r in rows):
+        if all(set(r) <= {"state", "file", "text state", "texts", "party seed", "bsv kept"} for r in rows):
             (out / "cov").mkdir(exist_ok=True)
             (out / "cov" / "cov-0.jsonl").write_text(json.dumps({"unit": Path(a.script).stem, **cov}, separators=(",", ":")) + "\n", encoding="utf-8")
         else:
@@ -298,9 +383,9 @@ def main():
               "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)},
               "original run": "replayed" if replayed else "live", "states": rows}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
-    first = next((r for r in rows if set(r) - {"state", "file", "text state", "texts", "party seed"}), None)
+    first = next((r for r in rows if set(r) - {"state", "file", "text state", "texts", "party seed", "bsv kept"}), None)
     for r in rows:
-        print("%-12s %s" % (r.get("state") or r["file"], "same" if set(r) <= {"state", "file", "text state", "texts", "party seed"} else json.dumps(
+        print("%-12s %s" % (r.get("state") or r["file"], "same" if set(r) <= {"state", "file", "text state", "texts", "party seed", "bsv kept"} else json.dumps(
             {k: v for k, v in r.items() if k not in ("state", "file")})[:300]))
     print("original: %s (%d s, %s); rewrite %d s; first divergence: %s" % (end, t_original, "replayed" if replayed else "live", t_rewrite,
                                                                        (first.get("state") or first["file"]) if first else "none"))
