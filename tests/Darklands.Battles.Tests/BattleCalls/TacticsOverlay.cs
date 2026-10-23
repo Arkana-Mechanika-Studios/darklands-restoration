@@ -16,6 +16,7 @@ internal static class TacticsOverlay
     public const int Modifiers = 0xA532, ModifierSize = 0x12, WatchedCounts = 0xD5C6, QueuedSteps = 0xCA30, WatchedFacingTable = 0x20EE;
     public const int FurnitureHeights = 0xC11D, FurnitureWidths = 0xC12F, FurnitureX = 0xD7BE, FurnitureY = 0xD802, LastParts = 0xE11C;
     public const int TwinDoorsAt = 0xC00, DoorsOpenedAt = 0xBB6, MissileCount = 0xC180, MissilesAt = 0x944D, MissileSize = 0x1A, MaxMissiles = 17;
+    public const int AttackEnables = 0x97DD, AttackMenuTitle = 0x9433, FloorsAt = 0xA6B4, FlagsAt = 0xA696;
     public const int MenuOrders = 0x9609, MenuStride = 0x14, DisarmText = 0x970B, Picker = 0xE1CA, RecoverableCount = 0xC783, RecoverablesAt = 0x3954, MaxRecoverables = 10;
     public const int PartyPacks = 0x3E, PartyPackStride = 0x180, EnemyPacks = 0xBDE, EnemyPackStride = 0x60, CountAt = 0x7E;
     public const int Clouds = 0xA2EB, CloudCount = 0xA33D, Areas = 0xA342, AreaCount = 0xA395, Markers = 0xA396, MarkerCount = 0xA531, Immunity = 0xC927, FlashUntil = 0xDA89;
@@ -91,6 +92,9 @@ internal static class TacticsOverlay
         {
             throw new BattleCallsTests.SkipJob("the floor shown is not a level of this battlefield");
         }
+        // the level shown is the one DS:11CA names: the rewrite's own start may show another (a job that moves the shown floor)
+        t.Map.Level = Get<IReadOnlyList<BattlefieldLevel>>(t, "_levels")[t.Battle.FloorShown];
+        t.Battle.ExitCards = t.Map.Level.ExitCards;
         far.AsSpan(0, FloorSize).CopyTo(t.Level.Image);
         var map = t.Map;
         foreach (var f in Flags)
@@ -154,6 +158,13 @@ internal static class TacticsOverlay
             t.Menus.Orders[n] = ds[MenuOrders + MenuStride * n];
         }
         t.Menus.DisarmText = Word(ds, DisarmText);
+        for (var n = 0; n < t.Menus.Attack.Length; n++)
+        {
+            t.Menus.Attack[n] = ds[AttackEnables + MenuStride * n];
+        }
+        t.Menus.AttackMenu = ds[AttackMenuTitle];
+        OrderOverlay.Apply(t, image);
+        LootOverlay.Apply(t, image);
         Set(t, "_picker", (int)ds[Picker]);
         t.Recoverables.Clear();
         for (var n = 0; n < Math.Min((int)ds[RecoverableCount], MaxRecoverables); n++)
@@ -307,6 +318,13 @@ internal static class TacticsOverlay
             ds[MenuOrders + MenuStride * n] = t.Menus.Orders[n];
         }
         PutWord(ds, DisarmText, t.Menus.DisarmText);
+        for (var n = 0; n < t.Menus.Attack.Length; n++)
+        {
+            ds[AttackEnables + MenuStride * n] = t.Menus.Attack[n];
+        }
+        ds[AttackMenuTitle] = t.Menus.AttackMenu;
+        OrderOverlay.Extract(t, image);
+        LootOverlay.Extract(t, image);
         ds[Picker] = (byte)Get<int>(t, "_picker");
         ds[RecoverableCount] = (byte)t.Recoverables.Count;
         for (var n = 0; n < Math.Min(t.Recoverables.Count, MaxRecoverables); n++)
@@ -513,6 +531,14 @@ internal static class TacticsOverlay
     /// <summary>A DS offset → what models it here, or null.</summary>
     public static string? Describe(int ds)
     {
+        if (OrderOverlay.Describe(ds) is { } order)
+        {
+            return order;
+        }
+        if (LootOverlay.Describe(ds) is { } lootPlace)
+        {
+            return lootPlace;
+        }
         foreach (var f in Flags)
         {
             if (ds == f.Ds)
@@ -543,6 +569,14 @@ internal static class TacticsOverlay
         if (ds >= MenuOrders && ds < MenuOrders + MenuStride * 18 && (ds - MenuOrders) % MenuStride == 0)
         {
             return $"menu enable[{(ds - MenuOrders) / MenuStride}]";
+        }
+        if (ds >= AttackEnables && ds < AttackEnables + MenuStride * 6 && (ds - AttackEnables) % MenuStride == 0)
+        {
+            return $"attack enable[{(ds - AttackEnables) / MenuStride}]";
+        }
+        if (ds == AttackMenuTitle)
+        {
+            return "attack menu title";
         }
         if (ds == DisarmText || ds == DisarmText + 1)
         {
@@ -637,6 +671,10 @@ internal static class TacticsOverlay
     /// <summary>An offset of the far segment → what models it, or null (the level's image, the paths, the hidden encounters).</summary>
     public static string? DescribeFar(int at)
     {
+        if (LootOverlay.DescribeFar(at) is { } pile)
+        {
+            return pile;
+        }
         if (at >= 0 && at < FloorSize)
         {
             return $"level image +0x{at:X4}";

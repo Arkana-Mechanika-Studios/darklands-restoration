@@ -60,7 +60,7 @@ def baseline(local: Path):
             for k, v in r["edges"].items():
                 edg[k] |= {tuple(e) for e in v}
     out = ({k: sorted(v) for k, v in ins.items()}, {k: sorted(v) for k, v in edg.items()})
-    target = local / "batch" / "battlecalls" / "baseline.pkl"
+    target = Path(os.environ.get("BATTLE_CALLS_BASELINE") or local / "batch" / "battlecalls" / "baseline.pkl")
     target.parent.mkdir(parents=True, exist_ok=True)
     pickle.dump(out, open(target, "wb"))
     print("baseline: %d instructions, %d edges in %d records -> %s" % (sum(map(len, out[0].values())), sum(map(len, out[1].values())), len(out[0]), target))
@@ -144,7 +144,7 @@ def main():
     out, specs = a.rest[0], a.rest[1:]
     items = Items()
     total = sum(len(v) for v in items.opens.values())
-    base_i, base_e = pickle.load(open(local / "batch" / "battlecalls" / "baseline.pkl", "rb"))
+    base_i, base_e = pickle.load(open(os.environ.get("BATTLE_CALLS_BASELINE") or local / "batch" / "battlecalls" / "baseline.pkl", "rb"))
     already = items.reached({k: set(v) for k, v in base_i.items()}, {k: {tuple(e) for e in v} for k, v in base_e.items()})
     ins, edg, runs = merged(specs)
     got = items.reached(ins, edg) - already

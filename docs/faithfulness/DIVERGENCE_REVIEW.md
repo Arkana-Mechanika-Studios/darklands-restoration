@@ -19,8 +19,8 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 1, justify: 44, keep: 7.
-- Part B (undefined-memory in core logic): 123 entries; determinism: n/a: 79, no: 31, partly: 9, yes: 4.
+- Part A (not-modelled, deliberate-fix, other in core logic): 55 entries; recommendations: document: 1, justify: 44, keep: 7, reproduce-later: 3.
+- Part B (undefined-memory in core logic): 124 entries; determinism: n/a: 79, no: 32, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -30,10 +30,13 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### reproduce (0)
 
 
-### reproduce-later (2)
+### reproduce-later (5)
 
 - **D-ba3c6e** `src/Darklands.Core/Rules/InnRoster.cs:86` `InnRoster.RowEntry` - original `R038+0x23EC`, `R038+0x02F8` (rules) - The highlight can go below the listed rows (DS:E7DC counts every record) and below row 19 only with more than 20 records; then DS:8D06[row] is a word of the record buffer DS:8D2E, i.e. a word of the last record R038+0x23EC read (deterministic: the last roster record). Row -1 needs an empty roster, which the game never has (the party is in it). Reproducing needs the record bytes in the core model (CharacterRecords is in Persistence).
 - **D-6f60dd** `src/Darklands.Core/Rules/InnRoster.cs:148` `InnRoster.AddOrRemove` - original `root 0000:1716`, `R038+0x02F8`, `R029+0x392C` (rules) - A stale row (DS:8D06 kept from an earlier listing) can name an entry past the roster only after a character was deleted from CHARACTR.TMP (R037+0x4048, a hireling dismissed or the dead after a battle) and the highlight is moved below the listed rows. The original then seeks past the records: fread returns nothing, the slot keeps its old bytes and gets status 1 (the previous occupant comes back unequipped), and the slot's id names a missing record. Deterministic; reproducing needs the slot residue as a member, which Party.Slot models.
+- **D-0e2c57** `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:338` `TacticalBattle.UseKey` - original `R016+0x1182` (battles) - With nobody selected the key code at R016+0x1182 copies entry -1 of the two tables (DS:C77D = DS:C8B1, the bytes before them). Reachable in play (a key with no member selected); the copy is of fixed memory and deterministic, so it can be reproduced: open item, listed in SUMMARY.
+- **D-9c5387** `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:530` `TacticalBattle.TakeExit` - original `R023+0x1618` (battles) - level_switch (R024+0x05B4) saves the level it leaves only when DS:D4E4 is set, so take_exit's +0x07 write (R023+0x1618) is lost after a switch while DS:D4E4 is clear. Reachable in play; deterministic; to be reproduced with the levels kept as the original saves them: open item, listed in SUMMARY.
+- **D-e8d85e** `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:598` `TacticalBattle.CancelOrder` - original `R016+0x13D4` (battles) - With nobody selected Esc at R016+0x13D4 writes the flee bit to flags[-1]'s high byte, which is DS:A695: with DS:D6EA = 1 the pause byte becomes 0x11, read as neither paused nor running. Reachable in play; deterministic; to be reproduced: open item, listed in SUMMARY.
 
 ### implement (0)
 
@@ -329,9 +332,9 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (15)
+### battles (18)
 
-#### not-modelled (5)
+#### not-modelled (7)
 
 - **D-5c369e** `not-modelled` - `src/Darklands.Core/Battles/BattleEnd.cs:266` `BattleEnd.LeaveCombatMode`  
   original: `R014+0x0D86` (0E76:0D86, draft)  
@@ -353,6 +356,14 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R011+0x0000` (1432:0000, draft)  
   divergence: the four level buffers (alloc_buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept.  
   recommendation: **justify** (checked against the original) - DS:E049 is written and never read (verified by the note); dropping it changes nothing observable.
+- **D-0e2c57** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:338` `TacticalBattle.UseKey`  
+  original: `R016+0x1182` (1EF8:1182, draft)  
+  divergence: with nobody selected the original copies entry -1 (DS:C77D = DS:C8B1, the bytes before the two tables); not kept here.  
+  recommendation: **reproduce-later** (checked against the original) - With nobody selected the key code at R016+0x1182 copies entry -1 of the two tables (DS:C77D = DS:C8B1, the bytes before them). Reachable in play (a key with no member selected); the copy is of fixed memory and deterministic, so it can be reproduced: open item, listed in SUMMARY.
+- **D-e8d85e** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:598` `TacticalBattle.CancelOrder`  
+  original: `R016+0x13D4` (1EF8:13D4, draft)  
+  divergence: with nobody selected the original's flee bit goes to flags[-1]'s high byte, DS:A695 (ai_paused): with DS:D6EA = 1 the pause byte becomes 0x11, which its tests read as neither paused (== 1) nor running (== 0). Paused is a flag here: not reproduced.  
+  recommendation: **reproduce-later** (checked against the original) - With nobody selected Esc at R016+0x13D4 writes the flee bit to flags[-1]'s high byte, which is DS:A695: with DS:D6EA = 1 the pause byte becomes 0x11, read as neither paused nor running. Reachable in play; deterministic; to be reproduced: open item, listed in SUMMARY.
 
 #### deliberate-fix (1)
 
@@ -361,7 +372,7 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: gives up after 1000 draws and keeps the last room.  
   recommendation: **justify** - The original draws until the room differs from the gate room and never ends when only the gate room can be drawn (see the BUG note at the same function), so giving up after 1000 draws replaces an infinite loop; it keeps the same room.
 
-#### other (9)
+#### other (10)
 
 - **D-a4c2b1** `other` - `src/Darklands.Core/Battles/Attacks.cs:130` `Attacks.ToHit`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -383,6 +394,10 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0x481A` (12F7:000A, draft), `R014+0x4B5A` (12F7:034A, draft)  
   divergence: the original never clears DS:E0C0 (nor saves it with the battle): a battle starts with what the last enemy search of an earlier battle of the session kept there, which matters only when an enemy's first search fails at its goal (see PathFinder.Find). Here each battle starts with every flag 0.  
   recommendation: **keep** (checked against the original) - DS:E0C0 has two references only (R014+0x48DE copies the open flags into it, R014+0x4B5A copies it back), so it carries over between battles and saved games within one run of the program. It matters only when an enemy search fails at its goal test before any enemy search of this battle has opened the doors; a per-battle buffer avoids process-wide state. The whole fights agree with it.
+- **D-9c5387** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:530` `TacticalBattle.TakeExit`  
+  original: `R023+0x1618` (1EF8:1618, draft)  
+  divergence: the levels stay in memory. The original's level_switch (R024+0x05B4) saves the level it leaves only when DS:D4E4 is set (any change of the level sets it; level_switch and the battle save clear it), and this write does not set it: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF here.  
+  recommendation: **reproduce-later** (checked against the original) - level_switch (R024+0x05B4) saves the level it leaves only when DS:D4E4 is set, so take_exit's +0x07 write (R023+0x1618) is lost after a switch while DS:D4E4 is clear. Reachable in play; deterministic; to be reproduced with the levels kept as the original saves them: open item, listed in SUMMARY.
 - **D-01c621** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:541` `TacticalBattle.Triggers`  
   original: `R014+0xD6DA` (19CD:216A, draft)  
   divergence: a record whose handler word is not one of the eight types (a marker the generator left) would be called through its raw words in the original; here nothing happens.  
@@ -391,7 +406,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R023+0x0E30` (1EF8:0E30, draft)  
   divergence: an odd direction leaves the line's globals as the last test left them in the original.  
   recommendation: **keep** - missile_trap (R014 19CD 3258): the direction comes from the trap record written by the generators, which use the even directions 0/2/4/6 only; an odd one would reuse the line globals of the last line_blocked call (deterministic in principle, but it needs a corrupt record). Kept as a guard.
-- **D-d89a90** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:900` `EffectField.LineCrossesCloud`  
+- **D-d89a90** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:903` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   divergence: a ninth cloud slot (the bytes after the array, DS:A33B) reads as an empty cloud at (0, 0).  
   recommendation: **keep** (checked against the original) - cloud_blocks_line reads one cloud past the array at DS:A33B, which is the far pointer of COMMONSP's lit panel edge (DS:A33B, a DOS segment from alloc_buffer): heap layout, not reproducible. The slot is read as an empty cloud; the residue of the missed box test (bug 0029) is reproduced separately.
@@ -432,7 +447,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 Where the original reads or writes outside its defined data, the outcome can still be a fixed function of the program state (a table that follows in the data image, a known stack leftover, a global the previous card left), in which case it can be reproduced exactly. `deterministic`: `yes` (a fixed value or a pure function of modelled state), `partly` (fixed in the shipped data or reachable states, unreproducible elsewhere), `no` (depends on unmodelled memory such as heap addresses or machine state), `n/a` (not reachable in play).
 
-### rules (33)
+### rules (34)
 
 - **D-92e987** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:47` `ItemStores.Open`  
   original: `R035+0x1350` (1462:1350, matched)  
@@ -446,6 +461,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   divergence: a write past the file's end (an offset word of a file shorter than its offset area) leaves DOS's undefined bytes before it; zeros here.  
   deterministic: **no** (checked against the original); action: **keep** - cache_save writes offset words at (i+1)*2 / (ncache+1)*2 through fseek; a file shorter than that (only a saved game whose tail was cut or edited) is extended by DOS with whatever the clusters held. Zeros here.
+- **D-75036a** `undefined-memory` - `src/Darklands.Core/Items/StoreTable.cs:28` `StoreTable.int`  
+  original: `R136+0x11124` (2E38:37F4, data), `R035+0x1350` (1462:1350, matched), `R035+0x10D2` (1462:10D2, matched) +1 more  
+  divergence: those bytes are a heap address in the original, unknown here: the entries before the table start as zero; what a G writes there is kept, as the original keeps it.  
+  deterministic: **no** (checked against the original); action: **keep** - The entries before the store table (2E38:37F0 ..) hold a heap address in the original (R136+0x11124 data, read by R035+0x1350 / +0x10D2 when the row is -1); the address is not reproducible, so they start as zero and what a G writes there is kept as the original keeps it.
 - **D-c9e64e** `undefined-memory` - `src/Darklands.Core/Rules/CampStay.cs:62` `CampStay.CampStay`  
   original: `R036+0x0082` (1462:0082, draft)  
   divergence: the detail words (DS:8A4E) are global in the original and keep the last stay's text; here each stay starts empty (only shown once an activity sets them).  
@@ -883,7 +902,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R016+0x0DA6` (1EF8:0DA6, draft), `R016+0x0E2E` (1EF8:0E2E, draft)  
   divergence: an entry past the thirteen combatant records (a saved game's bytes) reads past the records; here it makes the order rebuilt.  
   deterministic: **n/a** (checked against the original); action: **justify** - Entries are slot numbers 0..4: R022+0x07AA takes F1..F5 (0..4) or a party row or hot spot (0..4), R016+0x0E2E takes slots 0..4. An entry of 13 or more needs a saved game edited by hand (header +0x9B); the original would read the status byte of memory past the combatant records.
-- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1274` `EffectField.LayOutCloud`  
+- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1277` `EffectField.LayOutCloud`  
   original: `R014+0x9E92` (14F7:3682, draft)  
   divergence: a size above 4 (the trap kinds 10..15 have sizes 6 and 9: the low nibble) writes past the 16-puff arrays on the original's stack; the random numbers are drawn, the extra puffs are not kept.  
   deterministic: **no** (checked against the original); action: **keep** - effect_layout with a size above 4 writes past its 16-puff locals on the stack (return address and saved registers of its caller); the outcome depends on the stack frame (a crash or corrupted locals), not a state that can be modelled. The random numbers are drawn as in the original.

@@ -344,6 +344,33 @@ SCREENS = {
 }
 
 
+CAMP_SCREENS = ("stay", "wild")
+HOURGLASS_WAIT = 300        # frames: the C# host's hourglass of a camp day (4 steps x 400 ms + 1000 ms, R043+0x3494) runs on the host's frames
+
+
+def input_wait(screen: str, step: str) -> str:
+    """The C#'s wait after an input: a camp day (S, or a click on the bottom menu's first row, R036+0x0734) passes time with the
+    hourglass, whose delays the headless host plays out frame by frame; the original's next step waits for it to be idle anyway."""
+    if screen in CAMP_SCREENS:
+        kind, _, value = step.partition(":")
+        if kind == "key" and value in ("s", "S"):
+            return "wait:%d" % HOURGLASS_WAIT
+        if kind == "click":
+            x, y = (int(v) for v in value.split(","))
+            if 0x46 < x < 0x134 and 0xAA < y < 0xBC and (y - 0xAA) // 9 == 0:
+                return "wait:%d" % HOURGLASS_WAIT
+    return "wait:30"
+
+
+def fix_waits(screen: str, text: str) -> str:
+    """An existing generated session with the waits of input_wait (the inputs and states unchanged)."""
+    lines = text.splitlines()
+    for i in range(1, len(lines)):
+        if lines[i] == "wait:30" and lines[i - 1].split(":")[0] in ("key", "click"):
+            lines[i] = input_wait(screen, lines[i - 1])
+    return "\n".join(lines) + "\n"
+
+
 def generate(screen: str, seed: int, steps: int) -> str:
     save, prefix, alphabet, closing = SCREENS[screen]
     rng = random.Random("%s-%d" % (screen, seed))
@@ -354,7 +381,7 @@ def generate(screen: str, seed: int, steps: int) -> str:
         for s in alphabet(rng):
             out.append(s)
             if s.split(":")[0] in ("key", "click"):
-                out.append("wait:30")
+                out.append(input_wait(screen, s))
         if (k + 1) % STATE_EVERY == 0 and screen not in NO_STATES:
             out.append("state:s%d" % (k + 1))
     out += closing
@@ -369,7 +396,12 @@ def main():
     ap.add_argument("count", type=int)
     ap.add_argument("--steps", type=int, default=64)
     ap.add_argument("--out", default=str(SESSIONS_DIR))
+    ap.add_argument("--fix-waits", nargs="*", help="rewrite the waits of these generated .steps files (input_wait) instead of generating")
     a = ap.parse_args()
+    if a.fix_waits:
+        for f in a.fix_waits:
+            Path(f).write_text(fix_waits(a.screen, Path(f).read_text(encoding="utf-8")), encoding="utf-8", newline="\n")
+        return
     for seed in range(a.first, a.first + a.count):
         name = "gen-%s-%02d" % (a.screen, seed)
         (Path(a.out) / (name + ".steps")).write_text(generate(a.screen, seed, a.steps), encoding="utf-8")

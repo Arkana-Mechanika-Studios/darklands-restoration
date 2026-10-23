@@ -35,6 +35,7 @@ from dosmachine import DS, P, REG, SENTINEL_SEG, linear, Stop  # noqa: E402
 from orig_side import COMBATANTS, RECORD  # noqa: E402
 
 HOLDRAND = 0x7B20
+LOOT_FILE = "cfile.dat"                    # the loot file in the machine's file system
 RAND_FN = (P(0x06A1), 0x29B6)          # root 06A1:29B6, the generator (rand)
 FAR_SEG = 0x20A5                       # link-time segment of the level image, the paths and the loot piles
 PACK_SEG = 0x2E38                      # link-time segment of the packs (party 003E + 0x180 k, enemies 0BDE + 0x60 k): the first PACK_SIZE bytes
@@ -178,6 +179,8 @@ class State:
         self.far2_seg = m.word(DS, FAR2_VAR)          # the segment DS:7D4A names (the twin doors at +0xC00, the doors opened at +0xBB6)
         self.far2_base = bytes(m.uc.mem_read(self.far2_seg * 16, 0x10000))
         self.far3_base = bytes(m.uc.mem_read(P(PACK_SEG) * 16, PACK_SIZE))
+        loot = m.vfs.files.get(LOOT_FILE)
+        self.loot_base = None if loot is None else bytes(loot)           # the loot file (DS:1162 names it): the piles and chests keep offsets into it
 
     def image(self) -> dict:
         """The state's DS and far (level image, paths, loot piles) bytes as the jobs file keeps them."""
@@ -185,6 +188,7 @@ class State:
         return {"fight": self.fight, "pass": self.pass_no, "ds": base64.b64encode(gzip.compress(self.base, 1)).decode(),
                 "far": base64.b64encode(gzip.compress(self.far_base, 1)).decode(), "far2": base64.b64encode(gzip.compress(self.far2_base, 1)).decode(),
                 "far3": base64.b64encode(gzip.compress(self.far3_base, 1)).decode(),
+                "loot": "absent" if self.loot_base is None else base64.b64encode(gzip.compress(self.loot_base, 1)).decode(),
                 "randomState": u32(self.base[HOLDRAND:HOLDRAND + 4])}
 
     # ---- memory helpers (DS offsets, or a segment in memory)
@@ -232,10 +236,30 @@ class State:
         self.restore()
         m = self.m
         for seg_, o, data in mutations:
+            if seg_ == "loot":
+                m.vfs.files[LOOT_FILE] = bytearray(data)
+                continue
             m.write(DS if seg_ is None else seg_, o, data)
         info = self.cat.info(coord)
         if not (info["record"] in m.resident or info["record"] == "root") and info["thunk"] is None:
             m.ensure(info["record"])
+        if coord in KEYED and (args[0] & 0xFFFF) == 0:
+            m.script = []                                      # no key waits: the held direction keys (DS:0880 / DS:0881) give the arrow
+            m.waits, m.idle_since = 0, m.ms
+            args = ()
+        elif coord in KEYED:
+            name = "#%04x" % (args[0] & 0xFFFF)
+            orig_side.KEY_NAMES[name] = args[0] & 0xFFFF
+            m.script = [("key", name)]
+            m.waits, m.idle_since = orig_side.IDLE_POLLS, -orig_side.IDLE_MS         # the game has been idle long enough: the first look at the keyboard finds the key
+            m.idle_mark = (m.read(DS, orig_side.HOLDRAND, 4), m.word(DS, orig_side.CARD))
+            args = ()
+        if coord in MOUSED:
+            m.releases = [args[0] & 0xFFFF, 0]
+            m.presses = [0, 0]
+            m.write(*orig_side.KEYBOARD_FLAGS, bytes([4 if args[1] else 0]))
+            m.mouse = [m.word(DS, orig_side.MOUSE_X), m.word(DS, orig_side.MOUSE_Y), m.byte(DS, orig_side.MOUSE_BUTTONS) & 1]
+            args = ()
         before = bytes(m.uc.mem_read(DS * 16, 0x10000))
         far_before = bytes(m.uc.mem_read(P(FAR_SEG) * 16, 0x10000))
         far2_before = bytes(m.uc.mem_read(self.far2_seg * 16, 0x10000))
@@ -274,14 +298,18 @@ class State:
         far2_changed = {j: far2_after[j] for j in range(0x0B00, 0x0D00) if far2_before[j] != far2_after[j]}      # the part the rewrite models
         far3_after = bytes(m.uc.mem_read(P(PACK_SEG) * 16, PACK_SIZE))
         far3_changed = {j: far3_after[j] for j in range(PACK_SIZE) if far3_before[j] != far3_after[j]}
-        out = {"ax": ax, "dx": dx, "error": error, "changed": changed, "far_changed": far_changed, "far2_changed": far2_changed, "far3_changed": far3_changed, "random": u32(after[HOLDRAND:HOLDRAND + 4]), "draws": list(self.draws),
+        loot = m.vfs.files.get(LOOT_FILE)
+        out = {"ax": ax, "dx": dx, "error": error, "loot": "absent" if loot is None else bytes(loot).hex(), "changed": changed, "far_changed": far_changed, "far2_changed": far2_changed, "far3_changed": far3_changed, "random": u32(after[HOLDRAND:HOLDRAND + 4]), "draws": list(self.draws),
                "seconds": secs, "instructions": m.count, "coverage": m.coverage_result()}
         if keep_state:
             out["after"], out["before"] = after, before
         return out
 
 
-GAPS = {"R014+0xEA10": "loot_after_fight (the enemies' belongings)"}
+MOUSED = {"R014+0xB576"}          # functions that read the mouse: the arguments are the left-button releases the driver counted and whether Ctrl is held
+KEYED = {"R016+0x0000"}          # functions that read a key: the first argument is the key code (scan << 8 | character), given through the keyboard stubs
+
+GAPS: dict = {}          # (the loot is carried now: loot_after_fight is judged)
 
 
 def _runs(cat: "Catalog", coord: str, item: dict) -> bool:
@@ -309,7 +337,7 @@ def export(fuzz_folders, states_folder: Path, out: Path):
                 gaps = [why for coord, why in GAPS.items() if _runs(cat, coord, item)]
                 jobs.append({"gaps": gaps, "id": "%s|%s#%d" % (d["function"], d.get("label", name), item["iteration"]), "function": d["function"], "state": name,
                              "args": item["args"], "ops": item["ops"],
-                             "orig": {k: item[k] for k in ("ax", "dx", "changed", "far_changed", "far2_changed", "far3_changed", "random", "draws")}})
+                             "orig": {k: item[k] for k in ("ax", "dx", "changed", "far_changed", "far2_changed", "far3_changed", "random", "draws", "loot") if k in item}})
     with gzip.open(out, "wt", encoding="utf-8", compresslevel=6) as f:
         json.dump({"fights": fights, "states": states, "jobs": jobs}, f)
     print("exported", len(jobs), "jobs,", len(states), "states ->", out)

@@ -30,7 +30,7 @@ public sealed class GameOptions
 /// </summary>
 // orig: hot_keys root 0000:0CAA draft (matches the bytes; the file is "hand port" with 24 of 39 functions matching) for the Alt keys and F6, called from menu_bar_run (root 0000:0000) whenever a key is waiting; card_global_keys R043+0x33C6 (150B:2936) for F1..F6 and Ctrl-F1..F5 in the card engine; the F1..F5 / Ctrl-F cases of R030+0x0C44 on the map; tests: none (needs a host)
 // C: hot_keys looks at the key code with key_pressed() and consumes it (get_key) only for the codes it knows; other keys stay for the screen. Here a key it does not handle is not consumed either (Handle returns false).
-// DIVERGENCE: the original has no global handler for F1..F5/Ctrl-F: the card engine and the map each handle them in their own loops (and only while they wait); this one applies them in every wait of GameUi.Poll. The original also guards Alt-O, Alt-S, Alt-L and F6 with the screen flags DS:9893, DS:9920, DS:9934 and DS:987F (set 1 by screens that allow the operation, 0 elsewhere, e.g. no saving in a battle); here the inn's roster, the stay (camp), the character sheet and barter set DS:9920 / DS:9934 (SaveGameItem, LoadGameItem) as R038, R036, R031 and R032 do; the battle keeps its own flags (BattleScreen), and the others (DS:9893, DS:987F) are not kept.
+// DIVERGENCE: the original has no global handler for F1..F5/Ctrl-F: the card engine and the map each handle them in their own loops (and only while they wait); this one applies them in every wait of GameUi.Poll outside the full screens (ScreensUp). The original also guards Alt-O, Alt-S, Alt-L and F6 with the screen flags DS:9893, DS:9920, DS:9934 and DS:987F (set 1 by screens that allow the operation, 0 elsewhere, e.g. no saving in a battle); here the inn's roster, the stay (camp), the character sheet and barter set DS:9920 / DS:9934 (SaveGameItem, LoadGameItem) as R038, R036, R031 and R032 do; the battle keeps its own flags (BattleScreen), and the others (DS:9893, DS:987F) are not kept.
 // C: F10 (menu mode DS:9C26) and the right button open the menu bar: GameUi.Poll hands them to MenuBar, whose items call the actions below.
 public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
 {
@@ -65,6 +65,15 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     /// <summary>The flag of the Load Saved Game item and of Alt-L (1: allowed, 2: greyed and refused).</summary>
     // orig: DS:9934, set with DS:9920
     public int LoadGameItem { get; set; } = 1;
+
+    /// <summary>
+    /// The full screens a card opened and that are still up (the sheet, camp, barter, item store, loot ...): while one is up,
+    /// F1..F5 and Ctrl-F1..F5 are not taken here but left to the screen's own loop.
+    /// </summary>
+    // C: the original takes F1..F5 / Ctrl-F only in the card engine (card_global_keys R043+0x33C6) and on the map (R030+0x0C44); a screen's
+    // loop gets them through menu_bar_run untouched (hot_keys root 0000:0CAA does not know them): the sheet shows the member in place
+    // (R031+0x0124), the camp opens the sheet or changes the leader itself (R036+0x08EC), barter changes the leader (R032+0x0F60), others ignore them.
+    public int ScreensUp { get; set; }
 
     /// <summary>Handles a key; true when it was a hot key.</summary>
     public bool Handle(int key)
@@ -104,12 +113,12 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
         Keys.AltM => ToggleMusic,
         Keys.AltC => ToggleSaintlyChanges,
         Keys.F6 when PartyInfo is not null => ShowPartyInfo,
-        >= Keys.F1 and <= Keys.F5 when CharacterSheet is not null && MemberOf(key) is { } member => () =>
+        >= Keys.F1 and <= Keys.F5 when ScreensUp == 0 && CharacterSheet is not null && MemberOf(key) is { } member => () =>
         {
             CharacterSheet(member);
             ui.Redraw?.Invoke();
         },
-        >= Keys.CtrlF1 and <= Keys.CtrlF5 when AbleMemberOf(key) is { } leader => () => MakeLeader(leader),
+        >= Keys.CtrlF1 and <= Keys.CtrlF5 when ScreensUp == 0 && AbleMemberOf(key) is { } leader => () => MakeLeader(leader),
         _ => null,
     };
 

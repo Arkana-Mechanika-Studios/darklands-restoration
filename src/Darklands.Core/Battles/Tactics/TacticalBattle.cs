@@ -434,6 +434,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         _view.MapChanged();
         TurnTowardTargets();
         Effects.Drawn(_view);
+        RemoveArrivedMissiles();
         RefreshTargetCursor();
         // C: mouse_show and root 047C:1293 (R014+0x030C) take time before R014+0x0311 reads the clock
         _view.SetUpTime(2);
@@ -687,7 +688,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
             }
         }
         GroupEntries();
-        RemoveArrivedMissiles();
+        _arrivedShown.Clear();
         if (!Paused)
         {
             AiTick();
@@ -709,6 +710,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         TurnTowardTargets();
         Effects.Drawn(_view);
+        RemoveArrivedMissiles();
         RefreshTargetCursor();
         _tickToDraw = true;
         return true;
@@ -763,6 +765,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
         FreeEnemySlots();
     }
 
+    /// <summary>How many times a level was switched to (the harness of the single calls tells the original's file reloads by it).</summary>
+    public int LevelSwitches { get; private set; }
+
     /// <summary>Shows another level (level_switch).</summary>
     // orig: level_switch R024+0x059A (1EF8:059A) draft (outline; the end checked against the asm: `if (DS:D6EE != 0) R024+0x07A2();`)
     // DIVERGENCE: the levels stay in memory (no .flr/.atv files); the hidden wall lists of unopened doors are applied by LevelShown.
@@ -772,6 +777,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         {
             return;
         }
+        LevelSwitches++;
         Battle.FloorShown = floor;
         Map.Level = _levels[floor];
         Battle.ExitCards = Map.Level.ExitCards;

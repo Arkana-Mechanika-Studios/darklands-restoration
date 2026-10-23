@@ -44,12 +44,12 @@ TABLES = [("sequence length", 0xC96B, 1, 13), ("wait steps", 0xCA1C, 1, 13), ("p
           ("place", 0xA6C4, 1, 13), ("path index", 0xD6FB, 1, 13), ("orders", 0xD9E6, 2, 39),
           ("modifier held", 0xA53B, 1, 13, 0x12), ("modifier held until", 0xA542, 2, 13, 0x12), ("modifier skills until", 0xA540, 2, 13, 0x12),
           ("watched facing count", 0xD5C6, 1, 13), ("queued step", 0xCA30, 1, 13),
-          ("menu enable", 0x9609, 1, 18, 0x14), ("member door", 0xC64C, 1, 5), ("member door opens", 0xC678, 1, 5), ("member door side", 0xC6EF, 1, 5),
+          ("menu enable", 0x9609, 1, 18, 0x14), ("attack enable", 0x97DD, 1, 6, 0x14), ("member door", 0xC64C, 1, 5), ("member door opens", 0xC678, 1, 5), ("member door side", 0xC6EF, 1, 5),
           ("member stairs", 0xC77E, 1, 5), ("member chest", 0xC784, 1, 5), ("member dissolve", 0xC7CD, 1, 5),
           ("member exit zone", 0xC7FE, 1, 5), ("member stairs back", 0xC8B2, 1, 5), ("member skills used", 0xD68D, 2, 5)] \
     + [("clock %d" % n, a, 2, 13) for n, a in enumerate((0xD9CA, 0xD9B0, 0xD996, 0xD97C, 0xD962, 0xD948, 0xDABD, 0xDAA3, 0xDA89, 0xDA6F, 0xDA55))]
 SCALARS = [("missile count", 0xC180, 1), ("map search target", 0xD6CD, 1), ("activations count", 0xD6CC, 1), ("alarm", 0xD6F4, 1), ("difficulty", 0x906A, 1), ("group move", 0xD610, 1), ("activations", 0xD6F0, 1), ("delayed start", 0xD842, 1), ("ignore people", 0xC600, 1),
-           ("enemy saw", 0xC4FD, 1), ("stopped", 0xCA29, 1), ("lock is door", 0xCA99, 1), ("real combat", 0xA6C1, 1), ("floor shown", 0x11CA, 1),
+           ("enemy saw", 0xC4FD, 1), ("stopped", 0xCA29, 1), ("lock is door", 0xCA99, 1), ("selected member", 0xA6B2, 1), ("attack menu", 0x9433, 1), ("real combat", 0xA6C1, 1), ("floor shown", 0x11CA, 1),
            ("enemy floor", 0xC651, 1), ("clock", 0x07D4, 2), ("result", 0xA893, 2), ("result card", 0xCA3D, 2), ("timed exit", 0xDA4D, 2),
            ("end at", 0xDA45, 2), ("party rethink", 0xDA53, 2), ("enemy rethink", 0xDA51, 2), ("activations at", 0xDA4F, 2),
            ("group cursor", 0xDA4B, 2), ("combat box retry", 0xDA49, 2), ("alarm at", 0xDA47, 2), ("delayed start at", 0xC2BB, 2),
@@ -81,7 +81,7 @@ PATH_BYTES = [0xFF, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 
 TABLE_DOMAIN = {0xC96B: list(range(1, 11)), 0xCA1C: [0, 0, 1, 2, 3], 0xCA9A: list(range(10)), 0xCAA7: list(range(13)), 0xC180: list(range(18)), 0xCA57: [0, 1, 2, 3, 4, 5, 6, 7, 0x0E], 0xCA64: [0, 1, 3, 7, 9, 10, 11, 12, 13], 0xA6C4: list(range(11)), 0xD5C6: [0, 7],
                 0xCA30: PATH_BYTES, 0xD6FB: list(range(32)), 0xD3FE: list(range(8)), 0xD4E5: list(range(31)), 0xD4C7: list(range(31)),
                 0xD9E6: RECORD_DOMAIN[0x10], 0xC64C: [0xFF] + list(range(4)), 0xC6EF: list(range(4)), 0xC77E: [0xFF] + list(range(6)),
-                0xC784: [0xFF] + list(range(20)), 0xC7CD: [0xFF] + list(range(4)), 0xC7FE: [0xFF] + list(range(6)), 0xC8B2: list(range(2)), 0x9609: [1, 2], 0xC783: list(range(11)), 0xE1CA: list(range(5)), 0xD68D: [0, 1, 2, 4, 8, 0x10, 0x20, 0x40, 0x0F, 0x1F, 0x7F]}
+                0xC784: [0xFF] + list(range(20)), 0xC7CD: [0xFF] + list(range(4)), 0xC7FE: [0xFF] + list(range(6)), 0xC8B2: list(range(2)), 0x9609: [1, 2], 0xC783: list(range(11)),  0xA6B2: list(range(5)), 0x9433: [1, 2], 0x97DD: [1, 2], 0xE1CA: list(range(5)), 0xD68D: [0, 1, 2, 4, 8, 0x10, 0x20, 0x40, 0x0F, 0x1F, 0x7F]}
 FLOOR_VALUES = [0, 0, 0, 1, 2, 0x9D, 0xFF]
 FLOOR_TABLES = {0xA6B4, 0x11CA, 0xC651, 0xC623}
 # bytes the rewrite keeps as booleans: only 0 and 1 are states of the game
@@ -96,9 +96,28 @@ def modelled(addr: int, width: int) -> bool:
     return any(a <= addr and addr + width <= a + w for a, w in spans)
 
 
+_AIMED_CACHE: dict = {}
+
+
 def aimed_ops(coord: str) -> list[dict]:
     """Changes aimed at the open outcomes of the function (tools/oracle/branch_flip.py: for a branch whose flags come from a global the
     value that sends it the other way): a DS byte or word, one op each."""
+    if coord in _AIMED_CACHE:
+        return _AIMED_CACHE[coord]
+    folder = os.environ.get("BATTLE_CALLS_AIMED")          # a folder shared by the workers: the values depend on the function and the open list only
+    cached = Path(folder) / (coord.replace("+", "_") + ".json") if folder else None
+    if cached is not None and cached.exists():
+        _AIMED_CACHE[coord] = json.loads(cached.read_text(encoding="utf-8"))
+        return _AIMED_CACHE[coord]
+    out = _aimed_ops(coord)
+    _AIMED_CACHE[coord] = out
+    if cached is not None:
+        cached.parent.mkdir(parents=True, exist_ok=True)
+        cached.write_text(json.dumps(out), encoding="utf-8")
+    return out
+
+
+def _aimed_ops(coord: str) -> list[dict]:
     import csv
     import branch_flip
     import cfg as cfgmod
@@ -141,9 +160,18 @@ class Fuzzer:
         self.floor_values = [0, 0] + list(range(1, levels)) + [0x9D, 0xFF]
 
     # ---- generation
-    def prep(self, args) -> list[dict]:
+    def prep(self, args, ops=()) -> list[dict]:
         """Changes that make the call one of the game's: the combatant of a facing test has a target, a shooter a missile weapon."""
         rng = self.rng
+        if self.coord == "R014+0x2324" and args:
+            for op in reversed(ops):
+                k, rest = divmod(op["o"] - COMBATANTS, RECORD)
+                if op["w"] == "ds" and 0 <= k < 13 and rest == 0x14 and op["hex"] in ("02", "03"):
+                    args[0] = k
+                    break
+        if self.coord == "R014+0xDF28":
+            chosen = [int(op["hex"], 16) for op in ops if op["o"] == 0xA6B2]
+            return [] if chosen and chosen[-1] < 5 else [{"w": "ds", "o": 0xA6B2, "hex": "%02x" % rng.randrange(5)}]
         if self.coord == "R014+0x306A" and args:
             return [{"w": "ds", "o": COMBATANTS + RECORD * args[0] + 0x4A, "hex": "%02x" % rng.randrange(13)}]
         if self.coord == "R018+0x0000" and args and args[0] < 13:
@@ -200,6 +228,39 @@ class Fuzzer:
                 if rec[12] != 0xFF and rec[12] < 40:
                     twins[rec[12]] = 1
             ops.append({"w": "far2", "o": 0xC00, "hex": bytes(twins).hex()})
+        elif pick == "member":
+            ops.extend(self.member_state())
+        elif pick == "groups":
+            recs = [bytes(self.st.m.read(P(FLOOR_SEG), 0x47EE + 30 * k, 30)) for k in range(self.act_count)]
+            for k in range(self.act_count):
+                rec = bytearray(recs[k])
+                other = recs[rng.randrange(len(recs))]
+                if rng.random() < 0.5:
+                    rec[8:14] = other[8:14]              # the kinds and counts of another group of the level
+                if rng.random() < 0.5:
+                    rec[4:6] = rng.choice([8, 16, 24, 32, 48, 64, 0, 4]).to_bytes(2, "little")
+                if rng.random() < 0.3:
+                    x, y = rng.choice(self.live_positions)
+                    rec[0:2], rec[2:4] = ((x + rng.choice([-64, -32, 0, 32, 64, 160])) & 0xFFFF).to_bytes(2, "little"), ((y + rng.choice([-32, -16, 0, 16, 32, 64])) & 0xFFFF).to_bytes(2, "little")
+                if rng.random() < 0.3:
+                    rec[14:20] = other[14:20]
+                if rng.random() < 0.3:
+                    rec[20:30] = other[20:30]          # a reinforcement record
+                ops.append({"w": "floor", "o": 0x47EE + 30 * k, "hex": bytes(rec).hex()})
+        elif pick == "activations":
+            for k in range(self.act_count):
+                rec = bytearray(self.st.m.read(P(FLOOR_SEG), 0x47EE + 30 * k, 30))
+                x = int.from_bytes(rec[0:2], "little", signed=True)
+                if rng.random() < 0.6:
+                    rec[0:2] = (-abs(x) if x else -rng.randrange(1, 900)).to_bytes(2, "little", signed=True)
+                    ops.append({"w": "floor", "o": 0x47EE + 30 * k, "hex": bytes(rec).hex()})
+            ops.append({"w": "ds", "o": 0x9080, "hex": "%02x" % rng.choice([0x80, 0x80, 0x81, 0xC0, 0, 1])})
+        elif pick == "mouse":
+            ops.extend(self.mouse_state())
+        elif pick in ("loot", "dying"):
+            ops.extend(self.loot_state(pick == "dying"))
+        elif pick == "orders":
+            ops.extend(self.order_state())
         elif pick in ("regions", "triggers", "stairs", "zones"):
             ops.extend(self.features(pick))
         elif pick == "pack":
@@ -247,6 +308,8 @@ class Fuzzer:
                     # a weapon missile at a spot: missile_launch leaves done 0 only for a hit exchange, rolled against a target (R018+0x0212..0x024D)
                     rec[0x11] |= 1
                 ops.append({"w": "ds", "o": 0x944D + 0x1A * i, "hex": bytes(rec).hex()})
+        elif pick == "spells":
+            ops.extend(self.spell_missiles())
         elif pick == "map":
             # not DS:E13C (walls ignored): the original sets it only around one collision test (R014+0xF5D5..0xF5E3)
             for name, base, w in (("map strict walls", 0xE0A2, 1), ("map searching", 0xD697, 1), ("ignore people", 0xC600, 1)):
@@ -279,6 +342,220 @@ class Fuzzer:
             name, base, w, n, *stride = rng.choice(TABLES)
             for i in range(n):
                 ops.append({"w": "ds", "o": base + (stride[0] if stride else w) * i, "hex": pack(self.val(base, w), w)})
+        return ops
+
+    def spell_missiles(self) -> list[dict]:
+        """Spells and arrows in flight as the game makes them: a live shooter, the missile starting at its spot and aimed at a live target or a spot near one,
+        done 0 (it lands) or 1 (a miss), a spell of the effect kinds with a power the menu offers."""
+        rng = self.rng
+        alive = self.alive or list(range(13))
+        count = rng.choice([1, 1, 2, 3])
+        ops = [{"w": "ds", "o": 0xC180, "hex": "%02x" % count}]
+        for i in range(count):
+            shooter = rng.choice(alive)
+            target = rng.choice(alive) if rng.random() < 0.7 else 0xFF
+            rec = bytearray(0x1A)
+            sx, sy = self.positions[shooter]
+            tx, ty = self.positions[target] if target != 0xFF else (sx + rng.choice([-48, -24, 24, 48, 96]), sy + rng.choice([-24, 0, 24]))
+            px, py = sx + rng.choice([-8, 0, 8]), sy + rng.choice([-4, 0])
+            rec[8:12] = (px & 0xFFFF).to_bytes(2, "little") + (py & 0xFFFF).to_bytes(2, "little")
+            rec[12:16] = (tx & 0xFFFF).to_bytes(2, "little") + (ty & 0xFFFF).to_bytes(2, "little")
+            rec[0x10] = target
+            rec[0x11] = rng.choice([0, 0, 0, 1])
+            rec[0x12] = rng.randrange(8)
+            rec[0x13] = shooter
+            rec[0x14] = rng.choice([6, 7, 8, 9, 6, 7, 0, 1, 3, 4, 5])
+            rec[0x15] = rng.randrange(1, 15) if rec[0x14] >= 6 else 0
+            rec[0x16] = rng.choice([10, 20, 25, 30, 35, 40, 45, 49])
+            rec[0x17] = rng.choice([15, 20, 20, 30, 120])
+            rec[0x18] = self.st.ds(0xA6B4 + shooter, 1)[0] if self.st.ds(0xA6B4 + shooter, 1)[0] < 16 else 0
+            ops.append({"w": "ds", "o": 0x944D + 0x1A * i, "hex": bytes(rec).hex()})
+        return ops
+
+    def order_state(self) -> list[dict]:
+        """The order mode's variables (the orders menu and the keys read them): a member selected or not, the game paused or running, the order chosen and the
+        cursor, the move mode, the marching order, the enable bytes of the menus."""
+        rng = self.rng
+        ops = self.member_state() if rng.random() < 0.6 else []
+        paused = rng.random() < 0.6
+        selected = rng.randrange(5) if (paused and rng.random() < 0.85) or rng.random() < 0.15 else 0xFF
+        ops.append({"w": "ds", "o": 0xA695, "hex": "%02x" % int(paused)})
+        ops.append({"w": "ds", "o": 0xA6B2, "hex": "%02x" % selected})
+        ops.append({"w": "ds", "o": 0xA6B3, "hex": "%02x" % int(selected != 0xFF and (paused or rng.random() < 0.1))})
+        if selected != 0xFF:
+            ops.append({"w": "ds", "o": 0x9064 + selected, "hex": "01"})
+        ops.append({"w": "ds", "o": 0xA6B0, "hex": pack(rng.choice([0xFFFF, 0xFFFF, 1, 0x12, 0x06, 0x0A, 0x22, 0x80, 0x100, 0x400]), 2)})
+        ops.append({"w": "ds", "o": 0xA6D1, "hex": pack(rng.choice([0xFFFF, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), 2)})
+        ops.append({"w": "ds", "o": 0xD845, "hex": "%02x" % rng.choice([0xFF, 0xFE, 0xFD, 0xFF] + list(range(13)))})
+        ops.append({"w": "ds", "o": 0xE1BC, "hex": self.st.ds(rng.choice([0xC28F, 0xC244, 0xC242, 0xC2BD, 0xC4DB, 0xC621, 0xC28F]), 2).hex() if rng.random() < 0.85 else "0000"})
+        spot = rng.choice(self.live_positions)
+        ops.append({"w": "ds", "o": 0xE1B4, "hex": pack(spot[0] & 0xFFFF, 2) + pack(spot[1] & 0xFFFF, 2)})
+        ops.append({"w": "ds", "o": 0xC7CC, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0xC762, "hex": "%02x" % rng.randrange(2)})
+        if rng.random() < 0.4:
+            ops.append({"w": "ds", "o": 0xC652, "hex": pack(spot[0] & 0xFFFF, 2)})
+            ops.append({"w": "ds", "o": 0xC67D, "hex": pack(spot[1] & 0xFFFF, 2)})
+        ops.append({"w": "ds", "o": 0xD6EA, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0xD7FE, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0xC102, "hex": "%02x" % rng.choice([0, 0, 1, 2])})
+        ops.append({"w": "ds", "o": 0xC1CE, "hex": "%02x" % rng.randrange(10)})
+        ops.append({"w": "ds", "o": 0xC1F2, "hex": "%02x" % rng.choice([20, 25, 30, 40, 49])})
+        ops.append({"w": "ds", "o": 0xE1C8, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0x11B1, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0xD610, "hex": "%02x" % rng.randrange(2)})
+        order = [m for m in range(5) if rng.random() < 0.8]
+        rng.shuffle(order)
+        ops.append({"w": "ds", "o": 0xC629, "hex": "%02x" % len(order)})
+        ops.append({"w": "ds", "o": 0xC624, "hex": bytes(order + [0] * (5 - len(order))).hex()})
+        ops.append({"w": "ds", "o": 0x880, "hex": "%02x%02x" % (rng.choice([0, 1, 0xFF]), rng.choice([0, 1, 0xFF]))})
+        for n in range(18):
+            ops.append({"w": "ds", "o": 0x9609 + 0x14 * n, "hex": "%02x" % rng.choice([1, 2])})
+        for n in range(6):
+            ops.append({"w": "ds", "o": 0x97DD + 0x14 * n, "hex": "%02x" % rng.choice([1, 2])})
+        ops.append({"w": "ds", "o": 0x9433, "hex": "%02x" % rng.choice([1, 2])})
+        ops.append({"w": "ds", "o": 0xCA99, "hex": "%02x" % rng.randrange(2)})
+        return ops
+
+    def mouse_state(self) -> list[dict]:
+        """The pointer, its button and the releases waiting, where the last frame's hot spots are (DS:E0A1 of them: who D848, left D8F1, right D8D7, top D8BD,
+        bottom D8A3); with the order-mode state, a member selected or not."""
+        rng = self.rng
+        ops = self.order_state() if rng.random() < 0.75 else (self.member_state() if rng.random() < 0.5 else [])
+        ds = self.st.ds
+        count = ds(0xE0A1, 1)[0]
+        spots = []
+        for k in range(min(count, 13)):
+            who = ds(0xD848 + k, 1)[0]
+            left, right = struct.unpack("<hh", ds(0xD8F1 + 2 * k, 2) + ds(0xD8D7 + 2 * k, 2))
+            top, bottom = struct.unpack("<hh", ds(0xD8BD + 2 * k, 2) + ds(0xD8A3 + 2 * k, 2))
+            spots.append((who, left, right, top, bottom))
+        r = rng.random()
+        if spots and r < 0.7:
+            who, left, right, top, bottom = rng.choice(spots)
+            x, y = rng.randint(left - 2, right + 2), rng.randint(top - 2, bottom + 2)
+        elif r < 0.9:
+            x, y = rng.randint(0x3C, 0x13F), rng.randint(0, 199)
+        else:
+            x, y = rng.randint(0, 0x3F), rng.randint(0, 199)
+        ops.append({"w": "ds", "o": 0x6EEC, "hex": pack(x & 0xFFFF, 2) + pack(y & 0xFFFF, 2)})
+        ops.append({"w": "ds", "o": 0x6EF0, "hex": "%02x" % rng.choice([0, 1, 1])})
+        ops.append({"w": "ds", "o": 0xD728, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0xD73B, "hex": "%02x" % int(rng.random() < 0.25)})
+        pending = rng.choice([0, 0, 0, 1, 2])
+        ops.append({"w": "ds", "o": 0xC62A, "hex": pack(pending, 2)})
+        if pending:
+            ops.append({"w": "ds", "o": 0xC4FE, "hex": pack(0xFE60, 2)})
+            rx, ry = (rng.randint(0x3C, 0x13F), rng.randint(0, 199)) if rng.random() < 0.8 else (x, y)
+            ops.append({"w": "ds", "o": 0xFE60, "hex": pack(1, 2) + pack(pending, 2) + pack(rx, 2) + pack(ry, 2)})
+        if rng.random() < 0.15:
+            ops.append({"w": "ds", "o": 0xC26C, "hex": pack(32 * rng.randrange(1, 38), 2)})
+            ops.append({"w": "ds", "o": 0xC293, "hex": pack(16 * rng.randrange(1, 38), 2)})
+        ops.append({"w": "ds", "o": 0x9409, "hex": "00"})
+        return ops
+
+    def loot_state(self, dying: bool = False) -> list[dict]:
+        """The loot file (6-byte records: item word, type, quality, count, weight), the piles that point into it (20A5:59C8, 12 bytes: offset, count, level, x, y,
+        visible), the chests' offsets, the member's pile, the recovered missiles; with `dying` a combatant on his last frame of dying."""
+        rng = self.rng
+        ops = []
+        n = rng.choice([0, 1, 2, 3, 5, 8, 12, 20])
+        data = bytearray()
+        for _ in range(n):
+            t = rng.choice(["weapon", "ammo", "potion", "any", "any"])
+            if t == "weapon":
+                e = (rng.randrange(0x17, 0x40), rng.randrange(0x17, 0x40), rng.choice([25, 25, rng.randrange(256)]), rng.choice([1, 1, 2]), rng.randrange(1, 20))
+            elif t == "ammo":
+                e = (rng.choice([0x21, 0x22, 1]), rng.choice([0x40, 0x41]), 25, rng.choice([1, 5, 12, 20]), 1)
+            elif t == "potion":
+                p = rng.randrange(10)
+                e = (0x5F + p, 0x84 + p, rng.choice([20, 30, 40, 49]), rng.choice([1, 2, 3]), 1)
+            else:
+                e = (rng.randrange(0x80), rng.randrange(0x80), rng.randrange(256), rng.choice([1, 2, 3]), rng.randrange(256))
+            data += bytes([e[0] & 0xFF, 0, e[1] & 0xFF, e[2] & 0xFF, e[3] & 0xFF, e[4] & 0xFF])
+        ops.append({"w": "loot", "o": 0, "hex": bytes(data).hex()})
+        piles = rng.choice([0, 1, 2, 3, 4, 6])
+        ops.append({"w": "ds", "o": 0xC80E, "hex": "%02x" % piles})
+        ops.append({"w": "ds", "o": 0xC83E, "hex": "%02x" % rng.randrange(piles + 1)})
+        level = self.st.ds(0x11CA, 1)[0]
+        for k in range(piles):
+            off = rng.choice([6 * rng.randrange(max(n, 1)), 6 * rng.randrange(max(n, 1)), 0xFFFF, 0xFFFE])
+            cnt = rng.choice([1, 1, 2, 3, 4, min(n, 8)]) if off < 0xFFFE else rng.choice([0, 0, 1])
+            x, y = rng.choice(self.live_positions)
+            x, y = x + rng.choice([-30, -16, -8, 0, 8, 16, 30]), y + rng.choice([-30, -16, -8, 0, 8, 16])
+            rec = bytearray(12)
+            rec[0:2] = off.to_bytes(2, "little")
+            rec[2] = cnt
+            rec[3] = level if rng.random() < 0.85 else rng.randrange(4)
+            rec[4:6] = (x & 0xFFFF).to_bytes(2, "little")
+            rec[6:8] = (y & 0xFFFF).to_bytes(2, "little")
+            rec[8] = rng.randrange(2)
+            rec[10], rec[11] = 10, 4
+            ops.append({"w": "floor", "o": 0x59C8 + 12 * k, "hex": bytes(rec).hex()})
+        for k in range(20):
+            if rng.random() < 0.3 and n:
+                ops.append({"w": "ds", "o": 0xC7A4 + 2 * k, "hex": pack(rng.choice([6 * rng.randrange(n), 0xFFFF]), 2)})
+        for m in range(5):
+            if rng.random() < 0.4:
+                ops.append({"w": "ds", "o": 0xC81C + m, "hex": "%02x" % rng.choice([0xFF, 0xFF] + list(range(max(piles, 1))) + [0xFE, 0xFD])})
+        ops.append({"w": "ds", "o": 0x1B98, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0xD846, "hex": pack(rng.choice([0, 6 * rng.randrange(max(n, 1))]), 2)})
+        if rng.random() < 0.5:
+            count = rng.randrange(0, 4)
+            ops.append({"w": "ds", "o": 0xC783, "hex": "%02x" % count})
+            entries = bytearray()
+            for _ in range(count):
+                kind = rng.choice([0x17, 0x18, 0x19, 0x1A, 0x40, 0x41])
+                item = {0x17: 0x17, 0x18: 0x18, 0x19: 0x19, 0x1A: 1, 0x40: 0x21, 0x41: 0x22}[kind]
+                entries += item.to_bytes(2, "little") + bytes([kind, rng.choice([25, 25, 0xF0]), rng.choice([1, 2, 255]), rng.choice([1, 3])])
+            if entries:
+                ops.append({"w": "floor", "o": 0x3954, "hex": bytes(entries).hex()})
+        if dying and self.alive:
+            k = rng.choice(self.alive)
+            status = rng.choice([2, 3, 3, 3]) if k < 5 else rng.choice([2, 3, 3, 3, 3])
+            ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x14, "hex": "%02x" % status})
+            length = rng.randrange(1, 11)
+            ops.append({"w": "ds", "o": 0xC96B + k, "hex": "%02x" % length})
+            ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x1B, "hex": "%02x" % (length - 1 if rng.random() < 0.8 else rng.randrange(length))})
+            flag = self.st.ds(0xA696 + 2 * k, 2)
+            flags = int.from_bytes(flag, "little") & ~0x180
+            flags |= rng.choice([0, 0x80, 0x100, 0x180])
+            ops.append({"w": "ds", "o": 0xA696 + 2 * k, "hex": pack(flags, 2)})
+            ops.append({"w": "ds", "o": 0xC803 + self.records[k][0x16], "hex": "%02x" % rng.randrange(2)})          # the set drops loot
+            ops.append({"w": "ds", "o": 0xC83F + self.records[k][0x16], "hex": "%02x" % rng.choice([0, 1, 2, 0xFF])})        # the corpse kind
+            if k >= 5:
+                ops.append({"w": "ds", "o": 0xA6B2, "hex": "ff"})
+        return ops
+
+    def member_state(self) -> list[dict]:
+        """A party member on the spot the order menu is built for: selected, standing in a doorway / on stairs / at a chest / in an exit zone, with the record the place tests read."""
+        rng = self.rng
+        k = rng.randrange(5)
+        ops = [{"w": "ds", "o": 0xA6B2, "hex": "%02x" % k}, {"w": "ds", "o": 0xA6C1, "hex": "%02x" % rng.randrange(2)},
+               {"w": "ds", "o": 0xC865, "hex": "%02x" % rng.randrange(2)}]
+        flags = 0
+        for bit in (1, 2, 4, 0x20):
+            if rng.random() < 0.4:
+                flags |= bit
+        ops.append({"w": "ds", "o": 0xA696 + 2 * k, "hex": pack(flags | rng.choice([0, 0, 8, 0x10]), 2)})
+        real = self.floor_values[:len(self.floor_values) - 2]
+        floor = rng.choice(real)
+        # the party is on one level (DS:C623); a member may be on another (a split party: the level shown is then his or the party's)
+        ops.append({"w": "ds", "o": 0xC623, "hex": "%02x" % floor})
+        for m in range(5):
+            ops.append({"w": "ds", "o": 0xA6B4 + m, "hex": "%02x" % (floor if rng.random() < 0.8 else rng.choice(real))})
+        ops.append({"w": "ds", "o": 0x11CA, "hex": "%02x" % (floor if rng.random() < 0.8 else rng.choice(real))})
+        ops.append({"w": "ds", "o": 0xA53B + 0x12 * k, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0xD9E6 + 6 * k, "hex": pack(rng.choice([0, 1, 2, 3, 4, 8, 0x10]), 2)})
+        if self.door_count:
+            ops.append({"w": "ds", "o": 0xC64C + k, "hex": "%02x" % rng.randrange(self.door_count)})
+        ops.append({"w": "ds", "o": 0xA6C4 + k, "hex": "%02x" % rng.randrange(11)})
+        ops.append({"w": "ds", "o": 0xC77E + k, "hex": "%02x" % rng.choice([0xFF, 0, 1, 2])})
+        ops.append({"w": "ds", "o": 0xC784 + k, "hex": "%02x" % rng.choice([0, 1, 2, 3])})
+        ops.append({"w": "ds", "o": 0xC7CD + k, "hex": "%02x" % rng.choice([0xFF, 0, 1, 2, 3])})
+        if rng.random() < 0.7:
+            ops.extend(self.features("regions"))
+        if rng.random() < 0.5:
+            ops.extend(self.packs())
         return ops
 
     def effects(self) -> list[dict]:
@@ -461,6 +738,9 @@ class Fuzzer:
     def writes(self, ops):
         out = []
         for op in ops:
+            if op["w"] == "loot":
+                out.append(("loot", 0, bytes.fromhex(op["hex"])))
+                continue
             seg = DS if op["w"] == "ds" else self.st.far2_seg if op["w"] == "far2" else P(bc.PACK_SEG) if op["w"] == "far3" else P(FLOOR_SEG)
             out.append((seg, op["o"], bytes.fromhex(op["hex"])))
         return out
@@ -508,7 +788,7 @@ class Fuzzer:
                         ops.append(self.gen_op())
             if len(ops) > 60:
                 ops = ops[-60:]
-            ops = ops + self.prep(args)
+            ops = ops + self.prep(args, ops)
             try:
                 r = self.run(args, ops)
             except Exception as e:      # a machine fault of the original on odd bytes: not an input
@@ -520,7 +800,7 @@ class Fuzzer:
             if novel or probe:
                 probes_left -= 0 if novel else 1
                 self.absorb(r)
-                item = {"args": args, "ops": ops, "ax": r["ax"], "dx": r["dx"], "changed": {str(k): v for k, v in r["changed"].items()}, "far_changed": {str(k): v for k, v in r["far_changed"].items()}, "far2_changed": {str(k): v for k, v in r["far2_changed"].items()}, "far3_changed": {str(k): v for k, v in r["far3_changed"].items()},
+                item = {"args": args, "ops": ops, "ax": r["ax"], "dx": r["dx"], "changed": {str(k): v for k, v in r["changed"].items()}, "far_changed": {str(k): v for k, v in r["far_changed"].items()}, "far2_changed": {str(k): v for k, v in r["far2_changed"].items()}, "far3_changed": {str(k): v for k, v in r["far3_changed"].items()}, "loot": r["loot"],
                         "random": r["random"], "draws": r["draws"], "seconds": r["seconds"], "instructions": r["instructions"],
                         "coverage": r["coverage"], "iteration": it, "novel": bool(novel)}
                 kept.append(item)
@@ -540,7 +820,7 @@ anything = lambda rng, f: rng.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 0xFFFF, rng
 buffer = lambda rng, f: 0xFE80          # a DS offset above the stack for a function's output words
 DOOR_FUNCTIONS = {"R023+0x00B8", "R023+0x04AC"}
 # per function: the scenarios that matter most to it (70% of the scenarios drawn for it)
-BIAS = {"R014+0xD04E": ["doors", "doors", "pack", "menus"], "R014+0xD402": ["regions", "regions", "pack", "menus"], "R014+0xD6DA": ["triggers"],
+BIAS = {"R025+0x0000": ["groups", "groups", "activations", "positions", "statuses"], "R014+0x2324": ["dying", "dying", "dying", "loot", "pack"], "R014+0xEA10": ["loot", "loot", "loot", "pack", "statuses"], "R014+0xB576": ["mouse", "mouse", "mouse", "mouse", "orders", "member"], "R014+0x0620": ["activations", "activations", "orders"], "R014+0x2170": ["member", "member", "doors", "regions", "pack", "stairs"], "R014+0xBC0C": ["orders", "orders", "member", "pack"], "R014+0xBCA8": ["orders", "orders", "orders", "member", "pack"], "R014+0x0F58": ["spells", "spells", "effects", "effects", "immune", "times", "pack", "tables"], "R016+0x0000": ["orders", "orders", "orders", "member", "pack", "menus", "doors", "tables"], "R014+0xDF28": ["member", "member", "member", "doors", "pack", "menus", "tables"], "R014+0xD04E": ["doors", "doors", "pack", "menus"], "R014+0xD402": ["regions", "regions", "pack", "menus"], "R014+0xD6DA": ["triggers"],
         "R014+0xDC14": ["doors", "regions", "triggers", "stairs", "zones", "pack", "menus"], "R014+0xD328": ["stairs", "menus"], "R014+0xD60A": ["zones", "menus"],
         "R014+0x1BA0": ["pack", "recov", "missiles"], "R018+0x03AE": ["recov"]}
 FX_BIAS = ["effects", "effects", "effects", "immune", "pack", "statuses", "times", "tables"]
@@ -555,7 +835,33 @@ target_ = lambda rng, f: rng.choice([0xFFFF, rng.randrange(13), rng.randrange(13
 dur_ = lambda rng, f: rng.choice([10, 20, 25, 30, 35, 40, 45, 49, 60])
 slot8 = lambda rng, f: rng.choice([0, 0, 0, 1, 1, 2, 3, 4, 7])
 leaderish = lambda rng, f: rng.choice([0, 0, 0, rng.randrange(5), rng.randrange(13)])
+KEY_CODES = [0x4800, 0x5000, 0x4B00, 0x4D00, 0x4700, 0x4F00, 0x4900, 0x5100, 0x3920, 0x011B, 0x1C0D, 0x0F09, 0x0E08, 0x4C35, 0x4400, 0x4300,
+             0x5E00, 0x5F00, 0x6000, 0x6100, 0x6200]
+KEY_LETTERS = "abdfghmopquvwx" * 3 + "cijklnrysz"
+
+
+def key_code_of(rng, f) -> int:
+    r = rng.random()
+    if r < 0.12:
+        return 0
+    if r < 0.4:
+        return rng.choice(KEY_CODES)
+    if r < 0.6:
+        n = rng.randrange(1, 6)
+        return (n + 1) << 8 | (0x30 + n)
+    import orig_side
+    ch = rng.choice(KEY_LETTERS)
+    return orig_side.key_code(ch.upper() if rng.random() < 0.15 else ch)
+
+
 FUNCTIONS = {
+    "R016+0x0000": [key_code_of],
+    "R014+0x0620": [], "R014+0x3C86": [who, lambda r, f: r.choice([0, 1, 2, 0x12, 0x06, 0x0A, 0x22, 0x80, 0x100, 0x400])],
+    "R014+0xB576": [lambda r, f: r.choice([0, 0, 1, 1, 2]), lambda r, f: int(r.random() < 0.15)],
+    "R014+0xEA10": [],
+    "R025+0x0000": [lambda r, f: r.choice([0, 0, 0, 0, 1]), lambda r, f: 0x47EE + 30 * r.randrange(max(f.act_count, 1)), lambda r, f: P(FLOOR_SEG), lambda r, f: r.randrange(5)],
+    "R014+0x2170": [lambda r, f: r.randrange(5)],
+    "R014+0xBC0C": [], "R014+0xBCA8": [],
     "R018+0x0000": [who, lambda rng, f: rng.choice([0xFFFF] + list(range(13))), lambda rng, f: 0, lambda rng, f: 0, lambda rng, f: 0],
     "R014+0x481A": [who],
     "R014+0x9C4C": [who],
@@ -581,7 +887,7 @@ FUNCTIONS = {
     "R014+0x2324": [who, anything],
     "R018+0x0706": [],
     "R018+0x04B6": [who],
-    "R018+0x0000": [who, who, small, small, small],
+    "R018+0x0000": [who, lambda r, f: r.choice([0xFFFF] + list(range(13))), lambda r, f: r.choice([0, 0, 6, 6, 7, 8, 9]), lambda r, f: r.randrange(15), lambda r, f: r.choice([10, 25, 40, 49])],
     "R018+0x03AE": [lambda r, f: r.choice([0x17, 0x18, 0x19, 0x1A, 0x40, 0x41]), lambda r, f: r.choice([0x19, 0x19, 0x14, 0x28, 0xF0, r.randrange(256)])],
     "R014+0x1BA0": [who],
     "R014+0x0F58": [],
@@ -600,6 +906,7 @@ FUNCTIONS = {
     "R014+0x4188": [lambda r, f: r.choice(f.live_positions)[0] + r.choice([-16, 0, 16, 32]), lambda r, f: r.choice(f.live_positions)[1] + r.choice([-8, 0, 8, 16]), lambda r, f: r.randrange(8)],
     "R014+0xF88E": [who], "R014+0xF9D8": [who], "R014+0x47AE": [who, who],
     "R014+0xAED0": [who, lambda r, f: r.choice([0xFFFF] + list(range(63))), flag],
+    "R014+0xDF28": [],
     "R014+0xD04E": [leaderish], "R014+0xD402": [leaderish], "R014+0xD6DA": [leaderish], "R014+0xDC14": [], "R014+0xD328": [leaderish], "R014+0xD60A": [leaderish],
 }
 
@@ -614,7 +921,7 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--baseline", default=None, help="pickle of (insns, edges) per record, the coverage a run must beat to be kept (battle_calls_measure.py baseline makes it); default <DARKLANDS_LOCAL>/batch/battlecalls/baseline.pkl")
     a = ap.parse_args()
-    baseline = pickle.load(open(a.baseline or Path(os.environ["DARKLANDS_LOCAL"]) / "batch" / "battlecalls" / "baseline.pkl", "rb"))
+    baseline = pickle.load(open(a.baseline or os.environ.get("BATTLE_CALLS_BASELINE") or Path(os.environ["DARKLANDS_LOCAL"]) / "batch" / "battlecalls" / "baseline.pkl", "rb"))
     funcs = a.functions.split(",")
     out = Path(a.out)
     for name in a.state_names.split(","):
@@ -639,7 +946,7 @@ def main():
                 for n, item in enumerate(kept):
                     f.write(json.dumps({"unit": coord, "state": "%s#%d" % (name, item["iteration"]), "seconds": item["seconds"], **item["coverage"]}) + "\n")
             print(coord, name, "kept", len(kept), "of", a.iterations, "%.0f s wall, %.0f s cpu" % (fz.elapsed, fz.cpu), flush=True)
-
+    print("worker cpu total %.1f s" % time.process_time(), flush=True)
 
 if __name__ == "__main__":
     main()

@@ -171,7 +171,12 @@ public sealed partial class TacticalBattle
             CursorTarget = -2;
             return;
         }
-        // C: the target is looked for among the hot spots: one not on screen leaves the cursor as it was.
+        // C: the target is looked for among the hot spots of the last frame (R014+0xCF7A..0xCF9C): one without a hot spot leaves the
+        // C: cursor target and the sprite as they were.
+        if (!_view.HasHotSpot(c.Target))
+        {
+            return;
+        }
         CursorTarget = c.Target;
         Cursor = OrderCursor.Target;
     }
@@ -204,12 +209,11 @@ public sealed partial class TacticalBattle
 
     /// <summary>A place action is chosen (Use Door, Stairs, Pick Lock …): it is given when order mode ends.</summary>
     // orig: R016+0x1590 (1EF8:1590) matched
+    // C: R016+0x1590 has no test of DS:A6B2: H with Halt on outside order mode (R016+0x101E, individually) gives DS:A6B0 = 0x400,
+    // C: DS:A6D1 = 10 and DS:E1CA = 0xFF with nobody selected. R016+0x15BE then clears 0x10 of flags[-1]'s high byte, which is DS:A695
+    // C: (ai_paused, 0 or 1): nothing changes.
     public void ChoosePlace(PlaceAction action)
     {
-        if (Selected == -1)
-        {
-            return;
-        }
         OrderAction = 0x400;
         PlaceOrder = (int)action;
         if (CursorTarget < -1)
@@ -217,7 +221,10 @@ public sealed partial class TacticalBattle
             CursorTarget = -1;
             Cursor = OrderCursor.None;
         }
-        Battle[Selected].Flags &= ~TacticalFlags.Following;
+        if (Selected != -1)
+        {
+            Battle[Selected].Flags &= ~TacticalFlags.Following;
+        }
         _picker = Selected;
     }
 
@@ -414,10 +421,14 @@ public sealed partial class TacticalBattle
     /// </summary>
     // orig: order_mode_leave R014+0xBCA8 (19CD:0738) draft
     // C: a cursor target of 0 (party member 0) takes the spot branch and gives nothing (cursor_target &lt; 1).
+    // C: R014+0xBCA8 has no test of DS:A6B2: Enter outside order mode (R016+0x0734, individually) runs it with nobody selected. The spot
+    // C: of the last walk order (DS:C652, cleared only by R014+0xBC6A and R016+0x13DA) or DS:C7CC still set make it give an order to
+    // C: "member -1"; then the end (R014+0xC004..: the order menu reset, the cursor) runs as always.
     public void LeaveOrderMode()
     {
         if (Selected == -1)
         {
+            LeaveWithNobodySelected();
             return;
         }
         var i = Selected;
@@ -508,7 +519,8 @@ public sealed partial class TacticalBattle
                     ReadyWeapon(i, c.ReadiedWeapon, 0x80);
                     c.Target = (sbyte)CursorTarget;
                     c.Action = CombatAction.Missile;
-                    c.Flags |= TacticalFlags.InDoorway;
+                    // R014+0xBE85: 0x02 of the flags' high byte (0x200)
+                    c.Flags |= TacticalFlags.ShotSkipped;
                 }
                 else
                 {
@@ -557,21 +569,45 @@ public sealed partial class TacticalBattle
         }
     }
 
+    /// <summary>order_mode_leave with DS:A6B2 = 0xFF: what the original does to the data the rewrite keeps, then its end.</summary>
+    // orig: R014+0xBCA8 (19CD:0738) draft, checked against the asm for A6B2 = 0xFF
+    // DIVERGENCE: the original writes record -1 (DS:9BD5.., the bytes before combatant 0) and entry -1 of the per-member tables: for
+    // 0x400 DS:9BE5 = 0, DS:A6C3 = the place, 0x10 of DS:A695 cleared; for a spot its +0x08/+0x0A; for a cursor target >= 1 or -2 the
+    // whole order (R014+0xBD92.., 0xBF9F..: the path, the weapon, DS:17B0 = 0xFF). The rewrite keeps no record -1: none of these is done.
+    private void LeaveWithNobodySelected()
+    {
+        CursorKeysOn = false;
+        var spot = _orderSpot;
+        if (!(OrderAction == -1 && !_targetChosen && spot.X == 0) && OrderAction != 0x400 && CursorTarget != -3 && Cursor != OrderCursor.TargetBlocked
+            && spot.X != 0)
+        {
+            // R014+0xBD25 / 0xBD2D
+            CursorPoint = spot;
+        }
+        _orderMode = false;
+        _view.RowChanged(-1);
+        OrderAction = -1;
+        Cursor = OrderCursor.None;
+        CursorTarget = -1;
+        ResetOrderMenu();
+    }
+
     /// <summary>Esc in order mode: the order is dropped and order mode ends (the game stays paused).</summary>
-    // orig: R016+0x13D4 (1EF8:13D4) matched
+    // orig: R016+0x13D4 (1EF8:13D4) matched; DS:D7FE (the cursor keys) is not touched
+    // C: no test of DS:A6B2: Esc while paused outside order mode runs it with nobody selected.
+    // DIVERGENCE: with nobody selected the original's flee bit goes to flags[-1]'s high byte, DS:A695 (ai_paused): with DS:D6EA = 1 the
+    // pause byte becomes 0x11, which its tests read as neither paused (== 1) nor running (== 0). Paused is a flag here: not reproduced.
     public void CancelOrder()
     {
-        if (Selected == -1)
-        {
-            return;
-        }
         OrderAction = -1;
         _orderSpot = default;
-        var c = Battle[Selected];
-        c.Flags = _fleeBefore ? c.Flags | TacticalFlags.Following : c.Flags & ~TacticalFlags.Following;
+        if (Selected != -1)
+        {
+            var c = Battle[Selected];
+            c.Flags = _fleeBefore ? c.Flags | TacticalFlags.Following : c.Flags & ~TacticalFlags.Following;
+            c.Selected = false;
+        }
         _orderMode = false;
-        CursorKeysOn = false;
-        c.Selected = false;
         _targetChosen = false;
         _view.RowChanged(-1);
         Cursor = OrderCursor.None;

@@ -588,6 +588,32 @@ public sealed class TradingAndLootTests
     }
 
     [Fact]
+    public void TakeOneAtRowMinusOneKeepsTheBytesBeforeTheTable()
+    {
+        // R035+0x0A46 case Down with an empty store lowers the store's row to -1; a G there reads 2E38:37F0 (R035+0x114A: unsigned
+        // compare, nothing moves, and the count drops only when the byte reaches 0).
+        var store = StoreTable.Of([new(5, 25, 1)]);
+        Storing.TakeOne(store, -1);                      // 0 - 1 wraps to 255: nothing removed
+        Assert.Equal(new StoredItem(0, 0, 255), store[-1]);
+        Assert.Equal([new StoredItem(5, 25, 1)], store);
+        store[-1] = new StoredItem(3, 4, 1);
+        Storing.TakeOne(store, -1);                      // reaches 0: the count drops, no entry moves
+        Assert.Equal(new StoredItem(3, 4, 0), store[-1]);
+        Assert.Empty(store);
+        Assert.Equal(new StoredItem(5, 25, 1), store[0]);
+    }
+
+    [Fact]
+    public void GetAtRowMinusOneDoesNotStop()
+    {
+        var s = Make();
+        var store = StoreTable.Of([new(7, 30, 2)]);
+        Storing.Get(s, store, 0, -1);
+        Assert.Equal([new StoredItem(7, 30, 2)], store);
+        Assert.Equal(255, store[-1].Count);
+    }
+
+    [Fact]
     public void PutMovesOneItemToTheStore()
     {
         var s = Make();

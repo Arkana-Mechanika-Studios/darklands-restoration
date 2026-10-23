@@ -247,7 +247,14 @@ internal static class ImageOverlay
             return false;
         }
         var k = (ds - Combatants) / Record;
-        return k >= Combatant.PartySlots && StaleFields.Contains((ds - Combatants) % Record) && input.Ds[Combatants + Record * k + 0x14] == 0 && expected.Ds[Combatants + Record * k + 0x14] != 0;
+        var status = Combatants + Record * k + 0x14;
+        if (k >= Combatant.PartySlots && input.Ds[status] == 0 && expected.Ds[status] == 0 && ds != status)
+        {
+            // an enemy slot empty before and after: enemies_place tries its spots in the free record (R025) and leaves what it wrote there when
+            // no spot is found; an empty record's bytes are read by nothing until a placement fills it
+            return true;
+        }
+        return k >= Combatant.PartySlots && StaleFields.Contains((ds - Combatants) % Record) && input.Ds[status] == 0 && expected.Ds[status] != 0;
     }
 
     /// <summary>The bytes of a path after its 0xFF terminator are the last search's leftovers, not the path: not compared.</summary>
@@ -285,6 +292,10 @@ internal static class ImageOverlay
         {
             var first = extraFar.Keys.Min();
             lines.Add($"found path original {Convert.ToHexString(expected.Far, first, 60)} rewrite {Convert.ToHexString(actual.Far, first, 60)}");
+        }
+        if (LootOverlay.Differences(expected, actual) is { } loot)
+        {
+            lines.Add(loot);
         }
         var shown = new HashSet<int>();
         foreach (var line in lines.ToArray())

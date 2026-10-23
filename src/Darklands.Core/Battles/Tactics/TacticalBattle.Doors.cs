@@ -209,6 +209,7 @@ public sealed partial class TacticalBattle
         _view.MapChanged();
         // C: then combat_draw R014+0x6818, as each tick ends: the draw list (its random draws) and the target cursor.
         Effects.Drawn(_view);
+        RemoveArrivedMissiles();
         RefreshTargetCursor();
     }
 
@@ -333,9 +334,14 @@ public sealed partial class TacticalBattle
             // combat_keys with the party split: only U (and a few keys) work.
             if (Paused)
             {
-                if (Menus.On(OrdersItem.UseStairs) && selected >= 0)
+                // R016+0x014E..0x016E: no test of DS:A6B2 (the order is chosen with nobody selected too)
+                // DIVERGENCE: with nobody selected the original copies entry -1 (DS:C77D = DS:C8B1, the bytes before the two tables); not kept here.
+                if (Menus.On(OrdersItem.UseStairs))
                 {
-                    Battle[selected].StairsExit = Battle[selected].StairsBack;
+                    if (selected >= 0)
+                    {
+                        Battle[selected].StairsExit = Battle[selected].StairsBack;
+                    }
                     ChoosePlace(PlaceAction.Stairs);
                 }
                 return;
@@ -423,7 +429,8 @@ public sealed partial class TacticalBattle
             {
                 return true;
             }
-            if (Menus.On(OrdersItem.PickLock) && selected >= 0)
+            // R016+0x10CC: the pick has no test of DS:A6B2 (Parry has, R016+0x10C0)
+            if (Menus.On(OrdersItem.PickLock))
             {
                 // orig: R016+0x1398 (1EF8:1398) matched (R016+0x1590(3), a door) and R016+0x13AC
                 // (1EF8:13AC) matched (R016+0x1590(6), a chest),
@@ -460,10 +467,7 @@ public sealed partial class TacticalBattle
     {
         if (Paused)
         {
-            if (selected == -1)
-            {
-                return;
-            }
+            // R016+0x0F76..0x0F95: no test of DS:A6B2
             if (Menus.On(OrdersItem.DissolveLock))
             {
                 // orig: R016+0x13C0 (1EF8:13C0) matched: R016+0x1590(7)
@@ -523,6 +527,9 @@ public sealed partial class TacticalBattle
         var at = StairsAt + 14 * n;
         var record = Level.Image.AsSpan(at, 14).ToArray();
         var wall = (sbyte)Level.GetByte(at + 7);
+        // DIVERGENCE: the levels stay in memory. The original's level_switch (R024+0x05B4) saves the level it leaves only when DS:D4E4 is set
+        // (any change of the level sets it; level_switch and the battle save clear it), and this write does not set it: after a switch
+        // with DS:D4E4 clear the original reloads the old level without the 0xFF here.
         Level.SetByte(at + 7, 0xFF);
         int lvl = (sbyte)Level.GetByte(at + 6);
         Battle[who].Floor = lvl;

@@ -235,7 +235,7 @@ public sealed partial class TacticalBattle
             var saved = c.Position;
             c.Position = c.Destination;
             var r = Map.Collides(i, c.Position.X, c.Position.Y);
-            if (!r.IsFree && StandingOneBlocks(r))
+            if (!r.IsFree && StandingOneBlocks())
             {
                 // The destination is taken by somebody standing: give up (|x − tx| < 16 always holds here).
                 CancelAction(i);
@@ -255,16 +255,13 @@ public sealed partial class TacticalBattle
         c.RepathAt = (ushort)(Scaled(60) + Clock + 30);
     }
 
-    /// <summary>Some combatant in the mask stands still.</summary>
-    private bool StandingOneBlocks(Blocking r)
+    /// <summary>Some combatant in the mask of the last non-void test (DS:D708) stands still.</summary>
+    // C: R014+0x2DC5..0x2DE4 reads DS:D708 for any refusal: a void centre cell leaves the mask of the test before it.
+    private bool StandingOneBlocks()
     {
-        if (r.IsVoid)
-        {
-            return false;
-        }
         for (var k = 0; k < Combatant.Count; k++)
         {
-            if ((r.Mask & (1 << k)) != 0 && !Battle[k].Moving)
+            if ((Map.LastMask & (1 << k)) != 0 && !Battle[k].Moving)
             {
                 return true;
             }

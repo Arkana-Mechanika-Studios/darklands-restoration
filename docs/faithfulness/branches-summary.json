@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 57483,
-  "blocks_hit": 47662,
-  "functions": 8479,
-  "outcomes": 43076,
-  "outcomes_hit": 31316,
+  "blocks": 57663,
+  "blocks_hit": 48402,
+  "functions": 8504,
+  "outcomes": 43236,
+  "outcomes_hit": 32141,
   "runs": null
  },
  "battle": {
@@ -22,6 +22,14 @@
   "outcomes": 4786,
   "outcomes_hit": 2833,
   "runs": 5350
+ },
+ "battle-calls-r3": {
+  "blocks": 7805,
+  "blocks_hit": 5641,
+  "functions": 375,
+  "outcomes": 7488,
+  "outcomes_hit": 4746,
+  "runs": 4924
  },
  "battle-calls-scale": {
   "blocks": 3845,
@@ -1039,6 +1047,14 @@
   "outcomes_hit": 1837,
   "runs": 1
  },
+ "lockstep-gen-cache-05": {
+  "blocks": 5377,
+  "blocks_hit": 3180,
+  "functions": 332,
+  "outcomes": 4038,
+  "outcomes_hit": 1768,
+  "runs": 1
+ },
  "lockstep-gen-cache-06": {
   "blocks": 5481,
   "blocks_hit": 3285,
@@ -1487,6 +1503,14 @@
   "outcomes_hit": 1482,
   "runs": 1
  },
+ "lockstep-gen-pawn-01": {
+  "blocks": 6362,
+  "blocks_hit": 3638,
+  "functions": 362,
+  "outcomes": 4842,
+  "outcomes_hit": 2082,
+  "runs": 1
+ },
  "lockstep-gen-pawn-02": {
   "blocks": 6325,
   "blocks_hit": 3627,
@@ -1509,6 +1533,14 @@
   "functions": 356,
   "outcomes": 4382,
   "outcomes_hit": 1968,
+  "runs": 1
+ },
+ "lockstep-gen-pawn-05": {
+  "blocks": 5688,
+  "blocks_hit": 3440,
+  "functions": 354,
+  "outcomes": 4328,
+  "outcomes_hit": 1975,
   "runs": 1
  },
  "lockstep-gen-roster-05": {
@@ -1775,6 +1807,14 @@
   "outcomes_hit": 1971,
   "runs": 1
  },
+ "lockstep-gen-shop-04": {
+  "blocks": 6307,
+  "blocks_hit": 3625,
+  "functions": 364,
+  "outcomes": 4804,
+  "outcomes_hit": 2077,
+  "runs": 1
+ },
  "lockstep-gen-shop-05": {
   "blocks": 5780,
   "blocks_hit": 3426,
@@ -1783,12 +1823,36 @@
   "outcomes_hit": 1934,
   "runs": 1
  },
+ "lockstep-gen-shop-06": {
+  "blocks": 6257,
+  "blocks_hit": 3544,
+  "functions": 361,
+  "outcomes": 4742,
+  "outcomes_hit": 1991,
+  "runs": 1
+ },
  "lockstep-gen-shop-07": {
   "blocks": 5723,
   "blocks_hit": 3425,
   "functions": 353,
   "outcomes": 4360,
   "outcomes_hit": 1952,
+  "runs": 1
+ },
+ "lockstep-gen-shop-08": {
+  "blocks": 6371,
+  "blocks_hit": 3675,
+  "functions": 368,
+  "outcomes": 4876,
+  "outcomes_hit": 2127,
+  "runs": 1
+ },
+ "lockstep-gen-shop-09": {
+  "blocks": 5758,
+  "blocks_hit": 3416,
+  "functions": 357,
+  "outcomes": 4402,
+  "outcomes_hit": 1935,
   "runs": 1
  },
  "lockstep-gen-stable-01": {
@@ -1831,12 +1895,76 @@
   "outcomes_hit": 2114,
   "runs": 1
  },
+ "lockstep-gen-stay-02": {
+  "blocks": 6251,
+  "blocks_hit": 3546,
+  "functions": 349,
+  "outcomes": 4678,
+  "outcomes_hit": 1998,
+  "runs": 1
+ },
  "lockstep-gen-stay-03": {
   "blocks": 6420,
   "blocks_hit": 3755,
   "functions": 369,
   "outcomes": 4886,
   "outcomes_hit": 2063,
+  "runs": 1
+ },
+ "lockstep-gen-stay-04": {
+  "blocks": 6177,
+  "blocks_hit": 3705,
+  "functions": 369,
+  "outcomes": 4674,
+  "outcomes_hit": 2014,
+  "runs": 1
+ },
+ "lockstep-gen-stay-05": {
+  "blocks": 6089,
+  "blocks_hit": 3658,
+  "functions": 368,
+  "outcomes": 4666,
+  "outcomes_hit": 2017,
+  "runs": 1
+ },
+ "lockstep-gen-stay-06": {
+  "blocks": 6680,
+  "blocks_hit": 3887,
+  "functions": 375,
+  "outcomes": 5114,
+  "outcomes_hit": 2164,
+  "runs": 1
+ },
+ "lockstep-gen-stay-07": {
+  "blocks": 6659,
+  "blocks_hit": 3910,
+  "functions": 379,
+  "outcomes": 5104,
+  "outcomes_hit": 2179,
+  "runs": 1
+ },
+ "lockstep-gen-stay-08": {
+  "blocks": 6284,
+  "blocks_hit": 3708,
+  "functions": 377,
+  "outcomes": 4782,
+  "outcomes_hit": 2015,
+  "runs": 1
+ },
+ "lockstep-gen-stay-09": {
+  "blocks": 6544,
+  "blocks_hit": 3820,
+  "functions": 372,
+  "outcomes": 4968,
+  "outcomes_hit": 2114,
+  "runs": 1
+ },
+ "lockstep-gen-wild-02": {
+  "blocks": 6751,
+  "blocks_hit": 3862,
+  "functions": 353,
+  "outcomes": 5322,
+  "outcomes_hit": 2169,
   "runs": 1
  },
  "lockstep-gen-wild-03": {
@@ -1847,6 +1975,14 @@
   "outcomes_hit": 2410,
   "runs": 1
  },
+ "lockstep-gen-wild-04": {
+  "blocks": 6673,
+  "blocks_hit": 3906,
+  "functions": 352,
+  "outcomes": 5260,
+  "outcomes_hit": 2202,
+  "runs": 1
+ },
  "lockstep-gen-wild-05": {
   "blocks": 6987,
   "blocks_hit": 4154,
@@ -1855,12 +1991,36 @@
   "outcomes_hit": 2386,
   "runs": 1
  },
+ "lockstep-gen-wild-06": {
+  "blocks": 6294,
+  "blocks_hit": 3617,
+  "functions": 331,
+  "outcomes": 4880,
+  "outcomes_hit": 1983,
+  "runs": 1
+ },
  "lockstep-gen-wild-07": {
   "blocks": 6619,
   "blocks_hit": 3880,
   "functions": 355,
   "outcomes": 5256,
   "outcomes_hit": 2177,
+  "runs": 1
+ },
+ "lockstep-gen-wild-08": {
+  "blocks": 6250,
+  "blocks_hit": 3708,
+  "functions": 342,
+  "outcomes": 4976,
+  "outcomes_hit": 2097,
+  "runs": 1
+ },
+ "lockstep-gen-wild-09": {
+  "blocks": 6295,
+  "blocks_hit": 3755,
+  "functions": 351,
+  "outcomes": 5018,
+  "outcomes_hit": 2118,
   "runs": 1
  },
  "lockstep-healer": {
@@ -2350,5 +2510,13 @@
   "outcomes": 1076,
   "outcomes_hit": 761,
   "runs": 112
+ },
+ "world-calls-rules": {
+  "blocks": 2831,
+  "blocks_hit": 1453,
+  "functions": 146,
+  "outcomes": 1974,
+  "outcomes_hit": 943,
+  "runs": 630
  }
 }

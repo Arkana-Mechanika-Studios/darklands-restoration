@@ -646,6 +646,8 @@ public sealed class BattleScreen : ITacticalView
 
     public int CameraY => _view.CameraY;
 
+    public bool HasHotSpot(int i) => HotSpot(i) is not null;
+
     /// <summary>The renderer's clip test of the combatant's sprite box, 4 pixels round it, against the view (0..0x103 × 0..0xC7).</summary>
     // orig: R014+0x9C8C (14F7:347C) draft, called by R014+0x719E with (scrx − 4, scry − 4, w + 8, h + 8)
     public bool CombatantInView(int i)
@@ -1231,6 +1233,24 @@ public sealed class BattleScreen : ITacticalView
     {
         var tb = _battle!;
         var m = tb.Menus;
+        // R016+0x01F8.., 0x088A.., 0x08E4: combat_keys switches on the whole key word. The keypad's digits with Num Lock on (0x4737 .. 0x5133)
+        // are the arrows; its 5 (0x4C35) is no case, and only the top row's 1..5 (0x0231 .. 0x0635) choose a member.
+        key = key switch
+        {
+            0x4737 => Keys.Home,
+            0x4838 => Keys.Up,
+            0x4939 => Keys.PageUp,
+            0x4B34 => Keys.Left,
+            0x4D36 => Keys.Right,
+            0x4F31 => Keys.End,
+            0x5032 => Keys.Down,
+            0x5133 => Keys.PageDown,
+            _ => key,
+        };
+        if (key == Keys.Center)
+        {
+            return;
+        }
         if (tb.Battle.PartyFloor != tb.Battle.FloorShown)
         {
             // The party is split over two levels: the moves are refused, U takes the stairs back, a few keys work.
@@ -1319,7 +1339,10 @@ public sealed class BattleScreen : ITacticalView
         switch (char.ToUpperInvariant(Keys.CharacterOf(key)))
         {
             case >= '1' and <= '5':
-                tb.SelectMember(Keys.CharacterOf(key) - '1');
+                if (key >> 8 == Keys.CharacterOf(key) - '1' + 2)
+                {
+                    tb.SelectMember(Keys.CharacterOf(key) - '1');
+                }
                 return;
             case 'A':
                 if (m.On(AttackItem.Standard) && selected)
@@ -2224,7 +2247,7 @@ public sealed class BattleScreen : ITacticalView
     private void DrawMissiles(Canvas canvas)
     {
         var tb = _battle!;
-        foreach (var m in tb.Missiles)
+        foreach (var m in tb.MissilesDrawn)
         {
             if (m.Floor != tb.Battle.FloorShown || (m.Arrived && m.Sprite != 0))
             {

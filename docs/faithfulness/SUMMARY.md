@@ -7,7 +7,9 @@ its bytes, never against another reimplementation.
 
 The rules are identical to the original's in the faithful mode (`OriginalBehaviour.Faithful`, which the
 oracles and the headless host use). By default the player's game differs from it only in the 3 listed,
-switchable data-safety fixes below. No known divergence, strong evidence, published coverage:
+switchable data-safety fixes below. The aim, no known divergence, strong evidence, published coverage, is
+not met yet: the open items are listed under "Divergences and original bugs" (three original bugs still
+to reproduce, and leads not yet judged). Where it stands:
 
 * every original function the C# cites is compared with it statically, and no lead is open;
 * every oracle agrees with the original wherever it runs, or differs for a listed reason;
@@ -18,7 +20,7 @@ switchable data-safety fixes below. No known divergence, strong evidence, publis
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 71% of the branch outcomes have run in a comparison with the original, and the
+implements, about 73% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
 are the battlefield generators, the rules and the battles; the least covered are the card scripts and the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
@@ -94,39 +96,39 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,479 functions the oracles enter | 82.9% (47,662 / 57,483) | 72.7% (31,316 / 43,076) |
-| **every function the C# implements (9,281)** | | **71.3% (30,512 / 42,790)** |
+| the 8,504 functions the oracles enter | 83.9% (48,402 / 57,663) | 74.3% (32,141 / 43,236) |
+| **every function the C# implements (9,281)** | | **73.2% (31,337 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 30,512 against 31,316 exercised. By area:
+differ slightly on the resident code, hence 31,337 against 32,141 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 323 / 358 | 1,912 / 2,590 | 74% |
-| battles (tactical combat) | 254 / 314 | 5,381 / 7,516 | 72% |
-| travel (overland map) | 23 / 24 | 621 / 982 | 63% |
-| screens (inventory, barter, creation ...) | 190 / 202 | 4,464 / 6,070 | 74% |
-| resident code | 131 / 160 | 923 / 1,644 | 56% |
-| card engine | 35 / 36 | 418 / 686 | 61% |
+| rules | 329 / 358 | 2,058 / 2,590 | 79% |
+| battles (tactical combat) | 272 / 314 | 6,012 / 7,516 | 80% |
+| travel (overland map) | 23 / 24 | 623 / 982 | 63% |
+| screens (inventory, barter, creation ...) | 190 / 202 | 4,484 / 6,070 | 74% |
+| resident code | 132 / 160 | 941 / 1,644 | 57% |
+| card engine | 35 / 36 | 426 / 686 | 62% |
 | card scripts | 6,860 / 7,949 | 9,716 / 14,616 | 66% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`): 72.1% (30,852 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`): 74.0% (31,666 / 42,790). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the keyboard menu, the hot keys, the
 party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-21,581 items of the functions the oracles enter were never exercised: 2,321 are justified in
+20,356 items of the functions the oracles enter were never exercised: 2,306 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 19,260 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 18,050 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 9,100), the battles (about 2,900), the screens (about 2,600), the
+lie in the card scripts (about 9,100), the screens (about 2,600), the battles (about 2,000), the
 battlefield generators (about 2,100), the rules (about 650) and the overland map (about 650). A sweep
 of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
 tile contents and random draws, not inputs a sweep sets.
@@ -248,7 +250,12 @@ throughout: about 1,800 outcomes, the screens from 58% to 73%. Judging the ones 
 divergences on the character sheet, now fixed: its box table has 19 entries, the last two empty, and
 the cursor can stand on them (R136+0xBBE7; the C# failed there); D, A, U and P with the pack closed
 leave an open box open (R031+0x1D40; only the default case R031+0x1C66 closes). Twelve more sessions
-agree; the others are still being judged.
+agree. In the shops and stores: Down in an empty store puts its row at -1, where the original reads
+the bytes before the table (a heap address there; here they start as zero) and takes from them with
+an unsigned compare (R035+0x114A; the C# failed there); a click on the party column in barter, the
+stores and the loot opens the member's sheet; F1..F5 and Ctrl-F inside a screen are that screen's
+keys, the hot keys being taken only by the card engine (R043+0x33C6) and the map (R030+0x0C44).
+Twenty-one more sessions agree. The party menu's and the generator's sessions are still being judged.
 
 Only the sessions that agree throughout count as coverage.
 
@@ -257,7 +264,7 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-104 runs, all agreeing (and 219 with the generated sessions, replayed). The last open lead before these, a group move at
+104 runs, all agreeing (and 238 with the generated sessions, replayed). The last open lead before these, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
@@ -314,7 +321,14 @@ outcomes. They found four divergences, now fixed: the recovery after a fight set
 recovery clock and clears the hit shown (R014+0x0DEE .. +0x0E19); a door wakes an encounter by its
 X (R023+0x0362 .. +0x0368); an enemy's path search that fails at its goal puts the doors back as the
 last opening search left them (R014+0x48CA, +0x4B5A, an original bug reproduced); a member's pass
-over the party's places always clears the place-changed bit (R014+0xDD17).
+over the party's places always clears the place-changed bit (R014+0xDD17). A third round (the order mode,
+the battle keys R016+0x0000, the mouse R014+0xB576, the order menu, loot, the compression library R003)
+added about 800 outcomes (battles 72% -> 80%) and found more, now fixed: selecting a member stores the
+flee bit (R016+0x0A7D); the place keys D, P and U do not test the selection (R016+0x0F76, +0x10CC,
++0x014E); leaving the order mode with nobody selected still resets the menu and the cursor (R014+0xBCA8),
+and a shot order sets flag 0x200 (R014+0xBE85); a group click's timeout, formation direction, retries and
+line of sight (R014+0xB8E8, R014+0xC75C); the keypad digits under NumLock are arrows; a dying member
+uses the caller's animation set (R014+0x1584); an arrived missile is removed in the draw (R014+0x6D39).
 
 The fights brought the battle code run against the original from 32 to 252 of 314 functions (the battle sessions with the player's orders included). The
 first five found one divergence in the C# (the first frame also turns whoever just got an action
@@ -345,9 +359,20 @@ memory-layout effects (writes outside arrays the original performs).
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
 markers in the code, each with its reason and original coordinate: 173 original bugs the game
-reproduces (each can be fixed by its own `OriginalBehaviour` flag), 319 registered divergences,
+reproduces (each can be fixed by its own `OriginalBehaviour` flag), 324 registered divergences,
 908 dormant branches kept as the original has them, 55 uncertain readings (of 301: 234 were
 naming only, 8 settled by an agreeing oracle or the code, now closed).
+
+Open items (2026-10-23), listed honestly: three original bugs reachable in play that the C# does not yet
+reproduce, registered as divergences to be reproduced (`reproduce-later`): with nobody selected a key
+copies entry -1 of two tables (R016+0x1182, D-0e2c57) and Esc can leave the pause byte 0x11 (R016+0x13D4,
+D-e8d85e); a door's state written by an exit is lost after a level switch while nothing else changed
+(R023+0x1618 / R024+0x05B4, D-9c5387). Leads not yet judged from the direct calls: battle formation
+spots off the map, a few draws and placements, the aim length at R014+0x1BA0, the battle keys matched by
+character where the original matches the key word; a saint's help (R039+0x501E, 3 of 17 calls) and the
+monthly update called with a month the game may never pass (R029+0x281C); the inn card 1D's menu rows,
+the marketplace card 0x15 and the map's A key after a camp. Three static-structure leads of a
+party-menu change are kept off the published tree until judged.
 
 ## Presentation
 

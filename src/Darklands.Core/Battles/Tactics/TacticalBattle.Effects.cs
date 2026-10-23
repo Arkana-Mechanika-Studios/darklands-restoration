@@ -78,6 +78,9 @@ public interface IBattleViewport
     /// <summary>The renderer's clip test of combatant i's sprite box (14F7:347C, 4 pixels round it) against the view.</summary>
     bool CombatantInView(int i);
 
+    /// <summary>Combatant i has a hot spot in the last frame drawn (DS:D848[0..DS:E0A1 - 1]); a view that keeps none says yes.</summary>
+    bool HasHotSpot(int i) => true;
+
     /// <summary>
     /// DS:E176: the sprites the last frame logged for erasing (the ground cursor, the missiles, the damage numbers it queued), which
     /// take the first places of this frame's draw list.

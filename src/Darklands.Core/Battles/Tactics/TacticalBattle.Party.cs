@@ -220,6 +220,7 @@ public sealed partial class TacticalBattle
         _view.MapChanged();
         TurnTowardTargets();
         Effects.Drawn(_view);
+        RemoveArrivedMissiles();
         RefreshTargetCursor();
     }
 }

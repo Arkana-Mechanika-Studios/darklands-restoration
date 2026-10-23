@@ -524,16 +524,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-e1ca2c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/PathFinder.cs:114` `PathFinder.Find`  
   original: `R014+0x481A` (12F7:000A, draft)  
   why: R014+0x48CA leaves through the common exit (R014+0x4B36): R014+0x4B5A (for an enemy) puts every door that is no twin back to the open flags DS:E0C0 kept at the last enemy search that opened them, though this search opened none, and copies those flags back (DS:E0C0 to the level's +0x33D3): a door opened or shut since then is set back.
-- **B-fd2f1c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:662` `EffectField.DropWornOut`  
+- **B-fd2f1c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:665` `EffectField.DropWornOut`  
   original: `R019+0x0914` (1EF8:0914, matched)  
   why: items are consumed until none of that type and quality is left: the spares stacked with the worn piece (worn down with it by WearItem) are thrown away with it.
-- **B-8e79e5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:685` `EffectField.WearItem`  
+- **B-8e79e5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:688` `EffectField.WearItem`  
   original: `R019+0x0968` (1EF8:0968, matched)  
   why: armour wear hits the whole stack: the stack loses the quality, not one piece, so identical spare pieces stacked with the worn armour wear down with it.
-- **B-3cc78a** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:895` `EffectField.LineCrossesCloud`  
+- **B-3cc78a** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:898` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: the loop runs to the count inclusive, so the slot after the last cloud (an old cloud's copy, or zeros) is tested too (OriginalBehaviour.FixCloudLineOneTooMany stops at the last cloud).
-- **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:897` `EffectField.LineCrossesCloud`  
+- **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:900` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: a missed box reloads the line from the saved words, which are the stack residue until a box was hit: the clouds after it are tested against that line (3, 17405)-(state words), not a → t. Kept.
 - **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:351` `TacticalBattle.Cast`  

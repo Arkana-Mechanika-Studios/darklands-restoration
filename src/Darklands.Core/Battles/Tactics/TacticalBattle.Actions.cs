@@ -633,8 +633,8 @@ public sealed partial class TacticalBattle
         {
             c.Frame++;
         }
-        var slot = Slots[AnimationSet(i)];
-        _ = set;
+        // R014+0x2363 / 0x2415: the set the caller worked out before the dying pose (DS:C83F[set], DS:C803[set]), not the dying pose's
+        var slot = Slots[set];
         if (slot.CorpseKind == 2)
         {
             return;

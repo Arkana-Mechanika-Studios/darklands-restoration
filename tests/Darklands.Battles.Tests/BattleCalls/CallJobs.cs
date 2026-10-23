@@ -48,6 +48,9 @@ internal sealed class StateImage
     /// <summary>The packs' segment (2E38: member k at 0x3E + 0x180 k, enemy k at 0xBDE + 0x60 k), its first 0x1100 bytes. Absent in older jobs files.</summary>
     [JsonPropertyName("far3")] public string Far3Text { get; set; } = "";
 
+    /// <summary>The loot file (the machine's cfile.dat) as gzip + base64, "absent" when the file does not exist; null in older jobs files (the loot is then not carried).</summary>
+    [JsonPropertyName("loot")] public string? LootText { get; set; }
+
     private byte[]? _ds, _far, _far2, _far3;
 
     public byte[] Ds => _ds ??= Unpack(DsText);
@@ -55,6 +58,8 @@ internal sealed class StateImage
     public byte[] Far => _far ??= Unpack(FarText);
 
     public byte[]? Far2 => Far2Text.Length == 0 ? null : _far2 ??= Unpack(Far2Text);
+
+    public byte[]? Loot => LootText is null || LootText == "absent" ? null : Unpack(LootText);
 
     public byte[]? Far3 => Far3Text.Length == 0 ? null : _far3 ??= Unpack(Far3Text);
 
@@ -109,14 +114,22 @@ internal sealed class OriginalOutcome
 
     [JsonPropertyName("far3_changed")] public Dictionary<string, int> Far3Changed { get; set; } = [];
 
+    /// <summary>The loot file after the call as hex, "absent" when there is none; null in older jobs files.</summary>
+    [JsonPropertyName("loot")] public string? Loot { get; set; }
+
     [JsonPropertyName("random")] public uint Random { get; set; }
 
     [JsonPropertyName("draws")] public List<uint> Draws { get; set; } = [];
 }
 
 /// <summary>The memory a job starts from (state + ops) and the memory the original left (plus its changes).</summary>
-internal sealed class MemoryPair(byte[] ds, byte[] far, byte[]? far2 = null, byte[]? far3 = null)
+internal sealed class MemoryPair(byte[] ds, byte[] far, byte[]? far2 = null, byte[]? far3 = null, byte[]? loot = null, bool lootKnown = false)
 {
+    /// <summary>The loot file (null: absent); only compared where <see cref="LootKnown"/>.</summary>
+    public byte[]? Loot { get; set; } = loot;
+
+    public bool LootKnown { get; set; } = lootKnown;
+
     public byte[] Ds { get; } = ds;
 
     public byte[] Far { get; } = far;
@@ -125,13 +138,18 @@ internal sealed class MemoryPair(byte[] ds, byte[] far, byte[]? far2 = null, byt
 
     public byte[]? Far3 { get; } = far3;
 
-    public MemoryPair Clone() => new((byte[])Ds.Clone(), (byte[])Far.Clone(), (byte[]?)Far2?.Clone(), (byte[]?)Far3?.Clone());
+    public MemoryPair Clone() => new((byte[])Ds.Clone(), (byte[])Far.Clone(), (byte[]?)Far2?.Clone(), (byte[]?)Far3?.Clone(), (byte[]?)Loot?.Clone(), LootKnown);
 
     public static MemoryPair Input(StateImage state, CallJob job)
     {
-        var m = new MemoryPair((byte[])state.Ds.Clone(), (byte[])state.Far.Clone(), (byte[]?)state.Far2?.Clone(), (byte[]?)state.Far3?.Clone());
+        var m = new MemoryPair((byte[])state.Ds.Clone(), (byte[])state.Far.Clone(), (byte[]?)state.Far2?.Clone(), (byte[]?)state.Far3?.Clone(), state.Loot, state.LootText is not null);
         foreach (var op in job.Ops)
         {
+            if (op.Where == "loot")
+            {
+                m.Loot = Convert.FromHexString(op.Hex);
+                continue;
+            }
             Convert.FromHexString(op.Hex).CopyTo(op.Where == "ds" ? m.Ds : op.Where == "far2" ? m.Far2! : op.Where == "far3" ? m.Far3! : m.Far, op.Offset);
         }
         return m;
@@ -155,6 +173,10 @@ internal sealed class MemoryPair(byte[] ds, byte[] far, byte[]? far2 = null, byt
         foreach (var (k, v) in o.Far3Changed)
         {
             m.Far3![int.Parse(k)] = (byte)v;
+        }
+        if (o.Loot is not null)
+        {
+            m.Loot = o.Loot == "absent" ? null : Convert.FromHexString(o.Loot);
         }
         return m;
     }

@@ -130,10 +130,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-8df8a9** `uncertain` - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:224` `MineBuilder.MakeChests`  
   original: `R009+0x1AF0` (1432:1AF0, draft)  
   why: the original holds stack leftovers).
-- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:881` `EffectField.public`  
+- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:884` `EffectField.public`  
   original: `root 06A1:29B6` (06A1:29B6, asm), `R014+0xA738` (18BF:02A8, draft)  
   why: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
-- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1041` `EffectField.Drawn`  
+- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1044` `EffectField.Drawn`  
   original: `R014+0x6818` (14F7:0008, draft), `R014+0x7BBE` (14F7:13AE, draft)  
   why: an entry whose box the view clips to nothing gives its place back in the original; here every piece, edge and number of a combatant in view counts (the boxes are not clipped), and the cloud edges count for the clouds of the shown level with a puff in view.
 - **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:238` `TacticalBattle.AnimationSet`  
@@ -159,7 +159,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1630` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1653` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:55` `BuySellPage.DrawParty`  

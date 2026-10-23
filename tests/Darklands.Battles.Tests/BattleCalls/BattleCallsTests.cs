@@ -29,6 +29,10 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
     {
         public required TacticalBattle Tactics { get; init; }
 
+        public required BattleScreen Screen { get; init; }
+
+        public required CallHost Host { get; init; }
+
         public Battle Battle => Tactics.Battle;
 
         public required MemoryPair Input { get; init; }
@@ -47,6 +51,20 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
     }
 
     private static readonly System.Reflection.BindingFlags Any = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+
+    /// <summary>Calls a private method of the battle screen by name (the exception the method throws, not the reflection's).</summary>
+    internal static object? CallScreen(BattleScreen screen, string name, params object?[] args)
+    {
+        try
+        {
+            return typeof(BattleScreen).GetMethod(name, Any)!.Invoke(screen, args);
+        }
+        catch (System.Reflection.TargetInvocationException e) when (e.InnerException is not null)
+        {
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(e.InnerException).Throw();
+            throw;
+        }
+    }
 
     /// <summary>Calls a method of the tactical battle by name (most of the functions under test are private).</summary>
     internal static object? Call(TacticalBattle t, string name, params object?[] args)
@@ -91,11 +109,15 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         },
         ["R018+0x0000"] = (c, job) =>
         {
-            if (job.Args[2] != 0 || job.Args[0] is < 0 or >= 13 || (job.Args[1] is < -1 or >= 13 && job.Args[1] != 0xFFFF))
+            if (job.Args[2] is > 0 and < 6 || job.Args[0] is < 0 or >= 13 || (job.Args[1] is < -1 or >= 13 && job.Args[1] != 0xFFFF))
             {
-                throw new SkipJob("only the weapon missiles of a combatant at a combatant or a spot: a spell's sprite family is the animation slot's, which this overlay does not carry");
+                throw new SkipJob("a missile of a combatant at a combatant or a spot; the type is 0 (the weapon) or 6 and more (a spell)");
             }
-            if (c.Battle[job.Args[0]].ReadiedWeapon is < 0x17 or > 0x21)
+            if (job.Args[2] != 0 && c.Battle[job.Args[0]].AnimationSlot >= TacticsOverlay.Slots)
+            {
+                throw new SkipJob("a spell's sprite family is the shooter's animation slot's code: the slot is one of the seven loaded");
+            }
+            if (job.Args[2] == 0 && c.Battle[job.Args[0]].ReadiedWeapon is < 0x17 or > 0x21)
             {
                 throw new SkipJob("a weapon that is no missile weapon: the original's sprite and speed are uninitialised (a documented divergence)");
             }
@@ -285,21 +307,199 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 // its one caller is the orders menu of the active member; the pack it reads is 2E38:0x3E + 0x180 i (R019+0x0CC8), the members' layout
                 throw new SkipJob("not a party member: the throw list is the active member's orders menu, read from the members' pack layout");
             }
-            var lines = c.Tactics.Effects.ThrowList(job.Args[0]);
-            c.Outputs[0x97DD] = "throw entry state";
-            c.Actual[0x97DD] = (byte)(lines.Count != 0 ? 1 : 2);
-            if (((ushort)c.Battle[job.Args[0]].Action & 2) != 2)
+            ThrowLineOutputs(c, c.Tactics.Effects.ThrowList(job.Args[0]), job.Args[0], true);
+            return null;
+        },
+        ["R016+0x0000"] = (c, job) =>
+        {
+            // combat_keys with the key the call was given (args[0], scan << 8 | character): the screen's key handler. The keys that open another screen
+            // (the sheets F1..F5, Enemy Info, Surrender, Throw's menu, the Alt keys of the menu bar) run a loop of their own that the original's call
+            // does not get its keys for.
+            var key = job.Args[0] & 0xFFFF;
+            if (key == 0)
             {
-                for (var k = 0; k < lines.Count; k++)
+                // no key waits: the direction keys held (DS:0880 / DS:0881) give an arrow
+                var directions = typeof(Darklands.Presentation.GameUi).GetProperty("Directions")!.GetValue(typeof(BattleScreen).GetField("_ui", Any)!.GetValue(c.Screen))!;
+                typeof(Darklands.Presentation.KeyboardDirections).GetProperty("X")!.SetValue(directions, (int)(sbyte)c.Input.Ds[0x880]);
+                typeof(Darklands.Presentation.KeyboardDirections).GetProperty("Y")!.SetValue(directions, (int)(sbyte)c.Input.Ds[0x881]);
+                CallScreen(c.Screen, "CombatKeys");
+                return null;
+            }
+            if (key is >= 0x3B00 and <= 0x3F00 || char.ToUpperInvariant((char)(key & 0xFF)) is 'E' or 'S' or 'T' || (key & 0xFF) == 0 && key is not (>= 0x4700 and <= 0x5100 or >= 0x5E00 and <= 0x6200))
+            {
+                throw new SkipJob($"key {key:X4} opens another screen or belongs to the menu bar");
+            }
+            if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
+            {
+                Console.WriteLine($"key {key:X4}: shown {c.Battle.FloorShown} levels {c.Tactics.LevelCount} party floor {c.Battle.PartyFloor} floors {string.Join(",", Enumerable.Range(0, 5).Select(k => c.Battle[k].Floor))} selected {c.Tactics.Selected} paused {c.Tactics.Paused}");
+            }
+            if (char.ToUpperInvariant((char)(key & 0xFF)) == 'U' && c.Input.Ds[0xA695] == 0)
+            {
+                // U outside the pause takes the leader's stairs record (DS:C8B2 when the party is split, DS:C77E when Use Stairs is on): the
+                // original reads it without a test of the level's count (R023+0x1618); R014+0xDC14 sets these from a stairs record of the level
+                var ds = c.Input.Ds;
+                var leader = ds[0x907B];
+                var split = ds[0xC623] != ds[0x11CA];
+                int n = split ? ds[0xC8B2 + leader] : ds[0x96BD] == 1 ? ds[0xC77E + leader] : 0xFF;
+                if (n != 0xFF && n >= c.Input.Far[0x2FB6])
                 {
-                    var at = 0x9A47 + 0x16 * k;
-                    var nameAt = c.Input.Ds[0x114E + 2 * lines[k].Potion] | c.Input.Ds[0x114E + 2 * lines[k].Potion + 1] << 8;
-                    foreach (var (offset, value, name) in new[] { (0, nameAt & 0xFF, "name"), (1, nameAt >> 8, "name high"), (9, lines[k].Potion, "potion"), (8, lines[k].Quality, "quality"), (7, lines[k].Count, "count") })
-                    {
-                        c.Outputs[at + offset] = $"throw line {k} {name}";
-                        c.Actual[at + offset] = (byte)value;
-                    }
+                    throw new SkipJob($"the leader's stairs record {n} past the level's {c.Input.Far[0x2FB6]}: R014+0xDC14 sets it from a stairs record of the level");
                 }
+            }
+            if (key == 0x011B && c.Input.Ds[0xA695] == 1 && (sbyte)c.Input.Ds[OrderOverlay.Selected] == -1 && c.Input.Ds[OrderOverlay.FleeBefore] != 0)
+            {
+                throw new SkipJob("Esc while paused with nobody selected and DS:D6EA set: the original's pause byte becomes 0x11 (R016+0x13F9), which the rewrite's flag does not hold");
+            }
+            if (key == 0x1C0D && c.Input.Ds[OrderOverlay.MoveMode] == 0)
+            {
+                OrderOverlay.SkipGiftToNobody(c.Input.Ds);
+            }
+            CallScreen(c.Screen, "Key", key);
+            if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
+            {
+                var levels = TacticsOverlay.Get<IReadOnlyList<BattlefieldLevel>>(c.Tactics, "_levels");
+                Console.WriteLine("levels: " + string.Join(" ", levels.Select(l => $"{l.Image[0x300C]}/{l.Image.GetHashCode()}")) + $" current {c.Tactics.Level.Image.GetHashCode()}");
+                Console.WriteLine($"after: shown {c.Battle.FloorShown} selected {c.Tactics.Selected}");
+            }
+            return null;
+        },
+        ["R014+0x2170"] = (c, job) =>
+        {
+            if (job.Args[0] is < 0 or >= Combatant.PartySlots)
+            {
+                throw new SkipJob("a place action is given to a party member");
+            }
+            if (c.Input.Ds[0xA6C4 + job.Args[0]] == (byte)PlaceAction.Stairs && c.Input.Ds[0xC77E + job.Args[0]] >= c.Input.Far[0x2FB6])
+            {
+                // the Use Stairs entry (and so this action) is on only on a stairs record of the level, whose index R014+0xDC14 keeps (DS:C77E)
+                throw new SkipJob($"the stairs action with stairs record {c.Input.Ds[0xC77E + job.Args[0]]} past the level's {c.Input.Far[0x2FB6]}: R014+0xDC14 sets it from a stairs record of the level");
+            }
+            Call(c.Tactics, "DoPlaceAction", job.Args[0]);
+            return null;
+        },
+        ["R014+0xBC0C"] = (c, _) =>
+        {
+            var member = (sbyte)c.Input.Ds[OrderOverlay.Selected];
+            if (member is < 0 or >= Combatant.PartySlots)
+            {
+                throw new SkipJob("order mode is entered for a party member (DS:A6B2)");
+            }
+            ScreenOverlay.HotSpots(c.Screen, c.Input);
+            c.Tactics.EnterOrderMode(member);
+            return null;
+        },
+        ["R014+0xBCA8"] = (c, _) =>
+        {
+            OrderOverlay.SkipGiftToNobody(c.Input.Ds);
+            c.Tactics.LeaveOrderMode();
+            return null;
+        },
+        ["R014+0x0620"] = (c, _) =>
+        {
+            Call(c.Tactics, "RepeatActivation", (int)c.Input.Ds[0x9080]);
+            return null;
+        },
+        ["R014+0x3C86"] = (c, job) =>
+        {
+            if (job.Args[0] is < 0 or >= Combatant.Count)
+            {
+                throw new SkipJob("not a combatant");
+            }
+            c.Battle[job.Args[0]].QueueOrder((CombatAction)(ushort)job.Args[1]);
+            return null;
+        },
+        ["R014+0xB576"] = (c, job) =>
+        {
+            // combat_mouse: args = releases the driver counted, Ctrl held
+            if (c.Input.Ds[OrderOverlay.OrderMode] != 0 && (sbyte)c.Input.Ds[OrderOverlay.Selected] < 0)
+            {
+                throw new SkipJob("order mode with no member selected: the original reads the record before combatant 0");
+            }
+            ScreenOverlay.Apply(c.Screen, c.Host, c.Input, job.Args[0], job.Args[1] != 0);
+            CallScreen(c.Screen, "CombatMouse");
+            if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
+            {
+                Console.WriteLine($"DBG after mouse: selected {c.Tactics.Selected} order mode {c.Tactics.InOrderMode} paused {c.Tactics.Paused} flags {string.Join(",", Enumerable.Range(0, 5).Select(k => c.Battle[k].Selected))} cursor {c.Tactics.CursorTarget}");
+            }
+            if (c.Input.Ds[OrderOverlay.MoveMode] != 0)
+            {
+                // travelling in a formation the cursor is the group cursor (DS:C987, DS:CA19 / DS:CA2A sprites), which the rewrite keeps no sprite for: not compared
+                for (var b = 0; b < 2; b++)
+                {
+                    c.Actual[OrderOverlay.Cursor + b] = job.Orig.Changed.TryGetValue((OrderOverlay.Cursor + b).ToString(), out var v) ? (byte)v : c.Input.Ds[OrderOverlay.Cursor + b];
+                }
+            }
+            ScreenOverlay.Outputs(c.Screen, c);
+            return null;
+        },
+        ["R014+0x2324"] = (c, job) =>
+        {
+            if (job.Args[0] is < 0 or >= Combatant.Count)
+            {
+                throw new SkipJob("not a combatant");
+            }
+            // its one caller (R014+0x1584) passes the animation set it worked out for the combatant at the head of its pass; the call reads only
+            // the set's corpse kind and loot flag (DS:C83F, DS:C803), so another set with the same two is the same call
+            var set = c.Tactics.AnimationSet(job.Args[0]);
+            if (job.Args[1] is < 0 or >= 11 || c.Tactics.Slots[job.Args[1]].CorpseKind != c.Tactics.Slots[set].CorpseKind
+                || c.Tactics.Slots[job.Args[1]].DropsLoot != c.Tactics.Slots[set].DropsLoot)
+            {
+                throw new SkipJob($"set {job.Args[1]} is not like the combatant's animation set {set}: the caller passes that");
+            }
+            ScreenOverlay.Camera(c.Screen, c.Input);
+            Call(c.Tactics, "Dying", job.Args[0], job.Args[1]);
+            return null;
+        },
+        ["R014+0xEA10"] = (c, _) =>
+        {
+            LootOverlay.SkipBlocksPastTheFile(c.Input);
+            Call(c.Tactics, "GatherLoot");
+            return null;
+        },
+        ["R025+0x0000"] = (c, job) =>
+        {
+            // enemies_place(mode, far pointer to the encounter's record, who): the record is one of the level's list (20A5:47EE, 30 bytes each)
+            var mode = job.Args[0];
+            if (mode is not (0 or 1) || job.Args[3] is < 0 or >= Combatant.PartySlots)
+            {
+                throw new SkipJob("only the encounter placement (mode 0) and the reinforcement wave (mode 1) of a party member");
+            }
+            EnemyGroup? group = null;
+            if (mode == 0)
+            {
+                var list = c.Tactics.Activations[c.Battle.FloorShown];
+                var k = (job.Args[1] - TacticsOverlay.ActivationsAt) / TacticsOverlay.ActivationSize;
+                if ((job.Args[1] - TacticsOverlay.ActivationsAt) % TacticsOverlay.ActivationSize != 0 || k < 0 || k >= list.Count)
+                {
+                    throw new SkipJob("not a record of the level's encounter list");
+                }
+                group = list[k];
+            }
+            return (bool)Call(c.Tactics, "PlaceEnemies", mode, group, job.Args[3])! ? 1 : 0;
+        },
+        ["R014+0xDF28"] = (c, _) =>
+        {
+            var a = c.Input.Ds[0xA6B2];
+            if (a >= Combatant.PartySlots)
+            {
+                throw new SkipJob("the selected member (DS:A6B2) is past the party: the order menu is built for a member");
+            }
+            if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
+            {
+                var d = c.Battle[a];
+                Console.WriteLine($"menu for {a}: real {c.Battle.RealCombat} held {d.Held} party floor {c.Battle.PartyFloor} shown {c.Battle.FloorShown} flags {d.Flags} attack {string.Join(",", c.Tactics.Menus.Attack)}");
+            }
+            Call(c.Tactics, "BuildOrderMenu", (int)a);
+            var menus = c.Tactics.Menus;
+            // the label suffixes (DS:06AB + 8, 06BB + 10, 06CD + 10, 06DF + 9, 06F1 + 13, 0727 + 16): the first byte says "" or a suffix
+            foreach (var (at, text) in new[] { (0x6B3, menus.DoorSuffix), (0x6C5, menus.StairsSuffix), (0x6D7, menus.ChestSuffix), (0x6E8, menus.PickSuffix), (0x6FE, menus.DissolveSuffix), (0x737, menus.ExitSuffix) })
+            {
+                c.Outputs[at] = "menu suffix";
+                c.Actual[at] = text.Length == 0 ? (byte)0 : (byte)text[0];
+            }
+            if (c.Battle.RealCombat)
+            {
+                ThrowLineOutputs(c, menus.ThrowLines, a, false);
             }
             return null;
         },
@@ -371,6 +571,30 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             return null;
         },
     };
+
+    /// <summary>The throw list as R019+0x0C80 leaves it: the entry state (DS:97DD) and, unless the member is mid-throw, the lines (DS:9A47, 0x16 bytes each).</summary>
+    private static void ThrowLineOutputs(Context c, IReadOnlyList<(int Potion, int Quality, int Count)> lines, int member, bool entryState)
+    {
+        if (entryState)
+        {
+            c.Outputs[0x97DD] = "throw entry state";
+            c.Actual[0x97DD] = (byte)(lines.Count != 0 ? 1 : 2);
+        }
+        if (((ushort)c.Battle[member].Action & 2) == 2)
+        {
+            return;
+        }
+        for (var k = 0; k < lines.Count; k++)
+        {
+            var at = 0x9A47 + 0x16 * k;
+            var nameAt = c.Input.Ds[0x114E + 2 * lines[k].Potion] | c.Input.Ds[0x114E + 2 * lines[k].Potion + 1] << 8;
+            foreach (var (offset, value, name) in new[] { (0, nameAt & 0xFF, "name"), (1, nameAt >> 8, "name high"), (9, lines[k].Potion, "potion"), (8, lines[k].Quality, "quality"), (7, lines[k].Count, "count") })
+            {
+                c.Outputs[at + offset] = $"throw line {k} {name}";
+                c.Actual[at + offset] = (byte)value;
+            }
+        }
+    }
 
     private static int? Plain1(Context c, string method, int arg)
     {
@@ -480,9 +704,25 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         {
             throw new SkipJob("DS:E13C (walls ignored) set at the entry: the original sets it only around one collision test (R014+0xF5D5..0xF5E3)");
         }
+        // the place-changed bit (0x08 of a member's flags) is set and cleared within one call: R014+0xDC14 clears it at the end of every member's
+        // pass (R014+0xDD17), R017+0x0000 sets it for the five members and clears it again after the rows are drawn (R017+0x001E, 0x004C).
+        // Set at the entry it is inert unless one of those ran (the original's flags then have it clear)
+        for (var k = 0; k < Combatant.PartySlots; k++)
+        {
+            var at = TacticsOverlay.FlagsAt + 2 * k;
+            if ((ds[at] & 0x08) != 0 && job.Orig.Changed.TryGetValue(at.ToString(), out var after) && (after & 0x08) == 0)
+            {
+                throw new SkipJob($"flags[{k}] with the place-changed bit (0x08): R014+0xDC14 and R017+0x0000 clear it in the call that sets it");
+            }
+        }
         for (var k = 0; k < Combatant.Count; k++)
         {
             var record = ImageOverlay.Combatants + ImageOverlay.Record * k;
+            // a member stands on one of the battlefield's levels or has left (0x9D)
+            if (k < Combatant.PartySlots && ds[record + 0x14] != 0 && ds[TacticsOverlay.FloorsAt + k] != 0x9D && ds[TacticsOverlay.FloorsAt + k] >= Math.Max((int)ds[0xD661], 1))
+            {
+                throw new SkipJob($"member {k} on floor {ds[TacticsOverlay.FloorsAt + k]}: the battlefield has {ds[0xD661]} levels");
+            }
             // the battle code writes the status bytes 0, 1, 2, 3 and 5 only (R014+0x09EA, 0x0AF1, 0xAE6E, 0xAE91, R025+0x0461 ...)
             if (ds[record + 0x14] is not (0 or 1 or 2 or 3 or 5))
             {
@@ -547,23 +787,24 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
     }
 
     /// <summary>A battle of the fight's request, started the usual way from the tester's saved game (its party; the generator and the battlefield are the original's for that request); reused for all jobs of the fight.</summary>
-    private readonly Dictionary<string, TacticalBattle> _natural = [];
+    private readonly Dictionary<string, (TacticalBattle Tactics, BattleScreen Screen, CallHost Host)> _natural = [];
 
-    private static TacticalBattle StartFromSave(GameFiles files, BattleRequest request)
+    private static (TacticalBattle Tactics, BattleScreen Screen, CallHost Host) StartFromSave(GameFiles files, BattleRequest request)
     {
         var folder = Path.Combine(Darklands.Platform.LocalPaths.Get("game", "DARKLANDS_DIR")!, "SAVES");
         var sav = File.ReadAllBytes(Path.Combine(folder, "DKSAVE0.SAV"));
         var bsv = File.Exists(Path.Combine(folder, "DKSAVE0.BSV")) ? File.ReadAllBytes(Path.Combine(folder, "DKSAVE0.BSV")) : [];
         var world = WorldData.Load(files);
         var state = Darklands.Persistence.OriginalSaves.Read(sav, bsv, "dksave0.sav", world).State;
-        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var host = new CallHost();
+        var ui = new GameUi(host, new GameAssets(files));
         var screens = new BattleScreens(ui, () => state);
         var screen = new BattleScreen(ui, new BattleAssets(files), state, screens);
         screen.Start(request);
-        return screen.Tactics!;
+        return (screen.Tactics!, screen, host);
     }
 
-    private TacticalBattle Natural(CallJobs jobs, string fight)
+    private (TacticalBattle Tactics, BattleScreen Screen, CallHost Host) Natural(CallJobs jobs, string fight)
     {
         // a new battle for every job (about 15 ms): nothing a job left behind in the rewrite's own state, outside what the overlay sets, reaches the next.
         // DARKLANDS_BATTLE_CALLS_REUSE=1 keeps one battle per fight (faster, but order-dependent: the path finder's scratch, the doors opened for a search ...)
@@ -571,14 +812,14 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         {
             _natural.Remove(fight);
         }
-        if (!_natural.TryGetValue(fight, out var tactics))
+        if (!_natural.TryGetValue(fight, out var started))
         {
             var w = jobs.Fights[fight].EnumerateArray().Select(e => e.GetInt32()).ToArray();
             var request = new BattleRequest(w[1], w[2], [(w[3], w[4], w[5]), (w[6], w[7], w[8]), (w[9], w[10], w[11])], w[0]);
-            tactics = StartFromSave(GameFolder.Files!, request);
-            _natural[fight] = tactics;
+            started = StartFromSave(GameFolder.Files!, request);
+            _natural[fight] = started;
         }
-        return tactics;
+        return started;
     }
 
     /// <summary>How far the rewrite's own start of a fight is from the original's state at an early pass (DARKLANDS_BATTLE_CALLS_PROBE=1): the differing modelled bytes by name.</summary>
@@ -595,7 +836,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             {
                 continue;
             }
-            var tactics = Natural(jobs, state.Fight);
+            var tactics = Natural(jobs, state.Fight).Tactics;
             var image = new MemoryPair((byte[])state.Ds.Clone(), (byte[])state.Far.Clone());
             var mine = image.Clone();
             ImageOverlay.Extract(tactics.Battle, mine);
@@ -639,7 +880,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 continue;
             }
             var input = MemoryPair.Input(state, job);
-            var tactics = Natural(jobs, state.Fight);
+            var (tactics, screen, host) = Natural(jobs, state.Fight);
             var random = (MscRandom)tactics.Battle.Random;
             var draws = new List<uint>();
             MscRandom.BeforeDraw = () =>
@@ -651,7 +892,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             };
             random.Seed(BitConverter.ToUInt32(input.Ds, 0x7B20));
             ImageOverlay.Apply(tactics.Battle, input);
-            var context = new Context { Tactics = tactics, Input = input };
+            var context = new Context { Tactics = tactics, Screen = screen, Host = host, Input = input };
             string verdict;
             try
             {
@@ -662,7 +903,22 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 }
                 CheckDoors(tactics);
                 CheckReachable(job, input, state.Ds);
+                var switches = tactics.LevelSwitches;
                 var value = adapter(context, job);
+                if (tactics.LevelSwitches != switches)
+                {
+                    // level_switch (R024+0x059A) saves the level it leaves (20A5:0000, its encounter list 20A5:47EE through DS:A895) only when
+                    // DS:D4E4 is set, and loads the level it shows from its files: what the job changed in a level without that flag, or in a
+                    // level the original then reloads, is the files' and not the memory's
+                    if (input.Ds[0xD4E4] == 0)
+                    {
+                        throw new SkipJob("a level switch with DS:D4E4 clear: the original reloads the level it left from its file (the rewrite keeps the levels in memory)");
+                    }
+                    if (job.Ops.Any(op => op.Where == "floor" && op.Offset < TacticsOverlay.ActivationsAt + 0x300))
+                    {
+                        throw new SkipJob("a level switch after the job changed the level or its encounter list: the original's copies of the other levels are its files'");
+                    }
+                }
                 MscRandom.BeforeDraw = null;
                 var actual = input.Clone();
                 ImageOverlay.Extract(tactics.Battle, actual);
@@ -676,6 +932,37 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                     actual.Far[at] = b;
                 }
                 var expected = input.Expected(job.Orig);
+                if (tactics.Battle.FloorShown != (sbyte)input.Ds[0x11CA])
+                {
+                    // another level is shown now: the original loaded its image from its own copies, the rewrite from its battlefield's (the levels not shown are not carried)
+                    Array.Copy(expected.Far, 0, actual.Far, 0, TacticsOverlay.FloorSize);
+                    // and its encounter list (20A5:47EE, DS:D6CC records), which level_switch loads from the level's file through DS:A895
+                    var records = Math.Max(expected.Ds[TacticsOverlay.ActivationCount], actual.Ds[TacticsOverlay.ActivationCount]);
+                    Array.Copy(expected.Far, TacticsOverlay.ActivationsAt, actual.Far, TacticsOverlay.ActivationsAt,
+                        Math.Min(TacticsOverlay.ActivationSize * records, actual.Far.Length - TacticsOverlay.ActivationsAt));
+                    actual.Ds[TacticsOverlay.ActivationCount] = expected.Ds[TacticsOverlay.ActivationCount];
+                }
+                {
+                    // the missile records past the count are leftovers: missile_remove (R018+0x029C..0x02B3) moves all sixteen records after the
+                    // one removed down, and every reader stops at the count (DS:C180)
+                    var from = TacticsOverlay.MissilesAt + TacticsOverlay.MissileSize * Math.Min((int)expected.Ds[TacticsOverlay.MissileCount], TacticsOverlay.MaxMissiles);
+                    var to = TacticsOverlay.MissilesAt + TacticsOverlay.MissileSize * TacticsOverlay.MaxMissiles;
+                    if (expected.Ds[TacticsOverlay.MissileCount] == actual.Ds[TacticsOverlay.MissileCount] && from < to)
+                    {
+                        Array.Copy(expected.Ds, from, actual.Ds, from, to - from);
+                    }
+                }
+                {
+                    // the encounter records past the count are not the level's: every reader stops at DS:D6CC, a level switch leaves the staging
+                    // buffer's (DS:A896) leftovers of the last level loaded there, and the draw's scratch lies past the longest lists (20A5:4C62..)
+                    var records = Math.Max(expected.Ds[TacticsOverlay.ActivationCount], tactics.LevelSwitches != switches ? 0 : input.Ds[TacticsOverlay.ActivationCount]);
+                    var from = TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * records;
+                    var to = Math.Min(TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * 40, actual.Far.Length);
+                    if (from < to)
+                    {
+                        Array.Copy(expected.Far, from, actual.Far, from, to - from);
+                    }
+                }
                 var diffs = ImageOverlay.Differences(expected, actual, input, int.TryParse(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_DIFFS"), out var most) ? most : 8, context.Outputs, context.FarOutputs);
                 if (value is { } v && (ushort)v != (ushort)job.Orig.Ax)
                 {

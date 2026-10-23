@@ -41,7 +41,7 @@ wait:30
 key:3
 wait:30
 key:s
-wait:30
+wait:300
 key:f1
 wait:30
 key:esc
@@ -107,7 +107,7 @@ key:r
 wait:30
 state:s40
 key:s
-wait:30
+wait:300
 key:3
 wait:30
 key:5

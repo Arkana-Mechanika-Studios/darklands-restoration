@@ -57,6 +57,8 @@ public sealed partial class TacticalBattle
         }
         FollowsActive = true;
         Battle.ActiveMember = i;
+        // R016+0x0A72..0x0A7D: DS:D6EA = the member's flee bit (flags 0x1000), after order mode was left
+        _fleeBefore = (c.Flags & TacticalFlags.Following) != 0;
         if (c.Floor != Battle.FloorShown)
         {
             SwitchLevel(c.Floor);
@@ -341,12 +343,15 @@ public sealed partial class TacticalBattle
     /// <returns>False when the move is refused (blocked).</returns>
     // orig: combat_mouse R014+0xB576 (19CD:0006) draft (the group move) and group_move R014+0xC75C (19CD:11EC)
     // draft (outline, unverified per spec D §7.4)
+    // C: checked against the asm (R014+0xB8E8..0xBB4C): DS:DA4B = clock + 60 first; each path found shows the free ground cursor (DS:D845 =
+    // 0xFE), a refusal the blocked one (0xFD) with the sound 0x12 (R014+0x4694)
     public bool GroupMove(MapPoint to)
     {
         if (MarchingOrder.Count == 0)
         {
             return false;
         }
+        _groupCursorUntil = (ushort)(Clock + 60);
         var lead = MarchingOrder[0];
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
@@ -367,11 +372,13 @@ public sealed partial class TacticalBattle
             if (FindPath(lead))
             {
                 GivePath(lead);
+                Shown(free: true);
                 head.Action = CombatAction.Walk;
                 head.Target = -1;
                 head.PathIndex = 0;
                 return true;
             }
+            Shown(free: false);
             _view.Sound(0x12); // orig: R014+0x4694 (0E76:4694) matched: sound 0x12, a refused order
             head.Moving = false;
             return false;
@@ -385,10 +392,19 @@ public sealed partial class TacticalBattle
             }
             if (!FindPath(n))
             {
-                Refuse();
+                Shown(free: false);
+                _view.Sound(0x12);
+                for (var i = 0; i < Combatant.PartySlots; i++)
+                {
+                    if (Battle[i].IsAble)
+                    {
+                        Battle[i].Moving = false;
+                    }
+                }
                 return false;
             }
             GivePath(n);
+            Shown(free: true);
             c.Action = CombatAction.Walk;
             c.PathIndex = 0;
         }
@@ -396,7 +412,6 @@ public sealed partial class TacticalBattle
 
         void Refuse()
         {
-            _view.Sound(0x12);
             for (var i = 0; i < Combatant.PartySlots; i++)
             {
                 if (Battle[i].IsAble)
@@ -404,6 +419,14 @@ public sealed partial class TacticalBattle
                     Battle[i].Moving = false;
                 }
             }
+            Shown(free: false);
+            _view.Sound(0x12);
+        }
+
+        void Shown(bool free)
+        {
+            CursorTarget = free ? -2 : -3;
+            Cursor = free ? OrderCursor.Ground : OrderCursor.GroundBlocked;
         }
     }
 
@@ -437,9 +460,10 @@ public sealed partial class TacticalBattle
                 }
                 // C: with a path shorter than 3 steps the original reads before the path buffer; clamped here.
                 int At(int k) => FacingOfDirection[(p[Math.Max(0, n - k)] >> 4) % 10];
+                // R014+0xC854..0xC8B9: a = root 0410:005A(At(2), last) = (At(2) - last) & 7; dir = root 0410:004C(last, (2a + 1) / 3) = (last + ..) & 7
                 var last = At(1);
-                var a1 = (At(2) + last) & 7;
-                dir = (last - (a1 * 2 + 1) / 3) & 7;
+                var a1 = (At(2) - last) & 7;
+                dir = (last + (a1 * 2 + 1) / 3) & 7;
             }
             var (ox, oy) = (0, 0);
             if (InAnyBox(to))
@@ -447,7 +471,8 @@ public sealed partial class TacticalBattle
                 (ox, oy) = (SecondFileX[dir] / 2, SecondFileY[dir] / 2);
             }
             var at = new MapPoint(to.X + ox, to.Y + oy);
-            ok = Formation(at, dir) || Formation(at, (dir + 1) & 7) || Formation(at, (dir - 1) & 7);
+            // R014+0xCA2C..0xCA79: the direction, then one less (root 0410:005A(dir, 1)), then one more (root 0410:004C(dir, 1))
+            ok = Formation(at, dir, to) || Formation(at, (dir - 1) & 7, to) || Formation(at, (dir + 1) & 7, to);
         }
         for (var k = 0; k < Combatant.PartySlots; k++)
         {
@@ -505,9 +530,10 @@ public sealed partial class TacticalBattle
         return false;
     }
 
-    /// <summary>The marching order in two files behind the point; every spot free and in sight of the point.</summary>
+    /// <summary>The marching order in two files behind the point; every spot free and in sight of the point clicked.</summary>
     // orig: R014+0xCBBA (19CD:164A) draft; R014+0xCC84 (19CD:1714) draft
-    private bool Formation(MapPoint at, int dir)
+    // C: the line of sight starts at the point clicked (DS:E0A5 / DS:E0A3, set at R014+0xC9FD / 0xCA13), not at the shifted point.
+    private bool Formation(MapPoint at, int dir, MapPoint clicked)
     {
         for (var k = 0; k < MarchingOrder.Count; k++)
         {
@@ -516,7 +542,7 @@ public sealed partial class TacticalBattle
             var odd = (k & 1) == 1;
             c.Position = new MapPoint(FileX[dir] + row * RankX[dir] + at.X + (odd ? SecondFileX[dir] : 0),
                 FileY[dir] + row * RankY[dir] + (odd ? SecondFileY[dir] : 0) + at.Y);
-            if (!Map.Collides(c.Index, c.Position.X, c.Position.Y).IsFree || Map.LineBlocked(at, c.Position) != 0)
+            if (!Map.Collides(c.Index, c.Position.X, c.Position.Y).IsFree || Map.LineBlocked(clicked, c.Position) != 0)
             {
                 return false;
             }

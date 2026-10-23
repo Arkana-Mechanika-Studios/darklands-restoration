@@ -94,3 +94,6 @@ lists the open items of `docs/faithfulness/branches-missed.csv` that the new cov
 Use it instead of an ad-hoc script: it streams every `cov-*.jsonl` (recursively) line by line into one merged bytearray/edge set per record
 (about 60 MB for the whole 3.2 GB of `branches-work`, about 2 minutes), skips excluded runs, refuses to start under 2 GB free memory
 (`--min-free-gb`) and aborts past 3 GB of its own memory (`--max-rss-gb`). The item mapping is `battle_calls_measure.Items.reached` (cfg.py, as block_coverage.py).
+It is the only gain tool; there is no separate per-folder script and no helper folder to pass. For one folder's own hits give it as `--new`
+with no `--baseline`; for the items only that folder reaches give the other folders as `--baseline`. (It replaces `measure_new_outcomes.py`,
+which needed a git-ignored `cov.py`; on five folders the old and the new numbers were identical.)

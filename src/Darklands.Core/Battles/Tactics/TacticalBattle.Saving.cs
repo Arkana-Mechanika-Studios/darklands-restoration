@@ -455,6 +455,7 @@ public sealed partial class TacticalBattle
         // C: R014+0x02FF / 0x0307 as for any battle: floor_view_draw(−1) around the centre kept (DS:C866 / DS:C886), combat_draw
         _view.MapChanged();
         Effects.Drawn(_view);
+        RemoveArrivedMissiles();
         RefreshTargetCursor();
         _view.SetUpTime(2);
         NextTickAt = (ushort)(Clock + TickLength);

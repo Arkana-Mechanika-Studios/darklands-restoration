@@ -27,6 +27,7 @@
     <Project Path="tests/Darklands.Persistence.Tests/Darklands.Persistence.Tests.csproj" />
     <Project Path="tests/Darklands.Platform.Tests/Darklands.Platform.Tests.csproj" />
     <Project Path="tests/Darklands.Rendering.Tests/Darklands.Rendering.Tests.csproj" />
+    <Project Path="tests/Darklands.WorldCalls.Tests/Darklands.WorldCalls.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/tune/tune.csproj" />

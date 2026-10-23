@@ -409,7 +409,10 @@ public sealed class DarklandsGame
         // orig: music_play(5) R043+0x09AE: the AX of driver command 5 (or of the stop with music off), which $Shell00 keeps in DS:9C3D
         context.MusicPlaying = _ui.MusicPlaying;
         context.SavedMusic = _ui.SavedMusic;
-        var screens = new GameScreens2(_ui, panel, state, World, new GameScreens(_ui, panel, state, new ScreensUnavailable(screen)));
+        var shops = new GameScreens(_ui, panel, state, new ScreensUnavailable(screen));
+        var screens = new GameScreens2(_ui, panel, state, World, shops);
+        // the barter, item store and loot screens open the character sheet from their party column
+        shops.Sheet = screens.CharacterSheet;
         context.Screens = screens;
         var hotKeys = new HotKeys(_ui, state, Options)
         {
