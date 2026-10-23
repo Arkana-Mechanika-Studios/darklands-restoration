@@ -18,7 +18,7 @@ switchable data-safety fixes below. No known divergence, strong evidence, publis
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 69% of the branch outcomes have run in a comparison with the original, and the
+implements, about 71% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
 are the battlefield generators, the rules and the battles; the least covered are the card scripts and the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
@@ -94,39 +94,39 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,464 functions the oracles enter | 81.4% (46,690 / 57,347) | 70.6% (30,318 / 42,950) |
-| **every function the C# implements (9,281)** | | **69.0% (29,523 / 42,790)** |
+| the 8,469 functions the oracles enter | 82.9% (47,596 / 57,403) | 72.7% (31,261 / 43,006) |
+| **every function the C# implements (9,281)** | | **71.2% (30,457 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 29,523 against 30,318 exercised. By area:
+differ slightly on the resident code, hence 30,457 against 31,261 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 322 / 358 | 1,910 / 2,590 | 74% |
+| rules | 323 / 358 | 1,912 / 2,590 | 74% |
 | battles (tactical combat) | 254 / 314 | 5,381 / 7,516 | 72% |
 | travel (overland map) | 23 / 24 | 621 / 982 | 63% |
-| screens (inventory, barter, creation ...) | 177 / 202 | 3,516 / 6,070 | 58% |
+| screens (inventory, barter, creation ...) | 181 / 202 | 4,421 / 6,070 | 73% |
 | resident code | 131 / 160 | 923 / 1,644 | 56% |
-| card engine | 34 / 36 | 380 / 686 | 55% |
-| card scripts | 6,860 / 7,949 | 9,715 / 14,616 | 66% |
+| card engine | 34 / 36 | 406 / 686 | 59% |
+| card scripts | 6,860 / 7,949 | 9,716 / 14,616 | 66% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`): 69.8% (29,863 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`): 72.0% (30,797 / 42,790). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the keyboard menu, the hot keys, the
 party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-23,289 items of the functions the oracles enter were never exercised: 2,334 are justified in
+21,552 items of the functions the oracles enter were never exercised: 2,321 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 20,955 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 19,231 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 9,100), the screens (about 4,300), the battles (about 2,900), the
+lie in the card scripts (about 9,100), the battles (about 2,900), the screens (about 2,600), the
 battlefield generators (about 2,100), the rules (about 650) and the overland map (about 650). A sweep
 of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
 tile contents and random draws, not inputs a sweep sets.
@@ -237,6 +237,12 @@ from a saved game in Pressburg:
 | dungeon-mine-doors, dungeon-mine-orders, dungeon-mine-group | a fight at the Rammelsburg mine: doors, single file, the attack orders, moving the party as a group | identical, records at every pass included |
 | sheet-dksave0 | the character sheet of a member who wears no armour | identical (the sheet frees the same picture block twice, R031+0x0B22 .. +0x0C8C, which DOS allows; the emulator now frees as DOS does, where it had stopped the original with its "Buffer dealloc error") |
 
+Generated sessions (`tools/oracle/gen_screen_sessions.py`: seeded walks of keys and pointer clicks over
+the sheet, the pack, the saints, barter and the stores, the camp, the roster, the party menu and the
+generator, from the start screen or a saved game; `gen-*.steps`) add 103 more sessions that agree
+throughout: about 1,800 outcomes, the screens from 58% to 73%. The generated sessions that differ are
+being judged.
+
 Only the sessions that agree throughout count as coverage.
 
 The oracles record the original's side (`tools/oracle/recording.py`) and replay it against the C# for
@@ -244,7 +250,7 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-104 runs, all agreeing. The last open lead before these, a group move at
+104 runs, all agreeing (and 207 with the generated sessions, replayed). The last open lead before these, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
