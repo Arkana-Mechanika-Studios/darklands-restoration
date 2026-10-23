@@ -43,6 +43,9 @@ public sealed class CharacterGeneratorScreen
     private int _bubbleFrame;
     private long _frames;
 
+    /// <summary>The click that closed a list box: the button is still down when the generator's loop looks again.</summary>
+    private PlayerAction? _pending;
+
     /// <summary>The list row under the mouse (DS:43EE, −1 at first; it stays between runs in the original).</summary>
     private static int s_hovered = -1;
 
@@ -73,7 +76,8 @@ public sealed class CharacterGeneratorScreen
         {
             AnimateBubble();
             Hover();
-            var action = _ui.Poll();
+            var action = _pending ?? _ui.Poll();
+            _pending = null;
             if (action is not { } a)
             {
                 _ui.Idle();
@@ -498,9 +502,18 @@ public sealed class CharacterGeneratorScreen
 
     private string SaintName(int s) => s < _world.Items.Saints.Count ? _world.Items.Saints[s].FullName : "";
 
+    // orig: R037+0x7F06 / R037+0x802A: `while (!key_pressed() && !(mouse_buttons & 1));` then a key is taken (get_key), a press is not:
+    // orig: after R037+0x4B9E the loop of R037+0x4664 finds the button still down and takes the press as a click where the pointer is
+    // UNCERTAIN: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time: the C#
+    // redraws at once, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the first steps,
+    // not always that of the occupation list)
     private void WaitThenRedraw()
     {
-        _ui.WaitForAction();
+        var closing = _ui.WaitForAction();
         DrawAll();
+        if (closing.IsLeftClick && _ui.Mouse.Left)
+        {
+            _pending = closing;
+        }
     }
 }

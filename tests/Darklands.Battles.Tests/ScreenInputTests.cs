@@ -186,4 +186,43 @@ public sealed class ScreenInputTests
         // any other key closes it (the default case R031+0x1C66)
         Assert.Equal((10, false), Sheet(Keys.Down, Keys.Down, Keys.Down, Keys.Down, Keys.Down, Keys.Enter, 0x326D, Keys.Up)!.Value);
     }
+
+    // orig: R037+0x01C0 (a press on the party column, x < 0x3C, opens member_sheet for slot y / 0x28 when the slot is filled)
+    [Fact]
+    public void TheCreationMenuOpensTheSheetOfAMembersFigure()
+    {
+        (int, MouseState)[] frames =
+        [
+            Up(5, 5), Key(Keys.ForCharacter('a')), Up(5, 5), Key(Keys.Down), Up(5, 5), Key(Keys.ForCharacter('a')), Up(5, 5),
+            // the second member's figure (slot 1: y 0x28..0x4F), then the sheet's name box: that member becomes the leader
+            Held(20, 50), Held(20, 50), Up(20, 50), Up(20, 50), Held(160, 6), Held(160, 6), Up(160, 6), Up(160, 6),
+            Key(Keys.Escape), Up(5, 5), Up(5, 5), Key(Keys.ForCharacter('b')), Up(5, 5),
+        ];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, world))
+        {
+            return;
+        }
+        var game = new CharacterCreationScreen(ui, world, () => 1).Run();
+        Assert.NotNull(game);
+        Assert.Equal(1, game.Party.LeaderIndex);
+    }
+
+    // orig: R037+0x7F06 (the formulae box) waits for a key or the button; a press closes it and stays down, so R037+0x4664's loop takes it
+    // as a click: here on the list's first row ("Begin childhood"), which leaves the first step
+    [Fact]
+    public void AClickThatClosesTheGeneratorsListBoxActsWhereItIs()
+    {
+        (int, MouseState)[] frames = [Up(5, 5), Up(5, 5), Key(Keys.ForCharacter('2')), Up(5, 5), Held(100, 0x30), Held(100, 0x30), Up(100, 0x30), Up(100, 0x30)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, world))
+        {
+            return;
+        }
+        var data = Darklands.Content.Formats.Characters.CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE"));
+        var creation = new Darklands.Core.Characters.Creation.CharacterCreation(data.Tables, world.ItemDefinitions,
+            new Darklands.Core.Randomness.MscRandom(1), 1, () => 1);
+        Assert.Throws<QuitGameException>(() => new CharacterGeneratorScreen(ui, data, world, creation).Run());
+        Assert.Equal(Darklands.Core.Characters.Creation.CreationStage.FamilyBackground, creation.Stage);
+    }
 }

@@ -14,7 +14,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SESSIONS_DIR = HERE / "lockstep-sessions"
 STATE_EVERY = 8
-NO_STATES = {"party"}       # the party menu of the start screen has no game to write until Begin the Adventure
+NO_STATES = {"party", "party2"}       # the party menu of the start screen has no game to write until Begin the Adventure
 
 
 def cut(session: str, until_state: str) -> str:
@@ -281,6 +281,64 @@ def party_alphabet(rng: random.Random) -> list[str]:
     return ["click:%d,%d" % (rng.randrange(0, 320), rng.randrange(0, 200))]
 
 
+def party2_alphabet(rng: random.Random) -> list[str]:
+    """The party menu again, its clicks kept on the menu: the command rows 1..8 (Add .. Kill; row 0 opens the generator, 9 begins the game, 10
+    returns to the start screen) and the character list (R037+0x0000's two click areas); no click on the party column (x < 0x3C opens the
+    member's sheet, R037+0x01C0: the sheet families walk it)."""
+    r = rng.random()
+    if r < 0.30:
+        return ["key:" + rng.choice(ARROWS)]
+    if r < 0.84:
+        return ["key:" + rng.choice("ahsd123")]
+    if r < 0.88:
+        return ["key:" + rng.choice(["enter", "space", "tab", "pgup", "pgdn", "home", "end"])]
+    if r < 0.95:
+        return ["click:%d,%d" % (rng.randrange(0x47, 0xC8), 0x1A + 15 * rng.randrange(1, 9) + rng.randrange(0, 14))]
+    return ["click:%d,%d" % (rng.randrange(0xC6, 0x138), rng.randrange(0x15, 0xB4))]
+
+
+def roster2_alphabet(rng: random.Random) -> list[str]:
+    """The inn roster again, its clicks kept on the screen: the command rows 1..6 (row 0 opens the generator, row 7 returns to the inn) and the
+    character list (R038+0x0000's two click areas). No arrows: with the highlight on a party member, R038+0x02F8 loads the figure picture named by
+    the figure list's entry of the ROW, an empty name past the list's end, and the original stops on the missing file (PICS/SMALL.PIC, exit 99:
+    PartyRosterScreen's divergence); the list clicks move the highlight without a picture."""
+    r = rng.random()
+    if r < 0.40:
+        return ["click:%d,%d" % (rng.randrange(0xC6, 0x138), rng.randrange(0x15, 0xB4))]
+    if r < 0.70:
+        return ["key:" + rng.choice("ahis123dx")]
+    if r < 0.76:
+        return ["key:" + rng.choice(["enter", "space", "tab", "pgup", "pgdn"])]
+    if r < 0.88:
+        return ["click:%d,%d" % (rng.randrange(0x47, 0xC8), 0x2E + 15 * rng.randrange(1, 7) + rng.randrange(0, 14))]
+    return ["click:%d,%d" % (rng.randrange(0xC6, 0x138), rng.randrange(0x15, 0xB4))]
+
+
+def create3_alphabet(rng: random.Random) -> list[str]:
+    """create2 without the inputs that stall the original-side tester: R037+0x43E6 (the name boxes that list commands 4 and 5 and the keys e and
+    c open in the first step) reads keys only, so a click given while one is up is never read and the tester waits for it: every list click
+    is followed by Enter (no case of R037+0x4BEE; it closes a box that opened), and the typed letters have no command of their own (so they do
+    nothing when no box opened). R is left out (it leaves the generator from the first step)."""
+    r = rng.random()
+    if r < 0.30:
+        return ["click:%d,%d" % (rng.randrange(0x42, 0xAD), 0x2D + 0x0B * rng.randrange(0, 14) + 3), "key:enter"]
+    if r < 0.42:
+        return ["click:%d,%d" % (rng.randrange(0xC6, 0xEA), 0x12 + 8 * rng.randrange(0, 6) + 3)]
+    if r < 0.52:
+        return ["click:%d,%d" % (rng.randrange(0xF7, 0x13A), 0x12 + 8 * rng.randrange(0, 22) + 3)]
+    if r < 0.56:
+        return ["click:%d,%d" % (rng.randrange(0xC5, 0xEA), rng.randrange(0x60, 0xA4))]
+    if r < 0.60:
+        return ["click:%d,%d" % (rng.randrange(0xAF, 0xE9), rng.choice([0xAC, 0xBC]))]
+    if r < 0.74:
+        return ["key:" + rng.choice(["up", "down", "left", "right"])]
+    if r < 0.88:
+        return ["key:" + rng.choice("gms")]
+    if r < 0.95:
+        return ["key:" + rng.choice("ec")] + ["key:" + rng.choice("adfhijlopqtuvwxyz") for _ in range(rng.randrange(0, 5))] + ["key:enter"]
+    return ["key:" + rng.choice("23"), "key:esc"]
+
+
 def create_alphabet(rng: random.Random) -> list[str]:
     """The character generator (R037+0x4BEE): letters, list rows by click, typed names."""
     r = rng.random()
@@ -339,6 +397,9 @@ SCREENS = {
     "wild": ("DKSAVE99.SAV", lambda: cut("camp-wild-brew", "camp"), camp_alphabet, ["key:l", "wait:200"]),
     "roster": ("DKSAVE0.SAV", lambda: cut("roster-moves", "roster"), roster_alphabet, ["key:esc", "wait:200"]),
     "party": (None, lambda: "key:c\nwait:5", party_alphabet, ["key:a", "wait:30", "key:b", "wait:30"]),
+    "party2": (None, lambda: "key:c\nwait:5", party2_alphabet, ["key:a", "wait:30", "key:b", "wait:30"]),
+    "roster2": ("DKSAVE0.SAV", lambda: cut("roster-moves", "roster"), roster2_alphabet, ["key:esc", "wait:200"]),
+    "create3": ("DKSAVE8.SAV", lambda: cut("roster-create2", "generator"), create3_alphabet, ["key:esc", "wait:200"]),
     "create2": ("DKSAVE8.SAV", lambda: cut("roster-create2", "generator"), create2_alphabet, ["key:esc", "wait:200"]),
     "create": ("DKSAVE8.SAV", lambda: cut("roster-create2", "generator"), create_alphabet, ["key:esc", "wait:200"]),
 }
