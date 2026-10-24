@@ -176,11 +176,11 @@ public static class GameCommands
         _ => throw new ArgumentException("invalid param?"),
     };
 
-    private static string DirectionToLocationString(GameState s, int curX, int curY) {
+    private static string DirectionToLocationString(GameState s, int locX, int locY) {
 
         var ( currentX, currentY ) = s.Here != null ? ( s.Here.X, s.Here.Y ) : ( s.MapPosition.X, s.MapPosition.Y );
 
-        var directionToLocation = TextVariables.DirectionFromHere(currentX, currentY, curX, curY);
+        var directionToLocation = TextVariables.DirectionFromHere(currentX, currentY, locX, locY);
 
         return directionToLocation;
     }
@@ -226,8 +226,8 @@ public static class GameCommands
         var i = 0;
         foreach (var qEvent in resolvedQuestOwners) 
         { 
-            var home = qEvent.Location;
-            lines.Add($"Reolved quest {i} : Collect reward in the city of {s.Locations[home].Name} in direction of {DirectionToLocationString(s, s.Locations[home].X, s.Locations[home].Y)}"); 
+            var location = qEvent.Location;
+            lines.Add($"Reolved quest {i} : Collect reward in the city of {s.Locations[location].Name} in direction of {DirectionToLocationString(s, s.Locations[location].X, s.Locations[location].Y)}"); 
         }
 
         return lines;
