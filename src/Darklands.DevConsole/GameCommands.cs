@@ -185,9 +185,9 @@ public static class GameCommands
         return directionToLocation;
     }
 
-    private static string NearestCityName(GameState s, int curX, int curY) {
+    private static string NearestCityName(GameState s, int locX, int locY) {
         
-        var nearestCity = LocationRules.NearestCity(s, curX, curY);
+        var nearestCity = LocationRules.NearestCity(s, locX, locY);
 
         var nearestCityInfo = s.Locations[nearestCity];
 
