@@ -21,7 +21,7 @@ latest generated sessions found are leads not yet judged, listed there too. Wher
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 74% of the branch outcomes have run in a comparison with the original, and the
+implements, about 75% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
 are the battlefield generators, the rules and the battles; the least covered are the card scripts and the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
@@ -97,37 +97,37 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,525 functions the oracles enter | 84.7% (48,935 / 57,788) | 75.2% (32,594 / 43,332) |
-| **every function the C# implements (9,281)** | | **74.2% (31,767 / 42,790)** |
+| the 8,528 functions the oracles enter | 84.8% (49,068 / 57,854) | 75.4% (32,735 / 43,396) |
+| **every function the C# implements (9,281)** | | **74.6% (31,907 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 31,767 against 32,594 exercised. By area:
+differ slightly on the resident code, hence 31,907 against 32,735 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 333 / 358 | 2,089 / 2,590 | 81% |
-| battles (tactical combat) | 271 / 314 | 5,996 / 7,516 | 80% |
-| travel (overland map) | 23 / 24 | 681 / 982 | 69% |
-| screens (inventory, barter, creation ...) | 190 / 202 | 4,730 / 6,070 | 78% |
-| resident code | 137 / 160 | 1,027 / 1,644 | 62% |
-| card engine | 35 / 36 | 438 / 686 | 64% |
-| card scripts | 6,860 / 7,949 | 9,717 / 14,616 | 66% |
+| rules | 333 / 358 | 2,090 / 2,590 | 81% |
+| battles (tactical combat) | 274 / 314 | 6,094 / 7,516 | 81% |
+| travel (overland map) | 23 / 24 | 684 / 982 | 70% |
+| screens (inventory, barter, creation ...) | 190 / 202 | 4,748 / 6,070 | 78% |
+| resident code | 137 / 160 | 1,041 / 1,644 | 63% |
+| card engine | 35 / 36 | 443 / 686 | 65% |
+| card scripts | 6,860 / 7,949 | 9,718 / 14,616 | 66% |
+| other | 10 / 12 | 75 / 162 | 46% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`): 75.0% (32,096 / 42,790). Most of what is open is reachable in
-play and not yet driven by an oracle (in the resident code: the keyboard menu, the hot keys, the
-party panel, the intro).
+and listed in `unreachable.csv`): 75.3% (32,236 / 42,790). Most of what is open is reachable in
+play and not yet driven by an oracle (in the resident code: the party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-19,591 items of the functions the oracles enter were never exercised: 2,328 are justified in
+19,447 items of the functions the oracles enter were never exercised: 2,327 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 17,263 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 17,120 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
 lie in the card scripts (about 9,100), the screens (about 2,100), the battles (about 2,000), the
 battlefield generators (about 2,100), the rules (about 650) and the overland map (about 650). A sweep
@@ -268,10 +268,19 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-104 runs, all agreeing (and 529 with the generated sessions, replayed). The last open lead before these, a group move at
+578 fights and sessions (37 fights, 541 whole-game sessions), all agreeing: a full live pass, with the tester's original side changed (the right mouse button, F6 and F10 delivered to the hot keys' look), then a replay identical to it, 13,855 files compared, the only differing files being the 11 right-button sessions whose steps were settled in this batch). The last open lead before these, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
+
+The tester now drives the right mouse button (press, hold, release; the driver's button state and counters
+are set as the original's mouse driver sets them) and delivers F6 and F10 to the hot keys' look. The
+sessions it added: 34 with the right button, 9 of hurt, away and cached members, 4 of the menu and 2 of
+the map with F10. They found three divergences in the C#, now fixed and checked against the original:
+card menus take Up and Down only while the pointer is over a line and ignore the digit keys (R043+0x1BD2,
+DS:ED6C; the old keyboard behaviour stays as an option, off by default); the character generator's loop
+(R037+0x4664) and its waits run neither the menu bar nor the hot keys; party members not placed in a
+battle (unconscious or away) keep their record's place and facings (R002+0x1830).
 
 The emulator loads the original as DOS does: the PSP at 0813 and the root image at 0823 (where DOSBox-X
 puts DARKLAND.EXE), the EXE's relocation items applied, above a real vector table and BIOS data area, so
@@ -367,7 +376,7 @@ reproduces (each can be fixed by its own `OriginalBehaviour` flag), 324 register
 909 dormant branches kept as the original has them, 58 uncertain readings (of 301: 234 were
 naming only, 8 settled by an agreeing oracle or the code, now closed).
 
-Open items (2026-10-23), listed honestly. The three reachable original bugs listed before are now
+Open items (2026-10-24), listed honestly. The three reachable original bugs listed before are now
 reproduced behind fix flags (faithful by default; none damages a saved game, so none is in `DataSafe`):
 with nobody selected the stairs key copies entry -1 of two member tables (R016+0x014E; DS:C77D = DS:C8B1)
 and Esc writes the flee bit into the pause byte DS:A695, which can become 0x11, neither paused nor running
@@ -384,6 +393,12 @@ callers never pass, R029+0x5537 / +0x55CD; the uprising outcome outside a city, 
 After a menu-bar sub-menu has been opened, a party prayer in the original scans the last battle's leftover
 records (DS:C0A0 + 6i, never saved) for a quality equal to DS:9C2D, a DOS segment: not deterministic game
 state, kept as a divergence (D-8bb04c).
+Open on the tester's side: the emulated DOS gives each of a battle sheet's seven pictures its own memory
+block where the real driver uses one, so six blocks leak each time a sheet opens, and two gate sessions
+are trimmed before the resulting out-of-memory exit. A tester fix is prepared and lands with the next full
+live pass; under it one click inside the marching-order box (the original ignores it, the C# takes it) is
+still to be judged. The original exits (code 99) on the roster's arrow keys when a member stands on row 4
+or later of a long roster (a missing picture); the C# documents this as a deliberate difference.
 
 The last round (2026-10-23): a saved game made in a battle (the mines of DKSAVE99: save, reload, save
 again) agrees with the original's, the .BSV block by block (`savemid-mine`); it found five divergences,
@@ -403,11 +418,7 @@ A second round of generated sessions (225 more that agree: the menu bar in its k
 on the map and in a battle, the quit paths, the gate battle's orders, potions and packs on saved games
 edited for the purpose (`tools/oracle/synth_saves.py`), the party menu, the alchemist's bench, the cache,
 the camp, the sheet, the generator) took the resident code from 57% to 62% and the screens from 75% to
-78%. Its differing sessions are leads not yet judged: Alt-M in the menu bar's keyboard mode (the C#
-toggles the music, the original ignores the key); an unconscious member in the gate battle (a draw on the
-first unpaused pass in the original, not in the C#); an away member's record bytes after a battle; the gate
-battle with Alt toggles (clock 1550); the cache's G after g, Left, B; two map sessions with F10. The right
-mouse button cannot be scripted yet.
+78%. Its differing sessions (Alt-M in the menu bar's keyboard mode, an unconscious member in the gate battle, an away member's record bytes after a battle, the gate battle with Alt toggles, the cache's G after g, Left, B, two map sessions with F10) were settled in batch 13: the unconscious and the away member were a real difference (fixed, R002+0x1830); Alt-M, the Alt toggles and the two F10 map sessions were tester artifacts (the scripts and the F6/F10 delivery fixed); the cache's G agrees, its heap pointer (R035+0x114A) being reported as undefined memory. All of them agree.
 
 The battle direct calls' old differences were the harness's (15 now agree, 13 unreachable states); all
 15,045 jobs that run agree.

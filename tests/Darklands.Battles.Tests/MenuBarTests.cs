@@ -99,6 +99,28 @@ public sealed class MenuBarTests
         Assert.Empty(log);
     }
 
+    /// <summary>
+    /// In the keyboard mode the keys go to root 0000:0DD2, which takes Alt-M and does nothing with it (its default case); outside the
+    /// mode root 0000:0CAA's case 0x3200 toggles the music.
+    /// </summary>
+    [Fact]
+    public void AltMInTheKeyboardModeIsTakenWithoutTogglingTheMusic()
+    {
+        var host = new FrameHost(Key(Keys.F10), Key(Keys.AltM), Key(Keys.Escape), Key(0), Key(Keys.AltM));
+        if (MusicTests.Start(host) is not var (ui, state, _, _))
+        {
+            return;
+        }
+        var keys = new HotKeys(ui, state, ui.Options);
+        ui.GameKey = keys.Handle;
+        ui.MenuBar = MenuBar.ForGame(ui, state, ui.Options, keys);
+        Assert.Null(ui.Poll());                 // F10: the mode, Alt-M taken in it, Esc leaves it
+        Assert.True(ui.Options.Music);
+        Assert.Null(ui.Poll());
+        Assert.Null(ui.Poll());                 // Alt-M outside the mode: the hot key
+        Assert.False(ui.Options.Music);
+    }
+
     [Fact]
     public void RightFromTheFirstEntrySkipsTheGreyedOne()
     {

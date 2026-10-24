@@ -21,8 +21,14 @@ public static class CombatantSetup
         c.ScreenPlace = (member.RosterLocation, member.OriginalRecord is { Length: >= 4 } r ? (short)(r[2] | r[3] << 8) : 0);
         // orig: the record is copied whole, so the destination (+0x08..+0x0B) and the aim delay (+0x1D) are what the saved game held (the last
         // fight's) until the member walks or aims, and a saved game written afterwards keeps them
+        // orig: so are the place (+0x04 / +0x06) and the facings (+0x19 / +0x1A): R002+0x1830 does not touch them and effect_start R014+0x4188 places
+        // the able members only, so an unconscious or away member stays where the saved game's record put it (the view follows it there when it
+        // is chosen, R014+0x1065, and a saved game written afterwards keeps it)
         if (member.OriginalRecord is { Length: > 0x1D } held)
         {
+            c.Position = new MapPoint((short)(held[0x04] | held[0x05] << 8), (short)(held[0x06] | held[0x07] << 8));
+            c.Facing = (sbyte)held[0x19];
+            c.SpriteFacing = (sbyte)held[0x1A];
             c.Destination = new MapPoint((short)(held[0x08] | held[0x09] << 8), (short)(held[0x0A] | held[0x0B] << 8));
             c.AimDelay = (sbyte)held[0x1D];
         }

@@ -76,7 +76,9 @@ public sealed class CharacterGeneratorScreen
         {
             AnimateBubble();
             Hover();
-            var action = _pending ?? _ui.Poll();
+            // orig: R037+0x4664's loop reads the left button (DS:6EF0 & 1) and the keys (root 047C:073D / 0744) itself: it does not call
+            //   root 0000:0000, so neither the menu bar (the right button) nor the hot keys run in the generator
+            var action = _pending ?? _ui.PollWithoutBar();
             _pending = null;
             if (action is not { } a)
             {
@@ -502,14 +504,14 @@ public sealed class CharacterGeneratorScreen
 
     private string SaintName(int s) => s < _world.Items.Saints.Count ? _world.Items.Saints[s].FullName : "";
 
-    // orig: R037+0x7F06 / R037+0x802A: `while (!key_pressed() && !(mouse_buttons & 1));` then a key is taken (get_key), a press is not:
+    // orig: R037+0x7F06 / R037+0x802A: `while (!key_pressed() && !(mouse_buttons & 1));` (no root 0000:0000: no menu bar, no hot keys) then a key is taken (get_key), a press is not:
     // orig: after R037+0x4B9E the loop of R037+0x4664 finds the button still down and takes the press as a click where the pointer is
     // UNCERTAIN: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time: the C#
     // redraws at once, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the first steps,
     // not always that of the occupation list)
     private void WaitThenRedraw()
     {
-        var closing = _ui.WaitForAction();
+        var closing = _ui.WaitForActionWithoutBar();
         DrawAll();
         if (closing.IsLeftClick && _ui.Mouse.Left)
         {

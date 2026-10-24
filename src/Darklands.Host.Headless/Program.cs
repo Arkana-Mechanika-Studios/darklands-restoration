@@ -13,7 +13,7 @@ using Darklands.Rendering;
 //
 // Input and output steps:
 //   key:<c>                      a character; key:enter|space|esc|tab|backspace|up|down|left|right|home|end|pgup|pgdn|f1..f6|f10|alto (Alt-O, the marching order)
-//   click:<x>,<y>                a left click; move:<x>,<y> moves the pointer (and drags a held button)
+//   click:<x>,<y>                a left click; rclick:<x>,<y> a right click; move:<x>,<y> moves the pointer (and drags a held button)
 //   ldown:<x>,<y> / lup          the left button held and let go; rdown:<x>,<y> / rup the right one (the menu bar)
 //   shift:on|off, ctrl:on|off    the modifier keys; kdown:<hex> / kup:<hex> a key's make or break scan code
 //   wait:<frames>                lets frames pass; shot:<name> saves <name>.png; rec:<n> saves the next n frames
@@ -567,6 +567,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             case "click":
                 var (x, y) = Point(value);
                 Mouse = new MouseState(x, y, MouseButtons.Left);
+                _idleFrames = 2;
+                break;
+            case "rclick":
+                // the right button pressed for two pumps as click does the left (tools/oracle/orig_side.py: the driver's right-button bit)
+                var (rx, ry) = Point(value);
+                Mouse = new MouseState(rx, ry, MouseButtons.Right);
                 _idleFrames = 2;
                 break;
             case "move":

@@ -140,6 +140,8 @@ public sealed class MusicTests
             ShowStartUp = false,
             SaveDirectory = Path.Combine(Path.GetTempPath(), "darklands-music-tests"),
         };
+        // the walk chooses the card lines by their digits: the keyboard convenience (the original's card menu ignores digits)
+        game.Ui.KeyboardCardMenus = true;
         game.Run();
         Assert.Equal(0, host.Left);
         // the inn's draw gave 10; the map's draw 0x13; command 5 on the map answers the street's 6, in the camp the map's 0x13

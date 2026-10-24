@@ -74,7 +74,7 @@ def capture(session: str, out: Path, game: str = str(GAME), recordings: str | No
     parts = {"kind": "session", "steps": steps, "budget": 2_000_000_000, "battle_trace": session in rerun_all.BATTLE_RECORDS,
              "battle_records": session in rerun_all.BATTLE_RECORDS, "no_wall_draws": False, **recording.common_parts(exe, game, ("orig_side",), save)}
     sparts, n = orig_side.session_start(steps)
-    ahead = next(((k, v) for k, v in list(steps)[n:] if k in ("key", "move", "click", "option")), None)
+    ahead = next(((k, v) for k, v in list(steps)[n:] if k in orig_side.INPUT_KINDS), None)
     snapshots = recording.Snapshot(recordings, "session", {**{k: parts[k] for k in recording.COMMON_KEYS}, **sparts, "ahead": ahead, "coverage": True})
     out.mkdir(parents=True, exist_ok=True)
     orig_side.Session = WorldCapture

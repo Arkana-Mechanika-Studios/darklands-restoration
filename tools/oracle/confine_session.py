@@ -12,7 +12,7 @@ import argparse
 import re
 from pathlib import Path
 
-INPUT = ("key", "click", "option", "move")
+INPUT = ("key", "click", "rclick", "rdown", "rup", "option", "move")
 
 
 def main():
@@ -25,7 +25,7 @@ def main():
     a = ap.parse_args()
     lines = Path(a.steps).read_text(encoding="utf-8").splitlines()
     log = Path(a.log).read_text(encoding="utf-8", errors="replace").splitlines()
-    taken = [l for l in log if re.match(r"(key|click|option|move) ", l)]
+    taken = [l for l in log if re.match(r"(key|click|rclick|rdown|rup|option|move) ", l)]
     died = any(l.startswith("end: program exit") for l in log)
     out, n, walk, kept, cut = [], 0, False, 0, False
     for l in lines:

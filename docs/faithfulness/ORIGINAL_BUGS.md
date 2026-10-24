@@ -509,7 +509,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
   original: `R004+0x1D90` (0E76:1D90, draft)  
   why: the original removes an empty group by shifting the later groups down but keeps testing the same (stale, zero) counter, so every group after the first empty one is removed too.
-- **B-d7cb44** `bug`, no fix flag - `src/Darklands.Core/Battles/CombatantSetup.cs:102` `CombatantSetup.BackToMember`  
+- **B-d7cb44** `bug`, no fix flag - `src/Darklands.Core/Battles/CombatantSetup.cs:108` `CombatantSetup.BackToMember`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: the record's +0x00 word is the roster's location of the character and the combatant's scrx: the battle's last frame leaves the member's screen x there (cbt_screen_pos R014+0x99F6), which the inn's roster later reads as a location.
 - **B-8fdd39** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:149` `CastleGenerator.PlaceParty`  

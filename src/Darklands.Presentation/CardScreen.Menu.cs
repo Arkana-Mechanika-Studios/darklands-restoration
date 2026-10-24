@@ -51,7 +51,7 @@ public sealed partial class CardScreen
     // orig: card_menu: combat_clock = 0, flush_keys, DS:EE41 = DS:EE42 = 0, menu_popup = DS:8DDE = 0, menu_highlight = -1; then per pass: menu_bar_run (GameUi), the party_icons_dirty redraw (not needed), a left press on a portrait -> 13a0, card_mouse (hover, box, hint, click), and a waiting key: Enter / Space with a highlighted line choose it (in the box: menu_member = opt / 4, menu_slot = opt % 4, the line is the main line the box belongs to, DS:A7BA[DS:A779]), Alt-Q quits (HotKeys), card_global_keys (HotKeys), Up / Down while the pointer is over a line move the highlight (wrapping) and the pointer onto it
     // C: a choice by Enter in the box sets menu_member and menu_slot but not menu_popup, so the card rates and runs the line as a plain choice.
     // C: Up from no highlight cannot happen in the original (the cursor keys need the pointer over a line, which card_mouse has just highlighted).
-    // DIVERGENCE: the pointer is not moved onto the line Up / Down select (the host owns it); the menu acts as if it were until the mouse moves. Added for hosts without a mouse: Up / Down also work while the pointer is off the lines (from no highlight: the first or last line), and the digits 1..9 choose the main list's lines in order.
+    // DIVERGENCE: the pointer is not moved onto the line Up / Down select (the host owns it); the menu acts as if it were until the mouse moves. With GameUi.KeyboardCardMenus (an interface convenience, off unless a host turns it on): Up / Down also work while the pointer is off the lines (from no highlight: the first or last line), and the digits 1..9 choose the main list's lines in order.
     // DORMANT: the battle option kind (-1, marker 0x06): highlighting it calls R043+0x29CE, which does nothing (its message "Enemy stats will be displayed here" is never shown); leaving it redraws the panel, as here.
     private int Select(List<OptionArea> areas, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint)
     {
@@ -248,7 +248,9 @@ public sealed partial class CardScreen
                     c.MenuSlot = option % 4;
                     return main.Lines[main.Highlight].Option;
                 }
-                if (a.Key is Keys.Up or Keys.Down)
+                // orig: R043+0x1CE5 (Up, 0x4800) and R043+0x1D46 (Down, 0x5000): only with DS:ED6C == 1, which card_mouse R043+0x21D4 sets when the
+                // pointer is inside a line of the list shown (R043+0x2232); else the key is dropped (R043+0x1DEB)
+                if (a.Key is Keys.Up or Keys.Down && (over || ui.KeyboardCardMenus))
                 {
                     var n = current.Lines.Count;
                     var from = current.Highlight;
@@ -265,8 +267,10 @@ public sealed partial class CardScreen
                     warped = (over ? mx : current.X + 1, line.Y + 2);
                     continue;
                 }
+                // orig: R043+0x1C77..0x1D46 compare the key with 0x1C0D, 0x3920, 0x1000, 0x4800 and 0x5000 only (R043+0x33C6 takes the F keys):
+                // a digit is dropped there; the convenience below is not the original's
                 var digit = (a.Key & 0xFF) - '1';
-                if (!InBox() && a.Key >= '1' && digit is >= 0 and < 9 && digit < main.Lines.Count)
+                if (ui.KeyboardCardMenus && !InBox() && a.Key >= '1' && digit is >= 0 and < 9 && digit < main.Lines.Count)
                 {
                     return main.Lines[digit].Option;
                 }

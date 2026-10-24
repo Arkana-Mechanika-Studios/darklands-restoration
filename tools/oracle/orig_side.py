@@ -40,7 +40,7 @@ CARD, HOLDRAND = 0xA772, 0x7B20     # the card being run; the random generator's
 SAVE_ITEM, LOAD_ITEM = 0x9920, 0x9934  # the Game menu's Save Game / Load Saved Game flags (1 on), which hot_keys obeys
 SAV_WRITE = (P(0x1462), 0x2ACE)        # R037+0x2ACE (comment): the saved-game writer
 MACHINE_STATE = ("resident", "trampolines", "call_stack", "mcbs", "dta", "scratch_sp", "count", "next_irq", "irqs", "pit_divisor",
-                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "waits", "pic_size", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases")
+                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "waits", "pic_size", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases", "rheld", "held_bit")
 IDLE_MS = 3000                      # and as long without a random number drawn, a card change or a step
 IDLE_POLLS = 2000
 BATTLE_PAUSE_PASSES = 296           # the battle's start pause (it waits for Space, the combat clock standing still): the key is given after this many passes at one
@@ -58,9 +58,13 @@ CALLBACKS = 0x07D6                  # a word the timer callback counts at every 
 ACTIVATIONS_AT = 0xDA4F     # DS word: the combat clock of the next activations check (R014+0x0332 sets it to the clock + 120)
 TIMER_CALLBACK = (P(0x047C), 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
 BATTLE_QUIET = 5_000_000            # bytes of code without the time-based timer after a battle pass began
+TRACK_POINT = BASE + 0x01D4         # root 0000:01D4, the bar's pointer tracking: the loop at 0000:0048 runs it each pass while the right button is held and polls no key,
+                                    # so a held right button (rdown .. rup) takes its next steps here
 POLL_POINTS = {BASE}                # root 0000:0000, the menu bar's handler: every screen's loop calls it each pass
 BWAIT_ACTUAL: list[int] = []         # per bwait step in script order: the passes the original really waited (run_original fills it; the C# waits as long)
 COMBATANTS, RECORD, COUNT = 0x9C55, 0x80, 13   # DS:9C55, 13 combatant records of 0x80 bytes
+INPUT_KINDS = ("key", "move", "click", "rclick", "rdown", "rup", "option")   # the script steps that are input (rclick: the right button as click does the left; rdown / rup hold it)
+RIGHT_UNREAD_MS = 2000               # a right click that no screen reads (a loop that asks the driver for left-button counts only) is let go this long after the press
 CLICK_MS = 300                      # how long a scripted click holds the left button                   # key polls with no key before the script's next key is due
 
 
@@ -128,11 +132,13 @@ class Session(Machine):
         self.script: list[tuple[str, str]] = []
         self.states: dict[str, bytes] = {}
         self.held = False
+        self.rheld = False               # rdown: the right button held until rup (the menu bar)
+        self.held_bit = 1                # the button bit of the click being held (1 left, 2 right)
         self.button_read = False
         self._dos_extended = 0
         self.press_ms = 0
         self._polled = None
-        for lin in POLL_POINTS:
+        for lin in POLL_POINTS | {TRACK_POINT}:
             self._hook_address(lin)
         self._ticked = False
         self.battle_passes = 0
@@ -199,9 +205,10 @@ class Session(Machine):
         """A click is let go CLICK_MS after the press once the game has read the button (DS:6EF0): held longer, a map pass aims at
         the same point of the view again and a menu acts on the press only; screens that wait for the release go on."""
         self.held = False
-        self.put_word(DS, MOUSE_BUTTONS, 0)
-        self.mouse[2] = 0
-        self.releases[0] += 1
+        bit = self.held_bit
+        self.put_word(DS, MOUSE_BUTTONS, 2 if self.rheld else 0)
+        self.mouse[2] = 2 if self.rheld else 0
+        self.releases[bit >> 1] += 1
         self.waits = 0
         self.idle_since = self.ms
 
@@ -212,6 +219,8 @@ class Session(Machine):
     def _mouse(self, fn: int):
         """INT 33h from the script's pointer: x in the driver's 640 columns (the game shifts it by DS:6EFA = 1)."""
         x, y, b = self.mouse
+        if self.held and fn in (3, 5, 6):
+            self.button_read = True         # the driver asked for the button state (a loop that polls it by INT 33h only, never DS:6EF0): the click is let go CLICK_MS after the press
         if fn == 0:
             self.set_reg("AX", 0xFFFF)
             self.set_reg("BX", 2)
@@ -281,7 +290,7 @@ class Session(Machine):
         if not paused and (self.waits < IDLE_POLLS or self.ms < self.idle_since + IDLE_MS):
             self.waits += 1
             return None
-        while self.script and self.script[0][0] not in ("key", "move", "click", "option"):
+        while self.script and self.script[0][0] not in INPUT_KINDS:
             kind, value = self.script.pop(0)
             if kind == "state":
                 self.capture(value)
@@ -291,26 +300,43 @@ class Session(Machine):
         if not self.script:
             raise Stop("script ended")
         kind, value = self.script[0]
-        if kind in ("move", "click", "option"):
+        if kind in INPUT_KINDS and kind != "key":
             self.script.pop(0)
             if kind == "option":
                 n = int(value)
                 if not 0 <= n < self.byte(DS, HOTSPOTS):
                     raise Stop("option %d: the menu has %d lines" % (n, self.byte(DS, HOTSPOTS)))
                 x, y = self.word(DS, HOTSPOTS + 4) + 0x3C + 1, self.byte(DS, HOTSPOTS + 6 + n) + 1
-            else:
+            elif value:
                 x, y = (int(v) for v in value.split(","))
+            else:                                   # rup: the pointer stays
+                x, y = self.mouse[0], self.mouse[1]
             self.put_word(DS, MOUSE_X, x)
             self.put_word(DS, MOUSE_Y, y)
             self.mouse[0], self.mouse[1] = x, y
-            if kind == "click":
-                self.mouse[2] = 1
-                self.presses[0] += 1
+            if kind in ("click", "rclick"):
+                # the driver's event callback (root 047C:1395) stores the button state in DS:6EF0 and ORs it into the press word DS:6EF2
+                bit = 1 if kind == "click" else 2
+                self.mouse[2] = bit | (2 if self.rheld else 0)
+                self.presses[bit >> 1] += 1
                 self.held = True
+                self.held_bit = bit
                 self.button_read = False
                 self.press_ms = self.ms
-                self.put_word(DS, MOUSE_BUTTONS, 1)
-                self.put_word(DS, MOUSE_PRESSES, self.word(DS, MOUSE_PRESSES) | 1)
+                self.put_word(DS, MOUSE_BUTTONS, self.mouse[2])
+                self.put_word(DS, MOUSE_PRESSES, self.word(DS, MOUSE_PRESSES) | bit)
+            elif kind == "rdown":
+                # the right button held (no automatic release, the next steps are taken with it down) until rup
+                self.rheld = True
+                self.mouse[2] |= 2
+                self.presses[1] += 1
+                self.put_word(DS, MOUSE_BUTTONS, self.word(DS, MOUSE_BUTTONS) | 2)
+                self.put_word(DS, MOUSE_PRESSES, self.word(DS, MOUSE_PRESSES) | 2)
+            elif kind == "rup":
+                self.rheld = False
+                self.mouse[2] &= ~2
+                self.releases[1] += 1
+                self.put_word(DS, MOUSE_BUTTONS, self.word(DS, MOUSE_BUTTONS) & ~2)
             self.log.append("%s %s at %d ms in %s" % (kind, value, self.ms, " < ".join(self.call_stack[-3:])))
             self.waits = 0
             self.idle_since = self.ms
@@ -386,7 +412,7 @@ class Session(Machine):
                 self.uc.reg_write(REG["IP"], TIMER_CALLBACK[1])
                 return
         # a polling point: the script's steps are looked at (outside the emulation), then the function runs as it is
-        if address in POLL_POINTS and self.depth == 1:
+        if (address in POLL_POINTS or (address == TRACK_POINT and self.rheld)) and self.depth == 1:
             if self._polled == address:
                 self._polled = None
             else:
@@ -438,15 +464,15 @@ class Session(Machine):
         # calls the menu bar (hot_keys looks second, root 0000:0CAF) and throws away a key it does not know: an Alt key (the hot keys
         # Alt-S, Alt-L ...) delivered to it is lost, whereas the rewrite handles hot keys first. A real key press goes to whichever
         # look follows it; the script's Alt keys are delivered to hot_keys' look.
-        due = next((s for s in self.script if s[0] in ("key", "move", "click", "option")), None)
-        if (due and due[0] == "key" and due[1].lower().startswith("alt")
+        due = next((s for s in self.script if s[0] in INPUT_KINDS), None)
+        if (due and due[0] == "key" and (due[1].lower().startswith("alt") or due[1].lower() in ("f6", "f10"))
                 and self.call_stack and self.call_stack[-1].startswith("R030+")
                 and self.word(self.reg("SS"), self.reg("SP")) in (0x0545, 0x0572)):
             return (0, 0)
         # likewise the card menu's own look (R043+0x1BD2, return 150B:11DC, which only knows Enter, Space and the cursor keys and drops the rest) and the
         # "press a key" wait's (wait_continue R043+0x32B6, return 150B:288E, which takes any key to go on) come after the menu bar's pass in the same
         # loop: an Alt key the script has due waits for hot_keys' look of the next pass (menubar: Alt-O; save-load: Alt-L after the rest)
-        if (due and due[0] == "key" and due[1].lower().startswith("alt")
+        if (due and due[0] == "key" and (due[1].lower().startswith("alt") or due[1].lower() in ("f6", "f10"))
                 and self.word(self.reg("SS"), self.reg("SP") + 2) == P(0x150B) and self.word(self.reg("SS"), self.reg("SP")) in (0x11DC, 0x288E)):
             return (0, 0)
         k = self._next_key()
@@ -512,6 +538,8 @@ class Session(Machine):
             self._restore_stack = None
             self.write(ss, (sp - STOCK_LOOP_STACK) & 0xFFFF, dead)
         if self.held and self.button_read and self.ms >= self.press_ms + CLICK_MS:
+            self._release()
+        elif self.held and self.held_bit == 2 and self.ms >= self.press_ms + RIGHT_UNREAD_MS:
             self._release()
         if self.count > self.progress:
             self.progress += 20_000_000

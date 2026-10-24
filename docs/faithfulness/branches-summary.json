@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 57788,
-  "blocks_hit": 48935,
-  "functions": 8525,
-  "outcomes": 43332,
-  "outcomes_hit": 32594,
+  "blocks": 57854,
+  "blocks_hit": 49068,
+  "functions": 8528,
+  "outcomes": 43396,
+  "outcomes_hit": 32735,
   "runs": null
  },
  "battle": {
@@ -1391,6 +1391,14 @@
   "outcomes_hit": 1871,
   "runs": 1
  },
+ "lockstep-gen-cache-29": {
+  "blocks": 5429,
+  "blocks_hit": 3232,
+  "functions": 334,
+  "outcomes": 4094,
+  "outcomes_hit": 1821,
+  "runs": 1
+ },
  "lockstep-gen-cache-30": {
   "blocks": 5377,
   "blocks_hit": 3203,
@@ -1919,6 +1927,22 @@
   "outcomes_hit": 5750,
   "runs": 1
  },
+ "lockstep-gen-gatem-01": {
+  "blocks": 13192,
+  "blocks_hit": 8176,
+  "functions": 656,
+  "outcomes": 11690,
+  "outcomes_hit": 5672,
+  "runs": 1
+ },
+ "lockstep-gen-gatem-02": {
+  "blocks": 13187,
+  "blocks_hit": 8166,
+  "functions": 654,
+  "outcomes": 11688,
+  "outcomes_hit": 5665,
+  "runs": 1
+ },
  "lockstep-gen-gatem-03": {
   "blocks": 13179,
   "blocks_hit": 8158,
@@ -1943,6 +1967,62 @@
   "outcomes_hit": 5666,
   "runs": 1
  },
+ "lockstep-gen-gatem-06": {
+  "blocks": 13188,
+  "blocks_hit": 8167,
+  "functions": 655,
+  "outcomes": 11688,
+  "outcomes_hit": 5666,
+  "runs": 1
+ },
+ "lockstep-gen-hurt-01": {
+  "blocks": 12871,
+  "blocks_hit": 7927,
+  "functions": 637,
+  "outcomes": 11404,
+  "outcomes_hit": 5485,
+  "runs": 1
+ },
+ "lockstep-gen-hurt-02": {
+  "blocks": 12657,
+  "blocks_hit": 7772,
+  "functions": 628,
+  "outcomes": 11168,
+  "outcomes_hit": 5386,
+  "runs": 1
+ },
+ "lockstep-gen-hurt-03": {
+  "blocks": 13020,
+  "blocks_hit": 8015,
+  "functions": 643,
+  "outcomes": 11558,
+  "outcomes_hit": 5555,
+  "runs": 1
+ },
+ "lockstep-gen-hurt-04": {
+  "blocks": 12832,
+  "blocks_hit": 7928,
+  "functions": 634,
+  "outcomes": 11350,
+  "outcomes_hit": 5527,
+  "runs": 1
+ },
+ "lockstep-gen-hurt-05": {
+  "blocks": 13062,
+  "blocks_hit": 7908,
+  "functions": 641,
+  "outcomes": 11474,
+  "outcomes_hit": 5426,
+  "runs": 1
+ },
+ "lockstep-gen-hurt-06": {
+  "blocks": 12607,
+  "blocks_hit": 7760,
+  "functions": 627,
+  "outcomes": 11104,
+  "outcomes_hit": 5358,
+  "runs": 1
+ },
  "lockstep-gen-hurt-07": {
   "blocks": 12791,
   "blocks_hit": 7824,
@@ -1951,12 +2031,28 @@
   "outcomes_hit": 5402,
   "runs": 1
  },
+ "lockstep-gen-hurt-08": {
+  "blocks": 13693,
+  "blocks_hit": 8205,
+  "functions": 650,
+  "outcomes": 12228,
+  "outcomes_hit": 5690,
+  "runs": 1
+ },
  "lockstep-gen-hurt-09": {
   "blocks": 13004,
   "blocks_hit": 7990,
   "functions": 641,
   "outcomes": 11542,
   "outcomes_hit": 5514,
+  "runs": 1
+ },
+ "lockstep-gen-hurt-10": {
+  "blocks": 12846,
+  "blocks_hit": 7841,
+  "functions": 634,
+  "outcomes": 11358,
+  "outcomes_hit": 5414,
   "runs": 1
  },
  "lockstep-gen-kit-01": {
@@ -2044,31 +2140,31 @@
   "blocks_hit": 3051,
   "functions": 307,
   "outcomes": 3684,
-  "outcomes_hit": 1675,
+  "outcomes_hit": 1674,
   "runs": 1
  },
  "lockstep-gen-mbar-02": {
-  "blocks": 5194,
-  "blocks_hit": 3036,
-  "functions": 315,
-  "outcomes": 3832,
-  "outcomes_hit": 1653,
+  "blocks": 5170,
+  "blocks_hit": 3019,
+  "functions": 314,
+  "outcomes": 3800,
+  "outcomes_hit": 1637,
   "runs": 1
  },
  "lockstep-gen-mbar-03": {
-  "blocks": 5229,
-  "blocks_hit": 3116,
-  "functions": 318,
-  "outcomes": 3862,
-  "outcomes_hit": 1712,
+  "blocks": 5205,
+  "blocks_hit": 3108,
+  "functions": 317,
+  "outcomes": 3830,
+  "outcomes_hit": 1705,
   "runs": 1
  },
  "lockstep-gen-mbar-04": {
-  "blocks": 5011,
-  "blocks_hit": 2961,
-  "functions": 302,
-  "outcomes": 3702,
-  "outcomes_hit": 1605,
+  "blocks": 4987,
+  "blocks_hit": 2940,
+  "functions": 301,
+  "outcomes": 3670,
+  "outcomes_hit": 1587,
   "runs": 1
  },
  "lockstep-gen-mbar-05": {
@@ -2080,11 +2176,11 @@
   "runs": 1
  },
  "lockstep-gen-mbar-06": {
-  "blocks": 4995,
-  "blocks_hit": 3032,
-  "functions": 308,
-  "outcomes": 3668,
-  "outcomes_hit": 1656,
+  "blocks": 4971,
+  "blocks_hit": 3008,
+  "functions": 307,
+  "outcomes": 3636,
+  "outcomes_hit": 1633,
   "runs": 1
  },
  "lockstep-gen-mbar-07": {
@@ -2096,11 +2192,11 @@
   "runs": 1
  },
  "lockstep-gen-mbar-08": {
-  "blocks": 5047,
-  "blocks_hit": 3058,
-  "functions": 308,
-  "outcomes": 3726,
-  "outcomes_hit": 1669,
+  "blocks": 5023,
+  "blocks_hit": 3038,
+  "functions": 307,
+  "outcomes": 3694,
+  "outcomes_hit": 1650,
   "runs": 1
  },
  "lockstep-gen-mbar-09": {
@@ -2112,11 +2208,19 @@
   "runs": 1
  },
  "lockstep-gen-mbar-10": {
-  "blocks": 5161,
-  "blocks_hit": 3089,
-  "functions": 316,
-  "outcomes": 3790,
-  "outcomes_hit": 1696,
+  "blocks": 5137,
+  "blocks_hit": 3070,
+  "functions": 315,
+  "outcomes": 3758,
+  "outcomes_hit": 1679,
+  "runs": 1
+ },
+ "lockstep-gen-mbar-altm": {
+  "blocks": 4933,
+  "blocks_hit": 2896,
+  "functions": 299,
+  "outcomes": 3612,
+  "outcomes_hit": 1555,
   "runs": 1
  },
  "lockstep-gen-mbarm-01": {
@@ -2125,6 +2229,22 @@
   "functions": 314,
   "outcomes": 4004,
   "outcomes_hit": 1616,
+  "runs": 1
+ },
+ "lockstep-gen-mbarm-02": {
+  "blocks": 5382,
+  "blocks_hit": 3231,
+  "functions": 319,
+  "outcomes": 4134,
+  "outcomes_hit": 1714,
+  "runs": 1
+ },
+ "lockstep-gen-mbarm-03": {
+  "blocks": 5432,
+  "blocks_hit": 3252,
+  "functions": 320,
+  "outcomes": 4190,
+  "outcomes_hit": 1728,
   "runs": 1
  },
  "lockstep-gen-mbarm-04": {
@@ -2156,7 +2276,7 @@
   "blocks_hit": 3283,
   "functions": 323,
   "outcomes": 4210,
-  "outcomes_hit": 1741,
+  "outcomes_hit": 1742,
   "runs": 1
  },
  "lockstep-gen-mbarm-08": {
@@ -2172,7 +2292,7 @@
   "blocks_hit": 3182,
   "functions": 310,
   "outcomes": 4034,
-  "outcomes_hit": 1675,
+  "outcomes_hit": 1674,
   "runs": 1
  },
  "lockstep-gen-mbarm-10": {
@@ -2184,11 +2304,11 @@
   "runs": 1
  },
  "lockstep-gen-mquit-01": {
-  "blocks": 4977,
-  "blocks_hit": 2929,
-  "functions": 303,
-  "outcomes": 3658,
-  "outcomes_hit": 1571,
+  "blocks": 4953,
+  "blocks_hit": 2944,
+  "functions": 302,
+  "outcomes": 3626,
+  "outcomes_hit": 1582,
   "runs": 1
  },
  "lockstep-gen-mquit-02": {
@@ -2204,7 +2324,7 @@
   "blocks_hit": 2965,
   "functions": 318,
   "outcomes": 3698,
-  "outcomes_hit": 1580,
+  "outcomes_hit": 1584,
   "runs": 1
  },
  "lockstep-gen-mquit-04": {
@@ -3375,6 +3495,134 @@
   "outcomes_hit": 1746,
   "runs": 1
  },
+ "lockstep-gen-rbench-01": {
+  "blocks": 5889,
+  "blocks_hit": 3355,
+  "functions": 347,
+  "outcomes": 4472,
+  "outcomes_hit": 1881,
+  "runs": 1
+ },
+ "lockstep-gen-rbench-02": {
+  "blocks": 5923,
+  "blocks_hit": 3392,
+  "functions": 357,
+  "outcomes": 4494,
+  "outcomes_hit": 1905,
+  "runs": 1
+ },
+ "lockstep-gen-rcache-01": {
+  "blocks": 5777,
+  "blocks_hit": 3584,
+  "functions": 367,
+  "outcomes": 4400,
+  "outcomes_hit": 1990,
+  "runs": 1
+ },
+ "lockstep-gen-rcache-02": {
+  "blocks": 5568,
+  "blocks_hit": 3309,
+  "functions": 341,
+  "outcomes": 4222,
+  "outcomes_hit": 1882,
+  "runs": 1
+ },
+ "lockstep-gen-rcreate-01": {
+  "blocks": 7471,
+  "blocks_hit": 4052,
+  "functions": 369,
+  "outcomes": 5904,
+  "outcomes_hit": 2380,
+  "runs": 1
+ },
+ "lockstep-gen-rcreate-02": {
+  "blocks": 6479,
+  "blocks_hit": 3573,
+  "functions": 365,
+  "outcomes": 4938,
+  "outcomes_hit": 1989,
+  "runs": 1
+ },
+ "lockstep-gen-rgate-01": {
+  "blocks": 13694,
+  "blocks_hit": 8355,
+  "functions": 673,
+  "outcomes": 12114,
+  "outcomes_hit": 5783,
+  "runs": 1
+ },
+ "lockstep-gen-rgate-02": {
+  "blocks": 14032,
+  "blocks_hit": 8518,
+  "functions": 681,
+  "outcomes": 12410,
+  "outcomes_hit": 5924,
+  "runs": 1
+ },
+ "lockstep-gen-rmbar-01": {
+  "blocks": 5098,
+  "blocks_hit": 2995,
+  "functions": 311,
+  "outcomes": 3728,
+  "outcomes_hit": 1621,
+  "runs": 1
+ },
+ "lockstep-gen-rmbar-02": {
+  "blocks": 4919,
+  "blocks_hit": 2919,
+  "functions": 299,
+  "outcomes": 3600,
+  "outcomes_hit": 1561,
+  "runs": 1
+ },
+ "lockstep-gen-rmbar-03": {
+  "blocks": 4923,
+  "blocks_hit": 2948,
+  "functions": 300,
+  "outcomes": 3602,
+  "outcomes_hit": 1594,
+  "runs": 1
+ },
+ "lockstep-gen-rmbarm-01": {
+  "blocks": 5241,
+  "blocks_hit": 3160,
+  "functions": 310,
+  "outcomes": 3998,
+  "outcomes_hit": 1662,
+  "runs": 1
+ },
+ "lockstep-gen-rmbarm-02": {
+  "blocks": 5346,
+  "blocks_hit": 3213,
+  "functions": 319,
+  "outcomes": 4104,
+  "outcomes_hit": 1701,
+  "runs": 1
+ },
+ "lockstep-gen-rmbarm-03": {
+  "blocks": 5240,
+  "blocks_hit": 3163,
+  "functions": 309,
+  "outcomes": 3998,
+  "outcomes_hit": 1665,
+  "runs": 1
+ },
+ "lockstep-gen-rmgate-01": {
+  "blocks": 13184,
+  "blocks_hit": 8204,
+  "functions": 659,
+  "outcomes": 11684,
+  "outcomes_hit": 5708,
+  "runs": 1
+ },
+ "lockstep-gen-rmgate-02": {
+  "blocks": 13121,
+  "blocks_hit": 8167,
+  "functions": 659,
+  "outcomes": 11620,
+  "outcomes_hit": 5676,
+  "runs": 1
+ },
  "lockstep-gen-roster-02": {
   "blocks": 5778,
   "blocks_hit": 3440,
@@ -3605,6 +3853,150 @@
   "functions": 356,
   "outcomes": 4236,
   "outcomes_hit": 1904,
+  "runs": 1
+ },
+ "lockstep-gen-rpawn-01": {
+  "blocks": 5823,
+  "blocks_hit": 3490,
+  "functions": 360,
+  "outcomes": 4456,
+  "outcomes_hit": 2003,
+  "runs": 1
+ },
+ "lockstep-gen-rpawn-02": {
+  "blocks": 6629,
+  "blocks_hit": 3787,
+  "functions": 383,
+  "outcomes": 5088,
+  "outcomes_hit": 2193,
+  "runs": 1
+ },
+ "lockstep-gen-rroster-01": {
+  "blocks": 6493,
+  "blocks_hit": 3731,
+  "functions": 375,
+  "outcomes": 4902,
+  "outcomes_hit": 2033,
+  "runs": 1
+ },
+ "lockstep-gen-rroster-02": {
+  "blocks": 5773,
+  "blocks_hit": 3402,
+  "functions": 355,
+  "outcomes": 4232,
+  "outcomes_hit": 1829,
+  "runs": 1
+ },
+ "lockstep-gen-rroster2-01": {
+  "blocks": 5959,
+  "blocks_hit": 3603,
+  "functions": 365,
+  "outcomes": 4410,
+  "outcomes_hit": 1977,
+  "runs": 1
+ },
+ "lockstep-gen-rroster2-02": {
+  "blocks": 6036,
+  "blocks_hit": 3684,
+  "functions": 376,
+  "outcomes": 4474,
+  "outcomes_hit": 2032,
+  "runs": 1
+ },
+ "lockstep-gen-rsaints-01": {
+  "blocks": 6165,
+  "blocks_hit": 3509,
+  "functions": 357,
+  "outcomes": 4616,
+  "outcomes_hit": 1980,
+  "runs": 1
+ },
+ "lockstep-gen-rsaints-02": {
+  "blocks": 6705,
+  "blocks_hit": 3702,
+  "functions": 376,
+  "outcomes": 5104,
+  "outcomes_hit": 2107,
+  "runs": 1
+ },
+ "lockstep-gen-rsheet-01": {
+  "blocks": 5913,
+  "blocks_hit": 3470,
+  "functions": 334,
+  "outcomes": 4384,
+  "outcomes_hit": 1966,
+  "runs": 1
+ },
+ "lockstep-gen-rsheet-02": {
+  "blocks": 5869,
+  "blocks_hit": 3352,
+  "functions": 329,
+  "outcomes": 4344,
+  "outcomes_hit": 1865,
+  "runs": 1
+ },
+ "lockstep-gen-rshop-01": {
+  "blocks": 5953,
+  "blocks_hit": 3498,
+  "functions": 362,
+  "outcomes": 4590,
+  "outcomes_hit": 1984,
+  "runs": 1
+ },
+ "lockstep-gen-rshop-02": {
+  "blocks": 5883,
+  "blocks_hit": 3536,
+  "functions": 362,
+  "outcomes": 4506,
+  "outcomes_hit": 2038,
+  "runs": 1
+ },
+ "lockstep-gen-rstable-01": {
+  "blocks": 5690,
+  "blocks_hit": 3345,
+  "functions": 343,
+  "outcomes": 4324,
+  "outcomes_hit": 1887,
+  "runs": 1
+ },
+ "lockstep-gen-rstable-02": {
+  "blocks": 5795,
+  "blocks_hit": 3473,
+  "functions": 356,
+  "outcomes": 4420,
+  "outcomes_hit": 1990,
+  "runs": 1
+ },
+ "lockstep-gen-rstay-01": {
+  "blocks": 6572,
+  "blocks_hit": 3929,
+  "functions": 386,
+  "outcomes": 5058,
+  "outcomes_hit": 2213,
+  "runs": 1
+ },
+ "lockstep-gen-rstay-02": {
+  "blocks": 6844,
+  "blocks_hit": 3879,
+  "functions": 382,
+  "outcomes": 5266,
+  "outcomes_hit": 2142,
+  "runs": 1
+ },
+ "lockstep-gen-rwild-01": {
+  "blocks": 7241,
+  "blocks_hit": 4266,
+  "functions": 397,
+  "outcomes": 5762,
+  "outcomes_hit": 2489,
+  "runs": 1
+ },
+ "lockstep-gen-rwild-02": {
+  "blocks": 7148,
+  "blocks_hit": 4262,
+  "functions": 394,
+  "outcomes": 5734,
+  "outcomes_hit": 2531,
   "runs": 1
  },
  "lockstep-gen-saints-01": {
@@ -4404,7 +4796,7 @@
   "blocks_hit": 2977,
   "functions": 312,
   "outcomes": 3648,
-  "outcomes_hit": 1591,
+  "outcomes_hit": 1592,
   "runs": 1
  },
  "lockstep-menubar2": {
@@ -4412,7 +4804,7 @@
   "blocks_hit": 2967,
   "functions": 310,
   "outcomes": 3644,
-  "outcomes_hit": 1589,
+  "outcomes_hit": 1590,
   "runs": 1
  },
  "lockstep-notices": {

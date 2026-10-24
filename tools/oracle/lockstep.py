@@ -44,6 +44,10 @@ not compare (the C# writes the party, the original the battle's save). --battle-
 3. Per state: savdiff sections, the random generator's state (DS:7B20 / MscRandom.State) and the card; header
    word +0x84 (DS:E898, the card screen's text state) is reported apart (the C# writes the loaded file's). The
    saved games each wrote with Alt-S are compared too (the header's two texts apart), their battle files (.BSV) byte by byte.
+   A pack entry the original filled from a heap address (G at the store's row -1: an item code past DARKLAND.LST's count where the C# has 0,
+   DIVERGENCE D-75036a) is reported apart ("undefined memory"), not as a difference.
+   The C#'s waits follow the original's passes where its tester counts time: the battle passes a click was held (click_holds) and the
+   pass the first key of a battle's start pause came at (pause_keys).
 
 Out folder: report.json, original.log (keys, clicks, cards, clock seeds, states with the Save/Load flags),
 original-<state>.sav, cs/<state>.sav, original-file-*, cs-saves/, rewrite.log; with --battle-trace a line per
@@ -63,6 +67,7 @@ DARKLANDS_RANDOM_TRACE (each seed and draw with its callers), DARKLANDS_STEP_TRA
 from __future__ import annotations
 
 import argparse
+import struct
 import json
 import sys
 from pathlib import Path
@@ -74,6 +79,11 @@ import orig_side  # noqa: E402
 from orig_side import BWAIT_ACTUAL, ClockTrace, TraceList, key_code, run_original, stale_destinations  # noqa: E402,F401
 
 BWAIT_FRAMES = 3                    # the C# host's frames a step costs beyond its wait (see run_rewrite)
+# the hot keys whose message box (show_message root 0000:24BC, 0x3C ticks) holds the pass: Alt-M, Alt-F, Alt-C, Alt-D (outside the menu bar's
+# keyboard mode, where root 0000:0DD2 takes them without acting); the C# host's frames of that box: its draw, the 1000 ms delay at 32 ms a
+# frame (the host's pump and the delay's sleep), the restore
+BOX_KEYS = ("altm", "altf", "altc", "altd")
+BOX_FRAMES = 34
 HEADLESS = HERE.parent.parent / "src" / "Darklands.Host.Headless" / "bin" / "Release" / "net10.0" / "Darklands.Host.Headless.exe"
 clock_jumps = orig_side.clock_jumps
 Session, SRAND, linear = orig_side.Session, orig_side.SRAND, orig_side.linear
@@ -133,6 +143,78 @@ def dialog_gaps(log, steps, logged: int) -> list[int]:
     return out if len(out) == len(expected) else []
 
 
+def input_passes(log, steps) -> tuple[list[int], dict[int, tuple[int, int]]]:
+    """(the indices of the script's input steps, {index of a key step: (battle pass, combat clock) of the original's log line}), the log's
+    input lines taken in step order ({} when their count is not the steps')."""
+    inputs = [i for i, s in enumerate(steps) if s[0] in ("key", "move", "click", "option")]
+    lines = [l for l in log if l.split(" ", 1)[0] in ("key", "move", "click", "option") and " at " in l]
+    passes = {}
+    if len(inputs) == len(lines):
+        for i, l in zip(inputs, lines):
+            if l.startswith("key ") and "(battle pass " in l:
+                p, c = l.split("(battle pass ")[1].split(")")[0].split(", clock ")
+                passes[i] = (int(p), int(c))
+    return inputs, passes
+
+
+PAUSE_KEY_FRAMES = 4        # the C# host's battle passes from the key that starts a battle to a key after wait:<w> there: w + 4
+
+
+def pause_keys(log, steps, trace) -> dict[int, int]:
+    """{index of the last wait step before a battle's first key: the frames to add}: the original gives the first key of a battle's start pause
+    after BATTLE_PAUSE_PASSES passes at the pause's clock (orig_side.py), so its pass follows the passes the set-up's ticks left before the
+    pause (the clock the first pass has); the C# host gives it after its wait in frames. Only for a key the pause rule gave (the log's pass
+    is the pause's first pass + BATTLE_PAUSE_PASSES), after only waits (shot / state steps) from the key that began the battle."""
+    inputs, passes = input_passes(log, steps)
+    clocks = [int(l.split()[2]) for l in trace if l.startswith("pass clock ")]
+    out = {}
+    for k, i in enumerate(inputs[1:], 1):
+        before = inputs[k - 1]
+        if i not in passes or before not in passes or passes[i][0] <= passes[before][0]:
+            continue
+        start, (at, clock) = passes[before][0], passes[i]
+        between = steps[before + 1:i]
+        if any(s[0] not in ("wait", "shot", "state") for s in between):
+            continue
+        waits = [before + 1 + j for j, s in enumerate(between) if s[0] == "wait"]
+        first = next((j for j in range(start, min(at, len(clocks))) if clocks[j] == clock), None)
+        if not waits or first is None or at - first != orig_side.BATTLE_PAUSE_PASSES:
+            continue
+        delta = at - (start + sum(int(steps[j][1]) for j in waits) + PAUSE_KEY_FRAMES)
+        if delta and int(steps[waits[-1]][1]) + delta >= 0:
+            out[waits[-1]] = delta
+    return out
+
+
+def click_holds(log, steps, bwait_actual) -> dict[int, int]:
+    """{index of a bwait step after a click: the battle passes the original held that click}, for each battle click between two keys the log
+    gives the battle pass of (key, bwait:a, click, bwait:b, key, wait / shot steps between, both bwaits waited in full). The original lets a
+    click go CLICK_MS of emulated time after the game read the button and counts the bwait after it only then: the passes that hold spans
+    follow how long a pass takes (what it draws), not a fixed count; the passes between the two keys are a + 1 + b + 1 + the hold, where the
+    C# host gives a + 1 + b + 1."""
+    inputs, passes = input_passes(log, steps)
+    bwaits = [i for i, s in enumerate(steps) if s[0] == "bwait"]
+    actual = dict(zip(bwaits, bwait_actual)) if len(bwaits) == len(bwait_actual) else {}
+    out = {}
+    for k, i in enumerate(inputs[1:-1], 1):
+        if steps[i][0] != "click":
+            continue
+        before, after = inputs[k - 1], inputs[k + 1]
+        if passes.get(before, (0,))[0] <= 0 or passes.get(after, (0,))[0] <= 0:
+            continue
+        a = [j for j in range(before + 1, i) if steps[j][0] not in ("wait", "shot")]
+        b = [j for j in range(i + 1, after) if steps[j][0] not in ("wait", "shot")]
+        if len(a) != 1 or len(b) != 1 or steps[a[0]][0] != "bwait" or steps[b[0]][0] != "bwait":
+            continue
+        n1, n2 = int(steps[a[0]][1]), int(steps[b[0]][1])
+        if actual.get(a[0]) != n1 or actual.get(b[0]) != n2:
+            continue
+        extra = passes[after][0] - passes[before][0] - (n1 + 1) - (n2 + 1)
+        if extra:
+            out[b[0]] = extra
+    return out
+
+
 def resume_clocks(trace) -> list[int]:
     """The clock of the original's first battle pass after each fall of the combat clock in its trace: each battle after the first (a new
     one starts its clock again; one taken up from a saved game has the clock the restore R003+0x0CE8 read from the battle file, counted on by
@@ -166,7 +248,7 @@ def sheet_callbacks(log) -> list[tuple[int, int]]:
 
 
 def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
-                sheets=(), resume_clocks=(), loot=(), log=None):
+                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -186,20 +268,28 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     # a bwait right after the save's or the load's dialog (Alt-S .. Enter, Alt-L .. L) is taken by the dialog's console reads in the original
     # (no entry in BWAIT_ACTUAL): the next key there comes when the battle is idle; the C# waits the passes the original's log shows
     gaps = iter(dialog_gaps(log or (), steps, len(BWAIT_ACTUAL)))
+    holds = click_holds(log or (), steps, BWAIT_ACTUAL)
     # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames), a move one frame less
     for i, (k, v) in enumerate(steps):
         if k == "bwait":
-            cost = BWAIT_FRAMES + (2 if i and steps[i - 1][0] == "click" else 0)
+            cost = BWAIT_FRAMES + (2 if i and steps[i - 1][0] in ("click", "rclick") else 0) - holds.get(i, 0)
             if i and steps[i - 1][0] == "move":
                 # a move has no idle frames in the host (one frame, the step's own); the original takes the bwait at once at the poll after the move,
                 # in the same pass (a key: at the poll after the get_key that takes it), so the next step comes n passes after the move: wait:<n - 2>
                 cost -= 1
             if i >= 3 and steps[i - 1] == ("key", "esc") and steps[i - 3][0] == "key" and steps[i - 3][1] in ("f1", "f2", "f3", "f4", "f5"):
                 cost -= 1                   # the sheet that Esc closes passes no battle pass in the frame it ends in
+            if i and steps[i - 1][0] == "key" and steps[i - 1][1].lower() in BOX_KEYS:
+                # the message box of the hot key (root 0000:24BC: a spin of 0x3C timer ticks inside the pass, no key read) is no battle pass in
+                # the original, whose next step comes n passes after it; the C# host goes on taking steps over the box's frames, so the steps
+                # after it would wait in the keyboard buffer and be read together (a key after F10 then taken by the battle, not the menu)
+                cost -= BOX_FRAMES
             if after_dialog(steps, i) and (gap := next(gaps, None)) is not None:
                 args.append("wait:%d" % max(0, gap - 1 - cost))
                 continue
             args.append("wait:%d" % max(0, min(int(v), next(seen, int(v))) - cost))
+        elif k == "wait" and pause_shift and i in pause_shift:
+            args.append("wait:%d" % (int(v) + pause_shift[i]))
         else:
             args.append("%s:%s" % (k, v) if v else k)
     import os
@@ -235,8 +325,39 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     return states, run.stdout + run.stderr
 
 
-def compare(steps, original: dict, rewrite: dict, fresh: bool = False) -> list[dict]:
-    """Per state step in the script's order: the differences (savdiff sections, the random state, the card)."""
+# the report keys of a state row that are not differences (reported apart)
+APART = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory"}
+PACK_AT, PACK_ENTRY, PACK_ENTRIES = 0xAA, 6, 64     # a character record's pack (docs/SAVES.md): 64 entries {code word, type, quality, count, weight}
+
+
+def heap_pack_entries(d: dict, osav: bytes, csav: bytes, items: int | None) -> dict:
+    """Takes out of the savdiff d (in place) the pack entries the C# filled from the store table's zero entries before the table where the original
+    read a heap address (DIVERGENCE D-75036a: G with the store's row at -1, R035+0x114A): an entry whose original item code is past the item list
+    (DARKLAND.LST's count) and whose C# code is 0. {record: {offset: original byte}} of what was taken out."""
+    import savdiff
+    chars = d.get("chars")
+    if not items or not isinstance(chars, dict):
+        return {}
+    a, b = savdiff.sections(osav)["chars"], savdiff.sections(csav)["chars"]
+    out = {}
+    for rec, offsets in list(chars.items()):
+        r = int(rec)
+        if r >= len(a) or r >= len(b):
+            continue
+        for k in range(PACK_ENTRIES):
+            at = PACK_AT + PACK_ENTRY * k
+            keys = [o for o in offsets if at <= int(o, 16) < at + PACK_ENTRY]
+            if keys and struct.unpack_from("<H", a[r], at)[0] >= items and struct.unpack_from("<H", b[r], at)[0] == 0:
+                out.setdefault(rec, {}).update({o: offsets.pop(o) for o in keys})
+        if not offsets:
+            del chars[rec]
+    if not chars:
+        del d["chars"]
+    return out
+
+
+def compare(steps, original: dict, rewrite: dict, fresh: bool = False, items: int | None = None) -> list[dict]:
+    """Per state step in the script's order: the differences (savdiff sections, the random state, the card). items: DARKLAND.LST's count."""
     import savdiff
     rows = []
     for kind, name in steps:
@@ -267,6 +388,9 @@ def compare(steps, original: dict, rewrite: dict, fresh: bool = False) -> list[d
                     d["head"]["0"] = rest
                 else:
                     del d["head"]
+            heap = heap_pack_entries(d, osav, csav, items)
+            if heap:
+                row["undefined memory"] = {"D-75036a": heap}
             if d:
                 row["sav"] = d
             if orand != crand:
@@ -311,7 +435,7 @@ def main():
             sparts, n = orig_side.session_start(steps)
             # key_pressed looks ahead at the next step that is a key, a move, a click or an option (an Alt key is let through only at some of the map
             # loop's looks), so the state at the start point depends on it: it is part of the key
-            ahead = next(((k, v) for k, v in list(steps)[n:] if k in ("key", "move", "click", "option")), None)
+            ahead = next(((k, v) for k, v in list(steps)[n:] if k in orig_side.INPUT_KINDS), None)
             snapshots = recording.Snapshot(a.recordings, "session", {**{k: parts[k] for k in recording.COMMON_KEYS}, **sparts, "ahead": ahead, "coverage": a.coverage})
         got = orig_side.record_session(Path(a.exe), a.game, steps, save, a.budget, a.battle_records, a.no_wall_draws, a.coverage, snapshots)
         rec.store(got)
@@ -333,7 +457,7 @@ def main():
     t = time.time()
     rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
                                   got["stale"] if a.battle_records else None, sheet_callbacks(log),
-                                  resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log)
+                                  resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, steps, got["trace"]))
     battle = None
     if a.battle_trace:
         lines = [l for l in output.splitlines() if l.startswith("pass ")]
@@ -345,7 +469,8 @@ def main():
             battle = trace_difference(trace, lines)
     t_rewrite = time.time() - t
     (out / "rewrite.log").write_text(output, encoding="utf-8")
-    rows = compare(steps, original, rewrite, save is None)
+    lst = Path(a.game) / "DARKLAND.LST"
+    rows = compare(steps, original, rewrite, save is None, lst.read_bytes()[0] if lst.is_file() else None)
     # the saved games each game wrote itself (Alt-S): the same names, the same bytes by savdiff section
     import savdiff
     for name, data in sorted(files.items()):
@@ -372,7 +497,7 @@ def main():
                 row["texts"] = {"original": data[:0x64].hex(), "rewrite": theirs.read_bytes()[:0x64].hex()}
         rows.append(row)
     if cov is not None:
-        if all(set(r) <= {"state", "file", "text state", "texts", "party seed", "bsv kept"} for r in rows):
+        if all(set(r) <= APART for r in rows):
             (out / "cov").mkdir(exist_ok=True)
             (out / "cov" / "cov-0.jsonl").write_text(json.dumps({"unit": Path(a.script).stem, **cov}, separators=(",", ":")) + "\n", encoding="utf-8")
         else:
@@ -383,9 +508,9 @@ def main():
               "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)},
               "original run": "replayed" if replayed else "live", "states": rows}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
-    first = next((r for r in rows if set(r) - {"state", "file", "text state", "texts", "party seed", "bsv kept"}), None)
+    first = next((r for r in rows if set(r) - APART), None)
     for r in rows:
-        print("%-12s %s" % (r.get("state") or r["file"], "same" if set(r) <= {"state", "file", "text state", "texts", "party seed", "bsv kept"} else json.dumps(
+        print("%-12s %s" % (r.get("state") or r["file"], "same" if set(r) <= APART else json.dumps(
             {k: v for k, v in r.items() if k not in ("state", "file")})[:300]))
     print("original: %s (%d s, %s); rewrite %d s; first divergence: %s" % (end, t_original, "replayed" if replayed else "live", t_rewrite,
                                                                        (first.get("state") or first["file"]) if first else "none"))

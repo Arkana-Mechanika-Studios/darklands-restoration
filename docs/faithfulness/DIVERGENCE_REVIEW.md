@@ -349,7 +349,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0x0694` (0E76:0694, draft)  
   divergence: saving the changed floor and activations and ending the temporary modifiers (DS:A532) belong to the battle screen.  
   recommendation: **justify** - The part left out is delegated through an interface (ranOut, LeftCombatMode, PlaceWokenMember) that TacticalBattle implements, so the behaviour exists outside this method. Keep, and ensure a test covers each delegated step (AI reset, cbt_flags bits, the free-spot random draws, saving the floor).
-- **D-b616cc** `not-modelled` - `src/Darklands.Core/Battles/CombatantSetup.cs:134` `CombatantSetup.FromEnemy`  
+- **D-b616cc** `not-modelled` - `src/Darklands.Core/Battles/CombatantSetup.cs:140` `CombatantSetup.FromEnemy`  
   original: `R020+0x0000` (1EF8:0000, draft), `R025+0x0000` (1EF8:0000, draft)  
   divergence: the head bytes +0x1E/+0x1F (both 8) are not modelled; the slot's other head fields are whatever the .enm buffer held (0 for a fresh load), reset here.  
   recommendation: **justify** - Head bytes +0x1E/+0x1F (both 8) and stale head fields are not read by the clean model. They matter only when a battle is written to the .BSV file; revisit with battle saving (OriginalSaves).

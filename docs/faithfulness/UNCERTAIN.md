@@ -177,13 +177,13 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-a48f9e** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:259` `CharacterCreationScreen.MemberSheet`  
   original: `root 047C:056F` (047C:056F, draft), `R037+0x03D4` (1462:03D4, draft), `R037+0x0000` (1462:0000, draft)  
   why: a prayer from the sheet's Saints list reads the date and the place of the game the menu loaded (SAVES\DEFAULT); here those of a new game.
-- **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:507` `CharacterGeneratorScreen.WaitThenRedraw`  
+- **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:509` `CharacterGeneratorScreen.WaitThenRedraw`  
   original: `R037+0x4B9E` (18C8:053E, draft), `R037+0x4664` (18C8:0004, draft)  
   why: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time: the C# redraws at once, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the first steps, not always that of the occupation list)
 - **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
   original: `R029+0x2204` (0E76:2204, draft), `R029+0x222A` (0E76:222A, draft)  
   why: which keys the original's menu_bar_run takes inside the sheet is not traced; only the Alt keys are passed.
-- **U-fccc5f** `uncertain` - `src/Darklands.Presentation/GameUi.cs:318` `GameUi.Wait`  
+- **U-fccc5f** `uncertain` - `src/Darklands.Presentation/GameUi.cs:361` `GameUi.Wait`  
   original: `root 0410:0302` (0410:0302, asm), `R030+0x3096` (1767:0046, matched)  
   why: a clock() tick as one millisecond (MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit, see MessageBox and Cinematics.
 - **U-797153** `uncertain` - `src/Darklands.Presentation/MarchingOrderScreen.cs:20` `MarchingOrderScreen`  

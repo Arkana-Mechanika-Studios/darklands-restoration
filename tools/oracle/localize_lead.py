@@ -10,7 +10,7 @@ from pathlib import Path
 
 steps = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
 report = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
-ignored = {"state", "file", "text state", "texts", "party seed"}
+ignored = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory"}
 first = next((r["state"] for r in report["states"] if "state" in r and set(r) - ignored), None)
 if first is None:
     raise SystemExit("the report has no differing state")

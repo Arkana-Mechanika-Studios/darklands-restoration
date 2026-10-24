@@ -14,7 +14,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SESSIONS_DIR = HERE / "lockstep-sessions"
 STATE_EVERY = 8
-NO_STATES = {"party", "party2", "gate", "gatem"}       # the party menu of the start screen has no game to write until Begin the Adventure
+NO_STATES = {"party", "party2", "gate", "gatem", "rgate", "rmgate"}       # the party menu of the start screen has no game to write until Begin the Adventure
 
 
 def cut(session: str, until_state: str) -> str:
@@ -583,6 +583,54 @@ def mbar_alphabet(rng: random.Random) -> list[str]:
     return rng.mw.step(rng)
 
 
+def right_steps(rng: random.Random, screen: str = "") -> list[str]:
+    """The right button: a click anywhere (the menu bar's root 0000:0059 test of DS:6EF0 bit 1 runs its menu mode once, and the screens that read the
+    button themselves, R030+0x038B the map, R038+0x26E3 / +0x2CAD the roster), or the bar held: down on a title (y 4), a move into the dropdown
+    (items 8 rows of 8 below the bar's 12), up on the item. Each hold ends with a wait and Esc, which answers a question or closes a panel the item opened."""
+    wait = "bwait:5" if screen in ("gate", "rgate", "rmgate") else "wait:40"
+    r = rng.random()
+    if r < 0.35:
+        return ["rclick:%d,%d" % (rng.randrange(0, 320), rng.randrange(0, 200))]
+    if r < 0.50:
+        return ["rclick:%d,%d" % (rng.randrange(60, 320), rng.randrange(0, 12))]
+    # the bar held: its titles (Game x 66, Orders 96, Attack 130, Party 177 in the city's font), the items below (rows of 8 from y 12)
+    # Save, Load, Pause and Quit (rows 0, 1, 6, 7 of Game) are left out: they open dialogs the walk does not answer
+    k = rng.random()
+    if k < 0.40:
+        x, row, esc = rng.randrange(66, 82), rng.choice([3, 4, 5]), False
+        moves = [(x + rng.randrange(0, 40), 12 + 8 * row + 4)]
+    elif k < 0.60:
+        x, esc = rng.randrange(66, 82), False
+        s_row = rng.randrange(0, 3)
+        moves = [(x + 20, 12 + 8 * 2 + 4), (x + 110, 12 + 8 * (2 + s_row) + 4)]
+    elif k < 0.85:
+        x, esc = rng.randrange(177, 195), True
+        moves = [(x + rng.randrange(0, 30), 12 + 8 * rng.randrange(0, 2) + 4)]
+    else:
+        x, esc = rng.randrange(96, 165), False
+        moves = [(x + rng.randrange(0, 30), 12 + 8 * rng.randrange(0, 3) + 4)]
+    out = ["rdown:%d,4" % x, wait]
+    for mx, my in moves:
+        out += ["move:%d,%d" % (mx, my), wait]
+    out += ["rup", wait]
+    if esc:
+        out += ["key:esc"]
+    return out
+
+
+def right_wrapped(alphabet, screen: str, p: float = 0.15):
+    """The screen's alphabet with the right button mixed in with probability p (the cancel paths of screens that read it)."""
+    def walk(rng: random.Random) -> list[str]:
+        if rng.random() < p:
+            return right_steps(rng, screen)
+        return alphabet(rng)
+    return walk
+
+
+def rmenu_alphabet(screen: str):
+    return lambda rng: right_steps(rng, screen) if rng.random() < 0.8 else ["move:%d,%d" % (rng.randrange(0, 320), rng.randrange(20, 190))]
+
+
 GATE_START = "\noption:4\nwait:5\nkey:enter\nwait:300"       # the gate guards are attacked: the battle begins paused
 
 # name -> (saved game, prefix, alphabet, closing steps)
@@ -618,15 +666,27 @@ SCREENS = {
 }
 
 
+# the right button on screens (rm*: the menu bar with it from the city card, the map and the gate battle; r*: the screen's walk with it mixed in)
+SCREENS.update({
+    "rmbar": ("DKSAVE0.SAV", lambda: cut("menubar", "menu"), rmenu_alphabet("rmbar"), []),
+    "rmbarm": ("DKSAVE17.SAV", lambda: cut("mapsave", "map"), rmenu_alphabet("rmbarm"), []),
+    "rmgate": ("DKSAVE0.SAV", lambda: cut("orders-walk", "gate") + GATE_START, rmenu_alphabet("rmgate"),
+               ["key:space", "wait:20000", "key:l", "wait:300", "key:enter", "wait:300"]),
+})
+for _name in ("sheet", "shop", "pawn", "stable", "cache", "roster", "roster2", "create", "stay", "wild", "saints", "bench", "gate"):
+    _save, _prefix, _alpha, _closing = SCREENS[_name]
+    SCREENS["r" + _name] = (_save, _prefix, right_wrapped(_alpha, "r" + _name), _closing)
+
+
 CAMP_SCREENS = ("stay", "wild")
-BATTLE_SCREENS = ("gate", "gatem")        # inputs of a battle are followed by bwait:<passes> (lockstep.py); no state steps inside a battle
+BATTLE_SCREENS = ("gate", "gatem", "rgate", "rmgate")        # inputs of a battle are followed by bwait:<passes> (lockstep.py); no state steps inside a battle
 HOURGLASS_WAIT = 300        # frames: the C# host's hourglass of a camp day (4 steps x 400 ms + 1000 ms, R043+0x3494) runs on the host's frames
 
 
 def input_wait(screen: str, step: str) -> str:
     """The C#'s wait after an input: a camp day (S, or a click on the bottom menu's first row, R036+0x0734) passes time with the
     hourglass, whose delays the headless host plays out frame by frame; the original's next step waits for it to be idle anyway."""
-    if screen.startswith("mbar"):
+    if screen.startswith("mbar") or screen.startswith("rmbar"):
         return "wait:100"
     if screen in BATTLE_SCREENS:
         return "bwait:20"
@@ -660,7 +720,7 @@ def generate(screen: str, seed: int, steps: int) -> str:
     for k in range(steps):
         for s in alphabet(rng):
             out.append(s)
-            if s.split(":")[0] in ("key", "click") or (screen in BATTLE_SCREENS and s.split(":")[0] == "move"):
+            if s.split(":")[0] in ("key", "click", "rclick") or (screen in BATTLE_SCREENS and s.split(":")[0] == "move"):
                 out.append(input_wait(screen, s))
         if (k + 1) % STATE_EVERY == 0 and screen not in NO_STATES:
             if getattr(rng, "mw", None) is not None and rng.mw.mode:

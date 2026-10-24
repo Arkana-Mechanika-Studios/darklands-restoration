@@ -165,6 +165,12 @@ public sealed class GameUi
 
     public bool PointerVisible { get; set; } = true;
 
+    /// <summary>
+    /// An interface convenience the original does not have (off unless a host turns it on): at a card menu Up / Down also move the
+    /// highlight while the pointer is off the lines, and the digits 1..9 choose the main list's lines in order (CardScreen.Select).
+    /// </summary>
+    public bool KeyboardCardMenus { get; set; }
+
     /// <summary>Game-wide keys (saving, the character sheets): returns true when it took the key.</summary>
     public Func<int, bool>? GameKey { get; set; }
 
@@ -283,6 +289,43 @@ public sealed class GameUi
             return new PlayerAction(Keys.None, Mouse.X, Mouse.Y, pressed);
         }
         return null;
+    }
+
+    /// <summary>
+    /// One pass of a loop that reads the keyboard and the left button itself (no menu bar, no hot keys): a waiting key or a left
+    /// press, null when there is neither. The right button does nothing here.
+    /// </summary>
+    // orig: `if (root 047C:073D()) key = root 047C:0744();` and the `DS:6EF0 & 1` tests of loops that do not call root 0000:0000
+    //   (R037+0x4664's loop, R037+0x7F06 / R037+0x802A's waits)
+    public PlayerAction? PollWithoutBar()
+    {
+        Present();
+        if (ReadHostKey(out var key))
+        {
+            if (key == Keys.F12 && ScreenshotFolder is not null)
+            {
+                SaveScreenshot();
+                return null;
+            }
+            return new PlayerAction(key, Mouse.X, Mouse.Y, MouseButtons.None);
+        }
+        var buttons = Mouse.Buttons;
+        var pressed = buttons & ~_previousButtons & MouseButtons.Left;
+        _previousButtons = buttons;
+        return pressed != MouseButtons.None ? new PlayerAction(Keys.None, Mouse.X, Mouse.Y, pressed) : null;
+    }
+
+    /// <summary>Waits for the next key or left press (<see cref="PollWithoutBar"/>: no menu bar, no hot keys).</summary>
+    public PlayerAction WaitForActionWithoutBar()
+    {
+        while (true)
+        {
+            if (PollWithoutBar() is { } action)
+            {
+                return action;
+            }
+            _host.Clock.Sleep(FrameMilliseconds);
+        }
     }
 
     /// <summary>One frame of a screen's loop: the player's action, or null after waiting a frame.</summary>

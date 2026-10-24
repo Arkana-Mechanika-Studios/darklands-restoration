@@ -225,4 +225,114 @@ public sealed class ScreenInputTests
         Assert.Throws<QuitGameException>(() => new CharacterGeneratorScreen(ui, data, world, creation).Run());
         Assert.Equal(Darklands.Core.Characters.Creation.CreationStage.FamilyBackground, creation.Stage);
     }
+
+    /// <summary>A host that plays scripted steps once each is ready (a step returning null waits a frame), then idles.</summary>
+    private sealed class StepHost(params Func<(int Key, MouseState Mouse)?>[] steps) : IHost, IVideo, IInput, IClock
+    {
+        private readonly Queue<Func<(int Key, MouseState Mouse)?>> _steps = new(steps);
+        private int _key;
+        private int _idle;
+        private long _now;
+
+        public IVideo Video => this;
+        public IInput Input => this;
+        public IAudio Audio { get; } = new SilentAudio();
+        public IClock Clock => this;
+        public bool QuitRequested { get; private set; }
+        public MouseState Mouse { get; private set; } = new(5, 5, MouseButtons.None);
+        public bool ShiftHeld => false;
+        public long Milliseconds => _now;
+        public int Left => _steps.Count;
+
+        public void Present(Screen screen) { }
+
+        public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
+
+        public bool TryReadKey(out int key)
+        {
+            key = _key;
+            _key = 0;
+            return key != 0;
+        }
+
+        public void Pump()
+        {
+            _key = 0;
+            if (_steps.TryPeek(out var next) && next() is { } frame)
+            {
+                _steps.Dequeue();
+                (_key, Mouse) = frame;
+                return;
+            }
+            QuitRequested = ++_idle > 5000;
+        }
+    }
+
+    /// <summary>
+    /// The card menu takes Up / Down only with the pointer over one of its lines and never a digit, as the original's card_menu;
+    /// GameUi.KeyboardCardMenus (off by default) adds both.
+    /// </summary>
+    // orig: R043+0x1BD2: Up 0x4800 (R043+0x1CE5) and Down 0x5000 (R043+0x1D46) need DS:ED6C == 1 (card_mouse R043+0x21D4: the pointer inside
+    // a line, R043+0x2232), Enter / Space (R043+0x1C77) a highlighted line (DS:E96F != 0xFF); a digit matches none of its compares
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    public void TheCardMenuTakesTheCursorKeysOnlyWithThePointerOverALine(bool keyboard, int expected)
+    {
+        var off = new MouseState(5, 5, MouseButtons.None);
+        MouseState Line(int n) => CardScreen.OptionPoint(n) is var (x, y) ? new MouseState(x, y, MouseButtons.None) : off;
+        GameUi? ui = null;
+        // the steps after the text wait for the menu's own loop (its redraw is Select's Refresh), past the fade and its flush of the keys
+        (int, MouseState)? InMenu((int, MouseState) frame) => ui?.Redraw?.Method.Name.Contains("Refresh") == true ? frame : null;
+        var host = new StepHost(
+            () => (0, off), () => (Keys.Enter, off),
+            // with the pointer off the lines: the digit 1, Down three times and Enter (the original drops them all; the convenience chooses line 0 at the digit)
+            () => InMenu((Keys.ForCharacter('1'), off)), () => (0, off), () => (Keys.Down, off), () => (0, off), () => (Keys.Down, off),
+            () => (0, off), () => (Keys.Down, off), () => (0, off), () => (Keys.Enter, off), () => (0, off),
+            // the pointer onto the first line (it is lit), Down to the second, Enter chooses it
+            () => (0, Line(0)), () => (0, Line(0)), () => (Keys.Down, Line(0)), () => (0, Line(0)), () => (Keys.Enter, Line(0)), () => (0, Line(0)));
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        ui = new GameUi(host, new GameAssets(files)) { KeyboardCardMenus = keyboard };
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        Darklands.Cards.CardContext? context = null;
+        var screen = new CardScreen(ui, () => context!, new PartyPanel(ui.Assets));
+        context = new Darklands.Cards.CardContext(state, world, screen);
+        screen.Show("$Other00", Darklands.Cards.PictureNames.Of(34));
+        var options = Enumerable.Repeat(Darklands.Cards.OptionState.Enabled, 10).ToList();
+        Assert.Equal(expected, screen.Choose(0, options));
+        Assert.False(host.QuitRequested);
+    }
+
+    // orig: R037+0x4664's loop reads DS:6EF0 & 1 and the keys (root 047C:073D / 0744) itself and never calls root 0000:0000: the right
+    // button held over the bar's first title and let go on its first item chooses nothing, F10 and the hot keys do nothing
+    [Fact]
+    public void TheGeneratorRunsNeitherTheMenuBarNorTheHotKeys()
+    {
+        static (int, MouseState) Right(int x, int y) => (0, new MouseState(x, y, MouseButtons.Right));
+        (int, MouseState)[] frames =
+        [
+            Up(5, 5), Right(70, 4), Right(70, 4), Right(90, 16), Right(90, 16), Up(90, 16), Up(90, 16),
+            Key(Keys.F10), Up(5, 5), Key(Keys.Enter), Up(5, 5), Key(0x1000), Up(5, 5),
+        ];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, world))
+        {
+            return;
+        }
+        var chosen = false;
+        var hotKeys = 0;
+        ui.MenuBar = new MenuBar(ui, [new MenuBar.Menu("Game", true, [new MenuBar.Item(() => "Save Game", true, "", () => chosen = true)])]);
+        ui.GameKey = _ => { hotKeys++; return true; };
+        var data = Darklands.Content.Formats.Characters.CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE"));
+        var creation = new Darklands.Core.Characters.Creation.CharacterCreation(data.Tables, world.ItemDefinitions,
+            new Darklands.Core.Randomness.MscRandom(1), 1, () => 1);
+        Assert.Throws<QuitGameException>(() => new CharacterGeneratorScreen(ui, data, world, creation).Run());
+        Assert.False(chosen);
+        Assert.Equal(0, hotKeys);
+    }
 }

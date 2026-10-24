@@ -216,7 +216,9 @@ public sealed class PartyRosterScreen
     // PICS\ + the figure list's entry of the ROW + SMALL.PIC, the slot's colours into the shared ones, the palette set, the figure drawn at
     // (0x0C, 0xA4) for Up / Left / Right and at (0x46, 0xA5) for Down; no slot: AX is DS:E7DA (the search's last load)
     // C: Up, Left and Right draw the figure at (0x0C, 0xA4), over the fifth row of the party column, where the creation menu has it.
-    // DIVERGENCE: a row past the figure list names a picture that does not exist (the original's picture load fails); nothing is drawn.
+    // DIVERGENCE: a row past the figure list (DS:E7E2, one 4-byte name per figure picture, indexed by the row DS:E7DA) whose number a party slot
+    // holds names "pics\small.pic", which does not exist: the original's picture load (root 0617:045C from R038+0x04CA) ends the program
+    // (exit 99, "pics\small.pic: No such file or directory", root 06A1:01F0); here nothing is drawn and the screen goes on.
     private int Arrow(bool up)
     {
         Screen.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);

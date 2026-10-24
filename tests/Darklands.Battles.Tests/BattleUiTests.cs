@@ -564,6 +564,11 @@ public sealed class BattleUiTests
                     Mouse = new MouseState(x, y, MouseButtons.Left);
                     _idleFrames = 2;
                     break;
+                case "rclick":
+                    var (rx, ry) = Point(value);
+                    Mouse = new MouseState(rx, ry, MouseButtons.Right);
+                    _idleFrames = 2;
+                    break;
                 case "wait":
                     _idleFrames = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
                     break;
