@@ -27,8 +27,6 @@ public static class TextVariables
     private static readonly string[] StandingWords = ["a local hero", "respected", "unknown", "suspected", "wanted", "hunted"];
 
     // orig: R136+0xA773, indexed by the result of R030+0x29FA (0 north, clockwise)
-    private static readonly string[] Directions = ["North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"];
-
     // orig: R136+0xA9B3 (city type 1: f56 % 6) and R136+0xA9CB (city type 2: f56 % 9); the bytes are the game's own: 0x1F is its a-umlaut, { o-umlaut, | u-umlaut
     private static readonly string[] LordTitlesType1 = ["Vogt", "Erbvogt", "Obervogt", "Burggraf", "Richter", "Landhofmeister"];
 
@@ -276,7 +274,7 @@ public static class TextVariables
             return "";   // DIVERGENCE: the original indexes locations[cur_loc] and locations[var_loc] unchecked
         }
         var to = state.Locations[c.Variables.Location];
-        return Directions[Direction(from.X, from.Y, to.X, to.Y)];
+        return PartyStanding.Directions[PartyStanding.Direction(from.X, from.Y, to.X, to.Y)];
     }
 
     // orig: case 58: R136+0xA773[thunk 09C0:1FBD(loc2.x, loc2.y, loc.x, loc.y)] = the direction from var_loc2 to var_loc
@@ -288,32 +286,7 @@ public static class TextVariables
         {
             return "";   // DIVERGENCE: unchecked indexes in the original
         }
-        return Directions[Direction(state.Locations[a].X, state.Locations[a].Y, state.Locations[b].X, state.Locations[b].Y)];
-    }
-
-    /// <summary>
-    /// The compass point (0 north, 1 north-east ... 7 north-west) from (x1, y1) to (x2, y2),
-    /// with y counted a third; a side counts only when it is more than twice the other.
-    /// </summary>
-    // orig: R030+0x29FA (1462:29FA) draft (bytes match; 16 of the file's 22 functions do); tests: TextAndOpeningTests
-    // C: dx and dy are |difference| (dy divided by 3); a tie goes to the diagonal; "x2 <= x1" and "y2 <= y1" send equal coordinates west / north.
-    internal static int Direction(int x1, int y1, int x2, int y2)
-    {
-        var dx = Math.Abs(x2 - x1);
-        var dy = Math.Abs(y2 - y1) / 3;
-        if (x2 <= x1)
-        {
-            if (y2 <= y1)
-            {
-                return dx / 2 >= dy ? 6 : dy / 2 >= dx ? 0 : 7;
-            }
-            return dx / 2 >= dy ? 6 : dy / 2 >= dx ? 4 : 5;
-        }
-        if (y2 <= y1)
-        {
-            return dx / 2 >= dy ? 2 : dy / 2 >= dx ? 0 : 1;
-        }
-        return dx / 2 >= dy ? 2 : dy / 2 >= dx ? 4 : 3;
+        return PartyStanding.Directions[PartyStanding.Direction(state.Locations[a].X, state.Locations[a].Y, state.Locations[b].X, state.Locations[b].Y)];
     }
 
     // orig: case 68: month name, a space and the day of the next witches' sabbat (thunk 09C0:20DF, thunk 09C0:21A7)
@@ -345,7 +318,7 @@ public static class TextVariables
             return "";
         }
         var from = state.Locations[city];
-        return Directions[Direction(from.X, from.Y, place.X, place.Y)] + " of " + from.Name;
+        return PartyStanding.Directions[PartyStanding.Direction(from.X, from.Y, place.X, place.Y)] + " of " + from.Name;
     }
 
     /// <summary>A name of the working city record (city_rec->names[n]); n = -1 is the short name at the start of the record.</summary>

@@ -130,7 +130,7 @@ public sealed class TextAndOpeningTests
     [InlineData(5, 5, 5, 5, 6)]       // the same place: x2 <= x1 and y2 <= y1, dx / 2 >= dy -> west
     public void TheCompassDirectionFollowsTheOriginalsRule(int x1, int y1, int x2, int y2, int expected)
     {
-        Assert.Equal(expected, TextVariables.Direction(x1, y1, x2, y2));
+        Assert.Equal(expected, Darklands.Core.Rules.PartyStanding.Direction(x1, y1, x2, y2));
     }
 
     // ---- the opening card -----------------------------------------------------------------------

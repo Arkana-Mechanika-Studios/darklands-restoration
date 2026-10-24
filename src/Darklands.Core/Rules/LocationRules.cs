@@ -295,34 +295,6 @@ public static class LocationRules
 
     // ---- the map --------------------------------------------------------------------
 
-    /// <summary>The compass points in <see cref="Direction"/>'s order, as the cards name them.</summary>
-    public static readonly IReadOnlyList<string> CompassPoints =
-        ["North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"];
-
-    /// <summary>
-    /// The compass point (0 north, 1 north-east ... 7 north-west) from (x1, y1) to (x2, y2),
-    /// with y counted a third; a side counts only when it is more than twice the other.
-    /// </summary>
-    // C: the same computation as the cards' direction text variables (R030+0x29FA), for callers outside the cards (the developer console).
-    public static int Direction(int x1, int y1, int x2, int y2)
-    {
-        var dx = Math.Abs(x2 - x1);
-        var dy = Math.Abs(y2 - y1) / 3;
-        if (x2 <= x1)
-        {
-            if (y2 <= y1)
-            {
-                return dx / 2 >= dy ? 6 : dy / 2 >= dx ? 0 : 7;
-            }
-            return dx / 2 >= dy ? 6 : dy / 2 >= dx ? 4 : 5;
-        }
-        if (y2 <= y1)
-        {
-            return dx / 2 >= dy ? 2 : dy / 2 >= dx ? 0 : 1;
-        }
-        return dx / 2 >= dy ? 2 : dy / 2 >= dx ? 4 : 3;
-    }
-
     /// <summary>Map distance: the larger axis plus half the smaller, with y counted a third.</summary>
     // orig: the distance (dx = |x-X|, dy = |y-Y|/3, the larger plus half the smaller),
     // repeated inline in nearest_city_impl R030+0x271A (1462:271A) and R034+0x1A86

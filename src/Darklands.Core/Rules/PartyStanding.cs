@@ -35,7 +35,9 @@ public static class PartyStanding
         _ => "Large-Sized",
     };
 
-    // orig: R030+0x29FA (1462:29FA) draft (called through thunk 09C0:1FBD)
+    // orig: R030+0x29FA (1462:29FA) draft (called through thunk 09C0:1FBD; bytes match); tests: CampAndSheetRulesTests, TextAndOpeningTests
+    // C: dx and dy are |difference| (dy divided by 3); a tie goes to the diagonal; "x2 <= x1" and "y2 <= y1" send equal coordinates west / north.
+    //   The one copy: the Party Info screen, the cards' direction text variables (cases 57, 58, 69, 71, 72) and the developer console use it.
     /// <summary>
     /// The direction (0 north … 7 northwest) in which (x2, y2) lies from (x1, y1), y counted a
     /// third: straight when one axis is at most half the other.

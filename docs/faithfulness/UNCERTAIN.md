@@ -94,7 +94,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-8b4e75** `uncertain` - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:87` `StrangerBringsAMob.FightAWave`  
   original: `R128+0x03B8` (1838:03B8, matched)  
   why: what card_menu returns when no line is enabled; the C# screen decides.
-- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:213` `TextVariables.PlaceDescription`  
+- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:211` `TextVariables.PlaceDescription`  
   original: `R043+0x1316` (150B:0886, draft)  
   why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
 

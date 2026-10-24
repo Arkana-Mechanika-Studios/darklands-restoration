@@ -218,7 +218,7 @@ public static class GameCommands
         var (x, y) = s.Here is { } here ? (here.X, here.Y) : (s.MapPosition.X, s.MapPosition.Y);
         return place.X == x && place.Y == y
             ? "here"
-            : LocationRules.CompassPoints[LocationRules.Direction(x, y, place.X, place.Y)].ToLowerInvariant() + " of here";
+            : PartyStanding.Directions[PartyStanding.Direction(x, y, place.X, place.Y)].ToLowerInvariant() + " of here";
     }
 
     private static ConsoleResult Heal(GameState s, string[] w)
