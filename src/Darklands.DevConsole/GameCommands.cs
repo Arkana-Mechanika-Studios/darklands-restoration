@@ -207,7 +207,10 @@ public static class GameCommands
         foreach (var qEvent in activeQuestLocations) 
         { 
             var location = qEvent.Location;
-            lines.Add($"Active quest {i} : {DirectionToLocationString(s, s.Locations[location].X, s.Locations[location].Y)} of here near the city of {NearestCityName(s, s.Locations[location].X, s.Locations[location].Y)}"); 
+            var locX = s.Locations[location].X;
+            var locY = s.Locations[location].Y;
+
+            lines.Add($"Active quest {i} : {DirectionToLocationString(s, locX, locY)} of here near the city of {NearestCityName(s, locX, locY)}"); 
         }
         
         return lines;
@@ -227,7 +230,9 @@ public static class GameCommands
         foreach (var qEvent in resolvedQuestOwners) 
         { 
             var location = qEvent.Location;
-            lines.Add($"Reolved quest {i} : Collect reward in the city of {s.Locations[location].Name} in direction of {DirectionToLocationString(s, s.Locations[location].X, s.Locations[location].Y)}"); 
+            var locX = s.Locations[location].X;
+            var locY = s.Locations[location].Y;
+            lines.Add($"Reolved quest {i} : Collect reward in the city of {s.Locations[location].Name} in direction of {DirectionToLocationString(s, locX, locY)}"); 
         }
 
         return lines;
