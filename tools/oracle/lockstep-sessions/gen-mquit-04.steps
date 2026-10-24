@@ -1,0 +1,10 @@
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+state:map
+key:altq
+wait:100
+key:y
+wait:100

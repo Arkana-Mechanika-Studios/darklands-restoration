@@ -9,7 +9,8 @@ The rules are identical to the original's in the faithful mode (`OriginalBehavio
 oracles and the headless host use). By default the player's game differs from it only in the 3 listed,
 switchable data-safety fixes below. The aim is no known divergence, strong evidence, published coverage. Every
 known difference is registered with its reason (undefined memory, the host, deliberate fixes; the last one
-found, a party prayer reading undefined memory, under "Divergences and original bugs"). Where it stands:
+found, a party prayer reading undefined memory, under "Divergences and original bugs"); the differences the
+latest generated sessions found are leads not yet judged, listed there too. Where it stands:
 
 * every original function the C# cites is compared with it statically, and no lead is open;
 * every oracle agrees with the original wherever it runs, or differs for a listed reason;
@@ -20,7 +21,7 @@ found, a party prayer reading undefined memory, under "Divergences and original 
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 73% of the branch outcomes have run in a comparison with the original, and the
+implements, about 74% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
 are the battlefield generators, the rules and the battles; the least covered are the card scripts and the screens (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
@@ -96,39 +97,39 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,506 functions the oracles enter | 84.2% (48,589 / 57,686) | 74.6% (32,277 / 43,256) |
-| **every function the C# implements (9,281)** | | **73.6% (31,474 / 42,790)** |
+| the 8,525 functions the oracles enter | 84.7% (48,935 / 57,788) | 75.2% (32,594 / 43,332) |
+| **every function the C# implements (9,281)** | | **74.2% (31,767 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 31,474 against 32,277 exercised. By area:
+differ slightly on the resident code, hence 31,767 against 32,594 exercised. By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 332 / 358 | 2,087 / 2,590 | 81% |
-| battles (tactical combat) | 271 / 314 | 5,966 / 7,516 | 79% |
-| travel (overland map) | 23 / 24 | 680 / 982 | 69% |
-| screens (inventory, barter, creation ...) | 190 / 202 | 4,570 / 6,070 | 75% |
-| resident code | 132 / 160 | 943 / 1,644 | 57% |
-| card engine | 35 / 36 | 435 / 686 | 63% |
-| card scripts | 6,860 / 7,949 | 9,716 / 14,616 | 66% |
+| rules | 333 / 358 | 2,089 / 2,590 | 81% |
+| battles (tactical combat) | 271 / 314 | 5,996 / 7,516 | 80% |
+| travel (overland map) | 23 / 24 | 681 / 982 | 69% |
+| screens (inventory, barter, creation ...) | 190 / 202 | 4,730 / 6,070 | 78% |
+| resident code | 137 / 160 | 1,027 / 1,644 | 62% |
+| card engine | 35 / 36 | 438 / 686 | 64% |
+| card scripts | 6,860 / 7,949 | 9,717 / 14,616 | 66% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`): 74.3% (31,803 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`): 75.0% (32,096 / 42,790). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the keyboard menu, the hot keys, the
 party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-20,076 items of the functions the oracles enter were never exercised: 2,308 are justified in
+19,591 items of the functions the oracles enter were never exercised: 2,328 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
 forms, the C run-time library, drivers, memory and file helpers, the copy protection, code nothing
-reaches), 17,768 are open. The battle oracle and the whole-game sessions entered about 400
+reaches), 17,263 are open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 9,100), the screens (about 2,600), the battles (about 2,100), the
+lie in the card scripts (about 9,100), the screens (about 2,100), the battles (about 2,000), the
 battlefield generators (about 2,100), the rules (about 650) and the overland map (about 650). A sweep
 of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
 tile contents and random draws, not inputs a sweep sets.
@@ -267,7 +268,7 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-104 runs, all agreeing (and 304 with the generated sessions, replayed). The last open lead before these, a group move at
+104 runs, all agreeing (and 529 with the generated sessions, replayed). The last open lead before these, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
@@ -398,6 +399,16 @@ to the screen at (60, 16) (R030+0x2599 .. +0x25AD) and draws the party's corner 
 A click on a card menu sets the highlight from the pointer before it is judged (R043+0x21D4); a key
 pressed during the map's pause waits for the next pass (R030+0x3096); the battle screen tests the pause
 byte as the original at each place (the order pointer when it is 0, the clock held while it is not 0).
+A second round of generated sessions (225 more that agree: the menu bar in its keyboard mode in a city,
+on the map and in a battle, the quit paths, the gate battle's orders, potions and packs on saved games
+edited for the purpose (`tools/oracle/synth_saves.py`), the party menu, the alchemist's bench, the cache,
+the camp, the sheet, the generator) took the resident code from 57% to 62% and the screens from 75% to
+78%. Its differing sessions are leads not yet judged: Alt-M in the menu bar's keyboard mode (the C#
+toggles the music, the original ignores the key); an unconscious member in the gate battle (a draw on the
+first unpaused pass in the original, not in the C#); an away member's record bytes after a battle; the gate
+battle with Alt toggles (clock 1550); the cache's G after g, Left, B; two map sessions with F10. The right
+mouse button cannot be scripted yet.
+
 The battle direct calls' old differences were the harness's (15 now agree, 13 unreachable states); all
 15,045 jobs that run agree.
 

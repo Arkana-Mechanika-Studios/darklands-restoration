@@ -14,7 +14,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SESSIONS_DIR = HERE / "lockstep-sessions"
 STATE_EVERY = 8
-NO_STATES = {"party", "party2"}       # the party menu of the start screen has no game to write until Begin the Adventure
+NO_STATES = {"party", "party2", "gate", "gatem"}       # the party menu of the start screen has no game to write until Begin the Adventure
 
 
 def cut(session: str, until_state: str) -> str:
@@ -168,6 +168,41 @@ def packsweep_alphabet(members):
     def alphabet(rng):
         if not hasattr(rng, "pack"):
             rng.pack = PackSweep(members)
+        return rng.pack.step(rng)
+    return alphabet
+
+
+class PotionSweep(PackSweep):
+    """PackSweep for a pack full of potions (synth_saves.py pots): mostly P (drink one), then the next line; the stacks drunk up shift the lines."""
+
+    def step(self, rng: random.Random) -> list[str]:
+        if not self.ready:
+            return super().step(rng)
+        r = rng.random()
+        if r < 0.50:
+            return ["key:p"]
+        if r < 0.78:
+            self.line += 1
+            return ["key:down"]
+        if r < 0.84:
+            return ["key:up"]
+        if r < 0.88:
+            return ["key:" + rng.choice(["pgdn", "pgup", "home", "end"])]
+        if r < 0.92:
+            return ["key:" + rng.choice("au")]
+        if self.members > 1:
+            m = rng.randrange(0, self.members)
+            if m == self.who:
+                m = (m + 1) % self.members
+            self.who, self.line, self.ready = m, 0, False
+            return ["key:f%d" % (m + 1)]
+        return ["key:down"]
+
+
+def potions_alphabet(members):
+    def alphabet(rng):
+        if not hasattr(rng, "pack"):
+            rng.pack = PotionSweep(members)
         return rng.pack.step(rng)
     return alphabet
 
@@ -380,8 +415,186 @@ def create2_alphabet(rng: random.Random) -> list[str]:
     return ["key:" + rng.choice("23"), "key:esc"]
 
 
+class MenuWalk:
+    """The menu bar's keyboard mode (root 0000:0DD2, hot keys root 0000:0CAA) over a card (city, map): F10 starts it, then the arrows, Enter, Esc,
+    F10 again and the other keys it ignores; out of the mode the Alt hot keys (O, P, D, M, F, C), F6 and Alt-Q (the question answered N).
+    Follows the cursor like the game's own code so that Enter is given only on items whose action is harmless to the walk (not the save,
+    the load, the quit): menus = [(opens, [(on, subs, after), ...])], `after` the keys that dismiss what the item opens."""
+
+    def __init__(self, menus, nav_only=False):
+        self.menus = menus
+        self.nav_only = nav_only            # a battle's bar: which items can be chosen is the battle's (no Enter: the walk only moves the cursor)
+        self.mode, self.m, self.i, self.s = False, 0, -1, -1
+
+    def _down(self):
+        items = self.menus[self.m][1]
+        if self.s != -1:
+            if self.s + 1 < items[self.i][1]:
+                self.s += 1
+            return
+        n = self.i
+        while n + 1 < len(items) and items[n + 1][0] == 2:
+            n += 1
+        if n + 1 < len(items) and items[n + 1][0] == 1:
+            self.i = n + 1
+
+    def _up(self):
+        items = self.menus[self.m][1]
+        if self.s != -1:
+            if self.s > 0:
+                self.s -= 1
+            return
+        while self.i != -1:
+            self.i -= 1
+            if self.i >= 0 and items[self.i][0] == 1:
+                break
+
+    def _left(self):
+        if self.s != -1:
+            self.s = -1
+            return
+        if self.m > 0:
+            self.i = self.s = -1
+            while self.m != 0:
+                self.m -= 1
+                if self.menus[self.m][0] == 1:
+                    return
+
+    def _right(self):
+        items = self.menus[self.m][1]
+        if 0 <= self.i < len(items) and items[self.i][1] > 0:
+            self.s = 0
+            return
+        nxt = self.m + 1
+        while nxt < len(self.menus) and self.menus[nxt][0] == 2:
+            nxt += 1
+        if nxt < len(self.menus) and self.menus[nxt][0] == 1:
+            self.m, self.i, self.s = nxt, -1, -1
+
+    def safe_enter(self):
+        """Enter chooses the item under the cursor (or its sub-item): the keys that dismiss what it opens, or None when it must not be chosen."""
+        items = self.menus[self.m][1]
+        if self.i < 0 or self.i >= len(items):
+            return []
+        on, subs, after = items[self.i]
+        if self.s != -1:
+            return []                     # a difficulty sub-item: set at once
+        return after
+
+    def step(self, rng: random.Random) -> list[str]:
+        r = rng.random()
+        if not self.mode:
+            if r < 0.40:
+                self.mode, self.m, self.i, self.s = True, 0, -1, -1
+                return ["key:f10"]
+            if r < 0.62:
+                return ["key:" + rng.choice(["altm", "altf", "altc", "altm", "altf", "altc"])]
+            if r < 0.70:
+                return ["key:altp", "key:enter"]
+            if r < 0.78:
+                return ["key:alto", "key:esc"]
+            if r < 0.86:
+                return ["key:altd"]                   # steps to the next difficulty at once (no arrows / Enter after: they go to the card's own menu)
+            if r < 0.93:
+                return ["key:f6", "key:esc"]
+            a = rng.choice(["x", "n", "N"])
+            return ["key:altq", "key:" + a] + (["key:n"] if a == "x" else [])
+        if r < 0.24:
+            self._down()
+            return ["key:down"]
+        if r < 0.38:
+            self._up()
+            return ["key:up"]
+        if r < 0.52:
+            self._left()
+            return ["key:left"]
+        if r < 0.70:
+            self._right()
+            return ["key:right"]
+        if r < 0.84:
+            after = None if self.nav_only else self.safe_enter()
+            if after is None:
+                self._down()
+                return ["key:down"]
+            self.mode = False
+            return ["key:enter"] + after
+        if r < 0.90:
+            self.mode = False
+            return ["key:esc"]
+        if r < 0.93:
+            self.mode = False
+            return ["key:f10"]
+        return ["key:" + rng.choice(["space", "tab", "x"])]       # keys the mode ignores (an Alt key inside the mode toggles in the C#, not in the original: lead)
+
+
+def gate_alphabet(rng: random.Random) -> list[str]:
+    """The player's orders in the gate battle (the battle starts paused): members by digit, order letters, clicks on the ground / the enemy,
+    the party panel's rows (the pointer is put back at the view's middle: the original scrolls the view at its edges), Esc / Enter, the arrows
+    that step the active member, a member's sheet (F1..F3, Esc (the fourth picture is missing from the game folder))."""
+    r = rng.random()
+    if r < 0.18:
+        return ["key:" + rng.choice("1234")]
+    if r < 0.40:
+        return ["key:" + rng.choice("wavbpmfh")]
+    if r < 0.58:
+        return ["click:%d,%d" % (rng.randrange(80, 300), rng.randrange(20, 180))]
+    if r < 0.66:
+        return ["key:" + rng.choice(ARROWS)]
+    if r < 0.72:
+        return ["key:esc"]
+    if r < 0.75:
+        return ["key:esc"]                  # (Enter would end the order mode and start the battle: the closing's Space then pauses it)
+    if r < 0.88:
+        return ["click:%d,%d" % (rng.randrange(4, 56), 40 * rng.randrange(0, 4) + rng.randrange(3, 37)), "move:170,100"]
+    if r < 0.93:
+        return ["key:" + rng.choice(["f1", "f2", "f3"]), "key:esc"]
+    return ["move:%d,%d" % (rng.randrange(80, 300), rng.randrange(20, 180))]
+
+
+# Game: Save, Load, Difficulty (3 sub-items), Show Changes, Music, Sound FX, Pause, Quit; Orders and Attack greyed (opens 2); Party: Party Info, Marching Order
+CITY_MENUS = [(1, [(1, 0, None), (1, 0, None), (1, 3, []), (1, 0, []), (1, 0, []), (1, 0, []), (1, 0, ["key:enter"]), (1, 0, None)]),
+              (2, []), (2, []), (1, [(1, 0, ["key:esc"]), (1, 0, ["key:esc"])])]
+
+
+BATTLE_MENUS = [(1, [(1, 0, None)] * 8), (1, [(1, 0, None)] * 4), (1, [(1, 6, None)] * 6), (1, [(1, 0, None)] * 2)]
+
+
+def mbat_alphabet(rng: random.Random) -> list[str]:
+    """The menu bar in the gate battle (Game, Orders, Attack, Party): cursor moves only, and the Alt hot keys outside the mode."""
+    if not hasattr(rng, "mw"):
+        rng.mw = MenuWalk(BATTLE_MENUS, nav_only=True)
+    if not rng.mw.mode:
+        # out of the mode: F10, or an Alt toggle that leaves the battle's pause alone (Alt-P, Enter and the quit question are left out)
+        if rng.random() < 0.35:
+            return ["key:" + rng.choice(["altm", "altf", "altc", "altd"])]
+        rng.mw.mode, rng.mw.m, rng.mw.i, rng.mw.s = True, 0, -1, -1
+        return ["key:f10"]
+    out = rng.mw.step(rng)
+    if not rng.mw.mode:
+        # TESTER: after a key that leaves the mode the next key is given at once (4 ms later in the original: F10, Esc, F10, Esc leaves the
+        # original in a key wait); a pointer move needs the idle time first
+        out += ["move:170,100"]
+    return out
+
+
+def mbar_alphabet(rng: random.Random) -> list[str]:
+    if not hasattr(rng, "mw"):
+        rng.mw = MenuWalk(CITY_MENUS)
+    return rng.mw.step(rng)
+
+
+GATE_START = "\noption:4\nwait:5\nkey:enter\nwait:300"       # the gate guards are attacked: the battle begins paused
+
 # name -> (saved game, prefix, alphabet, closing steps)
 SCREENS = {
+    "mbar": ("DKSAVE0.SAV", lambda: cut("menubar", "menu"), mbar_alphabet, []),
+    "mbarm": ("DKSAVE17.SAV", lambda: cut("mapsave", "map"), mbar_alphabet, []),
+    "gate": ("DKSAVE0.SAV", lambda: cut("orders-walk", "gate") + GATE_START, gate_alphabet,
+             ["key:space", "wait:20000", "key:l", "wait:300", "key:enter", "wait:300"]),
+    "pots": ("synth/Dksave10-pots.sav", lambda: cut("sheet", "sheet"), potions_alphabet(4), ["key:esc", "wait:200"]),
+    "kit": ("synth/Dksave10-kitchen.sav", lambda: cut("sheet", "sheet"), packsweep_alphabet(4), ["key:esc", "wait:200"]),
+    "pots99": ("synth/DKSAVE99-pots3.sav", lambda: cut("pack-potions", "sheet"), potions_alphabet(3), ["key:esc", "wait:200"]),
+    "gatem": ("DKSAVE0.SAV", lambda: cut("orders-walk", "gate") + GATE_START, mbat_alphabet, ["key:space", "wait:20000", "key:l", "wait:300", "key:enter", "wait:300"]),
     "sheet": ("Dksave10.sav", lambda: cut("sheet", "sheet"), sheet_alphabet, ["key:esc", "wait:200"]),
     "shop": ("DKSAVE0.SAV", lambda: cut("shop", "shop"), barter_alphabet, ["key:esc", "wait:200"]),
     "pawn": ("DKSAVE0.SAV", lambda: cut("pawnshop", "shop"), barter_alphabet, ["key:esc", "wait:200"]),
@@ -406,12 +619,17 @@ SCREENS = {
 
 
 CAMP_SCREENS = ("stay", "wild")
+BATTLE_SCREENS = ("gate", "gatem")        # inputs of a battle are followed by bwait:<passes> (lockstep.py); no state steps inside a battle
 HOURGLASS_WAIT = 300        # frames: the C# host's hourglass of a camp day (4 steps x 400 ms + 1000 ms, R043+0x3494) runs on the host's frames
 
 
 def input_wait(screen: str, step: str) -> str:
     """The C#'s wait after an input: a camp day (S, or a click on the bottom menu's first row, R036+0x0734) passes time with the
     hourglass, whose delays the headless host plays out frame by frame; the original's next step waits for it to be idle anyway."""
+    if screen.startswith("mbar"):
+        return "wait:100"
+    if screen in BATTLE_SCREENS:
+        return "bwait:20"
     if screen in CAMP_SCREENS:
         kind, _, value = step.partition(":")
         if kind == "key" and value in ("s", "S"):
@@ -438,13 +656,23 @@ def generate(screen: str, seed: int, steps: int) -> str:
     out = ["# Generated by gen_screen_sessions.py (%s, seed %d, %d inputs): a seeded walk over the %s screen's keys and mouse; " % (screen, seed, steps, screen)
            + "a state every %d inputs" % STATE_EVERY]
     out += prefix().splitlines()
+    due = 0
     for k in range(steps):
         for s in alphabet(rng):
             out.append(s)
-            if s.split(":")[0] in ("key", "click"):
+            if s.split(":")[0] in ("key", "click") or (screen in BATTLE_SCREENS and s.split(":")[0] == "move"):
                 out.append(input_wait(screen, s))
         if (k + 1) % STATE_EVERY == 0 and screen not in NO_STATES:
+            if getattr(rng, "mw", None) is not None and rng.mw.mode:
+                due = k + 1                          # no state inside the keyboard menu mode: at the next input that leaves it
+            else:
+                out.append("state:s%d" % (k + 1))
+                due = 0
+        elif due and not (getattr(rng, "mw", None) is not None and rng.mw.mode):
             out.append("state:s%d" % (k + 1))
+            due = 0
+    if getattr(rng, "mw", None) is not None and rng.mw.mode:
+        out += ["key:esc", "wait:100"]              # the keyboard menu mode still on: leave it
     out += closing
     out.append("state:end")
     return "\n".join(out) + "\n"
