@@ -88,7 +88,7 @@ public sealed class CultistSacrifice : Card
                 c.Next = CardNumber;
                 break;
             default:
-                // DORMANT: other battle results leave the party bound.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party bound.
                 break;
         }
     }
@@ -126,7 +126,7 @@ public sealed class CultistSacrifice : Card
                 c.PassHours(0);
                 break;
             default:
-                // DORMANT: other battle results change nothing.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results change nothing.
                 break;
         }
     }

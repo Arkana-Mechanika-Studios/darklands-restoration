@@ -452,7 +452,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-1eb8d6** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S128/CollectorsCommission.cs:108` `CollectorsCommission.Run`  
   original: `R128+0x0BF0` (18F7:0000, matched), `R128+0x138A` (18F7:079A, matched), `R128+0x13C6` (18F7:07D6, matched) +28 more  
   why: debt notes name their holder by +0x2A % 2 (Medici, Fugger), but MerchantHouseOffices finds them in office +0x2A % 4, so the named office is often not the one that holds them.
-- **B-586670** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:85` `StrangerBringsAMob.FightAWave`  
+- **B-586670** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:86` `StrangerBringsAMob.FightAWave`  
   original: `R128+0x03B8` (1838:03B8, matched)  
   why: the offer's option lines are never switched on (R128+0x0806 cleared opt_on[] and the menu loop that copies the flags has not run yet), so the box offers nothing to choose.
 - **B-759d5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S130/CavernOfFireAndHail.cs:102` `CavernOfFireAndHail.CreepAcrossUnderArmour`  

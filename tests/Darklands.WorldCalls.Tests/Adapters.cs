@@ -145,6 +145,7 @@ internal static class Adapters
         type.GetField("_danger", Fields)!.SetValue(travel, c.Job.Word(0xE488));
         type.GetField("_terrain", Fields)!.SetValue(travel, c.Job.Word(0xD843));
         travel.HourPassed = () => TimePassage.Advance(c.State, 1);
+        travel.View = () => (c.Job.Word(0x286A), c.Job.Word(0x286C));
         var x = c.U(0) + 16 * c.Job.Word(0x286A);
         var y = c.S(1) + 4 * (c.Job.Word(0x286E) + c.Job.Word(0x286C));
         var result = travel.Step(x, y);

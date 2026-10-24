@@ -247,7 +247,7 @@ public sealed class PublicExecution : Card
                 c.Next = CardNumber;
                 break;
             default:
-                // DORMANT: other battle results go straight to the guard's watch below.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results go straight to the guard's watch below.
                 break;
         }
         c.EventHere(0x11, standing <= -75 ? 480 : 240);

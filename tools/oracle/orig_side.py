@@ -20,7 +20,11 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from dosmachine import BASE, DS, P, REG, SENTINEL_SEG, Machine, Stop, linear  # noqa: E402
+from run_unit import CONDITIONAL  # noqa: E402
+from unicorn.unicorn_py3.unicorn import HOOK_CODE_CFUNC  # noqa: E402
+import fast_capture  # noqa: E402
 
+REG_EFLAGS, SENTINEL_LIN, DS_LIN = REG["EFLAGS"], SENTINEL_SEG * 16, DS * 16
 BYTES_PER_MS = 200                 # the machine's speed: executed code bytes per millisecond
 EMS_SEG, FRAME, EMS_PAGES = 0xF800, 0xD000, 256
 # Segments are the link-time ones of the notation (root 047C:0xxx, R014 = 0E76) put through P: the segment the image is loaded at is added
@@ -35,12 +39,15 @@ COPY_PROTECTION = (P(0x1462), 0x0000)  # R041+0x0000 (thunk 09C0:1FD1)
 CHAR_WIDTH, FONT_HEIGHT = (P(0x047C), 0x04E3), (P(0x047C), 0x051B)
 HOTSPOTS = 0xE96E                   # the card menu's hot spots: count, highlight, width, x, y[20], height[20] (bytes)
 PIC_OPEN, PIC_CLOSE = (P(0x047C), 0x05BC), (P(0x047C), 0x05AE)
+# the graphics driver's memory-picture batch (its entries 18 and 7: begin = one DOS block of the largest size, end = the block cut to
+# what the pictures between used, or freed when none) and its line writer (entry 34, the line kept without its zero ends)
+PIC_BATCH_BEGIN, PIC_BATCH_END, PIC_LINE = (P(0x047C), 0x0545), (P(0x047C), 0x04F8), (P(0x047C), 0x05B5)
 KEY_PRESSED, GET_KEY = (P(0x047C), 0x073D), (P(0x047C), 0x0744)   # driver slots: a key waiting? / the next key (scan << 8 | char)
 CARD, HOLDRAND = 0xA772, 0x7B20     # the card being run; the random generator's state (MSC holdrand)
 SAVE_ITEM, LOAD_ITEM = 0x9920, 0x9934  # the Game menu's Save Game / Load Saved Game flags (1 on), which hot_keys obeys
 SAV_WRITE = (P(0x1462), 0x2ACE)        # R037+0x2ACE (comment): the saved-game writer
 MACHINE_STATE = ("resident", "trampolines", "call_stack", "mcbs", "dta", "scratch_sp", "count", "next_irq", "irqs", "pit_divisor",
-                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "waits", "pic_size", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases", "rheld", "held_bit")
+                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "waits", "pic_size", "pic_arena", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases", "press_at", "release_at", "rheld", "held_bit")
 IDLE_MS = 3000                      # and as long without a random number drawn, a card change or a step
 IDLE_POLLS = 2000
 BATTLE_PAUSE_PASSES = 296           # the battle's start pause (it waits for Space, the combat clock standing still): the key is given after this many passes at one
@@ -72,11 +79,14 @@ CLICK_MS = 300                      # how long a scripted click holds the left b
 
 class Session(Machine):
     """The DOS machine with EMS, a deterministic clock, no drivers and the script's input."""
+    fast_search = True                  # False: the state capture's match search emulated as well (the capture bench compares both)
+    direct_ram = True                   # the memory from a buffer of ours (fast_capture reads and writes it in place)
 
     def __init__(self, exe: bytes, game: str, **kw):
         super().__init__(exe, game, **kw)
         self.seen_int: dict = {}
         self.sheet_in = self.sheet_out = None   # the timer callbacks counted at the combat sheet (R022+0x0066 / +0x03C6; sessions hook them)
+        self.menu_calls, self.menu_out = [], None   # the menu bar's runs in a battle (run_original hooks root 0000:0000)
         # no sound card: without CONFIG.DRK the program takes nsound.dlc (DS:A876 = 'n'), as the C# headless host plays without sound;
         # a sound driver would be loaded by the stubbed misc.exe slots and unloaded (freed) by every battle start (R002+0x0025)
         self.vfs.deleted.add("config.drk")
@@ -112,14 +122,22 @@ class Session(Machine):
         for off in self.driver_slots():
             if self.root[DRIVER_SEG * 16 - BASE + off] == 0xE8:
                 self.write(DRIVER_SEG, off + 3, struct.pack("<HH", 0x50, EMS_SEG))
-        for off in [o for o in self.driver_slots() if (DRIVER_SEG, o) not in (KEY_PRESSED, GET_KEY, SAVE_RECT, PIC_OPEN, PIC_CLOSE, CHAR_WIDTH, FONT_HEIGHT)]:
+        for off in [o for o in self.driver_slots() if (DRIVER_SEG, o) not in (KEY_PRESSED, GET_KEY, SAVE_RECT, PIC_OPEN, PIC_CLOSE, PIC_BATCH_BEGIN, PIC_BATCH_END, PIC_LINE, CHAR_WIDTH, FONT_HEIGHT)]:
             self.stub(DRIVER_SEG, off, self._driver("047C:%04X" % off), "driver 047C:%04X" % off)
-        # gfx_save_rect: the screen under a box goes to a DOS block whose segment the caller frees later: a real block
-        self.stub(*SAVE_RECT, lambda m: (m.alloc(1) or 0, 0), "save_rect")
-        # a picture drawn into memory (root 0617:045C): 047C:05BC(width, height) opens the buffer, 047C:05AE returns its segment
+        # gfx_save_rect(page, x, y, w, h) (driver entry 2, body 0x0BB7): a memory picture of the screen's rectangle, in the batch's block
+        # as the pictures below (segment 0 outside a batch); its caller frees the batch's first one later
+        self.stub(*SAVE_RECT, self._save_rect, "save_rect")
+        # a picture drawn into memory (root 0617:045C): 047C:05BC(width, height) opens it, 047C:05B5(line) adds each line, 047C:05AE
+        # returns its segment. As the driver (mgraphic.exe) does it: the pictures are laid one after the other (paragraph-aligned) in the
+        # one DOS block of a batch (047C:0545 .. 047C:04F8), so freeing the first picture's segment frees them all (the combat sheet
+        # loads seven and frees only DS:8680, R031+0x0A0A..0x0A71 and R031+0x0939); outside a batch a picture gets segment 0.
         self.pic_size = 0
-        self.stub(*PIC_OPEN, lambda m: (setattr(m, "pic_size", m.arg(0) * m.arg(1)), (0, 0))[1], "pic_open")
-        self.stub(*PIC_CLOSE, lambda m: (m.alloc((m.pic_size + 15) // 16 or 1) or 0, 0), "pic_close")
+        self.pic_arena = [0, 0, 0, 0, 0, 0]      # offset in the picture, its segment, the block's segment, the block's end, the bytes allowed, width
+        self.stub(*PIC_BATCH_BEGIN, self._pic_batch_begin, "pic_batch_begin")
+        self.stub(*PIC_BATCH_END, self._pic_batch_end, "pic_batch_end")
+        self.stub(*PIC_OPEN, self._pic_open, "pic_open")
+        self.stub(*PIC_LINE, self._pic_line, "pic_line")
+        self.stub(*PIC_CLOSE, self._pic_close, "pic_close")
         # the driver's font metrics (char_width 047C:04E3(font, ch), font_height 047C:051B(font)): the wrapping of the card texts and so the
         # menus' hot spots (DS:E96E) follow the real fonts.
         self.fonts = self._read_fonts(game)
@@ -171,6 +189,9 @@ class Session(Machine):
         self.idle_since = 0
         self.mouse = [160, 100, 0]
         self.presses, self.releases = [0, 0], [0, 0]
+        # per button (0 left, 1 right): the pointer at its last press / release, which INT 33h fn 5 / fn 6 report as the driver does
+        # (None before the first: the pointer as it is)
+        self.press_at, self.release_at = [None, None], [None, None]
         self.on_key = None              # called (outside the emulation) before a key of the script is given
         self.waits = 0                  # key polls with nothing to give
         self.bwait_polls, self.bwait_seen = 0, -1
@@ -179,6 +200,10 @@ class Session(Machine):
         self.bwait = None               # bwait:<n>: the battle pass number the steps after it wait for (orders given mid-fight)
         self.progress = 0
         self.snap_plan = None           # (script steps left, take): a snapshot is due at the first idle stub handler entered with that many left
+        self._capturing = False         # inside capture(): fast_capture runs R003+0x2264's blocks
+        self._fast_base = self._fast_lo = self._fast_hi = 0
+        self._fast_trace = None
+        self._fast_io = self._fast_cov = None
         self.stub(*KEY_PRESSED, self._key_pressed, "key_pressed")
         self.stub(*GET_KEY, self._get_key, "get_key")
         self._key_pressed.__func__.outside = True
@@ -209,6 +234,7 @@ class Session(Machine):
         self.put_word(DS, MOUSE_BUTTONS, 2 if self.rheld else 0)
         self.mouse[2] = 2 if self.rheld else 0
         self.releases[bit >> 1] += 1
+        self.release_at[bit >> 1] = (self.mouse[0], self.mouse[1])
         self.waits = 0
         self.idle_since = self.ms
 
@@ -229,12 +255,15 @@ class Session(Machine):
             self.set_reg("CX", x << 1)
             self.set_reg("DX", y)
         elif fn in (5, 6):
+            # the pointer where button k was last pressed (fn 5) or let go (fn 6), not where it is now: a loop that reads the release
+            # after the pointer moved on (R022+0x064A's marching-order box) still finds the click where it was made
             k = self.reg("BX") & 1
             counts = self.presses if fn == 5 else self.releases
+            at = (self.press_at if fn == 5 else self.release_at)[k] or (x, y)
             self.set_reg("AX", b)
             self.set_reg("BX", counts[k])
-            self.set_reg("CX", x << 1)
-            self.set_reg("DX", y)
+            self.set_reg("CX", at[0] << 1)
+            self.set_reg("DX", at[1])
             counts[k] = 0
         elif fn == 4:
             self.mouse[0], self.mouse[1] = self.reg("CX") >> 1, self.reg("DX")
@@ -268,6 +297,7 @@ class Session(Machine):
         while self.script and self.script[0][0] == "bwait":
             self._end_bwait()
             self.bwait = self.battle_passes + int(self.script[0][1])
+            self.bwait_polls = 0        # each bwait waits its own IDLE_POLLS polls in a loop without passes (not at once after the one before)
             self.bwait_at = (len(self.bwait_log), self.battle_passes)
             self.bwait_log.append([int(self.script.pop(0)[1]), None])
         if self.bwait is not None:
@@ -319,6 +349,7 @@ class Session(Machine):
                 bit = 1 if kind == "click" else 2
                 self.mouse[2] = bit | (2 if self.rheld else 0)
                 self.presses[bit >> 1] += 1
+                self.press_at[bit >> 1] = (x, y)
                 self.held = True
                 self.held_bit = bit
                 self.button_read = False
@@ -330,12 +361,14 @@ class Session(Machine):
                 self.rheld = True
                 self.mouse[2] |= 2
                 self.presses[1] += 1
+                self.press_at[1] = (x, y)
                 self.put_word(DS, MOUSE_BUTTONS, self.word(DS, MOUSE_BUTTONS) | 2)
                 self.put_word(DS, MOUSE_PRESSES, self.word(DS, MOUSE_PRESSES) | 2)
             elif kind == "rup":
                 self.rheld = False
                 self.mouse[2] &= ~2
                 self.releases[1] += 1
+                self.release_at[1] = (x, y)
                 self.put_word(DS, MOUSE_BUTTONS, self.word(DS, MOUSE_BUTTONS) & ~2)
             self.log.append("%s %s at %d ms in %s" % (kind, value, self.ms, " < ".join(self.call_stack[-3:])))
             self.waits = 0
@@ -346,19 +379,31 @@ class Session(Machine):
 
     def capture(self, name: str):
         """The state now, as the original's own saved-game writer (R037 1462:2ACE) writes it, run on a copy of the machine
-        that is thrown away afterwards."""
+        that is thrown away afterwards. The compressor's match search R003+0x2264 runs block for block in fast_capture.py (the same
+        blocks, clock, coverage and machine state as the emulation; the emulation runs the rest and takes every timer interrupt)."""
         keep = self.save_machine()
         keep_random, keep_card = struct.unpack("<I", self.read(DS, HOLDRAND, 4))[0], self.word(DS, CARD)
         try:
             for k in [k for k in self.vfs.files if k.startswith("saves") and "dksave" in k]:
                 del self.vfs.files[k]
             self.ensure(37)
+            if self.byte(DS, 0x907A) == 1:
+                # in a battle the writer frees DS:A65E at its end (R037+0x37E1), the picture its caller save_game R037+0x2A68 loads in a
+                # batch of its own just before (R037+0x2A8E..0x2AA1): loaded here too, else the writer frees a picture inside the start's batch
+                self._pic_batch_begin(self)
+                self.put_word(DS, 0xA65E, self.call(P(0x0617), 0x045C, [0x41F2])[0])
+                self._pic_batch_end(self)
+            base = BASE + self.rt.sections[fast_capture.RECORD]["load_seg"] * 16
+            self._fast_base, self._fast_lo, self._fast_hi = base, base + fast_capture.FIRST, base + fast_capture.LAST + 1
+            # a hook inside the modelled blocks would have to run there: then the emulation runs them
+            self._capturing = self.fast_search and not any(self._fast_lo <= a < self._fast_hi for a in self._hooked)
             self.call(*SAV_WRITE, [self.push_string("Darklands")])
             names = [k for k in self.vfs.files if k.startswith("saves") and "dksave" in k and k.endswith(".sav")]
             self.states[name] = (bytes(self.vfs.files[names[0]]), keep_random, keep_card)
             self.log.append("state %s at %d ms, card %X (Save Game %d, Load Saved Game %d)" % (
                 name, self.ms, keep_card, self.byte(DS, SAVE_ITEM), self.byte(DS, LOAD_ITEM)))
         finally:
+            self._capturing = False
             self.load_machine(keep)
 
     def save_machine(self):
@@ -393,6 +438,7 @@ class Session(Machine):
                     during, mark = self.sheet_out
                     self.log.append("sheet callbacks %d,%d (battle pass %d)" % (during, (self.word(DS, CALLBACKS) - mark) & 0xFFFF, self.battle_passes - 1))
                     self.sheet_out = None
+                _menu_flush(self)
                 clock = self.word(DS, COMBAT_CLOCK)
                 self.still_clock, self.still_passes = clock, (self.still_passes + 1 if clock == self.still_clock else 1)
                 if self._setting_up is not None:
@@ -514,9 +560,28 @@ class Session(Machine):
     def _bios_tick(self, m):
         self.put_word(0x40, 0x6C, self.word(0x40, 0x6C) + 1)
 
+    def _add_block_hook(self):
+        """The block hook without the binding's two Python layers (its exception guard is the same: the first exception is kept and
+        re-raised by emu_start, and the emulation stops)."""
+        uc, on = self.uc, self._on_block       # the method as it is now (a harness may have replaced it)
+
+        def raw(handle, address, size, key):
+            try:
+                on(uc, address, size, None)
+            except BaseException as e:
+                if uc._hook_exception is None:
+                    uc._hook_exception = e
+                uc.emu_stop()
+        uc._Uc__do_hook_add(unicorn.UC_HOOK_BLOCK, HOOK_CODE_CFUNC(raw), 1, 0)
+
     def _on_block(self, uc, address, size, _):
-        if (self.count >= self.next_irq and self.uc.reg_read(REG["EFLAGS"]) & 0x200 and address not in self._hooked
-                and address < SENTINEL_SEG * 16):
+        # Session's part, then Machine._on_block's and Session.valid's, in one function: the same steps in the same order
+        if (self._capturing and self._fast_lo <= address < self._fast_hi and fast_capture.RECORD in self.resident and not self.held
+                and self._restore_stack is None and fast_capture.run(self, uc, address, size)):
+            return
+        count = self.count
+        if (count >= self.next_irq and uc.reg_read(REG_EFLAGS) & 0x200 and address not in self._hooked
+                and address < SENTINEL_LIN):
             self.next_irq += self._period()
             self.irqs += 1
             cs = self.reg("CS")
@@ -532,19 +597,59 @@ class Session(Machine):
             self.uc.reg_write(REG["CS"], seg)
             self.uc.reg_write(REG["IP"], off)
             return
-        if self._restore_stack is not None and address == self._restore_stack[0] and self.reg("SP") == self._restore_stack[2]:
+        rs = self._restore_stack
+        if rs is not None and address == rs[0] and self.reg("SP") == rs[2]:
             # the interrupt taken in the stock loop has returned: its frame and pushes below SP are put back as they were
-            _, ss, sp, dead = self._restore_stack
+            _, ss, sp, dead = rs
             self._restore_stack = None
             self.write(ss, (sp - STOCK_LOOP_STACK) & 0xFFFF, dead)
-        if self.held and self.button_read and self.ms >= self.press_ms + CLICK_MS:
-            self._release()
-        elif self.held and self.held_bit == 2 and self.ms >= self.press_ms + RIGHT_UNREAD_MS:
-            self._release()
-        if self.count > self.progress:
+        if self.held:
+            if self.button_read and count // BYTES_PER_MS >= self.press_ms + CLICK_MS:
+                self._release()
+            elif self.held_bit == 2 and count // BYTES_PER_MS >= self.press_ms + RIGHT_UNREAD_MS:
+                self._release()
+        if count > self.progress:
             self.progress += 20_000_000
             print("%7d ms  %s  %s" % (self.ms, self.function_at(address), " < ".join(self.call_stack[-3:])), flush=True)
-        super()._on_block(uc, address, size, _)
+        # Machine._on_block
+        self._block = (address, count, self._last_block_jcc)      # what a snapshot taken at this block's first instruction must undo
+        self.recent.append(address)
+        if not DS_LIN <= address < DS_LIN + 0x10000:              # Session.valid: DGROUP is code too (int86's stub), else Machine.valid
+            if self.resident != self._valid_res:
+                self._valid_res, self._valid_memo = list(self.resident), {}
+            r = self._valid_memo.get(address)
+            if r is None:
+                r = self._valid_memo[address] = self._valid(address)
+            if not r:
+                self.pending = ("stop", "execution outside the loaded code at %05X (from %s)" % (
+                    address, " ".join("%05X" % a for a in list(self.recent)[-8:-1])))
+                uc.emu_stop()
+                return
+        count += size   # bytes, a cheap bound
+        self.count = count
+        if count > self.budget * 3:
+            self.pending = ("stop", "instruction budget")
+            uc.emu_stop()
+            return
+        if not self.coverage:
+            return
+        if self._last_block_jcc is not None:
+            self.cov_edges.add((self._last_block_jcc, address))
+            self._last_block_jcc = None
+        ent = self._decoded.get(address)
+        if ent is None:
+            code = bytes(uc.mem_read(address, size))
+            ins = list(self.md.disasm(code, 0))
+            lst = [(address + i.address, code[i.address:i.address + i.size], i.mnemonic) for i in ins]
+            ent = self._decoded[address] = [lst, lst[-1][0] if lst and lst[-1][2] in CONDITIONAL else None, -1]
+        if ent[2] != self._cov_epoch:       # a block already added since the last flush adds nothing
+            ci = self.cov_insns
+            for lin, code, mn in ent[0]:
+                if lin not in ci:
+                    ci[lin] = code
+            ent[2] = self._cov_epoch
+        if ent[1] is not None:
+            self._last_block_jcc = ent[1]
 
     def _on_port(self, uc, port, size, *rest):
         if len(rest) == 2:          # out: (value, user data)
@@ -606,6 +711,89 @@ class Session(Machine):
         # orig: font_height drv+0x11FA: the glyph height (header -4) plus the line spacing (header -2)
         f = self._font_of(m.arg(0))
         return (8, 0) if f is None else (f[3] + f[5], 0)
+
+    # ---- the driver's memory pictures (mgraphic.exe entries 18, 7, 35, 34, 33: body 0x0A51, 0x0A7C, 0x0AAA, 0x0B15, 0x0AF8) ----------
+    def _pic_batch_begin(self, m):
+        # `mov ah, 48h; mov bx, 0FFFFh; int 21h` for the largest block, then that block: the arena's start, cursor and end
+        n = self.largest()
+        seg = self.alloc(n) if n else None
+        seg, end = (seg, seg + n) if seg else (0, 0)
+        self.pic_arena = [0, seg, seg, end, 0, 0]
+        return (seg, 0)
+
+    def _pic_batch_end(self, m):
+        # used = cursor - start: none frees the block (AH=49h), else it is cut to that (AH=4Ah); AX = the block or 0
+        _, cur, start, _, _, _ = self.pic_arena
+        out = 0
+        if start and cur >= start:
+            if cur == start:
+                self.mcbs.pop(start, None)
+            else:
+                self.mcbs[start] = cur - start
+            out = start
+        self.pic_arena = [0, 0, 0, 0, 0, 0]
+        return (out, 0)
+
+    def _pic_open(self, m):
+        w, h = m.arg(0), m.arg(1)
+        self.pic_size = w * h
+        a = self.pic_arena
+        avail = a[3] - a[1]
+        if avail <= 0:
+            a[0] = a[1] = 0
+            return (0, 0)
+        a[4] = min(avail, 0xFFF) << 4
+        self.write(a[1], a[0], bytes([w & 0xFF, h & 0xFF]))
+        a[0] += 2
+        a[5] = w
+        return (a[1], 0)
+
+    def _pic_line(self, m):
+        a = self.pic_arena
+        if not a[1]:
+            return (0, 0)
+        w = a[5]
+        if a[0] + w + 2 > a[4]:
+            # the picture no longer fits: its height byte loses one and the arena is closed (DS end 0)
+            self.write(a[1], 1, bytes([(self.byte(a[1], 1) - 1) & 0xFF]))
+            a[3] = 0
+            return (0, 0)
+        line = self.read(DS, m.arg(0), w)
+        nz = [i for i, b in enumerate(line) if b]
+        if nz:
+            lead, data = nz[0], bytes(line[nz[0]:nz[-1] + 1])
+        else:
+            lead, data = w, b""
+        self.write(a[1], a[0], bytes([len(data) & 0xFF, lead & 0xFF]) + data)
+        a[0] += 2 + len(data)
+        return (a[1], 0)
+
+    def _save_rect(self, m):
+        # the lines are the screen's, which this machine does not draw: each is taken whole (no zero ends trimmed), the largest the
+        # driver stores (2 + h * (w + 2) bytes), so the block is never smaller than the real one
+        w, h = m.arg(3), m.arg(4)
+        a = self.pic_arena
+        avail = a[3] - a[1]
+        if avail <= 0:
+            a[0] = a[1] = 0
+        else:
+            a[4] = min(avail, 0xFFF) << 4
+            self.write(a[1], a[0], bytes([w & 0xFF, h & 0xFF]))
+            a[0] += 2
+            for _ in range(h if w else 0):
+                if a[0] + w + 2 > a[4]:
+                    self.write(a[1], 1, bytes([(self.byte(a[1], 1) - 1) & 0xFF]))
+                    a[3] = 0
+                    break
+                a[0] += 2 + w
+        return self._pic_close(m)
+
+    def _pic_close(self, m):
+        a = self.pic_arena
+        used, seg = a[0], a[1]
+        a[0] = 0
+        a[1] = seg + ((used + 15) >> 4)
+        return (seg, 0)
 
     def _driver(self, coord: str):
         def h(m):
@@ -761,7 +949,7 @@ class Session(Machine):
     # and hooks), puts this state back and carries on from the same point of the same call loop, so it is the run it would have been.
     SNAPSHOT_SKIP = frozenset((
         "exe", "rt", "uc", "md", "images", "stubs", "hooks", "names", "thunks", "functions", "_hooked", "_decoded", "fonts", "vfs",   # built alike by every Session
-        "_cov_memo", "_valid_res", "_valid_memo", "script", "battle_trace", "_next_key", "on_key", "before_stub", "snap_plan", "coverage", "budget", "battle_pause", "_block", "pending"))      # the run's own wiring
+        "_cov_memo", "_valid_res", "_valid_memo", "_capturing", "_fast_base", "_fast_lo", "_fast_hi", "_fast_trace", "_fast_io", "_fast_cov", "_ram_map", "_ram_ref", "ram", "script", "battle_trace", "_next_key", "on_key", "before_stub", "snap_plan", "coverage", "budget", "battle_pause", "_block", "pending"))      # the run's own wiring
 
     def _handler_kind(self, handler):
         if handler == self._poll:
@@ -921,6 +1109,39 @@ def set_trace_state(t, st: dict):
         getattr(t, k)[:] = v
 
 
+def _menu_flush(m):
+    # the top-level bar run of this pass waiting for its "after" (the callbacks from its end up to the next pass's head or the next bar run)
+    if m.menu_out is not None:
+        during, mark = m.menu_out
+        m.menu_out = None
+        m.log.append("menu callbacks %d,%d (battle pass %d)" % (during, (m.word(DS, CALLBACKS) - mark) & 0xFFFF, m.battle_passes))
+
+
+def _menu_enter(m):
+    if not m.menu_calls:
+        _menu_flush(m)
+    m.menu_calls.append([m.word(DS, CALLBACKS), False, 0])    # [callbacks at entry, bar up, callbacks of nested bar runs]
+
+
+def _menu_up(m):
+    if m.menu_calls:
+        m.menu_calls[-1][1] = True
+
+
+def _menu_leave(m):
+    if not m.menu_calls:
+        return
+    mark, up, nested = m.menu_calls.pop()
+    if up and 14 in m.resident:
+        total = (m.word(DS, CALLBACKS) - mark) & 0xFFFF
+        if m.menu_calls:
+            # a bar run inside a bar run (a message's wait): its own callbacks only, the outer one's without them
+            m.log.append("menu callbacks %d,0 (battle pass %d)" % (total - nested, m.battle_passes))
+            m.menu_calls[-1][2] += total
+        else:
+            m.menu_out = (total - nested, m.word(DS, CALLBACKS))
+
+
 def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, battle_trace=None, no_wall_draws=False, cov_out: dict | None = None, snapshots=None):
     """The session in the original: (states {name: (sav, random, card)}, clock seeds in order, log, how it ended, saved files,
     each battle's set-up ticks). cov_out, when given, is filled with the coverage record."""
@@ -944,6 +1165,13 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
     s.sheet_in = s.sheet_out = None
     s.hook(P(0x1EF8), 0x0066, lambda m: setattr(m, "sheet_in", m.word(DS, CALLBACKS)), record="R022")
     s.hook(P(0x1EF8), 0x03C6, lambda m: setattr(m, "sheet_out", ((m.word(DS, CALLBACKS) - m.sheet_in) & 0xFFFF, m.word(DS, CALLBACKS))), record="R022")
+    # the menu bar in a battle (root 0000:0000 with the bar up: 0x0080 reached, the right button held or the keyboard menu DS:9C26): the
+    # timer callbacks while it ran (DS:07D1 counts on, the clock held) and after it up to the next pass, as for the sheet - the C# host has no
+    # time of its own there (DARKLANDS_BATTLE_MENU_CALLBACKS)
+    s.menu_calls, s.menu_out = [], None
+    s.hook(P(0x0000), 0x0000, _menu_enter)
+    s.hook(P(0x0000), 0x0080, _menu_up)
+    s.hook(P(0x0000), 0x01D0, _menu_leave)
     s.battle_pause = BATTLE_PAUSE_PASSES
     if getattr(battle_trace, "records", False):
         battle_trace.session = s

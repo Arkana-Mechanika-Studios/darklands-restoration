@@ -241,7 +241,7 @@ public sealed class EscortingTheRebelLeaders : Card
                 c.Screen.Text(0x10);
                 break;
             default:
-                // DORMANT: other results (the original lists −64..−1 and has a default) change nothing.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other results (the original lists −64..−1 and has a default) change nothing.
                 return;
         }
         c.Next = c.IsDaylight ? 9 : 10;

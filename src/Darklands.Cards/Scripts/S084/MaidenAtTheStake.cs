@@ -155,7 +155,7 @@ public sealed class MaidenAtTheStake : Card
                 GoOn(c);
                 break;
             default:
-                // DORMANT: other battle results leave the party watching.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party watching.
                 break;
         }
     }

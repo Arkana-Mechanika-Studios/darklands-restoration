@@ -253,7 +253,7 @@ public sealed class ChasedByTheCityGuard : Card
                 c.Next = 0x0D;
                 break;
             default:
-                // DORMANT: other battle results leave the chase on.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the chase on.
                 break;
         }
         c.EventHere(0x11, standing <= -75 ? 240 : 120);

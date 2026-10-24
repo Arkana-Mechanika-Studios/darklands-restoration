@@ -371,7 +371,7 @@ public sealed class MarketAtNight : Card
                 c.PassHours(3);
                 c.Next = Dungeon;
                 break;
-            // DORMANT: other battle results leave the card as it is.
+            // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the card as it is.
         }
         c.EventHere(Banned, standing <= -75 ? 240 : 144);
         c.LocationSet(c.Here, 0, standing);

@@ -218,7 +218,7 @@ public sealed class RivalDragonSlayer : Card
                 c.Next = 0x0D;
                 break;
             default:
-                // DORMANT: other battle results leave the party with the knight.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party with the knight.
                 break;
         }
     }

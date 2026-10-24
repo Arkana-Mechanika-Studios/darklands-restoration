@@ -30,7 +30,7 @@ public readonly record struct StepResult(StepOutcome Outcome, int Card = 0);
 /// an encounter, as the travel screen of the game decides.
 /// </summary>
 // orig: Step = R030+0x1300 (1462:1300) draft (the draft of 1300 does not match the bytes: shape right, stack slots differ; checked against its disassembly - the forced arrival with party_x/party_y, the blocked test, the minutes, the arrival loop, the notice loop with its message and cue, the danger roll and the weight all agree with the C), read with the key handler R030+0x0C44 (draft, bytes differ; its clamps, the DS:290E toggle and the scroll block were checked against the disassembly too) and the sel == 1000 / 2000 branches of overland_loop R030+0x02C0 (draft, bytes match); tests: OverlandTests
-// DIVERGENCE: the original keeps the party as three view-relative registers (DS:2866/DS:2868 the marker inside the 260x184 view, DS:286A/DS:286C/DS:286E the view's column and row offsets into the scrolling G[][] terrain buffer); this class works on absolute map pixels and cells (WorldMap.CellAt). The cell under the marker is the same one (the formulas of 1300: row = (y + 11) / 4, column from x + 16 or x + 24 by the row's parity, are those of CellAt).
+// DIVERGENCE: the original keeps the party as three view-relative registers (DS:2866/DS:2868 the marker inside the 260x184 view, DS:286A/DS:286C/DS:286E the view's column and row offsets into the scrolling G[][] terrain buffer); this class works on absolute map pixels and cells (WorldMap.CellAt). The cell under the marker is the same one (the formulas of 1300: row = (y + 11) / 4, column from x + 16 or x + 24 by the row's parity, are those of CellAt); the terrain read through G is one cell off at the view's column 0 / row 0, as in the original (WorldMap.BufferOffset, View).
 public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool>? eventStarted = null)
 {
     /// <summary>Event kinds the travel rules look at.</summary>
@@ -67,6 +67,18 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     /// <summary>Plays a music cue (<c>thunk 09C0:18F1</c>); the screen supplies it.</summary>
     public Action<int>? PlayCue { get; set; }
 
+    /// <summary>The view's first column and first shown row (DS:286A, DS:286C), which the terrain read depends on at the map's borders (<see cref="WorldMap.BufferOffset"/>); the screen supplies it.</summary>
+    public Func<(int Column, int Rows)> View { get; set; } = () => (1, 1);
+
+    // orig: the terrain read of R030+0x1300 (R030+0x1376..0x1387: G[(y + 11) / 4][col]) and of R030+0x16C6 (DS:D843), through the cell buffer of R030+0x20D2
+    // C: G is filled from column / row 1 when the view's is 0, so at the west / north border the cell read is the one east / south of the party's
+    private int TerrainUnderMarker(int column, int row)
+    {
+        var view = View();
+        var (dc, dr) = WorldMap.BufferOffset(view.Column, view.Rows);
+        return map.TerrainAt(column + dc, row + dr);
+    }
+
     /// <summary>The terrain the party stands on.</summary>
     // orig: DS:D843
     public int CurrentTerrain => _terrain;
@@ -79,7 +91,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         _minutes = 0;
         _danger = 0;
         var (column, row) = (state.MapPosition.X, state.MapPosition.Y);
-        _terrain = map.TerrainAt(column, row);
+        _terrain = TerrainUnderMarker(column, row);
     }
 
     /// <summary>The party moves onto the cell under map pixel (x, y).</summary>
@@ -96,7 +108,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         }
 
         // C: t = c >= 50 ? 28 : c — a place icon counts as a castle (16c6 uses c > 50 for the same test, so for the single code 50 it leaves DS:D843 at 50; place icon codes start at 0x1C and 0x33, so this is not reachable).
-        var terrain = map.TerrainAt(column, row);
+        var terrain = TerrainUnderMarker(column, row);
         // C: (t == 1 || t == 2) && !event_started(0x4b) && DS:D843 != 1 && DS:D843 != 2 -> 9999: deep water stops the party unless it already stands on deep water; a minor river (3) never stops it.
         if (Terrain.IsDeepWater(terrain) && !_eventStarted(MayCrossWater) && !Terrain.IsDeepWater(_terrain))
         {

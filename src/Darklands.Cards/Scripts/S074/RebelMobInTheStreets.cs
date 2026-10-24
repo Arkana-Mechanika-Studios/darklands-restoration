@@ -91,7 +91,7 @@ public sealed class RebelMobInTheStreets : Card
                 c.Next = 4;
                 break;
             default:
-                // DORMANT: other battle results (5, negative codes) leave the card as it is: the menu comes back.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results (5, negative codes) leave the card as it is: the menu comes back.
                 break;
         }
     }

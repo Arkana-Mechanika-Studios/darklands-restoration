@@ -158,7 +158,7 @@ public sealed class BeforeTheCityWalls : Card
                 c.Next = 0x0D;
                 return;
             default:
-                // DORMANT: other battle results (the original lists −64..−1 and a default) change nothing.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results (the original lists −64..−1 and a default) change nothing.
                 return;
         }
     }

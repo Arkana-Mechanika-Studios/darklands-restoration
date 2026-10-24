@@ -103,7 +103,7 @@ public sealed class ChurchSanctuary : Card
                 c.Next = 0x0D;
                 break;
             default:
-                // DORMANT: other battle results leave the party in the sanctuary.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party in the sanctuary.
                 break;
         }
         // DORMANT: the 120-hour arm: only a party at -75 or worse gets here.

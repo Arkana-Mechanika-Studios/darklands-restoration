@@ -29,6 +29,12 @@ public sealed class WorldMap
         }
     }
 
+    /// <summary>The place icons laid over the terrain: cell and code (one per cell, the last place listed there).</summary>
+    public IEnumerable<(int Column, int Row, int Code)> Icons => _icons.Select(i => (i.Key.Column, i.Key.Row, i.Value));
+
+    /// <summary>The terrain at a map cell without the place icons (0 outside the map).</summary>
+    public int TerrainCell(int column, int row) => column >= 0 && column < Width && row >= 0 && row < Height ? _terrain.ReadTile(column, row) : 0;
+
     public int Width => _terrain.Width;
 
     public int Height => _terrain.Height;
@@ -51,6 +57,19 @@ public sealed class WorldMap
         var code = Cell(column, row);
         return code >= Terrain.FirstPlaceIcon ? Terrain.Castle : code;
     }
+
+    /// <summary>
+    /// How far the cell the original reads under the marker lies from the party's cell, for a view starting at column
+    /// <paramref name="viewColumn"/> and shown row <paramref name="viewRows"/>: one column east when the view is at the map's west
+    /// border (column 0), one row south when its first shown row is 0.
+    /// </summary>
+    // C: R030+0x20D2 takes a first column or row of 0 as 1 (R030+0x20D8..0x20E9) when it fills the cell buffer G, while the readers index
+    //   G with the view's own DS:286A / DS:286C: the step R030+0x1300 (G[(y + 11) / 4][col] at R030+0x137B..0x1382), the camp watch
+    //   R030+0x25BE (R030+0x261D..0x2639, R030+0x26AC..0x26B2) and the party drawing R030+0x16C6 (which also sets DS:D843)
+    // C: party_x / party_y (DS:286A + col - 1, row + DS:286E + DS:286C - 1) and the place scans of 1300 use the registers, not G: only the
+    //   terrain read moves. DS:286A is 0 whenever the view stands at the west border (overland_open and the scroll block clamp it there);
+    //   DS:286C is 0 only after overland_open placed a party at map row 16 or less (the scroll block keeps it at 1 or more).
+    public static (int Column, int Row) BufferOffset(int viewColumn, int viewRows) => (viewColumn == 0 ? 1 : 0, viewRows == 0 ? 1 : 0);
 
     /// <summary>The map cell under a point in map pixels (the party's position).</summary>
     // orig: rowk = (DS:2868 + 11) / 4; cold = ((rowk + DS:286E + DS:286C - 1) % 2 ? DS:2866 + 16 : DS:2866 + 24) / 16; party_x = DS:286A + cold - 1; party_y = rowk + DS:286E + DS:286C - 1 (R030+0x0C44)

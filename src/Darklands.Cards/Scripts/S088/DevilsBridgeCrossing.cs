@@ -169,7 +169,7 @@ public sealed class DevilsBridgeCrossing : Card
                 }
                 break;
             default:
-                // DORMANT: other battle results (the jump table's negative cases too) leave the party on the bridge with nothing done.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results (the jump table's negative cases too) leave the party on the bridge with nothing done.
                 return;
         }
         CrossIntoTheVillage(c);

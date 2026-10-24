@@ -302,7 +302,7 @@ public sealed class CityGateInWartime : Card
                 c.Next = 0x0D;
                 break;
             default:
-                // DORMANT: other battle results leave the party at the gate.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party at the gate.
                 break;
         }
         c.Events.Renew(-2, c.Here, 0x14, 0x11, 1, 0x63, 0, standing <= -75 ? 240 : 120, 0, 0);

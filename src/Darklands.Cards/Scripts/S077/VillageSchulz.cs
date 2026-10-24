@@ -196,7 +196,7 @@ public sealed class VillageSchulz : Card
                     c.Next = 0x8F;
                     break;
                 default:
-                    // DORMANT: other battle results leave the party with the Schulz.
+                    // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party with the Schulz.
                     break;
             }
             // The village now greets the party with its cultists' card.

@@ -181,7 +181,7 @@ public sealed class WildBoarsCharge : Card
                 LeaveTheScene(c);
                 break;
             default:
-                // DORMANT: other battle results leave the party where it is.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party where it is.
                 break;
         }
     }

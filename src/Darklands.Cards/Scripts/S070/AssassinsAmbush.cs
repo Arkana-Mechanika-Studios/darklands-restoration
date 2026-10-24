@@ -220,7 +220,7 @@ public sealed class AssassinsAmbush : Card
                 BackToTheMap(c);
                 break;
             default:
-                // DORMANT: other battle results leave the menu as it is.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the menu as it is.
                 break;
         }
     }

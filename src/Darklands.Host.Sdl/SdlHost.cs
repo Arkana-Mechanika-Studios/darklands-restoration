@@ -19,6 +19,11 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     // the BIOS keyboard buffer with the game's keyboard interrupt in front of it (BiosKeyBuffer): SDL's presses and repeats go in
     // as the keyboard's makes and typematic repeats, bounded and with a held key's repeats collapsed as in the original
     private readonly BiosKeyBuffer _keys = new();
+    // orig: root 044A:020E (the INT 9 handler: it only sees what the keyboard sends; the original never programs the typematic rate, so the keyboard's power-on 500 ms / 10.9 cps apply)
+    // DIVERGENCE: the held key's repeats come from the PC keyboard's default typematic (KeyTypematic: 500 ms, then 10.9/s) counted
+    //   from its press, not from SDL's operating-system repeat events (about 30/s); the developer console keeps the OS repeats
+    private readonly KeyTypematic _typematic = new();
+    private readonly System.Diagnostics.Stopwatch _keyClock = System.Diagnostics.Stopwatch.StartNew();
     private SdlNative.SdlRect _viewport;
     private SdlNative.SdlRect _textViewport;
     private MouseState _mouse;
@@ -358,17 +363,16 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                     {
                         _transitions.Enqueue((make, false));
                     }
+                    if (e.Keyboard.Repeat != 0)
+                    {
+                        break;   // the operating system's own repeat: the keyboard's typematic below stands in for it
+                    }
                     var key = SdlKeyMap.ToGameKey(e.Keyboard.Keysym.Scancode, e.Keyboard.Keysym.Sym, e.Keyboard.Keysym.Mod);
-                    if (key != Keys.None)
-                    {
-                        _keys.Press(key);
-                    }
-                    else
-                    {
-                        _keys.ScanCode();
-                    }
+                    _typematic.Press(key, _keyClock.Elapsed.TotalMilliseconds, (int)e.Keyboard.Keysym.Scancode);
+                    PressKey(key);
                     break;
                 case SdlNative.EventKeyUp:
+                    _typematic.Release((int)e.Keyboard.Keysym.Scancode);
                     _keys.ScanCode();
                     _shift = (e.Keyboard.Keysym.Mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0;
                     if (PcScanCode(e.Keyboard.Keysym.Scancode) is var brk and not 0)
@@ -401,6 +405,12 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                     break;
             }
         }
+        // the typematic repeats of the key held last that came due since the previous pump
+        var due = _typematic.Due(_keyClock.Elapsed.TotalMilliseconds, out var held);
+        for (var i = 0; i < due; i++)
+        {
+            PressKey(held);
+        }
         // the game may pump without presenting while it waits: the console is drawn on (and taken away when it closes)
         if (Console is not null && (toggledThisPump || (Console.Console.IsOpen && !_framePresented)))
         {
@@ -409,11 +419,25 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         _framePresented = false;
     }
 
+    /// <summary>A make code or typematic repeat of a key reaches the keyboard interrupt: a game key is stored, any other only runs the handler.</summary>
+    private void PressKey(int key)
+    {
+        if (key != Keys.None)
+        {
+            _keys.Press(key);
+        }
+        else
+        {
+            _keys.ScanCode();
+        }
+    }
+
     private MouseButtons _releaseNextPump;
 
     private void SetConsoleOpen(bool open)
     {
         Console!.Console.IsOpen = open;
+        _typematic.Stop();   // the console takes the keyboard; what it types repeats with the operating system's rate
         if (open)
         {
             SdlNative.SDL_StartTextInput();

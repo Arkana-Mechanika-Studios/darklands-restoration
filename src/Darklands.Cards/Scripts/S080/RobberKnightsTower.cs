@@ -181,7 +181,7 @@ public sealed class RobberKnightsTower : Card
                 c.Next = 0x0C;
                 break;
             default:
-                // DORMANT: other battle results leave the party before the tower.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party before the tower.
                 break;
         }
     }
@@ -219,7 +219,7 @@ public sealed class RobberKnightsTower : Card
                 c.Next = 0x0C;
                 break;
             default:
-                // DORMANT: other battle results leave the party before the tower.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party before the tower.
                 break;
         }
     }

@@ -230,7 +230,8 @@ public sealed class GiantSpiderNest : Card
     // orig: R112+0x19B0 (199D:0360) matched; tests: CardSmokeTests
     // C: right-to-left arguments: the spider count is drawn before run_battle draws its seed (-1).
     // C: party_x is declared `extern long` in the original, so the call pushes party_y and party_x: nearest_city(party_x) receives the party's (x, y); nothing is undefined (checked against the asm).
-    // DORMANT: the switch's explicit cases -0x40..-1 (and results above 4) return without leaving.
+    // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): result 5 takes the default arm and returns without leaving.
+    // DORMANT: the switch's explicit cases -0x40..-1 return without leaving, and results 6 and above (pit, timed exit) cannot occur on this object-less battlefield; run_battle never gives them.
     private static void FightTheSpiders(CardContext c, bool ambushed)
     {
         var spiders = c.Random(3) + c.PartyLoreLevel() / 5 * 3 + 1;

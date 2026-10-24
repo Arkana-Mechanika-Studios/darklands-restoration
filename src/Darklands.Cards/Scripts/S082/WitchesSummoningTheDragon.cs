@@ -84,7 +84,7 @@ public sealed class WitchesSummoningTheDragon : Card
                 c.Next = 0x0C;
                 break;
             default:
-                // DORMANT: other battle results leave the party in the cave.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party in the cave.
                 break;
         }
     }

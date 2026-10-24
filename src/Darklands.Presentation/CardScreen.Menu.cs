@@ -42,6 +42,8 @@ public sealed partial class CardScreen
     }
 
     /// <summary>The menu being chosen from (null: none): for <see cref="OptionPoint"/>.</summary>
+    // C: per thread, so screens run side by side (parallel tests) do not read each other's menu; a game has one screen thread.
+    [ThreadStatic]
     private static OptionLayout? _choosing;
 
     /// <summary>A point on line <paramref name="line"/> of the menu being chosen from (a scripted host's option:&lt;n&gt; step), null without one.</summary>

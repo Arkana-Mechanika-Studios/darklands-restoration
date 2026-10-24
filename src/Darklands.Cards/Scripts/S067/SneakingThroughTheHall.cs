@@ -216,7 +216,7 @@ public sealed class SneakingThroughTheHall : Card
                 c.Next = 0x0D;
                 break;
             default:
-                // DORMANT: other battle results change nothing.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results change nothing.
                 break;
         }
     }

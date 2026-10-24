@@ -352,7 +352,8 @@ public sealed class MerchantHouseOffices : Card
     /// </summary>
     // orig: R108+0x1156 (1925:0286) matched; tests: CardSmokeTests
     // C: right-to-left arguments: the guard count is drawn before run_battle (seed -2 draws nothing).
-    // DORMANT: the switch's explicit cases -0x40..-1 (and results above 4) return without a change; run_battle never gives them.
+    // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): result 5 takes the default arm and returns without a change.
+    // DORMANT: the switch's explicit cases -0x40..-1 return without a change, and results 6 and above (pit, timed exit) cannot occur on these object-less battlefields; run_battle never gives them.
     private static void FightTheGuards(CardContext c)
     {
         var guards = c.Random(5) + 3;

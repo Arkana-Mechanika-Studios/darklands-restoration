@@ -28,7 +28,7 @@ The testers are split so that editing the comparison never expires a recording:
 
 | Side | Files | In the recording key |
 |---|---|---|
-| original side: drives, hooks, stubs or feeds the emulated original, and decides what is recorded from it | `orig_side.py` (the Session: EMS, clock, keys and mouse from the script, the hooks and stubs, the recorded session run, `clock_jumps`, `stale_destinations`, the traces, the snapshots), `battle_orig.py` (the fight's run up to and through the battle; fights only), `dosmachine.py`, `run_unit.py`, whatever they import | yes |
+| original side: drives, hooks, stubs or feeds the emulated original, and decides what is recorded from it | `orig_side.py` (the Session: EMS, clock, keys and mouse from the script, the hooks and stubs, the recorded session run, `clock_jumps`, `stale_destinations`, the traces, the snapshots), `fast_capture.py` (the state capture's match search, see below), `battle_orig.py` (the fight's run up to and through the battle; fights only), `dosmachine.py`, `run_unit.py`, whatever they import | yes |
 | compare / C# side: runs the rewrite, compares, writes reports and verdicts | `lockstep.py` (`run_rewrite`, `compare`, the report), `battle_oracle.py` (`FIGHTS`, `first_difference`, the report), `savdiff.py`, `rerun_all.py` (the verdicts, the schedule), `diff_runs.py` | no |
 | storage | `recording.py`, `rerun_all.py` | no (`FORMAT` is raised when what is stored changes) |
 
@@ -65,6 +65,26 @@ every live run from the beginning, and neither reads nor writes a snapshot. File
 - `rerun_all.py <out> [--workers N]`: every fight of FIGHTS and every session of lockstep-sessions, one process each, N workers (default the core count,
   bounded by free memory), the slowest first (the last live durations in `<recordings>/durations.json`); writes `<out>/summary.json`.
 - `diff_runs.py <A> <B>`: two such output folders compared, ignoring timings and live-or-replayed.
+
+## The state capture's match search (`fast_capture.py`)
+
+A session's `state:` step runs the original's saved-game writer (R037+0x2ACE) on a copy of the machine that is thrown away afterwards
+(`Session.capture`). Most of that time was the compressor's longest-match search R003+0x2264 (a hash-chain walk with `cmp`, `cmpsb` and
+`repe cmpsb`, one translated block per compared byte). Inside a capture its blocks R003+0x2284 .. 0x24AF run in Python, block for block, with
+what the emulation does at each of them: the same registers (EFLAGS as Unicorn computes it from the last flag-setting instruction) and memory
+bytes, the same blocks in the same order (each `repe cmpsb` iteration a block), `count` (+ each block's bytes), `recent`, and the coverage's
+instructions, conditional branches and (branch, next block) edges through the same `_decoded` entries and epoch. It gives the machine back
+to the emulation at the block where a timer interrupt is due (the emulation's own block hook then takes it there, as before), where the
+progress line or the budget falls, and at the blocks it does not model (the entry and exit around the stack switch R003+0x2264..0x2281 and
+0x24BC..0x24CF, whose `mov ss` / `sti` decide the next block's shape, and the `int3` at R003+0x2450). Nothing the original does or when changes:
+the emulated clock, the interrupts and their register frames, the saved games and the coverage are identical. For this the Session's
+megabyte is mapped from a host buffer of its own (`Machine.direct_ram`, `self.ram`: the same memory to the emulation, read and written in
+place by the model). `Session.fast_search = False` runs the search emulated as before (used to compare the two).
+
+The Session's block hook (`Session._on_block`, called by Unicorn for every translated block) is one function: the Session's steps (timer
+interrupt, the stock loop's stack, the click release, the progress line) and then Machine._on_block's and Session.valid's (`_block`,
+`recent`, the loaded-code test, `count`, the budget, the coverage) in the same order, registered without the binding's two Python layers
+(`Session._add_block_hook`: the same exception guard, the first exception kept and re-raised by `emu_start`).
 
 ## Direct calls of single battle functions
 

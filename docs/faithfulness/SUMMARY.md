@@ -97,20 +97,20 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,528 functions the oracles enter | 84.8% (49,068 / 57,854) | 75.4% (32,735 / 43,396) |
-| **every function the C# implements (9,281)** | | **74.6% (31,907 / 42,790)** |
+| the 8,528 functions the oracles enter | 84.8% (49,073 / 57,854) | 75.4% (32,732 / 43,396) |
+| **every function the C# implements (9,281)** | | **74.6% (31,904 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 31,907 against 32,735 exercised. By area:
+differ slightly on the resident code, hence 31,904 against 32,732 exercised (3 fewer than the batch before: the tester fixes below removed a few screen outcomes that only the tester's faults had reached). By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
 | rules | 333 / 358 | 2,090 / 2,590 | 81% |
-| battles (tactical combat) | 274 / 314 | 6,094 / 7,516 | 81% |
-| travel (overland map) | 23 / 24 | 684 / 982 | 70% |
-| screens (inventory, barter, creation ...) | 190 / 202 | 4,748 / 6,070 | 78% |
+| battles (tactical combat) | 274 / 314 | 6,096 / 7,516 | 81% |
+| travel (overland map) | 23 / 24 | 691 / 982 | 70% |
+| screens (inventory, barter, creation ...) | 190 / 202 | 4,736 / 6,070 | 78% |
 | resident code | 137 / 160 | 1,041 / 1,644 | 63% |
 | card engine | 35 / 36 | 443 / 686 | 65% |
 | card scripts | 6,860 / 7,949 | 9,718 / 14,616 | 66% |
@@ -118,7 +118,7 @@ differ slightly on the resident code, hence 31,907 against 32,735 exercised. By 
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`): 75.3% (32,236 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`; 366 outcomes, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch): 75.4% (32,270 / 42,790). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
@@ -268,7 +268,7 @@ day-to-day checks; a recording is used only when the hashes of the EXE, the game
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
 weekly during active work); the published verdicts and coverage come from such a live run (this one:
-578 fights and sessions (37 fights, 541 whole-game sessions), all agreeing: a full live pass, with the tester's original side changed (the right mouse button, F6 and F10 delivered to the hot keys' look), then a replay identical to it, 13,855 files compared, the only differing files being the 11 right-button sessions whose steps were settled in this batch). The last open lead before these, a group move at
+578 fights and sessions (37 fights, 541 whole-game sessions), all agreeing: a full live pass after the tester's original side was changed (below), 6,258 s on 8 workers, about half the previous pass thanks to two exact speed-ups of the tester, then a replay identical to it, 13,893 files compared, 0 differences). The last open lead before these, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
@@ -281,6 +281,27 @@ card menus take Up and Down only while the pointer is over a line and ignore the
 DS:ED6C; the old keyboard behaviour stays as an option, off by default); the character generator's loop
 (R037+0x4664) and its waits run neither the menu bar nor the hot keys; party members not placed in a
 battle (unconscious or away) keep their record's place and facings (R002+0x1830).
+
+Batch 14 changed the tester's original side again, each change proven exact before use. Two speed-ups: the
+state capture's compressor (R003+0x2264) is run block for block outside the emulator, with the same register
+frames at every timer interrupt, the same clock, memory and coverage (checked on 86 captures from live
+sessions, 265,929 interrupts taken inside the function), and the per-block hook is one function. Faults of the
+tester fixed: a battle sheet's seven pictures are placed in one DOS block, as the real driver keeps them (the
+emulated DOS gave each its own block, six leaked each time a sheet opened, and the out-of-memory exit that
+followed trimmed two gate sessions; gen-rgate-01 and -02 now run their full steps); INT 33h functions 5 and 6
+report where a button was pressed and released; the wait counter restarts at each wait; the timer is counted
+while the menu bar is up (an opt-in hook on the compare side, as the held battle clock needs: the bar holds
+the clock while the timer's callbacks keep counting, root 0000:0000, root 047C:000A). The card menu's chosen
+menu is kept per thread (a race in the tests, no change to the game). Held keys repeat at the PC/AT typematic
+default in the host (the original never sets it; no effect on the rules).
+Two real differences in the C# came out, fixed and checked against the original: in a battle, T opens the
+Throw list at the next pass, not at once (R016+0x068A .. +0x06A1 only set the request, root 0000:0000 raises
+the bar; BattleUiTests); and the overland step, the camp watch and the party's drawing read the map's cell
+buffer as the original does, so in a view whose first column (row) is 0 the terrain under the party is the
+cell one east (south) of it (R030+0x20D2 fills the buffer with 0 taken as 1, R030+0x1300 reads it around
++0x137B, R030+0x25BE is the camp watch): it decides deep water, the minutes of a step, whether the arrival
+loop runs, the encounter roll and the weight. This is common in the west of the map. 144 direct calls of the
+step after the original's own fill of each view agree.
 
 The emulator loads the original as DOS does: the PSP at 0813 and the root image at 0823 (where DOSBox-X
 puts DARKLAND.EXE), the EXE's relocation items applied, above a real vector table and BIOS data area, so
@@ -372,8 +393,8 @@ memory-layout effects (writes outside arrays the original performs).
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
 markers in the code, each with its reason and original coordinate: 180 original bugs the game
-reproduces (each can be fixed by its own `OriginalBehaviour` flag), 324 registered divergences,
-909 dormant branches kept as the original has them, 58 uncertain readings (of 301: 234 were
+reproduces (each can be fixed by its own `OriginalBehaviour` flag), 327 registered divergences,
+869 dormant branches kept as the original has them, 58 uncertain readings (of 301: 234 were
 naming only, 8 settled by an agreeing oracle or the code, now closed).
 
 Open items (2026-10-24), listed honestly. The three reachable original bugs listed before are now
@@ -393,12 +414,17 @@ callers never pass, R029+0x5537 / +0x55CD; the uprising outcome outside a city, 
 After a menu-bar sub-menu has been opened, a party prayer in the original scans the last battle's leftover
 records (DS:C0A0 + 6i, never saved) for a quality equal to DS:9C2D, a DOS segment: not deterministic game
 state, kept as a divergence (D-8bb04c).
-Open on the tester's side: the emulated DOS gives each of a battle sheet's seven pictures its own memory
-block where the real driver uses one, so six blocks leak each time a sheet opens, and two gate sessions
-are trimmed before the resulting out-of-memory exit. A tester fix is prepared and lands with the next full
-live pass; under it one click inside the marching-order box (the original ignores it, the C# takes it) is
-still to be judged. The original exits (code 99) on the roster's arrow keys when a member stands on row 4
-or later of a long roster (a missing picture); the C# documents this as a deliberate difference.
+Resolved in batch 14: the tester's memory leak at the battle sheet (above) and the marching-order click lead
+(a tester fault: the mouse driver's release query now reports where the button was released, INT 33h fn 6). Still open: the original exits (code 99) on
+the roster's arrow keys when a member stands on row 4 or later of a long roster (a missing picture); the C#
+documents this as a deliberate difference. The map's drawing at the view's column 0 or row 0 is still drawn
+unshifted (visual only, D-175ca3), as are the bytes just outside the cell buffer and the rows below the screen.
+The camp watch's shifted read (R030+0x25BE) is not yet checked by a direct call; the step's is. The note of
+card S128 (the mob's waves, leaving whatever the result) is unverified against the original. 40 battle-result
+markers said DORMANT for results the card engine never gets; a result 5 (every member down) reaches a card when
+a member was left behind by an earlier flight, so they now read COVERAGE GAP, and three more notes were split;
+a scenario to exercise them (flee a battle, then lose a card fight) is proposed. The keyboard interrupt is not
+emulated by the tester: key handling is checked by unit tests only.
 
 The last round (2026-10-23): a saved game made in a battle (the mines of DKSAVE99: save, reload, save
 again) agrees with the original's, the .BSV block by block (`savemid-mine`); it found five divergences,
@@ -409,8 +435,18 @@ damages saved data. On the overland map, entering a location needed the party a 
 (reported for 0.9.1): the entry test (R030+0x1300) agrees with the original in 2,448 direct calls around
 Pressburg from all sides, the difference was the drawing: the original copies its map buffer from (8, 8)
 to the screen at (60, 16) (R030+0x2599 .. +0x25AD) and draws the party's corner at the marker + (0x36, 9)
-(R030+0x1B96 .. +0x1C3C); the C# drew the map 8 pixels right and down and the party one lower. Fixed
-(the terrain-dependent raise of the party sprite and the rows drawn over it are not reproduced, listed).
+(R030+0x1B96 .. +0x1C3C); the C# drew the map 8 pixels right and down and the party one lower. Fixed.
+The party's drawing (R030+0x16C6) is now reproduced too: the lift by three 4 x 16 tables indexed by the pixel
+inside the cell (terrain 16..19 and 20..23 raise the sprite, the minor river, tidal marsh and ford lower it), the rows
+drawn over the sprite by terrain (R030+0x1B3E .. +0x1B80), the map's cell buffer as 20d2 fills it (a place icon 18
+columns right of the view's first column also lands in the next row's first cell and changes the masks at the left
+edge), and the screen kept between passes (the map drawn again only when the view moves, the party's 17 x 21 rectangle
+every pass). The original's drawing calls, run directly in the emulator from two map states (1,784 frames: 584 single
+frames over every terrain group and 20 walks of 60 passes) and replayed through a model of the graphics driver
+(MGRAPHIC.EXE), give the same pixels as the C# (tools/oracle/map_draw.py, OverlandDrawingTests). The cell buffer's overflow (R030+0x16C6) is
+reproduced. Left as divergences: the map's drawing at the view's column 0 or row 0, which is still drawn unshifted
+(visual only; D-175ca3, the step's logic is fixed above), the bytes just outside the cell buffer at the map's north
+and south borders, and the party rectangle's rows below the screen at the south border.
 A click on a card menu sets the highlight from the pointer before it is judged (R043+0x21D4); a key
 pressed during the map's pause waits for the next pass (R030+0x3096); the battle screen tests the pause
 byte as the original at each place (the order pointer when it is 0, the clock held while it is not 0).

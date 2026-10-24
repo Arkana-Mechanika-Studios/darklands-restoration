@@ -146,7 +146,26 @@ key:esc
 bwait:20
 key:3
 bwait:20
-# trimmed: the next input opens the sheet once more; the original's sheets leave blocks allocated (R031: six per open, ~33 KB) and the third open in the battle exhausts DOS memory (AllocBuffer, root 06A1:01F0+66 'Insufficient system memory', wanted 22288, 566 paragraphs free); the rewrite has no memory limit
+click:16,112
+bwait:20
+move:170,100
+bwait:20
+click:4,90
+bwait:20
+move:170,100
+bwait:20
+key:1
+bwait:20
+key:esc
+bwait:20
+key:w
+bwait:20
+key:1
+bwait:20
+key:f1
+bwait:20
+key:esc
+bwait:20
 key:space
 wait:20000
 key:l

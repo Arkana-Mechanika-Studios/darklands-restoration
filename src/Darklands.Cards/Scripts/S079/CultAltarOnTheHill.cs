@@ -115,7 +115,7 @@ public sealed class CultAltarOnTheHill : Card
                 c.Next = 0x8F;
                 break;
             default:
-                // DORMANT: other battle results leave the party at the altar.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party at the altar.
                 break;
         }
     }

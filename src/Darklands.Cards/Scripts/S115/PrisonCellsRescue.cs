@@ -148,7 +148,8 @@ public sealed class PrisonCellsRescue : Card
     /// </summary>
     // orig: R115+0x0EEC (1901:025C) matched; tests: CardSmokeTests
     // C: the seed argument is cur_loc + 0x6F (a fixed seed per city); rand_mod(5) + 3 is the only draw.
-    // DORMANT: the switch's explicit cases -0x40..-1 (and results above 4) skip to the reputation change.
+    // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): result 5 takes the default arm and skips to the reputation change.
+    // DORMANT: the switch's explicit cases -0x40..-1 skip to the reputation change, and results 6 and above (pit, timed exit) cannot occur on this object-less battlefield; run_battle never gives them.
     private static void FightTheGuards(CardContext c)
     {
         var guards = c.Random(5) + 3;

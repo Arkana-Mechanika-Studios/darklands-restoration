@@ -100,7 +100,7 @@ public sealed class MadPriestOfTheHoard : Card
                 c.Screen.Text(0x0A);
                 break;
             default:
-                // DORMANT: battle results above 4 leave the party before the priest.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): battle results above 4 leave the party before the priest.
                 return false;
         }
         c.State.CurrentLocation = -1;

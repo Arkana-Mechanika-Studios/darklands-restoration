@@ -325,7 +325,7 @@ public sealed class Footpads : Card
                 c.AddItem(Who.Everybody, Rope);
                 c.Next = c.State.SavedCard;
                 break;
-            // DORMANT: other battle results change nothing.
+            // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results change nothing.
         }
     }
 }

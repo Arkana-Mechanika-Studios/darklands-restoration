@@ -71,7 +71,7 @@ public sealed class WitchCultVillage : Card
                 Surrender(c, 5);
                 break;
             default:
-                // DORMANT: other battle results leave the party facing the mob.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party facing the mob.
                 break;
         }
     }

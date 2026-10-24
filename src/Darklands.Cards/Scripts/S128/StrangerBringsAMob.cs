@@ -65,8 +65,9 @@ public sealed class StrangerBringsAMob : Card
             CleanseTheArea(c);
         }
 
-        // DORMANT: every way through the fight leaves the card (0x0C or 0x14E; a battle result outside 0..4 changes
-        //   nothing and the next wave or the victory follows), so this menu is never reached. Its ten handlers
+        // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): a wave that returns 5 changes nothing and the next wave or the victory follows.
+        // DORMANT: even so every way through the fight leaves the card (the victory always sets 0x0C, a lost wave 0x14E;
+        //   results 6 and above cannot occur, negative ones never come from run_battle), so this menu is never reached. Its ten handlers
         //   (R128+0x0482 .. R128+0x07AC, hints R128+0x04A0 .. R128+0x07CA, "Success is
         //   assured.") show text 0 and go to 0x62; lines 0 and 1 would be offered.
         // C: when the menu's choice comes from the pop-up, the C calls item_fn[0][menu_slot] (member 0's handler).

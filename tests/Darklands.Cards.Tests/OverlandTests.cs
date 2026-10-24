@@ -76,6 +76,37 @@ public sealed class OverlandTests
     // ---- the step -------------------------------------------------------------------------
 
     [Fact]
+    public void AtTheViewsWestOrNorthBorderTheStepReadsTheTerrainOneCellEastOrSouth()
+    {
+        // R030+0x20D2 fills the cell buffer from column / row 1 when the view's DS:286A / DS:286C is 0, but 1300 indexes it with the
+        // registers: the terrain read is the cell east (west border) or south (first shown row 0) of the party's. Checked by direct calls
+        // of the original's 1300 after its own 20d2 (local/batch/border).
+        var state = State();
+        var map = MapOf(40, 40, (c, r) => c >= 6 ? Terrain.Plains : r == 21 ? Terrain.Road : Terrain.Ocean);
+        var (x, y) = PixelOf(5, 20);
+        foreach (var (view, outcome, terrain) in new[]
+                 {
+                     ((1, 5), StepOutcome.Blocked, Terrain.Ocean), ((0, 5), StepOutcome.Walked, Terrain.Plains),
+                     ((3, 0), StepOutcome.Walked, Terrain.Road), ((0, 0), StepOutcome.Walked, Terrain.Plains),
+                 })
+        {
+            state.MapPosition = new MapPosition(6, 19);
+            var travel = new OverlandTravel(state, map, kind => false) { View = () => view };
+            travel.Begin();
+            Assert.Equal(Terrain.Plains, travel.CurrentTerrain);
+            var result = travel.Step(x, y);
+            Assert.Equal(outcome, result.Outcome);
+            if (outcome == StepOutcome.Walked)
+            {
+                Assert.Equal(terrain, travel.CurrentTerrain);
+            }
+        }
+        Assert.Equal((1, 0), WorldMap.BufferOffset(0, 7));
+        Assert.Equal((0, 1), WorldMap.BufferOffset(2, 0));
+        Assert.Equal((0, 0), WorldMap.BufferOffset(1, 1));
+    }
+
+    [Fact]
     public void ForcedArrivalChoosesTheCityNearestTheOldPosition()
     {
         // The party stands near city 3; the step goes towards city 4. R030+0x1300 uses

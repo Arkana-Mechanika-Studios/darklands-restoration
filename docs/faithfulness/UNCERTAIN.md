@@ -91,7 +91,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-e2070d** `uncertain` - `src/Darklands.Cards/Scripts/S127/WokenAfterTheSabbat.cs:38` `WokenAfterTheSabbat.Run`  
   original: `R127+0x19A2` (19D2:0002, matched), `R127+0x1EB0` (19D2:0510, matched), `R127+0x1EEC` (19D2:054C, matched) +28 more  
   why: that TimePassage carries an overlong day exactly as advance_hours does is not verified.
-- **U-8b4e75** `uncertain` - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:87` `StrangerBringsAMob.FightAWave`  
+- **U-8b4e75** `uncertain` - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:88` `StrangerBringsAMob.FightAWave`  
   original: `R128+0x03B8` (1838:03B8, matched)  
   why: what card_menu returns when no line is enabled; the C# screen decides.
 - **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:211` `TextVariables.PlaceDescription`  
@@ -159,10 +159,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1737` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1775` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
-- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1841` `BattleScreen.CharacterSheet`  
+- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1879` `BattleScreen.CharacterSheet`  
   original: `R022+0x0000` (1EF8:0000, draft)  
   why: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:55` `BuySellPage.DrawParty`  

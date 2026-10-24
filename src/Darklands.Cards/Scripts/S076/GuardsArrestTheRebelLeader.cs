@@ -77,7 +77,7 @@ public sealed class GuardsArrestTheRebelLeader : Card
                 c.Next = 0x0D;
                 break;
             default:
-                // DORMANT: other battle results leave the card as it is.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the card as it is.
                 break;
         }
     }

@@ -111,6 +111,11 @@ public sealed class BattleScreen : ITacticalView
         : new(text.Split(';').Select(p => p.Split(',')).Select(p => (int.Parse(p[0], System.Globalization.CultureInfo.InvariantCulture),
             p.Length > 1 ? int.Parse(p[1], System.Globalization.CultureInfo.InvariantCulture) : 0)));
 
+    /// <summary>A debugging aid: for each run of the menu bar in a battle in turn, the timer callbacks that came while it ran (root 0000:0000 with
+    /// the bar up, the clock held) and after it up to the next pass, as tools/oracle/lockstep.py measures them in the original
+    /// (DARKLANDS_BATTLE_MENU_CALLBACKS, "1420,54;..."); the C# host has no time of its own there in OneTickPerPass.</summary>
+    public static Queue<(int During, int After)>? MenuCallbacks { get; set; } = ParseSheetCallbacks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_MENU_CALLBACKS"));
+
     /// <summary>The callbacks the original had after the last sheet in its pass (SheetCallbacks), for the pass's end.</summary>
     private int _afterSheetCallbacks;
 
@@ -203,6 +208,7 @@ public sealed class BattleScreen : ITacticalView
                 {
                     break;
                 }
+                Passes++;
                 if (PassTrace is { } trace)
                 {
                     trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}"
@@ -1138,6 +1144,14 @@ public sealed class BattleScreen : ITacticalView
     private bool MenuBarRun()
     {
         HotKeysForWaitingKey();
+        if (_unfoldedMenu is { } unfolded)
+        {
+            // C: the T key's flags (DS:9C26 = 1, DS:9C2F = 2, DS:A394 = 3) open the bar here, at the next root 0000:0000 of the battle's loop
+            _unfoldedMenu = null;
+            RunMenu(() => _menuBar!.RunUnfolded(unfolded));
+            _keyboardMenu = false;
+            return true;
+        }
         if (!_ui.Mouse.Right && !_keyboardMenu)
         {
             return false;
@@ -1146,6 +1160,17 @@ public sealed class BattleScreen : ITacticalView
         _keyboardMenu = false;
         return true;
     }
+
+    /// <summary>T seen in the battle's keys: the next root 0000:0000 runs the bar unfolded to this menu (Attack, at Throw's list).</summary>
+    private int? _unfoldedMenu;
+
+    /// <summary>The battle loop's passes so far (R014+0x0000's iterations past the end test).</summary>
+    public int Passes { get; private set; }
+
+    /// <summary>The pass the menu bar last came up in, and the pass the last T (the Throw list) was read in.</summary>
+    public int MenuPass { get; private set; } = -1;
+
+    public int ThrowKeyPass { get; private set; } = -1;
 
     /// <summary>A menu bar run from the keys (T): the clock stood still meanwhile.</summary>
     private bool _resyncClock;
@@ -1158,6 +1183,7 @@ public sealed class BattleScreen : ITacticalView
     // C: root 0000:0000 holds the combat clock (DS:07D3 = 1 at 0x003D, 0 at 0x01CB) while the bar is up; the timer callbacks go on
     private void RunMenu(Action run)
     {
+        MenuPass = Passes;
         _ui.PointerVisible = true;
         var opened = _ui.Clock.Milliseconds;
         try
@@ -1169,6 +1195,16 @@ public sealed class BattleScreen : ITacticalView
             _ui.PointerVisible = false;
         }
         HeldClockTime(_ui.Clock.Milliseconds - opened);
+        if (OneTickPerPass && MenuCallbacks is { Count: > 0 } measured)
+        {
+            var (during, after) = measured.Dequeue();
+            CountCallbacks(during);
+            if (_battle!.PauseByte != 0)
+            {
+                // as after a sheet: a running battle's callbacks after the bar raise the clock (the clock jumps list them)
+                _afterSheetCallbacks += after;
+            }
+        }
     }
 
     /// <summary>root 0000:0CAA for a waiting key: a key it knows is taken and acted on, any other stays waiting for the battle's keys.</summary>
@@ -1486,9 +1522,11 @@ public sealed class BattleScreen : ITacticalView
             case 'T':
                 if (m.On(AttackItem.Throw))
                 {
-                    // orig: case 0x1454: DS:9C26 = 1, DS:9C2F = 2, DS:9C3C = DS:9C41 = -1, DS:A394 = 3 (the Attack menu unfolded to Throw's list)
-                    RunMenu(() => _menuBar!.RunUnfolded(2));
-                    _resyncClock = true;
+                    // orig: case 0x1454 (R016+0x068A..0x06A1): DS:9C26 = 1, DS:9C2F = 2, DS:9C3C = DS:9C41 = -1, DS:A394 = 3 (the Attack menu
+                    // unfolded to Throw's list) and nothing else: the bar comes up at the next pass's root 0000:0000 (MenuBarRun), after that pass's
+                    // head, so the timer callbacks it holds the clock for are seen by that pass's combat tick, not this one's
+                    _unfoldedMenu = 2;
+                    ThrowKeyPass = Passes;
                 }
                 return;
             case 'U':

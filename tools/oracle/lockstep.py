@@ -10,7 +10,8 @@ key:<c>|enter|esc|space|up|...|alt<c>|f<n>, move:<x>,<y>, click:<x>,<y>, option:
 the card menu shown), state:<name>, bwait:<n>; wait/shot steps are for the C# only.
 bwait:<n> is for orders in a battle (the idle test below never passes where animated pieces draw random numbers, and a running battle is
 never idle): the steps after it are given n + 1 battle passes after the previous one (the original) / after wait:<n - 3> frames (the C#
-host, a frame being a pass there). A menu or a sheet (a loop that does not pass combat_input) is idle after IDLE_POLLS polls, as before.
+host, a frame being a pass there). A menu or a sheet (a loop that does not pass combat_input) is idle after IDLE_POLLS polls, as before
+(each bwait waits its own polls there).
 Keep the pointer off the battle view's edges (x < 68, y < 8 or > 191, x > 311): the original scrolls the view there, which the C# does not. State steps inside a battle do
 not compare (the C# writes the party, the original the battle's save). --battle-records adds the combatant records to every pass. With --save both start from that saved game
 (the script loads it from the start screen: key:t, key:l).
@@ -26,7 +27,7 @@ not compare (the C# writes the party, the original the battle's save). --battle-
    * no drivers: misc.exe is not loaded (root 047C:07CE, 047C:08C8 return) and no sound driver is chosen (no
      CONFIG.DRK: nsound.dlc); the slot table answers 0, except: keys (047C:073D peeks the key's code, 047C:0744
      takes it), DOS console input (INT 21h 0Bh/07h/08h, the load's question) and the mouse (INT 33h 3/5/6,
-     DS:6EEC..6EFB) from the script; the screen-save and picture buffers (047C:04D5, 047C:05BC/05AE) as real DOS
+     DS:6EEC..6EFB) from the script (fn 5/6 give the pointer at that button's last press/release, as the driver does); the screen-save and picture buffers (047C:04D5, 047C:05BC/05AE) as real DOS
      blocks; fixed font metrics (6 x 8, as card_oracle), so menus are chosen by line (option:<n>);
    * the copy-protection question (R041+0x0000) passes at once, as the C# has it;
    * a step is given when the game is idle: IDLE_POLLS polls (key_pressed, or the menu bar's handler root 0000:0000
@@ -247,8 +248,14 @@ def sheet_callbacks(log) -> list[tuple[int, int]]:
     return [tuple(int(v) for v in l.split()[2].split(",")) for l in log if l.startswith("sheet callbacks ")]
 
 
+def menu_callbacks(log) -> list[tuple[int, int]]:
+    """[(during, after)] for each run of the menu bar in a battle, from the original's log ("menu callbacks 1420,54 (battle pass 310)"): root 0000:0000
+    with the bar up holds the clock while DS:07D1 counts on; after: up to the next pass (or the next bar run)."""
+    return [tuple(int(v) for v in l.split()[2].split(",")) for l in log if l.startswith("menu callbacks ")]
+
+
 def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
-                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None):
+                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=()):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -287,7 +294,14 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
             if after_dialog(steps, i) and (gap := next(gaps, None)) is not None:
                 args.append("wait:%d" % max(0, gap - 1 - cost))
                 continue
-            args.append("wait:%d" % max(0, min(int(v), next(seen, int(v))) - cost))
+            actual = next(seen, int(v))
+            later = 0
+            if i and steps[i - 1] == ("key", "t") and actual < int(v):
+                # T (the Throw list, R016+0x068A..0x06A1) only sets the bar's flags: the bar comes up at the next pass's root 0000:0000 and unfolds
+                # over three of its loops (MenuBar.RunUnfolded), whose idle polls end the original's bwait; the C# host gives the next step one
+                # frame later, once the bar has unfolded
+                later = 1
+            args.append("wait:%d" % (max(0, min(int(v), actual) - cost) + later))
         elif k == "wait" and pause_shift and i in pause_shift:
             args.append("wait:%d" % (int(v) + pause_shift[i]))
         else:
@@ -314,6 +328,9 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     if sheets:
         # the timer callbacks of the original's combat sheets (DS:07D1 counts on while the sheet holds the clock): the C# host has no time there
         env["DARKLANDS_BATTLE_SHEET_CALLBACKS"] = ";".join("%d,%d" % p for p in sheets)
+    if menus:
+        # the same for the menu bar's runs in a battle (root 0000:0000 with the bar up): the C# host has no time there either
+        env["DARKLANDS_BATTLE_MENU_CALLBACKS"] = ";".join("%d,%d" % p for p in menus)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():
@@ -457,7 +474,8 @@ def main():
     t = time.time()
     rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
                                   got["stale"] if a.battle_records else None, sheet_callbacks(log),
-                                  resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, steps, got["trace"]))
+                                  resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, steps, got["trace"]),
+                                  menu_callbacks(log))
     battle = None
     if a.battle_trace:
         lines = [l for l in output.splitlines() if l.startswith("pass ")]

@@ -207,7 +207,7 @@ public sealed class FriarSellingPardons : Card
                 c.Screen.Text(0x0A);
                 break;
             default:
-                // DORMANT: other battle results: straight on to the penance below.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results: straight on to the penance below.
                 break;
         }
         // Attacking a friar weighs on everyone's conscience.

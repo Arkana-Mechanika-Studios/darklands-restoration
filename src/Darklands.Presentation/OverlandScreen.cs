@@ -13,7 +13,7 @@ namespace Darklands.Presentation;
 /// colour, the place icons and the party, moved by keys or by clicking where to go.
 /// </summary>
 // orig: overland_open R030+0x00A8 (1462:00A8) + overland_loop R030+0x02C0 (1462:02C0, matched) + the key handler R030+0x0C44 (unmatched) + the drawing R030+0x16C6 (party), R030+0x20D2 (map), R030+0x1F30 (pictures, matched), all; tests: OverlandTests, OverlandTests, OverlandTests
-// DIVERGENCE: the original draws into off-screen buffers and copies a 260x184 window; it keeps the party as view-relative registers and scrolls the view in jumps of 128 pixels across and 92 down when the marker comes within 20 pixels of an edge (Scroll below follows those jumps and thresholds). Here the screen redraws the visible tiles every frame from absolute positions.
+// DIVERGENCE: the original keeps the party as view-relative registers over a cell buffer of the view and scrolls the view in jumps of 128 pixels across and 92 down when the marker comes within 20 pixels of an edge (Scroll below follows those jumps and thresholds). Here the page (OverlandPage) is drawn from absolute map positions (WorldMap) with the same view.
 // DIVERGENCE: not ported from the loop: the joystick (DS:0880..DS:0882, DS:E3FA/DS:E3FB), the "party_icons_dirty" reload after the menu bar (the bar itself, right button and F10, comes with GameUi.Poll), and the copy-protection check of overland_map (the card engine side, see DarklandsGame.Travel).
 public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 {
@@ -34,14 +34,16 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     /// <summary>delay_ticks(75) of the wait-in-place loop (key A or F7), twice per pass.</summary>
     private const int RestMilliseconds = 75;
 
-    private const int TileHeight = 12;
-    private const int SpriteSize = 13;
-
     /// <summary>The marker's sprite row for "standing", used while waiting in place (direction 9).</summary>
     private const int WaitingDirection = 9;
 
-    private IndexedImage[]? _tiles;
-    private IndexedImage[]? _partySprites;
+    private OverlandTiles? _pictures;
+    private readonly OverlandPage _page = new();
+
+    /// <summary>Whether 20d2 is due: the view moved, the background changed or the screen is drawn again after another one.</summary>
+    // orig: `if (occ != DS:286C || DS:286A != oad) 20d2(...)` after the scroll block of R030+0x0C44, `if (m != DS:2860) 20d2(...)` after an hour in
+    //   R030+0x1300, and the redraws of overland_open, the `redraw` label of 0c44, the portrait click and the menu bar's party_icons_dirty
+    private bool _mapDirty = true;
     // orig: the view of R030: DS:286A the first column shown, DS:286E the first row of the row buffer, DS:286C the first row shown in it; the
     //   marker's position in the view is DS:2866 / DS:2868 (here _x - _originX, _y - _originY)
     /// <summary>A debugging aid: each step of the marker, as tools/oracle/lockstep.py prints the original's (DARKLANDS_TRACE_MAP).</summary>
@@ -92,11 +94,16 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         var travel = new OverlandTravel(state, map, eventStarted);
         travel.HourPassed = () =>
         {
+            // orig: R030+0x1300 after advance_hours(1): the clock picture onto the screen, then 2dd6 and 20d2 when the background changed
             TimePassage.Advance(state, 1);
+            _page.DrawClock(Clock(state));
+            var background = _background;
             ApplySeason(state);
+            _mapDirty |= _background != background;
         };
         travel.PlayCue = tune => ui.PlayMusic(tune);
         travel.MapMessage = ShowMapMessage;
+        travel.View = () => (_viewColumn, _viewRows);
         PlaceParty(state);
         travel.Begin();
         (int X, int Y)? target = null;
@@ -249,7 +256,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private int? CampOnTheMap(GameState state, OverlandTravel travel)
     {
         var (column, row) = (state.MapPosition.X, state.MapPosition.Y);
-        Camp?.Invoke(map.CampWatch(state.Party.Members.Count, column, row));
+        // C: 25be reads G from the view's registers like 1300: at the west / north border the block starts one cell east / south (WorldMap.BufferOffset)
+        var (dc, dr) = WorldMap.BufferOffset(_viewColumn, _viewRows);
+        Camp?.Invoke(map.CampWatch(state.Party.Members.Count, column + dc, row + dr));
         UseMapPalette(state);
         return travel.AmbushInCamp() is { } card and > 0 ? card : null;
     }
@@ -424,39 +433,23 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         }
         _x = _originX + vx;
         _y = _originY + vy;
+        _mapDirty |= _viewColumn != oldColumn || _viewRows != oldRows;
     }
 
 
-    // orig: R030+0x20D2 (map tiles into the 260x184 buffer, then the header picture at (60, 0), the clock picture mapbrs{hour/3*3} at (289, 0) and the copy to the screen at (60, 16)) + R030+0x16C6 (the party sprite, R136+0x100C8[direction][frame])
+    // orig: R030+0x20D2 when due (see _mapDirty), then R030+0x16C6 (the party) every pass, as 0c44 ends: the screen keeps what they drew
     private void Draw(GameState state)
     {
         var canvas = ui.Canvas;
-        canvas.Fill(AreaX, AreaY, AreaWidth, AreaHeight, (byte)_background);
-        var firstRow = Math.Max(0, _originY / WorldMap.RowHeight - 3);
-        var lastRow = Math.Min(map.Height - 1, (_originY + AreaHeight) / WorldMap.RowHeight + 1);
-        var firstColumn = Math.Max(0, _originX / WorldMap.TileWidth - 1);
-        var lastColumn = Math.Min(map.Width - 1, (_originX + AreaWidth) / WorldMap.TileWidth + 1);
-        for (var row = firstRow; row <= lastRow; row++)
+        var firstRow = _viewTop + _viewRows;
+        if (_mapDirty)
         {
-            for (var column = firstColumn; column <= lastColumn; column++)
-            {
-                var code = map.Cell(column, row);
-                if (code == 0)
-                {
-                    continue;
-                }
-                var (px, py) = WorldMap.PixelOf(column, row);
-                DrawClipped(canvas, TileFor(code, column, row), AreaX - BufferCrop + px - _originX, AreaY - BufferCrop + py - _originY);
-            }
+            _mapDirty = false;
+            _page.DrawMap(map, _pictures!, _viewColumn, firstRow, (byte)_background,
+                ui.Assets.PictureExists("mapheada") ? ui.Assets.Picture("mapheada").Image : null, Clock(state));
         }
-        var sprite = _partySprites![Math.Min(_direction, 9) * 8 + _frame];
-        // orig: 16c6 draws the sprite at (8 * row parity + px + 10, py - lift + 18) of its own buffer (px, py: the marker's pixel inside its cell) and copies
-        //   (8 * parity + 8 + px, py - lift + 14) of it to the screen at (DS:2866 + 0x34, DS:2868 - lift + 5) (R030+0x1B96..0x1C3C): the sprite's corner
-        //   is at (DS:2866 + 0x36, DS:2868 + 9 - lift)
-        // DIVERGENCE: the lift (16c6 raises the sprite on some terrains by three 4 x 16 tables indexed by the pixel inside the cell) and the tile rows
-        //   16c6 draws over the sprite (the rows below the party's, by terrain) are not reproduced: the sprite is drawn last, unlifted.
-        DrawClipped(canvas, sprite, AreaX + _x - _originX - 6, AreaY + _y - _originY - 7);
-        DrawFrame(canvas, state);
+        _page.DrawParty(_pictures!, firstRow, _x - _originX, _y - _originY, _direction, _frame, (byte)_background);
+        _page.CopyTo(canvas);
         panel.Draw(canvas, state.Party);
         if (_coordinates.Length > 0)
         {
@@ -464,54 +457,17 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         }
     }
 
-    // orig: the icon strip is ICONS[r][c] = R136+0xF92C[r * 16 + c]: MAPICONS rows 1..15 are ICONS[0..14], MAPICON2 rows 0..15 are ICONS[15..30]; place icons (codes 50 and up) are R136+0xF92C[code + 382] = ICONS[27][code - 50]
-    private IndexedImage TileFor(int code, int column, int row)
+    private IndexedImage? Clock(GameState state)
     {
-        if (code >= Core.World.Terrain.FirstPlaceIcon)
-        {
-            return _tiles![28 * 16 + Math.Min(15, code - Core.World.Terrain.FirstPlaceIcon)];
-        }
-        return _tiles![code * 16 + map.NeighbourMask(column, row)];
-    }
-
-    private void DrawFrame(Canvas canvas, GameState state)
-    {
-        if (ui.Assets.PictureExists("mapheada"))
-        {
-            canvas.Draw(ui.Assets.Picture("mapheada").Image, AreaX, 0);
-        }
         var clock = $"mapbrs{state.Date.Hour / 3 * 3:00}";
-        if (ui.Assets.PictureExists(clock))
-        {
-            canvas.Draw(ui.Assets.Picture(clock).Image, 289, 0);
-        }
-    }
-
-    private static void DrawClipped(Canvas canvas, IndexedImage image, int x, int y)
-    {
-        for (var row = 0; row < image.Height; row++)
-        {
-            var sy = y + row;
-            if (sy < AreaY || sy >= AreaY + AreaHeight)
-            {
-                continue;
-            }
-            for (var column = 0; column < image.Width; column++)
-            {
-                var sx = x + column;
-                var color = image.Pixels[row * image.Width + column];
-                if (color != 0 && sx >= AreaX && sx < AreaX + AreaWidth)
-                {
-                    canvas[sx, sy] = color;
-                }
-            }
-        }
+        return ui.Assets.PictureExists(clock) ? ui.Assets.Picture(clock).Image : null;
     }
 
     /// <summary>The map pictures' colours (cards and sheets change the palette), with the season's changes.</summary>
     // orig: pic_draw_pal(1, "pics\\mapicons.pic", cur_palette) (reloads the palette of MAPICONS.PIC) followed by R030+0x2DD6 and set_palette(cur_palette) - in 1f30, after a sheet (0c44's redraw label) and after a portrait click
     private void UseMapPalette(GameState state)
     {
+        _mapDirty = true;
         ui.Canvas.UsePalette(ui.Assets.Picture("mapicons"));
         ApplySeason(state);
     }
@@ -598,49 +554,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         return bytes[start..(start + length)];
     }
 
-    // orig: R030+0x1F30 (1462:1F30, matched): MAPICONS.PIC rows 1..15 and MAPICON2.PIC rows 0..15 cut into 16x12 icons, CHARICON.PIC into 13x13 sprites at (c * 14 + 1, r * 14 + 1) (10 rows of 8), then mapheada and mapbrs00..21
+    // orig: R030+0x1F30 (1462:1F30, matched), see OverlandTiles
     private void LoadPictures()
     {
-        if (_tiles is not null)
-        {
-            return;
-        }
-        var first = ui.Assets.Picture("mapicons");
-        var second = ui.Assets.Picture("mapicon2");
-        _tiles = new IndexedImage[32 * 16];
-        for (var code = 1; code < 32; code++)
-        {
-            var (sheet, sheetRow) = code < 16 ? (first.Image, code) : (second.Image, code - 16);
-            for (var mask = 0; mask < 16; mask++)
-            {
-                _tiles[code * 16 + mask] = Cut(sheet, mask * 16, sheetRow * TileHeight, 16, TileHeight);
-            }
-        }
-        // Place icons sit in MAPICON2 row 12, which is also code 28's row.
-        var party = ui.Assets.Picture("charicon").Image;
-        _partySprites = new IndexedImage[10 * 8];
-        for (var direction = 0; direction < 10; direction++)
-        {
-            for (var frame = 0; frame < 8; frame++)
-            {
-                _partySprites[direction * 8 + frame] = Cut(party, frame * 14 + 1, direction * 14 + 1, SpriteSize, SpriteSize);
-            }
-        }
-    }
-
-    private static IndexedImage Cut(IndexedImage sheet, int x, int y, int width, int height)
-    {
-        var pixels = new byte[width * height];
-        for (var row = 0; row < height; row++)
-        {
-            for (var column = 0; column < width; column++)
-            {
-                var sx = x + column;
-                var sy = y + row;
-                pixels[row * width + column] = sx < sheet.Width && sy < sheet.Height ? sheet.Pixels[sy * sheet.Width + sx] : (byte)0;
-            }
-        }
-        return new IndexedImage(width, height, pixels);
+        _pictures ??= new OverlandTiles(ui.Assets.Picture("mapicons").Image, ui.Assets.Picture("mapicon2").Image, ui.Assets.Picture("charicon").Image);
     }
 
     // orig: the key cases of 0c44: 0x4b00 left (sprite row 7), 0x4d00 right (3), 0x4800 up (1), 0x5000 down (5), 0x4700 Home (8), 0x4900 PgUp (2), 0x5100 PgDn (4), 0x4f00 End (6), 0x4c35 centre (0, standing)

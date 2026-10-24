@@ -163,6 +163,8 @@ class Vfs:
 
 
 class Machine:
+    direct_ram = False                  # True: the memory is mapped from a host buffer, `self.ram` (orig_side.Session)
+
     def __init__(self, exe: bytes, game_folder: str | None = None, coverage: bool = False,
                  index_csv: Path | None = None, max_instructions: int = 50_000_000):
         if sha256(exe) != EXE_SHA256:
@@ -170,7 +172,17 @@ class Machine:
         self.exe = exe
         self.rt = Rtlink(exe)
         self.uc = unicorn.Uc(unicorn.UC_ARCH_X86, unicorn.UC_MODE_16)
-        self.uc.mem_map(0, 0x100000)
+        self.ram = None
+        if self.direct_ram:
+            # the megabyte backed by a buffer of ours (the same memory to the emulation): `ram` reads and writes it in place
+            import ctypes
+            import mmap
+            self._ram_map = mmap.mmap(-1, 0x100000)
+            self._ram_ref = ctypes.c_char.from_buffer(self._ram_map)
+            self.ram = memoryview(self._ram_map)
+            self.uc.mem_map_ptr(0, 0x100000, unicorn.UC_PROT_ALL, ctypes.addressof(self._ram_ref))
+        else:
+            self.uc.mem_map(0, 0x100000)
         self.root = self.relocated_root()
         self.uc.mem_write(BASE, self.root)
         self.images = {}
@@ -213,7 +225,7 @@ class Machine:
         self.uc.hook_add(unicorn.UC_HOOK_INTR, self._on_int)
         self.uc.hook_add(unicorn.UC_HOOK_INSN, self._on_port, None, 1, 0, x86.UC_X86_INS_IN)
         self.uc.hook_add(unicorn.UC_HOOK_INSN, self._on_port, None, 1, 0, x86.UC_X86_INS_OUT)
-        self.uc.hook_add(unicorn.UC_HOOK_BLOCK, self._on_block)
+        self._add_block_hook()
         self._hooked = set()
         for t in self.thunks:
             self._hook_address(t)
@@ -490,6 +502,9 @@ class Machine:
         if SENTINEL_SEG * 16 <= lin < TRAMPOLINE_SEG * 16 + 0x10000:
             return True
         return any(self.extent(r)[0] <= lin < self.extent(r)[1] for r in self.resident if r != 136)
+
+    def _add_block_hook(self):
+        self.uc.hook_add(unicorn.UC_HOOK_BLOCK, self._on_block)
 
     def _on_block(self, uc, address, size, _):
         self._block = (address, self.count, self._last_block_jcc)      # what a snapshot taken at this block's first instruction must undo

@@ -238,6 +238,27 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
+    /// T (the Throw list) only sets the bar's flags (R016+0x068A..0x06A1: DS:9C26, 9C2F, 9C3C, 9C41, A394): the bar comes up unfolded at the
+    /// next pass's root 0000:0000, not in the pass that read the key (lockstep session orders-potion).
+    /// </summary>
+    [Fact]
+    public void TheThrowKeyOpensTheBarAtTheNextPass()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5");
+        var tb = run.Screen.Tactics!;
+        tb.Battle[0].Items.Add(new ItemStack(0x5F, 0, 30, 3, 1));
+        run.Play("key:1", "wait:3", "key:t", "wait:5");
+        Assert.True(run.Screen.ThrowKeyPass >= 0);
+        Assert.Equal(run.Screen.ThrowKeyPass + 1, run.Screen.MenuPass);
+        run.Play("key:esc", "wait:3");
+    }
+
+    /// <summary>
     /// The combat sheet holds the combat clock (R022+0x0066 / 0x03C6, DS:07D3) but the timer callbacks go on counting DS:07D1 (root 047C:000A):
     /// a running battle's clock does not move over a long sheet, and a paused battle ticks (draws) at once after it when 07D1 reached 8
     /// (R014+0x0F7B), unless the byte wrapped back below 8 (256 callbacks).

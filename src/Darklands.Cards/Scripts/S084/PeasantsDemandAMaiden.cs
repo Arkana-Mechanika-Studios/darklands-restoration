@@ -131,7 +131,7 @@ public sealed class PeasantsDemandAMaiden : Card
                 GoOn(c);
                 break;
             default:
-                // DORMANT: other battle results leave the party before the peasants.
+                // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party before the peasants.
                 break;
         }
     }

@@ -487,7 +487,7 @@ public sealed class CityDungeon : Card
                 c.Injure(Who.Everybody, 0, 1, 20);
                 c.Next = CardNumber;
                 break;
-            // DORMANT: other battle results (5: all down) leave the card as it is.
+            // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results (5: all down) leave the card as it is.
         }
     }
 }
