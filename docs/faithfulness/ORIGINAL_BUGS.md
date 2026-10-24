@@ -80,7 +80,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-55afd6** `bug`, flag `FixHostileUnrestTest` - `src/Darklands.Core/Rules/LocationRules.cs:219` `LocationRules.Hostile`  
   original: `R039+0x00BA` (1462:00BA, matched)  
   why: event_at(cur_loc, 0x13) has its arguments swapped (FixHostileUnrestTest); the three tests short-circuit in this order.
-- **B-e63363** `bug`, no fix flag - `src/Darklands.Core/Rules/LocationRules.cs:372` `LocationRules.FarOfType`  
+- **B-e63363** `bug`, no fix flag - `src/Darklands.Core/Rules/LocationRules.cs:400` `LocationRules.FarOfType`  
   original: `R030+0x28F2` (1462:28F2, draft)  
   why: only the icon is tested: a pagan altar the party has purged (its cards closed, 0x62: PaganAltarOnTheHill) is still chosen as an errand's site, which can then never be done; NearestOfType's flag-4 test does not catch it either.
 - **B-dc949d** `bug`, no fix flag - `src/Darklands.Core/Rules/LootSharing.cs:34` `LootSharing.ReplaceFallenLeader`  

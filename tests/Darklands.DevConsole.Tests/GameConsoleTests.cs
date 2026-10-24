@@ -1,6 +1,7 @@
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Economy;
+using Darklands.Core.Events;
 using Darklands.Core.Items;
 using Darklands.Core.Randomness;
 using Darklands.Core.Time;
@@ -194,5 +195,26 @@ public sealed class GameConsoleTests
         console.Execute("item grant 1 3 30 2");
         var stack = state.Party.Members[0].Pack[before];
         Assert.Equal((3, 30, 2, 2), (stack.Code, stack.Quality, stack.Count, stack.Weight));
+    }
+
+    [Fact]
+    public void QuestsAreListedWithTheirPlacesSeenFromHere()
+    {
+        var (console, state) = Playing();
+        state.Locations.Add(new Location { Index = 1, Name = "Bremen", X = 30, Y = 0 });
+        Assert.Equal(["no active quests"], console.Execute("quests active").Lines);
+        state.Events.Create(0, 1, 0, EventKinds.Quest, 0, 0, 0, EventLog.OneYear, 0, 5);
+        state.Events.Create(0, 0, 0, EventKinds.Quest, 0, 0, 0, EventLog.OneYear, 0, 6);
+        state.Events.Create(0, 0, 0, EventKinds.ResolvedQuest, 0, 0, 0, EventLog.OneYear, 0, 5);
+        state.Events.Create(0, 500, 0, EventKinds.ResolvedQuest, 0, 0, 0, EventLog.OneYear, 0, 7);
+        Assert.Equal(["active quest 1 at Bremen (#1), east of here", "active quest 2 at Nurnberg (#0), here"],
+            console.Execute("quests active").Lines);
+        Assert.Equal(["resolved quest 1: the reward is at Nurnberg (#0), here", "resolved quest 2: the reward is at an unknown place (#500)"],
+            console.Execute("quests resolved").Lines);
+        Assert.Equal(4, console.Execute("quests all").Lines.Count);
+        var wrong = console.Execute("quests open");
+        Assert.True(wrong.IsError);
+        Assert.Equal("quests active, resolved or all?", wrong.Lines[0]);
+        Assert.True(console.Execute("quests").IsError);
     }
 }

@@ -213,7 +213,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R039+0x0558` (1462:0558, matched)  
   divergence: `while (!loc_query(loc, d + 3))` loops forever in a city without any shop; here the search stops after seven days.  
   recommendation: **justify** - The original loops for ever when no place has the shop or icon searched for. The bound (seven days; one round) only replaces a hang; reachable only in modified data.
-- **D-553226** `deliberate-fix` - `src/Darklands.Core/Rules/LocationRules.cs:390` `LocationRules.RandomOfType`  
+- **D-553226** `deliberate-fix` - `src/Darklands.Core/Rules/LocationRules.cs:418` `LocationRules.RandomOfType`  
   original: `R039+0x0504` (1462:0504, matched)  
   divergence: the original loops forever when no place has the icon; here the scan stops after one round.  
   recommendation: **justify** - The original loops for ever when no place has the shop or icon searched for. The bound (seven days; one round) only replaces a hang; reachable only in modified data.

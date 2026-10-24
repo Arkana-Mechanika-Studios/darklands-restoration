@@ -2,8 +2,10 @@ using System.Globalization;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Economy;
+using Darklands.Core.Events;
 using Darklands.Core.Rules;
 using Darklands.Core.Time;
+using Darklands.Core.World;
 using CharacterAttribute = Darklands.Core.Characters.Attribute;
 
 namespace Darklands.DevConsole;
@@ -36,6 +38,7 @@ public static class GameCommands
         console.Add(new ConsoleCommand("heal", "heal [slot 1..5|all]  (endurance and strength back to their maximums)", On(Heal)));
         console.Add(new ConsoleCommand("saint", "saint grant|remove <slot 1..5|all> <saint number>", On(Saint)));
         console.Add(new ConsoleCommand("item", "item grant <slot 1..5|all> <code> [quality] [count] | item find <text>", On(Item)));
+        console.Add(new ConsoleCommand("quests", "quests active | resolved | all  (where each quest is, seen from here)", On(Quests)));
     }
 
     // ---- show
@@ -163,6 +166,59 @@ public static class GameCommands
             }
         }
         return new ConsoleResult(lines);
+    }
+
+    // ---- quests
+
+    private static ConsoleResult Quests(GameState s, string[] w)
+    {
+        var which = w.Length > 0 ? w[0].ToLowerInvariant() : "";
+        List<string> lines = which switch
+        {
+            "active" => QuestLines(s, EventKinds.Quest),
+            "resolved" => QuestLines(s, EventKinds.ResolvedQuest),
+            "all" => [.. QuestLines(s, EventKinds.Quest), .. QuestLines(s, EventKinds.ResolvedQuest)],
+            _ => throw new ArgumentException("quests active, resolved or all?"),
+        };
+        return lines.Count > 0 ? new ConsoleResult(lines) : ConsoleResult.Ok($"no {which} quests");
+    }
+
+    // A quest's event names the place it leads to; a resolved quest's names the city where the reward waits.
+    private static List<string> QuestLines(GameState s, int kind)
+    {
+        var lines = new List<string>();
+        var i = 0;
+        foreach (var (_, e) in s.Events.All())
+        {
+            if (e.Kind != kind)
+            {
+                continue;
+            }
+            i++;
+            var label = kind == EventKinds.Quest ? $"active quest {i}" : $"resolved quest {i}: the reward is";
+            if (e.Location < 0 || e.Location >= s.Locations.Count)
+            {
+                lines.Add($"{label} at an unknown place (#{e.Location})");
+                continue;
+            }
+            var place = s.Locations[e.Location];
+            var name = place.Name.Length > 0 ? place.Name : "a place";
+            var text = $"{label} at {name} (#{place.Index}), {FromHere(s, place)}";
+            if (!place.IsCity && LocationRules.NearestCity(s, place.X, place.Y) is var city && city >= 0)
+            {
+                text += $", near {s.Locations[city].Name}";
+            }
+            lines.Add(text);
+        }
+        return lines;
+    }
+
+    private static string FromHere(GameState s, Location place)
+    {
+        var (x, y) = s.Here is { } here ? (here.X, here.Y) : (s.MapPosition.X, s.MapPosition.Y);
+        return place.X == x && place.Y == y
+            ? "here"
+            : LocationRules.CompassPoints[LocationRules.Direction(x, y, place.X, place.Y)].ToLowerInvariant() + " of here";
     }
 
     private static ConsoleResult Heal(GameState s, string[] w)
