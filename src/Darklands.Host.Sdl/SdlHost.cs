@@ -16,7 +16,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private readonly int[] _argb = new int[Screen.Width * Screen.Height];
     private readonly int[] _textArgb = new int[TextModeRaster.Width * TextModeRaster.Height];
     private IntPtr _textTexture;
-    private readonly Queue<int> _keys = new();
+    // the BIOS keyboard buffer with the game's keyboard interrupt in front of it (BiosKeyBuffer): SDL's presses and repeats go in
+    // as the keyboard's makes and typematic repeats, bounded and with a held key's repeats collapsed as in the original
+    private readonly BiosKeyBuffer _keys = new();
     private SdlNative.SdlRect _viewport;
     private SdlNative.SdlRect _textViewport;
     private MouseState _mouse;
@@ -359,10 +361,15 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                     var key = SdlKeyMap.ToGameKey(e.Keyboard.Keysym.Scancode, e.Keyboard.Keysym.Sym, e.Keyboard.Keysym.Mod);
                     if (key != Keys.None)
                     {
-                        _keys.Enqueue(key);
+                        _keys.Press(key);
+                    }
+                    else
+                    {
+                        _keys.ScanCode();
                     }
                     break;
                 case SdlNative.EventKeyUp:
+                    _keys.ScanCode();
                     _shift = (e.Keyboard.Keysym.Mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0;
                     if (PcScanCode(e.Keyboard.Keysym.Scancode) is var brk and not 0)
                     {
@@ -457,7 +464,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
     }
 
-    public bool TryReadKey(out int key) => _keys.TryDequeue(out key);
+    public bool TryReadKey(out int key) => _keys.TryRead(out key);
 
     /// <summary>The SDL window and renderer, for another user of the window before the game (the launcher).</summary>
     internal IntPtr Window => _window;

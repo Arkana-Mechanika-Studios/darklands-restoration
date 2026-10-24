@@ -105,6 +105,13 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             Draw(state);
             var action = ui.Poll();
             var key = action?.Key ?? Keys.None;
+            // orig: R030+0x0566..0x057B: `key = get_key(); if (key_pressed()) key = get_key();`: a second waiting key is taken in the same
+            //   pass and replaces the first, so the two presses a held key leaves in the buffer (BiosKeyBuffer) make one step, and the walk
+            //   stops within a pass of the key's release
+            if (key != Keys.None && ui.TryReadKey(out var second))
+            {
+                key = second;
+            }
 
             // C: `if (mouse_buttons & 1)`: while the left button is HELD, a point right of x = 0x3c steers the marker, a point at or left of it clears the target and opens the sheet of the member in that row.
             // DIVERGENCE: the portrait click opens the sheet once per press (the original would reopen it every pass while the button stays down); the steering follows the held button as in the original.
