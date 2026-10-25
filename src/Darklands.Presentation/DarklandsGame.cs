@@ -280,9 +280,10 @@ public sealed class DarklandsGame
         }
         if (!state.Events.Started(CopyProtectionEvent))
         {
-            // DIVERGENCE: copyprot_run_vec asks the copy-protection question (a code from the manual); it is not asked here. The event it leaves behind, for 0x3E80 hours (about 22 months), is created as in the original.
-            //   The question's own random numbers (R041+0x0000: rand_mod(4), rand_mod(20), rand_mod(7) ... to pick the symbols) are not drawn either, so
-            //   the generator differs from the original's until the next reseed from the clock (the map's next hour) (found by tools/oracle/lockstep.py).
+            // DIVERGENCE: copyprot_run_vec (R041+0x0000) asks the copy-protection question (a symbol from the manual); it is not asked here (a host
+            //   choice, as the later CD release). Its five random draws are made (CopyProtection.Draw: rand_mod 4, 20, 7, 7 and 6, before anything else
+            //   of it), so the generator goes on as the original's; the event it leaves behind, for 0x3E80 hours (about 22 months), is created as in the original.
+            Core.World.CopyProtection.Draw(state.Random);
             state.Events.CreateHere(CopyProtectionEvent, CopyProtectionHours);
         }
         return new OverlandScreen(_ui, panel, _map) { CharacterSheet = sheet, Camp = camp }.Travel(state);
@@ -332,8 +333,8 @@ public sealed class DarklandsGame
     //   combat_flags |= 4 (−3) / 8 (−5) / 0x80 (−6) / 0xC (−4), |= 1, battle_run(battle_mode, battle_enemy, battle_seed,
     //   −1, A76C, 0, −1, A76E, 0, −1, A770, 0), status 3 → 0 with party_delete_vec, others but 0 and 5 → 1,
     //   none left or battle_result == 5 → music 0x12, "death", exit; else cards_startup_vec and the result is the next screen.
-    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; cards_shutdown and cards_startup's reloads of the
-    //   other work files are kept in memory (see CardContext.RunBattle).
+    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; the work files of cards_shutdown and cards_startup are
+    //   kept in memory, their effects made (the events, the reseed, the city record: see CardContext.RunBattle).
     // orig: cards_shutdown R043+0x054E writes the events to events.tmp and empties the table (EventLog.Shutdown); cards_startup
     //   R043+0x078E (1462:078E) matched begins with srand((unsigned)time(0)): TimePassage.Reseed, and its world_load reads the events
     //   back (EventLog.Reload). A load in the battle leaves it by the jump (LoadGameRequestedException): no cards_startup.
@@ -384,7 +385,9 @@ public sealed class DarklandsGame
             return CardDispatcher.EndOfGame;
         }
         state.Party.EnsureAbleLeader();
+        // C: cards_startup (thunk of R043+0x078E): the clock reseed, then world_load's city record and events (CardContext.RunBattle has the details).
         Core.Rules.TimePassage.Reseed(state);
+        Core.World.CityFile.ReloadAfterBattle(state);
         state.Events.Reload();
         return battles.LastResultCard;
     }
@@ -435,6 +438,9 @@ public sealed class DarklandsGame
         var screens = new GameScreens2(_ui, panel, state, World, shops);
         // the barter, item store and loot screens open the character sheet from their party column
         shops.Sheet = screens.CharacterSheet;
+        // in a battle a member who left the field through an exit is refused by the sheet and skipped by the loot screen's D
+        screens.CannotView = battles.CannotViewMember;
+        shops.CannotView = battles.LootSkipsMember;
         context.Screens = screens;
         var hotKeys = new HotKeys(_ui, state, Options)
         {

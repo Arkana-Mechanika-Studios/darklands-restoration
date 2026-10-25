@@ -24,7 +24,6 @@ namespace Darklands.Presentation;
 // list R037+0x2760 matched; labels R037+0x2922 matched; figures R037+0x4562
 // matched; exit R037+0x0348 matched; tests: headless chargen session (PNG)
 // DORMANT: the save-game half of this overlay (save_game, R037+0x2ACE) is not part of this menu.
-// DIVERGENCE: the exit transition root 047C:1320(6, 0, 0, 0) is not reproduced.
 public sealed class CharacterCreationScreen
 {
     private const byte LabelColor = 8;
@@ -127,6 +126,15 @@ public sealed class CharacterCreationScreen
         return (made, images);
     }
 
+    /// <summary>The exit R037+0x0348 (both ways out): the button waited out, the mouse driver's left-release count cleared.</summary>
+    // C: the end of R037+0x0348: R037+0x0377 `while (mouse_buttons & 1);`, then INT 33h function 6 through the root's mouse call (the left release count read and cleared)
+    private T? Leave<T>(T? result) where T : class
+    {
+        ScreenDrawing.WaitForRelease(_ui);
+        _ui.TakeLeftReleases();
+        return result;
+    }
+
     public GameState? Run()
     {
         // orig: R037+0x9DB2 case 'C': party_seed = BIOS ticks; the city was drawn at start-up (root 03A1) from the same clock
@@ -158,7 +166,7 @@ public sealed class CharacterCreationScreen
             // orig: 0x011B and R/r leave before the handler
             if (key == Keys.Escape || Keys.IsLetter(key, 'r'))
             {
-                return null;
+                return Leave<GameState>(null);
             }
             if (key == Keys.AltQ)
             {
@@ -215,7 +223,7 @@ public sealed class CharacterCreationScreen
                         PressDown('b');
                         var game = NewParty.Create(_world, seed, party, random, _seed);
                         _roster.CopyTo(game.Roster, game.Party);
-                        return game;
+                        return Leave(game);
                     }
                     Press('b', () => { });
                     break;
@@ -254,8 +262,10 @@ public sealed class CharacterCreationScreen
     // orig: member_sheet (thunk 09C0:1FDB = R031+0x0124) for slot y / 0x28; then root 047C:0568, PICS\CRETSCRN.PIC with its palette, DS:E753..DS:E76A
     // orig: = the slot's member_palette (24 bytes), set_palette, R037+0x03D4, root 047C:056F and the button waited out (R037+0x02F0)
     // C: the figure (PICS\XXXSMALL.PIC at 0x0C, 0xA4) is not drawn again: R037+0x03D4 copies the back window over it.
-    // DIVERGENCE: the sheet opens on the menu's slots as the party, all five counted (party_size is not written before Begin: 0 after start-up,
-    // so the original's Ctrl-F1..F5 leader keys do nothing there); the sheet's menu bar keys (root 0000:0000) are not passed.
+    // C: the sheet's Ctrl-F1..F5 case tests `slot < party_size` (DS:A67E), and party_size is not written before Begin: 0 after start-up,
+    // so those leader keys do nothing here (CharacterSheetScreen.PartySize)
+    // C: the sheet opens on the menu's slots as the party (the panel and the sheet read the slots, not party_size).
+    // DIVERGENCE: the sheet's menu bar and hot keys (root 0000:0000) are not passed.
     // UNCERTAIN: a prayer from the sheet's Saints list reads the date and the place of the game the menu loaded (SAVES\DEFAULT); here those of a new game.
     private void MemberSheet(int slot)
     {
@@ -267,6 +277,7 @@ public sealed class CharacterCreationScreen
         {
             var formulas = FormulaBook.Load(_ui.Assets.Files, _world);
             _sheet = new CharacterSheetScreen(_ui, _panel, formulas, _world.Items.Saints.Select(s => s.FullName).ToList(), new AlchemyScreen(_ui, _panel, formulas));
+            _sheet.PartySize = () => 0;
             _sheet.ShowSaint = (member, saint) => new SaintPrayerScreen(_ui, _panel) { InBattle = () => false }
                 .Pray(_sheetState!, member, saint, Core.Rules.PrayerMode.ForMember, Core.Rules.SaintEffects.Instance);
         }

@@ -136,8 +136,14 @@ public sealed partial class CardContext
     /// and the party ends after its last occupied slot; the character leaves the roster
     /// (CHARACTR.TMP) for good.
     /// </summary>
-    // orig: R037+0x3F30 party_delete R037+0x3F30 (1462:3F30) draft
-    // DIVERGENCE: the shield picture is the party panel's; no able member left keeps the old leader slot.
+    // orig: R037+0x3F30 party_delete R037+0x3F30 (1462:3F30) draft; tests: DeleteMemberTests (the original's bytes run on twelve parties, local/batch/nmB)
+    // C: event_find/event_free of kinds 0x43 and 0x47 for the slot; party[p][0] = 0; `if (leader == p)` the first of the five slots with
+    //   status 1 (other than p) becomes the leader byte DS:907B, and with none the byte keeps p (Party.Leader then reads the emptied slot,
+    //   as the original's party[leader]); R037+0x4048(ids[p]) drops the character from charactr.tmp; party_size DS:A67E becomes one past the
+    //   last slot whose status is not 0. A slot past the party (status 0 already) still passes the leadership on when it is the leader's.
+    // DIVERGENCE: the shield picture is the party panel's.
+    // UNCERTAIN: for a slot past the party the original also calls R037+0x4048 with that slot's charactr.tmp id, which is no character's
+    //   (its loop then moves records from before the file's first one); no card is known to delete an empty slot, so the roster is left alone here.
     public void DeleteMember(int who)
     {
         foreach (var kind in new[] { Core.Events.EventKinds.MemberTerm, Core.Events.EventKinds.MemberLeft })
@@ -149,13 +155,17 @@ public sealed partial class CardContext
             }
         }
         var party = State.Party;
-        if (who < 0 || who >= party.Members.Count)
+        if (who < 0 || who >= Core.Characters.Party.MaxMembers)
         {
             return;
         }
-        party.Members[who].Status = Core.Characters.CharacterStatus.Empty;
-        // C: R037+0x4048(ids[p]) removes the character's record from charactr.tmp.
-        State.Roster.Forget(party.Members[who]);
+        var member = who < party.Members.Count;
+        if (member)
+        {
+            party.Members[who].Status = Core.Characters.CharacterStatus.Empty;
+            // C: R037+0x4048(ids[p]) removes the character's record from charactr.tmp.
+            State.Roster.Forget(party.Members[who]);
+        }
         if (party.LeaderIndex == who)
         {
             var able = party.Members.FindIndex(m => m.Status == Core.Characters.CharacterStatus.Able);
@@ -164,8 +174,11 @@ public sealed partial class CardContext
                 party.LeaderIndex = able;
             }
         }
-        // The roster record (CHARACTR.TMP) goes through the presentation's hook (CardContext.Services.cs).
-        RosterLeave?.Invoke(who);
+        if (member)
+        {
+            // The roster record (CHARACTR.TMP) goes through the presentation's hook (CardContext.Services.cs).
+            RosterLeave?.Invoke(who);
+        }
         party.TrimToSize();
     }
 

@@ -198,7 +198,8 @@ public sealed partial class CardScreen
                 Track(mx, my);
                 var over = current.At(mx, my) >= 0;
                 Hint(over);
-                var action = ui.Poll();
+                // orig: card_menu R043 (150B) passes every key it does not use to card_global_keys (F1..F6, Ctrl-F1..F5)
+                var action = ui.PollWithSheetKeys();
                 if (action is not { } a)
                 {
                     ui.Idle();

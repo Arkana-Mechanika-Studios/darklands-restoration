@@ -137,8 +137,10 @@ public static class CombatantSetup
     /// <param name="activation">True when placed by an activation (keeps its class); false for reinforcements (fight hand to hand).</param>
     // orig: level_enemies_load R020+0x0000 (1EF8:0000) draft (the .trn → .enm conversion);
     // enemies_place R025+0x0000 (1EF8:0000) draft (the copy into the slot)
-    // DIVERGENCE: the head bytes +0x1E/+0x1F (both 8) are not modelled; the slot's other head fields are whatever the
-    // .enm buffer held (0 for a fresh load), reset here.
+    // orig: R025+0x0264..0x0267: the first 0x80 bytes of the kind's .enm record are copied over the slot, its bytes +0x1E/+0x1F (8, 8:
+    //   R020+0x0000's loader) the step and frame delays
+    // DIVERGENCE: the head bytes the loader does not write (the .enm buffer's earlier content in the original, 0 for a fresh load) are not
+    //   modelled: the slot's fields keep what its last enemy left, and the fields the readying and the placing read are set below or after.
     public static void FromEnemy(Battle battle, int index, EnemyKind kind, int floor, int facing, int slot, bool activation)
     {
         var c = battle[index];
@@ -148,6 +150,7 @@ public static class CombatantSetup
         c.Facing = c.SpriteFacing = facing;
         c.AnimationSlot = slot;
         c.Target = -1;
+        c.StepDelay = c.FrameDelay = 8;
         c.ReadiedWeapon = kind.MissileType;
         c.MissileQuality = kind.MissileQuality;
         c.PiercingResistance = kind.PiercingResistance;

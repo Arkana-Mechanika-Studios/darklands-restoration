@@ -113,4 +113,9 @@ public sealed class EnemyPalettes
 
     /// <summary>The 16 colours as 6-bit RGB triples.</summary>
     public ReadOnlySpan<byte> Colors(int scheme) => _data.AsSpan(53 * scheme + 1, 48);
+
+    /// <summary>The scheme's colour cycle: the first and last colour (first 0xFF: none), the frames per step and the cycle slot.</summary>
+    // orig: enemies_place R025+0x067E..0x069E keeps the record's bytes +0x31, +0x32, +0x33, +0x34 for root 047C:0362(+0x34, +0x33, +0x31, +0x32)
+    public (int First, int Last, int Reload, int Slot) Cycle(int scheme) =>
+        (_data[53 * scheme + 0x31], _data[53 * scheme + 0x32], _data[53 * scheme + 0x33], _data[53 * scheme + 0x34]);
 }

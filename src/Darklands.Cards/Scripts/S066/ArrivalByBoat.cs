@@ -237,9 +237,9 @@ public sealed class ArrivalByBoat : Card
         ShowPicture(c, ChasePicture);
         c.Screen.Text(8);
         c.PracticeSkill(Who.Everybody, (int)Skill.Stealth, 0, 10, 0);
-        // DIVERGENCE: the original sets prev_screen (DS:A88D) and the card before it (DS:A88F) to the
-        // street card; the main loop then moves prev_screen into DS:A88F, so only "two cards back" keeps
-        // it. The dispatcher here does not model DS:A88F and sets PreviousCard itself, so this has no effect.
+        // DIVERGENCE: the original sets the card before the previous one (DS:A88F) and prev_screen (DS:A88D) to the street card (R066+0x271F,
+        // R066+0x2732); the main loop then sets DS:A88F = DS:A88D (the street card) and DS:A88D = this card (root 03A1:000A), and DS:A88F has no reader
+        // in the EXE (only these two stores), so it is not kept; FinishPass sets PreviousCard as the loop does.
         c.Next = 1;
     }
 

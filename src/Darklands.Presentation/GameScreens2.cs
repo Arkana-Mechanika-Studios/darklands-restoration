@@ -61,6 +61,13 @@ public sealed class GameScreens2 : IGameScreens
         set => _sheet.ShowSaint = value;
     }
 
+    /// <summary>The battle's "can't view" test for a member who left the field (BattleScreens.CannotViewMember), asked by the sheet.</summary>
+    public Func<int, bool>? CannotView
+    {
+        get => _sheet.CannotView;
+        set => _sheet.CannotView = value;
+    }
+
     public void CharacterSheet(int member) => Keeping(() => _sheet.Show(_state, _state.Party.Resolve(member)));
 
     public void PartyInfo() => Keeping(() => _partyInfo.Show(_state));

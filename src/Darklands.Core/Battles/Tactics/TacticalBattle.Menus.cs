@@ -4,12 +4,14 @@ public sealed partial class TacticalBattle
 {
     /// <summary>The menus at the start of a battle: Attack off, Walk and Halt on, the place entries off, the "(Ldr)" / "(All)" suffixes.</summary>
     // orig: battle_menus_enable R000+0x0F04 (0E76:0F04) draft; battle_run sets
-    // DS:9429 (Orders) 1, DS:9433 (Attack) 2 and the other enables 2 (R002+0x0000)
+    // DS:9429 (Orders) 1, DS:9433 (Attack) 2 and the other enables 2 (R002+0x0000), Party Info (DS:987F) among them (R002+0x0258: F6 and the
+    // item refused for the whole battle; R002+0x0760 puts 1 back at its end); tests: HotKeyFlagsTests
     private void InitMenus()
     {
         var m = Menus;
         m.OrdersMenu = 1;
         m.AttackMenu = 2;
+        m.PartyInfo = 2;
         Array.Fill(m.Orders, (byte)2);
         Array.Fill(m.Attack, (byte)2);
         m.Set(OrdersItem.Walk, 1);

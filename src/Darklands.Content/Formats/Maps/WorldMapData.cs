@@ -18,9 +18,11 @@ public sealed class WorldMapData
 
     private readonly byte[] terrainIds;
     private readonly (int Offset, int Length)[] compressedRows;
+    private readonly byte[] file;
 
-    private WorldMapData(int width, int height, byte[] terrainIds, (int Offset, int Length)[] compressedRows)
+    private WorldMapData(int width, int height, byte[] terrainIds, (int Offset, int Length)[] compressedRows, byte[] file)
     {
+        this.file = file;
         Width = width;
         Height = height;
         this.terrainIds = terrainIds;
@@ -37,6 +39,10 @@ public sealed class WorldMapData
         if ((uint)row >= (uint)Height) throw new ArgumentOutOfRangeException(nameof(row));
         return compressedRows[row];
     }
+
+    /// <summary>The file's byte at <paramref name="offset"/>, as the original's reader (fgetc) gives it: 0xFF (the low byte of EOF, -1) past the end.</summary>
+    // orig: R030+0x1DD4 reads the rows with root 06A1:12DC (fgetc) and stores its AL
+    public byte FileByte(int offset) => (uint)offset < (uint)file.Length ? file[offset] : (byte)0xFF;
 
     /// <summary>
     /// Reads the terrain ID at the zero-based map column and row.
@@ -126,6 +132,6 @@ public sealed class WorldMapData
             compressedRows[row] = ((int)rowOffset, sourceOffset - (int)rowOffset);
         }
 
-        return new WorldMapData(width, height, terrainIds, compressedRows);
+        return new WorldMapData(width, height, terrainIds, compressedRows, data.ToArray());
     }
 }

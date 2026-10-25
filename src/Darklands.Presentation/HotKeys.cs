@@ -30,7 +30,14 @@ public sealed class GameOptions
 /// </summary>
 // orig: hot_keys root 0000:0CAA draft (matches the bytes; the file is "hand port" with 24 of 39 functions matching) for the Alt keys and F6, called from menu_bar_run (root 0000:0000) whenever a key is waiting; card_global_keys R043+0x33C6 (150B:2936) for F1..F6 and Ctrl-F1..F5 in the card engine; the F1..F5 / Ctrl-F cases of R030+0x0C44 on the map; tests: none (needs a host)
 // C: hot_keys looks at the key code with key_pressed() and consumes it (get_key) only for the codes it knows; other keys stay for the screen. Here a key it does not handle is not consumed either (Handle returns false).
-// DIVERGENCE: the original has no global handler for F1..F5/Ctrl-F: the card engine and the map each handle them in their own loops (and only while they wait); this one applies them in every wait of GameUi.Poll outside the full screens (ScreensUp). The original also guards Alt-O, Alt-S, Alt-L and F6 with the screen flags DS:9893, DS:9920, DS:9934 and DS:987F (set 1 by screens that allow the operation, 0 elsewhere, e.g. no saving in a battle); here the inn's roster, the stay (camp), the character sheet and barter set DS:9920 / DS:9934 (SaveGameItem, LoadGameItem) as R038, R036, R031 and R032 do; the battle keeps its own flags (BattleScreen), and the others (DS:9893, DS:987F) are not kept.
+// orig: F1..F5 / Ctrl-F1..F5 only where the original takes them: the card engine's menus and wait_continue (card_global_keys R043+0x33C6)
+//   and the map's loop (R030+0x0C44), which poll with GameUi.SheetKeys; the card's message wait (CardScreen.Tell), the full screens and the
+//   other loops leave them to the screen (hot_keys root 0000:0CAA does not know them); tests: HotKeyFlagsTests
+// orig: the screen flags of Alt-O, Alt-S, Alt-L and F6: DS:9893, DS:9920, DS:9934 and DS:987F. DS:9893 and DS:987F are 1 outside a battle
+//   (R000+0x0DF5 / 0x0DF8 at the start, R002+0x0760 at a battle's end, R037+0x8D41 after a load; no other writer); inside one the battle's
+//   own (BattleMenus: DS:987F = 2 from R002+0x0258, DS:9893 = 2 around the combat sheet R022+0x009D..0x02B7 and the loot screen
+//   R014+0xE42D..0xE72B) are read by BattleScreen. DS:9920 / DS:9934: the inn's roster, the stay (camp), the character sheet and barter set
+//   them (SaveGameItem, LoadGameItem) as R038, R036, R031 and R032 do.
 // C: F10 (menu mode DS:9C26) and the right button open the menu bar: GameUi.Poll hands them to MenuBar, whose items call the actions below.
 public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
 {
@@ -88,6 +95,9 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
             return false;
         }
         _busy = true;
+        // the screen a hot key opens has loops of its own: F1..F5 are theirs there
+        var sheetKeys = ui.SheetKeys;
+        ui.SheetKeys = false;
         try
         {
             action();
@@ -95,6 +105,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
         finally
         {
             _busy = false;
+            ui.SheetKeys = sheetKeys;
         }
         return true;
     }
@@ -113,12 +124,12 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
         Keys.AltM => ToggleMusic,
         Keys.AltC => ToggleSaintlyChanges,
         Keys.F6 when PartyInfo is not null => ShowPartyInfo,
-        >= Keys.F1 and <= Keys.F5 when ScreensUp == 0 && CharacterSheet is not null && MemberOf(key) is { } member => () =>
+        >= Keys.F1 and <= Keys.F5 when ui.SheetKeys && ScreensUp == 0 && CharacterSheet is not null && MemberOf(key) is { } member => () =>
         {
             CharacterSheet(member);
             ui.Redraw?.Invoke();
         },
-        >= Keys.CtrlF1 and <= Keys.CtrlF5 when ScreensUp == 0 && AbleMemberOf(key) is { } leader => () => MakeLeader(leader),
+        >= Keys.CtrlF1 and <= Keys.CtrlF5 when ui.SheetKeys && ScreensUp == 0 && AbleMemberOf(key) is { } leader => () => MakeLeader(leader),
         _ => null,
     };
 
@@ -131,13 +142,20 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     public void LoadGame() => Load?.Invoke();
 
     /// <summary>F6: the party information, then the screen below is drawn again.</summary>
-    // orig: party_info_screen_vec (key 0x4000, only if DS:987F == 1); the card redraws after it (card_global_keys, or party_icons_dirty after the menu bar)
+    // orig: party_info_screen_vec (key 0x4000, only if DS:987F == 1), whose close (R034+0x119C) sets party_icons_dirty (DS:9C46): the screens
+    //   with that test in their loop draw themselves again after the menu bar (GameUi.KeyAfterTheMouse); the card and the map redraw after it
+    // C: the screens that keep a redraw in GameUi.Redraw (cards, the map, the inn's roster) are redrawn here and the flag taken back.
     public void ShowPartyInfo()
     {
         if (PartyInfo is not null)
         {
             PartyInfo();
-            ui.Redraw?.Invoke();
+            ui.PartyIconsDirty = true;
+            if (ui.Redraw is { } redraw)
+            {
+                ui.PartyIconsDirty = false;
+                redraw();
+            }
         }
     }
 

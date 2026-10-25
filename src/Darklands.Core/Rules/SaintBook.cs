@@ -142,7 +142,7 @@ public static class SaintBook
     //   the record before the members' (weapon type DS:9C26, missile type DS:9BF7, pack count DS:9C53) and the pack bytes before
     //   the pack table (2E38:FEC0).
     // BUG: so for a prayer for the party (-1) the weapon-skill boost reaches nobody (FixSaintWeaponSkillsForParty: the leader's weapons).
-    // DIVERGENCE: DS:9C26 is the menu bar's keyboard mode and DS:9C53 its last sub-menu's text column (MenuBar); until a sub-menu
+    // DIVERGENCE (undefined-memory): DS:9C26 is the menu bar's keyboard mode and DS:9C53 its last sub-menu's text column (MenuBar); until a sub-menu
     //   has been opened the count (the low byte of DS:9C53, signed; root 0000:0000 sets it) is 0 and both lookups return -1 (as
     //   in the oracle's states). Afterwards R031+0x5D06 scans the records
     //   2E38:FEC0 + 6i (= DS:C0A0 + 6i, BSS) for type DS:9C26 (0/1; missile: DS:9BF7) and quality

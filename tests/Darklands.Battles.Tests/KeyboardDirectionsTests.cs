@@ -33,4 +33,23 @@ public sealed class KeyboardDirectionsTests
         d.Feed(0x50, released: false, 2010);
         Assert.Equal((0, 0), (d.X, d.Y));
     }
+
+    [Fact]
+    public void EnterIsKeptApartAndTheMapsClearingLeavesTheKeyHeld()
+    {
+        var d = new KeyboardDirections();
+        d.Feed(0x48, released: false, 0);
+        d.Feed(0x1C, released: false, 10);      // DS:0882 = 0xFF, the direction stays
+        Assert.Equal((0, -0x5A, true), (d.X, d.Y, d.Enter));
+        d.Feed(0x1C, released: true, 20);       // DS:0882 = 0
+        Assert.False(d.Enter);
+        d.Feed(0x1C, released: false, 30);
+        d.ClearForTheMap();                     // R030+0x0662: the three bytes, not DS:0884
+        Assert.Equal((0, 0, false), (d.X, d.Y, d.Enter));
+        d.Feed(0x48, released: false, 40);      // a repeat of the held key is still ignored
+        Assert.Equal((0, 0), (d.X, d.Y));
+        d.Feed(0x48, released: true, 50);
+        d.Feed(0x48, released: false, 2000);
+        Assert.Equal((0, -0x5A), (d.X, d.Y));
+    }
 }

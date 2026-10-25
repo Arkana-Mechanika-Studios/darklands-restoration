@@ -53,7 +53,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
 
     // orig: card_load R043+0x0A9A (+ card_load_near R043+0x0BA0 for ShowPicture): pic_draw_pal(1, "pics\\<pic>.pic") or, for an empty name, a fill of the whole screen with colour 0xFF; DS:EE59 = 15 for a name starting with 'x' else 0; party_panel_frames(0x100) and party_panel_rows(0x100); msg_load(name) reads msgfiles\<name>.msg
     // DIVERGENCE: msg_load refuses a file of 6000 bytes or more with message_box("<name>too large - <size>") (R029+0x5B40
-    //   matched: draw_text(side_win, 10, 10, msg), getch(), quit_to_dos()); a modding guard no game file reaches, not reproduced.
+    //   matched: draw_text(side_win, 10, 10, msg), getch(), quit_to_dos()); a modding guard no game file reaches, not reproduced. The check is on the catalogue entry's size; the largest of the 420 message files in MSGFILES is 5991 bytes (test MessageFilesTests.NoMessageFileReachesMsgLoadsSizeLimit).
     // DIVERGENCE: the original draws the picture onto an off-screen page and shows it at the first text (DS:EE55 = "picture not yet shown": the screen keeps the previous card until then); here it appears at once.
     // C: DS:E959, the block a redraw draws again, is left over from the previous card in the original until the new card shows a text; here a new card starts without one.
     public void Show(string cardName, string picture)
@@ -218,8 +218,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: the block drawer R043+0x0F54 (04c4): text_expand(idx, msg_buf) (R043+0x118E, see TextVariables) then
     // draw_text_wrapped(card_window, msg_buf, w - 10, x + 5, y + 5, font_height, &DS:E96E, 1, 0, 1, 1, 1): init, no stop, leading 1, drop
     // cap on, option colour on
-    // C: the block's x, y and width come from the .msg file (clamped to 0..200 for y and 0..320 for x by msg_load: clamp_range(0, 200, y), clamp_range(0, 0x140, x)).
-    // DIVERGENCE: the clamps are not applied here (the data files stay inside them).
+    // C: the block's x, y and width come from the .msg file, x and y already clamped by the scanner (MessageBlock.From: R043+0x0C9E).
     private List<OptionArea> DrawBlock(int block, byte color, IReadOnlyList<OptionState> options)
     {
         if (_messages is null || block < 0 || block >= _messages.Blocks.Count)
@@ -402,7 +401,8 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         {
             while (true)
             {
-                var action = ui.WaitForAction();
+                // orig: wait_continue: any other key goes to card_global_keys (F1..F6, Ctrl-F1..F5)
+                var action = ui.WaitForActionWithSheetKeys();
                 if (action.Key is Keys.Enter or Keys.Space)
                 {
                     return;

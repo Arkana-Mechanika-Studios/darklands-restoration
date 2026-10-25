@@ -52,7 +52,7 @@ internal static class TacticsOverlay
         return (T)(property is not null ? property.GetValue(target)! : (type.GetField(name, Any) ?? throw new MissingMemberException(type.Name, name)).GetValue(target)!);
     }
 
-    private sealed record Flag(string Name, int Ds, int Width, string Property, bool OnMap = false);
+    private sealed record Flag(string Name, int Ds, int Width, string Property, bool OnMap = false, bool Byte = false);
 
     private static readonly Flag[] Flags =
     [
@@ -64,7 +64,8 @@ internal static class TacticsOverlay
         new("activations enabled", 0xD6F0, 1, "ActivationsEnabled"),
         new("delayed start", 0xD842, 1, "DelayedStart"),
         new("group move allowed", 0xD610, 1, "GroupMoveAllowed"),
-        new("paused", 0xA695, 1, "Paused"),
+        // the pause byte itself (0x11 after Esc with nobody selected, 0x03 after order_mode_leave's missile to record -1)
+        new("paused", 0xA695, 1, "PauseByte", Byte: true),
         // DS:D4E4: the level in the buffer changed since it was loaded or saved (level_switch saves the level it leaves only then)
         new("level changed", 0xD4E4, 1, "LevelChanged"),
         new("stopped", 0xCA29, 1, "_stopped"),
@@ -107,6 +108,11 @@ internal static class TacticsOverlay
         var map = t.Map;
         foreach (var f in Flags)
         {
+            if (f.Byte)
+            {
+                Set(t, f.Property, ds[f.Ds]);
+                continue;
+            }
             Set(f.OnMap ? map : t, f.Property, ds[f.Ds] != 0);
         }
         foreach (var (_, at, property) in Words)
@@ -323,7 +329,7 @@ internal static class TacticsOverlay
         var map = t.Map;
         foreach (var f in Flags)
         {
-            ds[f.Ds] = (byte)(Get<bool>(f.OnMap ? map : t, f.Property) ? 1 : 0);
+            ds[f.Ds] = f.Byte ? Get<byte>(t, f.Property) : (byte)(Get<bool>(f.OnMap ? map : t, f.Property) ? 1 : 0);
         }
         foreach (var (_, at, property) in Words)
         {

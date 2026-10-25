@@ -30,10 +30,14 @@ public sealed class WorldMap
             _iconList.Add((place.X, place.Y, Terrain.PlaceIconCode(place.Icon)));
         }
         Buffer = new CellBuffer(this);
+        Rows = new RowBuffer(terrain);
     }
 
     /// <summary>The place icons in the order of the original's list (R136+0x10168), which is the order the map drawing writes them into the cell buffer.</summary>
     public IReadOnlyList<(int Column, int Row, int Code)> IconList => _iconList;
+
+    /// <summary>The row buffer of the open map screen (the map screen opens and scrolls it; the map drawing decodes the cell buffer from it).</summary>
+    public RowBuffer Rows { get; }
 
     /// <summary>The cell buffer the map drawing fills for the view (the camp watch reads it); one per world map, kept for the program's lifetime as the original's.</summary>
     public CellBuffer Buffer { get; }

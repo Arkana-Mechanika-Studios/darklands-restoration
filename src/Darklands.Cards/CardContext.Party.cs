@@ -384,9 +384,17 @@ public sealed partial class CardContext
     /// </summary>
     // orig: run_battle R029+0x2278 (0E76:2278) matched
     // C: the side is drawn (rand_mod(2)) before the seed (rand_mod(1000)); the battle gets seed + party_seed.
-    // DIVERGENCE: cards_shutdown's and cards_startup's other work files, frees and reloads (charactr.tmp's header read into DS:A668,
-    //   locs.tmp, card pictures, shields) are not modelled, and the "after battle" log is not written; the death film and the end of
-    //   the game are the host's (AllDead).
+    // C: what cards_shutdown R043+0x054E and cards_startup R043+0x078E change around the battle (both run directly on a city state, local/batch/nmB):
+    //   the event table goes to events.tmp and comes back (EventLog.Shutdown / Reload), the generator is seeded from the clock
+    //   (TimePassage.Reseed) and city_rec is read again from DARKLAND.CTY (CityFile.ReloadAfterBattle). The rest leaves the game as it was:
+    //   locs.tmp is the locations written and read back; the charactr.tmp header read into DS:A668 (the members' figure codes) is what every
+    //   writer of that table writes to the file too; the figure names copied to DS:1166 are set before every battle and read only in battles;
+    //   the order menu reset (R014+0xDE12) is made by the battle itself at its start and its end; the saved game written after the pair is the
+    //   one written before it, but for the uninitialised bytes after the place name's terminator (a stack buffer of the writer).
+    // DIVERGENCE: the pictures freed and loaded again (shields, card frames, timer pictures, the pop-up's saved screen DS:A776), the card's
+    //   picture and text loaded again at the end (card_load R043+0x0A9A: it also repairs the card text buffer DS:A895, which the reloads
+    //   overwrite) and the party panel are the presentation's; root 0000:2646, called with "after battle", is an empty function (RETF); the
+    //   death film and the end of the game are the host's (AllDead).
     // orig: cards_startup R043+0x078E (1462:078E) matched, called when somebody is left: srand((unsigned)time(0)),
     //   then the shields, card frames and timer pictures are loaded again, order_menu_reset_vec and world_load("locs.tmp") (the locations the
     //   battle saw, and the events: EventLog.Reload), party_panel_frames/rows; the reseed is TimePassage.Reseed (before advance_hours(0)).
@@ -410,6 +418,7 @@ public sealed partial class CardContext
             AllDead?.Invoke();
         }
         TimePassage.Reseed(State);
+        Core.World.CityFile.ReloadAfterBattle(State);
         Events.Reload();
         TimePassage.Advance(State, 0);
         return result;

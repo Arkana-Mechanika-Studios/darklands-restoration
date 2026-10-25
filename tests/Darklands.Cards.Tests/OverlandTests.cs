@@ -107,6 +107,23 @@ public sealed class OverlandTests
     }
 
     [Fact]
+    public void TheStepReadsTheMapScreensCellBufferWhenTheScreenGivesIt()
+    {
+        // R030+0x1300 reads G under the marker; the buffer is decoded from the row buffer, which can hold other rows than the registers
+        // name (the scroll block's bottom jump reads none, a scroll up leaves stale slots): the step then takes those rows' terrain
+        var state = State();
+        var map = MapOf(40, 40, (_, _) => Terrain.Plains);
+        var (x, y) = PixelOf(5, 20);
+        state.MapPosition = new MapPosition(5, 19);
+        var travel = new OverlandTravel(state, map, kind => false) { CellUnderMarker = (_, _) => Terrain.Ocean };
+        travel.Begin();
+        Assert.Equal(StepOutcome.Blocked, travel.Step(x, y).Outcome);
+        travel.CellUnderMarker = (_, _) => 0x33;            // a place icon counts as a castle
+        Assert.Equal(StepOutcome.Walked, travel.Step(x, y).Outcome);
+        Assert.Equal(Terrain.Castle, travel.CurrentTerrain);
+    }
+
+    [Fact]
     public void ForcedArrivalChoosesTheCityNearestTheOldPosition()
     {
         // The party stands near city 3; the step goes towards city 4. R030+0x1300 uses
@@ -313,7 +330,7 @@ public sealed class OverlandTests
     private static int CampAt2020(WorldMap map)
     {
         // view column 18: buffer column c is map column 17 + c; top 16, first shown row 1: buffer row r is map row 16 + r
-        map.Buffer.Fill(18, 16, 1);
+        map.Buffer.FillFresh(18, 16, 1);
         return map.Buffer.CampWatch(4, 4, 3);
     }
 
@@ -352,7 +369,7 @@ public sealed class OverlandTests
         {
             foreach (var (c, t, r) in views.Length == 0 ? [(10, 0, 1)] : views)
             {
-                map.Buffer.Fill(c, t, r);
+                map.Buffer.FillFresh(c, t, r);
             }
             return map.Buffer.CampWatch(4, row, column);
         }
@@ -371,7 +388,7 @@ public sealed class OverlandTests
         Assert.Equal(12 + 5, Camp(map, 44, 5, (10, 0, 1), (18, 0, 1)));
         // an icon in the window's last column + 1 (col + 18) is written over the next row's first cell: map (28, 20) lands on buffer (21, 0)
         map = new WorldMap(plain, [Village(92, 28, 20)]);
-        map.Buffer.Fill(10, 0, 1);
+        map.Buffer.FillFresh(10, 0, 1);
         Assert.Equal(0x1D, map.Buffer[21, 0]);
         Assert.Equal(0x1D, map.Buffer[20, 19]);
         // the marker's cell: row (y + 11) / 4, column (x + 16) / 16 on an odd row (row + top + rows - 1), (x + 24) / 16 on an even one

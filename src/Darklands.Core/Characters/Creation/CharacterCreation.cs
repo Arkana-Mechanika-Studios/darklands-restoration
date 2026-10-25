@@ -166,9 +166,10 @@ public sealed class CharacterCreation
 
     /// <summary>Starts again (<c>R037+0x675A</c>): a random man's name, age 0, base attributes, nothing learned.</summary>
     // orig: R037+0x675A (18C8:20FA) matched; tests: CharacterCreationTests
-    // DIVERGENCE: the record bytes the reset also writes and nothing in the clean model reads are not kept:
-    // +0x04 = 0x110, +0x06 = 0x50, +0x0E = 0, +0x16 = 0, +0x18 = -1, +0x19..+0x1C = 0, +0x49 = 10, +0x4A = -1,
-    // the equipment types -1 and qualities 0 (the made character has nothing equipped).
+    // C: the record bytes the reset also writes that the clean model does not read are kept in the made character's record (ResetRecord, under the
+    // Character fields CharacterRecords.Write puts over it): +0x04 = 0x110, +0x06 = 0x50, +0x18 = -1, +0x4A = -1, +0x49 = 10, the shield letter
+    // 'A', the equipment types -1 and qualities 0 (nothing equipped); +0x0E, +0x16 and +0x19..+0x1C = 0 are the zeros of a new record.
+    // Tests: CharacterCreationTests.TheMadeCharacterKeepsTheResetRecordsBytes, OriginalSaveTests.AMadeCharacterIsWrittenWithTheResetRecordsBytes
     // C: the cursor DS:8BFC is not reset: after "Kill character" it keeps the last skill row (see Raise).
     private void Reset(bool drawName)
     {

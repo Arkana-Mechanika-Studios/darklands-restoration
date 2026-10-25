@@ -19,8 +19,8 @@ namespace Darklands.Presentation.Battles;
 // orig: combat_main R014+0x0000 (0E76:0000) draft (the loop); combat_draw R014+0x6818 (14F7:0008) draft;
 // combat_input R014+0x3166 (0E76:3166) draft; combat_mouse R014+0xB576 (19CD:0006) draft; combat_keys
 // R016+0x0000 (1EF8:0000) draft (spec E)
-// DIVERGENCE: messages are drawn in the view for their time without blocking the window. The screen redraws the whole view every frame
-// (the original keeps dirty rectangles).
+// DIVERGENCE: the screen redraws the whole view every frame (the original keeps dirty rectangles); a message blocks as the original's
+// show_message does (ShowMessage).
 public sealed class BattleScreen : ITacticalView
 {
     private const int FrameMilliseconds = 16;
@@ -143,6 +143,9 @@ public sealed class BattleScreen : ITacticalView
     private readonly BattlefieldView _view = new();
     private readonly List<(int Who, int Left, int Top, int Right, int Bottom, int MapY)> _hotSpots = [];
     private readonly HashSet<int> _paletteApplied = [];
+
+    /// <summary>The combatants (slot, appearance) whose schemes' cycles were taken in this battle.</summary>
+    private readonly HashSet<int> _cyclesTaken = [];
     private TacticalBattle? _battle;
     private BattlefieldTiles? _tiles;
     private TextPainter? _small;
@@ -296,6 +299,12 @@ public sealed class BattleScreen : ITacticalView
                     _resyncClock = false;
                 }
                 _battle!.IterateRest();
+                if (_resyncClock)
+                {
+                    // a wait inside the tick (a message of a door, a trap, a pit) counted its own ticks
+                    previous = _ui.Clock.Milliseconds;
+                    _resyncClock = false;
+                }
                 if (pendingRises is { Count: > 0 })
                 {
                     // the rises of the original's pass that this pass did not reach (a draw or a phase it does not make, as when the loot screen
@@ -320,6 +329,12 @@ public sealed class BattleScreen : ITacticalView
                 _ui.Clock.Sleep(FrameMilliseconds);
             }
             Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
+            // orig: combat_main's end R014+0x0759..0x0783: root 047C:040B(1), (2), (3), (4) and DS:07D8 = 0: the cycles stop where they are
+            for (var slot = 1; slot <= 4; slot++)
+            {
+                _ui.Cycles.Stop(slot);
+            }
+            _ui.RunCycles(false);
             // orig: battle_run R002+0x0000 after thunk 09C0:1B03 (combat_main): mouse_hide (root 047C:12C3), mouse_set_cursor(0, 0, cursor_default)
             // (root 047C:124F), catalog_close (root 0000:262E), then "BattleResults - victory" … through show_message(DS:9085, 0x96) over the screen
             // as combat_main left it: the battle view in the battle palette (after a victory the loot screen has put both back, see OpenLoot).
@@ -341,6 +356,14 @@ public sealed class BattleScreen : ITacticalView
             _ui.PointerVisible = true;
             _ui.GameKey = _hotKey;
             _ui.MenuBar = menuBar;
+            // C: the next screen sets its own palette (the DAC then shows it); a game loaded from the battle's menu stops the cycles first
+            //   (R037+0x8400..0x8426: root 047C:040B(1..4), DS:07D8 = 0)
+            for (var slot = 1; slot <= 4; slot++)
+            {
+                _ui.Cycles.Stop(slot);
+            }
+            _ui.RunCycles(false);
+            _ui.PaletteSet();
         }
         var result = (int)_battle.Battle.Result;
         return result == 8 ? 2 : result;
@@ -498,6 +521,7 @@ public sealed class BattleScreen : ITacticalView
         }
         _small = new TextPainter(_ui.Assets.Font(3));
         SetPalette(field.Terrain.BackgroundPalette);
+        StartCycles();
         // orig: the marching order (DS:C624 / DS:C629) is the game's: the battle starts from it, R016+0x0DA6 keeping it while it is valid
         _battle.MarchingOrder.AddRange(Darklands.Core.Rules.MarchingOrderChoice.Entries(_state.MarchingOrder));
         (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
@@ -560,6 +584,7 @@ public sealed class BattleScreen : ITacticalView
         _battle.ReadBattleFile(file);
         _small = new TextPainter(_ui.Assets.Font(3));
         SetPalette(field.Terrain.BackgroundPalette);
+        StartCycles();
         (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
         _resuming = true;
         _battle.Resume();
@@ -590,7 +615,28 @@ public sealed class BattleScreen : ITacticalView
         {
             _ui.Canvas.SetColor(index, rgb);
         }
+        // C: set_palette (root 0410:0364, R002+0x04BA): the DAC shows the palette until each running cycle's next step
+        _ui.PaletteSet();
     }
+
+    /// <summary>The battlefield's palette cycles (colours 16..21, 24..30 and 22..23 of the background palette) start with the battle.</summary>
+    // orig: battle_run R002+0x04D2..0x04FA after set_palette: root 047C:0362(1, 4, 0x10, 0x15), 047C:0362(2, 6, 0x18, 0x1E),
+    //   047C:0362(4, 5, 0x16, 0x17); combat_main R014+0x02D5..0x02F3: 047C:03DA(1), 047C:03DA(-2) (backwards), 047C:03DA(4), DS:07D8 = 1
+    private void StartCycles()
+    {
+        _ui.TakeCycle(1, 4, 0x10, 0x15);
+        _ui.TakeCycle(2, 6, 0x18, 0x1E);
+        _ui.TakeCycle(4, 5, 0x16, 0x17);
+        _ui.Cycles.Start(1);
+        _ui.Cycles.Start(-2);
+        _ui.Cycles.Start(4);
+        _cyclesTaken.Clear();
+        _ui.RunCycles(true);
+    }
+
+    /// <summary>combat_mode_leave: the enemies' cycle (slot 3) stops; its colours stay as its last step left them.</summary>
+    // orig: R014+0x0D99: root 047C:040B(3)
+    public void CombatModeLeft() => _ui.Cycles.Stop(3);
 
     /// <summary>A party slot's figure colours (member_palette[slot]) as the battle palette takes them.</summary>
     // orig: battle_run R002+0x0000 R002+0x037B (0E76:037B) draft (member_palette copied into the party colours)
@@ -774,18 +820,53 @@ public sealed class BattleScreen : ITacticalView
     public FurnitureShape? VaryFurniture(int tile, string set, int record) =>
         _tiles?.Vary(_assets.TileSets, set, tile, record) is { } f ? new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY) : null;
 
-    public void Message(int text, int ticks)
-    {
-        _message = _assets.Executable.String(text);
-        _messageUntil = _ui.Clock.Milliseconds + ticks * 1000L / 60;
-    }
+    public void Message(int text, int ticks) => ShowMessage(_assets.Executable.String(text), ticks);
 
     public void Message(int text, int ticks, int member)
     {
         var c = _battle!.Battle[member];
-        var name = c.Member?.Name ?? "";
-        _message = name + _assets.Executable.String(text);
-        _messageUntil = _ui.Clock.Milliseconds + ticks * 1000L / 60;
+        ShowMessage((c.Member?.Name ?? "") + _assets.Executable.String(text), ticks);
+    }
+
+    /// <summary>show_message: the box over the battle for <paramref name="ticks"/> timer ticks, the battle's loop waiting meanwhile; then the box is gone.</summary>
+    // orig: show_message root 0000:24BC
+    // C: mouse_hide (047C:12C3), the framed box (0000:23E6, which saves the rectangle it covers), delay_ticks(ticks) (0410:0302: a loop
+    // C: until the byte DS:07D2 has risen by ticks), the rectangle put back (03EC:000E), mouse_show (047C:1293);
+    // C: nothing of the battle runs meanwhile (the callers go on after it: the "USE STAIRS" message at 19CD:0A1C, 19CD:0E70 and R016's
+    // C: arrow keys), no key or click is taken (they wait in the BIOS buffer and the driver's counts); the timer callback 047C:000A counts
+    // C: every tick: DS:07D1 / 07D2 / 07D6, and the combat clock DS:07D4 unless DS:07D3 holds it. Direct calls of order_mode_leave with
+    // C: the party split: DS:07D1 +150 at the delay's return, the clock +150 when running (castle-p600) and unmoved when paused.
+    // tests: BattleUiTests.AMessageWaitsItsTicksWithTheTimerRunning, BattleCallsTests (R014+0xBCA8 jobs)
+    private void ShowMessage(string text, int ticks)
+    {
+        _message = text;
+        _messageUntil = long.MaxValue;
+        if (!OneTickPerPass)
+        {
+            Draw();
+            _ui.Delay(ticks * 1000 / 60);
+        }
+        _message = null;
+        WaitedTicks(ticks);
+    }
+
+    /// <summary>Timer ticks spent inside a call that waits on the timer (show_message's delay_ticks): the callbacks count them, the clock too
+    /// unless it is held; the loop's own time starts again after them.</summary>
+    // orig: root 047C:000A (see ShowMessage); the clock stands while the pause byte is not 0, as Advance
+    private void WaitedTicks(int ticks)
+    {
+        _resyncClock = true;
+        if (_battle!.PauseByte == 0 && OneTickPerPass && (ClockJumps is not null || SetUpTicks is not null))
+        {
+            // C: a debugging aid: the tester's measured time of a running battle (the clock jumps of its passes, the set-up's late ticks,
+            // DARKLANDS_BATTLE_CLOCK_JUMPS / DARKLANDS_BATTLE_SETUP_TICKS) holds the wait's callbacks already
+            return;
+        }
+        CountCallbacks(ticks);
+        if (_battle.PauseByte == 0)
+        {
+            _battle.Battle.Clock = (ushort)(_battle.Battle.Clock + ticks);
+        }
     }
 
     /// <summary>The combatants' packs into the party records before a screen that works on the members (loot, character sheet).</summary>
@@ -894,11 +975,24 @@ public sealed class BattleScreen : ITacticalView
         // palette_restore(DS:CA53, DS:CA55) after it; then loot_pile_open R014+0xE278 redraws the battle:
         // floor_view_draw_vec(DS:17B0) (the view centred on the active member) and combat_draw.
         var palette = (uint[])_ui.Canvas.Screen.Palette.Clone();
+        // orig: loot_screen R014+0xE4F6: DS:07D8 = 0 (the loot screen's palette), R014+0xE6BB: DS:07D8 = 1 after the palette restore
+        _ui.RunCycles(false);
+        _ui.PaletteSet();
         // orig: the party records are the combatants, so the loot screen (R040) and its panel see the wounds and skills of the fight at once (as the
         // character sheet does, see CharacterSheet)
         _battle!.MembersFromCombat();
         PacksToMembers();
-        _owner.TakeLoot(list, money);
+        // orig: loot_screen R014+0xE410..0xE42D: the menu titles and DS:9893 are 2 while the loot screen is up, put back at
+        //   R014+0xE716..0xE72B (as around the combat sheet)
+        var menus = GreyMenusForAScreen();
+        try
+        {
+            _owner.TakeLoot(list, money);
+        }
+        finally
+        {
+            menus();
+        }
         // orig: the party record is the combatant record: what the screen changed in a member comes back whole, not only the pack: an item
         // put on the pile that was the equipped one is unequipped (R031+0x5B38 through item_take_one) in the record itself (+0x22, +0x51,
         // +0x4B/+0x4C, +0x5C and the encumbrance +0x49), which the battle reads afterwards
@@ -914,6 +1008,8 @@ public sealed class BattleScreen : ITacticalView
         _ui.TakeLeftReleases();
         _releases = 0;
         palette.CopyTo(_ui.Canvas.Screen.Palette, 0);
+        _ui.PaletteSet();
+        _ui.RunCycles(true);
         _underPointer = null;
         var c = _battle!.Battle[_battle.Battle.ActiveMember];
         _view.CentreColumn = c.Position.Column;
@@ -1061,16 +1157,19 @@ public sealed class BattleScreen : ITacticalView
             new(() => "Party Info", true, "\x0a", () => _owner.PartyInfo?.Invoke(), State: () => m.PartyInfo),
             new(() => "Change Marching Order", true, "\u000fO", ChooseMarchingOrder, State: () => m.MarchingOrder),
         };
-        return new MenuBar(_ui,
+        // C: the words before the item tables (the keyboard's Right with no item chosen) as outside a battle: MenuBar.BeforeGameItems
+        MenuBar? bar = null;
+        bar = new MenuBar(_ui,
         [
-            new("Game", true, game),
+            new("Game", true, game, BeforeItems: () => MenuBar.BeforeGameItems(_state)),
             new("Orders", true, orders, () => m.OrdersMenu),
             new("Attack", true, attack, () => m.AttackMenu),
-            new("Party", true, party, () => m.PartyMenu),
+            new("Party", true, party, () => m.PartyMenu, () => bar!.DropdownRight),
         ])
         {
             QuitToDos = () => _hotKey?.Invoke(Keys.AltQ),
         };
+        return bar;
 
         // orig: the Throw list's functions DS:9A47[k] (R000+0x083E), each R016+0x152E(k) (k = 0..19: line k's potion and quality, DS:9A47[k].f9 / f8):
         // orig: R016+0x1466, R016+0x1470, R016+0x147A, R016+0x1484, R016+0x148E matched
@@ -1837,18 +1936,20 @@ public sealed class BattleScreen : ITacticalView
         _viewRedrawn = true;
     }
 
+    /// <summary>The Orders, Attack and Party titles and Change Marching Order (DS:9893) set to 2; returns what puts them back.</summary>
+    private Action GreyMenusForAScreen()
+    {
+        var m = _battle!.Menus;
+        var (orders, attack, party, marching) = (m.OrdersMenu, m.AttackMenu, m.PartyMenu, m.MarchingOrder);
+        m.OrdersMenu = m.AttackMenu = m.PartyMenu = m.MarchingOrder = 2;
+        return () => (m.OrdersMenu, m.AttackMenu, m.PartyMenu, m.MarchingOrder) = (orders, attack, party, marching);
+    }
+
     /// <summary>"You can't view … at this time.": a message box for 150 ticks, the battle waiting.</summary>
     // orig: R022+0x04E4 matched: sprintf(buf, "%Fs%s%Fs", 286B:0212, name, 286B:0222); root 0000:24BC(buf, 0x96) (root 0000:24BC, a wait
     // on the timer that nothing shortens)
-    private void CannotView(int member)
-    {
-        var c = _battle!.Battle[member];
-        _message = _owner.CannotView(c.Member?.Name ?? "");
-        _messageUntil = long.MaxValue;
-        Draw();
-        _ui.Delay(0x96 * 1000 / 60);
-        _message = null;
-    }
+    // C: combat_char_sheet comes here (its test of the floor byte 0x9D) before it holds the clock (inc DS:07D3): the clock runs in the wait
+    private void CannotView(int member) => ShowMessage(_owner.CannotView(_battle!.Battle[member].Member?.Name ?? ""), 0x96);
 
     /// <summary>F1..F5 or a click on a portrait: the member's character sheet over the battle (only for an able member still on the field).</summary>
     // orig: combat_char_sheet R022+0x0000 (1EF8:0000) draft
@@ -1869,9 +1970,22 @@ public sealed class BattleScreen : ITacticalView
         var saved = _ui.Canvas.SaveScreen();
         // orig: R022+0x0066: inc DS:07D3 (the combat clock held) before the sheet, R022+0x03C6: dec DS:07D3 at its end
         var opened = _ui.Clock.Milliseconds;
+        // orig: R022+0x0167: DS:07D8 = 0 before the sheet (its own palette then); R022+0x0240: DS:07D8 = 1 after the battle's palette is back
+        _ui.RunCycles(false);
+        _ui.PaletteSet();
         tb.MembersFromCombat();
         _ui.PointerVisible = true;
-        sheet(member);
+        // orig: R022+0x007A..0x009D: the Orders, Attack and Party titles (DS:9429, DS:9433, DS:943D) and Change Marching Order (DS:9893,
+        //   Alt-O) are 2 (greyed, refused) while the sheet is up, put back at R022+0x02A2..0x02B7; tests: HotKeyFlagsTests
+        var menus = GreyMenusForAScreen();
+        try
+        {
+            sheet(member);
+        }
+        finally
+        {
+            menus();
+        }
         // C: a click on the member's own row closes the sheet on its press (R031+0x0635 to R031+0x08E1, no wait for the button); R022 then
         // reloads the battle's pictures and level (R022+0x01EA..0x03BE) before it reads the release count, so the closing click's release
         // falls inside the reload and is taken and forgotten at R022+0x03BE (lockstep session orders-sheetclick: the original is back in
@@ -1886,6 +2000,7 @@ public sealed class BattleScreen : ITacticalView
         _ui.Canvas.Restore(saved);
         SetPalette(tb.Field.Terrain.BackgroundPalette);
         _paletteApplied.Clear();
+        _ui.RunCycles(true);
         // orig: R022+0x03BE at the end: the release count read once more (DS:C62A untouched)
         _ui.TakeLeftReleases();
         HeldClockTime(_ui.Clock.Milliseconds - opened);
@@ -2529,9 +2644,13 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
-    /// <summary>The ENEMYPAL.DAT colour schemes of the enemies on the field.</summary>
+    /// <summary>The ENEMYPAL.DAT colour schemes of the enemies on the field, and their colour cycles.</summary>
     // orig: enemies_place R025+0x0000 (1EF8:0000) draft (spec E §1.8)
-    // DIVERGENCE: the palette cycles (a, b, c, d) of the schemes are not run.
+    // orig: R025+0x0958..0x098D after the palette upload (R025+0x094B): for each of the three schemes with +0x31 != 0xFF,
+    //   root 047C:0362(+0x34, +0x33, +0x31, +0x32) then 047C:03DA(+0x34): the scheme's range taken from the DAC and started forwards
+    // C: ENEMYPAL.DAT's 14 cycling schemes all name slot 3: an enemy's (or a later placement's) last cycling scheme is the one that turns,
+    //   the earlier ones keep the colours the take found. A cycle is taken once per combatant placed (not again when the sheet or the loot
+    //   screen gave the palette back: the slot goes on from where it was).
     private void ApplyEnemyPalettes()
     {
         var tb = _battle!;
@@ -2555,6 +2674,19 @@ public sealed class BattleScreen : ITacticalView
                     _ui.Canvas.SetColor(first + k, new Content.Formats.Graphics.Rgb24(
                         BattlePalette.Expand(colors[3 * k]), BattlePalette.Expand(colors[3 * k + 1]), BattlePalette.Expand(colors[3 * k + 2])));
                 }
+            }
+            if (!_cyclesTaken.Add(i * 1000 + c.Appearance))
+            {
+                continue;
+            }
+            foreach (var p in c.Palettes)
+            {
+                if (p < 0 || p >= _assets.EnemyPalettes.Count || _assets.EnemyPalettes.Cycle(p) is not { First: not 0xFF } cycle)
+                {
+                    continue;
+                }
+                _ui.TakeCycle(cycle.Slot, cycle.Reload, cycle.First, cycle.Last);
+                _ui.Cycles.Start(cycle.Slot);
             }
         }
     }

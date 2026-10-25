@@ -23,9 +23,9 @@ namespace Darklands.Presentation;
 // C: the screen draws on the back window (DS:2806) and the screen window (DS:27F4); restores copy the back window's rectangles,
 // C: which keep what the first drawing left on them (the names and '+' marks of the first list, the first highlight); a list row's
 // C: strip starts at its '+' line, so the top line of a '+' drawn above it on the screen (a member who left) stays.
-// DIVERGENCE: the exit transition (root 047C:1320 with 6, 0, 0, 0) is not reproduced; the screen is put back as it was before the
-// card's own redraw (thunk 09C0:1EA5, ICardScreen.Reload).
-// DIVERGENCE: F1..F5 open the character sheets here (HotKeys' divergence); the original's handler gets them as unknown keys.
+// C: the screen is put back as it was before the card's own redraw (thunk 09C0:1EA5, ICardScreen.Reload).
+// C: F1..F5 reach the screen's key handler as unknown keys, as in the original (the hot keys take them only in the card engine's and the
+//   map's loops: GameUi.SheetKeys).
 public sealed class PartyRosterScreen
 {
     private const int BackLabelColor = 8;
@@ -123,9 +123,11 @@ public sealed class PartyRosterScreen
         finally
         {
             // orig: R038+0x01FE: the figure and the button pictures freed, the fonts put back, DS:9920 = DS:9934 = 1, the button waited out
+            //   (R038+0x0235), then the mouse driver's release count read and cleared (root 047C:1320 with 6, 0, 0, 0 at R038+0x0244)
             _ui.Redraw = savedRedraw;
             SetSaveAndLoad(1);
             ScreenDrawing.WaitForRelease(_ui);
+            _ui.TakeLeftReleases();
         }
     }
 

@@ -89,9 +89,10 @@ public sealed class BattlefieldView
     }
 
     /// <summary>Draws the tiles of one cell.</summary>
-    // DIVERGENCE: R017+0x0000 also redraws the party panel, draws the loot piles of the cell between the floor and the west
-    // wall, and clears the "all tiles loaded" flag (DS:E22F) when a tile is missing. Here the battle screen draws the panel
-    // and the piles itself; a missing tile is simply not drawn. The animated decorations (EffectField.AnimatedPieces) show the
+    // C: R017+0x0000 also redraws the party panel and draws the loot piles of the cell between the floor and the west wall: the battle
+    // screen draws the panel (BattleScreen.DrawPanel) and the piles (tb.LootPiles) itself. A missing tile clears DS:E22F and then DS:E230,
+    // two latches only R017+0x0000 itself reads (the root and all other overlays never touch them), so a missing tile is simply not drawn
+    // here with no other effect. The animated decorations (EffectField.AnimatedPieces) show the
     // frame R014+0x6818 drew by lot for them (R014+0x8286..: 20A5:6EEA / 6F2A / 3474[n × 2 + random_n(2)], the second frame
     // possibly none).
     /// <summary>The frame (0, 1; −1 none) the renderer drew of the animated piece of a layer (0 north wall, 1 west wall, 2 floor) at a cell.</summary>

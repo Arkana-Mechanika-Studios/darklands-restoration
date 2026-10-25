@@ -337,6 +337,49 @@ public sealed class BattleUiTests
         Assert.Equal(2, opened);
     }
 
+    /// <summary>
+    /// show_message (root 0000:24BC) over a battle: the caller waits in delay_ticks (root 0410:0302) for the message's ticks while the timer
+    /// callback (root 047C:000A) counts DS:07D1 and, unless the clock stands, the combat clock; no tick of the battle runs meanwhile and the box is
+    /// gone when the call returns ("USE STAIRS..." DS:064A from R014+0xBF8C, R014+0xC3E0, R016+0x00F0; the direct calls of R014+0xBCA8 with the
+    /// party split: DS:07D1 +150 at the delay's return, the clock +150 in castle-p600, unmoved in the paused states). The message is shown
+    /// from inside the battle's thread (the sheet's hook, F1), the rest of the pass going on after it.
+    /// </summary>
+    [Fact]
+    public void AMessageWaitsItsTicksWithTheTimerRunning()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        BattleScreen? screen = null;
+        var seen = new List<(int Callbacks, ushort Clock, int Ticks, bool Paused)>();
+        using var run = new Session(files, Corridor, sheet: (_, _) =>
+        {
+            var tb = screen!.Tactics!;
+            seen.Add((tb.TimerCallbacks, tb.Battle.Clock, tb.Ticks, tb.Paused));
+            screen.Message(TacticalBattle.UseStairsText, 0x96);
+            seen.Add((tb.TimerCallbacks, tb.Battle.Clock, tb.Ticks, tb.Paused));
+        });
+        run.Play("wait:10", "key:space", "wait:5");
+        screen = run.Screen;
+        Assert.False(run.Screen.Tactics!.Paused);
+        run.Play("key:f1", "wait:200");
+        run.Play("key:space", "wait:2");
+        Assert.True(run.Screen.Tactics!.Paused);
+        run.Play("key:f1", "wait:200");
+        Assert.Equal(4, seen.Count);
+        // running: 150 callbacks and 150 clock ticks inside the call, no battle tick
+        Assert.False(seen[0].Paused);
+        Assert.Equal((seen[0].Callbacks + 0x96) & 0xFF, seen[1].Callbacks);
+        Assert.Equal((ushort)(seen[0].Clock + 0x96), seen[1].Clock);
+        Assert.Equal(seen[0].Ticks, seen[1].Ticks);
+        // paused: the callbacks count, the clock stands
+        Assert.True(seen[2].Paused);
+        Assert.Equal((seen[2].Callbacks + 0x96) & 0xFF, seen[3].Callbacks);
+        Assert.Equal(seen[2].Clock, seen[3].Clock);
+        Assert.Equal(seen[2].Ticks, seen[3].Ticks);
+    }
+
     /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
     private sealed class Session : IDisposable
     {

@@ -81,7 +81,7 @@ internal sealed class GameTimer(FrameTicker ticker)
     // orig: (frame work) root 047C:000A asm
     private void Frame(ITimerClient driver)
     {
-        // DORMANT: [7D8h] != 0 calls 047C:042A first (game work, not sound).
+        // C: [7D8h] != 0 calls 047C:042A first: the palette cycles (game work, not sound: the presentation runs them on the frames, GameUi.Cycles).
         // C: the skip of one frame in seven (sub byte [7DAh],1 / jg) is the ticker's.
         var ticks = Ticker.NextFrame();
         for (var i = 0; i < ticks; i++)

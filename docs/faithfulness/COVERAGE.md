@@ -114,7 +114,7 @@ link-time address) for overlay functions; an exact coordinate matches too.
 | `root 0000:262E` | host | 0 | datafile_forget: closes the open catalogs before a reload; Darklands.Content opens files per read |
 | `R000+0x0022` | startup | 0 | main: start-up (config, memory, drivers, fonts) and the call of the main loop root 03A1; the hosts (Darklands.Host.*) and DarklandsGame do this, the main loop itself is ported |
 | `R000+0x1150` | startup | 0 | start-up memory check (EMS/XMS and the swap store, with the EMS error texts); no memory limits in .NET |
-| `R041+*` | copy-protection | 3 | the manual's symbol check (copyprot_run with its pictures and retries) only gates play; the C# skips it (as the later CD release does), no other game state depends on it |
+| `R041+*` | copy-protection | 3 | the manual's symbol check (copyprot_run with its pictures and retries) only gates play; the C# skips the question (as the later CD release does) but makes its five random draws first (rand_mod 4, 20, 7, 7, 6: CopyProtection.Draw), so the generator goes on as the original's; no other game state depends on it |
 | `R015+0x0000` | debug | 1 | debug_mem_track: the developers' memory statistics in a battle; no game effect |
 | `root 0410:0068` | string-helper | 1 | word_fill(ptr, value, n): fill n words of a near array; the battle code's callers (combat_main, cbt_collisions, floor_view_draw, R019 0C80) clear their arrays with Array.Clear/Fill |
 | `root 0410:007E` | string-helper | 1 | word_fill_far: the same for a far array (combat_draw's tile tables, 1DB7:0028's trackers); Array.Fill in the C# |

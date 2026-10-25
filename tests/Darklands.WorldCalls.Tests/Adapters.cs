@@ -150,12 +150,12 @@ internal static class Adapters
             var (x, y) = (c.State.MapPosition.X, c.State.MapPosition.Y);
             var viewColumn = Math.Max(x - 2, 1);
             var viewTop = Math.Max(y - 4, 0);
-            buffer.Fill(viewColumn, viewTop, 1);
+            buffer.FillFresh(viewColumn, viewTop, 1);
             return buffer.CampWatch(members, y - viewTop, x - viewColumn + 1);
         }
         foreach (var view in c.Job.Views ?? [[c.Job.Word(0x286A), c.Job.Word(0x286E), c.Job.Word(0x286C)]])
         {
-            buffer.Fill(view[0], view[1], view[2]);
+            buffer.FillFresh(view[0], view[1], view[2]);
         }
         var (row, column) = Simulation.Overland.CellBuffer.MarkerCell(c.Job.Word(0x2866), c.Job.Word(0x2868), c.Job.Word(0x286E), c.Job.Word(0x286C));
         return buffer.CampWatch(members, row, column);

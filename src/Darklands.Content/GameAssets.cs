@@ -80,7 +80,7 @@ public sealed class GameAssets(GameFiles files)
             var key = wanted.Length > 12 ? wanted[..12] : wanted;
             var document = MsgCardDocumentParser.ParseEntryPayload(_messageArchive.ReadPayload(key));
             file = new MessageFile(cardName, document.Cards
-                .Select(c => new MessageBlock(c.Layout.TextX, c.Layout.TextY, c.Layout.TextMaxX, c.RawTextBytes))
+                .Select(MessageBlock.From)
                 .ToList());
             _messages[cardName] = file;
         }
@@ -95,4 +95,10 @@ public sealed record MessageFile(string Name, IReadOnlyList<MessageBlock> Blocks
 /// One text block of a card: where it is drawn (x, y and wrapping width, in card-window pixels)
 /// and its text bytes, including the option markers and control codes.
 /// </summary>
-public sealed record MessageBlock(int X, int Y, int Width, byte[] Text);
+public sealed record MessageBlock(int X, int Y, int Width, byte[] Text)
+{
+    /// <summary>A card's block as the scanner stores it: y clamped to 0..200 and x to 0..320 (signed), the width as read.</summary>
+    // C: the MSG scanner (R043+0x0C9E, cited on MsgCardDocumentParser) does this: the y byte through clamp_range(y, 0, 0xC8) (R029+0x4F76) into DS:E90B, the x word through clamp_range(x, 0, 0x140) into DS:E8D9, the width word as it is
+    public static MessageBlock From(Formats.Text.MsgCard card) =>
+        new(card.ScannerValues.BoundedTextX, card.ScannerValues.BoundedTextY, card.Layout.TextMaxX, card.RawTextBytes);
+}

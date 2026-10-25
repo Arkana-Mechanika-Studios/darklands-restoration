@@ -31,7 +31,7 @@ public sealed class PartyAtTheInn : Card
         var state = c.State;
         Show(c, Picture);
 
-        // DIVERGENCE: the card also sets DS:EE72 = 7 and DS:EE70 = 0 (flags of the pop-up boxes the menu draws: with DS:EE72 >= 0 a bordered box is filled behind a pop-up, R043+0x2ACA); nothing here uses pop-ups on this card.
+        // DIVERGENCE: the card also sets DS:EE72 = 7 and DS:EE70 = 0 (flags of the pop-up boxes the menu draws: with DS:EE72 >= 0 a bordered box is filled behind a pop-up, R043+0x2ACA); nothing here uses pop-ups on this card. DS:EE70 has no reader anywhere in the EXE (the root and all 136 overlays hold only stores to it) and DS:EE72 is read once, at R043+0x2BFC (a sign test; all 366 stores to it write 7 or 0), so neither store changes any behaviour.
         // orig: var_chosen1..4 = leader, 1, 2, 3 ($ChosenOneName ... $ChosenFourName)
         c.Variables.Chosen[0] = state.Party.LeaderIndex;
         c.Variables.Chosen[1] = 1;

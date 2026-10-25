@@ -33,4 +33,15 @@ public static class CityFile
         // the first byte); a record kept from before keeps its city.
         return new CityRecord(offset < 0 ? 0 : before?.City ?? 0, record);
     }
+
+    /// <summary>
+    /// After every battle (a card's and the main loop's) cards_startup reloads the world: the working copy is read again for cur_loc, so
+    /// what loc_set wrote into it (city size, the shops' qualities: LocationRules.Set codes 2..8 and 11) is lost.
+    /// </summary>
+    // orig: world_load R043+0x0100 (1462:0100) matched, called by cards_startup R043+0x078E (1462:078E) matched after cards_shutdown
+    //   R043+0x054E freed the old copy; tests: CityReloadTests (the original's shutdown and startup run directly on a city state after
+    //   loc_set(cur_loc, 3, 0x55): city_rec is DARKLAND.CTY's record again, local/batch/nmB)
+    // DIVERGENCE: at a place past the last city the read returns nothing into the block just allocated, uninitialised memory in the
+    //   original; the working copy is kept here (in the wilderness, cur_loc -1, the read is defined: the file's first bytes, as Read).
+    public static void ReloadAfterBattle(GameState s) => s.City = Read(s.Data, s.CurrentLocation, s.City) ?? s.City;
 }

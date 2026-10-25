@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 57854,
-  "blocks_hit": 49115,
-  "functions": 8528,
-  "outcomes": 43396,
-  "outcomes_hit": 32771,
+  "blocks": 57863,
+  "blocks_hit": 49210,
+  "functions": 8529,
+  "outcomes": 43404,
+  "outcomes_hit": 32871,
   "runs": null
  },
  "battle": {
@@ -1900,7 +1900,7 @@
   "blocks_hit": 8783,
   "functions": 687,
   "outcomes": 13078,
-  "outcomes_hit": 6140,
+  "outcomes_hit": 6141,
   "runs": 1
  },
  "lockstep-gen-gate-13": {
@@ -1916,7 +1916,7 @@
   "blocks_hit": 8755,
   "functions": 685,
   "outcomes": 12876,
-  "outcomes_hit": 6103,
+  "outcomes_hit": 6104,
   "runs": 1
  },
  "lockstep-gen-gate-16": {
@@ -4735,6 +4735,54 @@
   "outcomes_hit": 1903,
   "runs": 1
  },
+ "lockstep-kbd-battle-ctrl": {
+  "blocks": 12975,
+  "blocks_hit": 8049,
+  "functions": 647,
+  "outcomes": 11488,
+  "outcomes_hit": 5588,
+  "runs": 1
+ },
+ "lockstep-kbd-battle-cursor": {
+  "blocks": 13102,
+  "blocks_hit": 8213,
+  "functions": 652,
+  "outcomes": 11626,
+  "outcomes_hit": 5727,
+  "runs": 1
+ },
+ "lockstep-kbd-battle-held": {
+  "blocks": 12664,
+  "blocks_hit": 7773,
+  "functions": 633,
+  "outcomes": 11142,
+  "outcomes_hit": 5361,
+  "runs": 1
+ },
+ "lockstep-kbd-map-enter": {
+  "blocks": 5022,
+  "blocks_hit": 3015,
+  "functions": 298,
+  "outcomes": 3790,
+  "outcomes_hit": 1549,
+  "runs": 1
+ },
+ "lockstep-kbd-map-held": {
+  "blocks": 5176,
+  "blocks_hit": 3086,
+  "functions": 302,
+  "outcomes": 3924,
+  "outcomes_hit": 1609,
+  "runs": 1
+ },
+ "lockstep-kbd-map-wait": {
+  "blocks": 5249,
+  "blocks_hit": 3135,
+  "functions": 309,
+  "outcomes": 4018,
+  "outcomes_hit": 1655,
+  "runs": 1
+ },
  "lockstep-loot-esc": {
   "blocks": 13202,
   "blocks_hit": 8156,
@@ -4797,6 +4845,14 @@
   "functions": 312,
   "outcomes": 3648,
   "outcomes_hit": 1592,
+  "runs": 1
+ },
+ "lockstep-menubar-kbright": {
+  "blocks": 5292,
+  "blocks_hit": 3107,
+  "functions": 328,
+  "outcomes": 3918,
+  "outcomes_hit": 1711,
   "runs": 1
  },
  "lockstep-menubar2": {
@@ -4964,7 +5020,7 @@
   "blocks_hit": 3869,
   "functions": 387,
   "outcomes": 5006,
-  "outcomes_hit": 2225,
+  "outcomes_hit": 2226,
   "runs": 1
  },
  "lockstep-res5-ChasedByTheCityGuard": {
@@ -5164,7 +5220,7 @@
   "blocks_hit": 4003,
   "functions": 399,
   "outcomes": 5064,
-  "outcomes_hit": 2315,
+  "outcomes_hit": 2316,
   "runs": 1
  },
  "lockstep-university": {

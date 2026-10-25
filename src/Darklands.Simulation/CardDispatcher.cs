@@ -37,7 +37,7 @@ public sealed class CardDispatcher
     // orig: one pass of the do/while in root 03A1:000A, the part that is not a battle
     // C: the original runs the card only if bit 0 of DS:9081 is clear; when it is set (a game saved in a battle, GameState.ResumeBattle) the
     // card is skipped and the battle branch runs at once (DarklandsGame.Play).
-    // C: DS:A88F = DS:A88D; DS:A88D = DS:A772; DS:A772 = DS:A764 — the previous card (DS:A88D, the previous-screen word) becomes PreviousCard here. The one before it (DS:A88F) is kept by the original; no card script traced reads it, and it is not kept here.
+    // C: DS:A88F = DS:A88D; DS:A88D = DS:A772; DS:A772 = DS:A764 — the previous card (DS:A88D, the previous-screen word) becomes PreviousCard here. The one before it (DS:A88F) is kept by the original, but no instruction of the EXE reads it (the root and all 136 overlays hold only its two stores, root 03A1 and R066+0x271F), so it is not kept here; test CardDispatcherTests.FinishPassMovesTheCardsDown.
     // C: "if (DS:A772 != 0xc) DS:A891 = 0": after any card but the map the original clears the map-leave mode word (DS:A891, GameState.MapLeaveMode, saved with the game); the map itself runs in DarklandsGame.Travel and keeps it.
     // C: thunk 09C0:190F(0), called after every pass, is advance_hours(0) (the vector resolves to R029+0x54D8 (1367:05C8) through the overlay thunk table): the clock housekeeping TimePassage.Advance(state, 0) stands for. In the battle branch it is called a second time after thunk 09C0:1919(0) (= cards_startup, which reloads the card engine); nothing needs that here.
     // C: a battle code (-2..-6) leaves the pass unfinished: the battle runs first (DS:A772 is still the card during it, a save in the

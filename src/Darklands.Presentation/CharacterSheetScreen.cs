@@ -20,8 +20,9 @@ namespace Darklands.Presentation;
 // orig: member_sheet R031+0x0124 (1462:0124) draft (the byte match: 1 compare-order line; an earlier port's check matched the
 //   bytes with an alias of `who` for the equality guard, the logic unchanged); tests: none (visual, headless)
 // DORMANT: R031+0x0000 (inventory_leave) opens the sheet from a state without the world data loaded and writes LOCS.TMP/EVENTS.TMP afterwards; nothing in this game opens the sheet that way.
-// DIVERGENCE: the pointer does not change to the hand pictures (handicon, handicn2) over lists; the menu bar (menu_bar_run) comes with GameUi.Poll (MenuBar), its Alt keys through MenuBarKey; its party_icons_dirty redraw is not needed.
-// DIVERGENCE: the combat branch (DS:907A == 1 and the member on floor 0x9D: thunk 09C0:1D51) is not reached: battles do not open the sheet yet.
+// DIVERGENCE: the pointer does not change to the hand pictures (handicon, handicn2) over lists; the menu bar (menu_bar_run) comes with GameUi.Poll (MenuBar), its Alt keys through MenuBarKey.
+// orig: the combat branch of R031+0x0124 (DS:907A == 1 and the member on floor 0x9D: thunk 09C0:1D51 = R022+0x04E4) for a portrait
+//   click, F1..F5 and Enter on a member box: CannotView (BattleScreens.CannotViewMember); tests: SheetCannotViewTests
 public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formula> formulas, IReadOnlyList<string> saintNames,
     AlchemyScreen alchemy)
 {
@@ -116,6 +117,9 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     /// <summary>The saint page a click in the Saints list opens (the prayer screen, not part of this screen).</summary>
     public Action<int, int>? ShowSaint { get; set; }
 
+    /// <summary>In a battle, for a member who left the field through an exit: the "can't view" message, and true (the sheet then stays on its member).</summary>
+    public Func<int, bool>? CannotView { get; set; }
+
     private Canvas Back => new(_backScreen);
 
     private SavedScreen BackPage => new(_backScreen.Pixels, _backScreen.Palette);
@@ -132,6 +136,10 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
 
     /// <summary>Sets the Save Game and Load Saved Game items of the hot keys and the menu bar (1 on, 2 off).</summary>
     public Action<int>? SaveAndLoad { get; set; }
+
+    /// <summary>The game's party_size where the party shown is not the game's party (the character menu: 0); null: the party's members.</summary>
+    // C: the Ctrl-F1..F5 case of the original's key handler tests `slot < party_size` (DS:A67E, signed) before the status
+    public Func<int>? PartySize { get; set; }
 
     // C: member_sheet sets DS:9920 = DS:9934 = 2 once the member is there (R031+0x0144) (no Save Game, no Load Saved Game while the sheet is up); R031+0x08F6
     //   on leaving (Esc, the member's own portrait or F key) sets both to 1, whatever they were before (a sheet opened from a stay leaves saving on); the return on an empty
@@ -154,6 +162,21 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         Outline(_cursor, CursorColor);
         // orig: R031+0x018C the button waited out after drawing
         ScreenDrawing.WaitForRelease(ui);
+        // C: the screen below keeps no GameUi.Redraw while the sheet is up: the party information sets party_icons_dirty for the sheet's own test
+        var below = ui.Redraw;
+        ui.Redraw = null;
+        try
+        {
+            Loop();
+        }
+        finally
+        {
+            ui.Redraw = below;
+        }
+    }
+
+    private void Loop()
+    {
         while (true)
         {
             // orig: R031+0x0124 draft, checked against the asm: R031+0x019D tests the button's state (the pointer where it is now),
@@ -168,12 +191,22 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 }
                 ui.WaitForButtonRelease();
             }
-            var key = ui.KeyAfterTheMouse(0);
+            var key = ui.KeyAfterTheMouse(0, RedrawAfterPartyInformation);
             if (key != 0 && Key(key))
             {
                 return;
             }
         }
+    }
+
+    /// <summary>party_icons_dirty in the sheet's loop: the open box closed and the sheet drawn again, the cursor frame not.</summary>
+    // orig: R031+0x06D2: if DS:9C46 { DS:9C46 = 0; the panel (root 0000:1588 / 0000:1716 with 0x100), R031+0x2518(member, 0xB), DS:867E = 0, the saved panel
+    //   area DS:867A freed (0 after), R031+0x0A82(member) } (no R031+0x1D44: the cursor frame comes back with the next move)
+    private void RedrawAfterPartyInformation()
+    {
+        _open = false;
+        _underPanel = null;
+        DrawSheet();
     }
 
     /// <summary>A click: on the sheet (a list line, its arrows, a box) or on the party panel. True to leave.</summary>
@@ -267,7 +300,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         }
         if (_s.Party.Slot(m).Status == CharacterStatus.Able)
         {
-            // DORMANT: in a battle (DS:907A == 1) a member standing on floor 0x9D gets thunk 09C0:1D51(m) instead; battles do not open the sheet yet.
+            // orig: R031+0x0124: in a battle (DS:907A == 1) a member standing on floor 0x9D gets thunk 09C0:1D51(m) instead
+            if (CannotView?.Invoke(m) == true)
+            {
+                return false;
+            }
             ShowMember(m);
             Outline(_cursor, CursorColor);
         }
@@ -288,7 +325,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             }
             if (_s.Party.Slot(m).Status == CharacterStatus.Able)
             {
-                // DORMANT: the battle branch (thunk 09C0:1D51) as for a click.
+                // orig: the battle branch (thunk 09C0:1D51) as for a click
+                if (CannotView?.Invoke(m) == true)
+                {
+                    return false;
+                }
                 ShowMember(m);
                 Outline(_cursor, CursorColor);
             }
@@ -301,6 +342,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             {
                 // C: the original returns here without the clean-up of R031+0x08F6 (fonts and pointer stay as the sheet set them).
                 return true;
+            }
+            // orig: the battle branch (thunk 09C0:1D51) before the `who != m` test: the sheet stays (no leaving for the member shown)
+            if (CannotView?.Invoke(m) == true)
+            {
+                return false;
             }
             if (_who != m)
             {
@@ -436,7 +482,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         if (key is >= CtrlF1 and <= CtrlF1 + 0x400 && (key & 0xFF) == 0)
         {
             var m = (key >> 8) - (CtrlF1 >> 8);
-            if (m >= _s.Party.Members.Count || _s.Party.Members[m].Status != CharacterStatus.Able)
+            if (m >= (PartySize?.Invoke() ?? _s.Party.Members.Count) || _s.Party.Members[m].Status != CharacterStatus.Able)
             {
                 return;
             }
@@ -473,30 +519,29 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 return;
             case 'a' when packOpen:
             case 'u' when packOpen:
-                // DIVERGENCE: the original readies or unreadies the line's stack without checking it exists (an empty pack reads past its end); here nothing happens.
-                if (Index < Member.Pack.Count)
+                // C: R031+0x192E / R031+0x19E2 test only the box (flag 0x10) and that it is open: the line need not be a stack, an entry past the pack's
+                // end (Pack: what was last there, e.g. the stack just dropped or given) is readied or unreadied as it is.
+                if (Keys.IsLetter(key, 'a'))
                 {
-                    if (Keys.IsLetter(key, 'a'))
-                    {
-                        // orig: R031+0x5A02 (18E7:11B2) via PackRules.Equip
-                        PackRules.Equip(_s, _who, Index);
-                    }
-                    else
-                    {
-                        // orig: R031+0x5B38 (18E7:12E8) via Inventory.Unequip
-                        Inventory.Unequip(_s, _who, Index);
-                    }
+                    // orig: R031+0x5A02 (18E7:11B2) via PackRules.Equip
+                    PackRules.Equip(_s, _who, Index);
+                }
+                else
+                {
+                    // orig: R031+0x5B38 (18E7:12E8) via Inventory.Unequip
+                    Inventory.Unequip(_s, _who, Index);
                 }
                 AfterEquipping();
                 return;
             case 'p' when _cursor == PackBox && _open:
-                // DIVERGENCE: as for A and U, a line past the pack's end is ignored (the original reads its code).
-                if (Index >= Member.Pack.Count || !PotionEffects.CanDrink(_s, Member.Pack[Index].Code))
+                // C: R031+0x1B2C: as for A and U no test of the pack's count: a line past the end drinks the entry left there (the count of the
+                // pack, a signed char, goes down all the same: item_delete; -1 from an empty pack), and the list count DS:E7A4 follows it signed.
+                if (!PotionEffects.CanDrink(_s, Member.Pack[Index].Code))
                 {
                     return;
                 }
                 PotionEffects.DrinkFromPack(_s, _who, Index);
-                if (Member.Pack.Count < _listCount)
+                if (Member.Pack.Stacks < _listCount)
                 {
                     if (_top[PackBox, _who] != 0)
                     {
@@ -506,7 +551,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     {
                         _selected[PackBox, _who]--;
                     }
-                    _listCount = Member.Pack.Count;
+                    _listCount = Member.Pack.Stacks;
                 }
                 DrawPanel();
                 DrawListPanel(PackBox);
@@ -1069,7 +1114,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     }
                 }
                 HighlightLine(k);
-                _listCount = m.Pack.Count;
+                // C: DS:E7A4 = the pack's count as a signed char (R031+0x35B5)
+                _listCount = m.Pack.Stacks;
                 break;
             case FormulaeBox:
                 DrawNames(m.Formulas.Order().Select(f => f < formulas.Count ? formulas[f].Name : "").ToList(), k);

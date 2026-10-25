@@ -54,8 +54,11 @@ public sealed class MenuBar
         public IReadOnlyList<SubItem>? SubMenu => Subs is not null ? Subs() : Sub;
     }
 
-    /// <summary>A bar entry (10 bytes): its title; <c>has_items</c> 1 drops its items down, 2 is greyed and skipped.</summary>
-    public sealed record Menu(string Title, bool HasItems, IReadOnlyList<Item> Items, Func<int>? HasItemsState = null)
+    /// <summary>
+    /// A bar entry (10 bytes): its title; <c>has_items</c> 1 drops its items down, 2 is greyed and skipped. <paramref name="BeforeItems"/>
+    /// is the word just before the entry's item table, which the keyboard's Right reads as <c>items[-1].sub</c> (null: 0).
+    /// </summary>
+    public sealed record Menu(string Title, bool HasItems, IReadOnlyList<Item> Items, Func<int>? HasItemsState = null, Func<int>? BeforeItems = null)
     {
         /// <summary>has_items: 1 drops the items down, 2 is greyed (and skipped by the keyboard).</summary>
         public int Opens => HasItemsState?.Invoke() ?? (HasItems ? 1 : 2);
@@ -173,11 +176,22 @@ public sealed class MenuBar
             new(() => "Party Info", true, "\x0a", keys.ShowPartyInfo),
             new(() => "Change Marching Order", true, "\x0fO", () => keys.ChoosePartyOrder?.Invoke()),
         };
-        return new MenuBar(ui, [new("Game", true, game), new("Orders", false, []), new("Attack", false, []), new("Party", true, party)])
+        MenuBar? bar = null;
+        bar = new MenuBar(ui, [new("Game", true, game, BeforeItems: () => BeforeGameItems(state)), new("Orders", false, []), new("Attack", false, []),
+            new("Party", true, party, BeforeItems: () => bar!.DropdownRight)])
         {
             QuitToDos = keys.QuitToDos,
         };
+        return bar;
     }
+
+    /// <summary>The word DS:991C before the Game items (DS:991E): its high byte DS:991D is best_member, the low byte has no writer (0).</summary>
+    // C: the four item tables are DS:991E (Game), DS:9607 (Orders), DS:97DB (Attack), DS:987D (Party), the same in a battle; the words before
+    // them are DS:991C (best_member << 8), DS:9605 and DS:97D9 (no writer: 0) and DS:987B (the last dropdown's right edge, DropdownRight).
+    public static int BeforeGameItems(GameState state) => (state.Party.Last.Member & 0xFF) << 8;
+
+    /// <summary>DS:987B: the right edge of the last dropdown opened (0 before the first).</summary>
+    public int DropdownRight => _ddRight;
 
     /// <summary>Runs the bar while the right button is held (or, with <paramref name="keyboard"/>, until the keyboard menu ends), then the chosen item.</summary>
     // orig: menu_bar_run(m, 0): (hot_keys for a waiting key is GameUi's) the loop: in menu mode a key or the right button goes to 0dd2; active while the right button is held or menu mode is on: menu_bar_draw and menu_bar_track; once inactive with the bar drawn: DS:9409 = 0, the dropdown closed (0bc2), then the item under the pointer (DS:944B: items[DS:0204], if enabled and DS:9413 > DS:0204) and the sub-item (DS:9783: items[DS:A340].sub[DS:0206], if enabled and DS:9415 > DS:0206) are called, the window's colour and font put back first
@@ -517,7 +531,10 @@ public sealed class MenuBar
 
     // orig: root 0000:0DD2: the right button (a waiting key eaten) or Esc / F10 leave menu mode with DS:944B = DS:9783 = 0 (nothing is chosen); Enter leaves it (the item under the cursor is chosen); Alt-Q quit_to_dos; Up: the sub-item above (not past the first), else the enabled item above; Left: out of the sub-menu, else the previous entry with items; Right: into the item's sub-menu, else the next entry with items (entries of has_items 2 skipped); Down: the next sub-item, else the next item that is not greyed (enabled 2 skipped)
     // C: Up from the first item goes to "no item" (it reads items[-1].enabled on the way, which only decides whether the loop stops one step early).
-    // DIVERGENCE: Right with no item chosen reads items[-1].sub (memory before the item table); here that is "no sub-menu".
+    // C: Right tests items[DS:9C3C].sub also with no item chosen (DS:9C3C = -1): it then reads the word before the item table (Menu.BeforeItems):
+    // for Game best_member's byte, for Party the last dropdown's right edge, so with best_member != 0 (F10, Right) or on Party the cursor goes into
+    // a "sub-menu" of item -1 (DS:9C41 = 0) instead of to the next entry: the pointer it stands for is on the bar, shifted right by the dropdown's width.
+    // DIVERGENCE: Down in that sub-menu of item -1 tests the text of its next entry at that word + 0x16 * (DS:9C41 + 1): whatever DGROUP holds there (data at DS:0100..0400, the stack for best_member 0xFF); here it does not move.
     private void KeyboardStep(int key)
     {
         if (_ui.Mouse.Right)
@@ -578,7 +595,7 @@ public sealed class MenuBar
                 }
                 break;
             case Keys.Right:
-                if (_kbItem >= 0 && _kbItem < items.Count && items[_kbItem].SubMenu is not null)
+                if (_kbItem >= 0 && _kbItem < items.Count ? items[_kbItem].SubMenu is not null : _kbItem == -1 && (Menus[_kbMenu].BeforeItems?.Invoke() ?? 0) != 0)
                 {
                     _kbSub = 0;
                     return;
@@ -597,7 +614,7 @@ public sealed class MenuBar
             case Keys.Down:
                 if (_kbSub != -1)
                 {
-                    if (_kbSub + 1 < (items[_kbItem].SubMenu?.Count ?? 0))
+                    if (_kbItem >= 0 && _kbSub + 1 < (items[_kbItem].SubMenu?.Count ?? 0))
                     {
                         _kbSub++;
                     }

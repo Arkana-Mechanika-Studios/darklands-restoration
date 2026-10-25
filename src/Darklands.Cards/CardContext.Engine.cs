@@ -112,7 +112,7 @@ public sealed partial class CardContext
     /// screen is the presentation's; until it is set, the prayer fails (returns 0).
     /// </summary>
     // orig: invoke_saint R029+0x2180 (0E76:2180) matched
-    // DIVERGENCE: the prayer screen (thunk 09C0:1EAF, then the card redraw thunk 09C0:1EA5) is the presentation's SaintPrayer; without it the prayer fails (0).
+    // DIVERGENCE: the prayer screen (thunk 09C0:1EAF, then the card redraw thunk 09C0:1EA5) is the presentation's SaintPrayer; without it the prayer fails (0). In play DarklandsGame attaches SaintPrayerScreen to every card context it makes (DarklandsGame.cs, right after the CardContext is created), so no card runs without it.
     public int InvokeSaint(int who, int saint) => SaintPrayer?.Invoke(who, saint) ?? 0;
 
     /// <summary>The prayer screen (member, saint → result), supplied by the presentation.</summary>

@@ -70,9 +70,29 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     /// <summary>The view's first column and first shown row (DS:286A, DS:286C), which the terrain read depends on at the map's borders (<see cref="WorldMap.BufferOffset"/>); the screen supplies it.</summary>
     public Func<(int Column, int Rows)> View { get; set; } = () => (1, 1);
 
+    /// <summary>
+    /// The code of the map screen's cell buffer under the marker at map pixel (x, y), as the step reads it; the screen supplies it. Without
+    /// it the step reads the map cell the buffer would hold for a view drawn afresh.
+    /// </summary>
+    public Func<int, int, int>? CellUnderMarker { get; set; }
+
     // orig: the terrain read of R030+0x1300 (R030+0x1376..0x1387: G[(y + 11) / 4][col]) and of R030+0x16C6 (DS:D843), through the cell buffer of R030+0x20D2
     // C: G is filled from column / row 1 when the view's is 0, so at the west / north border the cell read is the one east / south of the party's
-    private int TerrainUnderMarker(int column, int row)
+    // C: G is decoded from the row buffer, which can hold other rows than the view's registers name (RowBuffer.Load's stale slots after a
+    //   scroll up, the scroll block's bottom jump): then the step reads the terrain of those rows (CellUnderMarker, from the screen's buffer).
+    //   The marker's column in G is at most 16 (DS:2866 <= 0xF7) and its row at most 47 (DS:2868 <= 0xB1): the step never reads G's last
+    //   column (the cell past the map's east end at the east border) nor the rows after the buffer.
+    private int TerrainUnderMarker(int column, int row, int x, int y)
+    {
+        if (CellUnderMarker is { } read)
+        {
+            var code = read(x, y);
+            return code >= Terrain.FirstPlaceIcon ? Terrain.Castle : code;
+        }
+        return FreshTerrainUnderMarker(column, row);
+    }
+
+    private int FreshTerrainUnderMarker(int column, int row)
     {
         var view = View();
         var (dc, dr) = WorldMap.BufferOffset(view.Column, view.Rows);
@@ -91,7 +111,8 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         _minutes = 0;
         _danger = 0;
         var (column, row) = (state.MapPosition.X, state.MapPosition.Y);
-        _terrain = TerrainUnderMarker(column, row);
+        // C: at the start the row buffer was just read for the view (RowBuffer.Open): the buffer holds the map's own cells
+        _terrain = FreshTerrainUnderMarker(column, row);
     }
 
     /// <summary>The party moves onto the cell under map pixel (x, y).</summary>
@@ -108,7 +129,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         }
 
         // C: t = c >= 50 ? 28 : c — a place icon counts as a castle (16c6 uses c > 50 for the same test, so for the single code 50 it leaves DS:D843 at 50; place icon codes start at 0x1C and 0x33, so this is not reachable).
-        var terrain = TerrainUnderMarker(column, row);
+        var terrain = TerrainUnderMarker(column, row, x, y);
         // C: (t == 1 || t == 2) && !event_started(0x4b) && DS:D843 != 1 && DS:D843 != 2 -> 9999: deep water stops the party unless it already stands on deep water; a minor river (3) never stops it.
         if (Terrain.IsDeepWater(terrain) && !_eventStarted(MayCrossWater) && !Terrain.IsDeepWater(_terrain))
         {

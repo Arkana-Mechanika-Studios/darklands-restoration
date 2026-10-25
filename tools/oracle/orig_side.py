@@ -35,7 +35,9 @@ SAVE_RECT = (P(0x047C), 0x04D5)
 EMS_CHECK, MOUSE_INIT = (P(0x05F8), 0x0064), (P(0x047C), 0x11F6)
 MOUSE_X, MOUSE_Y, MOUSE_BUTTONS, MOUSE_PRESSES, MOUSE_SHIFT, MOUSE_ON = 0x6EEC, 0x6EEE, 0x6EF0, 0x6EF2, 0x6EFA, 0x6EFB
 KEYBOARD_FLAGS = (0x40, 0x17)       # 0040:0017, the BIOS keyboard flags (Shift, Ctrl, Alt held): the BIOS data area
+SHIFT_BITS, CTRL_BIT = 3, 4         # its two Shift bits (shift:on) and its Ctrl bit (ctrl:on)
 COPY_PROTECTION = (P(0x1462), 0x0000)  # R041+0x0000 (thunk 09C0:1FD1)
+COPY_PROTECTION_DRAWS = (4, 20, 7, 7, 6)   # its rand_mod calls, R041+0x0014, 0x0021, 0x002D, 0x0052, 0x007B, before anything else of it
 CHAR_WIDTH, FONT_HEIGHT = (P(0x047C), 0x04E3), (P(0x047C), 0x051B)
 HOTSPOTS = 0xE96E                   # the card menu's hot spots: count, highlight, width, x, y[20], height[20] (bytes)
 PIC_OPEN, PIC_CLOSE = (P(0x047C), 0x05BC), (P(0x047C), 0x05AE)
@@ -70,7 +72,8 @@ TRACK_POINT = BASE + 0x01D4         # root 0000:01D4, the bar's pointer tracking
 POLL_POINTS = {BASE}                # root 0000:0000, the menu bar's handler: every screen's loop calls it each pass
 BWAIT_ACTUAL: list[int] = []         # per bwait step in script order: the passes the original really waited (run_original fills it; the C# waits as long)
 COMBATANTS, RECORD, COUNT = 0x9C55, 0x80, 13   # DS:9C55, 13 combatant records of 0x80 bytes
-INPUT_KINDS = ("key", "move", "click", "rclick", "rdown", "rup", "option")   # the script steps that are input (rclick: the right button as click does the left; rdown / rup hold it)
+INPUT_KINDS = ("key", "move", "click", "rclick", "rdown", "rup", "option", "kdown", "kup")   # the script steps that are input (rclick: the right button as click does the left; rdown / rup hold it;
+                                    # kdown / kup: a key's make / break code through the keyboard interrupt, see _keyboard_irq)
 RIGHT_UNREAD_MS = 2000               # a right click that no screen reads (a loop that asks the driver for left-button counts only) is let go this long after the press
 CLICK_MS = 300                      # how long a scripted click holds the left button                   # key polls with no key before the script's next key is due
 
@@ -93,7 +96,8 @@ class Session(Machine):
         self.driver_calls: dict[str, int] = {}
         # The vector table (0000:0000) and the BIOS data area are the machine's (dosmachine.py): every vector an IRET (F800:0030) at first,
         # the timer interrupt the BIOS tick (hooked) and IRET, INT 67h the EMM's entry. The game's own installs (INT 21h 25h and the direct
-        # writes of root 044A:01EC / 044A:0214, INT 9 at 0000:0024) change the table as on a DOS machine; its keyboard handler is never run.
+        # writes of root 044A:01EC / 044A:0214, INT 9 at 0000:0024) change the table as on a DOS machine; its keyboard handler runs only for the
+        # script's kdown / kup steps (_keyboard_irq), the keys of key steps go straight to the stubbed BIOS reads.
         self.write(EMS_SEG, 0, bytes([0xCD, 0x67, 0xCF]))      # int 67h; iret
         self.write(EMS_SEG, 0x0A, b"EMMXXXX0")
         self.write(EMS_SEG, 0x122, bytes([0xFF] * 4))       # the list of lists' device chain: empty
@@ -144,9 +148,10 @@ class Session(Machine):
         self.stub(*CHAR_WIDTH, self._char_width, "char_width")
         self.stub(*FONT_HEIGHT, self._font_height, "font_height")
         # the copy-protection question (R041+0x0000, asked by the first visit to the map): it passes at once, as the C# has it (no
-        # question, no random draws: see COVERAGE.md R041); a wrong answer would end the program
-        self.stub(*COPY_PROTECTION, lambda m: (m.log.append("copy protection passed (stubbed) at %d ms" % m.ms), (0, 0))[1],
-                  "copy_protection", record="R041")
+        # question, see COVERAGE.md R041), after the five draws it makes before anything else: the original's own rand_mod (root
+        # 0000:0C70) with 4, 20, 7, 7 and 6, as the function calls it (CopyProtection.Draw); a wrong answer would end the program
+        self.stub(*COPY_PROTECTION, self._copy_protection, "copy_protection", record="R041")
+        self._copy_protection.__func__.outside = True        # it runs code of the original (a nested call): outside the emulation's hook
         self.script: list[tuple[str, str]] = []
         self.states: dict[str, bytes] = {}
         self.held = False
@@ -181,9 +186,13 @@ class Session(Machine):
         self.hook(STOCK_LOOP[0], STOCK_LOOP[2], lambda m: setattr(m, "in_stock_loop", False), record="R032")
         self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._button_read, begin=DS * 16 + MOUSE_BUTTONS, end=DS * 16 + MOUSE_BUTTONS + 1)
         # the BIOS keyboard flags (0040:0017: Shift, Ctrl, Alt held; R031+0x10AE and R016+0x0294 test them: give one against give the stack) are
-        # the BIOS data area's byte, 0 (nothing held) until the script's shift:on gives the two Shift bits
+        # the BIOS data area's byte, 0 (nothing held) until the script's shift:on gives the two Shift bits and its ctrl:on the Ctrl bit
         self.shift = 0
+        self.ctrl = 0
         self.write(*KEYBOARD_FLAGS, bytes([self.shift]))
+        self.port60 = 0                 # the byte port 60h gives (the keyboard's scan byte while _keyboard_irq runs the INT 9 handler)
+        self.after_bwait = False        # the step being given is one a bwait held whose battle passes came
+        self.pass_keys = []             # kdown / kup steps due at the head of the next battle pass (see _next_key)
         self._buffered = False
         self.idle_mark = None
         self.idle_since = 0
@@ -208,6 +217,12 @@ class Session(Machine):
         self.stub(*GET_KEY, self._get_key, "get_key")
         self._key_pressed.__func__.outside = True
         self._get_key.__func__.outside = True
+
+    def _copy_protection(self, m):
+        for n in COPY_PROTECTION_DRAWS:
+            m.call(P(0x0000), 0x0C70, [n])
+        m.log.append("copy protection passed (stubbed, its 5 draws made) at %d ms" % m.ms)
+        return 0, 0
 
     def driver_slots(self) -> list[int]:
         """The slot table misc.exe fills: `jmp far 0:0` (EA 00 00 00 00) or `call 048A` (lazy entries) between 047C:04C7 and
@@ -292,6 +307,7 @@ class Session(Machine):
                 return key_code(self.script[0][1])
             self._buffered = False
         mark = (self.read(DS, HOLDRAND, 4), self.word(DS, CARD))
+        self.after_bwait = False
         # bwait:<n> (orders in a battle that is running: the idle test below never passes there): the steps after it wait for n more
         # battle passes instead, then are given at once (the C# host's wait:<n> frames, a frame being a pass there)
         while self.script and self.script[0][0] == "bwait":
@@ -307,6 +323,7 @@ class Session(Machine):
                 self.bwait_seen = self.battle_passes
                 if self.bwait_polls < IDLE_POLLS:
                     return None
+            self.after_bwait = self.battle_passes >= self.bwait     # its passes came (not a loop without passes)
             self._end_bwait()
             self.bwait = None
             self.idle_mark = mark
@@ -325,13 +342,27 @@ class Session(Machine):
             if kind == "state":
                 self.capture(value)
             elif kind == "shift":
-                self.shift = 3 if value == "on" else 0
-                self.write(*KEYBOARD_FLAGS, bytes([self.shift]))
+                self.shift = SHIFT_BITS if value == "on" else 0
+                self.write(*KEYBOARD_FLAGS, bytes([self.shift | self.ctrl]))
+            elif kind == "ctrl":
+                self.ctrl = CTRL_BIT if value == "on" else 0
+                self.write(*KEYBOARD_FLAGS, bytes([self.shift | self.ctrl]))
         if not self.script:
             raise Stop("script ended")
         kind, value = self.script[0]
         if kind in INPUT_KINDS and kind != "key":
             self.script.pop(0)
+            if kind in ("kdown", "kup"):
+                if self.after_bwait and 14 in self.resident:
+                    # in a running battle (after a bwait) at the head of the next pass, before its cursor keys (R014+0x35FC) and its timer
+                    # callback: the C# host feeds a key's codes at the start of its frame (lockstep.py gives that frame one wait more)
+                    self.pass_keys.append((kind, value))
+                else:
+                    self._keyboard_irq(kind, value)
+                self.log.append("%s %s at %d ms (battle pass %d) in %s" % (kind, value, self.ms, self.battle_passes, " < ".join(self.call_stack[-3:])))
+                self.waits = 0
+                self.idle_since = self.ms
+                return None
             if kind == "option":
                 n = int(value)
                 if not 0 <= n < self.byte(DS, HOTSPOTS):
@@ -376,6 +407,22 @@ class Session(Machine):
             return None
         self._buffered = True
         return key_code(value)
+
+    def _keyboard_irq(self, kind: str, value: str):
+        """kdown:<hex> / kup:<hex>: the keyboard's bytes for a key's make or break code (set 1: kdown:48 holds Up, kup:48 lets it go, kdown:E048
+        the grey Up with its E0 prefix; a break code is the make code with bit 7 set), each delivered as a real IRQ 1 delivers it: port 60h gives the
+        byte and INT 9 runs through the vector table, with an interrupt frame (the flags with IF set) as its return. The game's own handler (root
+        044A:020E, installed by root 044A:019C) then keeps DS:0880..0889 itself; it chains to the vector it found (the machine's IRET), so the BIOS
+        key ring is not fed: the buffered key a real press also makes is the script's key step. Run at the step, from the stub that took it
+        (a poll, or a get_key, inside which a real INT 16h wait takes interrupts too)."""
+        codes = bytearray(bytes.fromhex(value))
+        if kind == "kup":
+            codes[-1] |= 0x80
+        for b in codes:
+            self.port60 = b
+            seg, off = self.vector(9)
+            self.call(seg, off, [(self.uc.reg_read(REG_EFLAGS) | 0x200) & 0xFFFF])
+        self.port60 = 0
 
     def capture(self, name: str):
         """The state now, as the original's own saved-game writer (R037 1462:2ACE) writes it, run on a copy of the machine
@@ -426,6 +473,11 @@ class Session(Machine):
         # the battle's pass (combat_input, R014+0x3166): one call of the game's timer callback first, as the C# headless host's one tick
         # a pass (DARKLANDS_BATTLE_TICK_PER_PASS); the time-based timer waits BATTLE_QUIET bytes, so it only comes in a pass that blocks
         if address == BATTLE_PASS_LIN and 14 in self.resident:
+            if self.pass_keys and not self._ticked and self.depth == 1:
+                keys, self.pass_keys = self.pass_keys, []
+                uc.emu_stop()
+                self.pending = ("stub", lambda m: [m._keyboard_irq(*k) for k in keys] and None)
+                return
             if self._ticked:
                 self._ticked = False
             else:
@@ -673,7 +725,7 @@ class Session(Machine):
             self.vsync ^= 1
             return 9 if self.vsync else 0
         if port == 0x60:
-            return 0
+            return self.port60
         return 0
 
     # ---- drivers -----------------------------------------------------------------------

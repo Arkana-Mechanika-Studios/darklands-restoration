@@ -193,6 +193,8 @@ if (battleStep is not null)
     // the loot screen of a won battle is the game's (Esc or L leaves it)
     var lootScreens = new GameScreens(ui, panel, state, new NoGameScreens());
     var screens = new BattleScreens(ui, () => state, (items, money) => { Console.WriteLine($"loot: {items.Count} items"); lootScreens.Loot(items, money); }) { CharacterSheet = sheets.CharacterSheet, PartyInfo = sheets.PartyInfo };
+    sheets.CannotView = screens.CannotViewMember;
+    lootScreens.CannotView = screens.LootSkipsMember;
     // with saves:<folder>, Alt-S in the battle saves the game there (as the game does inside a battle)
     if (savesStep is not null)
     {

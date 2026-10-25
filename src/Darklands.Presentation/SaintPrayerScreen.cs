@@ -27,7 +27,7 @@ namespace Darklands.Presentation;
 //   tests: SaintPrayerTests (rules), the headless "saint" step (looks)
 // orig: the music: DS:9C3D = thunk 09C0:18F1(5), thunk 09C0:18F1(13) before the screen, thunk 09C0:18F1(DS:9C3D) on every way out;
 //   saint_pray does neither in a battle (DS:907A == 1) and plays back only a kept piece other than -1; tests: MusicTests
-// DIVERGENCE: the original redraws the whole screen when a hot key's box asks for it (DS:9C46); here the
+// C: the original redraws the whole screen when a hot key's box asks for it (DS:9C46): GameUi.KeyAfterTheMouse does, and the
 //   hot keys put back what they cover themselves. Alt-Q is the game-wide hot key (the screen's own
 //   0x1000 case, saint_finish then quit, is not reached).
 public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
@@ -92,13 +92,9 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
         }
         // orig: saint_pray: "Saint Call Successful" before the help, "Saint Call Fails" after the extra loss;
         //   saint_pray_party says nothing. The rolls and the favor spent are the same (SaintPrayer.Pray).
-        var success = prayer.Pray(who, effects);
-        if (mode == PrayerMode.ForMember)
-        {
-            // DIVERGENCE: the success message comes after the help here (the help's own change reports, when
-            //   "saintly changes" is on, therefore come first); the original shows it before.
-            _message.Show(success ? "Saint Call Successful" : "Saint Call Fails", MessageMilliseconds);
-        }
+        //   The message is shown from inside SaintPrayer.Pray, at the original's place between the roll and the help.
+        var success = prayer.Pray(who, effects,
+            mode == PrayerMode.ForMember ? ok => _message.Show(ok ? "Saint Call Successful" : "Saint Call Fails", MessageMilliseconds) : null);
         Leave(saved, state);
         PlayBack(mode, music);
         return prayer.Outcome(success);
@@ -224,8 +220,9 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
                 CloseMemberList();
                 return null;
             }
-            // DIVERGENCE: root 0000:0000 is GameUi.Poll's (MenuBar, HotKeys); the party_icons_dirty redraw is not modelled.
-            key = ui.KeyAfterTheMouse(key);
+            // C: the menu bar and the hot keys are GameUi.Poll's
+            // orig: R034+0x0616: after it `if (DS:9C46) { DS:9C46 = 0; R034+0x0720 and R034+0x0878 again (the picture, the status, the menu, the text); key = 0 }`
+            key = ui.KeyAfterTheMouse(key, () => DrawAll(prayer));
             if (key is Keys.Escape or 0x2044 or 0x2064)
             {
                 CloseMemberList();

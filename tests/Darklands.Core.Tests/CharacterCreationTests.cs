@@ -259,6 +259,34 @@ public sealed class CharacterCreationTests
         Assert.Equal('A', made.ShieldLetter);
     }
 
+    // R037+0x675A writes the whole record buffer: the bytes nothing in the model reads stay in the made record
+    [Fact]
+    public void TheMadeCharacterKeepsTheResetRecordsBytes()
+    {
+        var c = New();
+        c.Choose(1);
+        c.Choose(1);
+        c.Choose(1);
+        c.Choose(1);
+        Assert.Equal(CreationOutcome.Finished, c.Choose(2));
+        var made = c.Finished!;
+        var r = made.OriginalRecord!;
+        Assert.Equal(Character.MemberRecordSize, r.Length);
+        Assert.Equal(0x10, r[0x04]);
+        Assert.Equal(0x01, r[0x05]);   // +0x04 = 0x110
+        Assert.Equal(0x50, r[0x06]);
+        Assert.Equal(0xFF, r[0x18]);
+        Assert.Equal(0xFF, r[0x4A]);
+        Assert.All(new[] { 0x0E, 0x16, 0x19, 0x1A, 0x1B, 0x1C }, at => Assert.Equal(0, r[at]));
+        Assert.Equal(0x0A, made.Encumbrance);   // +0x49
+        Assert.Equal('A', made.ShieldLetter);   // +0x15
+        foreach (var item in new[] { made.Weapon, made.MissileWeapon, made.VitalArmor, made.LimbArmor, made.Shield })
+        {
+            Assert.Equal(-1, item.Type);
+            Assert.Equal(0, item.Quality);
+        }
+    }
+
     [Fact]
     public void EscapeFromChildhoodAttributesLetsABackgroundRowServeAnAdultOccupation()
     {

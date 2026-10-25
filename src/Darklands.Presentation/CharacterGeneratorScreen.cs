@@ -20,7 +20,6 @@ namespace Darklands.Presentation;
 // R037+0x4B12 matched, lists R037+0x7F06 / R037+0x802A matched, exit R037+0x4ADC
 // R037+0x4ADC matched; tests: headless chargen session (PNG)
 // DIVERGENCE: the original advances the bubble every 0x5DD passes of its polling loop (machine speed); here every 6 frames (about 100 ms).
-// DIVERGENCE: the exit transition root 047C:1320(6, 0, 0, 0) is not reproduced.
 public sealed class CharacterGeneratorScreen
 {
     private const byte Shadow = 0xBF;
@@ -64,6 +63,15 @@ public sealed class CharacterGeneratorScreen
 
     private TextPainter Text => _ui.Text;
 
+    /// <summary>The exit R037+0x4ADC: the button waited out, the mouse driver's left-release count cleared.</summary>
+    // C: the end of R037+0x4ADC: R037+0x4AF7 `while (mouse_buttons & 1);`, then INT 33h function 6 through the root's mouse call
+    private Character? Leave(Character? made)
+    {
+        ScreenDrawing.WaitForRelease(_ui);
+        _ui.TakeLeftReleases();
+        return made;
+    }
+
     public Character? Run()
     {
         // orig: R037+0x4664 sets state 0 and resets (R037+0x675A) before drawing
@@ -91,7 +99,7 @@ public sealed class CharacterGeneratorScreen
                 // orig: R037+0x4664: Esc goes back a step or leaves
                 if (_creation.Back() == CreationOutcome.Left)
                 {
-                    return null;
+                    return Leave(null);
                 }
                 DrawAll();
                 continue;
@@ -103,9 +111,9 @@ public sealed class CharacterGeneratorScreen
             switch (Handle(key))
             {
                 case CreationOutcome.Left:
-                    return null;
+                    return Leave(null);
                 case CreationOutcome.Finished:
-                    return _creation.Finished;
+                    return Leave(_creation.Finished);
             }
         }
     }

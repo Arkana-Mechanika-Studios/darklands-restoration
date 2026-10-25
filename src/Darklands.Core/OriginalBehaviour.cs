@@ -197,6 +197,24 @@ public sealed class OriginalBehaviour
     public bool FixEscapeWithoutSelectionPauseByte { get; set; }
 
     /// <summary>
+    /// The loot screen's D after a battle skips a party slot "gone through an exit" by reading the combat floor table (bytes, one a
+    /// combatant) as words at twice the slot: a member who left the battlefield is not skipped (his items can be shared to him), and
+    /// slot s is skipped, with the "can't view" message, only when combatant 2s's floor is -99 and combatant 2s + 1's is -1. Fixed:
+    /// the slot's own floor byte is tested.
+    /// </summary>
+    // orig: R040+0x0DB3..0x0DB7 `shl si, 1; cmp word [si - 0x594C], -0x63`
+    public bool FixLootExitTestReadsWords { get; set; }
+
+    /// <summary>
+    /// Enter travelling individually with nobody selected (after the button held over a member and let go elsewhere) leaves order
+    /// mode giving that member's last order to "member -1": the bytes before the tables, among them the pause byte (bits 0x10 and
+    /// 0x02), the last combatant's exchange state, repath and give-up times, and the "USE STAIRS" message with the party split. Fixed:
+    /// nothing is given (the parts on undefined memory, such as the active member DS:17B0 = 0xFF, are not reproduced either way).
+    /// </summary>
+    // orig: R014+0xBCA8 (19CD:0738) with DS:A6B2 = 0xFF, called by R016+0x0734
+    public bool FixLeaveOrderModeWithoutSelection { get; set; }
+
+    /// <summary>
     /// <c>level_switch</c> saves the level it leaves only when DS:D4E4 is set, and <c>take_exit</c> writes the stairs record's
     /// +0x07 byte (0xFF: its wall group is uncovered) before that switch without setting it: after a switch with DS:D4E4 clear
     /// (and at the battle's end) the level comes back without the write, so the wall group opens again on the next use. Fixed: the

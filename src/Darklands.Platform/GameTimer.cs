@@ -14,6 +14,10 @@ public interface IGameTimer
     /// <summary>Ticks so far, as the player sees and hears them.</summary>
     long Ticks { get; }
 
+    /// <summary>Frames of the timer so far (70.086 Hz: six ticks come with seven frames).</summary>
+    // C: a timer that counts only ticks gives the frames as 7 per 6 ticks: within one frame of the timer's own
+    long Frames => Ticks * 7 / 6;
+
     /// <summary>The first tick a sound request made now can be carried out at (the sound's output latency).</summary>
     long RequestTick { get; }
 
@@ -142,6 +146,18 @@ public sealed class ClockGameTimer(IClock clock) : IGameTimer
     }
 
     public long RequestTick => Ticks;
+
+    public long Frames
+    {
+        get
+        {
+            _ = Ticks;
+            lock (_lock)
+            {
+                return _ticker.Frames;
+            }
+        }
+    }
 
     public void Follow(TimerTrack? track, long afterTick)
     {

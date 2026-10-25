@@ -120,17 +120,25 @@ public sealed class SaintPrayer
     // C: rand_mod(100) <= r: a chance of 0 still succeeds on a roll of 0 (the screen only lets a prayer start when
     //   the chance is not 0, but a member chosen from the list is prayed for whatever the chance is now).
     // C: DS:887C / 2 is a signed division of a non-negative offer; add_attr keeps Divine Favor in 1..99.
-    public bool Pray(int target, ISaintEffects effects)
+    // orig: saint_pray R034+0x0166..0x01ED: the message (root 0000:24BC) comes after the roll and before the help on success
+    //   (0x0179, then the saint's function at 0x0195), after the extra loss on failure (0x01D0, then 0x01E8); the favor spent after both
+    public bool Pray(int target, ISaintEffects effects, Action<bool>? announce = null)
     {
         var chance = Chance;
         var success = _state.Random.Below(100) <= chance;
         if (success)
         {
+            announce?.Invoke(true);
             effects.Help(_state, target, Saint, Favor);
         }
         else if (_state.Random.Below(99) < chance - 66)
         {
             MemberRules.AddAttribute(_state, Member, (int)Attribute.DivineFavor, -(Favor / 2));
+            announce?.Invoke(false);
+        }
+        else
+        {
+            announce?.Invoke(false);
         }
         MemberRules.AddAttribute(_state, Member, (int)Attribute.DivineFavor, -Favor);
         return success;

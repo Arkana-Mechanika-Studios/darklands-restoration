@@ -75,7 +75,9 @@ public sealed class BattleSaveTests
         var (_, resumed) = StartBattle(ui, files, loaded, new BattleRequest(battlefield, seed, NoGroups, Persistent: true, Resume: true));
         var r = resumed.Battle;
 
-        Assert.Equal(b.Clock, r.Clock);
+        // the fight taken up again shows "Battlefield save rules are in effect" (DS:1776) for 150 ticks after its set-up (R014+0x0000), the
+        // clock running in show_message's wait (root 0000:24BC)
+        Assert.Equal((ushort)(b.Clock + 150), r.Clock);
         Assert.Equal(b.FloorShown, r.FloorShown);
         Assert.Equal(b.PartyFloor, r.PartyFloor);
         Assert.Equal(b.RealCombat, r.RealCombat);
@@ -111,7 +113,7 @@ public sealed class BattleSaveTests
         // The enemies of the battle are not saved (records 5..12 are emptied when a battle starts).
         Assert.All(Enumerable.Range(Combatant.PartySlots, 8), i => Assert.Equal(CharacterStatus.Empty, r[i].Status));
 
-        // Saved again at once, the battle file is the one saved, but for the orders (dropped) and the two timers the start sets.
+        // Saved again at once, the battle file is the one saved, but for the orders (dropped), the two timers the start sets and the clock.
         var again = loaded.BattleFile!.Clone();
         resumed.WriteBattleFile(again, inBattle: true, loaded.Battlefield.ClearedLevels, loaded.LastCastleFlags);
         var first = state.BattleFile!;
@@ -119,6 +121,8 @@ public sealed class BattleSaveTests
         Array.Fill(mask, true, BattleVariables.Orders, 13 * 6);
         Array.Fill(mask, true, BattleVariables.NextTickAt, 2);
         Array.Fill(mask, true, BattleVariables.ActivationsAt, 2);
+        // the clock: 150 ticks on after the save-rules message's wait (above)
+        Array.Fill(mask, true, BattleVariables.Clock, 2);
         for (var k = 0; k < BattleFile.VariablesSize; k++)
         {
             if (!mask[k])

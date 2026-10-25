@@ -102,6 +102,57 @@ public sealed class ScreenInputTests
         Assert.Equal(0, host.Left);
     }
 
+    // orig: R038+0x01FE: after the button is waited out (R038+0x0235) the mouse driver's release count is read and cleared (root 047C:1320 with 6, 0, 0, 0)
+    [Fact]
+    public void TheInnRosterLeavesNoReleaseCountBehind()
+    {
+        // a press and release on the list (a click the count keeps), then Esc
+        (int, MouseState)[] frames = [Up(5, 5), Up(5, 5), Held(0x100, 0x20), Held(0x100, 0x20), Up(0x100, 0x20), Up(0x100, 0x20), Key(Keys.Escape), Up(5, 5), Up(5, 5)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, state, panel, world))
+        {
+            return;
+        }
+        new PartyRosterScreen(ui, panel, world).Run(state, 0);
+        Assert.False(host.QuitRequested);
+        Assert.Equal(0, ui.TakeLeftReleases().Count);
+    }
+
+    /// <summary>The creation menu's exit R037+0x0348 clears the mouse driver's left-release count (root 047C:1320(6, 0, 0, 0)).</summary>
+    [Fact]
+    public void TheCreationMenuLeavesNoReleaseCountBehind()
+    {
+        // a press and release on the party column (a click the count keeps), then Esc
+        (int, MouseState)[] frames = [Up(5, 5), Up(5, 5), Held(20, 50), Held(20, 50), Up(20, 50), Up(20, 50), Key(Keys.Escape), Up(5, 5), Up(5, 5)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, world))
+        {
+            return;
+        }
+        Assert.Null(new CharacterCreationScreen(ui, world, () => 1).Run());
+        Assert.False(host.QuitRequested);
+        Assert.Equal(0, ui.TakeLeftReleases().Count);
+    }
+
+    /// <summary>The generator's exit R037+0x4ADC clears the mouse driver's left-release count too.</summary>
+    [Fact]
+    public void TheGeneratorLeavesNoReleaseCountBehind()
+    {
+        // a press and release in the empty area at the bottom right, then Esc (the first step: Esc leaves)
+        (int, MouseState)[] frames = [Up(5, 5), Up(5, 5), Held(300, 195), Held(300, 195), Up(300, 195), Up(300, 195), Key(Keys.Escape), Up(5, 5), Up(5, 5)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, world))
+        {
+            return;
+        }
+        var data = Darklands.Content.Formats.Characters.CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE"));
+        var creation = new Darklands.Core.Characters.Creation.CharacterCreation(data.Tables, world.ItemDefinitions,
+            new Darklands.Core.Randomness.MscRandom(1), 1, () => 1);
+        Assert.Null(new CharacterGeneratorScreen(ui, data, world, creation).Run());
+        Assert.False(host.QuitRequested);
+        Assert.Equal(0, ui.TakeLeftReleases().Count);
+    }
+
     [Fact]
     public void TheCampActsWhereTheButtonIsLetGo()
     {
@@ -155,6 +206,32 @@ public sealed class ScreenInputTests
             (bool)typeof(CharacterSheetScreen).GetField("_open", flags)!.GetValue(sheet)!);
     }
 
+    // orig: R031+0x161C: the Ctrl-F1..F5 case tests `slot < party_size` (DS:A67E); the character menu's sheet has party_size 0
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    public void TheSheetsCtrlFKeysTestThePartySize(bool menuSheet, int leader)
+    {
+        (int, MouseState)[] frames = [Up(5, 5), Up(5, 5), Key(0x5F00), Up(5, 5), Up(5, 5), Key(Keys.Escape), Up(5, 5), Up(5, 5)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, state, panel, world))
+        {
+            return;
+        }
+        var formulas = FormulaBook.Load(ui.Assets.Files, world);
+        var alchemy = new AlchemyScreen(ui, panel, formulas);
+        var sheet = new CharacterSheetScreen(ui, panel, formulas, world.Items.Saints.Select(s => s.FullName).ToList(), alchemy);
+        if (menuSheet)
+        {
+            sheet.PartySize = () => 0;
+        }
+        state.Party.LeaderIndex = 0;
+        sheet.Show(state, 0);
+        Assert.False(host.QuitRequested);
+        // Ctrl-F2 (0x5F00) makes the second member the leader, unless party_size is 0
+        Assert.Equal(leader, state.Party.LeaderIndex);
+    }
+
     [Fact]
     public void RightFromTheSecondMemberBoxGoesToTheEmptyTableEntry()
     {
@@ -185,6 +262,73 @@ public sealed class ScreenInputTests
         }
         // any other key closes it (the default case R031+0x1C66)
         Assert.Equal((10, false), Sheet(Keys.Down, Keys.Down, Keys.Down, Keys.Down, Keys.Down, Keys.Enter, 0x326D, Keys.Up)!.Value);
+    }
+
+    /// <summary>The sheet with member 0's pack (box 9, three Downs from the name box) opened, then <paramref name="keys"/>; the state after.</summary>
+    private static Darklands.Core.GameState? PackSheet(Action<Darklands.Core.GameState> setUp, params int[] keys)
+    {
+        var frames = new List<(int, MouseState)> { Up(5, 5), Up(5, 5) };
+        foreach (var k in new[] { Keys.Down, Keys.Down, Keys.Down, Keys.Enter }.Concat(keys).Append(Keys.Escape).Append(Keys.Escape))
+        {
+            frames.Add(Key(k));
+            frames.AddRange(Enumerable.Repeat(Up(5, 5), k == Keys.Enter ? 60 : 1));
+        }
+        var host = new FrameHost([.. frames]);
+        if (Start(host) is not var (ui, state, panel, world))
+        {
+            return null;
+        }
+        setUp(state);
+        var formulas = FormulaBook.Load(ui.Assets.Files, world);
+        var sheet = new CharacterSheetScreen(ui, panel, formulas, world.Items.Saints.Select(s => s.FullName).ToList(), new AlchemyScreen(ui, panel, formulas));
+        sheet.Show(state, 0);
+        Assert.False(host.QuitRequested);
+        return state;
+    }
+
+    /// <summary>
+    /// A (R031+0x192E) tests only that the pack is open, not the line against the count: on an empty pack it readies entry 0 as it was
+    /// left (here a hand weapon left past the end, as a dropped last stack leaves its successor entry), R031+0x5A02.
+    /// </summary>
+    [Fact]
+    public void AReadiesAnEntryPastThePacksEnd()
+    {
+        var weapon = -1;
+        var state = PackSheet(s =>
+        {
+            weapon = Enumerable.Range(1, 0x40).First(c => (s.Item(c).Flags & Darklands.Core.Items.ItemFlags.HandWeapon) != 0);
+            var m = s.Party.Slot(0);
+            m.Weapon = Darklands.Core.Characters.EquippedItem.None;
+            m.Pack.Stacks = 0;
+            m.Pack[0] = new Darklands.Core.Characters.ItemStack(weapon, s.Item(weapon).Type, 30, 1, s.Item(weapon).Weight);
+        }, 0x1E61);
+        if (state is null)
+        {
+            return;
+        }
+        Assert.Equal(state.Item(weapon).Type, state.Party.Slot(0).Weapon.Type);
+        Assert.Equal(30, state.Party.Slot(0).Weapon.Quality);
+    }
+
+    /// <summary>
+    /// P (R031+0x1B2C) has no count test either: a potion entry left past the end is drunk and taken (R031+0x4CC4: its count byte 1 -> 0,
+    /// item_delete), which lowers the pack's signed count to -1.
+    /// </summary>
+    [Fact]
+    public void PDrinksAnEntryPastThePacksEnd()
+    {
+        var state = PackSheet(s =>
+        {
+            var potion = Enumerable.Range(1, s.Data.ItemDefinitions.Count - 1).First(c => Darklands.Core.Rules.PotionEffects.CanDrink(s, c));
+            var m = s.Party.Slot(0);
+            m.Pack.Stacks = 0;
+            m.Pack[0] = new Darklands.Core.Characters.ItemStack(potion, s.Item(potion).Type, 30, 1, s.Item(potion).Weight);
+        }, 0x1970);
+        if (state is null)
+        {
+            return;
+        }
+        Assert.Equal(-1, state.Party.Slot(0).Pack.Stacks);
     }
 
     // orig: R037+0x01C0 (a press on the party column, x < 0x3C, opens member_sheet for slot y / 0x28 when the slot is filled)

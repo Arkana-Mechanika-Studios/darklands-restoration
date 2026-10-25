@@ -108,4 +108,69 @@ public sealed class OrderModeLeadsTests
         Assert.DoesNotContain(m, t.Missiles);
         Assert.Contains(m, t.MissilesDrawn);
     }
+    private static void Set(TacticalBattle t, string name, object value)
+    {
+        var type = typeof(TacticalBattle);
+        if (type.GetField(name, Any) is { } f)
+        {
+            f.SetValue(t, value);
+        }
+        else
+        {
+            type.GetProperty(name, Any)!.SetValue(t, value);
+        }
+    }
+
+    /// <summary>
+    /// R014+0xBF94..0xC000 with nobody selected (Enter travelling individually after the button held over a walking member): the walk is
+    /// given to record -1, whose action state and repath entries are exchange[12] and give-up[12] (direct calls of R014+0xBCA8).
+    /// </summary>
+    [Fact]
+    public void LeavingWithNobodySelectedGivesTheWalkToRecordMinusOne()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        foreach (var fix in new[] { false, true })
+        {
+            var t = Start();
+            t.Battle.Behaviour = new Darklands.Core.OriginalBehaviour { FixLeaveOrderModeWithoutSelection = fix };
+            var last = t.Battle[Combatant.Count - 1];
+            last.Exchange = Exchange.Placed;
+            last.GiveUpUntil = 5;
+            var active = t.Battle.ActiveMember;
+            Set(t, "CursorTarget", -2);
+            Set(t, "_orderSpot", new MapPoint(300, 200));
+            Set(t, "_orderClock", (ushort)1234);
+            t.Battle.PartyFloor = t.Battle.FloorShown;
+            t.LeaveOrderMode();
+            Assert.Equal(new MapPoint(300, 200), t.CursorPoint);
+            Assert.Equal(fix ? Exchange.Placed : Exchange.None, last.Exchange);
+            Assert.Equal(fix ? 5 : 1234 + 30, last.GiveUpUntil);
+            Assert.Equal(active, t.Battle.ActiveMember);      // DS:17B0 = 0xFF is not reproduced
+            Assert.Equal(fix ? 0 : 1, Get<int>(t, "_actionBeforeRecords"));
+        }
+    }
+
+    /// <summary>R014+0xBCDC..0xBCEE and 0xBD48..0xBD5B: with nobody selected the Hurry bit of flags[-1] is the pause byte's 0x10.</summary>
+    [Fact]
+    public void LeavingWithNobodySelectedClearsThePauseBytesHurryBit()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var t = Start();
+        t.PauseByte = 0x11;
+        Set(t, "OrderAction", 0x400);
+        t.LeaveOrderMode();
+        Assert.Equal(1, t.PauseByte);
+        t.PauseByte = 0x11;
+        Set(t, "_actionBeforeRecords", 0x1BE);
+        Set(t, "CursorTarget", -1);
+        Set(t, "_orderSpot", new MapPoint(300, 200));
+        t.LeaveOrderMode();
+        Assert.Equal(1, t.PauseByte);
+    }
 }

@@ -14,7 +14,7 @@ namespace Darklands.Presentation;
 /// </summary>
 // orig: overland_open R030+0x00A8 (1462:00A8) + overland_loop R030+0x02C0 (1462:02C0, matched) + the key handler R030+0x0C44 (unmatched) + the drawing R030+0x16C6 (party), R030+0x20D2 (map), R030+0x1F30 (pictures, matched), all; tests: OverlandTests, OverlandTests, OverlandTests
 // DIVERGENCE: the original keeps the party as view-relative registers over a cell buffer of the view and scrolls the view in jumps of 128 pixels across and 92 down when the marker comes within 20 pixels of an edge (Scroll below follows those jumps and thresholds). Here the page (OverlandPage) is drawn from absolute map positions (WorldMap) with the same view.
-// DIVERGENCE: not ported from the loop: the joystick (DS:0880..DS:0882, DS:E3FA/DS:E3FB), the "party_icons_dirty" reload after the menu bar (the bar itself, right button and F10, comes with GameUi.Poll), and the copy-protection check of overland_map (the card engine side, see DarklandsGame.Travel).
+// DIVERGENCE: not ported from the loop: the joystick (DS:E3FA/DS:E3FB, taken as centred: no stick; the held keys DS:0880..DS:0882 are, see HeldKey), the "party_icons_dirty" reload after the menu bar (the bar itself, right button and F10, comes with GameUi.Poll). The copy-protection check of overland_map is DarklandsGame.Travel's (the question left out, its random draws made).
 public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 {
     private const int AreaX = 60;
@@ -89,6 +89,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         ui.PlayMusic(state.Random.Below(2) != 0 ? 0x14 : 0x13);
         // orig: `DS:A891 = 3;` in overland_open R030+0x00A8 (the map-leave mode, GameState.MapLeaveMode)
         state.MapLeaveMode = 3;
+        PlaceParty(state);
+        // orig: overland_open R030+0x022B: R030+0x1C76 allocates the row buffer and reads the rows from DS:286E (R030+0x1DD4(file, DS:286E, -1)),
+        //   then R030+0x1F30 the pictures
+        map.Rows.Open(_viewTop);
         LoadPictures();
         UseMapPalette(state);
         var travel = new OverlandTravel(state, map, eventStarted);
@@ -104,20 +108,36 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         travel.PlayCue = tune => ui.PlayMusic(tune);
         travel.MapMessage = ShowMapMessage;
         travel.View = () => (_viewColumn, _viewRows);
-        PlaceParty(state);
+        // C: the step reads 20d2's cell buffer under the marker (R030+0x137B..0x1382), drawn for the current view before every step (Draw)
+        travel.CellUnderMarker = (x, y) =>
+        {
+            var (row, column) = CellBuffer.MarkerCell(x - _originX, y - _originY, _viewTop, _viewRows);
+            return map.Buffer[row, column];
+        };
         travel.Begin();
         (int X, int Y)? target = null;
         while (true)
         {
             Draw(state);
-            var action = ui.Poll();
+            // orig: R030+0x0C44's F1..F5 / Ctrl-F1..F5 cases (HotKeys, with GameUi.SheetKeys)
+            var action = ui.PollWithSheetKeys();
             var key = action?.Key ?? Keys.None;
-            // orig: R030+0x0566..0x057B: `key = get_key(); if (key_pressed()) key = get_key();`: a second waiting key is taken in the same
-            //   pass and replaces the first, so the two presses a held key leaves in the buffer (BiosKeyBuffer) make one step, and the walk
-            //   stops within a pass of the key's release
-            if (key != Keys.None && ui.TryReadKey(out var second))
+            // orig: R030+0x0540..0x066A: `if (key_pressed() || DS:0880 || DS:0881 || DS:0882) { key = get_key(); if (key_pressed()) key =
+            //   get_key(); else key = the held key's (HeldKey, or the key read); DS:0880 = DS:0881 = DS:0882 = 0; }`: a second waiting key is
+            //   taken in the same pass and replaces the first, so the two presses a held key leaves in the buffer (BiosKeyBuffer) make one step,
+            //   and the walk stops within a pass of the key's release
+            // C: with a key held (the keyboard interrupt's bytes) and none waiting, get_key waits for the next key (root 047C:0744, INT 16h
+            //   AH=0); the held key then replaces it: the ` and \ keys and the keypad's - and + (DS:088A) walk as Up, Left, Down and Right
+            //   do, and any key read while Enter is held is Enter
+            var held = ui.Directions;
+            if (key != Keys.None || held.X != 0 || held.Y != 0 || held.Enter)
             {
-                key = second;
+                if (key == Keys.None)
+                {
+                    key = ui.ReadKey();
+                }
+                key = ui.TryReadKey(out var second) ? second : HeldKey(held.X, held.Y, held.Enter) ?? key;
+                held.ClearForTheMap();
             }
 
             // C: `if (mouse_buttons & 1)`: while the left button is HELD, a point right of x = 0x3c steers the marker, a point at or left of it clears the target and opens the sheet of the member in that row.
@@ -207,8 +227,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     }
 
     // orig: case 0x1e41 / 0x1e61 / 0x4100 ('A', 'a', F7) of R030+0x0C44, written from the C
-    // C: the marker stands (sprite row 9) and every pass lets one step's time go by at the same place, with delay_ticks(75) before and after; the loop ends on a key press (checked after both delays) or when a mouse button is down (checked at the top). Any result of 1300 other than "walked on" leaves the loop: an arrival, an encounter, or a blocked step (impossible in place). DS:A891 is 1 while waiting and 3 after.
-    // DIVERGENCE: the original looks at the key buffer only after the delays; here a key ends the delay at once.
+    // C: the marker stands (sprite row 9) and every pass lets one step's time go by at the same place, with delay_ticks(75) before and after; the loop ends on a key press (checked after both delays) or when a mouse button is down (checked at the top). Any result of 1300 other than "walked on" leaves the loop: an arrival, an encounter, or a blocked step (impossible in place). DS:A891 is 1 until the first step and 3 after it.
     private int? Rest(GameState state, OverlandTravel travel)
     {
         _frame = 0;
@@ -224,19 +243,22 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         }
     }
 
+    // orig: R030+0x0C44 case 0x1E41: `goto test; do { if (mouse_buttons & 3) break; delay_ticks(75); kf = 1300(...); DS:A891 = 3;
+    //   if (kf != -1) return kf; 16c6(..., 9); delay_ticks(75); test: } while (!key_pressed());` (delay_ticks R030+0x3096 spins on the
+    //   clock without an input test): a key pressed during the first delay still lets that step's time pass, and the key stays in the
+    //   buffer for the map's next pass (key_pressed only looks); tests: OverlandKeyTests.AKeyInTheRestsFirstDelayStillLetsTheStepHappen; lockstep sessions with the rest key agree (replay)
     private int? RestLoop(GameState state, OverlandTravel travel)
     {
-        while (true)
+        while (!ui.KeyWaiting)
         {
             if (ui.Mouse.Buttons != MouseButtons.None)
             {
                 return null;
             }
-            if (ui.WaitForKey(RestMilliseconds))
-            {
-                return null;
-            }
+            ui.Delay(RestMilliseconds);
             var result = travel.Step(_x, _y);
+            Trace?.Invoke($"rest step -> {result.Outcome}");
+            state.MapLeaveMode = 3;
             if (result.Outcome != StepOutcome.Walked)
             {
                 return result.Card > 0 ? result.Card : null;
@@ -244,11 +266,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             _direction = WaitingDirection;
             Draw(state);
             _frame = (_frame + 1) % 8;
-            if (ui.WaitForKey(RestMilliseconds))
-            {
-                return null;
-            }
+            ui.Delay(RestMilliseconds);
         }
+        return null;
     }
 
     // orig: case 0x2e43 / 0x2e63 / 0x4200 ('C', 'c', F8) of R030+0x0C44: free the icon buffer, thunk 09C0:1FF9(25be()) (thunk 09C0:1FF9 = the camp, R036+0x0000), `if (event_started(0x5f)) return 1000`, then reload the pictures and redraw
@@ -380,6 +400,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             _viewRows += vy < 0x14 ? -0x17 : 0x17;
             if (map.Height - _viewTop - 0x30 <= _viewRows)
             {
+                // BUG: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the
+                //   buffer's top was not already there (a top of 0x318 from overland_open, the party walking south), the row buffer keeps the
+                //   rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's
+                //   registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
                 _viewTop = map.Height - 0x83;
                 _viewRows = map.Height - _viewTop - 0x30;
                 vy += (oldRows - _viewRows) * 5;
@@ -389,6 +413,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 _viewTop = _viewTop + 0xC4 >= map.Height ? map.Height - 0x83 : _viewTop + 0x41;
                 if (_viewTop != oldTop)
                 {
+                    // orig: R030+0x118A: R030+0x1DD4(file, DS:286E, old DS:286E)
+                    map.Rows.Load(_viewTop, oldTop);
                     _viewRows += oldTop - _viewTop;
                     vy += vy < 0x14 ? 0x5C : -0x5C;
                 }
@@ -399,6 +425,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 _viewTop = _viewTop <= 0x41 ? 0 : _viewTop - 0x41;
                 if (_viewTop != oldTop)
                 {
+                    // orig: R030+0x11EE: R030+0x1DD4(file, DS:286E, old DS:286E) (RowBuffer.Load: the stale slots of a scroll up)
+                    map.Rows.Load(_viewTop, oldTop);
                     _viewRows += oldTop - _viewTop;
                     vy += vy < 0x14 ? 0x5C : -0x5C;
                 }
@@ -445,8 +473,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         if (_mapDirty)
         {
             _mapDirty = false;
-            // C: 20d2 fills the cell buffer as it draws (the camp watch reads it)
-            map.Buffer.Fill(_viewColumn, _viewTop, _viewRows);
+            // C: 20d2 fills the cell buffer from the row buffer as it draws (the camp watch reads it): OverlandPage.DrawMap
             _page.DrawMap(map, _pictures!, _viewColumn, _viewTop, _viewRows, (byte)_background,
                 ui.Assets.PictureExists("mapheada") ? ui.Assets.Picture("mapheada").Image : null, Clock(state));
         }
@@ -563,6 +590,22 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     }
 
     // orig: the key cases of 0c44: 0x4b00 left (sprite row 7), 0x4d00 right (3), 0x4800 up (1), 0x5000 down (5), 0x4700 Home (8), 0x4900 PgUp (2), 0x5100 PgDn (4), 0x4f00 End (6), 0x4c35 centre (0, standing)
+    /// <summary>The key a held key gives the map (the signs of DS:0880 / DS:0881, then Enter from DS:0882), null for none held.</summary>
+    // orig: R030+0x0580..0x065F (the joystick's DS:E3FA / DS:E3FB tests with a centred stick): Home, End, PgUp, PgDn for the corners, then
+    // Left, Right, Up, Down, then 0x1C0D when DS:0882 is non-zero; only the signs are tested; tests: OverlandKeyTests
+    public static int? HeldKey(int x, int y, bool enter) => (x, y) switch
+    {
+        ( < 0, < 0) => Keys.Home,
+        ( < 0, > 0) => Keys.End,
+        ( > 0, < 0) => Keys.PageUp,
+        ( > 0, > 0) => Keys.PageDown,
+        ( < 0, _) => Keys.Left,
+        ( > 0, _) => Keys.Right,
+        (_, < 0) => Keys.Up,
+        (_, > 0) => Keys.Down,
+        _ => enter ? Keys.Enter : null,
+    };
+
     private static (int, int) DirectionOf(int key) => key switch
     {
         Keys.Left => (-1, 0),

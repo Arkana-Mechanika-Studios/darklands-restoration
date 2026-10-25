@@ -7,7 +7,9 @@ The sessions are in lockstep-sessions/ (each from the player's SAVES/DKSAVE0.SAV
 
 The script holds the C# headless host's steps (src/Darklands.Host.Headless/Program.cs), one per line, `#` comments:
 key:<c>|enter|esc|space|up|...|alt<c>|f<n>, move:<x>,<y>, click:<x>,<y>, option:<n> (the pointer onto line n of
-the card menu shown), state:<name>, bwait:<n>; wait/shot steps are for the C# only.
+the card menu shown), state:<name>, bwait:<n>, shift:on|off, ctrl:on|off, kdown:<hex> / kup:<hex> (a key's make / break code through the
+game's keyboard interrupt, root 044A:020E, which keeps DS:0880..0889: held direction keys and Enter; no buffered key, give a key step for that;
+in a battle give them after a bwait: they reach the original at the head of the next pass); wait/shot steps are for the C# only.
 bwait:<n> is for orders in a battle (the idle test below never passes where animated pieces draw random numbers, and a running battle is
 never idle): the steps after it are given n + 1 battle passes after the previous one (the original) / after wait:<n - 3> frames (the C#
 host, a frame being a pass there). A menu or a sheet (a loop that does not pass combat_input) is idle after IDLE_POLLS polls, as before
@@ -29,7 +31,8 @@ not compare (the C# writes the party, the original the battle's save). --battle-
      takes it), DOS console input (INT 21h 0Bh/07h/08h, the load's question) and the mouse (INT 33h 3/5/6,
      DS:6EEC..6EFB) from the script (fn 5/6 give the pointer at that button's last press/release, as the driver does); the screen-save and picture buffers (047C:04D5, 047C:05BC/05AE) as real DOS
      blocks; fixed font metrics (6 x 8, as card_oracle), so menus are chosen by line (option:<n>);
-   * the copy-protection question (R041+0x0000) passes at once, as the C# has it;
+   * the copy-protection question (R041+0x0000) passes at once, as the C# has it, after the five draws it makes first (rand_mod 4, 20, 7, 7, 6,
+     the original's own rand_mod run by the stub);
    * a step is given when the game is idle: IDLE_POLLS polls (key_pressed, or the menu bar's handler root 0000:0000
      every screen's loop calls) and IDLE_MS of emulated time with no random number drawn and the same card; a click
      holds the button CLICK_MS once the game has read it;
@@ -149,6 +152,14 @@ def dialog_gaps(log, steps, logged: int) -> list[int]:
         if where.startswith(("R037+0x2A68", "R037+0x8B76")) and not nxt.startswith(("R037+0x2A68", "R037+0x8B76")):
             out.append(q - p)
     return out if len(out) == len(expected) else []
+
+
+def after_bwait(steps, i) -> bool:
+    """Step i follows a bwait (shift / ctrl steps between): a kdown / kup there reaches the original at the head of the next battle pass."""
+    j = i - 1
+    while j >= 0 and steps[j][0] in ("shift", "ctrl"):
+        j -= 1
+    return j >= 0 and steps[j][0] == "bwait"
 
 
 def input_passes(log, steps) -> tuple[list[int], dict[int, tuple[int, int]]]:
@@ -287,10 +298,13 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     for i, (k, v) in enumerate(steps):
         if k == "bwait":
             cost = BWAIT_FRAMES + (2 if i and steps[i - 1][0] in ("click", "rclick") else 0) - holds.get(i, 0)
-            if i and steps[i - 1][0] == "move":
+            if i and steps[i - 1][0] in ("move", "kdown", "kup"):
                 # a move has no idle frames in the host (one frame, the step's own); the original takes the bwait at once at the poll after the move,
                 # in the same pass (a key: at the poll after the get_key that takes it), so the next step comes n passes after the move: wait:<n - 2>
+                # (a key's make or break code, kdown / kup, likewise: the host feeds it to its keyboard interrupt model in the step's frame)
                 cost -= 1
+            if i and steps[i - 1][0] in ("kdown", "kup") and after_bwait(steps, i - 1):
+                cost += 1                   # its frame came one later than the pass the original counts this bwait from (below)
             if i >= 3 and steps[i - 1] == ("key", "esc") and steps[i - 3][0] == "key" and steps[i - 3][1] in ("f1", "f2", "f3", "f4", "f5"):
                 cost -= 1                   # the sheet that Esc closes passes no battle pass in the frame it ends in
             if i and steps[i - 1][0] == "key" and steps[i - 1][1].lower() in BOX_KEYS:
@@ -298,6 +312,16 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
                 # the original, whose next step comes n passes after it; the C# host goes on taking steps over the box's frames, so the steps
                 # after it would wait in the keyboard buffer and be read together (a key after F10 then taken by the battle, not the menu)
                 cost -= BOX_FRAMES
+            # the modifier steps right after the bwait (shift / ctrl, set before the next input) take no pass in the original, which takes them
+            # with that input; the C# host spends a frame on each
+            j = i + 1
+            while j < len(steps) and steps[j][0] in ("shift", "ctrl"):
+                cost += 1
+                j += 1
+            if j < len(steps) and steps[j][0] in ("kdown", "kup"):
+                # a key's make or break code after a bwait reaches the original's keyboard interrupt at the head of the next battle pass
+                # (orig_side.py, before that pass's cursor keys): the C# host feeds it at the start of its frame, one frame later
+                cost -= 1
             if after_dialog(steps, i) and (gap := next(gaps, None)) is not None:
                 args.append("wait:%d" % max(0, gap - 1 - cost))
                 continue

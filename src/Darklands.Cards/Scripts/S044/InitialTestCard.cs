@@ -16,7 +16,7 @@ namespace Darklands.Cards.Scripts;
 //   then card_items and card_saints cleared to -1.
 // DORMANT: the pop-up handlers: the card's text has no item or saint line, so no box opens; lines 10..19 (the "screwed up." handler) and
 //   line 9 (R044+0x055E: advance_hours(0), next_card = 0x62, the end of the game; hint R044+0x0570) have no text line to choose.
-// DIVERGENCE: DS:EE70 = 0xF and DS:EE72 = 7 (the pop-up boxes' drawing flags) are not kept; no box opens on this card.
+// DIVERGENCE: DS:EE70 = 0xF and DS:EE72 = 7 (the pop-up boxes' drawing flags) are not kept; no box opens on this card. DS:EE70 has no reader in the EXE and DS:EE72 is only sign-tested (R043+0x2BFC), so the stores change nothing.
 public sealed class InitialTestCard : Card
 {
     public const int CardNumber = 0x00;

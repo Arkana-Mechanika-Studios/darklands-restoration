@@ -15,10 +15,11 @@ public abstract class Card
     /// <summary>Shows the card with one of the numbered card pictures.</summary>
     // orig: R043+0x0A9A (150B:000A) draft (bytes match; the byte-match summary counts 22 of the file's 28 functions); tests: CardSmokeTests (card_load: pics\<pic>.pic, text colour 15 for pictures starting with 'x', msgfiles\<name>.msg)
     // C: the card scripts pass pic_names[n] (a far string) in pic_buf; the number-to-name table is PictureNames.
+    // DIVERGENCE (host): card_load also appends a MEM.LOG line first (R043+0x0000: free DOS memory from INT 21h/48h, the event count, the party's lore level and the date; a debug file nothing reads back); card_load_near does not.
     protected void Show(CardContext c, int picture) => c.Screen.Show(Name, PictureNames.Of(picture));
 
     // orig: R043+0x0BA0 (150B:0110) draft (matches); tests: CardSmokeTests (card_load_near: the same without the MEM.LOG line and the DS:E957 card-name store)
-    // DIVERGENCE: card_load also appends a MEM.LOG line (R043+0x0000, a debug memory report) and clears the card sound; card_load_near does neither; both are not reproduced (a debug log and a sound reset).
+    // C: card_load_near is card_load without the MEM.LOG line, the card-name store (DS:E957) and the panel redraw (see Show).
     protected static void ShowPicture(CardContext c, int picture) => c.Screen.ShowPicture(PictureNames.Of(picture));
 
     /// <summary>A new option menu of this card on text block <paramref name="block"/>, offered while the card stays on its own number.</summary>

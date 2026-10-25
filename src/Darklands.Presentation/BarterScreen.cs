@@ -70,8 +70,9 @@ public sealed class BarterScreen
         {
             while (true)
             {
-                // DIVERGENCE: menu_bar_run(DS:9419, 0) is GameUi.Poll's (MenuBar, HotKeys); the party_icons_dirty redraw is not here: the page is not redrawn after them.
-                var key = _page.KeyAfterTheMouse(MouseStep(ref lit));
+                // orig: R032+0x06B2: menu_bar_run(DS:9419, 0) (GameUi.Poll's: MenuBar, HotKeys); R032+0x06BF: if DS:9C46 { DS:9C46 = 0; the picture 0x2F29
+                //   reloaded into DS:E48C and shown, the panel (root 0000:1588 / 0000:1716 with 0x100), R032+0x0B30 (Redraw) } (the pass's key kept); a waiting key
+                var key = _page.KeyAfterTheMouse(MouseStep(ref lit), Redraw);
                 if (key == Keys.Escape || BuySellPage.Is(key, 'L'))
                 {
                     return;

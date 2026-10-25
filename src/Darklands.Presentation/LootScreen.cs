@@ -43,6 +43,9 @@ public sealed class LootScreen
 
     private Party Party => _state.Party;
 
+    /// <summary>The battle's test of D for a slot gone from the battlefield: shows the "can't view" message and answers true (BattleScreens.LootSkipsMember).</summary>
+    public Func<int, bool>? CannotView { get; init; }
+
     private int Member => _member;
 
     private Pack PackOf(int member) => Party.Slot(member).Pack;
@@ -233,16 +236,20 @@ public sealed class LootScreen
     {
         _page.DrawParty(Party);
         // C: (DS:8DC4 + 1) % 5, skipping slots ≥ party_size and status 0 or 3 (checked against asm 0D9E..0DD9).
-        // DIVERGENCE: a member whose combat floor (cbt_floor, DS:A6B4) is −99 (he left the battlefield through an exit) is skipped after
-        //   thunk 09C0:1D51 = R022+0x04E4 is called for him (asm 0DB4..0DC8: DS:8DC4 = slot first); this screen does not see the
-        //   battle's combatant floors, so the test is absent (in a battle it belongs with the R022 work of the battle branch).
+        // orig: R040+0x0DB4..0x0DC8: a slot whose combat floor test (cbt_floor, DS:A6B4, read as words: BattleScreens.LootSkipsMember) says
+        //   −99 (gone through an exit) is skipped after thunk 09C0:1D51 = R022+0x04E4 ("You can't view ... at this time.") is called for it,
+        //   before the status test; tests: SheetCannotViewTests
         // C: 0C22 against the asm (R040 seg 1462 0C22..123D): every case of the draft matches it (cross-jumped tails only); P, G and D return
         //   without mouse_show, Left/Right on an empty pile returns with the pointer still hidden (the host owns the pointer here).
         // DIVERGENCE: the original loops forever when no member qualifies; here the search stops after five slots.
         for (var tries = 0; tries < Party.MaxMembers; tries++)
         {
             _member = (_member + 1) % Party.MaxMembers;
-            if (_member < Party.Members.Count && Party.Slot(_member).Status is not (CharacterStatus.Empty or CharacterStatus.Dead))
+            if (_member >= Party.Members.Count || CannotView?.Invoke(_member) == true)
+            {
+                continue;
+            }
+            if (Party.Slot(_member).Status is not (CharacterStatus.Empty or CharacterStatus.Dead))
             {
                 break;
             }

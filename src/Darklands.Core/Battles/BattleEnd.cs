@@ -33,6 +33,23 @@ public static class BattleEnd
     /// <summary>Exit floor of a member who left through an exit.</summary>
     public const int LeftThroughExit = -99;
 
+    /// <summary>The loot screen's D: true when party slot <paramref name="slot"/> is to be skipped as gone through an exit.</summary>
+    // orig: R040+0x0DB3..0x0DBC `mov si, bx; shl si, 1; cmp word [si - 0x594C], -0x63`
+    // BUG: OriginalBehaviour.FixLootExitTestReadsWords - the test reads cbt_floor (a byte table, DS:A6B4) as words at 2 x slot: it skips
+    //   slot s only when combatant 2s's floor is -99 (0x9D) and combatant 2s + 1's is -1 (0xFF), so a member who left is not skipped
+    //   (direct calls of R040+0x0C22 from the battle state street-p100 with key D and DS:8DC4 = 0: member 1's floor byte 0x9D gives
+    //   DS:8DC4 = 1 without the message; floor bytes 2, 3 = 0x9D, 0xFF give DS:8DC4 = 2 after R022+0x04E4); tests: BattleEndTests
+    public static bool LootSkips(Battle b, int slot)
+    {
+        if (slot is < 0 or >= Combatant.PartySlots)
+        {
+            return false;
+        }
+        return b.Behaviour.FixLootExitTestReadsWords
+            ? b[slot].Floor == LeftThroughExit
+            : (sbyte)b[2 * slot].Floor == LeftThroughExit && (sbyte)b[2 * slot + 1].Floor == -1;
+    }
+
     /// <summary>The end test; true when the battle screen should close.</summary>
     // orig: combat_over R014+0x08FE (0E76:08FE) draft; checked against asm up to R014+0x0A54 (results 4/6/7, enemy floor, fled/left); tests: BattleEndTests
     public static bool IsOver(Battle b, IBattleEndActions actions)
@@ -263,7 +280,9 @@ public static class BattleEnd
 
     /// <summary>Leaves battle mode: no more real combat, the alarm reset.</summary>
     // orig: combat_mode_leave R014+0x0D86 (0E76:0D86) draft
-    // DIVERGENCE: the menu states, the cbt_flags bits 13/14 and the collision boxes are the screen's (LeftCombatMode).
+    // C: the rest of combat_mode_leave is IBattleEndActions.LeftCombatMode (TacticalBattle): the menu states DS:9631 / DS:9721, the reinforcement
+    // waves DS:D6EB, the fire-blocked flags DS:A3D8, cbt_flags bits 13/14 and the collision half sizes; root 047C:040B(3) (a palette-cycling slot) is
+    // the battle screen's palette cycles. Tests: BattleEndDelegationTests.LeavingCombatModeResetsWhatTheOriginalResets
     public static void LeaveCombatMode(Battle b, IBattleEndActions actions)
     {
         b.RealCombat = false;
@@ -273,7 +292,9 @@ public static class BattleEnd
 
     /// <summary>After a fight: damage cleared, endurance back to at least three quarters, the unconscious woken.</summary>
     // orig: combat_recover R014+0x0DEE (0E76:0DEE) draft; tests: BattleEndTests
-    // DIVERGENCE: the search for a free spot near where the woken member fell (random_n draws) is the movement layer's (PlaceWokenMember).
+    // C: the search for a free spot near where the woken member fell (the random_n draws, the line-of-sight test, the collision test with DS:E0A2 set)
+    // is IBattleEndActions.PlaceWokenMember (TacticalBattle.PlaceWoken, checked against the asm); the party panel row redraw after it is the screen's.
+    // Tests: BattleEndDelegationTests.RecoveringWakesTheUnconsciousOnAFreeSpotWithTheSearchsDraws
     public static void Recover(Battle b, IBattleEndActions actions)
     {
         for (var i = 0; i < Combatant.PartySlots; i++)
@@ -306,7 +327,9 @@ public static class BattleEnd
 
     /// <summary>After the battle: each skill used may improve (mode 1 for successful use).</summary>
     // orig: R014+0x0694 (0E76:0694) draft (byte-matched per the draft notes)
-    // DIVERGENCE: saving the changed floor and activations and ending the temporary modifiers (DS:A532) belong to the battle screen.
+    // C: the save of the changed floor and activations (DS:D4E4) and the end of the temporary modifiers (DS:A532) that open the original function are
+    // TacticalBattle.AfterBattle (SaveLevelOrLoseUnsaved, Effects.EndPartyModifiers), which calls this for the skills.
+    // Tests: BattleEndDelegationTests.AfterABattleTheLevelIsSavedAndTheModifiersEnd
     public static void ImproveSkills(Battle b, Action<int, int, int, int>? changed = null)
     {
         if (b.Result == BattleResult.FellIntoPit)

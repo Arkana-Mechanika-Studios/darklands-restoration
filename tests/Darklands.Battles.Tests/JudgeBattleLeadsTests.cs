@@ -79,6 +79,25 @@ public sealed class JudgeBattleLeadsTests
         Assert.Equal(marker, c.Items.Entries[kind.Items.Count]);
     }
 
+    /// <summary>R025+0x0264: the .enm record's head is copied over the slot, whose bytes +0x1E/+0x1F (the step and frame delays) are 8.</summary>
+    [Fact]
+    public void AnEnemysDelaysAreTheRecordsEight()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, t) = Start();
+        var kind = t.Field.Forces.Kinds.Where(l => l is not null).SelectMany(l => l).First();
+        var c = t.Battle[5];
+        (c.StepDelay, c.FrameDelay) = (3, 5);
+        CombatantSetup.FromEnemy(t.Battle, 5, kind, 0, 0, 5, true);
+        Assert.Equal((8, 8), (c.StepDelay, c.FrameDelay));
+        // and the record the loader writes has them at +0x1E / +0x1F
+        var record = LevelEnemyFile.Write([kind]);
+        Assert.Equal((8, 8), (record[1 + 0x1E], record[1 + 0x1F]));
+    }
+
     /// <summary>R014+0x1E3F: the aim sequence's length is the caller's animation set's (DS:C8A7[set]), not one worked out again.</summary>
     [Fact]
     public void TheAimUsesTheCallersAnimationSet()

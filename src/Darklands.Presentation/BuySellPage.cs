@@ -173,7 +173,8 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
 
     /// <summary>The end of one pass of the loop (<see cref="GameUi.KeyAfterTheMouse"/>).</summary>
     // orig: `root 0000:0000(DS:9419, 0); if (root 047C:073D()) mkey = root 047C:0744();` at the end of the loops of R032+0x0000, R035+0x0000, R040+0x01C8
-    public int KeyAfterTheMouse(int mouseKey) => ui.KeyAfterTheMouse(mouseKey);
+    // C: only barter's loop has the party_icons_dirty test between the two (R032+0x06BF): <paramref name="redrawIfDirty"/>; its redraw keeps the mouse's key.
+    public int KeyAfterTheMouse(int mouseKey, Action? redrawIfDirty = null) => ui.KeyAfterTheMouse(mouseKey, redrawIfDirty, redrawKeepsTheKey: true);
 
     /// <summary>A key code for a click on a menu line, using the screen's table (0: none).</summary>
     public static int MenuKey(int line, IReadOnlyList<int> keys) => line >= 0 && line < keys.Count ? keys[line] : 0;

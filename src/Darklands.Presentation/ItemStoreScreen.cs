@@ -132,7 +132,9 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
             key = Keys.Down;
             _usingStore[Member] = true;
         }
-        // DIVERGENCE: the original shows sheets while member_sheet_vec returns another member (row != -1); IGameScreens.CharacterSheet returns nothing, so one sheet is shown.
+        // C: the original loops `row = mouse_y / 0x28; while (row != -1) { row = member_sheet_vec(row); panel redrawn }`; member_sheet returns -1 on every
+        //   path (its only two returns give -1), the member shown changing inside the sheet: the loop runs once, as here, and IGameScreens.CharacterSheet
+        //   needs no result.
         if (page.HeldRow(BuySellPage.MemberAt) is { } member)
         {
             screens.CharacterSheet(member);

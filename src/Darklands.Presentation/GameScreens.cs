@@ -33,7 +33,10 @@ public sealed class GameScreens : IGameScreens
     public void ItemStore() => _itemStore.Run();
 
     // orig: loot_distribute_vec = thunk 09C0:1DAB → loot_distribute R040+0x0000 (1462:0000) draft (byte-matched function)
-    public void Loot(IList<ItemStack> items, Money money) => new LootScreen(_page, _state, items).Run(money);
+    public void Loot(IList<ItemStack> items, Money money) => new LootScreen(_page, _state, items) { CannotView = CannotView }.Run(money);
+
+    /// <summary>The battle's test of the loot screen's D (BattleScreens.LootSkipsMember): true skips the slot after the "can't view" message.</summary>
+    public Func<int, bool>? CannotView { get; set; }
 
     public void Camp(int mode) => _others.Camp(mode);
 

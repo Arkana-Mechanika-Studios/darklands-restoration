@@ -10,7 +10,6 @@ namespace Darklands.Presentation;
 
 // orig: alchemy_screen R033+0x0000 (1462:0000) draft (register-level diffs); tests: CampAndSheetRulesTests (the bench), visual
 // C: the menu bar (menu_bar_run) comes with every GameUi.Poll (MenuBar).
-// DIVERGENCE: the redraw on party_icons_dirty after the menu bar is not part of this screen.
 /// <summary>
 /// The alchemy screen. The batch page lists the alchemist's formulas on a scroll (Up/Down or
 /// a click picks one) with "Use this formula" and "Do something else"; the formula page sets
@@ -58,8 +57,9 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         ScreenDrawing.WaitForRelease(ui);
         while (true)
         {
-            // DIVERGENCE: root 0000:0000 is GameUi.Poll's (MenuBar, HotKeys); the party_icons_dirty redraw is not modelled.
-            var key = ui.KeyAfterTheMouse(MouseStep());
+            // C: the menu bar and the hot keys are GameUi.Poll's
+            // orig: R033+0x0478: after it `if (DS:9C46) { DS:9C46 = 0; picture reloaded and shown, panel redrawn, the page drawn again; key = 0 }`
+            var key = ui.KeyAfterTheMouse(MouseStep(), RedrawAfterPartyInformation);
             if (key == Keys.AltQ)
             {
                 throw new QuitGameException();
@@ -101,6 +101,22 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         }
     }
 
+    /// <summary>The batch or formula page again, as the loop does after the party information (party_icons_dirty).</summary>
+    // orig: R033+0x047F..0x04DA
+    // C: the picture DS:3232 loaded and shown, the party panel drawn again, then the batch page (DS:324E == 0) or the formula page
+    private void RedrawAfterPartyInformation()
+    {
+        _back = ScreenDrawing.DrawBackground(ui, panel, _s.Party, "alcscrn1");
+        if (_formulaPage)
+        {
+            DrawFormulaPage();
+        }
+        else
+        {
+            DrawBatchPage();
+        }
+    }
+
     // orig: R033+0x16FA (alc_view) R033+0x16FA (15D1:000A) matched, with R033+0x1950, R033+0x1A2A and R033+0x1ABE
     // DORMANT: R033+0x1B9A (an empty drawing step) does nothing.
     /// <summary>The formula page of the character sheet's list: names, mystic number, description and ingredients. Esc or a click leaves.</summary>
@@ -108,36 +124,40 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     {
         var f = formulas[formula];
         var stock = Brewing.IngredientsOnTheFormulaPage(state);
-        ScreenDrawing.DrawBackground(ui, panel, state.Party, "alcscrn0");
-        ui.Text.Draw(ui.Canvas, 100, 9, f.Name, HeadingColor);
-        ui.Text.Draw(ui.Canvas, 100, 0x12, $"Mystical Number - {f.MysticNumber}", HeadingColor);
-        ScreenDrawing.Wrapped(ui, f.Name, 0x5F, 0x49, 0x3A, MenuColor);
-        ScreenDrawing.Wrapped(ui, f.Description, 0x5F, 0x49, 0x52, MenuColor);
-        ui.Text.Draw(ui.Canvas, 0xCB, 0x39, "Ingredients:", MenuColor);
-        var y = 0x41;
-        foreach (var ing in f.Slots)
+        void Draw()
         {
-            if (ing.Count != 0)
+            ScreenDrawing.DrawBackground(ui, panel, state.Party, "alcscrn0");
+            ui.Text.Draw(ui.Canvas, 100, 9, f.Name, HeadingColor);
+            ui.Text.Draw(ui.Canvas, 100, 0x12, $"Mystical Number - {f.MysticNumber}", HeadingColor);
+            ScreenDrawing.Wrapped(ui, f.Name, 0x5F, 0x49, 0x3A, MenuColor);
+            ScreenDrawing.Wrapped(ui, f.Description, 0x5F, 0x49, 0x52, MenuColor);
+            ui.Text.Draw(ui.Canvas, 0xCB, 0x39, "Ingredients:", MenuColor);
+            var y = 0x41;
+            foreach (var ing in f.Slots)
             {
-                var have = stock[ing.Item & 0xFF];
-                ui.Text.Draw(ui.Canvas, 0xCD, y, $"{ing.Count} {state.Item(ing.Item).Name} ({have})", have < ing.Count ? MenuGreyed : MenuColor);
+                if (ing.Count != 0)
+                {
+                    var have = stock[ing.Item & 0xFF];
+                    ui.Text.Draw(ui.Canvas, 0xCD, y, $"{ing.Count} {state.Item(ing.Item).Name} ({have})", have < ing.Count ? MenuGreyed : MenuColor);
+                }
+                y += 8;
             }
-            y += 8;
         }
+        Draw();
         // orig: R033+0x1724 the button waited out before the loop
         ScreenDrawing.WaitForRelease(ui);
         while (true)
         {
             // orig: R033+0x172D: the button held gives Esc, then it is waited out (R033+0x1737); then the menu bar, and a waiting key
             // replaces that Esc (a key other than Esc keeps the page open); tests: ScreenInputTests
-            // DIVERGENCE: the party_icons_dirty test (key = 0) is not modelled.
+            // orig: R033+0x174B: after the bar `if (DS:9C46) { DS:9C46 = 0; picture DS:335C reloaded and shown, the panel, the drawing again; key = 0 }`
             var key = 0;
             if (ui.Mouse.Left)
             {
                 key = Keys.Escape;
                 ui.WaitForButtonRelease();
             }
-            key = ui.KeyAfterTheMouse(key);
+            key = ui.KeyAfterTheMouse(key, Draw);
             // orig: R033+0x1A10 matched: key 0x1000 (Alt-Q) calls R033+0x17D6(-1), then root 0000:13A0().
             if (key == Keys.AltQ)
             {

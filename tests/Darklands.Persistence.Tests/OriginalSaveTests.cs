@@ -164,6 +164,42 @@ public sealed class OriginalSaveTests
         return file.ToBytes();
     }
 
+    // R037+0x675A's record bytes (CharacterCreation.Reset) reach the saved record: the creation's made character, written
+    [Fact]
+    public void AMadeCharacterIsWrittenWithTheResetRecordsBytes()
+    {
+        var record = new byte[Character.MemberRecordSize];
+        record[0x04] = 0x10;
+        record[0x05] = 0x01;
+        record[0x06] = 0x50;
+        record[0x18] = 0xFF;
+        record[0x4A] = 0xFF;
+        var made = new Character
+        {
+            Name = "Hans",
+            ShortName = "Hans",
+            ShieldLetter = 'A',
+            Encumbrance = 0x0A,
+            Weapon = new EquippedItem(-1, 0),
+            MissileWeapon = new EquippedItem(-1, 0),
+            VitalArmor = new EquippedItem(-1, 0),
+            LimbArmor = new EquippedItem(-1, 0),
+            Shield = new EquippedItem(-1, 0),
+            OriginalRecord = record,
+        };
+        var r = CharacterRecords.Write(made);
+        Assert.Equal(new byte[] { 0x10, 0x01, 0x50 }, r[0x04..0x07]);
+        Assert.Equal(0xFF, r[0x18]);
+        Assert.Equal(0x41, r[0x15]);
+        Assert.Equal(0x0A, r[0x49]);
+        Assert.Equal(0xFF, r[0x4A]);
+        foreach (var at in new[] { 0x22, 0x4B, 0x4C, 0x51, 0x5C })
+        {
+            Assert.Equal(0xFF, r[at]);   // the equipment types
+        }
+        Assert.All(new[] { 0x0E, 0x16, 0x19, 0x1A, 0x1B, 0x1C, 0x0F }, at => Assert.Equal(0, r[at]));
+    }
+
     [Fact]
     public void APartySlotOfStatusZeroIsSkippedAndTheRosterRecordsAfterItComeLate()
     {

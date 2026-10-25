@@ -12,16 +12,16 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 4 |
-| cards | core | 19 |
+| cards | core | 20 |
 | events | core | 0 |
 | travel | core | 3 |
-| battles | core | 9 |
+| battles | core | 10 |
 | persistence | core | 2 |
 | screens/presentation | other | 21 |
 | host/audio | other | 0 |
-| total |  | 58 |
+| total |  | 60 |
 
-## Core logic (37)
+## Core logic (39)
 
 ### rules (4)
 
@@ -38,8 +38,11 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R136+0xA70F` (290E:207F, data), `R029+0x21AA` (0E76:21AA, draft)  
   why: entries outside −3..11 are not reproduced (empty name); no card is known to pass them.
 
-### cards (19)
+### cards (20)
 
+- **U-ee7ab6** `uncertain` - `src/Darklands.Cards/CardContext.Memory.cs:145` `CardContext.DeleteMember`  
+  original: `R037+0x3F30` (1462:3F30, draft)  
+  why: for a slot past the party the original also calls R037+0x4048 with that slot's charactr.tmp id, which is no character's (its loop then moves records from before the file's first one); no card is known to delete an empty slot, so the roster is left alone here.
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
   why: the hint handlers of the ten options return a struct they never fill in (only the text "Success is assured." is set), so the hint shows that text for the whole party here.
@@ -110,7 +113,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: unresolved (none)  
   why: the offset is taken as FF53, the BIOS's default IRET handler that DOSBox points the unused vectors at; the segment is the BIOS's.
 
-### battles (9)
+### battles (10)
 
 - **U-797710** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:377` `CastleGenerator.PlaceRoomGroups`  
   original: `R007+0x23D4` (15AF:23D4, draft)  
@@ -136,7 +139,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1044` `EffectField.Drawn`  
   original: `R014+0x6818` (14F7:0008, draft), `R014+0x7BBE` (14F7:13AE, draft)  
   why: an entry whose box the view clips to nothing gives its place back in the original; here every piece, edge and number of a combatant in view counts (the boxes are not clipped), and the cloud edges count for the clouds of the shown level with a puff in view.
-- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:245` `TacticalBattle.AnimationSet`  
+- **U-cb31b9** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:585` `TacticalBattle._actionBeforeRecords`  
+  original: `R014+0xBCA8` (19CD:0738, draft)  
+  why: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text); the rewrite starts it at 0 and keeps only what order_mode_leave writes. The branches below agree for any value other than 0x80, 0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
+- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:250` `TacticalBattle.AnimationSet`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: read from the slot rules of cbt_set_anim (spec D §3.9): enemies use slot +2 fighting/hit and +4 dying.
 
@@ -156,13 +162,13 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-- **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:140` `BattleScreens.public`  
+- **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:178` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1775` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1874` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
-- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1879` `BattleScreen.CharacterSheet`  
+- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1993` `BattleScreen.CharacterSheet`  
   original: `R022+0x0000` (1EF8:0000, draft)  
   why: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:55` `BuySellPage.DrawParty`  
@@ -171,19 +177,19 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:77` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
-- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:93` `CharacterCreationScreen.FigureImages`  
+- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:92` `CharacterCreationScreen.FigureImages`  
   original: `R037+0x0000` (1462:0000, draft), `R037+0x0444` (1462:0444, draft), `R037+0x0390` (1462:0390, draft) +5 more  
   why: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
-- **U-a48f9e** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:259` `CharacterCreationScreen.MemberSheet`  
+- **U-a48f9e** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:269` `CharacterCreationScreen.MemberSheet`  
   original: `root 047C:056F` (047C:056F, draft), `R037+0x03D4` (1462:03D4, draft), `R037+0x0000` (1462:0000, draft)  
   why: a prayer from the sheet's Saints list reads the date and the place of the game the menu loaded (SAVES\DEFAULT); here those of a new game.
-- **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:509` `CharacterGeneratorScreen.WaitThenRedraw`  
+- **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:517` `CharacterGeneratorScreen.WaitThenRedraw`  
   original: `R037+0x4B9E` (18C8:053E, draft), `R037+0x4664` (18C8:0004, draft)  
   why: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time: the C# redraws at once, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the first steps, not always that of the occupation list)
 - **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
   original: `R029+0x2204` (0E76:2204, draft), `R029+0x222A` (0E76:222A, draft)  
   why: which keys the original's menu_bar_run takes inside the sheet is not traced; only the Alt keys are passed.
-- **U-fccc5f** `uncertain` - `src/Darklands.Presentation/GameUi.cs:361` `GameUi.Wait`  
+- **U-fccc5f** `uncertain` - `src/Darklands.Presentation/GameUi.cs:485` `GameUi.Wait`  
   original: `root 0410:0302` (0410:0302, asm), `R030+0x3096` (1767:0046, matched)  
   why: a clock() tick as one millisecond (MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit, see MessageBox and Cinematics.
 - **U-797153** `uncertain` - `src/Darklands.Presentation/MarchingOrderScreen.cs:20` `MarchingOrderScreen`  
@@ -204,13 +210,13 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-9404ee** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:83` `PartyRosterScreen.Run`  
   original: `R038+0x0000` (1462:0000, draft), `R038+0x024E` (1462:024E, draft), `R038+0x0292` (1462:0292, draft)  
   why: SI is taken to come through the thunk 09C0:1EE1 unchanged (the overlay manager is taken to keep it).
-- **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:210` `PartyRosterScreen.ResultOfDriver`  
+- **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:212` `PartyRosterScreen.ResultOfDriver`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: the driver's AX is taken never to be 0x11B (it would end the screen).
-- **U-9ecd08** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:339` `SaintPrayerScreen.DrawInfo`  
+- **U-9ecd08** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:336` `SaintPrayerScreen.DrawInfo`  
   original: `R034+0x0BC4` (1462:0BC4, matched)  
   why: the text routine root 0265:0134 is assembly only: the name is taken as centred in its 154-pixel column with the capital at y 8 (positions from a capture of the original), the description as wrapped in 156 pixels from (0x94, 0x25).
-- **U-a84a42** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:396` `SaintPrayerScreen.OpenMemberList`  
+- **U-a84a42** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:393` `SaintPrayerScreen.OpenMemberList`  
   original: `R034+0x0E04` (1462:0E04, matched), `R034+0x0D08` (1462:0D08, matched)  
   why: the names are drawn by the text routine (assembly only) in a 52-pixel column; here each full name is cut to fit that width on its row.
 - **U-ef55b2** `uncertain` - `src/Darklands.Presentation/StartUp.cs:254` `StartUp.GameStart`  

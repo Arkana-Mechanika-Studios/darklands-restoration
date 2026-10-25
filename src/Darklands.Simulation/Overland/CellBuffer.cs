@@ -28,6 +28,10 @@ public sealed class CellBuffer
     // DIVERGENCE: an index past the 70 bytes after the buffer reads the party icon table R136+0x100C8 in the original: the handles the graphics
     //   driver returned for the marker's 80 pictures (R030+0x1F30's save-rect loop), which depend on where DOS and the driver placed them (memory
     //   layout, other programs loaded): not reproducible; it reads 0 here (no settlement). Only the camp watch reaches it (see CampWatch).
+    // DIVERGENCE: a negative index (row -1: the neighbour masks of buffer row 0, which the party drawing R030+0x16C6 reads for a marker at
+    //   the top of the view, DS:2868 0x0D..0x10) reads the bytes before the buffer in the original: the end of the place icons' picture handle
+    //   table R136+0xF92C (codes 50..71, entries code + 382), handles the graphics driver returned when R030+0x1F30 cut the icons (memory
+    //   layout): not reproducible; it reads 0 here.
     public int this[int index] => index >= 0 && index < _bytes.Length ? _bytes[index] : 0;
 
     /// <summary>The cell of buffer row <paramref name="row"/>, column <paramref name="column"/>, read flat as the original does (no bounds check).</summary>
@@ -35,29 +39,29 @@ public sealed class CellBuffer
 
     /// <summary>
     /// Fills the buffer for a view (first column, first row of the row buffer, first shown row), as the map drawing does: the terrain of
-    /// the window, then the place icons in list order.
+    /// the window, decoded from the row buffer as it stands, then the place icons in list order.
     /// </summary>
-    // orig: R030+0x20D2(col = DS:286A, row = DS:286C): `if (col == 0) col = 1; if (row == 0) row = 1;` then for y = 0..49 the run-length row
-    //   (row + y - 1) of the row buffer (map row DS:286E + row - 1 + y) gives G[y][0..18] = map columns col - 1 .. col + 17
+    // orig: R030+0x20D2(col = DS:286A, row = DS:286C): `if (col == 0) col = 1; if (row == 0) row = 1;` then for y = 0..49 the run-length slot
+    //   (row + y - 1) of the row buffer (map row DS:286E + row - 1 + y when the buffer holds the rows from DS:286E) gives G[y][0..18] = map
+    //   columns col - 1 .. col + 17 (RowBuffer.Decode)
     // orig: then `tope = row + DS:286E - 1` and for each entry of the icon list R136+0x10168 (until flag -1) with y >= tope, x >= col - 1,
     //   x <= col + 18 and y <= tope + 50: G[y - tope][x - col + 1] = icon
     // BUG: the icon loop's bounds are one row and one column too wide: an icon in column col + 18 is written at G[y - tope][19], which is
     //   G[y - tope + 1][0] (the next row's first cell, over its terrain, or past the buffer for the last row), and one in row tope + 50 at
-    //   G[50][..], the bytes after the buffer, which no fill clears. Reproduced (the camp watch reads both).
-    // DIVERGENCE: for the view at the map's bottom (DS:286C = 0x53 with the last 0x83 rows in the row buffer) buffer row 49 is the row past
-    //   the map: the original decodes the bytes after the row buffer there (a block of its own, [DS:2870]:0000, 0x83 * 0xD2 bytes: whatever
-    //   memory follows it), here it is 0 (WorldMap.TerrainCell outside the map). The camp watch reads that row for a marker in buffer row 40 or
-    //   lower in such a view.
+    //   G[50][..], the bytes after the buffer, which no fill clears. Reproduced (the camp watch and the party drawing's masks read both).
+    // C: the icons are placed by the registers (DS:286E), the terrain comes from whatever the row buffer holds: after a scroll that left
+    //   stale slots (RowBuffer.Load) or the bottom jump of the scroll block, which sets DS:286E without reading the rows (R030+0x1133..0x1154),
+    //   the two disagree in the original too.
+    // C: at the map's bottom view (DS:286C = 0x53) buffer row 49 is slot 0x83, which no read fills: the decoder runs through its zeros past
+    //   the block (RowBuffer.Decode's divergence); the camp watch reads that row for a marker in buffer row 40 or lower in such a view.
     public void Fill(int viewColumn, int viewTop, int viewRows)
     {
         var column = Math.Max(viewColumn, 1);
-        var top = viewTop + Math.Max(viewRows, 1) - 1;
+        var rows = Math.Max(viewRows, 1);
+        var top = viewTop + rows - 1;
         for (var y = 0; y < Rows; y++)
         {
-            for (var x = 0; x < Columns; x++)
-            {
-                _bytes[y * Columns + x] = (byte)_map.TerrainCell(column - 1 + x, top + y);
-            }
+            _map.Rows.Decode(rows + y - 1, column, _bytes.AsSpan(y * Columns, Columns));
         }
         foreach (var (x, y, code) in _map.IconList)
         {
@@ -67,6 +71,22 @@ public sealed class CellBuffer
             }
         }
     }
+
+    /// <summary>
+    /// <see cref="Fill"/> for a view drawn afresh: the row buffer is first read for the view's first row when it holds other rows (as the
+    /// direct calls of the original do: R030+0x1DD4(file, top, -1), then 20d2).
+    /// </summary>
+    public void FillFresh(int viewColumn, int viewTop, int viewRows)
+    {
+        if (_map.Rows.Top != viewTop)
+        {
+            _map.Rows.Load(viewTop, -1);
+        }
+        Fill(viewColumn, viewTop, viewRows);
+    }
+
+    /// <summary>The 70 bytes after the buffer (R136+0x10082..0x100C7) as the fills left them.</summary>
+    public ReadOnlySpan<byte> AfterBytes => _bytes.AsSpan(Rows * Columns);
 
     /// <summary>
     /// The buffer cell the original reads under the marker at (<paramref name="markerX"/>, <paramref name="markerY"/>) of the view, whose

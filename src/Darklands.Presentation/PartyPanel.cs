@@ -11,7 +11,7 @@ namespace Darklands.Presentation;
 /// shield, name and three bars (endurance, strength, divine favour).
 /// </summary>
 // orig: party_panel_rows root 0000:1716 draft (matches the bytes) + member_bars root 0000:1A9C (draft, "cannot match": 6.00 saves SI/DI around the inline strcpy/strcat; written for documentation) + party_panel_frames root 0000:1588 (matches); tests: none (drawing)
-// DIVERGENCE: the status texts that replace the bars while a member is "away" is drawn only as bars here (see Draw); the combat extras of member_bars (the carried member's bars, the status-letter column of member_status_letter root 0000:18FA) belong to battles (BattleScreen.DrawPanel).
+// C: member_bars shows the "???? ???? ????" text instead of the bars for an away member (DrawUnknownBars); the combat extras of member_bars (the carried member's bars, the status-letter column of member_status_letter root 0000:18FA) are BattleScreen.DrawPanel's.
 // DIVERGENCE: the original copies each finished row from the off-screen page to the screen (copy_rect_clipped) and hides the mouse while it does; here it is drawn straight into the screen.
 public sealed class PartyPanel(GameAssets assets)
 {

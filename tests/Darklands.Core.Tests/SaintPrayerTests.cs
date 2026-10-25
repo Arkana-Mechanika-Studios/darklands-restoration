@@ -94,4 +94,39 @@ public sealed class SaintPrayerTests
         Assert.Equal(expected ? PrayerOutcome.Succeeded : PrayerOutcome.Failed, p.Outcome(success));
         Assert.Equal(PrayerOutcome.Failed, new SaintPrayer(s, 3, Aidan, PrayerMode.ForMember).Outcome(true));
     }
+    /// <summary>saint_pray R034+0x0166..0x01F5: the message before the saint's help, after the extra loss, before the offer is spent.</summary>
+    [Theory]
+    [InlineData(1u)]
+    [InlineData(2u)]
+    [InlineData(7u)]
+    [InlineData(1234u)]
+    [InlineData(99u)]
+    public void TheMessageComesBeforeTheHelpAndAfterTheExtraLoss(uint seed)
+    {
+        var s = TestGame.Create(seed);
+        var p = new SaintPrayer(s, 3, Aidan, PrayerMode.ForMember);
+        while (p.Chance < 70 && p.OfferMore())
+        {
+        }
+        var favor = p.Favor;
+        var events = new List<string>();
+        var effects = new OrderRecorder(events);
+        var success = p.Pray(Who.Leader, effects, ok => events.Add($"message {ok} favor {s.Party.Members[3][Attribute.DivineFavor]}"));
+        Assert.Equal(success ? 2 : 1, events.Count);
+        // the offer is spent after the message: it still shows the favor before (less the extra loss on a failure)
+        Assert.StartsWith($"message {success}", events[0]);
+        var shown = int.Parse(events[0].Split(' ')[3]);
+        Assert.True(shown == 99 || !success && shown == Math.Max(1, 99 - favor / 2));
+        if (success)
+        {
+            Assert.Equal("message True favor 99", events[0]);
+            Assert.Equal("help", events[1]);
+        }
+        Assert.Equal(Math.Max(1, shown - favor), s.Party.Members[3][Attribute.DivineFavor]);
+    }
+
+    private sealed class OrderRecorder(List<string> events) : ISaintEffects
+    {
+        public void Help(GameState state, int who, int saint, int favor) => events.Add("help");
+    }
 }

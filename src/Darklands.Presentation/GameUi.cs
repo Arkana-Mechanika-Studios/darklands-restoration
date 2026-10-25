@@ -103,6 +103,76 @@ public sealed class GameUi
     /// <summary>The game's timer: the clock of the music and the animations.</summary>
     public IGameTimer Timer => _host.Timer;
 
+    /// <summary>The palette cycles the timer's frame work runs (the battle's water and fire, the enemies' schemes).</summary>
+    public PaletteCycles Cycles { get; } = new();
+
+    /// <summary>The timer frame up to which the cycles have run (while they run).</summary>
+    private long _cycleFrame;
+
+    private readonly byte[] _dac = new byte[768];
+
+    /// <summary>Takes the colours <paramref name="first"/> .. <paramref name="last"/> of the palette as shown now into cycle slot <paramref name="slot"/>.</summary>
+    // orig: root 047C:0362 reads them from the VGA DAC (port 3C7/3C9): the palette last set, which is the screen's palette here (6 bits a channel)
+    public void TakeCycle(int slot, int reload, int first, int last)
+    {
+        for (var i = 0; i < 256; i++)
+        {
+            var argb = _screen.Palette[i];
+            _dac[3 * i] = (byte)((argb >> 18) & 0x3F);
+            _dac[3 * i + 1] = (byte)((argb >> 10) & 0x3F);
+            _dac[3 * i + 2] = (byte)((argb >> 2) & 0x3F);
+        }
+        Cycles.Take(slot, reload, first, last, _dac);
+    }
+
+    /// <summary>Lets the timer's frame work run the cycles (DS:07D8 = 1) or holds them (0).</summary>
+    // C: the frames are counted on the game timer from here: the phase of the first step against the timer's frames is within one frame
+    public void RunCycles(bool run)
+    {
+        Cycles.Running = run;
+        _cycleFrame = Timer.Frames;
+    }
+
+    /// <summary>The palette was set: the DAC shows it until each cycle's next step.</summary>
+    // C: set_palette (root 0410:0364) writes all 768 bytes of the DAC (holding DS:07D8 meanwhile); a cycle writes its range at its next step
+    public void PaletteSet() => Cycles.PaletteSet();
+
+    // orig: root 047C:000A: `cmp byte [7D8h], 0 / je / lcall 047C:042A` on every frame of the timer (70.086 Hz), the frame left out of the
+    //   60 Hz ticks included; the ranges the cycles wrote are what the DAC shows
+    // C: the frames that passed since the last present are run here, at once (the DAC's writes between two presents are not seen anyway)
+    // DIVERGENCE: the steps come on the host's timer frames (IGameTimer.Frames; a timer that counts only the 60 Hz ticks gives 7 frames per 6
+    //   ticks), counted from the call that let the cycles run: the original's interrupt comes in the middle of whatever the game was doing,
+    //   so a step can come up to a frame (14 ms) earlier or later here. Every step, its colours and the frames between steps are the
+    //   original's (PaletteCycleTests against direct calls of 047C:0362/03DA/040B/042A). Only the battle's palette sets drop the shown steps
+    //   (PaletteSet): a palette set by another screen while cycles were left written would show them until the battle screen ends.
+    private void ApplyCycles(uint[] palette)
+    {
+        if (Cycles.Running)
+        {
+            var frames = Timer.Frames;
+            for (var n = Math.Min(frames - _cycleFrame, 4096); n > 0; n--)
+            {
+                Cycles.Frame(_dac);
+            }
+            _cycleFrame = frames;
+        }
+        for (var slot = 1; slot <= PaletteCycles.Slots; slot++)
+        {
+            if (Cycles.Written(slot) is not { } written)
+            {
+                continue;
+            }
+            var (first, colours) = written;
+            var bytes = colours.Span;
+            for (var i = 0; i + 2 < bytes.Length; i += 3)
+            {
+                palette[(first + i / 3) & 0xFF] = 0xFF000000u | (uint)Expand(bytes[i]) << 16 | (uint)Expand(bytes[i + 1]) << 8 | Expand(bytes[i + 2]);
+            }
+        }
+    }
+
+    private static byte Expand(byte value) => (byte)((value & 0x3F) << 2 | (value & 0x3F) >> 4);
+
     /// <summary>Receives a line for each step of a timed sequence (the animations' cels); hosts write it to a trace.</summary>
     public Action<string>? Trace { get; set; }
 
@@ -174,6 +244,42 @@ public sealed class GameUi
     /// <summary>Game-wide keys (saving, the character sheets): returns true when it took the key.</summary>
     public Func<int, bool>? GameKey { get; set; }
 
+    /// <summary>
+    /// True while the card engine (its menus and wait_continue) or the map waits for input: only these loops take F1..F5, F6 and
+    /// Ctrl-F1..F5 (the original's card_global_keys R043+0x33C6 and the cases of R030+0x0C44); HotKeys looks at it.
+    /// </summary>
+    public bool SheetKeys { get; set; }
+
+    /// <summary>One <see cref="Poll"/> of a loop that takes F1..F5 and Ctrl-F1..F5 (<see cref="SheetKeys"/>).</summary>
+    public PlayerAction? PollWithSheetKeys()
+    {
+        var keep = SheetKeys;
+        SheetKeys = true;
+        try
+        {
+            return Poll();
+        }
+        finally
+        {
+            SheetKeys = keep;
+        }
+    }
+
+    /// <summary><see cref="WaitForAction"/> in a loop that takes F1..F5 and Ctrl-F1..F5 (<see cref="SheetKeys"/>).</summary>
+    public PlayerAction WaitForActionWithSheetKeys()
+    {
+        var keep = SheetKeys;
+        SheetKeys = true;
+        try
+        {
+            return WaitForAction();
+        }
+        finally
+        {
+            SheetKeys = keep;
+        }
+    }
+
     /// <summary>The menu bar the right button and F10 open while playing (null: none, e.g. in a battle).</summary>
     public MenuBar? MenuBar { get; set; }
 
@@ -192,6 +298,23 @@ public sealed class GameUi
             }
             return _peeked != 0;
         }
+    }
+
+    /// <summary>Takes the next key, waiting for one when none is waiting (no hot keys, no menu bar): the screen stays as it is meanwhile.</summary>
+    // orig: root 047C:0744 (graphics driver slot 91, misc.exe +0x49: `sub ah, ah; int 16h; retf`, the BIOS read that waits for a key)
+    public int ReadKey()
+    {
+        int key;
+        while (!ReadHostKey(out key))
+        {
+            Present();
+            if (ReadHostKey(out key))
+            {
+                break;
+            }
+            _host.Clock.Sleep(FrameMilliseconds);
+        }
+        return key;
     }
 
     /// <summary>Puts a key taken back in front of the waiting keys (a hot-key test that did not want it).</summary>
@@ -226,6 +349,7 @@ public sealed class GameUi
         }
         _screen.Pixels.CopyTo(_shown.Pixels, 0);
         _screen.Palette.CopyTo(_shown.Palette, 0);
+        ApplyCycles(_shown.Palette);
         _screen.CopyOwnershipTo(_shown);
         if (PointerVisible)
         {
@@ -416,16 +540,40 @@ public sealed class GameUi
     /// <see cref="Poll"/>), then a waiting key, which replaces the key the mouse gave in this pass; a frame passes when no key is
     /// waiting. A left click is not taken here: the loop's own tests read the button.
     /// </summary>
-    // orig: `root 0000:0000(DS:9419, 0); if (root 047C:073D()) key = root 047C:0744();` at the end of the screens' loops
-    public int KeyAfterTheMouse(int mouseKey)
+    // orig: `root 0000:0000(DS:9419, 0); if (DS:9C46) { DS:9C46 = 0; <the screen drawn again>; key = 0; } if (root 047C:073D()) key = root 047C:0744();`
+    //   at the end of the screens' loops
+    /// <param name="mouseKey">The key the pass's mouse tests gave.</param>
+    /// <param name="redrawIfDirty">The screen's redraw for <see cref="PartyIconsDirty"/>, for the screens whose loop has that test.</param>
+    /// <param name="redrawKeepsTheKey">The screen's redraw leaves the mouse's key as it is (barter, R032+0x06BF; the others set it to 0).</param>
+    public int KeyAfterTheMouse(int mouseKey, Action? redrawIfDirty = null, bool redrawKeepsTheKey = false)
     {
-        if (Poll() is { IsKey: true } action)
+        var action = Poll();
+        if (redrawIfDirty is not null && PartyIconsDirty)
         {
-            return action.Key;
+            PartyIconsDirty = false;
+            redrawIfDirty();
+            if (!redrawKeepsTheKey)
+            {
+                mouseKey = 0;
+            }
+        }
+        if (action is { IsKey: true } pressed)
+        {
+            return pressed.Key;
         }
         _host.Clock.Sleep(FrameMilliseconds);
         return mouseKey;
     }
+
+    /// <summary>
+    /// The party information screen was shown since the last screen that tested for it: the screens of the loops with that test draw
+    /// themselves again (<see cref="KeyAfterTheMouse"/>).
+    /// </summary>
+    // orig: DS:9C46, set by party_info_close (R034+0x119C, the only writer of 1) and cleared by the redraw after root 0000:0000 in the loops of
+    //   R033+0x0000, R033+0x16FA, R034+0x022C, R036+0x0082, R032+0x0000 (barter), R031+0x0124 (the sheet) and the other screens that test it
+    // C: the screens with that test and no GameUi.Redraw: alchemy (both pages), camp, prayer, barter, the sheet; R035 (the item store) and
+    //   R040 (loot) have none (the flag stays set).
+    public bool PartyIconsDirty { get; set; }
 
     /// <summary>
     /// One pass of a loop that reads the keyboard itself (no menu bar, no hot keys): the screen is shown and a waiting key

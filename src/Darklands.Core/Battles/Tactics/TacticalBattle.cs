@@ -14,7 +14,7 @@ public interface ITacticalView : IBattleViewport
     /// <summary>Plays sound effect <paramref name="n"/> (R014 0E76:465E decides whether it is heard).</summary>
     void Sound(int n);
 
-    /// <summary><c>show_message</c>: the string at DS:<paramref name="text"/> for <paramref name="ticks"/> clock ticks.</summary>
+    /// <summary><c>show_message</c> (root 0000:24BC): the string at DS:<paramref name="text"/>, the caller waiting <paramref name="ticks"/> timer ticks (the battle stands, the timer runs).</summary>
     void Message(int text, int ticks);
 
     /// <summary>A message about a member: its name, then the string at DS:<paramref name="text"/> (" finds a secret door").</summary>
@@ -31,6 +31,11 @@ public interface ITacticalView : IBattleViewport
 
     /// <summary>The level on screen changed (doors, furniture, floor switch: floor_view_draw(−1)).</summary>
     void MapChanged();
+
+    /// <summary>combat_mode_leave: the fight is over for now (the enemies' palette cycle stops).</summary>
+    void CombatModeLeft()
+    {
+    }
 
     /// <summary>floor_view_draw(<paramref name="who"/>) (R017+0x0000): the view drawn anew around combatant who's cell.</summary>
     void Recentre(int who)
@@ -853,6 +858,10 @@ public sealed partial class TacticalBattle : IBattleEndActions
 
     public void LeftCombatMode()
     {
+        // orig: combat_mode_leave R014+0x0D86: DS:D6EB = 0 first (no more reinforcement waves)
+        WavesEnabled = false;
+        // orig: R014+0x0D97..0x0D99: root 047C:040B(3), the enemies' palette cycle stopped (the screen's)
+        _view.CombatModeLeft();
         Menus.Set(OrdersItem.EnemyInfo, 2);
         Menus.Set(OrdersItem.Surrender, 2);
         // orig: combat_mode_leave R014+0x0D86 (0E76:0D86) draft (spec D §1.6): DS:A3D8[0..12] = 0 (0xDB2), the box bits and walk sizes.

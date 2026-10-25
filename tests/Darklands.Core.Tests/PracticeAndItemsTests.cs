@@ -93,6 +93,17 @@ public sealed class PracticeAndItemsTests
         Assert.Equal(-1, Inventory.Take(s, 0, 50));
     }
 
+    // count_items R029+0x0C76 with who >= 5 counts the last battle's enemy items (not modelled; no caller passes it)
+    [Fact]
+    public void CountingForANumberPastTheMembersIsZero()
+    {
+        var s = TestGame.Create();
+        Inventory.AddMany(s, 2, 50, 3);
+        Assert.Equal(0, Inventory.Count(s, 5, 50));
+        Assert.Equal(0, Inventory.Count(s, 9, 50));
+        Assert.Equal(3, Inventory.Count(s, 2, 50));
+    }
+
     [Fact]
     public void GivingTheWholePartyAnItemGivesItTwice()
     {

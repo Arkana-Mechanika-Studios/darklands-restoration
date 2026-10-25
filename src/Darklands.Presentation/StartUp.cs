@@ -27,7 +27,7 @@ public sealed record StartUpResult(bool NoAnimations, string SoundDriver)
 // (bytes match); the Ctrl-Break vector (root 044A:0100 asm); R000+0x052A draft (unmatched: register noise) up to its call of root
 // 03A1:000A; tests: StartUpTests
 // C: the copy-protection question (R041) is not part of the program start: the original asks it on the first visit to the map
-// (DarklandsGame.Travel), where this rewrite leaves it out.
+// (DarklandsGame.Travel), where this rewrite leaves the question out and makes its five random draws.
 // DORMANT: R000+0x00B8 draft (bytes match), the developers' menu "1) Tactical Battle code / 2) Role-Playing code / Select:"
 // (BANNER.DAT entry 0 twelve times from row 12, entries 11..13 at rows 12..14): nothing calls it. With DS:907A == 1 (main clears it)
 // R000+0x052A would run a test battle instead of the game (mode 0, battlefield 10, or the values at DS:0BF6..).
@@ -179,8 +179,8 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
     // entry 19 and exit); the conventional memory: needed = the program's own block + 0x4B6B0 + the driver's size by its letter,
     // available = the owned blocks from the program's on + the largest free block; at (14, 0): with too little memory or -O the three
     // figures (entries 15, 16, 17); too little: with -O entry 18 and on, else exit(0); then the wait of 3 to 4 seconds
-    // DIVERGENCE: there is no DOS memory here: the program's block is its EXE's load size (header) plus its minimum allocation and the
-    // PSP, the free memory a constant; the check always passes, the -O figures are an estimate. dk.tmp is not written.
+    // DIVERGENCE (host): there is no DOS memory here: the program's block is its EXE's load size (header) plus its minimum allocation and the
+    // PSP, the free memory a constant; the check always passes, the -O figures are an estimate. dk.tmp (the first 0x42 bytes of DGROUP, saved at start-up and put back by quit_to_dos before exit, the C runtime's copyright string, which its exit code compares to detect a null-pointer write) is not written.
     private bool MemoryCheck(bool report, string driver)
     {
         var needed = ProgramBlockBytes() + 0x4B6B0 + DriverBytes(driver[0]);

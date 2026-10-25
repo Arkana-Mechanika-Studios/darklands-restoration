@@ -221,8 +221,10 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 ui.TakeLeftReleases();
                 key = 0;
             }
-            // DIVERGENCE: root 0000:0000 is GameUi.Poll's (MenuBar, HotKeys); the party_icons_dirty redraw is not modelled.
-            key = ui.KeyAfterTheMouse(key);
+            // C: the menu bar and the hot keys are GameUi.Poll's
+            // orig: R036+0x062A: after it `if (DS:9C46) { DS:9C46 = 0; the camp picture (DS:3D02 in the wild, DS:3D14 else) reloaded and shown, the panel,
+            //   R036+0x0872 again; key = 0 }`
+            key = ui.KeyAfterTheMouse(key, Redraw);
             if (key == Keys.Escape)
             {
                 return true;

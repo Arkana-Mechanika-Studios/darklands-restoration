@@ -361,11 +361,11 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             {
                 throw new SkipJob("Esc while paused with nobody selected and DS:D6EA set: the original's pause byte becomes 0x11 (R016+0x13F9), which the rewrite's flag does not hold");
             }
+            CallScreen(c.Screen, "Key", key);
             if (key == 0x1C0D && c.Input.Ds[OrderOverlay.MoveMode] == 0)
             {
-                OrderOverlay.SkipGiftToNobody(c.Input.Ds);
+                OrderOverlay.TakeActiveMemberMinusOne(c, job);
             }
-            CallScreen(c.Screen, "Key", key);
             if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
             {
                 var levels = TacticsOverlay.Get<IReadOnlyList<BattlefieldLevel>>(c.Tactics, "_levels");
@@ -399,10 +399,11 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             c.Tactics.EnterOrderMode(member);
             return null;
         },
-        ["R014+0xBCA8"] = (c, _) =>
+        ["R014+0xBCA8"] = (c, job) =>
         {
-            OrderOverlay.SkipGiftToNobody(c.Input.Ds);
             c.Tactics.LeaveOrderMode();
+            OrderOverlay.TakeActiveMemberMinusOne(c, job);
+            PanelRedrawTime(c, job);
             return null;
         },
         ["R014+0x0620"] = (c, _) =>
@@ -694,6 +695,33 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         }
         Effect(c, name, args);
         return null;
+    }
+
+    /// <summary>
+    /// The emulated time of the party panel's redraw after show_message: the message's delay_ticks loop (root 0410:0302) runs the machine past
+    /// the quiet budget the tester gives a call before its time-based timer (orig_side.BATTLE_QUIET), so the timer callbacks of the emulator's
+    /// speed come in the code after it: order_mode_leave's root 0000:1716(0x100) took 6 of them in each of the four "walk split" jobs
+    /// (local/batch/stairs/measure.log: DS:07D1 +150 at the delay's return, the clock +150 when running). The rewrite counts the wait's 150
+    /// ticks (BattleScreen.ShowMessage); a few more callbacks of the original after a wait are machine speed, taken over (up to 8).
+    /// </summary>
+    private static void PanelRedrawTime(Context c, CallJob job)
+    {
+        var input = c.Input.Ds[TacticsOverlay.TimerCallbacksAt];
+        if (((c.Tactics.TimerCallbacks - input) & 0xFF) != 0x96 || !job.Orig.Changed.TryGetValue(TacticsOverlay.TimerCallbacksAt.ToString(), out var orig))
+        {
+            return;
+        }
+        var extra = (orig - c.Tactics.TimerCallbacks) & 0xFF;
+        if (extra is 0 or > 8)
+        {
+            return;
+        }
+        c.Tactics.TimerCallbacks = orig;
+        if (c.Tactics.PauseByte == 0)
+        {
+            c.Battle.Clock = (ushort)(c.Battle.Clock + extra);
+        }
+        c.Notes.Add($"{extra} timer callbacks after the message's wait taken over (the emulated time of root 0000:1716)");
     }
 
     /// <summary>The per-member place tests: the original's tables of the party members (door, stairs, chest, exit zone) hold five entries, a call for an enemy writes past them.</summary>

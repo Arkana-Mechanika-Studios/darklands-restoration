@@ -1,0 +1,27 @@
+# Lockstep session (Enter held on the map): DKSAVE17 (a party on the map by night); Enter's make code through the keyboard interrupt (DS:0882 = FFh) and a letter read: the map takes Enter instead (R030+0x0658); the keypad's Enter (E0 1C) likewise; Enter's break before the letter (DS:0882 = 0: the letter stays)
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+kdown:1C
+wait:5
+key:x
+wait:60
+kup:1C
+wait:5
+state:enter
+kdown:E01C
+wait:5
+key:x
+wait:60
+kup:E01C
+wait:5
+state:keypad-enter
+kdown:1C
+wait:5
+kup:1C
+wait:5
+key:x
+wait:60
+state:released

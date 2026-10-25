@@ -92,6 +92,44 @@ public sealed class BattleScreens
     /// <summary>DS:0FD8 " finished" (DS:11F2): the Orders entry "&lt;name&gt; finished".</summary>
     public const int FinishedText = 0x0FD8;
 
+    /// <summary>
+    /// In a battle, for a party member who left the battlefield through an exit (cbt_floor DS:A6B4 = 0x9D, −99): R022+0x04E4's
+    /// "You can't view &lt;name&gt; at this time." for 150 ticks, and true; false otherwise (no battle, or the member is still there).
+    /// The character sheet (R031+0x0124) and the loot screen (R040+0x0C22) ask it before showing a member.
+    /// </summary>
+    // orig: R031+0x0124's `if (DS:907A == 1 && cbt_floor[m] == 0x9D) thunk 09C0:1D51(m)` (R031+0x0644..0x064B, 0x07A4..0x07AB,
+    //   0x0837..0x083E: `cmp byte [di - 0x594C], 0x9D`, the byte table; portrait click, F1..F5, Enter on a member box);
+    //   R022+0x04E4 matched: sprintf("%Fs%s%Fs", 286B:0212, name, 286B:0222), root 0000:24BC(buf, 0x96)
+    public bool CannotViewMember(int member)
+    {
+        if (!Fighting || Current?.Tactics is not { } tb || member is < 0 or >= Core.Battles.Combatant.PartySlots
+            || tb.Battle[member].Floor != Core.Battles.BattleEnd.LeftThroughExit)
+        {
+            return false;
+        }
+        TellCannotView(tb, member);
+        return true;
+    }
+
+    /// <summary>
+    /// The loot screen's D for party slot <paramref name="slot"/> (R040+0x0DB4..0x0DC8): true (after the "can't view" message) when the
+    /// slot is to be skipped as gone from the battlefield.
+    /// </summary>
+    // orig: R040+0x0DB3..0x0DC8: the test (BattleEnd.LootSkips), then DS:8DC4 = slot, thunk 09C0:1D51(slot) and the next slot; no
+    //   DS:907A test (only the battle opens the loot screen)
+    public bool LootSkipsMember(int slot)
+    {
+        if (!Fighting || Current?.Tactics is not { } tb || !Core.Battles.BattleEnd.LootSkips(tb.Battle, slot))
+        {
+            return false;
+        }
+        TellCannotView(tb, slot);
+        return true;
+    }
+
+    private void TellCannotView(Core.Battles.Tactics.TacticalBattle tb, int who) =>
+        new MessageBox(_ui).Show(CannotView(tb.Battle[who].Member?.Name ?? ""), 0x96 * 1000 / 60);
+
     /// <summary>"You can't view &lt;name&gt; at this time." (R136+0x7E72 + name + R136+0x7E82, R022 04E4).</summary>
     internal string CannotView(string name) => FarText(0x0212) + name + FarText(0x0222);
 

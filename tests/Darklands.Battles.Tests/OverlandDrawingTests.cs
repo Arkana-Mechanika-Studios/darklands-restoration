@@ -63,6 +63,28 @@ public sealed class OverlandDrawingTests
     }
 
     [Fact]
+    public void AfterTheBottomJumpTheCellsAreTheOldTopsRowsAsTheStepReadThem()
+    {
+        // the scroll block's bottom jump (R030+0x1133..0x1154) sets DS:286E = 800 without reading the rows: the buffer keeps the rows of the
+        // old top 796. The original's step R030+0x1300 called after its own 20d2 for the view (column 200, DS:286C 60) left DS:D843 = 14, 15
+        // and 11 at these markers (local/batch/mapedge/step_east.py), where the map's own cells are 15, 16 and 14.
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var map = new WorldMap(Content.Formats.Maps.WorldMapData.Decode(files.Read("DARKLAND.MAP")), []);
+        map.Rows.Open(796);
+        map.Buffer.Fill(200, 800, 60);
+        foreach (var (x, y, original, own) in new[] { (20, 110, 14, 15), (31, 72, 15, 16), (156, 96, 11, 14) })
+        {
+            var (row, column) = CellBuffer.MarkerCell(x, y, 800, 60);
+            Assert.Equal(original, map.Buffer[row, column]);
+            var absolute = WorldMap.CellAt(x + 200 * WorldMap.TileWidth, y + (800 + 60) * WorldMap.RowHeight);
+            Assert.Equal(own, map.TerrainCell(absolute.Column, absolute.Row));
+        }
+    }
+
+    [Fact]
     public void TheOriginalsDrawingCallsGiveTheSamePage()
     {
         if (GameFolder.Files is not { } files || Environment.GetEnvironmentVariable("DARKLANDS_MAPDRAW_JOBS") is not { Length: > 0 } path)
@@ -75,18 +97,22 @@ public sealed class OverlandDrawingTests
         var tiles = new OverlandTiles(assets.Picture("mapicons").Image, assets.Picture("mapicon2").Image, assets.Picture("charicon").Image);
         // several job files can be given, separated by ';' (the sweep of map_draw.py, and its --border views at the map's west / north border)
         var docs = path.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(f => JsonDocument.Parse(new GZipStream(File.OpenRead(f), CompressionMode.Decompress))).ToArray();
-        // the place icons come from the state's saved game (R030+0x1C76 lists its places)
-        var maps = new Dictionary<string, WorldMap>();
+        // the place icons come from the state's saved game (R030+0x1C76 lists its places); a world map per job (each job starts from the
+        // state's machine: the row buffer read afresh, the bytes after the cell buffer as the state had them, zeros in every state)
+        var places = new Dictionary<string, IReadOnlyList<Core.World.Location>>();
         foreach (var d in docs)
         {
             foreach (var s in d.RootElement.GetProperty("saves").EnumerateObject())
             {
-                maps[s.Name] = new WorldMap(terrain, Persistence.OriginalSaves.Read(Convert.FromBase64String(s.Value.GetString()!), [], "dksave1.sav", world).State.Locations);
+                places[s.Name] = Persistence.OriginalSaves.Read(Convert.FromBase64String(s.Value.GetString()!), [], "dksave1.sav", world).State.Locations;
             }
         }
         var outFolder = Environment.GetEnvironmentVariable("DARKLANDS_MAPDRAW_OUT");
         var failures = new List<string>();
         var compared = 0;
+        var cellsCompared = 0;
+        var cellsDiffer = 0;
+        var pastBlock = 0;
         var index = 0;
         foreach (var job in docs.SelectMany(d => d.RootElement.GetProperty("jobs").EnumerateArray()))
         {
@@ -96,13 +122,49 @@ public sealed class OverlandDrawingTests
             var column = job.GetProperty("column").GetInt32();
             var firstRow = job.GetProperty("top").GetInt32() + job.GetProperty("rows").GetInt32();
             var background = (byte)job.GetProperty("background").GetInt32();
-            var map = maps[job.GetProperty("state").GetString()!];
+            var map = new WorldMap(terrain, places[job.GetProperty("state").GetString()!]);
+            var top = job.GetProperty("top").GetInt32();
+            // the row buffer as the job read it: the state's own rows (its slot tails: zeros in every state), then the job's
+            // R030+0x1DD4(file, new, old) calls (old -1: all rows), else the view's rows afresh when its top is another
+            var stateTop = job.TryGetProperty("state_top", out var st) ? st.GetInt32() : top;
+            map.Rows.Open(stateTop);
+            if (job.TryGetProperty("loads", out var loads))
+            {
+                foreach (var load in loads.EnumerateArray())
+                {
+                    map.Rows.Load(load[0].GetInt32(), load[1].GetInt32());
+                }
+            }
+            else if (top != stateTop)
+            {
+                map.Rows.Load(top, -1);
+            }
+            // a view whose decoder runs past the row buffer's block reads the memory after it (RowBuffer.Decode's divergence): not compared
+            if (job.TryGetProperty("past_block", out var past) && past.GetBoolean())
+            {
+                pastBlock++;
+                index++;
+                continue;
+            }
             var driver = new DriverModel(tiles, assets);
             var page = new OverlandPage();
             // the first 16c6 call begins where 20d2's calls end: its fill of the window DS:282A
             var mapCalls = Array.FindIndex(calls, c => c[0].GetString() == "fill" && c[1][1].GetInt32() == 280);
             var clock = calls.Take(mapCalls).Where(c => c[0].GetString() == "picture" && c[4][0].GetString() == "clock").Select(c => c[4][1].GetInt32()).Last();
-            page.DrawMap(map, tiles, column, job.GetProperty("top").GetInt32(), job.GetProperty("rows").GetInt32(), background, assets.Picture("mapheada").Image, assets.Picture($"mapbrs{clock * 3:00}").Image);
+            page.DrawMap(map, tiles, column, top, job.GetProperty("rows").GetInt32(), background, assets.Picture("mapheada").Image, assets.Picture($"mapbrs{clock * 3:00}").Image);
+            // the cell buffer itself (and the 70 bytes after it, when the job has them) against the original's after its 20d2
+            var original = job.GetProperty("cells").EnumerateArray().Select(v => (byte)v.GetInt32()).ToList();
+            if (job.TryGetProperty("after", out var after))
+            {
+                original.AddRange(after.EnumerateArray().Select(v => (byte)v.GetInt32()));
+            }
+            var cellDiffer = Enumerable.Range(0, original.Count).Where(i => map.Buffer[i] != original[i]).ToArray();
+            cellsCompared++;
+            if (cellDiffer.Length > 0)
+            {
+                cellsDiffer++;
+                failures.Add($"job {index} ({job.GetProperty("state").GetString()} view {column},{firstRow}): {cellDiffer.Length} cells differ, first G[{cellDiffer[0] / 19}][{cellDiffer[0] % 19}] original {original[cellDiffer[0]]} rewrite {map.Buffer[cellDiffer[0]]}");
+            }
             var done = 0;
             for (var k = 0; k < steps.Length; k++)
             {
@@ -127,8 +189,9 @@ public sealed class OverlandDrawingTests
             }
             index++;
         }
+        Console.WriteLine($"mapdraw: {compared} frames and {cellsCompared} cell buffers compared, {pastBlock} jobs past the row buffer's block left out; {failures.Count - cellsDiffer} frames and {cellsDiffer} cell buffers differ");
         Assert.True(compared > 0, "no job");
-        Assert.True(failures.Count == 0, $"{failures.Count} of {compared} frames differ:\n" + string.Join("\n", failures.Take(30)));
+        Assert.True(failures.Count == 0, $"{failures.Count} of {compared} frames / {cellsCompared} cell buffers differ:\n" + string.Join("\n", failures.Take(30)));
     }
 
     private static List<int> Differences(byte[] original, byte[] rewrite)

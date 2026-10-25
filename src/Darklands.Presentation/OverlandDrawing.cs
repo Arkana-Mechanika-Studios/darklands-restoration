@@ -118,9 +118,7 @@ public sealed class OverlandPage
     private readonly Screen _page = new();
     private readonly Canvas _canvas;
     private readonly byte[] _patch = new byte[PatchWidth * PatchHeight];
-    private const int CellRows = 50;
-    private const int CellColumns = 19;
-    private readonly byte[] _cells = new byte[CellRows * CellColumns];
+    private CellBuffer? _cells;
 
     public OverlandPage()
     {
@@ -158,11 +156,14 @@ public sealed class OverlandPage
     // C: the pictures go through the driver's entry 32 (MGRAPHIC.EXE 0D7D): colour 0 is transparent, nothing is clipped.
     // orig: 20d2 takes a first column or row of 0 as 1 (R030+0x20D8..0x20E9: cmp word [bp+6], 0 / mov word [bp+6], 1, the same for [bp+8]):
     //   at the map's west or north border its cell buffer, the tiles' row parity (R030+0x2541..0x254D) and the icons' window start one column (row) further
+    // C: the cells are the world map's cell buffer, filled here from the row buffer as it stands (CellBuffer.Fill: the map screen keeps the
+    //   row buffer as the original reads and scrolls it).
     public void DrawMap(WorldMap map, OverlandTiles tiles, int viewColumn, int viewTop, int viewRows, byte background, IndexedImage? header, IndexedImage? clock)
     {
+        _cells = map.Buffer;
+        _cells.Fill(viewColumn, viewTop, viewRows);
         viewColumn = Math.Max(viewColumn, 1);
         var firstRow = viewTop + Math.Max(viewRows, 1);
-        FillCells(map, viewColumn, firstRow);
         _canvas.Fill(Left, AreaY, AreaWidth, AreaHeight, background);
         for (var y = 1; y <= 48; y++)
         {
@@ -206,10 +207,9 @@ public sealed class OverlandPage
     // C: the copy is the driver's entry 20 (MGRAPHIC.EXE 0804): opaque, not clipped: with a lift the rectangle reaches above the map area into
     //   the header (at the map's north border, y 13 .. 19) and stays there until 20d2 draws the header again.
     // C: DS:D843 is OverlandTravel's terrain (the step sets it too; 16c6's value differs only for code 50: see OverlandTravel.Step).
-    // C: the cells are 20d2's cell buffer (FillCells), read as one array: a column past the row's end is the next row's first cell.
-    // C: at the map's south border the rectangle can reach screen rows 200..202, which the driver's row table (MGRAPHIC.EXE 1816) maps to
-    //   offsets 0, 1, 0: those lines land on the screen's top line.
-    // DIVERGENCE: not reproduced: rows of the rectangle below the screen are left out.
+    // C: the cells are 20d2's cell buffer (CellBuffer, filled by DrawMap), read as one array: a column past the row's end is the next row's first cell.
+    // orig: at the map's south border the rectangle can reach screen lines 200..202, which the driver's row table (MGRAPHIC.EXE 1816) maps to
+    //   offsets 0, 1, 0: those lines land on the screen's top line (the second one a byte to the right), in the order of the copy.
     public void DrawParty(OverlandTiles tiles, int firstRow, int x, int y, int direction, int frame, byte background)
     {
         var fy = (y + 11) % 4;
@@ -247,55 +247,28 @@ public sealed class OverlandPage
         var dy = y - lift + 5;
         for (var j = 0; j < 21; j++)
         {
-            if ((uint)(dy + j) >= Screen.Height)
+            var line = dy + j;
+            // the driver's row table: lines 0..199 their own, 200 and 202..204 the offset 0, 201 the offset 1, below 0 or past 204 none
+            var offset = line switch { >= 0 and < Screen.Height => line * Screen.Width, 201 => 1, >= 200 and <= 204 => 0, _ => -1 };
+            if (offset < 0)
             {
                 continue;
             }
             for (var i = 0; i < 17; i++)
             {
-                _canvas[dx + i, dy + j] = _patch[(sy + j) * PatchWidth + sx + i];
-            }
-        }
-    }
-
-    /// <summary>
-    /// 20d2's cell buffer: 50 rows of 19 cells from the view's first column - 1 and first row - 1, the terrain and then the place icons. An
-    /// icon in column first + 18 is written one past the row's end: it lands in the next row's first cell, where the neighbour masks of
-    /// the view's first column (and 16c6's tiles there) see it.
-    /// </summary>
-    // orig: R030+0x20D2: G[y][outl] from the row buffer (row + y - 1) for the columns col - 1 .. col + 17; then for each icon of the list with
-    //   y in tope .. tope + 50 and x in col - 1 .. col + 18 (tope = row + DS:286E - 1), G[y - tope][x - col + 1] = icon (G is [50][19]: x = col + 18
-    //   is G[y - tope + 1][0])
-    // DIVERGENCE: an icon in row tope + 50 (written past the buffer's end) and the bytes before and after the buffer that 16c6's masks read at
-    //   the map's north and south borders are not modelled (read as empty).
-    private void FillCells(WorldMap map, int viewColumn, int firstRow)
-    {
-        for (var y = 0; y < CellRows; y++)
-        {
-            for (var x = 0; x < CellColumns; x++)
-            {
-                _cells[y * CellColumns + x] = (byte)map.TerrainCell(viewColumn - 1 + x, firstRow - 1 + y);
-            }
-        }
-        var top = firstRow - 1;
-        foreach (var (column, row, code) in map.Icons)
-        {
-            if (row >= top && row <= top + 50 && column >= viewColumn - 1 && column <= viewColumn + 18)
-            {
-                var at = (row - top) * CellColumns + column - viewColumn + 1;
-                if (at < _cells.Length)
+                var at = offset + dx + i;
+                if ((uint)at < Screen.Width * Screen.Height)
                 {
-                    _cells[at] = (byte)code;
+                    _canvas[at % Screen.Width, at / Screen.Width] = _patch[(sy + j) * PatchWidth + sx + i];
                 }
             }
         }
     }
 
-    private int CellAt(int row, int column)
-    {
-        var at = row * CellColumns + column;
-        return (uint)at < (uint)_cells.Length ? _cells[at] : 0;
-    }
+    // C: 20d2's cell buffer read as one array (CellBuffer's flat index, 19 per row): a column past the row's end is the next row's first cell,
+    //   rows 50 and 51 (16c6's last rows and masks for a marker at the view's bottom, DS:2868 0xAD..0xB1) the 70 bytes after the buffer (zeros
+    //   and the icons fills wrote into row 50, CellBuffer), row -1 (the masks at the top of the view) the bytes before it (CellBuffer's index)
+    private int CellAt(int row, int column) => _cells is { } cells ? cells[row * CellBuffer.Columns + column] : 0;
 
     /// <summary>A cell's picture: a place icon, or the terrain's icon by which of its four diagonal neighbours continue it.</summary>
     // orig: the masks of R030+0x20D2 and R030+0x16C6 (the same tests): bit 1 the cell up-left, 2 up-right, 4 down-left, 8 down-right (G[r -+ 1][c - 1 + odd]

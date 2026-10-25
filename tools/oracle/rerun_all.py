@@ -45,7 +45,7 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "smiths": "DKSAVE0.SAV", "healer": "DKSAVE0.SAV", "churches": "DKSAVE0.SAV", "wharves": "DKSAVE0.SAV",
             "university-shop": "DKSAVE0.SAV",
             "stables": "DKSAVE0.SAV", "pawnshop": "DKSAVE0.SAV", "foreigntrader": "DKSAVE0.SAV", "banks": "DKSAVE0.SAV",
-            "menubar": "DKSAVE0.SAV", "menubar2": "DKSAVE0.SAV", "roster": "DKSAVE0.SAV", "roster4": "DKSAVE0.SAV",
+            "menubar": "DKSAVE0.SAV", "menubar2": "DKSAVE0.SAV", "menubar-kbright": "DKSAVE0.SAV", "roster": "DKSAVE0.SAV", "roster4": "DKSAVE0.SAV",
             "wien-rathaus": "DKSAVE0.SAV", "mapsave": "DKSAVE17.SAV",
             # the inn's roster screen (local/overnight/roster2): DKSAVE0 (five listed), DKSAVE8 (Hamburg, four rows), Dksave10 (Ulm, nine rows)
             "roster-colours": "DKSAVE0.SAV", "roster-moves": "DKSAVE0.SAV", "roster-wrap": "DKSAVE8.SAV", "roster-mouse": "DKSAVE8.SAV",
@@ -58,6 +58,9 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "sheet-dksave0": "DKSAVE0.SAV",
             # the loot screen after the gate fight of DKSAVE0 (local/overnight/loot): keys, mouse, capital keys and Esc
             "loot-keys": "DKSAVE0.SAV", "loot-mouse": "DKSAVE0.SAV", "loot-esc": "DKSAVE0.SAV",
+            # keys held through the keyboard interrupt (kdown / kup, DS:0880..0882) and Ctrl (local/batch/kbd): the map of DKSAVE17, the gate fight of DKSAVE0
+            "kbd-map-held": "DKSAVE17.SAV", "kbd-map-enter": "DKSAVE17.SAV", "kbd-map-wait": "DKSAVE17.SAV",
+            "kbd-battle-cursor": "DKSAVE0.SAV", "kbd-battle-held": "DKSAVE0.SAV", "kbd-battle-ctrl": "DKSAVE0.SAV",
             # the camp and the pack outside a battle (local/overnight/camp): DKSAVE99 and Dksave22 are parties on the map, DKSAVE0 is at the Pressburg inn
             "camp-wild-brew": "DKSAVE99.SAV", "camp-wild-risk": "Dksave22.sav", "camp-inn-broke": "DKSAVE0.SAV", "camp-rough": "DKSAVE0.SAV", "camp-mouse": "DKSAVE99.SAV",
             "pack-potions": "DKSAVE99.SAV", "pack-stacks": "DKSAVE99.SAV",

@@ -149,4 +149,23 @@ public sealed class BattleEndTests
         Assert.Equal(1, battle[5].Endurance);
         Assert.Equal(1, battle[5].Strength);
     }
+    /// <summary>
+    /// R040+0x0DB3..0x0DBC: the loot screen's D reads the floor bytes as words at twice the slot (the original's results from direct
+    /// calls of R040+0x0C22 with DS:8DC4 = 0: floor byte 1 = 0x9D lands on slot 1 without the message; bytes 2, 3 = 0x9D, 0xFF skip slot 1).
+    /// </summary>
+    [Fact]
+    public void TheLootScreensExitTestReadsTheFloorBytesAsWords()
+    {
+        var b = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1));
+        b[1].Floor = BattleEnd.LeftThroughExit;
+        Assert.False(BattleEnd.LootSkips(b, 1));
+        b[1].Floor = 0;
+        b[2].Floor = BattleEnd.LeftThroughExit;
+        b[3].Floor = -1;
+        Assert.True(BattleEnd.LootSkips(b, 1));
+        Assert.False(BattleEnd.LootSkips(b, 2));
+        b.Behaviour = new Darklands.Core.OriginalBehaviour { FixLootExitTestReadsWords = true };
+        Assert.False(BattleEnd.LootSkips(b, 1));
+        Assert.True(BattleEnd.LootSkips(b, 2));
+    }
 }

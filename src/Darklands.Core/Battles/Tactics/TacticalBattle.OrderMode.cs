@@ -578,11 +578,31 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>order_mode_leave with DS:A6B2 = 0xFF: what the original does to the data the rewrite keeps, then its end.</summary>
-    // orig: R014+0xBCA8 (19CD:0738) draft, checked against the asm for A6B2 = 0xFF
-    // DIVERGENCE: the original writes record -1 (DS:9BD5.., the bytes before combatant 0) and entry -1 of the per-member tables: for
-    // 0x400 DS:9BE5 = 0, DS:A6C3 = the place, 0x10 of DS:A695 cleared; for a spot its +0x08/+0x0A; for a cursor target >= 1 or -2 the
-    // whole order (R014+0xBD92.., 0xBF9F..: the path, the weapon, DS:17B0 = 0xFF). The rewrite keeps no record -1: none of these is done.
+    /// <summary>
+    /// The word of record -1 that order_mode_leave reads as the order with nobody selected (+0x10 of the record before combatant 0,
+    /// DS:9BE5, inside the menu bar's sub-menu item records) and writes the order it gives "member -1".
+    /// </summary>
+    // UNCERTAIN: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text);
+    //   the rewrite starts it at 0 and keeps only what order_mode_leave writes. The branches below agree for any value other than 0x80,
+    //   0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
+    private int _actionBeforeRecords;
+
+    /// <summary>order_mode_leave with DS:A6B2 = 0xFF: the order given to "member -1" where it lands on data the rewrite keeps, then its end.</summary>
+    // orig: R014+0xBCA8 (19CD:0738) draft, checked against the asm for A6B2 = 0xFF and by direct calls (battle states, DS:A6B2 = 0xFF):
+    //   entry -1 of the per-member tables is the end of the table before: action state[-1] (DS:CA63) is exchange[12], repath[-1] (DS:D97A)
+    //   is give-up[12], engage[-1] (DS:D994) is repath[12], the flags' high byte [-1] (DS:A695) is the pause byte; tests: OrderModeLeadsTests
+    // BUG: OriginalBehaviour.FixLeaveOrderModeWithoutSelection - Enter travelling individually (R016+0x0734) calls it with nobody selected,
+    //   and a cursor target left by the button held over a member (R014+0xB632..: the target of that member's order) gives the order to
+    //   record -1: for 0x400 the pause byte loses 0x10; the 0x1BE test clears it too; a missile (0x80) sets 0x02 of the pause byte; a
+    //   missile or a throw sets exchange[12] = 7 (Ready) and repath[12] = the order clock DS:C867; an attack with bit 1 (or adjacent) sets
+    //   exchange[12] = 7; a walk to a spot sets exchange[12] = 0 and give-up[12] = the order clock + 30, or, the party split in real combat,
+    //   shows "USE STAIRS..." (DS:064A) for 150 ticks.
+    // DIVERGENCE: not reproduced, the original then reads or writes undefined memory: DS:17B0 = 0xFF (walk, attack with a target chosen):
+    //   the view's follow (R014+0x1065) and the keys read record -1's screen place and floor (the menu records, DS:A6B3); the record -1
+    //   fields (DS:9BD5.., the menu bar's sub-menu items and DS:9C1E..9C2C: its range, the UI word, the alchemy file's far pointer through
+    //   weapon_ready(-1)), path_give_saved(-1), order_queue(-1), the 'PT' name of the animation slot of record -1's kind byte, and the
+    //   bytes before other tables (DS:A6C3, DS:CA2F, DS:D6FA, DS:D492, DS:9063, and DS:CA56, the high byte of the palette
+    //   buffer's segment DS:CA55 that the loot screen saves the palette through). moving[-1] (DS:A6D2) is the place order's high byte (modelled).
     private void LeaveWithNobodySelected()
     {
         CursorKeysOn = false;
@@ -593,6 +613,10 @@ public sealed partial class TacticalBattle
             // R014+0xBD25 / 0xBD2D
             CursorPoint = spot;
         }
+        if (!Battle.Behaviour.FixLeaveOrderModeWithoutSelection)
+        {
+            GiveToRecordBeforeCombatants(spot);
+        }
         _orderMode = false;
         _view.RowChanged(-1);
         OrderAction = -1;
@@ -600,6 +624,104 @@ public sealed partial class TacticalBattle
         CursorTarget = -1;
         ResetOrderMenu();
     }
+
+    // orig: R014+0xBCCD..0xC000 with i = -1, the effects on modelled data (see LeaveWithNobodySelected)
+    private void GiveToRecordBeforeCombatants(MapPoint spot)
+    {
+        if (OrderAction == -1 && !_targetChosen && spot.X == 0)
+        {
+            return;
+        }
+        const byte Hurry = 0x10, ShotSkipped = 0x02;     // 0x1000 / 0x0200 of the flags: their high byte [-1] is the pause byte
+        if (OrderAction == 0x400)
+        {
+            // R014+0xBCDC..0xBCEE
+            _actionBeforeRecords = 0;
+            PauseByte &= unchecked((byte)~Hurry);
+            return;
+        }
+        if (CursorTarget == -3 || Cursor == OrderCursor.TargetBlocked)
+        {
+            return;
+        }
+        // R014+0xBD31..0xBD5B
+        var action = OrderAction == -1 ? _actionBeforeRecords : OrderAction;
+        if ((action & 0x1BE) == 0x1BE)
+        {
+            PauseByte &= unchecked((byte)~Hurry);
+        }
+        var last = Battle[Combatant.Count - 1];
+        if (CursorTarget >= 1)
+        {
+            if (action == 0x80)
+            {
+                // R014+0xBE48..0xBE94
+                _actionBeforeRecords = 0x80;
+                MovingBeforeTable(0);
+                PauseByte |= ShotSkipped;
+                last.RepathAt = _orderClock;
+                last.Exchange = (Exchange)ActionState.Ready;
+            }
+            else if (action == 0x100)
+            {
+                // R014+0xBEA3..0xBF0A
+                _actionBeforeRecords = 0x100;
+                MovingBeforeTable(0);
+                last.RepathAt = _orderClock;
+                last.Exchange = (Exchange)ActionState.Ready;
+            }
+            else if (!_targetChosen)
+            {
+                // R014+0xBDD8..0xBDF3
+                if ((action & 2) == 2)
+                {
+                    _actionBeforeRecords = action;
+                    last.Exchange = (Exchange)ActionState.Ready;
+                }
+            }
+            else if (!_adjacent)
+            {
+                // R014+0xBE06..0xBE3A (DS:17B0 = 0xFF and order_queue(-1) not reproduced)
+                _actionBeforeRecords = 1;
+                MovingBeforeTable(1);
+            }
+            else
+            {
+                // R014+0xBDFD..0xBE04
+                _actionBeforeRecords = action;
+                last.Exchange = (Exchange)ActionState.Ready;
+            }
+            return;
+        }
+        if (CursorTarget != -2)
+        {
+            return;
+        }
+        if (action == 0x100)
+        {
+            // R014+0xBF20..0xBF72
+            _actionBeforeRecords = 0x100;
+            MovingBeforeTable(0);
+            last.RepathAt = _orderClock;
+            last.Exchange = (Exchange)ActionState.Ready;
+            return;
+        }
+        if (Battle.RealCombat && Battle.PartyFloor != Battle.FloorShown)
+        {
+            // R014+0xBF76..0xBF91
+            _view.Message(UseStairsText, 0x96);
+            return;
+        }
+        // R014+0xBF94..0xC000 (action state[-1] = 0, repath[-1] = clock + 30; DS:17B0 = 0xFF not reproduced)
+        _actionBeforeRecords = 1;
+        MovingBeforeTable(1);
+        last.Exchange = Exchange.None;
+        last.GiveUpUntil = (ushort)(_orderClock + 30);
+    }
+
+    /// <summary>moving[-1] (DS:A6D2, the byte before the moving table) is the high byte of the place order word DS:A6D1.</summary>
+    // orig: R014+0xBE4E / 0xBEAC / 0xBF26 (0), 0xBE09 / 0xBFD7 (1); DS:A6D1 is read as a word (R016+0x1652, root 0000:19FE)
+    private void MovingBeforeTable(int value) => PlaceOrder = (short)((PlaceOrder & 0xFF) | value << 8);
 
     /// <summary>Esc in order mode: the order is dropped and order mode ends (the game stays paused).</summary>
     // orig: R016+0x13D4 (1EF8:13D4) matched; DS:D7FE (the cursor keys) is not touched

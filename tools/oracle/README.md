@@ -20,7 +20,11 @@ manager does). The notation's coordinates (root 0000:0CAA, R014+0x3166 = 0E76:31
 `P(0x0E76)` for the segment in memory (`DS` is already `P(0x321A)`), never the sum by hand; payload offsets (R014+0x....) do not move.
 A hook or stub is given the segment in memory; the machine's own segments (EMS F800, its frame D000, the call sentinels F000/F100) and the
 BIOS data area (0040) are absolute. The game's own writes to the vector table (INT 9 at 0000:0024, the divide-error vector) are ordinary.
-The Shift/Ctrl/Alt flags (0040:0017) are 0 (nothing held) unless the script's `shift:on` is in force.
+The Shift/Ctrl/Alt flags (0040:0017) are 0 (nothing held) unless the script's `shift:on` (bits 0-1) or `ctrl:on` (bit 2) is in force.
+The keys of `key:` steps go straight to the stubbed BIOS reads (047C:073D / 047C:0744 = misc.exe's INT 16h AH=1 / AH=0); `kdown:<hex>` /
+`kup:<hex>` give a key's make / break bytes (set 1, `E0` prefix allowed) to the game's own INT 9 handler (root 044A:020E, through vector 9,
+port 60h giving the byte), which keeps DS:0880..0889 (the held direction key, Enter): the overland map, the battle's keys and its order-mode
+cursor read them. In a battle (after a bwait) they are delivered at the head of the next pass, where the C# host's frame starts.
 
 ## Original side and compare side
 

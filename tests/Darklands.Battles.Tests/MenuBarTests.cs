@@ -133,6 +133,82 @@ public sealed class MenuBarTests
         Assert.Equal(["last-one"], log);
     }
 
+    /// <summary>
+    /// Right with no item chosen tests items[-1].sub, the word before the entry's item table (root 0000:0EE4): when it is not 0 the cursor goes
+    /// into a sub-menu of item -1 (DS:9C41 = 0) and stays on the entry (without the word: Right, Down, Enter chooses "last-one").
+    /// </summary>
+    [Fact]
+    public void RightWithNoItemAndAWordBeforeTheItemsStaysOnTheEntry()
+    {
+        // (Down in that sub-menu reads memory that is not modelled: it does not move here, DIVERGENCE of MenuBar.KeyboardStep)
+        var host = new FrameHost(Key(Keys.Right), Key(Keys.Down), Key(Keys.Enter));
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var ui = new GameUi(host, new GameAssets(files));
+        var log = new List<string>();
+        MenuBar.Item Item(string name) => new(() => name, true, "", () => log.Add(name));
+        var bar = new MenuBar(ui,
+        [
+            new("First", true, [Item("one"), Item("two")], BeforeItems: () => 0x0100),
+            new("Grey", false, []),
+            new("Last", true, [Item("last-one")]),
+        ]);
+        bar.Run(keyboard: true);
+        Assert.Empty(log);
+    }
+
+    /// <summary>
+    /// The Game items' word before the table is DS:991C, whose high byte DS:991D is best_member: after a query that left best_member != 0,
+    /// F10 and Right do not move to Party (root 0000:0EE4; direct call of the original: DS:9C41 = 0 for best_member 1, 2, 4, 0xFF, DS:9C2F = 3 for 0).
+    /// </summary>
+    [Theory]
+    [InlineData(0, true)]
+    [InlineData(1, false)]
+    [InlineData(4, false)]
+    public void F10AndRightMoveToPartyOnlyWithBestMemberZero(int bestMember, bool movesToParty)
+    {
+        var host = new FrameHost(Key(Keys.F10), Key(Keys.Right), Key(Keys.Down), Key(Keys.Down), Key(Keys.Enter));
+        if (MusicTests.Start(host) is not var (ui, state, _, _))
+        {
+            return;
+        }
+        state.Party.Last.Member = bestMember;
+        var chosen = false;
+        var keys = new HotKeys(ui, state, ui.Options) { ChoosePartyOrder = () => chosen = true };
+        ui.GameKey = keys.Handle;
+        ui.MenuBar = MenuBar.ForGame(ui, state, ui.Options, keys);
+        Assert.Null(ui.Poll());
+        Assert.Equal(movesToParty, chosen);
+    }
+
+    /// <summary>
+    /// On Party (the last entry) Right with no item chosen reads DS:987B, the right edge of the dropdown just opened: never 0 there, so the
+    /// cursor goes into item -1's sub-menu; Left takes it out again and Down then walks the items as before.
+    /// </summary>
+    [Fact]
+    public void RightOnPartyGoesIntoItemMinusOnesSubMenuAndLeftTakesItOut()
+    {
+        var host = new FrameHost(Key(Keys.F10), Key(Keys.Right), Key(Keys.Right), Key(Keys.Enter), Key(0), Key(Keys.F10), Key(Keys.Right), Key(Keys.Right),
+            Key(Keys.Left), Key(Keys.Down), Key(Keys.Down), Key(Keys.Enter));
+        if (MusicTests.Start(host) is not var (ui, state, _, _))
+        {
+            return;
+        }
+        state.Party.Last.Member = 0;
+        var chosen = 0;
+        var keys = new HotKeys(ui, state, ui.Options) { ChoosePartyOrder = () => chosen++ };
+        ui.GameKey = keys.Handle;
+        var bar = MenuBar.ForGame(ui, state, ui.Options, keys);
+        ui.MenuBar = bar;
+        Assert.Null(ui.Poll());
+        Assert.NotEqual(0, bar.DropdownRight);
+        Assert.Equal(0, chosen);
+        Assert.Null(ui.Poll());
+        Assert.Equal(1, chosen);
+    }
+
     [Fact]
     public void DraggingWithTheRightButtonChoosesTheItemWhereItIsLetGo()
     {
