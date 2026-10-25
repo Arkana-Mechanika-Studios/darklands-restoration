@@ -3,7 +3,10 @@ captured inside lockstep sessions (world_calls.py capture), with the graphics dr
 no MGRAPHIC.EXE: the pictures in its memory are empty blocks, so the calls are kept with the picture each segment stands for and the rewrite's
 test, tests/Darklands.Cards.Tests/OverlandDrawingTests.cs, replays them with a model of the driver's primitives).
 
-usage: python -I -B map_draw.py <out.json.gz> <state> [<state> ...]
+usage: python -I -B map_draw.py [--border] <out.json.gz> <state> [<state> ...]
+
+--border: only the views at the map's west / north border (DS:286A = 0 and / or DS:286C = 0, where 20d2 takes the 0 as 1, R030+0x20D8..0x20E9)
+and two controls next to them, instead of the sweep of the whole map.
 
 Driver entries (MGRAPHIC.EXE, the slot table of root 047C:04C7): 5 (047C:04EA, fill page), 6 (047C:04EF, transparent picture clipped to
 the window), 20 (047C:0553, rectangle copy), 32 (047C:05A5, transparent picture, not clipped); root 047C:0952 (filled rectangle) is
@@ -151,20 +154,26 @@ DIRS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)]
 
 
 def main():
-    out = Path(sys.argv[1])
+    args = [a for a in sys.argv[1:] if a != "--border"]
+    border = len(args) != len(sys.argv) - 1
+    out = Path(args[0])
     rnd = random.Random(16)
     jobs, saves = [], {}
     t0 = time.time()
-    for path in sys.argv[2:]:
+    for path in args[1:]:
         st = wc.WState(Path(path), coverage=False, near=[])
         rec = Recorder(st)
         base = view_regs(st)
         name = Path(path).name[:-len(".state")]
         saves[name] = base64.b64encode(st.sav).decode()       # the saved game of the state: its places give the icons (R030+0x1C76)
         views = [(base["column"], base["rows"], base["top"])]
+        if border:
+            # (column, rows, top): column 0 at several heights (the Luxemburg / Nancy strip), row 0 (leaving Vordingborg: top 0), both,
+            # and the controls column 1 / row 1 (no shift)
+            views = [(0, 5, 400), (0, 20, 500), (0, 40, 600), (0, 20, 700), (150, 0, 0), (60, 0, 0), (0, 0, 0), (1, 20, 500), (150, 1, 0)]
         # the views with the most mountains and the most hills or water among a sweep of the whole map
         best = {}
-        for top in range(0, base["height"] - 0x83, 0x41):
+        for top in (() if border else range(0, base["height"] - 0x83, 0x41)):
             for column in range(1, base["width"] - 0x11, 24):
                 try:
                     setup(st, rec, column, 0x29, top)
@@ -177,7 +186,8 @@ def main():
                     if n > best.get(want, (0,))[0]:
                         best[want] = (n, column, 0x29, top)
         views += [v[1:] for v in best.values() if v[1:] not in views]
-        views.append((rnd.randint(1, base["width"] - 0x11), rnd.randint(1, 0x50), base["top"]))
+        if not border:
+            views.append((rnd.randint(1, base["width"] - 0x11), rnd.randint(1, 0x50), base["top"]))
         print(name, "views", views, "%.0f s" % (time.time() - t0), flush=True)
         for column, rows, top in views:
             try:

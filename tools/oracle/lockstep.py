@@ -110,9 +110,16 @@ def trace_difference(original, rewrite) -> dict:
         return d
     a, b = first(original), first(rewrite)
     common = [c for c in a if c in b]
+    # a clock only one side reached (its battle ended or stalled earlier) is a difference too: the shorter trace does not pass
+    lone = sorted(set(a) ^ set(b))
     for k, c in enumerate(common):
+        if lone and c > lone[0]:
+            break
         if a[c] != b[c]:
             return {"clock": c, "ticks agreeing": k, "original": a[c], "rewrite": b[c]}
+    if lone:
+        return {"clock": lone[0], "ticks agreeing": sum(c < lone[0] for c in common), "original": a.get(lone[0], "not reached"),
+                "rewrite": b.get(lone[0], "not reached"), "clocks": {"original": len(a), "rewrite": len(b)}}
     return {"clock": None, "ticks agreeing": len(common), "clocks": {"original": len(a), "rewrite": len(b)}}
 
 

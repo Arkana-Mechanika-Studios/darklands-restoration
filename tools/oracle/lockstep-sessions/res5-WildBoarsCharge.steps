@@ -1,0 +1,25 @@
+# Lockstep session (res5b): the game saved at card WildBoarsCharge with member 4 Away and members 0..3 at endurance 1 (synth away<card>): the fight is lost
+# without orders, everybody on the floor dies and battle result 5 reaches the card (the Away member keeps the party alive)
+# the wait after the key that starts the fight: the original gives the next step only once the battle has ended (a running battle is never idle),
+# the C# host counts frames (one a pass); the state step inside that wait is left out (inside a battle the original writes the battle's save)
+key:t
+wait:5
+key:l
+wait:300
+key:enter
+wait:100
+state:menu
+option:2
+wait:10
+key:enter
+wait:300
+wait:20000
+key:l
+wait:300
+state:s1
+key:enter
+wait:20000
+wait:300
+key:enter
+wait:300
+state:s3

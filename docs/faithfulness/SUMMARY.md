@@ -97,28 +97,28 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora | 88.6% | 81.2% |
-| the 8,528 functions the oracles enter | 84.8% (49,073 / 57,854) | 75.4% (32,732 / 43,396) |
-| **every function the C# implements (9,281)** | | **74.6% (31,904 / 42,790)** |
+| the 8,528 functions the oracles enter | 84.9% (49,115 / 57,854) | 75.5% (32,771 / 43,396) |
+| **every function the C# implements (9,281)** | | **74.7% (31,943 / 42,790)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 31,904 against 32,732 exercised (3 fewer than the batch before: the tester fixes below removed a few screen outcomes that only the tester's faults had reached). By area:
+differ slightly on the resident code, hence 31,943 against 32,771 exercised (39 more than the batch before: the six sessions of batch 15 below). By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 333 / 358 | 2,090 / 2,590 | 81% |
-| battles (tactical combat) | 274 / 314 | 6,096 / 7,516 | 81% |
+| rules | 333 / 358 | 2,093 / 2,590 | 81% |
+| battles (tactical combat) | 274 / 314 | 6,101 / 7,516 | 81% |
 | travel (overland map) | 23 / 24 | 691 / 982 | 70% |
 | screens (inventory, barter, creation ...) | 190 / 202 | 4,736 / 6,070 | 78% |
 | resident code | 137 / 160 | 1,041 / 1,644 | 63% |
 | card engine | 35 / 36 | 443 / 686 | 65% |
-| card scripts | 6,860 / 7,949 | 9,718 / 14,616 | 66% |
+| card scripts | 6,860 / 7,949 | 9,749 / 14,616 | 67% |
 | other | 10 / 12 | 75 / 162 | 46% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`; 366 outcomes, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch): 75.4% (32,270 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`; 366 outcomes, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch): 75.5% (32,309 / 42,790). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
@@ -415,16 +415,29 @@ After a menu-bar sub-menu has been opened, a party prayer in the original scans 
 records (DS:C0A0 + 6i, never saved) for a quality equal to DS:9C2D, a DOS segment: not deterministic game
 state, kept as a divergence (D-8bb04c).
 Resolved in batch 14: the tester's memory leak at the battle sheet (above) and the marching-order click lead
-(a tester fault: the mouse driver's release query now reports where the button was released, INT 33h fn 6). Still open: the original exits (code 99) on
+(a tester fault: the mouse driver's release query now reports where the button was released, INT 33h fn 6).
+Resolved in batch 15: the map's drawing at the view's column 0 or row 0, shifted by one cell as R030+0x20D2
+does, is compared pixel for pixel at the border (2,824 frames, 0 pixels differ; the divergence once listed
+for it is closed). Still open: the original exits (code 99) on
 the roster's arrow keys when a member stands on row 4 or later of a long roster (a missing picture); the C#
-documents this as a deliberate difference. The map's drawing at the view's column 0 or row 0 is still drawn
-unshifted (visual only, D-175ca3), as are the bytes just outside the cell buffer and the rows below the screen.
-The camp watch's shifted read (R030+0x25BE) is not yet checked by a direct call; the step's is. The note of
+documents this as a deliberate difference. The camp watch (R030+0x25BE) reads its 10 x 10 settlement block
+flat through the cell buffer's 19-wide rows, so a row wraps into the next and the read runs into the 70
+deterministic bytes after the buffer (the icons the fill writes one row or column too far); this is a
+gameplay quirk, reproduced and faithful by default. Past those bytes it reads the marker picture handles,
+which are undefined memory (a registered divergence, D-ff5e3e; rare). At the map's bottom view the fill decodes buffer row 49 from just past the map's row buffer (D-4b5538, documented). The note of
 card S128 (the mob's waves, leaving whatever the result) is unverified against the original. 40 battle-result
 markers said DORMANT for results the card engine never gets; a result 5 (every member down) reaches a card when
 a member was left behind by an earlier flight, so they now read COVERAGE GAP, and three more notes were split;
-a scenario to exercise them (flee a battle, then lose a card fight) is proposed. The keyboard interrupt is not
-emulated by the tester: key handling is checked by unit tests only.
+six sessions now reach it (S049, S053, S074 twice, S084, S085: 39 more outcomes). The keyboard interrupt is not
+emulated by the tester: key handling is checked by unit tests only. In particular the keyboard handler's held-key
+bytes DS:0880..0882 (read at R030+0x02C0, R016+0x0000, R014+0x3166, R014+0x35FC) are not driven by the tester, so
+held-key code is unexercised and the overland screen does not model them (a documented divergence); driving them is
+planned as the next tester change.
+
+Batch 15, the rest: the comparison now reports a clock reached by one side only (a shorter C# battle trace passed
+before; replaying everything found no hidden difference), and the scheduler's clock rise after a re-path search
+is applied where the original has it (an oracle hook only). Runs: 584 fights and sessions agree (replayed; the 6
+new sessions run live), the 28 card corpora and the 30 battle call jobs are unchanged.
 
 The last round (2026-10-23): a saved game made in a battle (the mines of DKSAVE99: save, reload, save
 again) agrees with the original's, the .BSV block by block (`savemid-mine`); it found five divergences,
@@ -444,8 +457,7 @@ edge), and the screen kept between passes (the map drawn again only when the vie
 every pass). The original's drawing calls, run directly in the emulator from two map states (1,784 frames: 584 single
 frames over every terrain group and 20 walks of 60 passes) and replayed through a model of the graphics driver
 (MGRAPHIC.EXE), give the same pixels as the C# (tools/oracle/map_draw.py, OverlandDrawingTests). The cell buffer's overflow (R030+0x16C6) is
-reproduced. Left as divergences: the map's drawing at the view's column 0 or row 0, which is still drawn unshifted
-(visual only; D-175ca3, the step's logic is fixed above), the bytes just outside the cell buffer at the map's north
+reproduced. The drawing at the view's column 0 or row 0 (shifted by one cell) is compared too (batch 15, above). Left as divergences: the bytes just outside the cell buffer at the map's north
 and south borders, and the party rectangle's rows below the screen at the south border.
 A click on a card menu sets the highlight from the pointer before it is judged (R043+0x21D4); a key
 pressed during the map's pause waits for the next pass (R030+0x3096); the battle screen tests the pause

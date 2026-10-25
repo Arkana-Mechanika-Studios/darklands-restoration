@@ -7,6 +7,8 @@ variants:
           R031+0x43B2 (up to 25, 35, 45 and above 45), stack sizes 1 and 2, before the items the pack holds (the first lines); 12 stacks a member
   pots3   the same for three members (DKSAVE99's fourth member's picture is missing from the game folder)
   kitchen every item of DARKLAND.LST once over the first four members' packs (kitchen3: three), before the items they hold
+  weak<card>, card<card>  controls: as away<card> without the Away member / with the party unchanged (any card, hex)
+  away<card>  (24, 7b, a0, 16, 7a, a5) member 4 Away, members 0..3 at endurance 1, the game saved at card <card> (0x24 Footpads, 0x7B RebelMobInTheStreets, 0xA0 WolfPackOnTheTrail, 0x16 MarketAtNight ...): see local/batch/res5
   hurt    the first four members hurt and ill for the battle's party panel: endurance / strength at 1, 0 and above the maximum, a dead,
           an unconscious and a poisoned member (status byte +0x14)
 """
@@ -103,12 +105,36 @@ def hurt_status(b: bytearray) -> None:
     b[HEAD_END + 4 * CHAR + STATUS] = 2
 
 
-VARIANTS = {"dead": dead, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt}
+CARD_AT, SAVED_CARD_AT, ENDURANCE = 0x82, 0x86, 0x5D
+
+
+def away_card(card: int, weak: bool = True, gone: bool = True):
+    """member 4 away (status 5), the game saved at card <card> (a battle card: loading it starts the card), members 0..3 at endurance 1 so
+    that a card fight lost on the floor leaves nobody able and battle result 5 reaches the card (the Away member keeps the party alive)."""
+    def edit(b: bytearray) -> None:
+        if gone:
+            away(b)
+        saved = struct.unpack_from("<H", b, CARD_AT)[0]          # the card the game was saved at: where the card goes on afterwards
+        struct.pack_into("<H", b, CARD_AT, card)
+        struct.pack_into("<H", b, SAVED_CARD_AT, saved)
+        if weak:
+            for k in range(4):
+                b[HEAD_END + k * CHAR + ENDURANCE] = 1
+    return edit
+
+
+VARIANTS = {"dead": dead, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
+            "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
+            "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}
 
 
 def main() -> None:
     variant, source, target = sys.argv[1:4]
     b = bytearray(Path(source).read_bytes())
+    if variant not in VARIANTS and variant.startswith(("weak", "card")):
+        # the controls of the away<card> saves (local/batch/res5b): weak<card> the same without the Away member, card<card> the game
+        # saved at the card with the party as it was
+        VARIANTS[variant] = away_card(int(variant[4:], 16), variant.startswith("weak"), False)
     VARIANTS[variant](b)
     Path(target).parent.mkdir(parents=True, exist_ok=True)
     Path(target).write_bytes(bytes(b))

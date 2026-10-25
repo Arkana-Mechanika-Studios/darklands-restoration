@@ -668,7 +668,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         Effects.Rebase(R);
     }
 
-    /// <summary>A debugging aid: called where a tick's phases begin (-1 the scheduler, -2 the melee exchanges; -3 after the activations' test), as MscRandom.BeforeDraw is before a draw
+    /// <summary>A debugging aid: called where a tick's phases begin (-1 the scheduler, -2 the melee exchanges, or earlier: after a rethink's path search in the scheduler; -3 after the activations' test), as MscRandom.BeforeDraw is before a draw
     /// (tools/oracle/battle_oracle.py gives the C# the clock the original's long passes had reached there, DARKLANDS_BATTLE_CLOCK_JUMPS).</summary>
     public static Action<int>? ClockPhase { get; set; }
 

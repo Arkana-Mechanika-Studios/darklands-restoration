@@ -1,10 +1,10 @@
 {
  "ALL": {
   "blocks": 57854,
-  "blocks_hit": 49073,
+  "blocks_hit": 49115,
   "functions": 8528,
   "outcomes": 43396,
-  "outcomes_hit": 32732,
+  "outcomes_hit": 32771,
   "runs": null
  },
  "battle": {
@@ -4965,6 +4965,54 @@
   "functions": 387,
   "outcomes": 5006,
   "outcomes_hit": 2225,
+  "runs": 1
+ },
+ "lockstep-res5-ChasedByTheCityGuard": {
+  "blocks": 11294,
+  "blocks_hit": 6919,
+  "functions": 568,
+  "outcomes": 9984,
+  "outcomes_hit": 4681,
+  "runs": 1
+ },
+ "lockstep-res5-MarketAtNight": {
+  "blocks": 11208,
+  "blocks_hit": 6955,
+  "functions": 562,
+  "outcomes": 9860,
+  "outcomes_hit": 4811,
+  "runs": 1
+ },
+ "lockstep-res5-WildBoarsCharge": {
+  "blocks": 11020,
+  "blocks_hit": 6317,
+  "functions": 526,
+  "outcomes": 9702,
+  "outcomes_hit": 4183,
+  "runs": 1
+ },
+ "lockstep-res5-WolfPackOnTheTrail": {
+  "blocks": 11137,
+  "blocks_hit": 6389,
+  "functions": 528,
+  "outcomes": 9738,
+  "outcomes_hit": 4263,
+  "runs": 1
+ },
+ "lockstep-res5-footpads": {
+  "blocks": 11878,
+  "blocks_hit": 6867,
+  "functions": 553,
+  "outcomes": 10492,
+  "outcomes_hit": 4731,
+  "runs": 1
+ },
+ "lockstep-res5-rebelmob": {
+  "blocks": 11309,
+  "blocks_hit": 6728,
+  "functions": 558,
+  "outcomes": 9948,
+  "outcomes_hit": 4578,
   "runs": 1
  },
  "lockstep-residence": {

@@ -60,7 +60,7 @@ internal static class Adapters
 
         // ---- travel on the map: the view's registers and the travel counters are DS words of the job
         ["R030+0x1300"] = Step,
-        ["R030+0x25BE"] = c => c.Map.CampWatch(c.State.Party.Members.Count, c.State.MapPosition.X, c.State.MapPosition.Y),
+        ["R030+0x25BE"] = CampWatch,
         ["R030+0x2DD6"] = SeasonPaletteCall,
         ["R030+0x2AC8"] = c => Terrain.MinutesPerStep(c.S(0)),
         ["R030+0x2D44"] = c => c.S(1) >= c.State.Locations.Count ? throw new WorldCallsTests.SkipJob("place 414, past the table: unreachable (the only caller, the step R030+0x1300, passes `found`, -1 or a table index below 414)") : (int)typeof(OverlandTravel).GetMethod("EncounterWeight", BindingFlags.Instance | BindingFlags.NonPublic)!
@@ -135,6 +135,31 @@ internal static class Adapters
     }
 
     private static readonly BindingFlags Fields = BindingFlags.Instance | BindingFlags.NonPublic;
+
+    /// <summary>
+    /// camp watch R030+0x25BE: the cell buffer as 20d2 filled it for the views the job lists (the call's view last; the bytes after the buffer
+    /// keep the icons earlier draws left there), read under the marker DS:2866/2868 with the view's DS:286E/286C. Jobs without the view's words
+    /// (the first travel corpus) get a view that holds the saved game's position and the whole 10 x 10 block inside the window.
+    /// </summary>
+    private static int? CampWatch(WorldCallsTests.Context c)
+    {
+        var members = c.State.Party.Members.Count;
+        var buffer = new Simulation.Overland.CellBuffer(c.Map);
+        if (!c.Job.Ds.ContainsKey(0x2866.ToString()) || !c.Job.Ds.ContainsKey(0x286A.ToString()))
+        {
+            var (x, y) = (c.State.MapPosition.X, c.State.MapPosition.Y);
+            var viewColumn = Math.Max(x - 2, 1);
+            var viewTop = Math.Max(y - 4, 0);
+            buffer.Fill(viewColumn, viewTop, 1);
+            return buffer.CampWatch(members, y - viewTop, x - viewColumn + 1);
+        }
+        foreach (var view in c.Job.Views ?? [[c.Job.Word(0x286A), c.Job.Word(0x286E), c.Job.Word(0x286C)]])
+        {
+            buffer.Fill(view[0], view[1], view[2]);
+        }
+        var (row, column) = Simulation.Overland.CellBuffer.MarkerCell(c.Job.Word(0x2866), c.Job.Word(0x2868), c.Job.Word(0x286E), c.Job.Word(0x286C));
+        return buffer.CampWatch(members, row, column);
+    }
 
     /// <summary>overland step R030+0x1300(x, y): the marker in the view, the view's registers DS:286A/286C/286E, the counters DS:8672/E488/D843.</summary>
     private static int? Step(WorldCallsTests.Context c)

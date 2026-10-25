@@ -156,10 +156,12 @@ public sealed class OverlandPage
     /// </summary>
     // orig: R030+0x20D2 (map tiles into the 260x184 buffer cleared to DS:2860, then the header picture at (60, 0), the clock picture mapbrs{hour/3*3} at (289, 0) and the copy to the screen at (60, 16))
     // C: the pictures go through the driver's entry 32 (MGRAPHIC.EXE 0D7D): colour 0 is transparent, nothing is clipped.
-    // C: 20d2 takes a first column or row of 0 as 1 (R030+0x20D8..0x20E9): at the map's west or north border its cell buffer starts one column (row) further.
-    // DIVERGENCE: not reproduced: the view's column 0 and row 0 are drawn as they are (the original's drawn view is shifted by one cell there; the terrain the step, the camp watch and DS:D843 read through that buffer is reproduced, WorldMap.BufferOffset).
-    public void DrawMap(WorldMap map, OverlandTiles tiles, int viewColumn, int firstRow, byte background, IndexedImage? header, IndexedImage? clock)
+    // orig: 20d2 takes a first column or row of 0 as 1 (R030+0x20D8..0x20E9: cmp word [bp+6], 0 / mov word [bp+6], 1, the same for [bp+8]):
+    //   at the map's west or north border its cell buffer, the tiles' row parity (R030+0x2541..0x254D) and the icons' window start one column (row) further
+    public void DrawMap(WorldMap map, OverlandTiles tiles, int viewColumn, int viewTop, int viewRows, byte background, IndexedImage? header, IndexedImage? clock)
     {
+        viewColumn = Math.Max(viewColumn, 1);
+        var firstRow = viewTop + Math.Max(viewRows, 1);
         FillCells(map, viewColumn, firstRow);
         _canvas.Fill(Left, AreaY, AreaWidth, AreaHeight, background);
         for (var y = 1; y <= 48; y++)

@@ -144,12 +144,34 @@ def parse(lines):
 clock_jumps = lockstep.clock_jumps            # orig_side.py (its sessions with a battle pass the jumps too)
 
 
-def first_difference(original: dict, rewrite: dict):
+def lone_clocks(original, rewrite, original_cut: bool = False) -> list:
+    """The combat clocks one trace reached and the other did not (a battle that ends or stalls earlier on one side): every clock
+    only the original reached, and every clock only the rewrite reached; with original_cut (a fight: the original's run stops at its
+    instruction budget or at the script's end, the C#'s runs on) only the rewrite's clocks up to the original's last count."""
+    last = max(original, default=None)
+    return sorted([c for c in original if c not in rewrite]
+                  + [c for c in rewrite if c not in original and not (original_cut and (last is None or c > last))])
+
+
+def lone_difference(original, rewrite, clock, agreeing) -> dict:
+    span = lambda d: [min(d), max(d)] if d else []
+    return {"clock": clock, "ticks agreeing": agreeing,
+            "differences": [{"field": "battle clock", "original": "reached" if clock in original else "not reached",
+                             "rewrite": "reached" if clock in rewrite else "not reached"}],
+            "clocks": {"original": span(original), "rewrite": span(rewrite)}}
+
+
+def first_difference(original: dict, rewrite: dict, original_cut: bool = False):
+    """The first combat clock at which the two traces differ: a field of the records, or a clock only one side reached (the shorter
+    trace no longer passes: a C# battle that ends earlier than the original's is a difference)."""
     common = sorted(set(original) & set(rewrite))
+    lone = lone_clocks(original, rewrite, original_cut)
     start = {}      # slot -> (original, rewrite) +0x1D at its first tick
     ready = {}      # (slot, offset) -> (original, rewrite) at the slot's first tick
     dest = {}       # slot -> (original, rewrite) +0x08..0x0B at its first tick
     for clock in common:
+        if lone and clock > lone[0]:
+            break
         (orand, orec, oq, oar), (crand, crec, cq, car) = original[clock], rewrite[clock]
         diffs = []
         for i in range(COUNT):
@@ -191,6 +213,8 @@ def first_difference(original: dict, rewrite: dict):
             diffs.append({"field": "random", "original": orand, "rewrite": crand})
         if diffs:
             return {"clock": clock, "ticks agreeing": common.index(clock), "differences": diffs[:60]}
+    if lone:
+        return lone_difference(original, rewrite, lone[0], sum(c < lone[0] for c in common))
     return {"clock": None, "ticks agreeing": len(common), "clocks": [common[0], common[-1]] if common else []}
 
 
@@ -283,7 +307,7 @@ def main():
                 lines = [l for l in output.splitlines() if l.startswith("pass ")]
                 (folder / "rewrite-battle.trace").write_text("\n".join(lines), encoding="utf-8")
                 (folder / "rewrite.log").write_text("\n".join(l for l in output.splitlines() if not l.startswith("pass ")), encoding="utf-8")
-        result = first_difference(parse(trace), parse(lines))
+        result = first_difference(parse(trace), parse(lines), original_cut=True)     # the original stops at its budget, the C# runs on
         report[name] = {"request": request, "card's arguments": given, "set-up ticks": set_up, "original end": end,
                         "passes": {"original": len(trace), "rewrite": len(lines)},
                         "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)},

@@ -309,6 +309,14 @@ public sealed class OverlandTests
         Assert.Equal(Terrain.Castle, map.TerrainAt(9, 9));        // icons count as castles when walking
     }
 
+    /// <summary>The camp value at map cell (20, 20), with the cell buffer filled for a view that holds the whole 10 x 10 block.</summary>
+    private static int CampAt2020(WorldMap map)
+    {
+        // view column 18: buffer column c is map column 17 + c; top 16, first shown row 1: buffer row r is map row 16 + r
+        map.Buffer.Fill(18, 16, 1);
+        return map.Buffer.CampWatch(4, 4, 3);
+    }
+
     [Fact]
     public void TheCampValueCountsMembersSettlementsAndTerrain()
     {
@@ -316,14 +324,14 @@ public sealed class OverlandTests
         // adds |distance - 6|; rough terrain takes off, a road or the heath adds
         Location Village(int index, int column, int row) => Place(index, column, row, icon: 8);
         var plain = Data(60, 60, (_, _) => Terrain.Plains);
-        Assert.Equal(12, new WorldMap(plain, []).CampWatch(4, 20, 20));
+        Assert.Equal(12, CampAt2020(new WorldMap(plain, [])));
         // a village 7 right and 2 down: i = 7 -> 2, j = 2 -> 3 capped to i -> 2; |2 - 6| = 4
-        Assert.Equal(12 + 4, new WorldMap(plain, [Village(92, 27, 22)]).CampWatch(4, 20, 20));
+        Assert.Equal(12 + 4, CampAt2020(new WorldMap(plain, [Village(92, 27, 22)])));
         // one at the cell itself: i = 0 -> 5, j = 0 -> 5, res 5, |5 - 6| = 1
-        Assert.Equal(12 + 1, new WorldMap(plain, [Village(92, 20, 20)]).CampWatch(4, 20, 20));
+        Assert.Equal(12 + 1, CampAt2020(new WorldMap(plain, [Village(92, 20, 20)])));
         // a settlement behind the party (left) is not in the block
-        Assert.Equal(12, new WorldMap(plain, [Village(92, 15, 20)]).CampWatch(4, 20, 20));
-        int Camp(int terrain) => MapOf(60, 60, (_, _) => terrain).CampWatch(4, 20, 20);
+        Assert.Equal(12, CampAt2020(new WorldMap(plain, [Village(92, 15, 20)])));
+        int Camp(int terrain) => CampAt2020(MapOf(60, 60, (_, _) => terrain));
         Assert.Equal(12 - 1, Camp(5));
         Assert.Equal(12 - 2, Camp(16));
         Assert.Equal(12 - 3, Camp(17));
@@ -331,6 +339,44 @@ public sealed class OverlandTests
         Assert.Equal(12 - 6, Camp(23));
         Assert.Equal(12 + 1, Camp(24));
         Assert.Equal(12 + 2, Camp(8));
+    }
+
+    [Fact]
+    public void TheCampValueReadsTheCellBufferFlatPastItsRightEdgeAndLastRow()
+    {
+        // R030+0x25BE reads G[row + j][col + i] (19 bytes per row) with no bounds check; the view is column 10, top 0, first row 1:
+        // buffer cell (r, c) is map cell (9 + c, r)
+        Location Village(int index, int column, int row) => Place(index, column, row, icon: 8);
+        var plain = Data(60, 60, (_, _) => Terrain.Plains);
+        int Camp(WorldMap map, int row, int column, params (int Column, int Top, int Rows)[] views)
+        {
+            foreach (var (c, t, r) in views.Length == 0 ? [(10, 0, 1)] : views)
+            {
+                map.Buffer.Fill(c, t, r);
+            }
+            return map.Buffer.CampWatch(4, row, column);
+        }
+        // the party at buffer (10, 15) = map (24, 10): the block's columns 19..24 are the next row's columns 0..5 (map columns 9..14, one row down)
+        // a village at map (11, 13) = buffer (13, 2) = flat 249 = (10 + 2) * 19 + 15 + 6: i = 6 -> 1, j = 2 -> 3 capped to 1: |1 - 6| = 5
+        Assert.Equal(12 + 5, Camp(new WorldMap(plain, [Village(92, 11, 13)]), 10, 15));
+        // a village in the true block but east of the window (map column 30) is not in the buffer
+        Assert.Equal(12, Camp(new WorldMap(plain, [Village(92, 30, 12)]), 10, 15));
+        // the party at buffer (44, 5) = map (14, 44): rows 50 and later are the bytes after the buffer, which hold no terrain:
+        // a village at map (17, 51) lies in the true block but not in the buffer
+        Assert.Equal(12, Camp(new WorldMap(plain, [Village(92, 17, 51)]), 44, 5));
+        // 20d2 writes an icon of row top + 50 into the bytes after the buffer (G[50][8] for map (17, 50)), and no fill clears them: after a
+        // draw of the view 8 columns east (where that byte is not rewritten) the camp still finds it at i = 3, j = 6: 3 -> 2, 6 -> 1: |1 - 6| = 5
+        var map = new WorldMap(plain, [Village(92, 17, 50)]);
+        Assert.Equal(12, Camp(new WorldMap(plain, [Village(92, 17, 50)]), 44, 5, (18, 0, 1)));
+        Assert.Equal(12 + 5, Camp(map, 44, 5, (10, 0, 1), (18, 0, 1)));
+        // an icon in the window's last column + 1 (col + 18) is written over the next row's first cell: map (28, 20) lands on buffer (21, 0)
+        map = new WorldMap(plain, [Village(92, 28, 20)]);
+        map.Buffer.Fill(10, 0, 1);
+        Assert.Equal(0x1D, map.Buffer[21, 0]);
+        Assert.Equal(0x1D, map.Buffer[20, 19]);
+        // the marker's cell: row (y + 11) / 4, column (x + 16) / 16 on an odd row (row + top + rows - 1), (x + 24) / 16 on an even one
+        Assert.Equal((10, 6), CellBuffer.MarkerCell(0x48, 0x1D, 0, 1));
+        Assert.Equal((11, 5), CellBuffer.MarkerCell(0x48, 0x21, 0, 1));
     }
 
     // ---- the season ----------------------------------------------------------------------------

@@ -73,15 +73,22 @@ public sealed class OverlandDrawingTests
         var world = WorldData.Load(files);
         var terrain = Content.Formats.Maps.WorldMapData.Decode(files.Read("DARKLAND.MAP"));
         var tiles = new OverlandTiles(assets.Picture("mapicons").Image, assets.Picture("mapicon2").Image, assets.Picture("charicon").Image);
-        using var doc = JsonDocument.Parse(new GZipStream(File.OpenRead(path), CompressionMode.Decompress));
+        // several job files can be given, separated by ';' (the sweep of map_draw.py, and its --border views at the map's west / north border)
+        var docs = path.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(f => JsonDocument.Parse(new GZipStream(File.OpenRead(f), CompressionMode.Decompress))).ToArray();
         // the place icons come from the state's saved game (R030+0x1C76 lists its places)
-        var maps = doc.RootElement.GetProperty("saves").EnumerateObject().ToDictionary(s => s.Name,
-            s => new WorldMap(terrain, Persistence.OriginalSaves.Read(Convert.FromBase64String(s.Value.GetString()!), [], "dksave1.sav", world).State.Locations));
+        var maps = new Dictionary<string, WorldMap>();
+        foreach (var d in docs)
+        {
+            foreach (var s in d.RootElement.GetProperty("saves").EnumerateObject())
+            {
+                maps[s.Name] = new WorldMap(terrain, Persistence.OriginalSaves.Read(Convert.FromBase64String(s.Value.GetString()!), [], "dksave1.sav", world).State.Locations);
+            }
+        }
         var outFolder = Environment.GetEnvironmentVariable("DARKLANDS_MAPDRAW_OUT");
         var failures = new List<string>();
         var compared = 0;
         var index = 0;
-        foreach (var job in doc.RootElement.GetProperty("jobs").EnumerateArray())
+        foreach (var job in docs.SelectMany(d => d.RootElement.GetProperty("jobs").EnumerateArray()))
         {
             var calls = job.GetProperty("calls").EnumerateArray().ToArray();
             var marks = job.GetProperty("marks").EnumerateArray().Select(m => m.GetInt32()).ToArray();
@@ -95,7 +102,7 @@ public sealed class OverlandDrawingTests
             // the first 16c6 call begins where 20d2's calls end: its fill of the window DS:282A
             var mapCalls = Array.FindIndex(calls, c => c[0].GetString() == "fill" && c[1][1].GetInt32() == 280);
             var clock = calls.Take(mapCalls).Where(c => c[0].GetString() == "picture" && c[4][0].GetString() == "clock").Select(c => c[4][1].GetInt32()).Last();
-            page.DrawMap(map, tiles, column, firstRow, background, assets.Picture("mapheada").Image, assets.Picture($"mapbrs{clock * 3:00}").Image);
+            page.DrawMap(map, tiles, column, job.GetProperty("top").GetInt32(), job.GetProperty("rows").GetInt32(), background, assets.Picture("mapheada").Image, assets.Picture($"mapbrs{clock * 3:00}").Image);
             var done = 0;
             for (var k = 0; k < steps.Length; k++)
             {

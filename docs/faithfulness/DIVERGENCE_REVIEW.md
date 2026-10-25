@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 1, justify: 44, keep: 8.
-- Part B (undefined-memory in core logic): 124 entries; determinism: n/a: 79, no: 32, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 126 entries; determinism: n/a: 79, no: 34, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -806,8 +806,16 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original indexes locations[-1] when there is no such place  
   deterministic: **no** (checked against the original); action: **keep** - Case 69 uses kg=thunk 09C0:20FD() = R039+0x1CFE, which returns events[i]->f2a of the sabbat fact (event_find(0x1c,4,..)) and, when none is planned, falls off its end with AX still -1 (asm 1632b-1634b), then reads locations[-1]->x,y (= words 0000:0004/0006, the INT 1 vector) into nearest_city and the direction call, so the printed text is host dependent. Cases 71/72 (nearest_loc_type icons 0x16/0x17) always find a site. Whether a card can print $SabbatLocation while no sabbat is planned ($WITCD*, $VILLA02/05/06, $COUNT05, $SNUCK00...) is not established; keep the C# '' for that case.
 
-### travel (1)
+### travel (3)
 
+- **D-ff5e3e** `undefined-memory` - `src/Darklands.Simulation/Overland/CellBuffer.cs:28` `CellBuffer.index`  
+  original: `R136+0xFCCC` (2E38:239C, data), `R030+0x20D2` (1462:20D2, draft), `R136+0x100C8` (2E38:2798, data)  
+  divergence: an index past the 70 bytes after the buffer reads the party icon table R136+0x100C8 in the original: the handles the graphics driver returned for the marker's 80 pictures (R030+0x1F30's save-rect loop), which depend on where DOS and the driver placed them (memory layout, other programs loaded): not reproducible; it reads 0 here (no settlement). Only the camp watch reaches it (see CampWatch).  
+  deterministic: **no** (checked against the original); action: **keep** - R030+0x25BE reads G[row + j][col + i] flat (stride 19, no bounds check); flat indices 1020 and up are the party icon table R136+0x100C8, the 80 picture handles R030+0x1F30 gets from the graphics driver (save-rect), whose values depend on where DOS and the driver placed the pictures (memory layout, resident programs) and change when 1F30 reloads them. Reached only for a marker in buffer row 44 or lower (DS:2868 >= 0xA5; after a scroll the marker stays at or above 0xAA, lower only at the map's bottom edge, up to 0xB1) when the scan met no settlement code earlier, and it matters only if one of the handle bytes it reads is 0x1D. In the emulator the handles never hold 0x1D (agrees in all direct calls); unreproducible on real machines. The 70 bytes before the table (R136+0x10082..0x100C7) are reproduced: zeros from the data image and the stale icons 20d2 writes into G[50][0..19].
+- **D-4b5538** `undefined-memory` - `src/Darklands.Simulation/Overland/CellBuffer.cs:47` `CellBuffer.Fill`  
+  original: `R136+0x10168` (2E38:2838, data)  
+  divergence: for the view at the map's bottom (DS:286C = 0x53 with the last 0x83 rows in the row buffer) buffer row 49 is the row past the map: the original decodes the bytes after the row buffer there (a block of its own, [DS:2870]:0000, 0x83 * 0xD2 bytes: whatever memory follows it), here it is 0 (WorldMap.TerrainCell outside the map). The camp watch reads that row for a marker in buffer row 40 or lower in such a view.  
+  deterministic: **no**; action: **keep** - 20d2 decodes buffer row 49 from row buffer row DS:286C + 48; in the view at the map's bottom (DS:286E = height - 0x83, DS:286C = 0x53) that is row 0x83, one past the row buffer [DS:2870]:0000 (0x83 rows of 0xD2 bytes), a block of its own: the bytes after it are whatever memory follows the allocation. Here the row past the map reads 0. Only the camp watch (marker in buffer row 40 or lower) and the drawing of the last shown row's masks read buffer row 49.
 - **D-9aff06** `undefined-memory` - `src/Darklands.Simulation/Overland/WorldMap.cs:11` `WorldMap`  
   original: `R136+0xFCCC` (2E38:239C, data), `R030+0x20D2` (1462:20D2, draft), `R030+0x1DD4` (1462:1DD4, draft) +2 more  
   divergence: the original keeps a window of the map (50 rows by 19 columns) in G and refills it as the view scrolls; this class answers for any cell of the whole decoded map, so the rows are never evicted. A cell outside the map reads 0 here (in the original, whatever the buffer held).  

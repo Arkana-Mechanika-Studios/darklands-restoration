@@ -14,12 +14,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | rules | 86 | 21 | 65 |
 | cards | 60 | 2 | 58 |
 | events | 7 | 4 | 3 |
+| travel | 2 | 0 | 2 |
 | battles | 23 | 7 | 16 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 2 | 1 | 1 |
-| total | 180 | 37 | 143 |
+| total | 182 | 37 | 145 |
 
-## Core logic (178)
+## Core logic (180)
 
 ### rules (86)
 
@@ -488,6 +489,15 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-8d31a1** `bug`, flag `FixNewEventAddDoubles` - `src/Darklands.Core/Events/EventLog.cs:221` `EventLog.Update`  
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
+
+### travel (2)
+
+- **B-c42c01** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:44` `CellBuffer.Fill`  
+  original: `R136+0x10168` (2E38:2838, data)  
+  why: the icon loop's bounds are one row and one column too wide: an icon in column col + 18 is written at G[y - tope][19], which is G[y - tope + 1][0] (the next row's first cell, over its terrain, or past the buffer for the last row), and one in row tope + 50 at G[50][..], the bytes after the buffer, which no fill clears. Reproduced (the camp watch reads both).
+- **B-a993d7** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:91` `CellBuffer.CampWatch`  
+  original: `R030+0x25BE` (1462:25BE, draft)  
+  why: the block is read through the buffer's flat layout with no bounds check (R030+0x261D..0x2639): a column past 18 is the next row's cell (col + i - 19 of row + j + 1: the west side of the window, one row down) and a row past 49 is the bytes after the buffer (zeros and the stale icons of Fill, then the party icon table). The marker's column is up to 16 and its row up to 47, so up to 9 columns wrap and up to 7 rows fall past the buffer. Reproduced: a settlement there changes the bonus; one in the true cells beyond is not seen.
 
 ### battles (23)
 

@@ -1,0 +1,23 @@
+# Lockstep session (res5): the game saved at card ChasedByTheCityGuard (0x7a) with member 4 Away and members 0..3 at endurance 1 (synth DKSAVE0-away7a): the fight (line 1) is lost
+# without orders, everybody on the floor dies and battle result 5 reaches the card (the Away member keeps the party alive)
+key:t
+wait:5
+key:l
+wait:300
+key:enter
+wait:100
+state:menu
+option:1
+wait:10
+key:enter
+wait:300
+wait:20000
+key:l
+wait:300
+state:s1
+key:enter
+wait:300
+state:s2
+key:enter
+wait:300
+state:s3

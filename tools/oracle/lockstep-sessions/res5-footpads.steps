@@ -1,0 +1,22 @@
+# Lockstep session (res5): the game saved at card Footpads (0x24) with member 4 Away and members 0..3 at endurance 1 (synth DKSAVE0-away24): the card's ambush fight is lost
+# without orders, everybody on the floor dies and battle result 5 reaches the card (the Away member keeps the party alive); the card goes on to the gate (0x29)
+key:t
+wait:5
+key:l
+wait:300
+key:enter
+wait:300
+key:space
+wait:20000
+key:l
+wait:300
+state:s1
+key:enter
+wait:300
+state:s2
+key:enter
+wait:300
+state:s3
+key:enter
+wait:300
+state:s4

@@ -16,6 +16,7 @@ public sealed class WorldMap
 
     private readonly WorldMapData _terrain;
     private readonly Dictionary<(int Column, int Row), int> _icons = new();
+    private readonly List<(int Column, int Row, int Code)> _iconList = [];
 
     // orig: R030+0x1C76: for k = 92..413, skip locations whose menu is 0x62 or whose icon is 15, put the rest in the icon list with their x, y and the code of Terrain.PlaceIconCode
     // C: later entries win where two places share a cell (the list is written into G in order). The list keeps a frame (k % 16) for the village icons 8 and 10; nothing in 20d2 or 16c6 reads it, so it is not kept here.
@@ -26,8 +27,16 @@ public sealed class WorldMap
         foreach (var place in places.Where(p => !p.IsCity && p.ArrivalCard != 0x62 && p.Icon != 15))
         {
             _icons[(place.X, place.Y)] = Terrain.PlaceIconCode(place.Icon);
+            _iconList.Add((place.X, place.Y, Terrain.PlaceIconCode(place.Icon)));
         }
+        Buffer = new CellBuffer(this);
     }
+
+    /// <summary>The place icons in the order of the original's list (R136+0x10168), which is the order the map drawing writes them into the cell buffer.</summary>
+    public IReadOnlyList<(int Column, int Row, int Code)> IconList => _iconList;
+
+    /// <summary>The cell buffer the map drawing fills for the view (the camp watch reads it); one per world map, kept for the program's lifetime as the original's.</summary>
+    public CellBuffer Buffer { get; }
 
     /// <summary>The place icons laid over the terrain: cell and code (one per cell, the last place listed there).</summary>
     public IEnumerable<(int Column, int Row, int Code)> Icons => _icons.Select(i => (i.Key.Column, i.Key.Row, i.Value));
@@ -84,72 +93,6 @@ public sealed class WorldMap
     /// <summary>The top-left map pixel of a cell.</summary>
     // orig: pxo = 8 for an odd absolute row else 0, advancing 16 per column, and pyg += 4 per row (20d2)
     public static (int X, int Y) PixelOf(int column, int row) => (column * TileWidth + (row % 2 == 1 ? 8 : 0), row * RowHeight);
-
-    /// <summary>
-    /// The party's watch value for camping on the map: three per member, more when a settlement
-    /// icon lies in the ten-by-ten block that starts at the party's cell, less on rough terrain.
-    /// </summary>
-    // orig: R030+0x25BE (1462:25BE) draft (bytes differ: a si/bx register swap only); tests: OverlandTests
-    // C: the block is G[row + j][col + i] for i, j in 0..9, i.e. it starts AT the party's cell and reaches nine cells right and down (not centred on it); the scan is column by column (i outer), the first settlement icon (code 0x1D, a village or any 29) found counts.
-    // C: the distances are measured from the block's middle: i, j become i > 5 ? i - 5 : |i - 5| and the same for j, j is then capped at i, and `res` = j; the scan ends by forcing the outer counter to 99. A distance of 0 adds nothing; otherwise speed += |res - 6|.
-    // C: the terrain bonuses test the cell under the party by its raw code: 4, 5, 15, 19 -1; else 16, 20 -2; else 17, 21 -3; else 22 -5; else 23 -6; then 24 (road) +1 and 8, 9 +2 as separate ifs.
-    public int CampWatch(int partySize, int column, int row)
-    {
-        var speed = partySize * 3;
-        var res = 0;
-        for (var i = 0; i < 10; i++)
-        {
-            for (var j = 0; j < 10; j++)
-            {
-                if (Cell(column + i, row + j) == 0x1D)
-                {
-                    i = i > 5 ? i - 5 : Math.Abs(i - 5);
-                    j = j > 5 ? j - 5 : Math.Abs(j - 5);
-                    if (j > i)
-                    {
-                        j = i;
-                    }
-                    res = j;
-                    i = 99;
-                    break;
-                }
-            }
-        }
-        if (res != 0)
-        {
-            speed += Math.Abs(res - 6);
-        }
-        var here = Cell(column, row);
-        if (here is 5 or 4 or 15 or 19)
-        {
-            speed--;
-        }
-        else if (here is 16 or 20)
-        {
-            speed -= 2;
-        }
-        else if (here is 17 or 21)
-        {
-            speed -= 3;
-        }
-        else if (here == 22)
-        {
-            speed -= 5;
-        }
-        else if (here == 23)
-        {
-            speed -= 6;
-        }
-        if (here == 24)
-        {
-            speed++;
-        }
-        if (here is 8 or 9)
-        {
-            speed += 2;
-        }
-        return speed;
-    }
 
     // orig: the maskf computation in 20d2 and 16c6: neighbours (y-1, x-1+odd), (y-1, x+odd), (y+1, x-1+odd), (y+1, x+odd) give bits 1, 2, 4, 8; the class that counts as "continuing" depends on the cell: water 1/2/3/25/27 together, 4..7 together, the road 24 with everything from 24 up, any other terrain only itself (Continues)
     // C: place icons (50 and up) are drawn from the icon strip without a mask; the generic icons 0x1C and 0x1D (28, 29) take the generic "same code" rule.

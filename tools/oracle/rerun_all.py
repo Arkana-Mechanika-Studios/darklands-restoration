@@ -576,11 +576,20 @@ SESSIONS.update({
     "gen-rbench-02": "Dksave10.sav",
     "gen-rgate-01": "DKSAVE0.SAV",
     "gen-rgate-02": "DKSAVE0.SAV",
+    # res5: a card fight lost with everybody on the floor dead while a member left Away keeps the party alive (battle result 5 reaches the card)
+    "res5-footpads": "synth/DKSAVE0-away24.sav",
+    "res5-ChasedByTheCityGuard": "synth/DKSAVE0-away7a.sav",
+    "res5-MarketAtNight": "synth/DKSAVE0-away16.sav",
+    # res5b: the same at RebelMobInTheStreets, WolfPackOnTheTrail and WildBoarsCharge (local/batch/res5b)
+    "res5-rebelmob": "synth/DKSAVE0-away7b.sav",
+    "res5-WolfPackOnTheTrail": "synth/DKSAVE0-awaya0.sav",
+    "res5-WildBoarsCharge": "synth/DKSAVE0-awaya5.sav",
 })
 # the sessions run with --battle-records (the combatant records of every battle pass compared: report.json's battle)
 BATTLE_RECORDS = {"orders-select", "orders-walk", "orders-missile", "orders-attack-a", "orders-attack-b", "orders-attack-b2", "orders-attack-v",
                   "orders-attacks", "orders-sheet", "orders-sheetclick", "orders-save", "orders-potion", "luebeck-potion", "orders-potion2", "orders-potion3", "orders-prague-missile",
-                  "dungeon-mine-doors", "dungeon-mine-orders", "dungeon-mine-group"}      # the minimal case of the sheet's allocation error (R031+0x0B22): ends, does not agree
+                  "dungeon-mine-doors", "dungeon-mine-orders", "dungeon-mine-group",
+                  "res5-footpads", "res5-ChasedByTheCityGuard", "res5-MarketAtNight", "res5-rebelmob", "res5-WolfPackOnTheTrail", "res5-WildBoarsCharge"}      # the minimal case of the sheet's allocation error (R031+0x0B22): ends, does not agree
 IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory"}   # lockstep.APART
 RESERVE_MB, JOB_MB = 1500, 450
 

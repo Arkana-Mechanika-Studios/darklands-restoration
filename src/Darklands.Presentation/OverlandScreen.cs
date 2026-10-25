@@ -255,10 +255,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // C: 1000 is the road-encounter branch, which for an ambush in camp (event 0x5f) is rand_mod(2) ? 0x16a : 0x169.
     private int? CampOnTheMap(GameState state, OverlandTravel travel)
     {
-        var (column, row) = (state.MapPosition.X, state.MapPosition.Y);
-        // C: 25be reads G from the view's registers like 1300: at the west / north border the block starts one cell east / south (WorldMap.BufferOffset)
-        var (dc, dr) = WorldMap.BufferOffset(_viewColumn, _viewRows);
-        Camp?.Invoke(map.CampWatch(state.Party.Members.Count, column + dc, row + dr));
+        // C: 25be reads the cell buffer 20d2 filled for the view (Draw), under the marker as the view's registers place it: at the west / north
+        //   border the block starts one cell east / south (WorldMap.BufferOffset), and it is read flat (CellBuffer.CampWatch)
+        var (row, column) = CellBuffer.MarkerCell(_x - _originX, _y - _originY, _viewTop, _viewRows);
+        Camp?.Invoke(map.Buffer.CampWatch(state.Party.Members.Count, row, column));
         UseMapPalette(state);
         return travel.AmbushInCamp() is { } card and > 0 ? card : null;
     }
@@ -445,7 +445,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         if (_mapDirty)
         {
             _mapDirty = false;
-            _page.DrawMap(map, _pictures!, _viewColumn, firstRow, (byte)_background,
+            // C: 20d2 fills the cell buffer as it draws (the camp watch reads it)
+            map.Buffer.Fill(_viewColumn, _viewTop, _viewRows);
+            _page.DrawMap(map, _pictures!, _viewColumn, _viewTop, _viewRows, (byte)_background,
                 ui.Assets.PictureExists("mapheada") ? ui.Assets.Picture("mapheada").Image : null, Clock(state));
         }
         _page.DrawParty(_pictures!, firstRow, _x - _originX, _y - _originY, _direction, _frame, (byte)_background);

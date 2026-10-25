@@ -71,6 +71,9 @@ internal sealed class WorldJob
 
     [JsonPropertyName("ds")] public Dictionary<string, int> Ds { get; set; } = [];
 
+    /// <summary>The map views (DS:286A, DS:286E, DS:286C) the original drew (R030+0x20D2) before the call since its fresh machine, the call's own view last; null when only the call's view was drawn.</summary>
+    [JsonPropertyName("views")] public int[][]? Views { get; set; }
+
     [JsonPropertyName("orig")] public OriginalOutcome Orig { get; set; } = new();
 
     /// <summary>A DS word of <see cref="Ds"/> (signed unless asked).</summary>

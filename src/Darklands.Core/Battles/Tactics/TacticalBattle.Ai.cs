@@ -325,9 +325,19 @@ public sealed partial class TacticalBattle
             c.ClearOrders();
             c.QueueOrder(Stance(i, t, true));
             c.Action = CombatAction.Walk;
+            ClockAfterPathSearch();
             c.RepathAt = (ushort)(Clock + 30);
         }
     }
+
+    /// <summary>
+    /// A debugging aid for the oracle (no effect in play: <see cref="ClockPhase"/> is null there): a rethink's path search in the
+    /// scheduler is where the original's long passes spend their emulated time (the path costs and the path search of ai_rethink
+    /// R014+0x10232 / ai_set_target R014+0x1003A), and both then read the combat clock DS:07D4 for the re-path time
+    /// (R014+0x1031F: clock + 30). The tester measures that time only as the callbacks that came before the melee exchanges
+    /// (phase -2), so they are given here, before the clock is read, rather than after the scheduler.
+    /// </summary>
+    private static void ClockAfterPathSearch() => ClockPhase?.Invoke(-2);
 
     /// <summary>Everybody's endurance fraction (×64), 0xFF for those not standing.</summary>
     // orig: R014+0x1010A (1DB7:0CFA) draft
@@ -405,6 +415,7 @@ public sealed partial class TacticalBattle
                 c.ClearOrders();
                 c.QueueOrder(Stance(i, t, false));
                 c.Action = CombatAction.Walk;
+                ClockAfterPathSearch();
                 c.RepathAt = (ushort)(Clock + 30);
             }
         }
