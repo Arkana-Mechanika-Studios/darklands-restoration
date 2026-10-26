@@ -142,7 +142,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-cb31b9** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:590` `TacticalBattle._actionBeforeRecords`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text); the rewrite starts it at 0 and keeps only what order_mode_leave writes. The branches below agree for any value other than 0x80, 0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
-- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:250` `TacticalBattle.AnimationSet`  
+- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:253` `TacticalBattle.AnimationSet`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: read from the slot rules of cbt_set_anim (spec D §3.9): enemies use slot +2 fighting/hit and +4 dying.
 
@@ -165,10 +165,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:178` `BattleScreens.public`  
   original: `R002+0x0000` (0E76:0000, draft)  
   why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1882` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1884` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
-- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2001` `BattleScreen.CharacterSheet`  
+- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2003` `BattleScreen.CharacterSheet`  
   original: `R022+0x0000` (1EF8:0000, draft)  
   why: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
 - **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:55` `BuySellPage.DrawParty`  
