@@ -12,18 +12,18 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 0 |
-| cards | core | 13 |
+| cards | core | 12 |
 | events | core | 0 |
 | travel | core | 3 |
 | battles | core | 7 |
 | persistence | core | 2 |
 | screens/presentation | other | 17 |
 | host/audio | other | 0 |
-| total |  | 42 |
+| total |  | 41 |
 
-## Core logic (25)
+## Core logic (24)
 
-### cards (13)
+### cards (12)
 
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
@@ -37,9 +37,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-4c93ee** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:33` `HandbillThugs_Polit01.StalePopupChance`  
   original: `R057+0x27AC` (1A02:0B0C, matched)  
   why: derived from the stack layout (card_menu's saved BP lies in the handler's unset result word).
-- **U-777d02** `uncertain` - `src/Darklands.Cards/Scripts/S067/JewelersGuildAtNight.cs:223` `JewelersGuildAtNight.FailedToGetIn`  
-  original: `R067+0x1962` (1954:07A2, matched)  
-  why: in the original it indexes the party records out of range (a number up to 199); here a member number past the party is an empty member, so the practice does nothing.
 - **U-c18edd** `uncertain` - `src/Darklands.Cards/Scripts/S074/CityGateInWartime.cs:141` `CityGateInWartime.Befriend`  
   original: `R074+0x0376` (1838:0376, matched)  
   why: it is taken as 0 (failure), which then overrides next_card = 1 and keeps the party at the gate; a non-zero leftover would instead let the party in (text 5).

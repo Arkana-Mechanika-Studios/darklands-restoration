@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 46 entries; recommendations: document: 1, justify: 38, keep: 7.
-- Part B (undefined-memory in core logic): 131 entries; determinism: n/a: 79, no: 39, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 132 entries; determinism: n/a: 79, no: 39, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -440,7 +440,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 Where the original reads or writes outside its defined data, the outcome can still be a fixed function of the program state (a table that follows in the data image, a known stack leftover, a global the previous card left), in which case it can be reproduced exactly. `deterministic`: `yes` (a fixed value or a pure function of modelled state), `partly` (fixed in the shipped data or reachable states, unreproducible elsewhere), `no` (depends on unmodelled memory such as heap addresses or machine state), `n/a` (not reachable in play).
 
-### rules (35)
+### rules (36)
 
 - **D-92e987** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:47` `ItemStores.Open`  
   original: `R035+0x1350` (1462:1350, matched)  
@@ -510,15 +510,15 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `root 0000:1588` (0000:1588, draft), `R022+0x07AA` (1EF8:07AA, draft)  
   divergence: a length above 5 (only from a saved game's bytes) writes past the order into the next globals (DS:C62A, the mouse release count of this loop); here the entry is dropped and the length still counted.  
   deterministic: **n/a** (checked against the original); action: **justify** - The game's own code never makes the length above 5: R016+0x0E2E writes at most 5 and R022+0x07AA with a length of 5 writes the length byte itself, leaving at most slot + 1 = 5. A larger length needs a saved game edited by hand (header +0xA0); the write would land on DS:C62A, the mouse release count of the same loop.
-- **D-6754c3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:32` `MemberRules.SetSkill`  
+- **D-6754c3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:33` `MemberRules.SetSkill`  
   original: `root 0410:001A` (0410:001A, asm), `R029+0x02B8` (0E76:02B8, draft)  
   divergence: who -2 or past the slots: the original writes outside the records; here the write is dropped (Party.Slot gives a scratch member).  
   deterministic: **n/a** (checked against the original); action: **document** - set_skill (02b8) resolves only -1; its only call site is R039 seg 165C (line ~4104: set_skill(si,9,0x14) in a loop over present records 0..4), so who=-2 or >=5 never occurs. The write would land at party[who]+0x57+k outside the records (unmodelled). Keep it dropped.
-- **D-65497b** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:251` `MemberRules.EffectiveAgility`  
+- **D-65497b** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:263` `MemberRules.EffectiveAgility`  
   original: `R029+0x06DE` (0E76:06DE, draft)  
   divergence: the original does not resolve -1 for the Agility byte (DS:9CB4[-1] reads the bytes before the records; only the band resolves it); callers pass a slot (CardContext resolves -1 first).  
   deterministic: **n/a** (checked against the original); action: **document** - member_eff_attr2 (06de) reads DS:9CB4[who] unresolved; every caller (R047 seg 1974/1a44, R058, R068, R073, R074 [EE6C], R085, R090 [EE8C], R105, R107) passes a loop member or menu_member/best_member (0..4); none pushes -1. party[-1]+0x4B would be DS:9C34, unrelated UI/combat memory. Nothing to do.
-- **D-7a8af3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:342` `MemberRules.RaiseSkillTemporarily`  
+- **D-7a8af3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:354` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
   divergence: member -2's skill is a byte before the records in the original (undefined); here 0.  
   deterministic: **n/a** (checked against the original); action: **document** - lower_skill_temp (4b08) has a -2 branch (member_skill(-2,k) = DS:9BC0+k, BSS bytes before the combatant area, effectively 0), but its only callers are the saint functions in R039 seg 165C with who = DS:89EA (-1 for a normal prayer, or a chosen member 0..4, see R034); nobody passes -2 (raise_attr_temp(-2) is used by R130, a different function). Unreachable; the C# 0 matches the BSS value anyway.
@@ -558,6 +558,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R039+0x1AB0` (1462:1AB0, matched)  
   divergence: without a quest about the target the original gives events[-1]->f2e (undefined); here no item.  
   deterministic: **n/a** (checked against the original); action: **document** - FinishQuest10 first requires ev8_at(10,cur_loc) (a started kind-8 event with f28==10 and f1c==cur_loc) and then event_find(8,-1,b,-1,10,-1) with b the caller's argument; every caller of thunk 09C0:214D (R106*, R107*, R108*) pushes DS:907E = cur_loc, so the find matches the same event and never returns -1. events[-1] is not reachable in play.
+- **D-472715** `undefined-memory` - `src/Darklands.Core/Rules/RecordOverrun.cs:16` `RecordOverrun`  
+  original: `R029+0x01A0` (0E76:01A0, draft), `R029+0x02EA` (0E76:02EA, draft), `R039+0x0132` (1462:0132, matched)  
+  divergence: the other records past the party (combatant records 5..12, battle tables and buffers: program memory the model does not hold) read as 0 with status 0, so nothing is written there; the original writes a skill byte there when the status byte is not 0. None of those bytes is in the .SAV (each of n = 5..99 poked and the original's writer run: j_call.py saved); of the battle file's variables only the written bytes of n = 78, 83 and 86 (DS:C3CF initial spot, DS:C64F member door, DS:C7CF member dissolve slot), whose status bytes (DS:C3E9, DS:C669, DS:C769) are not in it and were 0 in the states looked at (j_bsv.py).  
+  deterministic: **partly** (checked against the original); action: **keep** - Record n = DS:9C69 + n*0x80 past the party: direct calls j_call.py / j_bsv.py / j_prac.py (local/batch/evid1o) from banks-markt. No skill byte of n = 5..99 is in the .SAV (each poked, the writer run); of the .BSV variables only n = 20 (Place[11], +0x1680), 78 (+0x0CC2), 83 (+0x157C) and 86 (+0x1594). n = 20 is modelled (status byte = slot 0's figure image letter DS:A669, written byte = BattleFile Variables Place+11); the status bytes of 78/83/86 (DS:C3E9, DS:C669, DS:C769) are battle working memory not in the files (0 in the states looked at); the rest is program memory (combatant records 5..12, battle tables, buffers). Not data-damaging: a new battle sets Place[i] = 0 for all 13 (R002+0x19FA) before reading it.
 - **D-8bb04c** `undefined-memory` - `src/Darklands.Core/Rules/SaintBook.cs:145` `SaintBook.EquippedWeaponSkills`  
   original: `R029+0x0792` (0E76:0792, draft), `R031+0x5D06` (18E7:14B6, draft)  
   divergence: DS:9C26 is the menu bar's keyboard mode and DS:9C53 its last sub-menu's text column (MenuBar); until a sub-menu has been opened the count (the low byte of DS:9C53, signed; root 0000:0000 sets it) is 0 and both lookups return -1 (as in the oracle's states). Afterwards R031+0x5D06 scans the records 2E38:FEC0 + 6i (= DS:C0A0 + 6i, BSS) for type DS:9C26 (0/1; missile: DS:9BF7) and quality DS:9C2D (missile: DS:9C2F), returning the word at DS:C09E + 6i (first exact match, else the last type match; DS:99EB = i). DS:C09E..C3F3 are battle and battlefield-generation work variables left from the session's last battle (not saved; the word DS:C105 is a DOS segment), and DS:9C2D is the segment word of an "alc mem" buffer (R033+0x00CC, R033+0x185E, R036+0x1F12). What is found (and the item record R029+0x0792 then reads) depends on DOS memory and the session's past, not on the game's state: not modelled, here never a weapon.  

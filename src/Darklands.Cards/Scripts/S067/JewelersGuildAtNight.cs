@@ -220,8 +220,14 @@ public sealed class JewelersGuildAtNight : Card
         {
             // C: var_chosen1 takes the value party_min_skill returns, the lowest skill itself (the
             // other guilds' cards use best_member): that number is then passed as the member.
-            // UNCERTAIN: in the original it indexes the party records out of range (a number up to 199);
-            // here a member number past the party is an empty member, so the practice does nothing.
+            // orig: R067+0x1A0A party_min_skill(0xF) (R029+0x1396), DS:EE8C = AX, practice_skill(AX, 0xF, 0, 10, 0) through thunk 09C0:1F63 (R039+0x0132)
+            // BUG: the lowest Stealth (1..99) is the member number: practice_skill always draws its chance, then member_skill and add_skill
+            // address record DS:9C69 + n*0x80. Below 5 that is a party slot (a member, perhaps not the clumsy one, practises); 20 is the place
+            // actions of the last battle (RecordOverrun: its skill byte DS:A6CF is Place[11] of the .BSV's variables, written when slot 0 has a
+            // figure image, the message drawn below the screen and waited for); the others are program memory (RecordOverrun's DIVERGENCE).
+            // Not data-damaging: Place[11] is a finished battle's byte that a new battle sets to 0 for all 13 combatants (R002+0x19FA) before
+            // reading it, and the .SAV never changes (direct calls j_prac.py / j_call.py / j_bsv.py, local/batch/evid1o), so it is faithful
+            // in both behaviours.
             var lowest = c.PartyMinSkill((int)Skill.Stealth);
             c.Variables.Chosen[0] = lowest;
             c.PracticeSkill(lowest, (int)Skill.Stealth, 0, 10, 0);
