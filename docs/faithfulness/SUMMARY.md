@@ -209,7 +209,9 @@ changes, next card).
   with the most open outcomes; every card that fights or prays was then run again from the states that reached it, with the battle's
   result forced to 1..5 and the prayer cancelled, failed or answered, so the result-5 arms (S047, S065, S067, S070, S072) run in both
   games; and random aimed states (hour, month, facts, quests, events, skills, attributes, saints, items, reputation, previous card,
-  seed) for the cards of the sheet's 40 records. 29,310 runs count (675 more are left out because they differ or errored); on the
+  seed) for the cards of the sheet's 40 records. 29,310 runs count; 675 are left out: 42 that differ, 108 the oracle failed on, 87 left out earlier (saves made inside a
+  battle and others), and 438 that agree but were left out by a key-format slip of batch 19's selection (they reach about 41 more open items; to be
+  counted in the next coverage rebuild); on the
   batch 19 tree the replay of all of them against the C# differs in 42 runs only (card 0xFE, below), where it differed in 1,185 rows before the leads were judged. They added 1,292 branch
   outcomes and 1,529 blocks to the count of the functions the oracles enter (card scripts +1,243 in the whole-program count). The differences formed 16 clusters: 14 were judged in batch 19 (below) and the two tester ones closed
   (card 0xFE, the saves made inside a battle). The committed corpus `Oracle/cards-controlled.json.gz` holds 2,004 runs of the controlled
@@ -453,8 +455,8 @@ Open items (2026-10-26, after batch 19), listed honestly:
   "0" of SAVES\DEFAULT in the original, which a C# new game does not model for a slot nobody held (D-dff113); a loaded saved game with two slots
   naming one record is read as two copies, so a later save would give the second a roster entry of its own (not seen in any oracle run, not
   changed); the stack or session leftovers D-9654eb (a text variable past msg_file), D-9903b8 (the abbot's score in the verdict of card 0x8D),
-  the 'time 16' of card 0x41 and the hint value of card 0x11 depend on menu and text code the cards do not model. Open for the audit: the
-  ResumeBattle clause of the save writer (D-f631fd, below).
+  the 'time 16' of card 0x41 and the hint value of card 0x11 depend on menu and text code the cards do not model. The ResumeBattle clause
+  of the save writer (D-f631fd, below) was checked in the batch's audit: kept.
 * Evidence round (batch 18, local/batch/evid1 and evid1o): 36 uncertain readings remain (one, U-b280c3, the abbot's score in the verdict of card 0x8D, became the registered divergence D-9903b8 in batch 19), each in `UNCERTAIN.md`; those needing a session
   or a captured state are the stale-local cards (U-aff1d9, U-ecbac4, U-4c93ee, U-c18edd, U-4ffac2), the tester's interrupt table
   against the reference machine's (U-9860ee, U-6d067b, U-16b0a7, U-69b939), generator and battle states (U-2a08c3, U-8f4107, U-5bdb14,
@@ -463,11 +465,14 @@ Open items (2026-10-26, after batch 19), listed honestly:
   the creation session chargen-created still differs in the new name's stale tail bytes and the party seed; the copy-protection direct call
   returns after the five draws in the tester (not investigated); of the community's bug list, the inn saving, the neon palettes, the warehouse name,
   the merchant selection, the two menus, the strikes and the stale step after a re-path are not proven.
-* Registered in batch 19 for the audit of game-logic rows (reading taken from earlier audits, not re-derived against the EXE in the batch): door_set R023+0x04AC
-  leaves its direction local unset for a door record with none of the four side flags and the C# takes north (D-e92f84; whether a generated level can hold
-  such a record is not established), and the wall search R006+0x1D48 reads its two 40-cell local arrays up to two cells outside, which the C# reads as 0
-  (D-0bf8d6; matters only for a room within two cells of the map's edge, not proven absent). They were inline notes in comments, now markers with review
-  rows; the text-variable guards of TextVariables (the third inline note of audit 18) were not a divergence of their own and the comment is reworded. The save writer's
+* Registered in batch 19 and re-derived from the EXE in its audit: door_set R023+0x04AC leaves its direction local unset for a door record with none of
+  the four side flags (then the stale stack word picks the side, or no side when it is not 0..3) and the C# takes north (D-e92f84); no play state reaches
+  it: its three callers take only records whose first word is above 0, and every flagless record of the prepared maps and the citadel's levels has 0
+  there, while the castle generator flags every record. The wall search R006+0x1D48 reads its two 40-cell local arrays up to two cells outside, which the
+  C# reads as 0 (D-0bf8d6; it needs a room or strip bound within two cells of the map's edge; 300,000 castle builds of the corpus's scenarios with other
+  seeds never read outside, not proven by a bound). They were inline notes in comments, now markers with review rows; the text-variable guards of
+  TextVariables (the third inline note of audit 18) were not a divergence of their own and the comment is reworded; two of its guards that give "" have no
+  register entry yet (a city-name index past the record's 16 names, a place past the location table). The save writer's
   `|| state.ResumeBattle` has no counterpart in the original (bit 7 of the saved game's byte depends on DS:907A alone): kept and registered (D-f631fd)
   because the headless host's state writer needs it; it changes nothing in play. A tester gap, low: headless states taken inside a battle that was not
   loaded from a save lack the in-battle bit.

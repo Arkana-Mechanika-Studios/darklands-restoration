@@ -588,10 +588,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-71b924** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs:479` `TacticalBattle.PlanGroupMove`  
   original: `R014+0xC75C` (19CD:11EC, draft)  
   why: a path of fewer than 2 steps (a lead whose first step meets its target gives the bare 0xFF) is read before its start: the previous combatant's path bytes 248, 249 (for combatant 0 the last loot pile record's +10, +11, 20A5:6236, which no code writes: 0 here).
-- **B-afe397** `bug`, flag `FixStairsKeyWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:356` `TacticalBattle.UseKey`  
+- **B-afe397** `bug`, flag `FixStairsKeyWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:359` `TacticalBattle.UseKey`  
   original: `R016+0x1182` (1EF8:1182, draft), `R016+0x0000` (1EF8:0000, draft)  
   why: OriginalBehaviour.FixStairsKeyWithoutSelection - R016+0x0165..0x0169 copies entry [DS:A6B2] of the two member tables without testing it: with nobody selected (0xFF) entry -1, DS:C77D = DS:C8B1 (the bytes before the tables).
-- **B-e7ca8e** `bug`, flag `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:545` `TacticalBattle.TakeExit`  
+- **B-e7ca8e** `bug`, flag `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:548` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level_switch (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level_switch and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
 - **B-fd2f1c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:665` `EffectField.DropWornOut`  

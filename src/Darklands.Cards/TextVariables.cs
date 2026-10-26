@@ -99,7 +99,9 @@ public static class TextVariables
 
     /// <summary>The value of one variable, or null when it is not one the game knows.</summary>
     // orig: var_expand R043+0x1316 (150B:0886) draft (its switch on the variable index)
-    // C: the cases below are in the original's order of index; each reads its source unchecked, a few are guarded here (each guard that changes a result carries its own DIVERGENCE note below).
+    // C: the cases below are in the original's order of index; each reads its source unchecked, a few are guarded here (the guards for an index outside its table carry their own DIVERGENCE note below; not yet registered: Names
+    //   gives "" for a name index past the city record's 16 names, where the original reads the memory after the record, and PlaceName "" for a place past the
+    //   location table).
     public static string? Value(string name, CardContext c)
     {
         var state = c.State;

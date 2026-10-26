@@ -92,8 +92,11 @@ public sealed partial class TacticalBattle
 
     /// <summary>Door n opens or shuts by itself (an enemy walks into it, or a path search tries it), its group uncovered when <paramref name="reveal"/>.</summary>
     // orig: door_set R023+0x04AC (1EF8:04AC) draft
-    // DIVERGENCE: a door record with none of the four side flags (+8 and +9, bits 0x80 / 0x40) leaves the direction local uninitialised in the original,
-    //   so the door bit goes to whatever side the stack word names; north (0) is used here (whether a generated level can hold such a record is not established).
+    // DIVERGENCE: a door record with none of the four side flags (+8 and +9, bits 0x80 / 0x40) leaves the direction local bp-6 uninitialised in the original
+    //   (R023+0x04C8 .. +0x050B), so the door bits go to the side the stale stack word names, or to no side when it is not 0..3 (the two switches
+    //   R023+0x0620 / +0x06B8 have no default); north (0) is used here. Not reached in play: the three callers (R014+0x4924, +0x4B95, +0xDDE1, the only
+    //   calls of the vector 09C0:1D6F) take only records whose word +0 is above 0; the flagless records of IMAPS.CAT (IFORTMON.009 doors 0 and 1) and
+    //   LCASTLE (door 0 of the nine levels) are all-zero, word +0 = 0; the castle generator's records always carry a flag and the map turn moves the flags.
     private void SetDoor(int n, bool open, bool reveal)
     {
         var at = DoorsAt + 14 * n;
