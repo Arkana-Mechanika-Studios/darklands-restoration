@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 47 entries; recommendations: document: 1, justify: 38, keep: 8.
+- Part A (not-modelled, deliberate-fix, other in core logic): 48 entries; recommendations: document: 1, justify: 38, keep: 9.
 - Part B (undefined-memory in core logic): 132 entries; determinism: n/a: 79, no: 39, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -265,9 +265,9 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the shield picture is the party panel's (loaded on demand).  
   recommendation: **justify** (checked against the original) - party_remove (R037 3b58) frees the slot's shield picture handle; the C# party panel loads shield pictures on demand from Character.ShieldLetter, so no game state differs (presentation resource handling only).
 
-### cards (16)
+### cards (17)
 
-#### not-modelled (6)
+#### not-modelled (7)
 
 - **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:115` `CardContext.InvokeSaint`  
   original: `R029+0x2180` (0E76:2180, draft)  
@@ -289,6 +289,10 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R066+0x263E` (19EC:0AFE, matched)  
   divergence: the original sets the card before the previous one (DS:A88F) and prev_screen (DS:A88D) to the street card (R066+0x271F, R066+0x2732); the main loop then sets DS:A88F = DS:A88D (the street card) and DS:A88D = this card (root 03A1:000A), and DS:A88F has no reader in the EXE (only these two stores), so it is not kept; FinishPass sets PreviousCard as the loop does.  
   recommendation: **justify** (checked against the original) - R066+0x271F / 0x2732 store the street card (9 by day, 10 at night) into DS:A88F and DS:A88D; the main loop (root +0x3E5F..0x3E68) then sets DS:A88F = DS:A88D and DS:A88D = DS:A772. DS:A88F has no reader anywhere in the EXE (absolute references in the root and the 136 overlays: only these two stores), so the 'two cards back' remark of the old note was wrong and nothing can observe it. CardDispatcher.FinishPass sets PreviousCard as the loop does; test NotModelledEvidenceTests.FinishPassMovesTheCardsDown.
+- **D-4d048d** `not-modelled` - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:51` `DragonBlightedLand.Run`  
+  original: `R081+0x2884` (19BC:1044, asm), `R081+0x2902` (19BC:10C2, asm)  
+  divergence: options_block is held in CardContext.OptionsBlock, which only the cards that read it back write; the other cards' stores (some 350 in R044..R135, none outside the cards) are not modelled, so the retained block can differ.  
+  recommendation: **keep** (checked against the original) - Direct call j_dragon.py (local/batch/evid1o): R081+0x1848 with DS:EE53 = 0x2B, event_value stubbed to 5, what = 7, run_battle stubbed to 5 -> card_options(0x2B); what = 10 -> card_options(0x0A). The card now uses CardContext.OptionsBlock (the modelled global) there and stores 0x0A/0x0B/0x0C into it on the three ways in. Only cards write DS:EE53 (356 references, all in R044..R135 but a compare at R043+0x215E); the cards that do not read it back do not model their stores, so the retained value can differ: a lead (model options_block in every card). Reached only after the ruined outlaws' battle returns 5 or more.
 - **D-5dc345** `not-modelled` - `src/Darklands.Simulation/CardDispatcher.cs:83` `UnknownCard`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   divergence: no original: the original calls whatever R136+0xD090[number] holds; every card of the table has a script, so only a number outside it gets here.  

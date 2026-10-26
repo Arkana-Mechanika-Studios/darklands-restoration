@@ -12,18 +12,18 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 0 |
-| cards | core | 11 |
+| cards | core | 10 |
 | events | core | 0 |
 | travel | core | 3 |
 | battles | core | 7 |
 | persistence | core | 2 |
 | screens/presentation | other | 16 |
 | host/audio | other | 0 |
-| total |  | 39 |
+| total |  | 38 |
 
-## Core logic (23)
+## Core logic (22)
 
-### cards (11)
+### cards (10)
 
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
@@ -46,9 +46,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-b280c3** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:70` `PublicExecution.Verdict`  
   original: `R079+0x0CF6` (18D8:02F6, asm)  
   why: the abbot's score starts uninitialised when fact (2, 0) holds here; taken as 0.
-- **U-cea1ac** `uncertain` - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:48` `DragonBlightedLand.Run`  
-  original: `R081+0x2884` (19BC:1044, asm), `R081+0x2902` (19BC:10C2, asm)  
-  why: options_block is a global; when a battle result keeps the card (below), the list of an earlier card would be shown. The dragon's first list is assumed.
 - **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
   original: `R086+0x0C40` (18FC:0000, matched)  
   why: the saint name table of the texts (R034) is taken to be the saint list's full names.

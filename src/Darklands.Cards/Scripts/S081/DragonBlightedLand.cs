@@ -45,9 +45,11 @@ public sealed class DragonBlightedLand : Card
         var growth = c.Random(2);
         c.Events.Update(-1, -1, 0x1C, 1, growth, DragonQuest, EventUpdate.Add);
         var what = blight < 2 ? c.Random(3) : blight < 4 ? c.Random(8) : c.Random(10) + 3;
-        // UNCERTAIN: options_block is a global; when a battle result keeps the card (below),
-        // the list of an earlier card would be shown. The dragon's first list is assumed.
-        var block = 0x0C;
+        // C: options_block (DS:EE53) is written only on the dragon's three ways in (R081+0x20B2 / 0x20E4 / 0x2114); when the ruined
+        // outlaws' battle keeps the card, its menu shows the block the card before left. Direct call j_dragon.py (local/batch/evid1o):
+        // R081+0x1848 with DS:EE53 = 0x2B, the blight query stubbed to 5, what = 7, run_battle stubbed to 5 -> card_options(0x2B).
+        // DIVERGENCE: options_block is held in CardContext.OptionsBlock, which only the cards that read it back write; the other
+        // cards' stores (some 350 in R044..R135, none outside the cards) are not modelled, so the retained block can differ.
         switch (what)
         {
             case 0:
@@ -119,18 +121,18 @@ public sealed class DragonBlightedLand : Card
             case 10:
                 // The dragon descends from the sky.
                 ShowPicture(c, WastePicture);
-                block = 0x0A;
+                c.OptionsBlock = 0x0A;
                 break;
             case 11:
                 // It bursts out of the earth.
                 ShowPicture(c, 226);
-                block = 0x0B;
+                c.OptionsBlock = 0x0B;
                 break;
             default:
                 // It crawls out from behind the boulders (12). C: only the second picture
                 // buffer is changed here, so later redraws keep the card's picture.
                 ShowPicture(c, 226);
-                block = 0x0C;
+                c.OptionsBlock = 0x0C;
                 break;
         }
         c.SetCardItems(0x67, 0x64);
@@ -141,7 +143,7 @@ public sealed class DragonBlightedLand : Card
         {
             return c.Next;
         }
-        menu.Block = block;
+        menu.Block = c.OptionsBlock;
         return menu.Run(
             // orig: R081+0x2278 (19BC:0A38) asm; R081+0x2280 (19BC:0A40) asm; tests: CardSmokeTests
             // C: no roll: the hint's chance is shown, and the party always follows the dragon.
