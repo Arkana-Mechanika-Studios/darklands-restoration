@@ -806,6 +806,39 @@ SESSIONS["b2-einfo-a5"] = "synth/DKSAVE0-carda5.sav"
 BATTLE_RECORDS.add("b2-einfo-a5")
 
 
+# b2-session
+SESSIONS["b2-march-keys"] = "synth/DKSAVE0-carda5.sav"
+BATTLE_RECORDS.add("b2-march-keys")
+
+
+# b2-session
+SESSIONS["b2-march-mouse"] = "synth/DKSAVE0-carda5.sav"
+BATTLE_RECORDS.add("b2-march-mouse")
+
+
+# b2-session
+SESSIONS["b2-einfo-a0"] = "synth/DKSAVE0-carda0.sav"
+BATTLE_RECORDS.add("b2-einfo-a0")
+
+
+# b2-session
+
+
+# b2-session
+SESSIONS["b2-einfo-7a"] = "synth/DKSAVE0-card7a.sav"
+BATTLE_RECORDS.add("b2-einfo-7a")
+
+
+# b2-session
+SESSIONS["b2-einfo-16"] = "synth/DKSAVE0-card16.sav"
+BATTLE_RECORDS.add("b2-einfo-16")
+
+
+# b2-session
+SESSIONS["b2-einfo-7b"] = "synth/DKSAVE0-card7b.sav"
+BATTLE_RECORDS.add("b2-einfo-7b")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out")

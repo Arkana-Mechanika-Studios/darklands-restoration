@@ -10,6 +10,9 @@ option:2
 wait:10
 key:enter
 wait:300
+key:enter
+wait:300
+key:2
 bwait:20
 key:e
 bwait:10
