@@ -124,6 +124,18 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             c.Tactics.LaunchMissile(job.Args[0], (short)job.Args[1], job.Args[2], job.Args[3], job.Args[4]);
             return null;
         },
+        ["R024+0x08F2"] = (c, job) =>
+        {
+            // place_around (who, the 14-byte record whose +8/+10 words are the spot and +12 the direction): 1 when a place was found
+            var at = job.Args[1];
+            var ds = c.Input.Ds;
+            if (ds[at + 12] is not (0 or 2 or 4 or 6))
+            {
+                throw new SkipJob("a direction that is no even number below 8: the original reads the offsets of its stack garbage (the stairs records hold 0, 2, 4 or 6)");
+            }
+            var spot = new MapPoint((short)(ds[at + 8] | ds[at + 9] << 8), (short)(ds[at + 10] | ds[at + 11] << 8));
+            return (bool)Call(c.Tactics, "PlaceAround", job.Args[0], spot, (int)ds[at + 12])! ? 1 : 0;
+        },
         ["R023+0x17D2"] = (c, job) =>
         {
             // leave_level (who, the stairs record the caller copied to its frame): the call is made with the record at the DS offset given

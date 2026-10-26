@@ -224,6 +224,20 @@ class Fuzzer:
                 ops.append({"w": "ds", "o": 0xC77E + who_, "hex": "%02x" % (rng.randrange(count) if count else 0xFF)})
                 for slot in range(7):
                     ops.append({"w": "ds", "o": 0xC23E + 2 * slot, "hex": pack(rng.choice([0, 0xFFFF, 1 << rng.randrange(8), rng.getrandbits(8)]), 2)})
+        elif pick == "around":
+            # a combatant is placed round a spot (R024+0x08F2): the spot and the direction in a 14-byte record at DS:FE80 (+8/+10 the spot, +12 the direction), with
+            # combatants standing near it to take the places
+            x, y = rng.choice(self.live_positions)
+            rec = bytearray(14)
+            rec[8:10] = ((x + rng.choice([-48, -24, 0, 0, 24, 48])) & 0xFFFF).to_bytes(2, "little")
+            rec[10:12] = ((y + rng.choice([-24, -8, 0, 0, 8, 24])) & 0xFFFF).to_bytes(2, "little")
+            rec[12] = rng.choice([0, 2, 4, 6])
+            ops.append({"w": "ds", "o": 0xFE80, "hex": bytes(rec).hex()})
+            sx, sy = int.from_bytes(rec[8:10], "little", signed=True), int.from_bytes(rec[10:12], "little", signed=True)
+            for k in rng.sample(range(13), rng.randrange(0, 9)):
+                ox, oy = rng.choice([(0, 0), (-12, 0), (12, 0), (0, -8), (0, 8), (-12, -8), (12, 8), (0, -16), (24, 0), (-24, 0), (0, 16), (36, 0)])
+                ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 4, "hex": pack((sx + ox) & 0xFFFF, 2) + pack((sy + oy) & 0xFFFF, 2)})
+                ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x14, "hex": "01"})
         elif pick == "leave":
             # the party leaves a level through a stairs record while enemies are alive (R023+0x17D2): the floor, combat or not, the enemies' kinds, endurances and
             # the floors that follow (the per-kind masks DS:C23E), the stairs record the call is given (14 bytes at DS:FE80)
@@ -918,8 +932,8 @@ anything = lambda rng, f: rng.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 0xFFFF, rng
 buffer = lambda rng, f: 0xFE80          # a DS offset above the stack for a function's output words
 DOOR_FUNCTIONS = {"R023+0x00B8", "R023+0x04AC"}
 # per function: the scenarios that matter most to it (70% of the scenarios drawn for it)
-BIAS = {"R025+0x0000": ["groups", "groups", "activations", "positions", "statuses"], "R014+0x2324": ["dying", "dying", "dying", "loot", "pack"], "R014+0xEA10": ["loot", "loot", "loot", "pack", "statuses"], "R014+0xB576": ["mouse", "mouse", "mouse", "mouse", "orders", "member"], "R014+0x0620": ["activations", "activations", "orders"], "R014+0x2170": ["places", "places", "places", "member", "doors", "regions", "pack", "stairs"], "R014+0xBC0C": ["orders", "orders", "member", "pack"], "R014+0xBCA8": ["orders", "orders", "orders", "member", "pack"], "R014+0x0F58": ["spells", "spells", "effects", "effects", "immune", "times", "pack", "tables"], "R016+0x0000": ["orders", "orders", "orders", "member", "pack", "menus", "doors", "tables"], "R014+0xDF28": ["member", "member", "member", "doors", "pack", "menus", "tables"], "R014+0xD04E": ["doors", "doors", "pack", "menus"], "R014+0xD402": ["regions", "regions", "pack", "menus"], "R014+0xD6DA": ["triggers"],
-        "R014+0x33A2": ["pointer"], "R023+0x17D2": ["leave", "leave", "leave", "positions", "statuses"], "R014+0x08FE": ["endstate", "endstate", "endstate", "statuses", "floors", "result"], "R022+0x03E4": ["statuses", "floors", "kill enemies", "kill party", "result", "positions"],
+BIAS = {"R025+0x0000": ["groups", "groups", "activations", "positions", "statuses"], "R014+0x2324": ["dying", "dying", "dying", "loot", "pack"], "R014+0xEA10": ["loot", "loot", "loot", "pack", "statuses"], "R014+0xB576": ["mouse", "mouse", "mouse", "mouse", "orders", "member"], "R014+0x0620": ["activations", "activations", "orders"], "R014+0x2170": ["places", "places", "places", "member", "doors", "regions", "pack", "stairs"], "R014+0xBC0C": ["orders", "orders", "member", "pack"], "R014+0xBCA8": ["orders", "orders", "orders", "member", "pack"], "R014+0x0F58": ["spells", "spells", "effects", "effects", "immune", "times", "pack", "tables"], "R016+0x0000": ["orders", "orders", "orders", "member", "pack", "menus", "doors", "tables", "places", "places", "places", "places"], "R014+0xDF28": ["member", "member", "member", "doors", "pack", "menus", "tables"], "R014+0xD04E": ["doors", "doors", "pack", "menus"], "R014+0xD402": ["regions", "regions", "pack", "menus"], "R014+0xD6DA": ["triggers"],
+        "R014+0x33A2": ["pointer"], "R023+0x17D2": ["leave", "leave", "leave", "positions", "statuses"], "R024+0x08F2": ["around", "around", "around", "positions", "statuses"], "R014+0x08FE": ["endstate", "endstate", "endstate", "statuses", "floors", "result"], "R022+0x03E4": ["statuses", "floors", "kill enemies", "kill party", "result", "positions"],
         "R014+0xDC14": ["doors", "regions", "triggers", "stairs", "zones", "pack", "menus"], "R014+0xD328": ["stairs", "menus"], "R014+0xD60A": ["zones", "menus"],
         "R014+0x1BA0": ["pack", "recov", "missiles"], "R018+0x03AE": ["recov"]}
 FX_BIAS = ["effects", "effects", "effects", "immune", "pack", "statuses", "times", "tables"]
@@ -971,7 +985,7 @@ FUNCTIONS = {
     "R014+0x45AE": [],
     "R014+0x4442": [],
     "R014+0x0F58": [],
-    "R014+0x0D86": [], "R014+0x33A2": [], "R023+0x17D2": [member, buffer], "R022+0x03E4": [lambda r, f: r.choice([1, 1, 1, 0])],
+    "R014+0x0D86": [], "R014+0x33A2": [], "R023+0x17D2": [member, buffer], "R024+0x08F2": [who, buffer], "R022+0x03E4": [lambda r, f: r.choice([1, 1, 1, 0])],
     "R014+0x2FA2": [who],
     "R014+0x306A": [who],
     "R018+0x04B6": [buffer],
