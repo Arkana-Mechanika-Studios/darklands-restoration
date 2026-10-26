@@ -15,7 +15,7 @@ public sealed partial class TacticalBattle
 
     /// <summary>A debugging aid (DARKLANDS_BATTLE_STALE_DEST, "5:-256,511;7:..."): the destination a record keeps when its enemy is first placed,
     /// by record. The original copies the enemy file's record whole (R025+0x0267) and its destination bytes (+0x08..+0x0B) are whatever the
-    /// stack held; until the enemy first moves they steer what reads them (the facing of a spell at a spot, R014+0x306A). The oracle reads
+    /// work buffer DS:A895 held when R020+0x0000 converted the level (CombatantSetup.FromEnemy); until the enemy first moves they steer what reads them (the facing of a spell at a spot, R014+0x306A). The oracle reads
     /// them off the original's run; the C# leaves them 0.</summary>
     public static Dictionary<int, MapPoint>? StaleDestinations { get; set; } = ParseStaleDestinations(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_STALE_DEST"));
 

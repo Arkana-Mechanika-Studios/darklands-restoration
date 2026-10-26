@@ -283,6 +283,9 @@ public sealed class DarklandsGame
             // DIVERGENCE: copyprot_run_vec (R041+0x0000) asks the copy-protection question (a symbol from the manual); it is not asked here (a host
             //   choice, as the later CD release). Its five random draws are made (CopyProtection.Draw: rand_mod 4, 20, 7, 7 and 6, before anything else
             //   of it), so the generator goes on as the original's; the event it leaves behind, for 0x3E80 hours (about 22 months), is created as in the original.
+            //   Justified (evid1o): a right answer (keys 1..4 against the symbol asked, R041+0x050E) changes nothing else of the game: R041+0x04DA puts the
+            //   screen back and restores DS:2816 / DS:2804 from the copies R041+0x0006 made; a wrong one ends the program (R041+0x0594: shutdown,
+            //   exit(0) at R041+0x05C2). A direct call of R041+0x0000 from the Tyrnau map state (j_copy.py) changes only the generator (five draws) in DS.
             Core.World.CopyProtection.Draw(state.Random);
             state.Events.CreateHere(CopyProtectionEvent, CopyProtectionHours);
         }

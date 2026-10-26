@@ -140,7 +140,12 @@ public static class CombatantSetup
     // orig: R025+0x0264..0x0267: the first 0x80 bytes of the kind's .enm record are copied over the slot, its bytes +0x1E/+0x1F (8, 8:
     //   R020+0x0000's loader) the step and frame delays
     // DIVERGENCE: the head bytes the loader does not write (the .enm buffer's earlier content in the original, 0 for a fresh load) are not
-    //   modelled: the slot's fields keep what its last enemy left, and the fields the readying and the placing read are set below or after.
+    //   modelled: they are undefined memory. The .trn -> .enm conversion R020+0x0000 builds the records (0x122 bytes each) in the shared work buffer DS:A895 and writes count x 0x122 bytes of it to the level's .enm file
+    //   (R020+0x02BD), so the bytes it does not set are what the program last left there (the root's and the cards' text and tables: the
+    //   city state banks-markt holds the card text "The $marketplace, ..." at DS:A89A, the map states FFFF-separated indices); R025+0x0882
+    //   reads the file's record into DS:B899 and R025+0x0264 copies its head over the slot. Here the slot's fields keep what its last enemy
+    //   left (0 for a fresh one), and the fields the readying and the placing read are set below or after; the destination +0x08..+0x0B
+    //   (read by R014+0x306A until the enemy first moves) is TacticalBattle.StaleDestinations' (the oracle's injection of the original's values).
     public static void FromEnemy(Battle battle, int index, EnemyKind kind, int floor, int facing, int slot, bool activation)
     {
         var c = battle[index];

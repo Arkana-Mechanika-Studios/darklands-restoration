@@ -19,8 +19,8 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 48 entries; recommendations: document: 1, justify: 38, keep: 9.
-- Part B (undefined-memory in core logic): 133 entries; determinism: n/a: 79, no: 40, partly: 10, yes: 4.
+- Part A (not-modelled, deliberate-fix, other in core logic): 47 entries; recommendations: document: 1, justify: 37, keep: 9.
+- Part B (undefined-memory in core logic): 134 entries; determinism: n/a: 79, no: 41, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -357,14 +357,10 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (12)
+### battles (11)
 
-#### not-modelled (2)
+#### not-modelled (1)
 
-- **D-990fbb** `not-modelled` - `src/Darklands.Core/Battles/CombatantSetup.cs:142` `CombatantSetup.FromEnemy`  
-  original: `R025+0x0000` (1EF8:0000, draft), `R020+0x0000` (1EF8:0000, draft)  
-  divergence: the head bytes the loader does not write (the .enm buffer's earlier content in the original, 0 for a fresh load) are not modelled: the slot's fields keep what its last enemy left, and the fields the readying and the placing read are set below or after.  
-  recommendation: **justify** (checked against the original) - The head bytes +0x1E/+0x1F (both 8) are copied now (FromEnemy: R025+0x0264 copies the .enm record's first 0x80 bytes; the loader writes 8 there). The other head bytes the loader leaves from its buffer's earlier content are not read by the clean model: the fields the readying and the placing use are set after the copy. They matter only when a battle is written to the .BSV file (BattleSaveFile has its own note).
 - **D-ca7108** `not-modelled` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:57` `FortressBattlefield.BuildFortress`  
   original: `R011+0x0000` (1432:0000, draft)  
   divergence: the four level buffers (alloc_buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept. Its only store is R011+0x04ED; no instruction of the root or the 136 overlays reads it.  
@@ -857,7 +853,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original keeps a window of the map (50 rows by 19 columns) in G and refills it as the view scrolls; this class answers for any cell of the whole decoded map, so the rows are never evicted. A cell outside the map reads 0 here (in the original, whatever the buffer held).  
   deterministic: **partly** (checked against the original); action: **keep** - The original G is R136+0xFCCC[50][19] (index imul 13h + col, asm 159A2), refilled by R030+0x20D2 from the run-length rows (0xD2 bytes per map row) as the view scrolls, with the place-icon list overlaid. Inside the window the content equals this whole-map answer; a column outside it wraps into the neighbouring row and a row outside it shows whatever an earlier refill left, i.e. history dependent. Keep the whole-map semantics unless a read at the map border outside the window is shown to matter (not verified).
 
-### battles (29)
+### battles (30)
 
 - **D-89585b** `undefined-memory` - `src/Darklands.Core/Battles/Attacks.cs:189` `Attacks.MissileChance`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -867,6 +863,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R004+0x06AA` (0E76:06AA, draft)  
   divergence: an item code outside the list (−1 from an empty template entry) reads the bytes before the list in the original; it weighs 0 here.  
   deterministic: **n/a** (checked against the original); action: **document** - monster_type_map (0E76:06AA) reads bf_items[id].x25 (46-byte records at DS:DAE3:3+id*46+0x25); an id of -1 would wrap to DS:DAE3:FFFA, past the loaded DARKLAND.LST (heap, not deterministic). I ran the C# AddKind (same logic as the asm-checked draft) over all 82 enemy types x qualities 1..8 x 20 seeds on the shipped DARKLAND.ENM/.LST (200 item records): WeightOf never received a code outside 0..199, so the case does not occur with the shipped data.
+- **D-990fbb** `undefined-memory` - `src/Darklands.Core/Battles/CombatantSetup.cs:142` `CombatantSetup.FromEnemy`  
+  original: `R025+0x0000` (1EF8:0000, draft), `R020+0x0000` (1EF8:0000, draft)  
+  divergence: the head bytes the loader does not write (the .enm buffer's earlier content in the original, 0 for a fresh load) are not modelled: they are undefined memory. The .trn -> .enm conversion R020+0x0000 builds the records (0x122 bytes each) in the shared work buffer DS:A895 and writes count x 0x122 bytes of it to the level's .enm file (R020+0x02BD), so the bytes it does not set are what the program last left there (the root's and the cards' text and tables: the city state banks-markt holds the card text "The $marketplace, ..." at DS:A89A, the map states FFFF-separated indices); R025+0x0882 reads the file's record into DS:B899 and R025+0x0264 copies its head over the slot. Here the slot's fields keep what its last enemy left (0 for a fresh one), and the fields the readying and the placing read are set below or after; the destination +0x08..+0x0B (read by R014+0x306A until the enemy first moves) is TacticalBattle.StaleDestinations' (the oracle's injection of the original's values).  
+  deterministic: **no** (checked against the original); action: **justify** - Undefined memory, not a model gap: the .trn -> .enm conversion R020+0x0000 builds the records (0x122 bytes) in the shared work buffer DS:A895 and writes count x 0x122 bytes of it to the level's .enm file (R020+0x02BD); the bytes it does not set are what the program last left there (the root's and the cards' text and tables: city state banks-markt holds card text at DS:A89A, the map states FFFF-separated indices; j_peek.py, local/batch/evid1o). R025+0x0882 reads the record into DS:B899 and R025+0x0264 copies its head. The fields the readying and the placing read are set after the copy; the destination +0x08..+0x0B (R014+0x306A) is the oracle's injection (TacticalBattle.StaleDestinations). The head bytes +0x1E/+0x1F (both 8) are copied.
 - **D-10d533** `undefined-memory` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:1073` `CastleGenerator.GroupSlot`  
   original: `R007+0x316C` (15AF:316C, draft)  
   divergence: past the 160th record the original writes into mon_templates (B4C0); such records are kept apart here.  
