@@ -43,10 +43,10 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 | battle-calls-b2-e11 | 166 | 9 | 85/124 (68.5%) | 77/124 (62.1%) |  |  |  |
 | battle-calls-b2-e12 | 172 | 9 | 85/124 (68.5%) | 77/124 (62.1%) |  |  |  |
 | battle-calls-b2-e13 | 206 | 9 | 85/124 (68.5%) | 77/124 (62.1%) |  |  |  |
-| battle-calls-b2-e14 | 131 | 117 | 1125/1967 (57.2%) | 925/1924 (48.1%) |  |  |  |
+| battle-calls-b2-e14 | 134 | 117 | 1126/1967 (57.2%) | 928/1924 (48.2%) |  |  |  |
 | battle-calls-b2-e15 | 112 | 14 | 205/288 (71.2%) | 197/326 (60.4%) |  |  |  |
 | battle-calls-b2-e16 | 156 | 5 | 94/123 (76.4%) | 82/120 (68.3%) |  |  |  |
-| battle-calls-b2-e17 | 169 | 208 | 2153/3703 (58.1%) | 1562/3444 (45.4%) |  |  |  |
+| battle-calls-b2-e17 | 171 | 208 | 2157/3703 (58.3%) | 1569/3444 (45.6%) |  |  |  |
 | battle-calls-b2-e2 | 72 | 22 | 130/330 (39.4%) | 88/314 (28.0%) |  |  |  |
 | battle-calls-b2-e3 | 119 | 57 | 291/650 (44.8%) | 192/610 (31.5%) |  |  |  |
 | battle-calls-b2-e4 | 1037 | 206 | 2649/4828 (54.9%) | 1980/4628 (42.8%) |  |  |  |
@@ -56,7 +56,7 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 | battle-calls-b2-e8 | 152 | 122 | 1196/2191 (54.6%) | 833/2004 (41.6%) |  |  |  |
 | battle-calls-b2-e9 | 112 | 102 | 1078/2106 (51.2%) | 727/1886 (38.5%) |  |  |  |
 | battle-calls-pilot | 3658 | 247 | 3047/4756 (64.1%) | 2405/4528 (53.1%) |  |  |  |
-| battle-calls-r3 | 8449 | 351 | 5366/7455 (72.0%) | 4522/7172 (63.1%) |  |  |  |
+| battle-calls-r3 | 8447 | 351 | 5366/7455 (72.0%) | 4522/7172 (63.1%) |  |  |  |
 | battle-calls-scale | 3453 | 190 | 2590/3671 (70.6%) | 2167/3548 (61.1%) |  |  |  |
 | battle-oracle-castle | 1 | 581 | 7683/13362 (57.5%) | 5252/11912 (44.1%) |  |  |  |
 | battle-oracle-castle04 | 1 | 630 | 8412/14516 (57.9%) | 5884/13114 (44.9%) |  |  |  |
@@ -130,7 +130,7 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 | cards-seeds-p2a | 2538 | 1781 | 8177/13327 (61.4%) | 4288/8988 (47.7%) |  |  |  |
 | cards-seeds-p2b | 3809 | 2025 | 9126/15534 (58.7%) | 4877/10692 (45.6%) |  |  |  |
 | cards-variants | 18535 | 4347 | 16832/28199 (59.7%) | 8577/18564 (46.2%) |  |  |  |
-| cards1-A | 7501 | 2107 | 9861/18311 (53.9%) | 5758/12866 (44.8%) |  |  |  |
+| cards1-A | 7718 | 2109 | 9872/18326 (53.9%) | 5765/12880 (44.8%) |  |  |  |
 | cards1-ALCH | 12 | 122 | 1319/2837 (46.5%) | 660/1882 (35.1%) |  |  |  |
 | cards1-ALCH2 | 9 | 119 | 1263/2776 (45.5%) | 617/1784 (34.6%) |  |  |  |
 | cards1-F1 | 1348 | 1274 | 6513/13206 (49.3%) | 3798/9484 (40.0%) |  |  |  |
@@ -892,9 +892,9 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 | world-calls-r1-w5 | 42 | 10 | 53/71 (74.6%) | 37/70 (52.9%) |  |  |  |
 | world-calls-rules | 624 | 146 | 1437/2831 (50.8%) | 935/1974 (47.4%) |  |  |  |
 | world-calls-travel | 1643 | 128 | 1407/2764 (50.9%) | 906/1866 (48.6%) |  |  |  |
-| ALL |  | 8557 | 51099/58040 (88.0%) | 34611/43540 (79.5%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
+| ALL |  | 8557 | 51100/58040 (88.0%) | 34613/43540 (79.5%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
 
-Never-exercised items: 15870, of which open 13507, justified in `unreachable.csv` 2363.
+Never-exercised items: 15867, of which open 13504, justified in `unreachable.csv` 2363.
 
 ## Per function
 
@@ -6264,9 +6264,7 @@ draft, reached by battle-calls-b2-e14 battle-calls-b2-e17 battle-oracle-castle b
 
 ### R016+0x0E7E `R016+0x0E7E (1EF8:0E7E)`
 
-draft, reached by battle-calls-b2-e14 battle-calls-b2-e17 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-savemid-mine: blocks 6/7, outcomes 5/6
-
-- `R016+0x0ECF` `jmp 0xf73`
+draft, reached by battle-calls-b2-e14 battle-calls-b2-e17 lockstep-dungeon-mine-doors lockstep-dungeon-mine-group lockstep-dungeon-mine-orders lockstep-savemid-mine: blocks 7/7, outcomes 6/6
 
 ### R016+0x0F76 `R016+0x0F76 (1EF8:0F76)`
 
@@ -13613,7 +13611,7 @@ asm, reached by cards-flip cards-handlers-full cards-handlers2-blocks cards-hand
 
 ### R050+0x0AE2 `R050+0x0AE2 (1838:0AE2)`
 
-asm, reached by cards cards-day cards-flip cards-handlers-full cards-handlers2-blocks cards-handlers2-scale-L3-Vskilled-O0 cards-handlers2-scale-Spostwar40-O0 cards-lines-aim cards-lines-force cards-lines-force3 cards-places-a1-cov cards-places-b1-cov cards-places-c1-cov cards-places-d1-cov cards-saves-A cards-saves-B cards-saves-f0 cards-seeds-p1 cards-variants cards1-A cards1-F1: blocks 4/4, outcomes 3/4
+asm, reached by cards cards-day cards-flip cards-handlers-full cards-handlers2-blocks cards-handlers2-scale-L3-Vskilled-O0 cards-handlers2-scale-Spostwar40-O0 cards-lines-aim cards-lines-force cards-lines-force3 cards-places-a1-cov cards-places-b1-cov cards-places-c1-cov cards-places-d1-cov cards-saves-A cards-saves-B cards-saves-f0 cards-seeds-p1 cards-variants cards1-A cards1-F1: blocks 4/4, outcomes 4/4
 
 ### R050+0x0B5E `R050+0x0B5E (1838:0B5E)`
 
@@ -20324,7 +20322,7 @@ asm, reached by cards-day cards-handlers2-blocks cards-saves-A cards-saves-B car
 
 ### R066+0x13BC `R066+0x13BC (190C:067C)`
 
-asm, reached by cards-day cards-handlers2-blocks cards-lines-force cards-saves-A cards-saves-B cards-saves-f0: blocks 10/14, outcomes 7/14
+asm, reached by cards-day cards-handlers2-blocks cards-lines-force cards-saves-A cards-saves-B cards-saves-f0 cards1-A: blocks 10/14, outcomes 7/14
 
 - `R066+0x1474` `mov ax, si`
 - `R066+0x1484` `inc si`
@@ -20379,7 +20377,7 @@ asm, reached by cards-handlers2-blocks cards-lines-force: blocks 1/1, outcomes 0
 
 ### R066+0x174A `R066+0x174A (190C:0A0A)`
 
-asm, reached by cards-day cards-handlers2-blocks cards-lines-force cards-saves-A cards-saves-B: blocks 1/1, outcomes 0/0
+asm, reached by cards-day cards-handlers2-blocks cards-lines-force cards-saves-A cards-saves-B cards1-A: blocks 1/1, outcomes 0/0
 
 ### R066+0x1752 `R066+0x1752 (190C:0A12)`
 

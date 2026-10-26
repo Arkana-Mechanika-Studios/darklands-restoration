@@ -1,10 +1,10 @@
 {
  "ALL": {
   "blocks": 58040,
-  "blocks_hit": 51099,
+  "blocks_hit": 51100,
   "functions": 8557,
   "outcomes": 43540,
-  "outcomes_hit": 34611,
+  "outcomes_hit": 34613,
   "runs": null
  },
  "battle": {
@@ -65,11 +65,11 @@
  },
  "battle-calls-b2-e14": {
   "blocks": 1967,
-  "blocks_hit": 1125,
+  "blocks_hit": 1126,
   "functions": 117,
   "outcomes": 1924,
-  "outcomes_hit": 925,
-  "runs": 131
+  "outcomes_hit": 928,
+  "runs": 134
  },
  "battle-calls-b2-e15": {
   "blocks": 288,
@@ -89,11 +89,11 @@
  },
  "battle-calls-b2-e17": {
   "blocks": 3703,
-  "blocks_hit": 2153,
+  "blocks_hit": 2157,
   "functions": 208,
   "outcomes": 3444,
-  "outcomes_hit": 1562,
-  "runs": 169
+  "outcomes_hit": 1569,
+  "runs": 171
  },
  "battle-calls-b2-e2": {
   "blocks": 330,
@@ -173,7 +173,7 @@
   "functions": 351,
   "outcomes": 7172,
   "outcomes_hit": 4522,
-  "runs": 8449
+  "runs": 8447
  },
  "battle-calls-scale": {
   "blocks": 3671,
@@ -768,12 +768,12 @@
   "runs": 18535
  },
  "cards1-A": {
-  "blocks": 18311,
-  "blocks_hit": 9861,
-  "functions": 2107,
-  "outcomes": 12866,
-  "outcomes_hit": 5758,
-  "runs": 7501
+  "blocks": 18326,
+  "blocks_hit": 9872,
+  "functions": 2109,
+  "outcomes": 12880,
+  "outcomes_hit": 5765,
+  "runs": 7718
  },
  "cards1-ALCH": {
   "blocks": 2837,

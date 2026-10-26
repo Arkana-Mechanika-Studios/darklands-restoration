@@ -12,18 +12,18 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 0 |
-| cards | core | 9 |
+| cards | core | 8 |
 | events | core | 0 |
 | travel | core | 3 |
 | battles | core | 7 |
 | persistence | core | 2 |
 | screens/presentation | other | 16 |
 | host/audio | other | 0 |
-| total |  | 37 |
+| total |  | 36 |
 
-## Core logic (21)
+## Core logic (20)
 
-### cards (9)
+### cards (8)
 
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
@@ -43,13 +43,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-4ffac2** `uncertain` - `src/Darklands.Cards/Scripts/S075/KidnappersCampAtNight.cs:36` `KidnappersCampAtNight.Run`  
   original: `R075+0x16CA` (193D:067A, matched), `R075+0x1752` (193D:0702, matched), `R075+0x17DA` (193D:078A, matched)  
   why: the first option list (block 0) is assumed.
-- **U-b280c3** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:70` `PublicExecution.Verdict`  
-  original: `R079+0x0CF6` (18D8:02F6, asm)  
-  why: the abbot's score starts uninitialised when fact (2, 0) holds here; taken as 0.
 - **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
   original: `R086+0x0C40` (18FC:0000, matched)  
   why: the saint name table of the texts (R034) is taken to be the saint list's full names.
-- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:211` `TextVariables.PlaceDescription`  
+- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:252` `TextVariables.PlaceDescription`  
   original: `R043+0x1316` (150B:0886, draft)  
   why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
 
@@ -94,7 +91,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-7ce977** `uncertain` - `src/Darklands.Persistence/CharacterRecords.cs:16` `CharacterRecords`  
   original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched)  
   why: the bytes this model does not name (+0x02..+0x11 combat position and orders, +0x16, +0x18..+0x21, +0x23, +0x4A, +0x4D/+0x4E, +0x52..+0x54, +0x56/+0x57, +0x59, +0x7F) are kept as read (Character.OriginalRecord); a character made by this program has zeros there. The saint and formula bytes and all 64 pack entries are modelled as raw bytes (KnownBits, Pack).
-- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:417` `OriginalSaves.PartyRecordInBattle`  
+- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:421` `OriginalSaves.PartyRecordInBattle`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 

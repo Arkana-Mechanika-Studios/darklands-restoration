@@ -350,8 +350,9 @@ internal sealed partial class CastleGenerator
     /// </summary>
     // orig: R006+0x1D48 (16E1:0A28) draft
     // C: the draft's gotos (try 8 random cells, then every cell of the strip, up to 25 tries) are the loop below.
-    // C: b1 and b2 are local arrays of 40 ints; the search reads them up to two cells outside [0, 40), which the original reads from the
-    // neighbouring locals; those read as 0 here (DIVERGENCE only if a room lies within two cells of the map's edge).
+    // C: b1 and b2 are local arrays of 40 ints.
+    // DIVERGENCE: the search reads them up to two cells outside [0, 40), which the original reads from the neighbouring locals (stack memory);
+    //   those read as 0 here. It matters only if a room lies within two cells of the map's edge (writes there would stop the rewrite with an index error).
     private void PlaceWallSegment(int side, int[] adj, out int pa, out int pb)
     {
         pa = 0;

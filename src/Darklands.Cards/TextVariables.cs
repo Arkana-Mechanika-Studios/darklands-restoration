@@ -99,7 +99,7 @@ public static class TextVariables
 
     /// <summary>The value of one variable, or null when it is not one the game knows.</summary>
     // orig: var_expand R043+0x1316 (150B:0886) draft (its switch on the variable index)
-    // C: the cases below are in the original's order of index; each reads its source unchecked, a few are guarded here (DIVERGENCE per case).
+    // C: the cases below are in the original's order of index; each reads its source unchecked, a few are guarded here (each guard that changes a result carries its own DIVERGENCE note below).
     public static string? Value(string name, CardContext c)
     {
         var state = c.State;

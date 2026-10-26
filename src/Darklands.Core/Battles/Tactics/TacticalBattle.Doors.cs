@@ -92,7 +92,8 @@ public sealed partial class TacticalBattle
 
     /// <summary>Door n opens or shuts by itself (an enemy walks into it, or a path search tries it), its group uncovered when <paramref name="reveal"/>.</summary>
     // orig: door_set R023+0x04AC (1EF8:04AC) draft
-    // C: a record without a side flag leaves dir uninitialised in the original; north is used here (DIVERGENCE).
+    // DIVERGENCE: a door record with none of the four side flags (+8 and +9, bits 0x80 / 0x40) leaves the direction local uninitialised in the original,
+    //   so the door bit goes to whatever side the stack word names; north (0) is used here (whether a generated level can hold such a record is not established).
     private void SetDoor(int n, bool open, bool reveal)
     {
         var at = DoorsAt + 14 * n;
