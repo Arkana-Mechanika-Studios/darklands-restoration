@@ -47,7 +47,8 @@ public sealed class CardAimSearch
         var option = key[key.LastIndexOf("-O", StringComparison.Ordinal)..];
         var parts = key[(v + 2)..key.LastIndexOf("-O", StringComparison.Ordinal)].Split('+')
             .Where(p => !(p.Length > 3 && p[0] == 'F' && p[1..].Split('.') is [var b, var l] && int.TryParse(b, out _) && int.TryParse(l, out _))
-                && !(p.Length > 1 && p[0] == 'P' && p[1..].Split('_').All(x => int.TryParse(x, out _))));
+                && !(p.Length > 1 && p[0] == 'P' && p[1..].Split('_').All(x => int.TryParse(x, out _)))
+                && !CardOracleStates.IsBattle(p) && !CardOracleStates.IsPrayer(p));
         return key[..v] + (parts.Any() ? "-V" + string.Join('+', parts) : "") + option;
     }
 

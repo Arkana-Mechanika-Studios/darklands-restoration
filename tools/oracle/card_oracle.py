@@ -147,6 +147,9 @@ class CardRun:
         self.hand = hand                     # a handler call (see Oracle.run_card), else None
         self.menus = 0
         self.path = None                     # [n, ...]: the k-th menu chooses the (n mod count)-th enabled line (variant part "P2_0_1")
+        self.battles = None                  # [n, ...]: the results of the run's battles (variant part "B5"); None: 0
+        self.prayers = None                  # [-1 | 0 | 1, ...]: the answers of the prayer screen (variant part "Ya"); None: 0
+        self.nbattle = self.nprayer = 0
         self.force = None                    # (block, line): the first menu of that block chooses that line whatever its state
         self.lines: list[str] = []
         self.card_name = ""
@@ -313,14 +316,22 @@ class Oracle:
 
     def prayer(self, m):
         self.log("prayer %d %d" % (m.sarg(0), m.sarg(1)))
-        return (0, 0)
+        seq = self.run.prayers if self.run is not None else None
+        answer = seq[min(self.run.nprayer, len(seq) - 1)] if seq else 0
+        if self.run is not None:
+            self.run.nprayer += 1
+        return (answer & 0xFFFF, 0)
 
     def battle(self, m):
-        """battle_run(mode, side, seed, 9 parameters): no battle, as the C# without one (result 0)."""
+        """battle_run(mode, side, seed, 9 parameters): no battle, as the C# without one (result 0, or the variant part B<n> of the run key)."""
         args = [m.sarg(k) for k in range(12)]
         self.log("battle %d %d %s" % (args[1], args[2], " ".join(str(a) for a in args[3:])))
         m.write(DS, BATTLE_BYTE, bytes(1))
-        m.put_word(DS, BATTLE_RESULT, 0)
+        seq = self.run.battles if self.run is not None else None
+        result = seq[min(self.run.nbattle, len(seq) - 1)] if seq else 0
+        if self.run is not None:
+            self.run.nbattle += 1
+        m.put_word(DS, BATTLE_RESULT, result)
         return (0, 0)
 
     def shown(self, name: str, pic: str) -> str:
@@ -518,6 +529,7 @@ class Oracle:
     # ---- a run -------------------------------------------------------------------------------
     def run_card(self, card: int, key: str, option: int, probe: bool, hand: dict | None = None) -> dict:
         """hand: a handler call {"menu": n, "line": k, "hints": bool, "slot": s | None} (hand_menu); the other menus follow the policy."""
+        orig_key = key
         key, force, path = split_key(key)
         self.boot(key)
         m = self.m
@@ -526,6 +538,7 @@ class Oracle:
         self.run = CardRun(option, probe, self.messages, hand)
         self.run.force = force
         self.run.path = path
+        self.run.battles, self.run.prayers = results_of(orig_key)
         self.options_block = 0
         self.pending = None
         self.options_text = None
@@ -658,9 +671,25 @@ def split_key(key: str):
             force = tuple(int(x) for x in p[1:].split("."))
         elif re.fullmatch(r"P\d+(_\d+)*", p):
             path = [int(x) for x in p[1:].split("_")]
+        elif re.fullmatch(r"B\d(_\d)*", p) or re.fullmatch(r"Y[cfa](_[cfa])*", p):
+            pass                                     # the controlled battle / prayer results (results_of): no state change
         else:
             keep.append(p)
     return (head + ("-V" + "+".join(keep) if keep else "") + "-O" + option), force, path
+
+
+def results_of(key: str):
+    """The controlled service results of a run key's variant: (battle results, prayer answers) or None each. Variant part "B5" (or "B0_5": the first
+    battle of the run ends with result 0, the later ones with 5), "Yc" / "Yf" / "Ya" (or "Yf_a": the prayer screen is cancelled (-1) / the
+    prayer fails (0) / is answered (1); the later prayers repeat the last). The harness's stubs return 0 for both when no part is given."""
+    battles = prayers = None
+    if "-V" in key:
+        for p in key.split("-V", 1)[1].rsplit("-O", 1)[0].split("+"):
+            if re.fullmatch(r"B\d(_\d)*", p):
+                battles = [int(x) for x in p[1:].split("_")]
+            elif re.fullmatch(r"Y[cfa](_[cfa])*", p):
+                prayers = [{"c": -1, "f": 0, "a": 1}[x] for x in p[1:].split("_")]
+    return battles, prayers
 
 
 def card_names() -> dict[int, str]:
