@@ -106,41 +106,41 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora, before their gaps were worked on (`branches-summary-before.json`) | 88.6% | 81.2% |
-| the 8,557 functions the oracles enter | 88.0% (51,100 / 58,040) | 79.5% (34,613 / 43,540) |
-| **every function the C# implements (9,281)** | | **79.0% (33,785 / 42,790)** |
+| the 8,558 functions the oracles enter | 88.1% (51,134 / 58,055) | 79.5% (34,635 / 43,548) |
+| **every function the C# implements (9,281)** | | **79.0% (33,807 / 42,794)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 33,785 against 34,613 exercised (1,461 more branch outcomes than the published batch 17: the card scripts +1,244, rules +26 and screens +22 from the card oracle's saved-game start states and controlled battle and prayer results of round cards1, battles +166 from round B2's direct calls, both below, and 1 each in travel, the card engine and the resident code). By area:
+differ slightly on the resident code, hence 33,807 against 34,635 exercised (1,483 more branch outcomes than the published batch 17: the card scripts +1,257, rules +28 and screens +25 from the card oracle's saved-game start states and controlled battle and prayer results of round cards1, battles +166 from round B2's direct calls, both below, 1 each in travel and the card engine, and 5 in the resident code). By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 335 / 358 | 2,253 / 2,590 | 87% |
+| rules | 335 / 358 | 2,255 / 2,590 | 87% |
 | battles (tactical combat) | 284 / 314 | 6,497 / 7,516 | 86% |
 | travel (overland map) | 23 / 24 | 705 / 982 | 72% |
-| screens (inventory, barter, creation ...) | 191 / 202 | 4,760 / 6,070 | 78% |
-| resident code | 137 / 160 | 1,044 / 1,644 | 64% |
+| screens (inventory, barter, creation ...) | 191 / 202 | 4,763 / 6,070 | 78% |
+| resident code | 138 / 160 | 1,048 / 1,648 | 64% |
 | card engine | 35 / 36 | 444 / 686 | 65% |
-| card scripts | 6,874 / 7,949 | 10,993 / 14,616 | 75% |
+| card scripts | 6,874 / 7,949 | 11,006 / 14,616 | 75% |
 | other | 10 / 12 | 75 / 162 | 46% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`; 366 outcomes, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch): 79.8% (34,151 / 42,790). Most of what is open is reachable in
+and listed in `unreachable.csv`; 366 outcomes, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch): 79.9% (34,173 / 42,794). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-15,867 items of the functions the oracles enter were never exercised: 2,363 are justified in
+15,834 items of the functions the oracles enter were never exercised: 2,371 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
-forms, the C run-time library, drivers, memory and file helpers, code nothing reaches), 13,504 are
+forms, the C run-time library, drivers, memory and file helpers, code nothing reaches), 13,463 are
 open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 6,430), the screens (about 2,010), the battlefield generators (about 2,070), the
+lie in the card scripts (about 6,400), the screens (about 2,010), the battlefield generators (about 2,070), the
 battles (about 1,340), the resident code (about 410), the card engine (about 370), the overland map (about 470), the
-rules (about 250) and the other code (about 160). A sweep
+rules (about 245) and the other code (about 160). A sweep
 of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
 tile contents and random draws, not inputs a sweep sets.
 
@@ -209,9 +209,8 @@ changes, next card).
   with the most open outcomes; every card that fights or prays was then run again from the states that reached it, with the battle's
   result forced to 1..5 and the prayer cancelled, failed or answered, so the result-5 arms (S047, S065, S067, S070, S072) run in both
   games; and random aimed states (hour, month, facts, quests, events, skills, attributes, saints, items, reputation, previous card,
-  seed) for the cards of the sheet's 40 records. 29,310 runs count; 675 are left out: 42 that differ, 108 the oracle failed on, 87 left out earlier (saves made inside a
-  battle and others), and 438 that agree but were left out by a key-format slip of batch 19's selection (they reach about 41 more open items; to be
-  counted in the next coverage rebuild); on the
+  seed) for the cards of the sheet's 40 records. 29,733 runs count; 252 are left out: 42 that differ, 108 the oracle failed on and 102 left out earlier (saves made inside a
+  battle and others); on the
   batch 19 tree the replay of all of them against the C# differs in 42 runs only (card 0xFE, below), where it differed in 1,185 rows before the leads were judged. They added 1,292 branch
   outcomes and 1,529 blocks to the count of the functions the oracles enter (card scripts +1,243 in the whole-program count). The differences formed 16 clusters: 14 were judged in batch 19 (below) and the two tester ones closed
   (card 0xFE, the saves made inside a battle). The committed corpus `Oracle/cards-controlled.json.gz` holds 2,004 runs of the controlled
@@ -416,7 +415,7 @@ memory-layout effects (writes outside arrays the original performs).
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
 markers in the code, each with its reason and original coordinate: 200 original bugs the game
-reproduces (40 with their own `OriginalBehaviour` flag), 314 registered divergences,
+reproduces (40 with their own `OriginalBehaviour` flag), 316 registered divergences,
 870 dormant branches kept as the original has them, 36 uncertain readings (the others were
 naming only, or settled by an agreeing oracle or the code, now closed; each of the 36 is in
 `UNCERTAIN.md` with the assumption it rests on). Every core-logic divergence has a
@@ -471,8 +470,8 @@ Open items (2026-10-26, after batch 19), listed honestly:
   there, while the castle generator flags every record. The wall search R006+0x1D48 reads its two 40-cell local arrays up to two cells outside, which the
   C# reads as 0 (D-0bf8d6; it needs a room or strip bound within two cells of the map's edge; 300,000 castle builds of the corpus's scenarios with other
   seeds never read outside, not proven by a bound). They were inline notes in comments, now markers with review rows; the text-variable guards of
-  TextVariables (the third inline note of audit 18) were not a divergence of their own and the comment is reworded; two of its guards that give "" have no
-  register entry yet (a city-name index past the record's 16 names, a place past the location table). The save writer's
+  TextVariables (the third inline note of audit 18) were not a divergence of their own and the comment is reworded; its two other guards that give "" are registered
+  as undefined-memory divergences with review rows for the audit (a city-name index past the record's 16 names, D-1cbe8f; a place past the location table, D-6c5593). The save writer's
   `|| state.ResumeBattle` has no counterpart in the original (bit 7 of the saved game's byte depends on DS:907A alone): kept and registered (D-f631fd)
   because the headless host's state writer needs it; it changes nothing in play. A tester gap, low: headless states taken inside a battle that was not
   loaded from a save lack the in-battle bit.
@@ -605,7 +604,9 @@ was real and is fixed: the marching order keeps its five bytes DS:C624..C628 and
 as they were, and single file acts on the first byte (R016+0x0E2E, +0x0E7E; `SingleFileWithNobodyAbleTakesTheStaleFirstByte`; the byte past the
 13 records of a foreign save is D-ec9372); jobs e14 and e17 now agree throughout (134 of 193 and 171 of 240, 0 differ, the rest not judged).
 Replay of everything on the merged tree: 762 of 762 agree, the card corpora and the world calls unchanged, the battle call jobs as above; the
-coverage moved by 2 outcomes and 1 block only (the reinstated card runs and the now agreeing jobs of e14 and e17), so the figures above are batch 18's plus that.
+coverage moved by 22 outcomes and 34 blocks, and one function entered (the 438 agreeing card runs a key-format slip had left out of the first
+selection of this batch are counted after the audit's correction of the selection script, which now stops on a key that matches nothing; the now agreeing
+jobs of e14 and e17 add little): 33,807 outcomes, 79.0% (79.9% with the justified).
 
 Batch 18 (2026-10-26), three rounds. Round B2 (battle internals): direct calls of the battle code, after the harness gave the game's tick wait
 (root 0410:0302, which every battle message uses) the counters of one timer callback (the calls that reached it never ended and were

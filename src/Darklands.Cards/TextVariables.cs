@@ -99,9 +99,7 @@ public static class TextVariables
 
     /// <summary>The value of one variable, or null when it is not one the game knows.</summary>
     // orig: var_expand R043+0x1316 (150B:0886) draft (its switch on the variable index)
-    // C: the cases below are in the original's order of index; each reads its source unchecked, a few are guarded here (the guards for an index outside its table carry their own DIVERGENCE note below; not yet registered: Names
-    //   gives "" for a name index past the city record's 16 names, where the original reads the memory after the record, and PlaceName "" for a place past the
-    //   location table).
+    // C: the cases below are in the original's order of index; each reads its source unchecked, a few are guarded here (each guard that changes a result carries its own DIVERGENCE note: LocationName, Names, PlaceName).
     public static string? Value(string name, CardContext c)
     {
         var state = c.State;
@@ -247,6 +245,7 @@ public static class TextVariables
         {
             return Names(c.State.City, -1);
         }
+        // DIVERGENCE: a place past the location table (here >= 414) gives "" here; the original reads the far table's memory after its last record.
         return here < c.State.Locations.Count ? c.State.Locations[here].Name : "";
     }
 
@@ -365,7 +364,9 @@ public static class TextVariables
     }
 
     /// <summary>A name of the working city record (city_rec->names[n]); n = -1 is the short name at the start of the record.</summary>
-    // C: _fstrcpy copies up to the first zero byte: a 32-byte field without one runs on into the next field. An index outside the 16 names reads other parts of the record, or "" past its end.
+    // C: _fstrcpy copies up to the first zero byte: a 32-byte field without one runs on into the next field. An index outside the 16 names reads other parts of the record.
+    // DIVERGENCE: an index past the record's 16 names (the record ends at 0x6E + 16 x 0x20 = 0x26E) gives "" here; the original reads the memory after the record
+    //   (what follows the working city record in the data segment; the writers of the variable that holds such an index are unknown).
     private static string Names(Core.World.CityRecord city, int index)
     {
         var start = index < 0 ? 0 : NamesOffset + index * NameSize;
