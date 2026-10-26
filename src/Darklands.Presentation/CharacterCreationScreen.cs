@@ -151,9 +151,9 @@ public sealed class CharacterCreationScreen
             Shared.Image = 0;
         }
         var (readyMade, slotImages) = ReadyMade(NewGame.PartySeed(seed));
-        _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages);
-        var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, NewGame.PartySeed(seed), _seed);
         _sheetState = new GameState(random) { Data = _world };
+        _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages, _sheetState.Item);
+        var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, NewGame.PartySeed(seed), _seed);
         DrawAll();
         while (true)
         {

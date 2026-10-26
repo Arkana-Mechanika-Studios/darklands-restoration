@@ -11,7 +11,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 
 | area | kind | uncertain |
 |---|---|---|
-| rules | core | 2 |
+| rules | core | 1 |
 | cards | core | 13 |
 | events | core | 0 |
 | travel | core | 3 |
@@ -19,15 +19,12 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | persistence | core | 2 |
 | screens/presentation | other | 17 |
 | host/audio | other | 0 |
-| total |  | 44 |
+| total |  | 43 |
 
-## Core logic (27)
+## Core logic (26)
 
-### rules (2)
+### rules (1)
 
-- **U-8dd8f5** `uncertain` - `src/Darklands.Core/Characters/Creation/CreationRoster.cs:95` `CreationRoster.AddToParty`  
-  original: `R038+0x02F8` (1462:02F8, draft)  
-  why: equip_weight_vec(il) recomputes the encumbrance from the equipped items; the copy keeps the record's value (0 for made characters, who have nothing equipped; the ready-made four carry the game's own values).
 - **U-881f6b** `uncertain` - `src/Darklands.Core/Rules/CampStay.cs:165` `CampStay.CanDoAlchemy`  
   original: `R036+0x1E80` (1462:1E80, draft)  
   why: a byte is tested whole, so its top five bits (not formulas; kept in Character.OriginalRecord) would count too; nothing in the game sets them, and Formulas is the set of the low three bits.
