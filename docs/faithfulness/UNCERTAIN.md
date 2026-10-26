@@ -11,7 +11,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 
 | area | kind | uncertain |
 |---|---|---|
-| rules | core | 1 |
+| rules | core | 0 |
 | cards | core | 13 |
 | events | core | 0 |
 | travel | core | 3 |
@@ -19,15 +19,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | persistence | core | 2 |
 | screens/presentation | other | 17 |
 | host/audio | other | 0 |
-| total |  | 43 |
+| total |  | 42 |
 
-## Core logic (26)
-
-### rules (1)
-
-- **U-881f6b** `uncertain` - `src/Darklands.Core/Rules/CampStay.cs:165` `CampStay.CanDoAlchemy`  
-  original: `R036+0x1E80` (1462:1E80, draft)  
-  why: a byte is tested whole, so its top five bits (not formulas; kept in Character.OriginalRecord) would count too; nothing in the game sets them, and Formulas is the set of the low three bits.
+## Core logic (25)
 
 ### cards (13)
 

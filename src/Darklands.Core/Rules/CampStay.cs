@@ -162,9 +162,9 @@ public sealed class CampStay
     /// <summary>Alchemy needs a known formula.</summary>
     // orig: R036+0x1E80 (1462:1E80) draft(fn matched): 1 when one of the member's
     //   0x16 formulas_known bytes is non-zero (the A key and the menu line's colour both ask it).
-    // UNCERTAIN: a byte is tested whole, so its top five bits (not formulas; kept in Character.OriginalRecord) would count too;
-    //   nothing in the game sets them, and Formulas is the set of the low three bits.
-    public bool CanDoAlchemy(int i) => Member(i).Formulas.Count > 0;
+    // C: `cmp byte ptr [si+0x7BE], 0` (R036+0x1E9B) tests the whole byte: bits 3..7 (not formulas; only a file can set them) count too;
+    //   unit run of R036+0x1E80 (t_alch.py, local/batch/evid1): byte 0x80 -> 1, 0x08 -> 1, 0x07 -> 1, 0 -> 0; tests: CampAndSheetRulesTests
+    public bool CanDoAlchemy(int i) => Member(i).Formulas.Bytes.Any(b => b != 0);
 
     public bool CanEarnMoney => Place == CampPlace.Inn;
 
