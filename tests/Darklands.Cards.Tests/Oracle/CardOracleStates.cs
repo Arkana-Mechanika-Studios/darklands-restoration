@@ -65,8 +65,20 @@ public sealed class CardOracleStates
     {
         if (key.StartsWith('S'))
         {
-            // a community saved game: S<id>-O5 (DARKLANDS_CARD_ORACLE_SAVES/<id>/*.SAV)
-            return FromSave(key[1..key.LastIndexOf("-O", StringComparison.Ordinal)], int.Parse(key[(key.LastIndexOf("-O") + 2)..]));
+            // a community saved game: S<id>-O5 (DARKLANDS_CARD_ORACLE_SAVES/<id>/*.SAV), or with aimed changes to the loaded
+            // game, S<id>-Vit3B+sa5-O5 (the atoms of CardOracleAtoms, or the named mutations; "F.." and "P.." parts change no state)
+            var lastOption = key.LastIndexOf("-O", StringComparison.Ordinal);
+            var saveOption = int.Parse(key[(lastOption + 2)..]);
+            var at = key.IndexOf("-V", StringComparison.Ordinal);
+            var loaded = FromSave(key[1..(at < 0 ? lastOption : at)], saveOption);
+            if (at >= 0)
+            {
+                foreach (var one in key[(at + 2)..lastOption].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p)))
+                {
+                    Apply(loaded, one, saveOption);
+                }
+            }
+            return loaded;
         }
         var location = int.Parse(key[1..key.IndexOf('-')]);
         var option = int.Parse(key[(key.LastIndexOf("-O") + 2)..]);
@@ -76,8 +88,28 @@ public sealed class CardOracleStates
             return New(location, option);
         }
         // the parts "F<block>.<line>" (ForceOf) and "P<n>_<n>.." (PathOf) change no state
-        var variant = string.Join('+', key[(v + 2)..key.LastIndexOf("-O")].Split('+').Where(p => !IsForce(p) && !IsPath(p)));
+        var variant = string.Join('+', key[(v + 2)..key.LastIndexOf("-O")].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p)));
         return variant.Length == 0 ? New(location, option) : New(location, option, variant);
+    }
+
+    public static bool IsBattle(string part) => part.Length > 1 && part[0] == 'B' && part[1..].Split('_').All(x => x.Length == 1 && char.IsAsciiDigit(x[0]));
+
+    public static bool IsPrayer(string part) => part.Length > 1 && part[0] == 'Y' && part[1..].Split('_').All(x => x is "c" or "f" or "a");
+
+    /// <summary>
+    /// The results of the run's battles (the variant part <c>B5</c>, or <c>B0_5</c>: the first battle ends with 0, the later ones with 5;
+    /// tools/oracle/card_oracle.py results_of), or null: result 0, as the oracle's stub without the part.
+    /// </summary>
+    public static int[]? BattleResultsOf(string key) => PartOf(key, IsBattle)?[1..].Split('_').Select(int.Parse).ToArray();
+
+    /// <summary>The answers of the prayer screen (the variant part <c>Yc</c> cancelled -1, <c>Yf</c> failed 0, <c>Ya</c> answered 1; <c>Yf_a</c>: a sequence), or null: 0.</summary>
+    public static int[]? PrayerAnswersOf(string key) =>
+        PartOf(key, IsPrayer)?[1..].Split('_').Select(x => x switch { "c" => -1, "f" => 0, _ => 1 }).ToArray();
+
+    private static string? PartOf(string key, Func<string, bool> test)
+    {
+        var v = key.IndexOf("-V", StringComparison.Ordinal);
+        return v < 0 ? null : key[(v + 2)..key.LastIndexOf("-O", StringComparison.Ordinal)].Split('+').FirstOrDefault(test);
     }
 
     private static bool IsPath(string part) => part.Length > 1 && part[0] == 'P' && part[1..].Split('_').All(x => int.TryParse(x, out _));
@@ -413,6 +445,16 @@ public sealed class CardOracleStates
             {
                 var (sav, extra) = Export(FromSave(id, option));
                 var key = KeyOfSave(id, option);
+                File.WriteAllBytes(Path.Combine(folder, $"state-{key}.sav"), sav);
+                File.WriteAllText(Path.Combine(folder, $"state-{key}.json"), JsonSerializer.Serialize(extra));
+            }
+        }
+        // DARKLANDS_CARD_ORACLE_SAVE_STATES: a file of keys (one per line) of saved games with aimed changes: S<id>-V<atoms>-O<n>
+        if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_SAVE_STATES") is { Length: > 0 } list)
+        {
+            foreach (var key in File.ReadAllLines(list).Select(l => l.Trim()).Where(l => l.StartsWith('S')))
+            {
+                var (sav, extra) = Export(FromKey(key));
                 File.WriteAllBytes(Path.Combine(folder, $"state-{key}.sav"), sav);
                 File.WriteAllText(Path.Combine(folder, $"state-{key}.json"), JsonSerializer.Serialize(extra));
             }

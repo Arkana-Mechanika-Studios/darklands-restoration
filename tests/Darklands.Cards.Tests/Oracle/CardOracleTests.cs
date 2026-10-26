@@ -449,11 +449,15 @@ public sealed class CardOracleTests
         var screen = new OracleScreen(option, probe, hand) { Force = CardOracleStates.ForceOf(key), Path = CardOracleStates.PathOf(key) };
         var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames };
         c.Screens = new OracleScreens(screen.Log);
-        // the oracle stubs the battle (result 0, as here without one) and the prayer screen (0, the prayer fails)
+        // the oracle stubs the battle (result 0, or the run key's part B<n>) and the prayer screen (0, the prayer fails, or the part Y<c|f|a>)
+        var battleResults = CardOracleStates.BattleResultsOf(key);
+        var prayerAnswers = CardOracleStates.PrayerAnswersOf(key);
+        var battles = 0;
+        var prayers = 0;
         c.Battle = (side, seed, parameters) =>
         {
             screen.Log.Add($"battle {side} {(short)seed} {string.Join(" ", parameters)}");
-            return 0;
+            return battleResults is null ? 0 : battleResults[Math.Min(battles++, battleResults.Length - 1)];
         };
         // the films (root 030B:0004 plays each animation; the oracle records them)
         c.PlayFilm = steps =>
@@ -467,7 +471,7 @@ public sealed class CardOracleTests
         c.SaintPrayer = (who, saint) =>
         {
             screen.Log.Add($"prayer {who} {saint}");
-            return 0;
+            return prayerAnswers is null ? 0 : prayerAnswers[Math.Min(prayers++, prayerAnswers.Length - 1)];
         };
         screen.Context = c;
         state.CurrentCard = card.Number;
