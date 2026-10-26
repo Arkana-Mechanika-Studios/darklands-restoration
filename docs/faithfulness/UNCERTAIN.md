@@ -12,16 +12,16 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 4 |
-| cards | core | 20 |
+| cards | core | 19 |
 | events | core | 0 |
 | travel | core | 3 |
 | battles | core | 10 |
 | persistence | core | 2 |
 | screens/presentation | other | 21 |
 | host/audio | other | 0 |
-| total |  | 60 |
+| total |  | 59 |
 
-## Core logic (39)
+## Core logic (38)
 
 ### rules (4)
 
@@ -38,7 +38,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R136+0xA70F` (290E:207F, data), `R029+0x21AA` (0E76:21AA, draft)  
   why: entries outside −3..11 are not reproduced (empty name); no card is known to pass them.
 
-### cards (20)
+### cards (19)
 
 - **U-ee7ab6** `uncertain` - `src/Darklands.Cards/CardContext.Memory.cs:145` `CardContext.DeleteMember`  
   original: `R037+0x3F30` (1462:3F30, draft)  
@@ -64,9 +64,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-4ffac2** `uncertain` - `src/Darklands.Cards/Scripts/S075/KidnappersCampAtNight.cs:36` `KidnappersCampAtNight.Run`  
   original: `R075+0x16CA` (193D:067A, matched), `R075+0x1752` (193D:0702, matched), `R075+0x17DA` (193D:078A, matched)  
   why: the first option list (block 0) is assumed.
-- **U-b280c3** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:70` `PublicExecution.Verdict`  
-  original: `R079+0x0CF6` (18D8:02F6, asm)  
-  why: the abbot's score starts uninitialised when fact (2, 0) holds here; taken as 0.
 - **U-cea1ac** `uncertain` - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:48` `DragonBlightedLand.Run`  
   original: `R081+0x2884` (19BC:1044, asm), `R081+0x2902` (19BC:10C2, asm)  
   why: options_block is a global; when a battle result keeps the card (below), the list of an earlier card would be shown. The dragon's first list is assumed.
@@ -97,7 +94,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-8b4e75** `uncertain` - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:88` `StrangerBringsAMob.FightAWave`  
   original: `R128+0x03B8` (1838:03B8, matched)  
   why: what card_menu returns when no line is enabled; the C# screen decides.
-- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:211` `TextVariables.PlaceDescription`  
+- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:252` `TextVariables.PlaceDescription`  
   original: `R043+0x1316` (150B:0886, draft)  
   why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
 

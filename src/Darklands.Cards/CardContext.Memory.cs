@@ -233,6 +233,13 @@ public sealed partial class CardContext
     public IPersonalNames PersonalNames { get; set; } = NoPersonalNames.Instance;
 
     /// <summary>
+    /// The bytes of the .MSG file whose texts the card screen shows (the original's <c>msg_file</c>, DS:A895), set by the screen;
+    /// the text variables read it through party slots past the fifth (<see cref="TextVariables"/>).
+    /// </summary>
+    // orig: msg_file DS:A895, filled by msg_load R043+0x020E (file_load_far of the whole .MSG, under 6000 bytes)
+    public byte[]? MessageFileBytes { get; set; }
+
+    /// <summary>
     /// A random personal name into $Named1..5 (R029 <c>random_name</c>): the generator is
     /// seeded with the party seed + <paramref name="seed"/> so the same person keeps the same
     /// name, kind 0..5 picks the tables (men's or women's first names, with a surname, a

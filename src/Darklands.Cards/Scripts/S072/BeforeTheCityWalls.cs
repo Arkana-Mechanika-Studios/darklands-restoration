@@ -146,6 +146,10 @@ public sealed class BeforeTheCityWalls : Card
                 c.Next = Number;
                 return;
             case 3:
+                // DIVERGENCE: $CityE00.msg has 7 blocks, so blocks 7 (result 3) and 8 (result 4) do not exist: msg_load (R043+0x020E) sets
+                //   msg_index.ofs[0..6] only and card_text prints msg_file + the stale ofs[7] / ofs[8] a message file with more blocks left
+                //   there earlier in the session (0 after start-up: the file's header bytes, 07 02 0A under the oracle); not game state,
+                //   the C# prints nothing.
                 c.Screen.Text(7, TextFrame.BlankPage);
                 Disgrace(c);
                 c.State.CurrentLocation = -1;

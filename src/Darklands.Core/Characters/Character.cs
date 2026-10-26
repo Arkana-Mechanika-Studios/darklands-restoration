@@ -219,4 +219,17 @@ public sealed class Character
     }
 
     public bool IsAble => Status == CharacterStatus.Able;
+
+    /// <summary>
+    /// The part of the record after the member record (saints, formulas, the 64 pack entries) becomes <paramref name="file"/>'s; the
+    /// member record (the item count with it) stays this character's.
+    /// </summary>
+    public void KeepRecordTail(Character file)
+    {
+        var stacks = Pack.Stacks;
+        Pack.CopyFrom(file.Pack);
+        Pack.Stacks = stacks;
+        file.Saints.Bytes.CopyTo(Saints.Bytes, 0);
+        file.Formulas.Bytes.CopyTo(Formulas.Bytes, 0);
+    }
 }

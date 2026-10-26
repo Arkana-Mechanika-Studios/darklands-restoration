@@ -113,8 +113,12 @@ public static class TextVariables
             {
                 // C: strcpy from party[var_chosenK] + 0x2A whatever the slot's status: an empty slot still holds its last
                 // C: occupant's name in this run (Party.Slot keeps it), a never-used slot is zero ("").
-                // DIVERGENCE: an index outside 0..4 (var_chosenK is never reset between cards) reads the globals or combatant records next to the party in the original; "" here.
-                return Member(c, c.Variables.Chosen[k])?.ShortName ?? "";
+                // C: an index outside 0..4 (var_chosenK is never reset between cards; NightInTheGuildLeadersHouse puts an Agility value there)
+                // C: reads past the party: from slot 25 on party[k].name (DS:9C93 + 0x80k) lies in msg_file, the loaded .MSG (OutsideName).
+                // DIVERGENCE: elsewhere (the enemy combatants of the last battle, the globals after them, the stale tail of msg_file's
+                //   6000 bytes past the file, the word DS:A893 before it) the original reads memory that is not game state; "" here.
+                var chosen = c.Variables.Chosen[k];
+                return Member(c, chosen)?.ShortName ?? OutsideName(c, chosen) ?? "";
             }
             if (name == $"Named{Ordinals[k]}Name")
             {
@@ -127,7 +131,8 @@ public static class TextVariables
         }
 
         // C: "he/she" and the other pronouns look at the sex byte of party[var_chosen1] (0 male, any other value female).
-        var female = Member(c, c.Variables.Chosen[0])?.IsFemale == true;
+        // C: past the party the sex byte (party[k] + 3) is read the same way (OutsideByte); elsewhere taken as male (see ChosenOneName).
+        var female = Member(c, c.Variables.Chosen[0]) is { } chosenOne ? chosenOne.IsFemale : OutsideByte(c, c.Variables.Chosen[0], SexAt) is > 0;
         return name switch
         {
             "PlaceName" => PlaceName(c),
@@ -189,6 +194,42 @@ public static class TextVariables
     // C: the five 0x80-byte slots of party[] (DS:9C69), read whatever their status.
     private static Core.Characters.Character? Member(CardContext c, int index) =>
         index >= 0 && index < Core.Characters.Party.MaxMembers ? c.State.Party.Slot(index) : null;
+
+    // orig: party DS:9C69 (0x80 bytes a slot: +3 sex, +0x2A name), msg_file DS:A895
+    private const int PartyAt = 0x9C69;
+    private const int SlotSize = 0x80;
+    private const int SexAt = 0x03;
+    private const int NameAt = 0x2A;
+    private const int MessageFileAt = 0xA895;
+
+    /// <summary>
+    /// The offset into the loaded .MSG file that field <paramref name="field"/> of party slot <paramref name="index"/> (past the five) is at,
+    /// or −1 when it is not inside the file (16-bit offsets in DS).
+    /// </summary>
+    private static int OutsideOffset(CardContext c, int index, int field)
+    {
+        var at = ((PartyAt + SlotSize * index + field) & 0xFFFF) - MessageFileAt;
+        return c.MessageFileBytes is { } file && at >= 0 && at < file.Length ? at : -1;
+    }
+
+    /// <summary>One byte of a party slot past the five that lies in the loaded .MSG file, or null.</summary>
+    private static int? OutsideByte(CardContext c, int index, int field) =>
+        OutsideOffset(c, index, field) is var at and >= 0 ? c.MessageFileBytes![at] : null;
+
+    /// <summary>The name (strcpy to the zero byte) of a party slot past the five that lies in the loaded .MSG file, or null.</summary>
+    // C: every block of the file ends with a zero, so a name that starts in the file ends in it; it is copied into var[200] unchecked
+    // C: (a longer one overruns text_expand's stack; here it is copied whole).
+    private static string? OutsideName(CardContext c, int index)
+    {
+        var at = OutsideOffset(c, index, NameAt);
+        if (at < 0 || Member(c, index) is not null)
+        {
+            return null;
+        }
+        var file = c.MessageFileBytes!;
+        var end = Array.IndexOf(file, (byte)0, at);
+        return Encoding.Latin1.GetString(file, at, (end < 0 ? file.Length : end) - at);
+    }
 
     // orig: case 54 / 70 of R043+0x1316: locations[var_loc]->name
     // DIVERGENCE: an index outside the 414 locations gives "" (the original reads whatever the far table holds).

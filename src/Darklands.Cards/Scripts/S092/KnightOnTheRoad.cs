@@ -66,7 +66,9 @@ public sealed class KnightOnTheRoad : Card
 
     /// <summary>The knight accepts a challenge from a party of renown: three points per point of fame.</summary>
     // orig: R092+0x16F2 (197B:02C2) matched (and the same hint at 0408, 0574, 05CC)
-    private static int Renown(CardContext c) => Math.Clamp(c.PartyGet(4) * 3, 1, 99);
+    // C: fame * 3 is a 16-bit int (shl ax, 1; add ax, cx): from fame 10923 on it wraps, and a negative product clamps to 1 (card
+    // C: oracle: saves gc44, gc55, gc88, yafi98, yafi99).
+    internal static int Renown(CardContext c) => Math.Clamp((int)unchecked((short)(c.PartyGet(4) * 3)), 1, 99);
 
     /// <summary>Back to the map, out of any place.</summary>
     private static void RideOn(CardContext c)

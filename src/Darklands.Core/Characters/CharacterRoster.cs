@@ -23,6 +23,13 @@ public sealed class CharacterRoster
     // the slot memory of a slot whose id is -1 (a loaded slot without a record, what a member who left kept there): no entry of the roster
     private readonly HashSet<Character> _offRoster = new(ReferenceEqualityComparer.Instance);
 
+    // a second party slot's copy of an entry's character (party_add of a character already in the party), and the entry it names
+    private readonly Dictionary<Character, int> _secondSlots = new(ReferenceEqualityComparer.Instance);
+
+    /// <summary><paramref name="copy"/>, in a party slot, is a second slot of roster entry <paramref name="entry"/> (its own copy of the record).</summary>
+    // C: party_add R037+0x3CD6 reads the entry's record into the slot whoever else holds it: two slots then name the same entry.
+    public void KeepSecondSlot(Character copy, int entry) => _secondSlots[copy] = entry;
+
     /// <summary>
     /// <paramref name="residue"/> is what a slot without a roster entry holds: a status a card later gives it (a random member who is
     /// nobody) does not make it a member of the roster.
@@ -74,6 +81,7 @@ public sealed class CharacterRoster
         Characters.Clear();
         _stored.Clear();
         _offRoster.Clear();
+        _secondSlots.Clear();
         Array.Fill(PartySlots, -1);
         for (var slot = 0; slot < party.Members.Count && slot < PartySlots.Length; slot++)
         {
@@ -102,7 +110,8 @@ public sealed class CharacterRoster
             //   (a loaded slot of status 0 after the last occupied one).
             var member = slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot);
             var entry = PartySlots[slot];
-            if (member is not null && entry >= 0 && entry < Characters.Count && ReferenceEquals(Characters[entry], member))
+            if (member is not null && entry >= 0 && entry < Characters.Count
+                && (ReferenceEquals(Characters[entry], member) || (_secondSlots.TryGetValue(member, out var named) && named == entry)))
             {
                 continue;
             }

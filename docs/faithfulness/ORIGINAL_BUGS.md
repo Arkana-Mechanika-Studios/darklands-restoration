@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 86 | 21 | 65 |
+| rules | 87 | 22 | 65 |
 | cards | 60 | 2 | 58 |
 | events | 7 | 4 | 3 |
 | travel | 3 | 0 | 3 |
 | battles | 25 | 9 | 16 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 3 | 1 | 2 |
-| total | 186 | 39 | 147 |
+| total | 187 | 40 | 147 |
 
-## Core logic (183)
+## Core logic (184)
 
-### rules (86)
+### rules (87)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:289` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -111,7 +111,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-82a302** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:163` `PartyQueries.MaxAttributeSum`  
   original: `R029+0x179C` (0E76:179C, draft)  
   why: best_value = a * 2 (FixAttributeSums); DS:9A44 is not written here.
-- **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:245` `PartyRules.BattleSeed`  
+- **B-c48d94** `bug`, flag `FixLeavingMemberRecordTail` - `src/Darklands.Core/Rules/PartyRules.cs:186` `PartyRules.RemoveFromParty`  
+  original: `R037+0x3B58` (1462:3B58, draft)  
+  why: OriginalBehaviour.FixLeavingMemberRecordTail - the write-back is the 0x80-byte member record (combatants + p * 0x80 at the record's start, item count +0x7E included): the file's saints (+0x80), formulas (+0x94) and pack entries (+0xAA) stay as it had them, the slot's own (saints_known, formulas, inventories) are not written; the roster entry is that mix
+- **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:274` `PartyRules.BattleSeed`  
   original: `R029+0x2278` (0E76:2278, draft)  
   why: seed -2 gets party_seed twice (FixBattleSeed).
 - **B-11a75a** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:71` `PotionEffects.Drink`  
@@ -392,8 +395,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: outside a city the news test misses a negation: unlike the branch above, this one tests the mine quest without it, so the "nothing of interest" text appears here only while the mine quest runs (and not the robber knight's).
 - **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:93` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
   original: `R071+0x02A8` (1838:02A8, matched)  
-  why: the original makes $ChosenOneName the least agile member's Agility value (party_min_attr's result), not the member; a value past the party names nobody.
-- **B-2ac103** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:167` `BeforeTheCityWalls.Disgrace`  
+  why: the original makes $ChosenOneName the least agile member's Agility value (party_min_attr's result), not the member; a value past the party names whatever lies there (from 25 on a piece of this card's .MSG file: TextVariables.OutsideName).
+- **B-2ac103** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:171` `BeforeTheCityWalls.Disgrace`  
   original: `R072+0x17D6` (1981:0346, matched)  
   why: at −40 or below the original draws improve_roll(v, −3, −9) and drops the result, so the standing stays as it is (the draw is still made).
 - **B-097711** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:38` `SallyPortInTheCityWall.Run`  

@@ -341,5 +341,59 @@
     "contains": "",
     "leaderAbsent": true,
     "why": "WitchAtYourMercy: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party_delete on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours_pass, Party.EnsureAbleLeader)."
+  },
+  {
+    "card": "011",
+    "run": "*",
+    "contains": "C# 'hint 1: 0 '' -2'",
+    "why": "RevolutionHouseAtNight.KnockChance BUG: on its first path (the politics fact at the place against the party's side) the hint (R048+0x124E) copies \"Success is assured.\" but returns 0 with DX as the calls before left it (21626 / 21622 under the oracle's menu stand-in: a stale register, not game state); the C# shows chance 0 for the whole party."
+  },
+  {
+    "card": "041",
+    "run": "*",
+    "contains": "original 'time 16', C# 'picture xhound'",
+    "why": "WildHunt.OutrunChance DIVERGENCE, line 1's action (see the 'time 7' entry): with a member away not everybody rides, the hint R060+0x0FF4 leaves the chance word [bp-4] unwritten (23419 under the oracle, local/batch/cards1o probe at 18CF:06D9) and the party escapes (time 16 from this state's hour); the C# rolls against the least agile member's effective Agility and fails."
+  },
+  {
+    "card": "073",
+    "run": "*",
+    "contains": "C# 'text 7 1 '",
+    "why": "BeforeTheCityWalls DIVERGENCE (battle result 3): $CityE00.msg has 7 blocks, block 7 does not exist; the original prints msg_file + msg_index.ofs[7], an entry msg_load did not set (0 under the oracle: the file's header bytes 07 02 0A; in a game what an earlier message file left), the C# an empty text."
+  },
+  {
+    "card": "073",
+    "run": "*",
+    "contains": "C# 'text 8 1 '",
+    "why": "BeforeTheCityWalls DIVERGENCE (battle result 4): as block 7, block 8 of $CityE00.msg does not exist; the original prints from the stale msg_index.ofs[8], the C# an empty text."
+  },
+  {
+    "card": "08D",
+    "run": "plain Spolitical13-VP1+B1-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: fact (2, 0) holds at the political13 place, so the abbot's score [bp-0Ah] is never zeroed (R079+0x0D17) and starts as a stack leftover (1174 after line 1's text under the oracle, probe at 18D8:031D): the abbot rescues the party (picture ms039, text 8); the C# takes 0 and the bankers do (text 9). Not game state."
+  },
+  {
+    "card": "08D",
+    "run": "plain Spolitical13-VP1+B2-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0."
+  },
+  {
+    "card": "08D",
+    "run": "plain Spolitical13-VP1+B3-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0."
+  },
+  {
+    "card": "08D",
+    "run": "plain Spolitical13-VP1+B4-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0."
+  },
+  {
+    "card": "08D",
+    "run": "plain Spolitical13-VP1+B5-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0."
   }
 ]

@@ -78,10 +78,11 @@ public sealed class GameAssets(GameFiles files)
             // (root 0617:0736): a card named "$MeetI00.msg" finds "$MEETI00.MSG" by its first twelve characters.
             var wanted = cardName + ".MSG";
             var key = wanted.Length > 12 ? wanted[..12] : wanted;
-            var document = MsgCardDocumentParser.ParseEntryPayload(_messageArchive.ReadPayload(key));
+            var payload = _messageArchive.ReadPayload(key);
+            var document = MsgCardDocumentParser.ParseEntryPayload(payload);
             file = new MessageFile(cardName, document.Cards
                 .Select(MessageBlock.From)
-                .ToList());
+                .ToList()) { Bytes = payload };
             _messages[cardName] = file;
         }
         return file;
@@ -89,7 +90,11 @@ public sealed class GameAssets(GameFiles files)
 }
 
 /// <summary>A card's texts: the blocks of one .MSG file.</summary>
-public sealed record MessageFile(string Name, IReadOnlyList<MessageBlock> Blocks);
+public sealed record MessageFile(string Name, IReadOnlyList<MessageBlock> Blocks)
+{
+    /// <summary>The file's bytes as msg_load reads them into msg_file (DS:A895).</summary>
+    public byte[] Bytes { get; init; } = [];
+}
 
 /// <summary>
 /// One text block of a card: where it is drawn (x, y and wrapping width, in card-window pixels)
