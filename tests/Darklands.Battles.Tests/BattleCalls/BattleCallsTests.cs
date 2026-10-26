@@ -430,6 +430,14 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             // (the sheets F1..F5, Enemy Info, Surrender, Throw's menu, the Alt keys of the menu bar) run a loop of their own that the original's call
             // does not get its keys for.
             var key = job.Args[0] & 0xFFFF;
+            if (c.Input.Ds[0x07D3] != (c.Input.Ds[0xA695] != 0 ? 1 : 0))
+            {
+                // the clock's hold DS:07D3 is a count: the pause sets DS:A695 and adds 1 together (R016+0x0755/0x075A, R014+0xBC8E/0xBC9E, both only
+                // when A695 is 0), takes both back together (R016+0x1443/0x144D, called only from R016+0x076D when A695 is not 0), a battle starts with
+                // both 0 (R002+0x1912/0x191E); every other holder adds and takes back 1 inside itself (or sets 1 only from 0: the bar root 0000:0000,
+                // the pause box root 0000:1080), and none of them calls this. So at a key 07D3 is 1 exactly when A695 is not 0 (every captured state)
+                throw new SkipJob($"DS:07D3 = {c.Input.Ds[0x07D3]} with DS:A695 = {c.Input.Ds[0xA695]:X2}: the clock is held exactly while the battle is paused");
+            }
             if (key == 0)
             {
                 // no key waits: the direction keys held (DS:0880 / DS:0881) give an arrow
