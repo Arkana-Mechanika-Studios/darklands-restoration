@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 46 entries; recommendations: document: 1, justify: 38, keep: 7.
+- Part A (not-modelled, deliberate-fix, other in core logic): 47 entries; recommendations: document: 1, justify: 38, keep: 8.
 - Part B (undefined-memory in core logic): 132 entries; determinism: n/a: 79, no: 39, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -265,7 +265,7 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the shield picture is the party panel's (loaded on demand).  
   recommendation: **justify** (checked against the original) - party_remove (R037 3b58) frees the slot's shield picture handle; the C# party panel loads shield pictures on demand from Character.ShieldLetter, so no game state differs (presentation resource handling only).
 
-### cards (15)
+### cards (16)
 
 #### not-modelled (6)
 
@@ -294,7 +294,7 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: no original: the original calls whatever R136+0xD090[number] holds; every card of the table has a script, so only a number outside it gets here.  
   recommendation: **justify** (checked against the original) - A fallback for a card number outside R136+0xD090[]'s table: test NotModelledEvidenceTests.EveryCardOfTheTableHasAScript shows every card of the table has a script, so the original's call of whatever the slot holds is never reached with a valid number.
 
-#### deliberate-fix (6)
+#### deliberate-fix (7)
 
 - **D-7a90b2** `deliberate-fix` - `src/Darklands.Cards/Scripts/S059/NightWatch.cs:212` `NightWatch.FightTheWatch`  
   original: `R059+0x02F2` (1838:02F2, matched)  
@@ -320,6 +320,10 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R086+0x0152` (1838:0152, matched)  
   divergence: the original would loop forever with nobody standing; nobody is devoured here.  
   recommendation: **justify** - The original loops for ever when nobody stands; the party would have ended before. Unreachable guard.
+- **D-1b04e8** `deliberate-fix` - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:92` `StrangerBringsAMob.FightAWave`  
+  original: `R128+0x03B8` (1838:03B8, matched)  
+  divergence: the original waits for ever there (only the menu bar and the portraits answer); the screen takes line 0 for an empty option list (CardScreen.Select), the escape line: the party flees with the ointment's cost.  
+  recommendation: **keep** (checked against the original) - Original hang: direct call j_menu.py (local/batch/evid1o): from card state banks-markt with opt_on (DS:E99C, 20) cleared as R128+0x0806 leaves it, card_options then card_menu R043+0x1BD2 took all 602 inputs (every key, 552 clicks over the text window) and did not return (DS:E96F stayed 0xFF); the exits need a hot spot hit or Enter/space with a highlight (R043+0x1C83). The C# screen takes line 0 for an empty option list, as CardScreen.ChooseOnLastLayout already documents: here the escape line (the party flees, Virtue/DF cost).
 
 #### other (3)
 
