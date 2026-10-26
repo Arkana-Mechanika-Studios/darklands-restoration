@@ -121,14 +121,8 @@ public sealed partial class TacticalBattle
         v[BattleVariables.ActivationsOn] = Flag(ActivationsEnabled);
         v[BattleVariables.DelayedStart] = Flag(DelayedStart);
         PutWord(v, BattleVariables.BattlefieldType, BattlefieldType);
-        for (var k = 0; k < 5; k++)
-        {
-            if (k < MarchingOrder.Count)
-            {
-                v[BattleVariables.MarchingOrder + k] = (byte)MarchingOrder[k];
-            }
-        }
-        v[BattleVariables.MarchingOrder + 5] = (byte)MarchingOrder.Count;
+        // C: the six bytes DS:C624..DS:C629 as they are (the five order bytes, stale ones past the length included, and the length).
+        StoreMarchingOrder(v.AsSpan(BattleVariables.MarchingOrder, 6));
         v[BattleVariables.GroupMove] = Flag(GroupMoveAllowed);
         v[BattleVariables.Alarm] = (byte)Battle.Alarm;
         for (var level = 0; level < 16; level++)
@@ -370,6 +364,7 @@ public sealed partial class TacticalBattle
         ActivationsEnabled = v[BattleVariables.ActivationsOn] != 0;
         DelayedStart = v[BattleVariables.DelayedStart] != 0;
         BattlefieldType = Word(v, BattleVariables.BattlefieldType);
+        v.AsSpan(BattleVariables.MarchingOrder, MarchingOrderBytes.Length).CopyTo(MarchingOrderBytes);
         MarchingOrder.Clear();
         for (var k = 0; k < v[BattleVariables.MarchingOrder + 5] && k < 5; k++)
         {

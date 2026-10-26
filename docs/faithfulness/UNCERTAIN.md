@@ -142,7 +142,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-cb31b9** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:590` `TacticalBattle._actionBeforeRecords`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text); the rewrite starts it at 0 and keeps only what order_mode_leave writes. The branches below agree for any value other than 0x80, 0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
-- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:253` `TacticalBattle.AnimationSet`  
+- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:285` `TacticalBattle.AnimationSet`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: read from the slot rules of cbt_set_anim (spec D §3.9): enemies use slot +2 fighting/hit and +4 dying.
 
@@ -151,7 +151,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-7ce977** `uncertain` - `src/Darklands.Persistence/CharacterRecords.cs:16` `CharacterRecords`  
   original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched)  
   why: the bytes this model does not name (+0x02..+0x11 combat position and orders, +0x16, +0x18..+0x21, +0x23, +0x4A, +0x4D/+0x4E, +0x52..+0x54, +0x56/+0x57, +0x59, +0x7F) are kept as read (Character.OriginalRecord); a character made by this program has zeros there. The saint and formula bytes and all 64 pack entries are modelled as raw bytes (KnownBits, Pack).
-- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:417` `OriginalSaves.PartyRecordInBattle`  
+- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:421` `OriginalSaves.PartyRecordInBattle`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 

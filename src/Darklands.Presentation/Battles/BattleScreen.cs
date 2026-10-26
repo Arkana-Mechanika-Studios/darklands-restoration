@@ -348,8 +348,8 @@ public sealed class BattleScreen : ITacticalView
             // C: R002+0x05C1: combat_recover, then the buffers freed and (R002+0x0710) the able and unconscious lose their action and target
             _battle.RecoverAfterBattle();
             Finish();
-            // C: the battle's marching order is the game's (DS:C624 / DS:C629): it stays as the battle left it.
-            Darklands.Core.Rules.MarchingOrderChoice.Store(_battle.MarchingOrder, _state.MarchingOrder);
+            // C: the battle's marching order is the game's (DS:C624 / DS:C629): it stays as the battle left it (its five bytes and the length).
+            _battle.StoreMarchingOrder(_state.MarchingOrder);
         }
         finally
         {
@@ -525,7 +525,7 @@ public sealed class BattleScreen : ITacticalView
         SetPalette(field.Terrain.BackgroundPalette);
         StartCycles();
         // orig: the marching order (DS:C624 / DS:C629) is the game's: the battle starts from it, R016+0x0DA6 keeping it while it is valid
-        _battle.MarchingOrder.AddRange(Darklands.Core.Rules.MarchingOrderChoice.Entries(_state.MarchingOrder));
+        _battle.LoadMarchingOrder(_state.MarchingOrder);
         (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
         _battle.Start(arrivedThroughDoor: request.Mode >= 2, delayedStart: field.Timed && !reuse,
             combatFlags: request.CombatFlags | _state.BattleOrders.Flags, keptPlaces: reuse && request.Mode == 1 ? field.Store.PartyPlaces : null);
@@ -2195,10 +2195,7 @@ public sealed class BattleScreen : ITacticalView
         var tb = _battle!;
         var lengthAt = Darklands.Core.Rules.MarchingOrderChoice.LengthAt;
         var order = new byte[lengthAt + 1];
-        for (var k = 0; k < tb.MarchingOrder.Count && k <= lengthAt; k++)
-        {
-            order[k] = (byte)tb.MarchingOrder[k];
-        }
+        tb.StoreMarchingOrder(order);
         var choice = new Darklands.Core.Rules.MarchingOrderChoice(order, i => tb.Battle[i].IsAble);
         for (var k = 0; k < choice.Prompts; k++)
         {

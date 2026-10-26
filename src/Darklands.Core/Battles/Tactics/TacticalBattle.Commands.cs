@@ -38,6 +38,8 @@ public sealed partial class TacticalBattle
         }
         MarchingOrder.Clear();
         MarchingOrder.AddRange(able);
+        // C: only the able members' bytes are written: with nobody able the length is 0 and the five bytes stay (single file still reads the first).
+        StoreMarchingOrderBytes();
         if (message)
         {
             _view.FarMessage(MarchingOrderRebuiltText, 60);
@@ -216,14 +218,19 @@ public sealed partial class TacticalBattle
 
     /// <summary>The head stops; every other member follows the one in front.</summary>
     // orig: single_file R016+0x0E7E (1EF8:0E7E) draft (byte-matched)
+    // C: no test of the length: the head is DS:C624[0] (cbw) even when the length is 0 (nobody able: a rebuild leaves the bytes as they were),
+    // C: so that stale member is activated (R016+0x09BC, which refuses empty, dead, away and departed members) and its path byte 0 becomes 0xFF;
+    // C: the followers' loop (R016+0x0EC8, length > 1) does not run.
+    // DIVERGENCE: a first byte past the thirteen combatant records (a saved game's bytes) would write past them; here nothing is done.
     private void SingleFile()
     {
-        if (MarchingOrder.Count == 0)
+        var first = MarchingOrder.Count > 0 ? MarchingOrder[0] : (sbyte)MarchingOrderBytes[0];
+        if (first is < 0 or >= Combatant.Count)
         {
             return;
         }
-        ActivateMember(MarchingOrder[0]);
-        var head = Battle[MarchingOrder[0]];
+        ActivateMember(first);
+        var head = Battle[first];
         head.Path[0] = 0xFF;
         head.PathIndex = 0;
         head.Target = -1;

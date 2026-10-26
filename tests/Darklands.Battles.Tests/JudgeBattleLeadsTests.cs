@@ -252,4 +252,45 @@ public sealed class JudgeBattleLeadsTests
         t.ToggleSingleFile();
         Assert.Equal(60, (ushort)(t.Battle.Clock - clock));
     }
+
+    /// <summary>
+    /// R016+0x0E2E / R016+0x0E7E: with nobody able, Q's rebuild makes the length 0 and leaves the five order bytes as they were; single file has
+    /// no length test: the stale first byte's member is activated and its path byte 0 becomes 0xFF (round B2 lead L13). The bytes go into the
+    /// battle's save as they are.
+    /// </summary>
+    [Fact]
+    public void SingleFileWithNobodyAbleTakesTheStaleFirstByte()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, t) = Start();
+        t.PauseByte = 0;
+        t.SetMarchingOrder([3, 0, 1, 2, 4]);
+        CharacterStatus[] statuses = [CharacterStatus.Away, CharacterStatus.Dead, CharacterStatus.Away, CharacterStatus.Unconscious, CharacterStatus.Empty];
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            t.Battle[i].Status = statuses[i];
+            t.Battle[i].Path[0] = 0;
+        }
+        t.ToggleSingleFile();
+        Assert.Equal(2, t.MoveMode);
+        Assert.Empty(t.MarchingOrder);
+        Assert.Equal([3, 0, 1, 2, 4], t.MarchingOrderBytes);
+        Assert.Equal(3, t.ActiveMember);
+        Assert.Equal(0xFF, t.Battle[3].Path[0]);
+        Assert.Equal(0, t.Battle[4].Path[0]);
+        var six = new byte[6];
+        t.StoreMarchingOrder(six);
+        Assert.Equal([3, 0, 1, 2, 4, 0], six);
+
+        // the stale head an empty slot: not activated, its path byte still written
+        t.ToggleSingleFile();
+        t.SetMarchingOrder([]);
+        t.MarchingOrderBytes[0] = 4;
+        t.ToggleSingleFile();
+        Assert.Equal(3, t.ActiveMember);
+        Assert.Equal(0xFF, t.Battle[4].Path[0]);
+    }
 }

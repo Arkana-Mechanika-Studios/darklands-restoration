@@ -314,7 +314,11 @@ public static class OriginalSaves
         PutWord(h, PhilosophersStoneAt, state.Party.PhilosophersStone);
         // C: DS:A67C, the cached hireling count (GameState.HirelingCount).
         PutWord(h, HirelingsAt, state.HirelingCount);
-        // C: bit 7 of the difficulty is set when saving in a battle (a game taken up in a battle not yet begun again is still one).
+        // C: bit 7 of the difficulty is set when saving in a battle: R037+0x2AEF `if (DS:907A == 1)` (a battle runs) ... R037+0x2B57 sets it.
+        // DIVERGENCE: `|| state.ResumeBattle` has no counterpart in the original (the bit depends on DS:907A only). It changes no save made in
+        // play: every save in a battle passes the battle (inBattle), the save dialog outside one is refused while a battle is fought, and
+        // ResumeBattle is set outside a running battle only between a load and the restarted battle, where no input is taken. It serves the
+        // headless host's state writer (no battle argument) in a battle taken up from a save, where the original's DS:907A is 1.
         h[DifficultyAt] = (byte)((int)state.Difficulty & ~InBattleBit | (inBattle is not null || state.ResumeBattle ? InBattleBit : 0));
         PutWord(h, BattleLocationAt, state.Battlefield.LastLocation);
         PutWord(h, ClearedLevelsAt, state.Battlefield.ClearedLevels);
