@@ -74,6 +74,11 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
         {
             return "";
         }
+        // msg_file: the card's .MSG as the oracle loads it (the text variables can read it through party slots past the fifth)
+        lock (MessagesLock)
+        {
+            Context.MessageFileBytes = CardHarness.Assets!.Messages(_card).Bytes;
+        }
         return Convert.ToHexString(TextVariables.Expand(blocks[block].Text, Context)).ToLowerInvariant();
     }
 

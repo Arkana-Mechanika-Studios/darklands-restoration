@@ -67,7 +67,9 @@ public sealed class PublicExecution : Card
     // orig: R079+0x0CF6 (18D8:02F6) asm; tests: CardSmokeTests
     private static void Verdict(CardContext c, int saint, ref int standing)
     {
-        // UNCERTAIN: the abbot's score starts uninitialised when fact (2, 0) holds here; taken as 0.
+        // DIVERGENCE: the abbot's score [bp-0Ah] is zeroed only when fact (2, 0) does not hold here (R079+0x0D17); otherwise it starts
+        //   as the stack leftover of the calls before (1174 after line 1's text, -564 after the menu, under the oracle's stand-ins for
+        //   the menu and the text drawer): not game state; taken as 0.
         var abbot = 0;
         _ = c.Events.Fact(2, 0, c.Here);
         var piety = 0;

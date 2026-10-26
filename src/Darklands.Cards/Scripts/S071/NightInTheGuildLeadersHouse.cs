@@ -91,7 +91,8 @@ public sealed class NightInTheGuildLeadersHouse : Card
         if (c.Random(2) == 1)
         {
             // BUG: the original makes $ChosenOneName the least agile member's Agility value
-            // (party_min_attr's result), not the member; a value past the party names nobody.
+            // (party_min_attr's result), not the member; a value past the party names whatever lies there (from 25 on a piece of
+            // this card's .MSG file: TextVariables.OutsideName).
             c.Variables.Chosen[0] = c.PartyMinAttribute((int)Attribute.Agility);
             c.Screen.Text(1);
         }

@@ -68,6 +68,21 @@ public sealed class CardOracleTests
         AgreeWith(corpus);
     }
 
+    /// <summary>
+    /// The lead runs of local/batch/cards1 that start from built states (judged in local/batch/cards1o): the death film when nobody is
+    /// left, the member who leaves with the file's record tail, the text variable read through msg_file, a never-held slot's figure.
+    /// </summary>
+    [Fact]
+    public void LeadRunsAgreeWithTheOriginal()
+    {
+        if (!CardHarness.Available || Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_CORPUS") is { Length: > 0 }
+            || Corpus("cards-leads.json.gz") is not { } corpus)
+        {
+            return;
+        }
+        AgreeWith(corpus);
+    }
+
     private static void AgreeWith(JsonDocument corpus)
     {
         var divergences = Divergences();
@@ -279,6 +294,11 @@ public sealed class CardOracleTests
         {
             end = "stops " + reason;
         }
+        // the game is over after the death film: the original's run stops at the kbhit() that follows it (INT 21h AH=0Bh)
+        if (end == GameOver && want.LastOrDefault() == "film death" && wantEnd.StartsWith("stops INT 21h AH=0Bh ", StringComparison.Ordinal))
+        {
+            end = wantEnd;
+        }
         if (wantEnd != end)
         {
             return $"end: original '{Short(wantEnd)}', C# '{end}'";
@@ -450,6 +470,12 @@ public sealed class CardOracleTests
         }
     }
 
+    /// <summary>The C# run's end when nobody was left (the death film played; the game is over).</summary>
+    private const string GameOver = "game over";
+
+    /// <summary>Stops a run when nobody is left (<see cref="Run"/>).</summary>
+    private sealed class PartyPerishedStop : Exception;
+
     private static string Short(string s) => s.Length > 160 ? s[..160] + "…" : s;
 
     /// <summary>Runs the C# card on a start state as the oracle did.</summary>
@@ -465,6 +491,14 @@ public sealed class CardOracleTests
         foreach (var character in state.Party.Members.Concat(state.Roster.Characters))
         {
             character.OriginalRecord ??= Persistence.CharacterRecords.Write(character);
+        }
+        // the original's CHARACTR.TMP is that saved game's: its records of the party are the members as the start has them (aimed
+        // changes included), as a load leaves them (OriginalSaves.Read: CharacterRoster.KeepStored)
+        state.Roster.Reconcile(state.Party);
+        foreach (var entry in state.Roster.PartySlots.Where(e => e >= 0 && e < state.Roster.Characters.Count))
+        {
+            var member = state.Roster.Characters[entry];
+            state.Roster.KeepStored(member, member.Copy());
         }
         var screen = new OracleScreen(option, probe, hand) { Force = CardOracleStates.ForceOf(key), Path = CardOracleStates.PathOf(key) };
         var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames };
@@ -498,6 +532,23 @@ public sealed class CardOracleTests
             screen.Log.Add($"prayer {who} {saint}");
             return prayerAnswers is null ? 0 : prayerAnswers[Math.Min(prayers++, prayerAnswers.Length - 1)];
         };
+        // nobody left: hours_pass R029+0x255A and run_battle R029+0x2278 play the death film (the oracle records it) and end the program
+        // (the original's run stops at the kbhit after the film, INT 21h AH=0Bh); the game's host does the same (DarklandsGame: Perished,
+        // AllDead), the harness records the film and stops the run
+        c.AllDead = () =>
+        {
+            screen.Log.Add("film death");
+            throw new PartyPerishedStop();
+        };
+        void Perished(Core.GameState perished)
+        {
+            if (ReferenceEquals(perished, state))
+            {
+                screen.Log.Add("film death");
+                throw new PartyPerishedStop();
+            }
+        }
+        Core.Rules.TimePassage.PartyPerished += Perished;
         screen.Context = c;
         state.CurrentCard = card.Number;
         var end = "";
@@ -528,9 +579,17 @@ public sealed class CardOracleTests
                 Core.Rules.TimePassage.Advance(state, 0);
             }
         }
+        catch (PartyPerishedStop)
+        {
+            end = GameOver;
+        }
         catch (Exception e)
         {
             end = $"throws {e.GetType().Name}: {e.Message}";
+        }
+        finally
+        {
+            Core.Rules.TimePassage.PartyPerished -= Perished;
         }
         var random = state.Random is MscRandom msc ? msc.State.ToString("X8") : "?";
         (string, JsonObject)? sav = null;

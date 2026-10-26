@@ -52,7 +52,10 @@ public sealed class OriginalBehaviour
     /// stores in CACHE.TMP) are fixed, every other quirk stays. The fixed files are still read by the original. The player's game
     /// uses this; future data-safety fixes go here (and only these).
     /// </summary>
-    public static OriginalBehaviour DataSafe => new() { FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true };
+    public static OriginalBehaviour DataSafe => new()
+    {
+        FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
+    };
 
     /// <summary>
     /// Leaving an item store that already has a stored list rewrites CACHE.TMP with a 101-byte header over the 198-byte header's
@@ -80,6 +83,16 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: save writer R037+0x2ACE (1462:2ACE), data safety, data-damaging
     public bool FixSaveWriterSkipsEmptySlots { get; set; }
+
+    /// <summary>
+    /// A member who leaves the party through <c>party_remove</c> (gone away, sent off by a card) has only the 0x80-byte member record
+    /// written back to CHARACTR.TMP: the saints, formulas and pack entries there stay as the file last had them (the member joined, the
+    /// game was loaded) while the item count is the member's own, so on rejoining the member has the old saints, formulas and items
+    /// (what was learned or gained since is lost; a count above the old list's brings stale or empty entries); fixed: the whole record
+    /// is written.
+    /// </summary>
+    // orig: party_remove R037+0x3B58 (1462:3B58), data safety, data-damaging
+    public bool FixLeavingMemberRecordTail { get; set; }
 
     /// <summary><c>event_update</c> with "add" on a new event leaves 2 × value; fixed: the value.</summary>
     public bool FixNewEventAddDoubles { get; set; }

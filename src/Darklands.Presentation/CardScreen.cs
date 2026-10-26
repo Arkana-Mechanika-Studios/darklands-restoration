@@ -228,6 +228,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         var b = _messages.Blocks[block];
         _lastBlock = b;
         var c = context();
+        c.MessageFileBytes = _messages.Bytes;
         var text = TextVariables.Expand(b.Text, c);
         var layout = new CardTextLayout(ui.CardText);
         var areas = layout.Draw(_canvas, text, WindowX + b.X + 5, b.Y + 5, b.Width - 10, new CardTextLayout.Settings

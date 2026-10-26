@@ -68,6 +68,9 @@ public static class PartyRules
         Inventory.AddWithQuality(s, slot, 0x2C, 10);
         Inventory.AddWithQuality(s, slot, 0x33, 15);
         Inventory.AddWithQuality(s, slot, 3, 15);
+        // C: then the whole record (combatants, saints_known, formulas, inventories of the slot) is appended to charactr.tmp: the file's
+        // C: record of the member from now on (CharacterRoster.StoredRecord; party_remove writes back only its first 0x80 bytes)
+        s.Roster.KeepStored(m, m.Copy());
         s.Events.Create(-2, s.CurrentLocation, 0, EventKinds.MemberTerm, slot, term, (int)ExpiryHandler.MemberTermEnds, hours,
             (int)EventFlags.CallExpiryHandler, 0);
         // C: DS:A67C = event_count(0x43), the cached hireling count (GameState.HirelingCount).
@@ -163,6 +166,9 @@ public static class PartyRules
             }
         }
         s.Roster.Reconcile(party);
+        // the record CHARACTR.TMP holds for the member until the write-back below
+        var entry = slot >= 0 && slot < s.Roster.PartySlots.Length ? s.Roster.PartySlots[slot] : -1;
+        var stored = entry >= 0 && entry < s.Roster.Characters.Count ? s.Roster.StoredRecord(entry) : null;
         s.Roster.LeaveParty(slot);
         if (slot >= 0 && slot < party.Members.Count)
         {
@@ -177,6 +183,14 @@ public static class PartyRules
             residue.Status = CharacterStatus.Empty;
             party.Members[slot] = residue;
             s.Roster.MarkOffRoster(residue);
+            // BUG: OriginalBehaviour.FixLeavingMemberRecordTail - the write-back is the 0x80-byte member record (combatants + p * 0x80 at
+            //   the record's start, item count +0x7E included): the file's saints (+0x80), formulas (+0x94) and pack entries (+0xAA) stay
+            //   as it had them, the slot's own (saints_known, formulas, inventories) are not written; the roster entry is that mix
+            if (!s.Behaviour.FixLeavingMemberRecordTail && stored is not null && !ReferenceEquals(stored, record)
+                && ReferenceEquals(s.Roster.Characters[entry], record))
+            {
+                record.KeepRecordTail(stored);
+            }
         }
         party.TrimToSize();
     }
@@ -200,16 +214,31 @@ public static class PartyRules
         }
         s.Roster.PartySlots[slot] = character;
         var member = s.Roster.Characters[character];
+        if (party.Members.Any(m => ReferenceEquals(m, member)))
+        {
+            // C: a character already in the party is read into this slot too: the slot has its own copy of the record (from the file)
+            member = s.Roster.StoredRecord(character).Copy();
+            s.Roster.KeepSecondSlot(member, character);
+        }
         // C: the file keeps the record as it was read (CharacterRoster.StoredRecord).
         s.Roster.KeepStored(member, member.Copy());
         member.Status = CharacterStatus.Able;
         // C: R037+0x3D91..0x3E16 read the record, saints, formulas and pack into the slot, R037+0x3E19 the status; member_shield[slot]
         // C: (DS:A668, read back from the file's header) and member_palette[slot] (R136+0x33FC) are not written: the member takes the
-        // C: figure the slot held (a slot no member held since start-up: the member's own here).
+        // C: figure the slot held.
         if ((slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot)) is { } figure)
         {
             member.Image = figure.Image;
             member.ImagePalette = [.. figure.ImagePalette];
+        }
+        else
+        {
+            // C: a slot no member held since the game began (a state not read from a file: a loaded game's slots all hold their
+            // C: figure) keeps the figure the saved game writes for it, none: no figure code, a zero palette (card oracle, card 0x120).
+            // DIVERGENCE: after a new game the original's slot holds the figure of SAVES\DEFAULT's slot 4 (code "0", a zero palette);
+            //   here no code (the battle screen draws F01 for it).
+            member.Image = "";
+            member.ImagePalette = new byte[member.ImagePalette.Length];
         }
         while (party.Members.Count <= slot)
         {
