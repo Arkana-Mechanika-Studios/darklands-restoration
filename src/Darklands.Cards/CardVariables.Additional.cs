@@ -12,6 +12,7 @@ public sealed partial class CardVariables
 
     /// <summary>Which of the city's 16 names $CityLocation stands for (index into the working city record's name table).</summary>
     // orig: DS:ED52 (DGROUP int), case 52 of R043+0x1316: city_rec->names[DS:ED52]; data
-    // C: the name "city location" for DS:ED52 is the variable's text name ($CityLocation); which scripts set it is not established.
+    // C: the name "city location" for DS:ED52 is the variable's text name ($CityLocation). Nothing writes it: the one instruction that names DS:ED52 is this read
+    //   (R043+0x13CE), no word 0xED52 is in the EXE (no pointer to it), and the tables and buffers below it (the handler table ending at DS:ED45, $Money5 at DS:ED46, $Number1/$Number2 at DS:ED4C/ED50) end before it, so it keeps the 0 of the start-up BSS clear (names[0]).
     public int CityLocation { get; set; }
 }

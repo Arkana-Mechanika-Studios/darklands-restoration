@@ -46,7 +46,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
   original: `R086+0x0C40` (18FC:0000, matched)  
   why: the saint name table of the texts (R034) is taken to be the saint list's full names.
-- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:253` `TextVariables.PlaceDescription`  
+- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:255` `TextVariables.PlaceDescription`  
   original: `R043+0x1316` (150B:0886, draft)  
   why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
 

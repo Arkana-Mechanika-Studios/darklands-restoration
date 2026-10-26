@@ -246,6 +246,8 @@ public static class TextVariables
             return Names(c.State.City, -1);
         }
         // DIVERGENCE: a place past the location table (here >= 414) gives "" here; the original reads the far table's memory after its last record.
+        //   (R043+0x133E: the far pointer es:[10BE + 4 x cur_loc], es = DS:7EE6, then the name at +0x26 of what it points to.) Not reached in play: every writer of cur_loc (DS:907E) stores -1, a constant
+        //   below 414, a city index, a city record's +0x4A..+0x52 word (-1..91 in DARKLAND.CTY) or the result of a search over the 414 places (-1..413).
         return here < c.State.Locations.Count ? c.State.Locations[here].Name : "";
     }
 
@@ -366,7 +368,7 @@ public static class TextVariables
     /// <summary>A name of the working city record (city_rec->names[n]); n = -1 is the short name at the start of the record.</summary>
     // C: _fstrcpy copies up to the first zero byte: a 32-byte field without one runs on into the next field. An index outside the 16 names reads other parts of the record.
     // DIVERGENCE: an index past the record's 16 names (the record ends at 0x6E + 16 x 0x20 = 0x26E) gives "" here; the original reads the memory after the record
-    //   (what follows the working city record in the data segment; the writers of the variable that holds such an index are unknown).
+    //   (city_rec is the far block at DS:9785). Not reached in play: the callers pass 0..15 or -1, and $CityLocation's DS:ED52 is always 0 (see CardVariables.CityLocation).
     private static string Names(Core.World.CityRecord city, int index)
     {
         var start = index < 0 ? 0 : NamesOffset + index * NameSize;

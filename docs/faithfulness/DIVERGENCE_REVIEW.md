@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 46 entries; recommendations: document: 1, justify: 36, keep: 9.
-- Part B (undefined-memory in core logic): 143 entries; determinism: n/a: 81, no: 48, partly: 10, yes: 4.
+- Part B (undefined-memory in core logic): 143 entries; determinism: n/a: 83, no: 46, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -813,36 +813,36 @@ Where the original reads or writes outside its defined data, the outcome can sti
   deterministic: **n/a** (checked against the original); action: **document** - Cases 54/70 are _fstrcpy(name, locations[var_loc]->name) (record +0x26). var_loc/var_loc2 come from quest events (valid sites), nearest_loc_type (returns a real site or cur_loc) and nearest_city (never -1 on the shipped map); index -1 would read the NULL-pointer record at 2E38:10BA and >=414 the virtue_names pointers at 2E38:1736. Not reachable, so '' is a harmless guard.
 - **D-6c5593** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:248` `TextVariables.PlaceName`  
   original: `R043+0x1316` (150B:0886, draft)  
-  divergence: a place past the location table (here >= 414) gives "" here; the original reads the far table's memory after its last record.  
-  deterministic: **no**; action: **keep** - Registered in batch 19 after the audit (was an uncommented guard). var_expand case 0 (R043+0x1316) reads the far location table at cur_loc unchecked; for a place past the table (cur_loc >= 414) the original reads the memory after its last record, the rewrite gives "". Reachability not established (the current location is a table index or -1 in the game); not re-derived against the EXE in this pass. GAME LOGIC row: Opus audit.
-- **D-869de6** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:257` `TextVariables.Standing`  
+  divergence: a place past the location table (here >= 414) gives "" here; the original reads the far table's memory after its last record. (R043+0x133E: the far pointer es:[10BE + 4 x cur_loc], es = DS:7EE6, then the name at +0x26 of what it points to.) Not reached in play: every writer of cur_loc (DS:907E) stores -1, a constant below 414, a city index, a city record's +0x4A..+0x52 word (-1..91 in DARKLAND.CTY) or the result of a search over the 414 places (-1..413).  
+  deterministic: **n/a** (checked against the original); action: **keep** - Re-derived from the EXE (capstone): case 0 (R043+0x132C) takes the city record for cur_loc (DS:907E) < 0x5C, else the far pointer es:[10BE + 4 x cur_loc] (es = DS:7EE6) and the name at +0x26, unchecked; past 413 it reads a pointer after the 414-entry table. Every writer of DS:907E: constants -1, 0x22, 0xB9; rand_mod(0x5A) at start (root 03A1:01B2); nearest-city searches over the 92 cities (R030+0x132D, R082+0x1560, R109+0x0AB0/0x2102, R133+0x181A); the travel searches over i < 414 (R030+0x158E, +0x1684) and the nearest place of a type (R060+0x10CA, -1..413 or cur_loc); the city record's +0x4A..+0x52 words (R051, R066; -1..91 in all 92 records of DARKLAND.CTY); the saved game's header (written from the same variable). Not reached in play (only an edited save could hold more); keep.
+- **D-869de6** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:259` `TextVariables.Standing`  
   original: `R136+0xA813` (290E:2183, data)  
   divergence: in the wilderness (no location) the original indexes locations[-1]; here the standing band of an unknown place, 2, is used ("unknown").  
   deterministic: **n/a** (checked against the original); action: **document** - Case 16 is kg=loc_query(cur_loc,1) (band from locations[cur_loc]->rep at +0x12) and R136+0xA813[kg] (a fixed table: local hero, respected, unknown, suspected, wanted, hunted, Day Laborer, Beggar). With cur_loc=-1 the pointer is NULL (tail of enemy_items) and rep is the word at 0000:0012 = INT 4 vector segment, host dependent. $PlaceAttitude appears only in $CITYE00/01/03 and $VILLA02, whose scripts also call loc_query(cur_loc,..)/event_at(..,cur_loc), so they run only at a place: cannot occur.
-- **D-09000b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:272` `TextVariables.LordTitle`  
+- **D-09000b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:274` `TextVariables.LordTitle`  
   original: `R136+0xA813` (290E:2183, data)  
   divergence: no location counts as not risen (the original reads locations[-1])  
   deterministic: **n/a** (checked against the original); action: **document** - Case 51 reads locations[cur_loc]->flags & 0x80 (+0x14) to pick city_rec->f58/f5a and the name; with -1 that would be the byte at 0000:0014 (INT 5 vector, host dependent). The 24 texts that use $CityLordTitle ($CITYE*, $REVOL*, $NOBLE00, $COUNC00 ...) are city cards run at a place, so cur_loc>=0 and the guard never fires.
-- **D-f7cab9** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:284` `TextVariables.Support`  
+- **D-f7cab9** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:286` `TextVariables.Support`  
   original: `R136+0xB1EB` (290E:2B5B, data)  
   divergence: a value outside -1..1 gives "" (the original indexes its table unchecked and copies whatever string the neighbouring pointer gives).  
   deterministic: **n/a** (checked against the original); action: **document** - R136+0xB1EB is addressed with -1..1: its pointers sit at 290E:2B57 'oppose', 2B5B 'are undecided about', 2B5F 'support' (the C# SupportWords[value+1] is exactly this), followed by unrelated data (index 2 = 0059:004B, physical 0x5DB; indices below -1 hit other tables). All setters yield loc_side_get() (-1/0/1) or rand_mod(3)-1, so out-of-range values cannot occur; '' is fine.
-- **D-d7c7c6** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:316` `TextVariables.DirectionFromHere`  
+- **D-d7c7c6** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:318` `TextVariables.DirectionFromHere`  
   original: `R136+0xA773` (290E:20E3, data), `R030+0x29BC` (1462:29BC, draft)  
   divergence: the original indexes locations[cur_loc] and locations[var_loc] unchecked  
   deterministic: **n/a** (checked against the original); action: **document** - Case 57 is R136+0xA773[R030+0x29BC(var_loc)] = direction (0..7, fixed 8-name table) from locations[cur_loc] to locations[var_loc] using x/y at +4/+6. The nine cards using $Direction ($AFFAI00, $CITYN00, $COUNT05, $MINES00, $RAUBI00, $RESCU00, $SITUA01, $SNUCK00, $SPECI00) are place/quest cards with a valid var_loc; with cur_loc=-1 the x,y would be the words at 0000:0004/0006 (INT 1 vector), host dependent. Not reachable as far as the card scripts show (not all nine were traced).
-- **D-8cf4db** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:329` `TextVariables.DirectionBetweenLocations`  
+- **D-8cf4db** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:331` `TextVariables.DirectionBetweenLocations`  
   original: `R136+0xA773` (290E:20E3, data)  
   divergence: unchecked indexes in the original  
   deterministic: **n/a** (checked against the original); action: **document** - Case 58 is R136+0xA773[R030+0x29FA(locations[var_loc2].x,y, locations[var_loc].x,y)]; var_loc2 is normally nearest_city(locations[var_loc]) (never -1 here) and var_loc a quest site, in the seven texts that use $Direction2 ($MCGUF12 etc.). An invalid index would read the NULL-pointer record (interrupt table, host dependent); not reachable.
-- **D-09b57b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:354` `TextVariables.RelativeToNearestCity`  
+- **D-09b57b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:356` `TextVariables.RelativeToNearestCity`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: the original indexes locations[-1] when there is no such place  
   deterministic: **no** (checked against the original); action: **keep** - Case 69 uses kg=thunk 09C0:20FD() = R039+0x1CFE, which returns events[i]->f2a of the sabbat fact (event_find(0x1c,4,..)) and, when none is planned, falls off its end with AX still -1 (asm 1632b-1634b), then reads locations[-1]->x,y (= words 0000:0004/0006, the INT 1 vector) into nearest_city and the direction call, so the printed text is host dependent. Cases 71/72 (nearest_loc_type icons 0x16/0x17) always find a site. Whether a card can print $SabbatLocation while no sabbat is planned ($WITCD*, $VILLA02/05/06, $COUNT05, $SNUCK00...) is not established; keep the C# '' for that case.
-- **D-1cbe8f** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:368` `TextVariables.Names`  
+- **D-1cbe8f** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:370` `TextVariables.Names`  
   original: `R043+0x1316` (150B:0886, draft)  
-  divergence: an index past the record's 16 names (the record ends at 0x6E + 16 x 0x20 = 0x26E) gives "" here; the original reads the memory after the record (what follows the working city record in the data segment; the writers of the variable that holds such an index are unknown).  
-  deterministic: **no**; action: **keep** - Registered in batch 19 after the audit (was an uncommented guard). var_expand R043+0x1316 reads city_rec->names[n] unchecked; the variable CityLocation supplies n, so an index past the record's 16 names (0x6E + 16 x 0x20 = 0x26E) reads the memory after the working city record, which the rewrite does not model (""). The writers of CityLocation are not established; not re-derived against the EXE in this pass. GAME LOGIC row: Opus audit (settle whether any card sets an index past 15, else justify as unreachable).
+  divergence: an index past the record's 16 names (the record ends at 0x6E + 16 x 0x20 = 0x26E) gives "" here; the original reads the memory after the record (city_rec is the far block at DS:9785). Not reached in play: the callers pass 0..15 or -1, and $CityLocation's DS:ED52 is always 0 (see CardVariables.CityLocation).  
+  deterministic: **n/a** (checked against the original); action: **keep** - Re-derived from the EXE (capstone, every indexed function): var_expand case 52 (R043+0x13CE) is `mov ax, [DS:ED52]; shl ax, 5; add ax, [DS:9785]` then the names offset, unchecked. That read is the only instruction in the EXE that names DS:ED52; the word 0xED52 occurs nowhere else in the file (no near or far pointer to it); the tables and buffers below it end before it (the handler table at DS:ECF6, 5 x 4 far pointers, ends at DS:ED45; $Money5 is DS:ED46..ED4B, $Number1 DS:ED4C, $Number2 DS:ED50, word stores only). DS:ED52 is in the BSS the start-up clears (DS:83B6..F400), so it is always 0 and $CityLocation is names[0]. The other callers of the names pass 0..15 or -1. Not reached in play; keep.
 
 ### travel (6)
 

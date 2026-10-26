@@ -471,7 +471,8 @@ Open items (2026-10-26, after batch 19), listed honestly:
   C# reads as 0 (D-0bf8d6; it needs a room or strip bound within two cells of the map's edge; 300,000 castle builds of the corpus's scenarios with other
   seeds never read outside, not proven by a bound). They were inline notes in comments, now markers with review rows; the text-variable guards of
   TextVariables (the third inline note of audit 18) were not a divergence of their own and the comment is reworded; its two other guards that give "" are registered
-  as undefined-memory divergences with review rows for the audit (a city-name index past the record's 16 names, D-1cbe8f; a place past the location table, D-6c5593). The save writer's
+  as undefined-memory divergences (a city-name index past the record's 16 names, D-1cbe8f; a place past the location table, D-6c5593), both checked against the EXE
+  and unreachable: DS:ED52 ($CityLocation) has no writer and stays 0 from the BSS clear, and every writer of cur_loc stores -1..413. The save writer's
   `|| state.ResumeBattle` has no counterpart in the original (bit 7 of the saved game's byte depends on DS:907A alone): kept and registered (D-f631fd)
   because the headless host's state writer needs it; it changes nothing in play. A tester gap, low: headless states taken inside a battle that was not
   loaded from a save lack the in-battle bit.
