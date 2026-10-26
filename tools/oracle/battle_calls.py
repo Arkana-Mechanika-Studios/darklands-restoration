@@ -156,11 +156,27 @@ class State:
         self.cat = Catalog(exe)
         self.draws: list[int] = []
         self.m.hook(*RAND_FN, lambda m: self.draws.append(u32(m.read(DS, HOLDRAND, 4))))
+        # the tick wait of the game's delay routine (root 0410:0302: loops until the timer interrupt moves the tick byte DS:07D2). A call has no interrupts
+        # (and the machine would need ~10^7 bytes of code a tick), so each pass of the wait takes the counters of one timer callback (root 047C:0038..0050:
+        # the combat clock DS:07D4 unless held by DS:07D3, bytes 07D0 07D1 07D2 07D9, word 07D6): n ticks of the game's clock, as the game's wait would see
+        self.m.hook(P(0x0410), 0x0314, self._wait_tick)
+        self.answer = 0
+        if "R022+0x03E4" in near:
+            # the yes/no question (root 0000:2522, the message box with two buttons) of do_surrender: answered at once with the job's first argument
+            self.m.stub(P(0x0000), 0x2522, lambda m: (self.answer, 0), record="root")
         self.stop_at = None             # (linear entry, SP when the near function has returned)
         for coord in near:
             i = self.cat.info(coord)
             self.m.hook(i["seg"], i["off"], self._near_end, record="R%03d" % i["record"])
         self.restore()
+
+    @staticmethod
+    def _wait_tick(m):
+        if m.byte(DS, 0x07D3) == 0:
+            m.write(DS, 0x07D4, struct.pack("<H", (m.word(DS, 0x07D4) + 1) & 0xFFFF))
+        for a in (0x07D0, 0x07D1, 0x07D2, 0x07D9):
+            m.write(DS, a, bytes([(m.byte(DS, a) + 1) & 0xFF]))
+        m.write(DS, 0x07D6, struct.pack("<H", (m.word(DS, 0x07D6) + 1) & 0xFFFF))
 
     def _near_end(self, m):
         if self.stop_at is not None and m.reg("SP") == self.stop_at[1] and linear(m.reg("CS"), m.reg("IP")) == self.stop_at[0]:
@@ -254,6 +270,9 @@ class State:
             m.waits, m.idle_since = orig_side.IDLE_POLLS, -orig_side.IDLE_MS         # the game has been idle long enough: the first look at the keyboard finds the key
             m.idle_mark = (m.read(DS, orig_side.HOLDRAND, 4), m.word(DS, orig_side.CARD))
             args = ()
+        if coord in ASKED:
+            self.answer = args[0] & 0xFFFF           # the answer the question gets; the function itself takes no argument
+            args = ()
         if coord in MOUSED:
             m.releases = [args[0] & 0xFFFF, 0]
             m.presses = [0, 0]
@@ -307,6 +326,7 @@ class State:
 
 
 MOUSED = {"R014+0xB576"}          # functions that read the mouse: the arguments are the left-button releases the driver counted and whether Ctrl is held
+ASKED = {"R022+0x03E4"}          # functions that ask a yes/no question: the first argument is the answer (1 yes), given by a stub of the question's function
 KEYED = {"R016+0x0000"}          # functions that read a key: the first argument is the key code (scan << 8 | character), given through the keyboard stubs
 
 GAPS: dict = {}          # (the loot is carried now: loot_after_fight is judged)

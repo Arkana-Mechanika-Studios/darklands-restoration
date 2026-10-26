@@ -143,6 +143,7 @@ def pack(v: int, width: int) -> str:
 class Fuzzer:
     def __init__(self, st: "bc.State", coord: str, args_spec, rng: random.Random, baseline, probes: int = 12):
         self.probes = probes
+        self.errors = {}          # what the original's errored calls were (dropped from the corpus): message -> count
         self.aimed = [] if os.environ.get("DARKLANDS_BATTLE_FUZZ_NOAIM") else aimed_ops(coord)       # NOAIM: without branch_flip.py's values (to see what they add)
         self.st, self.coord, self.args_spec, self.rng = st, coord, args_spec, rng
         self.seen_i = {k: set(v) for k, v in baseline[0].items()}
@@ -169,6 +170,11 @@ class Fuzzer:
                 if op["w"] == "ds" and 0 <= k < 13 and rest == 0x14 and op["hex"] in ("02", "03"):
                     args[0] = k
                     break
+        if self.coord == "R014+0x2170" and args:
+            for op in reversed(ops):
+                if op["w"] == "ds" and 0xA6C4 <= op["o"] < 0xA6C9:
+                    args[0] = op["o"] - 0xA6C4          # the member whose place the call carries out
+                    break
         if self.coord == "R014+0xDF28":
             chosen = [int(op["hex"], 16) for op in ops if op["o"] == 0xA6B2]
             return [] if chosen and chosen[-1] < 5 else [{"w": "ds", "o": 0xA6B2, "hex": "%02x" % rng.randrange(5)}]
@@ -190,12 +196,42 @@ class Fuzzer:
             args[1], args[2] = self.rng.choice([(rec[0x22], rec[0x5A]), (0x40, 25), (0x41, 25), (rec[0x22], 25)])
         return args
 
-    def scenario(self) -> list[dict]:
+    def scenario(self, force=None) -> list[dict]:
         """Several coordinated changes at once: whole vectors of statuses, floors, the result, the timers."""
         rng = self.rng
         ops = []
-        pick = "doors" if self.coord in DOOR_FUNCTIONS and rng.random() < 0.6 else rng.choice(BIAS[self.coord]) if self.coord in BIAS and rng.random() < 0.7 else rng.choice(["statuses", "floors", "result", "times", "kill enemies", "kill party", "positions", "flags", "tables", "doors", "doors", "map", "missiles"])
-        if pick == "statuses":
+        pick = force or ("doors" if self.coord in DOOR_FUNCTIONS and rng.random() < 0.6 else rng.choice(BIAS[self.coord]) if self.coord in BIAS and rng.random() < 0.7 else rng.choice(["statuses", "floors", "result", "times", "kill enemies", "kill party", "positions", "flags", "tables", "doors", "doors", "map", "missiles"]))
+        if pick == "places":
+            # a member at a door / chest / stairs with the loot file there (the order the place carries out: R014+0x2170): doors, the member's spot, the loot
+            ops.extend(self.scenario("doors") if rng.random() < 0.7 else [])
+            ops.extend(self.member_state())
+            ops.extend(self.loot_state(False))
+            who_ = [int(op["hex"], 16) for op in ops if op["o"] == 0xA6B2][-1]
+            place = rng.choice([2, 2, 3, 4, 5, 6, 7, 8, 9])
+            ops.append({"w": "ds", "o": 0xA6C4 + who_, "hex": "%02x" % place})
+            if self.door_count:
+                ops.append({"w": "ds", "o": 0xC64C + who_, "hex": "%02x" % rng.randrange(self.door_count)})
+            # the place-changed bit (0x08) is set and cleared inside the pass that sets it: never in a state the call starts from
+            flags = [op for op in ops if op["w"] == "ds" and op["o"] == 0xA696 + 2 * who_]
+            if flags:
+                ops.append({"w": "ds", "o": 0xA696 + 2 * who_, "hex": pack(int.from_bytes(bytes.fromhex(flags[-1]["hex"]), "little") & ~0x08, 2)})
+            if place == 2:
+                # stairs: a record of the level (its number below the count), enemies that follow (the per-kind floor masks DS:C23E) and a few more
+                # a level switch is judged only with the level's own image (the other levels are the original's files') and DS:D4E4 set (the level saved)
+                ops[:] = [op for op in ops if not (op["w"] == "floor" and op["o"] < 0x4AEE)]
+                count = self.st.m.byte(P(FLOOR_SEG), 0x2FB6)
+                ops.append({"w": "ds", "o": 0xD4E4, "hex": "01"})
+                ops.append({"w": "ds", "o": 0xC77E + who_, "hex": "%02x" % (rng.randrange(count) if count else 0xFF)})
+                for slot in range(7):
+                    ops.append({"w": "ds", "o": 0xC23E + 2 * slot, "hex": pack(rng.choice([0, 0xFFFF, 1 << rng.randrange(8), rng.getrandbits(8)]), 2)})
+        elif pick == "pointer":
+            # the pointer at and around the zones of the view's edges (R014+0x33A2: x 60/68/126/255/311, y 8/50/150/191), with the shape in use: one of the arrows, the normal one or none
+            x = rng.choice([rng.randint(0, 319)] * 2 + [58, 59, 60, 61, 66, 67, 68, 69, 124, 125, 126, 127, 253, 254, 255, 256, 309, 310, 311, 312, 319])
+            y = rng.choice([rng.randint(0, 199)] * 2 + [0, 6, 7, 8, 9, 48, 49, 50, 51, 52, 148, 149, 150, 151, 152, 189, 190, 191, 192, 193, 199])
+            ops.append({"w": "ds", "o": 0x6EEC, "hex": pack(x & 0xFFFF, 2) + pack(y & 0xFFFF, 2)})
+            handles = [self.st.ds(0xD72B + 2 * a, 2).hex() for a in range(8)] + [self.st.ds(0x9C42, 2).hex(), "ffff"]
+            ops.append({"w": "ds", "o": 0xA68F, "hex": rng.choice(handles)})
+        elif pick == "statuses":
             for k in range(13):
                 st = rng.choice([1, 1, 1, 2, 3, 5, 0]) if k < 5 else rng.choice([1, 1, 0, 0, 2, 3])
                 ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x14, "hex": "%02x" % st})
@@ -797,8 +833,11 @@ class Fuzzer:
             try:
                 r = self.run(args, ops)
             except Exception as e:      # a machine fault of the original on odd bytes: not an input
+                self.errors[type(e).__name__ + " " + str(e)[:50]] = self.errors.get(type(e).__name__ + " " + str(e)[:50], 0) + 1
                 continue
             if r["error"]:
+                key = r["error"][:200].split(";")[0] + (" @" + r["error"].split("frames")[-1][:80] if "frames" in r["error"] else "")
+                self.errors[key] = self.errors.get(key, 0) + 1
                 continue
             novel = self.novelty(r)
             probe = not novel and probes_left > 0 and ops and rng.random() < 0.15
@@ -825,7 +864,8 @@ anything = lambda rng, f: rng.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 0xFFFF, rng
 buffer = lambda rng, f: 0xFE80          # a DS offset above the stack for a function's output words
 DOOR_FUNCTIONS = {"R023+0x00B8", "R023+0x04AC"}
 # per function: the scenarios that matter most to it (70% of the scenarios drawn for it)
-BIAS = {"R025+0x0000": ["groups", "groups", "activations", "positions", "statuses"], "R014+0x2324": ["dying", "dying", "dying", "loot", "pack"], "R014+0xEA10": ["loot", "loot", "loot", "pack", "statuses"], "R014+0xB576": ["mouse", "mouse", "mouse", "mouse", "orders", "member"], "R014+0x0620": ["activations", "activations", "orders"], "R014+0x2170": ["member", "member", "doors", "regions", "pack", "stairs"], "R014+0xBC0C": ["orders", "orders", "member", "pack"], "R014+0xBCA8": ["orders", "orders", "orders", "member", "pack"], "R014+0x0F58": ["spells", "spells", "effects", "effects", "immune", "times", "pack", "tables"], "R016+0x0000": ["orders", "orders", "orders", "member", "pack", "menus", "doors", "tables"], "R014+0xDF28": ["member", "member", "member", "doors", "pack", "menus", "tables"], "R014+0xD04E": ["doors", "doors", "pack", "menus"], "R014+0xD402": ["regions", "regions", "pack", "menus"], "R014+0xD6DA": ["triggers"],
+BIAS = {"R025+0x0000": ["groups", "groups", "activations", "positions", "statuses"], "R014+0x2324": ["dying", "dying", "dying", "loot", "pack"], "R014+0xEA10": ["loot", "loot", "loot", "pack", "statuses"], "R014+0xB576": ["mouse", "mouse", "mouse", "mouse", "orders", "member"], "R014+0x0620": ["activations", "activations", "orders"], "R014+0x2170": ["places", "places", "places", "member", "doors", "regions", "pack", "stairs"], "R014+0xBC0C": ["orders", "orders", "member", "pack"], "R014+0xBCA8": ["orders", "orders", "orders", "member", "pack"], "R014+0x0F58": ["spells", "spells", "effects", "effects", "immune", "times", "pack", "tables"], "R016+0x0000": ["orders", "orders", "orders", "member", "pack", "menus", "doors", "tables"], "R014+0xDF28": ["member", "member", "member", "doors", "pack", "menus", "tables"], "R014+0xD04E": ["doors", "doors", "pack", "menus"], "R014+0xD402": ["regions", "regions", "pack", "menus"], "R014+0xD6DA": ["triggers"],
+        "R014+0x33A2": ["pointer"], "R022+0x03E4": ["statuses", "floors", "kill enemies", "kill party", "result", "positions"],
         "R014+0xDC14": ["doors", "regions", "triggers", "stairs", "zones", "pack", "menus"], "R014+0xD328": ["stairs", "menus"], "R014+0xD60A": ["zones", "menus"],
         "R014+0x1BA0": ["pack", "recov", "missiles"], "R018+0x03AE": ["recov"]}
 FX_BIAS = ["effects", "effects", "effects", "immune", "pack", "statuses", "times", "tables"]
@@ -877,7 +917,7 @@ FUNCTIONS = {
     "R014+0x45AE": [],
     "R014+0x4442": [],
     "R014+0x0F58": [],
-    "R014+0x0D86": [],
+    "R014+0x0D86": [], "R014+0x33A2": [], "R022+0x03E4": [lambda r, f: r.choice([1, 1, 1, 0])],
     "R014+0x2FA2": [who],
     "R014+0x306A": [who],
     "R018+0x04B6": [buffer],
@@ -951,6 +991,8 @@ def main():
                 for n, item in enumerate(kept):
                     f.write(json.dumps({"unit": coord, "state": "%s#%d" % (name, item["iteration"]), "seconds": item["seconds"], **item["coverage"]}) + "\n")
             print(coord, name, "kept", len(kept), "of", a.iterations, "%.0f s wall, %.0f s cpu" % (fz.elapsed, fz.cpu), flush=True)
+            for msg, n in sorted(fz.errors.items(), key=lambda x: -x[1])[:5]:
+                print("   errored %4d x %s" % (n, msg), flush=True)
     print("worker cpu total %.1f s" % time.process_time(), flush=True)
 
 if __name__ == "__main__":

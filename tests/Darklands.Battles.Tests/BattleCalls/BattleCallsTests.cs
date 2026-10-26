@@ -124,6 +124,39 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             c.Tactics.LaunchMissile(job.Args[0], (short)job.Args[1], job.Args[2], job.Args[3], job.Args[4]);
             return null;
         },
+        ["R022+0x03E4"] = (c, job) =>
+        {
+            // do_surrender: the question "Do you really want to surrender?" is answered by the job's first argument (the original's stub); only in real combat
+            if (job.Args[0] == 1 && c.Battle.RealCombat)
+            {
+                c.Tactics.Surrender();
+            }
+            return null;
+        },
+        ["R014+0x33A2"] = (c, job) =>
+        {
+            // cursor_normal: the pointer's shape from its place (the zones of the view's edges); the original keeps the handle of the shape in use (DS:A68F),
+            // takes the arrow's from DS:D72B + 2 * arrow (up, up-right, right, down-right, down, down-left, left, up-left) when it is another one, and at no
+            // edge makes the normal pointer (R014+0x4780), whose handle is not modelled: AX is the new arrow's handle when the shape changed, not compared otherwise
+            var ds = c.Input.Ds;
+            int x = (short)(ds[ScreenOverlay.MouseX] | ds[ScreenOverlay.MouseX + 1] << 8), y = (short)(ds[ScreenOverlay.MouseY] | ds[ScreenOverlay.MouseY + 1] << 8);
+            var arrow = x >= 60 ? (int)typeof(BattleScreen).GetMethod("EdgeArrow", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!.Invoke(null, [x, y])! : -1;
+            var current = ds[0xA68F] | ds[0xA690] << 8;
+            if (arrow < 0)
+            {
+                var became = job.Orig.Changed.TryGetValue("42639", out var lo) ? lo | (job.Orig.Changed.TryGetValue("42640", out var hi) ? hi : ds[0xA690]) << 8 : current;
+                for (var a = 0; a < 8; a++)
+                {
+                    if (became != current && became == (ds[0xD72B + 2 * a] | ds[0xD72C + 2 * a] << 8))
+                    {
+                        return -1;
+                    }
+                }
+                return null;
+            }
+            var handle = ds[0xD72B + 2 * arrow] | ds[0xD72C + 2 * arrow] << 8;
+            return handle == current ? null : handle;
+        },
         ["R014+0x0DEE"] = (c, _) =>
         {
             BattleEnd.Recover(c.Battle, c.Tactics);
