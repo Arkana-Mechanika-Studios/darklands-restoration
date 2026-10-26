@@ -11,38 +11,20 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 
 | area | kind | uncertain |
 |---|---|---|
-| rules | core | 4 |
-| cards | core | 20 |
+| rules | core | 0 |
+| cards | core | 9 |
 | events | core | 0 |
 | travel | core | 3 |
-| battles | core | 10 |
+| battles | core | 7 |
 | persistence | core | 2 |
-| screens/presentation | other | 21 |
+| screens/presentation | other | 16 |
 | host/audio | other | 0 |
-| total |  | 60 |
+| total |  | 37 |
 
-## Core logic (39)
+## Core logic (21)
 
-### rules (4)
+### cards (9)
 
-- **U-8dd8f5** `uncertain` - `src/Darklands.Core/Characters/Creation/CreationRoster.cs:95` `CreationRoster.AddToParty`  
-  original: `R038+0x02F8` (1462:02F8, draft)  
-  why: equip_weight_vec(il) recomputes the encumbrance from the equipped items; the copy keeps the record's value (0 for made characters, who have nothing equipped; the ready-made four carry the game's own values).
-- **U-881f6b** `uncertain` - `src/Darklands.Core/Rules/CampStay.cs:165` `CampStay.CanDoAlchemy`  
-  original: `R036+0x1E80` (1462:1E80, draft)  
-  why: a byte is tested whole, so its top five bits (not formulas; kept in Character.OriginalRecord) would count too; nothing in the game sets them, and Formulas is the set of the low three bits.
-- **U-20fb81** `uncertain` - `src/Darklands.Core/Rules/LocationRules.cs:78` `LocationRules.Query`  
-  original: `R029+0x1A8E` (0E76:1A8E, draft), `R029+0x1A7E` (0E76:1A7E, draft)  
-  why: codes 19, 21, 22, 25, 30, 36 jump straight to the exit after `shl ax,1; xchg bx,ax`: they return the caller's BX (0 under the oracle harness); here 0.
-- **U-374c2b** `uncertain` - `src/Darklands.Core/Rules/Trading.cs:113` `Trading.DefaultName`  
-  original: `R136+0xA70F` (290E:207F, data), `R029+0x21AA` (0E76:21AA, draft)  
-  why: entries outside −3..11 are not reproduced (empty name); no card is known to pass them.
-
-### cards (20)
-
-- **U-ee7ab6** `uncertain` - `src/Darklands.Cards/CardContext.Memory.cs:145` `CardContext.DeleteMember`  
-  original: `R037+0x3F30` (1462:3F30, draft)  
-  why: for a slot past the party the original also calls R037+0x4048 with that slot's charactr.tmp id, which is no character's (its loop then moves records from before the file's first one); no card is known to delete an empty slot, so the roster is left alone here.
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
   why: the hint handlers of the ten options return a struct they never fill in (only the text "Success is assured." is set), so the hint shows that text for the whole party here.
@@ -55,9 +37,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-4c93ee** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:33` `HandbillThugs_Polit01.StalePopupChance`  
   original: `R057+0x27AC` (1A02:0B0C, matched)  
   why: derived from the stack layout (card_menu's saved BP lies in the handler's unset result word).
-- **U-777d02** `uncertain` - `src/Darklands.Cards/Scripts/S067/JewelersGuildAtNight.cs:223` `JewelersGuildAtNight.FailedToGetIn`  
-  original: `R067+0x1962` (1954:07A2, matched)  
-  why: in the original it indexes the party records out of range (a number up to 199); here a member number past the party is an empty member, so the practice does nothing.
 - **U-c18edd** `uncertain` - `src/Darklands.Cards/Scripts/S074/CityGateInWartime.cs:141` `CityGateInWartime.Befriend`  
   original: `R074+0x0376` (1838:0376, matched)  
   why: it is taken as 0 (failure), which then overrides next_card = 1 and keeps the party at the gate; a non-zero leftover would instead let the party in (text 5).
@@ -67,36 +46,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-b280c3** `uncertain` - `src/Darklands.Cards/Scripts/S079/PublicExecution.cs:70` `PublicExecution.Verdict`  
   original: `R079+0x0CF6` (18D8:02F6, asm)  
   why: the abbot's score starts uninitialised when fact (2, 0) holds here; taken as 0.
-- **U-cea1ac** `uncertain` - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:48` `DragonBlightedLand.Run`  
-  original: `R081+0x2884` (19BC:1044, asm), `R081+0x2902` (19BC:10C2, asm)  
-  why: options_block is a global; when a battle result keeps the card (below), the list of an earlier card would be shown. The dragon's first list is assumed.
-- **U-0e7156** `uncertain` - `src/Darklands.Cards/Scripts/S085/AlchemistsRobberPavilion.cs:67` `AlchemistsRobberPavilion.HandOverTheGoods`  
-  original: `R085+0x17C2` (1973:0412, matched), `R085+0x17C8` (1973:0418, matched)  
-  why: the text pays out $Money1, which this card never sets (a stale value from an earlier card).
 - **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
   original: `R086+0x0C40` (18FC:0000, matched)  
   why: the saint name table of the texts (R034) is taken to be the saint list's full names.
-- **U-4ef4f1** `uncertain` - `src/Darklands.Cards/Scripts/S087/SchratsMagicFruit.cs:30` `SchratsMagicFruit.Run`  
-  original: `R087+0x14EE` (1986:000E, matched)  
-  why: the original's bare 'party' (first test) is read as the status byte of slot 0.
-- **U-cb01bc** `uncertain` - `src/Darklands.Cards/Scripts/S108/MerchantHouseOffices.cs:32` `MerchantHouseOffices._office`  
-  original: `R108+0x203C` (1925:116C, matched)  
-  why: its value before the first choice is taken as 0.
-- **U-4ed5b1** `uncertain` - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:13` `HussiteBand`  
-  original: `R114+0x1260` (18D3:08B0, matched)  
-  why: the registration does not set item_fn, so the potion pop-up's handler is an earlier card's; the default pop-up hint is used.
-- **U-42c93a** `uncertain` - `src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs:63` `PrisonCellsRescue.FreeTheFriend`  
-  original: `R115+0x0F8A` (1901:02FA, matched)  
-  why: when nobody can join (-1), the original copies the name at party[-1] + 0x11; the leader's name is used.
-- **U-24ba58** `uncertain` - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:40` `TemplarWritingDesk.Run`  
-  original: `R118+0x246C` (1A2B:053C, matched), `R118+0x247A` (1A2B:054A, matched)  
-  why: "turn and leave" starts a battle (mode 1, -2) with the enemy and seed left from before.
-- **U-e2070d** `uncertain` - `src/Darklands.Cards/Scripts/S127/WokenAfterTheSabbat.cs:38` `WokenAfterTheSabbat.Run`  
-  original: `R127+0x19A2` (19D2:0002, matched), `R127+0x1EB0` (19D2:0510, matched), `R127+0x1EEC` (19D2:054C, matched) +28 more  
-  why: that TimePassage carries an overlong day exactly as advance_hours does is not verified.
-- **U-8b4e75** `uncertain` - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:88` `StrangerBringsAMob.FightAWave`  
-  original: `R128+0x03B8` (1838:03B8, matched)  
-  why: what card_menu returns when no line is enabled; the C# screen decides.
 - **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:211` `TextVariables.PlaceDescription`  
   original: `R043+0x1316` (150B:0886, draft)  
   why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
@@ -113,20 +65,14 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: unresolved (none)  
   why: the offset is taken as FF53, the BIOS's default IRET handler that DOSBox points the unused vectors at; the segment is the BIOS's.
 
-### battles (10)
+### battles (7)
 
-- **U-797710** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:377` `CastleGenerator.PlaceRoomGroups`  
-  original: `R007+0x23D4` (15AF:23D4, draft)  
-  why: for the unused slot the original writes has[-1] (the byte before its local table) when the slot holds -1; that byte is not read by anything visible, and the write is skipped here (DIVERGENCE).
 - **U-2a08c3** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Stairs.cs:11` `CastleGenerator.ContinueStairs`  
   original: `R006+0x34B8` (18FA:0008, draft)  
   why: slotn is uninitialised in the original when the placement failed before the strip search; 0 is used here and CutFromStrip then cuts strip 0 (the original cuts whatever the stack held).
 - **U-8f4107** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleWork.cs:12` `CastleWork`  
   original: `R005+0x005C` (1432:005C, draft)  
   why: the original allocates the segment once and gen_clear leaves a few fields alone (the stairs' link and side words, the area beyond 0xBA1D); they start at 0 here and keep their values between calls.
-- **U-7e4bb6** `uncertain` - `src/Darklands.Core/Battles/Generation/CityBattlefield.cs:643` `CityBattlefield.BuildKeep`  
-  original: `R010+0x1516` (1432:1516, draft)  
-  why: city_build reports start level 0 even when 0x2C/0x2D put the party on level 1 (faithful to the draft).
 - **U-5bdb14** `uncertain` - `src/Darklands.Core/Battles/Generation/MineBattlefield.cs:65` `MineBuilder.StaleStackWord`  
   original: `R009+0x0000` (1432:0000, draft)  
   why: what the real game's stack holds there depends on everything that ran before; the oracle's stack (file reads are stubbed) shows 0 for the first pile and 0x29CB afterwards, and a value above 9 means "no new kind picked, the last one repeats".
@@ -142,9 +88,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-cb31b9** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:590` `TacticalBattle._actionBeforeRecords`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text); the rewrite starts it at 0 and keeps only what order_mode_leave writes. The branches below agree for any value other than 0x80, 0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
-- **U-f1147b** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:253` `TacticalBattle.AnimationSet`  
-  original: `R014+0x9C4C` (14F7:343C, draft)  
-  why: read from the slot rules of cbt_set_anim (spec D §3.9): enemies use slot +2 fighting/hit and +4 dying.
 
 ### persistence (2)
 
@@ -155,43 +98,31 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 
-## Presentation and host (21)
+## Presentation and host (16)
 
-### screens/presentation (21)
+### screens/presentation (16)
 
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-- **U-fe3eea** `uncertain` - `src/Darklands.Presentation/BattleScreens.cs:178` `BattleScreens.public`  
-  original: `R002+0x0000` (0E76:0000, draft)  
-  why: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start, or a battle of the game played before) was not traced.
 - **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1884` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
 - **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2003` `BattleScreen.CharacterSheet`  
   original: `R022+0x0000` (1EF8:0000, draft)  
   why: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
-- **U-a4c9e9** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:55` `BuySellPage.DrawParty`  
-  original: `R032+0x0000` (1462:0000, draft), `R035+0x0000` (1462:0000, matched), `R040+0x01C8` (1462:01C8, draft)  
-  why: argument 0x100's meaning is not modelled
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:77` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
 - **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:92` `CharacterCreationScreen.FigureImages`  
   original: `R037+0x0000` (1462:0000, draft), `R037+0x0444` (1462:0444, draft), `R037+0x0390` (1462:0390, draft) +5 more  
   why: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
-- **U-a48f9e** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:269` `CharacterCreationScreen.MemberSheet`  
-  original: `root 047C:056F` (047C:056F, draft), `R037+0x03D4` (1462:03D4, draft), `R037+0x0000` (1462:0000, draft)  
-  why: a prayer from the sheet's Saints list reads the date and the place of the game the menu loaded (SAVES\DEFAULT); here those of a new game.
 - **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:517` `CharacterGeneratorScreen.WaitThenRedraw`  
   original: `R037+0x4B9E` (18C8:053E, draft), `R037+0x4664` (18C8:0004, draft)  
   why: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time: the C# redraws at once, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the first steps, not always that of the occupation list)
 - **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
   original: `R029+0x2204` (0E76:2204, draft), `R029+0x222A` (0E76:222A, draft)  
   why: which keys the original's menu_bar_run takes inside the sheet is not traced; only the Alt keys are passed.
-- **U-fccc5f** `uncertain` - `src/Darklands.Presentation/GameUi.cs:485` `GameUi.Wait`  
-  original: `root 0410:0302` (0410:0302, asm), `R030+0x3096` (1767:0046, matched)  
-  why: a clock() tick as one millisecond (MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit, see MessageBox and Cinematics.
 - **U-797153** `uncertain` - `src/Darklands.Presentation/MarchingOrderScreen.cs:20` `MarchingOrderScreen`  
   original: `root 0000:0CAA` (0000:0CAA, draft), `R022+0x051C` (1EF8:051C, draft), `R022+0x07AA` (1EF8:07AA, draft)  
   why: the selection bytes are taken to be 0 outside a battle (the panel is drawn unlit everywhere else, PartyPanel.Draw).
@@ -207,10 +138,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-37e39d** `uncertain` - `src/Darklands.Presentation/OverlandScreen.cs:31` `OverlandScreen.StepMilliseconds`  
   original: `R030+0x3096` (1767:0046, matched)  
   why: a clock() tick is taken as one millisecond (MSC 6 CLK_TCK is 1000, although the value only changes every 55 ms with the BIOS timer, so a real pass lasts 30 to 55 ms).
-- **U-9404ee** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:83` `PartyRosterScreen.Run`  
-  original: `R038+0x0000` (1462:0000, draft), `R038+0x024E` (1462:024E, draft), `R038+0x0292` (1462:0292, draft)  
-  why: SI is taken to come through the thunk 09C0:1EE1 unchanged (the overlay manager is taken to keep it).
-- **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:212` `PartyRosterScreen.ResultOfDriver`  
+- **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:213` `PartyRosterScreen.ResultOfDriver`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: the driver's AX is taken never to be 0x11B (it would end the screen).
 - **U-9ecd08** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:336` `SaintPrayerScreen.DrawInfo`  

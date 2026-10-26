@@ -276,7 +276,7 @@ def main():
         w.writerows(rows)
     with (out / "branches-missed.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["function", "record", "payload", "kind", "coordinate",
-                                          "first_insn", "status", "sources"], extrasaction="ignore")
+                                          "first_insn", "status"], extrasaction="ignore")
         w.writeheader()
         w.writerows(missed_rows)
     if lines:   # the reference's source lines stay machine-local
@@ -320,7 +320,8 @@ def write_markdown(path, rows, missed, summary, work):
          "ran; a branch outcome (taken / fall-through) when the instruction after the branch was its",
          "target / the next instruction. `branches.csv` has one row per function, `branches-missed.csv`",
          "one row per never-exercised block or branch outcome, with its status: `open`, or the verdict",
-         "of `unreachable.csv` (dormant / unreachable / presentation, with the justification).", "",
+         "of `unreachable.csv` (dormant / unreachable / presentation, with the justification). The sources that",
+         "enter a function are listed once per function in `branches.csv` (not repeated on every missed row).", "",
          "Coordinates: `RNNN+0xPPPP (SSSS:OOOO)` = record, payload offset, link-time address; root",
          "functions `root SSSS:OOOO`.", "",
          "## Totals by source", "",

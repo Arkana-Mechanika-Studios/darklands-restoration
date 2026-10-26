@@ -91,6 +91,7 @@ public sealed class StrangerBringsAMob : Card
             //   not return (the highlight stayed 0xFF); with opt_on[0] = 1 the same input returned.
             // DIVERGENCE: the original waits for ever there (only the menu bar and the portraits answer); the screen takes line 0 for an
             //   empty option list (CardScreen.Select), the escape line: the party flees with the ointment's cost.
+            //   Decided by the project owner (2026-10-26): kept as a deliberate divergence, the game must not hang.
             SabbatAftermath.OfferTheOintment(c, 4, 5, 0, _scene, _ => OptionHint.Say(CardTexts.ScrewedUp));
         }
         if (c.Next == SabbatAftermath.WorldMap)
