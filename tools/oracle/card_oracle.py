@@ -328,6 +328,9 @@ class Oracle:
         self.log("battle %d %d %s" % (args[1], args[2], " ".join(str(a) for a in args[3:])))
         m.write(DS, BATTLE_BYTE, bytes(1))
         seq = self.run.battles if self.run is not None else None
+        if seq and self.run.nbattle > 200:
+            # a constant controlled result that makes the card fight again and again: both sides give up at the same battle (the C# test: more than 200 results taken)
+            raise Stop("battle loop")
         result = seq[min(self.run.nbattle, len(seq) - 1)] if seq else 0
         if self.run is not None:
             self.run.nbattle += 1
@@ -539,6 +542,8 @@ class Oracle:
         self.run.force = force
         self.run.path = path
         self.run.battles, self.run.prayers = results_of(orig_key)
+        # a card kept fighting by a constant result can need more than the default budget to reach the battle bound both sides stop at
+        m.budget = 50_000_000 * (4 if self.run.battles else 1)
         self.options_block = 0
         self.pending = None
         self.options_text = None
