@@ -35,7 +35,8 @@ public sealed class WokenAfterTheSabbat : Card
         c.Screen.Text(0);
         // C: cur_day += 4 writes the day of the month directly (it may pass the month's end); the hour that passes
         //   next runs the calendar carry.
-        // UNCERTAIN: that TimePassage carries an overlong day exactly as advance_hours does is not verified.
+        // C: advance_hours (R029+0x54D8) takes an overlong day off the month's length in a loop whether or not the hour crossed midnight
+        //   (R029+0x5526..0x5572, the same loop as Calendar.Finish), so the card's day + 4 is carried as here.
         c.State.Date = c.State.Date with { Day = (short)(c.State.Date.Day + 4) };
         c.PassHours(1);
         c.LoseItems(Who.Everybody);

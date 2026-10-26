@@ -52,7 +52,7 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The party column (the original's party panel frames and rows).</summary>
-    // orig: party_panel_frames(0x100) and party_panel_rows(0x100) (root, resident) as PartyPanel; UNCERTAIN: argument 0x100's meaning is not modelled
+    // orig: party_panel_frames(0x100) and party_panel_rows(0x100) (root, resident) as PartyPanel; the argument 0x100 is the mask 0x1F (all five rows: root 0000:1591 `cmp bx,0x100` then `mov dx,0x1f`, and 0000:171F the same in party_panel_rows), as the panel draws
     public void DrawParty(Party party) => panel.Draw(ui.Canvas, party);
 
     /// <summary>Copies a part of the clean picture back onto the screen.</summary>

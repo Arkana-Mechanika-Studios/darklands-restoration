@@ -96,6 +96,8 @@ public sealed class HandbillThugs_Polit01 : Card
 
     /// <summary>Eats the handbills: a beating, a day's truce, a loss of standing and an hour; the card stays.</summary>
     // orig: R057+0x21DC (1A02:053C) matched
+    // BUG: R057+0x21DC..0x2230 never writes next_card (DS:E48A): after the truce the card is shown again and the line can be chosen again,
+    //   each time injuring the party, lowering the standing and passing an hour.
     private static void EatTheHandbills(CardContext c)
     {
         c.Screen.Text(0x12, TextFrame.BlankPage);

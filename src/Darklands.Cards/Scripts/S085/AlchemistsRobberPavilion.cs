@@ -64,7 +64,8 @@ public sealed class AlchemistsRobberPavilion : Card
     {
         c.RemoveItemsWithFlags(Who.Everybody, AlchemyFlags);
         ShowPicture(c, 106);
-        // UNCERTAIN: the text pays out $Money1, which this card never sets (a stale value from an earlier card).
+        // C: the text pays out $Money1, which this card never sets (R085+0x162C..0x167B: the goods are removed, the text shown, the party leaves;
+        //   no purse change, no store to $Money1): what an earlier card left, as the shared variable here.
         c.Screen.Text(1);
         LeaveTheScene(c);
     }

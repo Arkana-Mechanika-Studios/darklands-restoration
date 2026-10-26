@@ -110,7 +110,8 @@ public static class Trading
     /// other names (−3..−1: Tope, Ull, Volund; 9..11: Physician, Hospital, Nobility).
     /// </summary>
     // orig: R136+0xA70F DS-resident table 290E:207F (data, read by barter_screen and R029+0x21AA)
-    // UNCERTAIN: entries outside −3..11 are not reproduced (empty name); no card is known to pass them.
+    // DORMANT: entries outside −3..11 are not reproduced (empty name); the cards that leave the name null ask for the shops 0..3, 5, 8 and 9 (-1 and -2 are always
+    //   given a name).
     private static string DefaultName(int shop) => shop switch
     {
         >= 0 and < 9 => ShopNames[shop],

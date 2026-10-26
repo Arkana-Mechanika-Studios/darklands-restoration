@@ -267,6 +267,9 @@ public sealed class EventLog
 
     /// <summary>The first slot at or after <paramref name="from"/> holding <paramref name="kind"/>, or −1 (<c>event_next</c>).</summary>
     // orig: event_next R029+0x324C (0E76:324C) matched
+    // BUG: asking for kind 0x1C (location facts) also returns the kind 8 events (R029+0x3279..0x3281: `cmp cx,0x1c`, `cmp ax,8`): every fact scan
+    //   (loc_fact, loc_fact_value and the like) sees the quests. A city's politics quest (type 0, value = the city's number) answers
+    //   "fact 0" of that city, which should be the leaning.
     // C: the original reads events[i]->kind of empty slots through a null far pointer (0000:0022, the INT 8 vector's segment, a code
     // segment of 0x70 and up), which never equals an event kind (0x4A and below): an empty slot never matches, as here.
     public int Next(int kind, int from)

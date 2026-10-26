@@ -42,6 +42,8 @@ public sealed class CityNews : Card
             // orig: R069+0x1562: look for special jobs
             new MenuLine(_ => GoOn(c, SpecialJobs, letTimePass: false), Assured),
             // orig: R069+0x15A8: discuss the politics (the same card as the gossip)
+            // BUG: this line (shown only with the politics quest here) sets next_card 0xAE like the gossip line (R069+0x15AE), the idle-news
+            //   card; the politics talk of the city is card 0xBF.
             new MenuLine(_ => GoOn(c, Politics, letTimePass: false), Assured),
             // DORMANT: lines 5..8 (shown as 5 to 8 in the text; opt_flag_5..8 = 0): empty actions.
             // orig: R069+0x15EE, 03d8 R069+0x1628, 0412 R069+0x1662, 044c R069+0x169C
