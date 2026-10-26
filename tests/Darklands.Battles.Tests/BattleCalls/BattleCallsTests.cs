@@ -645,7 +645,13 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         }),
         ["R014+0xB18E"] = (c, job) => Member13(c, job, () => Attacks.Carries(c.Battle, job.Args[0], (byte)job.Args[1], (byte)job.Args[2]) ? 1 : 0),
         ["R014+0xB244"] = (c, job) => Member13(c, job, () => Attacks.ConsumeItem(c.Battle, job.Args[0], (byte)job.Args[1], (byte)job.Args[2])),
-        ["R014+0x116E"] = (c, _) => Plain(c, "CombatActions"),
+        ["R014+0x116E"] = (c, _) =>
+        {
+            // a combatant that dies here leaves a pile, moved into one screen tile by the tiles of the last full redraw (R014+0x2802 reads
+            // R136+0x5890): the view's origin as for R014+0x2324
+            ScreenOverlay.Camera(c.Screen, c.Input);
+            return Plain(c, "CombatActions");
+        },
         ["R014+0x1F00"] = (c, job) =>
         {
             Call(c.Tactics, "SpellAction", job.Args[0], CallersSet(c, job));
