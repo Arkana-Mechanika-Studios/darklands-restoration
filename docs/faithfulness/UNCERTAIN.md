@@ -12,18 +12,18 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 0 |
-| cards | core | 10 |
+| cards | core | 9 |
 | events | core | 0 |
 | travel | core | 3 |
 | battles | core | 7 |
 | persistence | core | 2 |
 | screens/presentation | other | 16 |
 | host/audio | other | 0 |
-| total |  | 38 |
+| total |  | 37 |
 
-## Core logic (22)
+## Core logic (21)
 
-### cards (10)
+### cards (9)
 
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
@@ -49,9 +49,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
   original: `R086+0x0C40` (18FC:0000, matched)  
   why: the saint name table of the texts (R034) is taken to be the saint list's full names.
-- **U-4ed5b1** `uncertain` - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:13` `HussiteBand`  
-  original: `R114+0x1260` (18D3:08B0, matched)  
-  why: the registration does not set item_fn, so the potion pop-up's handler is an earlier card's; the default pop-up hint is used.
 - **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:211` `TextVariables.PlaceDescription`  
   original: `R043+0x1316` (150B:0886, draft)  
   why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.

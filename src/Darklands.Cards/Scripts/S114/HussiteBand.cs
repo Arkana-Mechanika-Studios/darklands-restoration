@@ -10,7 +10,13 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R114+0x09B4 (18D3:0004) matched; tests: CardSmokeTests
 // orig: R114+0x1260 (18D3:08B0) matched (registration: saint pop-ups only, they do not name the member)
-// UNCERTAIN: the registration does not set item_fn, so the potion pop-up's handler is an earlier card's; the default pop-up hint is used.
+// C: the registration does not set item_fn (DS:EC00), so a potion chosen in line 4's pop-up box calls (DS:EB0A[menu_slot] = item_fn[slot],
+//   R043's card loop) the far pointer an earlier card registered, into whatever code is loaded there now, and line 4 gets its AX as the chance.
+//   Direct calls j_hussite.py (local/batch/evid1o), card_menu stubbed to that choice: from the Tyrnau map state the gate card's pointers
+//   213D:0D7E (slot 0) run R114 code that returns 0x223C (the potion always works), 213D:0DE8 (slot 1) runs into an invalid instruction,
+//   213D:0E50 (slot 2) returns 0, slot 3 and every slot after a load or a card without item handlers (banks-markt: all 0000:0000) jump to 0000:0000.
+// DIVERGENCE: that call is not reproduced (an earlier card's code pointer into another overlay's bytes: undefined); the pop-up's choice
+//   takes the menu's pop-up hint ("Success is assured.", the member named) and its chance -1: the potion always fizzles.
 // DORMANT: text 12 (an unknown saint angers them) is never shown; lines 5..9 have empty handlers (R114+0x124C..08ae).
 public sealed class HussiteBand : Card
 {

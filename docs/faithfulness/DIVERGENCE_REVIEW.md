@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 48 entries; recommendations: document: 1, justify: 38, keep: 9.
-- Part B (undefined-memory in core logic): 132 entries; determinism: n/a: 79, no: 39, partly: 10, yes: 4.
+- Part B (undefined-memory in core logic): 133 entries; determinism: n/a: 79, no: 40, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -595,7 +595,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original tests the 0x80 flag and prices item_defs[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item_defs[data_file[..].id] with the raw 16-bit id; item_defs is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
 
-### cards (57)
+### cards (58)
 
 - **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:136` `CardContext.ChanceText`  
   original: `R029+0x5B62` (1367:0C52, matched)  
@@ -737,6 +737,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R111+0x14F2` (193E:0492, matched)  
   divergence: the original offers the option lines of an uninitialised local (card_options(v_di)); text block 0 is offered here.  
   deterministic: **no** (checked against the original); action: **keep** - card_options(v_di) where v_di is reloaded from [bp-2] (R111 seg 193E 19465: mov di,[bp-2]) and was never written: the stack word 8 bytes under the caller's SP, left by the dispatcher's earlier call (thunk 09C0:190F overlay-thunk frames) or the previous card; it is used as the text block index although $Overl00 has only 3 blocks, so the displayed text is read through stale msg_index entries. Depends on stack history and the overlay manager, not modelled; keep block 0.
+- **D-bd2879** `undefined-memory` - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:18` `HussiteBand`  
+  original: `R114+0x1260` (18D3:08B0, matched)  
+  divergence: that call is not reproduced (an earlier card's code pointer into another overlay's bytes: undefined); the pop-up's choice takes the menu's pop-up hint ("Success is assured.", the member named) and its chance -1: the potion always fizzles.  
+  deterministic: **no** (checked against the original); action: **document** - Direct calls j_hussite.py (local/batch/evid1o): card_menu stubbed to the line-4 pop-up choice. From tyrnau-map (the gate card's item handlers 213D:0D7E/0DE8/0E50/0000): slot 0 runs R114 code that returns 0x223C, slot 1 an invalid instruction, slot 2 returns 0, slot 3 jumps to 0000:0000; from banks-markt (no item handlers since the load) every slot jumps to 0000:0000. An earlier card's code pointer into the current overlay: undefined, not reproduced; the C# takes the menu's pop-up hint (chance -1: the potion fizzles).
 - **D-e53d68** `undefined-memory` - `src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs:62` `PrisonCellsRescue.FreeTheFriend`  
   original: `R115+0x0F8A` (1901:02FA, matched)  
   divergence: without such an event the original reads events[-1]; here nobody joins (-1).  

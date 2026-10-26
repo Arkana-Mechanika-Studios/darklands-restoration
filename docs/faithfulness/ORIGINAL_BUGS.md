@@ -480,7 +480,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-c6aabd** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:175` `CryptUnderTheRuinedChurch.TakeTheItem`  
   original: `R108+0x07CA` (1838:07CA, matched)  
   why: a victory has already left for the map (cur_loc -1), so the errand's thing is given only after a defeat.
-- **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:73` `HussiteBand.ClaimFriendship`  
+- **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:79` `HussiteBand.ClaimFriendship`  
   original: `R114+0x0DCC` (18D3:041C, matched)  
   why: `rand_mod(100) == p` where every other card has `<=`; kept as the original has it.
 - **B-08a606** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:98` `TemplarWritingDesk.LearnAFormula`  
