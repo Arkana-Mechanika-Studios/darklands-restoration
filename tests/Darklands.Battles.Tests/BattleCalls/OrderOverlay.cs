@@ -65,6 +65,8 @@ internal static class OrderOverlay
         t.FollowsActive = ds[FollowsActive] != 0;
         t.KeyMoved = ds[KeyMoved] != 0;
         t.PendingOrderMember = ds[PendingFlag] != 0 ? (sbyte)ds[PendingMember] : -1;
+        // the five order bytes as they are (single file reads the first past a length of 0)
+        ds.AsSpan(MarchingOrderAt, t.MarchingOrderBytes.Length).CopyTo(t.MarchingOrderBytes);
         t.MarchingOrder.Clear();
         for (var k = 0; k < Math.Min((int)ds[MarchingOrderLength], 5); k++)
         {
@@ -117,11 +119,7 @@ internal static class OrderOverlay
         {
             ds[SelectedFlags + k] = (byte)(t.Battle[k].Selected ? 1 : 0);
         }
-        ds[MarchingOrderLength] = (byte)t.MarchingOrder.Count;
-        for (var k = 0; k < Math.Min(t.MarchingOrder.Count, 5); k++)
-        {
-            ds[MarchingOrderAt + k] = (byte)t.MarchingOrder[k];
-        }
+        t.StoreMarchingOrder(ds.AsSpan(MarchingOrderAt, 6));
     }
 
     /// <summary>

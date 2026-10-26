@@ -430,6 +430,12 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             // (the sheets F1..F5, Enemy Info, Surrender, Throw's menu, the Alt keys of the menu bar) run a loop of their own that the original's call
             // does not get its keys for.
             var key = job.Args[0] & 0xFFFF;
+            if (c.Input.Ds[0x907B] >= Combatant.PartySlots)
+            {
+                // every writer of the leader DS:907B stores a party slot (the new-leader search loops over the five party slots; the battle starts with one):
+                // a fuzz value of 5 or more names an enemy record, whose floor and stairs the original's U key then uses (tables of five entries read past)
+                throw new SkipJob($"leader {c.Input.Ds[0x907B]} is not a party slot: only party slots are ever stored in DS:907B");
+            }
             if (c.Input.Ds[0x07D3] != (c.Input.Ds[0xA695] != 0 ? 1 : 0))
             {
                 // the clock's hold DS:07D3 is a count: the pause sets DS:A695 and adds 1 together (R016+0x0755/0x075A, R014+0xBC8E/0xBC9E, both only

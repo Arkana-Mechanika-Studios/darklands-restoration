@@ -184,6 +184,38 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>marching_order (DS:C624) and its length (DS:C629).</summary>
     public List<int> MarchingOrder { get; } = [];
 
+    /// <summary>
+    /// The five bytes DS:C624..DS:C628 themselves: the entries of <see cref="MarchingOrder"/> and, past its length, whatever was written there
+    /// before (a rebuild writes only the able members, so with nobody able every byte stays). Single file reads the first byte whatever the length.
+    /// </summary>
+    // C: R016+0x0E2E stores each status-1 member at DS:C624[n++] and then the length n: the bytes past n are not cleared.
+    public byte[] MarchingOrderBytes { get; } = new byte[5];
+
+    /// <summary>The order's entries written into <see cref="MarchingOrderBytes"/> (the bytes past them stay).</summary>
+    private void StoreMarchingOrderBytes()
+    {
+        for (var k = 0; k < MarchingOrder.Count && k < MarchingOrderBytes.Length; k++)
+        {
+            MarchingOrderBytes[k] = (byte)MarchingOrder[k];
+        }
+    }
+
+    /// <summary>The order taken from six bytes as the game keeps them (five entries and the length): all five bytes, the entries up to the length.</summary>
+    public void LoadMarchingOrder(ReadOnlySpan<byte> order)
+    {
+        order[..MarchingOrderBytes.Length].CopyTo(MarchingOrderBytes);
+        MarchingOrder.Clear();
+        MarchingOrder.AddRange(Rules.MarchingOrderChoice.Entries(order.ToArray()));
+    }
+
+    /// <summary>The order written back into six bytes as the game keeps them: the five bytes and the length.</summary>
+    public void StoreMarchingOrder(Span<byte> order)
+    {
+        StoreMarchingOrderBytes();
+        MarchingOrderBytes.CopyTo(order);
+        order[MarchingOrderBytes.Length] = (byte)MarchingOrder.Count;
+    }
+
     /// <summary>DS:E092: combat ticks run.</summary>
     public int Ticks { get; private set; }
 

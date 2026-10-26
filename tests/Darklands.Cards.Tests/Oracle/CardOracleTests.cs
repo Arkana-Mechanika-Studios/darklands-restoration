@@ -290,7 +290,7 @@ public sealed class CardOracleTests
         // the menu policy gives up the same way on both sides (no choosable option, or more than 50 menus)
         const string PolicyStop = "throws InvalidOperationException: ";
         if (end.StartsWith(PolicyStop, StringComparison.Ordinal) && end[PolicyStop.Length..] is var reason
-            && (reason.StartsWith("Menu ", StringComparison.Ordinal) || reason.StartsWith("The card keeps asking", StringComparison.Ordinal)))
+            && (reason.StartsWith("Menu ", StringComparison.Ordinal) || reason.StartsWith("The card keeps asking", StringComparison.Ordinal) || reason == "battle loop"))
         {
             end = "stops " + reason;
         }
@@ -486,6 +486,10 @@ public sealed class CardOracleTests
         // C: srand((unsigned)time(0)) of the oracle's machine: its DOS clock is fixed, time(0) gives the corpus's "clock"
         state.ClockSeed = () => clock;
         var (start, _) = Persistence.OriginalSaves.Write(state);
+        // A game saved in a battle comes up with DS:9081 bit 0 (GameState.ResumeBattle); the main loop starts the battle instead of the card and the card never
+        // runs with it set. The oracle runs the card directly, and the original writes the in-battle bit of the difficulty (R037+0x2B57) only while a battle
+        // runs (DS:907A = 1, R037+0x2AEF), so the saved game after the card has it clear: the run goes on as after the battle, with the bit consumed.
+        state.ResumeBattle = false;
         // the original runs on that saved game as loaded: its character records keep the bytes the model does not
         // (the item records past the count, which keep_items_pct reads), as a loaded game's do
         foreach (var character in state.Party.Members.Concat(state.Roster.Characters))
@@ -513,7 +517,7 @@ public sealed class CardOracleTests
             screen.Log.Add($"battle {side} {(short)seed} {string.Join(" ", parameters)}");
             if (battleResults is not null && battles > 200)
             {
-                // a constant controlled result that makes the card fight again and again: the original's run ends at its instruction budget
+                // a constant controlled result that makes the card fight again and again: both sides give up here (card_oracle.py raises the same stop)
                 throw new InvalidOperationException("battle loop");
             }
             return battleResults is null ? 0 : battleResults[Math.Min(battles++, battleResults.Length - 1)];

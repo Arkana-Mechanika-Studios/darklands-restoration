@@ -582,7 +582,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-e1ca2c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/PathFinder.cs:115` `PathFinder.Find`  
   original: `R014+0x481A` (12F7:000A, draft)  
   why: R014+0x48CA leaves through the common exit (R014+0x4B36): R014+0x4B5A (for an enemy) puts every door that is no twin back to the open flags DS:E0C0 kept at the last enemy search that opened them, though this search opened none, and copies those flags back (DS:E0C0 to the level's +0x33D3): a door opened or shut since then is set back.
-- **B-71b924** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs:472` `TacticalBattle.PlanGroupMove`  
+- **B-71b924** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs:479` `TacticalBattle.PlanGroupMove`  
   original: `R014+0xC75C` (19CD:11EC, draft)  
   why: a path of fewer than 2 steps (a lead whose first step meets its target gives the bare 0xFF) is read before its start: the previous combatant's path bytes 248, 249 (for combatant 0 the last loot pile record's +10, +11, 20A5:6236, which no code writes: 0 here).
 - **B-afe397** `bug`, flag `FixStairsKeyWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:355` `TacticalBattle.UseKey`  
@@ -621,10 +621,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### persistence (2)
 
-- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:373` `OriginalSaves.static`  
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:377` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
-- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:384` `OriginalSaves.static`  
+- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:388` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party_size: the writer tests all five ids, and a slot past party_size has status 0 (party_size is one past the last slot of status != 0), so its record is left out as well.
 

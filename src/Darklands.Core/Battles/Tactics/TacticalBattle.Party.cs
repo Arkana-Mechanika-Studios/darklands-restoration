@@ -113,6 +113,7 @@ public sealed partial class TacticalBattle
     {
         MarchingOrder.Clear();
         MarchingOrder.AddRange(order);
+        StoreMarchingOrderBytes();
         if (MoveMode == 2)
         {
             SingleFile();
