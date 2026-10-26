@@ -156,7 +156,7 @@ public sealed class BattleScreens
         _ => "",
     };
 
-    private string FarText(int offset)
+    internal string FarText(int offset)
     {
         var bytes = Assets.Executable.Far(0x286B, offset, 60);
         var end = bytes.IndexOf((byte)0);

@@ -17,6 +17,9 @@ public interface ITacticalView : IBattleViewport
     /// <summary><c>show_message</c> (root 0000:24BC): the string at DS:<paramref name="text"/>, the caller waiting <paramref name="ticks"/> timer ticks (the battle stands, the timer runs).</summary>
     void Message(int text, int ticks);
 
+    /// <summary><c>show_message</c> of a far string: the one at 286B:<paramref name="text"/>, the caller waiting <paramref name="ticks"/> timer ticks.</summary>
+    void FarMessage(int text, int ticks);
+
     /// <summary>A message about a member: its name, then the string at DS:<paramref name="text"/> (" finds a secret door").</summary>
     void Message(int text, int ticks, int member);
 

@@ -824,6 +824,8 @@ public sealed class BattleScreen : ITacticalView
 
     public void Message(int text, int ticks) => ShowMessage(_assets.Executable.String(text), ticks);
 
+    public void FarMessage(int text, int ticks) => ShowMessage(_owner.FarText(text), ticks);
+
     public void Message(int text, int ticks, int member)
     {
         var c = _battle!.Battle[member];

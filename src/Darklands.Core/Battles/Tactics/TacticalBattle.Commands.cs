@@ -22,12 +22,14 @@ public sealed partial class TacticalBattle
     /// The marching order is kept when it lists exactly the able members; otherwise it becomes
     /// the able members in slot order.
     /// </summary>
+    /// <param name="message">marching_order_rebuild's argument: 1 from G and Q (R016+0x0C1B, R016+0x0D22), 0 at the battle's start (R014+0x000D).</param>
     // orig: marching_order_rebuild R016+0x0DA6 (1EF8:0DA6) draft; R016+0x0E2E (1EF8:0E2E) draft
-    // DIVERGENCE: the "marching order" message (p == 1) is the screen's.
+    // C: R016+0x0E54..0x0E73: a rebuilt order with the argument 1 copies the far string 286B:0231 to a buffer and shows it for 60 ticks
+    // C: (show_message root 0000:24BC: the battle waits, the timer runs; the clock too unless DS:07D3 holds it).
     // C: (checked with the draft of R016+0x0DA6) kept when the length is not 0, every entry's combatant has status 1 and every able member
     // C: is in it: an order that names a member twice (Change Marching Order's F keys) is kept.
     // DIVERGENCE: an entry past the thirteen combatant records (a saved game's bytes) reads past the records; here it makes the order rebuilt.
-    public void RebuildMarchingOrder()
+    public void RebuildMarchingOrder(bool message = false)
     {
         var able = Enumerable.Range(0, Combatant.PartySlots).Where(i => Battle[i].IsAble).ToList();
         if (MarchingOrder.Count > 0 && MarchingOrder.All(m => m >= 0 && m < Combatant.Count && Battle[m].IsAble) && able.All(MarchingOrder.Contains))
@@ -36,7 +38,14 @@ public sealed partial class TacticalBattle
         }
         MarchingOrder.Clear();
         MarchingOrder.AddRange(able);
+        if (message)
+        {
+            _view.FarMessage(MarchingOrderRebuiltText, 60);
+        }
     }
+
+    /// <summary>286B:0231: the message of a marching order rebuilt by G or Q.</summary>
+    public const int MarchingOrderRebuiltText = 0x0231;
 
     /// <summary>Keys 1..5 / a click on a member: the member the keys move (the leader stays).</summary>
     // orig: R016+0x0A2C (1EF8:0A2C) draft (byte-matched)
@@ -128,7 +137,7 @@ public sealed partial class TacticalBattle
         if (MoveMode == 1)
         {
             CursorKeysOn = true;
-            RebuildMarchingOrder();
+            RebuildMarchingOrder(message: true);
             for (var i = 0; i < Combatant.PartySlots; i++)
             {
                 var c = Battle[i];
@@ -162,7 +171,7 @@ public sealed partial class TacticalBattle
         MoveMode = MoveMode == 2 ? 0 : 2;
         if (MoveMode == 2)
         {
-            RebuildMarchingOrder();
+            RebuildMarchingOrder(message: true);
             SingleFile();
         }
         else

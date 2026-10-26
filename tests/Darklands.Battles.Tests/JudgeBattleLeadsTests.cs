@@ -228,4 +228,28 @@ public sealed class JudgeBattleLeadsTests
         Assert.Equal(CharacterStatus.Away, b[0].Status);
         Assert.Equal(CharacterStatus.Able, b[1].Status);
     }
+
+    /// <summary>
+    /// R016+0x0E54..0x0E73: Q (and G) rebuilding a marching order that no longer lists the able members shows the far message 286B:0231 for
+    /// 60 ticks before the mode's own 60 (round B2 lead L04): the running clock moves 120; an order still valid shows only the mode's.
+    /// </summary>
+    [Fact]
+    public void SingleFileOverABrokenMarchingOrderWaitsForTwoMessages()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, t) = Start();
+        t.PauseByte = 0;
+        t.MarchingOrder.Clear();
+        var clock = t.Battle.Clock;
+        t.ToggleSingleFile();
+        Assert.Equal(2, t.MoveMode);
+        Assert.Equal(120, (ushort)(t.Battle.Clock - clock));
+        t.ToggleSingleFile();
+        clock = t.Battle.Clock;
+        t.ToggleSingleFile();
+        Assert.Equal(60, (ushort)(t.Battle.Clock - clock));
+    }
 }
