@@ -196,4 +196,36 @@ public sealed class JudgeBattleLeadsTests
         Assert.Equal(before + 1, groups.Count);
         Assert.Equal(new sbyte[] { 1, 0, 1 }, groups[^1].Counts);
     }
+
+    /// <summary>
+    /// R022+0x0427..0x0440: surrender takes the enemies' level (DS:C651) from the first able enemy only; with none able it keeps the last value
+    /// (round B2 lead L02): the member on that level is taken, the one on the level shown stays.
+    /// </summary>
+    [Fact]
+    public void SurrenderWithNoAbleEnemyKeepsTheLastEnemyLevel()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, t) = Start();
+        var b = t.Battle;
+        b.RealCombat = true;
+        for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
+        {
+            b[i].Status = CharacterStatus.Empty;
+        }
+        Assert.True(b[0].IsAble && b[1].IsAble);
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            b[i].Floor = b.FloorShown;
+        }
+        var level = b.FloorShown + 1;
+        b.EnemyFloor = level;
+        b[0].Floor = level;
+        t.Surrender();
+        Assert.Equal(level, b.EnemyFloor);
+        Assert.Equal(CharacterStatus.Away, b[0].Status);
+        Assert.Equal(CharacterStatus.Able, b[1].Status);
+    }
 }

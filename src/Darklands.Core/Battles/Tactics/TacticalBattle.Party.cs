@@ -20,7 +20,8 @@ public sealed partial class TacticalBattle
         Battle.Result = BattleResult.Surrendered;
         bool any = false, other = false;
         Battle.ResultCard = Battle.ExitCards.Unknown;
-        Battle.EnemyFloor = Battle.FloorShown;
+        // orig: R022+0x0427..0x0440: DS:C651 is set only from the first able enemy; with none able it keeps the last value (the battle-end
+        // test R014+0x092D sets it to the level shown first, then to the first able enemy's level).
         for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
         {
             if (Battle[i].IsAble)
