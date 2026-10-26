@@ -55,6 +55,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
+        FixStaleDissolveSlot = true,
     };
 
     /// <summary>
@@ -218,6 +219,16 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R040+0x0DB3..0x0DB7 `shl si, 1; cmp word [si - 0x594C], -0x63`
     public bool FixLootExitTestReadsWords { get; set; }
+
+    /// <summary>
+    /// Dissolve Lock uses up the pack entry the Eater-Water was found at (DS:C7CD, a byte) when the order was given or, for the leader,
+    /// at the last tick, whatever the pack holds when the member acts: after an item given or dropped on the character sheet in order
+    /// mode it is another stack, or the stale entry past the last one (the last stack is then lost, an empty pack's count becomes −1),
+    /// and with the Eater-Water gone (slot 0xFF) entry 255 lies in another member's pack or past the packs. Fixed: only an Eater-Water is
+    /// used up, the weakest one the pack still holds (none: nothing).
+    /// </summary>
+    // orig: cbt_location_action R014+0x2256..0x2263 (consume_slot 18BF:0FA4 with DS:C7CD[m]), data safety, data-damaging
+    public bool FixStaleDissolveSlot { get; set; }
 
     /// <summary>
     /// Enter travelling individually with nobody selected (after the button held over a member and let go elsewhere) leaves order

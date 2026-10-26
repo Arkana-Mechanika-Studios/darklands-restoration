@@ -10,14 +10,17 @@ public sealed class BattleEndTests
     {
         public int Loots;
         public int Opened = -1;
+        public readonly List<string> Calls = [];
 
         public void LootAfterFight() => Loots++;
 
         public void OpenLoot(int member) => Opened = member;
 
-        public void SwitchLevel(int floor) { }
+        public void SwitchLevel(int floor) => Calls.Add($"switch {floor}");
 
-        public void LeftCombatMode() { }
+        public void LeftCombatMode() => Calls.Add("leave");
+
+        public void RedrawAround(int member) => Calls.Add($"draw {member}");
 
         public void PlaceWokenMember(int member) { }
 
@@ -133,6 +136,32 @@ public sealed class BattleEndTests
         Assert.Equal(BattleResult.Fled, battle.Result);
         Assert.Equal(102, battle.ResultCard);
         Assert.Equal(CharacterStatus.Away, battle[1].Status);
+    }
+
+    /// <summary>
+    /// R014+0x0A54..0x0AC3: nobody able left on the enemies' floor, somebody able on another: the party's floor is shown, and before the end test
+    /// returns the view is drawn around si (floor_view_draw, 09C0:1C2F) and a frame is drawn (combat_draw, 14F7:0008): si is the first able member,
+    /// or the new leader when the leader went Away.
+    /// </summary>
+    [Fact]
+    public void SwitchingToThePartysOtherFloorDrawsAFrameBeforeTheTestReturns()
+    {
+        foreach (var (leader, drawnAround) in new[] { (0, 1), (2, 1) })
+        {
+            var battle = NewBattle(CharacterStatus.Able);
+            battle[0].Status = CharacterStatus.Unconscious;
+            battle[1].Floor = 1;
+            battle[2].Status = CharacterStatus.Able;
+            battle[2].Floor = 1;
+            battle.Leader = leader;
+            var actions = new Actions();
+            Assert.False(BattleEnd.IsOver(battle, actions));
+            Assert.Equal(["switch 1", "leave", $"draw {drawnAround}"], actions.Calls);
+            Assert.Equal(CharacterStatus.Away, battle[0].Status);
+            Assert.Equal(CharacterStatus.Empty, battle[5].Status);
+            Assert.Equal(leader == 0 ? 1 : leader, battle.Leader);
+            Assert.False(battle.RealCombat);
+        }
     }
 
     [Fact]

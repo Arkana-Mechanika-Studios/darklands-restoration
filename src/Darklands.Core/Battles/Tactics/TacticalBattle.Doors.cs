@@ -282,10 +282,7 @@ public sealed partial class TacticalBattle
         if (c.Place == PlaceAction.DissolveLock)
         {
             _view.Message(EaterWaterText, 150);
-            if (c.DissolveSlot >= 0 && c.DissolveSlot < c.Items.Count)
-            {
-                Attacks.ConsumeSlot(Battle, i, c.DissolveSlot);
-            }
+            UseUpDissolveSlot(i);
             if (!LockIsDoor)
             {
                 OpenChest(i);

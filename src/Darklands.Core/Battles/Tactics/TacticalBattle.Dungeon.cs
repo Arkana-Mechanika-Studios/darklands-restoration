@@ -393,18 +393,74 @@ public sealed partial class TacticalBattle
 
     /// <summary>The weakest Eater-Water (item 99) in member i's pack (FIND_PICK).</summary>
     // orig: the FIND_PICK / FIND_PICK2 macros of (checked against the asm of 19CD:1E92)
-    private void FindEaterWater(int i)
+    private void FindEaterWater(int i) => Battle[i].DissolveSlot = WeakestEaterWater(Battle[i]);
+
+    private const int EaterWater = 99;
+
+    /// <summary>The stack of the weakest Eater-Water in the pack (the first of the lowest quality), −1 none.</summary>
+    private static int WeakestEaterWater(Combatant c)
     {
-        var c = Battle[i];
-        c.DissolveSlot = -1;
+        var slot = -1;
         var best = 100;
         for (var n = 0; n < c.Items.Count; n++)
         {
-            if (c.Items[n].Code == 99 && (byte)c.Items[n].Quality < best)
+            if (c.Items[n].Code == EaterWater && (byte)c.Items[n].Quality < best)
             {
-                c.DissolveSlot = n;
+                slot = n;
                 best = (byte)c.Items[n].Quality;
             }
+        }
+        return slot;
+    }
+
+    /// <summary>The Eater-Water of a Dissolve Lock order is used up: consume_slot(m, DS:C7CD[m]).</summary>
+    // orig: cbt_location_action R014+0x2256..0x2263 (checked against the asm): consume_slot 18BF:0FA4 (R014+0xB434) with the byte
+    //   DS:C7CD[m] and no test of it; the slot is written only by FindEaterWater (order_menu_build R014+0xDF28 when order mode opens, and
+    //   R014+0xD04E / 0xD402 for the leader at each running tick), and the character sheet works in order mode (R022+0x02F7 tests
+    //   DS:A6B3 and DS:A6B2) without building the menu again, so an item given or dropped there moves the pack under the slot.
+    private void UseUpDissolveSlot(int i)
+    {
+        var c = Battle[i];
+        // C: the slot is a byte: no Eater-Water found (−1) is 255.
+        var slot = c.DissolveSlot & 0xFF;
+        if (Battle.Behaviour.FixStaleDissolveSlot)
+        {
+            // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) only an Eater-Water is used up: the slot's stack
+            //   when it still is one, else the weakest the pack holds (none: nothing; the lock opens as in the original).
+            if (slot >= c.Items.Count || c.Items[slot].Code != EaterWater)
+            {
+                slot = WeakestEaterWater(c);
+            }
+            if (slot >= 0)
+            {
+                Attacks.ConsumeSlot(Battle, i, slot);
+            }
+            return;
+        }
+        // BUG: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the
+        //   stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an
+        //   empty pack's count becomes −1).
+        if (slot < Pack.Size)
+        {
+            Attacks.ConsumeSlot(Battle, i, slot);
+            return;
+        }
+        // BUG: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1
+        //   entry 63 of member m + 3's pack, whose count byte is decremented; when it was 0 or 1, consume_slot's removal (no shift, k past
+        //   the count) lowers member m's own count.
+        var entry = i * Pack.Size + slot;
+        if (entry >= Combatant.PartySlots * Pack.Size)
+        {
+            // DIVERGENCE: for members 2..4 entry 255 lies past the packs, in the formula and saint tables and the item-definition far
+            //   pointers (2E38:07BE..), which the battle does not hold: nothing is changed (the original's write there is not modelled).
+            return;
+        }
+        var other = Battle[entry / Pack.Size].Items;
+        var stale = other[entry % Pack.Size];
+        other[entry % Pack.Size] = stale with { Count = (byte)(stale.Count - 1) };
+        if (stale.Count - 1 <= 0)
+        {
+            c.Items.Stacks = (sbyte)(c.Items.Stacks - 1);
         }
     }
 

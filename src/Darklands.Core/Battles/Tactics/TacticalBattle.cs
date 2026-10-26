@@ -898,6 +898,16 @@ public sealed partial class TacticalBattle : IBattleEndActions
 
     public void OpenLoot(int member) => OpenLootPile(member);
 
+    // orig: R014+0x0AB5..0x0ABE: floor_view_draw(si) (09C0:1C2F) then combat_draw R014+0x6818 (14F7:0008), whose R014+0x99F6 turns the attackers
+    public void RedrawAround(int member)
+    {
+        _view.Recentre(member);
+        TurnTowardTargets();
+        Effects.Drawn(_view);
+        RemoveArrivedMissiles();
+        RefreshTargetCursor();
+    }
+
     public void LeftCombatMode()
     {
         // orig: combat_mode_leave R014+0x0D86: DS:D6EB = 0 first (no more reinforcement waves)
