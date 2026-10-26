@@ -16,11 +16,18 @@ public sealed class CreationRoster
 
     private readonly int[] _slots = [-1, -1, -1, -1, -1];
     private readonly Character?[] _members = new Character?[Party.MaxMembers];
+    private readonly Func<int, Items.ItemDefinition> _item;
+
+    /// <summary>The stack index equipped_item leaves (the program's party-query global; the new game does not carry it).</summary>
+    private readonly PartyQueryResult _last = new();
 
     /// <param name="slotPalettes">The five slots' figure colours (member_palette), kept per slot.</param>
     /// <param name="slotImages">The five slots' figure images (member_shield) as the menu starts, kept per slot.</param>
-    public CreationRoster(IEnumerable<Character> characters, IReadOnlyList<byte[]> slotPalettes, IReadOnlyList<string>? slotImages = null)
+    /// <param name="item">The item list's definition of a code (the weights of the equipped items); null: every item weighs 0.</param>
+    public CreationRoster(IEnumerable<Character> characters, IReadOnlyList<byte[]> slotPalettes, IReadOnlyList<string>? slotImages = null,
+        Func<int, Items.ItemDefinition>? item = null)
     {
+        _item = item ?? (code => new Items.ItemDefinition(code, "", "", 0, 0, 0, 0, 0));
         Characters.AddRange(characters);
         SlotPalettes = [.. slotPalettes.Select(p => (byte[])p.Clone())];
         for (var i = 0; i < SlotImages.Length && slotImages is not null && i < slotImages.Count; i++)
@@ -92,8 +99,10 @@ public sealed class CreationRoster
             SlotPalettes[slot][k] = PortraitColours.InnStartPalette[k];
         }
         member.ImagePalette = SlotPalettes[slot];
-        // UNCERTAIN: equip_weight_vec(il) recomputes the encumbrance from the equipped items; the copy keeps the record's
-        // value (0 for made characters, who have nothing equipped; the ready-made four carry the game's own values).
+        // orig: R037+0x0D5F status = 1, then R037+0x0D67 equip_weight (thunk 09C0:2049 = R031+0x5C5A) for the slot: the encumbrance is
+        // recomputed from the equipped items (a made character, nothing equipped, gets 0 for the generator's 0x0A); proved by the unit
+        // run of R031+0x5C5A (+0x35 = 0x0A, all equipment FF -> 00) and the lockstep session chargen-created (the saved record's +0x49 = 00)
+        Rules.Inventory.EquipmentWeight(member, _item, _last);
         _slots[slot] = character;
         _members[slot] = member;
         return slot;

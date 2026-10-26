@@ -44,6 +44,27 @@ public sealed class CreationRosterTests
     }
 
     [Fact]
+    public void AddingToThePartyRecomputesTheEncumbrance()
+    {
+        // orig: R037+0x0D67 equip_weight for the slot; lockstep session chargen-created: a made character (nothing equipped, the
+        // generator's 0x0A) is saved with +0x49 = 00
+        var r = New();
+        r.Add(new Character { Name = "Made", Encumbrance = 0x0A });
+        Assert.Equal(0, r.AddToParty(4, "F01"));
+        Assert.Equal(0, r.Member(0)!.Encumbrance);
+        Assert.Equal(0x0A, r.Characters[4].Encumbrance);
+
+        var weighed = new CreationRoster(DefaultParty.Create(1).Members, [.. Enumerable.Range(0, 5).Select(i => new byte[24])],
+            item: code => new Items.ItemDefinition(code, "", "", 0, 0, 7, 0, 0));
+        weighed.Characters[0].Encumbrance = 0;
+        weighed.AddToParty(0, "F01");
+        var member = weighed.Member(0)!;
+        var equipped = Enum.GetValues<Rules.EquipmentSlot>().Count(k => Rules.Inventory.Equipped(member, k, new PartyQueryResult()) != -1);
+        Assert.True(equipped > 0);
+        Assert.Equal(7 * equipped, member.Encumbrance);
+    }
+
+    [Fact]
     public void KillingMovesLaterCharactersDown()
     {
         var r = New();

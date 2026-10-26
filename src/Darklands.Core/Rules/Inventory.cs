@@ -452,9 +452,11 @@ public static class Inventory
     // C: checked against the asm (14b6 differs in store order only; an earlier port's check reproduced that order with the copy
     //   sequence type = i; i = t; q = type; type = i, quality I and type T unchanged): the equipped type and quality are signed chars compared with the stack's unsigned bytes (no game value reaches 0x80).
     // DIVERGENCE: equipped_item does not resolve -1 (party[-1] is the bytes before the records); here -1 is the leader.
-    public static int Equipped(GameState s, int who, EquipmentSlot slot)
+    public static int Equipped(GameState s, int who, EquipmentSlot slot) => Equipped(s.Party.Slot(who), slot, s.Party.Last);
+
+    /// <summary>As <see cref="Equipped(GameState, int, EquipmentSlot)"/> for a member record outside a game (the creation menu's slots).</summary>
+    public static int Equipped(Character m, EquipmentSlot slot, PartyQueryResult last)
     {
-        var m = s.Party.Slot(who);
         var item = SlotItem(m, slot);
         if (item.IsEmpty)
         {
@@ -466,7 +468,7 @@ public static class Inventory
             if (m.Pack[i].Type == item.Type)
             {
                 found = i;
-                s.Party.Last.Skill = i;
+                last.Skill = i;
                 if (m.Pack[i].Quality == item.Quality)
                 {
                     return m.Pack[i].Code;
@@ -511,16 +513,19 @@ public static class Inventory
     /// <summary>Recomputes the weight of the equipped items (0..500, kept in a byte) into the encumbrance.</summary>
     // orig: equip_weight R031+0x5C5A (18E7:140A) matched
     // C: clamp_range(0, 500, w) stored in the signed byte +0x35 and returned from the char (500 -> -12).
-    public static int EquipmentWeight(GameState s, int who)
+    public static int EquipmentWeight(GameState s, int who) => EquipmentWeight(s.Party.Slot(who), s.Item, s.Party.Last);
+
+    /// <summary>As <see cref="EquipmentWeight(GameState, int)"/> for a member record outside a game (the creation menu's slots).</summary>
+    public static int EquipmentWeight(Character m, Func<int, ItemDefinition> item, PartyQueryResult last)
     {
         var weight = 0;
         foreach (var slot in Enum.GetValues<EquipmentSlot>())
         {
-            if (Equipped(s, who, slot) is var code and not -1)
+            if (Equipped(m, slot, last) is var code and not -1)
             {
-                weight += s.Item(code).Weight;
+                weight += item(code).Weight;
             }
         }
-        return s.Party.Slot(who).Encumbrance = (sbyte)Math.Clamp(weight, 0, 500);
+        return m.Encumbrance = (sbyte)Math.Clamp(weight, 0, 500);
     }
 }

@@ -12,15 +12,15 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 94 | 21 | 73 |
-| cards | 63 | 2 | 61 |
+| cards | 64 | 2 | 62 |
 | events | 8 | 4 | 4 |
 | travel | 3 | 0 | 3 |
 | battles | 25 | 9 | 16 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 3 | 1 | 2 |
-| total | 198 | 39 | 159 |
+| total | 199 | 39 | 160 |
 
-## Core logic (195)
+## Core logic (196)
 
 ### rules (94)
 
@@ -96,22 +96,22 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-dc949d** `bug`, no fix flag - `src/Darklands.Core/Rules/LootSharing.cs:34` `LootSharing.ReplaceFallenLeader`  
   original: `R040+0x0000` (1462:0000, draft)  
   why: the second test reads party[leader] instead of party[i] (as in the source; loot_distribute is byte-matched): reproduced, no fix flag.
-- **B-a84745** `bug`, flag `FixBestWeaponSkillNumber` - `src/Darklands.Core/Rules/MemberRules.cs:81` `MemberRules.BestWeaponSkill`  
+- **B-a84745** `bug`, flag `FixBestWeaponSkillNumber` - `src/Darklands.Core/Rules/MemberRules.cs:93` `MemberRules.BestWeaponSkill`  
   original: `R029+0x01C0` (0E76:01C0, draft)  
   why: `best_skill = i` sits outside the if (missing braces): it ends as 6 (FixBestWeaponSkillNumber).
-- **B-2ffc47** `bug`, flag `FixSetAttributeMaximumLimit` - `src/Darklands.Core/Rules/MemberRules.cs:157` `MemberRules.SetAttributeMaximum`  
+- **B-2ffc47** `bug`, flag `FixSetAttributeMaximumLimit` - `src/Darklands.Core/Rules/MemberRules.cs:169` `MemberRules.SetAttributeMaximum`  
   original: `R029+0x0B84` (0E76:0B84, draft)  
   why: the clamp's result is dropped and v is stored as a char (FixSetAttributeMaximumLimit).
-- **B-308359** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:184` `MemberRules.HealAttribute`  
+- **B-308359** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:196` `MemberRules.HealAttribute`  
   original: `R029+0x08F2` (0E76:08F2, draft)  
   why: healing works from above the maximum too: an attribute boosted past it (Ironarm, New-wind, a saint) is brought most of the way down to it, so Essence o'Grace drunk while Ironarm runs takes most of the boost away.
-- **B-8b2837** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:276` `MemberRules.RaiseAttributeTemporarily`  
+- **B-8b2837** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:288` `MemberRules.RaiseAttributeTemporarily`  
   original: `R029+0x4C04` (0E76:4C04, draft)  
   why: (-2) a member above the boost ends the call and the reduced boost carries over (FixWholePartyBoosts).
-- **B-6eb045** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:313` `MemberRules.RaiseAttributeTemporarily`  
+- **B-6eb045** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:325` `MemberRules.RaiseAttributeTemporarily`  
   original: `R029+0x4C04` (0E76:4C04, draft)  
   why: a temporary attribute boost that is not wholly applied lowers the attribute for good: the boost is cut only by the excess over the maximum and then recorded in full, but AddAttribute keeps the attribute within 1..99 and under the maximum plus the largest single boost (R029+0x4E0C); the expiry takes back the recorded amount, so a boost cut short (an attribute near 99, or a second boost overlapping a larger one, in either order) leaves the attribute lower than before. The whole-party path above does the same.
-- **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:341` `MemberRules.RaiseSkillTemporarily`  
+- **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:353` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
   why: (-2) member_skill(-2) and add_skill(-2) for each present member (FixWholePartyBoosts).
 - **B-014a8d** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:126` `PartyQueries.MinAttributeSum`  
@@ -307,7 +307,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (63)
+### cards (64)
 
 - **B-ae3eba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:93` `MainStreetAtNight.Walk`  
   original: `R046+0x0422` (1838:0422, matched), `R046+0x0466` (1838:0466, matched), `R046+0x04AA` (1838:04AA, matched) +7 more  
@@ -411,6 +411,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-dac2b0** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S065/BowyersGuildAtNight.cs:85` `BowyersGuildAtNight.KnockToBuy`  
   original: `R065+0x21BC` (1A29:02AC, matched)  
   why: woken at night, the bowyers sell the smiths' goods: the night shop passes the smiths' categories (0xFF, 0x400) where the day shop passes the bowyers' (0x30, 0x83C).
+- **B-751be8** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S067/JewelersGuildAtNight.cs:224` `JewelersGuildAtNight.FailedToGetIn`  
+  original: `R067+0x1962` (1954:07A2, matched), `R029+0x1396` (0E76:1396, draft), `R039+0x0132` (1462:0132, matched)  
+  why: the lowest Stealth (1..99) is the member number: practice_skill always draws its chance, then member_skill and add_skill address record DS:9C69 + n*0x80. Below 5 that is a party slot (a member, perhaps not the clumsy one, practises); 20 is the place actions of the last battle (RecordOverrun: its skill byte DS:A6CF is Place[11] of the .BSV's variables, written when slot 0 has a figure image, the message drawn below the screen and waited for); the others are program memory (RecordOverrun's DIVERGENCE). Not data-damaging: Place[11] is a finished battle's byte that a new battle sets to 0 for all 13 combatants (R002+0x19FA) before reading it, and the .SAV never changes (direct calls j_prac.py / j_call.py / j_bsv.py, local/batch/evid1o), so it is faithful in both behaviours.
 - **B-ce730c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S068/ClimbingTheWallPastTheGuards.cs:45` `ClimbingTheWallPastTheGuards.Run`  
   original: `R068+0x2422` (19F9:0812, matched), `R068+0x2424` (19F9:0814, matched)  
   why: the rope line is greyed unless the last member carries a rope, whoever else has one.
@@ -477,7 +480,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-c6aabd** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:175` `CryptUnderTheRuinedChurch.TakeTheItem`  
   original: `R108+0x07CA` (1838:07CA, matched)  
   why: a victory has already left for the map (cur_loc -1), so the errand's thing is given only after a defeat.
-- **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:73` `HussiteBand.ClaimFriendship`  
+- **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:79` `HussiteBand.ClaimFriendship`  
   original: `R114+0x0DCC` (18D3:041C, matched)  
   why: `rand_mod(100) == p` where every other card has `<=`; kept as the original has it.
 - **B-08a606** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:98` `TemplarWritingDesk.LearnAFormula`  
@@ -632,7 +635,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:236` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:366` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:369` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party_delete_vec runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 - **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:403` `OverlandScreen.Scroll`  

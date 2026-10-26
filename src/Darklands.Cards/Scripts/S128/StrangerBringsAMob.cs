@@ -85,7 +85,12 @@ public sealed class StrangerBringsAMob : Card
             // orig: R128+0x03B8 matched
             // BUG: the offer's option lines are never switched on (R128+0x0806 cleared opt_on[] and the menu
             //   loop that copies the flags has not run yet), so the box offers nothing to choose.
-            // UNCERTAIN: what card_menu returns when no line is enabled; the C# screen decides.
+            // C: card_menu (R043+0x1BD2) returns only for a click on an enabled line's hot spot or Enter / space on a highlighted one
+            //   (R043+0x1C83: DS:E96F != 0xFF); with no line laid out neither can happen. Direct call j_menu.py (local/batch/evid1o): from the
+            //   card state banks-markt, opt_on cleared, card_options then card_menu took every key and 552 clicks over the text window and did
+            //   not return (the highlight stayed 0xFF); with opt_on[0] = 1 the same input returned.
+            // DIVERGENCE: the original waits for ever there (only the menu bar and the portraits answer); the screen takes line 0 for an
+            //   empty option list (CardScreen.Select), the escape line: the party flees with the ointment's cost.
             SabbatAftermath.OfferTheOintment(c, 4, 5, 0, _scene, _ => OptionHint.Say(CardTexts.ScrewedUp));
         }
         if (c.Next == SabbatAftermath.WorldMap)

@@ -23,8 +23,9 @@ public static class MemberRules
     // ---- skills ---------------------------------------------------------------------
 
     /// <summary><c>member_skill</c>.</summary>
-    // orig: member_skill R029+0x01A0 (0E76:01A0) matched; tests: MemberRulesTests
-    public static int Skill(GameState s, int who, int skill) => s.Party.Slot(who).Skills[skill];
+    // orig: member_skill R029+0x01A0 (0E76:01A0) matched; tests: MemberRulesTests; RecordOverrunTests (a member past the records)
+    public static int Skill(GameState s, int who, int skill) =>
+        RecordOverrun.Outside(s.Party.Resolve(who)) ? RecordOverrun.Skill(s, s.Party.Resolve(who), skill) : s.Party.Slot(who).Skills[skill];
 
     /// <summary>Sets a skill, kept in 0..99 (<c>set_skill</c>).</summary>
     // orig: set_skill R029+0x02B8 (0E76:02B8) matched; clamp root 0410:001A (0410:001A) asm; tests: MemberRulesTests
@@ -59,6 +60,17 @@ public static class MemberRules
         else if (s.Party.PresentMember(who) is not null)
         {
             ChangeSkill(s, who, skill, change);
+        }
+        else if (RecordOverrun.Outside(who) && RecordOverrun.Status(s, who) != 0)
+        {
+            // C: a member past the records: its status byte (another variable) is tested and its skill byte written (RecordOverrun)
+            var before = RecordOverrun.Skill(s, who, skill);
+            var after = Math.Clamp(before + change, 0, 99);
+            RecordOverrun.SetSkill(s, who, skill, after);
+            if (s.ReportSkillChanges)
+            {
+                s.Messages.Report(who, $"{SkillNames[skill]} changed from {before} to {after}", change > 0);
+            }
         }
     }
 

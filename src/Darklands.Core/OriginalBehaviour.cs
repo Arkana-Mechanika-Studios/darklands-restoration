@@ -19,6 +19,7 @@ namespace Darklands.Core;
 /// <item>The daily city politics change sides and measure strengths at the <em>current</em> location, not the event's city.</item>
 /// <item><c>has_item</c>'s formula test reads the formula table at member × 22 + code − 0x5F (other members' formulas for low codes).</item>
 /// <item><c>practice_skill</c> for one member rolls even when the member is absent.</item>
+/// <item>The jewelers' guild at night passes the party's lowest Stealth value as the member: record 20's skill byte is the last battle's place action of combatant 11 (<see cref="Rules.RecordOverrun"/>).</item>
 /// <item>A member who is the leader but not able is replaced by the first able member only when time passes.</item>
 /// <item>Potions above quality 45 take the last arm of their switch and are the weakest; weapon potions add to the bonus byte without limit; Strongedge and Great Power record the pack index.</item>
 /// <item>A camp guard's weapon test leaves out Impact Weapons; day jobs needing a second set of buildings are never open.</item>

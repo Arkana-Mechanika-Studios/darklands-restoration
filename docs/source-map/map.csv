@@ -730,7 +730,7 @@ Brewing.AbandonAll(),R036+0x082C,R036+0x082C,draft,CampAndSheetRulesTests,
 CampStay,R036+0x0082,R036+0x0082,draft,CampAndSheetRulesTests,unmatched (register allocation); divergence: detail words reset per stay
 CampStay.TeacherList(),R036+0x1D24,R036+0x1D24,draft,,bug: rows numbered by log position
 CampStay.DoAlchemy(),R036+0x08EC;R029+0x2204,R036+0x08EC,draft,,key A
-CampStay.CanDoAlchemy(),R036+0x1E80,R036+0x1E80,draft,CampAndSheetRulesTests,any non-zero formulas_known byte; uncertain: top bits of the bytes not modelled
+CampStay.CanDoAlchemy(),R036+0x1E80,R036+0x1E80,draft,CampAndSheetRulesTests,any non-zero formulas_known byte (all eight bits; unit run t_alch.py)
 CampStay.DayCost(),R036+0x1858,R036+0x1858,draft,CampAndSheetRulesTests,divergence: no teacher found reads slot 0 in the original; fee 0 here
 CampStay.SpendDay(),R036+0x08EC,R036+0x08EC,draft,CampAndSheetRulesTests,key S; days counted even when unpaid
 CampStay.PassTheDay(),R036+0x147A,R036+0x147A,draft,CampAndSheetRulesTests,unmatched; checked against asm
