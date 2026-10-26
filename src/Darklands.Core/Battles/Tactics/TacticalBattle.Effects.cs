@@ -912,13 +912,15 @@ public sealed class EffectField : IEffectClouds
         // los_x0, los_y0, los_x1, los_y1 (DS:E0A5, DS:E0A3, DS:E0A9, DS:E0A7) and the saved line (bp-6, -8, -0x0A, -0x0C).
         int x0 = a.X, y0 = a.Y, x1 = t.X, y1 = t.Y;
         var (sx0, sy0, sx1, sy1) = residue;
+        // orig: its own clip tests (R014+0xF284 from this frame) and those of the line tests it calls (one frame deeper) keep two runs (BattleMap.ClipResidue)
+        BattleMap.ClipResidue boxes = new(), lines = new();
         var last = Battle.Behaviour.FixCloudLineOneTooMany ? CloudCount - 1 : CloudCount;
         for (var i = 0; i <= last; i++)
         {
             var cl = _clouds[i];
             var n = cl.Size >> 4;
             int w = n < EffectHalfWidth.Length ? EffectHalfWidth[n] : 0, h = n < EffectHalfHeight.Length ? EffectHalfHeight[n] : 0;
-            if (Map.SegmentHitsBox(x0, y0, x1, y1, cl.X - w, cl.Y - h, w + cl.X, h + cl.Y))
+            if (Map.SegmentHitsBox(x0, y0, x1, y1, cl.X - w, cl.Y - h, w + cl.X, h + cl.Y, boxes))
             {
                 (sx0, sy0, sx1, sy1) = (x0, y0, x1, y1);
                 x0 = cl.X;
@@ -928,14 +930,14 @@ public sealed class EffectField : IEffectClouds
                     var (ox, oy) = PuffOffset(n, k);
                     x1 = ox + cl.X;
                     y1 = oy + cl.Y;
-                    if (Map.LineBlocked(new MapPoint(x0, y0), new MapPoint(x1, y1)) != 0)
+                    if (Map.LineBlocked(new MapPoint(x0, y0), new MapPoint(x1, y1), residue: lines) != 0)
                     {
                         continue;
                     }
                     var (px, py) = (x0, y0);
                     var box = (x1 - 8, y1 - 4, x1 + 8, y1 + 4);
                     (x0, y0, x1, y1) = (sx0, sy0, sx1, sy1);
-                    if (Map.SegmentHitsBox(x0, y0, x1, y1, box.Item1, box.Item2, box.Item3, box.Item4))
+                    if (Map.SegmentHitsBox(x0, y0, x1, y1, box.Item1, box.Item2, box.Item3, box.Item4, boxes))
                     {
                         return true;
                     }

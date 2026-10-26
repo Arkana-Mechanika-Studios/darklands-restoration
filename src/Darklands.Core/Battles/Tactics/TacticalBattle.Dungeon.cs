@@ -81,6 +81,10 @@ public sealed partial class TacticalBattle
     /// <summary>The flags table (DS:A696) as the program holds it when the battle starts (the last battle's, or the last load's battle file); null: zeros.</summary>
     public IReadOnlyList<ushort>? StaleFlags { get; set; }
 
+    /// <summary>The path bytes (cbt_paths, 13 × 250) and path indices (DS:D6FB) as the program holds them when the battle starts (the last
+    /// battle's, or the last load's battle file); null: what the combatants hold (zeros).</summary>
+    public (byte[] Paths, byte[] Indices)? StalePaths { get; set; }
+
     private Generation.BattlefieldStore Store => Field.Store;
 
     private static bool Inside(MapPoint p, int x, int y, int w, int h) => x <= p.X && p.X < x + w && y <= p.Y && p.Y < y + h;

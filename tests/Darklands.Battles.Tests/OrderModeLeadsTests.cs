@@ -141,7 +141,7 @@ public sealed class OrderModeLeadsTests
             last.GiveUpUntil = 5;
             var active = t.Battle.ActiveMember;
             Set(t, "CursorTarget", -2);
-            Set(t, "_orderSpot", new MapPoint(300, 200));
+            Set(t, "OrderSpot", new MapPoint(300, 200));
             Set(t, "_orderClock", (ushort)1234);
             t.Battle.PartyFloor = t.Battle.FloorShown;
             t.LeaveOrderMode();
@@ -151,6 +151,33 @@ public sealed class OrderModeLeadsTests
             Assert.Equal(active, t.Battle.ActiveMember);      // DS:17B0 = 0xFF is not reproduced
             Assert.Equal(fix ? 0 : 1, Get<int>(t, "_actionBeforeRecords"));
         }
+    }
+
+    /// <summary>
+    /// R014+0xBC6A (order mode's start) and R016+0x13DA (Esc) clear DS:C652, the spot's x, alone, and nothing but the ground click
+    /// (R014+0xC6F3 / 0xC6FA) writes DS:C67D: a walk order given with no spot clicked goes to x 0 and the last spot's y
+    /// (R014+0xBFC0..0xBFCC), in the next battle too (the battle's reset clears neither).
+    /// </summary>
+    [Fact]
+    public void AWalkWithNoSpotClickedGoesToTheLastSpotsY()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var t = Start();
+        var member = t.Battle.Leader;
+        t.EnterOrderMode(member);
+        Set(t, "OrderSpot", new MapPoint(300, 200));
+        t.CancelOrder();
+        Assert.Equal(new MapPoint(0, 200), t.ProgramMemory.OrderSpot);
+        t.EnterOrderMode(member);
+        Set(t, "OrderAction", 1);
+        Set(t, "CursorTarget", -2);
+        t.Battle.PartyFloor = t.Battle.FloorShown;
+        t.LeaveOrderMode();
+        Assert.Equal(CombatAction.Walk, t.Battle[member].Action);
+        Assert.Equal(new MapPoint(0, 200), t.Battle[member].Destination);
     }
 
     /// <summary>R014+0xBCDC..0xBCEE and 0xBD48..0xBD5B: with nobody selected the Hurry bit of flags[-1] is the pause byte's 0x10.</summary>
@@ -169,7 +196,7 @@ public sealed class OrderModeLeadsTests
         t.PauseByte = 0x11;
         Set(t, "_actionBeforeRecords", 0x1BE);
         Set(t, "CursorTarget", -1);
-        Set(t, "_orderSpot", new MapPoint(300, 200));
+        Set(t, "OrderSpot", new MapPoint(300, 200));
         t.LeaveOrderMode();
         Assert.Equal(1, t.PauseByte);
     }

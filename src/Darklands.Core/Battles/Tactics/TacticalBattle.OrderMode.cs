@@ -57,8 +57,12 @@ public sealed partial class TacticalBattle
     /// <summary>DS:C7CC: a target or spot was clicked; DS:C762: the clicked enemy is in reach (no walk).</summary>
     private bool _targetChosen, _adjacent;
 
-    /// <summary>DS:C652 / DS:C67D: the spot clicked (x 0: none).</summary>
-    private MapPoint _orderSpot;
+    /// <summary>DS:C652 / DS:C67D: the spot clicked (x 0: none), kept for the whole program (<see cref="Generation.GenerationProcessMemory.OrderSpot"/>).</summary>
+    private MapPoint OrderSpot
+    {
+        get => ProgramMemory.OrderSpot;
+        set => ProgramMemory.OrderSpot = value;
+    }
 
     /// <summary>DS:D6EA: the member's flee bit when order mode began; DS:C867: the clock then.</summary>
     private bool _fleeBefore;
@@ -138,7 +142,8 @@ public sealed partial class TacticalBattle
         PlaceOrder = -1;
         _targetChosen = false;
         Cursor = OrderCursor.None;
-        _orderSpot = default;
+        // orig: R014+0xBC6A clears the word DS:C652 only: DS:C67D, the y, keeps the last spot's
+        OrderSpot = OrderSpot with { X = 0 };
         InitialCursor();
         if (!Battle.RealCombat)
         {
@@ -419,7 +424,7 @@ public sealed partial class TacticalBattle
             Cursor = OrderCursor.Ground;
         }
         CursorTarget = -2;
-        _orderSpot = ground;
+        OrderSpot = ground;
         (c.Destination, c.Target, c.Facing) = keep;
         return false;
     }
@@ -442,7 +447,7 @@ public sealed partial class TacticalBattle
         }
         var i = Selected;
         var c = Battle[i];
-        var spot = _orderSpot;
+        var spot = OrderSpot;
         if (!(OrderAction == -1 && !_targetChosen && spot.X == 0))
         {
             Give();
@@ -606,7 +611,7 @@ public sealed partial class TacticalBattle
     private void LeaveWithNobodySelected()
     {
         CursorKeysOn = false;
-        var spot = _orderSpot;
+        var spot = OrderSpot;
         if (!(OrderAction == -1 && !_targetChosen && spot.X == 0) && OrderAction != 0x400 && CursorTarget != -3 && Cursor != OrderCursor.TargetBlocked
             && spot.X != 0)
         {
@@ -729,7 +734,8 @@ public sealed partial class TacticalBattle
     public void CancelOrder()
     {
         OrderAction = -1;
-        _orderSpot = default;
+        // orig: R016+0x13DA clears the word DS:C652 only: DS:C67D, the y, keeps the last spot's
+        OrderSpot = OrderSpot with { X = 0 };
         if (Selected != -1)
         {
             var c = Battle[Selected];

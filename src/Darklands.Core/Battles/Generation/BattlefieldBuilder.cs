@@ -56,6 +56,14 @@ public sealed class GenerationProcessMemory
 
     /// <summary>DS:C925 / DS:C978 / DS:C989 / DS:CA1B: the trigger whose alarm ended the last battle (x −1: none).</summary>
     public (int X, int Y, int Width, int Height) AlarmTrigger { get; set; } = (-1, 0, 0, 0);
+
+    /// <summary>
+    /// DS:C652 / DS:C67D: the spot of the last walk order clicked (x 0: none), zeros in a fresh program. Only the ground click sets both;
+    /// order mode's start and Esc clear the x alone and no battle's reset touches them, so a walk given with no spot clicked goes to x 0
+    /// and the y of the last spot, of this battle or an earlier one.
+    /// </summary>
+    // orig: set by R014+0xC6F3 / 0xC6FA only; R014+0xBC6A and R016+0x13DA clear DS:C652; R014+0xBFC0..0xBFCC copy both into the destination
+    public MapPoint OrderSpot { get; set; }
 }
 
 /// <summary>Everything a battlefield generator reads besides the request.</summary>

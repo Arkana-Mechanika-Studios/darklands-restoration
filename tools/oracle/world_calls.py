@@ -115,6 +115,7 @@ def private_mb() -> float:
 # The original's loader and writer (m.call of R037) leak native memory in the emulator (about 0.6 MB a call: the translated blocks it drops when
 # the code cache is flushed at every restore are not given back); a machine built afresh gives it all back. So the machine is rebuilt every
 # REBUILD_EVERY calls, and a process whose private memory still passes RSS_CAP_MB aborts (exit 3) instead of eating the computer.
+CLEAR_EVENT_TABLE = os.environ.get("WORLD_KEEP_EVENT_TABLE") != "1"          # (set WORLD_KEEP_EVENT_TABLE=1 to reproduce the earlier jobs)
 REBUILD_EVERY = int(os.environ.get("WORLD_REBUILD_EVERY", "20"))
 RSS_CAP_MB = float(os.environ.get("WORLD_RSS_CAP_MB", "1500"))
 
@@ -231,6 +232,11 @@ class WState(bc.State):
         self.in_load = True
         try:
             m.ensure(37)
+            if CLEAR_EVENT_TABLE:
+                # the game's own load path first clears the event table (R037+0x8B76 before R037+0x8ED4); the loader alone overwrites slots 0..n-1 and
+                # leaves the machine's older events beyond them, which the writer then saves and the rewrite packs into other slots
+                seg = m.word(DS, 0x7E30)
+                m.write(seg, 0x1B2C, bytes(4 * 300))
             m.call(P(0x1C7D), 0x0D24, [m.push_string("DKSAVE1.SAV"), DS])
         finally:
             self.in_load = False

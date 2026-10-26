@@ -491,8 +491,8 @@ public sealed class BattleScreen : ITacticalView
             : field.Store.FloorShown >= 0 ? field.Store.FloorShown : field.StartLevel;
         var battle = new Battle(_assets.Tables, _state.Random)
         {
-            Persistent = field.Persistent || request.Persistent, Difficulty = (int)_state.Difficulty, FloorShown = floor,
-            Leader = _state.Party.LeaderIndex, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
+            Persistent = field.Persistent || request.Persistent, DifficultyOf = _state, FloorShown = floor,
+            LeaderOf = _state.Party, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
@@ -501,6 +501,8 @@ public sealed class BattleScreen : ITacticalView
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed,
             StaleFlags = _state.BattleFile is { } program ? [.. Enumerable.Range(0, Combatant.Count).Select(i => (ushort)(program.Variables[BattleVariables.Flags + 2 * i] | program.Variables[BattleVariables.Flags + 2 * i + 1] << 8))] : null,
+            StalePaths = _state.BattleFile is { } heldFile ? (heldFile.Variables[BattleVariables.Paths..(BattleVariables.Paths + Combatant.Count * Combatant.PathLength)],
+                heldFile.Variables[BattleVariables.PathIndex..(BattleVariables.PathIndex + Combatant.Count)]) : null,
         };
         _view.PieceFrame = (layer, x, y) => _battle?.Effects.PieceFrame(layer, x, y) ?? -1;
         KeepSeenPositions(battle);
@@ -548,8 +550,8 @@ public sealed class BattleScreen : ITacticalView
         _owner.LastFieldLocation = _state.CurrentLocation;
         var battle = new Battle(_assets.Tables, _state.Random)
         {
-            Persistent = true, Difficulty = (int)_state.Difficulty, FloorShown = file.Variables[BattleVariables.FloorShown],
-            Leader = _state.Party.LeaderIndex, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
+            Persistent = true, DifficultyOf = _state, FloorShown = file.Variables[BattleVariables.FloorShown],
+            LeaderOf = _state.Party, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
@@ -1098,22 +1100,28 @@ public sealed class BattleScreen : ITacticalView
             var text = S(at).TrimStart('\x01', '\x02');
             return (text.Length > pos ? text[..pos] : t) + suffix;
         }
+        // C: the Game texts of R000+0x083E start with their tick byte too (6 pixels wide, so the dropdown menu_dropdown_open root 0000:07D4
+        // C: opens is 6 pixels wider than the words, and its sub-menu with it): 2 for Save Game, Load Saved Game, Difficulty, Pause and Quit
+        // C: to DOS; Show Changes, Music and Sound FX as toggle_saint_msgs / toggle_music / toggle_sound set them (*DS:995A, *DS:996E,
+        // C: *DS:9982); Basic / Standard / Expert as show_difficulty root 0000:1438 does (*DS:99EC / *DS:9A02 / *DS:9A18). They are read
+        // C: from the options when drawn, as MenuBar.ForGame's (its DIVERGENCE about the Show Changes tick across a load holds here too).
+        var options = _ui.Options;
         var difficulty = new List<MenuBar.SubItem>
         {
-            new(() => "Basic", true, "", 0, () => SetDifficulty(Difficulty.Basic)),
-            new(() => "Standard", true, "", 0, () => SetDifficulty(Difficulty.Standard)),
-            new(() => "Expert", true, "", 0, () => SetDifficulty(Difficulty.Expert)),
+            new(() => Tick(_state.Difficulty == Difficulty.Basic) + "Basic", true, "", 0, () => SetDifficulty(Difficulty.Basic)),
+            new(() => Tick(_state.Difficulty == Difficulty.Standard) + "Standard", true, "", 0, () => SetDifficulty(Difficulty.Standard)),
+            new(() => Tick(_state.Difficulty == Difficulty.Expert) + "Expert", true, "", 0, () => SetDifficulty(Difficulty.Expert)),
         };
         var game = new List<MenuBar.Item>
         {
-            new(() => "Save Game", true, "\u000fS", SaveGame, State: () => m.SaveGame),
-            new(() => "Load Saved Game", true, "\u000fL", LoadGame, State: () => m.LoadGame),
-            new(() => "Difficulty", true, "\u000fD", Nothing, difficulty),
-            new(() => "Show Changes", true, "\u000fC", () => _hotKey?.Invoke(Keys.AltC)),
-            new(() => "Music", true, "\u000fM", () => _hotKey?.Invoke(Keys.AltM)),
-            new(() => "Sound FX", true, "\u000fF", () => _hotKey?.Invoke(Keys.AltF)),
-            new(() => "Pause", true, "\u000fP", () => _hotKey?.Invoke(Keys.AltP)),
-            new(() => "Quit to DOS", true, "\u000fQ", () => _hotKey?.Invoke(Keys.AltQ)),
+            new(() => Tick(false) + "Save Game", true, "\u000fS", SaveGame, State: () => m.SaveGame),
+            new(() => Tick(false) + "Load Saved Game", true, "\u000fL", LoadGame, State: () => m.LoadGame),
+            new(() => Tick(false) + "Difficulty", true, "\u000fD", Nothing, difficulty),
+            new(() => Tick(_state.ShowSaintlyChanges) + "Show Changes", true, "\u000fC", () => _hotKey?.Invoke(Keys.AltC)),
+            new(() => Tick(options.Music) + "Music", true, "\u000fM", () => _hotKey?.Invoke(Keys.AltM)),
+            new(() => Tick(options.SoundEffects) + "Sound FX", true, "\u000fF", () => _hotKey?.Invoke(Keys.AltF)),
+            new(() => Tick(false) + "Pause", true, "\u000fP", () => _hotKey?.Invoke(Keys.AltP)),
+            new(() => Tick(false) + "Quit to DOS", true, "\u000fQ", () => _hotKey?.Invoke(Keys.AltQ)),
         };
         // C: every Orders text starts with its tick byte (font 1: 1 a tick, 2 none, both 6 pixels wide): 2, but Travel As Group's (DS:07AA) and
         // C: Travel Single File's (DS:07BC), which R016+0x0BD6 / R016+0x0CDC set to 1 for the mode turned on and every other writer (R002+0x0000,
@@ -1219,8 +1227,8 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>set_difficulty_basic / _standard / _expert (root 0000:13F6..): the game's difficulty, which the battle reads too.</summary>
     private void SetDifficulty(Difficulty d)
     {
+        // C: the battle's difficulty is the game's (Battle.DifficultyOf)
         _state.Difficulty = d;
-        _battle!.Battle.Difficulty = (int)d;
     }
 
     private void Resume()

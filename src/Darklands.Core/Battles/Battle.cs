@@ -97,7 +97,30 @@ public sealed class Battle
     public int EnemyFloor { get; set; }
 
     /// <summary>leader (DS:907B) and the active member DS:17B0 the keys move.</summary>
-    public int Leader { get; set; }
+    // C: DS:907B is the game's one leader byte: the battle's writers (member_activate R016+0x09BC, the new leader of combat_over
+    // C: R014+0x08FE, a character sheet's Ctrl-F1..F5 in R031) change the party's leader itself, which the loot screen (R040+0x01C8:
+    // C: DS:8DBA = leader, put back by R040+0x06C8), a save in the battle and the game after it read; no battle start or end copies it
+    // C: with LeaderOf set, the leader is that party's (Party.LeaderIndex); without (tests), the battle's own value.
+    public int Leader
+    {
+        get => LeaderOf?.LeaderIndex ?? _leader;
+        set
+        {
+            if (LeaderOf is { } party)
+            {
+                party.LeaderIndex = value;
+            }
+            else
+            {
+                _leader = value;
+            }
+        }
+    }
+
+    private int _leader;
+
+    /// <summary>The party whose leader is the battle's (null: the battle keeps its own, as in tests).</summary>
+    public Characters.Party? LeaderOf { get; init; }
 
     public int ActiveMember { get; set; }
 
@@ -114,7 +137,30 @@ public sealed class Battle
     public LevelExitCards ExitCards { get; set; }
 
     /// <summary>game_difficulty: 0 basic, 1 standard, 2 expert.</summary>
-    public int Difficulty { get; set; } = 1;
+    // C: game_difficulty (DS:906A) is the game's one byte: Alt-D in a battle (hot_keys root 0000:0CAA, case 0x2000) and the Game menu's
+    // C: Difficulty items (set_difficulty_* root 0000:1408..1428) write it, and the skill gains of the battle's end (R014+0x0694, the die of
+    // C: R021+0x0000) read it then
+    // C: with DifficultyOf set, the difficulty is that game's (GameState.Difficulty); without (tests), the battle's own value.
+    public int Difficulty
+    {
+        get => DifficultyOf is { } game ? (int)game.Difficulty : _difficulty;
+        set
+        {
+            if (DifficultyOf is { } game)
+            {
+                game.Difficulty = (Darklands.Core.Difficulty)value;
+            }
+            else
+            {
+                _difficulty = value;
+            }
+        }
+    }
+
+    private int _difficulty = 1;
+
+    /// <summary>The game whose difficulty is the battle's (null: the battle keeps its own, as in tests).</summary>
+    public GameState? DifficultyOf { get; init; }
 
     /// <summary>combat_alarm (DS:D6F4): real combat starts when it goes off.</summary>
     public int Alarm { get; set; }

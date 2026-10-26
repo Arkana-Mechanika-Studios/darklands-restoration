@@ -34,7 +34,20 @@ public sealed class BattleMap
     private static readonly int[] NeighbourY = [-16, -16, -16, 0, 0, 0, 16, 16, 16];
 
     private readonly Battle _battle;
-    private (int X, int Y) _lastClipPoint;
+
+    /// <summary>
+    /// The two stack words the clip test reads as its intersection point when neither its bottom nor its top case applies (known original bug
+    /// DL 0036): what the last clip test made at that stack place left there. Where they are depends on the caller's depth, so each run of
+    /// clip tests that the original makes one after another from the same frame, with nothing else called between, has its own; at the
+    /// start of a run they hold another function's leftovers, taken here as a clean stack's zeros.
+    /// </summary>
+    // orig: R014+0xF284's [bp-4] / [bp-2]. Probed in the gate battle: SS:FC44 under enemy_sees (R018+0x06AB), SS:FC6A under enemy_turn's
+    // missile test (R018+0x0BE7), SS:FCC6 under melee_exchanges' (R014+0x2A4A); each run began with leftovers outside the box tested
+    // (12358,17201; 4504,-874; 423,9 ...) and within a run held the previous test's point
+    public sealed class ClipResidue
+    {
+        public (int X, int Y) Point { get; set; }
+    }
 
     public BattleMap(Battle battle, BattlefieldLevel level, IReadOnlyList<FurnitureShape?> furniture, int firstSightBlockingFurniture)
     {
@@ -216,8 +229,10 @@ public sealed class BattleMap
     /// <param name="b">The target (never blocks).</param>
     /// <param name="mode">0x100 (a throw) uses the shooter's thrown-weapons skill (+0x6F), else the readied skill (+0x59).</param>
     // orig: line_blocked R014+0xEF3C (1D69:000C) draft (asm-verified per spec D §4.3); tests: Oracle:tactics.json (400 cases)
-    public int LineBlocked(MapPoint from, MapPoint to, int a = -1, int b = -1, int mode = 0)
+    /// <param name="residue">The clip point left by the caller's earlier tests of its run (<see cref="ClipResidue"/>); null: a run of its own.</param>
+    public int LineBlocked(MapPoint from, MapPoint to, int a = -1, int b = -1, int mode = 0, ClipResidue? residue = null)
     {
+        residue ??= new ClipResidue();
         int x0 = from.X, y0 = from.Y, x1 = to.X, y1 = to.Y;
         int r0 = y0 / 16, r1 = y1 / 16, c0 = x0 / 32, c1 = x1 / 32;
         var firstColumn = Math.Min(c0, c1);
@@ -277,12 +292,12 @@ public sealed class BattleMap
         }
         return 0;
 
-        bool Clips(int left, int top, int right, int bottom) => SegmentHitsBox(x0, y0, x1, y1, left, top, right, bottom);
+        bool Clips(int left, int top, int right, int bottom) => SegmentHitsBox(x0, y0, x1, y1, left, top, right, bottom, residue);
     }
 
     /// <summary>Whether the segment touches the box (an outcode clip test).</summary>
     // orig: R014+0xF284 (1D69:0354) draft; outcode R014+0xF3E2 (1D69:04B2) draft (asm-verified per spec D §4.3)
-    internal bool SegmentHitsBox(int x0, int y0, int x1, int y1, int left, int top, int right, int bottom)
+    internal bool SegmentHitsBox(int x0, int y0, int x1, int y1, int left, int top, int right, int bottom, ClipResidue residue)
     {
         int Code(int x, int y) => (x < left ? 1 : 0) | (x > right ? 2 : 0) | (y > bottom ? 4 : 0) | (y < top ? 8 : 0);
         var k0 = Code(x0, y0);
@@ -301,9 +316,10 @@ public sealed class BattleMap
         }
         // C: the intersection point is an uninitialised local when neither bottom nor top applies (known original bug DL 0036):
         // in the game it holds whatever the stack held (line_blocked's locals, or interrupt residue).
-        // DIVERGENCE: here it keeps the point of the previous clip test (a field starting at (0, 0)); that agrees with the
-        // original on Oracle:tactics.json, where each case starts on a clean stack.
-        var p = _lastClipPoint;
+        // DIVERGENCE: here it keeps the point of the previous clip test of the same run (ClipResidue), a run starting at (0, 0) as on a clean
+        // stack, where the original reads another function's leftovers (undefined memory; they agree when they lie outside the box, as in
+        // every run probed).
+        var p = residue.Point;
         if ((k0 & 4) != 0)
         {
             p = ((int)((long)(x1 - x0) * (bottom - y1) / (y1 - y0)) + x1, bottom);
@@ -323,7 +339,7 @@ public sealed class BattleMap
                 p = (left, (int)((long)(y1 - y0) * (left - x1) / (x1 - x0)) + y1);
             }
         }
-        _lastClipPoint = p;
+        residue.Point = p;
         return Code(p.X, p.Y) == 0;
     }
 }

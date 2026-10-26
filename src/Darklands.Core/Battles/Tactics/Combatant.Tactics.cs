@@ -147,7 +147,10 @@ public sealed partial class Combatant
     public int QueuedStep { get; set; } = -1;
 
     /// <summary>cbt_paths[i] (far 20A5:6238 + i·250) and DS:D6FB, the index of the next byte.</summary>
-    public byte[] Path { get; } = Filled(PathLength, 0xFF);
+    // orig: neither is cleared when a battle starts (R002+0x1830 resets the other per-combatant tables): zeros in a fresh program, else
+    // what the last battle or the last load's battle file left (TacticalBattle.StalePaths); a walk ordered without a path given
+    // (Flee, then Space) follows those bytes (lockstep session gen-bheld-22)
+    public byte[] Path { get; } = new byte[PathLength];
 
     public int PathIndex { get; set; }
 
@@ -314,10 +317,4 @@ public sealed partial class Combatant
         Orders[2] = CombatAction.None;
     }
 
-    private static byte[] Filled(int n, byte value)
-    {
-        var a = new byte[n];
-        Array.Fill(a, value);
-        return a;
-    }
 }

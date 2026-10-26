@@ -56,6 +56,7 @@ internal static class Adapters
         ["R029+0x0792"] = c => { MemberRules.BoostEquippedWeaponSkills(c.State, c.S(0), c.S(1)); return null; },
         ["R029+0x1260"] = c => Saints.Knows(c.State, c.S(0), c.S(1)) ? 1 : 0,
         ["R029+0x4C04"] = c => { MemberRules.RaiseAttributeTemporarily(c.State, c.S(0), c.S(1), c.S(2), c.S(3)); return null; },
+        ["R029+0x4D24"] = c => { MemberRules.RecordPotionBonus(c.State, c.S(0), c.S(1), c.S(2), c.S(3)); return null; },
         ["R029+0x4AA4"] = c => { PartyRules.EndTerms(c.State, c.S(0)); return null; },
 
         // ---- travel on the map: the view's registers and the travel counters are DS words of the job
@@ -73,6 +74,33 @@ internal static class Adapters
         ["R039+0x0EBE"] = c => c.State.CurrentLocation < 0
             ? throw new WorldCallsTests.SkipJob("in the open country (cur_loc -1): every caller runs in a city")
             : Run(() => CityPolitics.ConflictOutcome(c.State, c.S(0), c.S(1), c.S(2))),
+        ["R039+0x0A34"] = c => CityPolitics.SideOf(c.State, c.S(0)),
+        ["R039+0x0A7E"] = c => Run(() => CityPolitics.SetSide(c.State, c.S(0), c.S(1))),
+        // the expiry handlers (event_expiry_fns): the argument is the expiring event's slot; the rewrite's dispatcher runs the handler of that event
+        ["R029+0x3FB2"] = c => Handler(c, 1),
+        ["R029+0x4180"] = c => Handler(c, 2),
+        ["R029+0x4378"] = c => Handler(c, 3),
+        ["R029+0x4436"] = c => Handler(c, 4),
+        ["R029+0x4442"] = c => Handler(c, 5),
+        ["R029+0x448A"] = c => Handler(c, 6),
+        ["R029+0x450A"] = c => Handler(c, 7),
+        ["R029+0x4534"] = c => Handler(c, 8),
+        ["R029+0x4626"] = c =>
+        {
+            c.State.PartyTerrain = c.Job.Word(0xD843);
+            return Handler(c, 9);
+        },
+        ["R039+0x00BA"] = c => LocationRules.Hostile(c.State) ? 1 : 0,
+        ["R039+0x0102"] = c => LocationRules.PriceEvents(c.State),
+        ["R039+0x0000"] = c => LocationRules.LocalPrice(c.State, c.S(0), c.S(2)),
+        ["R039+0x1D2C"] = c => LocationRules.ServicePrice(c.State, c.S(0), c.S(1)),
+        ["R039+0x1E06"] = c => Practice.GiveReward(c.State, c.S(0)),
+        ["R039+0x15C2"] = c => Run(() => Quests.StartMine(c.State)),
+        ["R039+0x11FC"] = c => Run(() => Quests.StartDragon(c.State)),
+        ["R039+0x1B0C"] = c => Run(() => Quests.StartSabbat(c.State)),
+        // six words; the fact events' location is what the original pushes from DS:E89B (R039+0x118D/0x11AC/0x11CB/0x11EA), CardContext passes Variables.Location
+        ["R039+0x10B6"] = c => Quests.StartQuest3(c.State, c.S(0), c.S(1), c.S(2), c.S(3), c.S(4), c.S(5), c.Job.Word(0xE89B)),
+        ["R039+0x026A"] = c => Run(() => MemberRules.Injure(c.State, c.S(0), c.S(1), c.S(2), c.S(3))),
         ["R039+0x1C22"] = c => Quests.FeastDayNearThisMonth(c.State),
         ["R039+0x1712"] = c => Quests.StartQuest10(c.State, c.S(0), out _),
     };
@@ -131,6 +159,22 @@ internal static class Adapters
     private static int? Run(Action call)
     {
         call();
+        return null;
+    }
+
+    /// <summary>An expiry handler R029+0x.... called with an event slot: the rewrite's EventExpiry.Handle on that slot's event.</summary>
+    private static int? Handler(WorldCallsTests.Context c, int number)
+    {
+        var slot = c.U(0);
+        if (c.State.Events[slot] is not { } e)
+        {
+            throw new WorldCallsTests.SkipJob($"slot {slot} holds no event in the rewrite");
+        }
+        if ((int)e.ExpiryHandler != number)
+        {
+            throw new WorldCallsTests.SkipJob($"slot {slot} holds an event of handler {(int)e.ExpiryHandler}, not {number}");
+        }
+        EventExpiry.Handle(c.State, e);
         return null;
     }
 

@@ -323,6 +323,12 @@ public sealed partial class TacticalBattle : IBattleEndActions
         for (var i = 0; i < Combatant.Count; i++)
         {
             Battle[i].Flags = (TacticalFlags)(StaleFlags is { } stale && i < stale.Count ? stale[i] & 0x6E00 : 0);
+            // orig: the loop leaves cbt_paths (far 20A5:6238) and DS:D6FB as they were (Combatant.Path)
+            if (StalePaths is { } paths)
+            {
+                Array.Copy(paths.Paths, i * Combatant.PathLength, Battle[i].Path, 0, Combatant.PathLength);
+                Battle[i].PathIndex = paths.Indices[i];
+            }
             // C: the same loop sets every combatant's exchange (DS:CA57) to 7 (0E76:19D0), the members' too; the tests of the exchange
             // never take 7, but a battle file written in the battle keeps it (lockstep session savemid-mine).
             Battle[i].Exchange = Exchange.Placed;

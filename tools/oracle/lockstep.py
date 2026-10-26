@@ -85,9 +85,11 @@ from orig_side import BWAIT_ACTUAL, ClockTrace, TraceList, key_code, run_origina
 BWAIT_FRAMES = 3                    # the C# host's frames a step costs beyond its wait (see run_rewrite)
 # the hot keys whose message box (show_message root 0000:24BC, 0x3C ticks) holds the pass: Alt-M, Alt-F, Alt-C, Alt-D (outside the menu bar's
 # keyboard mode, where root 0000:0DD2 takes them without acting); the C# host's frames of that box: its draw, the 1000 ms delay at 32 ms a
-# frame (the host's pump and the delay's sleep), the restore
+# frame (the host's pump and the delay's sleep), the restore; 33 (round B1 tier 2: with 34 the next step came one battle pass after the original's at
+# 18 of 22 box keys in 14 sessions, the other four with another lag between)
 BOX_KEYS = ("altm", "altf", "altc", "altd")
-BOX_FRAMES = 34
+BOX_FRAMES = 33
+RUP_FRAMES = 34     # the C# host's frames of the battle's menu bar after the right button held up is let go (round B1 tier 2: gen-bhurtk-04 aligned)
 HEADLESS = HERE.parent.parent / "src" / "Darklands.Host.Headless" / "bin" / "Release" / "net10.0" / "Darklands.Host.Headless.exe"
 clock_jumps = orig_side.clock_jumps
 Session, SRAND, linear = orig_side.Session, orig_side.SRAND, orig_side.linear
@@ -205,32 +207,122 @@ def pause_keys(log, steps, trace) -> dict[int, int]:
     return out
 
 
-def click_holds(log, steps, bwait_actual) -> dict[int, int]:
+def click_holds(log, steps, bwait_actual, lists=None) -> dict[int, int]:
     """{index of a bwait step after a click: the battle passes the original held that click}, for each battle click between two keys the log
     gives the battle pass of (key, bwait:a, click, bwait:b, key, wait / shot steps between, both bwaits waited in full). The original lets a
     click go CLICK_MS of emulated time after the game read the button and counts the bwait after it only then: the passes that hold spans
     follow how long a pass takes (what it draws), not a fixed count; the passes between the two keys are a + 1 + b + 1 + the hold, where the
-    C# host gives a + 1 + b + 1."""
-    inputs, passes = input_passes(log, steps)
+    C# host gives a + 1 + b + 1. Pointer moves between the two keys (round B1 tester follow-up: the log gives a move no battle pass, so the
+    neighbours of a click are the nearest keys) each count their bwait as n passes (the original takes it in the pass of the move; so after a kdown / kup, which also anchor the
+    span: the log gives them a pass), a key's or a click's as n + 1; the hold is the rest, given to the bwait after the click (with several clicks between the keys, their holds together at the first one's)."""
+    # the anchors are the keys and the make / break codes (kdown / kup) the log gives a battle pass; the pointer steps have none
+    kinds = ("key", "kdown", "kup", "move", "click", "option")
+    inputs = [i for i, s in enumerate(steps) if s[0] in kinds]
+    lines = [l for l in log if l.split(" ", 1)[0] in kinds and " at " in l]
+    passes = {}
+    if len(inputs) == len(lines):
+        for i, l in zip(inputs, lines):
+            if l.split(" ", 1)[0] in ("key", "kdown", "kup") and "(battle pass " in l:
+                passes[i] = (int(l.split("(battle pass ")[1].split(")")[0].split(",")[0]),)
     bwaits = [i for i, s in enumerate(steps) if s[0] == "bwait"]
     actual = dict(zip(bwaits, bwait_actual)) if len(bwaits) == len(bwait_actual) else {}
     out = {}
-    for k, i in enumerate(inputs[1:-1], 1):
-        if steps[i][0] != "click":
+    keyed = [k for k, i in enumerate(inputs) if steps[i][0] in ("key", "kdown", "kup") and passes.get(i, (0,))[0] > 0]
+    for k0, k1 in zip(keyed, keyed[1:]):
+        before, after = inputs[k0], inputs[k1]
+        middle = inputs[k0 + 1:k1]
+        if any(steps[i][0] not in ("click", "move") for i in middle) or not any(steps[i][0] == "click" for i in middle):
             continue
-        before, after = inputs[k - 1], inputs[k + 1]
-        if passes.get(before, (0,))[0] <= 0 or passes.get(after, (0,))[0] <= 0:
+        # the steps between (shift / ctrl / wait / shot steps take no pass): bwait, input, bwait, input ... bwait
+        seq = [j for j in range(before + 1, after) if steps[j][0] not in ("wait", "shot", "shift", "ctrl")]
+        if len(seq) != 2 * len(middle) + 1 or any(steps[j][0] != "bwait" for j in seq[0::2]) or seq[1::2] != middle:
             continue
-        a = [j for j in range(before + 1, i) if steps[j][0] not in ("wait", "shot")]
-        b = [j for j in range(i + 1, after) if steps[j][0] not in ("wait", "shot")]
-        if len(a) != 1 or len(b) != 1 or steps[a[0]][0] != "bwait" or steps[b[0]][0] != "bwait":
+        # (a key read in one of LIST_FRAMES' boxes: the C#'s wait after it already takes its frames, list_keys)
+        expected, ok, held = -(lists or {}).get(before, 0), True, None
+        for w, owner in zip(seq[0::2], [before] + middle):       # the bwait that follows each input
+            n = int(steps[w][1])
+            if actual.get(w) != n:
+                ok = False
+                break
+            expected += n + (1 if steps[owner][0] in ("key", "click") else 0)
+            if steps[owner][0] == "click" and held is None:
+                held = w                # (the holds of several clicks between the keys are given together to the first one's bwait)
+        if not ok or held is None:
             continue
-        n1, n2 = int(steps[a[0]][1]), int(steps[b[0]][1])
-        if actual.get(a[0]) != n1 or actual.get(b[0]) != n2:
-            continue
-        extra = passes[after][0] - passes[before][0] - (n1 + 1) - (n2 + 1)
+        extra = passes[after][0] - passes[before][0] - expected
         if extra:
-            out[b[0]] = extra
+            out[held] = extra
+    return out
+
+
+SHEET_OPEN_FRAMES = 2       # the C# host's battle passes from a click on the party panel to the pass its character sheet runs in (the button's two pumps)
+
+
+def sheet_holds(log, steps, bwait_actual) -> dict[int, int]:
+    """{index of the bwait step before a click: the passes to add} for each battle click that opens the character sheet (the party panel:
+    the next key the log gives is read inside the sheet, R022, with the battle pass the sheet ran in), right after a key or a make / break
+    code the log gives a battle pass (one bwait between, waited in full). The battle opens the sheet on the button's release
+    (R014+0x031E's release count): the original's click is let go CLICK_MS after the game read it, so the sheet runs a varying number of
+    passes after the click (as long as the passes of that hold take); the C# host's button is let go after its two pumps. The C# gives
+    the click itself that many passes later, so that its sheet runs in the original's pass (round B1 tier 2: gen-bhurts-01, gen-bedge-02 ...)."""
+    kinds = ("key", "kdown", "kup", "move", "click", "option")
+    inputs = [i for i, s in enumerate(steps) if s[0] in kinds]
+    lines = [l for l in log if l.split(" ", 1)[0] in kinds and " at " in l]
+    if len(inputs) != len(lines):
+        return {}
+    bwaits = [i for i, s in enumerate(steps) if s[0] == "bwait"]
+    actual = dict(zip(bwaits, bwait_actual)) if len(bwaits) == len(bwait_actual) else {}
+    passes, in_sheet = {}, {}
+    for i, l in zip(inputs, lines):
+        if l.split(" ", 1)[0] in ("key", "kdown", "kup") and "(battle pass " in l:
+            passes[i] = int(l.split("(battle pass ")[1].split(")")[0].split(",")[0])
+            in_sheet[i] = "< R022+" in l
+    out = {}
+    for k in range(1, len(inputs) - 1):
+        click, before = inputs[k], inputs[k - 1]
+        if steps[click][0] != "click" or before not in passes or in_sheet[before]:
+            continue
+        # the sheet's first key: the next key the log gives a pass, read in R022, with only moves and bwaits between (the sheet takes them)
+        nxt = next((j for j in inputs[k + 1:] if j in passes or steps[j][0] != "move"), None)
+        if nxt is None or not in_sheet.get(nxt):
+            continue
+        seq = [j for j in range(before + 1, click) if steps[j][0] not in ("wait", "shot", "shift", "ctrl")]
+        if len(seq) != 1 or steps[seq[0]][0] != "bwait" or actual.get(seq[0]) != int(steps[seq[0]][1]):
+            continue
+        at = passes[before] + int(steps[seq[0]][1]) + (1 if steps[before][0] == "key" else 0)
+        extra = passes[nxt] - at - SHEET_OPEN_FRAMES
+        if extra:
+            out[seq[0]] = extra
+    return out
+
+
+LIST_FRAMES = {"R021+0x02CE": 1, "R022+0x03E4": -1}   # by the function that read the key: the frames the C# host's next step costs more
+
+
+def list_keys(log, steps) -> dict[int, int]:
+    """{index of a key step the original read in one of LIST_FRAMES' boxes over the battle (the key that closes it): its frames}, from its
+    log (empty when the log's input lines are not the steps')."""
+    inputs = [i for i, s in enumerate(steps) if s[0] in ("key", "move", "click", "option")]
+    lines = [l for l in log if l.split(" ", 1)[0] in ("key", "move", "click", "option") and " at " in l]
+    if len(inputs) != len(lines):
+        return {}
+    return {i: LIST_FRAMES[l.rstrip().split(" < ")[-1]] for i, l in zip(inputs, lines) if steps[i][0] == "key" and l.rstrip().split(" < ")[-1] in LIST_FRAMES}
+
+
+def rup_boxes(log) -> list[bool]:
+    """For each release of the held right button (rup) in the original's log, in order: whether the menu bar's run it ended showed a message
+    box (the next "menu callbacks" line counts show_message's 0x3C ticks)."""
+    out, waiting = [], False
+    for l in log:
+        if l.startswith("rup "):
+            if waiting:
+                out.append(False)
+            waiting = True
+        elif l.startswith("menu callbacks ") and waiting:
+            out.append(int(l.split()[2].split(",")[0]) == 0x3C)
+            waiting = False
+    if waiting:
+        out.append(False)
     return out
 
 
@@ -293,18 +385,36 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     # a bwait right after the save's or the load's dialog (Alt-S .. Enter, Alt-L .. L) is taken by the dialog's console reads in the original
     # (no entry in BWAIT_ACTUAL): the next key there comes when the battle is idle; the C# waits the passes the original's log shows
     gaps = iter(dialog_gaps(log or (), steps, len(BWAIT_ACTUAL)))
-    holds = click_holds(log or (), steps, BWAIT_ACTUAL)
-    # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames), a move one frame less
+    in_list = list_keys(log or (), steps)
+    holds = click_holds(log or (), steps, BWAIT_ACTUAL, in_list)
+    if holds:
+        print("click holds (bwait step: passes): %s" % holds)
+    sheet_clicks = sheet_holds(log or (), steps, BWAIT_ACTUAL)
+    boxed = iter(rup_boxes(log or ()))
+    if sheet_clicks:
+        print("sheet click holds (bwait step: passes): %s" % sheet_clicks)
+    # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames), a move one frame less;
+    # a battle right click does not (round B1 tier 2: with the two frames the next step came two battle passes before the original's at 17 of
+    # 18 lone right clicks in 12 sessions; its menu bar's own time is DARKLANDS_BATTLE_MENU_CALLBACKS)
     for i, (k, v) in enumerate(steps):
         if k == "bwait":
-            cost = BWAIT_FRAMES + (2 if i and steps[i - 1][0] in ("click", "rclick") else 0) - holds.get(i, 0)
+            cost = BWAIT_FRAMES + (2 if i and steps[i - 1][0] == "click" else 0) - holds.get(i, 0) - sheet_clicks.get(i, 0)
             if i and steps[i - 1][0] in ("move", "kdown", "kup"):
                 # a move has no idle frames in the host (one frame, the step's own); the original takes the bwait at once at the poll after the move,
                 # in the same pass (a key: at the poll after the get_key that takes it), so the next step comes n passes after the move: wait:<n - 2>
                 # (a key's make or break code, kdown / kup, likewise: the host feeds it to its keyboard interrupt model in the step's frame)
                 cost -= 1
+            if i and steps[i - 1][0] == "rup" and next(boxed, False):
+                # the right button let go in a battle on an item whose message box shows (rdown .. rup; the original's bar run counted show_message's
+                # 0x3C ticks, its "menu callbacks 60,n"): the C# host's box goes on over its frames before the battle's next pass, where the
+                # original's next pass comes at once (the box's time is DARKLANDS_BATTLE_MENU_CALLBACKS)
+                cost -= RUP_FRAMES
             if i and steps[i - 1][0] in ("kdown", "kup") and after_bwait(steps, i - 1):
                 cost += 1                   # its frame came one later than the pass the original counts this bwait from (below)
+            if i and i - 1 in in_list:
+                # a key read in a box over the battle that it closes (the list of E, R021+0x02CE; the question of S, R022+0x03E4): the C# host's
+                # next step comes a frame later after the list, a frame earlier after the question, than the original's (round B1 tier 2)
+                cost += in_list[i - 1]
             if i >= 3 and steps[i - 1] == ("key", "esc") and steps[i - 3][0] == "key" and steps[i - 3][1] in ("f1", "f2", "f3", "f4", "f5"):
                 cost -= 1                   # the sheet that Esc closes passes no battle pass in the frame it ends in
             if i and steps[i - 1][0] == "key" and steps[i - 1][1].lower() in BOX_KEYS:

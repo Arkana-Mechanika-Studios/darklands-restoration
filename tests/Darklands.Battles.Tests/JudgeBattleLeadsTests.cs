@@ -141,4 +141,24 @@ public sealed class JudgeBattleLeadsTests
         Call(screen, "Key", Keys.ForCharacter('g'));
         Assert.NotEqual(mode, t.MoveMode);
     }
+
+    /// <summary>
+    /// R014+0xF284 reads its intersection point from two stack words it never set when neither the box's bottom nor its top is crossed
+    /// first: what the last clip test at that stack place left. A run of line tests made one after another from one frame (enemy_turn's
+    /// missile tests, R018+0x0BE7) keeps it; a line test of its own starts from other leftovers (probed in the gate battle: outside the box),
+    /// taken as a clean stack. The wall east of cell (21, 3) and the line (659, 61)-(897, 97) of that battle (round B1 tier 2).
+    /// </summary>
+    [Fact]
+    public void AClipPointLeftInsideAWallBlocksOnlyTheRunThatLeftIt()
+    {
+        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1)) { FloorShown = 0 };
+        var level = new BattlefieldLevel(new byte[BattlefieldLevel.ImageSize]);
+        level[21, 3] = new BattlefieldCell(0x0A);
+        var map = new BattleMap(battle, level, [], 0);
+        var run = new BattleMap.ClipResidue { Point = (702, 64) };
+        Assert.Equal(1, map.LineBlocked(new MapPoint(659, 61), new MapPoint(897, 97), residue: run));
+        Assert.Equal((702, 64), run.Point);
+        Assert.Equal(0, map.LineBlocked(new MapPoint(659, 61), new MapPoint(897, 97)));
+        Assert.Equal(1, map.LineBlocked(new MapPoint(659, 61), new MapPoint(897, 97), residue: run));
+    }
 }

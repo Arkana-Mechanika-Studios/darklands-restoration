@@ -53,7 +53,7 @@ internal static class OrderOverlay
         TacticsOverlay.Set(t, "Cursor", CursorOf(ds, Word(ds, Cursor)) ?? UnknownCursor);
         TacticsOverlay.Set(t, "_targetChosen", ds[TargetChosen] != 0);
         TacticsOverlay.Set(t, "_adjacent", ds[Adjacent] != 0);
-        TacticsOverlay.Set(t, "_orderSpot", new MapPoint((short)Word(ds, SpotX), (short)Word(ds, SpotY)));
+        TacticsOverlay.Set(t, "OrderSpot", new MapPoint((short)Word(ds, SpotX), (short)Word(ds, SpotY)));
         TacticsOverlay.Set(t, "_fleeBefore", ds[FleeBefore] != 0);
         TacticsOverlay.Set(t, "_orderClock", (ushort)Word(ds, OrderClock));
         TacticsOverlay.Set(t, "_actionBeforeRecords", (int)(short)Word(ds, ActionBeforeRecords));
@@ -95,12 +95,9 @@ internal static class OrderOverlay
         }
         ds[TargetChosen] = (byte)(TacticsOverlay.Get<bool>(t, "_targetChosen") ? 1 : 0);
         ds[Adjacent] = (byte)(TacticsOverlay.Get<bool>(t, "_adjacent") ? 1 : 0);
-        var spot = TacticsOverlay.Get<MapPoint>(t, "_orderSpot");
+        var spot = TacticsOverlay.Get<MapPoint>(t, "OrderSpot");
         PutWord(ds, SpotX, spot.X);
-        if (spot.X != 0 || spot.Y != 0)
-        {
-            PutWord(ds, SpotY, spot.Y);       // the original clears the x only (x 0: no spot); its y then stays as it was
-        }
+        PutWord(ds, SpotY, spot.Y);
         ds[FleeBefore] = (byte)(TacticsOverlay.Get<bool>(t, "_fleeBefore") ? 1 : 0);
         PutWord(ds, OrderClock, TacticsOverlay.Get<ushort>(t, "_orderClock"));
         PutWord(ds, ActionBeforeRecords, TacticsOverlay.Get<int>(t, "_actionBeforeRecords"));
