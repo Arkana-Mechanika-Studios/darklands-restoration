@@ -933,7 +933,7 @@ buffer = lambda rng, f: 0xFE80          # a DS offset above the stack for a func
 DOOR_FUNCTIONS = {"R023+0x00B8", "R023+0x04AC"}
 # per function: the scenarios that matter most to it (70% of the scenarios drawn for it)
 BIAS = {"R025+0x0000": ["groups", "groups", "activations", "positions", "statuses"], "R014+0x2324": ["dying", "dying", "dying", "loot", "pack"], "R014+0xEA10": ["loot", "loot", "loot", "pack", "statuses"], "R014+0xB576": ["mouse", "mouse", "mouse", "mouse", "orders", "member"], "R014+0x0620": ["activations", "activations", "orders"], "R014+0x2170": ["places", "places", "places", "member", "doors", "regions", "pack", "stairs"], "R014+0xBC0C": ["orders", "orders", "member", "pack"], "R014+0xBCA8": ["orders", "orders", "orders", "member", "pack"], "R014+0x0F58": ["spells", "spells", "effects", "effects", "immune", "times", "pack", "tables"], "R016+0x0000": ["orders", "orders", "orders", "member", "pack", "menus", "doors", "tables", "places", "places", "places", "places"], "R014+0xDF28": ["member", "member", "member", "doors", "pack", "menus", "tables"], "R014+0xD04E": ["doors", "doors", "pack", "menus"], "R014+0xD402": ["regions", "regions", "pack", "menus"], "R014+0xD6DA": ["triggers"],
-        "R014+0x33A2": ["pointer"], "R023+0x17D2": ["leave", "leave", "leave", "positions", "statuses"], "R024+0x08F2": ["around", "around", "around", "positions", "statuses"], "R014+0x08FE": ["endstate", "endstate", "endstate", "statuses", "floors", "result"], "R022+0x03E4": ["statuses", "floors", "kill enemies", "kill party", "result", "positions"],
+        "R014+0x33A2": ["pointer"], "R023+0x17D2": ["leave", "leave", "leave", "positions", "statuses"], "R024+0x08F2": ["around", "around", "around", "positions", "statuses"], "R014+0x10672": ["effects", "effects", "effects", "positions", "statuses"], "R014+0x08FE": ["endstate", "endstate", "endstate", "statuses", "floors", "result"], "R022+0x03E4": ["statuses", "floors", "kill enemies", "kill party", "result", "positions"],
         "R014+0xDC14": ["doors", "regions", "triggers", "stairs", "zones", "pack", "menus"], "R014+0xD328": ["stairs", "menus"], "R014+0xD60A": ["zones", "menus"],
         "R014+0x1BA0": ["pack", "recov", "missiles"], "R018+0x03AE": ["recov"]}
 FX_BIAS = ["effects", "effects", "effects", "immune", "pack", "statuses", "times", "tables"]
@@ -985,7 +985,7 @@ FUNCTIONS = {
     "R014+0x45AE": [],
     "R014+0x4442": [],
     "R014+0x0F58": [],
-    "R014+0x0D86": [], "R014+0x33A2": [], "R023+0x17D2": [member, buffer], "R024+0x08F2": [who, buffer], "R022+0x03E4": [lambda r, f: r.choice([1, 1, 1, 0])],
+    "R014+0x0D86": [], "R014+0x33A2": [], "R023+0x17D2": [member, buffer], "R024+0x08F2": [who, buffer], "R014+0x10672": [who, who], "R022+0x03E4": [lambda r, f: r.choice([1, 1, 1, 0])],
     "R014+0x2FA2": [who],
     "R014+0x306A": [who],
     "R018+0x04B6": [buffer],

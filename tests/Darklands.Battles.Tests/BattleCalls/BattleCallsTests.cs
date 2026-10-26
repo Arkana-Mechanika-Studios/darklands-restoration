@@ -124,6 +124,22 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             c.Tactics.LaunchMissile(job.Args[0], (short)job.Args[1], job.Args[2], job.Args[3], job.Args[4]);
             return null;
         },
+        ["R014+0x10672"] = (c, job) =>
+        {
+            // cloud_blocks_line (shooter, target): a missed cloud box restores the line from four locals the call never set, the words its frame (below the
+            // state's stack pointer: the far return, two arguments, the saved bp) lay over the state's stack
+            if (job.Args[0] is < 0 or >= Combatant.Count || job.Args[1] is < 0 or >= Combatant.Count)
+            {
+                throw new SkipJob("a combatant number past the thirteen");
+            }
+            if (c.Input.Sp0 == 0)
+            {
+                throw new SkipJob("a jobs file without the state's stack pointer");
+            }
+            var bp = (c.Input.Sp0 - 0x40 - 4 - 4 - 2) & 0xFFFF;
+            short Local(int back) => (short)(c.Input.Ds[bp - back] | c.Input.Ds[bp - back + 1] << 8);
+            return c.Tactics.Effects.LineCrossesCloud(job.Args[0], job.Args[1], (Local(6), Local(8), Local(0x0A), Local(0x0C))) ? 1 : 0;
+        },
         ["R024+0x08F2"] = (c, job) =>
         {
             // place_around (who, the 14-byte record whose +8/+10 words are the spot and +12 the direction): 1 when a place was found

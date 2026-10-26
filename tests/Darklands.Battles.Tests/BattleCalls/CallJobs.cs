@@ -42,6 +42,9 @@ internal sealed class StateImage
 
     [JsonPropertyName("randomState")] public uint RandomState { get; set; }
 
+    /// <summary>The stack pointer the state was captured at (the calls' frames lie below it). Absent in older jobs files.</summary>
+    [JsonPropertyName("sp0")] public int Sp0 { get; set; }
+
     /// <summary>The segment DS:7D4A names: the twin doors (+0xC00) and the doors opened (+0xBB6). Absent in older jobs files.</summary>
     [JsonPropertyName("far2")] public string Far2Text { get; set; } = "";
 
@@ -138,11 +141,14 @@ internal sealed class MemoryPair(byte[] ds, byte[] far, byte[]? far2 = null, byt
 
     public byte[]? Far3 { get; } = far3;
 
-    public MemoryPair Clone() => new((byte[])Ds.Clone(), (byte[])Far.Clone(), (byte[]?)Far2?.Clone(), (byte[]?)Far3?.Clone(), (byte[]?)Loot?.Clone(), LootKnown);
+    /// <summary>The stack pointer of the state the call starts from.</summary>
+    public int Sp0 { get; set; }
+
+    public MemoryPair Clone() => new((byte[])Ds.Clone(), (byte[])Far.Clone(), (byte[]?)Far2?.Clone(), (byte[]?)Far3?.Clone(), (byte[]?)Loot?.Clone(), LootKnown) { Sp0 = Sp0 };
 
     public static MemoryPair Input(StateImage state, CallJob job)
     {
-        var m = new MemoryPair((byte[])state.Ds.Clone(), (byte[])state.Far.Clone(), (byte[]?)state.Far2?.Clone(), (byte[]?)state.Far3?.Clone(), state.Loot, state.LootText is not null);
+        var m = new MemoryPair((byte[])state.Ds.Clone(), (byte[])state.Far.Clone(), (byte[]?)state.Far2?.Clone(), (byte[]?)state.Far3?.Clone(), state.Loot, state.LootText is not null) { Sp0 = state.Sp0 };
         foreach (var op in job.Ops)
         {
             if (op.Where == "loot")

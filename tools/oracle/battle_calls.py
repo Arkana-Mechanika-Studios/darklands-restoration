@@ -205,7 +205,7 @@ class State:
                 "far": base64.b64encode(gzip.compress(self.far_base, 1)).decode(), "far2": base64.b64encode(gzip.compress(self.far2_base, 1)).decode(),
                 "far3": base64.b64encode(gzip.compress(self.far3_base, 1)).decode(),
                 "loot": "absent" if self.loot_base is None else base64.b64encode(gzip.compress(self.loot_base, 1)).decode(),
-                "randomState": u32(self.base[HOLDRAND:HOLDRAND + 4])}
+                "randomState": u32(self.base[HOLDRAND:HOLDRAND + 4]), "sp0": self.sp0}
 
     # ---- memory helpers (DS offsets, or a segment in memory)
     def ds(self, off: int, n: int) -> bytes:
