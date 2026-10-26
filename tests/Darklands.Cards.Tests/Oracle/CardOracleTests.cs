@@ -29,11 +29,11 @@ public sealed class CardOracleTests
 
     private static string Folder([CallerFilePath] string here = "") => Path.GetDirectoryName(here)!;
 
-    public static JsonDocument? Corpus()
+    public static JsonDocument? Corpus(string corpusFile = "cards-oracle.json.gz")
     {
         // DARKLANDS_CARD_ORACLE_CORPUS: another corpus (the pilot's start-state variations)
         var path = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_CORPUS") is { Length: > 0 } other
-            ? other : Path.Combine(Folder(), "cards-oracle.json.gz");
+            ? other : Path.Combine(Folder(), corpusFile);
         if (!File.Exists(path))
         {
             return null;
@@ -50,6 +50,26 @@ public sealed class CardOracleTests
         {
             return;
         }
+        AgreeWith(corpus);
+    }
+
+    /// <summary>
+    /// The runs with controlled service results (local/batch/cards1): the battle ends with the result of the key's part B&lt;n&gt; and the
+    /// prayer screen answers as Y&lt;c|f|a&gt; (the oracle's stubs, tools/oracle/card_oracle.py results_of), reached by the first menu's line P&lt;k&gt;.
+    /// </summary>
+    [Fact]
+    public void ControlledResultsAgreeWithTheOriginal()
+    {
+        if (!CardHarness.Available || Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_CORPUS") is { Length: > 0 }
+            || Corpus("cards-controlled.json.gz") is not { } corpus)
+        {
+            return;
+        }
+        AgreeWith(corpus);
+    }
+
+    private static void AgreeWith(JsonDocument corpus)
+    {
         var divergences = Divergences();
         var cards = typeof(Card).Assembly.GetTypes()
             .Where(t => t.IsSubclassOf(typeof(Card)) && !t.IsAbstract && t.GetConstructor(Type.EmptyTypes) is not null)
@@ -457,6 +477,11 @@ public sealed class CardOracleTests
         c.Battle = (side, seed, parameters) =>
         {
             screen.Log.Add($"battle {side} {(short)seed} {string.Join(" ", parameters)}");
+            if (battleResults is not null && battles > 200)
+            {
+                // a constant controlled result that makes the card fight again and again: the original's run ends at its instruction budget
+                throw new InvalidOperationException("battle loop");
+            }
             return battleResults is null ? 0 : battleResults[Math.Min(battles++, battleResults.Length - 1)];
         };
         // the films (root 030B:0004 plays each animation; the oracle records them)
@@ -508,7 +533,19 @@ public sealed class CardOracleTests
             end = $"throws {e.GetType().Name}: {e.Message}";
         }
         var random = state.Random is MscRandom msc ? msc.State.ToString("X8") : "?";
-        var sav = ok ? SaveDiff(start, state) : ((string, JsonObject)?)null;
+        (string, JsonObject)? sav = null;
+        if (ok)
+        {
+            try
+            {
+                sav = SaveDiff(start, state);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // the C# state cannot be written as a saved game (nobody left in the party): a difference to report, not a crash of the replay
+                end = "saved game unwritable";
+            }
+        }
         return (screen.Log, end, random, sav);
     }
 
