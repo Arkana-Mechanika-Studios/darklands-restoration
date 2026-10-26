@@ -75,7 +75,9 @@ public static class LocationRules
     /// </summary>
     // orig: loc_query R029+0x1A8E (0E76:1A8E) draft; cur_loc_query R029+0x1A7E (0E76:1A7E) matched; tests: Oracle:rules.json loc_query; WorldRulesTests
     // C: checked against the asm (jump table 0..0x29, unsigned): codes above 41, negative ones included, return the code (AX); 40 takes +5A when flag 0x80 is set, else +58, and 41 the other way round.
-    // UNCERTAIN: codes 19, 21, 22, 25, 30, 36 jump straight to the exit after `shl ax,1; xchg bx,ax`: they return the caller's BX (0 under the oracle harness); here 0.
+    // DORMANT: codes 19, 21, 22, 25, 30, 36 jump straight to the exit after `shl ax,1; xchg bx,ax` (their entries in the jump table at R029+0x1AA8 all
+    //   point to R029+0x1DFA): they return the caller's BX; here 0. No call passes them (every literal code in the scripts and rules, and the day + 3 of the
+    //   market search, is another one).
     // DIVERGENCE: 39..41 read locations[cur_loc]: in the wilderness that is the far pointer before the table (locations[-1]); here an empty record.
     public static int Query(GameState s, int loc, int what)
     {

@@ -374,8 +374,8 @@ internal sealed partial class CastleGenerator
     // orig: R007+0x23D4 (15AF:23D4) draft
     // C: the table of rooms with stairs is filled for exits 0..count inclusive (one slot too many: an unused exit whose room is -1 or stale),
     // and the switch falls through from 0x7A to 1 to 2.
-    // UNCERTAIN: for the unused slot the original writes has[-1] (the byte before its local table) when the slot holds -1; that byte is not
-    // read by anything visible, and the write is skipped here (DIVERGENCE).
+    // C: for the unused slot the original writes has[-1] (the byte before its local table) when the slot holds -1 (R007+0x2577); that byte is the high byte
+    // of the word at bp-0x20, which R007+0x258C sets to 0 before anything reads it: a dead store, skipped here.
     private void PlaceRoomGroups(int l, int start, int side, int battlefield, int room, int dir, GroupSpec[] specs)
     {
         var m1 = KindFor(battlefield, l, 1, side, specs[0]);

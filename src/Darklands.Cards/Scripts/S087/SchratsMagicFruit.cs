@@ -27,7 +27,7 @@ public sealed class SchratsMagicFruit : Card
         c.Next = CardNumber;
         c.Variables.Chosen[0] = 0;
         // One line for each of the first four slots, for those that are occupied; the fifth line refuses.
-        // UNCERTAIN: the original's bare 'party' (first test) is read as the status byte of slot 0.
+        // C: the original's bare 'party' (first test) is slot 0's status byte: R087+0x156B `cmp byte ptr [9C69],0`, then slot 1's at R087+0x1578 `[9CE9]`.
         var menu = Menu(c);
         menu.Enable(4);
         menu[0] = c.Status(0) == CharacterStatus.Empty ? OptionState.Hidden : OptionState.Enabled;

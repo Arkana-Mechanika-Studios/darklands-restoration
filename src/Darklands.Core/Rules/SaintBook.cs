@@ -352,6 +352,8 @@ public static class SaintBook
     //   set_skill(i, 9, 0x14); flag = 1; } if (flag) money_sub_fgp(&party_money, 0, 0, (unsigned)money_pfennigs(&party_money) >> 2)
     // C: money_pfennigs returns a long; the (unsigned) cast keeps its low 16 bits before the shift, so a purse
     //   of 65536 pfennigs or more loses a quarter of the remainder only.
+    // BUG: R039+0x4375..0x4394 shifts only AX of money_pfennigs (root 1367:00F2, DX:AX) right by two (`shr ax,2` at R039+0x4384) and
+    //   pays that: the quarter wraps at 65536 pfennigs (about 273 florins), a larger purse pays far less than a quarter.
     private static readonly Boon VirtueForAllAtAPrice = (s, _, _) =>
     {
         var anyone = false;
@@ -580,6 +582,9 @@ public static class SaintBook
         new("R039+0x49C4", [Boost(Streetwise, 4, 7), Boost(SpeakCommon, 6, 11), Boost(ReadWrite, 6, 11), Boost(Agility, 8, 15),
             Boost(Charisma, 6, 11), TravelBlessing]),
         // 51 St.Florian
+        // orig: R039+0x4AD0
+        // BUG: the text (DARKLAND.SNT) "may add to local reputation in Poland and Austria"; the code (case 8, R039+0x4B52..0x4B63) adds it only in
+        //   Passau, Salzburg, Linz, Steyr, Wien and Graz: no Polish town (Breslau, Bromberg, Elbing ...) is in the list.
         new("R039+0x4AD0", [Standing(15, 25, 0x43, 0x51, 0x52, 0x53, 0x54, 0x56), WeaponSkills(6, 11), Boost(Riding, 6, 11), TravelBlessing]),
         // 52 St.Francis
         // orig: R039+0x9674
@@ -630,6 +635,9 @@ public static class SaintBook
         // 67 St.Herve
         new("R039+0x5854", [Boost(Perception, 15, 29)]),
         // 68 St.Hildegard
+        // orig: R039+0x58D4
+        // BUG: the text (DARKLAND.SNT) "sometimes your local reputation" and visions near the Rhine; the code (case 8, R039+0x5932) only raises
+        //   Perception (one R029+0x4C04 call), nothing touches reputation.
         new("R039+0x58D4", [Boost(Perception, 20, 59)]),
         // 69 St.Hubert
         new("R039+0x5954", [Boost(Polearms, 15, 29), Boost(ThrownWeapons, 15, 29), Boost(Bows, 15, 29), Boost(MissileDevices, 10, 19),
@@ -716,6 +724,9 @@ public static class SaintBook
         // 92 St.Mark
         new("R039+0x6FCE", [Boost(ReadWrite, 15, 29), Boost(Agility, 12, 23)]),
         // 93 St.Martin of Tours
+        // orig: R039+0x706C
+        // BUG: the text (DARKLAND.SNT) heals injuries "provided the character is wearing some armor"; the code (case 8, R039+0x70CC) heals
+        //   Endurance and Strength with no look at the armour (no test before the two R029+0x08F2 calls).
         new("R039+0x706C", [Heal(Endurance, 30), Heal(Strength, 30), Boost(Charisma, 8, 15), Boost(Perception, 12, 19), Boost(SpeakCommon, 25, 49),
             Boost(Riding, 20, 39)]),
         // 94 St.Matthew
@@ -830,6 +841,9 @@ public static class SaintBook
         // 127 St.Victor o'Marseilles
         new("R039+0x8D32", [Heal(Endurance, 100), Heal(Strength, 20), WeaponSkills(15, 24), Boost(SpeakCommon, 10, 19), Boost(Charisma, 8, 15)]),
         // 128 St.Vitus
+        // orig: R039+0x8E02
+        // BUG: the text (DARKLAND.SNT) "There is risk that the invoker will lose some Endurance"; the code (case 8, R039+0x8E62..0x8EAB) raises
+        //   Charisma and Agility and sets the event, and loses no Endurance.
         new("R039+0x8E02", [Boost(Charisma, 10, 19), Boost(Agility, 12, 23), EventHere(0x5D, 1)]),
         // 129 St.Wenceslaus
         new("R039+0x8EAC", [Boost(Riding, 8, 15), WeaponSkills(8, 15), Boost(Perception, 6, 11), Boost(Intelligence, 8, 13), Boost(Strength, 6, 11),

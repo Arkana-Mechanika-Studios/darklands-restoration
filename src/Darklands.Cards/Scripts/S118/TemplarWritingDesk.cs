@@ -37,7 +37,8 @@ public sealed class TemplarWritingDesk : Card
             // orig: R118+0x23FA (1A2B:04CA) matched; hint R118+0x2434
             new MenuLine(_ => CallOnASaint(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R118+0x246C (1A2B:053C) matched; hint R118+0x247A
-            // UNCERTAIN: "turn and leave" starts a battle (mode 1, -2) with the enemy and seed left from before.
+            // C: "turn and leave" starts a battle (mode 1, -2) with the enemy and seed left from before: R118+0x246C writes only DS:A766 = 1 and DS:E48A = -2;
+            //   CardBattle is the persistent BattleOrders, which keep the enemy, seed and the rest.
             new MenuLine(_ => { c.CardBattle.Mode = 1; c.Next = -2; }, Unknown),
             // DORMANT: lines 5..9 are never enabled. Each (R118+0x24B2, R118+0x250C, R118+0x2566,
             // R118+0x25C0, R118+0x261A) would show text 0, pass no time and close the card (0x62);

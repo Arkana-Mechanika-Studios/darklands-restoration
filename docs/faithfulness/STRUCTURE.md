@@ -13,10 +13,10 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 
 | | count |
 |---|---:|
-| C# units with a trace (types left out) | 4519 |
+| C# units with a trace (types left out) | 4520 |
 | original functions compared | 5574 |
 | comparisons (functions one C# unit implements together are compared as one) | 3439 |
-| comparisons without a finding | 3175 |
+| comparisons without a finding | 3180 |
 | implemented functions not compared (cited only in statements, types or map.csv) | 2695 |
 
 ## Findings
@@ -27,7 +27,7 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 | `args` | a shared call passes a constant the other side never uses | 0 | 4 |
 | `stores` | the C# assigns a constant that appears nowhere in the original's code | 0 | 8 |
 | `missing` | a game-logic call of the original the C# does not make | 0 | 79 |
-| `extra` | a traced call the original does not make (three calls deep) | 0 | 87 |
+| `extra` | a traced call the original does not make (three calls deep) | 0 | 82 |
 | `order` | two shared calls in the opposite order | 0 | 30 |
 | `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 0 | 32 |
 | `decisions` | fewer than half the original's conditional branches | 0 | 67 |

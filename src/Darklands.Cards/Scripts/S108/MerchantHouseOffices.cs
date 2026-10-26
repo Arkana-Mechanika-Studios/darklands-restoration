@@ -29,7 +29,7 @@ public sealed class MerchantHouseOffices : Card
 
     // C: the chosen office lives in a DGROUP word (DS:EEB4, right after $Money4) that only this
     // card uses; it keeps its value between visits.
-    // UNCERTAIN: its value before the first choice is taken as 0.
+    // C: its value before the first choice is 0: DS:EEB4 is in the BSS the start-up clears (root 06A1:009D..00B7, `rep stosb` from DS:83B6 to F400).
     private int _office;
 
     // C: pic_buf, the card's picture: the hall, or an office's door once the party stands before one

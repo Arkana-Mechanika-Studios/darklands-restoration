@@ -250,7 +250,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
 
     /// <summary>The animation set index of combatant i (cbt_anim_set, 14F7:343C).</summary>
     // orig: cbt_anim_set R014+0x9C4C (14F7:343C) draft
-    // UNCERTAIN: read from the slot rules of cbt_set_anim (spec D §3.9): enemies use slot +2 fighting/hit and +4 dying.
+    // C: checked against the asm of R014+0x9C4C: the kind comes back as it is below 5 and for the poses other than 2..4; for an enemy slot (5 and up) poses 2
+    //   and 3 add 2 and pose 4 adds 4.
     public int AnimationSet(int i)
     {
         var c = Battle[i];

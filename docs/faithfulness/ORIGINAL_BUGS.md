@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 86 | 21 | 65 |
-| cards | 60 | 2 | 58 |
-| events | 7 | 4 | 3 |
+| rules | 94 | 21 | 73 |
+| cards | 63 | 2 | 61 |
+| events | 8 | 4 | 4 |
 | travel | 3 | 0 | 3 |
 | battles | 25 | 9 | 16 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 3 | 1 | 2 |
-| total | 186 | 39 | 147 |
+| total | 198 | 39 | 159 |
 
-## Core logic (183)
+## Core logic (195)
 
-### rules (86)
+### rules (94)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:289` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -57,9 +57,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:480` `CampStay.GrowRisk`  
   original: `R036+0x1B80` (1462:1B80, draft)  
   why: the weapon-skill test reads +0x57, +0x5C, +0x59, +0x5A, +0x5B, +0x5D: Impact Weapons (+0x58) is not among them.
-- **B-ea8f8b** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:214` `CityPolitics.DailyPolitics`  
+- **B-af3f91** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:88` `CityPolitics.ConflictOutcome`  
+  original: `R039+0x0EBE` (1462:0EBE, matched)  
+  why: ev8_resolve (R029+0x3E06, called at R039+0x0F3E) clears the group's facts here, the pacts 0x24 and 0x25 included, before the branches test them (loc_fact, R039+0x0F77 and after): with the politics quest under way the pact branches never run.
+- **B-032561** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:176` `CityPolitics.SetUpCity`  
+  original: `R039+0x0558` (1462:0558, matched)  
+  why: the facts made here are 0xC, 6, 7, 0x17, 0x14, 3, 5, 4, 9, 0xA, 0x23, 1 and 2 (R039+0x0558): none of type 8, the guild secret the guild cards (R062..R065) clear and read, so that fact never exists.
+- **B-ea8f8b** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:218` `CityPolitics.DailyPolitics`  
   original: `R029+0x4180` (0E76:4180, draft)  
   why: loc_side_get/loc_side_set and side*_percent work on cur_loc, not the event's city (kept).
+- **B-8bb85e** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:240` `CityPolitics.DailyPolitics`  
+  original: `R029+0x4180` (0E76:4180, draft)  
+  why: setup makes no fact 0 (the leaning); the scan (EventLog.Next) finds the politics quest, whose value is the city's number, so the leaning is that number: 1 is read as "leaning 1" for the city numbered 1, anything else but -1 and 1 as "none".
 - **B-074e99** `bug`, no fix flag - `src/Darklands.Core/Rules/DayJobs.cs:61` `DayJobs.static`  
   original: `R036+0x197E` (1462:197E, draft)  
   why: the second contents test is written `!cats2 & city.cats`, so a job with cats2 != 0 is never open.
@@ -75,13 +84,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-e458c5** `bug`, flag `FixKeepItemsOffByOne` - `src/Darklands.Core/Rules/Inventory.cs:411` `Inventory.KeepEach`  
   original: `R031+0x5308` (18E7:0AB8, draft)  
   why: i starts at nitems (FixKeepItemsOffByOne).
-- **B-42ba6c** `bug`, flag `FixRecordedListShift`, `FixShopSetSwap` - `src/Darklands.Core/Rules/LocationRules.cs:146` `LocationRules.Set`  
+- **B-42ba6c** `bug`, flag `FixRecordedListShift`, `FixShopSetSwap` - `src/Darklands.Core/Rules/LocationRules.cs:148` `LocationRules.Set`  
   original: `R029+0x1DFE` (0E76:1DFE, draft)  
   why: 6 writes city_rec[0x66] and 11 city_rec[0x67] (FixShopSetSwap); 37 overwrites every occupied slot (FixRecordedListShift).
-- **B-55afd6** `bug`, flag `FixHostileUnrestTest` - `src/Darklands.Core/Rules/LocationRules.cs:219` `LocationRules.Hostile`  
+- **B-55afd6** `bug`, flag `FixHostileUnrestTest` - `src/Darklands.Core/Rules/LocationRules.cs:221` `LocationRules.Hostile`  
   original: `R039+0x00BA` (1462:00BA, matched)  
   why: event_at(cur_loc, 0x13) has its arguments swapped (FixHostileUnrestTest); the three tests short-circuit in this order.
-- **B-e63363** `bug`, no fix flag - `src/Darklands.Core/Rules/LocationRules.cs:372` `LocationRules.FarOfType`  
+- **B-e63363** `bug`, no fix flag - `src/Darklands.Core/Rules/LocationRules.cs:374` `LocationRules.FarOfType`  
   original: `R030+0x28F2` (1462:28F2, draft)  
   why: only the icon is tested: a pagan altar the party has purged (its cards closed, 0x62: PaganAltarOnTheHill) is still chosen as an errand's site, which can then never be done; NearestOfType's flag-4 test does not catch it either.
 - **B-dc949d** `bug`, no fix flag - `src/Darklands.Core/Rules/LootSharing.cs:34` `LootSharing.ReplaceFallenLeader`  
@@ -141,130 +150,145 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-6878fe** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:214` `SaintBook.PragueStanding`  
   original: `R039+0x619A` (165C:41FA, matched)  
   why: in Prague the standing goes to u, a local the function never sets (165C:42D4 pushes [bp-2]; its frame's other words are the what-table), not to Prague: Prague's own standing never changes by this saint.
-- **B-b81c7e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:422` `SaintBook.new`  
+- **B-fe1d2c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:355` `SaintBook.VirtueForAllAtAPrice`  
+  original: `R029+0x007C` (0E76:007C, draft)  
+  why: R039+0x4375..0x4394 shifts only AX of money_pfennigs (root 1367:00F2, DX:AX) right by two (`shr ax,2` at R039+0x4384) and pays that: the quarter wraps at 65536 pfennigs (about 273 florins), a larger purse pays far less than a quarter.
+- **B-b81c7e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:424` `SaintBook.new`  
   original: `R039+0x1FD4` (165C:0034, matched)  
   why: the text (DARKLAND.SNT) gives Endurance as "healing only"; the code raises it for a day (raise_attr_temp), past its maximum when unhurt, and takes it back when the day ends (so do St.Agatha and St.Anthony).
-- **B-22d300** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:427` `SaintBook.new`  
+- **B-22d300** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:429` `SaintBook.new`  
   original: `R039+0x2130` (165C:0190, matched)  
   why: Endurance "healing only" by the text (DARKLAND.SNT), a day's boost in the code (see St.Adrian).
-- **B-747355** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:447` `SaintBook.new`  
+- **B-747355** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:449` `SaintBook.new`  
   original: `R039+0x2732` (165C:0792, matched)  
   why: Strength and Endurance "healing only" by the text (DARKLAND.SNT), a day's boost of each in the code (see St.Adrian).
-- **B-49f1ff** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:458` `SaintBook.new`  
+- **B-49f1ff** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:460` `SaintBook.new`  
   original: `R039+0x2B22` (165C:0B82, matched)  
   why: the text (DARKLAND.SNT) heals "a small amount of lost Strength and a fair amount of lost Endurance"; the code raises both for a day (raise_attr_temp), past their maxima when unhurt (see St.Adrian).
-- **B-defa50** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:463` `SaintBook.new`  
+- **B-defa50** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:465` `SaintBook.new`  
   original: `R039+0x2BC0` (165C:0C20, matched)  
   why: her text (DARKLAND.SNT) also "prevents death from wounds for a period (strength never goes below 1)": nothing records it, and damage_apply (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
-- **B-315695** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:481` `SaintBook.new`  
+- **B-315695** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:483` `SaintBook.new`  
   original: `R039+0x31FA` (165C:125A, matched)  
   why: her text (DARKLAND.SNT) promises resistance to fire, as St.Erasmus's and St.Pantaleon's do; the code sets only the charm nibble (SetCharm(0xA0)): no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6 (0x20) count as +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection (Attacks.HitDamage), for good.
-- **B-623452** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:490` `SaintBook.new`  
+- **B-623452** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:492` `SaintBook.new`  
   original: `R039+0x3374` (165C:13D4, matched)  
   why: the text (DARKLAND.SNT) "improves travel speeds" and restores a little Strength and Endurance; the code starts no event and heals nothing.
-- **B-4d4c99** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:505` `SaintBook.new`  
+- **B-4d4c99** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:507` `SaintBook.new`  
   original: `R039+0x3808` (165C:1868, matched)  
   why: the quality is raised for good and on metal armour too (the text, DARKLAND.SNT: "all non-metal armor"), with no event (MendArmor); worn pieces are matched to their pack stacks by type and quality (Inventory.Unequip), so a mended piece no longer matches its stack: taking that piece out of the pack (Inventory.TakeAt, RemoveStackAt) leaves the armour worn.
-- **B-44e795** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:518` `SaintBook.new`  
+- **B-44e795** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:520` `SaintBook.new`  
   original: `R039+0x3AA2` (165C:1B02, matched)  
   why: the text (DARKLAND.SNT) also restores "a small amount of Endurance"; the code heals Strength only.
-- **B-5eb6aa** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:526` `SaintBook.new`  
+- **B-5eb6aa** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:528` `SaintBook.new`  
   original: `R039+0x3C92` (165C:1CF2, matched)  
   why: the text (DARKLAND.SNT) raises Agility, Woodwise and Stealth "for the entire party" and increases Charisma and Speak Common; the code boosts the one member only and gives neither Charisma nor Speak Common.
-- **B-465f6c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:536` `SaintBook.new`  
+- **B-465f6c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:538` `SaintBook.new`  
   original: `R039+0x3F2C` (165C:1F8C, matched)  
   why: the text (DARKLAND.SNT) "increases the party speed, but not the frequency of encounters"; the code starts event 0x4F here for a week, the kind that spares the party an ambush (Footpads), as St.Genevieve's does: no speed.
-- **B-243faa** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:541` `SaintBook.new`  
+- **B-243faa** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:543` `SaintBook.new`  
   original: `R039+0x3FF2` (165C:2052, matched)  
   why: the text (DARKLAND.SNT) promises a better quality of the party's metal armour; the code adds 1 to the one member's Hardarmor nibble (AddCharm(1)): armour against every blow, with no event, so it never wears off and piles up with each prayer (past 15 into the fire-charm bits).
-- **B-32871d** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:550` `SaintBook.new`  
+- **B-32871d** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:552` `SaintBook.new`  
   original: `R039+0x41A8` (165C:2208, matched)  
   why: the text (DARKLAND.SNT) "heals a small amount of Endurance"; the code raises it for a day (see St.Adrian).
-- **B-9b19b6** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:555` `SaintBook.new`  
+- **B-9b19b6** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:557` `SaintBook.new`  
   original: `R039+0x439E` (165C:23FE, matched)  
   why: the text (DARKLAND.SNT) "may improve edged weapons, hammers, maces, halberds, crossbows and handguns"; the code touches no weapon (no quality, no skill).
-- **B-f32e0e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:564` `SaintBook.new`  
+- **B-f32e0e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:566` `SaintBook.new`  
   original: `R039+0x45C8` (165C:2628, matched)  
   why: resistance to fire by the text (DARKLAND.SNT), only the charm nibble in the code (see St.Charity).
-- **B-e8ecd2** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:570` `SaintBook.new`  
+- **B-e8ecd2** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:572` `SaintBook.new`  
   original: `R039+0x4762` (165C:27C2, matched)  
   why: the text (DARKLAND.SNT) gives "a large increase to all weapon skills except impact and flail" and "may speed travel through woods"; the code raises Edged, Thrown and Bow by 6..11 only (no Polearms, no Mechanical Missile) and starts no event.
-- **B-3947bd** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:586` `SaintBook.new`  
+- **B-43698e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:586` `SaintBook.new`  
+  original: `R039+0x4AD0` (165C:2B30, matched)  
+  why: the text (DARKLAND.SNT) "may add to local reputation in Poland and Austria"; the code (case 8, R039+0x4B52..0x4B63) adds it only in Passau, Salzburg, Linz, Steyr, Wien and Graz: no Polish town (Breslau, Bromberg, Elbing ...) is in the list.
+- **B-3947bd** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:591` `SaintBook.new`  
   original: `R039+0x9674` (165C:76D4, matched)  
   why: the text (DARKLAND.SNT) gives Endurance, Perception, Charisma, Speak Common and "a very great increase to Virtue", and may cost 10% of the cash; the code heals, adds Healing, Artifice and Woodwise as St.Thomas the Apostle's text does, and gives no Virtue and takes no money.
-- **B-f995af** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:597` `SaintBook.new`  
+- **B-f995af** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:602` `SaintBook.new`  
   original: `R039+0x4CF8` (165C:2D58, matched)  
   why: the text (DARKLAND.SNT) "may improve the quality of weapons and armor"; the code changes no quality.
-- **B-ec67c9** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:601` `SaintBook.new`  
+- **B-ec67c9** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:606` `SaintBook.new`  
   original: `R039+0x4E6E` (165C:2ECE, matched)  
   why: the text (DARKLAND.SNT) also gives "a modest increase to Charisma"; the code gives none.
-- **B-f2531c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:608` `SaintBook.new`  
+- **B-f2531c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:613` `SaintBook.new`  
   original: `R039+0x501E` (165C:307E, matched)  
   why: the text (DARKLAND.SNT) gives "a small increase to Streetwise" and "a tremendous increase to Woodwise", and money if needed; the code swaps them (Streetwise 50..89, Woodwise 5..9) and gives no money.
-- **B-41e624** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:624` `SaintBook.new`  
+- **B-41e624** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:629` `SaintBook.new`  
   original: `R039+0x55B2` (165C:3612, matched)  
   why: the text (DARKLAND.SNT) also "heals a modest amount of Strength and Endurance"; the code heals nothing.
-- **B-2e94a4** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:645` `SaintBook.new`  
+- **B-7b1d83** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:639` `SaintBook.new`  
+  original: `R039+0x58D4` (165C:3934, matched)  
+  why: the text (DARKLAND.SNT) "sometimes your local reputation" and visions near the Rhine; the code (case 8, R039+0x5932) only raises Perception (one R029+0x4C04 call), nothing touches reputation.
+- **B-2e94a4** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:653` `SaintBook.new`  
   original: `R039+0x948A` (165C:74EA, matched)  
   why: the text (DARKLAND.SNT) "causes a temporary loss of a small amount of Intelligence"; the code lowers nothing (and heals Endurance and Strength, which the text does not give).
-- **B-cced91** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:661` `SaintBook.new`  
+- **B-cced91** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:669` `SaintBook.new`  
   original: `R039+0x5F62` (165C:3FC2, matched)  
   why: the text (DARKLAND.SNT) "enhances ALL skills"; the code leaves out the seven weapon skills and Riding.
-- **B-64dd08** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:668` `SaintBook.new`  
+- **B-64dd08** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:676` `SaintBook.new`  
   original: `R039+0x62C0` (165C:4320, matched)  
   why: the text (DARKLAND.SNT) gives Charisma "inside a city"; the code gives it everywhere.
-- **B-48bb81** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:672` `SaintBook.new`  
+- **B-48bb81** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:680` `SaintBook.new`  
   original: `R039+0x6378` (165C:43D8, matched)  
   why: the text (DARKLAND.SNT) improves "every skill by a modest amount"; the code raises only the equipped weapons' skills (WeaponSkills) of the seven, and not Riding.
-- **B-7fe039** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:691` `SaintBook.new`  
+- **B-7fe039** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:699` `SaintBook.new`  
   original: `R039+0x6984` (165C:49E4, matched)  
   why: the text (DARKLAND.SNT) "may increase the quality of one character's weapons"; the code changes no quality.
-- **B-d7771e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:699` `SaintBook.new`  
+- **B-d7771e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:707` `SaintBook.new`  
   original: `R039+0x6BE6` (165C:4C46, matched)  
   why: the text (DARKLAND.SNT): "Sharing her ecstasies in prayer costs Endurance"; the code raises Endurance for a day.
-- **B-38e50e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:703` `SaintBook.new`  
+- **B-38e50e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:711` `SaintBook.new`  
   original: `R039+0x6CBA` (165C:4D1A, matched)  
   why: the text (DARKLAND.SNT) also improves "the flame resistance of one person's armor"; the code sets no charm.
-- **B-06bdba** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:725` `SaintBook.new`  
+- **B-57b386** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:728` `SaintBook.new`  
+  original: `R039+0x706C` (165C:50CC, matched)  
+  why: the text (DARKLAND.SNT) heals injuries "provided the character is wearing some armor"; the code (case 8, R039+0x70CC) heals Endurance and Strength with no look at the armour (no test before the two R029+0x08F2 calls).
+- **B-06bdba** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:736` `SaintBook.new`  
   original: `R039+0x7236` (165C:5296, matched)  
   why: the text (DARKLAND.SNT) "may improve the quality of any edged weapons carried"; the code changes no quality.
-- **B-723764** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:729` `SaintBook.new`  
+- **B-723764** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:740` `SaintBook.new`  
   original: `R039+0x72D4` (165C:5334, matched)  
   why: the text (DARKLAND.SNT): "in combat, he may improve the party's weapons and armor"; the code changes no quality and sets no charm.
-- **B-a1a2bc** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:738` `SaintBook.new`  
+- **B-a1a2bc** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:749` `SaintBook.new`  
   original: `R039+0x75DA` (165C:563A, matched)  
   why: the text (DARKLAND.SNT) gives Agility, Charisma and "a tremendous increase to Riding", and reputation "in areas of his patronage"; the code gives Flail Weapons and Endurance instead of Riding and Agility (St.Charity's and St.Theodore Tiro's boosts), and the standing anywhere.
-- **B-ce6144** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:750` `SaintBook.new`  
+- **B-ce6144** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:761` `SaintBook.new`  
   original: `R039+0x7A24` (165C:5A84, matched)  
   why: his text (DARKLAND.SNT) also promises resistance to fire; the code sets only the charm nibble (see St.Charity).
-- **B-a19878** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:755` `SaintBook.new`  
+- **B-a19878** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:766` `SaintBook.new`  
   original: `R039+0x7B22` (165C:5B82, matched)  
   why: the text (DARKLAND.SNT) promises armour against missiles in combat; the code adds 2 to the one member's Hardarmor nibble (AddCharm(2)), against every blow and for good (see St.Dunstan).
-- **B-148934** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:761` `SaintBook.new`  
+- **B-148934** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:772` `SaintBook.new`  
   original: `R039+0x7C6A` (165C:5CCA, matched), `R039+0x7D0C` (165C:5D6C, matched)  
   why: the helps of the two Pauls are mixed up: St.Paul gets R039+0x7C6A, whose feast day (66) and help are those DARKLAND.SNT gives St.Paul the Simple; St.Paul the Simple (106) gets R039+0x7D0C, a copy of St.Thomas Aquinas's help (R039+0x8B58); the help described for St.Paul is R039+0x9578, which no saint number reaches (Z-9318d7).
-- **B-44772a** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:779` `SaintBook.new`  
+- **B-44772a** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:790` `SaintBook.new`  
   original: `R039+0x80C2` (165C:6122, matched)  
   why: the saints' charms never wear off: FirewallForAll, like SetCharm and AddCharm, sets the charm byte (+0x41) and its strength (+0x10) with no event, and nothing takes them back.
-- **B-99f176** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:797` `SaintBook.new`  
+- **B-99f176** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:808` `SaintBook.new`  
   original: `R039+0x85EA` (165C:664A, matched)  
   why: the text (DARKLAND.SNT) also gives "a modest increase to all other weapon skills"; the code raises Bows only.
-- **B-b8a1ad** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:801` `SaintBook.new`  
+- **B-b8a1ad** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:812` `SaintBook.new`  
   original: `R039+0x86BE` (165C:671E, matched)  
   why: the text (DARKLAND.SNT) "can increase local reputation in Poland and Cracow"; the code changes no standing.
-- **B-bf6543** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:814` `SaintBook.new`  
+- **B-bf6543** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:825` `SaintBook.new`  
   original: `R039+0x8A88` (165C:6AE8, matched)  
   why: St.Theodore Tiro raises Flail Weapons twice for a flail wielder: WeaponSkills already raises it for a member holding a flail, and the saint then raises it again; his help also does not match DARKLAND.SNT (all weapon skills, Charisma, Riding): no Riding, Endurance instead.
-- **B-78a26c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:823` `SaintBook.new`  
+- **B-78a26c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:834` `SaintBook.new`  
   original: `R039+0x8B58` (165C:6BB8, matched)  
   why: the text (DARKLAND.SNT) gives "a very great increase to Religion"; the code gives none (Healing 10..19 instead, which the text does not give).
-- **B-29f615** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:839` `SaintBook.new`  
+- **B-67091e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:845` `SaintBook.new`  
+  original: `R039+0x8E02` (165C:6E62, matched)  
+  why: the text (DARKLAND.SNT) "There is risk that the invoker will lose some Endurance"; the code (case 8, R039+0x8E62..0x8EAB) raises Charisma and Agility and sets the event, and loses no Endurance.
+- **B-29f615** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:853` `SaintBook.new`  
   original: `R039+0x8FD8` (165C:7038, matched)  
   why: the text (DARKLAND.SNT) "may double party travel speed"; the code starts event 0x4F here for a week, the kind that spares the party an ambush (see St.Drogo): no speed.
-- **B-e64add** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:848` `SaintBook.new`  
+- **B-e64add** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:862` `SaintBook.new`  
   original: `R039+0x9228` (165C:7288, matched)  
   why: the text (DARKLAND.SNT) "can enhance local reputation in northern Germany"; the code changes no standing.
-- **B-61d9a9** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:852` `SaintBook.new`  
+- **B-61d9a9** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:866` `SaintBook.new`  
   original: `R039+0x92E2` (165C:7342, matched)  
   why: the text (DARKLAND.SNT) "enhances local reputation in villages and with nobility"; the code changes no standing.
 - **B-94efea** `bug`, flag `FixSaintLearnedByLeader` - `src/Darklands.Core/Rules/Saints.cs:55` `Saints.Learn`  
@@ -276,14 +300,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2cf199** `bug`, no fix flag - `src/Darklands.Core/Rules/Storing.cs:84` `Storing.Get`  
   original: `R035+0x0A46` (1462:0A46, matched)  
   why: taking from an inn store into a full pack loses the item: the store entry gives it up whatever AddStack did, and with 64 stacks and none that the item joins, AddStack adds nothing.
-- **B-700b91** `bug`, flag `FixShopStockSize` - `src/Darklands.Core/Rules/Trading.cs:251` `Trading.ShopHasItem`  
+- **B-700b91** `bug`, flag `FixShopStockSize` - `src/Darklands.Core/Rules/Trading.cs:252` `Trading.ShopHasItem`  
   original: `R032+0x1D18` (1462:1D18, draft)  
   why: the original compares its uninitialised size slot where cur_loc was meant (checked against asm 1D72: mov dx,[bp-2]; cmp dx,5Ch; inc dx); OriginalBehaviour.FixShopStockSize uses the city size always.
-- **B-fd421f** `bug`, no fix flag - `src/Darklands.Core/Rules/Trading.cs:335` `Trading.Buy`  
+- **B-fd421f** `bug`, no fix flag - `src/Darklands.Core/Rules/Trading.cs:336` `Trading.Buy`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (60)
+### cards (63)
 
 - **B-ae3eba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:93` `MainStreetAtNight.Walk`  
   original: `R046+0x0422` (1838:0422, matched), `R046+0x0466` (1838:0466, matched), `R046+0x04AA` (1838:04AA, matched) +7 more  
@@ -369,7 +393,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-f30456** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:208` `CityChurchByDay.GiveATenth`  
   original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
   why: party_max_skill(8) returns the skill value, which the original then uses as a member number.
-- **B-d962b2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:300` `HandbillThugs_Polit01.Fight`  
+- **B-ca9994** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:99` `HandbillThugs_Polit01.EatTheHandbills`  
+  original: `R057+0x21DC` (1A02:053C, matched)  
+  why: R057+0x21DC..0x2230 never writes next_card (DS:E48A): after the truce the card is shown again and the line can be chosen again, each time injuring the party, lowering the standing and passing an hour.
+- **B-d962b2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:302` `HandbillThugs_Polit01.Fight`  
   original: `R057+0x1F22` (1A02:0282, matched)  
   why: the case has no break; it fights the group of the main street and then, falling through, the group of the side street too, and only the second result counts.
 - **B-0818ac** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S058/LeavingByTheGate.cs:293` `LeavingByTheGate.SettleStanding`  
@@ -387,6 +414,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-ce730c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S068/ClimbingTheWallPastTheGuards.cs:45` `ClimbingTheWallPastTheGuards.Run`  
   original: `R068+0x2422` (19F9:0812, matched), `R068+0x2424` (19F9:0814, matched)  
   why: the rope line is greyed unless the last member carries a rope, whoever else has one.
+- **B-8a4d61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S069/CityNews.cs:45` `CityNews.Run`  
+  original: `R069+0x15A8` (195D:0358, matched)  
+  why: this line (shown only with the politics quest here) sets next_card 0xAE like the gossip line (R069+0x15AE), the idle-news card; the politics talk of the city is card 0xBF.
 - **B-fa0f93** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:75` `AffairsElsewhere.Run`  
   original: `R071+0x15A4` (1992:0004, matched)  
   why: outside a city the news test misses a negation: unlike the branch above, this one tests the mine quest without it, so the "nothing of interest" text appears here only while the mine quest runs (and not the robber knight's).
@@ -420,6 +450,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-19435f** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S084/WolfPackOnTheTrail.cs:150` `WolfPackOnTheTrail.RidingChance`  
   original: `R084+0x0536` (1838:0536, matched)  
   why: it tests item 0's flags.
+- **B-3a767e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S084/WolfPackOnTheTrail.cs:151` `WolfPackOnTheTrail.RidingChance`  
+  original: `R084+0x0536` (1838:0536, matched)  
+  why: the mask is also wrong: R084+0x054F pushes 0x0200 then 0 (the long 0x02000000), while the mounts of this card are removed with the flag 0x2000 (RemoveItemsWithFlags in the same card).
 - **B-905fee** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S087/SchratsMagicFruit.cs:66` `SchratsMagicFruit.EatTheFruit`  
   original: `R087+0x188E` (1986:03AE, matched), `R087+0x18A8` (1986:03C8, matched)  
   why: the strength is given before the last text; a game saved at that text holds only the card (DS:A772 = 0xAF), so loading it runs this card again from its menu with the strength kept: the fruit can be eaten again and again (lockstep oracle: save at the text, load, eat: +4 then +8).
@@ -447,7 +480,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:73` `HussiteBand.ClaimFriendship`  
   original: `R114+0x0DCC` (18D3:041C, matched)  
   why: `rand_mod(100) == p` where every other card has `<=`; kept as the original has it.
-- **B-08a606** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:97` `TemplarWritingDesk.LearnAFormula`  
+- **B-08a606** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:98` `TemplarWritingDesk.LearnAFormula`  
   original: `R118+0x21DC` (1A2B:02AC, matched)  
   why: the search tests formulas_known[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any n whose group of three has any formula known, not just n itself. If all groups do, the first n is learnt.
 - **B-1eb8d6** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S128/CollectorsCommission.cs:108` `CollectorsCommission.Run`  
@@ -466,7 +499,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R134+0x0550` (1838:0550, matched), `R134+0x0692` (1838:0692, matched)  
   why: the original adds rand(10) Endurance although text 9 says many were bitten; kept as it is (no OriginalBehaviour flag for it).
 
-### events (7)
+### events (8)
 
 - **B-ace31b** `bug`, no fix flag - `src/Darklands.Core/Events/EventExpiry.cs:105` `EventExpiry.AlchemyResult`  
   original: `R029+0x3FB2` (0E76:3FB2, draft)  
@@ -489,6 +522,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-8d31a1** `bug`, flag `FixNewEventAddDoubles` - `src/Darklands.Core/Events/EventLog.cs:221` `EventLog.Update`  
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
+- **B-d8f504** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:270` `EventLog.Next`  
+  original: `R029+0x324C` (0E76:324C, draft)  
+  why: asking for kind 0x1C (location facts) also returns the kind 8 events (R029+0x3279..0x3281: `cmp cx,0x1c`, `cmp ax,8`): every fact scan (loc_fact, loc_fact_value and the like) sees the quests. A city's politics quest (type 0, value = the city's number) answers "fact 0" of that city, which should be the leaning.
 
 ### travel (3)
 

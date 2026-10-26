@@ -640,7 +640,8 @@ public static class CityBattlefield
             l.ObjectCount = 0;
             g.Save(l);
         }
-        // UNCERTAIN: city_build reports start level 0 even when 0x2C/0x2D put the party on level 1 (faithful to the draft).
+        // C: city_build reports start level 0 even when 0x2C/0x2D put the party on level 1: the caller stores 0 through the start-level pointer after
+        //   R010+0x1516 returns (R010+0x00BC jumps to R010+0x006F `mov word ptr [bx],0`).
         return 2;
     }
 

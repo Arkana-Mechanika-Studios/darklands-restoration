@@ -175,8 +175,8 @@ public sealed class BattleScreens
 
     /// <summary>DS:C866 / DS:C886: the battle view's centre cell, a global the next battle's first view is drawn around (unless its
     /// placement sets it).</summary>
-    // UNCERTAIN: (0, 0) here when a game is begun or loaded from the opening screen; the original's value then (the program's start,
-    // or a battle of the game played before) was not traced.
+    // C: (0, 0) when a game is begun or loaded from the opening screen at the program's start: DS:C866/C886 are in the BSS the start-up clears
+    // (root 06A1:009D..00B7); a game loaded after a battle of an earlier one keeps the last centre (DarklandsGame._battleViewCentre).
     public (int Column, int Row) ViewCentre { get; internal set; }
 
     /// <summary>seenpos (20A5:79A9): where each combatant last saw each other one near its path, a program global no battle start clears

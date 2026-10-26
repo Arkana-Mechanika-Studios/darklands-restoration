@@ -142,8 +142,9 @@ public sealed partial class CardContext
     //   as the original's party[leader]); R037+0x4048(ids[p]) drops the character from charactr.tmp; party_size DS:A67E becomes one past the
     //   last slot whose status is not 0. A slot past the party (status 0 already) still passes the leadership on when it is the leader's.
     // DIVERGENCE: the shield picture is the party panel's.
-    // UNCERTAIN: for a slot past the party the original also calls R037+0x4048 with that slot's charactr.tmp id, which is no character's
-    //   (its loop then moves records from before the file's first one); no card is known to delete an empty slot, so the roster is left alone here.
+    // DORMANT: for a slot past the party the original also calls R037+0x4048 with that slot's charactr.tmp id, which is no character's
+    //   (its loop then moves records from before the file's first one); no card deletes an empty slot (the callers pass a member who is away, or one the card
+    //   chose among the members), so the roster is left alone here.
     public void DeleteMember(int who)
     {
         foreach (var kind in new[] { Core.Events.EventKinds.MemberTerm, Core.Events.EventKinds.MemberLeft })

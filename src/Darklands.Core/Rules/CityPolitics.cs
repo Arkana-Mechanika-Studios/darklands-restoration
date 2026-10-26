@@ -85,6 +85,8 @@ public static class CityPolitics
     /// winning side without a pact (facts 0x24 / 0x25) earns fame.
     /// </summary>
     // orig: conflict_outcome_impl R039+0x0EBE (1462:0EBE) matched
+    // BUG: ev8_resolve (R029+0x3E06, called at R039+0x0F3E) clears the group's facts here, the pacts 0x24 and 0x25 included, before the
+    //   branches test them (loc_fact, R039+0x0F77 and after): with the politics quest under way the pact branches never run.
     // C: with c == 0 side2_percent is called up to six times and pct is set to 0 either way; only the rand_mod(100) draw matters.
     // C: the reward (give_reward) comes before the standing change (its draws).
     public static void ConflictOutcome(GameState s, int partySide, int winner, int leadingSide)
@@ -171,6 +173,8 @@ public static class CityPolitics
     // orig: R039+0x0558 (1462:0558) matched; tests: WorldRulesTests
     // C: loc_query(loc, 0x21) and loc_query(loc, 0) are called first and their results dropped (pure reads).
     // DIVERGENCE: `while (!loc_query(loc, d + 3))` loops forever in a city without any shop; here the search stops after seven days.
+    // BUG: the facts made here are 0xC, 6, 7, 0x17, 0x14, 3, 5, 4, 9, 0xA, 0x23, 1 and 2 (R039+0x0558): none of type 8, the guild secret the
+    //   guild cards (R062..R065) clear and read, so that fact never exists.
     public static void SetUpCity(GameState s, int loc)
     {
         if (s.Events.QuestAt(Group, loc) || LocationRules.Query(s, loc, 32) == 2)
@@ -233,6 +237,8 @@ public static class CityPolitics
         {
             int strength;
             int unrest;
+            // BUG: setup makes no fact 0 (the leaning); the scan (EventLog.Next) finds the politics quest, whose value is the city's number, so
+            //   the leaning is that number: 1 is read as "leaning 1" for the city numbered 1, anything else but -1 and 1 as "none".
             var leaning = log.FactValue(Group, 0, city);
             if (leaning == -1)
             {

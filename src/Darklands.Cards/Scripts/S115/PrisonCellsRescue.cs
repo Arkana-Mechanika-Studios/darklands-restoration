@@ -60,7 +60,8 @@ public sealed class PrisonCellsRescue : Card
     // orig: R115+0x0F8A (1901:02FA) matched; tests: CardSmokeTests
     // C: var_chosen2 = party_add(*events[v = event_find(0x4D, ...)]): the event's first word (its type) is the character.
     // DIVERGENCE: without such an event the original reads events[-1]; here nobody joins (-1).
-    // UNCERTAIN: when nobody can join (-1), the original copies the name at party[-1] + 0x11; the leader's name is used.
+    // DORMANT: when nobody can join (-1: the 0x4D event is gone), the original copies the name at party[-1] + 0x11; the leader's name is used. Both ways to this
+    //   card (CitySquareAtNight, CouncilHall) offer it only while the event exists.
     private static void FreeTheFriend(CardContext c)
     {
         var note = c.Events.Find(0x4D, -1, c.Here, -1, -1, -1);

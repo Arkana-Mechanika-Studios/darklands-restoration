@@ -482,7 +482,8 @@ public sealed class GameUi
 
     /// <summary>Waits a while, showing the screen; a key or click ends the wait early when allowed.</summary>
     // orig: delay_ticks(n) (R030+0x3096): spins until clock() has advanced by n, no input checks at all; show_message waits root 0410:0302(ticks) (a timer-driver wait, see MessageBox)
-    // UNCERTAIN: a clock() tick as one millisecond (MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit, see MessageBox and Cinematics.
+    // C: a clock() tick is one millisecond (root 06A1:2682 multiplies the elapsed seconds by 1000, MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit,
+    //   see MessageBox and Cinematics.
     // C: a delay that cannot be skipped reads nothing (delay_ticks spins on clock() alone): a key pressed meanwhile stays waiting for the screen's next look, as in the BIOS buffer.
     public void Wait(int milliseconds, bool skippable = true)
     {

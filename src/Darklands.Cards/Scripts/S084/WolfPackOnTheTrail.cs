@@ -148,6 +148,8 @@ public sealed class WolfPackOnTheTrail : Card
 
     // orig: R084+0x0536 (1838:0536) matched; tests: CardSmokeTests
     // C: item_quality_flags(member, 0x02000000) as the long is pushed (low word 0); BUG: it tests item 0's flags.
+    // BUG: the mask is also wrong: R084+0x054F pushes 0x0200 then 0 (the long 0x02000000), while the mounts of this card are removed
+    //   with the flag 0x2000 (RemoveItemsWithFlags in the same card).
     private static OptionHint RidingChance(CardContext c)
     {
         var worst = c.PartyMinSkill(0x11);

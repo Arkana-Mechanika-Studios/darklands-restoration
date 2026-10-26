@@ -80,7 +80,8 @@ public sealed class PartyRosterScreen
     // and 0x1372 leave (R038+0x01FE(0)); another key goes to R038+0x02F8, whose 0x11B leaves (R038+0x01FE(1))
     // C: the row of a click is a signed division by 15 (commands) and by 8 (the list), of positive values here.
     // C: the hot keys run inside root 0000:0000 before the key is read: Alt-Q never reaches the handler's own 0x1000 case.
-    // UNCERTAIN: SI is taken to come through the thunk 09C0:1EE1 unchanged (the overlay manager is taken to keep it).
+    // C: SI comes through the thunk 09C0:1EE1 unchanged: the overlay manager's entry (root 09C0:052B) pushes SI at 09C0:0533 and pops it at 09C0:059F before
+    //   it passes control to the function.
     public void Run(GameState state, int callerWord)
     {
         _state = state;
