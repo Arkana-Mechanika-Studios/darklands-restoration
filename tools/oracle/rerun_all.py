@@ -801,6 +801,11 @@ def verdict_session(folder: Path, name: str):
     return first is None, where, report["original run"], report["seconds"]
 
 
+# b2-session
+SESSIONS["b2-einfo-a5"] = "synth/DKSAVE0-carda5.sav"
+BATTLE_RECORDS.add("b2-einfo-a5")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out")

@@ -121,6 +121,12 @@ internal static class TacticsOverlay
             Set(t, property, Convert.ChangeType((ushort)Word(ds, at), kind));
         }
         t.TimerCallbacks = ds[TimerCallbacksAt];
+        // the floors each enemy kind's slot follows the party to (DS:C23E, a word per slot, set when the group is placed)
+        var follows = Get<int[]>(t, "_slotFollows");
+        for (var s = 0; s < follows.Length; s++)
+        {
+            follows[s] = Word(ds, 0xC23E + 2 * s);
+        }
         // the enemy slots' identities (DS:D65F slot 5, DS:D67E slot 6; −1 free)
         t.EnemySlotIdentity[0] = (short)Word(ds, SlotIdentities);
         t.EnemySlotIdentity[1] = (short)Word(ds, SlotIdentity2);

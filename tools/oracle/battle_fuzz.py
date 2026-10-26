@@ -224,6 +224,60 @@ class Fuzzer:
                 ops.append({"w": "ds", "o": 0xC77E + who_, "hex": "%02x" % (rng.randrange(count) if count else 0xFF)})
                 for slot in range(7):
                     ops.append({"w": "ds", "o": 0xC23E + 2 * slot, "hex": pack(rng.choice([0, 0xFFFF, 1 << rng.randrange(8), rng.getrandbits(8)]), 2)})
+        elif pick == "leave":
+            # the party leaves a level through a stairs record while enemies are alive (R023+0x17D2): the floor, combat or not, the enemies' kinds, endurances and
+            # the floors that follow (the per-kind masks DS:C23E), the stairs record the call is given (14 bytes at DS:FE80)
+            real = self.floor_values[:len(self.floor_values) - 2]
+            pf = rng.choice(real)
+            ops.append({"w": "ds", "o": 0xC623, "hex": "%02x" % pf})
+            ops.append({"w": "ds", "o": 0xA6C1, "hex": "%02x" % rng.choice([1, 1, 1, 0])})
+            ops.append({"w": "ds", "o": 0xD661, "hex": "%02x" % max(len(real), 1)})
+            for slot in range(7):
+                ops.append({"w": "ds", "o": 0xC23E + 2 * slot, "hex": pack(rng.choice([1 << pf, 1 << pf, 0, 0xFFFF, rng.getrandbits(8)]), 2)})
+            loaded = sorted({self.records[k_][0x16] for k_ in self.alive if k_ >= 5 and 4 <= self.records[k_][0x16] < 7}) or [4, 5, 6]          # the enemy animation slots the state has loaded (4..6; an empty one is no state of a battle)
+            kinds = [rng.choice(loaded) for _ in range(rng.choice([1, 2, 3]))]
+            for k in range(5, 13):
+                alive = rng.random() < 0.6
+                ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x14, "hex": "%02x" % (1 if alive else rng.choice([0, 0, 3, 5]))})
+                ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x16, "hex": "%02x" % rng.choice(kinds + loaded)})
+                maximum = rng.randrange(4, 40)
+                ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x64, "hex": "%02x" % maximum})
+                ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x5D, "hex": "%02x" % rng.choice([maximum, maximum, rng.randrange(0, maximum + 1), rng.randrange(0, 5)])})
+                ops.append({"w": "ds", "o": 0xA6B4 + k, "hex": "%02x" % (pf if rng.random() < 0.9 else rng.choice(real))})
+            for k in range(5):
+                ops.append({"w": "ds", "o": 0xA6B4 + k, "hex": "%02x" % (pf if rng.random() < 0.9 else rng.choice(real))})
+            rec = bytearray(14)
+            x, y = rng.choice(self.live_positions)
+            rec[8:10] = ((x + rng.choice([-64, 0, 64])) & 0xFFFF).to_bytes(2, "little")
+            rec[10:12] = ((y + rng.choice([-32, 0, 32])) & 0xFFFF).to_bytes(2, "little")
+            rec[12] = rng.randrange(8)
+            rec[6] = pf
+            ops.append({"w": "ds", "o": 0xFE80, "hex": bytes(rec).hex()})
+        elif pick == "endstate":
+            # who is where when the end of the battle is tested (R014+0x08FE): the enemies' floor, each member's status and floor (on it, elsewhere, left through an
+            # exit), the enemies', the leader and the active member
+            real = self.floor_values[:len(self.floor_values) - 2]
+            ef = rng.choice(real)
+            ops.append({"w": "ds", "o": 0xC651, "hex": "%02x" % ef})
+            others = [f for f in real if f != ef] or [ef]
+            def where():
+                return rng.choice([ef, ef, ef, rng.choice(others), rng.choice(others), 0x9D])
+            for k in range(5):
+                ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x14, "hex": "%02x" % rng.choice([0, 1, 1, 1, 2, 2, 3, 5])})
+                ops.append({"w": "ds", "o": 0xA6B4 + k, "hex": "%02x" % where()})
+            mode = rng.random()
+            for k in range(5, 13):
+                alive = rng.random() < (0.15 if mode < 0.6 else 0.5)
+                ops.append({"w": "ds", "o": COMBATANTS + RECORD * k + 0x14, "hex": "%02x" % (rng.choice([1, 1, 2]) if alive else rng.choice([0, 0, 3, 5]))})
+                ops.append({"w": "ds", "o": 0xA6B4 + k, "hex": "%02x" % (ef if rng.random() < 0.8 else rng.choice(others))})
+            ops.append({"w": "ds", "o": 0xD4E4, "hex": "%02x" % rng.choice([0, 1, 1])})
+            ops.append({"w": "ds", "o": 0x907B, "hex": "%02x" % rng.choice([0, 1, 2, 3, 4, 4])})
+            ops.append({"w": "ds", "o": 0x17B0, "hex": "%02x" % rng.choice([0, 1, 2, 3, 4])})
+            ops.append({"w": "ds", "o": 0xC623, "hex": "%02x" % rng.choice(real)})
+            ops.append({"w": "ds", "o": 0x11CA, "hex": "%02x" % rng.choice(real)})
+            ops.append({"w": "ds", "o": 0xA893, "hex": pack(rng.choice([0xFFFF, 0, 0, 1, 2, 4, 5]), 2)})
+            ops.append({"w": "ds", "o": 0xA6C1, "hex": "%02x" % rng.randrange(2)})
+            ops.append({"w": "ds", "o": 0xD6CC, "hex": "%02x" % rng.randrange(self.act_count + 1)})
         elif pick == "pointer":
             # the pointer at and around the zones of the view's edges (R014+0x33A2: x 60/68/126/255/311, y 8/50/150/191), with the shape in use: one of the arrows, the normal one or none
             x = rng.choice([rng.randint(0, 319)] * 2 + [58, 59, 60, 61, 66, 67, 68, 69, 124, 125, 126, 127, 253, 254, 255, 256, 309, 310, 311, 312, 319])
@@ -865,7 +919,7 @@ buffer = lambda rng, f: 0xFE80          # a DS offset above the stack for a func
 DOOR_FUNCTIONS = {"R023+0x00B8", "R023+0x04AC"}
 # per function: the scenarios that matter most to it (70% of the scenarios drawn for it)
 BIAS = {"R025+0x0000": ["groups", "groups", "activations", "positions", "statuses"], "R014+0x2324": ["dying", "dying", "dying", "loot", "pack"], "R014+0xEA10": ["loot", "loot", "loot", "pack", "statuses"], "R014+0xB576": ["mouse", "mouse", "mouse", "mouse", "orders", "member"], "R014+0x0620": ["activations", "activations", "orders"], "R014+0x2170": ["places", "places", "places", "member", "doors", "regions", "pack", "stairs"], "R014+0xBC0C": ["orders", "orders", "member", "pack"], "R014+0xBCA8": ["orders", "orders", "orders", "member", "pack"], "R014+0x0F58": ["spells", "spells", "effects", "effects", "immune", "times", "pack", "tables"], "R016+0x0000": ["orders", "orders", "orders", "member", "pack", "menus", "doors", "tables"], "R014+0xDF28": ["member", "member", "member", "doors", "pack", "menus", "tables"], "R014+0xD04E": ["doors", "doors", "pack", "menus"], "R014+0xD402": ["regions", "regions", "pack", "menus"], "R014+0xD6DA": ["triggers"],
-        "R014+0x33A2": ["pointer"], "R022+0x03E4": ["statuses", "floors", "kill enemies", "kill party", "result", "positions"],
+        "R014+0x33A2": ["pointer"], "R023+0x17D2": ["leave", "leave", "leave", "positions", "statuses"], "R014+0x08FE": ["endstate", "endstate", "endstate", "statuses", "floors", "result"], "R022+0x03E4": ["statuses", "floors", "kill enemies", "kill party", "result", "positions"],
         "R014+0xDC14": ["doors", "regions", "triggers", "stairs", "zones", "pack", "menus"], "R014+0xD328": ["stairs", "menus"], "R014+0xD60A": ["zones", "menus"],
         "R014+0x1BA0": ["pack", "recov", "missiles"], "R018+0x03AE": ["recov"]}
 FX_BIAS = ["effects", "effects", "effects", "immune", "pack", "statuses", "times", "tables"]
@@ -917,7 +971,7 @@ FUNCTIONS = {
     "R014+0x45AE": [],
     "R014+0x4442": [],
     "R014+0x0F58": [],
-    "R014+0x0D86": [], "R014+0x33A2": [], "R022+0x03E4": [lambda r, f: r.choice([1, 1, 1, 0])],
+    "R014+0x0D86": [], "R014+0x33A2": [], "R023+0x17D2": [member, buffer], "R022+0x03E4": [lambda r, f: r.choice([1, 1, 1, 0])],
     "R014+0x2FA2": [who],
     "R014+0x306A": [who],
     "R018+0x04B6": [buffer],

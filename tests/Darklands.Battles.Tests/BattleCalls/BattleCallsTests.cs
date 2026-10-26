@@ -124,6 +124,48 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             c.Tactics.LaunchMissile(job.Args[0], (short)job.Args[1], job.Args[2], job.Args[3], job.Args[4]);
             return null;
         },
+        ["R023+0x17D2"] = (c, job) =>
+        {
+            // leave_level (who, the stairs record the caller copied to its frame): the call is made with the record at the DS offset given
+            if (job.Args[0] is < 0 or >= Combatant.PartySlots)
+            {
+                throw new SkipJob("a member of the party leaves");
+            }
+            var at = job.Args[1];
+            var before = c.Tactics.Activations[c.Battle.FloorShown].Count;
+            Call(c.Tactics, "LeaveLevel", job.Args[0], c.Input.Ds.AsSpan(at, 14).ToArray());
+            // the encounter record it adds holds the three kinds of the slots 4..6 whatever the slot holds: for a slot with no enemy the original writes a local
+            // it never set (the stack's leftovers; the rewrite has -1 for the first, 0 for the others), unseen as the count is 0: the original's byte is taken
+            var list = c.Tactics.Activations[c.Battle.FloorShown];
+            if (list.Count == before + 1)
+            {
+                var group = list[^1];
+                // and the reinforcement part (+0x14..+0x1D) of a record that has none (+0x07 = 0): the original leaves the bytes the slot held, the rewrite's
+                // new group has its defaults; nothing reads them (the reinforcements arrive only for a group that has the record)
+                var recordAt = TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * before;
+                int Byte(int o) => job.Orig.FarChanged.TryGetValue((recordAt + o).ToString(), out var v) ? v : c.Input.Far[recordAt + o];
+                if (group.HasReinforcements == 0)
+                {
+                    group.ReinforcementKind = (sbyte)Byte(0x14);
+                    group.Byte15 = (sbyte)Byte(0x15);
+                    group.ReinforcementX = (short)(Byte(0x16) | Byte(0x17) << 8);
+                    group.ReinforcementY = (short)(Byte(0x18) | Byte(0x19) << 8);
+                    group.ReinforcementBatch = (sbyte)Byte(0x1A);
+                    group.ReinforcementPool = (sbyte)Byte(0x1B);
+                    group.ReinforcementFacing = (sbyte)Byte(0x1C);
+                    group.Byte1D = (sbyte)Byte(0x1D);
+                }
+                for (var k = 0; k < 3; k++)
+                {
+                    var kindAt = TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * before + 8 + k;
+                    if (group.Counts[k] == 0)
+                    {
+                        group.Kinds[k] = (sbyte)(job.Orig.FarChanged.TryGetValue(kindAt.ToString(), out var kind) ? kind : c.Input.Far[kindAt]);
+                    }
+                }
+            }
+            return null;
+        },
         ["R022+0x03E4"] = (c, job) =>
         {
             // do_surrender: the question "Do you really want to surrender?" is answered by the job's first argument (the original's stub); only in real combat
