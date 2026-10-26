@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 47 entries; recommendations: document: 1, justify: 37, keep: 9.
-- Part B (undefined-memory in core logic): 134 entries; determinism: n/a: 79, no: 41, partly: 10, yes: 4.
+- Part B (undefined-memory in core logic): 135 entries; determinism: n/a: 79, no: 42, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -853,7 +853,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original keeps a window of the map (50 rows by 19 columns) in G and refills it as the view scrolls; this class answers for any cell of the whole decoded map, so the rows are never evicted. A cell outside the map reads 0 here (in the original, whatever the buffer held).  
   deterministic: **partly** (checked against the original); action: **keep** - The original G is R136+0xFCCC[50][19] (index imul 13h + col, asm 159A2), refilled by R030+0x20D2 from the run-length rows (0xD2 bytes per map row) as the view scrolls, with the place-icon list overlaid. Inside the window the content equals this whole-map answer; a column outside it wraps into the neighbouring row and a row outside it shows whatever an earlier refill left, i.e. history dependent. Keep the whole-map semantics unless a read at the map border outside the window is shown to matter (not verified).
 
-### battles (30)
+### battles (31)
 
 - **D-89585b** `undefined-memory` - `src/Darklands.Core/Battles/Attacks.cs:189` `Attacks.MissileChance`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -935,6 +935,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R016+0x0DA6` (1EF8:0DA6, draft), `R016+0x0E2E` (1EF8:0E2E, draft)  
   divergence: an entry past the thirteen combatant records (a saved game's bytes) reads past the records; here it makes the order rebuilt.  
   deterministic: **n/a** (checked against the original); action: **justify** - Entries are slot numbers 0..4: R022+0x07AA takes F1..F5 (0..4) or a party row or hot spot (0..4), R016+0x0E2E takes slots 0..4. An entry of 13 or more needs a saved game edited by hand (header +0x9B); the original would read the status byte of memory past the combatant records.
+- **D-d2c8b5** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:604` `TacticalBattle.LeaveLevel`  
+  original: `R023+0x17D2` (1EF8:17D2, draft)  
+  divergence: the encounter record it adds keeps undefined memory, not modelled. Its kinds (+0x08..+0x0A) are the local words of slots 4..6 (bp-0x24), written only for a kind with an able enemy (R023+0x1A04..0x1A1A): the first (no kind 4 exists) and a kind with none left hold the stack's leftovers, with a count of 0 (here -1 for the first, 0 for the others); the reinforcement part +0x14..+0x1D is not written (R023+0x1A27..0x1A9D write +0x00..+0x13 only), so the table slot keeps what it held (here the new group's defaults). These bytes go into a battle file saved after the change; the battle-call adapter of R023+0x17D2 takes the original's bytes there (local/batch/b2).  
+  deterministic: **no** (checked against the original); action: **justify** - Undefined memory (audit18, asm of R023+0x19FD..0x1ACA): the record at es:0x47EE + 0x1E x count gets +0x00/+0x02 (the nearest enemy), +0x04 = 0x10, +0x06 = 0xFF, +0x07 = 0, +0x0E..+0x13 from 2E38:0BB0, and its kinds/counts +0x08..+0x0D from the words at bp-0x24 / bp-0x1E (R023+0x1A7D..0x1A8D); the kind words are written only at R023+0x1A17 for an able enemy, so a kind with a count of 0 keeps the stack word; +0x14..+0x1D are never written. The rewrite gives -1 / 0 and the new group defaults. Only these unset bytes differ: the R023+0x17D2 direct calls of round B2 (e11..e13) agree with the adapter taking the original bytes there, but for 6 jobs whose fuzzed state puts an enemy in animation slot 1..3 (its count word overlays a kind word, the C: note in LeaveLevel). Replaces the old inline (DIVERGENCE) note on the first kind, which was not registered.
 - **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1279` `EffectField.LayOutCloud`  
   original: `R014+0x9E92` (14F7:3682, draft)  
   divergence: a size above 4 (the trap kinds 10..15 have sizes 6 and 9: the low nibble) writes past the 16-puff arrays on the original's stack; the random numbers are drawn, the extra puffs are not kept.  

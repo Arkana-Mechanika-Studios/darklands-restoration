@@ -601,7 +601,11 @@ public sealed partial class TacticalBattle
     /// rest wait at the stairs as an encounter.
     /// </summary>
     // orig: leave_level R023+0x17D2 (1EF8:17D2) draft
-    // C: typ[4] (no kind 4 exists) is read uninitialised for the encounter's first type (with a count of 0): −1 here (DIVERGENCE).
+    // DIVERGENCE: the encounter record it adds keeps undefined memory, not modelled. Its kinds (+0x08..+0x0A) are the local words of slots 4..6
+    //   (bp-0x24), written only for a kind with an able enemy (R023+0x1A04..0x1A1A): the first (no kind 4 exists) and a kind with none left hold
+    //   the stack's leftovers, with a count of 0 (here -1 for the first, 0 for the others); the reinforcement part +0x14..+0x1D is not written
+    //   (R023+0x1A27..0x1A9D write +0x00..+0x13 only), so the table slot keeps what it held (here the new group's defaults). These bytes go into
+    //   a battle file saved after the change; the battle-call adapter of R023+0x17D2 takes the original's bytes there (local/batch/b2).
     private void LeaveLevel(int who, byte[] exit)
     {
         var seen = new bool[7];

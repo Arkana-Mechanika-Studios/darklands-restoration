@@ -105,7 +105,7 @@ new cases or listed in `unreachable.csv` with a justification.
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 33,783 against 34,611 exercised (1,459 more branch outcomes than the batch before: the card scripts +1,243, rules +26 and screens +22 from the card oracle's saved-game start states and controlled battle and prayer results of round cards1 (together +1,292), battles +165 from round B2's direct calls, both below). By area:
+differ slightly on the resident code, hence 33,783 against 34,611 exercised (1,459 more branch outcomes than the batch before: the card scripts +1,243, rules +26 and screens +22 from the card oracle's saved-game start states and controlled battle and prayer results of round cards1, battles +165 from round B2's direct calls, both below, and 1 each in travel, the card engine and the resident code). By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
@@ -133,8 +133,8 @@ forms, the C run-time library, drivers, memory and file helpers, code nothing re
 open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
 lie in the card scripts (about 6,430), the screens (about 2,010), the battlefield generators (about 2,070), the
-battles (about 1,340), the resident code (about 410), the card engine (about 370), the overland map (about 470) and the
-rules (about 250). A sweep
+battles (about 1,340), the resident code (about 410), the card engine (about 370), the overland map (about 470), the
+rules (about 250) and the other code (about 160). A sweep
 of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
 tile contents and random draws, not inputs a sweep sets.
 
@@ -205,9 +205,9 @@ changes, next card).
   games; and random aimed states (hour, month, facts, quests, events, skills, attributes, saints, items, reputation, previous card,
   seed) for the cards of the sheet's 40 records. 29,093 runs count (892 more are left out because they differ or errored); on the
   merged tree the replay of all of them against the C# gives the same differing runs as when they were made. They added 1,292 branch
-  outcomes and 1,529 blocks to the whole-program count (card scripts +1,241). The differences form 16 clusters, listed as open leads
-  below; none is judged yet. The committed corpus `Oracle/cards-controlled.json.gz` holds 2,004 agreeing runs of the controlled
-  results (test `ControlledResultsAgreeWithTheOriginal`). A community-reported lead on the alchemist's trade formula agrees: the
+  outcomes and 1,529 blocks to the count of the functions the oracles enter (card scripts +1,243 in the whole-program count). The differences form 16 clusters, listed as open leads
+  below; none is judged yet. The committed corpus `Oracle/cards-controlled.json.gz` holds 2,004 runs of the controlled
+  results, 1,940 agreeing and 64 differing for a listed reason (test `ControlledResultsAgreeWithTheOriginal`). A community-reported lead on the alchemist's trade formula agrees: the
   traveling alchemist (card 0xA6) changes only the packs, and the formula seller (card 0x53) teaches the chosen member, in both.
 
 ## Whole game sessions (lockstep)
@@ -283,7 +283,7 @@ The oracles record the original's side (`tools/oracle/recording.py`) and replay 
 day-to-day checks; a recording is used only when the hashes of the EXE, the game files, the arguments,
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
-weekly during active work); the published verdicts and coverage come from such a live run (latest pass: a replay, with the 7 sessions of round B2 live, 762 fights and sessions (37 fights, 725 whole-game sessions), all agreeing: the replay of batch 18, 712 s on 6 workers, the 7 new sessions run live and the rest replayed against the recordings of the last full live pass (batch 16: 590 fights and sessions, all agreeing, 8,135 s on 8 workers, after the tester's original side was changed); the 54 sessions that wait in a battle and press G or Q, whose timing the C# changed in batch 18, were also run live once: all agree (1,170 s on 6 workers); the 28 card corpora give the same reports as batch 17, and the new controlled-results corpus (2,004 runs) agrees; the 30 battle call job files of batch 17 give the same summaries but for R016+0x0000's keyed jobs (651 moved from agree to not judged by a rule of the tester, below): 23,943 jobs, 14,482 agree, 0 differ, 9,461 not judged; round B2's 17 job files: 5,015 jobs, 3,973 agree, 89 differ, 9 raise an exception, 944 not judged). The last open lead before batch 14, a group move at
+weekly during active work); the published verdicts and coverage come from such a live run (latest pass: a replay, with the 7 sessions of round B2 live, 762 fights and sessions (37 fights, 725 whole-game sessions), all agreeing: the replay of batch 18, 712 s on 6 workers, the 7 new sessions run live and the rest replayed against the recordings of the last full live pass (batch 16: 590 fights and sessions, all agreeing, 8,135 s on 8 workers, after the tester's original side was changed); the 54 sessions that wait in a battle and press G or Q, whose timing the C# changed in batch 18, were also run live once: all agree (1,170 s on 6 workers); the 28 card corpora give the same reports as batch 17, and the new controlled-results corpus (2,004 runs: 1,940 agree, 64 differ for a listed reason) gives no other difference; the 30 battle call job files of batch 17 give the same summaries but for R016+0x0000's keyed jobs (651 moved from agree to not judged by a rule of the tester, below): 23,943 jobs, 14,482 agree, 0 differ, 9,461 not judged; round B2's 17 job files: 5,015 jobs, 3,973 agree, 89 differ, 9 raise an exception, 944 not judged). The last open lead before batch 14, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
@@ -408,7 +408,7 @@ memory-layout effects (writes outside arrays the original performs).
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
 markers in the code, each with its reason and original coordinate: 199 original bugs the game
-reproduces (39 with their own `OriginalBehaviour` flag), 306 registered divergences,
+reproduces (39 with their own `OriginalBehaviour` flag), 307 registered divergences,
 870 dormant branches kept as the original has them, 37 uncertain readings (the others were
 naming only, or settled by an agreeing oracle or the code, now closed; each of the 37 is in
 `UNCERTAIN.md` with the assumption it rests on). Every core-logic divergence has a
@@ -577,7 +577,7 @@ weakest enemy by the whole 16-bit percent, 100 x endurance / maximum computed as
 the first able enemy (R022+0x0427 .. +0x0440; `SurrenderWithNoAbleEnemyKeepsTheLastEnemyLevel`); and G and Q show the marching-order message
 286B:0231 for 60 ticks when they rebuild the order (R016+0x0E54 .. +0x0E73; `SingleFileOverABrokenMarchingOrderWaitsForTwoMessages`; it had been
 registered as the screen's, and the 54 sessions with G or Q in a battle still agree, run live). The recorded jobs rerun on the fixed C# agree
-where they differed (R023+0x17D2: 206 of 215 agree, 0 differ, 9 not judged, against 184 and 22 differ before; R014+0x116E: 120 of 120 and 123 of 123). The
+where they differed (R023+0x17D2: 206 of 215 agree, 0 differ, 9 not judged, against 184 and 22 differ before; R014+0x116E: 120 of 120 and 123 of 123), but for 6 jobs of R023+0x17D2's earlier runs (e11, e12) whose fuzzed state puts an enemy in animation slot 1..3, which the game never does (there the original's count word overlays a kind word). The
 tester's changes: the R014+0x116E adapter takes the state's view origin, and a keyed call of R016+0x0000 is not judged when the clock hold
 DS:07D3 disagrees with the pause DS:A695 (the game sets and clears them together; this moved 651 earlier jobs from agree to not judged and
 their coverage left the count). Round cards1 (above): saved games of the players' archives and controlled battle and prayer results in the card
@@ -636,8 +636,8 @@ edited for the purpose (`tools/oracle/synth_saves.py`), the party menu, the alch
 the camp, the sheet, the generator) took the resident code from 57% to 62% and the screens from 75% to
 78%. Its differing sessions (Alt-M in the menu bar's keyboard mode, an unconscious member in the gate battle, an away member's record bytes after a battle, the gate battle with Alt toggles, the cache's G after g, Left, B, two map sessions with F10) were settled in batch 13: the unconscious and the away member were a real difference (fixed, R002+0x1830); Alt-M, the Alt toggles and the two F10 map sessions were tester artifacts (the scripts and the F6/F10 delivery fixed); the cache's G agrees, its heap pointer (R035+0x114A) being reported as undefined memory. All of them agree.
 
-The battle direct calls' old differences were the harness's (15 now agree, 13 unreachable states); all
-15,045 jobs that run agree.
+The battle direct calls' old differences were the harness's (15 now agree, 13 unreachable states); every judged job of
+those files agrees (batch 18: 14,482 of 23,943 agree, 0 differ, the rest not judged).
 
 Travel functions called directly from map states (the step R030+0x1300, the camp watch, the minutes per
 step, the encounter weight, the season palette and three R029 helpers; 25 map states): about 80 more
