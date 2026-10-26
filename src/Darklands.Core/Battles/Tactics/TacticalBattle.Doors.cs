@@ -696,8 +696,9 @@ public sealed partial class TacticalBattle
                     {
                         continue;
                     }
-                    // C: (char)(100 × endurance) / maximum: the product is cut to a signed byte first.
-                    var d = p.MaximumEndurance == 0 ? 0 : (sbyte)(100 * p.Endurance) / p.MaximumEndurance;
+                    // orig: R023+0x19BD..0x19C2 `mov al,0x64; imul byte [si]; cwd; idiv cx`: the whole 16-bit product 100 × endurance over the
+                    // sign-extended maximum (no cut to a byte). A maximum of 0 is a divide error in the original (an able enemy has one).
+                    var d = p.MaximumEndurance == 0 ? 0 : 100 * p.Endurance / p.MaximumEndurance;
                     if (d < r && !p.EndsBattleWhenKilled)
                     {
                         r = d;
@@ -712,6 +713,8 @@ public sealed partial class TacticalBattle
         {
             return;
         }
+        // C: R023+0x1A04..0x1A1A keeps the kinds as words at bp−0x24 + 2 × (slot − 4) and the counts at bp−0x1E + 2 × (slot − 4): an able enemy
+        // in slot 1..3 would add 1 to the kind word of slot 4..6. Enemies only take slots 0 (its words are not read), 5 and 6: not modelled.
         for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
         {
             var p = Battle[i];

@@ -161,4 +161,39 @@ public sealed class JudgeBattleLeadsTests
         Assert.Equal(0, map.LineBlocked(new MapPoint(659, 61), new MapPoint(897, 97)));
         Assert.Equal(1, map.LineBlocked(new MapPoint(659, 61), new MapPoint(897, 97), residue: run));
     }
+
+    /// <summary>
+    /// R023+0x19BD..0x19C2: leave_level drops the enemy with the lowest 100 × endurance / maximum, the product kept in 16 bits
+    /// (round B2 lead L01). Endurances 2/4, 1/10 and 20/20: the 10 % enemy goes; a product cut to a byte would drop the 2/4 one.
+    /// </summary>
+    [Fact]
+    public void LeavingALevelDropsTheWeakestByTheWholePercent()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, t) = Start();
+        for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
+        {
+            t.Battle[i].Status = CharacterStatus.Empty;
+        }
+        (sbyte E, sbyte M)[] enemies = [(2, 4), (1, 10), (20, 20)];
+        for (var k = 0; k < 3; k++)
+        {
+            var c = t.Battle[Combatant.PartySlots + k];
+            c.Status = CharacterStatus.Able;
+            c.AnimationSlot = 4 + k;
+            c.EndsBattleWhenKilled = false;
+            c.Endurance = enemies[k].E;
+            c.Maximums[(int)Darklands.Core.Characters.Attribute.Endurance] = enemies[k].M;
+            c.Position = new MapPoint((short)(t.Battle[0].Position.X + 64 * (k + 1)), t.Battle[0].Position.Y);
+        }
+        t.Battle.RealCombat = false;
+        var groups = t.Activations[t.Battle.FloorShown];
+        var before = groups.Count;
+        Call(t, "LeaveLevel", 0, new byte[14]);
+        Assert.Equal(before + 1, groups.Count);
+        Assert.Equal(new sbyte[] { 1, 0, 1 }, groups[^1].Counts);
+    }
 }
