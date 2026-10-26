@@ -2,6 +2,7 @@ using Darklands.Content;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Randomness;
+using Darklands.Core.Time;
 
 namespace Darklands.Simulation;
 
@@ -17,6 +18,11 @@ public static class NewGame
     // orig: DS:907E = rand_mod(0x5a) (cur_loc) in root 03A1:000A; rand_mod = root 0000:0C70 (rand() % n)
     // C: rand_mod(n) is rand() % n with n below 2 counted as 2; 0x5A = 90, so the last two cities (90 and 91) are never the start.
     public const int StartingCities = 0x5A;
+
+    /// <summary>The date the program starts with, before a game sets its own (9:00 on day 26 of month 8, 1400; the first card sets day and month).</summary>
+    // orig: the initial words of hour, day, month, year at DS:00E0..00E7 (read in the original at the creation menu, local/batch/evid1o creation-menu.steps);
+    // only R054+0x0A7D..0x0AA0 (the first card) and the date functions write them
+    public static readonly GameDate StartUpDate = new(9, 26, 8, 1400);
 
     /// <summary>
     /// A Quickstart game: the four ready-made adventurers at an inn in a random city.

@@ -140,7 +140,7 @@ public sealed class CharacterCreationScreen
         // orig: R037+0x9DB2 case 'C': party_seed = BIOS ticks; the city was drawn at start-up (root 03A1) from the same clock
         var seed = _seed();
         var random = new MscRandom(seed);
-        random.Below(NewGame.StartingCities);
+        var startUpCity = random.Below(NewGame.StartingCities);
         // orig: R037+0x0000: thunk 09C0:18F1(0x14) (music), R037+0x4562, load_saved_game("default"), party[k][0] = 0
         // DIVERGENCE (host): the original reads SAVES\DEFAULT here too (R037+0x4184, the open not checked; see D-66e575 for
         // Quickstart); without the file it reads through an unset handle, and the 483.07 notes say characters can then not be
@@ -151,7 +151,7 @@ public sealed class CharacterCreationScreen
             Shared.Image = 0;
         }
         var (readyMade, slotImages) = ReadyMade(NewGame.PartySeed(seed));
-        _sheetState = new GameState(random) { Data = _world };
+        _sheetState = SheetState(random, startUpCity);
         _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages, _sheetState.Item);
         var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, NewGame.PartySeed(seed), _seed);
         DrawAll();
@@ -266,7 +266,7 @@ public sealed class CharacterCreationScreen
     // so those leader keys do nothing here (CharacterSheetScreen.PartySize)
     // C: the sheet opens on the menu's slots as the party (the panel and the sheet read the slots, not party_size).
     // DIVERGENCE: the sheet's menu bar and hot keys (root 0000:0000) are not passed.
-    // UNCERTAIN: a prayer from the sheet's Saints list reads the date and the place of the game the menu loaded (SAVES\DEFAULT); here those of a new game.
+    // C: a prayer from the sheet's Saints list runs on the program's own state (SheetState), not on SAVES\DEFAULT's header.
     private void MemberSheet(int slot)
     {
         if (slot >= Party.MaxMembers || _roster.Member(slot) is null)
@@ -290,6 +290,20 @@ public sealed class CharacterCreationScreen
         Shared.Colours.Load(_roster.SlotPalettes[slot]);
         ApplyFigureColours();
         ScreenDrawing.WaitForRelease(_ui);
+    }
+
+    /// <summary>
+    /// The game the member sheet (and a prayer from it) works on: the program as it started, the start-up city as the current place
+    /// and the date the data segment starts with; the menu's load of SAVES\DEFAULT changes neither.
+    /// </summary>
+    // orig: load_saved_game R037+0x4184 reads DEFAULT's 0xEF header bytes and each 0x22A record into msg_buf DS:9085 (only to copy the records
+    //   into charactr.tmp), party_size and member_shield; the date words DS:00E0..00E7 and cur_loc DS:907E are not written. Captured in the
+    //   original at the menu (creation-menu.steps, local/batch/evid1o): DS:00E0 = 9, 26, 8, 1400; DS:907E = the start-up city (root 03A1)
+    private GameState SheetState(IRandomSource random, int startUpCity)
+    {
+        var state = new GameState(random) { Data = _world, CurrentLocation = startUpCity, Date = NewGame.StartUpDate };
+        state.City = _world.LoadCity(startUpCity);
+        return state;
     }
 
     /// <summary>The selection moves; the figure of the selected member (if in the first four slots) shows with its colours.</summary>

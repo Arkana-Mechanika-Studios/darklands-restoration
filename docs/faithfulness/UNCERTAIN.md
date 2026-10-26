@@ -17,9 +17,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | travel | core | 3 |
 | battles | core | 7 |
 | persistence | core | 2 |
-| screens/presentation | other | 17 |
+| screens/presentation | other | 16 |
 | host/audio | other | 0 |
-| total |  | 41 |
+| total |  | 40 |
 
 ## Core logic (24)
 
@@ -107,9 +107,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 
-## Presentation and host (17)
+## Presentation and host (16)
 
-### screens/presentation (17)
+### screens/presentation (16)
 
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
@@ -126,9 +126,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:92` `CharacterCreationScreen.FigureImages`  
   original: `R037+0x0000` (1462:0000, draft), `R037+0x0444` (1462:0444, draft), `R037+0x0390` (1462:0390, draft) +5 more  
   why: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
-- **U-a48f9e** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:269` `CharacterCreationScreen.MemberSheet`  
-  original: `root 047C:056F` (047C:056F, draft), `R037+0x03D4` (1462:03D4, draft), `R037+0x0000` (1462:0000, draft)  
-  why: a prayer from the sheet's Saints list reads the date and the place of the game the menu loaded (SAVES\DEFAULT); here those of a new game.
 - **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:517` `CharacterGeneratorScreen.WaitThenRedraw`  
   original: `R037+0x4B9E` (18C8:053E, draft), `R037+0x4664` (18C8:0004, draft)  
   why: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time: the C# redraws at once, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the first steps, not always that of the occupation list)
