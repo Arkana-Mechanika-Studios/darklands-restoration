@@ -145,7 +145,30 @@ class Recording:
         tmp = self.path.with_name(self.path.name + ".%d.tmp" % os.getpid())
         with gzip.open(tmp, "wb", compresslevel=3) as f:
             pickle.dump({"format": FORMAT, "key": self.key, "parts": self.parts, "payload": payload}, f, protocol=4)
-        os.replace(tmp, self.path)
+        replace_shared(tmp, self.path)
+
+
+def replace_shared(tmp, target, tries: int = 40):
+    """os.replace for a file that several workers store at the same time (workers of one pass that start from the same state): on Windows the
+    replace fails with PermissionError while another worker's replace or a reader holds the target. Retry; if the target exists after the tries
+    (a snapshot is keyed by everything that made it, so it holds the same state), drop our copy. Tester only (2026-10-27: three fights of
+    the live pass, mine / castle / city13, died here and left no report)."""
+    import time
+    for n in range(tries):
+        try:
+            os.replace(tmp, target)
+            return
+        except PermissionError:
+            if n >= tries - 1:
+                break
+            time.sleep(0.05 * (n + 1))
+    try:
+        if Path(target).is_file():
+            Path(tmp).unlink()
+            return
+    except OSError:
+        pass
+    os.replace(tmp, target)
 
 
 class Snapshot:
@@ -177,7 +200,7 @@ class Snapshot:
         tmp = self.path.with_name(self.path.name + ".%d.tmp" % os.getpid())
         with gzip.open(tmp, "wb", compresslevel=1) as f:
             pickle.dump({"key": self.key, "parts": self.parts, "state": state}, f, protocol=4)
-        os.replace(tmp, self.path)
+        replace_shared(tmp, self.path)
         print("original %s: snapshot stored" % self.path.name, flush=True)
 
 

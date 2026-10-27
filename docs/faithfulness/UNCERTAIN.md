@@ -79,10 +79,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-8df8a9** `uncertain` - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:224` `MineBuilder.MakeChests`  
   original: `R009+0x1AF0` (1432:1AF0, draft)  
   why: the original holds stack leftovers).
-- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:884` `EffectField.public`  
+- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:895` `EffectField.public`  
   original: `root 06A1:29B6` (06A1:29B6, asm), `R014+0xA738` (18BF:02A8, draft)  
   why: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
-- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1046` `EffectField.Drawn`  
+- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1057` `EffectField.Drawn`  
   original: `R014+0x6818` (14F7:0008, draft), `R014+0x7BBE` (14F7:13AE, draft)  
   why: an entry whose box the view clips to nothing gives its place back in the original; here every piece, edge and number of a combatant in view counts (the boxes are not clipped), and the cloud edges count for the clouds of the shown level with a puff in view.
 - **U-cb31b9** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:590` `TacticalBattle._actionBeforeRecords`  
@@ -105,10 +105,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1895` `BattleScreen.EdgeScroll`  
+- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1965` `BattleScreen.EdgeScroll`  
   original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
   why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
-- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2014` `BattleScreen.CharacterSheet`  
+- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2085` `BattleScreen.CharacterSheet`  
   original: `R022+0x0000` (1EF8:0000, draft)  
   why: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:77` `BuySellPage.Text`  
