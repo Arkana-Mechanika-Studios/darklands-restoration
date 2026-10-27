@@ -216,7 +216,13 @@ DIRS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)]
 
 
 def main():
-    args = [a for a in sys.argv[1:] if a not in ("--border", "--south", "--east", "--after")]
+    argv = list(sys.argv[1:])
+    cov_dir = None
+    if "--cov" in argv:        # --cov <folder>: also write each job's coverage (cov-<out name>.jsonl) for the faithfulness figures
+        k = argv.index("--cov")
+        cov_dir = Path(argv[k + 1])
+        del argv[k:k + 2]
+    args = [a for a in argv if a not in ("--border", "--south", "--east", "--after")]
     border = "--border" in sys.argv[1:]
     south = "--south" in sys.argv[1:]
     east = "--east" in sys.argv[1:]
@@ -224,9 +230,19 @@ def main():
     out = Path(args[0])
     rnd = random.Random(16)
     jobs, saves = [], {}
+    cov_file = None
+    if cov_dir is not None:
+        cov_dir.mkdir(parents=True, exist_ok=True)
+        cov_file = open(cov_dir / ("cov-%s.jsonl" % out.name.split(".")[0]), "w", encoding="utf-8")
     t0 = time.time()
+
+    def add(job):
+        jobs.append(job)
+        if cov_file is not None:
+            cov_file.write(json.dumps({"unit": "map_draw", "state": "%s#%d" % (out.name.split(".")[0], len(jobs) - 1), "seconds": 0, **st.m.coverage_result()}) + "\n")
+            cov_file.flush()
     for path in args[1:]:
-        st = wc.WState(Path(path), coverage=False, near=[])
+        st = wc.WState(Path(path), coverage=cov_dir is not None, near=[])
         rec = Recorder(st)
         base = view_regs(st)
         name = Path(path).name[:-len(".state")]
@@ -315,7 +331,7 @@ def main():
                     if any(c[0] in ("sprite", "picture") and c[-1][0] == "segment" for c in rec.calls):
                         continue
                     tl, odd, fy, fx = party_cell(st, cells(st), x, y)
-                    jobs.append({"state": name, **view_regs(st), "kind": "frame", "terrain": tl, "path": [[x, y, f, d]], "marks": [len(rec.calls)],
+                    add({"state": name, **view_regs(st), "kind": "frame", "terrain": tl, "path": [[x, y, f, d]], "marks": [len(rec.calls)],
                                  "cells": list(cells(st)), "calls": rec.calls})
                 continue
             kinds = kinds_of(st)
@@ -332,7 +348,7 @@ def main():
                 d, f = rnd.randint(0, 9), rnd.randint(0, 7)
                 run(st, rec, PARTY, [x, y, f, d])
                 tl, odd, fy, fx = party_cell(st, cells(st), x, y)
-                jobs.append({"state": name, "state_top": base["top"], **view_regs(st), **extra, "kind": "frame", "terrain": tl, "path": [[x, y, f, d]],
+                add({"state": name, "state_top": base["top"], **view_regs(st), **extra, "kind": "frame", "terrain": tl, "path": [[x, y, f, d]],
                              "marks": [len(rec.calls)], "cells": list(cells(st)), "after": after(st), "calls": rec.calls})
             # walks: from a hill, mountain or water point, 60 steps changing direction every 12 (the marker kept 20 pixels off the view's
             # edges, so 0c44 would not scroll); every pass calls 16c6 once
@@ -351,7 +367,7 @@ def main():
                     run(st, rec, PARTY, [x, y, f, d])
                     steps.append([x, y, f, d])
                     marks.append(len(rec.calls))
-                jobs.append({"state": name, "state_top": base["top"], **view_regs(st), **extra, "kind": "walk", "terrain": -1, "path": steps, "marks": marks,
+                add({"state": name, "state_top": base["top"], **view_regs(st), **extra, "kind": "walk", "terrain": -1, "path": steps, "marks": marks,
                              "cells": list(cells(st)), "after": after(st), "calls": rec.calls})
             print(name, "view", column, rows, top, extra, "frames", len(picks), "%.0f s" % (time.time() - t0), flush=True)
         st.m = None

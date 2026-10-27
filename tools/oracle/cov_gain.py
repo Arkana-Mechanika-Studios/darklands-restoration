@@ -202,6 +202,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--baseline", action="append", default=[], help="cov folder (searched recursively) or 'branches-work'")
     ap.add_argument("--new", action="append", default=[], help="cov folder (searched recursively)")
+    ap.add_argument("--baseline-cache", help="pickle of the merged coverage of the --baseline folders (written when missing, read when there): the "
+                    "corpus is streamed once for several measures; extra folders for one measure go in --extra-baseline")
+    ap.add_argument("--extra-baseline", action="append", default=[], help="cov folder streamed on top of the cached baseline (not cached)")
     ap.add_argument("--exclude", help="file of 'unit|state' lines: runs to leave out")
     ap.add_argument("--open", default=str(REPO / "docs" / "faithfulness" / "branches-missed.csv"))
     ap.add_argument("--out", help="write the gained items (function|payload|kind) as JSON")
@@ -222,7 +225,21 @@ def main():
     records = {items.funcs[n].record for n in items.opens if n in items.funcs}
     exclude = read_exclude(a.exclude)
     base, new = Merged(records), Merged(records)
-    bf = stream([resolve(b, local) for b in a.baseline], base, exclude, guard, "baseline")
+    if a.baseline_cache and Path(a.baseline_cache).exists():
+        import pickle
+        with open(a.baseline_cache, "rb") as fh:
+            base = pickle.load(fh)
+        bf = 0
+        if base.records != records:
+            sys.exit("cov_gain: the cached baseline was made for other records; delete %s" % a.baseline_cache)
+    else:
+        bf = stream([resolve(b, local) for b in a.baseline], base, exclude, guard, "baseline")
+        if a.baseline_cache:
+            import pickle
+            with open(a.baseline_cache, "wb") as fh:
+                pickle.dump(base, fh, protocol=4)
+    if a.extra_baseline:
+        bf += stream([resolve(b, local) for b in a.extra_baseline], base, exclude, guard, "baseline+")
     print("baseline: %d files, %d runs (%d excluded), %d instructions, %d edges, %.0fs" % ((bf, base.runs, base.skipped) + base.count() + (time.time() - t0,)), flush=True)
     nf = stream([resolve(n, local) for n in a.new], new, exclude, guard, "new")
     print("new:      %d files, %d runs (%d excluded), %d instructions, %d edges" % ((nf, new.runs, new.skipped) + new.count()), flush=True)

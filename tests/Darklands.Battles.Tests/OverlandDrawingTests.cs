@@ -96,7 +96,11 @@ public sealed class OverlandDrawingTests
         var terrain = Content.Formats.Maps.WorldMapData.Decode(files.Read("DARKLAND.MAP"));
         var tiles = new OverlandTiles(assets.Picture("mapicons").Image, assets.Picture("mapicon2").Image, assets.Picture("charicon").Image);
         // several job files can be given, separated by ';' (the sweep of map_draw.py, and its --border views at the map's west / north border)
-        var docs = path.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(f => JsonDocument.Parse(new GZipStream(File.OpenRead(f), CompressionMode.Decompress))).ToArray();
+        var files_ = path.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        var docs = files_.Select(f => JsonDocument.Parse(new GZipStream(File.OpenRead(f), CompressionMode.Decompress))).ToArray();
+        // DARKLANDS_MAPDRAW_RESULTS: a file with one line per job, "map_draw|<job file's name up to its first dot>#<job's number in it>" and its verdict
+        // (agree / DIFFER / SKIP), the names of the coverage lines map_draw.py --cov writes: only the agreeing jobs count as coverage
+        var verdicts = new List<string>();
         // the place icons come from the state's saved game (R030+0x1C76 lists its places); a world map per job (each job starts from the
         // state's machine: the row buffer read afresh, the bytes after the cell buffer as the state had them, zeros in every state)
         var places = new Dictionary<string, IReadOnlyList<Core.World.Location>>();
@@ -114,8 +118,11 @@ public sealed class OverlandDrawingTests
         var cellsDiffer = 0;
         var pastBlock = 0;
         var index = 0;
+        var jobNames = docs.Select((d, k) => (d, k)).SelectMany(p => Enumerable.Range(0, p.d.RootElement.GetProperty("jobs").GetArrayLength())
+            .Select(n => $"map_draw|{Path.GetFileName(files_[p.k]).Split('.')[0]}#{n}")).ToArray();
         foreach (var job in docs.SelectMany(d => d.RootElement.GetProperty("jobs").EnumerateArray()))
         {
+            var failuresBefore = failures.Count;
             var calls = job.GetProperty("calls").EnumerateArray().ToArray();
             var marks = job.GetProperty("marks").EnumerateArray().Select(m => m.GetInt32()).ToArray();
             var steps = job.GetProperty("path").EnumerateArray().Select(p => p.EnumerateArray().Select(v => v.GetInt32()).ToArray()).ToArray();
@@ -143,6 +150,7 @@ public sealed class OverlandDrawingTests
             if (job.TryGetProperty("past_block", out var past) && past.GetBoolean())
             {
                 pastBlock++;
+                verdicts.Add(jobNames[index] + "	SKIP");
                 index++;
                 continue;
             }
@@ -187,7 +195,12 @@ public sealed class OverlandDrawingTests
                 File.WriteAllBytes(Path.Combine(outFolder, $"job{index:000}-orig.bin"), driver.Pages[0]);
                 File.WriteAllBytes(Path.Combine(outFolder, $"job{index:000}-cs.bin"), page.Screen.Pixels);
             }
+            verdicts.Add(jobNames[index] + (failures.Count == failuresBefore ? "	agree" : "	DIFFER"));
             index++;
+        }
+        if (Environment.GetEnvironmentVariable("DARKLANDS_MAPDRAW_RESULTS") is { Length: > 0 } results)
+        {
+            File.WriteAllLines(results, verdicts);
         }
         Console.WriteLine($"mapdraw: {compared} frames and {cellsCompared} cell buffers compared, {pastBlock} jobs past the row buffer's block left out; {failures.Count - cellsDiffer} frames and {cellsDiffer} cell buffers differ");
         Assert.True(compared > 0, "no job");
