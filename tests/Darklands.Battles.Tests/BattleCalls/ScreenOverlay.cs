@@ -93,6 +93,7 @@ internal static class ScreenOverlay
         var y = (short)Word(ds, MouseY);
         host.Mouse = new MouseState(x, y, (ds[MouseButtonsAt] & 1) != 0 ? MouseButtons.Left : MouseButtons.None);
         host.CtrlHeld = ctrl;
+        host.ShiftHeld = false;
         var view = Field<BattlefieldView>(screen, "_view");
         view.CentreColumn = (short)Word(ds, CameraX) / 32;
         view.CentreRow = (short)Word(ds, CameraY) / 16;

@@ -170,6 +170,9 @@ class Fuzzer:
                 if op["w"] == "ds" and 0 <= k < 13 and rest == 0x14 and op["hex"] in ("02", "03"):
                     args[0] = k
                     break
+        if self.coord == "R016+0x0000" and args and args[0] == 0:
+            # no key waits: the held direction keys (DS:0880 / DS:0881, bytes of -1, 0 or 1) give an arrow (round B3)
+            return [{"w": "ds", "o": 0x880, "hex": "%02x" % rng.choice([0, 1, 0xFF])}, {"w": "ds", "o": 0x881, "hex": "%02x" % rng.choice([0, 1, 0xFF])}]
         if self.coord == "R014+0x2170" and args:
             for op in reversed(ops):
                 if op["w"] == "ds" and 0xA6C4 <= op["o"] < 0xA6C9:
@@ -968,7 +971,7 @@ def key_code_of(rng, f) -> int:
 
 
 FUNCTIONS = {
-    "R016+0x0000": [key_code_of],
+    "R016+0x0000": [key_code_of, lambda r, f: r.choice([0, 0, 0, 1, 2, 3, 4, 5])],
     "R014+0x0620": [], "R014+0x3C86": [who, lambda r, f: r.choice([0, 1, 2, 0x12, 0x06, 0x0A, 0x22, 0x80, 0x100, 0x400])],
     "R014+0xB576": [lambda r, f: r.choice([0, 0, 1, 1, 2]), lambda r, f: int(r.random() < 0.15)],
     "R014+0xEA10": [],

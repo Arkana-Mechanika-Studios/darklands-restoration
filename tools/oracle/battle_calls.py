@@ -259,6 +259,8 @@ class State:
         info = self.cat.info(coord)
         if not (info["record"] in m.resident or info["record"] == "root") and info["thunk"] is None:
             m.ensure(info["record"])
+        if coord in KEYED:
+            m.write(*orig_side.KEYBOARD_FLAGS, bytes([args[1] & 0xFF if len(args) > 1 else 0]))      # the second argument (round B3): the BIOS shift flags (bit 0/1 Shift, bit 2 Ctrl)
         if coord in KEYED and (args[0] & 0xFFFF) == 0:
             m.script = []                                      # no key waits: the held direction keys (DS:0880 / DS:0881) give the arrow
             m.waits, m.idle_since = 0, m.ms
