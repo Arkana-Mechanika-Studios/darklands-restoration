@@ -36,6 +36,11 @@ public sealed class DarklandsGame
     /// <summary>The game being played (null before one starts and after it ends): what a host's developer console acts on.</summary>
     public GameState? Playing { get; private set; }
 
+    /// <summary>A battle is running (a host's state report: tools/oracle/lockstep.py does not compare a state taken inside a battle).</summary>
+    public bool Fighting => _battles?.Fighting == true;
+
+    private BattleScreens? _battles;
+
     /// <summary>True while the start screen shows (a host may draw the program's version over the window then).</summary>
     public bool OnStartScreen { get; private set; }
 
@@ -411,6 +416,7 @@ public sealed class DarklandsGame
             PartyInfo = () => context!.Screens.PartyInfo(),
         };
         battles.Save = battle => SaveGame(state, battles, battle);
+        _battles = battles;
         // C: the view centre DS:C866 / DS:C886 is a global the load leaves as it was: a battle taken up from the file loaded in a battle is
         // drawn around the centre the battle left had (R014+0x02FF), and so its members' screen positions (+0x00 / +0x02) as its next save
         // writes them (lockstep session savemid-mine)

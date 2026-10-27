@@ -951,8 +951,10 @@ def input_wait(screen: str, step: str) -> str:
     if screen.startswith("mbar") or screen.startswith("rmbar"):
         return "wait:100"
     if screen.startswith("trav"):
+        # a click on the map walks until the target or a stop (the original's next step waits for it to be idle): a walk across the view
+        # takes some 340 passes, about 700 of the host's frames (round R2: gen-trav0-01, gen-trav-11 took their states mid-walk with 600)
         kind, _, value = step.partition(":")
-        return "wait:600" if kind == "click" else "wait:60"
+        return "wait:2000" if kind == "click" else "wait:60"
     if screen in ("brun", "bhurt", "bhurta", "bdead"):
         return "bwait:8"
     if screen in BATTLE_SCREENS:
