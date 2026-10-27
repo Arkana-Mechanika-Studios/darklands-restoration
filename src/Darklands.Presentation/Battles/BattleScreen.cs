@@ -152,6 +152,8 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The game's hot keys outside the battle (Alt-Q, Alt-P …), which the battle passes some keys to.</summary>
     private Func<int, bool>? _hotKey;
     private string? _message;
+    /// <summary>show_message is waiting out its ticks: the pointer is hidden (not drawn) until the box is gone.</summary>
+    private bool _messageWaiting;
     private long _messageUntil;
 
     /// <summary>DS:C62A / DS:C4FE: the releases of the left button taken from the mouse driver and not acted on yet, and the place of the last.</summary>
@@ -843,10 +845,18 @@ public sealed class BattleScreen : ITacticalView
     {
         _message = text;
         _messageUntil = long.MaxValue;
-        if (!OneTickPerPass)
+        _messageWaiting = true;
+        try
         {
-            Draw();
-            _ui.Delay(ticks * 1000 / 60);
+            if (!OneTickPerPass)
+            {
+                Draw();
+                _ui.Delay(ticks * 1000 / 60);
+            }
+        }
+        finally
+        {
+            _messageWaiting = false;
         }
         _message = null;
         WaitedTicks(ticks);
@@ -2337,7 +2347,15 @@ public sealed class BattleScreen : ITacticalView
         OpenPendingOrderMode();
         DrawPanel(canvas);
         DrawMessage(canvas);
-        DrawPointer(canvas);
+        // orig: show_message root 0000:24BC: mouse_hide (root 047C:12C3) before the box and mouse_show (root 047C:1293) after the wait: no pointer while it waits
+        if (_messageWaiting)
+        {
+            _underPointer = null;
+        }
+        else
+        {
+            DrawPointer(canvas);
+        }
     }
 
     /// <summary>In the frame drawn after a combat tick: the member waiting for order mode (DS:D6F1 / DS:D6ED) enters it once it has a hot spot.</summary>

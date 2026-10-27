@@ -469,8 +469,6 @@ Open items (2026-10-27, after batch 21), listed honestly:
   (D-ecc6f5); the loot screen's click on an empty pile row followed by G gives the entry past the pile's end, from a stale
   tail of the pile (D-b00418); Ctrl-F1 in the open pack reads the status byte before the party, whose value at run time is
   unknown (D-03c80e, unsure; classed undefined memory).
-* The mouse pointer is drawn over a battle message box, where the original hides it (presentation; `DrawMessage` is followed
-  by `DrawPointer`). It has no entry in the register yet.
 * Twelve battle input sessions of round B1 still differ and are not counted: gen-bhurtk-02 (the right button let go after
   crossing two menus: the original's bar run counted a message box, the C#'s bar closed at once), gen-bhurts-01 (keys read in
   one pass inside the I sheet, R022+0x051C, plus or minus 1), gen-bkeys-21 (Alt-F then a view click), gen-bkeys-37 (right

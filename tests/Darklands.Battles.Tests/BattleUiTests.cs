@@ -380,6 +380,46 @@ public sealed class BattleUiTests
         Assert.Equal(seen[2].Ticks, seen[3].Ticks);
     }
 
+    /// <summary>
+    /// The original hides the mouse pointer (mouse_hide root 047C:12C3) before the box of show_message (root 0000:24BC) and shows it again
+    /// (root 047C:1293) after the wait: while a message waits, the frame does not depend on where the pointer is.
+    /// </summary>
+    [Fact]
+    public void NoPointerIsDrawnWhileAMessageWaits()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        Session? run = null;
+        var shown = new List<byte[]>();
+        run = new Session(files, Corridor, sheet: (ui, _) =>
+        {
+            ui.PointerVisible = false;
+            var frames = run!.Frames;
+            run.Screen.Message(TacticalBattle.UseStairsText, 0x96);
+            shown.Add(frames[^1].Pixels);
+        });
+        using (run)
+        {
+            run.Recording = true;
+            run.Play("wait:10", "key:space", "wait:5");
+            run.MovePointer(100, 60);
+            run.Play("key:f1", "wait:200");
+            run.MovePointer(250, 120);
+            run.Play("key:f1", "wait:200");
+        }
+        Assert.Equal(2, shown.Count);
+        // (the rest of the picture may move: animated ground and sprites) the two places the pointer stood in are the same in both frames
+        foreach (var (px, py) in new[] { (100, 60), (250, 120) })
+        {
+            for (var y = py; y < py + 16; y++)
+            {
+                Assert.True(shown[0].AsSpan(y * 320 + px, 16).SequenceEqual(shown[1].AsSpan(y * 320 + px, 16)), $"the pointer is drawn near {px},{py}");
+            }
+        }
+    }
+
     /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
     private sealed class Session : IDisposable
     {
@@ -424,6 +464,10 @@ public sealed class BattleUiTests
         public byte[]? LastFrame => _host.Last?.Pixels;
 
         public List<(byte[] Pixels, uint[] Palette)> Frames => _host.Frames;
+
+        public bool Recording { set => _host.Recording = value; }
+
+        public void MovePointer(int x, int y) => _host.MovePointer(x, y);
 
         private bool _started;
 
