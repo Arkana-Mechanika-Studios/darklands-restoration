@@ -70,7 +70,9 @@ public sealed class CardOracleTests
 
     /// <summary>
     /// The lead runs of local/batch/cards1 that start from built states (judged in local/batch/cards1o): the death film when nobody is
-    /// left, the member who leaves with the file's record tail, the text variable read through msg_file, a never-held slot's figure.
+    /// left, the member who leaves with the file's record tail, the text variable read through msg_file, a never-held slot's figure;
+    /// and those of local/batch/cards2 (judged in local/batch/cards2o): the heir who leaves nobody (the death film after the card), the
+    /// fellow prisoner who joins with the file's record, a choice in a pop-up box opened on a line whose handler has none of its own.
     /// </summary>
     [Fact]
     public void LeadRunsAgreeWithTheOriginal()
@@ -490,6 +492,17 @@ public sealed class CardOracleTests
         // runs with it set. The oracle runs the card directly, and the original writes the in-battle bit of the difficulty (R037+0x2B57) only while a battle
         // runs (DS:907A = 1, R037+0x2AEF), so the saved game after the card has it clear: the run goes on as after the battle, with the bit consumed.
         state.ResumeBattle = false;
+        // a roster entry outside the party is the saved game's record (OriginalSaves.Write writes its StoredRecord), as a load reads it:
+        // an aimed change made to a member that the start then drops (part sz<n>) is not in the file. In play a member who leaves the
+        // party has the record written back (party_remove R037+0x3B58), so the entry and the file's record are one.
+        for (var entry = 0; entry < state.Roster.Characters.Count; entry++)
+        {
+            if (Array.IndexOf(state.Roster.PartySlots, entry) < 0 && state.Roster.StoredRecord(entry) is var record
+                && !ReferenceEquals(record, state.Roster.Characters[entry]))
+            {
+                state.Roster.Characters[entry] = record.Copy();
+            }
+        }
         // the original runs on that saved game as loaded: its character records keep the bytes the model does not
         // (the item records past the count, which keep_items_pct reads), as a loaded game's do
         foreach (var character in state.Party.Members.Concat(state.Roster.Characters))
@@ -585,7 +598,10 @@ public sealed class CardOracleTests
         }
         catch (PartyPerishedStop)
         {
+            // the game is over (also in the main loop's advance_hours(0) after the card): the original's run stops at the kbhit
+            // after the film, so there is no saved game to compare
             end = GameOver;
+            ok = false;
         }
         catch (Exception e)
         {

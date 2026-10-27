@@ -12,18 +12,18 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 0 |
-| cards | core | 8 |
+| cards | core | 9 |
 | events | core | 0 |
 | travel | core | 3 |
 | battles | core | 7 |
 | persistence | core | 2 |
 | screens/presentation | other | 16 |
 | host/audio | other | 0 |
-| total |  | 36 |
+| total |  | 37 |
 
-## Core logic (20)
+## Core logic (21)
 
-### cards (8)
+### cards (9)
 
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
@@ -43,6 +43,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-4ffac2** `uncertain` - `src/Darklands.Cards/Scripts/S075/KidnappersCampAtNight.cs:36` `KidnappersCampAtNight.Run`  
   original: `R075+0x16CA` (193D:067A, matched), `R075+0x1752` (193D:0702, matched), `R075+0x17DA` (193D:078A, matched)  
   why: the first option list (block 0) is assumed.
+- **U-224116** `uncertain` - `src/Darklands.Cards/Scripts/S081/DragonTidings.cs:138` `DragonTidings.Run`  
+  original: `R081+0x175A` (1962:04BA, matched), `R081+0x1766` (1962:04C6, matched)  
+  why: the hints of lines 1..3 (R081+0x16EA/0x1728/0x1766) return their member word [bp-2] unset (enter 4,0; only line 0's sets it, to $ChosenOneName): a stack leftover of the caller's frame (card_mouse R043+0x26C4 under Shift; the card oracle's call gives 0). The whole party is shown here.
 - **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
   original: `R086+0x0C40` (18FC:0000, matched)  
   why: the saint name table of the texts (R034) is taken to be the saint list's full names.

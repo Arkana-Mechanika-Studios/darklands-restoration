@@ -193,6 +193,7 @@ class Oracle:
         if key in self.snapshots:
             self.m.restore(self.snapshots[key])
             self.initial_sav = self.initial_savs[key]
+            self.snapshots[key] = self.snapshots.pop(key)         # most recently used last
             return
         m = self.m
         if "clean" not in self.snapshots:
@@ -221,6 +222,12 @@ class Oracle:
         self.initial_sav = self.initial_savs[key] = sav
         m.scratch_sp = m.scratch_sp   # strings pushed during the boot stay
         self.snapshots[key] = m.snapshot()
+        # bounded cache (cards2: a long run over thousands of start states grew without end): "clean" and the last 32 states stay;
+        # a miss only rebuilds the state, no run result changes
+        old = [k for k in self.snapshots if k != "clean"]
+        for k in old[:-32]:
+            del self.snapshots[k]
+            self.initial_savs.pop(k, None)
 
     def reset_engine(self):
         """The card engine's variables as a new C# CardContext has them."""
