@@ -98,6 +98,8 @@ public sealed class CardOracleTests
         var entries = corpus.RootElement.GetProperty("cards").EnumerateObject().ToList();
         var clock = Convert.ToUInt32(corpus.RootElement.GetProperty("clock").GetString()!, 16);
         var dump = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_DUMP");
+        // "sound": true in the corpus: its traces hold the sound_play / music_play lines (card_oracle.py since the audio round); older corpora do not
+        var soundTrace = corpus.RootElement.TryGetProperty("sound", out var soundFlag) && soundFlag.GetBoolean();
         Parallel.ForEach(entries, entry =>
         {
             var number = Convert.ToInt32(entry.Name, 16);
@@ -124,7 +126,7 @@ public sealed class CardOracleTests
                 var drop = divergences.Where(d => (d.Card == "*" || d.Card == entry.Name) && d.DropCSharp is { Length: > 0 })
                     .Select(d => d.DropCSharp!).ToList();
                 var blind = divergences.Any(d => (d.Card == "*" || d.Card == entry.Name) && d.IgnoreTexts);
-                var difference = Compare((Card)Activator.CreateInstance(card.GetType())!, run.Name, run.Value, clock, dump, texts, drop, blind);
+                var difference = Compare((Card)Activator.CreateInstance(card.GetType())!, run.Name, run.Value, clock, dump, texts, drop, blind, soundTrace);
                 if (difference is null && blind)
                 {
                     justified++;
@@ -182,7 +184,7 @@ public sealed class CardOracleTests
 
     /// <summary>The first difference of one run, or null when the C# agrees.</summary>
     public static string? Compare(Card card, string runName, JsonElement expected, uint clock, string? dump = null, string[]? texts = null,
-        IReadOnlyList<string>? dropCSharp = null, bool ignoreTexts = false)
+        IReadOnlyList<string>? dropCSharp = null, bool ignoreTexts = false, bool soundTrace = false)
     {
         var parts = runName.Split(' ');
         var probe = parts[0] is "probe" or "hand" or "direct";
@@ -193,6 +195,11 @@ public sealed class CardOracleTests
         var direct = parts[0] == "direct" ? parts[2] : null;
         var option = int.Parse(key[(key.LastIndexOf("-O") + 2)..]);
         var (actual, end, random, sav) = Run(card, key, option, probe, clock, hand, direct);
+        if (!soundTrace)
+        {
+            // a corpus recorded before the sound lines existed: they are compared by CardSoundOracleTests against a sidecar of the original's
+            actual.RemoveAll(IsSound);
+        }
         foreach (var prefix in dropCSharp ?? [])
         {
             // a C# line the original has no counterpart for, listed in card-divergences.json
@@ -249,6 +256,9 @@ public sealed class CardOracleTests
         }
         return CompareResult(expected, actual, end, random, sav, dump is { Length: > 0 } ? Path.Combine(dump, $"{card.Number:X3} {runName}.txt") : null, texts, ignoreTexts);
     }
+
+    /// <summary>A trace line of the sound device: <c>sound n</c> (sound_play, root 047C:078A) or <c>music x</c> (music_play, R043+0x09AE).</summary>
+    public static bool IsSound(string line) => line.StartsWith("sound ", StringComparison.Ordinal) || line.StartsWith("music ", StringComparison.Ordinal);
 
     /// <summary>A run's trace, end, random state and saved game against the original's (null: they agree).</summary>
     public static string? CompareResult(JsonElement expected, List<string> actual, string end, string random,
@@ -520,6 +530,21 @@ public sealed class CardOracleTests
         var screen = new OracleScreen(option, probe, hand) { Force = CardOracleStates.ForceOf(key), Path = CardOracleStates.PathOf(key) };
         var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames };
         c.Screens = new OracleScreens(screen.Log);
+        // sound: music_play(x) is a "music x" line and then the driver's command (sound x, or sound 1 with the music off), sound_play(n)
+        // a "sound n" line; the oracle's saved games hold music on (DS:01BF = 1). The presentation's wiring (DarklandsGame.Play)
+        // is the same: Music = GameUi.PlayMusic, SoundPlayer = Audio.PlayMusic, MusicPlaying = GameUi.MusicPlaying.
+        var audio = new OracleAudio(screen.Log);
+        c.Music = tune =>
+        {
+            screen.Log.Add($"music {tune}");
+            Darklands.Audio.GameSounds.PlayMusic(audio, tune, musicOn: true);
+        };
+        c.SoundPlayer = number => audio.PlayMusic(number);
+        c.MusicPlaying = () =>
+        {
+            screen.Log.Add("music 5");
+            return Darklands.Audio.GameSounds.RequestCurrentPiece(audio, musicOn: true);
+        };
         // the oracle stubs the battle (result 0, or the run key's part B<n>) and the prayer screen (0, the prayer fails, or the part Y<c|f|a>)
         var battleResults = CardOracleStates.BattleResultsOf(key);
         var prayerAnswers = CardOracleStates.PrayerAnswersOf(key);
@@ -536,11 +561,18 @@ public sealed class CardOracleTests
             return battleResults is null ? 0 : battleResults[Math.Min(battles++, battleResults.Length - 1)];
         };
         // the films (root 030B:0004 plays each animation; the oracle records them)
+        // orig: R133+0x186C: cards_shutdown (sound_play(1)), then each scene's tune (music_play) and its PAN film; Cinematics.Film does the same
         c.PlayFilm = steps =>
         {
-            foreach (var step in steps.Where(s => s.Animation is not null))
+            audio.StopMusic();
+            foreach (var step in steps)
             {
-                screen.Log.Add($"film {step.Animation!.ToLowerInvariant()}");
+                screen.Log.Add($"music {step.Tune}");
+                Darklands.Audio.GameSounds.PlayMusic(audio, step.Tune, musicOn: true);
+                if (step.Animation is not null)
+                {
+                    screen.Log.Add($"film {step.Animation.ToLowerInvariant()}");
+                }
             }
             return true;
         };
@@ -552,8 +584,11 @@ public sealed class CardOracleTests
         // nobody left: hours_pass R029+0x255A and run_battle R029+0x2278 play the death film (the oracle records it) and end the program
         // (the original's run stops at the kbhit after the film, INT 21h AH=0Bh); the game's host does the same (DarklandsGame: Perished,
         // AllDead), the harness records the film and stops the run
+        // orig: run_battle R029+0x2278: music_play(0x12), then the film (Cinematics.Death)
         c.AllDead = () =>
         {
+            screen.Log.Add("music 18");
+            Darklands.Audio.GameSounds.PlayMusic(audio, 0x12, musicOn: true);
             screen.Log.Add("film death");
             throw new PartyPerishedStop();
         };
@@ -561,6 +596,10 @@ public sealed class CardOracleTests
         {
             if (ReferenceEquals(perished, state))
             {
+                // orig: hours_pass R029+0x255A: music_play(0x12), cards_shutdown_vec (sound_play(1)), then the film (Cinematics.DeathAfterShutdown)
+                screen.Log.Add("music 18");
+                Darklands.Audio.GameSounds.PlayMusic(audio, 0x12, musicOn: true);
+                audio.StopMusic();
                 screen.Log.Add("film death");
                 throw new PartyPerishedStop();
             }

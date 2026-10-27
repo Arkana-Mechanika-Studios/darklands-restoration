@@ -121,3 +121,22 @@ Use it instead of an ad-hoc script: it streams every `cov-*.jsonl` (recursively)
 It is the only gain tool; there is no separate per-folder script and no helper folder to pass. For one folder's own hits give it as `--new`
 with no `--baseline`; for the items only that folder reaches give the other folders as `--baseline`. (It replaces `measure_new_outcomes.py`,
 which needed a git-ignored `cov.py`; on five folders the old and the new numbers were identical.)
+
+## Sound requests
+
+The game starts music and plays effects through one command, `sound_play(n)` (root 047C:078A: the driver's play slot; 1 stops the music, 2 / 3
+pause and resume, 5 asks for the number last played, any other number is a tune or an effect), and `music_play(x)` (R043+0x09AE) in front of it
+(`if (DS:01BF) sound_play(x); else sound_play(1)`). Both sides write them as trace lines, `music x` for a music_play request and `sound n` for each
+driver command, so a tune an event starts (or fails to start) is a difference like any other:
+
+* `card_oracle.py`: the stub of sound_play and a hook on music_play write the lines into the run's trace (cards_shutdown, which ends with
+  sound_play(1), is a stub that writes its line); the C# test side (`OracleAudio`, the `Music`, `SoundPlayer` and `MusicPlaying` hooks of
+  `CardOracleTests.Run`, `GameSounds`) writes the same words. A corpus whose root has `"sound": true` holds them in its traces and is compared with
+  them; an older corpus is compared without (`CardOracleTests.Compare`). `audio_rerun.py` reruns the original over the runs of an older corpus and
+  keeps the sound lines (a sidecar, replayed by `CardSoundOracleTests`: `DARKLANDS_CARD_ORACLE_SOUNDS`, `DARKLANDS_CARD_ORACLE_SOUND_DIFFS`), or, with
+  `--full`, the whole result of each run as a new corpus with the sound lines.
+* `lockstep.py` / `battle_oracle.py`: the original side (patch 06 of the queue; `orig_side.py`, `battle_orig.py`) logs `sound n at T ms in <callers>` and
+  `music x at ...` after a `sound log on` line; the C# headless host writes `sound n` / `music x` with `DARKLANDS_SOUND_LOG=1` (set by `run_rewrite`).
+  `sound_compare` compares both per segment between the script's state steps (`report.json` "sound", a `sound:` line); a recording made before the
+  patch has no `sound log on` line and is reported as not recorded. The original's start-up `sound_play(7)` (R000+0x052A, after the driver is
+  loaded) is left out: the C# host plays it when its sound device is made.

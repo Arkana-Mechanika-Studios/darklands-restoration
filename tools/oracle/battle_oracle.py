@@ -312,6 +312,10 @@ def main():
                         "passes": {"original": len(trace), "rewrite": len(lines)},
                         "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)},
                         "original run": "replayed" if replayed else "live", **result}
+        # the sound requests of the whole run (the program's start, the load, the battle's set-up, its effects) against the C# host's; a lead apart from
+        # the passes' verdict above (the original's log has them since patch 06 of local/batch/orig-side-queue, battle_orig.py)
+        sound = lockstep.sound_compare(log, output, original_cut=True)
+        report[name]["sound"] = {k: v for k, v in sound.items() if k != "segments"}
         print(name, json.dumps(report[name])[:600], flush=True)
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
 

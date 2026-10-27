@@ -135,6 +135,8 @@ BARTER, CAMP, ITEM_STORE = (P(0x0E76), 0x21AA), (P(0x0E76), 0x222A), (P(0x0E76),
 PRAYER = (P(0x1462), 0x0000)          # R034 saint prayer screen (thunk 09C0:1EAF): (who, saint, 1) -> result
 BATTLE_RUN = (P(0x0E76), 0x0000)      # R002 battle_run (thunk 09C0:18BF)
 CARDS_SHUTDOWN, CARDS_STARTUP = (P(0x1462), 0x054E), (P(0x1462), 0x078E)   # R043: the world to locs.tmp/events.tmp and back
+SOUND_PLAY = (P(0x047C), 0x078A)      # root: sound_play(n), the driver's one command (a tune, an effect or a control number; 1 stops the music, 5 asks the number last played)
+MUSIC_PLAY = (P(0x1462), 0x09AE)      # R043 (thunk 09C0:18F1): music_play(x) = `if (DS:01BF) sound_play(x); else sound_play(1)`
 BATTLE_BYTE, BATTLE_RESULT = 0x907A, 0xA893   # DS:907A (cleared by battle_run), DS:A893
 SIDE_MESSAGE = (P(0x150B), 0x1F40)     # (who, colour): msg_buf beside a member's portrait, wait for a key
 
@@ -171,6 +173,8 @@ class Oracle:
         self.cards = self.card_table()
         self.names = card_names()
         for name, (seg, off, ax) in PRESENTATION.items():
+            if name == "sound_play":
+                continue                      # logged: see install()
             rec = "R043" if seg in (0x150B, 0x17E5) or (seg, off) == (0x1462, 0x0000) else None
             self.m.stub(P(seg), off, (lambda v: lambda m: (v, 0))(ax), name, record=rec)
         self.install()
@@ -290,8 +294,24 @@ class Oracle:
         m.stub(*ITEM_STORE, lambda mm: (self.log("screen itemstore"), (0, 0))[1], record="R029")
         m.stub(*PRAYER, self.prayer, record="R034")
         m.stub(*BATTLE_RUN, self.battle, record="R002")
-        m.stub(*CARDS_SHUTDOWN, zero, record="R043")
+        # sound: every sound_play(n) is a trace line "sound n" (the driver's command, whoever calls it: music_play, the battle's effects, a card's
+        # own call); music_play(x) also logs "music x" before it (the request, whatever the music option makes of it). cards_shutdown ends with
+        # sound_play(1) (R043+0x0704, the music stops before a battle): the stub makes that call.
+        m.stub(*SOUND_PLAY, self.sound_play, "sound_play")
+        m.hook(*MUSIC_PLAY, self.music_play, record="R043")
+        m.stub(*CARDS_SHUTDOWN, self.cards_shutdown, record="R043")
         m.stub(*CARDS_STARTUP, zero, record="R043")
+
+    def sound_play(self, m):
+        self.log("sound %d" % m.sarg(0))
+        return (0, 0)
+
+    def music_play(self, m):
+        self.log("music %d" % m.sarg(0))
+
+    def cards_shutdown(self, m):
+        self.log("sound 1")
+        return (0, 0)
 
     def save_rect(self, m):
         """gfx_save_rect: the screen under a box is kept in a DOS block, whose segment the caller frees afterwards

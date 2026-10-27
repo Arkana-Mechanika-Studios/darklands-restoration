@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\src\Darklands.Simulation\Darklands.Simulation.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Persistence\Darklands.Persistence.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Platform\Darklands.Platform.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Audio\Darklands.Audio.csproj" />
   </ItemGroup>
 
 </Project>

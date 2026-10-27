@@ -490,6 +490,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
             args.append("%s:%s" % (k, v) if v else k)
     import os
     env = dict(os.environ, DARKLANDS_BATTLE_TICK_PER_PASS="1")   # one 60 Hz tick a battle pass, as the original is run here
+    env["DARKLANDS_SOUND_LOG"] = "1"                              # the host writes its music requests and driver commands (sound_compare)
     if battle_trace:
         env["DARKLANDS_BATTLE_TRACE"] = "records" if battle_trace == "records" else "1"
     if set_up_ticks:
@@ -554,6 +555,55 @@ def heap_pack_entries(d: dict, osav: bytes, csav: bytes, items: int | None) -> d
     if not chars:
         del d["chars"]
     return out
+
+
+def sound_lines(lines, rewrite: bool) -> list[tuple[str, str]]:
+    """[(segment, "sound n" | "music x")] in order: the segment is the last "state <name>" step before the line ("start" before the first). The
+    original's log (orig_side.py, patch 06) has "sound 6 at 1234 ms in f < g" / "music 6 at ..." and "state <name> at ..."; the C# host's output
+    (DARKLANDS_SOUND_LOG) has "sound 6" / "music 6" and "state <name>: ..." in the same stream."""
+    out, segment = [], "start"
+    for l in lines:
+        if l.startswith("state "):
+            segment = l[6:].split(":" if rewrite else " ")[0]
+        elif l.startswith(("sound ", "music ")) and not l.startswith("sound log"):
+            words = l.split()
+            out.append((segment, words[0] + " " + words[1]))
+    return out
+
+
+def sound_compare(log, output: str, original_cut: bool = False) -> dict:
+    """The sound requests of the original (sound_play root 047C:078A, music_play R043+0x09AE) against the C# host's, per segment between the
+    script's state steps. {"original": n, "rewrite": n, "agree": bool, "first": {...} | None, "segments": {name: {"original": [...], "rewrite": [...]}}
+    for the segments that differ}; original_cut: the original stopped at its budget while the C# ran on (a fight): the C#'s requests after the
+    original's last one are not compared; "recorded": False when the original's log has no "sound log on" line (a recording made before patch 06)."""
+    theirs, mine = sound_lines(log, False), sound_lines(output.splitlines(), True)
+    if theirs[:1] == [("start", "sound 7")]:
+        # orig: R000+0x052A: sound_play(7) right after the driver is loaded at the program's start (the "ready" tune). The C# host plays it when its
+        # SynthAudio is made (the driver start, SynthAudio ctor); the silent headless host has no driver, so there is nothing to compare
+        theirs = theirs[1:]
+    if original_cut and theirs:
+        last = theirs[-1][0]
+        kept, seen = [], 0
+        for m in mine:
+            if m[0] == last:
+                if seen >= sum(1 for t in theirs if t[0] == last):
+                    continue
+                seen += 1
+            kept.append(m)
+        mine = kept
+    names = list(dict.fromkeys([s for s, _ in theirs] + [s for s, _ in mine]))
+    differ = {}
+    for name in names:
+        a, b = [l for s, l in theirs if s == name], [l for s, l in mine if s == name]
+        if a != b:
+            at = next((i for i in range(min(len(a), len(b))) if a[i] != b[i]), min(len(a), len(b)))
+            differ[name] = {"at": at, "original": a, "rewrite": b}
+    first = next(iter(differ), None)
+    return {"recorded": "sound log on" in log, "original": len(theirs), "rewrite": len(mine), "agree": not differ,
+            "first": None if first is None else {"segment": first, **{k: differ[first][k] for k in ("at",)},
+                                                  "original": differ[first]["original"][max(0, differ[first]["at"] - 1):differ[first]["at"] + 3],
+                                                  "rewrite": differ[first]["rewrite"][max(0, differ[first]["at"] - 1):differ[first]["at"] + 3]},
+            "segments": differ}
 
 
 def compare(steps, original: dict, rewrite: dict, fresh: bool = False, items: int | None = None) -> list[dict]:
@@ -679,6 +729,7 @@ def main():
             battle = trace_difference(trace, lines)
     t_rewrite = time.time() - t
     (out / "rewrite.log").write_text(output, encoding="utf-8")
+    sound = sound_compare(log, output)
     lst = Path(a.game) / "DARKLAND.LST"
     rows = compare(steps, original, rewrite, save is None, lst.read_bytes()[0] if lst.is_file() else None)
     # the saved games each game wrote itself (Alt-S): the same names, the same bytes by savdiff section
@@ -717,12 +768,16 @@ def main():
         print("battle: " + json.dumps(battle)[:700])
     report = {"battle": battle, "script": a.script, "save": a.save, "clock seeds": seeds, "battle set-up ticks": set_up, "original end": end,
               "seconds": {"original": round(t_original), "rewrite": round(t_rewrite)},
-              "original run": "replayed" if replayed else "live", "states": rows}
+              "original run": "replayed" if replayed else "live", "sound": sound, "states": rows}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     first = next((r for r in rows if set(r) - APART), None)
     for r in rows:
         print("%-12s %s" % (r.get("state") or r["file"], "same" if set(r) <= APART else json.dumps(
             {k: v for k, v in r.items() if k not in ("state", "file")})[:300]))
+    # the sound requests are a lead apart from the states (the verdict above is the states'); a recording made before patch 06 has none
+    print("sound: %s" % ("not recorded by the original (a recording made before patch 06)" if not sound["recorded"] else
+                         "%d requests of the original, %d of the rewrite, %s" % (sound["original"], sound["rewrite"], "agree" if sound["agree"] else
+                                                                                 "first difference " + json.dumps(sound["first"])[:300])))
     print("original: %s (%d s, %s); rewrite %d s; first divergence: %s" % (end, t_original, "replayed" if replayed else "live", t_rewrite,
                                                                        (first.get("state") or first["file"]) if first else "none"))
 

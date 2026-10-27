@@ -352,6 +352,12 @@ if (sound?.Trace is { } traceWriter)
 {
     game.Ui.Trace = traceWriter.WriteLine;
 }
+if (Environment.GetEnvironmentVariable("DARKLANDS_SOUND_LOG") == "1")
+{
+    // a tester's aid (tools/oracle/lockstep.py): every music request and driver command in order, among the "state" lines
+    host.Audio = new LoggingAudio(host.Audio, Console.WriteLine);
+    game.Ui.SoundLog = Console.WriteLine;
+}
 var developerConsole = new Darklands.DevConsole.GameConsole();
 Darklands.DevConsole.GameCommands.Register(developerConsole, () => game.Playing);
 host.State = name =>
@@ -789,6 +795,49 @@ internal sealed class NoGameScreens : Darklands.Cards.IGameScreens
     public void PartyInfo() { }
     public void Loot(IList<Darklands.Core.Characters.ItemStack> items, Darklands.Core.Economy.Money money) { }
     public int Battle(Darklands.Cards.BattleRequest request) => 0;
+}
+
+/// <summary>
+/// The audio of the host with each driver command written as a line "sound n": the numbers of the original's sound_play(n)
+/// (root 047C:078A), whoever asked (music_play R043+0x09AE, the battle's effects R014+0x465E, a card's own call).
+/// </summary>
+internal sealed class LoggingAudio(IAudio inner, Action<string> write) : IAudio
+{
+    public void PlayMusic(int tune)
+    {
+        write($"sound {tune}");
+        inner.PlayMusic(tune);
+    }
+
+    public void PlayMusicAt(int tune, long tick)
+    {
+        write($"sound {tune}");
+        inner.PlayMusicAt(tune, tick);
+    }
+
+    public void StopMusic()
+    {
+        write("sound 1");
+        inner.StopMusic();
+    }
+
+    public void PlaySound(int effect)
+    {
+        write($"sound {effect}");
+        inner.PlaySound(effect);
+    }
+
+    // orig: music_play(5) keeps the AX the driver leaves (DS:9C3D, played back at the end of the prayer screen, the camp, the shell game ...). The
+    // original's sessions run on NSOUND.DLC, whose play slot is a bare far return: the AX is what the caller had (0 in the runs seen); the silent
+    // host answers -1 (no driver), so the played-back piece would differ (GameSounds.CurrentPiece)
+    public int PlayMusicNow(int tune)
+    {
+        write($"sound {tune}");
+        var ax = inner.PlayMusicNow(tune);
+        return ax < 0 ? 0 : ax;
+    }
+
+    public int RequestCurrentPiece() => PlayMusicNow(5);
 }
 
 /// <summary>The game's sound drivers rendered in step with the scripted clock, to a .wav file and a trace.</summary>

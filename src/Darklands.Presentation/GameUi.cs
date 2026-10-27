@@ -176,6 +176,13 @@ public sealed class GameUi
     /// <summary>Receives a line for each step of a timed sequence (the animations' cels); hosts write it to a trace.</summary>
     public Action<string>? Trace { get; set; }
 
+    /// <summary>
+    /// A tester's aid, off in play (DARKLANDS_SOUND_LOG in the headless host): receives "music x" for each music_play(x) request, before the
+    /// option makes of it what it does; the driver's own commands ("sound n") are logged by the host around <see cref="Audio"/>.
+    /// tools/oracle/lockstep.py compares both with the original's music_play (R043+0x09AE) and sound_play (root 047C:078A) calls.
+    /// </summary>
+    public Action<string>? SoundLog { get; set; }
+
     /// <summary>Options toggled by the hot keys (sound effects, music).</summary>
     // orig: opt_sound / opt_music (DGROUP bytes 01BF / 01BE, saved with the game)
     public GameOptions Options { get; set; } = new();
@@ -184,12 +191,17 @@ public sealed class GameUi
     // orig: music_play = thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) `if (opt_music) sound_play(x); else sound_play(1);` (sound_play(1) stops the music)
     public void PlayMusic(int tune)
     {
+        SoundLog?.Invoke($"music {tune}");
         Audio.PlayMusic(Darklands.Audio.GameSounds.MusicNumber(tune, Options.Music));
     }
 
     /// <summary>music_play(5): the number of the piece playing (with music off the stop is played instead and its AX given).</summary>
     // orig: thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) matched; its callers keep the AX the driver left (GameSounds.CurrentPiece)
-    public int MusicPlaying() => Darklands.Audio.GameSounds.RequestCurrentPiece(Audio, Options.Music);
+    public int MusicPlaying()
+    {
+        SoundLog?.Invoke("music 5");
+        return Darklands.Audio.GameSounds.RequestCurrentPiece(Audio, Options.Music);
+    }
 
     /// <summary>The piece kept to be played back (the prayer screen, the camp, the map and the shell game share it).</summary>
     // orig: DS:9C3D (an int of the game's data, zero at start: past the data image's initialised bytes)
@@ -206,6 +218,7 @@ public sealed class GameUi
     /// <summary>As <see cref="PlayMusic"/>, carried out at a tick of the game timer (the animations' tunes).</summary>
     public void PlayMusicAt(int tune, long tick)
     {
+        SoundLog?.Invoke($"music {tune}");
         Audio.PlayMusicAt(Darklands.Audio.GameSounds.MusicNumber(tune, Options.Music), tick);
     }
 
