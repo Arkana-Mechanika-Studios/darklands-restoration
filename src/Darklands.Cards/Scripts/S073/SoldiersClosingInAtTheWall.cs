@@ -55,12 +55,16 @@ public sealed class SoldiersClosingInAtTheWall : Card
             }
         };
 
+        // C: a choice in a pop-up box calls the box's handler table (item_fn / saint_fn, the same for every line), and the
+        // texts' boxes are not on the code's lines: text line 1 (alchemy, the horses left behind) opens the item box over
+        // handler 1 (the sally port), text line 3 (pray) the saint box over handler 3 (the attack). Their box handlers are
+        // the item and saint ones (the item slot 1 and every saint handler make the member $ChosenOneName).
         return menu.Run(
             new MenuLine(chance => ThrowAPotion(c, standing, chance), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             // orig: R073+0x1B62 (199E:0502) matched: advance_hours(0), next_card = 0x2F
-            new MenuLine(_ => { c.PassHours(0); c.Next = 0x2F; }, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => { c.PassHours(0); c.Next = 0x2F; }, OptionHint.Saying(CardTexts.Unknown), () => PotionHint(c)),
             new MenuLine(_ => Pray(c, standing), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
-            new MenuLine(_ => Attack(c, standing), OptionHint.Saying(CardTexts.EnterCombat)),
+            new MenuLine(_ => Attack(c, standing), OptionHint.Saying(CardTexts.EnterCombat), c.SaintPopupHint),
             new MenuLine(_ => { c.PassHours(0); c.Next = Wilderness; }, OptionHint.Saying(SuccessAssured)));
     }
 

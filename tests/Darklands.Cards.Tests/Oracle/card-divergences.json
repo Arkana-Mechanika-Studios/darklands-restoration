@@ -395,5 +395,18 @@
     "run": "plain Spolitical13-VP1+B5-O0",
     "contains": "",
     "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0."
+  },
+  {
+    "card": "096",
+    "run": "*",
+    "contains": "C# 'hint 1: -1 'Success is assured.' -2'",
+    "why": "DragonTidings UNCERTAIN: the hints of the heir lines 1..3 (R081+0x16EA/0x1728/0x1766) return their member word [bp-2] unset (enter 4,0; only line 0's hint sets it): a stack leftover of the caller's frame (card_mouse R043+0x26C4 in play, 0 under the oracle's call); the C# shows the hint for the whole party."
+  },
+  {
+    "card": "00D",
+    "run": "*",
+    "contains": "original '<end>', C# 'text 18 1 ",
+    "originalEnd": "vectors ['R037+0x3CD6']",
+    "why": "PartyRules.AddFromRoster DIVERGENCE: a fellow prisoner (event 0x4D) naming an entry past the roster's end (a start state's aimed event; in play the event names the roster entry of a member who went away) makes party_add R037+0x3CD6 read past the file's records, and the original runs into stale bytes (execution outside the loaded code); the C# lets nobody join and shows the text."
   }
 ]

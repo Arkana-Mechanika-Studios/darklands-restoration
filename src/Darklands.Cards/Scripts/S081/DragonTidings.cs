@@ -135,7 +135,9 @@ public sealed class DragonTidings : Card
             // orig: R081+0x171C (1962:047C) matched; R081+0x1728 (1962:0488) matched; tests: CardSmokeTests
             Heir(2),
             // orig: R081+0x175A (1962:04BA) matched; R081+0x1766 (1962:04C6) matched; tests: CardSmokeTests
-            // C: the hints of lines 1..3 leave the member unset (the whole party is shown here).
+            // UNCERTAIN: the hints of lines 1..3 (R081+0x16EA/0x1728/0x1766) return their member word [bp-2] unset (enter 4,0; only
+            //   line 0's sets it, to $ChosenOneName): a stack leftover of the caller's frame (card_mouse R043+0x26C4 under Shift; the card
+            //   oracle's call gives 0). The whole party is shown here.
             Heir(3),
             // orig: R081+0x1798 (1962:04F8) matched; R081+0x17A0 (1962:0500) matched; tests: CardSmokeTests
             new MenuLine(() => c.Next = previous, OptionHint.Saying(SuccessAssured)));
