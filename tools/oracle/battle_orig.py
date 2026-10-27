@@ -101,6 +101,10 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
         if bytes(m.uc.mem_read(ret - 14, 5)) == orig_side.SRAND_CLOCK_CALL:
             seeds.append(m.arg(0))
     s.hook(*orig_side.SRAND, srand)
+    # sound: every sound_play(n) and music_play(x) in order, for battle_oracle.py's comparison with the C# host's requests (patch 06; orig_side.run_original has the same)
+    s.log.append("sound log on")
+    s.hook(*orig_side.SOUND_PLAY, lambda m: m.log.append("sound %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))))
+    s.hook(*orig_side.MUSIC_PLAY, lambda m: m.log.append("music %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))), record="R043")
     if snap is not None:
         s.restore_state(snap)
         x = snap["extra"]

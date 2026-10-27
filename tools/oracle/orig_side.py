@@ -1117,6 +1117,8 @@ def key_code(name: str) -> int:
 
 CARD_CALL = (P(0x03A1), 0x02CC)        # the main loop's `call far es:[bx]` of the card table (DS:A772 = the card)
 SRAND = (P(0x06A1), 0x29A4)
+SOUND_PLAY = (P(0x047C), 0x078A)        # sound_play(n): the sound driver's one command (a tune, an effect, 1 = stop the music, 2 / 3 = pause / resume, 5 = which?)
+MUSIC_PLAY = (P(0x1462), 0x09AE)        # R043 (thunk 09C0:18F1): music_play(x) = `if (DS:01BF) sound_play(x); else sound_play(1)`
 SRAND_CLOCK_CALL = bytes([0x9A, 0xA8, 0x23]) + struct.pack("<H", P(0x06A1))   # call far 06A1:23A8 (time), five bytes before the return into the srand call
 
 
@@ -1289,6 +1291,11 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         m.log.append("srand %d%s at %d ms in %s" % (m.arg(0), "" if clock else " (not the clock)", m.ms, " < ".join(m.call_stack[-2:])))
     s.hook(*SRAND, srand)
     s.hook(*CARD_CALL, lambda m: m.log.append("card %X at %d ms" % (m.word(DS, CARD), m.ms)))
+    # sound: every call of the driver's command and every music request, in order (tools/oracle/lockstep.py compares them with the C# host's
+    # "sound n" / "music x" lines, DARKLANDS_SOUND_LOG); no sound card is emulated, the calls return at once
+    s.log.append("sound log on")
+    s.hook(*SOUND_PLAY, lambda m: m.log.append("sound %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))))
+    s.hook(*MUSIC_PLAY, lambda m: m.log.append("music %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))), record="R043")
     snap = snapshots.load() if snapshots is not None else None
     full = list(s.script)
     if snap is not None:
