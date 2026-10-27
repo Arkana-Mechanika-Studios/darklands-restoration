@@ -440,19 +440,33 @@ public sealed partial class TacticalBattle
         // BUG: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the
         //   stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an
         //   empty pack's count becomes −1).
-        if (slot < Pack.Size)
+        ConsumeSlotAsOriginal(i, slot);
+    }
+
+    /// <summary>consume_slot(m, k) of a party member m (−1..4) with a slot byte k (0..255), with no test of either, as the original.</summary>
+    // orig: consume_slot R014+0xB434 (checked against the asm), the party branch (m < 5, signed): entry m × 64 + k of the five packs
+    //   (2E38:003E, 6 bytes, count at +4) decremented in place; old count − 1 > 0: done; else member m's count byte (DS:9CD3 + 0x80m,
+    //   signed) shifts the entries above k down only when count − 1 > k, then goes down by one.
+    private void ConsumeSlotAsOriginal(int m, int k)
+    {
+        if (m >= Combatant.PartySlots)
         {
-            Attacks.ConsumeSlot(Battle, i, slot);
+            return;
+        }
+        if (m >= 0 && k < Pack.Size)
+        {
+            Attacks.ConsumeSlot(Battle, m, k);
             return;
         }
         // BUG: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1
-        //   entry 63 of member m + 3's pack, whose count byte is decremented; when it was 0 or 1, consume_slot's removal (no shift, k past
-        //   the count) lowers member m's own count.
-        var entry = i * Pack.Size + slot;
-        if (entry >= Combatant.PartySlots * Pack.Size)
+        //   entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it
+        //   was 0 or 1, consume_slot's removal (no shift, k past the count) lowers member m's own count.
+        var entry = m * Pack.Size + k;
+        if (entry < 0 || entry >= Combatant.PartySlots * Pack.Size)
         {
-            // DIVERGENCE: for members 2..4 entry 255 lies past the packs, in the formula and saint tables and the item-definition far
-            //   pointers (2E38:07BE..), which the battle does not hold: nothing is changed (the original's write there is not modelled).
+            // DIVERGENCE: entry m × 64 + k outside the packs (member −1 with a slot below 64: before them, from 2E38:FEBE after the
+            //   wrap; members 2..4 with slot 255: past them, in the formula and saint tables and the item-definition far pointers,
+            //   2E38:07BE..), which the battle does not hold: nothing is changed (the original's write there is not modelled).
             return;
         }
         var other = Battle[entry / Pack.Size].Items;
@@ -460,7 +474,12 @@ public sealed partial class TacticalBattle
         other[entry % Pack.Size] = stale with { Count = (byte)(stale.Count - 1) };
         if (stale.Count - 1 <= 0)
         {
-            c.Items.Stacks = (sbyte)(c.Items.Stacks - 1);
+            if (m < 0)
+            {
+                // DIVERGENCE: member −1's count byte DS:9C53 (before the party's records) is not held by the battle: not modelled.
+                return;
+            }
+            Battle[m].Items.Stacks = (sbyte)(Battle[m].Items.Stacks - 1);
         }
     }
 
