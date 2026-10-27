@@ -324,10 +324,8 @@ if (cardStep is not null)
 }
 List<string> commandLine = [.. resolved.CommandLine, .. TakeArguments(steps)];
 using var sound = soundStep is null ? null : HeadlessSound.Attach(host, OpenGame(), soundStep, romsStep, wavStep, traceStep, commandLine);
-if (steps.Any(s => s.StartsWith("mapclick:", StringComparison.Ordinal)))
-{
-    OverlandScreen.PassHook = host.MapPass;
-}
+// the map's passes: mapclick's holds, and a click into the map's view stays down until a pass has read it (ScriptedHost.MapPass)
+OverlandScreen.PassHook = host.MapPass;
 var game = new DarklandsGame(host, OpenGame())
 {
     Seed = clockStep is null ? () => seed : NextSeed,
@@ -544,9 +542,17 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     // original's click spanned n map passes (tools/oracle/lockstep.py map_holds); let go too when the map is left
     private int _mapHold;
 
+    // a click into the map's view (where a pass steers toward it) made while the map runs stays down until a pass has read it: a pass
+    // lasts one BIOS tick (GameUi.DelayClock), two to four pumps, so two pumps could fall between two passes' looks at the button (at most
+    // six pumps: a box the map opens meanwhile sees it let go)
+    private bool _onMap;
+    private bool _clickRead;
+
     /// <summary>OverlandScreen.PassHook: a map pass read the button (true) or the map was left (false).</summary>
     public void MapPass(bool read)
     {
+        _onMap = read;
+        _clickRead |= read && Mouse.Left;
         if (_mapHold > 0 && (!read || --_mapHold == 0))
         {
             _mapHold = 0;
@@ -561,11 +567,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         if (Mouse.Buttons != MouseButtons.None && !_held && _mapHold == 0)
         {
             // a click stays down over two pumps (a screen may present twice a frame before it polls)
-            if (++_clickPumps < 2)
+            if (++_clickPumps < 2 || _onMap && Mouse.Buttons == MouseButtons.Left && Mouse.X > 60 && Mouse.Y >= 16 && !_clickRead && _clickPumps < 6)
             {
                 return;
             }
             _clickPumps = 0;
+            _clickRead = false;
             Mouse = Mouse with { Buttons = MouseButtons.None };
             return;
         }
@@ -589,6 +596,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             case "click":
                 var (x, y) = Point(value);
                 Mouse = new MouseState(x, y, MouseButtons.Left);
+                _clickRead = false;
                 _idleFrames = 2;
                 break;
             case "mapclick":

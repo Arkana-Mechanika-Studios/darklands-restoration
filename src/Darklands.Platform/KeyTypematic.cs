@@ -1,19 +1,24 @@
 namespace Darklands.Platform;
 
 /// <summary>
-/// The keyboard's typematic repeat for the one key held last: after the delay it sends the key's make code again at the repeat
-/// rate until that key (or none) is released. The host feeds each repeat to <see cref="BiosKeyBuffer"/> exactly as a press.
+/// The keyboard's typematic repeat for the one key held last: after the delay it sends the key's make code again every period
+/// until that key (or none) is released. The host feeds each repeat to <see cref="BiosKeyBuffer"/> exactly as a press. The delay and
+/// period are DOSBox's (500 ms, then every 33 ms), the machine the original is played on.
 /// </summary>
 // orig: root 044A:020E (the INT 9 handler) sees only what the keyboard sends; the original never programs the keyboard (no INT 16h function 3,
-//   no command F3h to port 60h anywhere in DARKLAND.EXE), so the PC/AT power-on typematic applies (default byte 2Ch: 500 ms, 10.9 cps)
-//   (the divergence from SDL's operating-system repeat is registered at the host member that uses this)
-public sealed class KeyTypematic
+//   no command F3h to port 60h anywhere in DARKLAND.EXE), so the machine's own typematic applies
+// C: the overland map walks one step per key it reads and stands (key 0x4C35, DS:8676 = 0, the standing marker) in a pass with none
+//   (R030+0x0540..0x066A, R030+0x0E5E); a pass lasts one BIOS tick (54.9 ms, R030+0x3096 on clock()). A key held at the PC/AT power-on
+//   rate (byte 2Ch: 500 ms, 10.9/s) leaves about 7 of the 18.2 passes a second without a key, so the original itself alternates
+//   walking and standing; DOSBox's rate (keyboard.cpp: repeat.pause 500, repeat.rate 33) gives a key to every pass (both measured on the
+//   emulated original's map with the keyboard's bytes through its INT 9 handler and DOS's time from the BIOS ticks)
+public sealed class KeyTypematic(double delayMs = KeyTypematic.DelayMs, double periodMs = KeyTypematic.PeriodMs)
 {
-    /// <summary>The keyboard's power-on delay before the first repeat, in milliseconds.</summary>
+    /// <summary>The delay before the first repeat, in milliseconds (DOSBox's, the PC keyboard's power-on value too).</summary>
     public const double DelayMs = 500;
 
-    /// <summary>The keyboard's power-on repeat rate, characters per second.</summary>
-    public const double RateCps = 10.9;
+    /// <summary>The time between two repeats, in milliseconds (DOSBox's: 30.3 a second; the PC keyboard's power-on rate is 91.7 ms, 10.9 a second).</summary>
+    public const double PeriodMs = 33;
 
     private int _key;
     private int _id;
@@ -31,7 +36,7 @@ public sealed class KeyTypematic
         _key = key;
         _id = id;
         _held = true;
-        _nextMs = nowMs + DelayMs;
+        _nextMs = nowMs + delayMs;
     }
 
     /// <summary>A key comes up: when it is the one repeating, the repeats stop.</summary>
@@ -54,7 +59,7 @@ public sealed class KeyTypematic
         while (_held && nowMs >= _nextMs)
         {
             count++;
-            _nextMs += 1000.0 / RateCps;
+            _nextMs += periodMs;
         }
         return count;
     }

@@ -1,6 +1,6 @@
 namespace Darklands.Platform.Tests;
 
-/// <summary>The keyboard's default typematic: 500 ms, then 10.9 characters/s for the key held last.</summary>
+/// <summary>DOSBox's typematic: 500 ms, then a repeat every 33 ms for the key held last.</summary>
 public sealed class KeyTypematicTests
 {
     private static int Repeats(KeyTypematic t, double from, double to)
@@ -24,8 +24,8 @@ public sealed class KeyTypematicTests
 
     [Theory]
     [InlineData(500, 1)]     // the first repeat comes with the delay
-    [InlineData(1000, 6)]    // 1 + floor(500 / 91.74)
-    [InlineData(2500, 22)]   // 1 + floor(2000 / 91.74)
+    [InlineData(1000, 16)]   // 1 + floor(500 / 33)
+    [InlineData(2500, 61)]   // 1 + floor(2000 / 33)
     public void AKeyHeldForNMillisecondsRepeatsAtTheRate(int heldMs, int expected)
     {
         var t = new KeyTypematic();
@@ -38,7 +38,7 @@ public sealed class KeyTypematicTests
     {
         var t = new KeyTypematic();
         t.Press(Keys.Left, 0);
-        Assert.Equal(6, t.Due(1000, out var key));
+        Assert.Equal(16, t.Due(1000, out var key));
         Assert.Equal(Keys.Left, key);
     }
 
@@ -47,7 +47,7 @@ public sealed class KeyTypematicTests
     {
         var t = new KeyTypematic();
         t.Press(Keys.Right, 0);
-        Assert.Equal(3, Repeats(t, 1, 700));
+        Assert.Equal(7, Repeats(t, 1, 700));
         t.Release(Keys.Right);
         Assert.False(t.IsHeld);
         Assert.Equal(0, Repeats(t, 701, 5000));

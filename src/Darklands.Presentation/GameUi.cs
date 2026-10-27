@@ -605,6 +605,25 @@ public sealed class GameUi
         while (_host.Clock.Milliseconds < end);
     }
 
+    /// <summary>Lets clock() (<see cref="DosClock"/>) advance by <paramref name="units"/>, showing the screen, without reading the keyboard or the mouse: the wait ends at a BIOS tick.</summary>
+    // orig: R030+0x3096 (1767:0046) matched: `end = clock() + n; while (clock() < end);` on a clock() that moves only at the BIOS tick: a
+    //   wait of 30 (the overland pass) ends at the next tick, whatever part of the tick the pass took before it
+    public void DelayClock(int units)
+    {
+        var end = DosClock.Milliseconds(_host.Clock.Milliseconds) + units;
+        do
+        {
+            Present();
+            var now = _host.Clock.Milliseconds;
+            if (DosClock.Milliseconds(now) >= end)
+            {
+                break;
+            }
+            _host.Clock.Sleep((int)Math.Clamp(DosClock.NextTickAt(now) - now, 1, FrameMilliseconds));
+        }
+        while (DosClock.Milliseconds(_host.Clock.Milliseconds) < end);
+    }
+
     /// <summary>Waits until the left mouse button is let go (the original's `do {} while (mouse_buttons & 1)` after a click it acts on).</summary>
     // orig: R043+0x2A3C wait_continue's tail and the card engine's click handling (R043 150B) wait the button out before going on;
     //   without it the next screen sees the button still held (the world map then steers the party toward the pointer).

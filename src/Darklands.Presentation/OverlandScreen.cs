@@ -26,10 +26,12 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // orig: gfx_copy_rect(DS:284E, 8, 8, 0x104, 0xB8, screen, 0x3C, 0x10) at R030+0x2599..0x25AD; the view's first cell (column DS:286A, row DS:286E + DS:286C) is drawn at (0 or 8, 0) of the buffer
     private const int BufferCrop = 8;
 
-    /// <summary>The pause after every pass of the loop: R030+0x3096(delayc) with delayc = 30, a busy wait on clock().</summary>
-    // orig: delayc = 30; R030+0x3096(delayc) at the bottom of overland_loop; the body is delay_ticks R030 seg 1767 in matched (spins until clock() has advanced by the argument)
-    // UNCERTAIN: a clock() tick is taken as one millisecond (MSC 6 CLK_TCK is 1000, although the value only changes every 55 ms with the BIOS timer, so a real pass lasts 30 to 55 ms).
-    private const int StepMilliseconds = 30;
+    /// <summary>The pause after every pass of the loop: R030+0x3096(delayc) with delayc = 30, a busy wait on clock() (GameUi.DelayClock).</summary>
+    // orig: delayc = 30; R030+0x3096(delayc) at the bottom of overland_loop (R030+0x0C2F..0x0C35); the body is delay_ticks R030 seg 1767 in matched (spins until clock() has advanced by the argument)
+    // C: clock() moves only at a BIOS tick, by 50 or 60 (DosClock), so the wait ends at the next tick and a pass lasts one tick (54.9 ms: 18.2
+    //   passes a second) while its own work takes less (the emulated original's passes: 50 or 66.7 ms, the game's 60 Hz timer interrupts
+    //   passing the BIOS its ticks, about 12,000 bytes of code standing, 44,000 a step, 270,000 when an hour passes)
+    private const int StepClock = 30;
 
     /// <summary>delay_ticks(75) of the wait-in-place loop (key A or F7), twice per pass.</summary>
     private const int RestMilliseconds = 75;
@@ -198,7 +200,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 // C: key 0x4c35 (idle) runs 0c44 with DS:8676 = 0: no step, the standing marker; the frame counter still counts (`if (key) DS:2910++`)
                 _direction = 0;
                 _frame = (_frame + 1) % 8;
-                ui.Wait(StepMilliseconds, skippable: false);
+                ui.DelayClock(StepClock);
                 continue;
             }
             var result = MoveOnce(state, travel, dx, dy);
@@ -211,7 +213,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             {
                 return r.Card;
             }
-            ui.Wait(StepMilliseconds, skippable: false);
+            ui.DelayClock(StepClock);
         }
     }
 

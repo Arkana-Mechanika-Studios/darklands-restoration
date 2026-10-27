@@ -17,9 +17,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | travel | core | 3 |
 | battles | core | 7 |
 | persistence | core | 2 |
-| screens/presentation | other | 16 |
+| screens/presentation | other | 15 |
 | host/audio | other | 0 |
-| total |  | 37 |
+| total |  | 36 |
 
 ## Core logic (21)
 
@@ -98,9 +98,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
 
-## Presentation and host (16)
+## Presentation and host (15)
 
-### screens/presentation (16)
+### screens/presentation (15)
 
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
@@ -135,9 +135,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-77166b** `uncertain` - `src/Darklands.Presentation/OpeningTiming.cs:21` `OpeningTiming.IReadOnlyList`  
   original: `root 03A1:000A` (03A1:000A, matched), `root 030B:0004` (030B:0004, matched), `root 030B:0508` (030B:0508, matched) +2 more  
   why: one tick after the last cel of OPENING2 (the capture's tick after it came in the same frame, before the tune).
-- **U-37e39d** `uncertain` - `src/Darklands.Presentation/OverlandScreen.cs:31` `OverlandScreen.StepMilliseconds`  
-  original: `R030+0x3096` (1767:0046, matched)  
-  why: a clock() tick is taken as one millisecond (MSC 6 CLK_TCK is 1000, although the value only changes every 55 ms with the BIOS timer, so a real pass lasts 30 to 55 ms).
 - **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:213` `PartyRosterScreen.ResultOfDriver`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: the driver's AX is taken never to be 0x11B (it would end the screen).
