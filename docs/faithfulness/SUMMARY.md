@@ -122,7 +122,7 @@ new cases or listed in `unreachable.csv` with a justification.
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 33,810 against 34,638 exercised (1,483 more branch outcomes than the published batch 17: the card scripts +1,257, rules +28 and screens +25 from the card oracle's saved-game start states and controlled battle and prayer results of round cards1, battles +166 from round B2's direct calls, both below, 1 each in travel and the card engine, and 5 in the resident code). By area:
+differ slightly on the resident code, hence 33,810 against 34,638 exercised (1,486 more branch outcomes than the published batch 17: the card scripts +1,257, rules +28 and screens +25 from the card oracle's saved-game start states and controlled battle and prayer results of round cards1, battles +169 from round B2's direct calls, both below, 1 each in travel and the card engine, and 5 in the resident code). By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
@@ -454,13 +454,18 @@ Open items (2026-10-27, after batch 20), listed honestly:
   schedule-reads, 04 box-callbacks; private runs), not applied, and, for gen-bsafe-27 and gen-bheld-40, also with measured click
   holds (gen-bsafe-50 with patch 01 alone). gen-bheld-22 is fixed (the C#) and its battle records agree, but its end state, taken inside
   the battle, still differs and was not proven again. gen-bkeys-44's step timing has no derivation.
-* Round B2 leads L05 to L08 are triaged and settled in batch 20 (below); no job of them differs now except the early run e2's (66 differing jobs of R014+0x2170, timer-callback
-  counts, which predates the tick wait fix and is replaced by the later runs of the same function; its coverage is not counted) and e11's and e12's leave_level jobs
-  (5 and 1, whose fuzzed state puts an enemy in animation slot 1..3). Still open from that work: the loot screen's redraw in TacticalBattle.Loot.cs (floor_view_draw and
-  combat_draw after the screen) does not turn the attackers toward their targets as the other draw sites now do (not compared with the original); the Dissolve key outside
-  order mode (Doors.cs) consumes "selected -1"'s slot in the original (DS:C7CC, member -1) and the C# skips it (not registered); D-25f7f1 (members 2 to 4 with slot 0xFF, past the
-  packs) is not modelled. The per-battle state carried from one battle to the next (a lead from the community's bug list) needs a run of two
-  battles in the original; no tool for it exists yet.
+* Round B2 leads L05 to L08 are triaged and settled in batch 20 (below); no job of them differs now. The 72 B2 jobs that still differ are the tester's: the early
+  run e2 (66 jobs of R014+0x2170 whose original side predates the tick wait fix: the rewrite's timer-callback count is the original's plus exactly the 150 or 60 ticks
+  of the message wait, and the clock and the times derived from it follow; replaced by the later runs of the same function, its coverage is not counted) and e11's and
+  e12's leave_level jobs (5 and 1, whose fuzzed state puts an enemy in animation slot 1..3). Still open from that work, found by the batch's audit and neither fixed
+  nor registered yet: combat_draw (14F7:0008) always turns the attackers toward their targets (R014+0x99F6, called at R014+0x6926), but three C# sites of a
+  floor_view_draw and combat_draw pair leave the turn out: after a loot pile (loot_pile_open, R014+0xE3AB..0xE3B3, TacticalBattle.Loot.cs), after a chest
+  (chest_open, R023+0x152A..0x1532, which also centres the view on the active member DS:17B0 where the C# keeps the centre) and when an in-battle save resumes
+  (R014+0x02FF..0x0307, TacticalBattle.Saving.cs; the fresh start has the turn). The Dissolve key outside order mode (R016+0x0FAF..0x0FBA) calls consume_slot with
+  the selected member DS:A6B2 (the party member under the pointer, else -1) and member 0's slot byte DS:C7CD, whatever member is selected; the C# uses the selected
+  member's own slot and does nothing for -1 (where the original writes before the packs). D-25f7f1 (members 2 to 4 with slot 0xFF, past the packs) is not modelled.
+  The per-battle state carried from one battle to the next (a lead from the community's bug list) needs a run of two battles in the original; no tool for it
+  exists yet.
 * Round cards1 leads (14 judged in batch 19, below): what is left of them is registered, not reproduced: the new game's slot 4 holds the figure
   "0" of SAVES\DEFAULT in the original, which a C# new game does not model for a slot nobody held (D-dff113); a loaded saved game with two slots
   naming one record is read as two copies, so a later save would give the second a roster entry of its own (not seen in any oracle run, not
@@ -601,7 +606,7 @@ Batch 20 (2026-10-27), two branches (b2l58, the first pass of the B2 leads L05 t
 and the loot, stairs and empty-member parts of L07 were the tester's (every writer of DS:907B stores a party slot; the harness now skips such jobs). Two were real
 and are fixed in the C#, each with a unit test: the battle end R014+0x08FE, when nobody able is left on the enemies' floor and somebody able is on another,
 ends with the view centred on the first able member or the new leader and one frame drawn (floor_view_draw 09C0:1C2F, then combat_draw 14F7:0008, R014+0x0AAD..0x0ABE):
-the renderer's random draws, the enemies turning toward their targets and the arrived missiles removed; the C# made that draw only at the end of the next tick, one
+the renderer's random draws, the attackers turning toward their targets and the arrived missiles removed; the C# made that draw only at the end of the next tick, one
 draw late, so every later random number differed (BattleEnd.IsOver now calls `RedrawAround`; `SwitchingToThePartysOtherFloorDrawsAFrameBeforeTheTestReturns`; leads L05 and L08;
 jobs e9, e10 and 32 rows of the old job files now agree). And the Dissolve Lock action uses the pack entry the slot byte DS:C7CD names whatever the pack holds, a
 data-damaging original bug: reproduced in the faithful mode and fixed in the player's game behind `FixStaleDissolveSlot` (B-dce22a, B-bf6904, D-a25000; the fifth `DataSafe` switch,

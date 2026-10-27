@@ -500,7 +500,9 @@ public sealed partial class TacticalBattle
         if (Menus.On(OrdersItem.DissolveLock))
         {
             _view.Message(EaterWaterText, 150);
-            // C: the slot of the SELECTED member (−1 outside order mode reads before the table) is used up.
+            // C: R016+0x0FAF..0x0FBA: consume_slot(DS:A6B2, DS:C7CD): the selected member (outside order mode the party member under the
+            //   pointer, R014+0xB785, else −1) with member 0's slot byte, whatever member is selected; with −1 consume_slot writes before the packs. Here the selected
+            //   member's own slot is used and −1 does nothing: not yet reproduced or registered (open lead, see SUMMARY).
             if (selected >= 0 && Battle[selected].DissolveSlot >= 0 && Battle[selected].DissolveSlot < Battle[selected].Items.Count)
             {
                 Attacks.ConsumeSlot(Battle, selected, Battle[selected].DissolveSlot);
