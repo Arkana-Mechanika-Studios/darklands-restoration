@@ -15,6 +15,7 @@ using Darklands.Rendering;
 //   key:<c>                      a character; key:enter|space|esc|tab|backspace|up|down|left|right|home|end|pgup|pgdn|f1..f6|f10|alto (Alt-O, the marching order)
 //   click:<x>,<y>                a left click; rclick:<x>,<y> a right click; move:<x>,<y> moves the pointer (and drags a held button)
 //   ldown:<x>,<y> / lup          the left button held and let go; rdown:<x>,<y> / rup the right one (the menu bar)
+//   mapclick:<x>,<y>,<n>         a left click held until n passes of the map's loop have read it (tools/oracle/lockstep.py)
 //   shift:on|off, ctrl:on|off    the modifier keys; kdown:<hex> / kup:<hex> a key's make or break scan code
 //   wait:<frames>                lets frames pass; shot:<name> saves <name>.png; rec:<n> saves the next n frames
 //   seed:<n>                     the game's random seed
@@ -323,6 +324,10 @@ if (cardStep is not null)
 }
 List<string> commandLine = [.. resolved.CommandLine, .. TakeArguments(steps)];
 using var sound = soundStep is null ? null : HeadlessSound.Attach(host, OpenGame(), soundStep, romsStep, wavStep, traceStep, commandLine);
+if (steps.Any(s => s.StartsWith("mapclick:", StringComparison.Ordinal)))
+{
+    OverlandScreen.PassHook = host.MapPass;
+}
 var game = new DarklandsGame(host, OpenGame())
 {
     Seed = clockStep is null ? () => seed : NextSeed,
@@ -358,7 +363,8 @@ host.State = name =>
         var (sav, _) = Darklands.Persistence.OriginalSaves.Write(playing, "Darklands", game.Options.Music, game.Options.SoundEffects);
         File.WriteAllBytes(Path.Combine(output, name + ".sav"), sav);
         var random = playing.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?";
-        Console.WriteLine($"state {name}: card 0x{playing.CurrentCard:X2} random {random}");
+        // " in-battle": a battle runs (tools/oracle/lockstep.py compares no state taken inside a battle on both sides)
+        Console.WriteLine($"state {name}: card 0x{playing.CurrentCard:X2} random {random}{(game.Fighting ? " in-battle" : "")}");
     }
     else
     {
@@ -534,11 +540,25 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
 
     private int _clickPumps;
 
+    // mapclick:<x>,<y>,<n>: the left button stays down until n passes of the map's loop have read it (OverlandScreen.PassHook), as the
+    // original's click spanned n map passes (tools/oracle/lockstep.py map_holds); let go too when the map is left
+    private int _mapHold;
+
+    /// <summary>OverlandScreen.PassHook: a map pass read the button (true) or the map was left (false).</summary>
+    public void MapPass(bool read)
+    {
+        if (_mapHold > 0 && (!read || --_mapHold == 0))
+        {
+            _mapHold = 0;
+            Mouse = Mouse with { Buttons = MouseButtons.None };
+        }
+    }
+
     public void Pump()
     {
         _now += 16;
         Advanced?.Invoke(_now);
-        if (Mouse.Buttons != MouseButtons.None && !_held)
+        if (Mouse.Buttons != MouseButtons.None && !_held && _mapHold == 0)
         {
             // a click stays down over two pumps (a screen may present twice a frame before it polls)
             if (++_clickPumps < 2)
@@ -569,6 +589,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             case "click":
                 var (x, y) = Point(value);
                 Mouse = new MouseState(x, y, MouseButtons.Left);
+                _idleFrames = 2;
+                break;
+            case "mapclick":
+                var at = value.Split(',');
+                Mouse = new MouseState(int.Parse(at[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(at[1], System.Globalization.CultureInfo.InvariantCulture), MouseButtons.Left);
+                _mapHold = int.Parse(at[2], System.Globalization.CultureInfo.InvariantCulture);
                 _idleFrames = 2;
                 break;
             case "rclick":

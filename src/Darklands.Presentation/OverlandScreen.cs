@@ -49,6 +49,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     /// <summary>A debugging aid: each step of the marker, as tools/oracle/lockstep.py prints the original's (DARKLANDS_TRACE_MAP).</summary>
     public static Action<string>? Trace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_TRACE_MAP") is null ? null : Console.WriteLine;
 
+    /// <summary>A tester's hook (the headless host, tools/oracle/lockstep.py's mapclick): true when a pass of the map's loop has read the left
+    /// button (before it acts on it: a portrait's sheet opens after), false when the loop is left. Not set in play.</summary>
+    public static Action<bool>? PassHook { get; set; }
+
     private int _viewColumn;
     private int _viewTop;
     private int _viewRows;
@@ -78,6 +82,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         finally
         {
             ui.Redraw = null;
+            PassHook?.Invoke(false);
         }
     }
 
@@ -142,18 +147,20 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 
             // C: `if (mouse_buttons & 1)`: while the left button is HELD, a point right of x = 0x3c steers the marker, a point at or left of it clears the target and opens the sheet of the member in that row.
             // DIVERGENCE: the portrait click opens the sheet once per press (the original would reopen it every pass while the button stays down); the steering follows the held button as in the original.
-            if (ui.Mouse.Left)
+            var mouse = ui.Mouse;
+            PassHook?.Invoke(true);
+            if (mouse.Left)
             {
-                if (ui.Mouse.X > AreaX)
+                if (mouse.X > AreaX)
                 {
                     // C: mxe = mouse_x - 0x41; mye = mouse_y - 0x15: a point of the view (overland_loop's locals), not of the map: when the view
                     //   jumps (0c44 moves DS:2866 / DS:2868 by 128 / 92 pixels) the target stays where it was in the view
-                    target = (ui.Mouse.X - AreaX - 5, ui.Mouse.Y - AreaY - 5);
+                    target = (mouse.X - AreaX - 5, mouse.Y - AreaY - 5);
                 }
                 else if (action is { IsLeftClick: true })
                 {
                     target = null;
-                    OpenSheet(state, ui.Mouse.Y / PartyPanel.RowHeight);
+                    OpenSheet(state, mouse.Y / PartyPanel.RowHeight);
                 }
             }
             // C: the right button with a Shift key held shows "character X:%02d Y:%02d" at (0x58, 0x1f) in white, until the next redraw.

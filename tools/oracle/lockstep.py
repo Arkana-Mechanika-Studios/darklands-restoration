@@ -15,7 +15,8 @@ never idle): the steps after it are given n + 1 battle passes after the previous
 host, a frame being a pass there). A menu or a sheet (a loop that does not pass combat_input) is idle after IDLE_POLLS polls, as before
 (each bwait waits its own polls there).
 Keep the pointer off the battle view's edges (x < 68, y < 8 or > 191, x > 311): the original scrolls the view there, which the C# does not. State steps inside a battle do
-not compare (the C# writes the party, the original the battle's save). --battle-records adds the combatant records to every pass. With --save both start from that saved game
+not compare (the C# writes the party, the original the battle's save): a state the original wrote in a battle (the difficulty byte's bit 7) while
+the C# host reports one running ("in-battle") compares the card only, and the session then writes no coverage. --battle-records adds the combatant records to every pass. With --save both start from that saved game
 (the script loads it from the start screen: key:t, key:l).
 
 1. The original runs from its own start (R000+0x0022, command line -Q) in the DOS machine of dosmachine.py,
@@ -320,6 +321,28 @@ def list_keys(log, steps) -> dict[int, int]:
     return {i: LIST_FRAMES[l.rstrip().split(" < ")[-1]] for i, l in zip(inputs, lines) if steps[i][0] == "key" and l.rstrip().split(" < ")[-1] in LIST_FRAMES}
 
 
+def map_holds(log, steps) -> dict[int, int]:
+    """{index of a click step: the map passes the original saw its left button down}, from the log's "maphold n" lines (written at the click's
+    release when overland_loop R030+0x02DC found the button down in n passes; empty when the log's input lines are not the steps'). The
+    original lets a click go CLICK_MS after the game read the button, which spans as many map passes as the emulator takes for them (a pass
+    that steps and draws takes longer than one that stands); the target is aimed again at every pass that sees the button down, so after a
+    blocked step (the target dropped, overland_loop's sel == 9999) a pass with the button still down walks on (round R2: L1, L2). The C#
+    host holds the click for as many passes of its map loop (mapclick:x,y,n). The log's input lines are matched to the input steps in order
+    (a run that ended early logs fewer); the matching stops at the first line whose kind is not its step's."""
+    kinds = orig_side.INPUT_KINDS          # the steps the original logs as input lines ("<kind> <value> at ...")
+    inputs = [i for i, s in enumerate(steps) if s[0] in kinds]
+    out, k = {}, -1
+    for l in log:
+        if l.startswith("maphold "):
+            if k >= 0 and steps[inputs[k]][0] == "click":
+                out[inputs[k]] = int(l.split()[1])
+        elif l.split(" ", 1)[0] in kinds and " at " in l:
+            k += 1
+            if k >= len(inputs) or steps[inputs[k]][0] != l.split(" ", 1)[0]:
+                break
+    return out
+
+
 def rup_boxes(log) -> list[bool]:
     """For each release of the held right button (rup) in the original's log, in order: whether the menu bar's run it ended showed a message
     box (the next "menu callbacks" line counts show_message's 0x3C ticks)."""
@@ -402,6 +425,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
         print("click holds (bwait step: passes): %s" % holds)
     sheet_clicks = sheet_holds(log or (), steps, BWAIT_ACTUAL)
     boxed = iter(rup_boxes(log or ()))
+    mapheld = map_holds(log or (), steps)
     if sheet_clicks:
         print("sheet click holds (bwait step: passes): %s" % sheet_clicks)
     # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames), a move one frame less;
@@ -458,6 +482,8 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
                 # frame later, once the bar has unfolded
                 later = 1
             args.append("wait:%d" % (max(0, min(int(v), actual) - cost) + later))
+        elif k == "click" and i in mapheld:
+            args.append("mapclick:%s,%d" % (v, mapheld[i]))
         elif k == "wait" and pause_shift and i in pause_shift:
             args.append("wait:%d" % (int(v) + pause_shift[i]))
         else:
@@ -494,12 +520,13 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
             name = line[6:line.index(":")]
             words = line.split()
             card, random = int(words[words.index("card") + 1], 16), words[words.index("random") + 1]
-            states[name] = ((shots / (name + ".sav")).read_bytes(), int(random, 16) if random != "?" else None, card)
+            states[name] = ((shots / (name + ".sav")).read_bytes(), int(random, 16) if random != "?" else None, card, line.rstrip().endswith(" in-battle"))
     return states, run.stdout + run.stderr
 
 
 # the report keys of a state row that are not differences (reported apart)
-APART = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory"}
+APART = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory", "in battle"}
+IN_BATTLE_BIT = 0x96, 0x80          # the saved game's difficulty byte, bit 7: written in a battle (R037+0x2B57, OriginalSaves InBattleBit)
 PACK_AT, PACK_ENTRY, PACK_ENTRIES = 0xAA, 6, 64     # a character record's pack (docs/SAVES.md): 64 entries {code word, type, quality, count, weight}
 
 
@@ -540,7 +567,16 @@ def compare(steps, original: dict, rewrite: dict, fresh: bool = False, items: in
         if name not in original or name not in rewrite:
             row["missing"] = [side for side, d in (("original", original), ("rewrite", rewrite)) if name not in d]
         else:
-            (osav, orand, ocard), (csav, crand, ccard) = original[name], rewrite[name]
+            (osav, orand, ocard), (csav, crand, ccard, *cfight) = original[name], rewrite[name]
+            if osav[IN_BATTLE_BIT[0]] & IN_BATTLE_BIT[1] and cfight and cfight[0]:
+                # taken inside a battle on both sides: the original's writer saves the battle (the combatant records, the events read back,
+                # bit 7), the C# host's state step the party as it stands, and a running battle has no idle point where the two sides'
+                # passes meet (its random state follows the passes): only the card is compared (round R2: gen-trav-16 and five more)
+                row["in battle"] = "sav and random not compared"
+                if ocard != ccard:
+                    row["card"] = {"original": "%X" % ocard, "rewrite": "%X" % ccard}
+                rows.append(row)
+                continue
             d = savdiff.diff(csav, osav)
             head = d.get("head", {}).get("0", {})
             # +0x84 (DS:E898, the card screen's text state): the C# keeps the loaded file's (a known divergence, see the report)
@@ -671,7 +707,8 @@ def main():
                 row["texts"] = {"original": data[:0x64].hex(), "rewrite": theirs.read_bytes()[:0x64].hex()}
         rows.append(row)
     if cov is not None:
-        if all(set(r) <= APART for r in rows):
+        # a state taken inside a battle (not compared, "in battle") leaves the battle's passes unchecked: no coverage from the session
+        if all(set(r) <= APART and "in battle" not in r for r in rows):
             (out / "cov").mkdir(exist_ok=True)
             (out / "cov" / "cov-0.jsonl").write_text(json.dumps({"unit": Path(a.script).stem, **cov}, separators=(",", ":")) + "\n", encoding="utf-8")
         else:

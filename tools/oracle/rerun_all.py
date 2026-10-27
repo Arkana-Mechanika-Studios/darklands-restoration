@@ -742,7 +742,7 @@ SESSIONS.update({"gen-bheld-03": "DKSAVE0.SAV", "gen-bheld-26": "DKSAVE0.SAV", "
 BATTLE_RECORDS |= {"gen-bheld-03", "gen-bheld-26", "gen-bheld-35", "gen-bkeys-34", "gen-bsafe-23", "gen-bsafe-39", "gen-bsafe-40"}
 SESSIONS.update({"gen-bdead-02": "synth/DKSAVE0-dead.sav", "gen-bgater-01": "DKSAVE0.SAV", "gen-bgater-04": "DKSAVE0.SAV", "gen-bheld-02": "DKSAVE0.SAV", "gen-bheld-36": "DKSAVE0.SAV", "gen-bhurt-04": "synth/DKSAVE0-hurt.sav", "gen-bhurta-02": "synth/DKSAVE0-hurtattr.sav", "gen-bhurtk-04": "synth/DKSAVE0-hurt.sav", "gen-bhurts-04": "synth/DKSAVE0-hurtstatus.sav", "gen-bkeys-03": "DKSAVE0.SAV", "gen-bkeys-04": "DKSAVE0.SAV", "gen-bkeys-06": "DKSAVE0.SAV", "gen-bkeys-40": "DKSAVE0.SAV", "gen-bkeys-45": "DKSAVE0.SAV", "gen-blue-01": "Dksave21.sav", "gen-brun-04": "DKSAVE0.SAV", "gen-brun-05": "DKSAVE0.SAV", "gen-brun-10": "DKSAVE0.SAV", "gen-bsafe-06": "DKSAVE0.SAV", "gen-bsafe-07": "DKSAVE0.SAV"})  # B1o2: agree with battle records on (local/batch/b1o2)
 BATTLE_RECORDS |= {"gen-bdead-02", "gen-bgater-01", "gen-bgater-04", "gen-bheld-02", "gen-bheld-36", "gen-bhurt-04", "gen-bhurta-02", "gen-bhurtk-04", "gen-bhurts-04", "gen-bkeys-03", "gen-bkeys-04", "gen-bkeys-06", "gen-bkeys-40", "gen-bkeys-45", "gen-blue-01", "gen-brun-04", "gen-brun-05", "gen-brun-10", "gen-bsafe-06", "gen-bsafe-07"}
-IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory"}   # lockstep.APART
+IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory", "in battle"}   # lockstep.APART
 RESERVE_MB, JOB_MB = 1500, 450
 
 

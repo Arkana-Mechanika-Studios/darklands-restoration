@@ -25,6 +25,10 @@ internal static class Adapters
         ["R029+0x54D8"] = c => { TimePassage.Advance(c.State, c.S(0)); return null; },
         ["R029+0x5590"] = c => { TimePassage.AdvanceDays(c.State, c.S(0)); return null; },
 
+        // day of the year to month / day of the month (R029+0x5848, R029+0x5892)
+        ["R029+0x5848"] = c => Quests.MonthOf(c.S(0)),
+        ["R029+0x5892"] = c => Quests.DayOfMonth(c.S(0)),
+
         // ---- timed events
         ["R029+0x2E74"] = c => c.State.Events.Update(c.S(0), c.S(1), c.S(2), c.S(3), c.S(4), c.S(5), (EventUpdate)c.S(6)),
         ["R029+0x37E2"] = c => c.State.Events.CountAt(c.S(0), c.S(1)),
@@ -58,6 +62,8 @@ internal static class Adapters
         ["R029+0x4C04"] = c => { MemberRules.RaiseAttributeTemporarily(c.State, c.S(0), c.S(1), c.S(2), c.S(3)); return null; },
         ["R029+0x4D24"] = c => { MemberRules.RecordPotionBonus(c.State, c.S(0), c.S(1), c.S(2), c.S(3)); return null; },
         ["R029+0x4AA4"] = c => { PartyRules.EndTerms(c.State, c.S(0)); return null; },
+        // R029+0x2474: of the members who went away one leaves for good, the others come back; AX = how many were away
+        ["R029+0x2474"] = c => new Cards.CardContext(c.State, c.Data, new NoScreen()).OneOfTheAwayLeaves(),
 
         // ---- travel on the map: the view's registers and the travel counters are DS words of the job
         ["R030+0x1300"] = Step,
@@ -114,6 +120,22 @@ internal static class Adapters
             var number = saint;
             Map.TryAdd(coordinate, c => { SaintBook.Help(c.State, c.S(0), number); return null; });
         }
+    }
+
+    /// <summary>A card screen that shows nothing (the party panel redraw of the original's calls is not part of what is compared).</summary>
+    private sealed class NoScreen : Cards.ICardScreen
+    {
+        public void Show(string cardName, string picture) { }
+
+        public void ShowPicture(string picture) { }
+
+        public void Text(int block, Cards.TextFrame frame = Cards.TextFrame.OnPicture) { }
+
+        public int Choose(int block, IReadOnlyList<Cards.OptionState> options, Func<int, Cards.OptionHint>? hint = null) => 0;
+
+        public void Tell(string message, int member = Cards.OptionHint.WholeParty) { }
+
+        public void PassTime(int hours) { }
     }
 
     private sealed class BytePalette(int[] bytes) : SeasonPalette.IPaletteBytes

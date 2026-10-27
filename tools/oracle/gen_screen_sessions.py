@@ -633,10 +633,49 @@ def rmenu_alphabet(screen: str):
 
 GATE_START = "\noption:4\nwait:5\nkey:enter\nwait:300"       # the gate guards are attacked: the battle begins paused
 
+# ---- round R2: the travel map (overland_loop R030+0x02C0, the key handler R030+0x0C44) ----
+def trav_alphabet(rng: random.Random) -> list[str]:
+    """The map from DKSAVE17 (a party by night on the road): clicks that steer the marker, held directions (the keyboard interrupt), buffered arrows,
+    Shift / Ctrl F-keys (the leader), the sheets, the right button with Shift (the coordinates), the portraits, the camp and the cards an encounter shows."""
+    r = rng.random()
+    if r < 0.28:
+        return ["click:%d,%d" % (rng.randrange(66, 318), rng.randrange(24, 192))]
+    if r < 0.40:
+        d = rng.choice(sorted(HELD))
+        return ["kdown:" + HELD[d], "wait:5", "key:x", "wait:60", "kup:" + HELD[d], "wait:5"]
+    if r < 0.48:
+        return ["key:" + rng.choice(ARROWS + ["home", "end", "pgup", "pgdn"])]
+    if r < 0.56:
+        return ["shift:on", "key:f%d" % rng.randrange(1, 6), "shift:off"]
+    if r < 0.60:
+        return ["ctrl:on", "key:f%d" % rng.randrange(1, 6), "ctrl:off"]
+    if r < 0.66:
+        return ["key:f%d" % rng.randrange(1, 6), "wait:30", "key:esc"]
+    if r < 0.72:
+        x, y = rng.randrange(66, 318), rng.randrange(24, 192)
+        # (no key inside the hold: the menu bar's tracking loop, which the held right button starts, takes no key)
+        shift = rng.random() < 0.7
+        return (["shift:on"] if shift else []) + ["rdown:%d,%d" % (x, y), "wait:5", "move:%d,%d" % (x + rng.randrange(-8, 9), y + rng.randrange(-8, 9)), "wait:5", "rup", "wait:5"]             + (["shift:off"] if shift else [])
+    if r < 0.78:
+        return ["click:%d,%d" % (rng.randrange(0, 60), rng.randrange(20, 200))]
+    if r < 0.82:
+        return ["key:c", "wait:60", "key:l", "wait:200"]
+    if r < 0.92:
+        return ["key:enter"]
+    if r < 0.96:
+        return ["key:enter", "wait:60", "key:enter"]
+    return ["move:%d,%d" % (rng.randrange(0, 320), rng.randrange(20, 190))]
+
+
 # name -> (saved game, prefix, alphabet, closing steps)
 SCREENS = {
     "mbar": ("DKSAVE0.SAV", lambda: cut("menubar", "menu"), mbar_alphabet, []),
     "mbarm": ("DKSAVE17.SAV", lambda: cut("mapsave", "map"), mbar_alphabet, []),
+    "trav": ("DKSAVE17.SAV", lambda: cut("mapsave", "map"), trav_alphabet, []),
+    "trav0": ("DKSAVE0.SAV", lambda: cut("pressburg-map", "map"), trav_alphabet, []),
+    "travw": ("synth/DKSAVE17-month0d3.sav", lambda: cut("mapsave", "map"), trav_alphabet, []),
+    "travs": ("synth/DKSAVE17-month6.sav", lambda: cut("mapsave", "map"), trav_alphabet, []),
+    "travn": ("synth/DKSAVE17-month10d1.sav", lambda: cut("mapsave", "map"), trav_alphabet, []),
     "gate": ("DKSAVE0.SAV", lambda: cut("orders-walk", "gate") + GATE_START, gate_alphabet,
              ["key:space", "wait:20000", "key:l", "wait:300", "key:enter", "wait:300"]),
     "pots": ("synth/Dksave10-pots.sav", lambda: cut("sheet", "sheet"), potions_alphabet(4), ["key:esc", "wait:200"]),
@@ -911,6 +950,11 @@ def input_wait(screen: str, step: str) -> str:
     hourglass, whose delays the headless host plays out frame by frame; the original's next step waits for it to be idle anyway."""
     if screen.startswith("mbar") or screen.startswith("rmbar"):
         return "wait:100"
+    if screen.startswith("trav"):
+        # a click on the map walks until the target or a stop (the original's next step waits for it to be idle): a walk across the view
+        # takes some 340 passes, about 700 of the host's frames (round R2: gen-trav0-01, gen-trav-11 took their states mid-walk with 600)
+        kind, _, value = step.partition(":")
+        return "wait:2000" if kind == "click" else "wait:60"
     if screen in ("brun", "bhurt", "bhurta", "bdead"):
         return "bwait:8"
     if screen in BATTLE_SCREENS:
