@@ -80,10 +80,83 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         }
     }
 
+    /// <summary>
+    /// leave_level (R023+0x17D2) adds an encounter record for the group left on the level: the record it adds holds the three kinds of the slots 4..6 whatever the
+    /// slot holds: for a slot with no enemy the original writes a local it never set (the stack's leftovers; the rewrite has -1 for the first, 0 for the others),
+    /// unseen as the count is 0: the original's byte is taken. Used by the direct call and by the stairs action that makes it (R014+0x2170, case 2).
+    /// </summary>
+    private static void AdoptUnsetBytesOfTheNewRecord(Context c, CallJob job, int floor, int before)
+    {
+        // the encounter record it adds holds the three kinds of the slots 4..6 whatever the slot holds: for a slot with no enemy the original writes a local
+        // it never set (the stack's leftovers; the rewrite has -1 for the first, 0 for the others), unseen as the count is 0: the original's byte is taken
+        var list = c.Tactics.Activations[floor];
+        if (list.Count == before + 1)
+        {
+            var group = list[^1];
+            // and the reinforcement part (+0x14..+0x1D) of a record that has none (+0x07 = 0): the original leaves the bytes the slot held, the rewrite's
+            // new group has its defaults; nothing reads them (the reinforcements arrive only for a group that has the record)
+            var recordAt = TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * before;
+            int Byte(int o) => job.Orig.FarChanged.TryGetValue((recordAt + o).ToString(), out var v) ? v : c.Input.Far[recordAt + o];
+            if (group.HasReinforcements == 0)
+            {
+                group.ReinforcementKind = (sbyte)Byte(0x14);
+                group.Byte15 = (sbyte)Byte(0x15);
+                group.ReinforcementX = (short)(Byte(0x16) | Byte(0x17) << 8);
+                group.ReinforcementY = (short)(Byte(0x18) | Byte(0x19) << 8);
+                group.ReinforcementBatch = (sbyte)Byte(0x1A);
+                group.ReinforcementPool = (sbyte)Byte(0x1B);
+                group.ReinforcementFacing = (sbyte)Byte(0x1C);
+                group.Byte1D = (sbyte)Byte(0x1D);
+            }
+            for (var k = 0; k < 3; k++)
+            {
+                var kindAt = TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * before + 8 + k;
+                if (group.Counts[k] == 0)
+                {
+                    group.Kinds[k] = (sbyte)(job.Orig.FarChanged.TryGetValue(kindAt.ToString(), out var kind) ? kind : c.Input.Far[kindAt]);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Every writer of the leader DS:907B stores a party slot: the new-leader searches loop over the five slots (R014+0x08FE 0x0AAA, 0x0D0C; R016+0x09BC;
+    /// R029+0x255A; R030+0x0C44; R031+0x10AE, 0x264C) and the battle starts with 0 (R001+0x00A9). A fuzz value past the thirteen records (0xFF in the old rounds)
+    /// makes the original read the record before the first, which the rewrite's array does not have: the jobs that end in that exception are not judged
+    /// (those that agree with such a leader stay judged).
+    /// </summary>
+    private static T UnlessLeaderIsNoCombatant<T>(Context c, Func<T> call)
+    {
+        try
+        {
+            return call();
+        }
+        catch (IndexOutOfRangeException) when (c.Input.Ds[0x907B] >= Combatant.Count)
+        {
+            throw new SkipJob($"leader {c.Input.Ds[0x907B]} is not a combatant: only party slots are ever stored in DS:907B");
+        }
+    }
+
     /// <summary>The calls: original function to what the rewrite does for it, returning the value the original leaves in AX (null: none compared).</summary>
     private static readonly Dictionary<string, Func<Context, CallJob, int?>> Adapters = new()
     {
-        ["R014+0x08FE"] = (c, _) => BattleEnd.IsOver(c.Battle, c.Tactics) ? 1 : 0,
+        ["R014+0x08FE"] = (c, job) =>
+        {
+            var switches = c.Tactics.LevelSwitches;
+            var over = UnlessLeaderIsNoCombatant(c, () => BattleEnd.IsOver(c.Battle, c.Tactics));
+            if (!over && c.Tactics.LevelSwitches != switches && Environment.GetEnvironmentVariable("B2L58_DRAW") == "1")
+            {
+                var exp = c.Input.Expected(job.Orig);
+                var tv = (IBattleViewport)typeof(TacticalBattle).GetField("_view", Any)!.GetValue(c.Tactics)!;
+                var view = (BattlefieldView)typeof(BattleScreen).GetField("_view", Any)!.GetValue(c.Screen)!;
+                view.CentreColumn = (short)(exp.Ds[ScreenOverlay.CameraX] | exp.Ds[ScreenOverlay.CameraX + 1] << 8) / 32;
+                view.CentreRow = (short)(exp.Ds[ScreenOverlay.CameraY] | exp.Ds[ScreenOverlay.CameraY + 1] << 8) / 16;
+                Call(c.Tactics, "TurnTowardTargets");
+                c.Tactics.Effects.Drawn(tv);
+                Call(c.Tactics, "RemoveArrivedMissiles");
+            }
+            return over ? 1 : 0;
+        },
         ["R014+0x481A"] = (c, job) =>
         {
             var ok = (bool)Call(c.Tactics, "FindPath", job.Args[0])!;
@@ -162,36 +235,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             var at = job.Args[1];
             var before = c.Tactics.Activations[c.Battle.FloorShown].Count;
             Call(c.Tactics, "LeaveLevel", job.Args[0], c.Input.Ds.AsSpan(at, 14).ToArray());
-            // the encounter record it adds holds the three kinds of the slots 4..6 whatever the slot holds: for a slot with no enemy the original writes a local
-            // it never set (the stack's leftovers; the rewrite has -1 for the first, 0 for the others), unseen as the count is 0: the original's byte is taken
-            var list = c.Tactics.Activations[c.Battle.FloorShown];
-            if (list.Count == before + 1)
-            {
-                var group = list[^1];
-                // and the reinforcement part (+0x14..+0x1D) of a record that has none (+0x07 = 0): the original leaves the bytes the slot held, the rewrite's
-                // new group has its defaults; nothing reads them (the reinforcements arrive only for a group that has the record)
-                var recordAt = TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * before;
-                int Byte(int o) => job.Orig.FarChanged.TryGetValue((recordAt + o).ToString(), out var v) ? v : c.Input.Far[recordAt + o];
-                if (group.HasReinforcements == 0)
-                {
-                    group.ReinforcementKind = (sbyte)Byte(0x14);
-                    group.Byte15 = (sbyte)Byte(0x15);
-                    group.ReinforcementX = (short)(Byte(0x16) | Byte(0x17) << 8);
-                    group.ReinforcementY = (short)(Byte(0x18) | Byte(0x19) << 8);
-                    group.ReinforcementBatch = (sbyte)Byte(0x1A);
-                    group.ReinforcementPool = (sbyte)Byte(0x1B);
-                    group.ReinforcementFacing = (sbyte)Byte(0x1C);
-                    group.Byte1D = (sbyte)Byte(0x1D);
-                }
-                for (var k = 0; k < 3; k++)
-                {
-                    var kindAt = TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * before + 8 + k;
-                    if (group.Counts[k] == 0)
-                    {
-                        group.Kinds[k] = (sbyte)(job.Orig.FarChanged.TryGetValue(kindAt.ToString(), out var kind) ? kind : c.Input.Far[kindAt]);
-                    }
-                }
-            }
+            AdoptUnsetBytesOfTheNewRecord(c, job, c.Battle.FloorShown, before);
             return null;
         },
         ["R022+0x03E4"] = (c, job) =>
@@ -502,7 +546,24 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 // the Use Stairs entry (and so this action) is on only on a stairs record of the level, whose index R014+0xDC14 keeps (DS:C77E)
                 throw new SkipJob($"the stairs action with stairs record {c.Input.Ds[0xC77E + job.Args[0]]} past the level's {c.Input.Far[0x2FB6]}: R014+0xDC14 sets it from a stairs record of the level");
             }
+            if (c.Input.Ds[0xA6C4 + job.Args[0]] == (byte)PlaceAction.TakeLoot && (sbyte)c.Input.Ds[0xC81C + job.Args[0]] >= c.Input.Ds[0xC80E])
+            {
+                // the Loot Bodies entry is on only next to a pile outside real combat: R014+0xD7A2 (order mode's entry, peaceful only) stores the member's pile
+                // DS:C81C+m as a pile of the list or 0xFF, R014+0xEA10 as 0, a pile it makes or minus the recovered count; the list's count DS:C80E is reset only
+                // at a battle's start (R002+0x1A7A) and grows (R014+0x2324), so a pile index past it is the last battle's, which the entry overwrites
+                throw new SkipJob($"the loot action with member pile {(sbyte)c.Input.Ds[0xC81C + job.Args[0]]} past the list's {c.Input.Ds[0xC80E]} piles: the member's pile is one of the list or negative");
+            }
+            if (c.Input.Ds[0xA6C4 + job.Args[0]] == (byte)PlaceAction.DissolveLock && c.Input.Ds[ImageOverlay.Combatants + ImageOverlay.Record * job.Args[0] + 0x14] == 0)
+            {
+                // R014+0x2170 has one caller, combat_actions (R014+0x12B7), whose pass skips a combatant with status 0 (R014+0x11B0..0x11B6). The other actions of an
+                // empty member agree and stay judged; the dissolve one uses up a slot of its pack (the original's count 0 wraps to 0xFF), which the rewrite does not
+                throw new SkipJob("the dissolve action for an empty member: combat_actions passes over status 0 (R014+0x11B0), the only caller");
+            }
+            var floor = c.Battle.FloorShown;
+            var records = c.Tactics.Activations[floor].Count;
             Call(c.Tactics, "DoPlaceAction", job.Args[0]);
+            // the stairs make leave_level's record (R014+0x2170 case 2 -> R023+0x17D2): its unset bytes are the original's
+            AdoptUnsetBytesOfTheNewRecord(c, job, floor, records);
             return null;
         },
         ["R014+0xBC0C"] = (c, _) =>
@@ -582,7 +643,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         ["R014+0xEA10"] = (c, _) =>
         {
             LootOverlay.SkipBlocksPastTheFile(c.Input);
-            Call(c.Tactics, "GatherLoot");
+            UnlessLeaderIsNoCombatant(c, () => Call(c.Tactics, "GatherLoot"));
             return null;
         },
         ["R025+0x0000"] = (c, job) =>
