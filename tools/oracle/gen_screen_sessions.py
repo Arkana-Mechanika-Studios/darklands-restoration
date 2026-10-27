@@ -672,6 +672,10 @@ SCREENS = {
     "mbar": ("DKSAVE0.SAV", lambda: cut("menubar", "menu"), mbar_alphabet, []),
     "mbarm": ("DKSAVE17.SAV", lambda: cut("mapsave", "map"), mbar_alphabet, []),
     "trav": ("DKSAVE17.SAV", lambda: cut("mapsave", "map"), trav_alphabet, []),
+    "trav0": ("DKSAVE0.SAV", lambda: cut("pressburg-map", "map"), trav_alphabet, []),
+    "travw": ("synth/DKSAVE17-month0d3.sav", lambda: cut("mapsave", "map"), trav_alphabet, []),
+    "travs": ("synth/DKSAVE17-month6.sav", lambda: cut("mapsave", "map"), trav_alphabet, []),
+    "travn": ("synth/DKSAVE17-month10d1.sav", lambda: cut("mapsave", "map"), trav_alphabet, []),
     "gate": ("DKSAVE0.SAV", lambda: cut("orders-walk", "gate") + GATE_START, gate_alphabet,
              ["key:space", "wait:20000", "key:l", "wait:300", "key:enter", "wait:300"]),
     "pots": ("synth/Dksave10-pots.sav", lambda: cut("sheet", "sheet"), potions_alphabet(4), ["key:esc", "wait:200"]),
@@ -946,7 +950,7 @@ def input_wait(screen: str, step: str) -> str:
     hourglass, whose delays the headless host plays out frame by frame; the original's next step waits for it to be idle anyway."""
     if screen.startswith("mbar") or screen.startswith("rmbar"):
         return "wait:100"
-    if screen == "trav":
+    if screen.startswith("trav"):
         kind, _, value = step.partition(":")
         return "wait:600" if kind == "click" else "wait:60"
     if screen in ("brun", "bhurt", "bhurta", "bdead"):
