@@ -272,7 +272,7 @@ public sealed partial class TacticalBattle
                 {
                     var target = Battle[t];
                     target.WasHit = true;
-                    Attacks.ApplyDamage(Battle, t);
+                    ApplyDamage(t);
                     if (target.Status is CharacterStatus.Unconscious or CharacterStatus.Dead)
                     {
                         if (sh < Combatant.Count)

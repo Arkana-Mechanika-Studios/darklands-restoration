@@ -327,4 +327,44 @@ public sealed class DungeonTests
         Assert.Contains(0x17, records);
         Assert.Contains(0x1D, records);
     }
+
+    /// <summary>root 0000:1A9C (member_bars) with R014+0xDC4E..0xDD17 and R017+0x001E..0x004C: a member stepping into a doorway gets
+    /// "near a door" (DS:01A8 → DS:0049) in its row in place of the bars, which stays until the row is drawn again; stepping out draws the
+    /// bars; a full view redraw (floor_view_draw) shows the note of everyone standing in a place; in real combat the bars stay.</summary>
+    [Fact]
+    public void AMemberSteppingIntoADoorwayShowsNearADoorUntilTheRowIsDrawnAgain()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (screen, tactics) = Start(0x5E, 4545);
+        var level = tactics.Level;
+        var door = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => (short)level.GetWord(DoorsAt + 14 * d) > 0
+            && level.GetByte(DoorsAt + 14 * d + 4) > 0 && level.GetByte(DoorsAt + 14 * d + 5) > 0);
+        var at = DoorsAt + 14 * door;
+        var i = Enumerable.Range(0, Combatant.PartySlots).First(k => tactics.Battle[k].IsAble);
+        var c = tactics.Battle[i];
+        var outside = c.Position;
+        void Locations() => typeof(TacticalBattle).GetMethod("PartyLocations", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .Invoke(tactics, []);
+        tactics.Battle.RealCombat = false;
+        c.Position = new MapPoint(level.GetWord(at), level.GetWord(at + 2));
+        c.Flags &= ~(TacticalFlags.InDoorway | TacticalFlags.PlaceChanged);
+        Locations();
+        Assert.Equal("near a door", screen.PlaceNote(i));
+        Locations();
+        Assert.Equal("near a door", screen.PlaceNote(i));       // no row drawn: the note stays
+        screen.RowChanged(i);
+        Assert.Null(screen.PlaceNote(i));                       // the row drawn again: the bars
+        screen.MapChanged();
+        Assert.Equal("near a door", screen.PlaceNote(i));       // floor_view_draw: every member in a place
+        c.Position = outside;
+        Locations();
+        Assert.Null(screen.PlaceNote(i));                       // out of the doorway: the row drawn with the bars
+        tactics.Battle.RealCombat = true;
+        c.Position = new MapPoint(level.GetWord(at), level.GetWord(at + 2));
+        Locations();
+        Assert.Null(screen.PlaceNote(i));
+    }
 }

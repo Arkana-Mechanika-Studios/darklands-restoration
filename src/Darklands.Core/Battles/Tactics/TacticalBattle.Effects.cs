@@ -126,6 +126,17 @@ public sealed class EffectField : IEffectClouds
     /// <summary>DS:D842 = 0: an effect landing ends the enemies' delayed start.</summary>
     public event Action? Landed;
 
+    /// <summary>damage_apply drew the party panel rows anew (party_panel_rows(0x100), R014+0xAEC4).</summary>
+    public event Action? PanelRedrawn;
+
+    private void ApplyDamage(int i)
+    {
+        if (Attacks.ApplyDamage(Battle, i))
+        {
+            PanelRedrawn?.Invoke();
+        }
+    }
+
     private ushort Clock => Battle.Clock;
 
     private bool Paused => _paused();
@@ -496,7 +507,7 @@ public sealed class EffectField : IEffectClouds
                                 d = -c.ArmourQuality[0];
                             }
                             Attacks.QueueDamage(Battle, d, i, 1, 0);
-                            Attacks.ApplyDamage(Battle, i);
+                            ApplyDamage(i);
                         }
                         DropWornOut(i);
                         break;
@@ -505,7 +516,7 @@ public sealed class EffectField : IEffectClouds
                     {
                         var d = (lvl + 2) * 2 + Battle.RollOneTo(8);
                         Attacks.QueueDamage(Battle, ((lvl + 2) * 10 - c.MaximumEndurance) / 10 + d, i, c.ArmourValue[0] + 1, c.ArmourValue[0]);
-                        Attacks.ApplyDamage(Battle, i);
+                        ApplyDamage(i);
                         break;
                     }
             }
@@ -575,7 +586,7 @@ public sealed class EffectField : IEffectClouds
                         int sk = c.ArmourValue[0];
                         var r = sk < th ? dmg : sk == th ? dmg / 3 : dmg / 8;
                         Attacks.QueueDamage(Battle, ((lvl + 2) * 10 - c.ArmourQuality[0]) / 10 + r, i, th, sk);
-                        Attacks.ApplyDamage(Battle, i);
+                        ApplyDamage(i);
                         break;
                     }
                 case 8:
@@ -585,7 +596,7 @@ public sealed class EffectField : IEffectClouds
                         dmg >>= 2;
                     }
                     Attacks.QueueDamage(Battle, (c.ArmourQuality[0] + c.PiercingResistance) / -10 + dmg, i, c.ArmourValue[0] + 1, c.ArmourValue[0]);
-                    Attacks.ApplyDamage(Battle, i);
+                    ApplyDamage(i);
                     break;
                 default:
                     continue;

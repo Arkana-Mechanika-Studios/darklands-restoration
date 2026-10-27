@@ -720,6 +720,9 @@ public sealed partial class TacticalBattle
     /// <summary>DS:CA29: the battle is stopped (a pit or a timed exit): the ticks do nothing more.</summary>
     private bool _stopped;
 
+    /// <summary>DS:CA29: the battle is stopped (a pit or an alarm): combat_tick returns before its draw from then on.</summary>
+    public bool Stopped => _stopped;
+
     /// <summary>An alarm outside real combat: furniture n is removed, the battle ends after a moment with result 7 and the trigger is remembered.</summary>
     // orig: R014+0xD966 (19CD:23F6) draft
     private void FurnitureAlarm(int i, int k, byte n, int card) => Alarm(i, k, n, card, FurnitureRemovalAt, true);

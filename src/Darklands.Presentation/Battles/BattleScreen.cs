@@ -176,6 +176,9 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The tactical battle being shown (after <see cref="Start"/>).</summary>
     public TacticalBattle? Tactics => _battle;
 
+    /// <summary>The place note party row <paramref name="row"/> shows instead of its bars ("near a door" ...), null for the bars.</summary>
+    public string? PlaceNote(int row) => _placeNotes[row];
+
     /// <summary>The card the battle leaves for (battle_args).</summary>
     public int ResultCard { get; private set; }
 
@@ -499,6 +502,7 @@ public sealed class BattleScreen : ITacticalView
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
         // C: R002+0x0000 sets DS:C1F0 to the battlefield and DS:D6CE to the seed (the battle file keeps them).
+        Array.Clear(_placeNotes);
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
@@ -557,6 +561,7 @@ public sealed class BattleScreen : ITacticalView
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
+        Array.Clear(_placeNotes);
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
@@ -897,8 +902,69 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
+    /// <summary>
+    /// What member_bars put in each party row when the row was last drawn: a place note ("near a door", DS:0049 ...) in place of the
+    /// bars, or null (the bars). The row keeps it until it is drawn again.
+    /// </summary>
+    // orig: member_bars root 0000:1A9C, root 0000:1BB7..1CD4 (checked against the asm): when cbt_flags[i] (DS:A696) has bit 0x08 and
+    // real_combat (DS:A6C1) is 0, the text at the near pointer DS:01A8 (bit 0x02, in a doorway), DS:01AA (0x01, on stairs), DS:01AC (0x04,
+    // at a chest), DS:01AE (0x20, in an exit zone) or DS:01B0 (0x40, left the field), the first bit set in that order, replaces the three
+    // bars (the values are still drawn); with none of them, the bars. Bit 0x08 is set only while party_locations (R014+0xDC4E..0xDD17)
+    // draws the row of a member who entered a place and while floor_view_draw (R017+0x001E..0x004C) draws all the rows, so the note
+    // comes when a member steps into a place (or the view is drawn anew) and stays until the row is drawn again.
+    private readonly string?[] _placeNotes = new string?[Combatant.PartySlots];
+
+    /// <summary>A tester's trace (DARKLANDS_PANEL_TRACE): each row drawn, with the combat clock and its note.</summary>
+    public static Action<string>? PanelTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_PANEL_TRACE") is null ? null : Console.WriteLine;
+
+    // orig: party_panel_rows root 0000:1716 (which): the rows of the bits DS:01E4[which] (1 << which), all five for 0x100; each through
+    // member_bars, which chooses the note from the flags as they are at that moment.
     public void RowChanged(int member)
     {
+        if (member == -1)
+        {
+            for (var i = 0; i < Combatant.PartySlots; i++)
+            {
+                DrawRowNote(i, 0);
+            }
+        }
+        else if (member is >= 0 and < Combatant.PartySlots)
+        {
+            DrawRowNote(member, 0);
+        }
+    }
+
+    // orig: floor_view_draw R017+0x0000..0x0058: bit 0x08 set in cbt_flags[0..4], party_panel_frames(0x100) and party_panel_rows(0x100),
+    // then bit 0x08 cleared again: every member who stands in a place shows its note.
+    private void FloorViewPanel()
+    {
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            DrawRowNote(i, TacticalFlags.PlaceChanged);
+        }
+    }
+
+    private void DrawRowNote(int i, TacticalFlags extra)
+    {
+        if (_battle is not { } tb)
+        {
+            return;
+        }
+        var flags = tb.Battle[i].Flags | extra;
+        int? at = null;
+        if ((flags & TacticalFlags.PlaceChanged) != 0 && !tb.Battle.RealCombat)
+        {
+            at = (flags & TacticalFlags.InDoorway) != 0 ? 0x01A8
+                : (flags & TacticalFlags.OnStairs) != 0 ? 0x01AA
+                : (flags & TacticalFlags.AtChest) != 0 ? 0x01AC
+                : (flags & TacticalFlags.InExitZone) != 0 ? 0x01AE
+                : (flags & TacticalFlags.LeftField) != 0 ? 0x01B0
+                : null;
+        }
+        _placeNotes[i] = at is { } pointer
+            ? _assets.Executable.String(System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(_assets.Executable.DataSegment(pointer, 2)))
+            : null;
+        PanelTrace?.Invoke($"row {i} clock {tb.Battle.Clock} {_placeNotes[i] ?? "bars"}");
     }
 
     // orig: the timer callback root 047C:000A counts the combat clock (DS:07D4) while the set-up of combat_main R014+0x0000 loads its
@@ -952,6 +1018,7 @@ public sealed class BattleScreen : ITacticalView
     {
         ApplyViewOrigin();
         _viewRedrawn = true;
+        FloorViewPanel();
     }
 
     // orig: floor_view_draw R017+0x0000 draft with who ≥ 0: the centre becomes the combatant's cell (DS:E233 = x >> 5, DS:E235 = y >> 4)
@@ -962,6 +1029,7 @@ public sealed class BattleScreen : ITacticalView
         _view.CentreColumn = c.Position.Column;
         _view.CentreRow = c.Position.Row;
         _viewRedrawn = true;
+        FloorViewPanel();
     }
 
     // orig: combat_tick R014+0x1065..0x10A7 (checked against the asm): scry < 0x14 or > 0xA0, or scrx < 0x14 or > 0xDC, of DS:17B0, as
@@ -1957,6 +2025,7 @@ public sealed class BattleScreen : ITacticalView
         _battle!.ViewOrigin = null;
         _battle.FollowsActive = false;
         _viewRedrawn = true;
+        FloorViewPanel();
     }
 
     /// <summary>The Orders, Attack and Party titles and Change Marching Order (DS:9893) set to 2; returns what puts them back.</summary>
@@ -2087,6 +2156,8 @@ public sealed class BattleScreen : ITacticalView
         _ui.FlushKeys();
         _ui.WaitForButtonRelease();
         canvas.Restore(panel);
+        // orig: R021+0x03E3..0x03F6: party_panel_frames(0x100), party_panel_rows(0x100) as the screen closes
+        RowChanged(-1);
     }
 
     private void DrawEnemyInfo(Canvas canvas, int m, int x)
@@ -2313,7 +2384,13 @@ public sealed class BattleScreen : ITacticalView
         var canvas = _ui.Canvas;
         ApplyEnemyPalettes();
         ApplyViewOrigin();
-        RecordScreenPlaces();
+        // orig: R014+0x105B..0x1062: once DS:CA29 is set (a pit or an alarm stopped the battle, also in the tick that set it) combat_tick
+        // returns before combat_draw (R014+0x10AA), so cbt_screen_pos (R014+0x99F6) no longer moves +0x00 / +0x02, which the saved game
+        // keeps (lockstep session dungeon-mine-doormsg: the alarm of a riddle door)
+        if (!tb.Stopped)
+        {
+            RecordScreenPlaces();
+        }
         _view.Draw(canvas, tb.Level, _tiles!);
         var clip = BattlefieldView.Area;
         foreach (var pile in tb.LootPiles)
@@ -2750,12 +2827,17 @@ public sealed class BattleScreen : ITacticalView
             }
             var gone = c.Floor == BattleEnd.LeftThroughExit || c.Status is CharacterStatus.Dead or CharacterStatus.Away || (tb.Selected >= 0 && tb.Selected != i);
             var color = gone ? Palette.Grey : tb.Battle.Leader == i ? (byte)0x0E : Palette.White;
-            // orig: the panel's window DS:0156 (pointer DS:0168) has font slot 1 in a battle too (hooked at party_panel_rows root 0000:1716 / member_bars root 0000:1A9C over the gate battle: font 1 at every call), so the name, the values and the order letter are in the map panel's font (PartyPanel); the window colour set for the name stays for the values
+            // orig: the panel's window DS:0156 (pointer DS:0168) has font slot 1 in a battle too (hooked at party_panel_rows root 0000:1716 / member_bars root 0000:1A9C over the gate battle: font 1 at every call), so the name, the values, the place note and the order letter are in the map panel's font (PartyPanel); the window colour set for the name stays for the values
             _panel.Draw(canvas, 4, y1, c.Member.ShortName, color);
-            Bar(canvas, i, c.Endurance, c.MaximumEndurance, 0x15, 0x12, 9, color);
-            Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2, color);
+            var note = _placeNotes[i];
+            if (note is not null)
+            {
+                DrawPlaceNote(canvas, i, note, color);
+            }
+            Bar(canvas, i, c.Endurance, c.MaximumEndurance, 0x15, 0x12, 9, color, note is null);
+            Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2, color, note is null);
             var favour = (int)Core.Characters.Attribute.DivineFavor;
-            Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E, color);
+            Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E, color, note is null);
             if (StatusLetter(i) is { } letter)
             {
                 _panel.Draw(canvas, 6, y + 0x1F, letter.ToString(), Palette.White);
@@ -2818,9 +2900,22 @@ public sealed class BattleScreen : ITacticalView
         };
     }
 
-    /// <summary>A 16-pixel bar: the lost part white at the top, the rest in the stat colour; the value below.</summary>
+    // orig: member_bars root 0000:1C36..1CCF: draw_text_wrapped(DS:0168, text, 0x24, 0x13, i * 0x28 + dy + 9, font height, ...) with DS:01BC = 1
+    // (centred) in the window's colour (the name's), dy = (i * 0x28 - ext.high + 0x1F) / 2 but at least -1, ext = measure_text_wrapped of the same
+    // text at y = i * 0x28 + 9 (its high word the last line's bottom, y - 1 + height); the window's font is slot 1 (as the name and the values)
+    private void DrawPlaceNote(Canvas canvas, int row, string note, byte color)
+    {
+        var layout = new CardTextLayout(_panel);
+        var text = TextPainter.Encode(note);
+        var height = layout.MeasureHeight(text, 0x24, 0);
+        var dy = Math.Max(-1, (0x1F - 9 - height + 1) / 2);
+        layout.Draw(canvas, text, 0x13, row * PartyPanel.RowHeight + dy + 9, 0x24,
+            new CardTextLayout.Settings { Color = color, Leading = 0, Alignment = TextAlignment.Center });
+    }
+
+    /// <summary>A 16-pixel bar: the lost part white at the top, the rest in the stat colour; the value below (the bar not when a place note stands there).</summary>
     // orig: member_bars root 0000:1A9C (as PartyPanel.DrawBar): a "+" at (x - 1, top - 4) when the value exceeds the maximum; the value and a space at (textX, row * 0x28 + 0x1F) with the window's last column 0x38, in the name's colour
-    private void Bar(Canvas canvas, int row, int current, int maximum, int x, int textX, byte color, byte textColor)
+    private void Bar(Canvas canvas, int row, int current, int maximum, int x, int textX, byte color, byte textColor, bool bar = true)
     {
         var realMaximum = maximum;
         var top = row * PartyPanel.RowHeight + 0x0C;
@@ -2832,7 +2927,7 @@ public sealed class BattleScreen : ITacticalView
             lost = 15;
         }
         lost = Math.Max(0, lost);
-        for (var y = top; y <= bottom; y++)
+        for (var y = top; bar && y <= bottom; y++)
         {
             var c = y < top + lost ? Palette.White : color;
             canvas[x, y] = c;

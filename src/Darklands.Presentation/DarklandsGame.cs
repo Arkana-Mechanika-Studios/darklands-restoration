@@ -403,6 +403,10 @@ public sealed class DarklandsGame
         Core.Rules.TimePassage.Reseed(state);
         Core.World.CityFile.ReloadAfterBattle(state);
         state.Events.Reload();
+        // orig: root 03A1:0438..0441: after cards_startup (thunk 09C0:1919(0), 03A1:0430) thunk 09C0:190F(0) = advance_hours(0), before the
+        // pass's own end calls it again (03A1:0463, CardDispatcher.FinishPass): two more clock reseeds (lockstep session dungeon-mine-doormsg:
+        // the second second of the original's reload took the next clock seed)
+        Core.Rules.TimePassage.Advance(state, 0);
         return battles.LastResultCard;
     }
 

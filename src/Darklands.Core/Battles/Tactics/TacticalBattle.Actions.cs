@@ -274,7 +274,7 @@ public sealed partial class TacticalBattle
         {
             target.WasHit = true;
         }
-        Attacks.ApplyDamage(Battle, t);
+        ApplyDamage(t);
         if (target.Status is CharacterStatus.Unconscious or CharacterStatus.Dead)
         {
             c.Exchange = Exchange.None;

@@ -116,6 +116,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         Paths.UseHalfSizes(k => battle[k].HalfWidth, k => battle[k].HalfHeight);
         Effects = new EffectField(battle, Map, n => _view.Sound(n), ReadyWeapon, slot => SlotWeapons[slot], () => PauseByte != 0) { Terrain = field.Terrain };
         Effects.Landed += () => DelayedStart = false;
+        Effects.PanelRedrawn += () => _view.RowChanged(-1);
         battle.Clouds = Effects;
         for (var k = 0; k < Slots.Length; k++)
         {
@@ -897,6 +898,15 @@ public sealed partial class TacticalBattle : IBattleEndActions
     }
 
     // IBattleEndActions (combat_over's calls).
+
+    /// <summary>damage_apply on combatant i; when it ran to its end it drew the party panel rows anew (party_panel_rows(0x100), R014+0xAEC4).</summary>
+    private void ApplyDamage(int i)
+    {
+        if (Attacks.ApplyDamage(Battle, i))
+        {
+            _view.RowChanged(-1);
+        }
+    }
 
     public void LootAfterFight() => GatherLoot();
 

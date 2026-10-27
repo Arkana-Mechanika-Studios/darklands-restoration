@@ -426,13 +426,14 @@ public static class Attacks
 
     /// <summary>Applies the queued damage: endurance 0 = unconscious, strength 0 = dead (in a non-lethal fight both stop at 1).</summary>
     // orig: damage_apply R014+0xAE1E (18BF:098E) draft (byte-matched per the draft notes); checked against asm; tests: Oracle:battle.json
-    // DIVERGENCE: the party panel redraw (party_panel_rows(0x100)) is left to the battle screen.
-    public static void ApplyDamage(Battle battle, int i)
+    // C: the function ends with party_panel_rows(0x100) (R014+0xAEC1..0xAEC4), skipped by the early return of a combatant that is not able
+    // (R014+0xAE36 jumps past it): true tells the caller that the panel rows are drawn anew (the battle screen's RowChanged(-1)).
+    public static bool ApplyDamage(Battle battle, int i)
     {
         var c = battle[i];
         if (c.Status != CharacterStatus.Able)
         {
-            return;
+            return false;
         }
         if (c.QueuedEndurance > 42)
         {
@@ -468,6 +469,7 @@ public static class Attacks
                 c.Status = CharacterStatus.Able;
             }
         }
+        return true;
     }
 
     /// <summary>Readies weapon type <paramref name="weapon"/> (−1 with no missile flag: bare hands).</summary>
