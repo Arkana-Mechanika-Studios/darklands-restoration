@@ -49,9 +49,8 @@ public interface ITacticalView : IBattleViewport
     /// combat_tick's follow (DS:11B1 set): when combatant <paramref name="who"/>'s sprite, where the last frame put it (+scrx, +scry), lies
     /// outside 0x14..0xDC × 0x14..0xA0 of the view, floor_view_draw(who).
     /// </summary>
-    void KeepInView(int who)
-    {
-    }
+    /// <returns>True when the view was drawn again around the combatant.</returns>
+    bool KeepInView(int who) => false;
 
     /// <summary>
     /// The battle's set-up takes time while the combat clock runs (the timer callback counts it whenever DS:07D3 is 0): stage 0 when
@@ -762,6 +761,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
             RotateSpeedMasks();
             CombatActions();
         }
+        // orig: R014+0x1052: DS:D9E4 = DS:07D4 + 8, the clock as it is after the tick's phases (the tester's rise -4 of a long pass comes here)
+        ClockPhase?.Invoke(-4);
         NextTickAt = (ushort)(Clock + TickLength);
         // orig: R014+0x105B: DS:CA29 set by this tick's actions (a pit, an alarm): combat_tick returns before the follow and the draw
         if (_stopped)
@@ -769,9 +770,11 @@ public sealed partial class TacticalBattle : IBattleEndActions
             return true;
         }
         // orig: R014+0x1065..0x10A7: with DS:11B1 the view follows the active member (DS:17B0) by its place in the last frame
-        if (FollowsActive)
+        if (FollowsActive && _view.KeepInView(Battle.ActiveMember))
         {
-            _view.KeepInView(Battle.ActiveMember);
+            // orig: R014+0x10A1: after floor_view_draw (09C0:1C2F) DS:D9E4 = DS:07D4 + 8 again (the tester's rise -5: the redraw's time)
+            ClockPhase?.Invoke(-5);
+            NextTickAt = (ushort)(Clock + TickLength);
         }
         TurnTowardTargets();
         Effects.Drawn(_view);

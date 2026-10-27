@@ -264,6 +264,26 @@ def click_holds(log, steps, bwait_actual, lists=None) -> dict[int, int]:
         extra = passes[after][0] - passes[before][0] - expected
         if extra:
             out[held] = extra
+    # a click that is not between two keys: the original's log gives the click and the pointer moves their own battle pass ("click x,y at .. ms
+    # (battle pass N) in ..."; absent from older logs, then nothing is added). The hold is what the passes up to the next input that has a pass
+    # take more than its bwait: bwait n after a click or key counts n + 1, after a move n.
+    every = {}
+    if len(inputs) == len(lines):
+        for i, l in zip(inputs, lines):
+            if "(battle pass " in l:
+                every[i] = int(l.split("(battle pass ")[1].split(")")[0].split(",")[0])
+    for k, i in enumerate(inputs[:-1]):
+        if steps[i][0] != "click" or i not in every or k + 1 >= len(inputs):
+            continue
+        nxt = inputs[k + 1]
+        if nxt not in every:
+            continue
+        seq = [j for j in range(i + 1, nxt) if steps[j][0] not in ("wait", "shot", "shift", "ctrl")]
+        if len(seq) != 1 or steps[seq[0]][0] != "bwait" or actual.get(seq[0]) != int(steps[seq[0]][1]) or seq[0] in out:
+            continue
+        extra = every[nxt] - every[i] - (int(steps[seq[0]][1]) + 1)
+        if extra:
+            out[seq[0]] = extra
     return out
 
 
@@ -392,6 +412,19 @@ def sheet_callbacks(log) -> list[tuple[int, int]]:
     return [tuple(int(v) for v in l.split()[2].split(",")) for l in log if l.startswith("sheet callbacks ")]
 
 
+def box_callbacks(log) -> list[tuple[int, int]]:
+    """[(during, after)] for each hot key's message box in a battle, from the original's log ("box callbacks 13,16 (battle pass 746)" after the
+    key line of Alt-D / F / M / C): the timer callbacks of show_message's wait and of the rest of its pass."""
+    out, last = [], None
+    for l in log:
+        if l.startswith("key ") and "(battle pass " in l:
+            last = l.split()[1]
+        elif l.startswith("box callbacks ") and last in ("2000", "2100", "3200", "2E00"):
+            out.append(tuple(int(v) for v in l.split()[2].split(",")))
+            last = None
+    return out
+
+
 def menu_callbacks(log) -> list[tuple[int, int]]:
     """[(during, after)] for each run of the menu bar in a battle, from the original's log ("menu callbacks 1420,54 (battle pass 310)"): root 0000:0000
     with the bar up holds the clock while DS:07D1 counts on; after: up to the next pass (or the next bar run)."""
@@ -399,7 +432,7 @@ def menu_callbacks(log) -> list[tuple[int, int]]:
 
 
 def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
-                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=()):
+                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=(), boxes=()):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -514,6 +547,9 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     if menus:
         # the same for the menu bar's runs in a battle (root 0000:0000 with the bar up): the C# host has no time there either
         env["DARKLANDS_BATTLE_MENU_CALLBACKS"] = ";".join("%d,%d" % p for p in menus)
+    if boxes:
+        # and for the hot keys' message boxes in a battle (show_message's wait of the timer's tick byte)
+        env["DARKLANDS_BATTLE_BOX_CALLBACKS"] = ";".join("%d,%d" % p for p in boxes)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():
@@ -717,7 +753,7 @@ def main():
     rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
                                   got["stale"] if a.battle_records else None, sheet_callbacks(log),
                                   resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, steps, got["trace"]),
-                                  menu_callbacks(log))
+                                  menu_callbacks(log), box_callbacks(log))
     battle = None
     if a.battle_trace:
         lines = [l for l in output.splitlines() if l.startswith("pass ")]

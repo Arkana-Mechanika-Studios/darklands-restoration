@@ -49,7 +49,7 @@ CARD, HOLDRAND = 0xA772, 0x7B20     # the card being run; the random generator's
 SAVE_ITEM, LOAD_ITEM = 0x9920, 0x9934  # the Game menu's Save Game / Load Saved Game flags (1 on), which hot_keys obeys
 SAV_WRITE = (P(0x1462), 0x2ACE)        # R037+0x2ACE (comment): the saved-game writer
 MACHINE_STATE = ("resident", "trampolines", "call_stack", "mcbs", "dta", "scratch_sp", "count", "next_irq", "irqs", "pit_divisor",
-                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "waits", "pic_size", "pic_arena", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases", "press_at", "release_at", "rheld", "held_bit")
+                 "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "waits", "pic_size", "pic_arena", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases", "press_at", "release_at", "rheld", "held_bit", "map_reads")
 IDLE_MS = 3000                      # and as long without a random number drawn, a card change or a step
 IDLE_POLLS = 2000
 BATTLE_PAUSE_PASSES = 296           # the battle's start pause (it waits for Space, the combat clock standing still): the key is given after this many passes at one
@@ -89,6 +89,7 @@ class Session(Machine):
         super().__init__(exe, game, **kw)
         self.seen_int: dict = {}
         self.sheet_in = self.sheet_out = None   # the timer callbacks counted at the combat sheet (R022+0x0066 / +0x03C6; sessions hook them)
+        self.box_in = self.box_out = None       # the same for show_message (root 0000:24BC) in a battle pass outside the menu bar (run_original hooks it)
         self.menu_calls, self.menu_out = [], None   # the menu bar's runs in a battle (run_original hooks root 0000:0000)
         # no sound card: without CONFIG.DRK the program takes nsound.dlc (DS:A876 = 'n'), as the C# headless host plays without sound;
         # a sound driver would be loaded by the stubbed misc.exe slots and unloaded (freed) by every battle start (R002+0x0025)
@@ -158,11 +159,16 @@ class Session(Machine):
         self.rheld = False               # rdown: the right button held until rup (the menu bar)
         self.held_bit = 1                # the button bit of the click being held (1 left, 2 right)
         self.button_read = False
+        self.map_reads = 0               # the map passes that saw the click's left button down (overland_loop R030+0x02E6), logged at the release
         self._dos_extended = 0
         self.press_ms = 0
         self._polled = None
         for lin in POLL_POINTS | {TRACK_POINT}:
             self._hook_address(lin)
+        # overland_loop R030+0x02DC: `test byte [DS:6EF0], 1; jne 02E6`: the map pass found the left button down (it aims at the pointer);
+        # the passes a click is held for follow how long each pass takes in the emulator, so the release logs them ("maphold n") and
+        # lockstep.py holds the C# host's click for as many map passes
+        self.hook(P(0x1462), 0x02E6, lambda m: setattr(m, "map_reads", m.map_reads + 1) if m.held else None, record="R030")
         self._ticked = False
         self.battle_passes = 0
         self.still_clock, self.still_passes = None, 0      # the combat clock of the last pass and the passes at that value
@@ -246,6 +252,9 @@ class Session(Machine):
         the same point of the view again and a menu acts on the press only; screens that wait for the release go on."""
         self.held = False
         bit = self.held_bit
+        if self.map_reads:
+            self.log.append("maphold %d" % self.map_reads)
+            self.map_reads = 0
         self.put_word(DS, MOUSE_BUTTONS, 2 if self.rheld else 0)
         self.mouse[2] = 2 if self.rheld else 0
         self.releases[bit >> 1] += 1
@@ -384,6 +393,7 @@ class Session(Machine):
                 self.held = True
                 self.held_bit = bit
                 self.button_read = False
+                self.map_reads = 0
                 self.press_ms = self.ms
                 self.put_word(DS, MOUSE_BUTTONS, self.mouse[2])
                 self.put_word(DS, MOUSE_PRESSES, self.word(DS, MOUSE_PRESSES) | bit)
@@ -401,7 +411,9 @@ class Session(Machine):
                 self.releases[1] += 1
                 self.release_at[1] = (x, y)
                 self.put_word(DS, MOUSE_BUTTONS, self.word(DS, MOUSE_BUTTONS) & ~2)
-            self.log.append("%s %s at %d ms in %s" % (kind, value, self.ms, " < ".join(self.call_stack[-3:])))
+            # the battle pass the pointer step is taken at (as the keys' lines give theirs): lockstep.click_holds measures a click's hold from it
+            where = " (battle pass %d)" % self.battle_passes if 14 in self.resident and self.battle_passes else ""
+            self.log.append("%s %s at %d ms%s in %s" % (kind, value, self.ms, where, " < ".join(self.call_stack[-3:])))
             self.waits = 0
             self.idle_since = self.ms
             return None
@@ -484,6 +496,12 @@ class Session(Machine):
                 self._ticked = True
                 self.next_irq = self.count + BATTLE_QUIET
                 self.battle_passes += 1
+                if self.box_out is not None:
+                    # the timer callbacks of a message box shown in a battle pass (a hot key's: Alt-D / F / M / C) and of the rest of its pass
+                    # (DARKLANDS_BATTLE_BOX_CALLBACKS)
+                    during, mark = self.box_out
+                    self.log.append("box callbacks %d,%d (battle pass %d)" % (during, (self.word(DS, CALLBACKS) - mark) & 0xFFFF, self.battle_passes - 1))
+                    self.box_out = None
                 if self.sheet_out is not None:
                     # the timer callbacks of the combat sheet (R022+0x0066 .. 0x03C6, the clock held) and of the rest of its pass: the C#
                     # has no emulated time there (DARKLANDS_BATTLE_SHEET_CALLBACKS)
@@ -610,7 +628,9 @@ class Session(Machine):
         return max(1, self.pit_divisor * 1000 * BYTES_PER_MS // 1193182)
 
     def _bios_tick(self, m):
-        self.put_word(0x40, 0x6C, self.word(0x40, 0x6C) + 1)
+        n = (self.word(0x40, 0x6C) | (self.word(0x40, 0x6E) << 16)) + 1      # a real BIOS carries into 0040:006E (no wrap back after 65536 ticks)
+        self.put_word(0x40, 0x6C, n)
+        self.put_word(0x40, 0x6E, n >> 16)
 
     def _add_block_hook(self):
         """The block hook without the binding's two Python layers (its exception guard is the same: the first exception is kept and
@@ -1108,10 +1128,14 @@ class ClockTrace(list):
         super().__init__()
         self.draw_clocks, self.draws_at = [], []            # the combat clock at each draw; the draws made before each pass head
         self.phase_clocks, self.phases_at = [], []          # (-1 or -2, combat clock); the phase marks made before each pass head
+        # (-4 or -5, draws made before it, combat clock): the tick's reads of the clock for the next tick (R014+0x1052, again R014+0x10A1 after
+        # the view followed the active member), placed among the draws; the marks made before each pass head
+        self.sched_clocks, self.scheds_at = [], []
 
     def append(self, line):
         self.draws_at.append(len(self.draw_clocks))
         self.phases_at.append(len(self.phase_clocks))
+        self.scheds_at.append(len(self.sched_clocks))
         super().append(line)
 
 
@@ -1120,10 +1144,13 @@ def clock_jumps(lines):
     pass: a pass that computes for long (R014+0x4BFA..0x66FE) lets the time-based timer callbacks come, which the C# (one tick a pass) does not
     have. The rises that came between the pass's random draws (a draw that reads the clock, a re-path time, sees them) are listed by the
     draw's number in the pass; the callbacks beyond those come after the pass. The rises before the tick's scheduler and melee exchanges (which
-    test the clock against re-path and engage times before any draw) are listed as "-1:n" and "-2:n"."""
+    test the clock against re-path and engage times before any draw) are listed as "-1:n" and "-2:n"; those before the tick's reads of the
+    clock that schedule the next tick (R014+0x1052: DS:D9E4 = DS:07D4 + 8, and R014+0x10A1 after the view followed the active member), in
+    their place among the draws, as "-4:n" and "-5:n"."""
     clocks = [int(l.split()[2]) for l in lines]
     draw_clocks, draws_at = getattr(lines, "draw_clocks", []), getattr(lines, "draws_at", [])
     phase_clocks, phases_at = getattr(lines, "phase_clocks", []), getattr(lines, "phases_at", [])
+    sched_clocks, scheds_at = getattr(lines, "sched_clocks", []), getattr(lines, "scheds_at", [])
     out = []
     for k, (a, b) in enumerate(zip(clocks, clocks[1:])):
         if b - a <= 1:
@@ -1134,9 +1161,13 @@ def clock_jumps(lines):
                 if c > cur:
                     rises.append("%d:%d" % (phase, c - cur))
                     cur = c
-            for n, c in enumerate(draw_clocks[draws_at[k]:draws_at[k + 1]]):
+            # the draws and the schedule reads in the order they came (a read made after d draws comes before draw d)
+            events = [((d, 0), n - draws_at[k], c) for n, c in enumerate(draw_clocks[draws_at[k]:draws_at[k + 1]], draws_at[k]) for d in [n]]
+            if k + 1 < len(scheds_at):
+                events += [((d, -1), phase, c) for phase, d, c in sched_clocks[scheds_at[k]:scheds_at[k + 1]]]
+            for _, label, c in sorted(events, key=lambda e: e[0]):
                 if c > cur:
-                    rises.append("%d:%d" % (n, c - cur))
+                    rises.append("%d:%d" % (label, c - cur))
                     cur = c
         out.append((a, b - cur) + tuple(rises))
     return out
@@ -1167,6 +1198,17 @@ def _menu_flush(m):
         during, mark = m.menu_out
         m.menu_out = None
         m.log.append("menu callbacks %d,%d (battle pass %d)" % (during, (m.word(DS, CALLBACKS) - mark) & 0xFFFF, m.battle_passes))
+
+
+def _box_enter(m):
+    if 14 in m.resident and m.battle_passes and not any(up for _, up, _ in m.menu_calls):     # root 0000:0000 takes the hot keys: not with the bar up
+        m.box_in = m.word(DS, CALLBACKS)
+
+
+def _box_leave(m):
+    if m.box_in is not None:
+        m.box_out = ((m.word(DS, CALLBACKS) - m.box_in) & 0xFFFF, m.word(DS, CALLBACKS))
+        m.box_in = None
 
 
 def _menu_enter(m):
@@ -1224,6 +1266,10 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
     s.hook(P(0x0000), 0x0000, _menu_enter)
     s.hook(P(0x0000), 0x0080, _menu_up)
     s.hook(P(0x0000), 0x01D0, _menu_leave)
+    # show_message (root 0000:24BC .. its leave at 0000:251F) in a battle pass outside the bar: the timer callbacks of its wait of DS:07D2 and of
+    # the rest of the pass (the tick it can make due, and that tick's draw): the C# host has no time of its own there either
+    s.hook(P(0x0000), 0x24BC, _box_enter)
+    s.hook(P(0x0000), 0x251F, _box_leave)
     s.battle_pause = BATTLE_PAUSE_PASSES
     if getattr(battle_trace, "records", False):
         battle_trace.session = s
@@ -1231,6 +1277,8 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         s.hook(P(0x1DB7), 0x0D36, lambda m: battle_trace.phase_clocks.append((-1, m.word(DS, COMBAT_CLOCK))), record="R014")
         s.hook(P(0x0E76), 0x2A4A, lambda m: battle_trace.phase_clocks.append((-2, m.word(DS, COMBAT_CLOCK))), record="R014")
         s.hook(P(0x06A1), 0x29B6, lambda m: battle_trace.draw_clocks.append(m.word(DS, COMBAT_CLOCK)))
+        s.hook(P(0x0E76), 0x1052, lambda m: battle_trace.sched_clocks.append((-4, len(battle_trace.draw_clocks), m.word(DS, COMBAT_CLOCK))), record="R014")
+        s.hook(P(0x0E76), 0x10A1, lambda m: battle_trace.sched_clocks.append((-5, len(battle_trace.draw_clocks), m.word(DS, COMBAT_CLOCK))), record="R014")
     seeds = []
     def srand(m):
         # a clock seed when the call follows `call time` (06A1:23A8; push ax): srand((unsigned)time(0)); other seeds come from the game

@@ -116,6 +116,10 @@ public sealed class BattleScreen : ITacticalView
     /// (DARKLANDS_BATTLE_MENU_CALLBACKS, "1420,54;..."); the C# host has no time of its own there in OneTickPerPass.</summary>
     public static Queue<(int During, int After)>? MenuCallbacks { get; set; } = ParseSheetCallbacks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_MENU_CALLBACKS"));
 
+    /// <summary>A debugging aid: the same for each message box of a hot key in a battle (Alt-D / F / M / C: show_message's wait of 0x3C ticks of the
+    /// timer's tick byte), as tools/oracle/lockstep.py measures them in the original (DARKLANDS_BATTLE_BOX_CALLBACKS).</summary>
+    public static Queue<(int During, int After)>? BoxCallbacks { get; set; } = ParseSheetCallbacks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_BOX_CALLBACKS"));
+
     /// <summary>The callbacks the original had after the last sheet in its pass (SheetCallbacks), for the pass's end.</summary>
     private int _afterSheetCallbacks;
 
@@ -404,7 +408,19 @@ public sealed class BattleScreen : ITacticalView
                 }
                 return true;
             case Keys.AltQ or Keys.AltP or Keys.AltD or Keys.AltF or Keys.AltM or Keys.AltC:
-                return _hotKey?.Invoke(key) ?? false;
+                var acted = _hotKey?.Invoke(key) ?? false;
+                if (acted && OneTickPerPass && key is Keys.AltD or Keys.AltF or Keys.AltM or Keys.AltC && BoxCallbacks is { Count: > 0 } measured)
+                {
+                    // C: the host has no time of its own in OneTickPerPass: the timer callbacks of the box's wait (root 0000:24BC: DS:07D1 counts on)
+                    // and, paused, those after it up to the next pass
+                    var (during, after) = measured.Dequeue();
+                    CountCallbacks(during);
+                    if (_battle!.PauseByte != 0)
+                    {
+                        _afterSheetCallbacks += after;
+                    }
+                }
+                return acted;
             default:
                 return false;
         }
@@ -1034,13 +1050,15 @@ public sealed class BattleScreen : ITacticalView
 
     // orig: combat_tick R014+0x1065..0x10A7 (checked against the asm): scry < 0x14 or > 0xA0, or scrx < 0x14 or > 0xDC, of DS:17B0, as
     // cbt_screen_pos R014+0x99F6 left them in the last frame (the sprite's top left in the view)
-    public void KeepInView(int who)
+    public bool KeepInView(int who)
     {
         var (sx, sy) = _battle!.Battle[who].ScreenPlace;
         if (sy < 0x14 || sy > 0xA0 || sx < 0x14 || sx > 0xDC)
         {
             Recentre(who);
+            return true;
         }
+        return false;
     }
 
     /// <summary>The loot screen over the battle (the party records are the combatants): what the party leaves stays in the list.</summary>
