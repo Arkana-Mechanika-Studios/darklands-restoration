@@ -139,6 +139,17 @@ def after_dialog(steps, i) -> bool:
     return False
 
 
+def waits_since_key(steps, i) -> int:
+    """The frames of the wait steps between step i and the input step before it."""
+    total = 0
+    j = i - 1
+    while j >= 0 and steps[j][0] in ("wait", "shot"):
+        if steps[j][0] == "wait":
+            total += int(steps[j][1])
+        j -= 1
+    return total
+
+
 def dialog_gaps(log, steps, logged: int) -> list[int]:
     """The battle passes from the last key read in a save or load dialog (R037+0x2A68, R037+0x8B76) to the next key the battle took, in
     order, when the bwaits after the dialogs are exactly those missing from BWAIT_ACTUAL (else none)."""
@@ -433,7 +444,11 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
                 # (orig_side.py, before that pass's cursor keys): the C# host feeds it at the start of its frame, one frame later
                 cost -= 1
             if after_dialog(steps, i) and (gap := next(gaps, None)) is not None:
-                args.append("wait:%d" % max(0, gap - 1 - cost))
+                # the gap counts every pass from the dialog's last key on. The wait steps between that key and this bwait (the script's
+                # wait:300 after the save's Enter, wait:600 after the load's L) are frames the C# host runs as battle passes, where the
+                # original spent them inside the dialog's file work; the key's own frames (BWAIT_FRAMES) are the dialog's, not battle passes
+                # (round B3, b3-probe1: the next key came 297 passes late in a running battle, 3 early without the key's frames)
+                args.append("wait:%d" % max(0, gap - 1 - cost + BWAIT_FRAMES - waits_since_key(steps, i)))
                 continue
             actual = next(seen, int(v))
             later = 0

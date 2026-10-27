@@ -839,6 +839,12 @@ SESSIONS["b2-einfo-7b"] = "synth/DKSAVE0-card7b.sav"
 BATTLE_RECORDS.add("b2-einfo-7b")
 
 
+# b3-sessions: saves in a running battle (the dialogs' passes, the cursor keys' bytes), Alt-S refused in real combat, the probes of round B3 (local/batch/b3)
+for _name in ("b3-save-fight", "b3-save-fight2", "b3-save-fight3", "b3-probe1", "b3-probe2", "b3-probe3"):
+    SESSIONS[_name] = "DKSAVE99.SAV"
+    BATTLE_RECORDS.add(_name)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out")

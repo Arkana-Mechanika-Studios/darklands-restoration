@@ -329,6 +329,10 @@ public sealed class DarklandsGame
     /// <summary>The combatants' seen positions (20A5:79A9), a program global: a game loaded keeps them.</summary>
     private Core.Battles.MapPoint[][]? _seenPositions;
 
+    /// <summary>The cursor keys' state (DS:D728, DS:D73B, DS:D7FE, DS:D947, DS:D945), program globals: a game loaded keeps them (a battle
+    /// file restored replaces them).</summary>
+    private readonly Core.Battles.Tactics.CursorKeyState _cursorKeys = new();
+
     /// <summary>
     /// A card returned −2..−6: the battle it ordered is fought, the dead leave the party and the
     /// rest stand up again; if nobody is left (or all fell, result 5) the game ends with the
@@ -416,6 +420,7 @@ public sealed class DarklandsGame
         // writes them (lockstep session savemid-mine)
         battles.ViewCentre = _battleViewCentre;
         battles.SeenPositions = _seenPositions;
+        battles.CursorKeys = _cursorKeys;
         battles.Load = () =>
         {
             _battleViewCentre = battles.CurrentViewCentre;

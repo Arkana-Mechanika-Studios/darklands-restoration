@@ -1,4 +1,4 @@
-# Round B3 (save/load in a live fight): DKSAVE99, the mines: Dietrich walks west into the ambush (as savemid-mine), saved at once while the kobolds fight (DKSAVE1), Alt-L of it (resume with the fight on), unpaused 40 passes, saved again (DKSAVE2); the .SAV/.BSV of each are compared
+# Round B3 (Alt-S in real combat): DKSAVE99, the mines: Dietrich walks west into the ambush (as savemid-mine); Space pauses the fight, Alt-S is refused (DS:9920 = 2 with DS:A6C1, R014+0x036B..0x0388: no dialog, no file), Space resumes it and the fight goes on; the battle records are compared (a save dialog would hold the second Space)
 key:t
 wait:5
 key:l
@@ -75,28 +75,10 @@ bwait:7
 key:left
 bwait:7
 key:left
-bwait:7
-bwait:15
-key:alts
-wait:100
-key:enter
-wait:300
+bwait:22
+key:space
 bwait:20
-key:altl
-wait:100
-key:y
-wait:300
-key:l
-wait:600
+key:alts
 bwait:20
 key:space
-bwait:40
-key:alts
-wait:100
-key:enter
-wait:300
-bwait:20
-key:down
-bwait:7
-key:down
-bwait:7
+bwait:80

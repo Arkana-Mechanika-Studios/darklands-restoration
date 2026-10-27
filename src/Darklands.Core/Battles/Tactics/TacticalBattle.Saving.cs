@@ -119,6 +119,8 @@ public sealed partial class TacticalBattle
         v[BattleVariables.PileCount] = (byte)loot.Piles.Count;
         v[BattleVariables.Gathered] = (byte)loot.Gathered;
         v[BattleVariables.ActivationsOn] = Flag(ActivationsEnabled);
+        // orig: R003+0x00DC at 0x02DC..0x0315: DS:D728, DS:D73B, DS:D7FE, DS:D947 and the word DS:D945 as they are
+        CursorKeys.Write(v.AsSpan(BattleVariables.CursorKeys, 6));
         v[BattleVariables.DelayedStart] = Flag(DelayedStart);
         PutWord(v, BattleVariables.BattlefieldType, BattlefieldType);
         // C: the six bytes DS:C624..DS:C629 as they are (the five order bytes, stale ones past the length included, and the length).
@@ -362,6 +364,9 @@ public sealed partial class TacticalBattle
         InitialEnemySpot = (new MapPoint((short)Word(InitialSpotRecord, 8), (short)Word(InitialSpotRecord, 10)), InitialSpotRecord[12]);
         Map.IgnorePeople = v[BattleVariables.IgnorePeople] != 0;
         ActivationsEnabled = v[BattleVariables.ActivationsOn] != 0;
+        // orig: R003+0x0CE8 at 0x0EDB..0x0F06: DS:D728, DS:D73B, DS:D7FE, DS:D947, DS:D945 back (the start's member selection that follows
+        // does not leave order mode, DS:A6B2 being 0xFF: D7FE stays as read until the first tick's order_mode_enter)
+        CursorKeys.Read(v.AsSpan(BattleVariables.CursorKeys, 6));
         DelayedStart = v[BattleVariables.DelayedStart] != 0;
         BattlefieldType = Word(v, BattleVariables.BattlefieldType);
         v.AsSpan(BattleVariables.MarchingOrder, MarchingOrderBytes.Length).CopyTo(MarchingOrderBytes);

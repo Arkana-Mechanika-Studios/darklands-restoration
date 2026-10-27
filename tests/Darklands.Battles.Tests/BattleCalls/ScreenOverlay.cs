@@ -100,8 +100,9 @@ internal static class ScreenOverlay
         SetField(screen, "_releases", (int)(short)Word(ds, Releases));
         SetField(screen, "_releaseX", x);
         SetField(screen, "_releaseY", y);
-        SetField(screen, "_keyboardHover", ds[KeyboardHover] != 0);
-        SetField(screen, "_keyboardClick", ds[KeyboardClick] != 0);
+        var keys = Field<Darklands.Core.Battles.Tactics.TacticalBattle>(screen, "_battle").CursorKeys;
+        keys.Hover = ds[KeyboardHover] != 0;
+        keys.Click = ds[KeyboardClick] != 0;
         if (ds[Releases] != 0 || ds[Releases + 1] != 0)
         {
             // releases already counted: the place is the one the driver's answer kept in the buffer DS:C4FE names (+4, +6)
@@ -148,7 +149,8 @@ internal static class ScreenOverlay
             }
         }
         Put(Releases, "releases waiting", Field<int>(screen, "_releases"), 2);
-        Put(KeyboardHover, "keyboard hover", Field<bool>(screen, "_keyboardHover") ? 1 : 0, 1);
-        Put(KeyboardClick, "keyboard click", Field<bool>(screen, "_keyboardClick") ? 1 : 0, 1);
+        var keys = Field<Darklands.Core.Battles.Tactics.TacticalBattle>(screen, "_battle").CursorKeys;
+        Put(KeyboardHover, "keyboard hover", keys.Hover ? 1 : 0, 1);
+        Put(KeyboardClick, "keyboard click", keys.Click ? 1 : 0, 1);
     }
 }

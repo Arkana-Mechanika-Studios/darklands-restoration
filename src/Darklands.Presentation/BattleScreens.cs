@@ -183,6 +183,10 @@ public sealed class BattleScreens
     /// (only a path found writes it, R014+0xF568): the last battle's (or the battle a load left) arrays, null before any battle.</summary>
     public Darklands.Core.Battles.MapPoint[][]? SeenPositions { get; internal set; }
 
+    /// <summary>The cursor keys' state (DS:D728, DS:D73B, DS:D7FE, DS:D947, DS:D945), program globals no battle start clears: each battle
+    /// works on this one (DarklandsGame keeps it across loads; a battle file restored puts its bytes back).</summary>
+    public Darklands.Core.Battles.Tactics.CursorKeyState CursorKeys { get; internal set; } = new();
+
     /// <summary>The view centre now: the running battle's while one runs, else <see cref="ViewCentre"/>.</summary>
     public (int Column, int Row) CurrentViewCentre => Current?.ViewCentre ?? ViewCentre;
 
