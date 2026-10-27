@@ -55,6 +55,23 @@ class R2(r1.R1):
         return [{"s": "head", "o": 0x6A, "hex": wf.w16(rng.choice([0, 1, 5, 10, 11, 11, 11])).hex()}, {"s": "head", "o": 0x6C, "hex": wf.w16(rng.choice([0, 15, 28, 29, 30])).hex()},
                 {"s": "head", "o": 0x6E, "hex": wf.w16(rng.choice([0, 12, 23])).hex()}]
 
+    def handler(self) -> list:
+        ops = super().handler()
+        n = r1.HANDLERS[self.coord]
+        rng = self.rng
+        if n == 3 and rng.random() < 0.6:
+            # the scan of the quests ends at the last slot: the expiring event, fillers up to slot 298, a quest (kind 8) at slot 299 at another place
+            y = self.year()
+            have = len(self.sav.events) + len(ops)
+            for _ in range(max(0, 299 - have)):
+                ops.append({"s": "event+", "hex": r1.event_hex(y, rng.choice([0x3B, 0x3D, 0x47, 0x52, 0x60]), type_=rng.randrange(0, 5), owner=0xFFFE, loc=self.cur_loc(), flags=1)})
+            other = (self.cur_loc() + 1 + rng.randrange(max(1, self.places - 1))) % max(1, self.places)
+            ops.append({"s": "event+", "hex": r1.event_hex(y, r1.KIND_QUEST, type_=rng.randrange(0, 12), owner=rng.choice([0xFFFE, other]), loc=other,
+                                                          value=rng.randrange(3), extra=rng.randrange(3), tag=rng.randrange(1, 14), d1=rng.randrange(5), d2=rng.randrange(5))})
+        if n == 6:
+            ops.append({"s": "ds", "o": 0x01BD, "hex": "%02x" % rng.choice([0, 0, 1])})
+        return ops
+
     def scenario(self) -> list:
         if self.coord in AWAY and self.rng.random() < 0.9:
             return self.away()
@@ -74,6 +91,9 @@ def main():
     wf.FUNCTIONS["R029+0x2A32"] = [wf.kind_, wf.small_, pick(1, 2, 12, 24, 0x270F, 9999, 5000, 300)]
     wf.FUNCTIONS["R029+0x2B36"] = [wf.kind_, pick(1, 2, 12, 24, 0x270F, 9999, 100)]
     wf.FUNCTIONS["R029+0x54D8"] = [pick(1, 5, 24, 100, 500, 720, 1000, 2000, 5000, 9000, 20000)]
+    days = pick(0, 1, 30, 31, 32, 58, 59, 60, 90, 120, 180, 270, 333, 334, 335, 364, 365, 366, 400, 700, 729, 730, 731, 1000, 32000, 0x7FFF, 0xFFFF, 0xFFFE, 0x8000)
+    wf.FUNCTIONS["R029+0x5848"] = [days]
+    wf.FUNCTIONS["R029+0x5892"] = [days]
     r1.R1 = R2
     r1.main()
 

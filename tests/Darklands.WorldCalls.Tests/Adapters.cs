@@ -25,6 +25,10 @@ internal static class Adapters
         ["R029+0x54D8"] = c => { TimePassage.Advance(c.State, c.S(0)); return null; },
         ["R029+0x5590"] = c => { TimePassage.AdvanceDays(c.State, c.S(0)); return null; },
 
+        // day of the year to month / day of the month (R029+0x5848, R029+0x5892)
+        ["R029+0x5848"] = c => Quests.MonthOf(c.S(0)),
+        ["R029+0x5892"] = c => Quests.DayOfMonth(c.S(0)),
+
         // ---- timed events
         ["R029+0x2E74"] = c => c.State.Events.Update(c.S(0), c.S(1), c.S(2), c.S(3), c.S(4), c.S(5), (EventUpdate)c.S(6)),
         ["R029+0x37E2"] = c => c.State.Events.CountAt(c.S(0), c.S(1)),
