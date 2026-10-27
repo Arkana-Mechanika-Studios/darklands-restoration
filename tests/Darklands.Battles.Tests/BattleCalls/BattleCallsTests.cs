@@ -462,6 +462,10 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             // (the sheets F1..F5, Enemy Info, Surrender, Throw's menu, the Alt keys of the menu bar) run a loop of their own that the original's call
             // does not get its keys for.
             var key = job.Args[0] & 0xFFFF;
+            // the BIOS shift flags (0040:0017) the call was made with (round B3: the second argument; bits 0 and 1 the Shifts, bit 2 Ctrl)
+            var flags = job.Args.Length > 1 ? job.Args[1] : 0;
+            c.Host.ShiftHeld = (flags & 3) != 0;
+            c.Host.CtrlHeld = (flags & 4) != 0;
             if (c.Input.Ds[0x907B] >= Combatant.PartySlots)
             {
                 // every writer of the leader DS:907B stores a party slot (the new-leader search loops over the five party slots; the battle starts with one):

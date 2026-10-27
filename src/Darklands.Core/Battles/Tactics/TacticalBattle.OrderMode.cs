@@ -81,9 +81,9 @@ public sealed partial class TacticalBattle
     /// DS:D7FE: the cursor keys move the pointer (set by entering order mode and by travelling as a group, cleared by leaving
     /// order mode, by the group's end and by single file).
     /// </summary>
-    // orig: R014+0xBC0C sets it, R014+0xBCA8 clears it; R016+0x0BD6 (the group: 1 when move_mode
-    // becomes 1, else 0), R016+0x0CDC (single file: 0)
-    public bool CursorKeysOn { get; private set; }
+    // C: R014+0xBC0C sets it, R014+0xBCA8 clears it; R016+0x0BD6 (the group: 1 when move_mode
+    // C: becomes 1, else 0), R016+0x0CDC (single file: 0); the byte lives in CursorKeys (CursorKeyState)
+    public bool CursorKeysOn { get => CursorKeys.On; private set => CursorKeys.On = value; }
 
     /// <summary>order_mode (DS:A6B3): a member is being given an order.</summary>
     public bool InOrderMode => _orderMode;

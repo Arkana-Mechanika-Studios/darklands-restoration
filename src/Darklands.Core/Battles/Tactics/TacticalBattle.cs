@@ -168,6 +168,10 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>DS:07D1: timer callbacks since the last combat tick (the screen counts them, paused or not).</summary>
     public int TimerCallbacks { get; set; }
 
+    /// <summary>The cursor keys' state (DS:D728, DS:D73B, DS:D7FE, DS:D947, DS:D945): program globals, so the screen gives each battle the
+    /// program's (the last battle's); a battle on its own has its own.</summary>
+    public CursorKeyState CursorKeys { get; set; } = new();
+
     /// <summary>ai_paused (DS:A695): order mode; the AI, melee and actions are frozen.</summary>
     public bool Paused { get => PauseByte == 1; private set => PauseByte = (byte)(value ? 1 : 0); }
 

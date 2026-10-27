@@ -158,8 +158,6 @@ public sealed class BattleScreen : ITacticalView
     private int _releases;
     private int _releaseX, _releaseY;
 
-    /// <summary>DS:D728: a cursor key is held (the hover acts as with the button held); DS:D73B: the keyboard's click (at the pointer).</summary>
-    private bool _keyboardHover, _keyboardClick;
     private double _clockFraction;
 
     public BattleScreen(GameUi ui, BattleAssets assets, GameState state, BattleScreens owner)
@@ -499,7 +497,7 @@ public sealed class BattleScreen : ITacticalView
         // C: R002+0x0000 sets DS:C1F0 to the battlefield and DS:D6CE to the seed (the battle file keeps them).
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
-            ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed,
+            ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
             StaleFlags = _state.BattleFile is { } program ? [.. Enumerable.Range(0, Combatant.Count).Select(i => (ushort)(program.Variables[BattleVariables.Flags + 2 * i] | program.Variables[BattleVariables.Flags + 2 * i + 1] << 8))] : null,
             StalePaths = _state.BattleFile is { } heldFile ? (heldFile.Variables[BattleVariables.Paths..(BattleVariables.Paths + Combatant.Count * Combatant.PathLength)],
                 heldFile.Variables[BattleVariables.PathIndex..(BattleVariables.PathIndex + Combatant.Count)]) : null,
@@ -557,7 +555,7 @@ public sealed class BattleScreen : ITacticalView
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
-            ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed,
+            ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
         };
         KeepSeenPositions(battle);
         for (var i = 0; i < Combatant.PartySlots; i++)
@@ -1380,9 +1378,9 @@ public sealed class BattleScreen : ITacticalView
         _ => 0,
     };
 
-    /// <summary>DS:E094: the combat tick the pointer last moved in; DS:D947: a click when the key is let go; DS:07D6: timer callbacks since the keys were last let go.</summary>
+    /// <summary>DS:E094: the combat tick the pointer last moved in; DS:07D6: timer callbacks since the keys were last let go. The hover
+    /// (DS:D728), the keyboard's click (DS:D73B) and the click when the key is let go (DS:D947) are the battle's CursorKeys.</summary>
     private int _pointerTick = -1;
-    private bool _clickOnRelease;
     private int _keysHeldCallbacks;
 
     /// <summary>
@@ -1398,30 +1396,33 @@ public sealed class BattleScreen : ITacticalView
     private void CursorKeys()
     {
         var tb = _battle!;
+        var keys = tb.CursorKeys;
         var (dx, dy) = (_ui.Directions.X, _ui.Directions.Y);
         if (dx == 0 && dy == 0)
         {
-            _keyboardHover = false;
-            if (_clickOnRelease)
+            keys.Hover = false;
+            if (keys.ClickOnRelease)
             {
-                _keyboardClick = true;
-                _clickOnRelease = false;
+                keys.Click = true;
+                keys.ClickOnRelease = false;
             }
+            // C: R014+0x38AC..0x38B1: DS:07D6 = DS:D945 = 0
             _keysHeldCallbacks = 0;
+            keys.ReleasedAt = 0;
             return;
         }
         var key = 0;
         if (_pointerTick != tb.Ticks)
         {
             _pointerTick = tb.Ticks;
-            _keyboardHover = true;
+            keys.Hover = true;
             if (tb.MoveMode != 1)
             {
-                _clickOnRelease = true;
+                keys.ClickOnRelease = true;
             }
             key = ArrowOf(dx, dy);
         }
-        var t = (short)_keysHeldCallbacks;
+        var t = (short)(_keysHeldCallbacks - keys.ReleasedAt);
         var speed = t <= 0x2D ? 1 : t <= 0x4B ? 3 : t <= 0x5A ? 5 : 10;
         var (mx, my) = (_ui.Mouse.X, _ui.Mouse.Y);
         int Up() => my - speed >= 0 ? my - speed : 0;
@@ -1538,7 +1539,7 @@ public sealed class BattleScreen : ITacticalView
                 // R014+0xBCA8();`: travelling as a group, Enter clicks at the pointer
                 if (tb.CursorKeysOn && tb.MoveMode == 1)
                 {
-                    _keyboardClick = true;
+                    tb.CursorKeys.Click = true;
                 }
                 else if (tb.MoveMode == 0)
                 {
@@ -1752,7 +1753,7 @@ public sealed class BattleScreen : ITacticalView
         tb.GroupCursorTimeout();
         var mouse = _ui.Mouse;
         var mx = mouse.X - BattlefieldView.Left;
-        if ((_keyboardHover || mouse.Left) && mx >= 0 && mx < 0x104 && !_ui.CtrlHeld)
+        if ((tb.CursorKeys.Hover || mouse.Left) && mx >= 0 && mx < 0x104 && !_ui.CtrlHeld)
         {
             if (tb.MoveMode == 0)
             {
@@ -1772,18 +1773,18 @@ public sealed class BattleScreen : ITacticalView
             }
         }
         TakeReleases();
-        if (_releases <= 0 && !_keyboardClick)
+        if (_releases <= 0 && !tb.CursorKeys.Click)
         {
             return;
         }
         int ex, ey;
-        if (_keyboardClick)
+        if (tb.CursorKeys.Click)
         {
             if (tb.MoveMode != 0)
             {
                 tb.KeepGroupCursor();
             }
-            _keyboardClick = false;
+            tb.CursorKeys.Click = false;
             (ex, ey) = (_ui.Mouse.X, _ui.Mouse.Y);
         }
         else
