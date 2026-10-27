@@ -22,6 +22,12 @@ public interface IBattleEndActions
 
     /// <summary>The victory clean-up of the sprites and animations (enemy_anim_free5, cbt_set_anim(i, 5)).</summary>
     void VictoryCleanUp();
+
+    /// <summary>
+    /// <c>floor_view_draw</c>(<paramref name="member"/>) and <c>combat_draw</c>: the view drawn anew around combatant member's cell, then a frame of
+    /// the renderer (its random draws, the turns toward the targets, the arrived missiles removed, the target cursor).
+    /// </summary>
+    void RedrawAround(int member);
 }
 
 /// <summary>
@@ -51,7 +57,8 @@ public static class BattleEnd
     }
 
     /// <summary>The end test; true when the battle screen should close.</summary>
-    // orig: combat_over R014+0x08FE (0E76:08FE) draft; checked against asm up to R014+0x0A54 (results 4/6/7, enemy floor, fled/left); tests: BattleEndTests
+    // orig: combat_over R014+0x08FE (0E76:08FE) draft; checked against asm up to R014+0x0B1C (results 4/6/7, enemy floor, fled/left, the switch to the
+    //   party's other floor); tests: BattleEndTests
     public static bool IsOver(Battle b, IBattleEndActions actions)
     {
         var party = b.Combatants.Take(Combatant.PartySlots).ToArray();
@@ -146,9 +153,13 @@ public static class BattleEnd
                     {
                         b[j].Status = CharacterStatus.Empty;
                     }
-                    ChooseNewLeader(b);
+                    // C: R014+0x0AFC..0x0B1C: si, the member the view is drawn around, is the first able member, or the new leader when one is chosen.
+                    var who = ChooseNewLeader(b) ?? first;
                     LeaveCombatMode(b, actions);
                     Recover(b, actions);
+                    // C: R014+0x0AB5..0x0ABE: floor_view_draw(si) (09C0:1C2F) and combat_draw (14F7:0008) before the return of 0: the renderer's
+                    //   random draws and the removal of the arrived missiles come in this pass, not with the next tick's draw.
+                    actions.RedrawAround(who);
                     return false;
                 }
             }
@@ -262,20 +273,25 @@ public static class BattleEnd
         return !(b.Result == BattleResult.Running || b.Persistent || now <= b.EndTime);
     }
 
-    /// <summary>When the leader cannot lead (empty, dead or gone), the first able or unconscious member leads.</summary>
-    private static void ChooseNewLeader(Battle b)
+    /// <summary>
+    /// When the leader cannot lead (empty, dead or gone), the first able or unconscious member leads; returns the slot the search stopped at
+    /// (<see cref="Combatant.PartySlots"/> when it found nobody), null when the leader stays.
+    /// </summary>
+    private static int? ChooseNewLeader(Battle b)
     {
-        if (b[b.Leader].Status is CharacterStatus.Empty or CharacterStatus.Dead or CharacterStatus.Away)
+        if (b[b.Leader].Status is not (CharacterStatus.Empty or CharacterStatus.Dead or CharacterStatus.Away))
         {
-            for (var i = 0; i < Combatant.PartySlots; i++)
+            return null;
+        }
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            if (b[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious)
             {
-                if (b[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious)
-                {
-                    b.Leader = b.ActiveMember = i;
-                    break;
-                }
+                b.Leader = b.ActiveMember = i;
+                return i;
             }
         }
+        return Combatant.PartySlots;
     }
 
     /// <summary>Leaves battle mode: no more real combat, the alarm reset.</summary>

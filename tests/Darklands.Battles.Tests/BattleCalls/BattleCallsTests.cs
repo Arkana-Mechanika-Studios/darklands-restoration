@@ -142,19 +142,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
     {
         ["R014+0x08FE"] = (c, job) =>
         {
-            var switches = c.Tactics.LevelSwitches;
             var over = UnlessLeaderIsNoCombatant(c, () => BattleEnd.IsOver(c.Battle, c.Tactics));
-            if (!over && c.Tactics.LevelSwitches != switches && Environment.GetEnvironmentVariable("B2L58_DRAW") == "1")
-            {
-                var exp = c.Input.Expected(job.Orig);
-                var tv = (IBattleViewport)typeof(TacticalBattle).GetField("_view", Any)!.GetValue(c.Tactics)!;
-                var view = (BattlefieldView)typeof(BattleScreen).GetField("_view", Any)!.GetValue(c.Screen)!;
-                view.CentreColumn = (short)(exp.Ds[ScreenOverlay.CameraX] | exp.Ds[ScreenOverlay.CameraX + 1] << 8) / 32;
-                view.CentreRow = (short)(exp.Ds[ScreenOverlay.CameraY] | exp.Ds[ScreenOverlay.CameraY + 1] << 8) / 16;
-                Call(c.Tactics, "TurnTowardTargets");
-                c.Tactics.Effects.Drawn(tv);
-                Call(c.Tactics, "RemoveArrivedMissiles");
-            }
             return over ? 1 : 0;
         },
         ["R014+0x481A"] = (c, job) =>

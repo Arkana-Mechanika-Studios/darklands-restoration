@@ -2,6 +2,7 @@ using System.Reflection;
 using Darklands.Cards;
 using Darklands.Core.Battles;
 using Darklands.Core.Battles.Tactics;
+using Darklands.Core.Characters;
 
 namespace Darklands.Battles.Tests;
 
@@ -89,6 +90,52 @@ public sealed class OrderModeLeadsTests
         t.CancelOrder();
         Assert.True(t.CursorKeysOn);
         Assert.Equal(-1, t.Selected);
+    }
+
+    /// <summary>
+    /// R014+0x2256..0x2263: Dissolve Lock calls consume_slot (R014+0xB434) with the slot byte DS:C7CD[m] found when the order was given,
+    /// whatever the pack holds then: past the last stack the stale entry's count goes down and, when it was 1, the pack's count (the last
+    /// stack lost); slot 0xFF (the Eater-Water gone) is entry 255, for member 0 member 3's entry 63. With OriginalBehaviour.FixStaleDissolveSlot
+    /// only an Eater-Water is used up.
+    /// </summary>
+    [Fact]
+    public void ADissolveOrderUsesUpTheSlotFoundWhenTheOrderWasGiven()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var use = typeof(TacticalBattle).GetMethod("UseUpDissolveSlot", Any)!;
+        foreach (var fix in new[] { false, true })
+        {
+            foreach (var slot in new[] { 3, -1 })
+            {
+                var t = Start();
+                t.Battle.Behaviour = new Darklands.Core.OriginalBehaviour { FixStaleDissolveSlot = fix };
+                var c = t.Battle[0];
+                c.Items.Clear();
+                c.Items.Add(new ItemStack(10, 0, 20, 1, 1));
+                c.Items.Add(new ItemStack(99, 0, 30, 2, 1));
+                c.Items.Add(new ItemStack(12, 0, 25, 1, 1));
+                c.Items[3] = new ItemStack(99, 0, 30, 1, 1);
+                var other = t.Battle[3].Items;
+                other[63] = new ItemStack(5, 0, 5, 1, 1);
+                c.DissolveSlot = slot;
+                use.Invoke(t, [0]);
+                if (fix)
+                {
+                    Assert.Equal(3, c.Items.Stacks);
+                    Assert.Equal(1, c.Items[1].Count);
+                    Assert.Equal(1, c.Items[3].Count);
+                    Assert.Equal(1, other[63].Count);
+                    continue;
+                }
+                Assert.Equal(2, c.Items.Stacks);
+                Assert.Equal(2, c.Items[1].Count);
+                Assert.Equal(slot == 3 ? 0 : 1, c.Items[3].Count);
+                Assert.Equal(slot == 3 ? 1 : 0, other[63].Count);
+            }
+        }
     }
 
     /// <summary>combat_draw (R014+0x6D39) removes an arrived missile in the tick that drew it.</summary>
