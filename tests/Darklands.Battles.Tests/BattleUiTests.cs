@@ -421,7 +421,7 @@ public sealed class BattleUiTests
     }
 
     /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
-    private sealed class Session : IDisposable
+    internal sealed class Session : IDisposable
     {
         private readonly StepHost _host;
         private readonly BattleScreens _screens;

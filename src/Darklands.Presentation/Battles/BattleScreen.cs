@@ -149,6 +149,8 @@ public sealed class BattleScreen : ITacticalView
     private TacticalBattle? _battle;
     private BattlefieldTiles? _tiles;
     private TextPainter? _small;
+    private TextPainter? _panelText;
+    private TextPainter _panel => _panelText ??= new TextPainter(_ui.Assets.Font(1));
     /// <summary>The game's hot keys outside the battle (Alt-Q, Alt-P …), which the battle passes some keys to.</summary>
     private Func<int, bool>? _hotKey;
     private string? _message;
@@ -2748,14 +2750,15 @@ public sealed class BattleScreen : ITacticalView
             }
             var gone = c.Floor == BattleEnd.LeftThroughExit || c.Status is CharacterStatus.Dead or CharacterStatus.Away || (tb.Selected >= 0 && tb.Selected != i);
             var color = gone ? Palette.Grey : tb.Battle.Leader == i ? (byte)0x0E : Palette.White;
-            _small!.Draw(canvas, 4, y1, c.Member.ShortName, color);
-            Bar(canvas, i, c.Endurance, c.MaximumEndurance, 0x15, 0x12, 9);
-            Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2);
+            // orig: the panel's window DS:0156 (pointer DS:0168) has font slot 1 in a battle too (hooked at party_panel_rows root 0000:1716 / member_bars root 0000:1A9C over the gate battle: font 1 at every call), so the name, the values and the order letter are in the map panel's font (PartyPanel); the window colour set for the name stays for the values
+            _panel.Draw(canvas, 4, y1, c.Member.ShortName, color);
+            Bar(canvas, i, c.Endurance, c.MaximumEndurance, 0x15, 0x12, 9, color);
+            Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2, color);
             var favour = (int)Core.Characters.Attribute.DivineFavor;
-            Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E);
+            Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E, color);
             if (StatusLetter(i) is { } letter)
             {
-                _small.Draw(canvas, 6, y + 0x1F, letter.ToString(), Palette.White);
+                _panel.Draw(canvas, 6, y + 0x1F, letter.ToString(), Palette.White);
             }
         }
     }
@@ -2816,8 +2819,10 @@ public sealed class BattleScreen : ITacticalView
     }
 
     /// <summary>A 16-pixel bar: the lost part white at the top, the rest in the stat colour; the value below.</summary>
-    private void Bar(Canvas canvas, int row, int current, int maximum, int x, int textX, byte color)
+    // orig: member_bars root 0000:1A9C (as PartyPanel.DrawBar): a "+" at (x - 1, top - 4) when the value exceeds the maximum; the value and a space at (textX, row * 0x28 + 0x1F) with the window's last column 0x38, in the name's colour
+    private void Bar(Canvas canvas, int row, int current, int maximum, int x, int textX, byte color, byte textColor)
     {
+        var realMaximum = maximum;
         var top = row * PartyPanel.RowHeight + 0x0C;
         var bottom = row * PartyPanel.RowHeight + 0x1B;
         maximum = Math.Max(1, maximum);
@@ -2833,7 +2838,11 @@ public sealed class BattleScreen : ITacticalView
             canvas[x, y] = c;
             canvas[x + 1, y] = c;
         }
-        _small!.Draw(canvas, textX, row * PartyPanel.RowHeight + 0x1F, current.ToString(System.Globalization.CultureInfo.InvariantCulture), Palette.White);
+        if (current > realMaximum)
+        {
+            _panel.Draw(canvas, x - 1, top - 4, "+", textColor, 0x38);
+        }
+        _panel.Draw(canvas, textX, row * PartyPanel.RowHeight + 0x1F, current.ToString(System.Globalization.CultureInfo.InvariantCulture) + " ", textColor, 0x38);
     }
 
     private readonly Dictionary<string, Content.Formats.Graphics.Pic?> _portraits = new(StringComparer.OrdinalIgnoreCase);
