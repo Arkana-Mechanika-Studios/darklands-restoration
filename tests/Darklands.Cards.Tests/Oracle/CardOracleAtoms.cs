@@ -18,6 +18,7 @@ namespace Darklands.Cards.Tests.Oracle;
 /// <item><c>ev&lt;kind&gt;_&lt;type&gt;_&lt;tag&gt;_&lt;value&gt;_&lt;owner&gt;_&lt;location&gt;</c> a started event (trailing numbers optional: type 0, tag 0, value 0 (9999: the current place), owner -2, here; location -1: nowhere in particular, 0..: that place)</item>
 /// <item><c>ps&lt;n&gt;</c> the party's seed (<c>Party.Seed</c>, apart from the generator's <c>rn</c>); <c>px&lt;n&gt;</c>, <c>py&lt;n&gt;</c> the map position (DS:E3D0 / DS:E3D2)</item>
 /// <item><c>ed&lt;d1&gt;_&lt;d2&gt;_&lt;d3&gt;</c> the three data words of the event created last (<c>ev..</c> before it); <c>er&lt;kind&gt;_&lt;type&gt;_&lt;tag&gt;</c> removes the matching events (-1: any)</item>
+/// <item><c>sq</c>, <c>sr</c> the first / second saved card = the slot of the event created last (a card that names a quest event slot)</item>
 /// <item><c>iq&lt;code&gt;_&lt;quality&gt;_&lt;count&gt;</c> every member carries that stack (quality and count as given); <c>ac&lt;attribute&gt;_&lt;v&gt;</c> the current attribute alone (the maximum stays)</item>
 /// <item><c>rn&lt;seed&gt;</c> the random generator's seed; <c>ml&lt;n&gt;</c> the map-leave mode; <c>pc&lt;n&gt;</c> the previous card (prev_screen); <c>sc&lt;n&gt;</c>, <c>sd&lt;n&gt;</c> the two saved cards</item>
 /// </list>
@@ -187,6 +188,12 @@ public static class CardOracleAtoms
                 return true;
             case "sc":
                 state.SavedCard = n[0];
+                return true;
+            case "sq":
+                state.SavedCard = state.Events.Last;
+                return true;
+            case "sr":
+                state.SavedCard2 = state.Events.Last;
                 return true;
             case "sd":
                 state.SavedCard2 = n[0];
