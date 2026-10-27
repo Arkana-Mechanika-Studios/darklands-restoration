@@ -235,7 +235,7 @@ public sealed class OriginalBehaviour
     /// (DS:C7CD) of the selected member (DS:A6B2): the party member under the pointer, else nobody (−1). With the pointer on another
     /// member that member's stack at member 0's slot is used up, whatever it is (or the stale entry past his last one: the last stack is
     /// then lost); with nobody selected the entry 64 before member 0's (before the packs, or with slot 0xFF member 2's entry 63) and the
-    /// byte before member 0's pack count. The leader's own Eater-Water is used up only when the pointer is on member 0 and he leads.
+    /// count byte 0x80 before member 0's (DS:9C53). The leader's own Eater-Water is used up only when the pointer is on member 0 and he leads.
     /// Fixed: the leader's Eater-Water is used up (his slot byte, as Dissolve Lock's, with <see cref="FixStaleDissolveSlot"/>).
     /// </summary>
     // orig: R016+0x0F9A..0x0FBA (consume_slot 18BF:0FA4 of DS:A6B2 with the byte DS:C7CD), data safety, data-damaging

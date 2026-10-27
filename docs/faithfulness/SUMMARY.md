@@ -24,8 +24,8 @@ items there. Where it stands:
 It is not a proof that every branch of the original has run: counted over every function the C#
 implements, about 81.4% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
-are the rules, the battles and the battlefield generators (82-87%); the least covered are the resident
-code (64%), the card engine (65%), the overland map (72%) and the card scripts (75%) (see below). In the card scripts, the open branches lie behind particular quest
+are the rules, the battles, the battlefield generators and the card scripts (81-88%); the least covered are the resident
+code (64%), the card engine (69%), the overland map (78%) and the screens (79%) (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
 after 1.0.
 
@@ -240,8 +240,10 @@ changes, next card).
   and generators of random combinations of aimed atoms for the cards of the sheet: the ten with the most open outcomes (0E7, 096, 055, 025, 04B, 04F, 051,
   057, 060, 097) on 100 to 150 states each, then the day and night guilds, the cities' cards on the 92 cities and 30 further cards; every state run plain, probed,
   and with each enabled line of the first menu (each run its own coverage unit). They reached 1,660 open items of the functions the oracles enter
-  (853 blocks, 807 branch outcomes) in about 10 CPU-hours of the original's side (families that gave under 20 items per CPU-hour were stopped). 51,235 runs
-  count; 530 are left out (456 that differ, 74 the oracle failed on). The differences formed five clusters, judged in `cards2o`: card 0x76's text lines 1 and 3
+  (853 blocks, 807 branch outcomes) in about 10 CPU-hours of the original's side (families that gave under 20 items per CPU-hour were stopped). 50,754 runs
+  count (51,235 coverage lines: 481 runs of r1 ran twice); 530 are left out (456 that differ, 74 the oracle failed on). Of the runs counted, 722 differ for a
+  listed reason (card 0x96's heir hints and card 0x0D's prisoner past the roster, below); they reach no open item the agreeing runs do not (`cov_gain.py`,
+  batch 21 audit), so every figure here comes from agreeing runs. The differences formed five clusters, judged in `cards2o`: card 0x76's text lines 1 and 3
   put an item box and a saint box over handlers 1 and 3, and a choice in a pop-up box calls the box's handler table whichever line it stands on (R073+0x2238:
   `$ChosenOneName` = the menu member), where the C# took the line's own pop-up: real, fixed (those two lines get the item and saint pop-ups; the lead corpus's
   076 run, `LeadRunsAgreeWithTheOriginal`, and two state digests of the golden traces); card 0x96's hints 1 to 3 of the heir menu return a member word the code never
@@ -541,7 +543,7 @@ Open items (2026-10-27, after batch 21), listed honestly:
   deleted member's shield picture (D-34f49d), two omitted pop-up flags (D-920e47, D-40b596), the omitted previous-card global
   (D-58560f), the other cards' stores of the shared options block (D-4d048d), the fortress room bookkeeping (D-ca7108), a card number outside the table (D-5dc345), the rejection of an
   oversized message (D-3854a2), the copy-protection question (D-9c9eab) and the joystick with the overland loop's reload
-  (D-959078); and, from the two Dissolve leads, a write before the packs for the Dissolve slot byte or the Dissolve key with nobody selected (D-5471a9, D-c055d0).
+  (D-959078); and, from the two Dissolve leads, consume_slot's write outside the packs (past them for the Dissolve Lock order's slot 0xFF of members 2 to 4, before them for the Dissolve key with nobody selected, D-5471a9) and member -1's count byte DS:9C53 (D-c055d0).
 
 Closed items, kept for the record. The three reachable original bugs listed before are now
 reproduced behind fix flags (faithful by default; none damages a saved game, so none is in `DataSafe`):
@@ -640,7 +642,7 @@ there is no change in the C#. The agreeing world-call runs now: 1,626 of R1 (the
 
 Batch 21 (2026-10-27), phase 2, five branches: a2fix (the two leads of the batch 20 audit, below), b3 and b3o (round B3, battle save and load), cards2 and cards2o
 (round cards2, the per-card set-ups, above), r2 and r2o (round R2, rules, travel and the resident code). Coverage rose to 81.4% (34,841 of 42,794; 82.3% with the justified,
-35,207), the functions the oracles enter to 89.8% of the blocks and 81.8% of the outcomes: +1,033 outcomes and +1,061 blocks, of them 831 in the card scripts. Round B3: 105 new
+35,207), the functions the oracles enter to 89.8% of the blocks and 81.8% of the outcomes (+1,033 outcomes and +1,061 blocks); over every function +1,031 outcomes, of them 831 in the card scripts. Round B3: 105 new
 open items (R003 77, R017 15, R016 11, R018 2) from direct calls (the compression library, 19 of 19 agree; the R016 key handler with the BIOS shift flags and the held-direction
 bytes, 123 and 256 judged jobs agree; the old adapters of R014+0x0F58, +0x1BA0, +0x2324 and R018 with new states, 409 agree; none differs) and six sessions (b3-save-fight,
 -save-fight2, -save-fight3, -probe1..3: a battle saved with Alt-S, loaded again with Alt-L, saved again, Alt-S refused in real combat), registered in `rerun_all.py`
