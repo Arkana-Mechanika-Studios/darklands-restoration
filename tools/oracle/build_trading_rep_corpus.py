@@ -1,10 +1,12 @@
-"""R2: shop reputation modifier (R032+0x1A94..0x1AD1 buy, +0x1C86..0x1CC3 sell) over reputations incl. extremes: original-byte corpus in build_trading_corpus format."""
+"""R2: shop reputation modifier (R032+0x1A94..0x1AD1 buy, +0x1C86..0x1CC3 sell) over reputations incl. extremes: original-byte corpus in build_trading_corpus format.
+
+usage: python -I -B build_trading_rep_corpus.py <out json> <DARKLAND.EXE>"""
 import hashlib, json, random, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_trading_corpus as b
 from run_unit import run
-exe = Path('E:/Projects/darklands-restoration/game/DARKLAND/DARKLAND.EXE').read_bytes()
+exe = Path(sys.argv[2]).read_bytes()
 seg = b.item_table_segment(exe)
 REPS = [-32768, -32767, -20000, -10000, -1000, -656, -655, -654, -400, -200, -100, -99, -50, -20, -19, -18, -17, -16, -5, -4, -3, -2, -1, 0, 1, 2, 3, 20, 98, 99, 100, 101, 150, 200, 654, 655, 656, 1000, 16384, 20000, 32767]
 r = random.Random(20261027)
