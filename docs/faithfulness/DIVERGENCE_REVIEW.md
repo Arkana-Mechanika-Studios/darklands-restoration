@@ -19,8 +19,8 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 46 entries; recommendations: document: 1, justify: 36, keep: 9.
-- Part B (undefined-memory in core logic): 143 entries; determinism: n/a: 83, no: 46, partly: 10, yes: 4.
+- Part A (not-modelled, deliberate-fix, other in core logic): 48 entries; recommendations: document: 1, justify: 38, keep: 9.
+- Part B (undefined-memory in core logic): 143 entries; determinism: n/a: 82, no: 47, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -355,21 +355,29 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (11)
+### battles (13)
 
-#### not-modelled (1)
+#### not-modelled (2)
 
 - **D-ca7108** `not-modelled` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:57` `FortressBattlefield.BuildFortress`  
   original: `R011+0x0000` (1432:0000, draft)  
   divergence: the four level buffers (alloc_buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept. Its only store is R011+0x04ED; no instruction of the root or the 136 overlays reads it.  
   recommendation: **justify** (checked against the original) - R011+0x0000 stores DS:E049[k] = n once (R011+0x04ED, mov [bx - 0x1FB7], cx); scanning the root and all 136 overlays for DS:E049..E04F finds no other reference, so the array is write-only.
+- **D-25f7f1** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:454` `TacticalBattle.UseUpDissolveSlot`  
+  original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
+  divergence: for members 2..4 entry 255 lies past the packs, in the formula and saint tables and the item-definition far pointers (2E38:07BE..), which the battle does not hold: nothing is changed (the original's write there is not modelled).  
+  recommendation: **justify** (checked against the original) - consume_slot (R014+0xB434) addresses entry m * 64 + k of the five packs at 2E38:003E; with k = 255 (DS:C7CD[m] = 0xFF, the leader's Eater-Water given away in order mode) members 2..4 reach 2E38:07BE.. (the formula and saint tables and the item-definition far pointers), which the battle state does not hold. Members 0 and 1 (entry 63 of member m + 3) are reproduced. Reaching it needs the leader at a locked door ordering Dissolve Lock and then giving away or dropping the Eater-Water on the character sheet before leaving order mode; the faithful game does not write there (the fixed game uses up nothing).
 
-#### deliberate-fix (1)
+#### deliberate-fix (2)
 
 - **D-3c2455** `deliberate-fix` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:152` `CastleGenerator.PlaceParty`  
   original: `R007+0x1D78` (15AF:1D78, draft)  
   divergence: gives up after 1000 draws and keeps the last room.  
   recommendation: **justify** - The original draws until the room differs from the gate room and never ends when only the gate room can be drawn (see the BUG note at the same function), so giving up after 1000 draws replaces an infinite loop; it keeps the same room.
+- **D-a25000** `deliberate-fix` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:428` `TacticalBattle.UseUpDissolveSlot`  
+  original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
+  divergence: with the fix (data safety, switchable; on in the player's game) only an Eater-Water is used up: the slot's stack when it still is one, else the weakest the pack holds (none: nothing; the lock opens as in the original).  
+  recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixStaleDissolveSlot, on in the player's game; the testers stay faithful): cbt_location_action R014+0x2256..0x2263 calls consume_slot (18BF:0FA4) with the slot byte DS:C7CD[m] with no test. The byte is written only by the Eater-Water searches (order_menu_build R014+0xDF28 when order mode opens; R014+0xD04E / 0xD402 for the leader at each running tick), and the character sheet runs inside order mode (R022+0x02F7 tests order_mode DS:A6B3 and the selected member DS:A6B2) without building the menu again, so a stack given or dropped there leaves the slot on another stack or on the stale entry past the count (the last stack is lost, an empty pack's count becomes -1), and for the leader with the Eater-Water gone the slot is 0xFF (entry 255: another member's pack or past the packs). Faithful mode reproduces it (tests: OrderModeLeadsTests.ADissolveOrderUsesUpTheSlotFoundWhenTheOrderWasGiven; battle jobs e3 mine-p300#370, wild-p300#346 agree); the fix uses up only an Eater-Water.
 
 #### other (9)
 
@@ -393,11 +401,11 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0x481A` (12F7:000A, draft), `R014+0x4B5A` (12F7:034A, draft)  
   divergence: the original never clears DS:E0C0 (nor saves it with the battle): a battle starts with what the last enemy search of an earlier battle of the session kept there, which matters only when an enemy's first search fails at its goal (see PathFinder.Find). Here each battle starts with every flag 0.  
   recommendation: **keep** (checked against the original) - DS:E0C0 has two references only (R014+0x48DE copies the open flags into it, R014+0x4B5A copies it back), so it carries over between battles and saved games within one run of the program. It matters only when an enemy search fails at its goal test before any enemy search of this battle has opened the doors; a per-battle buffer avoids process-wide state. The whole fights agree with it.
-- **D-01c621** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:545` `TacticalBattle.Triggers`  
+- **D-01c621** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:601` `TacticalBattle.Triggers`  
   original: `R014+0xD6DA` (19CD:216A, draft)  
   divergence: a record whose handler word is not one of the eight types (a marker the generator left) would be called through its raw words in the original; here nothing happens.  
   recommendation: **justify** - triggers (R014 19CD 1E92 and the trigger loop) call the record's handler word through the far pointer the level loader set; the generators only write the eight handler types (0 secret door .. 8 wall alarm) into trigger records, so a record with another word does not occur in generated levels. Calling raw words would jump into arbitrary code; nothing to reproduce.
-- **D-e70eea** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:989` `TacticalBattle.MissileTrap`  
+- **D-e70eea** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:1045` `TacticalBattle.MissileTrap`  
   original: `R023+0x0E30` (1EF8:0E30, draft)  
   divergence: an odd direction leaves the line's globals as the last test left them in the original.  
   recommendation: **keep** - missile_trap (R014 19CD 3258): the direction comes from the trap record written by the generators, which use the even directions 0/2/4/6 only; an odd one would reuse the line globals of the last line_blocked call (deterministic in principle, but it needs a corrupt record). Kept as a guard.
@@ -892,7 +900,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
 - **D-0bf8d6** `undefined-memory` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Wall.cs:354` `CastleGenerator.PlaceWallSegment`  
   original: `R006+0x1D48` (16E1:0A28, draft)  
   divergence: the search reads them up to two cells outside [0, 40), which the original reads from the neighbouring locals (stack memory); those read as 0 here. It matters only if a room or strip bound lies within two cells of the map's edge (writes at -1 or 40 would stop the rewrite with an index error). Not seen: the castle corpus's 100 scenarios with 3,000 seeds each (300,000 builds, 395,486 calls) read no cell outside [0, 40) and throw nothing; not proven by a bound.  
-  deterministic: **no**; action: **keep** - audit19: the out-of-range reads are only the final +-2 search (k = i-2..i+2 around a cell with bit 4) and the i+step test, which reads only cells the loops before wrote (an out-of-range one would have thrown); bit 4 at 0, 1, 38 or 39 needs a room or strip bound there. Measured on an instrumented copy: the castle corpus's 100 scenarios with 3,000 seeds each (300,000 builds, 395,486 calls) read no cell outside [0, 40) and throw nothing. Not proven by a bound on room and strip positions; keep.
+  deterministic: **no**; action: **keep** - Registered in batch 19 (was an inline note in a C: line, listed in audit18). R006+0x1D48: b1/b2 are 40-word locals; the original's reads up to two cells outside [0, 40) land in neighbouring locals (stack), read as 0 in the rewrite. The rewrite's writes at an index below 0 or above 39 would throw, and no generator run does, so rooms probably never lie that close to the edge; not proven. GAME LOGIC row: Opus audit (settle reachability by a bound on room positions, or reproduce the stack layout).
 - **D-d75fc3** `undefined-memory` - `src/Darklands.Core/Battles/Generation/CitadelBattlefield.cs:107` `CitadelBattlefield.BuildCourt`  
   original: `R013+0x0098` (1432:0098, draft)  
   divergence: the loop of the original runs over 9 bits; bits 7 and 8 take the door ids 0x159 and 0x15E as rows and write far outside the level (into unrelated memory), which is not reproduced.  
@@ -964,8 +972,8 @@ Where the original reads or writes outside its defined data, the outcome can sti
 - **D-e92f84** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:95` `TacticalBattle.SetDoor`  
   original: `R023+0x04AC` (1EF8:04AC, draft)  
   divergence: a door record with none of the four side flags (+8 and +9, bits 0x80 / 0x40) leaves the direction local bp-6 uninitialised in the original (R023+0x04C8 .. +0x050B), so the door bits go to the side the stale stack word names, or to no side when it is not 0..3 (the two switches R023+0x0620 / +0x06B8 have no default); north (0) is used here. Not reached in play: the three callers (R014+0x4924, +0x4B95, +0xDDE1, the only calls of the vector 09C0:1D6F) take only records whose word +0 is above 0; the flagless records of IMAPS.CAT (IFORTMON.009 doors 0 and 1) and LCASTLE (door 0 of the nine levels) are all-zero, word +0 = 0; the castle generator's records always carry a flag and the map turn moves the flags.  
-  deterministic: **n/a** (checked against the original); action: **keep** - audit19, re-derived from the EXE (capstone): door_set R023+0x04AC sets the direction local bp-6 only in the four flag branches (R023+0x04C8..0x050B); with none set it is the stale stack word, and the two switches on it (R023+0x0620, +0x06B8) have no default, so a value outside 0..3 sets no door bit at all. Not reached in play: the only calls of the vector 09C0:1D6F are R014+0x4924, +0x4B95 and +0xDDE1, each behind `cmp word es:[rec+0], 0 / jle` (word +0 > 0); a scan of every IMAPS.CAT and LCASTLE member finds flagless records only in IFORTMON.009 (doors 0, 1) and door 0 of the nine LCASTLE levels, all with word +0 = 0; the castle generator writes a flag into every record (x|0x80 / y|0x40 pairs), the map turn permutes the four flags. Keep north (only a foreign or edited level could differ).
-- **D-d2c8b5** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:608` `TacticalBattle.LeaveLevel`  
+  deterministic: **no**; action: **keep** - Registered in batch 19 (was an inline (DIVERGENCE) in a C: line, listed in audit18). Source reading of audit18, not re-checked against the EXE in this pass: door_set R023+0x04AC picks the side from the +8/+9 flag bits (0x80 / 0x40) and leaves its direction local unset when none is set; the rewrite takes north. Reachability unknown (a generated level may never hold such a record). GAME LOGIC row: Opus audit to confirm the reading and decide keep or reproduce.
+- **D-d2c8b5** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:605` `TacticalBattle.LeaveLevel`  
   original: `R023+0x17D2` (1EF8:17D2, draft)  
   divergence: the encounter record it adds keeps undefined memory, not modelled. Its kinds (+0x08..+0x0A) are the local words of slots 4..6 (bp-0x24), written only for a kind with an able enemy (R023+0x1A04..0x1A1A): the first (no kind 4 exists) and a kind with none left hold the stack's leftovers, with a count of 0 (here -1 for the first, 0 for the others); the reinforcement part +0x14..+0x1D is not written (R023+0x1A27..0x1A9D write +0x00..+0x13 only), so the table slot keeps what it held (here the new group's defaults). These bytes go into a battle file saved after the change; the battle-call adapter of R023+0x17D2 takes the original's bytes there (local/batch/b2).  
   deterministic: **no** (checked against the original); action: **justify** - Undefined memory (audit18, asm of R023+0x19FD..0x1ACA): the record at es:0x47EE + 0x1E x count gets +0x00/+0x02 (the nearest enemy), +0x04 = 0x10, +0x06 = 0xFF, +0x07 = 0, +0x0E..+0x13 from 2E38:0BB0, and its kinds/counts +0x08..+0x0D from the words at bp-0x24 / bp-0x1E (R023+0x1A7D..0x1A8D); the kind words are written only at R023+0x1A17 for an able enemy, so a kind with a count of 0 keeps the stack word; +0x14..+0x1D are never written. The rewrite gives -1 / 0 and the new group defaults. Only these unset bytes differ: the R023+0x17D2 direct calls of round B2 (e11..e13) agree with the adapter taking the original bytes there, but for 6 jobs whose fuzzed state puts an enemy in animation slot 1..3 (its count word overlays a kind word, the C: note in LeaveLevel). Replaces the old inline (DIVERGENCE) note on the first kind, which was not registered.

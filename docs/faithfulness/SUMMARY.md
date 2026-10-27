@@ -8,7 +8,7 @@ its bytes, never against another reimplementation.
 Wherever an oracle runs, the rules agree with the original's in the faithful mode (`OriginalBehaviour.Faithful`,
 which the oracles and the headless host use); the exceptions are registered, each with its reason (undefined
 memory, the host, deliberate fixes, a few things not modelled: see "Divergences and original bugs"). By default the
-player's game differs from the faithful mode only in the 4 listed, switchable data-safety fixes below. The aim is no
+player's game differs from the faithful mode only in the 5 listed, switchable data-safety fixes below. The aim is no
 known divergence, strong evidence, published coverage. The differences found and not yet settled are listed as open
 items there. Where it stands:
 
@@ -38,7 +38,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those.
-* The four fixes now in `DataSafe` (registered as deliberate fixes, `divergences.csv`; the bugs in
+* The five fixes now in `DataSafe` (registered as deliberate fixes, `divergences.csv`; the bugs in
   `original_bugs.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (cache_save R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -67,6 +67,17 @@ after 1.0.
     a member who rejoins finds the file's old saints, formulas and items under the new count (found by the card
     oracle with saved games that have an away member, batch 19; registered B-c48d94, test
     `LeavingMemberRecordTests`). Fixed: the whole record is written. The faithful mode keeps the mix byte for byte.
+  * `FixStaleDissolveSlot`: the Dissolve Lock action at a locked door (R014+0x2170 case 7, 0x2256..0x2263) uses up the
+    pack entry `consume_slot` (18BF:0FA4, R014+0xB434) is given by the slot byte DS:C7CD[member], which the menu builders
+    store when order mode opens (R014+0xDF28) or, for the leader, at each running tick (R014+0xD04E, 0xD402). The
+    character sheet runs inside order mode without rebuilding the menu and can give and drop items, so when the member
+    arrives at the door the slot can name another stack or one past the last (the last stack is lost, an empty pack's
+    count becomes -1), and with the Eater-Water gone the leader's slot is 0xFF, entry 255 (member m + 3's entry 63 for
+    members 0 and 1; past the packs for members 2 to 4: D-25f7f1, not modelled). Found in batch 20 by the B2 direct calls
+    (mine-p300#370, wild-p300#346; registered B-dce22a, B-bf6904, the fix D-a25000; test
+    `ADissolveOrderUsesUpTheSlotFoundWhenTheOrderWasGiven`). Fixed: only an Eater-Water is used up (the slot's stack if
+    it still is one, else the weakest; none: nothing, and the lock opens as before). The faithful mode keeps the
+    original's use of the slot byte, without the count guard.
 * The switches are not exposed in the settings; the player's host sets the profile.
 
 ## Coverage of the original functions
@@ -88,8 +99,8 @@ including paths no oracle case reaches. Its findings are leads to review; a revi
 | | |
 |---|---:|
 | original functions compared | 5,574 |
-| comparisons without a finding | 3,180 of 3,439 |
-| findings reviewed (each with its reason) | 304 |
+| comparisons without a finding | 3,179 of 3,437 |
+| findings reviewed (each with its reason) | 301 |
 | findings open | 0 |
 
 The first review of its leads fixed about twenty divergences in the card scripts and the rules (the
@@ -106,18 +117,18 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora, before their gaps were worked on (`branches-summary-before.json`) | 88.6% | 81.2% |
-| the 8,558 functions the oracles enter | 88.1% (51,134 / 58,055) | 79.5% (34,635 / 43,548) |
-| **every function the C# implements (9,281)** | | **79.0% (33,807 / 42,794)** |
+| the 8,558 functions the oracles enter | 88.1% (51,135 / 58,055) | 79.5% (34,638 / 43,548) |
+| **every function the C# implements (9,281)** | | **79.0% (33,810 / 42,794)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 33,807 against 34,635 exercised (1,483 more branch outcomes than the published batch 17: the card scripts +1,257, rules +28 and screens +25 from the card oracle's saved-game start states and controlled battle and prayer results of round cards1, battles +166 from round B2's direct calls, both below, 1 each in travel and the card engine, and 5 in the resident code). By area:
+differ slightly on the resident code, hence 33,810 against 34,638 exercised (1,483 more branch outcomes than the published batch 17: the card scripts +1,257, rules +28 and screens +25 from the card oracle's saved-game start states and controlled battle and prayer results of round cards1, battles +166 from round B2's direct calls, both below, 1 each in travel and the card engine, and 5 in the resident code). By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
 | rules | 335 / 358 | 2,255 / 2,590 | 87% |
-| battles (tactical combat) | 284 / 314 | 6,497 / 7,516 | 86% |
+| battles (tactical combat) | 284 / 314 | 6,500 / 7,516 | 86% |
 | travel (overland map) | 23 / 24 | 705 / 982 | 72% |
 | screens (inventory, barter, creation ...) | 191 / 202 | 4,763 / 6,070 | 78% |
 | resident code | 138 / 160 | 1,048 / 1,648 | 64% |
@@ -127,19 +138,19 @@ differ slightly on the resident code, hence 33,807 against 34,635 exercised (1,4
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`; 366 outcomes, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch): 79.9% (34,173 / 42,794). Most of what is open is reachable in
+and listed in `unreachable.csv`; 366 outcomes, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch): 79.9% (34,176 / 42,794). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-15,834 items of the functions the oracles enter were never exercised: 2,371 are justified in
+15,830 items of the functions the oracles enter were never exercised: 2,371 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
-forms, the C run-time library, drivers, memory and file helpers, code nothing reaches), 13,463 are
+forms, the C run-time library, drivers, memory and file helpers, code nothing reaches), 13,459 are
 open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
 lie in the card scripts (about 6,400), the screens (about 2,010), the battlefield generators (about 2,070), the
-battles (about 1,340), the resident code (about 410), the card engine (about 370), the overland map (about 470), the
+battles (about 1,330), the resident code (about 410), the card engine (about 370), the overland map (about 470), the
 rules (about 245) and the other code (about 160). A sweep
 of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
 tile contents and random draws, not inputs a sweep sets.
@@ -290,7 +301,7 @@ The oracles record the original's side (`tools/oracle/recording.py`) and replay 
 day-to-day checks; a recording is used only when the hashes of the EXE, the game files, the arguments,
 the saved games and the tester's sources are unchanged. A full live rerun of every fight and session
 (`tools/oracle/rerun_all.py <out> --live`) is made before every release and periodically (at least
-weekly during active work); the published verdicts and coverage come from such a live run (latest pass: a replay, 762 fights and sessions (37 fights, 725 whole-game sessions), all agreeing: the replay of batch 19, 586 s on 6 workers, every run replayed (none needed a live run) against the recordings of the last full live pass (batch 16: 590 fights and sessions, all agreeing, 8,135 s on 8 workers, after the tester's original side was changed); the 54 sessions that wait in a battle and press G or Q, whose timing the C# changed in batch 18, were run live once then: all agree (1,170 s on 6 workers; not repeated in batch 19, which changed no timing; the recordings are the original's); the 28 card corpora give the same differing runs as batch 18 (none at all; four lines of the per-card reports moved, cards 0x169 and 0x16A, whose battle-result runs now end at the death film), and the controlled-results corpus (2,004 runs: 1,940 agree, 64 differ for a listed reason) and the lead corpus of batch 19 (156 runs, all agree) give no other difference; the 30 battle call job files of batch 17 give the same summaries but for R016+0x0000's keyed jobs (batch 18: 651 moved from agree to not judged by a rule of the tester, below; batch 19: 1 more, a leader outside the party slots): 23,943 jobs, 14,481 agree, 0 differ, 9,462 not judged; round B2's 17 job files: 5,015 jobs, 3,978 agree, 83 differ, 9 raise an exception, 945 not judged). The last open lead before batch 14, a group move at
+weekly during active work); the published verdicts and coverage come from such a live run (latest pass: a replay, 762 fights and sessions (37 fights, 725 whole-game sessions), all agreeing: the replay of batch 20, 472 s on 6 workers, every run replayed (none needed a live run) against the recordings of the last full live pass (batch 16: 590 fights and sessions, all agreeing, 8,135 s on 8 workers, after the tester's original side was changed); the 54 sessions that wait in a battle and press G or Q, whose timing the C# changed in batch 18, were run live once then: all agree (1,170 s on 6 workers; not repeated in batches 19 and 20, which changed no timing; the recordings are the original's); the 28 card corpora give the same differing runs as batch 18 (none at all; four lines of the per-card reports moved in batch 19, cards 0x169 and 0x16A, whose battle-result runs now end at the death film; the reports of batch 20 are byte-identical to batch 19's), and the controlled-results corpus (2,004 runs: 1,940 agree, 64 differ for a listed reason) and the lead corpus of batch 19 (156 runs, all agree) give no other difference; the 30 battle call job files of batch 17 give the same summaries but for R016+0x0000's keyed jobs (batch 18: 651 moved from agree to not judged by a rule of the tester, below; batch 19: 1 more, a leader outside the party slots; batch 20: 32 rows of R014+0x08FE that differed in the random state or in missiles, or raised an exception, agree or are not judged as a leader outside the party slots): 23,943 jobs, 14,513 agree, 0 differ, 9,430 not judged; round B2's 17 job files: 5,015 jobs, 3,984 agree, 72 differ (66 of the early run e2, 5 of e11's leave_level, 1 of e12), 0 raise an exception, 959 not judged). The last open lead before batch 14, a group move at
 the mine acted on one pass later in the original, was the tester's: the original takes the keyboard
 click in one pass (R016+0x0734 sets DS:D73B) and acts on it in the mouse handler of the next
 (R014+0xB838), as the C# does; the tester gave the C# the key one pass early after a pointer move).
@@ -414,8 +425,8 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 200 original bugs the game
-reproduces (40 with their own `OriginalBehaviour` flag), 316 registered divergences,
+markers in the code, each with its reason and original coordinate: 202 original bugs the game
+reproduces (42 with their own `OriginalBehaviour` flag), 318 registered divergences,
 870 dormant branches kept as the original has them, 36 uncertain readings (the others were
 naming only, or settled by an agreeing oracle or the code, now closed; each of the 36 is in
 `UNCERTAIN.md` with the assumption it rests on). Every core-logic divergence has a
@@ -425,7 +436,7 @@ the justifications given evidence (a search of the whole EXE for readers, a tabl
 rows of game logic were read again against the original's code (100 rows: 84 right, 8 with a slip in
 the text, corrected, 7 wrong, of which 3 are now implemented and 4 are leads below, 1 unsure).
 
-Open items (2026-10-26, after batch 19), listed honestly:
+Open items (2026-10-27, after batch 20), listed honestly:
 * Leads of batch 16: the barter's buy on a lit row past the list's end takes a leftover of an earlier, longer listing
   (D-dd4c2e); the sneaking card shows the previous card's text until a redraw, as it loads no message file of its own
   (D-ecc6f5); the loot screen's click on an empty pile row followed by G gives the entry past the pile's end, from a stale
@@ -443,13 +454,13 @@ Open items (2026-10-26, after batch 19), listed honestly:
   schedule-reads, 04 box-callbacks; private runs), not applied, and, for gen-bsafe-27 and gen-bheld-40, also with measured click
   holds (gen-bsafe-50 with patch 01 alone). gen-bheld-22 is fixed (the C#) and its battle records agree, but its end state, taken inside
   the battle, still differs and was not proven again. gen-bkeys-44's step timing has no derivation.
-* Round B2 leads still open, not triaged (local/batch/b2/leads.tsv): the battle end R014+0x08FE (the random state after N draws differs in 3 of 110
-  jobs, with split floors and a replacement leader), an exception when the leader byte DS:907B is 0xFF (not a state the game has; the original
-  reads record -1), the chest actions of R014+0x2170 (pack counts 02/FF against 03/00 in about 8 jobs, one C# exception), missiles in flight
-  carried across a level switch (2 jobs) (leads L05 to L08; the single-file path byte after G or Q, L13, is fixed in batch 19 and the U key's
-  level switch, L14, was the tester's, both below; no job of those two differs now). The per-battle state carried from one battle to the next (a lead from the community's bug list) needs a run of two
-  battles in the original; no tool for it exists yet. The first run of R014+0x2170 (e2: 66 differing jobs, timer-callback counts) predates the
-  tick wait fix and is replaced by the later runs of the same function; its coverage is not counted.
+* Round B2 leads L05 to L08 are triaged and settled in batch 20 (below); no job of them differs now except the early run e2's (66 differing jobs of R014+0x2170, timer-callback
+  counts, which predates the tick wait fix and is replaced by the later runs of the same function; its coverage is not counted) and e11's and e12's leave_level jobs
+  (5 and 1, whose fuzzed state puts an enemy in animation slot 1..3). Still open from that work: the loot screen's redraw in TacticalBattle.Loot.cs (floor_view_draw and
+  combat_draw after the screen) does not turn the attackers toward their targets as the other draw sites now do (not compared with the original); the Dissolve key outside
+  order mode (Doors.cs) consumes "selected -1"'s slot in the original (DS:C7CC, member -1) and the C# skips it (not registered); D-25f7f1 (members 2 to 4 with slot 0xFF, past the
+  packs) is not modelled. The per-battle state carried from one battle to the next (a lead from the community's bug list) needs a run of two
+  battles in the original; no tool for it exists yet.
 * Round cards1 leads (14 judged in batch 19, below): what is left of them is registered, not reproduced: the new game's slot 4 holds the figure
   "0" of SAVES\DEFAULT in the original, which a C# new game does not model for a slot nobody held (D-dff113); a loaded saved game with two slots
   naming one record is read as two copies, so a later save would give the second a roster entry of its own (not seen in any oracle run, not
@@ -586,6 +597,18 @@ location) differ and are open leads, not triaged (probably the documented uninit
 there is no change in the C#. The agreeing world-call runs now: 1,626 of R1 (the other corpora unchanged: 630 rules, 1,673 travel,
 2,448 map entry); the contents of the events a call creates are now compared in all of them.
 
+Batch 20 (2026-10-27), two branches (b2l58, the first pass of the B2 leads L05 to L08, and b2l58o, the fixes of the two real ones). L06 (a leader byte 0xFF)
+and the loot, stairs and empty-member parts of L07 were the tester's (every writer of DS:907B stores a party slot; the harness now skips such jobs). Two were real
+and are fixed in the C#, each with a unit test: the battle end R014+0x08FE, when nobody able is left on the enemies' floor and somebody able is on another,
+ends with the view centred on the first able member or the new leader and one frame drawn (floor_view_draw 09C0:1C2F, then combat_draw 14F7:0008, R014+0x0AAD..0x0ABE):
+the renderer's random draws, the enemies turning toward their targets and the arrived missiles removed; the C# made that draw only at the end of the next tick, one
+draw late, so every later random number differed (BattleEnd.IsOver now calls `RedrawAround`; `SwitchingToThePartysOtherFloorDrawsAFrameBeforeTheTestReturns`; leads L05 and L08;
+jobs e9, e10 and 32 rows of the old job files now agree). And the Dissolve Lock action uses the pack entry the slot byte DS:C7CD names whatever the pack holds, a
+data-damaging original bug: reproduced in the faithful mode and fixed in the player's game behind `FixStaleDissolveSlot` (B-dce22a, B-bf6904, D-a25000; the fifth `DataSafe` switch,
+above; e3 now agrees throughout). The golden card traces were regenerated: only the state digests moved, as the state dump gained the new flag. Replay of everything on the merged
+tree: 762 of 762 agree (472 s), the card corpora (30 jobs, byte-identical reports), cards1's own corpora and the world calls unchanged; coverage +3 outcomes and +1 block (the battle end's
+new draw path): 33,810 outcomes, 79.0% (79.9% with the justified).
+
 Batch 19 (2026-10-26), three branches. Card leads (cards1o, 0ad0d6c): the 14 clusters of the card oracle's differences were judged against the
 original's code and runs. The death film (cards 0x8F, 0x123, 0x8D: nobody is left, the original plays it and stops at the keyboard test) was the
 tester's: the harness now records `film death` and ends the run (44 + 1 + 21 runs agree). Three were real and are fixed, each with a unit test
@@ -680,7 +703,7 @@ the camp, the sheet, the generator) took the resident code from 57% to 62% and t
 78%. Its differing sessions (Alt-M in the menu bar's keyboard mode, an unconscious member in the gate battle, an away member's record bytes after a battle, the gate battle with Alt toggles, the cache's G after g, Left, B, two map sessions with F10) were settled in batch 13: the unconscious and the away member were a real difference (fixed, R002+0x1830); Alt-M, the Alt toggles and the two F10 map sessions were tester artifacts (the scripts and the F6/F10 delivery fixed); the cache's G agrees, its heap pointer (R035+0x114A) being reported as undefined memory. All of them agree.
 
 The battle direct calls' old differences were the harness's (15 now agree, 13 unreachable states); every judged job of
-those files agrees (batch 19: 14,481 of 23,943 agree, 0 differ, the rest not judged).
+those files agrees (batch 20: 14,513 of 23,943 agree, 0 differ, the rest not judged).
 
 Travel functions called directly from map states (the step R030+0x1300, the camp watch, the minutes per
 step, the encounter weight, the season palette and three R029 helpers; 25 map states): about 80 more
