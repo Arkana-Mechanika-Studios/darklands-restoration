@@ -449,8 +449,10 @@ public sealed partial class TacticalBattle
         SelectMember(Battle.Leader);
         PendingOrderMember = Battle.ActiveMember;
         MoveMode = 0;
-        // C: R014+0x02FF / 0x0307 as for any battle: floor_view_draw(−1) around the centre kept (DS:C866 / DS:C886), combat_draw
+        // C: R014+0x02FF / 0x0307 as for any battle: floor_view_draw(−1) around the centre kept (DS:C866 / DS:C886), combat_draw, whose
+        //   R014+0x99F6 (called at R014+0x6926) turns whoever EnemyTurn just gave an action toward its target
         _view.MapChanged();
+        TurnTowardTargets();
         Effects.Drawn(_view);
         RemoveArrivedMissiles();
         RefreshTargetCursor();

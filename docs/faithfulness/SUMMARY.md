@@ -8,7 +8,7 @@ its bytes, never against another reimplementation.
 Wherever an oracle runs, the rules agree with the original's in the faithful mode (`OriginalBehaviour.Faithful`,
 which the oracles and the headless host use); the exceptions are registered, each with its reason (undefined
 memory, the host, deliberate fixes, a few things not modelled: see "Divergences and original bugs"). By default the
-player's game differs from the faithful mode only in the 5 listed, switchable data-safety fixes below. The aim is no
+player's game differs from the faithful mode only in the 6 listed, switchable data-safety fixes below. The aim is no
 known divergence, strong evidence, published coverage. The differences found and not yet settled are listed as open
 items there. Where it stands:
 
@@ -38,7 +38,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those.
-* The five fixes now in `DataSafe` (registered as deliberate fixes, `divergences.csv`; the bugs in
+* The six fixes now in `DataSafe` (registered as deliberate fixes, `divergences.csv`; the bugs in
   `original_bugs.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (cache_save R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -73,11 +73,19 @@ after 1.0.
     character sheet runs inside order mode without rebuilding the menu and can give and drop items, so when the member
     arrives at the door the slot can name another stack or one past the last (the last stack is lost, an empty pack's
     count becomes -1), and with the Eater-Water gone the leader's slot is 0xFF, entry 255 (member m + 3's entry 63 for
-    members 0 and 1; past the packs for members 2 to 4: D-25f7f1, not modelled). Found in batch 20 by the B2 direct calls
+    members 0 and 1; past the packs for members 2 to 4: D-5471a9, not modelled). Found in batch 20 by the B2 direct calls
     (mine-p300#370, wild-p300#346; registered B-dce22a, B-bf6904, the fix D-a25000; test
     `ADissolveOrderUsesUpTheSlotFoundWhenTheOrderWasGiven`). Fixed: only an Eater-Water is used up (the slot's stack if
     it still is one, else the weakest; none: nothing, and the lock opens as before). The faithful mode keeps the
     original's use of the slot byte, without the count guard.
+  * `FixDissolveKeyMember`: the Dissolve key (D) outside order mode, where the leader dissolves the lock, calls
+    `consume_slot` (R016+0x0F9A..0x0FBA) with the selected member DS:A6B2 (outside order mode the party member under the
+    pointer, R014+0xB785, else -1, R014+0xB7F5) and member 0's slot byte DS:C7CD (absolute, not indexed), with no test: the
+    pointer on another member uses up that member's stack at member 0's slot (another item, or the stale entry past his
+    last: his last stack lost); nobody selected writes before the packs (D-5471a9, D-c055d0, not modelled; with slot 0xFF
+    member 2's entry 63, reproduced). Found by reading in the batch 20 audit (lead B2-L17; registered B-d71b85, the fix
+    D-cbae26; test `TheDissolveKeyUsesMemberZerosSlotOfTheSelectedMember`, both modes). Fixed: the leader's own Eater-Water
+    is used up, as by his Dissolve Lock order.
 * The switches are not exposed in the settings; the player's host sets the profile.
 
 ## Coverage of the original functions
@@ -425,8 +433,8 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 202 original bugs the game
-reproduces (42 with their own `OriginalBehaviour` flag), 318 registered divergences,
+markers in the code, each with its reason and original coordinate: 203 original bugs the game
+reproduces (43 with their own `OriginalBehaviour` flag), 320 registered divergences,
 870 dormant branches kept as the original has them, 36 uncertain readings (the others were
 naming only, or settled by an agreeing oracle or the code, now closed; each of the 36 is in
 `UNCERTAIN.md` with the assumption it rests on). Every core-logic divergence has a
@@ -457,13 +465,8 @@ Open items (2026-10-27, after batch 20), listed honestly:
 * Round B2 leads L05 to L08 are triaged and settled in batch 20 (below); no job of them differs now. The 72 B2 jobs that still differ are the tester's: the early
   run e2 (66 jobs of R014+0x2170 whose original side predates the tick wait fix: the rewrite's timer-callback count is the original's plus exactly the 150 or 60 ticks
   of the message wait, and the clock and the times derived from it follow; replaced by the later runs of the same function, its coverage is not counted) and e11's and
-  e12's leave_level jobs (5 and 1, whose fuzzed state puts an enemy in animation slot 1..3). Still open from that work, found by the batch's audit and neither fixed
-  nor registered yet: combat_draw (14F7:0008) always turns the attackers toward their targets (R014+0x99F6, called at R014+0x6926), but three C# sites of a
-  floor_view_draw and combat_draw pair leave the turn out: after a loot pile (loot_pile_open, R014+0xE3AB..0xE3B3, TacticalBattle.Loot.cs), after a chest
-  (chest_open, R023+0x152A..0x1532, which also centres the view on the active member DS:17B0 where the C# keeps the centre) and when an in-battle save resumes
-  (R014+0x02FF..0x0307, TacticalBattle.Saving.cs; the fresh start has the turn). The Dissolve key outside order mode (R016+0x0FAF..0x0FBA) calls consume_slot with
-  the selected member DS:A6B2 (the party member under the pointer, else -1) and member 0's slot byte DS:C7CD, whatever member is selected; the C# uses the selected
-  member's own slot and does nothing for -1 (where the original writes before the packs). D-25f7f1 (members 2 to 4 with slot 0xFF, past the packs) is not modelled.
+  e12's leave_level jobs (5 and 1, whose fuzzed state puts an enemy in animation slot 1..3). The two leads the batch's audit found by reading are fixed (a2fix, below): B2-L16 (the
+  attackers' turn of combat_draw at three draw sites) and B2-L17 (the Dissolve key outside order mode, behind `FixDissolveKeyMember`).
   The per-battle state carried from one battle to the next (a lead from the community's bug list) needs a run of two battles in the original; no tool for it
   exists yet.
 * Round cards1 leads (14 judged in batch 19, below): what is left of them is registered, not reproduced: the new game's slot 4 holds the figure
@@ -613,6 +616,14 @@ data-damaging original bug: reproduced in the faithful mode and fixed in the pla
 above; e3 now agrees throughout). The golden card traces were regenerated: only the state digests moved, as the state dump gained the new flag. Replay of everything on the merged
 tree: 762 of 762 agree (472 s), the card corpora (30 jobs, byte-identical reports), cards1's own corpora and the world calls unchanged; coverage +3 outcomes and +1 block (the battle end's
 new draw path): 33,810 outcomes, 79.0% (79.9% with the justified).
+
+a2fix (2026-10-27), the two leads of the batch 20 audit. B2-L16: combat_draw (R014+0x6818) calls the attackers' turn R014+0x99F6 at R014+0x6926 whoever
+calls it, and three C# draw sites left it out: after a loot pile (R014+0xE3B3), after a chest (R023+0x1532, whose floor_view_draw also centres the view on the
+active member DS:17B0, R023+0x1525, where the C# kept the centre) and when an in-battle save resumes (R014+0x0307); all three now turn the attackers (test
+`TheDrawsAfterALootPileAndAChestTurnTheAttackers`). The seven-headed dragon's victory draw (R014+0x0CB6..0x0CC7) and the draw after the menu loop at
+R015+0x00DC are still to check (the first comes as the battle is won; the second's C# counterpart is not identified). B2-L17: the Dissolve key outside order mode reproduced in the faithful mode and fixed
+in the player's game behind `FixDissolveKeyMember` (the sixth `DataSafe` switch, above). Battle jobs: the 30 judge-battle files and b2's 17 give results
+byte-identical to batch 20; the replay of every fight and session (rerun_all default mode, 2 workers) 762 of 762 agree (none of them is known to reach the changed sites, so they show no regression rather than prove the fixes). The golden card traces moved in their state digests only (the new flag in the state dump).
 
 Batch 19 (2026-10-26), three branches. Card leads (cards1o, 0ad0d6c): the 14 clusters of the card oracle's differences were judged against the
 original's code and runs. The death film (cards 0x8F, 0x123, 0x8D: nobody is left, the original plays it and stops at the keyboard test) was the

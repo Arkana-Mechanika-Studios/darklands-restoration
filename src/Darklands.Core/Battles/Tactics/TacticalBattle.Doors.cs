@@ -213,8 +213,11 @@ public sealed partial class TacticalBattle
         {
             loot.ChestOffsets[idx] = loot.Append(contents, contents.Count);
         }
-        _view.MapChanged();
-        // C: then combat_draw R014+0x6818, as each tick ends: the draw list (its random draws) and the target cursor.
+        // C: R023+0x1525..0x152A: floor_view_draw(DS:17B0): the view drawn anew around the active member
+        _view.Recentre(Battle.ActiveMember);
+        // C: then combat_draw R014+0x6818 (R023+0x1532), as each tick ends: its R014+0x99F6 (called at R014+0x6926) turns the attackers
+        //   toward their targets, then the draw list (its random draws) and the target cursor.
+        TurnTowardTargets();
         Effects.Drawn(_view);
         RemoveArrivedMissiles();
         RefreshTargetCursor();
@@ -500,12 +503,19 @@ public sealed partial class TacticalBattle
         if (Menus.On(OrdersItem.DissolveLock))
         {
             _view.Message(EaterWaterText, 150);
-            // C: R016+0x0FAF..0x0FBA: consume_slot(DS:A6B2, DS:C7CD): the selected member (outside order mode the party member under the
-            //   pointer, R014+0xB785, else −1) with member 0's slot byte, whatever member is selected; with −1 consume_slot writes before the packs. Here the selected
-            //   member's own slot is used and −1 does nothing: not yet reproduced or registered (open lead, see SUMMARY).
-            if (selected >= 0 && Battle[selected].DissolveSlot >= 0 && Battle[selected].DissolveSlot < Battle[selected].Items.Count)
+            // orig: R016+0x0F9A (1EF8:0F9A) matched: consume_slot 18BF:0FA4 (R014+0xB434) of DS:A6B2 with the byte DS:C7CD (R016+0x0FAF..0x0FBA)
+            if (Battle.Behaviour.FixDissolveKeyMember)
             {
-                Attacks.ConsumeSlot(Battle, selected, Battle[selected].DissolveSlot);
+                // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) the leader's Eater-Water is used up, as by
+                //   his Dissolve Lock order (his own slot byte; the stale-slot fix applies as there).
+                UseUpDissolveSlot(l);
+            }
+            else
+            {
+                // BUG: OriginalBehaviour.FixDissolveKeyMember - R016+0x0FAF..0x0FBA: consume_slot(DS:A6B2, DS:C7CD): the selected member
+                //   (outside order mode the party member under the pointer, R014+0xB785, else −1, R014+0xB7F5) with member 0's slot byte
+                //   (absolute, not indexed), no test of either: another member's stack, or the entries before the packs.
+                ConsumeSlotAsOriginal((sbyte)selected, Battle[0].DissolveSlot & 0xFF);
             }
             if (LockIsDoor)
             {

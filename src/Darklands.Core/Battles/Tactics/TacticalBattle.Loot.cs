@@ -265,7 +265,9 @@ public sealed partial class TacticalBattle
         }
         // C: floor_view_draw(DS:17B0): the view drawn anew around the active member
         _view.Recentre(Battle.ActiveMember);
-        // C: then combat_draw R014+0x6818, as each tick ends: the draw list (its random draws) and the target cursor.
+        // C: then combat_draw R014+0x6818 (R014+0xE3B3), as each tick ends: its R014+0x99F6 (called at R014+0x6926) turns the attackers
+        //   toward their targets, then the draw list (its random draws) and the target cursor.
+        TurnTowardTargets();
         Effects.Drawn(_view);
         RemoveArrivedMissiles();
         RefreshTargetCursor();

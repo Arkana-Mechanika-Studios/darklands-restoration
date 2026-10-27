@@ -138,6 +138,105 @@ public sealed class OrderModeLeadsTests
         }
     }
 
+    /// <summary>
+    /// R016+0x0F9A..0x0FBA: the Dissolve key outside order mode calls consume_slot (R014+0xB434) with the selected member DS:A6B2 (the
+    /// member under the pointer, else −1) and member 0's slot byte DS:C7CD, with no test: the pointer on member 1 uses up member 1's
+    /// entry at member 0's slot; nobody selected with slot 0xFF uses up member 2's entry 63 (entry −64 + 255); nobody selected with a slot
+    /// below 64 writes before the packs (not modelled: nothing changes). With OriginalBehaviour.FixDissolveKeyMember the leader's
+    /// Eater-Water is used up whoever is selected.
+    /// </summary>
+    [Fact]
+    public void TheDissolveKeyUsesMemberZerosSlotOfTheSelectedMember()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        foreach (var fix in new[] { false, true })
+        {
+            foreach (var (selected, slot) in new[] { (1, 1), (-1, -1), (-1, 1), (0, 1), (2, 1) })
+            {
+                var t = Start();
+                t.Battle.Behaviour = new Darklands.Core.OriginalBehaviour { FixDissolveKeyMember = fix, FixStaleDissolveSlot = fix };
+                Assert.False(t.Paused);
+                t.Battle.Leader = 2;
+                var m0 = t.Battle[0];
+                m0.Items.Clear();
+                m0.Items.Add(new ItemStack(10, 0, 20, 1, 1));
+                m0.Items.Add(new ItemStack(99, 0, 30, 2, 1));
+                m0.DissolveSlot = slot;
+                var m1 = t.Battle[1];
+                m1.Items.Clear();
+                m1.Items.Add(new ItemStack(10, 0, 20, 1, 1));
+                m1.Items.Add(new ItemStack(12, 0, 25, 3, 1));
+                var m2 = t.Battle[2];
+                m2.Items.Clear();
+                m2.Items.Add(new ItemStack(99, 0, 40, 2, 1));
+                m2.DissolveSlot = 0;
+                m2.Items[63] = new ItemStack(5, 0, 5, 4, 1);
+                t.Menus.Set(OrdersItem.DissolveLock, 1);
+                t.DissolveKey(selected);
+                if (fix)
+                {
+                    // the leader's (member 2's) own Eater-Water
+                    Assert.Equal(1, m2.Items[0].Count);
+                    Assert.Equal(4, m2.Items[63].Count);
+                    Assert.Equal(2, m0.Items[1].Count);
+                    Assert.Equal(3, m1.Items[1].Count);
+                    continue;
+                }
+                Assert.Equal(2, m2.Items[0].Count);
+                Assert.Equal(selected == 0 ? 1 : 2, m0.Items[1].Count);
+                Assert.Equal(selected == 1 ? 2 : 3, m1.Items[1].Count);
+                Assert.Equal(selected == -1 && slot == -1 ? 3 : 4, m2.Items[63].Count);
+                Assert.Equal(selected == 2 ? 0 : 1, m2.Items.Stacks);
+                Assert.Equal(2, m0.Items.Stacks);
+                Assert.Equal(2, m1.Items.Stacks);
+            }
+        }
+    }
+
+    /// <summary>
+    /// combat_draw R014+0x6818 calls R014+0x99F6 (at R014+0x6926) whatever its caller: the draws after a loot pile (R014+0xE3B3) and a
+    /// chest (R023+0x1532, after floor_view_draw(DS:17B0)) turn an attacker toward its target, as the tick end's draw does.
+    /// </summary>
+    [Fact]
+    public void TheDrawsAfterALootPileAndAChestTurnTheAttackers()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        foreach (var site in new[] { "OpenChest", "OpenLootPile" })
+        {
+            var t = Start();
+            var l = t.Battle.Leader;
+            var e = -1;
+            for (var i = 0; i < Combatant.Count; i++)
+            {
+                if (i != l && t.Battle[i].Status == CharacterStatus.Able && t.Battle[i].Floor == t.Battle.FloorShown && t.Battle[i].Position != t.Battle[l].Position)
+                {
+                    e = i;
+                    break;
+                }
+            }
+            Assert.True(e >= 0);
+            var c = t.Battle[e];
+            c.Action = CombatAction.Melee;
+            c.Target = (sbyte)l;
+            var facing = t.FacingToTarget(e);
+            c.Facing = c.SpriteFacing = (facing + 4) & 7;
+            if (site == "OpenLootPile")
+            {
+                Set(t, "_lootLeft", true);
+                t.Battle[l].LootPile = -1;
+            }
+            typeof(TacticalBattle).GetMethod(site, Any)!.Invoke(t, [l]);
+            Assert.Equal(facing, c.Facing);
+            Assert.Equal(facing, c.SpriteFacing);
+        }
+    }
+
     /// <summary>combat_draw (R014+0x6D39) removes an arrived missile in the tick that drew it.</summary>
     [Fact]
     public void AnArrivedMissileGoesInTheTickThatDrawsIt()
