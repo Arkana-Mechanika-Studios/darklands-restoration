@@ -747,7 +747,7 @@ BATTLE_RECORDS |= {"gen-bdead-02", "gen-bgater-01", "gen-bgater-04", "gen-bheld-
 SESSIONS["dungeon-mine-doormsg"] = "local/oracle-saves/dlp-issue2/DKSAVE16.SAV"
 BATTLE_RECORDS |= {"dungeon-mine-doormsg"}
 IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory", "in battle"}   # lockstep.APART
-RESERVE_MB, JOB_MB = 1500, 450
+RESERVE_MB, JOB_MB = int(os.environ.get("DARKLANDS_RESERVE_MB", 1500)), int(os.environ.get("DARKLANDS_JOB_MB", 450))   # the 2026-10-27 memory rule: reserve 6000 and 1900 per oracle worker
 
 
 def free_mb() -> int:
