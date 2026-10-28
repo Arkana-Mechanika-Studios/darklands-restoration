@@ -67,6 +67,7 @@ VAR_TEXTS = (0xED6D, 0xED95, 0xEDBD, 0xEDE5)
 VAR_ITEM, VAR_LOC, VAR_LOC2, VAR_SUPPORT, VAR_CITY_LOCATION = 0xED5C, 0xE89B, 0xED54, 0xED5E, 0xED52
 CONDITIONS = 0x9C30                 # the conditional passages of the texts (bytes)
 CARD_NAME = 0xE3D4
+PIC_BUF = 0xE3E3                    # the card's picture (card_load's second argument; the screens' redraw)
 BANKERS = 0x4BB6
 REPORT_SKILLS = 0x26BC
 SAINT_MESSAGES = 0x01BD             # "show saintly changes" (Alt-C)
@@ -289,9 +290,13 @@ class Oracle:
         # differ from machine to machine; the run is marked too. (The rules' event scans read empty slots so on every
         # run and are not counted.)
         m.uc.hook_add(UC_HOOK_MEM_READ, lambda uc, acc, addr, size, val, ud: self.null_read(uc), begin=0, end=0xFF)
+        # the screens end with the card's redraw (screen_redraw: a nested call, so the stubs run outside the emulation)
+        camp = lambda mm: (self.log("screen camp %d" % mm.sarg(0)), self.screen_redraw(mm))[1]
+        item_store = lambda mm: (self.log("screen itemstore"), self.screen_redraw(mm))[1]
+        self.barter.__func__.outside = camp.outside = item_store.outside = True
         m.stub(*BARTER, self.barter, record="R029")
-        m.stub(*CAMP, lambda mm: (self.log("screen camp %d" % mm.sarg(0)), (0, 0))[1], record="R029")
-        m.stub(*ITEM_STORE, lambda mm: (self.log("screen itemstore"), (0, 0))[1], record="R029")
+        m.stub(*CAMP, camp, record="R029")
+        m.stub(*ITEM_STORE, item_store, record="R029")
         m.stub(*PRAYER, self.prayer, record="R034")
         m.stub(*BATTLE_RUN, self.battle, record="R002")
         # sound: every sound_play(n) is a trace line "sound n" (the driver's command, whoever calls it: music_play, the battle's effects, a card's
@@ -339,6 +344,16 @@ class Oracle:
             off, seg = m.word(P(0x290E), 0x207F + 4 * i), m.word(P(0x290E), 0x207F + 4 * i + 2)
         name = m.cstr(seg, off, 80).decode("latin-1")
         self.log("screen barter %d %X %s" % (i, (y << 16) | x, name))
+        return self.screen_redraw(m)
+
+    def screen_redraw(self, m):
+        """The stubbed screen wrappers of R029 (barter R029+0x21AA, camp +0x222A, item store +0x225C) end with
+        card_load(DS:E3D4, DS:E3E3) through thunk 09C0:1EA5: the card is redrawn with its picture buffer, which the
+        card may have changed (e.g. card 0x1D's back room). The thunk runs for real (its records loaded and the
+        caller's loaded back), so card_load logs it as the rules' redraw. A card that never loads itself (e.g. 0x4D)
+        leaves the buffers as the card before it did: empty in the oracle's start states, where nothing is redrawn."""
+        if m.cstr(DS, CARD_NAME) and m.cstr(DS, PIC_BUF):
+            m.call(P(0x09C0), 0x1EA5, [CARD_NAME, PIC_BUF, DS])
         return (0, 0)
 
     def prayer(self, m):

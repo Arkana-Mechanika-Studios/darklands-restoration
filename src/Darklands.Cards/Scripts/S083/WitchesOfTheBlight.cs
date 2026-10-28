@@ -65,8 +65,9 @@ public sealed class WitchesOfTheBlight : Card
         c.Events.Update(-1, -1, 0x1C, 1, growth, DragonQuest, EventUpdate.Add);
         c.Events.Update(-1, -1, 0x1C, 4, 1, DragonQuest, EventUpdate.Add);
         var menu = Menu(c, block);
-        menu.Enable(0, 2, 3, 5);
-        menu[4] = block == 4 ? OptionState.Hidden : OptionState.Enabled;
+        menu.Enable(0, 2, 4, 5);
+        // C: at the sabbat (block 4) line 3 (grovel) is left out, surrender stays (R083+0x01CD: DS:EE7C = 0).
+        menu[3] = block == 4 ? OptionState.Hidden : OptionState.Enabled;
         c.SetCardItems();
         c.SetCardSaints(9, 0x17, 0x1D, 0x2B);
         menu[1] = c.SaintsUsable();
