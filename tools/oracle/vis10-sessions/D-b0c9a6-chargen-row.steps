@@ -1,0 +1,11 @@
+# vis10 D-b0c9a6: Create characters from the start screen, a ready-made member added to the party (A): his row of the party column, then H (heraldry)
+wait:5
+key:c
+wait:200
+shot:created0
+key:a
+wait:50
+shot:added
+key:h
+wait:50
+shot:heraldry

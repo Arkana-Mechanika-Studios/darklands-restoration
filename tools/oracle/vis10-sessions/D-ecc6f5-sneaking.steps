@@ -1,0 +1,12 @@
+# vis10 D: the game saved at the Sneaking card (0x5F, R067+0x1ECE): loaded, the original shows the previous screen's picture and texts, not the card's (synth save DKSAVE0-card5f: scratch/vis10/saves/DKSAVE0-card5f.sav)
+key:t
+wait:5
+key:l
+wait:300
+shot:idle
+move:150,60
+wait:50
+shot:moved
+move:250,150
+wait:50
+shot:moved2

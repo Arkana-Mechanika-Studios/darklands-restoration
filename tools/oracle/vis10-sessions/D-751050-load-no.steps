@@ -1,0 +1,16 @@
+# vis10 D-751050: the load screen, Alt-Q ("Quit to DOS?") answered n, then D (Delete): the original has freed the button picture (R037+0x8218), so no pressed button is drawn; the rewrite still draws it
+key:t
+wait:5
+shot:load0
+key:altq
+wait:30
+shot:prompt
+key:n
+wait:30
+shot:afterno
+key:d
+wait:30
+shot:pressed
+key:n
+wait:30
+shot:end

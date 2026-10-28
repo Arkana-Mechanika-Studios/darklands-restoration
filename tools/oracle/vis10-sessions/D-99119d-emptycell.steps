@@ -1,0 +1,10 @@
+# vis10 D-99119d: the game saved at the Empty prison cell (card 0x16B, R134+0x1EDA; synth save DKSAVE0-card16b: scratch/vis10/saves/DKSAVE0-card16b.sav): its text, then Enter and what follows (the original only draws the text as an option list and goes on to the battle)
+key:t
+wait:5
+key:l
+wait:300
+shot:idle
+series:after,24,250
+key:enter
+wait:300
+shot:afterkey

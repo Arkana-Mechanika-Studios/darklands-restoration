@@ -1,0 +1,12 @@
+# vis10 D: the game saved at Before the city walls (0x73, R072+0x1494): loaded, the original shows the previous screen, not the card (synth save DKSAVE0-card73: scratch/vis10/saves/DKSAVE0-card73.sav)
+key:t
+wait:5
+key:l
+wait:300
+shot:idle
+move:150,60
+wait:50
+shot:moved
+move:250,150
+wait:50
+shot:moved2
