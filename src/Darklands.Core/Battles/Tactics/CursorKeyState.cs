@@ -26,6 +26,15 @@ public sealed class CursorKeyState
     /// <summary>DS:D945: the timer callbacks count (DS:07D6) the held keys' speed is measured from; 0 except from a file.</summary>
     public ushort ReleasedAt { get; set; }
 
+    /// <summary>DS:07D6: the timer callbacks since the keys were last let go in a battle (a word that wraps); not in the battle file.</summary>
+    // C: the timer's frame work root 047C:000A counts it at every callback of the program (the timer is installed at the start,
+    // C: R000+0x06A5, and only taken off around the sound driver's reloads), in a battle or not; R014+0x38AE (the cursor keys let go)
+    // C: is its only clear, so a battle begins with what the time since the last battle's let-go (or since the start) left
+    public ushort HeldCallbacks { get; set; }
+
+    /// <summary>The game timer's ticks when the last battle screen ended (the time outside the battles counts <see cref="HeldCallbacks"/> on).</summary>
+    public long TimerTicksAtLeave { get; set; }
+
     /// <summary>The state as a battle file holds it (6 bytes).</summary>
     public void Write(Span<byte> to)
     {
