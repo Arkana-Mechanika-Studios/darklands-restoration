@@ -387,6 +387,9 @@ public sealed class TracingScreen(int option, bool probe) : ICardScreen
             c.MenuPopup = false;
             if (PopupKind(block, choice) is { } saints && PopupChoice(c, saints) is var (member, slot))
             {
+                // the choice is made in the box: the menu's layout is then the box's (CardMenu.Run)
+                c.MenuBox = saints ? PopupBox.Saints : PopupBox.Items;
+                c.PopupStates(saints).CopyTo(c.MenuBoxStates, 0);
                 c.MenuPopup = true;
                 c.MenuMember = member;
                 c.MenuSlot = slot;

@@ -71,12 +71,17 @@ public sealed class NoblemansRoadToll : Card
         };
         var assured = AsLeader(OptionHint.Saying(CardTexts.SuccessAssured));
         var combat = AsLeader(OptionHint.Saying(CardTexts.EnterCombat));
-        // The card's pop-ups (the saints' too) all use the potion hints, by the slot chosen.
-        // DORMANT: the set-up also installs the saint pop-up handlers R132+0x0D04 / _0a4c (the usual chance text),
-        //   but the menu loop calls item_fn[0][menu_slot] for every pop-up, so they never run.
+        // The card's pop-up choices (the saints' too) are rated by the potion hints, by the slot chosen: the loop calls
+        // item_fn[0][menu_slot] for every pop-up. The saint box's own handlers (R132+0x0D04 / R132+0x0D8C, the usual chance
+        // text) answer a Shift hint in the saint box and an Enter there (opt_fn is then the box's table).
         // C: item_fn[0][2] / [0][3] are not set by this card (stale from an earlier card); only slots 0 and 1 have
         //   potions or saints here, so the pop-up never reaches them.
         var potionHint = AsLeader(() => PotionChance(c));
+        menu.ItemBox = potionHint;
+        menu.SaintBox = c.SaintPopupChanceHint;
+        menu.PopupRatedByItems = true;
+        // orig: R132+0x057B: var_chosen1 = leader after card_menu, before the choice is rated
+        menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
 
         // DORMANT: in text block 4 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         // DORMANT: in text block 6 the option lines 0..5 are never offered (an Offer for this block lists other lines, the switch to this block hides them); they can be offered in other blocks only.

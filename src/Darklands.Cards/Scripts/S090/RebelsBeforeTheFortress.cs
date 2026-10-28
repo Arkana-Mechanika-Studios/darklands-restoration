@@ -36,6 +36,11 @@ public sealed class RebelsBeforeTheFortress : Card
         Show(c, Picture);
         c.Next = Number;
         var menu = Menu(c);
+        // C: the item box's handlers give the potion 100 % beside the member ($ChosenOneName unchanged); a choice there by a click
+        // C: or by Enter is rated by them (CardMenu.ItemBox), a choice of the line itself by its hint (-1).
+        menu.ItemBox = () => OptionHint.ChanceOf(100, c.MenuMember);
+        // C: the saint box's handlers (R090+0x20CC..) tell the prayer's chance beside the member, for line 3 and the hidden line 2 alike.
+        menu.SaintBox = c.SaintPopupChanceHint;
         menu.Enable(0, 1, 4, 6, 7);
         c.RandomName(c.City.Ordinal + 0x0C, c.LocationQuery(c.Here, 0x21) % 5 == 0 ? 1 : 0, 0);
         c.PartyMaxSkill((int)Skill.Stealth);
@@ -104,7 +109,7 @@ public sealed class RebelsBeforeTheFortress : Card
             // orig: R090+0x1D42 (1999:0732); hint R090+0x1D9E matched
             new MenuLine(chance => ScaleTheWall(c, chance), () => OptionHint.ChanceOf(ClimbChance(c), c.Variables.Chosen[0])),
             // orig: R090+0x1DCC (1999:07BC); hint R090+0x1E5A; item hints R090+0x209C, R090+0x20B4 (100 %) matched
-            new MenuLine(() => UseAPotion(c, c.MenuPopup ? 100 : -1), OptionHint.Saying(CardTexts.SelectPotion)),
+            new MenuLine(chance => UseAPotion(c, chance), OptionHint.Saying(CardTexts.SelectPotion)),
             // orig: R090+0x1E92 (1999:0882); hint R090+0x1EA4 matched
             new MenuLine(() => { c.PassHours(24); c.Next = 0xBC; }, OptionHint.Saying(NoRisk)),
             // orig: R090+0x1EDC (1999:08CC); hint R090+0x1F2A ("Coward!", checked against asm) matched

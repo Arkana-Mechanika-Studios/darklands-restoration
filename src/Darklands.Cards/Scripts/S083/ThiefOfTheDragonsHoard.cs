@@ -50,6 +50,8 @@ public sealed class ThiefOfTheDragonsHoard : Card
                 break;
             case 4:
                 ShowPicture(c, Picture);
+                // orig: R083+0x161E: options_block = 4 (DS:EE53, which a later card may read); the other cases leave it.
+                c.OptionsBlock = 4;
                 break;
             default:
                 c.Next = 0x97;

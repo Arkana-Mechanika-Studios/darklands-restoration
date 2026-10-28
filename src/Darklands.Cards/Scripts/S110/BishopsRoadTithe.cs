@@ -25,7 +25,8 @@ public sealed class BishopsRoadTithe : Card
     {
         Show(c, BishopPicture);
         c.Next = Number;
-        var menu = Menu(c, 0);
+        // C: options_block is written after the empty-purse test (R110+0x013C): that way out leaves the block the card before left.
+        var menu = Menu(c, null);
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 4, 5);
         c.State.SavedCard2 = 0;
         c.Variables.Chosen[0] = c.Leader;
@@ -44,6 +45,7 @@ public sealed class BishopsRoadTithe : Card
             tithe = Money.From(0, 0, (ushort)purse / 2);
         }
         c.Variables.Money[0] = tithe;
+        menu.Block = 0;
         c.SetCardItems(0x65, 0x66);
         c.SetCardSaints(0x3D, 0x4E);
         menu[5] = c.ItemsUsable();

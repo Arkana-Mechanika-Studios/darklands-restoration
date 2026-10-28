@@ -50,9 +50,9 @@ public sealed class MaidenAtTheStake : Card
         menu[0] = c.Events.FactAnywhere(DragonQuest, 0x0B) ? OptionState.Shown : OptionState.Enabled;
         c.SetCardSaints();
         c.SetCardItems(0x5F, 0x60, 0x65, 0x61);
-        // C: items_usable() is stored in opt_flag_6, but the menu copies only flags 0..5: the
+        // C: items_usable() is stored in opt_flag_6 (the global flag a later card may show), but the menu copies only flags 0..5: the
         // potion line (flag 4) is always enabled.
-        _ = c.ItemsUsable();
+        c.State.OptionFlags[6] = (int)c.ItemsUsable();
         return menu.Run(
             // orig: R084+0x196C (199A:034C) asm; R084+0x1A6E (199A:044E) asm; tests: CardSmokeTests
             new MenuLine(() =>

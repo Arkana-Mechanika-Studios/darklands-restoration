@@ -49,6 +49,12 @@ public sealed class SabbatWitchFeast : Card
         Show(c, Picture);
         c.Next = Number;
         var menu = Menu(c, 2);
+        // C: the loop rates a pop-up choice with item_fn[0][menu_slot] (R126+0x367A..: $ChosenOneName = the member, "Success is
+        // C: assured."), the saint box's own handlers (R126+0x376A..: the prayer's chance beside the member) answer a Shift hint
+        // C: in the box and an Enter there.
+        menu.ItemBox = () => c.MemberPopupHint(SuccessAssured);
+        menu.SaintBox = c.SaintPopupChanceHint;
+        menu.PopupRatedByItems = true;
         menu.Enable(2, 3, 4);
         c.SetCardItems();
         c.SetCardSaints(0, 0x59, 0x61, 0x80);

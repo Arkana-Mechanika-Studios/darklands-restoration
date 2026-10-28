@@ -73,6 +73,10 @@ public sealed class CouncilHall : Card
         menu[2] = saint;
         menu[3] = prisoners;
         menu[4] = prisoners;
+        // C: after each choice the loop sets $ChosenOneName to the leader, then calls the handler (the saint box's, R054+0x2F5C..,
+        // C: for a choice in the box: by a click, or by Enter as opt_fn[2]), then the action.
+        menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
+        menu.SaintBox = () => SaintChance(c);
         c.Next = Number;
         return menu.Run(
             // orig: R054+0x221C (19DF:07AC) hint + R054+0x2018 (19DF:05A8) action (hint matched, action unmatched)
@@ -81,12 +85,7 @@ public sealed class CouncilHall : Card
             // orig: R054+0x2526 (19DF:0AB6) hint + R054+0x22F8 (19DF:0888) action (hint matched, action unmatched)
             Option(c, () => AskForAnErrand(c, ErrandChance(c).Chance), () => ErrandChance(c)),
             // orig: R054+0x2758 (19DF:0CE8) hint + R054+0x25C6 (19DF:0B56) action matched
-            Option(c, () =>
-                {
-                    _ = (c.MenuPopup ? SaintChance(c) : OptionHint.Say(CardTexts.SelectSaint)).Chance;
-                    CallUponASaint(c);
-                },
-                OptionHint.Saying(CardTexts.SelectSaint)),
+            Option(c, () => CallUponASaint(c), OptionHint.Saying(CardTexts.SelectSaint)),
             // orig: R054+0x2880 (19DF:0E10) hint + R054+0x2790 (19DF:0D20) action matched
             Option(c, () => InquireAboutPrisoners(c), InquireChance(c)),
             // orig: R054+0x2996 (19DF:0F26) hint + R054+0x28CE (19DF:0E5E) action matched
@@ -108,16 +107,9 @@ public sealed class CouncilHall : Card
     }
 
     /// <summary>
-    /// An option line. C: after each choice the menu loop sets $ChosenOneName to the leader
-    /// before the line's handler and action run (a saint pop-up's handler then sets the member).
+    /// An option line (the leader is $ChosenOneName before the line's handler and action run: CardMenu.OnChoice).
     /// </summary>
-    private static MenuLine Option(CardContext c, Action choose, Func<OptionHint> hint) =>
-        new(() =>
-            {
-                c.Variables.Chosen[0] = c.Leader;
-                choose();
-            },
-            hint);
+    private static MenuLine Option(CardContext c, Action choose, Func<OptionHint> hint) => new(choose, hint);
 
     // ---- chances ------------------------------------------------------------------
 

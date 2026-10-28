@@ -58,6 +58,15 @@ CARD_ITEMS, CARD_SAINTS = 0xEE43, 0xEE4B
 MENU_MEMBER, MENU_SLOT, MENU_POPUP, POPUP_ALL = 0xEE6C, 0xEE6A, 0xEE6E, 0x5204
 ITEM_FN, SAINT_FN = 0xEC00, 0xECF6
 POPUP_LAYOUT, ITEM_LAYOUT, SAINT_LAYOUT, LAYOUT_SIZE = 0xEA64, 0xEB5A, 0xEC50, 0xF6   # struct layout {..., +0xA6 handlers}
+MENU_LAYOUT, SAVED_LAYOUT, LAYOUT_STATES = 0xE96E, 0xA778, 0x2E   # the menu's layout (+0x2E opt_on DS:E99C, +0xA6 opt_fn DS:EA14), card_mouse's copy of it
+DIFFICULTY, LEADER = 0x906A, 0x907B   # bytes, as R043+0x2CE2 reads them
+# DARKLANDS_CARD_ORACLE_BOXKEY=1: a choice in a pop-up box is made with Enter (menu_popup stays 0), not with a click
+# DARKLANDS_CARD_ORACLE_BOXES=1: at every menu each item/saint line's box handlers are asked (trace lines "box <line> <member> <slot>: ...")
+BOX_KEY = os.environ.get("DARKLANDS_CARD_ORACLE_BOXKEY") == "1"
+BOX_PROBE = os.environ.get("DARKLANDS_CARD_ORACLE_BOXES") == "1"
+# DARKLANDS_CARD_ORACLE_OPTBLOCK=n: every run starts with options_block DS:EE53 = n, and its trace ends with the value the card left
+OPTIONS_BLOCK = 0xEE53
+OPTBLOCK_START = int(os.environ["DARKLANDS_CARD_ORACLE_OPTBLOCK"]) if os.environ.get("DARKLANDS_CARD_ORACLE_OPTBLOCK") else None
 MSG_BUF = 0x9085
 # text variables (the reference's names)
 VAR_CHOSEN = (0xEE8C, 0xEE8E, 0xEE90, 0xEE92, 0xEE94)
@@ -259,6 +268,8 @@ class Oracle:
         m.write(DS, VAR_SUPPORT, bytes(14))
         m.put_word(DS, VAR_CITY_LOCATION, 0)
         m.write(DS, CONDITIONS, bytes(10))
+        if OPTBLOCK_START is not None:
+            m.put_word(DS, OPTIONS_BLOCK, OPTBLOCK_START & 0xFFFF)
 
     # ---- services ------------------------------------------------------------------------
     def install(self):
@@ -461,17 +472,15 @@ class Oracle:
             for i, s in enumerate(states):
                 if s != 0 or (forced and i == choice):
                     self.log("hint %d: %s" % (i, self.hint(i)))
+        if BOX_PROBE:
+            self.box_probe(block)
         m.put_word(DS, MENU_POPUP, 0)
         if run.probe:
             kind = self.messages.popup_kind(run.texts_name, block, choice)
             if kind is not None:
                 pc = self.popup_choice(kind)
                 if pc is not None:
-                    # card_mouse opens the box: DS:EA64 = DS:EB5A (items) / DS:EC50 (saints), so DS:EB0A = item_fn / saint_fn
-                    m.write(DS, POPUP_LAYOUT, m.read(DS, SAINT_LAYOUT if kind else ITEM_LAYOUT, LAYOUT_SIZE))
-                    m.put_word(DS, MENU_POPUP, 1)
-                    m.put_word(DS, MENU_MEMBER, pc[0])
-                    m.put_word(DS, MENU_SLOT, pc[1])
+                    self.box_choice(kind, pc[0], pc[1])
         self.log("choose %d" % choice)
         return (choice, 0)
 
@@ -491,13 +500,84 @@ class Oracle:
         if slot is not None:
             kind = self.messages.popup_kind(self.run.texts_name, block, line)
             if kind is not None:
-                member = self.popup_member(kind, slot)
-                m.write(DS, POPUP_LAYOUT, m.read(DS, SAINT_LAYOUT if kind else ITEM_LAYOUT, LAYOUT_SIZE))
-                m.put_word(DS, MENU_POPUP, 1)
-                m.put_word(DS, MENU_MEMBER, member)
-                m.put_word(DS, MENU_SLOT, slot)
+                self.box_choice(kind, self.popup_member(kind, slot), slot)
         self.log("choose %d" % line)
         return (line, 0)
+
+    def box_choice(self, saints: bool, member: int, slot: int):
+        """A choice in the line's item or saint box, as card_mouse leaves it: the box opens (DS:EA64 = DS:EB5A items /
+        DS:EC50 saints, R043+0x239C; R043+0x2CE2 writes the entries' states at +0x2E), the pointer enters it (DS:A778 =
+        DS:E96E, DS:E96E = DS:EA64, R043+0x245E: opt_on and opt_fn are then the box's states and handler table) and the
+        entry is chosen: by a click (menu_popup = 1, the card calls DS:EB0A[menu_slot]) or, with BOX_KEY, by Enter
+        (menu_popup 0, the card calls opt_fn[k]); menu_member and menu_slot are the entry's."""
+        m = self.m
+        layout = bytearray(m.read(DS, SAINT_LAYOUT if saints else ITEM_LAYOUT, LAYOUT_SIZE))
+        layout[LAYOUT_STATES:LAYOUT_STATES + 20] = bytes(self.box_states(saints))
+        m.write(DS, POPUP_LAYOUT, bytes(layout))
+        m.write(DS, SAVED_LAYOUT, m.read(DS, MENU_LAYOUT, LAYOUT_SIZE))
+        m.write(DS, MENU_LAYOUT, bytes(layout))
+        m.put_word(DS, MENU_POPUP, 0 if BOX_KEY else 1)
+        m.put_word(DS, MENU_MEMBER, member)
+        m.put_word(DS, MENU_SLOT, slot)
+
+    def box_states(self, saints: bool) -> list:
+        """The box entries' states, member * 4 + slot, as R043+0x2CE2 stores them (DS:EA92)."""
+        m = self.m
+        lst = struct.unpack("<4h", m.read(DS, CARD_SAINTS if saints else CARD_ITEMS, 8))
+        every = m.word(DS, POPUP_ALL)
+        basic = m.byte(DS, DIFFICULTY) == 0
+        expert = m.byte(DS, DIFFICULTY) == 2
+        leader = m.byte(DS, LEADER)
+        out = [0] * 20
+        for i in range(m.word(DS, PARTY_SIZE)):
+            if m.byte(DS, PARTY + 0x80 * i) in (0, 5):
+                continue
+            for j in range(4):
+                if lst[j] == -1:
+                    continue
+                if saints:
+                    rn = m.call(*MEMBER_BIT, [i, lst[j]])[0]
+                    if rn != 0 or (basic and leader == i) or every == 1:
+                        out[i * 4 + j] = 2 if (basic and leader == i and rn == 0 and every == 0) else 1
+                else:
+                    rn = m.call(*HAS_ITEM, [i, lst[j]])[0]
+                    if rn != 0 or (basic and leader == i) or every == 1:
+                        if basic and leader == i and rn == 0 and every == 0:
+                            out[i * 4 + j] = 2
+                        elif not expert and rn == 2 and every == 0:
+                            out[i * 4 + j] = 2
+                        elif rn == 1 or every != 0:
+                            out[i * 4 + j] = 1
+        return out
+
+    def box_probe(self, block: int):
+        """BOX_PROBE: for each item/saint line of the block, the box's handler (item_fn / saint_fn row 0, as DS:EB0A after
+        the box opened) for every present member and listed slot: the hint and $ChosenOneName after it."""
+        m = self.m
+        for k, saints in enumerate(self.messages.popup_kinds(self.run.texts_name, block)):
+            if saints is None:
+                continue
+            lst = struct.unpack("<4h", m.read(DS, CARD_SAINTS if saints else CARD_ITEMS, 8))
+            table = SAINT_FN if saints else ITEM_FN
+            for i in range(m.word(DS, PARTY_SIZE)):
+                if m.byte(DS, PARTY + 0x80 * i) in (0, 5):
+                    continue
+                for j in range(4):
+                    if lst[j] == -1:
+                        continue
+                    off, seg = m.word(DS, table + 4 * j), m.word(DS, table + 4 * j + 2)
+                    if off == 0 and seg == 0:
+                        self.log("box %d %d %d: null" % (k, i, j))
+                        continue
+                    m.put_word(DS, MENU_MEMBER, i)
+                    m.put_word(DS, MENU_SLOT, j)
+                    m.write(DS, MSG_BUF, b"\0")
+                    ax, dx = m.call(seg, off, [])
+                    chance = ax - 0x10000 if ax & 0x8000 else ax
+                    member = dx - 0x10000 if dx & 0x8000 else dx
+                    msg = m.cstr(DS, MSG_BUF, 300).decode("latin-1") if chance == -1 else ""
+                    chosen = m.word(DS, VAR_CHOSEN[0])
+                    self.log("box %d %d %d: %d '%s' %d c%d" % (k, i, j, chance, msg, member, chosen - 0x10000 if chosen & 0x8000 else chosen))
 
     def popup_member(self, saints: bool, slot: int) -> int:
         """The member the pop-up box gives a slot: the last who has the item / knows the saint, else the last present member."""
@@ -612,6 +692,9 @@ class Oracle:
             end = "stops %s" % str(e)[:300]
             nxt = None
         self.in_card = False
+        if OPTBLOCK_START is not None:
+            ob = m.word(DS, OPTIONS_BLOCK)
+            self.run.lines.append("options_block %d" % (ob - 0x10000 if ob & 0x8000 else ob))
         run, self.run = self.run, None
         state = m.read(DS, HOLDRAND, 4)
         result = {"trace": run.lines, "end": end, "random": "%08X" % struct.unpack("<I", state)[0], "draws": run.draws}
@@ -784,6 +867,13 @@ class MessageFiles:
         if block < 0 or block >= len(bl):
             return 20
         return min(20, sum(1 for b in bl[block] if b in (0x15, 0x10, 0x16, 0x06)))
+
+    def popup_kinds(self, card: str, block: int):
+        """Per option line of the block: True the saints' box, False the items' box, None none."""
+        bl = self.blocks(card)
+        if block < 0 or block >= len(bl):
+            return []
+        return [{0x10: False, 0x16: True}.get(b) for b in bl[block] if b in (0x15, 0x10, 0x16, 0x06)][:20]
 
     def popup_kind(self, card: str, block: int, line: int):
         """True: the line opens the saints' box, False the items' box, None no box."""

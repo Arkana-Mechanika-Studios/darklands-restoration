@@ -36,8 +36,6 @@ public sealed class BlightedWitchRitualSite : Card
     private const int BlightedWoodPicture = 139;
     private const int DreamPicture = 90;
 
-    private bool _searched;
-
     public override int Run(CardContext c)
     {
         Show(c, BlightedWoodPicture);
@@ -48,8 +46,9 @@ public sealed class BlightedWitchRitualSite : Card
         c.SetCardSaints(3, 0x0F, 0x2B, 0x44);
         menu[2] = c.SaintsUsable();
 
-        // The original keeps "the site has been searched" in options_block; the option text is always block 0.
-        _searched = false;
+        // The original keeps "the site has been searched" in options_block (R123+0x0A26 = 0, R123+0x0CC6 / R123+0x0DE0 = 1; a later
+        // card may read it); the option text is always block 0.
+        c.OptionsBlock = 0;
         var assured = OptionHint.Saying(SuccessAssured);
         var showAgain = new MenuLine(_ => ShowTheWoodAgain(c), assured);
         return menu.Run(
@@ -77,13 +76,13 @@ public sealed class BlightedWitchRitualSite : Card
     private void Investigate(CardContext c, int chance)
     {
         c.PassHours(1);
-        if (_searched)
+        if (c.OptionsBlock != 0)
         {
             c.Screen.Text(1);
             FightTheWolves(c);
             return;
         }
-        _searched = true;
+        c.OptionsBlock = 1;
         c.Screen.Text(c.Random(100) < chance ? 4 : 5);
     }
 
@@ -148,7 +147,7 @@ public sealed class BlightedWitchRitualSite : Card
                     break;
             }
             c.PassHours(1);
-            _searched = true;
+            c.OptionsBlock = 1;
         }
         else
         {

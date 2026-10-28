@@ -363,10 +363,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-9ddbde** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:290` `Footpads.Fight`  
   original: `R053+0x02D6` (1838:02D6, matched)  
   why: the standing (and the battle's skill practice) is given before the thanks; a game saved at that text holds only this card (DS:A772 = 0x24), so loading it starts the card again (an hour, the ambush or the menu) with the gains kept, by day as by night: the fight can be repeated at will.
-- **B-227a55** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:391` `CouncilHall.AskForAnErrand`  
+- **B-227a55** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:383` `CouncilHall.AskForAnErrand`  
   original: `R054+0x22F8` (19DF:0888, matched)  
   why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
-- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:452` `CouncilHall.CallUponASaint`  
+- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:444` `CouncilHall.CallUponASaint`  
   original: `R054+0x25C6` (19DF:0B56, matched)  
   why: unlike the audience (ReceiveACommission), the saint's way in never asks for a finished commission (ev24_at_owner(3, 0x0A, cur_loc)): a party that prays its way in to be paid gets a new commission instead.
 - **B-0c78c7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:77` `CityWallSallyPort.ForceChance`  
@@ -465,13 +465,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-ee49f7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:35` `CityLordsReward.Run`  
   original: `R089+0x0C5C` (18CE:02FC, matched)  
   why: the original looks for a saint nobody in the party knows, starting from the city's own, but has no return statement: AX holds the last member_bit answer, 0 (checked against asm). So saint 0.
-- **B-418c61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:93` `CityLordsReward.LearnTheFormula`  
+- **B-418c61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:97` `CityLordsReward.LearnTheFormula`  
   original: `R089+0x0C08` (18CE:02A8, matched)  
   why: see the summary; the formula table's byte is set to 7 (bits 0-2: the group's three formulas).
 - **B-65bf20** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelMarch.cs:51` `RebelMarch.Run`  
   original: `R090+0x0A82` (18E0:0002, matched)  
   why: the bribe line's flag is set from saints_usable() (meant for line 2, the prayer, which stays enabled); it also overrides the 0 set just above for the far squads.
-- **B-45b1b4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelsBeforeTheFortress.cs:54` `RebelsBeforeTheFortress.Run`  
+- **B-45b1b4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelsBeforeTheFortress.cs:59` `RebelsBeforeTheFortress.Run`  
   original: `R090+0x161E` (1999:000E, matched)  
   why: as the original has it, carrying a rope (item 0x3B) greys out the climb with a rope; the test looks inverted.
 - **B-4df3ba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S092/MerchantsOfTheCity.cs:89` `MerchantsOfTheCity.Trade`  

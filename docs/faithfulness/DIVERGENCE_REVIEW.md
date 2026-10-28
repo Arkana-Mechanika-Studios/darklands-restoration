@@ -19,8 +19,8 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 51 entries; recommendations: document: 1, justify: 40, keep: 10.
-- Part B (undefined-memory in core logic): 143 entries; determinism: n/a: 83, no: 46, partly: 10, yes: 4.
+- Part A (not-modelled, deliberate-fix, other in core logic): 50 entries; recommendations: document: 1, justify: 40, keep: 9.
+- Part B (undefined-memory in core logic): 144 entries; determinism: n/a: 83, no: 47, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -267,11 +267,11 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the shield picture is the party panel's (loaded on demand).  
   recommendation: **justify** (checked against the original) - party_remove (R037 3b58) frees the slot's shield picture handle; the C# party panel loads shield pictures on demand from Character.ShieldLetter, so no game state differs (presentation resource handling only).
 
-### cards (16)
+### cards (15)
 
-#### not-modelled (7)
+#### not-modelled (6)
 
-- **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:115` `CardContext.InvokeSaint`  
+- **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:168` `CardContext.InvokeSaint`  
   original: `R029+0x2180` (0E76:2180, draft)  
   divergence: the prayer screen (thunk 09C0:1EAF, then the card redraw thunk 09C0:1EA5) is the presentation's SaintPrayer; without it the prayer fails (0). In play DarklandsGame attaches SaintPrayerScreen to every card context it makes (DarklandsGame.cs, right after the CardContext is created), so no card runs without it.  
   recommendation: **justify** (checked against the original) - invoke_saint (R029+0x2180, matched) calls thunk 09C0:1EAF (the prayer screen) and then thunk 09C0:1EA5 (card redraw). The only production CardContext is made in DarklandsGame (line 397) and SaintPrayerScreen.Attach follows at once, so no card runs without the screen; the headless fallback is 0. Test NotModelledEvidenceTests.InvokeSaintNeedsThePrayerScreen.
@@ -291,10 +291,6 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R066+0x263E` (19EC:0AFE, matched)  
   divergence: the original sets the card before the previous one (DS:A88F) and prev_screen (DS:A88D) to the street card (R066+0x271F, R066+0x2732); the main loop then sets DS:A88F = DS:A88D (the street card) and DS:A88D = this card (root 03A1:000A), and DS:A88F has no reader in the EXE (only these two stores), so it is not kept; FinishPass sets PreviousCard as the loop does.  
   recommendation: **justify** (checked against the original) - R066+0x271F / 0x2732 store the street card (9 by day, 10 at night) into DS:A88F and DS:A88D; the main loop (root +0x3E5F..0x3E68) then sets DS:A88F = DS:A88D and DS:A88D = DS:A772. DS:A88F has no reader anywhere in the EXE (absolute references in the root and the 136 overlays: only these two stores), so the 'two cards back' remark of the old note was wrong and nothing can observe it. CardDispatcher.FinishPass sets PreviousCard as the loop does; test NotModelledEvidenceTests.FinishPassMovesTheCardsDown.
-- **D-4d048d** `not-modelled` - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:51` `DragonBlightedLand.Run`  
-  original: `R081+0x2884` (19BC:1044, asm), `R081+0x2902` (19BC:10C2, asm)  
-  divergence: options_block is held in CardContext.OptionsBlock, which only the cards that read it back write; the other cards' stores (some 350 in R044..R135, none outside the cards) are not modelled, so the retained block can differ.  
-  recommendation: **keep** (checked against the original) - Direct call j_dragon.py (local/batch/evid1o): R081+0x1848 with DS:EE53 = 0x2B, event_value stubbed to 5, what = 7, run_battle stubbed to 5 -> card_options(0x2B); what = 10 -> card_options(0x0A). The card now uses CardContext.OptionsBlock (the modelled global) there and stores 0x0A/0x0B/0x0C into it on the three ways in. Only cards write DS:EE53 (356 references, all in R044..R135 but a compare at R043+0x215E); the cards that do not read it back do not model their stores, so the retained value can differ: a lead (model options_block in every card). Reached only after the ruined outlaws' battle returns 5 or more.
 - **D-5dc345** `not-modelled` - `src/Darklands.Simulation/CardDispatcher.cs:83` `UnknownCard`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   divergence: no original: the original calls whatever R136+0xD090[number] holds; every card of the table has a script, so only a number outside it gets here.  
@@ -609,13 +605,13 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original tests the 0x80 flag and prices item_defs[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item_defs[data_file[..].id] with the raw 16-bit id; item_defs is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
 
-### cards (63)
+### cards (64)
 
-- **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:136` `CardContext.ChanceText`  
+- **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:189` `CardContext.ChanceText`  
   original: `R029+0x5B62` (1367:0C52, matched)  
   divergence: an index beyond 7 or below −2 (a chance of 160 and up, or below −40; callers pass clamped chances) is clamped to 0..6.  
   deterministic: **partly** (checked against the original); action: **keep** - Slots 8 and up / −3 and below of quality_words read further words of DGROUP as near pointers (the data before DS:4FCE and after it), which a chance of 160+ or below −60 would need; the callers pass chances of the usual range (not checked caller by caller), so the case is not expected; keep the clamp.
-- **D-6a940b** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:165` `CardContext.NameToSlot`  
+- **D-6a940b** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:218` `CardContext.NameToSlot`  
   original: `R029+0x1FB8` (0E76:1FB8, draft)  
   divergence: for kinds 0..2 an index past its table (or a kind-2 index below 0x5F, which reads the unwritten bytes before virtue_names) keeps the slot's text; kinds 6..8 read the static pointers next to their tables as the original does (TablePersonalNames.Name); without the EXE's tables kinds 6..8 keep the slot's text.  
   deterministic: **partly** (checked against the original); action: **document** - Checked with the card oracle: name_to_slot kinds 6..8 now read the far pointers next to their tables as the original does (one contiguous block of pointers in 290E); kinds 0..2 past their tables keep the slot's text, a case no card reaches with a valid quest.
@@ -659,6 +655,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R029+0x2116` (0E76:2116, draft)  
   divergence: a saint outside the table (an empty pop-up slot) gives 0, as for SaintChanceLow (R029+0x2116 calls through the same far table).  
   deterministic: **n/a** (checked against the original); action: **document** - Same as D-90c7b3 for saint_chance_hi: only an empty pop-up slot (never listed by the box) passes -1.
+- **D-ea107a** `undefined-memory` - `src/Darklands.Cards/CardMenu.cs:363` `CardMenu.SlotHint`  
+  original: `R043+0x21D4` (150B:1744, draft)  
+  divergence: a slot the card's reset installs no handler for keeps an earlier card's (null since start-up: the original then calls 0000:0000); a click or a Shift hint only reaches the slots the card lists items or saints in, but Enter rates line k with slot k % 4, which can be such a slot. The card's box handler (or the line's pop-up) answers for every slot here.  
+  deterministic: **no** (checked against the original); action: **document** - A choice in an item or saint box leaves the box layout (DS:EA64, copied from DS:EB5A / DS:EC50 when the box opens, R043+0x239C) as the menu layout DS:E96E (R043+0x246B), so opt_fn DS:EA14 is the box handler table: Enter in the box returns with menu_popup 0 (R043+0x1C8A) and the card loop calls opt_fn[k], the box handler of row k / 4, slot k % 4. A card installs item_fn / saint_fn only for the slots it fills (e.g. the city gate R044+0x1A50: item slots 0..2, saint slots 0..1; R110 and R132: slots 0..1), the others keep an earlier card handler (a code pointer into whatever overlay was loaded then) or 0000:0000 since start-up: undefined, as D-bd2879. The C# answers with the card box handler for the slot (its own function folded over MenuSlot). Click and Shift hint reach only listed slots; only Enter on a line k whose k % 4 is an unlisted slot meets it.
 - **D-c38f0b** `undefined-memory` - `src/Darklands.Cards/PictureNames.cs:57` `PictureNames.Of`  
   original: `R136+0xC0A0` (2CAF:0000, data)  
   divergence: a picture number outside the table gives "" (an empty name, which the card engine shows as a blank screen); the original indexes the far table unchecked.  
@@ -735,7 +735,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R087+0x05D2` (1838:05D2, matched), `R087+0x05E4` (1838:05E4, matched)  
   divergence: with all 300 event slots in use the original writes through a stale slot; here nothing is written.  
   deterministic: **n/a** (checked against the original); action: **document** - event_new returns -1 WITHOUT creating anything when event_slot_free finds no free slot (and shows an 'EVENT Failure' message box); the caller then does events[-1]->f2a/f2c/f2e = ..., writing three words at 0000:002A..002F (IVT INT 0A/0B vectors) with no game effect. So 'nothing written' is equivalent except for the message box; 300 live events is not a realistic state.
-- **D-7e6bc1** `undefined-memory` - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:108` `CityLordsReward.LearnFormulaGroup`  
+- **D-7e6bc1** `undefined-memory` - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:112` `CityLordsReward.LearnFormulaGroup`  
   original: `R089+0x0C08` (18CE:02A8, matched)  
   divergence: for member 0 and slot −1 the original writes the byte before the table; here nothing is written.  
   deterministic: **n/a** (checked against the original); action: **document** - The write is R136+0xE0EE[var_chosen1][card_saints[menu_slot]] = 7 (the cited functions are only advance_hours stubs); for member 0 and slot -1 it hits 2E38:07BD, the weight byte of slot 63 of member 4's inventory (inventories end at 07BE), a slot that cannot be in use (packs hold at most 53 items), so nothing observable changes. The C# index arithmetic already reproduces the member-to-member spill (slot -1 = previous member's last group byte).
@@ -763,7 +763,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R114+0x1260` (18D3:08B0, matched)  
   divergence: that call is not reproduced (an earlier card's code pointer into another overlay's bytes: undefined); the pop-up's choice takes the menu's pop-up hint ("Success is assured.", the member named) and its chance -1: the potion always fizzles.  
   deterministic: **no** (checked against the original); action: **document** - Direct calls j_hussite.py (local/batch/evid1o): card_menu stubbed to the line-4 pop-up choice. From tyrnau-map (the gate card's item handlers 213D:0D7E/0DE8/0E50/0000): slot 0 runs R114 code that returns 0x223C, slot 1 an invalid instruction, slot 2 returns 0, slot 3 jumps to 0000:0000; from banks-markt (no item handlers since the load) every slot jumps to 0000:0000. An earlier card's code pointer into the current overlay: undefined, not reproduced; the C# takes the menu's pop-up hint (chance -1: the potion fizzles).
-- **D-e53d68** `undefined-memory` - `src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs:62` `PrisonCellsRescue.FreeTheFriend`  
+- **D-e53d68** `undefined-memory` - `src/Darklands.Cards/Scripts/S115/PrisonCellsRescue.cs:65` `PrisonCellsRescue.FreeTheFriend`  
   original: `R115+0x0F8A` (1901:02FA, matched)  
   divergence: without such an event the original reads events[-1]; here nobody joins (-1).  
   deterministic: **n/a** (checked against the original); action: **document** - PrisonCellsRescue is only routed to when event_at(0x4D, cur_loc) holds (guards in R047:184, R048:140, R050:115, R054:171), so event_find(0x4D,...) is never -1 here; the missing-event case would read events[-1] (null/IVT) and index party[] with that word.

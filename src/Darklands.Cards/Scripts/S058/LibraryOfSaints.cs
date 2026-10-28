@@ -23,9 +23,10 @@ public sealed class LibraryOfSaints : Card
     // DORMANT: R058+0x0C1C (18CA:02FC): the "screwed up." handler the init installs on all 20 lines; lines 0 and 1 get their own, 2..19 are disabled, so it never runs.
     // DORMANT: R058+0x0C54 (18CA:0334), R058+0x0C90 (18CA:0370), R058+0x0CCC (18CA:03AC) and R058+0x0D08 (18CA:03E8):
     //   "success is assured" handlers (they also set var_chosen1 = menu_member) that nothing in this file installs.
-    // DORMANT: R058+0x0D44 (18CA:0424), R058+0x0D7C (18CA:045C), R058+0x0DB4 (18CA:0494) and R058+0x0DEC (18CA:04CC):
-    //   the saint pop-up hints for slots 0..3, all "No risk." for the whole party. The init installs them in saint_fn, but only the pop-up screen
-    //   shows them: this card's loop calls the line handler, never DS:EB0A[menu_slot].
+    // orig: R058+0x0D44 (18CA:0424), R058+0x0D7C (18CA:045C), R058+0x0DB4 (18CA:0494) and R058+0x0DEC (18CA:04CC) matched:
+    //   the saint box's handlers for slots 0..3, all "No risk." for the whole party (CardMenu.SaintBox): a Shift hint in the box shows them.
+    // C: this card's loop calls opt_fn[k] even for a choice in the box (never DS:EB0A[menu_slot]); opt_fn[0] is then the box's handler for
+    // C: slot 0 (the box's layout is the menu's), the same "No risk." with no side effect, and the action does not use it.
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -54,6 +55,7 @@ public sealed class LibraryOfSaints : Card
         // C: DS:5204 = 1 for the menu loop (back to 0 at the end): the saint pop-up lists every saint of the card for every member, not only those the member knows.
         c.PopupListsAll = true;
         var menu = Menu(c, 0);
+        menu.SaintBox = () => OptionHint.Say(NoRisk);
         menu.Enable(0, 1);
         menu[0] = learn;
         c.Next = Number;

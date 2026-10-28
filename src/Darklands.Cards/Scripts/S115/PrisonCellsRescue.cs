@@ -26,7 +26,10 @@ public sealed class PrisonCellsRescue : Card
         menu[2] = c.ItemsUsable();
         menu[3] = c.SaintsUsable();
 
-        menu.Popup = () => c.MemberPopupHint();
+        // C: the standard pop-up handlers name the member picked in the box: the item box's say "Success is assured." beside the
+        // C: member (R115+0x1562..), the saint box's tell the prayer's chance for the party (R115+0x1652..).
+        menu.ItemBox = () => c.MemberPopupHint();
+        menu.SaintBox = c.SaintPopupHint;
 
         return menu.Run(
             // orig: R115+0x1000 (1901:0370) matched; hint R115+0x1058

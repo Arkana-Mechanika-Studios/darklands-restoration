@@ -110,6 +110,8 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: the lines stay where that text put them; one is choosable when its option's state is enabled now. Nothing is drawn or faded.
     // DIVERGENCE: with no line to choose (a last text without option lines) the original's card_menu waits for ever (only the menu bar
     // and the portraits answer); Select takes line 0 here, as it does for any empty option list.
+    // C: after a choice in an item or saint box the layout is the box's (card_mouse copied it there, R043+0x246B): a card that then calls
+    // C: card_menu without card_options (0x7D, 0x109, 0x10B) works on the box's entries, at the places the box had (KeepTheBoxsLayout).
     public int ChooseOnLastLayout(IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint)
     {
         ui.FlushKeys();

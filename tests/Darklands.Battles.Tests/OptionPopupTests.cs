@@ -36,6 +36,31 @@ public sealed class OptionPopupTests
         c.State.Party.Members[who].Pack.Select(p => p.Code).First(code => Inventory.Has(c.State, 0, code) == 0 && code < 0x5F);
 
     [Fact]
+    public void TheCardEngineKeepsTheBoxsStatesAsTheBoxShowsThem()
+    {
+        // CardContext.PopupStates (what opt_on becomes after a choice in the box, CardMenu.Run) is the box's own state table
+        if (Setup() is not var (c, painter))
+        {
+            return;
+        }
+        var items = c.State.Party.Members.SelectMany(m => m.Pack.Select(p => p.Code)).Distinct().Take(3).Append(0x65).ToArray();
+        foreach (var difficulty in new[] { Difficulty.Basic, Difficulty.Standard, Difficulty.Expert })
+        {
+            foreach (var all in new[] { false, true })
+            {
+                c.State.Difficulty = difficulty;
+                c.PopupListsAll = all;
+                c.SetCardItems(items);
+                c.SetCardSaints(0, 0x17, 0x59, 0x61);
+                foreach (var saints in new[] { false, true })
+                {
+                    Assert.Equal(OptionPopupText.Build(c, saints, painter, darkPicture: false).States, c.PopupStates(saints));
+                }
+            }
+        }
+    }
+
+    [Fact]
     public void OnlyTheMembersCarryingTheItemGetALineWithTheirCount()
     {
         if (Setup() is not var (c, painter))

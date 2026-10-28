@@ -41,6 +41,10 @@ public sealed class CityLordsReward : Card
         // C: DS:5204 = 1 for the menu loop (back to 0 after): the pop-ups list the formula and the saint for every member.
         c.PopupListsAll = true;
         var menu = Menu(c, 2);
+        // C: the pop-up handlers (R089+0x1162.., R089+0x1252..) name the member picked in the box: the formula box says "Success is
+        // C: assured." beside the member, the saint box tells the prayer's chance for the party.
+        menu.ItemBox = () => c.MemberPopupHint();
+        menu.SaintBox = c.SaintPopupHint;
         menu.Enable(0, 1, 2, 3, 4);
         var next = menu.Run(
             // orig: R089+0x0C9C (18CE:033C); hint R089+0x0CE6 matched

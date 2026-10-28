@@ -328,6 +328,21 @@ internal static class OptionFlagCopies
         ["BanditsNearTheCamp"] = (0x3FF, 0x000), // R134+0x152C
         ["HuntsmanAtTheCamp"] = (0x3FF, 0x000), // R134+0x0C1C
         ["SpiderWarehousePoster"] = (0x3FF, 0x000), // R134+0x0000
+        // The cards without C (asm): the stores opt_on[k] = (char)opt_flag_k of their loops, read from the disassembly; each assigns every flag it copies.
+        ["AlchemistsShop"] = (0x3FF, 0x000), // R066+0x0D48
+        ["CathedralByDay"] = (0x3FF, 0x000), // R056+0x18C8
+        ["ChallengedByTheWatch"] = (0x07F, 0x000), // R044+0x099E
+        ["CityChurchByDay"] = (0x07F, 0x000), // R057+0x0000
+        ["DragonBlightedLand"] = (0x01F, 0x000), // R081+0x1848
+        ["DragonsLair"] = (0x007, 0x000), // R082+0x00D8
+        ["LonelyMountainLake"] = (0x3FF, 0x000), // R106+0x07D4
+        ["MaidenAtTheStake"] = (0x03F, 0x000), // R084+0x1622
+        ["MarketAtNight"] = (0x3FF, 0x000), // R049+0x1BF2
+        ["OutsideThePrison"] = (0x3FF, 0x000), // R115+0x187A
+        ["PhysiciansHouse"] = (0x07F, 0x000), // R050+0x0000
+        ["PlaceholderScene"] = (0x3FF, 0x000), // R059+0x1896
+        ["PublicExecution"] = (0x007, 0x000), // R079+0x0A08
+        ["UnfinishedPauseScene"] = (0x3FF, 0x000), // R069+0x0000
     };
 
     /// <summary>The copied lines of a card class (0: none, its lines are the card's own) and the copied lines it never assigns.</summary>

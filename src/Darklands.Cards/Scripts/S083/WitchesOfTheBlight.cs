@@ -31,8 +31,8 @@ public sealed class WitchesOfTheBlight : Card
         c.State.CurrentLocation = -1;
         // C: the picture buffer is the card's: these scenes change it for later redraws.
         var picture = Picture;
-        // options_block keeps an earlier card's value when the card leaves at once (cases 0, 1).
-        var block = 0;
+        // options_block keeps an earlier card's value when the card leaves at once (case 0): the sabbat test below reads it.
+        int? block = null;
         switch (c.Events.FactValueAnywhere(DragonQuest, 4))
         {
             case 0:
@@ -44,7 +44,7 @@ public sealed class WitchesOfTheBlight : Card
                 c.Screen.Text(1);
                 ShowPicture(c, picture);
                 block = 0;
-                Fight(c, block);
+                Fight(c, 0);
                 c.Next = 0x0C;
                 break;
             case 2:
@@ -66,8 +66,9 @@ public sealed class WitchesOfTheBlight : Card
         c.Events.Update(-1, -1, 0x1C, 4, 1, DragonQuest, EventUpdate.Add);
         var menu = Menu(c, block);
         menu.Enable(0, 2, 4, 5);
-        // C: at the sabbat (block 4) line 3 (grovel) is left out, surrender stays (R083+0x01CD: DS:EE7C = 0).
-        menu[3] = block == 4 ? OptionState.Hidden : OptionState.Enabled;
+        // C: at the sabbat (block 4) line 3 (grovel) is left out, surrender stays (R083+0x01CD: DS:EE7C = 0); in case 0 the test
+        // C: reads the block the card before left, and the flag (a global) stays for the next card.
+        menu[3] = menu.Block == 4 ? OptionState.Hidden : OptionState.Enabled;
         c.SetCardItems();
         c.SetCardSaints(9, 0x17, 0x1D, 0x2B);
         menu[1] = c.SaintsUsable();
@@ -76,12 +77,12 @@ public sealed class WitchesOfTheBlight : Card
             return c.Next;
         }
         return menu.Run(
-            new MenuLine(chance => Run(c, block, chance), hint: () => RunningChance(c)),
+            new MenuLine(chance => Run(c, menu.Block, chance), hint: () => RunningChance(c)),
             // orig: R083+0x05DC (line 1); R083+0x0A0C (1838:0A0C) matched; R083+0x0A96 (1838:0A96) matched; R083+0x0B20 (1838:0B20) matched;
             // R083+0x0BAA (1838:0BAA) matched; tests: CardSmokeTests
             new MenuLine(() => Pray(c, picture), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R083+0x06DA (1838:06DA) matched; R083+0x06E0 (1838:06E0) matched; tests: CardSmokeTests
-            new MenuLine(() => Fight(c, block), OptionHint.Saying(CardTexts.EnterCombat)),
+            new MenuLine(() => Fight(c, menu.Block), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R083+0x0718 (1838:0718) matched; R083+0x0798 (1838:0798) matched; tests: CardSmokeTests
             new MenuLine(() =>
             {
@@ -102,7 +103,7 @@ public sealed class WitchesOfTheBlight : Card
                 c.AddSkill(Who.Everybody, 9, -c.Random(3));
                 c.Next = 0x8F;
             }, OptionHint.Saying(SuccessAssured)),
-            new MenuLine(chance => ParleyInLatin(c, chance, block), hint: () => LatinChance(c)));
+            new MenuLine(chance => ParleyInLatin(c, chance, menu.Block), hint: () => LatinChance(c)));
     }
 
     // orig: R083+0x0328 (1838:0328) matched; tests: CardSmokeTests

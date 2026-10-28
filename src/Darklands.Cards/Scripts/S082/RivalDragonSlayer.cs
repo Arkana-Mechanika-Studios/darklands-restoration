@@ -32,7 +32,8 @@ public sealed class RivalDragonSlayer : Card
         };
         Show(c, picture);
         c.Next = CardNumber;
-        var menu = Menu(c);
+        // C: options_block is written only by the meetings that show the menu (below); the others leave what the card before left.
+        var menu = Menu(c, null);
         menu.Enable(0, 1, 2, 3);
         c.RandomName(c.DragonDetail() + 0x25, 0, 0);
         // C: name kind 6 (the dragons' names) is read from the EXE's table (PersonalNames, NameToSlot).
