@@ -49,7 +49,7 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "wien-rathaus": "DKSAVE0.SAV", "mapsave": "DKSAVE17.SAV",
             # the inn's roster screen (local/overnight/roster2): DKSAVE0 (five listed), DKSAVE8 (Hamburg, four rows), Dksave10 (Ulm, nine rows)
             "roster-colours": "DKSAVE0.SAV", "roster-moves": "DKSAVE0.SAV", "roster-wrap": "DKSAVE8.SAV", "roster-mouse": "DKSAVE8.SAV",
-            "roster-create2": "DKSAVE8.SAV", "roster-ulm": "Dksave10.sav",
+            "roster-create2": "DKSAVE8.SAV", "roster-ulm": "Dksave10.sav", "discordq-retire": "DKSAVE0.SAV",
             # the player's orders in a battle (local/overnight/orders): Prague's gate DKSAVE40, Luebeck's Dksave21, the others the gate of DKSAVE0
             "orders-select": "DKSAVE0.SAV", "orders-walk": "DKSAVE0.SAV", "orders-missile": "DKSAVE0.SAV", "orders-attack-a": "DKSAVE0.SAV",
             "orders-attack-b": "DKSAVE0.SAV", "orders-attack-b2": "DKSAVE0.SAV", "orders-attack-v": "DKSAVE0.SAV", "orders-attacks": "DKSAVE0.SAV",
