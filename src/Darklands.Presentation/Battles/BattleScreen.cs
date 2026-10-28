@@ -254,6 +254,19 @@ public sealed class BattleScreen : ITacticalView
                         };
                         TacticalBattle.ClockPhase = phase =>
                         {
+                            // a tick the C# found not due where the original's scheduler ran (its rise -1): the original's long computation
+                            // between the activations' enemy turn and combat_tick's due test (R014+0x0F58) made it due; the callbacks that
+                            // made it due come before the test, one a call, the rest at the scheduler (round C3: gen-bluer-01, a 136-tick pass)
+                            if (phase == -6)
+                            {
+                                if (pendingRises is not null && pendingRises.TryGetValue(-1, out var left) && left > 0)
+                                {
+                                    pendingRises[-1] = left - 1;
+                                    _clockFraction = 1;
+                                    Advance(0);
+                                }
+                                return;
+                            }
                             if (pendingRises is not null && pendingRises.Remove(phase, out var rise))
                             {
                                 _clockFraction = rise;

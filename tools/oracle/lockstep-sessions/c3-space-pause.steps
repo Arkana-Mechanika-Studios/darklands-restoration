@@ -1,0 +1,27 @@
+# Round C3 (Space in a running battle): the res5 rebelmob set-up (synth DKSAVE0-away7b); 30 passes into the fight Space pauses it (combat_keys
+# R016+0x0897 -> R016+0x074E: DS:A695 = 1, DS:07D3 + 1), 50 paused passes, Space resumes it (R016+0x076C -> R016+0x1436); the fight is lost as in res5-rebelmob
+# round C3: agrees with battle records on: the original pauses on Space as the C# does (local/batch/c3battle/README.md)
+key:t
+wait:5
+key:l
+wait:300
+key:enter
+wait:100
+state:menu
+option:0
+wait:10
+key:enter
+bwait:30
+key:space
+bwait:50
+key:space
+wait:20000
+key:l
+wait:300
+state:s1
+key:enter
+wait:300
+state:s2
+key:enter
+wait:300
+state:s3

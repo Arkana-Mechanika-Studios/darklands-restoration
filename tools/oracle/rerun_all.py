@@ -877,6 +877,37 @@ SESSIONS.update({
 })
 
 
+# c3battle: the early B1 battle sessions left open, rerun on the current original side with the round's compare rules, and Space in a running
+# battle (local/batch/c3battle)
+SESSIONS.update({
+    "c3-space-pause": "synth/DKSAVE0-away7b.sav",
+    "gen-bedge-02": "DKSAVE0.SAV",
+    "gen-bedge-03": "DKSAVE0.SAV",
+    "gen-bheld-22": "DKSAVE0.SAV",
+    "gen-bheld-40": "DKSAVE0.SAV",
+    "gen-bhurta-03": "synth/DKSAVE0-hurtattr.sav",
+    "gen-bhurtk-01": "synth/DKSAVE0-hurt.sav",
+    "gen-bhurtk-02": "synth/DKSAVE0-hurt.sav",
+    "gen-bhurtk-05": "synth/DKSAVE0-hurt.sav",
+    "gen-bhurts-01": "synth/DKSAVE0-hurtstatus.sav",
+    "gen-bhurts-02": "synth/DKSAVE0-hurtstatus.sav",
+    "gen-bkeys-21": "DKSAVE0.SAV",
+    "gen-bkeys-25": "DKSAVE0.SAV",
+    "gen-bkeys-37": "DKSAVE0.SAV",
+    "gen-bkeys-44": "DKSAVE0.SAV",
+    "gen-bkeys-51": "DKSAVE0.SAV",
+    "gen-blue-02": "Dksave21.sav",
+    "gen-blue-04": "Dksave21.sav",
+    "gen-blue-05": "Dksave21.sav",
+    "gen-bluer-01": "Dksave21.sav",
+    "gen-bsafe-27": "DKSAVE0.SAV",
+    "gen-bsafe-33": "DKSAVE0.SAV",
+    "gen-bsafe-35": "DKSAVE0.SAV",
+    "gen-bsafe-50": "DKSAVE0.SAV",
+})
+BATTLE_RECORDS |= {"c3-space-pause", "gen-bedge-02", "gen-bedge-03", "gen-bheld-22", "gen-bheld-40", "gen-bhurta-03", "gen-bhurtk-01", "gen-bhurtk-02", "gen-bhurtk-05", "gen-bhurts-01", "gen-bhurts-02", "gen-bkeys-21", "gen-bkeys-25", "gen-bkeys-37", "gen-bkeys-44", "gen-bkeys-51", "gen-blue-02", "gen-blue-04", "gen-blue-05", "gen-bluer-01", "gen-bsafe-27", "gen-bsafe-33", "gen-bsafe-35", "gen-bsafe-50"}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out")
