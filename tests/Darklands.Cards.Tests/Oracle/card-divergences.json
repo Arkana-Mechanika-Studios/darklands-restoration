@@ -20,9 +20,14 @@
   {
     "card": "05F",
     "run": "*",
-    "contains": "",
-    "dropCSharp": "show $Sneak00 common",
-    "why": "SneakingThroughTheHall DIVERGENCE: the original never calls card_load (it keeps the previous card's picture until the engine redraws); the C# shows the card at once. The oracle loads the card's own texts first, so everything after the C#'s show is compared."
+    "contains": "C# 'menu 13 [11010000010000000000] '",
+    "why": "SneakingThroughTheHall DIVERGENCE: after a rebels' card ($Revol00, $Revol01: key part T$Revol00) block 0x0D is not in the loaded message file; the original prints from a msg_index entry msg_load did not set (undefined memory: 0d 0a 0a under the oracle), the C# an empty text with the same option lines."
+  },
+  {
+    "card": "073",
+    "run": "*",
+    "contains": "C# 'text 5 1 '",
+    "why": "BeforeTheCityWalls DIVERGENCE: after the initial test card ($Initi00, one block: key part T$Initi00) block 5 is not in the loaded message file; the original prints from a msg_index entry msg_load did not set (undefined memory: 01 0a 0e under the oracle), the C# an empty text."
   },
   {
     "card": "062",
@@ -96,13 +101,6 @@
     "contains": "",
     "ignoreTexts": true,
     "why": "SourceOfTheHorrors_MineH01 DIVERGENCE: without the horror's quest (a negative detail) the original draws no option block (the menu keeps what was shown); the C# uses the block the last card left. Texts compared without their words."
-  },
-  {
-    "card": "073",
-    "run": "*",
-    "contains": "",
-    "dropCSharp": "show $CityE00 ",
-    "why": "BeforeTheCityWalls DIVERGENCE: the original only fills the card name and picture buffers (no card_load; the engine draws them later); the C# shows the card at once. The oracle loads the card's own texts first, so everything after the C#'s show is compared."
   },
   {
     "card": "037",

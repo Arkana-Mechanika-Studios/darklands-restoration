@@ -592,7 +592,7 @@ class Oracle:
         self.pending_options = False
         m.ensure(rec)
         self.card_code = self.m.extent(rec)
-        name = self.names.get(card)
+        name = texts_of(orig_key) or self.names.get(card)
         if name and (name + ".msg")[:12].lower() in self.messages.entries:
             # the card's own texts, as the card before it would usually have left them (some cards never load
             # theirs: they keep the previous card's, see CARDS.md)
@@ -718,11 +718,21 @@ def split_key(key: str):
             force = tuple(int(x) for x in p[1:].split("."))
         elif re.fullmatch(r"P\d+(_\d+)*", p):
             path = [int(x) for x in p[1:].split("_")]
-        elif re.fullmatch(r"B\d(_\d)*", p) or re.fullmatch(r"Y[cfa](_[cfa])*", p):
-            pass                                     # the controlled battle / prayer results (results_of): no state change
+        elif re.fullmatch(r"B\d(_\d)*", p) or re.fullmatch(r"Y[cfa](_[cfa])*", p) or re.fullmatch(r"T\$\w+", p):
+            pass                                     # the controlled battle / prayer results (results_of), the preloaded texts (texts_of): no state change
         else:
             keep.append(p)
     return (head + ("-V" + "+".join(keep) if keep else "") + "-O" + option), force, path
+
+
+def texts_of(key: str):
+    """The variant part "T$Enter00": the message file the card before left loaded, preloaded instead of the card's own (a card that only
+    names itself, without card_load, reads its texts from it). None: the card's own."""
+    if "-V" in key:
+        for p in key.split("-V", 1)[1].rsplit("-O", 1)[0].split("+"):
+            if re.fullmatch(r"T\$\w+", p):
+                return p[1:]
+    return None
 
 
 def results_of(key: str):

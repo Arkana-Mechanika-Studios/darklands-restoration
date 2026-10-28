@@ -57,6 +57,34 @@ public interface ICardScreen
     // C: a screen that keeps no picture (the scripted test screens) shows the card without one.
     void ShowWithTheLastPicture(string cardName) => Show(cardName, "");
 
+    /// <summary>
+    /// Names the card and its picture (null: the picture buffer as the last card left it) without showing it: the screen keeps the
+    /// last card's picture and the texts stay the last card's, until the card shows a picture of its own (<see cref="ShowPicture"/>),
+    /// the card is drawn again after a full screen, or a battle ends (<see cref="ReloadAfterBattle"/>): those load the named card's texts.
+    /// </summary>
+    // C: strcpy(card_name, ..) and _fstrcpy(pic_buf, ..) with no card_load: R067+0x1ECE (1A24:000E, "$Sneak00") and R072+0x1494
+    //   (1981:0004, "$CityE00"), the only two card functions that name a card without loading it
+    // C: a screen that keeps no texts of its own (the scripted test screens) shows the card, as before.
+    void NameTheCard(string cardName, string? picture)
+    {
+        if (picture is null)
+        {
+            ShowWithTheLastPicture(cardName);
+        }
+        else
+        {
+            Show(cardName, picture);
+        }
+    }
+
+    /// <summary>The card loaded again from its name and picture buffers at the end of a battle: its texts are the named card's.</summary>
+    // orig: card_load(card_name, pic_buf) R043+0x0A9A
+    // C: the last call of run_battle R029+0x2278 (CardContext.RunBattle).
+    // C: a screen that keeps no texts of its own does nothing.
+    void ReloadAfterBattle()
+    {
+    }
+
     /// <summary>The card's picture and the party column drawn again after a full screen (the texts stay to be shown again).</summary>
     // orig: thunk 09C0:1EA5 = R043+0x0A9A (150B:000A) with the card's name and picture, as R029+0x2246 calls it after the inn's roster
     // C: a screen that keeps no picture (the scripted test screens) does nothing.

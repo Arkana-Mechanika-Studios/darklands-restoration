@@ -584,6 +584,14 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         {
             var to = (key & 7) - 1;
             // DIVERGENCE: Ctrl-F1 makes to −1, which the original reads as the record before member 0; here nothing is given.
+            // C: the original reads record −1's status (DS:9BE9) and count (DS:9C53):
+            //   DS:9BE9 is the first word of the 20th line of the battle's Throw sub-menu (DS:9A47 + 19 * 0x16, R019+0x0C80, a 22-byte record
+            //   per line), 0 (BSS, read so at start-up) until a battle lists 19 or more Throw lines for a member, then the low byte of a
+            //   potion-name pointer (DS:114A / DS:114E[]: 0xB0..0x14, never 0 or 5); while it is 0 the original returns as here. After such a
+            //   battle the give goes on when DS:9C53, the last sub-menu's text column (MenuBar), is below 0x40 as a signed byte:
+            //   give_one / give_stack(who, −1) add the item to the leader, member 0 (add_item_rec's −1, R031+0x4850), and take it from the
+            //   member even when member 0's pack is full (the item is lost). That history (a Throw list of 19 lines, the menu bar's
+            //   geometry) is the same not-modelled UI memory as DS:9C53 elsewhere (SaintBook, TacticalBattle.Dungeon): not reproduced.
             if (to < 0)
             {
                 return;

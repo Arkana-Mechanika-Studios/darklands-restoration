@@ -38,6 +38,9 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
 
     public Canvas Canvas => ui.Canvas;
 
+    /// <summary>The barter screen's list of the codes for sale (DS:86A2, see <see cref="GameUi.BarterListing"/>).</summary>
+    public int[] BarterListing => ui.BarterListing;
+
     /// <summary>A short message box over the page (put back afterwards).</summary>
     public void ShowMessage(string text) => new MessageBox(ui).Show(text);
 

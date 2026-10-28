@@ -133,6 +133,11 @@ public static class LootSharing
     public static int Get(GameState s, IList<ItemStack> pile, int member, int index)
     {
         // DIVERGENCE: a row past the pile's end hands out a stale entry in the original (it only checks the pile is not empty); nothing happens here.
+        //   That entry (G at R040+0x0DF6) is undefined memory: the battle hands the screen a new 6000-byte DOS block
+        //   (loot_screen R014+0xE530: alloc_buffer root 05BA:0004, DOS 48h, which clears nothing) right after freeing its battlefield
+        //   buffers, and copies only count * 6 bytes into it (R014+0xE56C); a removal (R040+0x12EC) moves entry [count] down, which is
+        //   that block's leftover too. So the code, quality and count past the end are whatever DOS memory held (a code past the item
+        //   table would be stored in the pack and saved): not reproducible, and the C# keeps the pack safe. The battle is the only caller.
         if (index < 0 || index >= pile.Count)
         {
             return -1;

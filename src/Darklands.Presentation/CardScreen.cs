@@ -44,6 +44,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     private SavedScreen? _picture;
     private string _pictureName = "";
 
+    /// <summary>card_name (DS:E3D4): the card the last <see cref="Show"/> or <see cref="NameTheCard"/> named; <see cref="_messages"/> may still be another card's.</summary>
+    private string _cardName = "";
+
     /// <summary>pic_buf (DS:E3E3): the picture of the last <see cref="Show"/>, which <see cref="ShowPicture"/> does not change.</summary>
     private string _mainPicture = "";
     private byte _textColor;
@@ -58,6 +61,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: DS:E959, the block a redraw draws again, is left over from the previous card in the original until the new card shows a text; here a new card starts without one.
     public void Show(string cardName, string picture)
     {
+        _cardName = cardName;
         _messages = ui.Assets.Messages(cardName);
         _block = -1;
         _mode = Mode.Text;
@@ -68,11 +72,40 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: card_load(card_name, pic_buf) R043+0x0A9A with pic_buf as the last card_load left it
     public void ShowWithTheLastPicture(string cardName) => Show(cardName, _mainPicture);
 
+    // C: strcpy(card_name, name) and _fstrcpy(pic_buf, picture) with no card_load (R067+0x1ECE, R072+0x1494): the screen keeps the
+    //   last card's picture and msg_file (DS:A895) the last card's texts; card_load_near(card_name, ..) (ShowPicture), the redraw R043+0x1E82
+    //   and the card_load at the end of a battle load the named card's texts
+    public void NameTheCard(string cardName, string? picture)
+    {
+        _cardName = cardName;
+        if (picture is not null)
+        {
+            _mainPicture = picture;
+        }
+    }
+
+    // orig: card_load(card_name, pic_buf) R043+0x0A9A: the named card's texts and its picture buffer
+    // C: the last call of run_battle R029+0x2278 (CardContext.RunBattle).
+    // C: the block shown last and the menu state stay as they were (card_load does not touch DS:E959 or DS:E898).
+    public void ReloadAfterBattle()
+    {
+        if (_cardName.Length == 0)
+        {
+            return;
+        }
+        _messages = ui.Assets.Messages(_cardName);
+        // C: a card that never filled pic_buf here (it only drew pictures of its own) keeps its last picture
+        ShowPicture(_mainPicture.Length > 0 ? _mainPicture : _pictureName);
+    }
+
     // orig: R043+0x0A9A (150B:000A) again (thunk 09C0:1EA5) with the card's picture: the picture and the party column
     public void Reload() => ShowPicture(_pictureName);
 
+    // orig: card_load_near(card_name, pic) R043+0x0BA0: the picture, and msg_load(card_name): after a card that only named itself
+    //   (NameTheCard) its own texts are loaded here
     public void ShowPicture(string picture)
     {
+        LoadTheNamedTexts();
         _pictureName = picture;
         _textColor = picture.StartsWith('x') ? Palette.White : Palette.Black;
         if (picture.Length > 0 && ui.Assets.PictureExists(picture))
@@ -114,8 +147,8 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     {
         ui.FlushKeys();
         _options = options;
-        var areas = _lastAreas.Where(a => a.Option < options.Count && options[a.Option] == OptionState.Enabled).ToList();
-        return Select(areas, hint, popupHint);
+        List<OptionArea> Enabled() => _lastAreas.Where(a => a.Option < options.Count && options[a.Option] == OptionState.Enabled).ToList();
+        return Select(Enabled(), hint, popupHint, Enabled);
     }
 
     /// <summary>The option lines of the last text laid out (DS:E96E), kept for a menu that draws none.</summary>
@@ -445,6 +478,15 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         return false;
     }
 
+    /// <summary>msg_load(card_name): the texts of the card named last, when the loaded ones are another card's.</summary>
+    private void LoadTheNamedTexts()
+    {
+        if (_cardName.Length > 0 && _messages?.Name != _cardName)
+        {
+            _messages = ui.Assets.Messages(_cardName);
+        }
+    }
+
     // orig: R043+0x1E82 (150B:13F2): redraws the card after a full screen was shown over it: pic_draw_pal of the picture DS:EE5B, set_palette, msg_load(DS:E957), text_expand(DS:E959) and the block as 04c4 drew it: DS:E898 == 1 the option list unfaded, == 2 the option list with the fade and the recolouring, anything else the plain text
     // C: the plain-text arm draws the block with the card colour DS:EE59 over the PICTURE (a blank-page text, how == 1, comes back as ordinary picture text), and the fade arm's recolour loop uses the grey remap's colour variable even when the fade is switched off (DS:9069 != 0). Both are reproduced as far as they apply here: the blank page is not restored.
     private void Redraw()
@@ -453,6 +495,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         {
             return;
         }
+        // C: msg_load(DS:E957): the name the last card_load was given, card_name's buffer, which a card that only named itself has changed
         ShowPicture(_pictureName);
         switch (_mode)
         {

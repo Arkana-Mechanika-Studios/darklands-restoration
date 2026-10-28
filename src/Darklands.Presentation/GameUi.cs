@@ -590,6 +590,14 @@ public sealed class GameUi
     public bool PartyIconsDirty { get; set; }
 
     /// <summary>
+    /// The barter screen's list of the codes for sale, kept for the whole run of the game: a listing writes only its own
+    /// entries, so the rows past a shorter list's end keep what an earlier, longer listing left (0 before any).
+    /// </summary>
+    // orig: DS:86A2 (int[200], BSS: 0 at start-up), written only by the stock listing R032+0x0ACD (scan of every record for the
+    //   address) and never cleared; a saved game neither holds nor restores it
+    public int[] BarterListing { get; } = new int[200];
+
+    /// <summary>
     /// One pass of a loop that reads the keyboard itself (no menu bar, no hot keys): the screen is shown and a waiting key
     /// taken (0: none, and a frame passes).
     /// </summary>

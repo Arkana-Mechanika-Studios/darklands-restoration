@@ -528,6 +528,11 @@ public sealed class CardOracleTests
             state.Roster.KeepStored(member, member.Copy());
         }
         var screen = new OracleScreen(option, probe, hand) { Force = CardOracleStates.ForceOf(key), Path = CardOracleStates.PathOf(key) };
+        // the texts the card before left loaded: the card's own, as card_oracle.py loads them first, or the key's T part
+        if ((CardOracleStates.TextsOf(key) ?? CardTable.Find(card.Number)?.Name) is { Length: > 0 } texts)
+        {
+            screen.PreloadTexts(texts);
+        }
         var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames };
         c.Screens = new OracleScreens(screen.Log);
         // sound: music_play(x) is a "music x" line and then the driver's command (sound x, or sound 1 with the music off), sound_play(n)

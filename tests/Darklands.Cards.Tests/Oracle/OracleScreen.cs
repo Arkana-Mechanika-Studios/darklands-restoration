@@ -15,7 +15,15 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
 {
     private static readonly object MessagesLock = new();
     private int _menus;
-    private string _card = "";
+
+    /// <summary>The card the last card_load / card_load_near loaded (the oracle's run.card_name): "show" when another is loaded.</summary>
+    private string _shown = "";
+
+    /// <summary>The card whose message file is loaded (the oracle's run.texts_name): the texts are read from it.</summary>
+    private string _texts = "";
+
+    /// <summary>card_name's buffer (DS:E3D4): set by a load and by a card that only names itself (NameTheCard).</summary>
+    private string _named = "";
 
     public CardContext? Context { get; set; }
 
@@ -30,11 +38,11 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
     /// <summary>"show" when the texts are another card's than the ones shown, else "picture" (as the oracle words card_load and card_load_near).</summary>
     public void Show(string cardName, string picture)
     {
-        Log.Add(cardName == _card ? $"picture {picture.ToLowerInvariant()}" : $"show {cardName} {picture.ToLowerInvariant()}");
+        Log.Add(cardName == _shown ? $"picture {picture.ToLowerInvariant()}" : $"show {cardName} {picture.ToLowerInvariant()}");
         // card_load takes pic_buf, the picture the rules redraw after a battle or a prayer ("redraw" in the original's
         // trace); the comparison reads this marker and drops it
         Log.Add($"main {picture.ToLowerInvariant()}");
-        _card = cardName;
+        _shown = _texts = _named = cardName;
         _main = picture;
     }
 
@@ -43,13 +51,48 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
 
     public void ShowWithTheLastPicture(string cardName) => Show(cardName, _main);
 
-    public void ShowPicture(string picture) => Log.Add($"picture {picture.ToLowerInvariant()}");
+    /// <summary>card_load_near(card_name, picture): the oracle's "show" when card_name is not the card loaded last (it loads its texts).</summary>
+    public void ShowPicture(string picture)
+    {
+        if (_named.Length > 0 && _named != _shown)
+        {
+            Log.Add($"show {_named} {picture.ToLowerInvariant()}");
+            _shown = _texts = _named;
+            return;
+        }
+        Log.Add($"picture {picture.ToLowerInvariant()}");
+    }
+
+    /// <summary>strcpy(card_name), _fstrcpy(pic_buf): nothing is loaded or logged; pic_buf is the picture a later redraw takes ("main").</summary>
+    public void NameTheCard(string cardName, string? picture)
+    {
+        _named = cardName;
+        if (picture is not null)
+        {
+            _main = picture;
+            Log.Add($"main {picture.ToLowerInvariant()}");
+        }
+    }
+
+    /// <summary>run_battle's card_load(card_name, pic_buf): the oracle's "redraw" (the comparison drops it); the texts are card_name's.</summary>
+    public void ReloadAfterBattle()
+    {
+        if (_named.Length == 0)
+        {
+            return;
+        }
+        Log.Add($"redraw {_named} {_main.ToLowerInvariant()}");
+        _shown = _texts = _named;
+    }
+
+    /// <summary>The message file the card before left loaded (the oracle loads the card's own, or the run key's T part, before the card runs).</summary>
+    public void PreloadTexts(string cardName) => _texts = cardName;
 
     public void Text(int block, TextFrame frame = TextFrame.OnPicture) => Log.Add($"text {block} {(int)frame} {Expanded(block)}");
 
     private IReadOnlyList<Content.MessageBlock> Blocks()
     {
-        if (CardHarness.Assets is not { } assets || _card.Length == 0)
+        if (CardHarness.Assets is not { } assets || _texts.Length == 0)
         {
             return [];
         }
@@ -58,7 +101,7 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
         {
             try
             {
-                return assets.Messages(_card).Blocks;
+                return assets.Messages(_texts).Blocks;
             }
             catch (KeyNotFoundException)
             {
@@ -77,7 +120,7 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
         // msg_file: the card's .MSG as the oracle loads it (the text variables can read it through party slots past the fifth)
         lock (MessagesLock)
         {
-            Context.MessageFileBytes = CardHarness.Assets!.Messages(_card).Bytes;
+            Context.MessageFileBytes = CardHarness.Assets!.Messages(_texts).Bytes;
         }
         return Convert.ToHexString(TextVariables.Expand(blocks[block].Text, Context)).ToLowerInvariant();
     }
@@ -240,7 +283,7 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
     }
 
     /// <summary>The texts are a card's, without a picture being shown (a direct handler call, see <see cref="CardOracleTests.Run"/>).</summary>
-    public void UseTexts(string cardName) => _card = cardName;
+    public void UseTexts(string cardName) => _shown = _texts = _named = cardName;
 
     public static string Describe(OptionHint h) => Say(h);
 

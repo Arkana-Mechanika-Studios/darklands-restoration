@@ -205,12 +205,18 @@ public sealed class BarterScreen
     // orig: barter_key R032+0x0F60 draft, case P; the rule is Trading.Buy
     private void Purchase()
     {
-        // DIVERGENCE: a click can light a shop row past the list's end; the original then buys DS:86A2[row] left from an earlier listing (the array is never cleared). Nothing happens here.
-        if (!_buying[_member] || _stock.Codes.Count == 0 || (uint)(_shopTop + _shopRow) >= _stock.Codes.Count)
+        // C: only the list in use (DS:8842[who]) and the count DS:885C != 0 are tested; the code is DS:86A2[top + row].
+        if (!_buying[_member] || _stock.Codes.Count == 0)
         {
             return;
         }
-        var count = Trading.Buy(_state, _shop, _member, _stock.Codes[_shopTop + _shopRow]);
+        var index = _shopTop + _shopRow;
+        // BUG: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end;
+        //   P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any),
+        //   at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices,
+        //   rates and adds DS:86A2[3]).
+        var code = index < _stock.Codes.Count ? _stock.Codes[index] : _page.BarterListing[index];
+        var count = Trading.Buy(_state, _shop, _member, code);
         if (count < 0)
         {
             return;
@@ -437,6 +443,11 @@ public sealed class BarterScreen
         }
         // C: the pack lines above were priced before the stock listing seeds the generator (sell_price draws under the clock seed, in a flag-8 place).
         _stock = Trading.Stock(_state, _shop);
+        // orig: R032+0x0ACD: DS:86A2[DS:8850] = k for every item for sale; the entries past the list's end are left as they were
+        for (var i = 0; i < _stock.Codes.Count && i < _page.BarterListing.Length; i++)
+        {
+            _page.BarterListing[i] = _stock.Codes[i];
+        }
         for (var i = 0; i < _stock.ListedPrices.Count; i++)
         {
             var code = _stock.Codes[i];

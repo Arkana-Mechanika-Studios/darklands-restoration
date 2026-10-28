@@ -391,9 +391,9 @@ public sealed partial class CardContext
     //   writer of that table writes to the file too; the figure names copied to DS:1166 are set before every battle and read only in battles;
     //   the order menu reset (R014+0xDE12) is made by the battle itself at its start and its end; the saved game written after the pair is the
     //   one written before it, but for the uninitialised bytes after the place name's terminator (a stack buffer of the writer).
-    // DIVERGENCE: the pictures freed and loaded again (shields, card frames, timer pictures, the pop-up's saved screen DS:A776), the card's
-    //   picture and text loaded again at the end (card_load R043+0x0A9A: it also repairs the card text buffer DS:A895, which the reloads
-    //   overwrite) and the party panel are the presentation's; root 0000:2646, called with "after battle", is an empty function (RETF); the
+    // DIVERGENCE: the pictures freed and loaded again (shields, card frames, timer pictures, the pop-up's saved screen DS:A776) and the
+    //   party panel are the presentation's; the card's picture and text loaded again at the end (card_load R043+0x0A9A: it also repairs the
+    //   card text buffer DS:A895, which the reloads overwrite) is ICardScreen.ReloadAfterBattle; root 0000:2646, called with "after battle", is an empty function (RETF); the
     //   death film and the end of the game are the host's (AllDead).
     // orig: cards_startup R043+0x078E (1462:078E) matched, called when somebody is left: srand((unsigned)time(0)),
     //   then the shields, card frames and timer pictures are loaded again, order_menu_reset_vec and world_load("locs.tmp") (the locations the
@@ -421,6 +421,8 @@ public sealed partial class CardContext
         Core.World.CityFile.ReloadAfterBattle(State);
         Events.Reload();
         TimePassage.Advance(State, 0);
+        // orig: card_load(card_name, pic_buf) at the end: the named card's texts (a card that only named itself, NameTheCard, has its own from here)
+        Screen.ReloadAfterBattle();
         return result;
     }
 

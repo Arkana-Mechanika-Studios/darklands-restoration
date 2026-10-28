@@ -208,6 +208,7 @@ public sealed class LootScreen
     {
         var index = _pileTop[Member] + _pileRow[Member];
         // DIVERGENCE: rows past the pile's end are ignored (see LootSharing.Get).
+        // C: the original's G gives the entry there, a leftover of the DOS block the battle hands over: undefined memory (LootSharing.Get).
         if (!_usingPile[Member] || _pile.Count == 0 || index >= _pile.Count)
         {
             return;

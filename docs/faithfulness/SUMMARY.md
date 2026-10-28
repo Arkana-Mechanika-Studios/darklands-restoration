@@ -484,11 +484,12 @@ the text, corrected, 7 wrong, of which 3 are now implemented and 4 are leads bel
 Open items (2026-10-28, after batch 23), listed honestly:
 * Batch 23: the 60 unsure and 3 refuted unreachable-justification rows (above); no lead is open from scr1, discordq or cards3.
 * Batch 22 leads (local/batch/b22/leads.tsv): gen-bsafe-36 and gen-bsafe-40 differ from their end state on the new recording (B22-L01, L02); gen-travn-02 differs at s8 with wait:600 and agrees with wait:2000 (B22-L03, probably the script); the order of a few sounds inside a battle tick differs from the original in the gate sessions gen-bkeys-05, gen-bkeys-15, gen-bsafe-36, gen-bsafe-40 and the cave fight (B22-L05, L06; no state differs in the first two or in the fight); the event music a player heard in DOSBox is not among the recorded sessions (B22-L08).
-* Leads of batch 16: the barter's buy on a lit row past the list's end takes a leftover of an earlier, longer listing
-  (D-dd4c2e); the sneaking card shows the previous card's text until a redraw, as it loads no message file of its own
-  (D-ecc6f5); the loot screen's click on an empty pile row followed by G gives the entry past the pile's end, from a stale
-  tail of the pile (D-b00418); Ctrl-F1 in the open pack reads the status byte before the party, whose value at run time is
-  unknown (D-03c80e, unsure; classed undefined memory).
+* Leads of batch 16, settled (local/batch/c2stale): the barter's buy on a lit row past the list's end and the cards 0x5F
+  (sneaking) and 0x73 (before the city walls, also the cross-check's finding 21), which keep the previous card's texts, are
+  reproduced as original bugs with tests and card-oracle runs (D-dd4c2e, D-ecc6f5, D-d4f515 done); the loot screen's G past
+  the pile's end reads a DOS block the battle never clears (D-b00418, undefined memory, not reproducible) and Ctrl-F1 in the
+  open pack depends on a Throw list of 19 lines in an earlier battle and the menu bar's geometry (D-03c80e, not modelled
+  with evidence).
 * Twelve battle input sessions of round B1 still differ and are not counted: gen-bhurtk-02 (the right button let go after
   crossing two menus: the original's bar run counted a message box, the C#'s bar closed at once), gen-bhurts-01 (keys read in
   one pass inside the I sheet, R022+0x051C, plus or minus 1), gen-bkeys-21 (Alt-F then a view click), gen-bkeys-37 (right

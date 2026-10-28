@@ -18,11 +18,15 @@ public sealed class SneakingThroughTheHall : Card
 
     public override int Run(CardContext c)
     {
-        // DIVERGENCE: the original never calls card_load here: it only fills the name and picture
-        // buffers, so the screen keeps the previous card's picture, and its texts until the engine
-        // redraws the card (R043 13f2 reloads the MSG named by card_name, now "$Sneak00", and draws
-        // pic_buf). The card is shown here at once with its own texts and the "common" picture.
-        Show(c, 0);
+        // BUG: the card (R067+0x1ECE) never calls card_load: it only fills card_name and pic_buf ("common"), so the
+        // screen keeps the previous card's picture and its blocks 6 and 0x0D, and those of every later
+        // text, are read from the previous card's message file (the guild's: $Black00, $Sword00 ...),
+        // until a member's sheet, the party information or a battle has the card loaded again
+        // (R043+0x1E82 and run_battle's card_load load card_name's texts, "$Sneak00"); see NameTheCard.
+        // DIVERGENCE: after the rebels' cards ($Revol00 has 13 blocks, $Revol01 10) the blocks 0x0D, 0x0E and up are not in the loaded
+        //   file: card_text and card_options print from msg_file + msg_index.ofs[n], a stale entry msg_load did not set (R043+0x020E: what an
+        //   earlier, longer message file left; 0d 0a 0a under the oracle), undefined memory; the C# prints an empty text, with the same lines.
+        c.Screen.NameTheCard(Name, PictureNames.Of(0));
         c.Next = Number;
         var menu = Menu(c, 0x0D);
         menu.Enable(0, 1, 3, 9);
