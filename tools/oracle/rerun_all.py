@@ -851,21 +851,6 @@ for _name in ("b3-save-fight", "b3-save-fight2", "b3-save-fight3", "b3-probe1", 
     BATTLE_RECORDS.add(_name)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # scr1: scripted sweeps of the screens' open input paths (gen_scr1.py; local/batch/scr1)
 SESSIONS.update({
     "scr1-camp-1": "Dksave10.sav",
