@@ -237,10 +237,26 @@ public sealed partial class TacticalBattle
             DragonMayBreathe(c);
         }
         var t = c.Target;
-        if (c.Exchange is not (Exchange.LightHit or Exchange.HeavyHit) || t < 0)
+        // orig: R014+0x1A59..0x1A7E: the swish (sound 0x11, R014+0x465E) only for an exchange other than a hit (1, 2); a hit goes on whatever the target
+        if (c.Exchange is not (Exchange.LightHit or Exchange.HeavyHit))
         {
             _view.Sound(0x11);
             c.State = ActionState.Ready;
+            return;
+        }
+        if (t < 0)
+        {
+            // C: a hit with no target (the cave dragon's blow after DragonPicksVictim found nobody, target -1: fight cave60, B22-L06) takes the hit
+            //   path with t = -1 (R014+0x1A80..0x1B9B): no sound, action state 7 (R014+0x1B0E), the party's hit-skill bit
+            // DIVERGENCE: not reproduced, the original then works on undefined memory: the knock-back test reads record -1's target byte (DS:9C1F,
+            //   only for a heavy hit), queued damage[-1] (DS:D70A) and, when it is above 0, writes was-hit[-1] (DS:D4F1); damage_apply(-1)
+            //   (R014+0xAE1E) and the test after it read record -1's status byte (DS:9BE9, the menu bar's sub-menu item records), which act only
+            //   for a value of 1, 2 or 3
+            c.State = ActionState.Ready;
+            if (i < Combatant.PartySlots)
+            {
+                c.SkillsUsed |= SkillUse.HandWeaponHit;
+            }
             return;
         }
         var target = Battle[t];

@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 50 entries; recommendations: document: 1, justify: 40, keep: 9.
+- Part A (not-modelled, deliberate-fix, other in core logic): 51 entries; recommendations: document: 1, justify: 40, keep: 10.
 - Part B (undefined-memory in core logic): 143 entries; determinism: n/a: 83, no: 46, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -355,14 +355,18 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (15)
+### battles (16)
 
-#### not-modelled (3)
+#### not-modelled (4)
 
 - **D-ca7108** `not-modelled` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:57` `FortressBattlefield.BuildFortress`  
   original: `R011+0x0000` (1432:0000, draft)  
   divergence: the four level buffers (alloc_buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept. Its only store is R011+0x04ED; no instruction of the root or the 136 overlays reads it.  
   recommendation: **justify** (checked against the original) - R011+0x0000 stores DS:E049[k] = n once (R011+0x04ED, mov [bx - 0x1FB7], cx); scanning the root and all 136 overlays for DS:E049..E04F finds no other reference, so the array is write-only.
+- **D-74b517** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Actions.cs:251` `TacticalBattle.MeleeFrame`  
+  original: `R014+0x199C` (0E76:199C, draft), `R014+0x465E` (0E76:465E, draft)  
+  divergence: not reproduced, the original then works on undefined memory: the knock-back test reads record -1's target byte (DS:9C1F, only for a heavy hit), queued damage[-1] (DS:D70A) and, when it is above 0, writes was-hit[-1] (DS:D4F1); damage_apply(-1) (R014+0xAE1E) and the test after it read record -1's status byte (DS:9BE9, the menu bar's sub-menu item records), which act only for a value of 1, 2 or 3  
+  recommendation: **keep** (checked against the original) - R014+0x199C with target -1 and a hit exchange (the cave dragon after the victim draw found nobody): asm R014+0x1A80..0x1B9B reads [bx-0x6361] (DS:9C1F) only for exchange 2, [bx-0x28F4] with bx=-2 (DS:D70A), writes [si-0x2B0E] with si=-1 (DS:D4F1) when above 0, calls R014+0xAE1E(-1), which acts only when DS:9BE9 is 1 (else it returns at 0xAE36), and tests DS:9BE9 for 2/3. These bytes are not modelled (menu bar sub-menu records and the bytes before two tables); fight cave60 agrees in all 1,204 ticks and in sound with them left out. The sound and the action state are reproduced.
 - **D-5471a9** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:467` `TacticalBattle.ConsumeSlotAsOriginal`  
   original: `R014+0xB434` (18BF:0FA4, draft)  
   divergence: entry m × 64 + k outside the packs (member −1 with a slot below 64: before them, from 2E38:FEBE after the wrap; members 2..4 with slot 255: past them, in the formula and saint tables and the item-definition far pointers, 2E38:07BE..), which the battle does not hold: nothing is changed (the original's write there is not modelled).  
