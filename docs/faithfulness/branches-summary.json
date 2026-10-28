@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 58133,
-  "blocks_hit": 52196,
-  "functions": 8583,
-  "outcomes": 43610,
-  "outcomes_hit": 35671,
+  "blocks": 58179,
+  "blocks_hit": 52256,
+  "functions": 8586,
+  "outcomes": 43650,
+  "outcomes_hit": 35724,
   "runs": null
  },
  "battle": {
@@ -245,14 +245,6 @@
   "functions": 582,
   "outcomes": 11854,
   "outcomes_hit": 5270,
-  "runs": 1
- },
- "battle-oracle-cave60": {
-  "blocks": 10700,
-  "blocks_hit": 5880,
-  "functions": 545,
-  "outcomes": 9218,
-  "outcomes_hit": 3670,
   "runs": 1
  },
  "battle-oracle-city13": {
@@ -1423,6 +1415,14 @@
   "outcomes_hit": 1767,
   "runs": 1
  },
+ "lockstep-dungeon-mine-doormsg": {
+  "blocks": 13103,
+  "blocks_hit": 7518,
+  "functions": 567,
+  "outcomes": 11412,
+  "outcomes_hit": 5002,
+  "runs": 1
+ },
  "lockstep-dungeon-mine-doors": {
   "blocks": 14695,
   "blocks_hit": 8991,
@@ -2023,6 +2023,14 @@
   "outcomes_hit": 6037,
   "runs": 1
  },
+ "lockstep-gen-bheld-40": {
+  "blocks": 14404,
+  "blocks_hit": 8871,
+  "functions": 683,
+  "outcomes": 12834,
+  "outcomes_hit": 6236,
+  "runs": 1
+ },
  "lockstep-gen-bheld-41": {
   "blocks": 13174,
   "blocks_hit": 8362,
@@ -2159,6 +2167,14 @@
   "outcomes_hit": 5696,
   "runs": 1
  },
+ "lockstep-gen-bhurta-03": {
+  "blocks": 12924,
+  "blocks_hit": 8175,
+  "functions": 644,
+  "outcomes": 11426,
+  "outcomes_hit": 5730,
+  "runs": 1
+ },
  "lockstep-gen-bhurta-04": {
   "blocks": 13127,
   "blocks_hit": 8321,
@@ -2231,6 +2247,14 @@
   "outcomes_hit": 5776,
   "runs": 1
  },
+ "lockstep-gen-bhurts-02": {
+  "blocks": 13727,
+  "blocks_hit": 8509,
+  "functions": 673,
+  "outcomes": 12152,
+  "outcomes_hit": 5928,
+  "runs": 1
+ },
  "lockstep-gen-bhurts-03": {
   "blocks": 13298,
   "blocks_hit": 8219,
@@ -2287,14 +2311,6 @@
   "outcomes_hit": 6068,
   "runs": 1
  },
- "lockstep-gen-bkeys-05": {
-  "blocks": 13878,
-  "blocks_hit": 8575,
-  "functions": 672,
-  "outcomes": 12262,
-  "outcomes_hit": 6000,
-  "runs": 1
- },
  "lockstep-gen-bkeys-06": {
   "blocks": 14245,
   "blocks_hit": 8856,
@@ -2317,14 +2333,6 @@
   "functions": 670,
   "outcomes": 12002,
   "outcomes_hit": 5818,
-  "runs": 1
- },
- "lockstep-gen-bkeys-15": {
-  "blocks": 12889,
-  "blocks_hit": 7312,
-  "functions": 614,
-  "outcomes": 11228,
-  "outcomes_hit": 4851,
   "runs": 1
  },
  "lockstep-gen-bkeys-16": {
@@ -2549,6 +2557,22 @@
   "functions": 577,
   "outcomes": 10604,
   "outcomes_hit": 4541,
+  "runs": 1
+ },
+ "lockstep-gen-blue-04": {
+  "blocks": 14477,
+  "blocks_hit": 8792,
+  "functions": 677,
+  "outcomes": 12912,
+  "outcomes_hit": 6148,
+  "runs": 1
+ },
+ "lockstep-gen-blue-05": {
+  "blocks": 14403,
+  "blocks_hit": 8811,
+  "functions": 679,
+  "outcomes": 12820,
+  "outcomes_hit": 6156,
   "runs": 1
  },
  "lockstep-gen-bluer-02": {
@@ -2839,6 +2863,14 @@
   "outcomes_hit": 5830,
   "runs": 1
  },
+ "lockstep-gen-bsafe-27": {
+  "blocks": 13219,
+  "blocks_hit": 8443,
+  "functions": 668,
+  "outcomes": 11718,
+  "outcomes_hit": 5950,
+  "runs": 1
+ },
  "lockstep-gen-bsafe-28": {
   "blocks": 13191,
   "blocks_hit": 8413,
@@ -2863,6 +2895,14 @@
   "outcomes_hit": 5856,
   "runs": 1
  },
+ "lockstep-gen-bsafe-33": {
+  "blocks": 13226,
+  "blocks_hit": 8339,
+  "functions": 662,
+  "outcomes": 11728,
+  "outcomes_hit": 5834,
+  "runs": 1
+ },
  "lockstep-gen-bsafe-34": {
   "blocks": 13203,
   "blocks_hit": 8397,
@@ -2871,12 +2911,12 @@
   "outcomes_hit": 5902,
   "runs": 1
  },
- "lockstep-gen-bsafe-36": {
-  "blocks": 13227,
-  "blocks_hit": 8409,
-  "functions": 667,
-  "outcomes": 11726,
-  "outcomes_hit": 5885,
+ "lockstep-gen-bsafe-35": {
+  "blocks": 13231,
+  "blocks_hit": 8388,
+  "functions": 663,
+  "outcomes": 11736,
+  "outcomes_hit": 5871,
   "runs": 1
  },
  "lockstep-gen-bsafe-37": {
@@ -2901,14 +2941,6 @@
   "functions": 651,
   "outcomes": 11408,
   "outcomes_hit": 5797,
-  "runs": 1
- },
- "lockstep-gen-bsafe-40": {
-  "blocks": 13207,
-  "blocks_hit": 8366,
-  "functions": 664,
-  "outcomes": 11706,
-  "outcomes_hit": 5853,
   "runs": 1
  },
  "lockstep-gen-bsafe-41": {
@@ -2981,6 +3013,14 @@
   "functions": 661,
   "outcomes": 11724,
   "outcomes_hit": 5875,
+  "runs": 1
+ },
+ "lockstep-gen-bsafe-50": {
+  "blocks": 14040,
+  "blocks_hit": 8731,
+  "functions": 674,
+  "outcomes": 12544,
+  "outcomes_hit": 6137,
   "runs": 1
  },
  "lockstep-gen-cache-01": {
@@ -7071,6 +7111,30 @@
   "outcomes_hit": 209,
   "runs": 1086
  },
+ "travel-r2-L1-key-l-then-bottom-click": {
+  "blocks": 5263,
+  "blocks_hit": 3187,
+  "functions": 310,
+  "outcomes": 4024,
+  "outcomes_hit": 1706,
+  "runs": 1
+ },
+ "travel-r2-L2-bottom-click-pressburg": {
+  "blocks": 6436,
+  "blocks_hit": 3897,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2260,
+  "runs": 1
+ },
+ "travel-r2-L2b-trav0-03-3clicks": {
+  "blocks": 6436,
+  "blocks_hit": 3897,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2260,
+  "runs": 1
+ },
  "travel-r2-a3": {
   "blocks": 5658,
   "blocks_hit": 3449,
@@ -7119,6 +7183,14 @@
   "outcomes_hit": 2086,
   "runs": 1
  },
+ "travel-r2-gen-trav-11": {
+  "blocks": 6767,
+  "blocks_hit": 3825,
+  "functions": 351,
+  "outcomes": 5312,
+  "outcomes_hit": 2155,
+  "runs": 1
+ },
  "travel-r2-gen-trav-12": {
   "blocks": 6726,
   "blocks_hit": 3883,
@@ -7159,6 +7231,14 @@
   "outcomes_hit": 2809,
   "runs": 1
  },
+ "travel-r2-gen-trav0-03": {
+  "blocks": 7688,
+  "blocks_hit": 4413,
+  "functions": 423,
+  "outcomes": 6070,
+  "outcomes_hit": 2610,
+  "runs": 1
+ },
  "travel-r2-gen-trav0-04": {
   "blocks": 7289,
   "blocks_hit": 4269,
@@ -7175,12 +7255,12 @@
   "outcomes_hit": 2704,
   "runs": 1
  },
- "travel-r2-gen-travn-02": {
-  "blocks": 7490,
-  "blocks_hit": 4253,
-  "functions": 390,
-  "outcomes": 5966,
-  "outcomes_hit": 2498,
+ "travel-r2-gen-trav0-m5": {
+  "blocks": 6436,
+  "blocks_hit": 3897,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2260,
   "runs": 1
  },
  "travel-r2-gen-travn-03": {
@@ -7293,6 +7373,14 @@
   "functions": 314,
   "outcomes": 4130,
   "outcomes_hit": 1736,
+  "runs": 1
+ },
+ "travel-r2-m1": {
+  "blocks": 5263,
+  "blocks_hit": 3187,
+  "functions": 310,
+  "outcomes": 4024,
+  "outcomes_hit": 1706,
   "runs": 1
  },
  "travel-r2-t1": {
