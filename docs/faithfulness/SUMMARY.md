@@ -22,10 +22,10 @@ items there. Where it stands:
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 81.5% of the branch outcomes have run in a comparison with the original, and the
+implements, about 82.3% of the branch outcomes have run in a comparison with the original, and the
 rest is listed (`branches-missed.csv` for the functions the oracles enter). The best-covered areas
-are the rules, the battles, the battlefield generators and the card scripts (81-88%); the least covered are the resident
-code (65%), the card engine (69%), the overland map (79%) and the screens (79%) (see below). In the card scripts, the open branches lie behind particular quest
+are the rules, the battles, the battlefield generators and the card scripts (82-88%); the least covered are the resident
+code (65%), the card engine (69%), the overland map (79%) and the screens (81%) (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
 after 1.0.
 
@@ -125,43 +125,59 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora, before their gaps were worked on (`branches-summary-before.json`) | 88.6% | 81.2% |
-| the 8,586 functions the oracles enter | 89.8% (52,256 / 58,179) | 81.8% (35,724 / 43,650) |
-| **every function the C# implements (9,281)** | | **81.5% (34,895 / 42,794)** |
+| the 8,622 functions the oracles enter | 90.2% (52,619 / 58,323) | 82.4% (36,040 / 43,740) |
+| **every function the C# implements (9,281)** | | **82.3% (35,210 / 42,794)** |
 
 The last line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence 34,895 against 35,724 exercised (2,571 more branch outcomes than the published batch 17: the card scripts +2,088, of them +831 in batch 21 from the per-card set-ups of round cards2, and the rules +48, screens +42 and card engine +29 (batch 21: +20, +17 and +28), from the card oracle's saved-game start states and controlled battle and prayer results of round cards1 and the set-ups of cards2; battles +274 (batch 21: +70, from round B3's direct calls and the compression library; batch 22: +35, from the live pass's new recordings) and travel +69 (batch 21: +65, from the travel-map sessions, the map-drawing and camp-watch jobs of round R2; batch 22: +3), both below; and 21 in the resident code (batch 22: +16, the battle's party panel rows and notes)). By area:
+differ slightly on the resident code, hence 35,210 against 36,040 exercised (2,886 more branch outcomes than the published batch 17 (batch 23: +315, the screens +151 and the card scripts +159 from the sessions of round scr1 and the card set-ups of round cards3, the rules +2, battles +2, card engine +1): the card scripts +2,088, of them +831 in batch 21 from the per-card set-ups of round cards2, and the rules +48, screens +42 and card engine +29 (batch 21: +20, +17 and +28), from the card oracle's saved-game start states and controlled battle and prayer results of round cards1 and the set-ups of cards2; battles +274 (batch 21: +70, from round B3's direct calls and the compression library; batch 22: +35, from the live pass's new recordings) and travel +69 (batch 21: +65, from the travel-map sessions, the map-drawing and camp-watch jobs of round R2; batch 22: +3), both below; and 21 in the resident code (batch 22: +16, the battle's party panel rows and notes)). By area:
 
 | area | functions run / implemented | branch outcomes exercised / total | |
 |---|---:|---:|---:|
 | battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 335 / 358 | 2,275 / 2,590 | 88% |
-| battles (tactical combat) | 288 / 314 | 6,605 / 7,516 | 88% |
+| rules | 335 / 358 | 2,277 / 2,590 | 88% |
+| battles (tactical combat) | 288 / 314 | 6,607 / 7,516 | 88% |
 | travel (overland map) | 23 / 24 | 773 / 982 | 79% |
-| screens (inventory, barter, creation ...) | 192 / 202 | 4,780 / 6,070 | 79% |
+| screens (inventory, barter, creation ...) | 197 / 202 | 4,931 / 6,070 | 81% |
 | resident code | 138 / 160 | 1,064 / 1,648 | 65% |
-| card engine | 35 / 36 | 472 / 686 | 69% |
-| card scripts | 6,897 / 7,949 | 11,837 / 14,616 | 81% |
+| card engine | 35 / 36 | 473 / 686 | 69% |
+| card scripts | 6,928 / 7,949 | 11,996 / 14,616 | 82% |
 | other | 10 / 12 | 75 / 162 | 46% |
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`; 366 outcomes, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch): 82.4% (35,261 / 42,794). Most of what is open is reachable in
+and listed in `unreachable.csv`; 1,113 outcomes: 366 before batch 23, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch, and 747 added in batch 23 from 1,367 rows (below)): 84.9% (36,323 / 42,794). Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
 the C#; the screens are checked mostly by the structure comparison and the C#'s own tests.
 
-13,876 items of the functions the oracles enter were never exercised: 2,368 are justified in
+13,404 items of the functions the oracles enter were never exercised: 3,735 are justified in
 `unreachable.csv` (dormant branches — tautologies, repeated tests, unused thresholds —, compiled
-forms, the C run-time library, drivers, memory and file helpers, code nothing reaches), 11,508 are
+forms, the C run-time library, drivers, memory and file helpers, code nothing reaches), 9,669 are
 open. The battle oracle and the whole-game sessions entered about 400
 functions no run had entered, whose unreached branches are now listed too. By area, the open items
-lie in the card scripts (about 4,760), the screens (about 2,000), the battlefield generators (about 2,070), the
-battles (about 1,230), the resident code (about 410), the card engine (about 320), the overland map (about 350), the
-rules (about 210) and the other code (about 160). A sweep
+lie in the card scripts (about 3,620), the battlefield generators (about 1,810), the screens (about 1,670), the
+battles (about 1,210), the resident code (about 380), the overland map (about 330), the card engine (about 320), the
+rules (about 180) and the other code (about 155). A sweep
 of the generators' seeds and forced maps added about 230 outcomes; the rest of their open branches test
 tile contents and random draws, not inputs a sweep sets.
+
+The 1,367 rows added in batch 23 (`local/batch/ujust`, machine-local) went through three readings before they counted: a
+Codex pass wrote a justification for each of 1,430 open rows that it could argue from the original's code (callers, data, switch
+defaults, dec chains, bytes inside an instruction), an independent Codex pass tried to refute each one (1,367 confirmed, 60
+unsure, 3 refuted; only the confirmed rows entered), and an Opus spot check of 44 stratified rows found 43 sound and one weak
+(R039+0x1712/190D, whose second predecessor 0x1971 was not named; corrected). A mechanical pass over the disassembly then listed
+every predecessor of the payload for the 111 rows that argue a switch default, a dec chain or code inside an instruction:
+58 had every entry inside the argued region, 30 argue from the callers' values alone, 12 argue a byte inside an instruction
+(no transfer to it in the aligned code, no unresolved indirect jump) and 11 had an entry from outside: five are the loop-back that
+re-enters a menu's set-up (R091+0x0A82, R092+0x109A, R123+0x0256; the choice is read again, now stated in the row), four are the
+exits to the return blocks of R005+0x0606, one is the jump table of R010+0x02CC, and one was a real gap, R039+0x1712 (fixed for its two rows).
+No row was dropped. The rows use the verdict `dormant`; a reason that starts with `callers:` rests on the values every
+caller passes (228 rows) and one that starts with `data:` on the game data (44 rows). The 598 rows that argue about the next-card
+word rely on one fact (docs/TRACEABILITY.md): DS:E48A is written only by the card records and the card dispatcher (R030 1462:0000). The 60
+unsure rows stay open, and so do the three refuted ones (R016+0x0DA6 at 0x0DCC and 0x0E01, reached by a saved game whose header
+byte +0xA0 is 0xFF; R043+0x37CA at 0x37D3, reached by a saved game whose cur_hour is -3): leads for a later run with an edited save.
 
 ## Card oracle
 
@@ -465,7 +481,8 @@ the justifications given evidence (a search of the whole EXE for readers, a tabl
 rows of game logic were read again against the original's code (100 rows: 84 right, 8 with a slip in
 the text, corrected, 7 wrong, of which 3 are now implemented and 4 are leads below, 1 unsure).
 
-Open items (2026-10-28, after batch 22), listed honestly:
+Open items (2026-10-28, after batch 23), listed honestly:
+* Batch 23: the 60 unsure and 3 refuted unreachable-justification rows (above); no lead is open from scr1, discordq or cards3.
 * Batch 22 leads (local/batch/b22/leads.tsv): gen-bsafe-36 and gen-bsafe-40 differ from their end state on the new recording (B22-L01, L02); gen-travn-02 differs at s8 with wait:600 and agrees with wait:2000 (B22-L03, probably the script); the order of a few sounds inside a battle tick differs from the original in the gate sessions gen-bkeys-05, gen-bkeys-15, gen-bsafe-36, gen-bsafe-40 and the cave fight (B22-L05, L06; no state differs in the first two or in the fight); the event music a player heard in DOSBox is not among the recorded sessions (B22-L08).
 * Leads of batch 16: the barter's buy on a lit row past the list's end takes a leftover of an earlier, longer listing
   (D-dd4c2e); the sneaking card shows the previous card's text until a redraw, as it loads no message file of its own
@@ -640,6 +657,8 @@ fixed, 42 jobs redone, all agree. One was an old two-argument job of R039+0x0000
 location) differ and are open leads, not triaged (probably the documented uninitialised sort and item of region kinds 1, 2, 9 and 11);
 there is no change in the C#. The agreeing world-call runs now: 1,626 of R1 (the other corpora unchanged: 630 rules, 1,673 travel,
 2,448 map entry); the contents of the events a call creates are now compared in all of them.
+
+Batch 23 (2026-10-28), road to 90%: four branches and one round integrated on 0.9.5 (master 2cc5219). scr1: 19 scripted whole-game sessions of the screens' open input paths (F6 screen, prayer page, load and title screens, party menu, card keys, character generator, camp; tools/oracle/gen_scr1.py); scr1o: its two leads were the tester's (the original refuses Begin with an empty roster as the C# does, R037+0x087A; the camp's rest runs until the next key, 53 hours to a wild-boar encounter, so the script waits longer), with sessions scr1-camp-2 and scr1-party-4; all agree live. discordq: five community claims checked on the original and agreed by the C# (the freelance rule by city record ordinal with the party seed as a signed 16-bit sum, gossip bands, retirees listed only where left, the character generator's roster from SAVES\DEFAULT), the card oracle atom lf (location flags), the party-seed save and load test and the session discordq-retire (run live once, 562 s). cards3: 8,527 agreeing units over 134 cards, +139 outcomes. cards3o: one real card fix (card 09C: the sabbat block of the witches of the blight hides line 3, grovel, not line 4, R083+0x01CD / DS:EE7C; WitchesOfTheBlightTests) and one tester fix (the oracle's stubs of the barter, camp and item-store screens now run their closing card_load through thunk 09C0:1EA5, so the picture after a shop compares as the original redraws it; the 12 + 2 lead runs enter cards-leads.json.gz and, agreeing, the coverage). Unreachable justifications: 1,367 rows (above). Checks on the merged tree: build 0 warnings 0 errors; 12 of 12 test projects pass (1,610 tests); replay 791 of 791 agree (37 fights and 754 sessions, 1,259 s with 2 workers; discordq-retire live, the rest replayed), sound and music 791 of 791 agree; the 30 card corpora, controlled and lead corpora replay with 0 differing runs, reports identical to batch 22 except the leads (+14 runs); the committed golden cards-oracle.json.gz still agrees and was not regenerated. Coverage 82.3% (35,210 of 42,794; 84.9% with the justified, 36,323): +315 outcomes (screens +151, card scripts +159, rules +2, battles +2, card engine +1); registers unchanged (320 divergences, 203 original bugs, 870 dormant, 36 uncertain); structure 0 open.
 
 Batch 22 (2026-10-28), release 0.9.5: five branches integrated on batch 21 (keyrep, pointer, panelfont, doormsg, audio) and the full live pass. keyrep: the held arrow on the map (DOSBox's typematic of 500 ms and then 33 ms, the pass ending at the next BIOS tick, R030+0x3096). pointer: no mouse pointer while a message box waits (root 047C:12C3 / 047C:1293 around root 0000:24BC). panelfont and doormsg: the battle's party panel draws in font slot 1 (names, values, the order letter, values in the name's colour, a plus above the maximum; root 0000:1716, 0000:1A9C) and the row notes (near a door, near the stairs, near a chest, near an exit, Exited: DS:01A8 to DS:01B0) in place of the bars; both change the same rows, and the merged panel keeps both (the note is laid out in the same font slot 1 as the name and the values; a rendered frame is in local/batch/b22). doormsg also fixes the double advance_hours(0) after a battle (root 03A1:0438) and the saved screen positions after an alarm or a pit (R014+0x105B). audio: the card oracle, the whole-game sessions and the fights compare the sound and music requests. Three fights (mine, castle, city13) died in the stopped pass with no report: workers starting from one snapshot stored it at the same moment and Windows refused the replace; the tester's store now retries. Checks on the merged tree: 12 of 12 test projects pass (1,606 tests; the golden card traces did not change), replay 769 of 769 on the old recordings, the 28 card corpora, the controlled and lead corpora, the card passes of cards1 and cards2, the battle call job sets of batches 17 to 21, the world-call jobs, the shop reputation corpus and the map drawing all identical to batch 21; of the 30 counted travel sessions 27 agree on the old recordings. Then the live pass above. Coverage 81.5% (34,895 of 42,794; 82.4% with the justified, 35,261), from the agreeing runs of the live pass (36 fights, 728 sessions and 45 travel and battle sessions of the second stage; the runs that differ in a state or in sound are left out), the other sources unchanged: +54 outcomes (battles +35, resident code +16, travel +3). Registers: 320 divergences (out: the panel redraw after damage, now made, and the PC/AT typematic; in: DOSBox's typematic and, after the lead fixes, record -1's undefined memory in the melee frame, D-74b517), 203 original bugs, 870 dormant, 36 uncertain (the map pass's clock() tick, now read from the BIOS tick); structure 0 open. The leads of the live pass, then fixed: gen-bsafe-36 and gen-bsafe-40 (B22-L01, L02) were the tester's, which counted a later click's hold twice once the new click and move passes were logged; gen-travn-02 (L03) was the script's, as the original side never runs a wait: step and the keyrep C# walks one step per BIOS tick as a PC does (292 steps to card 103 on both sides), so its copy with wait:2000 now stands in its place; the battle sound order of four gate sessions (L05) was the tester's, which gave a bwait after a shift, ctrl, state or wait step its neighbour's passes where the original side skips it (226 of 226 sessions now match the recorded counts); the cave fight's extra sound (L06) was the C#'s, which played the miss sound 0x11 for a hit with no target (R014+0x1A59..0x1A7E). After these fixes: 12 of 12 test projects, replay 769 of 769 agree, sound 831 of 836 (the 5 left also differ in their states); the coverage above is the live pass's, without these three sessions.
 
