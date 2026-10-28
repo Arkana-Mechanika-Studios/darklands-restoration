@@ -2932,7 +2932,7 @@ public sealed class BattleScreen : ITacticalView
     }
 
     /// <summary>A 16-pixel bar: the lost part white at the top, the rest in the stat colour; the value below (the bar not when a place note stands there).</summary>
-    // orig: member_bars root 0000:1A9C (as PartyPanel.DrawBar): a "+" at (x - 1, top - 4) when the value exceeds the maximum; the value and a space at (textX, row * 0x28 + 0x1F) with the window's last column 0x38, in the name's colour
+    // orig: member_bars root 0000:1A9C (as PartyPanel.DrawBar): a "+" at (x - 1, top - 4) when the value exceeds the maximum (only in the bars branch: with a place note none, root 0000:1C36..1CCF); the value and a space at (textX, row * 0x28 + 0x1F) with the window's last column 0x38, in the name's colour
     private void Bar(Canvas canvas, int row, int current, int maximum, int x, int textX, byte color, byte textColor, bool bar = true)
     {
         var realMaximum = maximum;
@@ -2951,7 +2951,7 @@ public sealed class BattleScreen : ITacticalView
             canvas[x, y] = c;
             canvas[x + 1, y] = c;
         }
-        if (current > realMaximum)
+        if (bar && current > realMaximum)
         {
             _panel.Draw(canvas, x - 1, top - 4, "+", textColor, 0x38);
         }
