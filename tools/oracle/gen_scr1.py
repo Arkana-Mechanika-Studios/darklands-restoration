@@ -123,8 +123,17 @@ def r_load(variant):
 
 def r_party(variant):
     """The create-a-party menu (R037+0x0444 / 0x0000, from the start screen): add, delete, kill, heraldry, figure and the three colour keys with their arrows,
-    the command rows by click; Begin at the end (no state before: there is no game)."""
+    the command rows by click; Begin at the end (no state before: there is no game).
+    Variant 4: every character killed, then A and B: Begin is refused as the original refuses it (R037+0x087A: the roster count DS:E7DC, which
+    R037+0x2760 takes from charactr.tmp after each kill, must be above 0, then the party size from the slot ids; neither holds) and the menu stays;
+    a state there would compare the original's saved-game writer run with no game against the C# host's "no game", so R leaves for the start
+    screen, C opens the menu again (R037+0x0000 reloads the ready-made roster from the saved game "default"), and A, B begin (a game begun at the first
+    B would take R and C as a card's keys). No --save: the tester's machine has that saved game only without one."""
     out = ["key:c", "wait:5"]
+    if variant == 4:
+        out += keys(["k"] * 6 + ["a"], "wait:50")
+        out += ["key:b", "wait:300", "key:r", "wait:100", "key:c", "wait:200", "key:a", "wait:50", "key:b", "wait:300", "state:begun"]
+        return None, out
     if variant == 1:
         out += keys(["a"], "wait:50")
         for c in "123":
@@ -209,7 +218,10 @@ def r_camp(variant):
     for m in "1234":
         out += keys([m, "j", "r", "p", "e", "g"], "wait:30")
     out += ["state:acts"]
-    out += keys(["t"], "wait:100") + keys(["a"], "wait:200") + ["key:l", "wait:200"] + ["state:alch"]
+    # camp-2: the Esc after a sheet has left the wild camp (both sides), so T, A and L are the map's keys: A rests (R030+0x0C44 case 0x1E41) until a
+    # key; the original side gives the next key only when the game is idle, and the rest draws random numbers every step, so the original
+    # rests until the encounter (card 0xA5, 53 hours on) and takes L at the card: the C#'s wait must outlast those steps (200 frames gave 11)
+    out += keys(["t"], "wait:100") + keys(["a"], "wait:%d" % (2400 if variant == 2 else 200)) + ["key:l", "wait:200"] + ["state:alch"]
     out += ["key:s", "wait:%d" % 300, "state:day", "key:5", W, "key:j", W, "key:s", "wait:300", "state:day2"]
     if variant == 3:
         out += ["key:altq", "wait:300"]
@@ -222,9 +234,9 @@ def r_camp(variant):
 RECIPES = {}
 for _v in (1, 2, 3):
     RECIPES["load-%d" % _v] = (lambda v=_v: r_load(v))
-for _v in (1, 2, 3):
+for _v in (1, 2, 3, 4):
     RECIPES["party-%d" % _v] = (lambda v=_v: r_party(v))
-for _v in (1, 3):      # camp-2 (the wild camp, DKSAVE99) differs from the original: local/batch/scr1/leads.tsv
+for _v in (1, 2, 3):
     RECIPES["camp-%d" % _v] = (lambda v=_v: r_camp(v))
 for _v in (1, 2):
     RECIPES["card-%d" % _v] = (lambda v=_v: r_card(v))

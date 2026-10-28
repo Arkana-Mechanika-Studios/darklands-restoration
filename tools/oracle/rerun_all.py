@@ -869,6 +869,7 @@ for _name in ("b3-save-fight", "b3-save-fight2", "b3-save-fight3", "b3-probe1", 
 # scr1: scripted sweeps of the screens' open input paths (gen_scr1.py; local/batch/scr1)
 SESSIONS.update({
     "scr1-camp-1": "Dksave10.sav",
+    "scr1-camp-2": "DKSAVE99.SAV",
     "scr1-camp-3": "Dksave10.sav",
     "scr1-card-1": "DKSAVE0.SAV",
     "scr1-card-2": "DKSAVE0.SAV",
@@ -883,6 +884,7 @@ SESSIONS.update({
     "scr1-party-1": None,
     "scr1-party-2": None,
     "scr1-party-3": None,
+    "scr1-party-4": None,
     "scr1-pray-1": "Dksave10.sav",
     "scr1-pray-2": "Dksave10.sav",
     "scr1-pray-3": "Dksave10.sav",
