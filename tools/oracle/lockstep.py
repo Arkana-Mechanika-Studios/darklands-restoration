@@ -461,7 +461,7 @@ def menu_callbacks(log) -> list[tuple[int, int]]:
 
 
 def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
-                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=(), boxes=(), carry=()):
+                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=(), boxes=(), carry=(), ticks=None):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -475,6 +475,8 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     shots = out / "cs"
     shutil.rmtree(shots, ignore_errors=True)
     args = [str(headless), game, str(shots), "clock:" + ",".join(str(v) for v in (seeds or [1])), "saves:" + str(saves)]
+    if ticks is not None:
+        args.append("ticks:%d" % ticks)
     # bwait:<n>: the original gives the step n + 1 battle passes after the previous one was taken; the C# host takes three frames more
     # than its wait (the key's two idle frames and the step's own), so the same pass is wait:<n - 3>
     seen = iter(BWAIT_ACTUAL)
@@ -676,6 +678,17 @@ def sound_compare(log, output: str, original_cut: bool = False) -> dict:
             "segments": differ}
 
 
+def party_ticks(steps, original: dict, save) -> int | None:
+    """The BIOS tick word the original took as the party seed (R037+0x9DB2, keys C and Q: DS:9C4A = the word at 0040:006C), which the C# host cannot
+    read from the original's clock: the party seed (header +0x64) of the first saved game the original wrote, for a session that begins at the start
+    screen (no --save). One word serves the session (the host repeats the last): a session that takes the party seed twice before its first state is
+    given the second. None: no state, or a session that starts from a saved game."""
+    if save is not None:
+        return None
+    name = next((n for k, n in steps if k == "state" and n in original), None)
+    return None if name is None else struct.unpack_from("<H", original[name][0], 0x64)[0]
+
+
 def compare(steps, original: dict, rewrite: dict, fresh: bool = False, items: int | None = None) -> list[dict]:
     """Per state step in the script's order: the differences (savdiff sections, the random state, the card). items: DARKLAND.LST's count."""
     import savdiff
@@ -709,7 +722,8 @@ def compare(steps, original: dict, rewrite: dict, fresh: bool = False, items: in
                     del d["head"]
             # +0x64 (party_seed): a game begun from the start screen (no saved game) takes it from the BIOS timer word at 0040:006C
             # (R037+0x9DB2, keys C and Q), a read of the original's time that the C# host (whose clock is the srand seeds) cannot repeat:
-            # it is reported apart ("party seed"), not as a difference
+            # the host is given the word the first saved game holds (party_ticks, the ticks: step), and then the party seed is compared like
+            # any field; only a session with no state to take the word from keeps it apart ("party seed"), not as a difference
             if fresh and "0" in d.get("head", {}) and ("0" in d["head"]["0"] or "1" in d["head"]["0"]):
                 row["party seed"] = {k: v for k, v in d["head"]["0"].items() if k in ("0", "1")}
                 rest = {k: v for k, v in d["head"]["0"].items() if k not in ("0", "1")}
@@ -785,10 +799,11 @@ def main():
         (out / ("original-%s.sav" % name)).write_bytes(sav)
     t = time.time()
     cs_steps, carry = unwaited_bwaits(steps)
+    ticks = party_ticks(steps, original, save)
     rewrite, output = run_rewrite(Path(a.headless), a.game, cs_steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
                                   got["stale"] if a.battle_records else None, sheet_callbacks(log),
                                   resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, cs_steps, got["trace"]),
-                                  menu_callbacks(log), box_callbacks(log), carry)
+                                  menu_callbacks(log), box_callbacks(log), carry, ticks)
     battle = None
     if a.battle_trace:
         lines = [l for l in output.splitlines() if l.startswith("pass ")]
@@ -802,7 +817,7 @@ def main():
     (out / "rewrite.log").write_text(output, encoding="utf-8")
     sound = sound_compare(log, output)
     lst = Path(a.game) / "DARKLAND.LST"
-    rows = compare(steps, original, rewrite, save is None, lst.read_bytes()[0] if lst.is_file() else None)
+    rows = compare(steps, original, rewrite, save is None and ticks is None, lst.read_bytes()[0] if lst.is_file() else None)
     # the saved games each game wrote itself (Alt-S): the same names, the same bytes by savdiff section
     import savdiff
     for name, data in sorted(files.items()):

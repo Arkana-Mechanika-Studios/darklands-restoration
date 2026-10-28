@@ -114,7 +114,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:77` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
-- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:92` `CharacterCreationScreen.FigureImages`  
+- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:95` `CharacterCreationScreen.FigureImages`  
   original: `R037+0x0000` (1462:0000, draft), `R037+0x0444` (1462:0444, draft), `R037+0x0390` (1462:0390, draft) +5 more  
   why: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
 - **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:517` `CharacterGeneratorScreen.WaitThenRedraw`  

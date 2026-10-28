@@ -47,6 +47,11 @@ public sealed class DarklandsGame
     /// <summary>Seed for new games and for reseeding after time passes; the game uses the clock.</summary>
     public Func<uint> Seed { get; set; } = () => (uint)Environment.TickCount;
 
+    /// <summary>The BIOS tick word (0040:006C) the start screen's Quickstart and Create characters take as the party seed; the game reads the BIOS counter, not <c>time(0)</c>.</summary>
+    // orig: R037+0x9DB2 (keys C and Q): party_seed (DS:9C4A) = the word at 0040:006C
+    // C: a tester (the headless host's ticks: step) gives the word the original read; the default is the BIOS count's value now (Platform.DosClock)
+    public Func<ushort> PartyTicks { get; set; } = () => DosClock.TickWordOfDay(DateTime.Now.TimeOfDay);
+
     /// <summary>
     /// The folder of the saved games (DKSAVEn.SAV and .BSV files). Default: the game folder's SAVES, as the
     /// original uses (shared with it); the settings file's savesFolder, DARKLANDS_SAVES or --saves override it.
@@ -148,7 +153,7 @@ public sealed class DarklandsGame
                     case StartChoice.Quit:
                         return;
                     case StartChoice.Quickstart:
-                        var quickstart = NewGame.Quickstart(World, Seed(), Seed);
+                        var quickstart = NewGame.Quickstart(World, Seed(), Seed, PartyTicks());
                         quickstart.CurrentCard = QuickstartCard ?? quickstart.CurrentCard;
                         PlayFrom(quickstart);
                         break;
@@ -157,7 +162,7 @@ public sealed class DarklandsGame
                     case StartChoice.LoadGame when new LoadGameScreen(_ui, Saves, LoadScreenTexts).Run(fromStartScreen: true, name => LoadSavedGame(name, _session ??= NewGame.StartUp(World, Seed()))) is { } loaded:
                         PlayFrom(loaded.State);
                         break;
-                    case StartChoice.CreateCharacters when new CharacterCreationScreen(_ui, World, Seed).Run() is { } created:
+                    case StartChoice.CreateCharacters when new CharacterCreationScreen(_ui, World, Seed, PartyTicks).Run() is { } created:
                         PlayFrom(created);
                         break;
                     default:

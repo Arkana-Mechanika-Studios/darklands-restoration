@@ -26,16 +26,17 @@ public static class NewGame
 
     /// <summary>
     /// A Quickstart game: the four ready-made adventurers at an inn in a random city.
-    /// <paramref name="seed"/> seeds the random generator (the game uses the clock).
+    /// <paramref name="seed"/> seeds the random generator (the game uses the clock); <paramref name="partySeed"/> is the BIOS tick word
+    /// the party seed is (none: the low word of <paramref name="seed"/>).
     /// </summary>
-    public static GameState Quickstart(WorldData world, uint seed, Func<uint>? clockSeed = null)
+    public static GameState Quickstart(WorldData world, uint seed, Func<uint>? clockSeed = null, int? partySeed = null)
     {
         // orig: srand((unsigned)time(0)) in root 03A1:000A seeds the generator (here: seed); the first draw is the starting city.
         var random = new MscRandom(seed);
         var city = random.Below(StartingCities);
         // orig: party_seed = the BIOS timer word at 0040:006C, load_saved_game("default"), party_default_vec(), party_size = 4 (R037+0x9DB2, key Q)
-        // DIVERGENCE: the original seeds the default party from the tick count and the generator from time(); here both come from the one seed. It also writes charactr.tmp (ids 0..3 and the shield letters) and loads the shield pictures; the party panel loads those on demand.
-        return Start(world, random, city, DefaultParty.Create(seed: PartySeed(seed)), clockSeed);
+        // DIVERGENCE: the original seeds the default party from the tick count and the generator from time(); here both come from the one seed unless the host gives the tick word (partySeed: the game host and the lockstep tester do). It also writes charactr.tmp (ids 0..3 and the shield letters) and loads the shield pictures; the party panel loads those on demand.
+        return Start(world, random, city, DefaultParty.Create(seed: partySeed ?? PartySeed(seed)), clockSeed);
     }
 
     /// <summary>
