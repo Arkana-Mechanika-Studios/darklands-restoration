@@ -140,6 +140,13 @@ public static class CardOracleAtoms
             case "ps":
                 state.Party.Seed = n[0];
                 return true;
+            case "lf":
+                // the flag byte of the place the party stands in (loc_query 32: 1, 2, 0x80 ...), replaced
+                if (state.Here is { } flagged)
+                {
+                    flagged.Flags = n[0];
+                }
+                return true;
             case "px":
                 state.MapPosition = state.MapPosition with { X = n[0] };
                 return true;
