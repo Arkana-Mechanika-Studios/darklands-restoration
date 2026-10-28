@@ -140,6 +140,16 @@ def after_dialog(steps, i) -> bool:
     return False
 
 
+def unwaited_bwaits(steps) -> list[tuple[str, str]]:
+    """The steps without the bwaits the original side never waits: orig_side's _next_key takes a bwait only when it heads the script at a
+    poll; one that comes after a non-input step (shift / ctrl / state / wait / shot, taken together with the next input) is passed over with
+    them and not logged (BWAIT_ACTUAL has no entry), so the next input comes at once. The C# host is given the same: such a bwait is left out
+    (B22-L05: gen-bkeys-15's bwait:7 after shift:off shifted the next three, the hold of kdown:49 was given 2 passes instead of 45). A bwait
+    after a save's or load's dialog is the same case and stays: dialog_gaps gives it the original's passes."""
+    return [s for i, s in enumerate(steps)
+            if not (s[0] == "bwait" and i and steps[i - 1][0] not in orig_side.INPUT_KINDS + ("bwait",) and not after_dialog(steps, i))]
+
+
 def waits_since_key(steps, i) -> int:
     """The frames of the wait steps between step i and the input step before it."""
     total = 0
@@ -239,11 +249,21 @@ def click_holds(log, steps, bwait_actual, lists=None) -> dict[int, int]:
     bwaits = [i for i, s in enumerate(steps) if s[0] == "bwait"]
     actual = dict(zip(bwaits, bwait_actual)) if len(bwaits) == len(bwait_actual) else {}
     out = {}
+    # every input's battle pass where the log gives one (newer logs give the clicks and the pointer moves theirs too)
+    every = {}
+    if len(inputs) == len(lines):
+        for i, l in zip(inputs, lines):
+            if "(battle pass " in l:
+                every[i] = int(l.split("(battle pass ")[1].split(")")[0].split(",")[0])
     keyed = [k for k, i in enumerate(inputs) if steps[i][0] in ("key", "kdown", "kup") and passes.get(i, (0,))[0] > 0]
     for k0, k1 in zip(keyed, keyed[1:]):
         before, after = inputs[k0], inputs[k1]
         middle = inputs[k0 + 1:k1]
         if any(steps[i][0] not in ("click", "move") for i in middle) or not any(steps[i][0] == "click" for i in middle):
+            continue
+        if all(i in every for i in middle):
+            # the log gives each click and move its pass: the per-click rule below gives each click its own hold (counting the span's
+            # holds here as well gave the clicks after the first one theirs twice: gen-bsafe-40, B22-L02)
             continue
         # the steps between (shift / ctrl / wait / shot steps take no pass): bwait, input, bwait, input ... bwait
         seq = [j for j in range(before + 1, after) if steps[j][0] not in ("wait", "shot", "shift", "ctrl")]
@@ -267,11 +287,6 @@ def click_holds(log, steps, bwait_actual, lists=None) -> dict[int, int]:
     # a click that is not between two keys: the original's log gives the click and the pointer moves their own battle pass ("click x,y at .. ms
     # (battle pass N) in ..."; absent from older logs, then nothing is added). The hold is what the passes up to the next input that has a pass
     # take more than its bwait: bwait n after a click or key counts n + 1, after a move n.
-    every = {}
-    if len(inputs) == len(lines):
-        for i, l in zip(inputs, lines):
-            if "(battle pass " in l:
-                every[i] = int(l.split("(battle pass ")[1].split(")")[0].split(",")[0])
     for k, i in enumerate(inputs[:-1]):
         if steps[i][0] != "click" or i not in every or k + 1 >= len(inputs):
             continue
@@ -485,11 +500,11 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
                 cost += in_list[i - 1]
             if i >= 3 and steps[i - 1] == ("key", "esc") and steps[i - 3][0] == "key" and steps[i - 3][1] in ("f1", "f2", "f3", "f4", "f5"):
                 cost -= 1                   # the sheet that Esc closes passes no battle pass in the frame it ends in
-            if i and steps[i - 1][0] == "key" and steps[i - 1][1].lower() in BOX_KEYS:
+            if i and steps[i - 1][0] == "key" and steps[i - 1][1].lower() in BOX_KEYS and i - 1 not in in_list:
                 # the message box of the hot key (root 0000:24BC: a spin of 0x3C timer ticks inside the pass, no key read) is no battle pass in
                 # the original, whose next step comes n passes after it; the C# host goes on taking steps over the box's frames, so the steps
                 # after it would wait in the keyboard buffer and be read together (a key after F10 then taken by the battle, not the menu)
-                cost -= BOX_FRAMES
+                cost -= BOX_FRAMES          # (not for a key a list over the battle read and closed with: no box there, gen-bkeys-15)
             # the modifier steps right after the bwait (shift / ctrl, set before the next input) take no pass in the original, which takes them
             # with that input; the C# host spends a frame on each
             j = i + 1
@@ -750,9 +765,10 @@ def main():
     for name, (sav, _, _) in original.items():
         (out / ("original-%s.sav" % name)).write_bytes(sav)
     t = time.time()
-    rewrite, output = run_rewrite(Path(a.headless), a.game, steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
+    cs_steps = unwaited_bwaits(steps)
+    rewrite, output = run_rewrite(Path(a.headless), a.game, cs_steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
                                   got["stale"] if a.battle_records else None, sheet_callbacks(log),
-                                  resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, steps, got["trace"]),
+                                  resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, cs_steps, got["trace"]),
                                   menu_callbacks(log), box_callbacks(log))
     battle = None
     if a.battle_trace:
