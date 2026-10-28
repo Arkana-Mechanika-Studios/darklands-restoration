@@ -162,7 +162,14 @@ absent. Tests that need reference-side data read `local/reference-map.csv` and p
   reference's source line of each missed item goes to `local/faithfulness/branches-ref-lines.csv` only.
 * **Never-exercised branches** are closed with oracle cases (the C# must agree), or listed in
   `unreachable.csv` with the verdict (`dormant`, `compiled-form`, `runtime-library`, ...), the reason and the C#
-  place that keeps the branch with its `// DORMANT:` note. A builder may add generated cases guided by coverage
+  place that keeps the branch with its `// DORMANT:` note. Verdicts: `dormant` (no play reaches the branch: a
+  tautology, a repeated test, an unused threshold, a switch default no value reaches; a reason that starts with
+  `callers:` rests on the values every caller passes, one that starts with `data:` on the values the game data
+  holds; both count as `dormant`), `compiled-form` (the compiler's form of a construct), `excluded` and
+  `runtime-library` (code that is not game logic). Many rows of the card records argue about the next-card
+  word (DS:E48A, `next_card` in the reasons): it is written only by the card records themselves and by the card
+  dispatcher (R030 1462:0000); the root code and the helper records R043 and R029 never write it, so a card
+  record that sets it and then tests it is not disturbed in between. A builder may add generated cases guided by coverage
   (`run_unit.CoverageSet`, `coverage_defer` + `commit_coverage`): only those that exercise something new are kept.
 * **Function coverage.** `tools/faithfulness/coverage.py` classifies every original function of the index as
   implemented (its coordinate cited by the C# or the map), excluded (a reviewed pattern of `exclusions.csv`,
