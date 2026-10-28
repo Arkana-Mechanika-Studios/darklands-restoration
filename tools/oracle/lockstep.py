@@ -140,14 +140,28 @@ def after_dialog(steps, i) -> bool:
     return False
 
 
-def unwaited_bwaits(steps) -> list[tuple[str, str]]:
+def unwaited_bwaits(steps) -> tuple[list[tuple[str, str]], set[int]]:
     """The steps without the bwaits the original side never waits: orig_side's _next_key takes a bwait only when it heads the script at a
     poll; one that comes after a non-input step (shift / ctrl / state / wait / shot, taken together with the next input) is passed over with
     them and not logged (BWAIT_ACTUAL has no entry), so the next input comes at once. The C# host is given the same: such a bwait is left out
     (B22-L05: gen-bkeys-15's bwait:7 after shift:off shifted the next three, the hold of kdown:49 was given 2 passes instead of 45). A bwait
-    after a save's or load's dialog is the same case and stays: dialog_gaps gives it the original's passes."""
-    return [s for i, s in enumerate(steps)
-            if not (s[0] == "bwait" and i and steps[i - 1][0] not in orig_side.INPUT_KINDS + ("bwait",) and not after_dialog(steps, i))]
+    after a save's or load's dialog is the same case and stays: dialog_gaps gives it the original's passes.
+    Also {index in the steps kept: the bwait before a left-out one}: there the original gives the next input in the same poll as the modifier
+    steps, at the bwait's end, which a short bwait (bwait:2 after a kup, then ctrl:off) cannot give the host its frames for (run_rewrite carries
+    the overrun to the next bwait)."""
+    left = {i for i, s in enumerate(steps)
+            if s[0] == "bwait" and i and steps[i - 1][0] not in orig_side.INPUT_KINDS + ("bwait",) and not after_dialog(steps, i)}
+    kept, carry = [], set()
+    for i, s in enumerate(steps):
+        if i in left:
+            j = len(kept) - 1
+            while j >= 0 and kept[j][0] != "bwait":
+                j -= 1
+            if j >= 0:
+                carry.add(j)
+            continue
+        kept.append(s)
+    return kept, carry
 
 
 def waits_since_key(steps, i) -> int:
@@ -447,7 +461,7 @@ def menu_callbacks(log) -> list[tuple[int, int]]:
 
 
 def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
-                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=(), boxes=()):
+                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=(), boxes=(), carry=()):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -464,6 +478,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     # bwait:<n>: the original gives the step n + 1 battle passes after the previous one was taken; the C# host takes three frames more
     # than its wait (the key's two idle frames and the step's own), so the same pass is wait:<n - 3>
     seen = iter(BWAIT_ACTUAL)
+    debt = 0
     # a bwait right after the save's or the load's dialog (Alt-S .. Enter, Alt-L .. L) is taken by the dialog's console reads in the original
     # (no entry in BWAIT_ACTUAL): the next key there comes when the battle is idle; the C# waits the passes the original's log shows
     gaps = iter(dialog_gaps(log or (), steps, len(BWAIT_ACTUAL)))
@@ -529,7 +544,11 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
                 # over three of its loops (MenuBar.RunUnfolded), whose idle polls end the original's bwait; the C# host gives the next step one
                 # frame later, once the bar has unfolded
                 later = 1
-            args.append("wait:%d" % (max(0, min(int(v), actual) - cost) + later))
+            w = min(int(v), actual) - cost - debt
+            # the frames a bwait before a left-out one overran (unwaited_bwaits) come off the next bwait (gen-bsafe-04: its steps came
+            # one pass late per such bwait); elsewhere a bwait shorter than its cost is waited as 0 (the cost rules were set so)
+            debt = max(0, -w) if i in carry else 0
+            args.append("wait:%d" % (max(0, w) + later))
         elif k == "click" and i in mapheld:
             args.append("mapclick:%s,%d" % (v, mapheld[i]))
         elif k == "wait" and pause_shift and i in pause_shift:
@@ -765,11 +784,11 @@ def main():
     for name, (sav, _, _) in original.items():
         (out / ("original-%s.sav" % name)).write_bytes(sav)
     t = time.time()
-    cs_steps = unwaited_bwaits(steps)
+    cs_steps, carry = unwaited_bwaits(steps)
     rewrite, output = run_rewrite(Path(a.headless), a.game, cs_steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
                                   got["stale"] if a.battle_records else None, sheet_callbacks(log),
                                   resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, cs_steps, got["trace"]),
-                                  menu_callbacks(log), box_callbacks(log))
+                                  menu_callbacks(log), box_callbacks(log), carry)
     battle = None
     if a.battle_trace:
         lines = [l for l in output.splitlines() if l.startswith("pass ")]
