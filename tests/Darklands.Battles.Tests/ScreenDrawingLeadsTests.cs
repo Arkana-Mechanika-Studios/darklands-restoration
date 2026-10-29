@@ -1,7 +1,9 @@
 using Darklands.Content;
+using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Platform;
 using Darklands.Presentation;
+using Darklands.Simulation;
 
 namespace Darklands.Battles.Tests;
 
@@ -68,5 +70,30 @@ public sealed class ScreenDrawingLeadsTests
         Assert.Equal(3, host.Shown[0]);
         ui.Poll();
         Assert.Equal(7, host.Shown[0]);
+    }
+
+    // orig: R067+0x1ECE / R072+0x1494 fill card_name and pic_buf without card_load (the previous card stays on the screen); with
+    // GameOptions.CleanDrawing the card is loaded and drawn at once
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ACardThatOnlyNamesItselfIsDrawnAtOnceOnlyWithCleanDrawing(bool clean)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        var ui = new GameUi(new ShotHost(), new GameAssets(files));
+        ui.Options.CleanDrawing = clean;
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        Darklands.Cards.CardContext? context = null;
+        var screen = new CardScreen(ui, () => context!, new PartyPanel(ui.Assets));
+        context = new Darklands.Cards.CardContext(state, world, screen);
+        ui.Canvas.Fill(0, 0, Screen.Width, Screen.Height, 3);
+        screen.NameTheCard("$Sneak00", Darklands.Cards.PictureNames.Of(0));
+        var untouched = ui.Canvas.Screen.Pixels.All(p => p == 3);
+        Assert.Equal(!clean, untouched);
     }
 }
