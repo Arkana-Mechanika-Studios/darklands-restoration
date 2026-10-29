@@ -135,6 +135,11 @@ driver command, so a tune an event starts (or fails to start) is a difference li
   them; an older corpus is compared without (`CardOracleTests.Compare`). `audio_rerun.py` reruns the original over the runs of an older corpus and
   keeps the sound lines (a sidecar, replayed by `CardSoundOracleTests`: `DARKLANDS_CARD_ORACLE_SOUNDS`, `DARKLANDS_CARD_ORACLE_SOUND_DIFFS`), or, with
   `--full`, the whole result of each run as a new corpus with the sound lines.
+  Memory: a worker's emulated machine grows by about 35 MB of commit per card it has run (measured: 35 MB at start, 419 MB after 10 cards,
+  so about 12 GB over all 365 cards in one long-lived worker, which ended the 2026-10-28 golden run with access violations and MemoryError).
+  `--cards-per-worker N` (default 8; 0 = never) replaces a worker after N cards (`Pool(maxtasksperchild=N)`; with N=8 a worker peaks at
+  about 350 MB). Results do not change (checked byte for byte on cards 1..10). `DARKLANDS_CARD_ORACLE_MEMLOG=<file>` appends `pid card commit-MB`
+  after each card, for measuring.
 * `lockstep.py` / `battle_oracle.py`: the original side (patch 06 of the queue; `orig_side.py`, `battle_orig.py`) logs `sound n at T ms in <callers>` and
   `music x at ...` after a `sound log on` line; the C# headless host writes `sound n` / `music x` with `DARKLANDS_SOUND_LOG=1` (set by `run_rewrite`).
   `sound_compare` compares both per segment between the script's state steps (`report.json` "sound", a `sound:` line); a recording made before the

@@ -1,7 +1,7 @@
 """Card oracle: every card function of the ORIGINAL DARKLAND.EXE, run with the card engine's services.
 
 usage: python -I -B card_oracle.py <DARKLAND.EXE> <game folder> <states folder> <out cards.json.gz>
-           [--cards 2,6,0x13] [--workers 8] [--coverage DIR]
+           [--cards 2,6,0x13] [--workers 8] [--coverage DIR] [--cards-per-worker 8]
 
 The states folder holds the start states the C# exports (tests/Darklands.Cards.Tests/Oracle,
 CardOracleStates: DARKLANDS_CARD_ORACLE_EXPORT): for location 3 and 120 and options 0..9 a saved
@@ -906,10 +906,36 @@ def init_worker(exe_path, game, states, coverage_dir):
     _W["coverage"] = coverage_dir
 
 
+def commit_mb() -> float:
+    """This process's committed memory in MB (Windows PagefileUsage; 0 elsewhere): only for the optional DARKLANDS_CARD_ORACLE_MEMLOG file."""
+    try:
+        import ctypes
+        import ctypes.wintypes as w
+
+        class PMC(ctypes.Structure):
+            _fields_ = [("cb", w.DWORD), ("PageFaultCount", w.DWORD)] + [(n, ctypes.c_size_t) for n in (
+                "PeakWorkingSetSize", "WorkingSetSize", "QuotaPeakPagedPoolUsage", "QuotaPagedPoolUsage",
+                "QuotaPeakNonPagedPoolUsage", "QuotaNonPagedPoolUsage", "PagefileUsage", "PeakPagefileUsage")]
+        k = ctypes.WinDLL("kernel32")
+        k.GetCurrentProcess.restype = w.HANDLE
+        k.K32GetProcessMemoryInfo.argtypes = [w.HANDLE, ctypes.c_void_p, w.DWORD]
+        p = PMC()
+        p.cb = ctypes.sizeof(p)
+        k.K32GetProcessMemoryInfo(k.GetCurrentProcess(), ctypes.byref(p), p.cb)
+        return p.PagefileUsage / 2**20
+    except Exception:  # noqa: BLE001
+        return 0.0
+
+
 def run_card_safe(card: int) -> tuple[int, dict]:
     """run_card_all; a failure of the emulator itself is reported and the worker's machine is made anew."""
     try:
-        return run_card_all(card)
+        res = run_card_all(card)
+        log = os.environ.get("DARKLANDS_CARD_ORACLE_MEMLOG")        # measuring only: pid, card, commit MB after the card
+        if log:
+            with open(log, "a") as f:
+                f.write("%d %X %.0f\n" % (os.getpid(), card, commit_mb()))
+        return res
     except Exception as e:  # noqa: BLE001
         exe_path, game, states, coverage_dir = _W["args"]
         _W["oracle"] = Oracle(Path(exe_path).read_bytes(), game, Path(states), coverage=bool(coverage_dir))
@@ -958,6 +984,9 @@ def main():
     ap.add_argument("--cards")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--coverage")
+    # a worker's machine grows by ~35 MB per card (measured; ~12 GB over 365 cards in one worker, 2026-10-28 golden run: access
+    # violations and MemoryError), so a worker is replaced after this many cards (0: never); the results do not change
+    ap.add_argument("--cards-per-worker", type=int, default=8)
     a = ap.parse_args()
     if a.coverage:
         os.makedirs(a.coverage, exist_ok=True)
@@ -974,7 +1003,8 @@ def main():
             if "error" not in v:
                 results[k] = v
     todo = [c for c in cards if c not in results]
-    with Pool(a.workers, initializer=init_worker, initargs=(a.exe, a.game, a.states, a.coverage)) as pool, \
+    with Pool(a.workers, initializer=init_worker, initargs=(a.exe, a.game, a.states, a.coverage),
+              maxtasksperchild=a.cards_per_worker or None) as pool, \
             partial.open("a", encoding="utf-8") as f:
         for k, v in pool.imap_unordered(run_card_safe, todo):
             f.write(json.dumps([k, v], separators=(",", ":")) + "\n")
