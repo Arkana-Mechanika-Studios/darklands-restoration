@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 50 entries; recommendations: document: 1, justify: 40, keep: 9.
-- Part B (undefined-memory in core logic): 148 entries; determinism: deterministic: 1, n/a: 83, no: 51, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 151 entries; determinism: deterministic: 1, n/a: 83, no: 54, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -464,7 +464,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 Where the original reads or writes outside its defined data, the outcome can still be a fixed function of the program state (a table that follows in the data image, a known stack leftover, a global the previous card left), in which case it can be reproduced exactly. `deterministic`: `yes` (a fixed value or a pure function of modelled state), `partly` (fixed in the shipped data or reachable states, unreproducible elsewhere), `no` (depends on unmodelled memory such as heap addresses or machine state), `n/a` (not reachable in play).
 
-### rules (36)
+### rules (38)
 
 - **D-92e987** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:47` `ItemStores.Open`  
   original: `R035+0x1350` (1462:1350, matched)  
@@ -570,15 +570,23 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R029+0x4378` (0E76:4378, draft)  
   divergence: `events[k]->f2e = events[i]->f2e` writes through the uninitialised local k; left out.  
   deterministic: **no** (checked against the original); action: **keep** - 4378 is an event-expiry handler (listed in the root_09c0 expiry table); `k` is the first local [bp-2] of its frame (enter 6,0) and is never assigned, so events[k]->f2e = ... writes through whatever word the earlier call chain left at that stack address (a k outside 0..299 gives a wild far pointer into the 2e38 data). Not derivable from the rules state. Keep it left out; note that the original therefore leaves the new 0x24 event's f2e unset.
-- **D-5b0725** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:413` `Quests.StartQuest10`  
+- **D-54d606** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:169` `Quests.StartSabbat`  
+  original: `R039+0x1B0C` (1462:1B0C, matched)  
+  divergence: when the 300-slot log is full the original writes the quest's three data words through events[-1] (R039+0x1B61..0x1B81: the far pointer 2E38:1B28, null in play, so into the interrupt vectors at 0000:002A..002E); here nothing is written.  
+  deterministic: **no** (checked against the original); action: **keep** - R039+0x1B41 creates the quest and R039+0x1B61..0x1B81 store data1..data3 through events[slot] without testing the slot: with all 300 slots in use the slot is -1 and the far pointer read is 2E38:1B28 (the tail of var_named[4], 0 in play), so the words land in the interrupt vector table at 0000:002A..002E. Host memory, not game state or saved data; the C# writes nothing. Reached only with a full event log at the start card or a monthly update. local/batch/b24text
+- **D-185ea3** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:194` `Quests.PlanSabbat`  
+  original: `R039+0x1B0C` (1462:1B0C, matched), `R029+0x4534` (0E76:4534, draft)  
+  divergence: when the log is full the original writes the site through events[-1] (R039+0x1BFD, R029+0x4592: into 0000:002A, the INT 0Ah vector's segment); here nothing is written. No sabbat is planned from then on (the quest still exists, so nothing starts it again): SabbatSite gives -1.  
+  deterministic: **no** (checked against the original); action: **keep** - The planned-sabbat fact's site is stored through events[slot] unguarded (R039+0x1BF8/0x1BFD in the start, R029+0x458A/0x4592 at a sabbat's begin): a full log gives slot -1 and a write to 0000:002A (INT 0Ah vector segment, host memory). The C# writes nothing; in both programs no fact exists afterwards, so R039+0x1CFE returns -1 and $SabbatLocation reads locations[-1] (D-09b57b). local/batch/b24text
+- **D-5b0725** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:420` `Quests.StartQuest10`  
   original: `R039+0x1712` (1462:1712, matched)  
   divergence: region kinds 1, 2, 9 and others leave k and v uninitialised in the original; here sort 0 and item 0.  
   deterministic: **n/a** (checked against the original); action: **document** - thunk 09C0:21B1 (StartQuest10) callers push literal region kinds 0, 4, 5, 6, 7, 8 and 10 only (R049 seg 1893, R054 seg 19DF, R056 seg 19C4, R060 seg 1A36, R061 seg 18CF, R061 seg 1A5F), all of which have their own switch arm; kinds 1, 2, 9 and >10 are never passed, so k/v are never uninitialised in play.
-- **D-634961** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:414` `Quests.StartQuest10`  
+- **D-634961** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:421` `Quests.StartQuest10`  
   original: `R039+0x1712` (1462:1712, matched)  
   divergence: in the wilderness the original reads locations[-1]; here position 0, 0.  
   deterministic: **no** (checked against the original); action: **keep** - locations[-1] (cur_loc==-1) is the far pointer at 2e38:10BA (enemy item area tail, null in practice) so x,y would be the INT 1 vector words at 0000:0004/0006; machine dependent. The StartQuest10 callers (R049, R054, R056, R060, R061 cards) are location/city menu cards, so the wilderness case is not expected to occur. Keep (0,0).
-- **D-fd5dc6** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:458` `Quests.FinishQuest10`  
+- **D-fd5dc6** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:465` `Quests.FinishQuest10`  
   original: `R039+0x1AB0` (1462:1AB0, matched)  
   divergence: without a quest about the target the original gives events[-1]->f2e (undefined); here no item.  
   deterministic: **n/a** (checked against the original); action: **document** - FinishQuest10 first requires ev8_at(10,cur_loc) (a started kind-8 event with f28==10 and f1c==cur_loc) and then event_find(8,-1,b,-1,10,-1) with b the caller's argument; every caller of thunk 09C0:214D (R106*, R107*, R108*) pushes DS:907E = cur_loc, so the find matches the same event and never returns -1. events[-1] is not reachable in play.
@@ -611,7 +619,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original tests the 0x80 flag and prices item_defs[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item_defs[data_file[..].id] with the raw 16-bit id; item_defs is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
 
-### cards (67)
+### cards (68)
 
 - **D-21ff84** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:123` `CardContext.EmptyBoxHandler`  
   original: `R112+0x1438` (1881:0FA8, matched), `R112+0x143A` (1881:0FAA, matched), `R108+0x0D30` (1838:0D30, matched) +1 more  
@@ -713,6 +721,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R071+0x15A4` (1992:0004, matched)  
   divergence: a location number outside the table reads garbage in the original; here it is position 0, 0.  
   deterministic: **no** (checked against the original); action: **keep** - The cited 0624 is the init helper; the read is nearest_city(*(long far*)(locations[var_loc]+4)) in the card main with var_loc = event_find_loc(0x1C,...,0xC,..), which is -1 only if the kind-8 quest 0xC exists without its kind-0x1C fact; then locations[-1] is normally null and (x,y) are the INT 1 vector offset/segment words from the IVT, so the 'nearest city' depends on the machine. The cur_loc branch is guarded by cur_loc != -1 and the wilderness branch uses party_x/y. Normal play creates both events together; keep (0,0).
+- **D-994942** `undefined-memory` - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:57` `NightInTheGuildLeadersHouse.Run`  
+  original: `R071+0x07CC` (1838:07CC, matched)  
+  divergence: its hint (R071+0x0962) copies "Success is assured." to the message buffer but returns its two locals unset (R071+0x0985: [bp-4], [bp-2]): the chance is a stack leftover of the mouse handler's earlier calls (-558 under the card oracle, whose calls differ from the game's), shown as a number unless it happens to be -1; here the chance is -1, so the text is shown.  
+  deterministic: **no** (checked against the original); action: **keep** - Hint R071+0x0962 (line 9, offered, leads to card 0x62) copies DS:4F48 'Success is assured.' to msg_buf and returns [bp-4]/[bp-2] (R071+0x0985) never written: the chance and member are whatever the mouse handler's earlier calls left on the stack (the card oracle, which calls the hints itself, gets -558/-2; card-divergences.json justifies its 06C hint 9 line). Not a function of game state; the C# gives -1, so the text shows. Display only. local/batch/b24text
 - **D-dedb02** `undefined-memory` - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:35` `BeforeTheCityWalls.Run`  
   original: `R072+0x1A0E` (1981:057E, matched)  
   divergence: a block the previous card's file does not have ($Initi00 has 1 block, $CityW05 11, $Enter00 11) is printed from msg_file + msg_index.ofs[n], an entry msg_load (R043+0x020E) did not set: undefined memory (what an earlier, longer file left; 01 0a 0e under the oracle for block 5 after $Initi00); the C# prints an empty text.  
@@ -876,7 +888,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
 - **D-09b57b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:360` `TextVariables.RelativeToNearestCity`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: the original indexes locations[-1] when there is no such place  
-  deterministic: **no** (checked against the original); action: **keep** - Case 69 uses kg=thunk 09C0:20FD() = R039+0x1CFE, which returns events[i]->f2a of the sabbat fact (event_find(0x1c,4,..)) and, when none is planned, falls off its end with AX still -1 (asm 1632b-1634b), then reads locations[-1]->x,y (= words 0000:0004/0006, the INT 1 vector) into nearest_city and the direction call, so the printed text is host dependent. Cases 71/72 (nearest_loc_type icons 0x16/0x17) always find a site. Whether a card can print $SabbatLocation while no sabbat is planned ($WITCD*, $VILLA02/05/06, $COUNT05, $SNUCK00...) is not established; keep the C# '' for that case.
+  deterministic: **no** (checked against the original); action: **keep** - Case 69 uses kg=thunk 09C0:20FD() = R039+0x1CFE, which returns events[i]->f2a of the sabbat fact (event_find(0x1c,4,..)) and, when none is planned, falls off its end with AX still -1 (asm 1632b-1634b), then reads locations[-1]->x,y (= words 0000:0004/0006, the INT 1 vector) into nearest_city and the direction call, so the printed text is host dependent. Cases 71/72 (nearest_loc_type icons 0x16/0x17) always find a site. No sabbat is planned in play only after a full event log at a planning (D-185ea3) or after 31.12.1499 (forever events end, the quest clears its facts); the start card and each sabbat's begin always plan the next one. The card oracle's start states carry no sabbat quest, so cards 08A 0F7 123 127 132 139 144 14D (and 06C, 091 through other -1 reads) print the oracle's own vectors (F800:0030 in every slot: 'North of Flensburg'; older oracle builds other bytes): tester memory, stray-flagged, not the game's. Keep the C# ''. local/batch/b24text
 - **D-1cbe8f** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:374` `TextVariables.Names`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: an index past the record's 16 names (the record ends at 0x6E + 16 x 0x20 = 0x26E) gives "" here; the original reads the memory after the record (city_rec is the far block at DS:9785). Not reached in play: the callers pass 0..15 or -1, and $CityLocation's DS:ED52 is always 0 (see CardVariables.CityLocation).  

@@ -166,6 +166,8 @@ public static class Quests
     /// <see cref="TimedEvent.Data1"/>; its end starts the sabbat), and fact 2.
     /// </summary>
     // orig: R039+0x1B0C (1462:1B0C) matched; tests: PracticeAndItemsTests
+    // DIVERGENCE: when the 300-slot log is full the original writes the quest's three data words through events[-1] (R039+0x1B61..0x1B81: the far pointer
+    //   2E38:1B28, null in play, so into the interrupt vectors at 0000:002A..002E); here nothing is written.
     public static void StartSabbat(GameState s)
     {
         if (s.Events.Find(EventKinds.Quest, -1, -1, -1, Sabbat, -1) != -1)
@@ -189,6 +191,8 @@ public static class Quests
     /// <summary>The fact that ends on the sabbat's day and starts it at a random sabbat site.</summary>
     // orig: R039+0x1B0C (1462:1B0C) matched; R029+0x4534 (0E76:4534) matched
     // C: days_until(&d) * 24 is a 16-bit product; the site is drawn after the event exists.
+    // DIVERGENCE: when the log is full the original writes the site through events[-1] (R039+0x1BFD, R029+0x4592: into 0000:002A, the INT 0Ah vector's
+    //   segment); here nothing is written. No sabbat is planned from then on (the quest still exists, so nothing starts it again): SabbatSite gives -1.
     private static void PlanSabbat(GameState s, int day, int days)
     {
         var ev = s.Events.Create(-2, 0, 0x63, Fact, 4, day, (int)ExpiryHandler.SabbatBegins, days * 24,
@@ -301,6 +305,9 @@ public static class Quests
 
     /// <summary>The planned sabbat's site (<c>thunk 09C0:20FD</c>), −1 if none.</summary>
     // orig: R039+0x1CFE (1462:1CFE) matched
+    // C: no planned sabbat (AX stays -1, R039+0x1D15) only when the log was full at a planning (PlanSabbat) or after 31.12.1499 (the forever-end bug at EventLog.Create:
+    //   the quest's end clears its facts); the start card and every sabbat's begin plan the next one. The card oracle's start states have no sabbat
+    //   quest at all, so its $SabbatLocation reads locations[-1] (D-09b57b).
     public static int SabbatSite(GameState s) =>
         s.Events[s.Events.Find(Fact, 4, -1, -1, Sabbat, -1)] is { } f ? f.Data1 : -1;
 

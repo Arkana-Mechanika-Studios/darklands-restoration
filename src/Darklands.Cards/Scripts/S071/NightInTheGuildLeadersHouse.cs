@@ -53,8 +53,10 @@ public sealed class NightInTheGuildLeadersHouse : Card
             new MenuLine(_ => LeaveTheGame(c), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => LeaveTheGame(c), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => LeaveTheGame(c), OptionHint.Saying(SuccessAssured)),
-            // C: line 9 is offered and leads to card 0x62, which ends the original's main loop; its hint
-            // (0962) leaves the chance and member unset (−1 here). orig: R071+0x0950
+            // C: line 9 is offered and leads to card 0x62, which ends the original's main loop. orig: R071+0x0950
+            // DIVERGENCE: its hint (R071+0x0962) copies "Success is assured." to the message buffer but returns its two locals unset (R071+0x0985:
+            //   [bp-4], [bp-2]): the chance is a stack leftover of the mouse handler's earlier calls (-558 under the card oracle, whose calls differ from
+            //   the game's), shown as a number unless it happens to be -1; here the chance is -1, so the text is shown.
             new MenuLine(_ => LeaveTheGame(c), OptionHint.Saying(SuccessAssured)));
     }
 
