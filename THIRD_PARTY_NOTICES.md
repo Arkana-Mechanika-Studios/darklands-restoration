@@ -41,6 +41,28 @@ MT-32/CM-32L emulation uses the Munt mt32emu library through its NuGet package (
 Public License v2.1 or later); no mt32emu source code is included in this repository. MT-32 control
 and PCM ROMs are not included; the player supplies them.
 
+## NVorbis
+
+Sound packs (docs/PACKS.md) decode Ogg Vorbis files with NVorbis (https://github.com/NVorbis/NVorbis), through its
+NuGet package, under the MIT License; no NVorbis source code is included in this repository.
+
+```text
+Copyright (c) 2020 Andrew Ward
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
 ## DejaVu Sans Mono (developer console)
 
 `src/Darklands.Host.Sdl/Resources/DejaVuSansMono.ttf` is DejaVu Sans Mono 2.37, unmodified

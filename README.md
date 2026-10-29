@@ -151,7 +151,7 @@ game sessions run in the original and in the rewrite side by side, compared afte
 | `src/Darklands.Cards` | the card engine and every card script |
 | `src/Darklands.Content`, `src/Darklands.Persistence` | the game files; saved games |
 | `src/Darklands.Simulation`, `src/Darklands.Presentation` | the game loop; the screens |
-| `src/Darklands.Audio`, `src/Darklands.Audio.Mt32` | the sound drivers in an emulated PC; MT-32 |
+| `src/Darklands.Audio`, `src/Darklands.Audio.Mt32` | the sound drivers in an emulated PC; MT-32; sound packs (docs/PACKS.md) |
 | `src/Darklands.Platform`, `src/Darklands.Host.*` | host interfaces and settings; the SDL and headless hosts |
 | `src/Darklands.DevConsole` | the developer console |
 | `src/Darklands.Rendering` | replacement graphics (HD packs) drawn over the game's frame, for any host |

@@ -9,4 +9,8 @@
     <InternalsVisibleTo Include="Darklands.Audio.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+  </ItemGroup>
+
 </Project>

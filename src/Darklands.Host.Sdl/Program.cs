@@ -1,5 +1,6 @@
 using Darklands.Platform;
 using Darklands.Audio;
+using Darklands.Audio.Packs;
 using Darklands.Content;
 using Darklands.Host.Sdl;
 using Darklands.Launcher;
@@ -10,7 +11,7 @@ using Darklands.Rendering;
 //   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console]
-//                      [--hd-pack folder] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
+//                      [--hd-pack folder] [--audio-pack folder] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
 //                      [--version] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
 // The options come from the command line, else the environment variables, else the settings file darklands.settings.json
 // (--settings, else next to the program, else %APPDATA%\DarklandsRestoration; without one a commented template is written on the
@@ -86,6 +87,7 @@ var cli = new CommandLineOptions
     SavesFolder = Option("--saves"),
     TextFont = Option("--text-font"),
     Mt32Roms = Option("--mt32-roms"),
+    AudioPack = Option("--audio-pack"),
     NoBanner = arguments.Remove("--no-banner"),
     NoIntro = arguments.Remove("--no-intro"),
     Scale = Option("--scale"),
@@ -220,7 +222,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     var audioTrace = Environment.GetEnvironmentVariable("DARKLANDS_AUDIO_TRACE") is { Length: > 0 } tracePath
         ? TextWriter.Synchronized(new StreamWriter(tracePath) { AutoFlush = true })
         : null;
-    using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.CommandLine, audioTrace);
+    using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.AudioPack, settings.CommandLine, audioTrace);
     var game = new DarklandsGame(host, files)
     {
         ShowStartUp = settings.ShowBanner,
@@ -253,8 +255,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
 }
 
 // The game's sound (chosen by Darklands.Audio.Mt32.SoundSelection, as any host does) through an SDL audio device.
-static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, string? romFolder, IReadOnlyList<string> commandLine,
-    TextWriter? trace)
+static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, string? romFolder, string? audioPack,
+    IReadOnlyList<string> commandLine, TextWriter? trace)
 {
     var output = SdlAudioOutput.TryOpen(out var error);
     if (output is null)
@@ -283,8 +285,27 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
             trace.WriteLine(line);
         }
     };
-    var audio = sound.Start(files, output, traced);
-    host.Audio = trace is null ? audio : new TracedCalls(audio, audio, trace);
+    // an audio pack (docs/PACKS.md, sound.audioPack): the device plays its mixer, which renders the drivers underneath (muted
+    // while a replacement plays); the game's calls reach the drivers unchanged and the timer stays theirs
+    PackMixer? mixer = null;
+    if (audioPack is not null)
+    {
+        var pack = AudioPack.Load(audioPack);
+        pack.Problems.ToList().ForEach(p => Console.Error.WriteLine(p));
+        Console.WriteLine($"Sound: audio pack {pack.Folder}, {pack.Count} replacement(s)");
+        var reported = pack.Problems.Count;
+        // the files that cannot be decoded are reported when the preload has tried them
+        _ = pack.PreloadAsync(output.SampleRate).ContinueWith(_ => pack.Problems.Skip(reported).ToList().ForEach(p => Console.Error.WriteLine(p)), TaskScheduler.Default);
+        mixer = new PackMixer(pack, output.SampleRate);
+    }
+    var audio = sound.Start(files, mixer is null ? output : new PackOutput(output, mixer), traced);
+    IAudio played = audio;
+    if (mixer is not null)
+    {
+        mixer.RenderedTicks = () => audio.RenderedTicks;
+        played = new PackAudio(audio, audio, mixer);
+    }
+    host.Audio = trace is null ? played : new TracedCalls(played, audio, trace);
     host.Timer = audio;
     return new Disposables(output, sound);
 }

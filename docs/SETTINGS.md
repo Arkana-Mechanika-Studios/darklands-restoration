@@ -47,6 +47,7 @@ not meant for players.
 | `display.hdPack` | none | `--hd-pack <folder>` | a folder of replacement pictures (an HD pack, below); not part of the original, the game plays the same |
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
+| `sound.audioPack` | none | `--audio-pack <folder>`; `DARKLANDS_AUDIO_PACK` | a folder of replacement music and battle effects (an audio pack, [PACKS.md](PACKS.md)); not part of the original, the game plays the same |
 | `sound.configDrk` | absent (commented out in the template) | | replaces CONFIG.DRK's words (below) |
 | `startup.launcher` | false | `--setup` (once), `--no-launcher` | the launcher at every start; false: only when needed (below) |
 | `startup.banner` | true | `--no-banner` | the BANNER.DAT banner and the start-up checks |
@@ -70,7 +71,16 @@ proportions); it shows only where the original picture is still seen, so menus, 
 they are. A replaced picture fades, greys or lightens with the original (the card's option fade); colour cycling and
 recoloured figures do not change a replacement yet. Problems (a
 missing folder, a broken PNG) are reported on the console and the original pictures are kept. The headless host takes
-the same key from `--settings`, or the step `hdpack:<folder>`, and then also saves `<name>.hd.png` for each shot.
+the same key from `--settings`, or the step `hdpack:<folder>`, and then also saves `<name>.hd.png` for each shot
+(and `<name>.assets.txt`, the asset names on that screen). The guide for pack makers: [PACKS.md](PACKS.md).
+
+### `sound.audioPack`
+
+A folder of `.ogg` or `.wav` files named after the game's pieces of music and battle effects (`travel-1.ogg`,
+`battle-death.wav`, the catalogue in [PACKS.md](PACKS.md)), with an optional `audio.json`. The game's own sound drivers
+keep running underneath, muted while a replacement plays, so the game's timing does not change. Problems (a missing
+folder, an unknown name, a file that cannot be read) are reported on the console and the game's own sound plays there.
+The headless host takes the same key from `--settings`, the environment variable, or the step `audiopack:<folder>`.
 
 ### `sound.configDrk`
 

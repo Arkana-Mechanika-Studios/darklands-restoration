@@ -244,6 +244,7 @@ public static class SettingsFile
                     }
                     break;
                 case "mt32Roms": settings.Mt32Roms = FilePath(key, property.Value); break;
+                case "audioPack": settings.AudioPack = FilePath(key, property.Value); break;
                 case "configDrk": ConfigDrk(key, property.Value, settings); break;
                 default: Unknown(key); break;
             }
@@ -479,6 +480,10 @@ public static class SettingsFile
             // Without the ROMs the OPL3 FM drivers play (with a warning).
             // Command line: --mt32-roms <folder>; environment: DARKLANDS_MT32_ROMS.
             "mt32Roms": "",
+            // A folder of replacement music and battle effects (an audio pack: .ogg or .wav files named after the game's
+            // pieces, docs/PACKS.md). Not part of the original; the game plays the same. "": the game's own sound.
+            // Command line: --audio-pack <folder>; environment: DARKLANDS_AUDIO_PACK.
+            "audioPack": "",
             // To replace values of CONFIG.DRK as if the file held them, remove the // before "configDrk" (any field may be left out).
             // card is the install program's number (0 AdLib, 1 Covox, 2 Sound Blaster, 3 SB Pro, 4 SB Pro 2, 5 PAS, 6 PAS 16,
             // 7 Roland, 127 speaker) or a name (adlib, sb, sbpro2, roland, speaker, none); it also picks the driver files

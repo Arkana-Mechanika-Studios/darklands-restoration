@@ -23,6 +23,8 @@ public sealed class CommandLineOptions
 
     public string? Mt32Roms { get; set; }
 
+    public string? AudioPack { get; set; }
+
     public bool NoBanner { get; set; }
 
     public bool NoIntro { get; set; }
@@ -66,6 +68,8 @@ public sealed class CommandLineOptions
         By("sound.card", Given(Sound), "--sound");
         By("sound.mt32Roms", Given(Mt32Roms), "--mt32-roms");
         By("sound.mt32Roms", Given(environment("DARKLANDS_MT32_ROMS")), "DARKLANDS_MT32_ROMS");
+        By("sound.audioPack", Given(AudioPack), "--audio-pack");
+        By("sound.audioPack", Given(environment("DARKLANDS_AUDIO_PACK")), "DARKLANDS_AUDIO_PACK");
         By("startup.banner", NoBanner, "--no-banner");
         By("startup.intro", NoIntro, "--no-intro");
         By("startup.commandLine", GameCommandLine is not null, "--");
@@ -98,6 +102,9 @@ public sealed class ResolvedSettings
     public bool NoAudio { get; private init; }
 
     public string? Mt32Roms { get; private init; }
+
+    /// <summary>The audio pack's folder; null: none (the game's own sound).</summary>
+    public string? AudioPack { get; private init; }
 
     public ConfigDrkSettings? ConfigDrk { get; private init; }
 
@@ -166,6 +173,7 @@ public sealed class ResolvedSettings
             SoundChoice = sound is null or "config" or "none" ? null : sound,
             NoAudio = cli.NoAudio || (cli.Sound is null && sound == "none") || cli.Sound == "none",
             Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),
+            AudioPack = Pick(cli.AudioPack, "DARKLANDS_AUDIO_PACK", file.AudioPack),
             ConfigDrk = file.ConfigDrk,
             ShowBanner = !cli.NoBanner && (file.Banner ?? true),
             PlayIntro = !cli.NoIntro && (file.Intro ?? true),

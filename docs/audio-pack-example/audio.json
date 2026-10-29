@@ -1,0 +1,13 @@
+// The example audio pack (docs/PACKS.md): generated test tones only, nothing of the game's own music.
+// music/travel-2.ogg replaces the map's travel piece 14h (also the character creation's), found by its file name;
+// effects/battle-swing.wav replaces the battle's missed swing 11h. The entries below show the manifest.
+{
+  // every replacement at 80 %
+  "volume": 0.8,
+  "cues": {
+    // the other travel piece (13h) plays the same file, quieter
+    "travel-1": { "file": "music/travel-2.ogg", "volume": 0.6 },
+    // found by its name already; this only says it does not repeat (effects never do unless "loop": true)
+    "battle-swing": { "loop": false },
+  },
+}

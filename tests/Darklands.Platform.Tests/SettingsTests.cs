@@ -80,6 +80,24 @@ public class SettingsParsingTests
         Assert.Null(ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, new GameSettings()).HdPack);
     }
 
+    /// <summary>The audio pack folder: relative to the settings file's folder; DARKLANDS_AUDIO_PACK and --audio-pack replace it.</summary>
+    [Fact]
+    public void TheAudioPackFolderIsAPathAndTheCommandLineWins()
+    {
+        using var scratch = new Scratch();
+        var path = System.IO.Path.Combine(scratch.Folder("settings"), "darklands.settings.json");
+        File.WriteAllText(path, """{ "sound": { "audioPack": "packs/sound" } }""");
+        var load = SettingsFile.Load(path);
+        Assert.Empty(load.Problems);
+        Assert.Equal(System.IO.Path.GetFullPath(System.IO.Path.Combine(scratch.Path, "settings", "packs", "sound")), load.Settings.AudioPack);
+        Assert.Equal(load.Settings.AudioPack, ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, load.Settings).AudioPack);
+        Assert.Equal("E:/env", ResolvedSettings.Resolve(new CommandLineOptions(), v => v == "DARKLANDS_AUDIO_PACK" ? "E:/env" : null, load.Settings).AudioPack);
+        var cli = new CommandLineOptions { AudioPack = "D:/other" };
+        Assert.Equal("D:/other", ResolvedSettings.Resolve(cli, _ => "E:/env", load.Settings).AudioPack);
+        Assert.Equal("--audio-pack", cli.Overrides(_ => null)["sound.audioPack"]);
+        Assert.Null(ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, new GameSettings()).AudioPack);
+    }
+
     [Fact]
     public void ResolutionAndCommandLineAsText()
     {
@@ -365,6 +383,7 @@ public class SettingsTemplateTests
              fromTemplate.Mt32Roms, fromTemplate.ConfigDrk, fromTemplate.ShowBanner, fromTemplate.PlayIntro, string.Join(' ', fromTemplate.CommandLine),
              fromTemplate.TextFont, fromTemplate.ScreenshotsFolder, fromTemplate.SdlLibrary, fromTemplate.ConsoleEnabled, fromTemplate.ConsoleFont,
              fromTemplate.ConsoleFontSize, fromTemplate.HdPack));
+        Assert.Equal(fromNothing.AudioPack, fromTemplate.AudioPack);
     }
 
     /// <summary>A resolution filled in beside the template's "scale": 1 replaces the scale, without a complaint.</summary>
