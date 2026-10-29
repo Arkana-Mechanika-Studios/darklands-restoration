@@ -43,4 +43,28 @@ public sealed class DisplayLayoutTests
         Assert.Equal((160, 100), DisplayLayout.ToScreen(graphics, 360, 200));
         Assert.Equal((319, 199), DisplayLayout.ToScreen(graphics, 719, 399));
     }
+
+    [Fact]
+    public void SdlsSoftwareRendererIsFollowedInItsTruncatedFixedPoint()
+    {
+        // 1366x768: the picture is 1228x768 at x 69; window column 364 is picture column 295, whose centre is in game
+        // pixel 77 but which the software renderer fills from 76 (as CI's Linux runner showed), and row 564 likewise
+        var graphics = DisplayLayout.Graphics(1366, 768);
+        Assert.Equal((77, 147), DisplayLayout.ToScreen(graphics, 364, 564));
+        Assert.Equal((76, 146), DisplayLayout.ToScreen(graphics, 364, 564, PictureSampling.SdlSoftware));
+        Assert.Equal((0, 0), DisplayLayout.ToScreen(graphics, 10, 0, PictureSampling.SdlSoftware)); // the black border clamps
+        Assert.Equal((319, 199), DisplayLayout.ToScreen(graphics, 1365, 767, PictureSampling.SdlSoftware));
+
+        // the closed form is SDL's loop (SDL_stretch.c: posx = incx / 2, then posx += incx per window pixel)
+        foreach (var shown in new[] { 320, 480, 640, 913, 1228, 1280, 1920, 2304 })
+        {
+            var inc = (320L << 16) / shown;
+            var pos = inc / 2;
+            for (var n = 0; n < shown; n++, pos += inc)
+            {
+                var r = new DisplayRectangle(0, 0, shown, 200);
+                Assert.Equal((int)(pos >> 16), DisplayLayout.ToScreen(r, n, 0, PictureSampling.SdlSoftware).X);
+            }
+        }
+    }
 }

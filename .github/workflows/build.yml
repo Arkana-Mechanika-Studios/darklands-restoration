@@ -27,12 +27,15 @@ jobs:
             os: windows-latest
             rid: win-x64
           - name: linux-x64
-            os: ubuntu-latest
+            # pinned, not ubuntu-latest: the tests run on the system's libSDL2 (24.04: SDL 2.30) and, without a graphics card,
+            # on SDL's software renderer, whose stretching the mouse mapping follows (MouseMappingTests); moving to a newer
+            # Ubuntu (ubuntu-latest becomes 26.04) changes that SDL and should be a deliberate edit here
+            os: ubuntu-24.04
             rid: linux-x64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -59,7 +62,7 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Path artifacts/${{ matrix.rid }}/* -DestinationPath DarklandsRP-${{ matrix.rid }}.zip
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: DarklandsRP-${{ matrix.rid }}
           path: |

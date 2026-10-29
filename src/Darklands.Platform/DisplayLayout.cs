@@ -1,5 +1,15 @@
 namespace Darklands.Platform;
 
+/// <summary>
+/// How the renderer picks the game pixel each window pixel of the stretched picture shows: a graphics card samples at the
+/// window pixel's centre (exact); SDL's software renderer steps through the picture in truncated 16.16 fixed point.
+/// </summary>
+public enum PictureSampling
+{
+    Centre,
+    SdlSoftware,
+}
+
 /// <summary>An integer rectangle in window pixels.</summary>
 public readonly record struct DisplayRectangle(int X, int Y, int Width, int Height);
 
@@ -87,9 +97,27 @@ public static class DisplayLayout
     /// at its centre too: at a scale that is not whole (1920x1080) its left edge would name the pixel before at every
     /// boundary. MouseMappingTests checks this against the picture SDL draws.
     /// </summary>
-    public static (int X, int Y) ToScreen(DisplayRectangle graphics, int x, int y) =>
-        (Math.Clamp(Under(x - graphics.X, graphics.Width, Screen.Width), 0, Screen.Width - 1),
-         Math.Clamp(Under(y - graphics.Y, graphics.Height, Screen.Height), 0, Screen.Height - 1));
+    public static (int X, int Y) ToScreen(DisplayRectangle graphics, int x, int y, PictureSampling sampling = PictureSampling.Centre) =>
+        sampling == PictureSampling.SdlSoftware
+            ? (Math.Clamp(UnderSoftware(x - graphics.X, graphics.Width, Screen.Width), 0, Screen.Width - 1),
+               Math.Clamp(UnderSoftware(y - graphics.Y, graphics.Height, Screen.Height), 0, Screen.Height - 1))
+            : (Math.Clamp(Under(x - graphics.X, graphics.Width, Screen.Width), 0, Screen.Width - 1),
+               Math.Clamp(Under(y - graphics.Y, graphics.Height, Screen.Height), 0, Screen.Height - 1));
+
+    // SDL's software renderer stretches with 16.16 fixed point (SDL_stretch.c, and the scaling blitters of SDL_blit_auto.c
+    // and SDL_blit_slow.c: identical in SDL 2.30.0, 2.32.10 and SDL 3.2, which sdl2-compat runs on): the step is truncated,
+    // inc = (pixels << 16) / shown, and window pixel n takes source pixel (n * inc + inc / 2) >> 16. The truncation lands
+    // one game pixel short just past some boundaries (1366x768: window column 295 of the picture shows game pixel 76 where
+    // the exact centre is in 77), so the mouse follows the same arithmetic when that renderer draws.
+    internal static int UnderSoftware(int offset, int shown, int pixels)
+    {
+        if (offset < 0)
+        {
+            return -1;
+        }
+        var inc = ((long)pixels << 16) / Math.Max(1, shown);
+        return (int)((offset * inc + inc / 2) >> 16);
+    }
 
     // Exact arithmetic. A centre exactly on the line between two game pixels (2.5 window pixels per game pixel, and the
     // like) is a tie the GPU breaks by its own rounding, either way: it is taken as the pixel before. The game draws its

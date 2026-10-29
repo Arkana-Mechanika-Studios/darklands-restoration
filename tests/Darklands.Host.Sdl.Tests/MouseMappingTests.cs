@@ -30,7 +30,15 @@ public sealed class MouseMappingTests
     [InlineData(1920, 1080, false, true)]
     [InlineData(0, 0, true, false)]
     [InlineData(0, 0, true, true)]
-    public void EveryWindowPositionGivesTheGamePixelShownThere(int width, int height, bool fullscreen, bool hd)
+    // SDL's software renderer (no graphics card: Linux CI, a VM; or SDL_RENDER_DRIVER=software) stretches in truncated fixed point
+    [InlineData(1366, 768, false, false, true)]
+    [InlineData(1013, 571, false, false, true)]
+    [InlineData(1920, 1080, false, false, true)]
+    [InlineData(500, 300, false, false, true)]
+    [InlineData(2560, 1440, false, false, true)]
+    [InlineData(1366, 768, false, true, true)]
+    [InlineData(0, 0, true, false, true)]
+    public void EveryWindowPositionGivesTheGamePixelShownThere(int width, int height, bool fullscreen, bool hd, bool software = false)
     {
         var library = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
         if (!File.Exists(library))
@@ -38,9 +46,18 @@ public sealed class MouseMappingTests
             return;
         }
         SdlNative.ConfigureLibrary(library);
+        if (software)
+        {
+            // read when the renderer is made; SDL_Quit (the host's Dispose) clears it again
+            SdlNative.SDL_SetHint("SDL_RENDER_DRIVER", "software");
+        }
         using var host = fullscreen
             ? new SdlHost("mouse test", DisplayLayout.BaseWidth, DisplayLayout.BaseHeight, fullscreen: true)
             : new SdlHost("mouse test", width, height);
+        if (software)
+        {
+            Assert.Equal(PictureSampling.SdlSoftware, host.Sampling);
+        }
         if (hd)
         {
             host.Renderer = new HdRenderer(HdPack.Empty);

@@ -10,4 +10,8 @@
     <EmbeddedResource Include="Resources/vga-8x16.b64" LogicalName="Darklands.Platform.vga-8x16.b64" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Darklands.Platform.Tests" />
+  </ItemGroup>
+
 </Project>

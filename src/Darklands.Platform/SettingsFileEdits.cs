@@ -7,7 +7,8 @@ namespace Darklands.Platform;
 public static class SettingsFileEdits
 {
     /// <summary>
-    /// Sets "gameFolder" in the file at <paramref name="path"/> to <paramref name="folder"/> (written with forward slashes).
+    /// Sets "gameFolder" in the file at <paramref name="path"/> to <paramref name="folder"/> (written with forward slashes on
+    /// Windows; elsewhere a backslash is a letter of a name and is kept).
     /// Only an empty or null value is replaced unless <paramref name="replace"/>; false (and why) when the file has no such
     /// key, already names a folder, or cannot be written.
     /// </summary>
@@ -28,7 +29,7 @@ public static class SettingsFileEdits
                 message = $"{path} already names a game folder";
                 return false;
             }
-            var value = JsonSerializer.Serialize(folder.Replace('\\', '/'));
+            var value = JsonSerializer.Serialize(Written(folder, Path.DirectorySeparatorChar));
             File.WriteAllText(path, text[..span.Start] + value + text[span.End..], new System.Text.UTF8Encoding(false));
             message = $"wrote \"gameFolder\": {value} into {path}";
             return true;
@@ -39,6 +40,10 @@ public static class SettingsFileEdits
             return false;
         }
     }
+
+    /// <summary>The folder as the settings file names it: forward slashes where the backslash separates folders (Windows).</summary>
+    internal static string Written(string folder, char directorySeparator) =>
+        directorySeparator == '\\' ? folder.Replace('\\', '/') : folder;
 
     /// <summary>
     /// Sets each dotted key ("display.fullscreen") to its value in the file at <paramref name="path"/>, keeping everything else

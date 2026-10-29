@@ -211,6 +211,21 @@ internal static class SdlNative
     internal static extern int SDL_GetRendererOutputSize(IntPtr renderer, out int width, out int height);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_GetRendererInfo(IntPtr renderer, out SdlRendererInfo info);
+
+    /// <summary>SDL_RendererInfo (its texture formats and maximum sizes are not read).</summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe struct SdlRendererInfo
+    {
+        internal IntPtr Name;
+        internal uint Flags;
+        internal uint TextureFormatCount;
+        internal fixed uint TextureFormats[16];
+        internal int MaxTextureWidth;
+        internal int MaxTextureHeight;
+    }
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr SDL_CreateTexture(
         IntPtr renderer,
         uint format,

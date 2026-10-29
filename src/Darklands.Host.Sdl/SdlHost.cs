@@ -26,6 +26,8 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private readonly System.Diagnostics.Stopwatch _keyClock = System.Diagnostics.Stopwatch.StartNew();
     private SdlNative.SdlRect _viewport;
     private SdlNative.SdlRect _textViewport;
+    // how the renderer stretches the picture, which the mouse follows (SDL's software renderer: no graphics card, or SDL_RENDER_DRIVER=software)
+    private readonly PictureSampling _sampling;
     private MouseState _mouse;
     private bool _shift;
     private bool _framePresented;
@@ -52,6 +54,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         {
             _renderer = SdlNative.SDL_CreateRenderer(_window, -1, SdlNative.RendererSoftware);
         }
+        _sampling = IsSoftware(_renderer) ? PictureSampling.SdlSoftware : PictureSampling.Centre;
         _texture = SdlNative.SDL_CreateTexture(_renderer, SdlNative.PixelFormatArgb8888,
             (int)SdlNative.TextureAccessStreaming, Screen.Width, Screen.Height);
         SdlNative.SDL_SetTextureScaleMode(_texture, SdlNative.ScaleModeNearest);
@@ -272,6 +275,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
             SdlNative.SDL_RenderCopyTo(_renderer, _texture, IntPtr.Zero, ref _viewport);
         }
     }
+
+    /// <summary>How the renderer in use stretches the picture (tests).</summary>
+    internal PictureSampling Sampling => _sampling;
 
     /// <summary>The window's size in the coordinates its mouse events use (tests).</summary>
     internal (int Width, int Height) WindowSize
@@ -535,15 +541,20 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         SdlNative.SDL_GetWindowSize(_window, out var ww, out _);
         SdlNative.SDL_GetRendererOutputSize(_renderer, out var rw, out _);
         var x = windowX * rw / Math.Max(1, ww);
-        return DisplayLayout.ToScreen(Graphics, x, 0).X;
+        return DisplayLayout.ToScreen(Graphics, x, 0, _sampling).X;
     }
+
+    private static bool IsSoftware(IntPtr renderer) =>
+        SdlNative.SDL_GetRendererInfo(renderer, out var info) == 0
+        && ((info.Flags & SdlNative.RendererSoftware) != 0
+            || string.Equals(System.Runtime.InteropServices.Marshal.PtrToStringUTF8(info.Name), "software", StringComparison.Ordinal));
 
     private int ToScreenY(int windowY)
     {
         SdlNative.SDL_GetWindowSize(_window, out _, out var wh);
         SdlNative.SDL_GetRendererOutputSize(_renderer, out _, out var rh);
         var y = windowY * rh / Math.Max(1, wh);
-        return DisplayLayout.ToScreen(Graphics, 0, y).Y;
+        return DisplayLayout.ToScreen(Graphics, 0, y, _sampling).Y;
     }
 
     private DisplayRectangle Graphics => new(_viewport.X, _viewport.Y, _viewport.Width, _viewport.Height);

@@ -2,10 +2,15 @@ namespace Darklands.Platform.Tests;
 
 public sealed class GameFolderSearchTests
 {
+    // Folders rooted on the running system: on Windows the drives themselves; on Linux "D:\Games" would be a relative name
+    // with backslashes in it, so the same tree stands under /d.
+    private static string On(char drive, params string[] parts) =>
+        Path.Combine([OperatingSystem.IsWindows() ? drive + @":\" : "/" + char.ToLowerInvariant(drive) + "/", .. parts]);
+
     private static readonly HashSet<string> Games = new(StringComparer.OrdinalIgnoreCase)
     {
-        @"D:\Games\Darklands\DARKLAND",
-        @"C:\DARKLAND",
+        On('D', "Games", "Darklands", "DARKLAND"),
+        On('C', "DARKLAND"),
     };
 
     private static bool IsGame(string folder) => Games.Contains(folder);
@@ -13,9 +18,9 @@ public sealed class GameFolderSearchTests
     [Fact]
     public void AFolderOrItsDarklandSubfolderCounts()
     {
-        Assert.Equal(@"C:\DARKLAND", GameFolderSearch.GameFolderIn(@"C:\DARKLAND", IsGame));
-        Assert.Equal(Path.Combine(@"D:\Games\Darklands", "DARKLAND"), GameFolderSearch.GameFolderIn(@"D:\Games\Darklands", IsGame));
-        Assert.Null(GameFolderSearch.GameFolderIn(@"D:\Games", IsGame));
+        Assert.Equal(On('C', "DARKLAND"), GameFolderSearch.GameFolderIn(On('C', "DARKLAND"), IsGame));
+        Assert.Equal(On('D', "Games", "Darklands", "DARKLAND"), GameFolderSearch.GameFolderIn(On('D', "Games", "Darklands"), IsGame));
+        Assert.Null(GameFolderSearch.GameFolderIn(On('D', "Games"), IsGame));
         Assert.Null(GameFolderSearch.GameFolderIn("", IsGame));
         Assert.Null(GameFolderSearch.GameFolderIn(null, IsGame));
     }
@@ -24,16 +29,16 @@ public sealed class GameFolderSearchTests
     public void TheFirstCandidateHoldingTheGameWinsWithItsSource()
     {
         var found = GameFolderSearch.Find(
-            [(@"E:\Nothing", "a"), (@"D:\Games\Darklands", "GOG"), (@"C:\DARKLAND", "usual")], IsGame);
-        Assert.Equal((Path.Combine(@"D:\Games\Darklands", "DARKLAND"), "GOG"), found);
-        Assert.Null(GameFolderSearch.Find([(@"E:\Nothing", "a")], IsGame));
+            [(On('E', "Nothing"), "a"), (On('D', "Games", "Darklands"), "GOG"), (On('C', "DARKLAND"), "usual")], IsGame);
+        Assert.Equal((On('D', "Games", "Darklands", "DARKLAND"), "GOG"), found);
+        Assert.Null(GameFolderSearch.Find([(On('E', "Nothing"), "a")], IsGame));
     }
 
     [Fact]
     public void AnUnreadableCandidateIsSkipped()
     {
-        bool Throwing(string folder) => folder.StartsWith(@"X:\", StringComparison.Ordinal) ? throw new UnauthorizedAccessException() : IsGame(folder);
-        Assert.Equal((@"C:\DARKLAND", "usual"), GameFolderSearch.Find([(@"X:\Locked", "a"), (@"C:\DARKLAND", "usual")], Throwing));
+        bool Throwing(string folder) => folder.StartsWith(On('X'), StringComparison.Ordinal) ? throw new UnauthorizedAccessException() : IsGame(folder);
+        Assert.Equal((On('C', "DARKLAND"), "usual"), GameFolderSearch.Find([(On('X', "Locked"), "a"), (On('C', "DARKLAND"), "usual")], Throwing));
     }
 
     [Fact]
@@ -70,37 +75,58 @@ public sealed class SettingsFileEditsTests : IDisposable
 {
     private readonly string _file = Path.Combine(Path.GetTempPath(), $"darklands-settings-{Guid.NewGuid():N}.json");
 
+    // A folder rooted on the running system as given (Windows: with backslashes) and as the settings file then reads it: a
+    // "D:/..." is relative on Linux and resolved against the settings file's folder, as any relative name is.
+    private static (string Given, string Read) Rooted(string windows, string linux) =>
+        OperatingSystem.IsWindows() ? (windows, windows.Replace('\\', '/')) : (linux, linux);
+
     public void Dispose() => File.Delete(_file);
 
     [Fact]
     public void AnEmptyGameFolderOfTheTemplateIsFilledAndTheFileStillReads()
     {
+        var folder = Rooted(@"D:\Games\Darklands\DARKLAND", "/d/Games/Darklands/DARKLAND");
         File.WriteAllText(_file, SettingsFile.Template);
-        Assert.True(SettingsFileEdits.TrySetGameFolder(_file, @"D:\Games\Darklands\DARKLAND", replace: false, out _));
+        Assert.True(SettingsFileEdits.TrySetGameFolder(_file, folder.Given, replace: false, out _));
         var load = SettingsFile.Load(_file);
         Assert.Empty(load.Problems);
-        Assert.Equal("D:/Games/Darklands/DARKLAND", load.Settings.GameFolder);
+        Assert.Equal(folder.Read, load.Settings.GameFolder);
         Assert.Contains("// The folder with the original game", File.ReadAllText(_file));
     }
 
     [Fact]
     public void ANamedFolderIsKeptUnlessReplacing()
     {
-        File.WriteAllText(_file, """{ "gameFolder": "C:/Old", "savesFolder": "" }""");
-        Assert.False(SettingsFileEdits.TrySetGameFolder(_file, @"D:\New", replace: false, out _));
-        Assert.Equal("C:/Old", SettingsFile.Load(_file).Settings.GameFolder);
-        Assert.True(SettingsFileEdits.TrySetGameFolder(_file, @"D:\New", replace: true, out _));
-        Assert.Equal("D:/New", SettingsFile.Load(_file).Settings.GameFolder);
+        var old = Rooted("C:/Old", "/c/Old");
+        var named = Rooted(@"D:\New", "/d/New");
+        File.WriteAllText(_file, $$"""{ "gameFolder": "{{old.Given}}", "savesFolder": "" }""");
+        Assert.False(SettingsFileEdits.TrySetGameFolder(_file, named.Given, replace: false, out _));
+        Assert.Equal(old.Read, SettingsFile.Load(_file).Settings.GameFolder);
+        Assert.True(SettingsFileEdits.TrySetGameFolder(_file, named.Given, replace: true, out _));
+        Assert.Equal(named.Read, SettingsFile.Load(_file).Settings.GameFolder);
     }
 
     [Fact]
     public void NullIsFilledACommentedKeyIsNot()
     {
         File.WriteAllText(_file, "{\n  // \"gameFolder\": \"\",\n  \"gameFolder\": null\n}");
-        Assert.True(SettingsFileEdits.TrySetGameFolder(_file, "E:/Darklands", replace: false, out _));
+        var folder = Rooted("E:/Darklands", "/e/Darklands");
+        Assert.True(SettingsFileEdits.TrySetGameFolder(_file, folder.Given, replace: false, out _));
         var text = File.ReadAllText(_file);
         Assert.Contains("// \"gameFolder\": \"\",", text);
-        Assert.Equal("E:/Darklands", SettingsFile.Load(_file).Settings.GameFolder);
+        Assert.Equal(folder.Read, SettingsFile.Load(_file).Settings.GameFolder);
+    }
+
+    [Fact]
+    public void BackslashesBecomeSlashesOnlyWhereTheySeparateFolders()
+    {
+        Assert.Equal("D:/Games/Darklands", SettingsFileEdits.Written(@"D:\Games\Darklands", '\\'));
+        Assert.Equal(@"/home/deck/odd\name/DARKLAND", SettingsFileEdits.Written(@"/home/deck/odd\name/DARKLAND", '/'));
+        // and on this system: on Linux a folder whose name holds a backslash is written and read back as it is
+        var folder = Rooted(@"D:\Games\Darklands", @"/d/odd\name/DARKLAND");
+        File.WriteAllText(_file, """{ "gameFolder": "" }""");
+        Assert.True(SettingsFileEdits.TrySetGameFolder(_file, folder.Given, replace: false, out _));
+        Assert.Equal(folder.Read, SettingsFile.Load(_file).Settings.GameFolder);
     }
 
     [Fact]
