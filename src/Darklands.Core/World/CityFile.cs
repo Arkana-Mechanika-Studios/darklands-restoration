@@ -29,8 +29,14 @@ public static class CityFile
         }
         var record = before?.ToArray() ?? new byte[CityRecord.Size];
         bytes.CopyTo(record, 0);
-        // UNCERTAIN: the record read at the file's start is taken as city 0's (the darkland.dsc read of the same load also starts after
-        // the first byte); a record kept from before keeps its city.
+        // C: a record kept from before (a read past the file's end) keeps its city: the darkland.dsc read beside it also returns nothing and
+        //   leaves city_desc (DS:978B) as it was.
+        // DIVERGENCE: the record read at the file's start (a negative index: the wilderness, -1) is taken as city 0's, so its description is
+        //   city 0's. The original's city_desc is then DARKLAND.DSC bytes 0x200..0x24F: the darkland.dsc stream's fgetc (root 06A1:12DC)
+        //   filled its 0x200-byte buffer (the buffer set-up at root 06A1:0AE4 asks for 0x200 bytes), fseek to the negative offset is refused by lseek
+        //   (root 06A1:131A tests the sign before any DOS call) after the buffer was dropped, and fread goes on from the handle's place 0x200.
+        //   Not shown in play: $PlaceDesc is only in the city-arrival texts ($CityE00/01/03, $Enter00, $Outsi00), shown after the overland
+        //   read of that city.
         return new CityRecord(offset < 0 ? 0 : before?.City ?? 0, record);
     }
 

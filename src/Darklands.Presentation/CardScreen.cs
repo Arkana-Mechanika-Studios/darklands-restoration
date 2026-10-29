@@ -54,10 +54,16 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: card_load R043+0x0A9A (+ card_load_near R043+0x0BA0 for ShowPicture): pic_draw_pal(1, "pics\\<pic>.pic") or, for an empty name, a fill of the whole screen with colour 0xFF; DS:EE59 = 15 for a name starting with 'x' else 0; party_panel_frames(0x100) and party_panel_rows(0x100); msg_load(name) reads msgfiles\<name>.msg
     // DIVERGENCE: msg_load refuses a file of 6000 bytes or more with message_box("<name>too large - <size>") (R029+0x5B40
     //   matched: draw_text(side_win, 10, 10, msg), getch(), quit_to_dos()); a modding guard no game file reaches, not reproduced. The check is on the catalogue entry's size; the largest of the 420 message files in MSGFILES is 5991 bytes (test MessageFilesTests.NoMessageFileReachesMsgLoadsSizeLimit).
-    // DIVERGENCE: the original draws the picture onto an off-screen page and shows it at the first text (DS:EE55 = "picture not yet shown": the screen keeps the previous card until then); here it appears at once.
+    // orig: the picture is drawn onto an off-screen page and shown at the first text (DS:EE55 = "picture not yet shown": the screen keeps the
+    //   previous card until then): GameUi.HoldScreen until the first text, option list or wait for input
+    // DIVERGENCE: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) the new card's picture is shown at once.
     // C: DS:E959, the block a redraw draws again, is left over from the previous card in the original until the new card shows a text; here a new card starts without one.
     public void Show(string cardName, string picture)
     {
+        if (!ui.Options.CleanDrawing)
+        {
+            ui.HoldScreen();
+        }
         _messages = ui.Assets.Messages(cardName);
         _block = -1;
         _mode = Mode.Text;
@@ -174,6 +180,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: the first lines of 04c4 for a text block, card_text's two arms, and R043+0x3376 (the frame): restores the text area from the picture page (gfx_copy_rect(screen_ptr, 0x43, 6, 0xf5, 0xbc, card_window, 7, 6)), fills it with 0xFF for how == 1
     private void PrepareWindow(TextFrame frame)
     {
+        ui.ReleaseScreen();
         if (_picture is not null)
         {
             RestoreWindowFrom(_picture);

@@ -1054,8 +1054,12 @@ public sealed class EffectField : IEffectClouds
     // the flash, checked against the asm): the last frame's logged sprites, the animated pieces (1A6A: random_n(2) after the limit test,
     // R014+0x8383/0x843A/0x84B6), the cloud edges, then per combatant its body (able ones), its flash (random_n(3) only below the limit,
     // R014+0x7327) and its damage number; the floor pieces go to list B (limit 0x8A); tests: DrawListTests
-    // UNCERTAIN: an entry whose box the view clips to nothing gives its place back in the original; here every piece, edge and number of
-    // a combatant in view counts (the boxes are not clipped), and the cloud edges count for the clouds of the shown level with a puff in view.
+    // C: an entry whose box the view clips to nothing gives its place back in the original (R014+0x7BBE: after the clip R014+0x8680 a zero
+    //   width or height decrements DS:E162 or DS:E166, R014+0x7CF5 / 0x7CFC); here every piece, edge and number of a combatant in view
+    //   counts (the boxes are not clipped). The count only matters against the limits, which no frame reaches: at most 1 + 18 logged
+    //   sprites of the last frame (the ground cursor and 0x11 missiles) + 15 + 15 animated wall pieces + 2 x 8 cloud edges + 3 x 13
+    //   combatant entries + 18 of this frame = 122 < 157 (list B: 15 floor pieces + 13 fallen bodies < 0x8A), so the places given back
+    //   change no draw and no random number.
     public void Drawn(IBattleViewport viewport)
     {
         var now = Paused ? (ushort)0 : Clock;

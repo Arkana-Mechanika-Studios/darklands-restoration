@@ -21,6 +21,13 @@ public sealed class GameOptions
     public bool SoundEffects { get; set; } = true;
 
     public bool Music { get; set; } = true;
+
+    /// <summary>
+    /// Draws the screens clean where the original's drawing shows a leftover (the Fixed and Classic + comfort presets): a new card's
+    /// picture at once rather than with its first text, no pressed-button picture after the load screen's "no". Off (Classic): as the
+    /// original draws them. A drawing choice only: no game value depends on it.
+    /// </summary>
+    public bool CleanDrawing { get; set; }
 }
 
 /// <summary>

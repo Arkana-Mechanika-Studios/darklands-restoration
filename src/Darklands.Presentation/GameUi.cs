@@ -360,10 +360,11 @@ public sealed class GameUi
         {
             throw new QuitGameException();
         }
-        _screen.Pixels.CopyTo(_shown.Pixels, 0);
-        _screen.Palette.CopyTo(_shown.Palette, 0);
+        var source = _held ?? _screen;
+        source.Pixels.CopyTo(_shown.Pixels, 0);
+        source.Palette.CopyTo(_shown.Palette, 0);
         ApplyCycles(_shown.Palette);
-        _screen.CopyOwnershipTo(_shown);
+        source.CopyOwnershipTo(_shown);
         if (PointerVisible)
         {
             // orig: mouse_set_cursor(0, 0, cursor_default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left corner
@@ -371,6 +372,30 @@ public sealed class GameUi
         }
         _host.Video.Present(_shown);
     }
+
+    /// <summary>The screen as it was when <see cref="HoldScreen"/> was called, shown instead of the canvas until <see cref="ReleaseScreen"/>.</summary>
+    private Screen? _held;
+
+    /// <summary>
+    /// Keeps the screen as it is now on show while the canvas is drawn on (the original's off-screen picture page): until
+    /// <see cref="ReleaseScreen"/> or the next wait for input, a present shows the screen as it was here.
+    /// </summary>
+    // orig: card_load R043+0x0A9A draws the picture on page 1 and sets DS:EE55 ("picture not yet shown"); the first card text or option list
+    //   (R043+0x0E40 / R043+0x0F2A) copies the page to the screen
+    public void HoldScreen()
+    {
+        if (_held is not null)
+        {
+            return;
+        }
+        _held = new Screen();
+        _screen.Pixels.CopyTo(_held.Pixels, 0);
+        _screen.Palette.CopyTo(_held.Palette, 0);
+        _screen.CopyOwnershipTo(_held);
+    }
+
+    /// <summary>Ends <see cref="HoldScreen"/>: the next present shows the canvas.</summary>
+    public void ReleaseScreen() => _held = null;
 
     /// <summary>Shows the 80×25 text screen (the program start) and processes window events; keys stay waiting.</summary>
     // orig: nothing: the program start writes through the BIOS and DOS, see TextConsole
@@ -390,6 +415,7 @@ public sealed class GameUi
     // C: hot_keys only takes the keys it knows (Alt-Q ... F10) and leaves every other key in the buffer for the screen; GameKey returning false does the same. Keys the hot keys take never reach the screen, as here.
     public PlayerAction? Poll()
     {
+        ReleaseScreen();
         Present();
         if (ReadHostKey(out var key))
         {

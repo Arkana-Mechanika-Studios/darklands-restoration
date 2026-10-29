@@ -514,9 +514,10 @@ public sealed class CharacterGeneratorScreen
 
     // orig: R037+0x7F06 / R037+0x802A: `while (!key_pressed() && !(mouse_buttons & 1));` (no root 0000:0000: no menu bar, no hot keys) then a key is taken (get_key), a press is not:
     // orig: after R037+0x4B9E the loop of R037+0x4664 finds the button still down and takes the press as a click where the pointer is
-    // UNCERTAIN: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time: the C#
-    // redraws at once, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the first steps,
-    // not always that of the occupation list)
+    // DIVERGENCE: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time, which is
+    //   the machine's speed (R037+0x4B9E draws the pictures and texts through the graphics driver; the EXE sets no time for it): the C#
+    //   redraws at once, as a fast PC, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the
+    //   first steps, not always that of the occupation list; the emulator's speed is the tester's model, not a PC's)
     private void WaitThenRedraw()
     {
         var closing = _ui.WaitForActionWithoutBar();

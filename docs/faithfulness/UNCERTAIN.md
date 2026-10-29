@@ -12,18 +12,18 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 0 |
-| cards | core | 9 |
+| cards | core | 8 |
 | events | core | 0 |
-| travel | core | 3 |
-| battles | core | 7 |
-| persistence | core | 2 |
-| screens/presentation | other | 15 |
+| travel | core | 2 |
+| battles | core | 6 |
+| persistence | core | 0 |
+| screens/presentation | other | 9 |
 | host/audio | other | 0 |
-| total |  | 36 |
+| total |  | 25 |
 
-## Core logic (21)
+## Core logic (16)
 
-### cards (9)
+### cards (8)
 
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
@@ -49,15 +49,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
   original: `R086+0x0C40` (18FC:0000, matched)  
   why: the saint name table of the texts (R034) is taken to be the saint list's full names.
-- **U-9860ee** `uncertain` - `src/Darklands.Cards/TextVariables.cs:255` `TextVariables.PlaceDescription`  
-  original: `R043+0x1316` (150B:0886, draft)  
-  why: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
 
-### travel (3)
+### travel (2)
 
-- **U-6d067b** `uncertain` - `src/Darklands.Core/World/CityFile.cs:32` `CityFile.Read`  
-  original: `R043+0x0100` (1462:0100, matched), `R037+0x8ED4` (1C7D:0D24, matched), `R029+0x4E68` (0E76:4E68, draft) +1 more  
-  why: the record read at the file's start is taken as city 0's (the darkland.dsc read of the same load also starts after the first byte); a record kept from before keeps its city.
 - **U-16b0a7** `uncertain` - `src/Darklands.Core/World/NullPage.cs:9` `NullPage`  
   original: unresolved (none)  
   why: the values are those of the reference machine as far as they matter: a vector's segment word is the BIOS segment F000 (DOSBox points the vectors the game does not hook into its F000 callback area; DOS's own handlers would be 0070, a hooked vector a program segment above 0100). Every rule here only needs |segment| > 100 or its remainder by 4; the offsets are not established.
@@ -65,7 +59,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: unresolved (none)  
   why: the offset is taken as FF53, the BIOS's default IRET handler that DOSBox points the unused vectors at; the segment is the BIOS's.
 
-### battles (7)
+### battles (6)
 
 - **U-2a08c3** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Stairs.cs:11` `CastleGenerator.ContinueStairs`  
   original: `R006+0x34B8` (18FA:0008, draft)  
@@ -82,44 +76,20 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:895` `EffectField.public`  
   original: `root 06A1:29B6` (06A1:29B6, asm), `R014+0xA738` (18BF:02A8, draft)  
   why: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
-- **U-0f84cb** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1057` `EffectField.Drawn`  
-  original: `R014+0x6818` (14F7:0008, draft), `R014+0x7BBE` (14F7:13AE, draft)  
-  why: an entry whose box the view clips to nothing gives its place back in the original; here every piece, edge and number of a combatant in view counts (the boxes are not clipped), and the cloud edges count for the clouds of the shown level with a puff in view.
 - **U-cb31b9** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:590` `TacticalBattle._actionBeforeRecords`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text); the rewrite starts it at 0 and keeps only what order_mode_leave writes. The branches below agree for any value other than 0x80, 0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
 
-### persistence (2)
+## Presentation and host (9)
 
-- **U-7ce977** `uncertain` - `src/Darklands.Persistence/CharacterRecords.cs:16` `CharacterRecords`  
-  original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched)  
-  why: the bytes this model does not name (+0x02..+0x11 combat position and orders, +0x16, +0x18..+0x21, +0x23, +0x4A, +0x4D/+0x4E, +0x52..+0x54, +0x56/+0x57, +0x59, +0x7F) are kept as read (Character.OriginalRecord); a character made by this program has zeros there. The saint and formula bytes and all 64 pack entries are modelled as raw bytes (KnownBits, Pack).
-- **U-5d20fe** `uncertain` - `src/Darklands.Persistence/OriginalSaves.cs:421` `OriginalSaves.PartyRecordInBattle`  
-  original: `R037+0x2ACE` (1462:2ACE, draft)  
-  why: the record words the model does not keep for a combatant (+0x02, +0x0E the pointer R002+0x1830 sets, +0x1C) are written as the record was read.
-
-## Presentation and host (15)
-
-### screens/presentation (15)
+### screens/presentation (9)
 
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-- **U-653f84** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:1983` `BattleScreen.EdgeScroll`  
-  original: `R014+0x3166` (0E76:3166, draft), `R016+0x0B92` (1EF8:0B92, draft)  
-  why: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
-- **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2103` `BattleScreen.CharacterSheet`  
-  original: `R022+0x0000` (1EF8:0000, draft)  
-  why: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:77` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
-- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:92` `CharacterCreationScreen.FigureImages`  
-  original: `R037+0x0000` (1462:0000, draft), `R037+0x0444` (1462:0444, draft), `R037+0x0390` (1462:0390, draft) +5 more  
-  why: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
-- **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:517` `CharacterGeneratorScreen.WaitThenRedraw`  
-  original: `R037+0x4B9E` (18C8:053E, draft), `R037+0x4664` (18C8:0004, draft)  
-  why: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time: the C# redraws at once, so a press seen down here acts (the oracle's 300 ms scripted press outlasts the emulated redraw of the first steps, not always that of the occupation list)
 - **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
   original: `R029+0x2204` (0E76:2204, draft), `R029+0x222A` (0E76:222A, draft)  
   why: which keys the original's menu_bar_run takes inside the sheet is not traced; only the Alt keys are passed.
@@ -138,12 +108,6 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:213` `PartyRosterScreen.ResultOfDriver`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: the driver's AX is taken never to be 0x11B (it would end the screen).
-- **U-9ecd08** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:336` `SaintPrayerScreen.DrawInfo`  
-  original: `R034+0x0BC4` (1462:0BC4, matched)  
-  why: the text routine root 0265:0134 is assembly only: the name is taken as centred in its 154-pixel column with the capital at y 8 (positions from a capture of the original), the description as wrapped in 156 pixels from (0x94, 0x25).
-- **U-a84a42** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:393` `SaintPrayerScreen.OpenMemberList`  
-  original: `R034+0x0E04` (1462:0E04, matched), `R034+0x0D08` (1462:0D08, matched)  
-  why: the names are drawn by the text routine (assembly only) in a 52-pixel column; here each full name is cut to fit that width on its row.
 - **U-ef55b2** `uncertain` - `src/Darklands.Presentation/StartUp.cs:254` `StartUp.GameStart`  
   original: `root 047C:0783` (047C:0783, draft), `root 047C:0066` (047C:0066, draft), `root 044A:019C` (044A:019C, asm) +4 more  
   why: the driver's mouse pointer (shown after commonsp.img) is left out until the start screen, as during the opening.
