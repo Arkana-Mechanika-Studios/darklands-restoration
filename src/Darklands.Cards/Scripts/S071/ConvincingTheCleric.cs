@@ -146,7 +146,7 @@ public sealed class ConvincingTheCleric : Card
     private void Pray(CardContext c, ref int standing)
     {
         c.PassHours(1);
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

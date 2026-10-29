@@ -27,7 +27,7 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 | `args` | a shared call passes a constant the other side never uses | 0 | 4 |
 | `stores` | the C# assigns a constant that appears nowhere in the original's code | 0 | 8 |
 | `missing` | a game-logic call of the original the C# does not make | 0 | 78 |
-| `extra` | a traced call the original does not make (three calls deep) | 1 | 81 |
+| `extra` | a traced call the original does not make (three calls deep) | 0 | 82 |
 | `order` | two shared calls in the opposite order | 0 | 30 |
 | `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 0 | 31 |
 | `decisions` | fewer than half the original's conditional branches | 0 | 65 |
@@ -36,7 +36,6 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 
 | area | draws | args | stores | missing | extra | order | consts | decisions |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| start-up | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
 
 ## Limits
 

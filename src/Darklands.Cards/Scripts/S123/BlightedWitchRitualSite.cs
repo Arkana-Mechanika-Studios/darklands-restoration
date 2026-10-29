@@ -120,7 +120,7 @@ public sealed class BlightedWitchRitualSite : Card
     //   menu ignores it. A failed prayer loads +0x0C73, the card's own picture, then pic_buf again (the same one).
     private void CallASaint(CardContext c, CardMenu menu)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

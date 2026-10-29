@@ -167,7 +167,7 @@ public sealed class SabbatFeastKitchen : Card
     //   options_block (2) after a failed one; ignored.
     private static void CallASaint(CardContext c, CardMenu menu)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

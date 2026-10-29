@@ -159,7 +159,7 @@ public sealed class LakeOfFire : Card
     private void Pray(CardContext c, CardMenu menu)
     {
         menu[1] = OptionState.Shown;
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

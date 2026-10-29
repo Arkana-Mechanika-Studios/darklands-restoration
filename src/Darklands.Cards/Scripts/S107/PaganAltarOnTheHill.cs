@@ -81,7 +81,7 @@ public sealed class PaganAltarOnTheHill : Card
         var chance = 0;
         if (c.MenuSlot == 3)
         {
-            chance = c.ItemQuality(c.MenuMember, c.CardItems[c.MenuSlot]) * 2;
+            chance = c.ItemQuality(c.MenuMember, c.CardItems[c.MenuEntrySlot]) * 2;
             if (menu.Block == 13)
             {
                 chance = 0;
@@ -150,7 +150,7 @@ public sealed class PaganAltarOnTheHill : Card
     private static void PrayAgainstThePaganPowers(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
@@ -232,7 +232,7 @@ public sealed class PaganAltarOnTheHill : Card
     private static void PrayAgainstTheBeasts(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

@@ -140,6 +140,43 @@ public sealed class CardMenuBoxTests
     }
 
     [Fact]
+    public void EnterInABoxRunsSlotLineModFoursHandlerOnTheEntrysSlot()
+    {
+        if (!CardHarness.Available)
+        {
+            return;
+        }
+        // Enter on member 0's slot 1 entry of the item box over line 2: the loop calls opt_fn[2], the handler for slot 2 (e.g. R112+0x391A),
+        // which reads card_items[menu_slot] with menu_slot still the entry's 1 (card_menu R043+0x1CAE)
+        var (c, _) = Context(line: 2, PopupBox.Items, member: 0, slot: 1, click: false);
+        var menu = new CardMenu(c, 1) { ItemBox = () => OptionHint.ChanceOf(10 * c.MenuSlot + c.MenuEntrySlot, c.MenuMember) };
+        menu.Enable(0, 1, 2);
+        var got = (-9, -9, -9);
+        menu.Run(new MenuLine(_ => { }), new MenuLine(_ => { }),
+            new MenuLine(chance => { got = (chance, c.MenuSlot, c.MenuEntrySlot); c.Next = 2; }, OptionHint.Saying("line 2")));
+        Assert.Equal((21, 1, 1), got);
+    }
+
+    [Fact]
+    public void ABareRetfBoxHandlerGivesTheValueLeftInAx()
+    {
+        if (!CardHarness.Available)
+        {
+            return;
+        }
+        // item_fn slots 2/3 bare retf (R112+0x1438 / 0x143A): Enter in the item box over line 2 rates it with slot 2's, a click on slot 0 with slot 0's
+        foreach (var (click, expected) in new[] { (false, 0), (true, 55) })
+        {
+            var (c, _) = Context(line: 2, PopupBox.Items, member: 0, slot: 0, click: click);
+            var menu = new CardMenu(c, 1) { ItemBox = () => c.MenuSlot < 2 ? OptionHint.ChanceOf(55, c.MenuMember) : c.EmptyBoxHandler() };
+            menu.Enable(0, 1, 2);
+            var got = -9;
+            menu.Run(new MenuLine(_ => { }), new MenuLine(_ => { }), new MenuLine(chance => { got = chance; c.Next = 2; }, OptionHint.Saying("line 2")));
+            Assert.Equal(expected, got);
+        }
+    }
+
+    [Fact]
     public void AfterAChoiceInABoxTheUnlistedLinesHaveTheBoxsHandlersAndStates()
     {
         if (!CardHarness.Available)

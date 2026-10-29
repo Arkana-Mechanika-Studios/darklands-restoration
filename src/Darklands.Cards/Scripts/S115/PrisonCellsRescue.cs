@@ -121,7 +121,7 @@ public sealed class PrisonCellsRescue : Card
     // C: the rescue writes the friend's name into $Named1, so the saint's name is written again after it.
     private static void CallOnASaint(CardContext c)
     {
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         var answer = c.InvokeSaint(c.MenuMember, saint);
         if (answer == -1)
         {

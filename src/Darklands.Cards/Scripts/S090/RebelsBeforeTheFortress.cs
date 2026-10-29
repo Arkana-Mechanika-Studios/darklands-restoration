@@ -134,7 +134,7 @@ public sealed class RebelsBeforeTheFortress : Card
     private static void PrayForTheGate(CardContext c)
     {
         c.Variables.Chosen[1] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
@@ -155,7 +155,7 @@ public sealed class RebelsBeforeTheFortress : Card
     private static void Pray(CardContext c)
     {
         c.Variables.Chosen[1] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
@@ -163,7 +163,7 @@ public sealed class RebelsBeforeTheFortress : Card
         if (answer == 1)
         {
             c.Screen.Text(5);
-            var saint = c.CardSaints[c.MenuSlot];
+            var saint = c.CardSaints[c.MenuEntrySlot];
             if (saint == GateSaint)
             {
                 c.PassHours(1);

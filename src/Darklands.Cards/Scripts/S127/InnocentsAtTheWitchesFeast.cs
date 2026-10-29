@@ -158,7 +158,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
     private void PrayForTheInnocents(CardContext c, CardMenu menu)
     {
         // C: menu_member / menu_slot are the globals the pop-up box set last.
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

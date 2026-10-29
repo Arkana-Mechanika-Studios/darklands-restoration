@@ -164,7 +164,7 @@ public sealed class SabbatMockBaptism : Card
     //   outside 0..2 changes nothing), and it falls off its end after a failed one; ignored.
     private static void PrayAtTheStream(CardContext c, CardMenu menu)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

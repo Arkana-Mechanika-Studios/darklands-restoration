@@ -67,7 +67,7 @@ public sealed class TemplarFortressGate : Card
     // C: the card is reloaded (card_load_near) only after the fourth saint's vision or no answer.
     private void CallOnASaint(CardContext c, CardMenu menu)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

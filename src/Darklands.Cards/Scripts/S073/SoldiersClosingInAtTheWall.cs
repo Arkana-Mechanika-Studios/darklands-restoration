@@ -277,7 +277,7 @@ public sealed class SoldiersClosingInAtTheWall : Card
     // C: any answer but 0 and −1 counts as the saint answering (not only 1).
     private void Pray(CardContext c, int standing)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

@@ -52,42 +52,34 @@ public sealed class BishopsRoadTithe : Card
         menu[1] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
-        // C: after every choice the loop sets var_chosen1 = leader before the handler; a pop-up
-        // handler then names its own member. Each action does this first for line choices.
+        // C: after each choice the loop sets $ChosenOneName to the leader, then calls the handler (a box handler may name its member), then
+        // C: the action.
+        menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
         return menu.Run(
             // orig: R110+0x052E (1838:052E) matched; hint R110+0x057E
-            new MenuLine(_ => { LeaderSpeaks(c); PayTheTithe(c, tithe); }, () => OptionHint.Say(SuccessAssured)),
+            new MenuLine(_ => { PayTheTithe(c, tithe); }, () => OptionHint.Say(SuccessAssured)),
             // orig: R110+0x05B6 (line 1); hint R110+0x0608 (1838:0608) matched
-            new MenuLine(_ => { LeaderSpeaks(c); PrayForAid(c, menu); }, () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => { PrayForAid(c, menu); }, () => OptionHint.Say("Select a person and a saint.")),
             // orig: R110+0x0640 (line 2); hint R110+0x0718 (1838:0718) matched
-            new MenuLine(p => { LeaderSpeaks(c); PleadYourVirtue(c, menu, p); }, () => OptionHint.ChanceOf(Math.Clamp(
+            new MenuLine(p => { PleadYourVirtue(c, menu, p); }, () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageSkill((int)Skill.Virtue) + c.Skill(Who.Leader, (int)Skill.SpeakCommon) / 2, 0, 100), c.Leader)),
             // orig: R110+0x075C (1838:075C) matched; hint R110+0x07B6
-            new MenuLine(_ => { LeaderSpeaks(c); Refuse(c, menu); }, Unknown),
+            new MenuLine(_ => { Refuse(c, menu); }, Unknown),
             // orig: R110+0x07EE (line 4); hint R110+0x08FC (1838:08FC) matched
-            new MenuLine(p => { LeaderSpeaks(c); RideOff(c, menu, p); }, () => EscapeHint(c)),
+            new MenuLine(p => { RideOff(c, menu, p); }, () => EscapeHint(c)),
             // orig: R110+0x0948 (line 5); hint R110+0x0A04 (1838:0A04) matched
-            new MenuLine(p => { LeaderSpeaks(c); ThrowAPotion(c, menu, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
+            new MenuLine(p => { ThrowAPotion(c, menu, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // orig: R110+0x0A3C (1838:0A3C) matched; hint R110+0x0A8C
-            new MenuLine(_ => { LeaderSpeaks(c); Submit(c); }, () => OptionHint.Say(SuccessAssured)),
+            new MenuLine(_ => { Submit(c); }, () => OptionHint.Say(SuccessAssured)),
             // orig: R110+0x0AC4 (1838:0AC4) matched; hint R110+0x0ACA
-            new MenuLine(_ => { LeaderSpeaks(c); FightTheGuard(c); }, () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => { FightTheGuard(c); }, () => OptionHint.Say("Enter Combat")),
             // DORMANT: lines 8 and 9 are never offered; actions R110+0x0B02/0b06 and hints R110+0x0B04/0b08
             // C: are empty; the hints return AX/DX; neutral hints are used.
-            new MenuLine(_ => LeaderSpeaks(c)),
-            new MenuLine(_ => LeaderSpeaks(c)));
+            new MenuLine(_ => { }),
+            new MenuLine(_ => { }));
     }
 
     private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
-
-    /// <summary>The loop's var_chosen1 = leader, unless a pop-up named its member (see Run).</summary>
-    private static void LeaderSpeaks(CardContext c)
-    {
-        if (!c.MenuPopup)
-        {
-            c.Variables.Chosen[0] = c.Leader;
-        }
-    }
 
     /// <summary>Throwing the potion: sure for a mounted party, else by the least nimble rider and the potion's quality.</summary>
     // orig: R110+0x0BB4 (1838:0BB4) matched; slot 1 R110+0x0C14
@@ -102,11 +94,11 @@ public sealed class BishopsRoadTithe : Card
         }
         else if (c.MenuSlot == 0)
         {
-            chance = Math.Clamp(c.PartyMinMountedAgility() + c.ItemQuality(m, c.CardItems[c.MenuSlot]) + 1, 1, 99);
+            chance = Math.Clamp(c.PartyMinMountedAgility() + c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]) + 1, 1, 99);
         }
         else
         {
-            chance = Math.Clamp(c.PartyMinMountedAgility() + c.ItemQuality(m, c.CardItems[c.MenuSlot]) + 10, 10, 95);
+            chance = Math.Clamp(c.PartyMinMountedAgility() + c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]) + 10, 10, 95);
         }
         return OptionHint.ChanceOf(chance, m);
     }
@@ -136,7 +128,7 @@ public sealed class BishopsRoadTithe : Card
     private static void PrayForAid(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

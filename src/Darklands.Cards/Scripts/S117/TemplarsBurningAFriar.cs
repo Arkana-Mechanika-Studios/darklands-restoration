@@ -66,7 +66,7 @@ public sealed class TemplarsBurningAFriar : Card
     {
         var m = c.MenuMember;
         c.Variables.Chosen[0] = m;
-        var quality = c.ItemQuality(m, c.CardItems[c.MenuSlot]);
+        var quality = c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]);
         var chance = c.MenuSlot switch { 0 => quality + 2, 1 => quality - 3, 2 => quality + 12, _ => quality * 2 };
         return OptionHint.ChanceOf(chance, m);
     }
@@ -85,7 +85,7 @@ public sealed class TemplarsBurningAFriar : Card
     private static void PrayForGuidance(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

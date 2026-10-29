@@ -169,7 +169,7 @@ public sealed class BearCave : Card
     // orig: R104+0x0732 (1838:0732) matched; tests: CardSmokeTests
     private static void PrayToASaint(CardContext c)
     {
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         var answer = c.InvokeSaint(c.MenuMember, saint);
         if (answer == -1)
         {

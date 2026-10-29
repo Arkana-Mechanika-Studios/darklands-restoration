@@ -118,7 +118,7 @@ public sealed class DwarfKingsRedCap_MineB03 : Card
     private void Pray(CardContext c, CardMenu menu)
     {
         // C: the action leaves $ChosenOneName alone: the saint pop-up's hint (R101+0x10E0, +0x1103) names the one who prays.
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

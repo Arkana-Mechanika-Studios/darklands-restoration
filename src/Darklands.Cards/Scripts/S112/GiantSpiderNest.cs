@@ -54,6 +54,9 @@ public sealed class GiantSpiderNest : Card
         menu[2] = c.ItemsUsable();
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
+        // C: item_fn slots 0/1 are the potion handlers R112+0x24B8 / R112+0x24FA, slots 2/3 bare retf (R112+0x253C / 0x253E): Enter in the
+        // C: item box rates line 2 with slot 2's.
+        menu.ItemBox = () => c.MenuSlot < 2 ? PotionHint(c) : c.EmptyBoxHandler();
 
         return menu.Run(
             // orig: R112+0x1B5C (199D:050C) matched; hint R112+0x1BE8
@@ -89,7 +92,8 @@ public sealed class GiantSpiderNest : Card
     {
         var m = c.MenuMember;
         c.Variables.Chosen[0] = m;
-        var aim = c.Attribute(m, (int)Attribute.Perception) + c.ItemQuality(m, c.CardItems[c.MenuSlot]);
+        // C: the handlers read the entry's item (menu_slot), whichever slot's handler runs.
+        var aim = c.Attribute(m, (int)Attribute.Perception) + c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]);
         return OptionHint.ChanceOf(aim + (c.MenuSlot == 0 ? 4 : 19), m);
     }
 
@@ -137,7 +141,7 @@ public sealed class GiantSpiderNest : Card
     private void PrayForDeliverance(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

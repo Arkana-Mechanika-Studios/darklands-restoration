@@ -97,6 +97,33 @@ public sealed partial class CardContext
     /// <summary>The item/saint slot chosen in the pop-up (<c>menu_slot</c>).</summary>
     public int MenuSlot { get; set; }
 
+    /// <summary>
+    /// <c>menu_slot</c> as the box left it: the same as <see cref="MenuSlot"/>, except while the menu asks the box's handler for another
+    /// slot (Enter in a box rates line k with the handler for slot k % 4, <see cref="CardMenu"/>): <see cref="MenuSlot"/> then names that
+    /// handler, and a handler that reads <c>menu_slot</c> (most saint handlers and some item handlers) reads this.
+    /// </summary>
+    // orig: menu_slot DS:EE6A, set from the box's entry by card_menu R043+0x1CAE on Enter; the handler opt_fn[k] reads it as it stands
+    public int MenuEntrySlot
+    {
+        get => _menuEntrySlot ?? MenuSlot;
+        internal set => _menuEntrySlot = value;
+    }
+
+    private int? _menuEntrySlot;
+
+    /// <summary>Ends <see cref="MenuEntrySlot"/>'s difference from <see cref="MenuSlot"/> (CardMenu, after asking another slot's handler).</summary>
+    internal void ClearMenuEntrySlot() => _menuEntrySlot = null;
+
+    /// <summary>
+    /// A box handler that is a bare <c>retf</c> (installed for a slot the card lists no item or saint in): its chance is what AX holds at
+    /// the call, which mouse_hide (root 047C:12C3) leaves, and it names no member. Only Enter in a box reaches such a slot (line k rated
+    /// with the handler for slot k % 4); the box is reached with the pointer, so mouse_hide then runs the display driver's hide.
+    /// </summary>
+    // orig: e.g. R112+0x1438 / R112+0x143A / R108+0x0D30 retf; the loop: si = card_menu(..); mouse_hide(); l_a = (*opt_fn[si])() (R112+0x06ED..0x0700)
+    // DIVERGENCE (undefined-register): AX after mouse_hide with the pointer drawn is whatever the display driver's hide routine (reached through
+    // root 047C:052E) returns (with no pointer drawn it would be the line k). 0 is used, as the card oracle's mouse_hide returns.
+    public OptionHint EmptyBoxHandler() => OptionHint.ChanceOf(0, OptionHint.WholeParty);
+
     /// <summary>The choice came from the pop-up, not from an option line (<c>menu_popup</c>).</summary>
     public bool MenuPopup { get; set; }
 

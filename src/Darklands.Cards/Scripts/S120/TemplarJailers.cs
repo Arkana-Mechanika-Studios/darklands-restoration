@@ -87,7 +87,7 @@ public sealed class TemplarJailers : Card
     //   menu ignores it. card_load_near(card_name, pic_buf) in case 1 reloads the card's own picture.
     private static void Pray(CardContext c, CardMenu menu)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

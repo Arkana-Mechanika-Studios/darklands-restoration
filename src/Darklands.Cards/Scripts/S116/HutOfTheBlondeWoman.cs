@@ -38,39 +38,32 @@ public sealed class HutOfTheBlondeWoman : Card
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
-        // C: after every choice the loop sets var_chosen1 = leader before the handler; a pop-up
-        // handler then names its own member. Each action does this first for line choices.
+        // C: after each choice the loop sets $ChosenOneName to the leader, then calls the handler (a box handler may name its member), then
+        // C: the action.
+        menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
         return menu.Run(
             // orig: R116+0x12E6 (191B:04B6) matched; hint R116+0x1352
-            new MenuLine(_ => { LeaderSpeaks(c); KnockOnTheDoor(c, menu); }, Unknown),
+            new MenuLine(_ => { KnockOnTheDoor(c, menu); }, Unknown),
             // orig: R116+0x138A (line 1); hint R116+0x14E6 (191B:06B6) matched
-            new MenuLine(p => { LeaderSpeaks(c); WatchTheHut(c, menu, p); }, () => StealthHint(c)),
+            new MenuLine(p => { WatchTheHut(c, menu, p); }, () => StealthHint(c)),
             // orig: R116+0x1526 (line 2); hint R116+0x16E8 (191B:08B8) matched
-            new MenuLine(p => { LeaderSpeaks(c); ClimbInAtTheWindow(c, menu, p); }, () => StealthHint(c)),
+            new MenuLine(p => { ClimbInAtTheWindow(c, menu, p); }, () => StealthHint(c)),
             // orig: R116+0x1728 (line 3); hint R116+0x17EA (191B:09BA) matched
-            new MenuLine(_ => { LeaderSpeaks(c); PrayForInsight(c); }, () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => { PrayForInsight(c); }, () => OptionHint.Say("Select a person and a saint.")),
             // orig: R116+0x1822 (line 4); hint R116+0x18F4 (191B:0AC4) matched
-            new MenuLine(_ => { LeaderSpeaks(c); StormTheHut(c); }, Unknown),
+            new MenuLine(_ => { StormTheHut(c); }, Unknown),
             // orig: R116+0x192C (line 5); hint R116+0x1A26 (191B:0BF6) matched
-            new MenuLine(p => { LeaderSpeaks(c); BurnTheHut(c, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
+            new MenuLine(p => { BurnTheHut(c, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // DORMANT: lines 6..8 are never offered; actions R116+0x1A5E/0c32/0c36 and hints R116+0x1A60/0c34/0c38
             // C: are empty; the hints return AX/DX; neutral hints are used.
-            new MenuLine(_ => LeaderSpeaks(c)),
-            new MenuLine(_ => LeaderSpeaks(c)),
-            new MenuLine(_ => LeaderSpeaks(c)),
+            new MenuLine(_ => { }),
+            new MenuLine(_ => { }),
+            new MenuLine(_ => { }),
             // orig: R116+0x1A6A (191B:0C3A) matched; hint R116+0x1A78
-            new MenuLine(_ => { LeaderSpeaks(c); c.LeaveForTheMap(); }, () => OptionHint.Say(SuccessAssured)));
+            new MenuLine(_ => { c.LeaveForTheMap(); }, () => OptionHint.Say(SuccessAssured)));
     }
 
     private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
-
-    private static void LeaderSpeaks(CardContext c)
-    {
-        if (!c.MenuPopup)
-        {
-            c.Variables.Chosen[0] = c.Leader;
-        }
-    }
 
     private static OptionHint StealthHint(CardContext c) => OptionHint.ChanceOf(Math.Clamp(
         c.PartyAverageSkill((int)Skill.Woodwise) / 2 + c.PartyAverageSkill((int)Skill.Stealth) / 2, 1, 99), OptionHint.WholeParty);
@@ -81,7 +74,7 @@ public sealed class HutOfTheBlondeWoman : Card
     {
         var m = c.MenuMember;
         c.Variables.Chosen[0] = m;
-        var quality = c.ItemQuality(m, c.CardItems[c.MenuSlot]);
+        var quality = c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]);
         var chance = c.MenuSlot switch { 0 => quality, 1 => Math.Clamp(quality * 2, 1, 99), _ => Math.Clamp(quality * 5 / 2, 1, 99) };
         return OptionHint.ChanceOf(chance, m);
     }
@@ -188,7 +181,7 @@ public sealed class HutOfTheBlondeWoman : Card
     private void PrayForInsight(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

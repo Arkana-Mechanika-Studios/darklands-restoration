@@ -365,7 +365,9 @@ public sealed class CardMenu
     // which can be such a slot. The card's box handler (or the line's pop-up) answers for every slot here.
     private OptionHint SlotHint(PopupBox box, MenuLine line, int slot)
     {
+        // C: the handler for slot j is that slot's function; menu_slot stays the entry's (MenuEntrySlot), which handlers that read it see.
         var chosen = _c.MenuSlot;
+        _c.MenuEntrySlot = chosen;
         _c.MenuSlot = slot;
         try
         {
@@ -374,6 +376,7 @@ public sealed class CardMenu
         finally
         {
             _c.MenuSlot = chosen;
+            _c.ClearMenuEntrySlot();
         }
     }
 
@@ -432,7 +435,7 @@ public sealed partial class CardContext
     public OptionHint SaintPopupHint()
     {
         Variables.Chosen[0] = MenuMember;
-        var saint = CardSaints[MenuSlot];
+        var saint = CardSaints[MenuEntrySlot];
         var low = SaintChanceLow(MenuMember, saint);
         return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)));
     }
@@ -444,7 +447,7 @@ public sealed partial class CardContext
     // orig: e.g. R119+0x0760 matched: saint_chance_lo, saint_chance_hi, chance_text; r.a = -1, r.b = menu_member
     public OptionHint SaintPopupChanceHint()
     {
-        var saint = CardSaints[MenuSlot];
+        var saint = CardSaints[MenuEntrySlot];
         var low = SaintChanceLow(MenuMember, saint);
         return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)), MenuMember);
     }
@@ -457,7 +460,7 @@ public sealed partial class CardContext
     public OptionHint SaintPopupMemberHint()
     {
         Variables.Chosen[0] = MenuMember;
-        var saint = CardSaints[MenuSlot];
+        var saint = CardSaints[MenuEntrySlot];
         var low = SaintChanceLow(MenuMember, saint);
         return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)), MenuMember);
     }

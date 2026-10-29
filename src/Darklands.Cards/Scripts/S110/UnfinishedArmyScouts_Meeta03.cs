@@ -79,7 +79,7 @@ public sealed class UnfinishedArmyScouts_Meeta03 : Card
     // orig: R110+0x1F60 (19FD:0310) matched; tests: CardSmokeTests
     private static void Pray(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

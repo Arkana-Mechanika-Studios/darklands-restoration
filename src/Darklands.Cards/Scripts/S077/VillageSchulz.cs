@@ -133,7 +133,7 @@ public sealed class VillageSchulz : Card
     // orig: R077+0x1A9C (1996:04BC) matched; R077+0x1B8A (1996:05AA) matched; tests: CardSmokeTests
     private static void Pray(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

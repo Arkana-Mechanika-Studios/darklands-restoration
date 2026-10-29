@@ -114,7 +114,7 @@ public sealed class DemonPrinceAndTheSealedBook : Card
     // orig: R122+0x0322 (1838:0322) matched
     private static void CallASaint(CardContext c)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

@@ -410,7 +410,7 @@ public sealed class DragonBlightedLand : Card
                 // DORMANT: slot 3 holds no saint: no name.
                 break;
         }
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return true;

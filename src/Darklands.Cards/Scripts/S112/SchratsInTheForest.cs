@@ -88,7 +88,8 @@ public sealed class SchratsInTheForest : Card
     {
         var m = c.MenuMember;
         c.Variables.Chosen[0] = m;
-        var quality = c.ItemQuality(m, c.CardItems[c.MenuSlot]);
+        // C: the handlers read the entry's item (menu_slot), whichever slot's handler runs (Enter in the box: slot 2's).
+        var quality = c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]);
         var perception = c.Attribute(m, (int)Attribute.Perception);
         var chance = c.MenuSlot switch
         {
@@ -206,7 +207,7 @@ public sealed class SchratsInTheForest : Card
     private void PrayForDeliverance(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

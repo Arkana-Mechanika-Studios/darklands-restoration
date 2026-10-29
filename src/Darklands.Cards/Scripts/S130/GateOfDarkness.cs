@@ -56,14 +56,14 @@ public sealed class GateOfDarkness : Card
     private void PrayForLight(CardContext c, CardMenu menu)
     {
         menu[1] = OptionState.Shown;
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;
         }
         if (result != 0)
         {
-            c.NameToSlot(1, c.CardSaints[c.MenuSlot], 0);
+            c.NameToSlot(1, c.CardSaints[c.MenuEntrySlot], 0);
             // C: card_load (the whole card), not card_load_near.
             Show(c, 289);
             c.Screen.Text(1);

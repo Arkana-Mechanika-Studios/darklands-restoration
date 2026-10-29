@@ -148,7 +148,7 @@ public sealed class HuntsmanAtTheCamp : Card
     {
         var guard = c.Variables.Chosen[0];
         c.Variables.Chosen[0] = c.MenuMember;
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

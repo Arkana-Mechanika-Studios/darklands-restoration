@@ -136,7 +136,7 @@ public sealed class NoblemansRoadToll : Card
     private void Pray(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;
@@ -223,7 +223,7 @@ public sealed class NoblemansRoadToll : Card
     private static OptionHint PotionChance(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var quality = () => c.ItemQuality(c.Variables.Chosen[0], c.CardItems[c.MenuSlot]);
+        var quality = () => c.ItemQuality(c.Variables.Chosen[0], c.CardItems[c.MenuEntrySlot]);
         int chance;
         if (c.MenuSlot == 0)
         {

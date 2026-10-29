@@ -78,7 +78,7 @@ public sealed class BanditsNearTheCamp : Card
     private void CallOnASaint(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[1] = c.MenuMember;
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

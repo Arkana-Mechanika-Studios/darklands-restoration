@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 50 entries; recommendations: document: 1, justify: 40, keep: 9.
-- Part B (undefined-memory in core logic): 144 entries; determinism: n/a: 83, no: 47, partly: 10, yes: 4.
+- Part B (undefined-memory in core logic): 145 entries; determinism: n/a: 83, no: 48, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -271,7 +271,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### not-modelled (6)
 
-- **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:168` `CardContext.InvokeSaint`  
+- **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:195` `CardContext.InvokeSaint`  
   original: `R029+0x2180` (0E76:2180, draft)  
   divergence: the prayer screen (thunk 09C0:1EAF, then the card redraw thunk 09C0:1EA5) is the presentation's SaintPrayer; without it the prayer fails (0). In play DarklandsGame attaches SaintPrayerScreen to every card context it makes (DarklandsGame.cs, right after the CardContext is created), so no card runs without it.  
   recommendation: **justify** (checked against the original) - invoke_saint (R029+0x2180, matched) calls thunk 09C0:1EAF (the prayer screen) and then thunk 09C0:1EA5 (card redraw). The only production CardContext is made in DarklandsGame (line 397) and SaintPrayerScreen.Attach follows at once, so no card runs without the screen; the headless fallback is 0. Test NotModelledEvidenceTests.InvokeSaintNeedsThePrayerScreen.
@@ -605,13 +605,17 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original tests the 0x80 flag and prices item_defs[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item_defs[data_file[..].id] with the raw 16-bit id; item_defs is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
 
-### cards (64)
+### cards (65)
 
-- **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:189` `CardContext.ChanceText`  
+- **D-21ff84** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:123` `CardContext.EmptyBoxHandler`  
+  original: `R112+0x1438` (1881:0FA8, matched), `R112+0x143A` (1881:0FAA, matched), `R108+0x0D30` (1838:0D30, matched) +1 more  
+  divergence: AX after mouse_hide with the pointer drawn is whatever the display driver's hide routine (reached through root 047C:052E) returns (with no pointer drawn it would be the line k). 0 is used, as the card oracle's mouse_hide returns.  
+  deterministic: **no** (checked against the original); action: **document** - The four bare-retf box handlers (item slots 2/3 of R112+0x049E and R112+0x165C: R112+0x1438/0x143A, R112+0x253C/0x253E; item slots 1..3 of R108+0x0000: R108+0x0D30/0D32/0D34) are reached only by Enter in the item box (card_menu R043+0x1C8A returns the box's line k with menu_slot the entry's; the loop calls opt_fn[k], the handler for slot k % 4). Their result is AX at the call: the loop does si = card_menu(..); mouse_hide (root 047C:12C3); lcall [opt_fn + si*4] (R112+0x06ED..0x0700). mouse_hide leaves AX = k when no pointer is drawn ([DS:6EF4] or [DS:6A81] zero), but the box is only reached with the pointer, so it calls the display driver's hide through root 047C:052E (a far pointer patched at start-up) and AX is that routine's: not determined here. The C# uses 0, the value the card oracle's mouse_hide stub returns (pass B Enter-mode corpus: cards 111/112 agree). The chance only decides the potion roll (roll <= chance).
+- **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:216` `CardContext.ChanceText`  
   original: `R029+0x5B62` (1367:0C52, matched)  
   divergence: an index beyond 7 or below −2 (a chance of 160 and up, or below −40; callers pass clamped chances) is clamped to 0..6.  
   deterministic: **partly** (checked against the original); action: **keep** - Slots 8 and up / −3 and below of quality_words read further words of DGROUP as near pointers (the data before DS:4FCE and after it), which a chance of 160+ or below −60 would need; the callers pass chances of the usual range (not checked caller by caller), so the case is not expected; keep the clamp.
-- **D-6a940b** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:218` `CardContext.NameToSlot`  
+- **D-6a940b** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:245` `CardContext.NameToSlot`  
   original: `R029+0x1FB8` (0E76:1FB8, draft)  
   divergence: for kinds 0..2 an index past its table (or a kind-2 index below 0x5F, which reads the unwritten bytes before virtue_names) keeps the slot's text; kinds 6..8 read the static pointers next to their tables as the original does (TablePersonalNames.Name); without the EXE's tables kinds 6..8 keep the slot's text.  
   deterministic: **partly** (checked against the original); action: **document** - Checked with the card oracle: name_to_slot kinds 6..8 now read the far pointers next to their tables as the original does (one contiguous block of pointers in 290E); kinds 0..2 past their tables keep the slot's text, a case no card reaches with a valid quest.

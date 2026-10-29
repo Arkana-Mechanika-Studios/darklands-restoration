@@ -119,7 +119,7 @@ public sealed class FortressDungeonCell : Card
     //   menu ignores it. A menu_slot outside 0..3 shows nothing and stays on the card (no slot beyond 3 exists).
     private static void Pray(CardContext c)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

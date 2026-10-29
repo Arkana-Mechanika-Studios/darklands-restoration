@@ -117,7 +117,7 @@ public sealed class WitchesSummoningTheDragon : Card
     // orig: R082+0x0B40 (18A9:0430) matched; R082+0x0BEA (18A9:04DA) matched; tests: CardSmokeTests
     private static void CallASaint(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

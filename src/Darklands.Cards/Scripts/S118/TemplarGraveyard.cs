@@ -116,7 +116,7 @@ public sealed class TemplarGraveyard : Card
     // C: any non-zero answer counts as answered; the prayer does not make the member $ChosenOneName.
     private static void CallOnASaint(CardContext c, CardMenu menu)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

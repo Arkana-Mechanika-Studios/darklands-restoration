@@ -68,14 +68,14 @@ public sealed class ApocalypseCastleGate : Card
     /// <summary>The saint shows a dire vision (text 4) or stays silent (text 5); the gate's picture comes back.</summary>
     private static void PrayForGuidance(CardContext c)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;
         }
         if (result != 0)
         {
-            c.NameToSlot(1, c.CardSaints[c.MenuSlot], 0);
+            c.NameToSlot(1, c.CardSaints[c.MenuEntrySlot], 0);
             ShowPicture(c, 344);
             c.Screen.Text(4);
         }

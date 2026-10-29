@@ -198,7 +198,7 @@ public sealed class WitchesOfTheBlight : Card
     // orig: R083+0x05DC (1838:05DC) matched; R083+0x06A2 (1838:06A2) matched; tests: CardSmokeTests
     private static void Pray(CardContext c, int picture)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
@@ -206,7 +206,7 @@ public sealed class WitchesOfTheBlight : Card
         if (answer != 0)
         {
             ShowPicture(c, 232);
-            c.Screen.Text(c.CardSaints[c.MenuSlot] == 0x2B ? 0x0A : 0x0B);
+            c.Screen.Text(c.CardSaints[c.MenuEntrySlot] == 0x2B ? 0x0A : 0x0B);
             c.State.CurrentLocation = -1;
             c.Next = 0x0C;
             return;

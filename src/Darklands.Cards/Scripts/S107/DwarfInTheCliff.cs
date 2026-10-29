@@ -244,7 +244,7 @@ public sealed class DwarfInTheCliff : Card
     {
         c.Variables.Chosen[0] = c.MenuMember;
         var price = c.State.SavedCard;
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         var answer = c.InvokeSaint(c.Variables.Chosen[0], saint);
         // C: the price is saved around the prayer and put back (the prayer may change saved_card).
         c.State.SavedCard = price;

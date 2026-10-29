@@ -36,7 +36,7 @@ public sealed class ChasedByTheCityGuard : Card
             new MenuLine(() => Fight(c, standing), OptionHint.Saying(CardTexts.EnterCombat)),
             new MenuLine(chance => LayAnAmbush(c, standing, chance), () => AmbushChance(c)),
             new MenuLine(chance => Hide(c, standing, chance), () => HidingChance(c)),
-            new MenuLine(() => ThrowAPotion(c), OptionHint.Saying(CardTexts.SelectPotion),
+            new MenuLine(chance => ThrowAPotion(c, chance), OptionHint.Saying(CardTexts.SelectPotion),
                 () => PotionChance(c, c.MenuMember, c.MenuSlot)),
             new MenuLine(() => Surrender(c), OptionHint.Saying(SuccessAssured)));
     }
@@ -168,11 +168,12 @@ public sealed class ChasedByTheCityGuard : Card
     }
 
     // orig: R074+0x1AF2 (1995:0522) matched; R074+0x1C32 (1995:0662) matched; tests: CardSmokeTests
-    private static void ThrowAPotion(CardContext c)
+    private static void ThrowAPotion(CardContext c, int chance)
     {
         // C: the option line itself only asks for a member and a potion (chance -1, so the
         // ">= chance" roll always succeeds); member and slot are then whatever the pop-up left.
-        var chance = c.MenuPopup ? PotionChance(c, c.MenuMember, c.MenuSlot).Chance : -1;
+        // C: the chance is the handler's the loop calls (CardMenu.Run): the option line's -1, the box's for a click there, and for Enter
+        // C: there opt_fn[k], the box's handler for slot k % 4.
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         if (c.Random(100) >= chance)
         {

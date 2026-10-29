@@ -54,7 +54,7 @@ public sealed class CityGateInWartime : Card
             new MenuLine(() => WalkIn(c, menu, standing, WalkInChance(c, standing).Chance), () => WalkInChance(c, standing)),
             new MenuLine(() => Befriend(c, menu, standing), () => BefriendChance(c, standing)),
             new MenuLine(() => HideInTheHay(c, toll), OptionHint.Saying(NoRisk)),
-            new MenuLine(() => UsePotion(c), OptionHint.Saying(CardTexts.SelectPotion),
+            new MenuLine(chance => UsePotion(c, chance), OptionHint.Saying(CardTexts.SelectPotion),
                 () => OptionHint.ChanceOf(DistractionChance(c, c.MenuSlot), c.MenuMember)),
             new MenuLine(() => CallASaint(c, standing), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(() => AttackTheGuards(c, standing), OptionHint.Saying(CardTexts.EnterCombat)),
@@ -181,10 +181,11 @@ public sealed class CityGateInWartime : Card
         Math.Clamp(c.PartyAverageEffectiveAgility() + slot switch { 0 => 10, 1 => 30, _ => 20 }, 0, 100);
 
     // orig: R074+0x054C (1838:054C) matched; R074+0x061A (1838:061A) matched; tests: CardSmokeTests
-    private static void UsePotion(CardContext c)
+    private static void UsePotion(CardContext c, int chance)
     {
         // The option line itself only asks for a member and a potion (chance −1).
-        var chance = c.MenuPopup ? DistractionChance(c, c.MenuSlot) : -1;
+        // C: the chance is the handler's the loop calls (CardMenu.Run): the option line's -1, the box's for a click there, and for Enter
+        // C: there opt_fn[k], the box's handler for slot k % 4.
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         c.Events.Renew(-2, c.Here, 0, 0x13, 1, 0x63, 0, 24, 0, 0);
         if (c.Random(100) > chance)
@@ -219,7 +220,7 @@ public sealed class CityGateInWartime : Card
     // orig: R074+0x0652 (1838:0652) matched; R074+0x06FC (1838:06FC) matched; R074+0x0AD6 (1838:0AD6) matched; R074+0x0B60 (1838:0B60) matched; tests: CardSmokeTests
     private static void CallASaint(CardContext c, int standing)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

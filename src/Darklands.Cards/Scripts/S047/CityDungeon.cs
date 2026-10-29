@@ -367,7 +367,7 @@ public sealed class CityDungeon : Card
     private static OptionHint SaintChance(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         var low = c.SaintChanceLow(c.MenuMember, saint);
         return OptionHint.Say(c.ChanceText(low, c.SaintChanceHigh(c.MenuMember, saint)));
     }
@@ -379,7 +379,7 @@ public sealed class CityDungeon : Card
     /// </summary>
     private void Pray(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
@@ -394,7 +394,7 @@ public sealed class CityDungeon : Card
             c.Next = CardNumber;
             return;
         }
-        c.NameToSlot(1, c.CardSaints[c.MenuSlot], 0);
+        c.NameToSlot(1, c.CardSaints[c.MenuEntrySlot], 0);
         switch (c.MenuSlot)
         {
             case 0:

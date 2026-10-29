@@ -58,7 +58,7 @@ public sealed class AstrologersManor : Card
     // C: this prayer does not make the praying member $ChosenOneName.
     private static void PrayForInsight(CardContext c, CardMenu menu)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

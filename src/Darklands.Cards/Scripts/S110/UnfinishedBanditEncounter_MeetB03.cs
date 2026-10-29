@@ -76,7 +76,7 @@ public sealed class UnfinishedBanditEncounter_MeetB03 : Card
     // orig: R110+0x109A (1910:031A) matched; tests: CardSmokeTests
     private static void Pray(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

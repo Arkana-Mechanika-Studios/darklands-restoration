@@ -75,7 +75,7 @@ public sealed class LibraryOfSaints : Card
     {
         c.WaitUntilHour(EveningHour);
         c.State.Party.Purse = c.State.Party.Purse.Subtract(c.Variables.Money[0]);
-        c.LearnSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        c.LearnSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         c.Next = c.State.SavedCard;
     }
 }

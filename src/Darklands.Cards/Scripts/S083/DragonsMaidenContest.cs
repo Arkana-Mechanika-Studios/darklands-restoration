@@ -144,7 +144,7 @@ public sealed class DragonsMaidenContest : Card
     // orig: R083+0x11F2 (18FB:05C2) matched; R083+0x1292 (18FB:0662) matched; tests: CardSmokeTests
     private static void PrayForHelp(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

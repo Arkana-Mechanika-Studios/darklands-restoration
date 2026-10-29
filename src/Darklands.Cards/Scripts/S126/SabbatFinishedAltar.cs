@@ -119,7 +119,7 @@ public sealed class SabbatFinishedAltar : Card
     // C: returns 0 after a cancelled box, otherwise falls off its end without a value (ignored).
     private static void PrayToPurifyTheAltar(CardContext c)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

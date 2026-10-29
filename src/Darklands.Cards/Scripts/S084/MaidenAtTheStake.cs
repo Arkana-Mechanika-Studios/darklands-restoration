@@ -70,7 +70,7 @@ public sealed class MaidenAtTheStake : Card
             new MenuLine(chance => CutHerLoose(c, chance), hint: () => SpeedChance(c)),
 // orig: R084+0x1CA2 (199A:0682) asm; R084+0x1E1A (199A:07FA) asm; tests: CardSmokeTests
             // orig: R084+0x1F70 (199A:0950) asm; R084+0x1F8A (199A:096A) asm; R084+0x1FA4 (199A:0984) asm; R084+0x1FBE (199A:099E) asm; tests: CardSmokeTests
-            new MenuLine(() => DistractThem(c), OptionHint.Saying(CardTexts.SelectPotion), () =>
+            new MenuLine(chance => DistractThem(c, chance), OptionHint.Saying(CardTexts.SelectPotion), () =>
             {
                 c.Variables.Chosen[0] = c.MenuMember;
                 return OptionHint.ChanceOf(c.MenuSlot is >= 0 and < 4 ? PotionChances[c.MenuSlot] : -1, c.MenuMember);
@@ -211,15 +211,11 @@ public sealed class MaidenAtTheStake : Card
         Fight(c, 0);
     }
 
-    private static void DistractThem(CardContext c)
+    private static void DistractThem(CardContext c, int chance)
     {
         // C: the option line itself gives chance -1: the potion then always fails.
-        var chance = -1;
-        if (c.MenuPopup && c.MenuSlot is >= 0 and < 4)
-        {
-            c.Variables.Chosen[0] = c.MenuMember;
-            chance = PotionChances[c.MenuSlot];
-        }
+        // C: the chance is the handler's the loop calls (CardMenu.Run): the option line's -1, the box's for a click there, and for Enter
+        // C: there opt_fn[k], the box's handler for slot k % 4.
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         // C: here a roll below the chance (<) succeeds.
         if (c.Random(100) < chance)

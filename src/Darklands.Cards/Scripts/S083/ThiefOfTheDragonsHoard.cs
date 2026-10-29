@@ -154,7 +154,7 @@ public sealed class ThiefOfTheDragonsHoard : Card
     // C: the saint brings the party to the thief, but the script then neither records nor gives the cup.
     private static void InvokeASaint(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

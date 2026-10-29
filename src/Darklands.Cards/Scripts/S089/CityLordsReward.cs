@@ -98,7 +98,7 @@ public sealed class CityLordsReward : Card
     private static void LearnTheFormula(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        LearnFormulaGroup(c, c.MenuMember, c.CardSaints[c.MenuSlot]);
+        LearnFormulaGroup(c, c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         c.Screen.Text(3);
         c.PassHours(1);
         c.Next = ToTheSquare(c);
@@ -126,7 +126,7 @@ public sealed class CityLordsReward : Card
     private static void LearnAboutTheSaint(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         // C: for saint −1 the bit is 0x80 >> −1 % 8 = 0x80 >> −1, a shift count masked to 31: no bit is set.
         if (saint >= 0)
         {

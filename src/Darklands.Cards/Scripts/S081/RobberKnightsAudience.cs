@@ -154,7 +154,7 @@ public sealed class RobberKnightsAudience : Card
     // orig: R081+0x0DE0 (18BB:05B0) matched; R081+0x0EC2 (18BB:0692) matched; tests: CardSmokeTests
     private static void CallASaint(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

@@ -117,7 +117,7 @@ public sealed class CavernOfFireAndHail : Card
     private void PrayForShelter(CardContext c, CardMenu menu)
     {
         menu[2] = OptionState.Shown;
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

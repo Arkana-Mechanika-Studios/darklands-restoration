@@ -480,7 +480,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-805211** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:199` `SmallCaveUnderTheLedge.FightTheTatzelwurm`  
   original: `R106+0x1C28` (19BC:03E8, matched)  
   why: R029 2474 returns how many members were away, not who left: var_chosen1 gets that count, so the text names party member [count], and the test against -1 always holds: the loss text and the Virtue practice come even when nobody was away.
-- **B-c6aabd** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:175` `CryptUnderTheRuinedChurch.TakeTheItem`  
+- **B-c6aabd** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:179` `CryptUnderTheRuinedChurch.TakeTheItem`  
   original: `R108+0x07CA` (1838:07CA, matched)  
   why: a victory has already left for the map (cur_loc -1), so the errand's thing is given only after a defeat.
 - **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:79` `HussiteBand.ClaimFriendship`  

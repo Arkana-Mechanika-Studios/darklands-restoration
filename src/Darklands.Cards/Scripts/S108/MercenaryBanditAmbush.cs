@@ -134,7 +134,7 @@ public sealed class MercenaryBanditAmbush : Card
     // orig: R108+0x37EA (1B3A:07CA) matched; tests: CardSmokeTests
     private static void PrayForPeacefulPassage(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
