@@ -35,9 +35,21 @@ public sealed class ScreenDrawingLeadsTests
 
         public sealed class Stop : Exception;
 
+        /// <summary>The keys the host gives, in order.</summary>
+        public Queue<int> Keys { get; } = new();
+
+        /// <summary>Every screen presented, when <see cref="KeepFrames"/>.</summary>
+        public List<byte[]> Frames { get; } = [];
+
+        public bool KeepFrames { get; init; }
+
         public void Present(Screen screen)
         {
             screen.Pixels.CopyTo(Shown, 0);
+            if (KeepFrames)
+            {
+                Frames.Add([.. screen.Pixels]);
+            }
             if (++_presents == StopAtPresent)
             {
                 throw new Stop();
@@ -46,11 +58,7 @@ public sealed class ScreenDrawingLeadsTests
 
         public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
 
-        public bool TryReadKey(out int key)
-        {
-            key = 0;
-            return false;
-        }
+        public bool TryReadKey(out int key) => Keys.TryDequeue(out key);
 
         public void Pump()
         {
@@ -105,6 +113,78 @@ public sealed class ScreenDrawingLeadsTests
         Assert.Throws<ShotHost.Stop>(() => screens.Battle(new Darklands.Cards.BattleRequest(0x14, 863, [(34, 4, 8), (18, 5, 2), (34, 1, 2)])));
         Assert.Contains(host.Shown, p => p != 3 && p != 7);
         Assert.Equal(ui.Canvas.Screen.Pixels, host.Shown);
+    }
+
+    // orig: R002+0x0378..0x037B root 047C:0584(0x1C0) sets colours 0..15 to the driver's sixteen in every battle; R002+0x03B4..0x03C6 fills
+    // colours 16..255 with 0xFF before the parts are copied and set_palette (root 0410:0397) writes the bytes as they are: the DAC shows the
+    // colours no part sets (235..242, 255; 32..79 where no enemy scheme takes them) white (vis10 sessions D-09fbc1, D-b797f7, D-56a675: local/batch/batpal)
+    [Fact]
+    public void ABattleSetsTheSixteenStartUpColoursAndWhiteWhereNoPartIsCopied()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost { StopAtPresent = 30 };
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(WorldData.Load(files), 7);
+        // a city picture's colours before the battle (colour 9 as D-09fbc1's town leaves it)
+        ui.Canvas.SetColor(9, new Darklands.Content.Formats.Graphics.Rgb24(60, 56, 199));
+        ui.Canvas.SetColor(255, new Darklands.Content.Formats.Graphics.Rgb24(101, 85, 81));
+        ui.Canvas.SetColor(238, new Darklands.Content.Formats.Graphics.Rgb24(170, 170, 170));
+        var screens = new BattleScreens(ui, () => state);
+        Assert.Throws<ShotHost.Stop>(() => screens.Battle(new Darklands.Cards.BattleRequest(0x14, 863, [(34, 4, 8), (18, 5, 2), (34, 1, 2)])));
+        var palette = ui.Canvas.Screen.Palette;
+        uint Rgb(int i) => palette[i] & 0xFFFFFF;
+        uint Of(Darklands.Content.Formats.Graphics.Rgb24 c) => (uint)(c.R << 16 | c.G << 8 | c.B);
+        for (var i = 0; i < 16; i++)
+        {
+            Assert.Equal(i == 13 ? 0xC7C7C7u : Of(Darklands.Presentation.Graphics.Palette.StartupColors[i]), Rgb(i));
+        }
+        Assert.Equal(0x5555FFu, Rgb(9));
+        foreach (var white in new[] { 235, 238, 242, 255 })
+        {
+            Assert.Equal(0xFFFFFFu, Rgb(white));
+        }
+    }
+
+    // orig: root 0000:0012..0x0033: menu_bar_run sets the card window's font to 1 and runs the hot keys with it (root 0000:0CAA); its items
+    // run with the font put back (root 0000:014C..0x0158): Alt-Q's box is font 1 (rows 93..106), the Game menu's Quit to DOS font 3 (92..106);
+    // the battle's Alt-S "Saving Game" box is the same box (vis10 session D-b797f7: local/batch/batpal)
+    [Theory]
+    [InlineData(true, 93)]
+    [InlineData(false, 92)]
+    public void AHotKeysBoxIsInTheCardWindowsFontOneAndTheMenusInFontThree(bool hotKey, int top)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost { KeepFrames = true };
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(WorldData.Load(files), 7);
+        var keys = new HotKeys(ui, state, ui.Options);
+        ui.GameKey = keys.Handle;
+        ui.Canvas.Fill(0, 0, Screen.Width, Screen.Height, 3);
+        ui.Present();
+        if (hotKey)
+        {
+            host.Keys.Enqueue(Keys.AltQ);
+            host.Keys.Enqueue(0x316E);
+            ui.Poll();
+        }
+        else
+        {
+            host.Keys.Enqueue(0x316E);
+            keys.QuitToDos();
+        }
+        // rows 30 and down: the pointer stands at (5, 5)
+        static List<int> Rows(byte[] f) =>
+            Enumerable.Range(30, Screen.Height - 30).Where(y => Enumerable.Range(0, Screen.Width).Any(x => f[y * Screen.Width + x] != 3)).ToList();
+        var rows = host.Frames.Select(Rows).First(r => r.Count > 0);
+        Assert.Equal(top, rows[0]);
+        Assert.Equal(106, rows[^1]);
+        Assert.Equal(3, ui.CardWindowFont);
     }
 
     // orig: R067+0x1ECE / R072+0x1494 fill card_name and pic_buf without card_load (the previous card stays on the screen); with

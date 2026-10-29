@@ -1,0 +1,14 @@
+# vis10 batpal: Alt-S on the map of DKSAVE17 (mapsave.steps): the comment dialog, then Enter: the "Saving Game" box of a hot key outside a battle
+key:t
+wait:5
+key:l
+wait:300
+shot:map
+key:alts
+wait:50
+shot:comment
+shotsave:saving
+rec:14
+key:enter
+wait:300
+shot:aftersave

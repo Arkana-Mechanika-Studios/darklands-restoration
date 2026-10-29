@@ -122,8 +122,8 @@ public sealed class MessageBox(GameUi ui)
     private SavedRegion Draw(string text, int y, byte textColor = TextColor)
     {
         var canvas = ui.Canvas;
-        // C: the box is drawn in the card window, whose font is slot 3 (GameUi.CardText).
-        var font = ui.CardText;
+        // C: the box is drawn in the card window with its font: slot 3, slot 1 inside menu_bar_run (a hot key's box: GameUi.CardWindowFont).
+        var font = ui.CardWindowText;
         var textY = y != Centred ? y : 100 - font.LineHeight / 2;
         var textWidth = font.Measure(text);
         var textX = WindowX + (WindowWidth - textWidth) / 2;

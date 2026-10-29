@@ -51,7 +51,7 @@ public sealed class GameScreens2 : IGameScreens
     {
         get => _sheet.MenuBarKey;
         set => _sheet.MenuBarKey = value is null ? null : key => key is Keys.AltQ or Keys.AltP or Keys.AltS or Keys.AltL or Keys.AltD
-            or Keys.AltF or Keys.AltM or Keys.AltC && value(key);
+            or Keys.AltF or Keys.AltM or Keys.AltC && _ui.InMenuBarLoop(() => value(key));
     }
 
     /// <summary>The saint page the sheet's Saints list opens (member, saint).</summary>

@@ -95,6 +95,37 @@ public sealed class GameUi
 
     private TextPainter? _cardText;
 
+    /// <summary>The card window's font slot as the boxes drawn in it take it: 3, but 1 while the menu bar's loop runs (its hot keys included).</summary>
+    // orig: root 0000:0006..0x001E: menu_bar_run keeps the card window's colour and font (DS:017C -> +0x0C, +0x10) and sets the font to 1;
+    //   root 0000:0029..0x0033 runs hot_keys (root 0000:0CAA) for a waiting key with that font; root 0000:014C..0x0158 and 0x019D..0x01A9
+    //   put both back before calling a chosen item or sub-item, root 0000:01BF..0x01C5 at the end. So a box of a hot key (Alt-S's "Saving
+    //   Game", Alt-Q's question, Alt-P, the Alt-D / F / M / C messages) is in font 1, the same box from the menu in font 3. load_game
+    //   R037+0x8B76 sets the font to 3 first. checked against asm and the original's screen (vis10 session D-b797f7, local/batch/batpal)
+    public int CardWindowFont { get; set; } = 3;
+
+    /// <summary>The painter of <see cref="CardWindowFont"/>.</summary>
+    public TextPainter CardWindowText => CardWindowFont switch
+    {
+        1 => Text,
+        3 => CardText,
+        _ => new TextPainter(Assets.Font(CardWindowFont)),
+    };
+
+    /// <summary>Runs <paramref name="run"/> as menu_bar_run runs its part: with the card window's font set to 1, put back after.</summary>
+    public T InMenuBarLoop<T>(Func<T> run)
+    {
+        var font = CardWindowFont;
+        CardWindowFont = 1;
+        try
+        {
+            return run();
+        }
+        finally
+        {
+            CardWindowFont = font;
+        }
+    }
+
     public IAudio Audio => _host.Audio;
 
     /// <summary>The host's clock (real-time screens such as the battle).</summary>
@@ -441,7 +472,7 @@ public sealed class GameUi
                 MenuBar.Run(keyboard: true);
                 return null;
             }
-            if (GameKey?.Invoke(key) == true)
+            if (GameKey is { } gameKey && InMenuBarLoop(() => gameKey(key)))
             {
                 return null;
             }

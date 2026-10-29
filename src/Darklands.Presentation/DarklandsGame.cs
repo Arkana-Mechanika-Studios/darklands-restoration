@@ -249,6 +249,8 @@ public sealed class DarklandsGame
     // (R043+0x078E: srand((unsigned)time(0)), TimePassage.Reseed) before the load screen
     private void LoadInGame(GameState state, bool inBattle = false)
     {
+        // orig: R037+0x8B76 card_window->f10 = 3 first: the question is in font 3 from Alt-L too (GameUi.CardWindowFont)
+        _ui.CardWindowFont = 3;
         if (!new MessageBox(_ui).Ask("Loading is irreversable. Proceed?"))
         {
             return;

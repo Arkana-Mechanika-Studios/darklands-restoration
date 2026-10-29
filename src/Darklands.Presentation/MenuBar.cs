@@ -204,6 +204,10 @@ public sealed class MenuBar
             return;
         }
         _running = true;
+        // orig: root 0000:001E: the card window's font is 1 in the loop (the keyboard mode's Alt-Q box), put back before an item (Choose)
+        var font = _ui.CardWindowFont;
+        _ui.CardWindowFont = 1;
+        _itemFont = font;
         try
         {
             if (keyboard)
@@ -235,8 +239,12 @@ public sealed class MenuBar
         finally
         {
             _running = false;
+            _ui.CardWindowFont = font;
         }
     }
+
+    /// <summary>The card window's font menu_bar_run kept at its start: the items run with it.</summary>
+    private int _itemFont = 3;
 
     private void Choose()
     {
@@ -244,6 +252,8 @@ public sealed class MenuBar
         var (menu, item, sub, parent) = (_lit, _itemRow, _subRow, _subParent);
         CloseDropdown();
         _ui.Present();
+        // orig: root 0000:014C..0x0152 / 0x019D..0x01A3: the window's colour and font put back before the item's call
+        _ui.CardWindowFont = _itemFont;
         if (_overItem)
         {
             _overItem = false;

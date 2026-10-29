@@ -648,17 +648,22 @@ public sealed class BattleScreen : ITacticalView
 
     /// <summary>The battle palette: common colours, the party's colours, the terrain's background colours.</summary>
     // orig: battle_run R002+0x0000 R002+0x037B..0x0502 (0E76:037B) draft (the palette part, spec E §0)
+    // orig: R002+0x045C..0x0470 copies the 0x78 bytes at 20A5:33FC (the five slots' figure colours, 0x18 each) whatever the party size:
+    //   a slot past the party keeps the colours a load or a departed member left there (vis10 session D-b797f7: colour 112)
     private void SetPalette(int background)
     {
         var party = new byte[120];
-        for (var i = 0; i < _state.Party.Members.Count && i < 5; i++)
+        for (var i = 0; i < Party.MaxMembers; i++)
         {
-            var colours = PartyColours(_state.Party.Members[i].ImagePalette, i);
+            var colours = i < _state.Party.Members.Count ? PartyColours(_state.Party.Members[i].ImagePalette, i)
+                : _state.Party.SpareRecord(i)?.ImagePalette ?? [];
             colours.AsSpan(0, Math.Min(24, colours.Length)).CopyTo(party.AsSpan(24 * i));
         }
         // Colours 0..15 come from MGRAPHIC's 16 EGA colours through the index list {0, 1, 2, 3, 4, 0, 6, …, 15}: colour 5 is black,
         // the shadow colour inside the sprites (spec E §0).
-        _ui.Canvas.SetColor(5, new Content.Formats.Graphics.Rgb24(0, 0, 0));
+        // orig: R002+0x0378..0x037B root 047C:0584(0x1C0) before the DS:9069 test, in every battle: the driver writes all sixteen (colour 9 is
+        //   (21, 21, 63) again even when a card's picture changed it); root 0410:031E then reads them back into the palette set at R002+0x04BA
+        _ui.UseStartupColors();
         foreach (var (index, rgb) in BattlePalette.Colors(_assets.CommonColors, _assets.BackgroundPalettes, background, party))
         {
             _ui.Canvas.SetColor(index, rgb);
@@ -1371,7 +1376,12 @@ public sealed class BattleScreen : ITacticalView
     // DS:9C2F = 0, DS:9C3C = DS:9C41 = -1); tests: BattleUiTests
     private bool MenuBarRun()
     {
-        HotKeysForWaitingKey();
+        // orig: root 0000:001E..0x0033: these hot keys run with the card window's font 1 (GameUi.CardWindowFont); R016's own call keeps it
+        _ui.InMenuBarLoop(() =>
+        {
+            HotKeysForWaitingKey();
+            return 0;
+        });
         if (_unfoldedMenu is { } unfolded)
         {
             // C: the T key's flags (DS:9C26 = 1, DS:9C2F = 2, DS:A394 = 3) open the bar here, at the next root 0000:0000 of the battle's loop

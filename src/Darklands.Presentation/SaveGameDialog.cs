@@ -25,7 +25,8 @@ public sealed class SaveGameDialog(GameUi ui, SaveFolder folder)
     // the combatants', bit 7 of the difficulty is set for the file, then the battle-state save R003+0x00DC writes the battle file
     // orig: R037+0x2B66..0x2B70: in a battle the card window's text colour (DS:017C -> +0x0C) is set to 9 before the "Saving Game" box
     //   (root 0000:23E6) and put back after it: the box's words are in colour 9 there, colour 1 outside a battle; checked against the
-    //   original's screen (vis10 session D-b797f7, local/batch/c5uncertain)
+    //   original's screen (vis10 session D-b797f7, local/batch/c5uncertain); Alt-S comes through the hot keys of menu_bar_run, so the box is
+    //   in the card window's font 1 (root 0000:001E, GameUi.CardWindowFont), from the Game menu in font 3 (local/batch/batpal)
     public string? Run(GameState state, TacticalBattle? battle = null)
     {
         var comment = new TextInputBox(ui).Ask("Save Game Comment:", CommentLength, OriginalSaves.DefaultComment);
