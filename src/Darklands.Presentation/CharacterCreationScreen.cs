@@ -30,7 +30,10 @@ public sealed class CharacterCreationScreen
     private const byte NameColor = 0x10;
     private const byte NameShadow = 0x11;
     private const byte SelectedName = 0x12;
-    private const int FirstFigureColor = 237;
+    // orig: the figure colours DS:E753..DS:E76A, written into the current palette block (DS:E48C) and set (root 047C:058B), are colours
+    // 235..242 on the screen, not 237..244: the original's DAC after A in the creation menu (R037+0x0B9C..0x0C88) holds the 24 start bytes
+    // there (vis10 session D-b0c9a6).
+    private const int FirstFigureColor = 235;
 
     /// <summary>The commands from top to bottom: label text, key, label y.</summary>
     private static readonly (int Text, char Key, int Y)[] Commands =
@@ -201,35 +204,45 @@ public sealed class CharacterCreationScreen
                     DrawAll();
                     break;
                 case 'a' when _roster.Characters.Count > 0:
+                {
+                    var slot = -1;
                     Press('a', () =>
                     {
                         // orig: R037+0x0B06: the new slot's shield picture DS:A2D7[slot] is PICS\SHIELDA.PIC, whatever the record's letter, until H
-                        if (_roster.AddToParty(Shared.Selected, _images[0]) is var added and >= 0 && _roster.Member(added) is { } joined)
+                        slot = _roster.AddToParty(Shared.Selected, _images[0]);
+                        if (slot >= 0 && _roster.Member(slot) is { } joined)
                         {
-                            _panel.SetShieldPicture(added, joined, 'A');
+                            _panel.SetShieldPicture(slot, joined, 'A');
                         }
                     });
                     DrawFigure();
-                    DrawPartyRows();
+                    DrawPartyFrame(slot);
+                    DrawPartyRow(slot);
                     DrawList();
                     break;
+                }
                 case 'd' when _roster.Characters.Count > 0:
+                {
+                    var slot = _roster.SlotOf(Shared.Selected, CreationRoster.MenuSlots);
                     Press('d', () => _roster.DropFromParty(Shared.Selected));
-                    DrawPartyRows();
+                    DrawPartyRow(slot);
                     DrawList();
                     break;
+                }
                 case 'h' when _roster.Characters.Count > 0:
+                {
+                    var slot = _roster.SlotOf(Shared.Selected);
                     Press('h', () =>
                     {
                         // orig: R037+0x1046: the next letter, then DS:A2D7[slot] freed and loaded again from PICS\SHIELD<letter>.PIC
-                        if (_roster.NextShield(Shared.Selected) && _roster.SlotOf(Shared.Selected) is var slot and >= 0 &&
-                            _roster.Member(slot) is { } member)
+                        if (_roster.NextShield(Shared.Selected) && slot >= 0 && _roster.Member(slot) is { } member)
                         {
                             _panel.SetShieldPicture(slot, member, member.ShieldLetter);
                         }
                     });
-                    DrawPartyRows();
+                    DrawPartyRow(slot);
                     break;
+                }
                 case 's' when _roster.Characters.Count > 0:
                     Press('s', NextImage);
                     break;
@@ -237,10 +250,13 @@ public sealed class CharacterCreationScreen
                     Colour(c - '0');
                     break;
                 case 'k' when _roster.Characters.Count > 0:
+                {
+                    var slot = _roster.SlotOf(Shared.Selected);
                     Press('k', () => _roster.Kill(Shared.Selected));
-                    DrawPartyRows();
+                    DrawPartyRow(slot);
                     DrawList();
                     break;
+                }
                 case 'b' when _roster.Characters.Count > 0:
                     if (_roster.ToParty(partySeed, _leader) is { } party)
                     {
@@ -412,6 +428,7 @@ public sealed class CharacterCreationScreen
         {
             if (_roster.Member(i) is not null)
             {
+                DrawPartyFrame(i);
                 _panel.DrawRow(Screen, PanelParty(), i);
             }
         }
@@ -455,21 +472,38 @@ public sealed class CharacterCreationScreen
         Screen.Recolor(0xC6, Shared.Selected * 8 + 0x16, 0x71, 8, NameColor, SelectedName);
     }
 
-    /// <summary>The party column rows (party_panel_frames / party_panel_rows).</summary>
+    /// <summary>The party column row of the one slot a command changed (none when <paramref name="slot"/> is -1).</summary>
+    // orig: only the slot found is drawn: A (R037+0x0D6F / 0x0D7A) root 0000:1588 + root 0000:1716 for the slot filled; D (R037+0x0EF1, the
+    // first four slots), H (R037+0x1102) and K (R037+0x126B, the five slots) root 0000:1716 for the character's slot, which draws the row's
+    // background there even when the slot was just emptied; the other rows keep what is on the screen, so an empty slot no command touched
+    // shows the menu's picture (CRETSCRN.PIC), as after R037+0x03D4 (rows only for slots whose status DS:9C69 + 0x80 x slot is not 0).
     // C: a new member's row shows PICS\SHIELDA.PIC until H is pressed (the slot's shield picture, PartyPanel.SetShieldPicture), whatever the
     //   letter of its record; checked against the original's screen (vis10 session D-b0c9a6 with a member whose letter is not A, local/batch/c5uncertain)
-    private void DrawPartyRows()
+    private void DrawPartyRow(int slot)
     {
-        var party = PanelParty();
-        for (var i = 0; i < CreationRoster.MenuSlots; i++)
+        if (slot >= 0)
         {
-            _panel.DrawRow(Screen, party, i);
+            _panel.DrawRow(Screen, PanelParty(), slot);
         }
     }
 
+    /// <summary>The frame around the party column row of a filled slot (A, and the whole menu's drawing).</summary>
+    // orig: root 0000:1588 with the slot (its bit of the table DS:01E4) from A (R037+0x0D6F) and R037+0x0420; DS:9064 + slot is 0 in this menu
+    // (the unlit pieces): the frame shows in the original's picture after A (vis10 session D-b0c9a6), not on the menu's picture
+    private void DrawPartyFrame(int slot)
+    {
+        if (slot >= 0)
+        {
+            PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, slot, lit: false);
+        }
+    }
+
+    // orig: root 0000:1716 writes the name and values of the slot equal to the leader byte DS:907B in colour 0x0E; the menu starts with
+    // DS:907B = 0 (the original's picture after A shows the first slot's name and values in 0x0E, vis10 session D-b0c9a6), and the
+    // member sheet's leader change (MemberSheet) keeps it.
     private Party PanelParty()
     {
-        var party = new Party { LeaderIndex = -1 };
+        var party = new Party { LeaderIndex = _leader };
         for (var i = 0; i < Party.MaxMembers; i++)
         {
             party.Members.Add(_roster.Member(i) ?? new Character { Status = CharacterStatus.Empty });
@@ -496,7 +530,7 @@ public sealed class CharacterCreationScreen
         }
     }
 
-    /// <summary>The shared figure palette into colours 237..244 (6-bit VGA values).</summary>
+    /// <summary>The shared figure palette into colours 235..242 (6-bit VGA values).</summary>
     private void ApplyFigureColours()
     {
         for (var i = 0; i < 8; i++)

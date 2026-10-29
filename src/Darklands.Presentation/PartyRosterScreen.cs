@@ -32,7 +32,10 @@ public sealed class PartyRosterScreen
     private const byte NameColor = 0x10;
     private const byte NameShadow = 0x11;
     private const byte Highlight = 0x12;
-    private const int FirstFigureColor = 237;
+    // orig: the figure colours DS:E753..DS:E76A, written into the current palette block (DS:E48C) and set (root 047C:058B), are colours
+    // 235..242 on the screen, not 237..244: the original's DAC after A in the creation menu (R037+0x0B9C..0x0C88) holds the 24 start bytes
+    // there (vis10 session D-b0c9a6) (R038 writes the same DS:E753).
+    private const int FirstFigureColor = 235;
 
     /// <summary>The commands from top to bottom: label text, the key a click on the row gives, the label's y.</summary>
     // orig: R038+0x0000 the click rows (y 0x2D + 15 x row) and their keys; R038+0x25CA the labels at (0x48, 0x30 + 15 x row)
@@ -349,7 +352,7 @@ public sealed class PartyRosterScreen
     /// <summary>1, 2, 3: the next colours of a part of the figure of the slot holding the ROW's number; no button.</summary>
     // orig: R038+0x02F8 keys 0x231/0x4F31, 0x332/0x5032, 0x433/0x5133: with DS:E7DC > 0; InnRoster.CycleColour, the palette set; no slot: AX is
     // DS:E7DA (the search's last load)
-    // C: the shared colours are the current palette's colours 237..244 (DS:E753 is the current palette DS:E48C + 3 x 237): read from the screen here.
+    // C: the shared colours are the current palette's colours 235..242 (DS:E753 is the current palette's colour 235): read from the screen here.
     private int Colour(int key)
     {
         if (Menu.Count <= 0)
@@ -441,7 +444,7 @@ public sealed class PartyRosterScreen
         }
     }
 
-    /// <summary>The shared figure colours into colours 237..244 (the palette set).</summary>
+    /// <summary>The shared figure colours into colours 235..242 (the palette set).</summary>
     private void ApplyFigureColours()
     {
         var p = Menu.Colours.Palette;
@@ -451,7 +454,7 @@ public sealed class PartyRosterScreen
         }
     }
 
-    /// <summary>Colours 237..244 of the screen into the shared figure colours (6-bit values).</summary>
+    /// <summary>Colours 235..242 of the screen into the shared figure colours (6-bit values).</summary>
     private void ReadFigureColours()
     {
         var p = Menu.Colours.Palette;
