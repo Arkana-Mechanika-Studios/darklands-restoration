@@ -127,6 +127,12 @@ internal sealed class LauncherScreen
                 _editText = (_editFresh ? "" : _editText) + typed.Text;
                 _editFresh = false;
                 return null;
+            case TextTyped typed when _focus == Item.GameFolder && !IsFixed(Item.GameFolder, out _):
+                // typing on the focused game folder starts editing it (no click or Enter needed)
+                StartEditing(_model.GameFolder ?? "");
+                _editText = typed.Text;
+                _editFresh = false;
+                return null;
             case KeyPressed key when _editing:
                 EditKey(key);
                 return null;
@@ -163,8 +169,15 @@ internal sealed class LauncherScreen
                 return Activate(_focus, 1, cycle: false);
             case LauncherKey.Escape:
                 return LauncherChoice.Quit;
-            case LauncherKey.Paste when _focus == Item.GameFolder:
-                StartEditing(_surface.Clipboard() ?? "");
+            case LauncherKey.Paste when _focus is Item.GameFolder or Item.Change:
+                if (IsFixed(Item.GameFolder, out var by))
+                {
+                    _message = $"The game folder is set by {by}: change it there.";
+                    return null;
+                }
+                _focus = Item.GameFolder;
+                StartEditing(CleanPath(_surface.Clipboard()));
+                _editFresh = false;
                 return null;
             default:
                 return null;
@@ -176,8 +189,10 @@ internal sealed class LauncherScreen
         _message = null;
         _messageColour = PaleRed;
         _showSound = false;
-        if (IsFixed(item, out _))
+        if (IsFixed(item, out var fixedBy))
         {
+            _message = $"Set by {fixedBy}: change it there.";
+            _messageColour = PaleBlue;
             return null;
         }
         switch (item)
@@ -189,9 +204,9 @@ internal sealed class LauncherScreen
                 StartEditing(_model.GameFolder ?? "");
                 break;
             case Item.Change:
-                if (_surface.PickFolder is { } pick)
+                if (Pick("Choose your Darklands folder (the one with DARKLAND.EXE, or the GOG or Steam install folder)", out var picked))
                 {
-                    if (pick("Choose your Darklands folder (the one with DARKLAND.EXE, or the GOG or Steam install folder)") is { } picked)
+                    if (picked is not null)
                     {
                         SetGameFolder(picked);
                         if (!_model.CanPlay)
@@ -202,8 +217,11 @@ internal sealed class LauncherScreen
                 }
                 else
                 {
+                    // no dialog here: the folder is typed, pasted (Ctrl+V) or dropped instead
                     _focus = Item.GameFolder;
                     StartEditing(_model.GameFolder ?? "");
+                    _message ??= "Type or paste (Ctrl+V) the folder, or drop it on this window.";
+                    _messageColour = PaleBlue;
                 }
                 break;
             case Item.Window:
@@ -222,16 +240,16 @@ internal sealed class LauncherScreen
                 _model.CycleSoundCard(step);
                 break;
             case Item.Roms:
-                if (_surface.PickFolder is { } pickRoms)
+                if (Pick("Choose the folder with your MT-32 or CM-32L ROM files", out var romFolder))
                 {
-                    if (pickRoms("Choose the folder with your MT-32 or CM-32L ROM files") is { } picked)
+                    if (romFolder is not null)
                     {
-                        SetRoms(picked);
+                        SetRoms(romFolder);
                     }
                 }
                 else
                 {
-                    _message = "Drop the folder with your MT-32 or CM-32L ROM files on this window.";
+                    _message = (_message is null ? "" : _message + " ") + "Drop the folder with your MT-32 or CM-32L ROM files on this window.";
                 }
                 break;
             case Item.Test when _model.GameFolderChecked is null:
@@ -273,8 +291,56 @@ internal sealed class LauncherScreen
         return null;
     }
 
+    /// <summary>
+    /// The system's folder dialog: false when there is none (or it could not be shown: <see cref="_message"/> says why); else true,
+    /// with the folder chosen or null when cancelled.
+    /// </summary>
+    private bool Pick(string title, out string? folder)
+    {
+        folder = null;
+        if (_surface.PickFolder is not { } pick)
+        {
+            return false;
+        }
+        try
+        {
+            folder = pick(title) is { } picked ? CleanPath(picked) : null;
+            return true;
+        }
+        catch (NotSupportedException e)
+        {
+            _message = e.Message;
+            _messageColour = PaleRed;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// A folder as typed, pasted or dropped, made usable: its first line, without the quotes and spaces around it, a file:// link
+    /// as its path, and a leading ~ as the home folder (as a Linux shell reads it).
+    /// </summary>
+    internal static string CleanPath(string? text)
+    {
+        var line = (text ?? "").Split('\n', '\r').Select(l => l.Trim()).FirstOrDefault(l => l.Length > 0) ?? "";
+        line = line.Trim('"', '\'').Trim();
+        if (line.StartsWith("file://", StringComparison.OrdinalIgnoreCase) && Uri.TryCreate(line, UriKind.Absolute, out var uri) && uri.IsFile)
+        {
+            line = uri.LocalPath;
+        }
+        if (line == "~" || line.StartsWith("~/", StringComparison.Ordinal) || line.StartsWith(@"~\", StringComparison.Ordinal))
+        {
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            if (home.Length > 0)
+            {
+                line = line.Length == 1 ? home : Path.Combine(home, line[2..]);
+            }
+        }
+        return line;
+    }
+
     private void Dropped(string path)
     {
+        path = CleanPath(path);
         if (_editing)
         {
             StopEditing(apply: false);
@@ -306,11 +372,11 @@ internal sealed class LauncherScreen
     /// <summary>A pack row: ←/→ go through None and the packs found; Enter or a click browses for a folder (or goes on, without a dialog).</summary>
     private void ChoosePack(PackKind kind, int step, bool cycle)
     {
-        if (!cycle && _surface.PickFolder is { } pick)
+        var what = kind == PackKind.Pictures ? "a picture (HD) pack: PNG files named after the game's pictures"
+            : "a sound pack: OGG or WAV files named after the game's music and effects";
+        if (!cycle && _surface.PickFolder is not null && Pick("Choose the folder of " + what, out var chosen))
         {
-            var what = kind == PackKind.Pictures ? "a picture (HD) pack: PNG files named after the game's pictures"
-                : "a sound pack: OGG or WAV files named after the game's music and effects";
-            if (pick("Choose the folder of " + what) is { } picked)
+            if (chosen is { } picked)
             {
                 if (_model.Holds(picked, kind))
                 {
@@ -398,9 +464,13 @@ internal sealed class LauncherScreen
     {
         _editing = false;
         _surface.TextInput(false);
-        if (apply && _editText.Trim() is { Length: > 0 } typed && typed != _model.GameFolder)
+        if (apply && CleanPath(_editText) is { Length: > 0 } typed && typed != _model.GameFolder)
         {
-            SetGameFolder(typed.Trim('"'));
+            SetGameFolder(typed);
+            if (!_model.CanPlay)
+            {
+                _message = $"{typed} holds no Darklands (DARKLAND.EXE).";
+            }
         }
     }
 
@@ -419,7 +489,7 @@ internal sealed class LauncherScreen
                 _editText = _editFresh ? "" : _editText[..^1];
                 break;
             case LauncherKey.Paste:
-                _editText = (_editFresh ? "" : _editText) + (_surface.Clipboard() ?? "");
+                _editText = (_editFresh ? "" : _editText) + CleanPath(_surface.Clipboard());
                 break;
         }
         _editFresh = false;
@@ -796,9 +866,9 @@ internal sealed class LauncherScreen
         var help = item switch
         {
             Item.GameFolder => _editing
-                ? "Type or paste the folder, then Enter (Esc cancels)."
-                : "The folder with DARKLAND.EXE; the GOG or Steam install folder is fine." + (_model.Found.Count > 1 ? " ←/→: the other folders found." : ""),
-            Item.Change => _surface.PickFolder is not null ? "Choose the folder of your copy of Darklands." : "Type the folder of your copy of Darklands.",
+                ? "Type or paste (Ctrl+V) the folder, then Enter (Esc cancels). ~ is your home folder."
+                : "The folder with DARKLAND.EXE (the GOG or Steam install folder is fine): type, paste (Ctrl+V) or drop it." + (_model.Found.Count > 1 ? " ←/→: the other folders found." : ""),
+            Item.Change => _surface.PickFolder is not null ? "Choose the folder of your copy of Darklands." : "Type or paste (Ctrl+V) the folder of your copy of Darklands.",
             Item.Window => "The window's size; the game keeps its shape.",
             Item.Fullscreen => "Fill the whole screen; the game keeps its shape.",
             Item.HdPack => "Replacement pictures. " + PackHelp(PackKind.Pictures),

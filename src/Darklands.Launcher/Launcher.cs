@@ -23,7 +23,7 @@ public sealed class Launcher : ILauncher
             {
                 if (screen.Handle(input) is { } choice)
                 {
-                    return new LauncherResult(choice, model.Settings(), model.Changes());
+                    return new LauncherResult(choice, model.Settings(), model.Changes(playing: choice == LauncherChoice.Play));
                 }
             }
         }

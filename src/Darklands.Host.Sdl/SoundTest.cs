@@ -87,7 +87,7 @@ internal sealed class SoundTest(IReadOnlyList<string> commandLine, Action change
             }
             var audio = sound.Start(files, output);
             var warning = report.FirstOrDefault(SoundSelection.IsWarning);
-            var status = warning is null ? "Playing a little of the game's music." : "Playing, but " + warning[SoundSelection.WarningPrefix.Length..];
+            var status = (warning is null ? "Playing a little of the game's music" : "Playing, but " + warning[SoundSelection.WarningPrefix.Length..].TrimEnd('.')) + $" (SDL audio: {output.Driver}).";
             Finish(generation, (output, sound, audio), status);
         }
         catch (Exception e) when (e is IOException or InvalidDataException or UnauthorizedAccessException)

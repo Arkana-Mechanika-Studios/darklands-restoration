@@ -37,6 +37,14 @@ public sealed class GameFolderSearchLinuxTests : IDisposable
     }
 
     [Fact]
+    public void ACopyInGamesKeptUnderItsDosNameIsFound()
+    {
+        // the copy the Linux test guide makes: ~/Games/DARKLAND
+        var game = Game("home", "deck", "Games", "DARKLAND");
+        Assert.Equal((game, "a usual folder"), Search());
+    }
+
+    [Fact]
     public void SteamLibraryOfTheClientIsFound()
     {
         var game = Game("home", "deck", ".local", "share", "Steam", "steamapps", "common", "Darklands", "DARKLAND");

@@ -303,6 +303,130 @@ public sealed class LauncherTests
         Assert.Equal(["https://example.org/PACKS.md"], links);
     }
 
+    // ---- the game folder given at the start, typing, pasting and the folder dialog (found on Linux, 2026-10-29) ----
+
+    private const string Given = "/home/player/Games/Darklands";
+
+    private static readonly Dictionary<string, string> ByCommandLine = new() { ["gameFolder"] = "the command line" };
+
+    [Fact]
+    public void AFolderGivenOnTheCommandLineIsShownAndPlayStartsTheGame()
+    {
+        // the file names none (a first run): the folder given is shown, Play (the first focus) starts, and the file gets it
+        var surface = new ScriptedSurface(1440, 800, Enter);
+        var context = Context(new GameSettings(), LauncherReason.FirstRun, ByCommandLine) with { GivenGameFolder = Given };
+        var model = new LauncherModel(context, null);
+        Assert.Equal(Given, model.GameFolder);
+        Assert.True(model.CanPlay);
+        var result = new Launcher().Run(context, surface);
+        Assert.Equal(LauncherChoice.Play, result.Choice);
+        Assert.Equal(Given, result.Settings.GameFolder);
+        Assert.Equal(Given, (string)result.Changes["gameFolder"]!);
+
+        // closed without Play: nothing is saved (so the host can show the launcher again at the next start)
+        Assert.Empty(new Launcher().Run(context, new ScriptedSurface(1440, 800, Escape)).Changes);
+        var found = Context(new GameSettings(), LauncherReason.FirstRun);
+        Assert.Empty(new Launcher().Run(found, new ScriptedSurface(1440, 800, Escape)).Changes);
+
+        // the file names another folder: the given one is played, the file's is not replaced
+        var other = Run(Context(fixedKeys: ByCommandLine) with { GivenGameFolder = Given }, Enter);
+        Assert.Equal(LauncherChoice.Play, other.Choice);
+        Assert.Equal(Given, other.Settings.GameFolder);
+        Assert.False(other.Changes.ContainsKey("gameFolder"));
+    }
+
+    [Fact]
+    public void AFolderGivenWithoutTheGameCanBeReplacedOnTheLauncher()
+    {
+        // the host does not fix a given folder that holds no game: the player types another, then plays
+        var context = Context(new GameSettings(), LauncherReason.GameNotFound) with { GivenGameFolder = "/home/player/nothing" } with
+        {
+            FoundGameFolders = () => [],
+        };
+        var result = Run(context, new TextTyped(Given), Enter, Enter);
+        Assert.Equal(LauncherChoice.Play, result.Choice);
+        Assert.Equal(Given, result.Settings.GameFolder);
+    }
+
+    [Fact]
+    public void TypingOnTheFocusedFolderEditsItWithoutAClickFirst()
+    {
+        // nothing found: the focus is on the game folder; the keys typed replace it
+        var context = Context(new GameSettings(), LauncherReason.GameNotFound) with { FoundGameFolders = () => [] };
+        var surface = new ScriptedSurface(1440, 800, new TextTyped("/home/player/"), new TextTyped("Games/Darklands"), Enter, Enter);
+        var result = new Launcher().Run(context, surface);
+        Assert.Equal(LauncherChoice.Play, result.Choice);
+        Assert.Equal(Given, result.Settings.GameFolder);
+        Assert.False(surface.TextInputOn);
+    }
+
+    [Fact]
+    public void APastedFolderIsCleanedOfQuotesLinesAndLinks()
+    {
+        Assert.Equal(Given, LauncherScreen.CleanPath("'" + Given + "'\n"));
+        Assert.Equal(Given, LauncherScreen.CleanPath("\n  \"" + Given + "\"  \r\nsecond line"));
+        Assert.Equal(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Games/DARKLAND"),
+            LauncherScreen.CleanPath("~/Games/DARKLAND"));
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Equal("/home/player/My Games/Darklands", LauncherScreen.CleanPath("file:///home/player/My%20Games/Darklands"));
+        }
+        else
+        {
+            Assert.Equal(@"C:\My Games\Darklands", LauncherScreen.CleanPath("file:///C:/My%20Games/Darklands"));
+        }
+
+        // Ctrl+V on the folder (not editing yet): the clipboard's folder, then Enter
+        var context = Context(new GameSettings(), LauncherReason.GameNotFound) with { FoundGameFolders = () => [] };
+        var surface = new ScriptedSurface(1440, 800, new KeyPressed(LauncherKey.Paste, Control: true), Enter, Enter) { ClipboardText = "\"" + Given + "\"\n" };
+        Assert.Equal(Given, new Launcher().Run(context, surface).Settings.GameFolder);
+    }
+
+    [Fact]
+    public void WithoutAFolderDialogChangeGoesToTyping()
+    {
+        // no dialog at all (null), or one that could not be shown (it throws): Change… starts typing in the field
+        foreach (var pick in new Func<string, string?>?[] { null, _ => throw new NotSupportedException("No folder dialog on this system.") })
+        {
+            var context = Context(new GameSettings(), LauncherReason.GameNotFound) with { FoundGameFolders = () => [] };
+            var surface = new ScriptedSurface(1080, 600) { PickFolder = pick };
+            var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
+            screen.Render(new Drawing.Canvas(1080, 600));
+            var change = screen.Area(LauncherScreen.Item.Change);
+            screen.Handle(new PointerPressed(change.X + change.Width / 2, change.Y + change.Height / 2));
+            Assert.True(screen.Editing);
+            Assert.True(surface.TextInputOn);
+            Assert.Equal(LauncherScreen.Item.GameFolder, screen.Focus);
+            screen.Handle(new TextTyped(Given));
+            Assert.Null(screen.Handle(Enter));
+            Assert.False(screen.Editing);
+            Assert.Equal(LauncherChoice.Play, screen.Handle(Enter));
+        }
+
+        // a dialog: its folder is taken, a cancel changes nothing
+        var picked = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = _ => Given };
+        Assert.Equal(Given, (string)new Launcher().Run(Context(), picked).Changes["gameFolder"]!);
+        var cancelled = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = _ => null };
+        Assert.Empty(new Launcher().Run(Context(), cancelled).Changes);
+    }
+
+    [Fact]
+    public void AFixedFolderSaysWhereItIsSet()
+    {
+        var context = Context(fixedKeys: ByCommandLine) with { GivenGameFolder = Given };
+        var surface = new ScriptedSurface(1080, 600) { PickFolder = _ => throw new InvalidOperationException("not to be called") };
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
+        screen.Render(new Drawing.Canvas(1080, 600));
+        var field = screen.Area(LauncherScreen.Item.GameFolder);
+        screen.Handle(new PointerPressed(field.X + 2, field.Y + 2));
+        Assert.False(screen.Editing);
+        screen.Handle(new TextTyped("x"));
+        Assert.False(screen.Editing);
+        var change = screen.Area(LauncherScreen.Item.Change);
+        screen.Handle(new PointerPressed(change.X + 2, change.Y + 2));
+        Assert.False(screen.Editing);
+    }
+
     /// <summary>DARKLANDS_LAUNCHER_SHOTS=folder: writes the screen at a few sizes and states, to look at.</summary>
     [Fact]
     public void Screenshots()

@@ -29,6 +29,9 @@ internal sealed class LauncherModel
     private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string? HdPack, string SoundCard, string? Roms, string? AudioPack, bool Banner, bool Intro, bool Always) _initial;
     private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
+    /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
+    private readonly string? _automatic;
+
     public LauncherModel(LauncherContext context, (int Width, int Height)? display)
     {
         _context = context;
@@ -44,12 +47,16 @@ internal sealed class LauncherModel
         Intro = s.Intro ?? true;
         Always = s.Launcher ?? false;
         Found = context.FoundGameFolders();
-        SetGameFolder(string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder);
+        var fileFolder = string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder;
+        // the folder the command line (or DARKLANDS_DIR) gives is the one the game would start with: shown first
+        var given = string.IsNullOrWhiteSpace(context.GivenGameFolder) ? null : context.GivenGameFolder;
+        SetGameFolder(given ?? fileFolder, given is null ? null : "given at the start");
         if (GameFolder is null && Found.Count > 0)
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder, Windows[WindowIndex], Fullscreen, HdPack, SoundCard, Mt32Roms, AudioPack, Banner, Intro, Always);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, HdPack, SoundCard, Mt32Roms, AudioPack, Banner, Intro, Always);
+        _automatic = GameFolder;
     }
 
     public IReadOnlyList<(string Folder, string Source)> Found { get; }
@@ -190,10 +197,14 @@ internal sealed class LauncherModel
     public string SoundCardLabel => SoundCards.First(c => c.Value == SoundCard).Label;
 
     /// <summary>The settings-file keys that changed, with their new values.</summary>
-    public IReadOnlyDictionary<string, JsonNode?> Changes()
+    /// <param name="playing">The player pressed Play: a folder they did not choose themselves (given at the start or found) is
+    /// written only then; else (the launcher closed) it is left to the next start.</param>
+    public IReadOnlyDictionary<string, JsonNode?> Changes(bool playing = true)
     {
         var changes = new Dictionary<string, JsonNode?>(StringComparer.Ordinal);
-        if (GameFolder != _initial.GameFolder && GameFolderChecked is not null)
+        // a folder fixed by the command line goes into the file only when the file names none (the next start then finds it)
+        if (GameFolder != _initial.GameFolder && GameFolderChecked is not null && (_initial.GameFolder is null || !IsFixed("gameFolder", out _))
+            && (playing || GameFolder != _automatic))
         {
             changes["gameFolder"] = GameFolder!.Replace('\\', '/');
         }

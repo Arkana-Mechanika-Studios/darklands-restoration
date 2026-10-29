@@ -12,7 +12,11 @@ using Darklands.Rendering;
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console]
 //                      [--hd-pack folder] [--audio-pack folder] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
-//                      [--version] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
+//                      [--version] [--sound-test] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
+// --sound-test checks the sound without the game window: SDL's audio driver and devices, beeps through each way of feeding SDL,
+// then a little of the game's
+// music on the card the settings choose, each with a plain verdict (SoundCheck). DARKLANDS_AUDIO_MODE=queue or native feeds the
+// audio device another way than SDL's callback (SdlAudioOutput), for a system where that stays silent.
 // The options come from the command line, else the environment variables, else the settings file darklands.settings.json
 // (--settings, else next to the program, else %APPDATA%\DarklandsRestoration; without one a commented template is written on the
 // first run, --write-settings writes it where asked; docs/SETTINGS.md), else the defaults.
@@ -78,6 +82,7 @@ if (writeSettings is not null)
 // found and when the game could not start
 var setup = arguments.Remove("--setup");
 var noLauncher = arguments.Remove("--no-launcher");
+var soundCheck = arguments.Remove("--sound-test");
 var cli = new CommandLineOptions
 {
     SdlLibrary = Option("--sdl"),
@@ -101,11 +106,11 @@ var cli = new CommandLineOptions
 var settingsPath = SettingsFile.Locate(settingsFile);
 var firstRun = settingsPath is null;
 GameSettings fileSettings = new();
-if (settingsPath is null)
+if (settingsPath is null && !soundCheck)
 {
     settingsPath = SettingsFile.WriteFirstRunTemplate(Console.Error.WriteLine);
 }
-else
+else if (settingsPath is not null)
 {
     var load = SettingsFile.Load(settingsPath);
     foreach (var problem in load.Problems)
@@ -119,6 +124,14 @@ if (Resolve(fileSettings) is not { } settings)
     return 1;
 }
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
+// SDL2: the settings file or --sdl, else the SDL2.dll next to the program, else DARKLANDS_SDL2_PATH or the developer's
+// local/paths.json "sdl", else the system's
+var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
+SdlNative.ConfigureLibrary(settings.SdlLibrary ?? (File.Exists(besideProgram) ? besideProgram : LocalPaths.Get("sdl", "DARKLANDS_SDL2_PATH")));
+if (soundCheck)
+{
+    return SoundCheck.Run(folder, settings, Console.Out);
+}
 LauncherReason? launch = noLauncher ? null
     : setup || settings.AlwaysLaunch || StartKeys.ShiftHeldBeforeWindow() ? LauncherReason.Asked
     : folder is null ? LauncherReason.GameNotFound
@@ -131,10 +144,6 @@ if (folder is null && launch is null)
     return 1;
 }
 
-// SDL2: the settings file or --sdl, else the SDL2.dll next to the program, else DARKLANDS_SDL2_PATH or the developer's
-// local/paths.json "sdl", else the system's
-var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
-SdlNative.ConfigureLibrary(settings.SdlLibrary ?? (File.Exists(besideProgram) ? besideProgram : LocalPaths.Get("sdl", "DARKLANDS_SDL2_PATH")));
 var title = "Darklands Restoration Project " + version;
 var window = settings.Window ?? DisplayLayout.WindowSize(null, null);
 using var host = launch is null ? new SdlHost(title, window.Width, window.Height, settings.Fullscreen) : LauncherHost.Open(title);
@@ -149,8 +158,13 @@ while (true)
 {
     if (launch is { } reason)
     {
-        if (LauncherHost.Run(host, reason, startProblem, fileSettings, cli, settingsPath, version) is not { } chosen)
+        if (LauncherHost.Run(host, reason, startProblem, fileSettings, cli, settingsPath, version, out var saved) is not { } chosen)
         {
+            if (firstRun && !saved && settingsPath is not null)
+            {
+                // left without Play and without a change: still a first run, so the launcher shows again at the next start
+                ForgetFirstRun(settingsPath);
+            }
             return 0;
         }
         fileSettings = chosen;
@@ -160,6 +174,11 @@ while (true)
         }
         settings = resolved;
         folder = FindGameFolder(settings.GameFolder, settingsPath);
+        if (folder is null && chosen.GameFolder is { } picked && picked != settings.GameFolder)
+        {
+            // the folder named at the start holds no game: the one chosen on the launcher
+            folder = FindGameFolder(picked, settingsPath);
+        }
         if (folder is null)
         {
             (launch, startProblem) = (LauncherReason.GameNotFound, null);
@@ -261,9 +280,10 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
     var output = SdlAudioOutput.TryOpen(out var error);
     if (output is null)
     {
-        Console.Error.WriteLine("Sound: no audio device (" + error + "); no sound.");
+        Console.Error.WriteLine("Sound: no audio device (" + error + "); no sound. Run with --sound-test for details.");
         return null;
     }
+    Console.WriteLine("Sound: " + output.Description + ".");
     var sound = Darklands.Audio.Mt32.SoundSelection.Select(files, choice, romFolder,
         output.SampleRate, line => (Darklands.Audio.Mt32.SoundSelection.IsWarning(line) ? Console.Error : Console.Out).WriteLine("Sound: " + line),
         commandLine);
@@ -307,7 +327,26 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
     }
     host.Audio = trace is null ? played : new TracedCalls(played, audio, trace);
     host.Timer = audio;
-    return new Disposables(output, sound);
+    // what reached the device, said a few seconds in and again later (silence that is our fault shows here: no frames pulled,
+    // only zero samples, or a driver fault)
+    var watch = new SoundWatch(output, audio);
+    return new Disposables(output, sound, watch);
+}
+
+// The settings file this first run wrote (its template, maybe with the game folder found), left without a change: removed.
+static void ForgetFirstRun(string settingsPath)
+{
+    try
+    {
+        if (File.Exists(settingsPath))
+        {
+            File.Delete(settingsPath);
+            Console.WriteLine("Settings: the launcher was closed without Play; it shows again at the next start.");
+        }
+    }
+    catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+    {
+    }
 }
 
 /// <summary>
@@ -424,10 +463,11 @@ sealed file class StartProgress
 }
 
 /// <summary>Closes the audio device, then the synthesiser it pulled from.</summary>
-sealed file class Disposables(IDisposable output, IDisposable? midi) : IDisposable
+sealed file class Disposables(IDisposable output, IDisposable? midi, IDisposable? watch = null) : IDisposable
 {
     public void Dispose()
     {
+        watch?.Dispose();
         output.Dispose();
         midi?.Dispose();
     }
