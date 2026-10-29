@@ -220,6 +220,23 @@ public class SettingsPrecedenceTests
     }
 
     [Fact]
+    public void CleanDrawingIsOffByDefaultAndFollowsTheFile()
+    {
+        Assert.Null(SettingsFile.Parse("{}").Settings.CleanDrawing);
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).CleanDrawing);
+        var template = SettingsFile.Parse(SettingsFile.Template);
+        Assert.Empty(template.Problems);
+        Assert.False(template.Settings.CleanDrawing);
+        var on = SettingsFile.Parse("""{ "display": { "cleanDrawing": true } }""");
+        Assert.Empty(on.Problems);
+        Assert.True(on.Settings.CleanDrawing);
+        Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, on.Settings).CleanDrawing);
+        Assert.True(ResolvedSettings.Resolve(new CommandLineOptions { CleanDrawing = true }, NoEnvironment, new GameSettings()).CleanDrawing);
+        Assert.Equal("--clean-drawing", new CommandLineOptions { CleanDrawing = true }.Overrides(NoEnvironment)["display.cleanDrawing"]);
+        Assert.NotEmpty(SettingsFile.Parse("""{ "display": { "cleanDrawing": "yes" } }""").Problems);
+    }
+
+    [Fact]
     public void FileOverDefaults()
     {
         var file = new GameSettings { GameFolder = "F", Scale = 2, Fullscreen = true, SoundCard = "adlib", Banner = false, Intro = false, CommandLine = ["-Q"], Mt32Roms = "R" };
@@ -410,12 +427,12 @@ public class SettingsTemplateTests
     [Fact]
     public void TheTemplateDocumentsEveryKey()
     {
-        foreach (var key in new[] { "gameFolder", "savesFolder", "scale", "resolution", "fullscreen", "hdPack", "card", "mt32Roms", "configDrk", "banner", "intro",
+        foreach (var key in new[] { "gameFolder", "savesFolder", "scale", "resolution", "fullscreen", "hdPack", "cleanDrawing", "card", "mt32Roms", "configDrk", "banner", "intro",
                      "commandLine", "textFont", "screenshotsFolder", "library", "display", "sound", "startup", "sdl" })
         {
             Assert.Contains($"\"{key}\":", SettingsFile.Template);
         }
-        foreach (var option in new[] { "--saves", "--scale", "--resolution", "--fullscreen", "--hd-pack", "--sound", "--mt32-roms", "--no-banner", "--no-intro", "--text-font", "--screenshots", "--sdl" })
+        foreach (var option in new[] { "--saves", "--scale", "--resolution", "--fullscreen", "--hd-pack", "--clean-drawing", "--sound", "--mt32-roms", "--no-banner", "--no-intro", "--text-font", "--screenshots", "--sdl" })
         {
             Assert.Contains(option, SettingsFile.Template);
         }

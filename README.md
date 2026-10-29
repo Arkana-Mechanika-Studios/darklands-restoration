@@ -80,6 +80,7 @@ want:
 | `display.scale`, `display.resolution`, `display.fullscreen` | a bigger window (`2` = 1440x800), any size (`"1600x1000"`), full screen |
 | `sound.card`, `sound.mt32Roms` | the sound card; where the MT-32 ROMs are |
 | `display.hdPack`, `sound.audioPack` | a picture pack, a sound pack (`docs/PACKS.md`) |
+| `display.cleanDrawing` | false: drawn as the 1992 game, oddities included; true: the cleaner drawing of 0.9.5 |
 | `startup.banner`, `startup.intro` | skip the banner or the opening |
 
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,

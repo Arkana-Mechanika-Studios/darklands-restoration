@@ -365,6 +365,7 @@ var game = new DarklandsGame(host, OpenGame())
     QuickstartCard = cardStep is null ? null : Convert.ToInt32(cardStep[5..], 16),
     StartWithSave = loadStep?[5..],
 };
+game.Options.Apply(resolved);
 if (savesStep is not null)
 {
     game.SaveDirectory = savesStep[6..];

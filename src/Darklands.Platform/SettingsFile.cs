@@ -221,6 +221,7 @@ public static class SettingsFile
                     break;
                 case "fullscreen": settings.Fullscreen = Boolean(key, property.Value) ?? settings.Fullscreen; break;
                 case "hdPack": settings.HdPack = FilePath(key, property.Value); break;
+                case "cleanDrawing": settings.CleanDrawing = Boolean(key, property.Value) ?? settings.CleanDrawing; break;
                 default: Unknown(key); break;
             }
         }
@@ -468,7 +469,10 @@ public static class SettingsFile
             "fullscreen": false,
             // A folder of replacement pictures (an HD pack: one PNG per picture of the game, named after it). Not part of the
             // original; the game plays the same. "": the original pictures. Command line: --hd-pack <folder>.
-            "hdPack": ""
+            "hdPack": "",
+            // false: the screens are drawn as in the 1992 game, including its drawing oddities; true: the cleaner drawing of 0.9.5.
+            // The game plays the same either way. Command line: --clean-drawing.
+            "cleanDrawing": false
           },
 
           "sound": {

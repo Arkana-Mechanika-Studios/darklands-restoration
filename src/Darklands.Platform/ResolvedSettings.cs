@@ -17,6 +17,8 @@ public sealed class CommandLineOptions
 
     public string? HdPack { get; set; }
 
+    public bool CleanDrawing { get; set; }
+
     public string? Sound { get; set; }
 
     public bool NoAudio { get; set; }
@@ -64,6 +66,7 @@ public sealed class CommandLineOptions
         By("display.resolution", size is not null, size ?? "");
         By("display.fullscreen", Fullscreen, "--fullscreen");
         By("display.hdPack", Given(HdPack), "--hd-pack");
+        By("display.cleanDrawing", CleanDrawing, "--clean-drawing");
         By("sound.card", NoAudio, "--no-audio");
         By("sound.card", Given(Sound), "--sound");
         By("sound.mt32Roms", Given(Mt32Roms), "--mt32-roms");
@@ -94,6 +97,9 @@ public sealed class ResolvedSettings
 
     /// <summary>The HD pack's folder; null: none (the original pictures).</summary>
     public string? HdPack { get; private init; }
+
+    /// <summary>The cleaner drawing of 0.9.5 (GameOptions.CleanDrawing); false: drawn as the 1992 game.</summary>
+    public bool CleanDrawing { get; private init; }
 
     /// <summary>adlib, sb, sbpro2, mt32, cm32l or speaker; null: the game's own choice from CONFIG.DRK.</summary>
     public string? SoundChoice { get; private init; }
@@ -170,6 +176,7 @@ public sealed class ResolvedSettings
             Window = window,
             Fullscreen = cli.Fullscreen || (file.Fullscreen ?? false),
             HdPack = Pick(cli.HdPack, null, file.HdPack),
+            CleanDrawing = cli.CleanDrawing || (file.CleanDrawing ?? false),
             SoundChoice = sound is null or "config" or "none" ? null : sound,
             NoAudio = cli.NoAudio || (cli.Sound is null && sound == "none") || cli.Sound == "none",
             Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),

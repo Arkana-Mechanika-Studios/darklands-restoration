@@ -24,6 +24,9 @@ public sealed class GameSettings
     /// <summary>A folder of replacement pictures (an HD pack; not part of the game). Null: the original pictures.</summary>
     public string? HdPack { get; set; }
 
+    /// <summary>true: the cleaner drawing of 0.9.5 (GameOptions.CleanDrawing); false/null: the 1992 game's drawing, oddities included.</summary>
+    public bool? CleanDrawing { get; set; }
+
     /// <summary>One of <see cref="SoundCards"/>.</summary>
     public string? SoundCard { get; set; }
 

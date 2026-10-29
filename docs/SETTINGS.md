@@ -45,6 +45,7 @@ not meant for players.
 | `display.resolution` | | `--resolution WxH` | window size, e.g. `"1440x800"`; when set it replaces `scale` |
 | `display.fullscreen` | false | `--fullscreen` | |
 | `display.hdPack` | none | `--hd-pack <folder>` | a folder of replacement pictures (an HD pack, below); not part of the original, the game plays the same |
+| `display.cleanDrawing` | false | `--clean-drawing` | false = the screens are drawn as in the 1992 game, including its drawing oddities; true = the cleaner drawing of 0.9.5 (the game plays the same) |
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
 | `sound.audioPack` | none | `--audio-pack <folder>`; `DARKLANDS_AUDIO_PACK` | a folder of replacement music and battle effects (an audio pack, [PACKS.md](PACKS.md)); not part of the original, the game plays the same |

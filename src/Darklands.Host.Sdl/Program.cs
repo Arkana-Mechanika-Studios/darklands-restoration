@@ -11,7 +11,7 @@ using Darklands.Rendering;
 //   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console]
-//                      [--hd-pack folder] [--audio-pack folder] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
+//                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
 //                      [--version] [--sound-test] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
 // --sound-test checks the sound without the game window: SDL's audio driver and devices, beeps through each way of feeding SDL,
 // then a little of the game's
@@ -99,6 +99,7 @@ var cli = new CommandLineOptions
     Resolution = Option("--resolution"),
     Fullscreen = arguments.Remove("--fullscreen"),
     HdPack = Option("--hd-pack"),
+    CleanDrawing = arguments.Remove("--clean-drawing"),
     NoConsole = arguments.Remove("--no-console"),
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
@@ -258,6 +259,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     host.Console = console;
     using var corner = new CornerText(() => game.OnStartScreen ? "v" + version : null);
     host.Corner = corner;
+    game.Options.Apply(settings);
     game.Ui.ScreenshotFolder = settings.ScreenshotsFolder ?? Environment.CurrentDirectory;
     var saves = SaveLocation.Choose(settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
     if (saves.FellBack)

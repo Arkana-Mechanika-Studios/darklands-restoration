@@ -131,4 +131,16 @@ public sealed class ScreenDrawingLeadsTests
         var untouched = ui.Canvas.Screen.Pixels.All(p => p == 3);
         Assert.Equal(!clean, untouched);
     }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheSettingsChoiceReachesGameOptionsAndIsOffByDefault(bool clean)
+    {
+        Assert.False(new GameOptions().CleanDrawing);
+        var file = SettingsFile.Parse(clean ? """{ "display": { "cleanDrawing": true } }""" : "{}").Settings;
+        var options = new GameOptions();
+        options.Apply(ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, file));
+        Assert.Equal(clean, options.CleanDrawing);
+    }
 }

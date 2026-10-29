@@ -29,6 +29,9 @@ public sealed class GameOptions
     /// original draws them. A drawing choice only: no game value depends on it.
     /// </summary>
     public bool CleanDrawing { get; set; }
+
+    /// <summary>Takes the choices of the settings file (display.cleanDrawing) and the command line; the hosts call it at the start.</summary>
+    public void Apply(ResolvedSettings settings) => CleanDrawing = settings.CleanDrawing;
 }
 
 /// <summary>
