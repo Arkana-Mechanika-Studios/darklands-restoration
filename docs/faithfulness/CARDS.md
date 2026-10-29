@@ -36,19 +36,20 @@ original's own writer (R037 1462:2ACE) makes afterwards that differ from the sta
 | cards | 365 |
 | runs | 14600 (40 per card: options 0..9 x location 3/120 x plain/probe) |
 | runs the original does not finish | 766 |
-| runs the C# agrees with | 13542 (92.8%) |
-| runs that differ for a listed reason (card-divergences.json) | 1058 |
+| runs the C# agrees with | 13618 (93.3%) |
+| runs that differ for a listed reason (card-divergences.json) | 982 |
 | runs that differ | 0 |
 | cards whose every run agrees (or differs for a listed reason) | 365 of 365 |
-| blocks of the card records exercised | 13977/20855 (67.0%) |
-| branch outcomes of the card records exercised | 6771/12684 (53.4%) |
+| blocks of the card records exercised | 24754/27108 (91.3%) |
+| branch outcomes of the card records exercised | 12769/15434 (82.7%) |
 
 ## Listed differences
 
 - card 074, every run: `original '<end>', C# 'prayer ` — FactionLeadersRecruitment DIVERGENCE: the card installs no saint pop-up handlers, so a prayer calls whatever saint_fn the previous card left; run from a start state no card installed them in, the original calls 0000:0000. The C# uses the standard saint rating.
 - card 0B6, every run: `original '<end>', C# 'menu 2 ` — CityLordsReward DIVERGENCE: the search for a saint nobody in the party knows (R089+0x0C5C) never ends when the party knows all 0x88 saints (the original hangs; the oracle stops at its instruction budget); the C# offers the boons with saint 0.
 - card 005, every run: `end: original 'next 0', C# 'next ` — BattleStandIn (R045 188B:01E4) DIVERGENCE: the original goes to screen 0, whose table entry points into data (the game would crash); the C# goes back to the card before.
-- card 05F, every run: `` — SneakingThroughTheHall DIVERGENCE: the original never calls card_load (it keeps the previous card's picture until the engine redraws); the C# shows the card at once. The oracle loads the card's own texts first, so everything after the C#'s show is compared.
+- card 05F, every run: `C# 'menu 13 [11010000010000000000] '` — SneakingThroughTheHall DIVERGENCE: after a rebels' card ($Revol00, $Revol01: key part T$Revol00) block 0x0D is not in the loaded message file; the original prints from a msg_index entry msg_load did not set (undefined memory: 0d 0a 0a under the oracle), the C# an empty text with the same option lines.
+- card 073, every run: `C# 'text 5 1 '` — BeforeTheCityWalls DIVERGENCE: after the initial test card ($Initi00, one block: key part T$Initi00) block 5 is not in the loaded message file; the original prints from a msg_index entry msg_load did not set (undefined memory: 01 0a 0e under the oracle), the C# an empty text.
 - card 062, every run: `` — Card 0x62 is the end of the game: the main loop (root 03A1:000A) stops when a card returns 0x62 and never runs this table entry; run directly, the original loads "$NoGo00.msg.msg", which does not exist, and its catalog code jumps into data.
 - card 02F, every run: `` — CityWallSallyPort BUG/DIVERGENCE: the force-the-door chance reads the Strength of member number <highest Strength value> (DS:8DFC used as an index): the original reads memory past the party table, the C# an empty member (0). Every run whose hint or action uses that chance differs.
 - card 00C, every run: `no C# card` — Card 0x0C is the overland map (R030 1462, the travel screen): it is ported as DarklandsGame.Travel, not as a card script, and its input is the map's, which the card policy does not drive.
@@ -60,7 +61,6 @@ original's own writer (R037 1462:2ACE) makes afterwards that differ from the sta
 - card 10E, every run: `` — EasternBalticVoyage DIVERGENCE: the original never calls card_options (the menu works on whatever option list the screen last drew) and shows text blocks its .MSG may not have; the C# offers its first block. The texts are compared without their words, everything else in full.
 - card 110, every run: `` — RiverboatLanding DIVERGENCE: the original never calls card_options (the menu works on whatever option list the screen last drew) and shows text blocks its .MSG may not have; the C# offers its first block. The texts are compared without their words, everything else in full.
 - card 0E9, every run: `` — SourceOfTheHorrors_MineH01 DIVERGENCE: without the horror's quest (a negative detail) the original draws no option block (the menu keeps what was shown); the C# uses the block the last card left. Texts compared without their words.
-- card 073, every run: `` — BeforeTheCityWalls DIVERGENCE: the original only fills the card name and picture buffers (no card_load; the engine draws them later); the C# shows the card at once. The oracle loads the card's own texts first, so everything after the C#'s show is compared.
 - card 037, every run: `C# 'text 15 0 ` — HandbillThugs_Polit01 UNCERTAIN: the potion pop-up handlers never set the chance (struct res left unset): the action rolls against a stack leftover. Under the oracle the leftover lets the potion work (texts 11..14); the C# takes it as negative (StalePopupChance), so the potion always fails (text 15).
 - card 0B8, every run: `hint 0: ` — RebelsBeforeTheCouncilHall UNCERTAIN: the first line's hint handler (R090 1838:046C) sets only r.a; the member (r.b) is a stack leftover (2 under the oracle); the C# names the speaker it chose.
 - card 06C, every run: `hint 9: ` — The leave line's hint handler fills only msg_buf ("Success is assured.") and returns a struct res it never sets: the chance is a stack leftover (-558 under the oracle, which the display shows as the text); the C# says the text.
@@ -71,6 +71,45 @@ original's own writer (R037 1462:2ACE) makes afterwards that differ from the sta
 - card 151, every run: `` — CollectorsCommission runs on the quest event saved_card names; the oracle's start state has none (saved_card 0, no event in slot 0): the original reads the type byte of the unused record events[0] points to (a value no case has: default text 0), the C# an absent event (type 0, text 1). Without its quest the card cannot be compared.
 - card 119, every run: `original '<end>'` — Card 0x119 ($MeetH01) UNCERTAIN: its registration (R114 18D3:08B0) sets the saint pop-up handlers but not the item ones (DS:EB0A), so a potion chosen in the pop-up calls an earlier card's handler; the oracle starts with none (a null pointer: the original jumps to 0000:0000). The C# uses the default pop-up hint.
 - card 0AB, every run: `original 'menu 0 [1111]` — CityLeavingDirection DIVERGENCE: no line changes next_card, so the original offers the menu again for ever (its loop runs while next_card is 0x0C); the C# ends the card after one choice, with the same next card. The first menu and choice are compared.
+- card 0AB, every run: `original 'menu 0 [0000]` — CityLeavingDirection DIVERGENCE: no line changes next_card, so the original offers the menu again for ever (its loop runs while next_card is 0x0C); the C# ends the card after one choice, with the same next card. The first menu and choice are compared (a run that forces a line of this menu ends in a menu with no line on: the original stops there too).
+- card 100, every run: `line 4: original 'text 14 0 506c6163696e672074686520706f74696f6e206361726566756c6c792c20` — CryptUnderTheRuinedChurch, item pop-up slots 1..3 of line 2 (forced): the registration (R108+0x0C25) gives them the empty handlers R108+0x0D30/0D32/0D34 (retf), so $ChosenOneName (DS:EE8C) keeps what it held before (here Gretch: text 14, "Placing the potion carefully, $ChosenOneName leads you ..."), where the C# rates every slot with slot 0's handler R108+0x0CDE, which names the pop-up's member (Ebhard). The card fills only item slot 0 (card_items DS:EE43 = -1 x 4, then 0x66), so the box never lists slots 1..3.
+- card 100, probe L3-Vfacts+F3.0-O2: `original 'picture boom'` — Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers.
+- card 100, probe L3-Vfacts+F3.1-O2: `original 'picture boom'` — Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers.
+- card 100, probe L3-Vfacts+F3.2-O2: `original 'picture boom'` — Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers.
+- card 100, probe L3-Vfacts+F4.0-O0: `original 'picture xdungeon'` — Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers.
+- card 100, probe L3-Vfacts+F4.2-O0: `original 'picture xdungeon'` — Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers.
+- card 104, probe L3-Vskilled+F12.3-O8: `original 'picture xkntdemo'` — Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers.
+- card 107, probe L3-Vrich+F5.4-O3: `original 'picture robmen2'` — Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers.
+- card 108, probe L3-Vrich+F4.2-O2: `original 'picture robmen2'` — Forced line (the card never offers it): after a prayer from it the original redraws the picture last put in the picture buffer, the C# the card's main picture. Not reachable in play; the picture model follows the lines the card offers.
+- card *, every run: `original '<end>', C# '` — Tester fault (forced handler calls): the original calls a far pointer 0000:0000, a handler slot nothing installed: opt_fn[k] of a line the card's text has no line for (its reset left it null), the hint of such a line, or the item_fn / saint_fn of a pop-up slot the card never fills (card_items / card_saints[k] = -1). The menu offers only the text's lines and the pop-up box lists only filled slots, so the game never makes that call; the C# goes on with its "screwed up." default or the line's pop-up handler. Everything up to the call is compared.
+- card *, every run: `end: original 'stops execution outside the loaded code at 00000` — Tester fault, as the entry above: the original's trace agrees up to its call through a null handler slot (a line or pop-up slot the card never offers), the C# then ends the run its own way.
+- card 0AA, hand L3-O0 M1L0H: `original '<end>', C# 'menu 0 ` — Oracle limit: line 0 (recruit) opens the inn's party roster (R038+0x0000), whose key loop (R038+0x02F8) waits for input the card oracle does not give; the oracle stops at its instruction budget there. The C# stubs the roster screen (CardContext.PartyRosterScreen) and returns to the menu. Here the line is also greyed (the party is full).
+- card 01F, every run: `saved game: head record 0: original {"1E":"0A","26":"1F","A":"02"}, C# {"1E":"0A","26":"1F","A":"01"}` — Docks, unlisted lines 10..19 (forced; the text has 8 lines, the init R051+0x2E4E enables them with its "screwed up." default): the switch has no case (R051+0x20D1), so the original goes round its loop again (R051+0x1F69), which lets an hour pass first (R051+0x201D); the C#'s CardMenu re-offers the menu without the outer round's hour. Unreachable: no lines 10..19 are ever offered.
+- card 01F, every run: `saved game: head record 0: original {"1E":"06","26":"1F","3D":"02","A":"0B"}, C# {"1E":"06","26":"1F","3D":"02","A":"0A"}` — Docks, unlisted lines 10..19 (forced), as the entry above on another start state (postwar40, the hour 0x0A): the switch has no case (R051+0x20D1), the original's loop (R051+0x1F69) lets an hour pass first (R051+0x201D), the C#'s CardMenu re-offers the menu without it. Unreachable: no lines 10..19 are ever offered.
+- card 036, every run: `line 3: original 'menu 5 [` — Monastery, unlisted lines 10..19 (forced; the text has 9 lines and the init R057+0x1C46 points their handlers at the "screwed up." default R057+0x1C68): the switch has no case, so the original goes round its loop again and draws block 5 (the visit of the last twelve hours is now noted; its enabled lines depend on the state: [211110001], postwar40 [111110001]); the C#'s CardMenu re-offers block 0 without the outer round. Unreachable: no lines 10..19 are ever offered.
+- card 111, every run: `original 'picture xms128', C# 'picture explshn'` — TatzelwurmPack, potion pop-up slots 2 and 3 (forced): their handlers R112+0x1438 / R112+0x143A are empty, so the throw takes the registers' leftovers as its chance and misses; the C# rates every slot with the potion hint. The card fills only two item slots (R112+0x12BE), so the box never lists slots 2 and 3.
+- card 112, every run: `original 'picture xms129', C# 'picture explshn'` — GiantSpiderNest, potion pop-up slots 2 and 3 (forced): their handlers R112+0x253C / R112+0x253E are empty (the throw takes the registers' leftovers as its chance), the C# rates every slot with the potion hint. The card fills only two item slots (R112+0x23DE), so the box never lists slots 2 and 3.
+- card *, every run: `line 0: original 'error ` — Tester fault: the emulator itself raised on the original's side (hand_run.py records the exception as the trace line 'error ...' and the end 'error'; seen as a host access violation, gone on a rerun of the same job). Nothing of the original's run is recorded, so there is nothing to compare.
+- card 169, every run: `` — HuntsmanAtTheCamp: the card is reached only from the camp, whose discovery (R036, CampStay.SpendDay) sets saved_card (DS:E7D8) to the first guard or -1; it names that member ($ChosenOneName = party[saved_card]). A saved game's start state holds another saved_card (a card number), so the original reads a character record past the party (another member's text, or code: it stops), the C# an empty name. Not a state the card runs from in play.
+- card 16A, every run: `` — BanditsNearTheCamp: the card is reached only from the camp, whose discovery (R036, CampStay.SpendDay) sets saved_card (DS:E7D8) to the first guard or -1; it names that member ($ChosenOneName = party[saved_card]). A saved game's start state holds another saved_card (a card number), so the original reads a character record past the party (another member's text, or code: it stops), the C# an empty name. Not a state the card runs from in play.
+- card 0BC, every run: `end: original 'next 0', C# 'next 12'` — SiegeOfTheCityLord: line 0 goes back to prev_screen (DS:A88D, R091+0x0276); CardContext.CardBefore DIVERGENCE: a prev_screen of 0 (a game saved before its first card transition, francis0 at card 0x29) leads to the map in the C#, to card 0 in the original. The card is reached from the revolt cards, never with prev_screen 0.
+- card 041, every run: `original 'hint 1: ` — WildHunt.OutrunChance DIVERGENCE: when not everybody rides the original's hint (R060+0x0FF4) returns the chance word [bp-4] unwritten, a stack leftover of the menu engine; the C# gives the least agile member's effective Agility.
+- card 041, every run: `original 'time 7', C# 'picture xhound'` — WildHunt.OutrunChance DIVERGENCE, line 1's action: when not everybody rides the hint (R060+0x0FF4..0x1050) never writes the chance word [bp-4], and the action (R060+0x0ECC) rolls against that leftover (here the oracle's menu stand-in left a high one: the party escapes, time 7, picture xms057, text 7); the C# rolls against the least agile member's effective Agility and fails (text 8, the fight). The leftover is the menu engine's stack, not a value of the game state.
+- card 041, every run: `original 'picture xhound', C# 'time 7'` — WildHunt.OutrunChance DIVERGENCE, line 1's action, the other way round (see the entry above): the original rolls against the unwritten chance word of R060+0x0FF4 and fails, the C# against the least agile member's effective Agility and succeeds.
+- card 0AA, every run: `original '<end>', C# 'menu 0 [` — InnRetireOrRecruit: looking for somebody to join opens the inn's roster (R029+0x2246, thunk 09C0:1EE1 = R038+0x0000), which the card oracle does not stub: the original's roster waits for a key until the instruction budget; the C# screen returns. The line is choosable only with fewer than 4 present, which no golden-trace state has.
+- card 0A1, every run: `` — PeasantsDemandAMaiden: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party_delete on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours_pass, Party.EnsureAbleLeader).
+- card 123, every run: `` — WitchAtYourMercy: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party_delete on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours_pass, Party.EnsureAbleLeader).
+- card 011, every run: `C# 'hint 1: 0 '' -2'` — RevolutionHouseAtNight.KnockChance BUG: on its first path (the politics fact at the place against the party's side) the hint (R048+0x124E) copies "Success is assured." but returns 0 with DX as the calls before left it (21626 / 21622 under the oracle's menu stand-in: a stale register, not game state); the C# shows chance 0 for the whole party.
+- card 041, every run: `original 'time 16', C# 'picture xhound'` — WildHunt.OutrunChance DIVERGENCE, line 1's action (see the 'time 7' entry): with a member away not everybody rides, the hint R060+0x0FF4 leaves the chance word [bp-4] unwritten (23419 under the oracle, local/batch/cards1o probe at 18CF:06D9) and the party escapes (time 16 from this state's hour); the C# rolls against the least agile member's effective Agility and fails.
+- card 073, every run: `C# 'text 7 1 '` — BeforeTheCityWalls DIVERGENCE (battle result 3): $CityE00.msg has 7 blocks, block 7 does not exist; the original prints msg_file + msg_index.ofs[7], an entry msg_load did not set (0 under the oracle: the file's header bytes 07 02 0A; in a game what an earlier message file left), the C# an empty text.
+- card 073, every run: `C# 'text 8 1 '` — BeforeTheCityWalls DIVERGENCE (battle result 4): as block 7, block 8 of $CityE00.msg does not exist; the original prints from the stale msg_index.ofs[8], the C# an empty text.
+- card 08D, plain Spolitical13-VP1+B1-O0: `` — PublicExecution.Verdict DIVERGENCE: fact (2, 0) holds at the political13 place, so the abbot's score [bp-0Ah] is never zeroed (R079+0x0D17) and starts as a stack leftover (1174 after line 1's text under the oracle, probe at 18D8:031D): the abbot rescues the party (picture ms039, text 8); the C# takes 0 and the bankers do (text 9). Not game state.
+- card 08D, plain Spolitical13-VP1+B2-O0: `` — PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0.
+- card 08D, plain Spolitical13-VP1+B3-O0: `` — PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0.
+- card 08D, plain Spolitical13-VP1+B4-O0: `` — PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0.
+- card 08D, plain Spolitical13-VP1+B5-O0: `` — PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score, as plain Spolitical13-VP1+B1-O0.
+- card 096, every run: `C# 'hint 1: -1 'Success is assured.' -2'` — DragonTidings UNCERTAIN: the hints of the heir lines 1..3 (R081+0x16EA/0x1728/0x1766) return their member word [bp-2] unset (enter 4,0; only line 0's hint sets it): a stack leftover of the caller's frame (card_mouse R043+0x26C4 in play, 0 under the oracle's call); the C# shows the hint for the whole party.
+- card 00D, every run: `original '<end>', C# 'text 18 1 ` — PartyRules.AddFromRoster DIVERGENCE: a fellow prisoner (event 0x4D) naming an entry past the roster's end (a start state's aimed event; in play the event names the roster entry of a member who went away) makes party_add R037+0x3CD6 read past the file's records, and the original runs into stale bytes (execution outside the loaded code); the C# lets nobody join and shows the text.
 
 ## Per card
 
@@ -78,368 +117,368 @@ Coverage is of the card's whole record (records with several cards count once pe
 
 | card | function | record | agree | listed | differ | blocks | outcomes | first difference |
 |---|---|---|---|---|---|---|---|---|
-| 001 | R044+0x099E | R044 | 40 | 0 | 0 | 252/399 | 138/270 |  |
-| 002 | R044+0x1A50 | R044 | 40 | 0 | 0 | 252/399 | 138/270 |  |
-| 003 | R044+0x28E8 | R044 | 40 | 0 | 0 | 252/399 | 138/270 |  |
-| 004 | R045+0x0000 | R045 | 40 | 0 | 0 | 186/234 | 103/156 |  |
-| 005 | R045+0x0530 | R045 | 16 | 24 | 0 | 186/234 | 103/156 |  |
-| 006 | R045+0x0C40 | R045 | 40 | 0 | 0 | 186/234 | 103/156 |  |
-| 007 | R045+0x162E | R045 | 40 | 0 | 0 | 186/234 | 103/156 |  |
-| 008 | R046+0x0000 | R046 | 40 | 0 | 0 | 250/382 | 131/286 |  |
-| 009 | R046+0x0724 | R046 | 40 | 0 | 0 | 250/382 | 131/286 |  |
-| 00A | R046+0x1132 | R046 | 40 | 0 | 0 | 250/382 | 131/286 |  |
-| 00B | R046+0x1A14 | R046 | 40 | 0 | 0 | 250/382 | 131/286 |  |
-| 00C | R030+0x0000 | R030 | 0 | 40 | 0 | 73/85 | 67/92 |  |
-| 00D | R047+0x01A6 | R047 | 40 | 0 | 0 | 228/353 | 123/240 |  |
-| 00E | R047+0x13CC | R047 | 40 | 0 | 0 | 228/353 | 123/240 |  |
-| 00F | R047+0x20C0 | R047 | 40 | 0 | 0 | 228/353 | 123/240 |  |
-| 010 | R048+0x0000 | R048 | 40 | 0 | 0 | 271/405 | 155/318 |  |
-| 011 | R048+0x0D6E | R048 | 40 | 0 | 0 | 271/405 | 155/318 |  |
-| 012 | R048+0x1B18 | R048 | 40 | 0 | 0 | 271/405 | 155/318 |  |
-| 013 | R048+0x2504 | R048 | 40 | 0 | 0 | 271/405 | 155/318 |  |
-| 014 | R049+0x0000 | R049 | 40 | 0 | 0 | 344/468 | 193/330 |  |
-| 015 | R049+0x05B2 | R049 | 40 | 0 | 0 | 344/468 | 193/330 |  |
-| 016 | R049+0x1BF2 | R049 | 40 | 0 | 0 | 344/468 | 193/330 |  |
-| 017 | R049+0x2E2C | R049 | 40 | 0 | 0 | 344/468 | 193/330 |  |
-| 018 | R050+0x0000 | R050 | 40 | 0 | 0 | 268/362 | 156/264 |  |
-| 019 | R050+0x0C48 | R050 | 40 | 0 | 0 | 268/362 | 156/264 |  |
-| 01A | R050+0x14A0 | R050 | 40 | 0 | 0 | 268/362 | 156/264 |  |
-| 01B | R050+0x1CEE | R050 | 40 | 0 | 0 | 268/362 | 156/264 |  |
-| 01C | R051+0x0000 | R051 | 40 | 0 | 0 | 224/294 | 118/172 |  |
-| 01D | R051+0x091E | R051 | 40 | 0 | 0 | 224/294 | 118/172 |  |
-| 01E | R051+0x12F0 | R051 | 40 | 0 | 0 | 224/294 | 118/172 |  |
-| 01F | R051+0x1BA6 | R051 | 40 | 0 | 0 | 224/294 | 118/172 |  |
-| 020 | R052+0x0000 | R052 | 40 | 0 | 0 | 133/175 | 49/70 |  |
-| 021 | R052+0x0AC6 | R052 | 40 | 0 | 0 | 133/175 | 49/70 |  |
-| 022 | R052+0x10A6 | R052 | 40 | 0 | 0 | 133/175 | 49/70 |  |
-| 023 | R052+0x16A8 | R052 | 40 | 0 | 0 | 133/175 | 49/70 |  |
-| 024 | R053+0x0000 | R053 | 40 | 0 | 0 | 147/323 | 72/220 |  |
-| 025 | R053+0x0EC4 | R053 | 40 | 0 | 0 | 147/323 | 72/220 |  |
-| 026 | R053+0x2170 | R053 | 40 | 0 | 0 | 147/323 | 72/220 |  |
-| 027 | R053+0x2EE4 | R053 | 40 | 0 | 0 | 147/323 | 72/220 |  |
-| 028 | R054+0x0000 | R054 | 40 | 0 | 0 | 147/231 | 69/122 |  |
-| 029 | R054+0x09B8 | R054 | 40 | 0 | 0 | 147/231 | 69/122 |  |
-| 02A | R054+0x11A4 | R054 | 20 | 20 | 0 | 147/231 | 69/122 |  |
-| 02B | R054+0x1A78 | R054 | 40 | 0 | 0 | 147/231 | 69/122 |  |
-| 02C | R055+0x0000 | R055 | 40 | 0 | 0 | 97/139 | 52/88 |  |
-| 02D | R055+0x08FC | R055 | 40 | 0 | 0 | 97/139 | 52/88 |  |
-| 02E | R055+0x0D08 | R055 | 40 | 0 | 0 | 97/139 | 52/88 |  |
-| 02F | R055+0x0FA0 | R055 | 20 | 20 | 0 | 97/139 | 52/88 |  |
-| 030 | R056+0x0000 | R056 | 40 | 0 | 0 | 212/302 | 101/194 |  |
-| 031 | R056+0x088C | R056 | 40 | 0 | 0 | 212/302 | 101/194 |  |
-| 032 | R056+0x18C8 | R056 | 40 | 0 | 0 | 212/302 | 101/194 |  |
-| 033 | R056+0x2838 | R056 | 40 | 0 | 0 | 212/302 | 101/194 |  |
-| 034 | R057+0x0000 | R057 | 40 | 0 | 0 | 259/377 | 133/260 |  |
-| 035 | R057+0x09FE | R057 | 40 | 0 | 0 | 259/377 | 133/260 |  |
-| 036 | R057+0x0F72 | R057 | 40 | 0 | 0 | 259/377 | 133/260 |  |
-| 037 | R057+0x1CA0 | R057 | 38 | 2 | 0 | 259/377 | 133/260 |  |
-| 038 | R058+0x0000 | R058 | 40 | 0 | 0 | 209/324 | 119/222 |  |
-| 039 | R058+0x0928 | R058 | 40 | 0 | 0 | 209/324 | 119/222 |  |
-| 03A | R058+0x0E24 | R058 | 40 | 0 | 0 | 209/324 | 119/222 |  |
-| 03B | R058+0x1E76 | R058 | 40 | 0 | 0 | 209/324 | 119/222 |  |
-| 03C | R059+0x0000 | R059 | 40 | 0 | 0 | 113/217 | 58/130 |  |
-| 03D | R059+0x0F14 | R059 | 40 | 0 | 0 | 113/217 | 58/130 |  |
-| 03E | R059+0x1896 | R059 | 40 | 0 | 0 | 113/217 | 58/130 |  |
-| 03F | R059+0x220E | R059 | 40 | 0 | 0 | 113/217 | 58/130 |  |
-| 040 | R060+0x0000 | R060 | 40 | 0 | 0 | 71/180 | 42/120 |  |
-| 041 | R060+0x0978 | R060 | 40 | 0 | 0 | 71/180 | 42/120 |  |
-| 042 | R060+0x1674 | R060 | 40 | 0 | 0 | 71/180 | 42/120 |  |
-| 043 | R060+0x1FEC | R060 | 40 | 0 | 0 | 71/180 | 42/120 |  |
-| 044 | R061+0x0000 | R061 | 40 | 0 | 0 | 108/200 | 61/120 |  |
-| 045 | R061+0x0978 | R061 | 40 | 0 | 0 | 108/200 | 61/120 |  |
-| 046 | R061+0x1900 | R061 | 40 | 0 | 0 | 108/200 | 61/120 |  |
-| 047 | R061+0x2278 | R061 | 40 | 0 | 0 | 108/200 | 61/120 |  |
-| 048 | R062+0x0000 | R062 | 40 | 0 | 0 | 56/150 | 30/82 |  |
-| 049 | R062+0x0978 | R062 | 40 | 0 | 0 | 56/150 | 30/82 |  |
-| 04A | R062+0x12F0 | R062 | 40 | 0 | 0 | 56/150 | 30/82 |  |
-| 04B | R062+0x1C68 | R062 | 40 | 0 | 0 | 56/150 | 30/82 |  |
-| 04C | R063+0x0000 | R063 | 40 | 0 | 0 | 142/199 | 41/88 |  |
-| 04D | R063+0x0D40 | R063 | 40 | 0 | 0 | 142/199 | 41/88 |  |
-| 04E | R063+0x16BA | R063 | 40 | 0 | 0 | 142/199 | 41/88 |  |
-| 04F | R063+0x2032 | R063 | 40 | 0 | 0 | 142/199 | 41/88 |  |
-| 050 | R064+0x0000 | R064 | 40 | 0 | 0 | 112/189 | 48/102 |  |
-| 051 | R064+0x0D48 | R064 | 40 | 0 | 0 | 112/189 | 48/102 |  |
-| 052 | R064+0x1FF4 | R064 | 40 | 0 | 0 | 112/189 | 48/102 |  |
-| 053 | R064+0x2D38 | R064 | 40 | 0 | 0 | 112/189 | 48/102 |  |
-| 054 | R065+0x0000 | R065 | 40 | 0 | 0 | 151/272 | 70/176 |  |
-| 055 | R065+0x0C3A | R065 | 40 | 0 | 0 | 151/272 | 70/176 |  |
-| 056 | R065+0x1F1A | R065 | 40 | 0 | 0 | 151/272 | 70/176 |  |
-| 057 | R065+0x2C64 | R065 | 40 | 0 | 0 | 151/272 | 70/176 |  |
-| 058 | R066+0x0000 | R066 | 40 | 0 | 0 | 322/435 | 188/282 |  |
-| 059 | R066+0x0D48 | R066 | 40 | 0 | 0 | 322/435 | 188/282 |  |
-| 05A | R066+0x1B4E | R066 | 40 | 0 | 0 | 322/435 | 188/282 |  |
-| 05B | R066+0x2FDC | R066 | 40 | 0 | 0 | 322/435 | 188/282 |  |
-| 05C | R093+0x0DDA | R093 | 40 | 0 | 0 | 102/137 | 54/76 |  |
-| 05D | R067+0x031E | R067 | 40 | 0 | 0 | 107/173 | 51/98 |  |
-| 05E | R067+0x11C4 | R067 | 40 | 0 | 0 | 107/173 | 51/98 |  |
-| 05F | R067+0x1ECE | R067 | 0 | 40 | 0 | 107/173 | 51/98 |  |
-| 060 | R068+0x0000 | R068 | 40 | 0 | 0 | 146/201 | 78/126 |  |
-| 061 | R068+0x097E | R068 | 40 | 0 | 0 | 146/201 | 78/126 |  |
-| 062 | R068+0x128C | R068 | 0 | 40 | 0 | 146/201 | 78/126 |  |
-| 063 | R068+0x1C14 | R068 | 40 | 0 | 0 | 146/201 | 78/126 |  |
-| 064 | R069+0x0000 | R069 | 40 | 0 | 0 | 105/151 | 33/54 |  |
-| 065 | R069+0x0928 | R069 | 40 | 0 | 0 | 105/151 | 33/54 |  |
-| 066 | R069+0x1250 | R069 | 40 | 0 | 0 | 105/151 | 33/54 |  |
-| 067 | R069+0x175A | R069 | 40 | 0 | 0 | 105/151 | 33/54 |  |
-| 068 | R070+0x0000 | R070 | 40 | 0 | 0 | 199/288 | 79/156 |  |
-| 069 | R070+0x090E | R070 | 40 | 0 | 0 | 199/288 | 79/156 |  |
-| 06A | R070+0x177A | R070 | 40 | 0 | 0 | 199/288 | 79/156 |  |
-| 06B | R070+0x2894 | R070 | 40 | 0 | 0 | 199/288 | 79/156 |  |
-| 06C | R071+0x0000 | R071 | 14 | 26 | 0 | 134/239 | 63/160 |  |
-| 06D | R071+0x0D82 | R071 | 40 | 0 | 0 | 134/239 | 63/160 |  |
-| 06E | R071+0x15A4 | R071 | 40 | 0 | 0 | 134/239 | 63/160 |  |
-| 06F | R071+0x1FB6 | R071 | 40 | 0 | 0 | 134/239 | 63/160 |  |
-| 070 | R072+0x0000 | R072 | 40 | 0 | 0 | 145/184 | 61/88 |  |
-| 071 | R093+0x115A | R093 | 40 | 0 | 0 | 102/137 | 54/76 |  |
-| 072 | R072+0x0B6A | R072 | 40 | 0 | 0 | 145/184 | 61/88 |  |
-| 073 | R072+0x1494 | R072 | 0 | 40 | 0 | 145/184 | 61/88 |  |
-| 074 | R073+0x0000 | R073 | 40 | 0 | 0 | 272/405 | 157/284 |  |
-| 075 | R073+0x0D36 | R073 | 40 | 0 | 0 | 272/405 | 157/284 |  |
-| 076 | R073+0x1668 | R073 | 40 | 0 | 0 | 272/405 | 157/284 |  |
-| 077 | R073+0x2460 | R073 | 40 | 0 | 0 | 272/405 | 157/284 |  |
-| 078 | R074+0x0000 | R074 | 40 | 0 | 0 | 229/328 | 117/214 |  |
-| 079 | R074+0x0BEA | R074 | 40 | 0 | 0 | 229/328 | 117/214 |  |
-| 07A | R074+0x15D2 | R074 | 40 | 0 | 0 | 229/328 | 117/214 |  |
-| 07B | R074+0x20A6 | R074 | 40 | 0 | 0 | 229/328 | 117/214 |  |
-| 07C | R075+0x0000 | R075 | 40 | 0 | 0 | 147/219 | 62/120 |  |
-| 07D | R075+0x0A28 | R075 | 0 | 40 | 0 | 147/219 | 62/120 |  |
-| 07E | R075+0x1056 | R075 | 40 | 0 | 0 | 147/219 | 62/120 |  |
-| 07F | R075+0x1864 | R075 | 40 | 0 | 0 | 147/219 | 62/120 |  |
-| 080 | R076+0x0000 | R076 | 40 | 0 | 0 | 122/182 | 62/124 |  |
-| 081 | R076+0x0430 | R076 | 40 | 0 | 0 | 122/182 | 62/124 |  |
-| 082 | R076+0x09FE | R076 | 40 | 0 | 0 | 122/182 | 62/124 |  |
-| 083 | R076+0x0C9C | R076 | 40 | 0 | 0 | 122/182 | 62/124 |  |
-| 084 | R077+0x0000 | R077 | 40 | 0 | 0 | 178/247 | 86/150 |  |
-| 085 | R077+0x0E48 | R077 | 40 | 0 | 0 | 178/247 | 86/150 |  |
-| 086 | R077+0x15EC | R077 | 40 | 0 | 0 | 178/247 | 86/150 |  |
-| 087 | R077+0x212A | R077 | 40 | 0 | 0 | 178/247 | 86/150 |  |
-| 088 | R078+0x0000 | R078 | 40 | 0 | 0 | 124/167 | 51/92 |  |
-| 089 | R078+0x0244 | R078 | 40 | 0 | 0 | 124/167 | 51/92 |  |
-| 08A | R078+0x0A6A | R078 | 4 | 36 | 0 | 124/167 | 51/92 |  |
-| 08B | R078+0x0E4A | R078 | 40 | 0 | 0 | 124/167 | 51/92 |  |
-| 08C | R079+0x0000 | R079 | 40 | 0 | 0 | 252/383 | 139/268 |  |
-| 08D | R079+0x0A08 | R079 | 40 | 0 | 0 | 252/383 | 139/268 |  |
-| 08E | R079+0x168A | R079 | 40 | 0 | 0 | 252/383 | 139/268 |  |
-| 08F | R079+0x2360 | R079 | 12 | 28 | 0 | 252/383 | 139/268 |  |
-| 090 | R080+0x0000 | R080 | 40 | 0 | 0 | 170/305 | 91/222 |  |
-| 091 | R080+0x038C | R080 | 0 | 40 | 0 | 170/305 | 91/222 |  |
-| 092 | R080+0x06DC | R080 | 40 | 0 | 0 | 170/305 | 91/222 |  |
-| 093 | R080+0x0F16 | R080 | 40 | 0 | 0 | 170/305 | 91/222 |  |
-| 094 | R081+0x0000 | R081 | 40 | 0 | 0 | 142/384 | 75/288 |  |
-| 095 | R081+0x0834 | R081 | 40 | 0 | 0 | 142/384 | 75/288 |  |
-| 096 | R081+0x12AC | R081 | 40 | 0 | 0 | 142/384 | 75/288 |  |
-| 097 | R081+0x1848 | R081 | 40 | 0 | 0 | 142/384 | 75/288 |  |
-| 098 | R082+0x0000 | R082 | 40 | 0 | 0 | 108/216 | 53/136 |  |
-| 099 | R082+0x00D8 | R082 | 40 | 0 | 0 | 108/216 | 53/136 |  |
-| 09A | R082+0x071C | R082 | 40 | 0 | 0 | 108/216 | 53/136 |  |
-| 09B | R082+0x0EA0 | R082 | 40 | 0 | 0 | 108/216 | 53/136 |  |
-| 09C | R083+0x0000 | R083 | 40 | 0 | 0 | 62/125 | 35/84 |  |
-| 09D | R083+0x0C34 | R083 | 40 | 0 | 0 | 62/125 | 35/84 |  |
-| 09E | R083+0x146E | R083 | 40 | 0 | 0 | 62/125 | 35/84 |  |
-| 09F | R083+0x1F82 | R083 | 40 | 0 | 0 | 62/125 | 35/84 |  |
-| 0A0 | R084+0x0000 | R084 | 40 | 0 | 0 | 170/248 | 87/154 |  |
-| 0A1 | R084+0x0A3C | R084 | 40 | 0 | 0 | 170/248 | 87/154 |  |
-| 0A2 | R084+0x1622 | R084 | 40 | 0 | 0 | 170/248 | 87/154 |  |
-| 0A3 | R084+0x1FD8 | R084 | 40 | 0 | 0 | 170/248 | 87/154 |  |
-| 0A4 | R085+0x0000 | R085 | 40 | 0 | 0 | 175/237 | 100/160 |  |
-| 0A5 | R085+0x071A | R085 | 40 | 0 | 0 | 175/237 | 100/160 |  |
-| 0A6 | R085+0x0FE2 | R085 | 40 | 0 | 0 | 175/237 | 100/160 |  |
-| 0A7 | R085+0x13B2 | R085 | 40 | 0 | 0 | 175/237 | 100/160 |  |
-| 0A8 | R086+0x0000 | R086 | 40 | 0 | 0 | 116/214 | 65/166 |  |
-| 0A9 | R086+0x0C40 | R086 | 0 | 40 | 0 | 116/214 | 65/166 |  |
-| 0AA | R086+0x0DEE | R086 | 40 | 0 | 0 | 116/214 | 65/166 |  |
-| 0AB | R086+0x1930 | R086 | 40 | 0 | 0 | 116/214 | 65/166 |  |
-| 0AC | R087+0x0000 | R087 | 40 | 0 | 0 | 78/124 | 44/70 |  |
-| 0AD | R087+0x0A12 | R087 | 40 | 0 | 0 | 78/124 | 44/70 |  |
-| 0AE | R087+0x13CE | R087 | 40 | 0 | 0 | 78/124 | 44/70 |  |
-| 0AF | R087+0x14EE | R087 | 40 | 0 | 0 | 78/124 | 44/70 |  |
-| 0B0 | R088+0x0000 | R088 | 40 | 0 | 0 | 123/178 | 78/130 |  |
-| 0B1 | R088+0x0210 | R088 | 40 | 0 | 0 | 123/178 | 78/130 |  |
-| 0B2 | R088+0x0B20 | R088 | 40 | 0 | 0 | 123/178 | 78/130 |  |
-| 0B3 | R088+0x0FB6 | R088 | 40 | 0 | 0 | 123/178 | 78/130 |  |
-| 0B4 | R089+0x0000 | R089 | 40 | 0 | 0 | 118/212 | 61/142 |  |
-| 0B5 | R089+0x04F8 | R089 | 40 | 0 | 0 | 118/212 | 61/142 |  |
-| 0B6 | R089+0x096A | R089 | 40 | 0 | 0 | 118/212 | 61/142 |  |
-| 0B7 | R089+0x147A | R089 | 40 | 0 | 0 | 118/212 | 61/142 |  |
-| 0B8 | R090+0x0000 | R090 | 20 | 20 | 0 | 217/337 | 108/198 |  |
-| 0B9 | R090+0x0A82 | R090 | 40 | 0 | 0 | 217/337 | 108/198 |  |
-| 0BA | R090+0x161E | R090 | 40 | 0 | 0 | 217/337 | 108/198 |  |
-| 0BB | R090+0x22EC | R090 | 40 | 0 | 0 | 217/337 | 108/198 |  |
-| 0BC | R091+0x0000 | R091 | 40 | 0 | 0 | 104/150 | 38/82 |  |
-| 0BD | R091+0x05C4 | R091 | 40 | 0 | 0 | 104/150 | 38/82 |  |
-| 0BE | R091+0x0892 | R091 | 40 | 0 | 0 | 104/150 | 38/82 |  |
-| 0BF | R091+0x0BA8 | R091 | 40 | 0 | 0 | 104/150 | 38/82 |  |
-| 0C0 | R092+0x0000 | R092 | 40 | 0 | 0 | 108/187 | 43/90 |  |
-| 0C1 | R092+0x057A | R092 | 40 | 0 | 0 | 108/187 | 43/90 |  |
-| 0C2 | R092+0x0E80 | R092 | 0 | 40 | 0 | 108/187 | 43/90 |  |
-| 0C3 | R092+0x1436 | R092 | 40 | 0 | 0 | 108/187 | 43/90 |  |
-| 0C4 | R093+0x0000 | R093 | 40 | 0 | 0 | 102/137 | 54/76 |  |
-| 0C5 | R094+0x0000 | R094 | 40 | 0 | 0 | 113/132 | 44/64 |  |
-| 0C6 | R067+0x0000 | R067 | 40 | 0 | 0 | 107/173 | 51/98 |  |
-| 0C7 | R072+0x05DE | R072 | 40 | 0 | 0 | 145/184 | 61/88 |  |
-| 0C8 | R093+0x09B4 | R093 | 40 | 0 | 0 | 102/137 | 54/76 |  |
-| 0C9 | R094+0x02E8 | R094 | 40 | 0 | 0 | 113/132 | 44/64 |  |
-| 0CA | R094+0x079C | R094 | 40 | 0 | 0 | 113/132 | 44/64 |  |
-| 0CB | R094+0x0A92 | R094 | 40 | 0 | 0 | 113/132 | 44/64 |  |
-| 0CC | R095+0x0000 | R095 | 40 | 0 | 0 | 127/148 | 67/88 |  |
-| 0CD | R095+0x03F0 | R095 | 40 | 0 | 0 | 127/148 | 67/88 |  |
-| 0CE | R095+0x0874 | R095 | 40 | 0 | 0 | 127/148 | 67/88 |  |
-| 0CF | R095+0x0C02 | R095 | 40 | 0 | 0 | 127/148 | 67/88 |  |
-| 0D0 | R096+0x0000 | R096 | 40 | 0 | 0 | 132/151 | 48/68 |  |
-| 0D1 | R096+0x0384 | R096 | 40 | 0 | 0 | 132/151 | 48/68 |  |
-| 0D2 | R096+0x0712 | R096 | 40 | 0 | 0 | 132/151 | 48/68 |  |
-| 0D3 | R096+0x0BA8 | R096 | 40 | 0 | 0 | 132/151 | 48/68 |  |
-| 0D4 | R097+0x0000 | R097 | 40 | 0 | 0 | 126/146 | 57/78 |  |
-| 0D5 | R097+0x048C | R097 | 40 | 0 | 0 | 126/146 | 57/78 |  |
-| 0D6 | R097+0x09E6 | R097 | 40 | 0 | 0 | 126/146 | 57/78 |  |
-| 0D7 | R097+0x0D74 | R097 | 40 | 0 | 0 | 126/146 | 57/78 |  |
-| 0D8 | R098+0x0000 | R098 | 40 | 0 | 0 | 122/141 | 56/76 |  |
-| 0D9 | R098+0x03F0 | R098 | 40 | 0 | 0 | 122/141 | 56/76 |  |
-| 0DA | R098+0x0782 | R098 | 40 | 0 | 0 | 122/141 | 56/76 |  |
-| 0DB | R098+0x0B06 | R098 | 40 | 0 | 0 | 122/141 | 56/76 |  |
-| 0DC | R099+0x0000 | R099 | 40 | 0 | 0 | 140/156 | 36/56 |  |
-| 0DD | R099+0x04AA | R099 | 40 | 0 | 0 | 140/156 | 36/56 |  |
-| 0DE | R099+0x0B0E | R099 | 40 | 0 | 0 | 140/156 | 36/56 |  |
-| 0DF | R099+0x0FDA | R099 | 40 | 0 | 0 | 140/156 | 36/56 |  |
-| 0E0 | R100+0x0000 | R100 | 40 | 0 | 0 | 134/164 | 61/92 |  |
-| 0E1 | R100+0x04C2 | R100 | 40 | 0 | 0 | 134/164 | 61/92 |  |
-| 0E2 | R100+0x08EA | R100 | 40 | 0 | 0 | 134/164 | 61/92 |  |
-| 0E3 | R100+0x0BE0 | R100 | 40 | 0 | 0 | 134/164 | 61/92 |  |
-| 0E4 | R101+0x0000 | R101 | 40 | 0 | 0 | 166/279 | 117/230 |  |
-| 0E5 | R101+0x0622 | R101 | 40 | 0 | 0 | 166/279 | 117/230 |  |
-| 0E6 | R101+0x0850 | R101 | 40 | 0 | 0 | 166/279 | 117/230 |  |
-| 0E7 | R101+0x11F4 | R101 | 40 | 0 | 0 | 166/279 | 117/230 |  |
-| 0E8 | R102+0x0000 | R102 | 40 | 0 | 0 | 100/121 | 55/76 |  |
-| 0E9 | R102+0x06E8 | R102 | 0 | 40 | 0 | 100/121 | 55/76 |  |
-| 0EA | R102+0x0E56 | R102 | 40 | 0 | 0 | 100/121 | 55/76 |  |
-| 0EB | R102+0x1202 | R102 | 40 | 0 | 0 | 100/121 | 55/76 |  |
-| 0EC | R103+0x0000 | R103 | 40 | 0 | 0 | 69/98 | 33/56 |  |
-| 0ED | R103+0x0344 | R103 | 40 | 0 | 0 | 69/98 | 33/56 |  |
-| 0EE | R103+0x0688 | R103 | 40 | 0 | 0 | 69/98 | 33/56 |  |
-| 0EF | R103+0x0B00 | R103 | 40 | 0 | 0 | 69/98 | 33/56 |  |
-| 0F0 | R104+0x0000 | R104 | 40 | 0 | 0 | 164/207 | 73/108 |  |
-| 0F1 | R104+0x0D62 | R104 | 40 | 0 | 0 | 164/207 | 73/108 |  |
-| 0F2 | R104+0x14A0 | R104 | 40 | 0 | 0 | 164/207 | 73/108 |  |
-| 0F3 | R104+0x1FD0 | R104 | 40 | 0 | 0 | 164/207 | 73/108 |  |
-| 0F4 | R105+0x0000 | R105 | 40 | 0 | 0 | 235/332 | 129/208 |  |
-| 0F5 | R105+0x11C8 | R105 | 40 | 0 | 0 | 235/332 | 129/208 |  |
-| 0F6 | R105+0x1DA6 | R105 | 40 | 0 | 0 | 235/332 | 129/208 |  |
-| 0F7 | R105+0x27AA | R105 | 0 | 40 | 0 | 235/332 | 129/208 |  |
-| 0F8 | R106+0x0000 | R106 | 40 | 0 | 0 | 158/232 | 72/124 |  |
-| 0F9 | R106+0x07D4 | R106 | 40 | 0 | 0 | 158/232 | 72/124 |  |
-| 0FA | R106+0x184A | R106 | 40 | 0 | 0 | 158/232 | 72/124 |  |
-| 0FB | R106+0x21EA | R106 | 40 | 0 | 0 | 158/232 | 72/124 |  |
-| 0FC | R107+0x0000 | R107 | 40 | 0 | 0 | 234/380 | 122/254 |  |
-| 0FD | R107+0x0E76 | R107 | 40 | 0 | 0 | 234/380 | 122/254 |  |
-| 0FE | R107+0x1962 | R107 | 40 | 0 | 0 | 234/380 | 122/254 |  |
-| 0FF | R107+0x2D28 | R107 | 40 | 0 | 0 | 234/380 | 122/254 |  |
-| 100 | R108+0x0000 | R108 | 40 | 0 | 0 | 277/400 | 139/240 |  |
-| 101 | R108+0x0ED0 | R108 | 40 | 0 | 0 | 277/400 | 139/240 |  |
-| 102 | R108+0x2076 | R108 | 40 | 0 | 0 | 277/400 | 139/240 |  |
-| 103 | R108+0x3028 | R108 | 40 | 0 | 0 | 277/400 | 139/240 |  |
-| 104 | R109+0x0000 | R109 | 40 | 0 | 0 | 196/318 | 91/178 |  |
-| 105 | R109+0x0F6A | R109 | 40 | 0 | 0 | 196/318 | 91/178 |  |
-| 106 | R109+0x1C58 | R109 | 40 | 0 | 0 | 196/318 | 91/178 |  |
-| 107 | R109+0x21A2 | R109 | 40 | 0 | 0 | 196/318 | 91/178 |  |
-| 108 | R110+0x0000 | R110 | 40 | 0 | 0 | 184/260 | 70/136 |  |
-| 109 | R110+0x0D8E | R110 | 0 | 40 | 0 | 184/260 | 70/136 |  |
-| 10A | R110+0x159C | R110 | 40 | 0 | 0 | 184/260 | 70/136 |  |
-| 10B | R110+0x1C52 | R110 | 0 | 40 | 0 | 184/260 | 70/136 |  |
-| 10C | R111+0x0000 | R111 | 0 | 40 | 0 | 104/140 | 16/32 |  |
-| 10D | R111+0x0576 | R111 | 40 | 0 | 0 | 104/140 | 16/32 |  |
-| 10E | R111+0x0B28 | R111 | 0 | 40 | 0 | 104/140 | 16/32 |  |
-| 10F | R111+0x1066 | R111 | 40 | 0 | 0 | 104/140 | 16/32 |  |
-| 110 | R112+0x0000 | R112 | 0 | 40 | 0 | 243/345 | 107/192 |  |
-| 111 | R112+0x049E | R112 | 40 | 0 | 0 | 243/345 | 107/192 |  |
-| 112 | R112+0x165C | R112 | 40 | 0 | 0 | 243/345 | 107/192 |  |
-| 113 | R112+0x2760 | R112 | 40 | 0 | 0 | 243/345 | 107/192 |  |
-| 114 | R113+0x0000 | R113 | 40 | 0 | 0 | 194/258 | 110/156 |  |
-| 115 | R113+0x0656 | R113 | 40 | 0 | 0 | 194/258 | 110/156 |  |
-| 116 | R113+0x0B8C | R113 | 40 | 0 | 0 | 194/258 | 110/156 |  |
-| 117 | R113+0x17DA | R113 | 40 | 0 | 0 | 194/258 | 110/156 |  |
-| 118 | R114+0x0000 | R114 | 40 | 0 | 0 | 184/256 | 75/130 |  |
-| 119 | R114+0x09B4 | R114 | 38 | 2 | 0 | 184/256 | 75/130 |  |
-| 11A | R114+0x15D4 | R114 | 40 | 0 | 0 | 184/256 | 75/130 |  |
-| 11B | R114+0x207A | R114 | 40 | 0 | 0 | 184/256 | 75/130 |  |
-| 11C | R115+0x0000 | R115 | 40 | 0 | 0 | 130/201 | 53/102 |  |
-| 11D | R115+0x0654 | R115 | 40 | 0 | 0 | 130/201 | 53/102 |  |
-| 11E | R115+0x0C9A | R115 | 36 | 4 | 0 | 130/201 | 53/102 |  |
-| 11F | R115+0x187A | R115 | 40 | 0 | 0 | 130/201 | 53/102 |  |
-| 120 | R116+0x0000 | R116 | 0 | 40 | 0 | 80/109 | 29/50 |  |
-| 121 | R116+0x070E | R116 | 40 | 0 | 0 | 80/109 | 29/50 |  |
-| 122 | R116+0x0E3C | R116 | 40 | 0 | 0 | 80/109 | 29/50 |  |
-| 123 | R116+0x1E4A | R116 | 28 | 12 | 0 | 80/109 | 29/50 |  |
-| 124 | R117+0x0000 | R117 | 40 | 0 | 0 | 88/143 | 31/76 |  |
-| 125 | R117+0x066C | R117 | 40 | 0 | 0 | 88/143 | 31/76 |  |
-| 126 | R117+0x0896 | R117 | 40 | 0 | 0 | 88/143 | 31/76 |  |
-| 127 | R117+0x0A80 | R117 | 12 | 28 | 0 | 88/143 | 31/76 |  |
-| 128 | R118+0x0000 | R118 | 40 | 0 | 0 | 161/230 | 60/122 |  |
-| 129 | R118+0x08AA | R118 | 40 | 0 | 0 | 161/230 | 60/122 |  |
-| 12A | R118+0x14C2 | R118 | 40 | 0 | 0 | 161/230 | 60/122 |  |
-| 12B | R118+0x1F3C | R118 | 40 | 0 | 0 | 161/230 | 60/122 |  |
-| 12C | R119+0x0000 | R119 | 40 | 0 | 0 | 147/183 | 49/76 |  |
-| 12D | R119+0x0980 | R119 | 40 | 0 | 0 | 147/183 | 49/76 |  |
-| 12E | R119+0x150C | R119 | 40 | 0 | 0 | 147/183 | 49/76 |  |
-| 12F | R119+0x238E | R119 | 40 | 0 | 0 | 147/183 | 49/76 |  |
-| 130 | R120+0x0000 | R120 | 40 | 0 | 0 | 146/204 | 51/84 |  |
-| 131 | R120+0x0970 | R120 | 40 | 0 | 0 | 146/204 | 51/84 |  |
-| 132 | R120+0x14EA | R120 | 8 | 32 | 0 | 146/204 | 51/84 |  |
-| 133 | R120+0x2018 | R120 | 40 | 0 | 0 | 146/204 | 51/84 |  |
-| 134 | R121+0x0000 | R121 | 40 | 0 | 0 | 108/143 | 35/58 |  |
-| 135 | R121+0x0A56 | R121 | 40 | 0 | 0 | 108/143 | 35/58 |  |
-| 136 | R121+0x124A | R121 | 40 | 0 | 0 | 108/143 | 35/58 |  |
-| 137 | R121+0x1C06 | R121 | 40 | 0 | 0 | 108/143 | 35/58 |  |
-| 138 | R122+0x0000 | R122 | 40 | 0 | 0 | 111/146 | 43/62 |  |
-| 139 | R122+0x0B2E | R122 | 0 | 40 | 0 | 111/146 | 43/62 |  |
-| 13A | R122+0x159E | R122 | 40 | 0 | 0 | 111/146 | 43/62 |  |
-| 13B | R122+0x1FE0 | R122 | 40 | 0 | 0 | 111/146 | 43/62 |  |
-| 13C | R123+0x0000 | R123 | 40 | 0 | 0 | 113/184 | 44/86 |  |
-| 13D | R123+0x09B6 | R123 | 40 | 0 | 0 | 113/184 | 44/86 |  |
-| 13E | R123+0x14AA | R123 | 40 | 0 | 0 | 113/184 | 44/86 |  |
-| 13F | R123+0x2036 | R123 | 40 | 0 | 0 | 113/184 | 44/86 |  |
-| 140 | R124+0x0000 | R124 | 40 | 0 | 0 | 168/254 | 70/140 |  |
-| 141 | R124+0x0BDE | R124 | 40 | 0 | 0 | 168/254 | 70/140 |  |
-| 142 | R124+0x165C | R124 | 40 | 0 | 0 | 168/254 | 70/140 |  |
-| 143 | R124+0x22AC | R124 | 40 | 0 | 0 | 168/254 | 70/140 |  |
-| 144 | R125+0x0000 | R125 | 36 | 4 | 0 | 122/169 | 45/76 |  |
-| 145 | R125+0x0D80 | R125 | 40 | 0 | 0 | 122/169 | 45/76 |  |
-| 146 | R125+0x18A8 | R125 | 40 | 0 | 0 | 122/169 | 45/76 |  |
-| 147 | R125+0x25FE | R125 | 40 | 0 | 0 | 122/169 | 45/76 |  |
-| 148 | R126+0x0000 | R126 | 40 | 0 | 0 | 204/274 | 99/184 |  |
-| 149 | R126+0x0B40 | R126 | 40 | 0 | 0 | 204/274 | 99/184 |  |
-| 14A | R126+0x1650 | R126 | 40 | 0 | 0 | 204/274 | 99/184 |  |
-| 14B | R126+0x2C0E | R126 | 40 | 0 | 0 | 204/274 | 99/184 |  |
-| 14C | R127+0x0000 | R127 | 40 | 0 | 0 | 62/92 | 31/54 |  |
-| 14D | R127+0x07C6 | R127 | 0 | 40 | 0 | 62/92 | 31/54 |  |
-| 14E | R127+0x19A2 | R127 | 40 | 0 | 0 | 62/92 | 31/54 |  |
-| 14F | R127+0x21C0 | R127 | 40 | 0 | 0 | 62/92 | 31/54 |  |
-| 150 | R128+0x0000 | R128 | 40 | 0 | 0 | 76/193 | 44/122 |  |
-| 151 | R128+0x0BF0 | R128 | 0 | 40 | 0 | 76/193 | 44/122 |  |
-| 152 | R128+0x16A2 | R128 | 40 | 0 | 0 | 76/193 | 44/122 |  |
-| 153 | R128+0x1E28 | R128 | 40 | 0 | 0 | 76/193 | 44/122 |  |
-| 154 | R129+0x0000 | R129 | 40 | 0 | 0 | 131/154 | 36/54 |  |
-| 155 | R129+0x055A | R129 | 40 | 0 | 0 | 131/154 | 36/54 |  |
-| 156 | R129+0x0AB4 | R129 | 40 | 0 | 0 | 131/154 | 36/54 |  |
-| 157 | R129+0x10A4 | R129 | 40 | 0 | 0 | 131/154 | 36/54 |  |
-| 158 | R130+0x0740 | R130 | 40 | 0 | 0 | 51/102 | 28/64 |  |
-| 159 | R130+0x0D48 | R130 | 40 | 0 | 0 | 51/102 | 28/64 |  |
-| 15A | R130+0x1674 | R130 | 40 | 0 | 0 | 51/102 | 28/64 |  |
-| 15B | R130+0x18AC | R130 | 40 | 0 | 0 | 51/102 | 28/64 |  |
-| 15C | R131+0x0000 | R131 | 40 | 0 | 0 | 36/60 | 17/38 |  |
-| 15D | R131+0x0B8C | R131 | 40 | 0 | 0 | 36/60 | 17/38 |  |
-| 15E | R131+0x0C8A | R131 | 40 | 0 | 0 | 36/60 | 17/38 |  |
-| 15F | R131+0x0DC0 | R131 | 40 | 0 | 0 | 36/60 | 17/38 |  |
-| 160 | R132+0x0000 | R132 | 40 | 0 | 0 | 78/104 | 36/64 |  |
-| 161 | R132+0x00FC | R132 | 40 | 0 | 0 | 78/104 | 36/64 |  |
-| 162 | R132+0x0218 | R132 | 40 | 0 | 0 | 78/104 | 36/64 |  |
-| 163 | R132+0x034E | R132 | 40 | 0 | 0 | 78/104 | 36/64 |  |
-| 164 | R133+0x0000 | R133 | 40 | 0 | 0 | 87/129 | 47/90 |  |
-| 165 | R133+0x074A | R133 | 40 | 0 | 0 | 87/129 | 47/90 |  |
-| 166 | R133+0x11DC | R133 | 40 | 0 | 0 | 87/129 | 47/90 |  |
-| 167 | R133+0x139A | R133 | 40 | 0 | 0 | 87/129 | 47/90 |  |
-| 168 | R134+0x0000 | R134 | 40 | 0 | 0 | 147/200 | 57/104 |  |
-| 169 | R134+0x0C1C | R134 | 40 | 0 | 0 | 147/200 | 57/104 |  |
-| 16A | R134+0x152C | R134 | 40 | 0 | 0 | 147/200 | 57/104 |  |
-| 16B | R134+0x1EDA | R134 | 0 | 40 | 0 | 147/200 | 57/104 |  |
-| 16C | R135+0x0000 | R135 | 40 | 0 | 0 | 1/1 | 0/0 |  |
-| 16D | R130+0x0000 | R130 | 40 | 0 | 0 | 51/102 | 28/64 |  |
+| 001 | R044+0x099E | R044 | 40 | 0 | 0 | 377/430 | 240/286 |  |
+| 002 | R044+0x1A50 | R044 | 40 | 0 | 0 | 377/430 | 240/286 |  |
+| 003 | R044+0x28E8 | R044 | 40 | 0 | 0 | 377/430 | 240/286 |  |
+| 004 | R045+0x0000 | R045 | 40 | 0 | 0 | 227/241 | 142/156 |  |
+| 005 | R045+0x0530 | R045 | 16 | 24 | 0 | 227/241 | 142/156 |  |
+| 006 | R045+0x0C40 | R045 | 40 | 0 | 0 | 227/241 | 142/156 |  |
+| 007 | R045+0x162E | R045 | 40 | 0 | 0 | 227/241 | 142/156 |  |
+| 008 | R046+0x0000 | R046 | 40 | 0 | 0 | 375/402 | 237/286 |  |
+| 009 | R046+0x0724 | R046 | 40 | 0 | 0 | 375/402 | 237/286 |  |
+| 00A | R046+0x1132 | R046 | 40 | 0 | 0 | 375/402 | 237/286 |  |
+| 00B | R046+0x1A14 | R046 | 40 | 0 | 0 | 375/402 | 237/286 |  |
+| 00C | R030+0x0000 | R030 | 0 | 40 | 0 | 838/989 | 773/972 |  |
+| 00D | R047+0x01A6 | R047 | 40 | 0 | 0 | 321/379 | 183/240 |  |
+| 00E | R047+0x13CC | R047 | 40 | 0 | 0 | 321/379 | 183/240 |  |
+| 00F | R047+0x20C0 | R047 | 40 | 0 | 0 | 321/379 | 183/240 |  |
+| 010 | R048+0x0000 | R048 | 40 | 0 | 0 | 429/463 | 280/336 |  |
+| 011 | R048+0x0D6E | R048 | 40 | 0 | 0 | 429/463 | 280/336 |  |
+| 012 | R048+0x1B18 | R048 | 40 | 0 | 0 | 429/463 | 280/336 |  |
+| 013 | R048+0x2504 | R048 | 40 | 0 | 0 | 429/463 | 280/336 |  |
+| 014 | R049+0x0000 | R049 | 40 | 0 | 0 | 503/531 | 325/370 |  |
+| 015 | R049+0x05B2 | R049 | 40 | 0 | 0 | 503/531 | 325/370 |  |
+| 016 | R049+0x1BF2 | R049 | 40 | 0 | 0 | 503/531 | 325/370 |  |
+| 017 | R049+0x2E2C | R049 | 40 | 0 | 0 | 503/531 | 325/370 |  |
+| 018 | R050+0x0000 | R050 | 40 | 0 | 0 | 438/462 | 308/346 |  |
+| 019 | R050+0x0C48 | R050 | 40 | 0 | 0 | 438/462 | 308/346 |  |
+| 01A | R050+0x14A0 | R050 | 40 | 0 | 0 | 438/462 | 308/346 |  |
+| 01B | R050+0x1CEE | R050 | 40 | 0 | 0 | 438/462 | 308/346 |  |
+| 01C | R051+0x0000 | R051 | 40 | 0 | 0 | 368/406 | 187/230 |  |
+| 01D | R051+0x091E | R051 | 40 | 0 | 0 | 368/406 | 187/230 |  |
+| 01E | R051+0x12F0 | R051 | 40 | 0 | 0 | 368/406 | 187/230 |  |
+| 01F | R051+0x1BA6 | R051 | 40 | 0 | 0 | 368/406 | 187/230 |  |
+| 020 | R052+0x0000 | R052 | 40 | 0 | 0 | 227/258 | 69/98 |  |
+| 021 | R052+0x0AC6 | R052 | 40 | 0 | 0 | 227/258 | 69/98 |  |
+| 022 | R052+0x10A6 | R052 | 40 | 0 | 0 | 227/258 | 69/98 |  |
+| 023 | R052+0x16A8 | R052 | 40 | 0 | 0 | 227/258 | 69/98 |  |
+| 024 | R053+0x0000 | R053 | 40 | 0 | 0 | 469/495 | 271/304 |  |
+| 025 | R053+0x0EC4 | R053 | 40 | 0 | 0 | 469/495 | 271/304 |  |
+| 026 | R053+0x2170 | R053 | 40 | 0 | 0 | 469/495 | 271/304 |  |
+| 027 | R053+0x2EE4 | R053 | 40 | 0 | 0 | 469/495 | 271/304 |  |
+| 028 | R054+0x0000 | R054 | 40 | 0 | 0 | 294/315 | 118/140 |  |
+| 029 | R054+0x09B8 | R054 | 40 | 0 | 0 | 294/315 | 118/140 |  |
+| 02A | R054+0x11A4 | R054 | 20 | 20 | 0 | 294/315 | 118/140 |  |
+| 02B | R054+0x1A78 | R054 | 40 | 0 | 0 | 294/315 | 118/140 |  |
+| 02C | R055+0x0000 | R055 | 40 | 0 | 0 | 163/178 | 80/96 |  |
+| 02D | R055+0x08FC | R055 | 40 | 0 | 0 | 163/178 | 80/96 |  |
+| 02E | R055+0x0D08 | R055 | 40 | 0 | 0 | 163/178 | 80/96 |  |
+| 02F | R055+0x0FA0 | R055 | 20 | 20 | 0 | 163/178 | 80/96 |  |
+| 030 | R056+0x0000 | R056 | 40 | 0 | 0 | 326/352 | 179/212 |  |
+| 031 | R056+0x088C | R056 | 40 | 0 | 0 | 326/352 | 179/212 |  |
+| 032 | R056+0x18C8 | R056 | 40 | 0 | 0 | 326/352 | 179/212 |  |
+| 033 | R056+0x2838 | R056 | 40 | 0 | 0 | 326/352 | 179/212 |  |
+| 034 | R057+0x0000 | R057 | 40 | 0 | 0 | 382/404 | 230/264 |  |
+| 035 | R057+0x09FE | R057 | 40 | 0 | 0 | 382/404 | 230/264 |  |
+| 036 | R057+0x0F72 | R057 | 40 | 0 | 0 | 382/404 | 230/264 |  |
+| 037 | R057+0x1CA0 | R057 | 38 | 2 | 0 | 382/404 | 230/264 |  |
+| 038 | R058+0x0000 | R058 | 40 | 0 | 0 | 314/350 | 209/236 |  |
+| 039 | R058+0x0928 | R058 | 40 | 0 | 0 | 314/350 | 209/236 |  |
+| 03A | R058+0x0E24 | R058 | 40 | 0 | 0 | 314/350 | 209/236 |  |
+| 03B | R058+0x1E76 | R058 | 40 | 0 | 0 | 314/350 | 209/236 |  |
+| 03C | R059+0x0000 | R059 | 40 | 0 | 0 | 266/277 | 115/130 |  |
+| 03D | R059+0x0F14 | R059 | 40 | 0 | 0 | 266/277 | 115/130 |  |
+| 03E | R059+0x1896 | R059 | 40 | 0 | 0 | 266/277 | 115/130 |  |
+| 03F | R059+0x220E | R059 | 40 | 0 | 0 | 266/277 | 115/130 |  |
+| 040 | R060+0x0000 | R060 | 40 | 0 | 0 | 250/281 | 105/142 |  |
+| 041 | R060+0x0978 | R060 | 40 | 0 | 0 | 250/281 | 105/142 |  |
+| 042 | R060+0x1674 | R060 | 40 | 0 | 0 | 250/281 | 105/142 |  |
+| 043 | R060+0x1FEC | R060 | 40 | 0 | 0 | 250/281 | 105/142 |  |
+| 044 | R061+0x0000 | R061 | 40 | 0 | 0 | 262/293 | 107/138 |  |
+| 045 | R061+0x0978 | R061 | 40 | 0 | 0 | 262/293 | 107/138 |  |
+| 046 | R061+0x1900 | R061 | 40 | 0 | 0 | 262/293 | 107/138 |  |
+| 047 | R061+0x2278 | R061 | 40 | 0 | 0 | 262/293 | 107/138 |  |
+| 048 | R062+0x0000 | R062 | 40 | 0 | 0 | 317/333 | 137/158 |  |
+| 049 | R062+0x0978 | R062 | 40 | 0 | 0 | 317/333 | 137/158 |  |
+| 04A | R062+0x12F0 | R062 | 40 | 0 | 0 | 317/333 | 137/158 |  |
+| 04B | R062+0x1C68 | R062 | 40 | 0 | 0 | 317/333 | 137/158 |  |
+| 04C | R063+0x0000 | R063 | 40 | 0 | 0 | 372/389 | 183/210 |  |
+| 04D | R063+0x0D40 | R063 | 40 | 0 | 0 | 372/389 | 183/210 |  |
+| 04E | R063+0x16BA | R063 | 40 | 0 | 0 | 372/389 | 183/210 |  |
+| 04F | R063+0x2032 | R063 | 40 | 0 | 0 | 372/389 | 183/210 |  |
+| 050 | R064+0x0000 | R064 | 40 | 0 | 0 | 426/449 | 240/270 |  |
+| 051 | R064+0x0D48 | R064 | 40 | 0 | 0 | 426/449 | 240/270 |  |
+| 052 | R064+0x1FF4 | R064 | 40 | 0 | 0 | 426/449 | 240/270 |  |
+| 053 | R064+0x2D38 | R064 | 40 | 0 | 0 | 426/449 | 240/270 |  |
+| 054 | R065+0x0000 | R065 | 40 | 0 | 0 | 572/593 | 335/376 |  |
+| 055 | R065+0x0C3A | R065 | 40 | 0 | 0 | 572/593 | 335/376 |  |
+| 056 | R065+0x1F1A | R065 | 40 | 0 | 0 | 572/593 | 335/376 |  |
+| 057 | R065+0x2C64 | R065 | 40 | 0 | 0 | 572/593 | 335/376 |  |
+| 058 | R066+0x0000 | R066 | 40 | 0 | 0 | 478/525 | 282/332 |  |
+| 059 | R066+0x0D48 | R066 | 40 | 0 | 0 | 478/525 | 282/332 |  |
+| 05A | R066+0x1B4E | R066 | 40 | 0 | 0 | 478/525 | 282/332 |  |
+| 05B | R066+0x2FDC | R066 | 40 | 0 | 0 | 478/525 | 282/332 |  |
+| 05C | R093+0x0DDA | R093 | 40 | 0 | 0 | 153/161 | 68/76 |  |
+| 05D | R067+0x031E | R067 | 40 | 0 | 0 | 276/312 | 137/176 |  |
+| 05E | R067+0x11C4 | R067 | 40 | 0 | 0 | 276/312 | 137/176 |  |
+| 05F | R067+0x1ECE | R067 | 40 | 0 | 0 | 276/312 | 137/176 |  |
+| 060 | R068+0x0000 | R068 | 40 | 0 | 0 | 193/229 | 86/126 |  |
+| 061 | R068+0x097E | R068 | 40 | 0 | 0 | 193/229 | 86/126 |  |
+| 062 | R068+0x128C | R068 | 0 | 40 | 0 | 193/229 | 86/126 |  |
+| 063 | R068+0x1C14 | R068 | 40 | 0 | 0 | 193/229 | 86/126 |  |
+| 064 | R069+0x0000 | R069 | 40 | 0 | 0 | 193/202 | 46/56 |  |
+| 065 | R069+0x0928 | R069 | 40 | 0 | 0 | 193/202 | 46/56 |  |
+| 066 | R069+0x1250 | R069 | 40 | 0 | 0 | 193/202 | 46/56 |  |
+| 067 | R069+0x175A | R069 | 40 | 0 | 0 | 193/202 | 46/56 |  |
+| 068 | R070+0x0000 | R070 | 40 | 0 | 0 | 371/425 | 175/218 |  |
+| 069 | R070+0x090E | R070 | 40 | 0 | 0 | 371/425 | 175/218 |  |
+| 06A | R070+0x177A | R070 | 40 | 0 | 0 | 371/425 | 175/218 |  |
+| 06B | R070+0x2894 | R070 | 40 | 0 | 0 | 371/425 | 175/218 |  |
+| 06C | R071+0x0000 | R071 | 14 | 26 | 0 | 216/264 | 113/160 |  |
+| 06D | R071+0x0D82 | R071 | 40 | 0 | 0 | 216/264 | 113/160 |  |
+| 06E | R071+0x15A4 | R071 | 40 | 0 | 0 | 216/264 | 113/160 |  |
+| 06F | R071+0x1FB6 | R071 | 40 | 0 | 0 | 216/264 | 113/160 |  |
+| 070 | R072+0x0000 | R072 | 40 | 0 | 0 | 195/207 | 76/88 |  |
+| 071 | R093+0x115A | R093 | 40 | 0 | 0 | 153/161 | 68/76 |  |
+| 072 | R072+0x0B6A | R072 | 40 | 0 | 0 | 195/207 | 76/88 |  |
+| 073 | R072+0x1494 | R072 | 36 | 4 | 0 | 195/207 | 76/88 |  |
+| 074 | R073+0x0000 | R073 | 40 | 0 | 0 | 412/440 | 252/290 |  |
+| 075 | R073+0x0D36 | R073 | 40 | 0 | 0 | 412/440 | 252/290 |  |
+| 076 | R073+0x1668 | R073 | 40 | 0 | 0 | 412/440 | 252/290 |  |
+| 077 | R073+0x2460 | R073 | 40 | 0 | 0 | 412/440 | 252/290 |  |
+| 078 | R074+0x0000 | R074 | 40 | 0 | 0 | 330/355 | 188/220 |  |
+| 079 | R074+0x0BEA | R074 | 40 | 0 | 0 | 330/355 | 188/220 |  |
+| 07A | R074+0x15D2 | R074 | 40 | 0 | 0 | 330/355 | 188/220 |  |
+| 07B | R074+0x20A6 | R074 | 40 | 0 | 0 | 330/355 | 188/220 |  |
+| 07C | R075+0x0000 | R075 | 40 | 0 | 0 | 265/287 | 96/126 |  |
+| 07D | R075+0x0A28 | R075 | 0 | 40 | 0 | 265/287 | 96/126 |  |
+| 07E | R075+0x1056 | R075 | 40 | 0 | 0 | 265/287 | 96/126 |  |
+| 07F | R075+0x1864 | R075 | 40 | 0 | 0 | 265/287 | 96/126 |  |
+| 080 | R076+0x0000 | R076 | 40 | 0 | 0 | 170/188 | 104/124 |  |
+| 081 | R076+0x0430 | R076 | 40 | 0 | 0 | 170/188 | 104/124 |  |
+| 082 | R076+0x09FE | R076 | 40 | 0 | 0 | 170/188 | 104/124 |  |
+| 083 | R076+0x0C9C | R076 | 40 | 0 | 0 | 170/188 | 104/124 |  |
+| 084 | R077+0x0000 | R077 | 40 | 0 | 0 | 221/259 | 115/150 |  |
+| 085 | R077+0x0E48 | R077 | 40 | 0 | 0 | 221/259 | 115/150 |  |
+| 086 | R077+0x15EC | R077 | 40 | 0 | 0 | 221/259 | 115/150 |  |
+| 087 | R077+0x212A | R077 | 40 | 0 | 0 | 221/259 | 115/150 |  |
+| 088 | R078+0x0000 | R078 | 40 | 0 | 0 | 168/191 | 79/104 |  |
+| 089 | R078+0x0244 | R078 | 40 | 0 | 0 | 168/191 | 79/104 |  |
+| 08A | R078+0x0A6A | R078 | 4 | 36 | 0 | 168/191 | 79/104 |  |
+| 08B | R078+0x0E4A | R078 | 40 | 0 | 0 | 168/191 | 79/104 |  |
+| 08C | R079+0x0000 | R079 | 40 | 0 | 0 | 350/395 | 222/268 |  |
+| 08D | R079+0x0A08 | R079 | 40 | 0 | 0 | 350/395 | 222/268 |  |
+| 08E | R079+0x168A | R079 | 40 | 0 | 0 | 350/395 | 222/268 |  |
+| 08F | R079+0x2360 | R079 | 12 | 28 | 0 | 350/395 | 222/268 |  |
+| 090 | R080+0x0000 | R080 | 40 | 0 | 0 | 277/322 | 177/226 |  |
+| 091 | R080+0x038C | R080 | 0 | 40 | 0 | 277/322 | 177/226 |  |
+| 092 | R080+0x06DC | R080 | 40 | 0 | 0 | 277/322 | 177/226 |  |
+| 093 | R080+0x0F16 | R080 | 40 | 0 | 0 | 277/322 | 177/226 |  |
+| 094 | R081+0x0000 | R081 | 40 | 0 | 0 | 441/478 | 310/356 |  |
+| 095 | R081+0x0834 | R081 | 40 | 0 | 0 | 441/478 | 310/356 |  |
+| 096 | R081+0x12AC | R081 | 40 | 0 | 0 | 441/478 | 310/356 |  |
+| 097 | R081+0x1848 | R081 | 40 | 0 | 0 | 441/478 | 310/356 |  |
+| 098 | R082+0x0000 | R082 | 40 | 0 | 0 | 189/223 | 107/136 |  |
+| 099 | R082+0x00D8 | R082 | 40 | 0 | 0 | 189/223 | 107/136 |  |
+| 09A | R082+0x071C | R082 | 40 | 0 | 0 | 189/223 | 107/136 |  |
+| 09B | R082+0x0EA0 | R082 | 40 | 0 | 0 | 189/223 | 107/136 |  |
+| 09C | R083+0x0000 | R083 | 40 | 0 | 0 | 192/235 | 105/144 |  |
+| 09D | R083+0x0C34 | R083 | 40 | 0 | 0 | 192/235 | 105/144 |  |
+| 09E | R083+0x146E | R083 | 40 | 0 | 0 | 192/235 | 105/144 |  |
+| 09F | R083+0x1F82 | R083 | 40 | 0 | 0 | 192/235 | 105/144 |  |
+| 0A0 | R084+0x0000 | R084 | 40 | 0 | 0 | 256/279 | 144/168 |  |
+| 0A1 | R084+0x0A3C | R084 | 40 | 0 | 0 | 256/279 | 144/168 |  |
+| 0A2 | R084+0x1622 | R084 | 40 | 0 | 0 | 256/279 | 144/168 |  |
+| 0A3 | R084+0x1FD8 | R084 | 40 | 0 | 0 | 256/279 | 144/168 |  |
+| 0A4 | R085+0x0000 | R085 | 40 | 0 | 0 | 227/246 | 140/160 |  |
+| 0A5 | R085+0x071A | R085 | 40 | 0 | 0 | 227/246 | 140/160 |  |
+| 0A6 | R085+0x0FE2 | R085 | 40 | 0 | 0 | 227/246 | 140/160 |  |
+| 0A7 | R085+0x13B2 | R085 | 40 | 0 | 0 | 227/246 | 140/160 |  |
+| 0A8 | R086+0x0000 | R086 | 40 | 0 | 0 | 204/247 | 135/182 |  |
+| 0A9 | R086+0x0C40 | R086 | 0 | 40 | 0 | 204/247 | 135/182 |  |
+| 0AA | R086+0x0DEE | R086 | 40 | 0 | 0 | 204/247 | 135/182 |  |
+| 0AB | R086+0x1930 | R086 | 40 | 0 | 0 | 204/247 | 135/182 |  |
+| 0AC | R087+0x0000 | R087 | 40 | 0 | 0 | 148/161 | 58/70 |  |
+| 0AD | R087+0x0A12 | R087 | 40 | 0 | 0 | 148/161 | 58/70 |  |
+| 0AE | R087+0x13CE | R087 | 40 | 0 | 0 | 148/161 | 58/70 |  |
+| 0AF | R087+0x14EE | R087 | 40 | 0 | 0 | 148/161 | 58/70 |  |
+| 0B0 | R088+0x0000 | R088 | 40 | 0 | 0 | 165/184 | 110/130 |  |
+| 0B1 | R088+0x0210 | R088 | 40 | 0 | 0 | 165/184 | 110/130 |  |
+| 0B2 | R088+0x0B20 | R088 | 40 | 0 | 0 | 165/184 | 110/130 |  |
+| 0B3 | R088+0x0FB6 | R088 | 40 | 0 | 0 | 165/184 | 110/130 |  |
+| 0B4 | R089+0x0000 | R089 | 40 | 0 | 0 | 241/261 | 130/154 |  |
+| 0B5 | R089+0x04F8 | R089 | 40 | 0 | 0 | 241/261 | 130/154 |  |
+| 0B6 | R089+0x096A | R089 | 40 | 0 | 0 | 241/261 | 130/154 |  |
+| 0B7 | R089+0x147A | R089 | 40 | 0 | 0 | 241/261 | 130/154 |  |
+| 0B8 | R090+0x0000 | R090 | 20 | 20 | 0 | 355/394 | 172/210 |  |
+| 0B9 | R090+0x0A82 | R090 | 40 | 0 | 0 | 355/394 | 172/210 |  |
+| 0BA | R090+0x161E | R090 | 40 | 0 | 0 | 355/394 | 172/210 |  |
+| 0BB | R090+0x22EC | R090 | 40 | 0 | 0 | 355/394 | 172/210 |  |
+| 0BC | R091+0x0000 | R091 | 40 | 0 | 0 | 172/184 | 75/92 |  |
+| 0BD | R091+0x05C4 | R091 | 40 | 0 | 0 | 172/184 | 75/92 |  |
+| 0BE | R091+0x0892 | R091 | 40 | 0 | 0 | 172/184 | 75/92 |  |
+| 0BF | R091+0x0BA8 | R091 | 40 | 0 | 0 | 172/184 | 75/92 |  |
+| 0C0 | R092+0x0000 | R092 | 40 | 0 | 0 | 180/231 | 59/100 |  |
+| 0C1 | R092+0x057A | R092 | 40 | 0 | 0 | 180/231 | 59/100 |  |
+| 0C2 | R092+0x0E80 | R092 | 0 | 40 | 0 | 180/231 | 59/100 |  |
+| 0C3 | R092+0x1436 | R092 | 40 | 0 | 0 | 180/231 | 59/100 |  |
+| 0C4 | R093+0x0000 | R093 | 40 | 0 | 0 | 153/161 | 68/76 |  |
+| 0C5 | R094+0x0000 | R094 | 40 | 0 | 0 | 130/138 | 56/64 |  |
+| 0C6 | R067+0x0000 | R067 | 40 | 0 | 0 | 276/312 | 137/176 |  |
+| 0C7 | R072+0x05DE | R072 | 40 | 0 | 0 | 195/207 | 76/88 |  |
+| 0C8 | R093+0x09B4 | R093 | 40 | 0 | 0 | 153/161 | 68/76 |  |
+| 0C9 | R094+0x02E8 | R094 | 40 | 0 | 0 | 130/138 | 56/64 |  |
+| 0CA | R094+0x079C | R094 | 40 | 0 | 0 | 130/138 | 56/64 |  |
+| 0CB | R094+0x0A92 | R094 | 40 | 0 | 0 | 130/138 | 56/64 |  |
+| 0CC | R095+0x0000 | R095 | 40 | 0 | 0 | 144/152 | 80/88 |  |
+| 0CD | R095+0x03F0 | R095 | 40 | 0 | 0 | 144/152 | 80/88 |  |
+| 0CE | R095+0x0874 | R095 | 40 | 0 | 0 | 144/152 | 80/88 |  |
+| 0CF | R095+0x0C02 | R095 | 40 | 0 | 0 | 144/152 | 80/88 |  |
+| 0D0 | R096+0x0000 | R096 | 40 | 0 | 0 | 147/155 | 60/68 |  |
+| 0D1 | R096+0x0384 | R096 | 40 | 0 | 0 | 147/155 | 60/68 |  |
+| 0D2 | R096+0x0712 | R096 | 40 | 0 | 0 | 147/155 | 60/68 |  |
+| 0D3 | R096+0x0BA8 | R096 | 40 | 0 | 0 | 147/155 | 60/68 |  |
+| 0D4 | R097+0x0000 | R097 | 40 | 0 | 0 | 142/150 | 70/78 |  |
+| 0D5 | R097+0x048C | R097 | 40 | 0 | 0 | 142/150 | 70/78 |  |
+| 0D6 | R097+0x09E6 | R097 | 40 | 0 | 0 | 142/150 | 70/78 |  |
+| 0D7 | R097+0x0D74 | R097 | 40 | 0 | 0 | 142/150 | 70/78 |  |
+| 0D8 | R098+0x0000 | R098 | 40 | 0 | 0 | 137/145 | 68/76 |  |
+| 0D9 | R098+0x03F0 | R098 | 40 | 0 | 0 | 137/145 | 68/76 |  |
+| 0DA | R098+0x0782 | R098 | 40 | 0 | 0 | 137/145 | 68/76 |  |
+| 0DB | R098+0x0B06 | R098 | 40 | 0 | 0 | 137/145 | 68/76 |  |
+| 0DC | R099+0x0000 | R099 | 40 | 0 | 0 | 151/159 | 48/56 |  |
+| 0DD | R099+0x04AA | R099 | 40 | 0 | 0 | 151/159 | 48/56 |  |
+| 0DE | R099+0x0B0E | R099 | 40 | 0 | 0 | 151/159 | 48/56 |  |
+| 0DF | R099+0x0FDA | R099 | 40 | 0 | 0 | 151/159 | 48/56 |  |
+| 0E0 | R100+0x0000 | R100 | 40 | 0 | 0 | 161/172 | 81/92 |  |
+| 0E1 | R100+0x04C2 | R100 | 40 | 0 | 0 | 161/172 | 81/92 |  |
+| 0E2 | R100+0x08EA | R100 | 40 | 0 | 0 | 161/172 | 81/92 |  |
+| 0E3 | R100+0x0BE0 | R100 | 40 | 0 | 0 | 161/172 | 81/92 |  |
+| 0E4 | R101+0x0000 | R101 | 40 | 0 | 0 | 269/285 | 211/230 |  |
+| 0E5 | R101+0x0622 | R101 | 40 | 0 | 0 | 269/285 | 211/230 |  |
+| 0E6 | R101+0x0850 | R101 | 40 | 0 | 0 | 269/285 | 211/230 |  |
+| 0E7 | R101+0x11F4 | R101 | 40 | 0 | 0 | 269/285 | 211/230 |  |
+| 0E8 | R102+0x0000 | R102 | 40 | 0 | 0 | 130/136 | 76/82 |  |
+| 0E9 | R102+0x06E8 | R102 | 0 | 40 | 0 | 130/136 | 76/82 |  |
+| 0EA | R102+0x0E56 | R102 | 40 | 0 | 0 | 130/136 | 76/82 |  |
+| 0EB | R102+0x1202 | R102 | 40 | 0 | 0 | 130/136 | 76/82 |  |
+| 0EC | R103+0x0000 | R103 | 40 | 0 | 0 | 92/100 | 48/56 |  |
+| 0ED | R103+0x0344 | R103 | 40 | 0 | 0 | 92/100 | 48/56 |  |
+| 0EE | R103+0x0688 | R103 | 40 | 0 | 0 | 92/100 | 48/56 |  |
+| 0EF | R103+0x0B00 | R103 | 40 | 0 | 0 | 92/100 | 48/56 |  |
+| 0F0 | R104+0x0000 | R104 | 40 | 0 | 0 | 233/240 | 102/110 |  |
+| 0F1 | R104+0x0D62 | R104 | 40 | 0 | 0 | 233/240 | 102/110 |  |
+| 0F2 | R104+0x14A0 | R104 | 40 | 0 | 0 | 233/240 | 102/110 |  |
+| 0F3 | R104+0x1FD0 | R104 | 40 | 0 | 0 | 233/240 | 102/110 |  |
+| 0F4 | R105+0x0000 | R105 | 40 | 0 | 0 | 360/386 | 181/208 |  |
+| 0F5 | R105+0x11C8 | R105 | 40 | 0 | 0 | 360/386 | 181/208 |  |
+| 0F6 | R105+0x1DA6 | R105 | 40 | 0 | 0 | 360/386 | 181/208 |  |
+| 0F7 | R105+0x27AA | R105 | 0 | 40 | 0 | 360/386 | 181/208 |  |
+| 0F8 | R106+0x0000 | R106 | 40 | 0 | 0 | 311/337 | 133/164 |  |
+| 0F9 | R106+0x07D4 | R106 | 40 | 0 | 0 | 311/337 | 133/164 |  |
+| 0FA | R106+0x184A | R106 | 40 | 0 | 0 | 311/337 | 133/164 |  |
+| 0FB | R106+0x21EA | R106 | 40 | 0 | 0 | 311/337 | 133/164 |  |
+| 0FC | R107+0x0000 | R107 | 40 | 0 | 0 | 418/465 | 224/280 |  |
+| 0FD | R107+0x0E76 | R107 | 40 | 0 | 0 | 418/465 | 224/280 |  |
+| 0FE | R107+0x1962 | R107 | 40 | 0 | 0 | 418/465 | 224/280 |  |
+| 0FF | R107+0x2D28 | R107 | 40 | 0 | 0 | 418/465 | 224/280 |  |
+| 100 | R108+0x0000 | R108 | 40 | 0 | 0 | 427/480 | 213/268 |  |
+| 101 | R108+0x0ED0 | R108 | 40 | 0 | 0 | 427/480 | 213/268 |  |
+| 102 | R108+0x2076 | R108 | 40 | 0 | 0 | 427/480 | 213/268 |  |
+| 103 | R108+0x3028 | R108 | 40 | 0 | 0 | 427/480 | 213/268 |  |
+| 104 | R109+0x0000 | R109 | 40 | 0 | 0 | 327/378 | 136/186 |  |
+| 105 | R109+0x0F6A | R109 | 40 | 0 | 0 | 327/378 | 136/186 |  |
+| 106 | R109+0x1C58 | R109 | 40 | 0 | 0 | 327/378 | 136/186 |  |
+| 107 | R109+0x21A2 | R109 | 40 | 0 | 0 | 327/378 | 136/186 |  |
+| 108 | R110+0x0000 | R110 | 40 | 0 | 0 | 289/313 | 114/144 |  |
+| 109 | R110+0x0D8E | R110 | 0 | 40 | 0 | 289/313 | 114/144 |  |
+| 10A | R110+0x159C | R110 | 40 | 0 | 0 | 289/313 | 114/144 |  |
+| 10B | R110+0x1C52 | R110 | 0 | 40 | 0 | 289/313 | 114/144 |  |
+| 10C | R111+0x0000 | R111 | 0 | 40 | 0 | 161/173 | 20/32 |  |
+| 10D | R111+0x0576 | R111 | 40 | 0 | 0 | 161/173 | 20/32 |  |
+| 10E | R111+0x0B28 | R111 | 0 | 40 | 0 | 161/173 | 20/32 |  |
+| 10F | R111+0x1066 | R111 | 40 | 0 | 0 | 161/173 | 20/32 |  |
+| 110 | R112+0x0000 | R112 | 0 | 40 | 0 | 365/387 | 167/192 |  |
+| 111 | R112+0x049E | R112 | 40 | 0 | 0 | 365/387 | 167/192 |  |
+| 112 | R112+0x165C | R112 | 40 | 0 | 0 | 365/387 | 167/192 |  |
+| 113 | R112+0x2760 | R112 | 40 | 0 | 0 | 365/387 | 167/192 |  |
+| 114 | R113+0x0000 | R113 | 40 | 0 | 0 | 293/311 | 135/156 |  |
+| 115 | R113+0x0656 | R113 | 40 | 0 | 0 | 293/311 | 135/156 |  |
+| 116 | R113+0x0B8C | R113 | 40 | 0 | 0 | 293/311 | 135/156 |  |
+| 117 | R113+0x17DA | R113 | 40 | 0 | 0 | 293/311 | 135/156 |  |
+| 118 | R114+0x0000 | R114 | 40 | 0 | 0 | 288/305 | 108/130 |  |
+| 119 | R114+0x09B4 | R114 | 38 | 2 | 0 | 288/305 | 108/130 |  |
+| 11A | R114+0x15D4 | R114 | 40 | 0 | 0 | 288/305 | 108/130 |  |
+| 11B | R114+0x207A | R114 | 40 | 0 | 0 | 288/305 | 108/130 |  |
+| 11C | R115+0x0000 | R115 | 40 | 0 | 0 | 256/269 | 85/102 |  |
+| 11D | R115+0x0654 | R115 | 40 | 0 | 0 | 256/269 | 85/102 |  |
+| 11E | R115+0x0C9A | R115 | 36 | 4 | 0 | 256/269 | 85/102 |  |
+| 11F | R115+0x187A | R115 | 40 | 0 | 0 | 256/269 | 85/102 |  |
+| 120 | R116+0x0000 | R116 | 0 | 40 | 0 | 152/164 | 64/80 |  |
+| 121 | R116+0x070E | R116 | 40 | 0 | 0 | 152/164 | 64/80 |  |
+| 122 | R116+0x0E3C | R116 | 40 | 0 | 0 | 152/164 | 64/80 |  |
+| 123 | R116+0x1E4A | R116 | 28 | 12 | 0 | 152/164 | 64/80 |  |
+| 124 | R117+0x0000 | R117 | 40 | 0 | 0 | 158/172 | 59/76 |  |
+| 125 | R117+0x066C | R117 | 40 | 0 | 0 | 158/172 | 59/76 |  |
+| 126 | R117+0x0896 | R117 | 40 | 0 | 0 | 158/172 | 59/76 |  |
+| 127 | R117+0x0A80 | R117 | 12 | 28 | 0 | 158/172 | 59/76 |  |
+| 128 | R118+0x0000 | R118 | 40 | 0 | 0 | 266/284 | 98/122 |  |
+| 129 | R118+0x08AA | R118 | 40 | 0 | 0 | 266/284 | 98/122 |  |
+| 12A | R118+0x14C2 | R118 | 40 | 0 | 0 | 266/284 | 98/122 |  |
+| 12B | R118+0x1F3C | R118 | 40 | 0 | 0 | 266/284 | 98/122 |  |
+| 12C | R119+0x0000 | R119 | 40 | 0 | 0 | 240/247 | 73/82 |  |
+| 12D | R119+0x0980 | R119 | 40 | 0 | 0 | 240/247 | 73/82 |  |
+| 12E | R119+0x150C | R119 | 40 | 0 | 0 | 240/247 | 73/82 |  |
+| 12F | R119+0x238E | R119 | 40 | 0 | 0 | 240/247 | 73/82 |  |
+| 130 | R120+0x0000 | R120 | 40 | 0 | 0 | 232/257 | 63/84 |  |
+| 131 | R120+0x0970 | R120 | 40 | 0 | 0 | 232/257 | 63/84 |  |
+| 132 | R120+0x14EA | R120 | 8 | 32 | 0 | 232/257 | 63/84 |  |
+| 133 | R120+0x2018 | R120 | 40 | 0 | 0 | 232/257 | 63/84 |  |
+| 134 | R121+0x0000 | R121 | 40 | 0 | 0 | 201/210 | 52/62 |  |
+| 135 | R121+0x0A56 | R121 | 40 | 0 | 0 | 201/210 | 52/62 |  |
+| 136 | R121+0x124A | R121 | 40 | 0 | 0 | 201/210 | 52/62 |  |
+| 137 | R121+0x1C06 | R121 | 40 | 0 | 0 | 201/210 | 52/62 |  |
+| 138 | R122+0x0000 | R122 | 40 | 0 | 0 | 215/220 | 61/66 |  |
+| 139 | R122+0x0B2E | R122 | 0 | 40 | 0 | 215/220 | 61/66 |  |
+| 13A | R122+0x159E | R122 | 40 | 0 | 0 | 215/220 | 61/66 |  |
+| 13B | R122+0x1FE0 | R122 | 40 | 0 | 0 | 215/220 | 61/66 |  |
+| 13C | R123+0x0000 | R123 | 40 | 0 | 0 | 214/247 | 72/104 |  |
+| 13D | R123+0x09B6 | R123 | 40 | 0 | 0 | 214/247 | 72/104 |  |
+| 13E | R123+0x14AA | R123 | 40 | 0 | 0 | 214/247 | 72/104 |  |
+| 13F | R123+0x2036 | R123 | 40 | 0 | 0 | 214/247 | 72/104 |  |
+| 140 | R124+0x0000 | R124 | 40 | 0 | 0 | 298/326 | 125/162 |  |
+| 141 | R124+0x0BDE | R124 | 40 | 0 | 0 | 298/326 | 125/162 |  |
+| 142 | R124+0x165C | R124 | 40 | 0 | 0 | 298/326 | 125/162 |  |
+| 143 | R124+0x22AC | R124 | 40 | 0 | 0 | 298/326 | 125/162 |  |
+| 144 | R125+0x0000 | R125 | 36 | 4 | 0 | 225/244 | 71/90 |  |
+| 145 | R125+0x0D80 | R125 | 40 | 0 | 0 | 225/244 | 71/90 |  |
+| 146 | R125+0x18A8 | R125 | 40 | 0 | 0 | 225/244 | 71/90 |  |
+| 147 | R125+0x25FE | R125 | 40 | 0 | 0 | 225/244 | 71/90 |  |
+| 148 | R126+0x0000 | R126 | 40 | 0 | 0 | 385/410 | 218/266 |  |
+| 149 | R126+0x0B40 | R126 | 40 | 0 | 0 | 385/410 | 218/266 |  |
+| 14A | R126+0x1650 | R126 | 40 | 0 | 0 | 385/410 | 218/266 |  |
+| 14B | R126+0x2C0E | R126 | 40 | 0 | 0 | 385/410 | 218/266 |  |
+| 14C | R127+0x0000 | R127 | 40 | 0 | 0 | 232/260 | 88/130 |  |
+| 14D | R127+0x07C6 | R127 | 0 | 40 | 0 | 232/260 | 88/130 |  |
+| 14E | R127+0x19A2 | R127 | 40 | 0 | 0 | 232/260 | 88/130 |  |
+| 14F | R127+0x21C0 | R127 | 40 | 0 | 0 | 232/260 | 88/130 |  |
+| 150 | R128+0x0000 | R128 | 40 | 0 | 0 | 198/245 | 92/122 |  |
+| 151 | R128+0x0BF0 | R128 | 0 | 40 | 0 | 198/245 | 92/122 |  |
+| 152 | R128+0x16A2 | R128 | 40 | 0 | 0 | 198/245 | 92/122 |  |
+| 153 | R128+0x1E28 | R128 | 40 | 0 | 0 | 198/245 | 92/122 |  |
+| 154 | R129+0x0000 | R129 | 40 | 0 | 0 | 166/174 | 46/54 |  |
+| 155 | R129+0x055A | R129 | 40 | 0 | 0 | 166/174 | 46/54 |  |
+| 156 | R129+0x0AB4 | R129 | 40 | 0 | 0 | 166/174 | 46/54 |  |
+| 157 | R129+0x10A4 | R129 | 40 | 0 | 0 | 166/174 | 46/54 |  |
+| 158 | R130+0x0740 | R130 | 40 | 0 | 0 | 165/175 | 79/84 |  |
+| 159 | R130+0x0D48 | R130 | 40 | 0 | 0 | 165/175 | 79/84 |  |
+| 15A | R130+0x1674 | R130 | 40 | 0 | 0 | 165/175 | 79/84 |  |
+| 15B | R130+0x18AC | R130 | 40 | 0 | 0 | 165/175 | 79/84 |  |
+| 15C | R131+0x0000 | R131 | 40 | 0 | 0 | 92/108 | 46/60 |  |
+| 15D | R131+0x0B8C | R131 | 40 | 0 | 0 | 92/108 | 46/60 |  |
+| 15E | R131+0x0C8A | R131 | 40 | 0 | 0 | 92/108 | 46/60 |  |
+| 15F | R131+0x0DC0 | R131 | 40 | 0 | 0 | 92/108 | 46/60 |  |
+| 160 | R132+0x0000 | R132 | 40 | 0 | 0 | 107/109 | 59/64 |  |
+| 161 | R132+0x00FC | R132 | 40 | 0 | 0 | 107/109 | 59/64 |  |
+| 162 | R132+0x0218 | R132 | 40 | 0 | 0 | 107/109 | 59/64 |  |
+| 163 | R132+0x034E | R132 | 40 | 0 | 0 | 107/109 | 59/64 |  |
+| 164 | R133+0x0000 | R133 | 40 | 0 | 0 | 148/162 | 84/102 |  |
+| 165 | R133+0x074A | R133 | 40 | 0 | 0 | 148/162 | 84/102 |  |
+| 166 | R133+0x11DC | R133 | 40 | 0 | 0 | 148/162 | 84/102 |  |
+| 167 | R133+0x139A | R133 | 40 | 0 | 0 | 148/162 | 84/102 |  |
+| 168 | R134+0x0000 | R134 | 40 | 0 | 0 | 244/272 | 85/120 |  |
+| 169 | R134+0x0C1C | R134 | 40 | 0 | 0 | 244/272 | 85/120 |  |
+| 16A | R134+0x152C | R134 | 40 | 0 | 0 | 244/272 | 85/120 |  |
+| 16B | R134+0x1EDA | R134 | 0 | 40 | 0 | 244/272 | 85/120 |  |
+| 16C | R135+0x0000 | R135 | 40 | 0 | 0 | 31/31 | 4/4 |  |
+| 16D | R130+0x0000 | R130 | 40 | 0 | 0 | 165/175 | 79/84 |  |
