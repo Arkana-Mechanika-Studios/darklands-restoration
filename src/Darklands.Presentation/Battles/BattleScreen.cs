@@ -194,6 +194,11 @@ public sealed class BattleScreen : ITacticalView
     // orig: battle_run R002+0x0000 (0E76:0000) draft; its loop is combat_input R014+0x3166 (0E76:3166) draft
     public int Run(BattleRequest request)
     {
+        // C: DS:07D6 counted on outside the battle (root 047C:000A runs at every timer callback of the program)
+        var keys = _owner.CursorKeys;
+        var timerTicks = _ui.Timer.Ticks;
+        keys.HeldCallbacks = (ushort)(keys.HeldCallbacks + (timerTicks - keys.TimerTicksAtLeave));
+        keys.TimerTicksAtLeave = timerTicks;
         Start(request);
         var previous = _ui.Clock.Milliseconds;
         _ui.PointerVisible = false;
@@ -249,6 +254,19 @@ public sealed class BattleScreen : ITacticalView
                         };
                         TacticalBattle.ClockPhase = phase =>
                         {
+                            // a tick the C# found not due where the original's scheduler ran (its rise -1): the original's long computation
+                            // between the activations' enemy turn and combat_tick's due test (R014+0x0F58) made it due; the callbacks that
+                            // made it due come before the test, one a call, the rest at the scheduler (round C3: gen-bluer-01, a 136-tick pass)
+                            if (phase == -6)
+                            {
+                                if (pendingRises is not null && pendingRises.TryGetValue(-1, out var left) && left > 0)
+                                {
+                                    pendingRises[-1] = left - 1;
+                                    _clockFraction = 1;
+                                    Advance(0);
+                                }
+                                return;
+                            }
                             if (pendingRises is not null && pendingRises.Remove(phase, out var rise))
                             {
                                 _clockFraction = rise;
@@ -362,6 +380,7 @@ public sealed class BattleScreen : ITacticalView
         }
         finally
         {
+            _owner.CursorKeys.TimerTicksAtLeave = _ui.Timer.Ticks;
             _ui.PointerVisible = true;
             _ui.GameKey = _hotKey;
             _ui.MenuBar = menuBar;
@@ -696,8 +715,8 @@ public sealed class BattleScreen : ITacticalView
     private void CountCallbacks(int ticks)
     {
         _battle!.TimerCallbacks = (_battle.TimerCallbacks + ticks) & 0xFF;
-        // C: DS:07D6 counts every callback, paused or not (a word)
-        _keysHeldCallbacks = (ushort)(_keysHeldCallbacks + ticks);
+        // C: DS:07D6 counts every callback, paused or not (a word; a program global: CursorKeyState.HeldCallbacks)
+        _owner.CursorKeys.HeldCallbacks = (ushort)(_owner.CursorKeys.HeldCallbacks + ticks);
     }
 
     /// <summary>A screen over the battle that holds the combat clock (DS:07D3) took <paramref name="milliseconds"/>: the timer callbacks of
@@ -1476,10 +1495,9 @@ public sealed class BattleScreen : ITacticalView
         _ => 0,
     };
 
-    /// <summary>DS:E094: the combat tick the pointer last moved in; DS:07D6: timer callbacks since the keys were last let go. The hover
-    /// (DS:D728), the keyboard's click (DS:D73B) and the click when the key is let go (DS:D947) are the battle's CursorKeys.</summary>
+    /// <summary>DS:E094: the combat tick the pointer last moved in. The hover (DS:D728), the keyboard's click (DS:D73B), the click when
+    /// the key is let go (DS:D947) and the timer callbacks since the keys were last let go (DS:07D6) are the program's CursorKeys.</summary>
     private int _pointerTick = -1;
-    private int _keysHeldCallbacks;
 
     /// <summary>
     /// The cursor keys move the pointer (order mode, travelling as a group): once a combat tick while a direction key is held, the
@@ -1489,8 +1507,9 @@ public sealed class BattleScreen : ITacticalView
     /// </summary>
     // orig: R014+0x35FC draft, checked against the asm (its jump table and clamps): t = DS:07D6 - DS:D945 (is 0): speed 1 up to 0x2D,
     // 3 up to 0x4B, 5 up to 0x5A, else 10; root 047C:1266; `if (root 047C:073D()) root 047C:0744();`; tests: BattleUiTests
-    // C: DS:07D6 counts every timer callback (paused too) and only this function clears it, so a key already held when order mode begins
-    // starts at the fastest speed; t is a signed int.
+    // C: DS:07D6 counts every timer callback of the program (paused too, outside the battles too) and only this function clears it, so a
+    // key already held when order mode begins starts at the speed of the time since the last let-go, in this battle or an earlier one
+    // (or since the program's start): t is a signed int, so a count past 0x7FFF is slow again.
     private void CursorKeys()
     {
         var tb = _battle!;
@@ -1505,7 +1524,7 @@ public sealed class BattleScreen : ITacticalView
                 keys.ClickOnRelease = false;
             }
             // C: R014+0x38AC..0x38B1: DS:07D6 = DS:D945 = 0
-            _keysHeldCallbacks = 0;
+            keys.HeldCallbacks = 0;
             keys.ReleasedAt = 0;
             return;
         }
@@ -1520,7 +1539,7 @@ public sealed class BattleScreen : ITacticalView
             }
             key = ArrowOf(dx, dy);
         }
-        var t = (short)(_keysHeldCallbacks - keys.ReleasedAt);
+        var t = (short)(keys.HeldCallbacks - keys.ReleasedAt);
         var speed = t <= 0x2D ? 1 : t <= 0x4B ? 3 : t <= 0x5A ? 5 : 10;
         var (mx, my) = (_ui.Mouse.X, _ui.Mouse.Y);
         int Up() => my - speed >= 0 ? my - speed : 0;

@@ -217,6 +217,36 @@ public sealed class BattleUiTests
         Assert.Equal(view.ToMap(run.Ui.Mouse.X, run.Ui.Mouse.Y), (tb.CursorPoint.X, tb.CursorPoint.Y));
     }
 
+    /// <summary>
+    /// DS:07D6 is a program global the timer counts outside the battles too: a direction key already held when a battle begins (in order mode) moves the
+    /// pointer at the speed of the count since the last let-go, read as a signed word (R014+0x36C4: 0x8000 and up is slow), and the time
+    /// since the last battle screen ended counts in it (root 047C:000A at every timer callback, cleared only by R014+0x38AE).
+    /// </summary>
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(0x200, true)]
+    public void AKeyHeldIntoABattleTakesItsSpeedFromTheProgramsCount(int ticksOutside, bool slow)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.CursorKeys.HeldCallbacks = 0x7F00;
+        run.CursorKeys.TimerTicksAtLeave = run.Ui.Timer.Ticks - ticksOutside;
+        // the battle begins in order mode (its first combat tick pauses it): the key is held from before its start
+        run.Play("move:120,140", "kdown:4D", "wait:10");
+        var tb = run.Screen.Tactics!;
+        Assert.True(tb.CursorKeysOn);
+        var x0 = run.Ui.Mouse.X;
+        run.Play("wait:40");
+        var moved = run.Ui.Mouse.X - x0;
+        // 1 pixel a combat tick against 10
+        Assert.True(slow ? moved is > 0 and <= 12 : moved >= 30, $"the pointer moved {moved} pixels");
+        run.Play("kup:4D", "wait:3");
+        Assert.Equal(0, run.CursorKeys.HeldCallbacks & 0xFFF0);
+    }
+
     /// <summary>F10 opens the menu bar from the keyboard: the battle stands still while it is up; Esc closes it with nothing chosen.</summary>
     [Fact]
     public void F10OpensTheKeyboardMenuAndTheBattleWaits()
@@ -460,6 +490,9 @@ public sealed class BattleUiTests
         public BattleAssets Assets { get; }
 
         public BattleScreen Screen => _screens.Current!;
+
+        /// <summary>The program's cursor keys' state the battles share (DS:D7FE, DS:D945, DS:07D6 ...).</summary>
+        public CursorKeyState CursorKeys => _screens.CursorKeys;
 
         public byte[]? LastFrame => _host.Last?.Pixels;
 
