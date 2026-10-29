@@ -114,8 +114,8 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:77` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
-- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:92` `CharacterCreationScreen.FigureImages`  
-  original: `R037+0x0000` (1462:0000, draft), `R037+0x0444` (1462:0444, draft), `R037+0x0390` (1462:0390, draft) +5 more  
+- **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:95` `CharacterCreationScreen.FigureImages`  
+  original: `root 047C:058B` (047C:058B, draft), `R037+0x0444` (1462:0444, draft)  
   why: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
 - **U-5dcdfc** `uncertain` - `src/Darklands.Presentation/CharacterGeneratorScreen.cs:517` `CharacterGeneratorScreen.WaitThenRedraw`  
   original: `R037+0x4B9E` (18C8:053E, draft), `R037+0x4664` (18C8:0004, draft)  
@@ -135,7 +135,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-77166b** `uncertain` - `src/Darklands.Presentation/OpeningTiming.cs:21` `OpeningTiming.IReadOnlyList`  
   original: `root 03A1:000A` (03A1:000A, matched), `root 030B:0004` (030B:0004, matched), `root 030B:0508` (030B:0508, matched) +2 more  
   why: one tick after the last cel of OPENING2 (the capture's tick after it came in the same frame, before the tune).
-- **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:213` `PartyRosterScreen.ResultOfDriver`  
+- **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:216` `PartyRosterScreen.ResultOfDriver`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: the driver's AX is taken never to be 0x11B (it would end the screen).
 - **U-9ecd08** `uncertain` - `src/Darklands.Presentation/SaintPrayerScreen.cs:336` `SaintPrayerScreen.DrawInfo`  

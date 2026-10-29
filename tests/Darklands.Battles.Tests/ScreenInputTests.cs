@@ -31,7 +31,9 @@ public sealed class ScreenInputTests
         public int Pumped { get; private set; }
         public int Left => _frames.Count;
 
-        public void Present(Screen screen) { }
+        public Action<Screen>? Presented { get; set; }
+
+        public void Present(Screen screen) => Presented?.Invoke(screen);
 
         public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
 
@@ -132,6 +134,55 @@ public sealed class ScreenInputTests
         Assert.Null(new CharacterCreationScreen(ui, world, () => 1).Run());
         Assert.False(host.QuitRequested);
         Assert.Equal(0, ui.TakeLeftReleases().Count);
+    }
+
+    /// <summary>
+    /// A in the creation menu: the new member's figure colours are colours 235..242 (DS:E753, set by R037+0x0B9C..0x0C88, as the original's
+    /// DAC shows them), and only the filled slot's row is drawn: the three empty rows keep the menu's picture (R037+0x0D6F / 0x0D7A).
+    /// </summary>
+    [Fact]
+    public void AddingAMemberColoursItsFigureAndDrawsOnlyItsRow()
+    {
+        (int, MouseState)[] frames = [Up(5, 5), Up(5, 5), Key(Keys.ForCharacter('a')), Up(5, 5), Up(5, 5), Up(5, 5), Key(Keys.Escape), Up(5, 5)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, world))
+        {
+            return;
+        }
+        (byte[] Pixels, uint[] Palette)? first = null, added = null;
+        host.Presented = s =>
+        {
+            if (host.Left < 2)
+            {
+                return;
+            }
+            var shot = ((byte[])s.Pixels.Clone(), (uint[])s.Palette.Clone());
+            first ??= shot;
+            added = shot;
+        };
+        Assert.Null(new CharacterCreationScreen(ui, world, () => 1).Run());
+        Assert.NotNull(first);
+        Assert.NotNull(added);
+        var start = Darklands.Core.Characters.Creation.PortraitColours.InnStartPalette;
+        static uint Vga(byte r, byte g, byte b) => (uint)(Widen(r) << 16 | Widen(g) << 8 | Widen(b));
+        static int Widen(byte v) => (v & 0x3F) << 2 | (v & 0x3F) >> 4;
+        for (var i = 0; i < 8; i++)
+        {
+            Assert.Equal(Vga(start[3 * i], start[3 * i + 1], start[3 * i + 2]), added.Value.Palette[235 + i] & 0xFFFFFF);
+        }
+        // colours 243 and 244 keep the menu picture's own colours
+        Assert.Equal(first.Value.Palette[243] & 0xFFFFFF, added.Value.Palette[243] & 0xFFFFFF);
+        Assert.Equal(first.Value.Palette[244] & 0xFFFFFF, added.Value.Palette[244] & 0xFFFFFF);
+        // the first slot's row is drawn; slots 1..3 (y 0x28 .. 0x9F, x 0 .. 0x3B) are the menu's picture as before
+        Assert.Contains(Enumerable.Range(1, 0x26).SelectMany(y => Enumerable.Range(3, 0x36).Select(x => y * 320 + x)),
+            k => added.Value.Pixels[k] != first.Value.Pixels[k]);
+        for (var y = 0x28; y < 0xA0; y++)
+        {
+            for (var x = 0; x < 0x3C; x++)
+            {
+                Assert.Equal(first.Value.Pixels[y * 320 + x], added.Value.Pixels[y * 320 + x]);
+            }
+        }
     }
 
     /// <summary>The generator's exit R037+0x4ADC clears the mouse driver's left-release count too.</summary>

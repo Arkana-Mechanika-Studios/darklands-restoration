@@ -3,13 +3,13 @@ namespace Darklands.Core.Characters.Creation;
 /// <summary>
 /// The figure colours of the "Create a new party" menu (keys 1, 2, 3: "1st/2nd/3rd color"): each
 /// key steps through six colour sets for one part of the selected member's figure. The current
-/// set lives in one shared 24-byte palette (8 VGA triples, colours 237..244) and three shared
+/// set lives in one shared 24-byte palette (8 VGA triples, colours 235..242) and three shared
 /// step counters; each press changes some of the shared bytes, then copies a range of them into
 /// the member's own palette.
 /// </summary>
 // orig: R037+0x0444 (1462:0444) draft (key cases 0x231/0x4F31, 0x332/0x5032,
 // 0x433/0x5133; the colour tables were generated from the asm per the draft header, and extracted mechanically here); tests: PortraitColoursTests
-// C: the palette is the globals DS:E753..DS:E76A (cur_palette + 3 x 237) and the counters DS:E890/DS:E892/DS:E894 are shared by all
+// C: the palette is the globals DS:E753..DS:E76A (colours 235..242 of the current palette) and the counters DS:E890/DS:E892/DS:E894 are shared by all
 // members, so a member's next step depends on what was pressed for another one.
 public sealed class PortraitColours
 {

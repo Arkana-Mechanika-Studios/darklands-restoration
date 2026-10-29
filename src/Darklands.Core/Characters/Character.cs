@@ -89,7 +89,7 @@ public sealed class Character
     // orig: member_shield[slot] (DS:A668, 4 bytes per party slot); saved with the party block of charactr.tmp
     public string Image { get; set; } = "F01";
 
-    /// <summary>The figure's own colours: 8 VGA triples (0..63) for colours 237..244.</summary>
+    /// <summary>The figure's own colours: 8 VGA triples (0..63) for colours 235..242.</summary>
     // orig: member_palette = R136+0x33FC[slot] (24 bytes)
     public byte[] ImagePalette { get; set; } = new byte[24];
 
