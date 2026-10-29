@@ -28,7 +28,21 @@ public sealed class ScreenDrawingLeadsTests
         public long Milliseconds => _now;
         public byte[] Shown { get; } = new byte[Screen.Width * Screen.Height];
 
-        public void Present(Screen screen) => screen.Pixels.CopyTo(Shown, 0);
+        /// <summary>Ends the run (<see cref="Stop"/>) at that present (counted from 1), once its screen is kept; 0: never.</summary>
+        public int StopAtPresent { get; init; }
+
+        private int _presents;
+
+        public sealed class Stop : Exception;
+
+        public void Present(Screen screen)
+        {
+            screen.Pixels.CopyTo(Shown, 0);
+            if (++_presents == StopAtPresent)
+            {
+                throw new Stop();
+            }
+        }
 
         public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
 
@@ -70,6 +84,27 @@ public sealed class ScreenDrawingLeadsTests
         Assert.Equal(3, host.Shown[0]);
         ui.Poll();
         Assert.Equal(7, host.Shown[0]);
+    }
+
+    // orig: R014+0x02F8 root 047C:056F (the screen on again) before the battle's loop: a card that shows its picture and goes into a
+    // battle before any text (card 0x24's city ambush, R053) shows the battle, not the screen held for the picture (vis10: local/batch/b24fix)
+    [Fact]
+    public void ABattleShowsItsOwnScreenOverAHeldCardPicture()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost { StopAtPresent = 30 };
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(WorldData.Load(files), 7);
+        ui.Canvas.Fill(0, 0, Screen.Width, Screen.Height, 3);
+        ui.HoldScreen();
+        ui.Canvas.Fill(0, 0, Screen.Width, Screen.Height, 7);
+        var screens = new BattleScreens(ui, () => state);
+        Assert.Throws<ShotHost.Stop>(() => screens.Battle(new Darklands.Cards.BattleRequest(0x14, 863, [(34, 4, 8), (18, 5, 2), (34, 1, 2)])));
+        Assert.Contains(host.Shown, p => p != 3 && p != 7);
+        Assert.Equal(ui.Canvas.Screen.Pixels, host.Shown);
     }
 
     // orig: R067+0x1ECE / R072+0x1494 fill card_name and pic_buf without card_load (the previous card stays on the screen); with

@@ -209,6 +209,10 @@ public sealed class BattleScreen : ITacticalView
         _ui.MenuBar = _menuBar;
         try
         {
+            // orig: R002+0x001B root 047C:0568 at battle_run's head, R014+0x02F8 root 047C:056F before the loop: the battle's own screen is shown
+            // C: a card's picture still waiting for its first text (DS:EE55, GameUi.HoldScreen) is never shown: the battle replaces the screen
+            //   (vis10, the city ambush of card 0x24: local/batch/b24fix)
+            _ui.ReleaseScreen();
             // orig: R014+0x031E / 0x0326 (R014+0x0000, before its loop): the mouse driver's release count read and DS:C62A = 0
             _ui.TakeLeftReleases();
             _releases = 0;

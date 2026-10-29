@@ -58,7 +58,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // DIVERGENCE: msg_load refuses a file of 6000 bytes or more with message_box("<name>too large - <size>") (R029+0x5B40
     //   matched: draw_text(side_win, 10, 10, msg), getch(), quit_to_dos()); a modding guard no game file reaches, not reproduced. The check is on the catalogue entry's size; the largest of the 420 message files in MSGFILES is 5991 bytes (test MessageFilesTests.NoMessageFileReachesMsgLoadsSizeLimit).
     // orig: the picture is drawn onto an off-screen page and shown at the first text (DS:EE55 = "picture not yet shown": the screen keeps the
-    //   previous card until then): GameUi.HoldScreen until the first text, option list or wait for input
+    //   previous card until then): GameUi.HoldScreen until the first text, option list, a screen's wait (GameUi.Poll) or a battle
     // DIVERGENCE: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) the new card's picture is shown at once.
     // C: DS:E959, the block a redraw draws again, is left over from the previous card in the original until the new card shows a text; here a new card starts without one.
     public void Show(string cardName, string picture)

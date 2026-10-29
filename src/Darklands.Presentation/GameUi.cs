@@ -385,10 +385,14 @@ public sealed class GameUi
 
     /// <summary>
     /// Keeps the screen as it is now on show while the canvas is drawn on (the original's off-screen picture page): until
-    /// <see cref="ReleaseScreen"/> or the next wait for input, a present shows the screen as it was here.
+    /// <see cref="ReleaseScreen"/> (the card's first text, a battle) or the next <see cref="Poll"/> (a screen's own wait), a present
+    /// shows the screen as it was here.
     /// </summary>
     // orig: card_load R043+0x0A9A draws the picture on page 1 and sets DS:EE55 ("picture not yet shown"); the first card text or option list
-    //   (R043+0x0E40 / R043+0x0F2A) copies the page to the screen
+    //   (R043+0x0E40 / R043+0x0F2A) copies the page to the screen; a battle shows its own screen (R014+0x02F8)
+    // C: only R043+0x0C70, R043+0x0E93 and R043+0x0FA4 read DS:EE55: the waits that read the keyboard alone (PollKeyOnly, PollWithoutBar,
+    //   ReadKey, WaitForButtonRelease) do not show the picture, and none of them is reached while a picture is held (instrumented replay of
+    //   the 816 sessions: local/batch/b24fix)
     public void HoldScreen()
     {
         if (_held is not null)
