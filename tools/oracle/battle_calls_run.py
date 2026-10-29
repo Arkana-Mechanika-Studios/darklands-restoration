@@ -38,7 +38,7 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--workers", type=int, default=2)
     ap.add_argument("--baseline", default=None)
-    ap.add_argument("--game", default=str(REPO.parent / "game" / "DARKLAND"))
+    ap.add_argument("--game", default=str(Path(os.environ.get("DARKLANDS_ROOT") or REPO.parent) / "game" / "DARKLAND"))
     ap.add_argument("--skip-fuzz", action="store_true")
     ap.add_argument("--skip-test", action="store_true")
     a = ap.parse_args()

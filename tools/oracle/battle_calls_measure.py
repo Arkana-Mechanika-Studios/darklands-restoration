@@ -32,7 +32,7 @@ import cfg as cfgmod  # noqa: E402
 from run_unit import Rtlink  # noqa: E402
 
 REPO = HERE.parent.parent
-GAME = REPO.parent / "game" / "DARKLAND"
+GAME = Path(os.environ.get("DARKLANDS_ROOT") or REPO.parent) / "game" / "DARKLAND"
 BAT = {"R002", "R003"} | {"R%03d" % i for i in range(14, 26)}
 
 

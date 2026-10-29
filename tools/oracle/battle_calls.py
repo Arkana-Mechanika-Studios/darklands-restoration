@@ -20,6 +20,7 @@ export    the kept inputs of battle_fuzz.py with the states they start from, as 
 from __future__ import annotations
 
 import argparse
+import os
 import gzip
 import json
 import pickle
@@ -42,7 +43,7 @@ PACK_SEG = 0x2E38                      # link-time segment of the packs (party 0
 PACK_SIZE = 0x1100
 FAR2_VAR = 0x7D4A                    # DS word: the segment of the twin doors (+0xC00) and the doors opened (+0xBB6)
 REPO = HERE.parent.parent
-GAME = REPO.parent / "game" / "DARKLAND"       # as rerun_all.py: the game folder beside the code folder
+GAME = Path(os.environ.get("DARKLANDS_ROOT") or REPO.parent) / "game" / "DARKLAND"       # as rerun_all.py: the game folder of the project root
 
 
 def u32(b: bytes) -> int:

@@ -29,7 +29,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("work")
     ap.add_argument("--states-folder", default=None)
-    ap.add_argument("--game", default=str(REPO.parent / "game" / "DARKLAND"))
+    ap.add_argument("--game", default=str(Path(os.environ.get("DARKLANDS_ROOT") or REPO.parent) / "game" / "DARKLAND"))
     ap.add_argument("--skip-test", action="store_true")
     a = ap.parse_args()
     work = Path(a.work)
