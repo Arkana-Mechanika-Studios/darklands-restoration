@@ -472,7 +472,9 @@ public sealed class GameUi
                 MenuBar.Run(keyboard: true);
                 return null;
             }
-            if (GameKey is { } gameKey && InMenuBarLoop(() => gameKey(key)))
+            // orig: root 0000:0029..0x0033 runs hot_keys with the font 1; F1..F5 / Ctrl-F1..F5 (GameKey's too) are the screen's own keys,
+            //   read with the font put back (HotKeys.InHotKeyTable)
+            if (GameKey is { } gameKey && (HotKeys.InHotKeyTable(key) ? InMenuBarLoop(() => gameKey(key)) : gameKey(key)))
             {
                 return null;
             }

@@ -105,7 +105,10 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
         {
             return false;
         }
-        _busy = true;
+        // C: F1..F5 / Ctrl-F1..F5 are not hot_keys' (InHotKeyTable): the sheet they open (R043+0x33D9, R030+0x0CC5 call it themselves)
+        //   runs menu_bar_run with the hot keys as any screen, so they do not hold the hot keys off (Alt-Q in that sheet asks)
+        var busy = _busy;
+        _busy = InHotKeyTable(key);
         // the screen a hot key opens has loops of its own: F1..F5 are theirs there
         var sheetKeys = ui.SheetKeys;
         ui.SheetKeys = false;
@@ -115,11 +118,19 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
         }
         finally
         {
-            _busy = false;
+            _busy = busy;
             ui.SheetKeys = sheetKeys;
         }
         return true;
     }
+
+    /// <summary>True for the keys of hot_keys' own table (Alt-Q/O/P/S/D/F/L/C/M, F6, F10): those run with the card window's font 1.</summary>
+    // orig: root 0000:0CAA's cases (root 0000:0CAF..0x0CFB): 0x1000 Alt-Q, 0x1800 Alt-O, 0x1900 Alt-P, 0x1F00 Alt-S, 0x2000 Alt-D,
+    //   0x2100 Alt-F, 0x2600 Alt-L, 0x2E00 Alt-C, 0x3200 Alt-M, 0x4000 F6, 0x4400 F10; nothing else. F1..F5 / Ctrl-F1..F5 are each
+    //   screen's own keys (R030+0x0CC5, R043+0x33D9, R016+0x08EC, R022+0x05FE), read after menu_bar_run has put the font back
+    //   (root 0000:01BF..0x01C5): GameUi.Poll runs only these inside GameUi.InMenuBarLoop (local/batch/b25 AUDIT F1)
+    public static bool InHotKeyTable(int key) => key is Keys.AltQ or Keys.AltO or Keys.AltP or Keys.AltS or Keys.AltD or Keys.AltF
+        or Keys.AltL or Keys.AltC or Keys.AltM or Keys.F6 or Keys.F10;
 
     private Action? ActionFor(int key) => key switch
     {

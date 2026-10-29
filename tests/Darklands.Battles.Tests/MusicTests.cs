@@ -66,7 +66,18 @@ public sealed class MusicTests
 
         public void MovePointer(int x, int y) => Mouse = Mouse with { X = x, Y = y };
 
-        public bool TryReadKey(out int key) => _keys.TryDequeue(out key);
+        /// <summary>Each key as it is read (tests that look at the state a key is read in).</summary>
+        public Action<int>? Read { get; set; }
+
+        public bool TryReadKey(out int key)
+        {
+            if (!_keys.TryDequeue(out key))
+            {
+                return false;
+            }
+            Read?.Invoke(key);
+            return true;
+        }
 
         public void Pump()
         {
@@ -93,6 +104,11 @@ public sealed class MusicTests
                         "up" => Keys.Up,
                         _ => Keys.ForCharacter(value[0]),
                     });
+                    _idle = 2;
+                    break;
+                case "code":
+                    // a key code in hex (the Alt and function keys)
+                    _keys.Enqueue(int.Parse(value, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture));
                     _idle = 2;
                     break;
                 case "wait":

@@ -35,6 +35,9 @@ public sealed class ScreenDrawingLeadsTests
 
         public sealed class Stop : Exception;
 
+        /// <summary>In <see cref="Keys"/>: that read finds no key (a pass of the loop that reads goes by).</summary>
+        public const int NoKey = -1;
+
         /// <summary>The keys the host gives, in order.</summary>
         public Queue<int> Keys { get; } = new();
 
@@ -58,7 +61,19 @@ public sealed class ScreenDrawingLeadsTests
 
         public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
 
-        public bool TryReadKey(out int key) => Keys.TryDequeue(out key);
+        /// <summary>Each key as it is read (tests that look at the state a key is read in).</summary>
+        public Action<int>? Read { get; set; }
+
+        public bool TryReadKey(out int key)
+        {
+            if (!Keys.TryDequeue(out key) || key == NoKey)
+            {
+                key = 0;
+                return false;
+            }
+            Read?.Invoke(key);
+            return true;
+        }
 
         public void Pump()
         {
@@ -185,6 +200,164 @@ public sealed class ScreenDrawingLeadsTests
         Assert.Equal(top, rows[0]);
         Assert.Equal(106, rows[^1]);
         Assert.Equal(3, ui.CardWindowFont);
+    }
+
+    // orig: root 0000:014C..0x0158: menu_bar_run puts the card window's font back (3) before it calls the chosen item: the Game menu's
+    // Quit to DOS, chosen through the bar (F10, Down to the last item, Enter), asks in font 3 (rows 92..106; font 1 would be 93)
+    [Fact]
+    public void AMenuBarChoiceThroughTheBarAsksInFontThree()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost();
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(WorldData.Load(files), 7);
+        var keys = new HotKeys(ui, state, ui.Options);
+        ui.GameKey = keys.Handle;
+        ui.MenuBar = MenuBar.ForGame(ui, state, ui.Options, keys);
+        ui.Canvas.Fill(0, 0, Screen.Width, Screen.Height, 3);
+        ui.Present();
+        host.Keys.Enqueue(Keys.F10);
+        // a read with no key: the bar's first pass opens the Game menu before the cursor moves
+        host.Keys.Enqueue(ShotHost.NoKey);
+        for (var i = 0; i < 10; i++)
+        {
+            host.Keys.Enqueue(Keys.Down);
+        }
+        host.Keys.Enqueue(Keys.Enter);
+        host.Keys.Enqueue(0x316E);
+        byte[]? asked = null;
+        var font = 0;
+        host.Read = key =>
+        {
+            if (key == 0x316E)
+            {
+                asked = [.. host.Shown];
+                font = ui.CardWindowFont;
+            }
+        };
+        Assert.Null(ui.Poll());
+        Assert.NotNull(asked);
+        Assert.Equal(3, font);
+        var rows = Enumerable.Range(30, Screen.Height - 30).Where(y => Enumerable.Range(0, Screen.Width).Any(x => asked![y * Screen.Width + x] != 3)).ToList();
+        Assert.Equal(92, rows[0]);
+        Assert.Equal(106, rows[^1]);
+        Assert.Equal(3, ui.CardWindowFont);
+    }
+
+    // orig: root 0000:0CAA's table (Alt-Q/O/P/S/D/F/L/C/M, F6, F10) runs with the font 1 (root 0000:0029..0x0033); F1..F5 and Ctrl-F1..F5 are
+    // the screen's own keys (R030+0x0CC5, R043+0x33D9, R016+0x08EC, R022+0x05FE), read with the font put back: what they open is in font 3
+    [Theory]
+    [InlineData(Keys.AltQ, 1)]
+    [InlineData(Keys.AltO, 1)]
+    [InlineData(Keys.AltP, 1)]
+    [InlineData(Keys.AltS, 1)]
+    [InlineData(Keys.AltD, 1)]
+    [InlineData(Keys.AltF, 1)]
+    [InlineData(Keys.AltL, 1)]
+    [InlineData(Keys.AltC, 1)]
+    [InlineData(Keys.AltM, 1)]
+    [InlineData(Keys.F6, 1)]
+    [InlineData(Keys.F1, 3)]
+    [InlineData(Keys.F5, 3)]
+    [InlineData(Keys.CtrlF1, 3)]
+    [InlineData(Keys.CtrlF5, 3)]
+    public void OnlyTheHotKeysTableRunsInFontOne(int key, int font)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost();
+        var ui = new GameUi(host, new GameAssets(files));
+        var seen = new List<int>();
+        ui.GameKey = _ =>
+        {
+            seen.Add(ui.CardWindowFont);
+            return true;
+        };
+        host.Keys.Enqueue(key);
+        Assert.Null(ui.PollWithSheetKeys());
+        Assert.Equal([font], seen);
+        Assert.Equal(3, ui.CardWindowFont);
+    }
+
+    // The real paths of a game: F1 on the first card opens the sheet, where Alt-Q (a hot key) asks in font 1 and the menu bar's Quit to DOS (F10, Down to the last item, Enter) asks
+    // in font 3 (AUDIT b25 F1: was 1); Alt-Q on the card asks in font 1 (a hot key); Alt-L asks in font 3 (load_game R037+0x8B76 sets 3 first)
+    [Fact]
+    public void TheSheetsMenuBarTheHotKeysAndAltLAskInTheirFonts()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        string Code(int key) => "code:" + key.ToString("X4", System.Globalization.CultureInfo.InvariantCulture);
+        string[] steps =
+        [
+            "key:q", "wait:10", "key:space", "wait:10", "key:space", "wait:10", "key:space", "wait:10", "key:space", "wait:10",
+            "key:space", "wait:40",
+            Code(Keys.F1), "wait:40", Code(Keys.AltQ), "wait:10", "key:n", "wait:20", Code(Keys.F10), "wait:5", .. Enumerable.Repeat(Code(Keys.Down), 10), Code(Keys.Enter), "wait:10",
+            "key:n", "wait:10", "key:esc", "wait:40",
+            Code(Keys.AltQ), "wait:10", "key:n", "wait:20",
+            Code(Keys.AltL), "wait:10", "key:n", "wait:20",
+        ];
+        var host = new MusicTests.StepHost(new MusicTests.MusicRecorder(), steps);
+        var game = new DarklandsGame(host, files)
+        {
+            Seed = () => 27,
+            PlayOpening = false,
+            ShowStartUp = false,
+            SaveDirectory = Path.Combine(Path.GetTempPath(), "darklands-font-tests"),
+        };
+        var fonts = new List<int>();
+        host.Read = key =>
+        {
+            if (key == 0x316E)
+            {
+                fonts.Add(game.Ui.CardWindowFont);
+            }
+        };
+        game.Run();
+        Assert.Equal(0, host.Left);
+        Assert.Equal([1, 3, 1, 3], fonts);
+    }
+
+    // orig: in a battle root 0000:0000 (R014+0x3185) runs the hot keys with the font 1 and the bar's items with it put back: Alt-P is the
+    // hot key's (font 1), the Game menu's Quit to DOS (F10, Down to the last item, Enter) the item's (font 3)
+    [Fact]
+    public void TheBattlesHotKeysRunInFontOneAndItsMenuItemsInFontThree()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost { StopAtPresent = 200 };
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(WorldData.Load(files), 7);
+        var seen = new List<(int Key, int Font)>();
+        ui.GameKey = key =>
+        {
+            seen.Add((key, ui.CardWindowFont));
+            return true;
+        };
+        host.Keys.Enqueue(Keys.AltP);
+        host.Keys.Enqueue(Keys.F10);
+        // reads with no key (NoKey): the battle's looks at the buffer take some, the bar's first passes the rest, which open the Game
+        // menu before the cursor moves (extra ones only idle in the bar)
+        for (var i = 0; i < 4; i++)
+        {
+            host.Keys.Enqueue(ShotHost.NoKey);
+        }
+        for (var i = 0; i < 10; i++)
+        {
+            host.Keys.Enqueue(Keys.Down);
+        }
+        host.Keys.Enqueue(Keys.Enter);
+        var screens = new BattleScreens(ui, () => state);
+        Assert.Throws<ShotHost.Stop>(() => screens.Battle(new Darklands.Cards.BattleRequest(0x14, 863, [(34, 4, 8), (18, 5, 2), (34, 1, 2)])));
+        Assert.Equal([(Keys.AltP, 1), (Keys.AltQ, 3)], seen);
     }
 
     // orig: R067+0x1ECE / R072+0x1494 fill card_name and pic_buf without card_load (the previous card stays on the screen); with
