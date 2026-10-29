@@ -1999,7 +1999,8 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>Shift with the pointer at an edge of the view: the view scrolls toward it (a cell, two at the corners' sides).</summary>
     // orig: R014+0x323E.. (R014+0x3166) draft: the zones of the edge cursors (KBFLAGS & 3), DS:C866 / DS:C886 changed, then R016+0x0B92
     // (R016+0x0B92: the centre kept within 1..0x27, the view redrawn); tests: BattleUiTests
-    // UNCERTAIN: the original scrolls once per pass of its loop, which runs as fast as the redraw allows; here once a frame.
+    // DIVERGENCE: the original scrolls once per pass of its loop (R014+0x3166, no time gate before R016+0x0B92), which runs as fast as the
+    //   machine draws; here once a frame (a pass of the C# battle loop), so the speed of the edge scroll is a host's, not the EXE's.
     private void EdgeScroll()
     {
         if (!_ui.ShiftHeld)
@@ -2119,7 +2120,9 @@ public sealed class BattleScreen : ITacticalView
         // reloads the battle's pictures and level (R022+0x01EA..0x03BE) before it reads the release count, so the closing click's release
         // falls inside the reload and is taken and forgotten at R022+0x03BE (lockstep session orders-sheetclick: the original is back in
         // the battle, R014+0x3198 does not open the sheet again). The reload takes no time here: the button is waited out in its place.
-        // UNCERTAIN: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
+        // DIVERGENCE: a button held longer than the original's reload would give the battle a release (the sheet again); the reload's time
+        //   is the machine's (disk reads of the battle's pictures and level, R022+0x01EA..0x03BE), not a value of the EXE: here the reload
+        //   always outlasts the press (an ordinary click on a PC of the time), so a long press does not reopen the sheet.
         _ui.WaitForButtonRelease();
         // orig: R022+0x01EA after the sheet: the releases made on it taken from the driver and forgotten (DS:C62A = 0)
         _ui.TakeLeftReleases();

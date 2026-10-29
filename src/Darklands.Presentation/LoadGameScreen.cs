@@ -217,10 +217,15 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         if (key == Keys.AltQ)
         {
             // C: 0218 frees the button picture before quit_to_dos asks; after "no" the screen goes on without it.
-            // DIVERGENCE: after "no" the button picture is still drawn when pressed.
             if (new MessageBox(ui).Ask("Quit to DOS?"))
             {
                 throw new QuitGameException();
+            }
+            // DIVERGENCE: with GameOptions.CleanDrawing (Fixed, Classic + comfort) the button picture is kept and still drawn when pressed.
+            if (!ui.Options.CleanDrawing)
+            {
+                // C: a pressed button then shows its label alone (checked against the original's screen: vis10 session D-751050)
+                _button = null;
             }
             return null;
         }

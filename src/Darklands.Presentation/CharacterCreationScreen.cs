@@ -92,7 +92,9 @@ public sealed class CharacterCreationScreen
     private Canvas Screen => _ui.Canvas;
 
     /// <summary>The figure codes from PICS\F??STAT.PIC, A??STAT.PIC, C??STAT.PIC (<c>R037+0x4562</c>).</summary>
-    // UNCERTAIN: DOS lists the files in directory order; here each group is in name order (F01, F60, then A00, then C00).
+    // DIVERGENCE: DOS lists the files in directory order (R037+0x4562 appends find-first / find-next results unsorted), which is the order the
+    //   install wrote them on that disk, a fact of the host's file system and not of the EXE; here each group is in name order (F01, F60,
+    //   then A00, then C00), the order of a folder the files were copied into by name.
     internal static IReadOnlyList<string> FigureImages(GameFiles files)
     {
         var codes = new List<string>();
@@ -199,7 +201,14 @@ public sealed class CharacterCreationScreen
                     DrawAll();
                     break;
                 case 'a' when _roster.Characters.Count > 0:
-                    Press('a', () => _roster.AddToParty(Shared.Selected, _images[0]));
+                    Press('a', () =>
+                    {
+                        // orig: R037+0x0B06: the new slot's shield picture DS:A2D7[slot] is PICS\SHIELDA.PIC, whatever the record's letter, until H
+                        if (_roster.AddToParty(Shared.Selected, _images[0]) is var added and >= 0 && _roster.Member(added) is { } joined)
+                        {
+                            _panel.SetShieldPicture(added, joined, 'A');
+                        }
+                    });
                     DrawFigure();
                     DrawPartyRows();
                     DrawList();
@@ -210,7 +219,15 @@ public sealed class CharacterCreationScreen
                     DrawList();
                     break;
                 case 'h' when _roster.Characters.Count > 0:
-                    Press('h', () => _roster.NextShield(Shared.Selected));
+                    Press('h', () =>
+                    {
+                        // orig: R037+0x1046: the next letter, then DS:A2D7[slot] freed and loaded again from PICS\SHIELD<letter>.PIC
+                        if (_roster.NextShield(Shared.Selected) && _roster.SlotOf(Shared.Selected) is var slot and >= 0 &&
+                            _roster.Member(slot) is { } member)
+                        {
+                            _panel.SetShieldPicture(slot, member, member.ShieldLetter);
+                        }
+                    });
                     DrawPartyRows();
                     break;
                 case 's' when _roster.Characters.Count > 0:
@@ -439,7 +456,8 @@ public sealed class CharacterCreationScreen
     }
 
     /// <summary>The party column rows (party_panel_frames / party_panel_rows).</summary>
-    // DIVERGENCE: a new member's row shows the shield of its record, where the menu loads PICS\SHIELDA.PIC until H is pressed.
+    // C: a new member's row shows PICS\SHIELDA.PIC until H is pressed (the slot's shield picture, PartyPanel.SetShieldPicture), whatever the
+    //   letter of its record; checked against the original's screen (vis10 session D-b0c9a6 with a member whose letter is not A, local/batch/c5uncertain)
     private void DrawPartyRows()
     {
         var party = PanelParty();

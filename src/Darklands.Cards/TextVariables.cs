@@ -252,7 +252,11 @@ public static class TextVariables
     }
 
     // orig: case 1: strcpy(name, city_desc); city_desc is the DARKLAND.DSC record of the city loaded last (read together with the city record when the party arrives in a city)
-    // UNCERTAIN: the description is looked up by the working city record's number; the original keeps city_desc in its own buffer, which only the overland travel and game loading refill.
+    // C: the description is looked up by the working city record's number; the original keeps city_desc (DS:978B, 0x50 bytes) in its own buffer,
+    //   but every one of its writers reads DARKLAND.DSC at index * 0x50 + 1 beside its DARKLAND.CTY read at index * 0x26E + 1 with the same index
+    //   (the opens of darkland.dsc at R029+0x4ED4, R030+0x06F2, R037+0x9A0D, R043+0x0447, R051+0x2296/0x24AA/0x26BE/0x28D4/0x2AE8,
+    //   R066+0x291E/0x2A2E/0x2B3E/0x2C4E, R082+0x15C4, R133+0x1B48: no other code names the file), so the two never part for a city; for
+    //   the other indexes see CityFile.Read.
     private static string PlaceDescription(CardContext c) => c.World.CityDescription(c.State.City.City);
 
     // orig: case 16: R136+0xA813[loc_query(cur_loc, 1)]

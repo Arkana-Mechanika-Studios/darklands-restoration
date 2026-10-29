@@ -15,7 +15,7 @@ public sealed class MessageBox(GameUi ui)
     /// <summary>The card window starts at x 60; boxes are centred in it.</summary>
     private const int WindowX = 60;
     private const int WindowWidth = Canvas.Width - WindowX;
-    private const byte TextColor = 1;
+    public const byte TextColor = 1;
     private const byte Background = 0xFF;
 
     /// <summary>How long a message stays (the original waits 60 timer ticks).</summary>
@@ -38,9 +38,9 @@ public sealed class MessageBox(GameUi ui)
     /// <summary>A box that stays while something is done ("Loading Game", "Saving Game"); <see cref="Close"/> puts back what it covered.</summary>
     // orig: text_box(card_window, -1, 1, text, card_window2, &r) ... copy_rect_saved(card_window2, r..., card_window, ...),
     // repeated inline in R037+0x8ED4 and R037+0x2ACE
-    public SavedRegion Open(string text)
+    public SavedRegion Open(string text, byte textColor = TextColor)
     {
-        var saved = Draw(text, Centred);
+        var saved = Draw(text, Centred, textColor);
         ui.Present();
         return saved;
     }
@@ -119,7 +119,7 @@ public sealed class MessageBox(GameUi ui)
     /// <summary>Frames <paramref name="text"/> at text row <paramref name="y"/> (−1: mid-screen) and returns what it covered.</summary>
     // orig: text_box(w, y, save, text, dst, &r): ty = y (or -(font_height / 2 - 100)); tw = text_pixel_width; bw = tw + 10; bh = font_height + 7; tx = (320 - tw - w->w) / 2; bx = tx - 5; by = ty - 4; draw_frame_box(w, bx, by, bw, bh, w->f0e) then draw_text(w, tx, ty, text)
     // C: draw_frame_box (ScreenDrawing.FrameBox): the box colour, the two outlines and the four corner pieces of COMMONSP.IMG.
-    private SavedRegion Draw(string text, int y)
+    private SavedRegion Draw(string text, int y, byte textColor = TextColor)
     {
         var canvas = ui.Canvas;
         // C: the box is drawn in the card window, whose font is slot 3 (GameUi.CardText).
@@ -130,7 +130,7 @@ public sealed class MessageBox(GameUi ui)
         var (x, top, width, height) = (textX - 5, textY - 4, textWidth + 10, font.LineHeight + 7);
         var saved = canvas.Save(x, top, width, height);
         ScreenDrawing.FrameBox(canvas, ui.Assets.CommonSprites, x, top, width, height, Background);
-        font.Draw(canvas, textX, textY, text, TextColor);
+        font.Draw(canvas, textX, textY, text, textColor);
         ui.Present();
         return saved;
     }

@@ -332,21 +332,30 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The saint's name with an illuminated capital, the feast day, the description.</summary>
-    // orig: saint_draw_info R034+0x0BC4
-    // UNCERTAIN: the text routine root 0265:0134 is assembly only: the name is taken as centred in its
-    //   154-pixel column with the capital at y 8 (positions from a capture of the original), the description as
-    //   wrapped in 156 pixels from (0x94, 0x25).
+    // orig: saint_draw_info R034+0x0BC4: the name (sprintf of saint_names R136+0xF16E) by draw_text_wrapped root 0265:0134 in a column of 0x9A
+    //   from (0x94, 4), spacing 8, leading 1, the illuminated capital (icon 1) unless in a battle (DS:907A == 1: icon 0), left-aligned (its
+    //   measure, root 0265:084E at R034+0x0BFA, is not used); "Saint Day" (0x4C, 0xAD), "is" (0x62, 0xB5); the date centred in 50 pixels from
+    //   0x4B (a width of 0x31 or more counts as 0x32, R034+0x0CB5); the description by draw_text_wrapped in 0x9C from (0x94, 0x25), spacing 8,
+    //   leading 1, no capital. Checked against the original's screen (pixel comparison, local/batch/c5uncertain).
     private void DrawInfo(int saint)
     {
-        DrawTitle(SaintName(saint));
+        var layout = new CardTextLayout(_text);
+        var inBattle = InBattle?.Invoke() == true;
+        layout.Draw(_canvas, TextPainter.Encode(SaintName(saint)), 0x94, 4, 0x9A, new CardTextLayout.Settings
+        {
+            Color = TextColor,
+            Spacing = 8,
+            DropCap = inBattle ? null : b => DropCaps.Get(ui.Assets, b),
+        });
         _text.Draw(_canvas, 0x4C, 0xAD, "Saint Day", TextColor);
         _text.Draw(_canvas, 0x62, 0xB5, "is", TextColor);
         var day = SaintTable.Of(saint).FeastDay;
         var date = $"{TextVariables.MonthNames[Quests.MonthOf(day)]} {Quests.DayOfMonth(day)}";
-        var width = Math.Min(_text.Measure(date), 50);
-        _text.Draw(_canvas, (50 - width) / 2 + 75, 0xBD, date, TextColor);
-        new CardTextLayout(_text).Draw(_canvas, TextPainter.Encode(ui.Assets.SaintDescription(saint)), 0x94, 0x25, 0x9C,
-            new CardTextLayout.Settings { Color = TextColor });
+        var measured = _text.Measure(date);
+        var width = measured < 0x31 ? measured : 0x32;
+        _text.Draw(_canvas, (0x32 - width) / 2 + 0x4B, 0xBD, date, TextColor);
+        layout.Draw(_canvas, TextPainter.Encode(ui.Assets.SaintDescription(saint)), 0x94, 0x25, 0x9C,
+            new CardTextLayout.Settings { Color = TextColor, Spacing = 8 });
     }
 
     /// <summary>The saint's full name (saint_names R136+0xF16E, from DARKLAND.LST).</summary>
@@ -357,24 +366,6 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     private IReadOnlyList<Content.Formats.World.DarklandSaintName>? _names;
-
-    private void DrawTitle(string name)
-    {
-        if (name.Length == 0)
-        {
-            return;
-        }
-        var cap = DropCaps.Get(ui.Assets, (byte)name[0]);
-        var tail = cap is null ? name : name[1..];
-        var width = _text.Measure(tail) + (cap is null ? 0 : 0x11);
-        var x = 0x94 + Math.Max(0, (0x9A - width) / 2);
-        if (cap is not null)
-        {
-            _canvas.Draw(cap, x, 8, transparent: true);
-            x += 0x11;
-        }
-        _text.Draw(_canvas, x, 0x11, tail, TextColor);
-    }
 
     // ---- the member list --------------------------------------------------------------
 
@@ -390,21 +381,18 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
         _canvas.Fill(BoxX, 0xBF, BoxWidth, 1, BoxBorder);
         _canvas.Fill(BoxX, BoxY, 1, 0xBF - BoxY + 1, BoxBorder);
         _canvas.Fill(right, BoxY, 1, 0xBF - BoxY + 1, BoxBorder);
-        // UNCERTAIN: the names are drawn by the text routine (assembly only) in a 52-pixel column; here each full
-        //   name is cut to fit that width on its row.
-        var y = 0x91;
-        foreach (var member in party.Members.Where(m => m.IsPresent))
-        {
-            var name = member.Name;
-            while (name.Length > 0 && _text.Measure(name) > BoxWidth - 8)
-            {
-                name = name[..^1];
-            }
-            _text.Draw(_canvas, 0xFF, y, name, TextColor);
-            y += BoxRow;
-        }
+        // orig: R034+0x0E04 joins the short names (+0x3E of each record whose status is not 0, in slot order) with newlines (the last
+        //   one cut off) and R034+0x0D08 draws them by draw_text_wrapped root 0265:0134 in a column of 0x3C - 8 from (0xFF, 0x91), spacing the
+        //   font's height (root 047C:051B), leading 0, the window colour 8: a name wider than the column wraps onto the next row and moves
+        //   the names after it down. Checked against the original's screen (pixel comparison, local/batch/c5uncertain).
+        new CardTextLayout(_text).Draw(_canvas, TextPainter.Encode(MemberListText(party)), 0xFF, 0x91, BoxWidth - 8,
+            new CardTextLayout.Settings { Color = TextColor, Leading = 0 });
         ui.Present();
     }
+
+    /// <summary>The member list's text: the present members' short names in slot order, one per line.</summary>
+    // orig: R034+0x0E04 (the short name +0x3E of each record whose status byte DS:9C69 + 0x80 * slot is not 0; the last newline cut off)
+    public static string MemberListText(Party party) => string.Join('\n', party.Members.Where(m => m.IsPresent).Select(m => m.ShortName));
 
     private void CloseMemberList()
     {
