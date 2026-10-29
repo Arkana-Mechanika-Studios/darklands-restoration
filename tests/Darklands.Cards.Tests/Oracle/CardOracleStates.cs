@@ -73,7 +73,7 @@ public sealed class CardOracleStates
             var loaded = FromSave(key[1..(at < 0 ? lastOption : at)], saveOption);
             if (at >= 0)
             {
-                foreach (var one in key[(at + 2)..lastOption].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p)))
+                foreach (var one in key[(at + 2)..lastOption].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p) && !IsTexts(p)))
                 {
                     Apply(loaded, one, saveOption);
                 }
@@ -88,9 +88,18 @@ public sealed class CardOracleStates
             return New(location, option);
         }
         // the parts "F<block>.<line>" (ForceOf) and "P<n>_<n>.." (PathOf) change no state
-        var variant = string.Join('+', key[(v + 2)..key.LastIndexOf("-O")].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p)));
+        var variant = string.Join('+', key[(v + 2)..key.LastIndexOf("-O")].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p) && !IsTexts(p)));
         return variant.Length == 0 ? New(location, option) : New(location, option, variant);
     }
+
+    /// <summary>
+    /// The variant part <c>T$Enter00</c>: the message file the card before left loaded (the oracle loads it instead of the card's own before
+    /// the card runs; tools/oracle/card_oracle.py split_key). It changes no state.
+    /// </summary>
+    public static bool IsTexts(string part) => part.Length > 2 && part[0] == 'T' && part[1] == '$';
+
+    /// <summary>The message file of the run key's <c>T</c> part, or null (the card's own, as the oracle preloads it).</summary>
+    public static string? TextsOf(string key) => PartOf(key, IsTexts)?[1..];
 
     public static bool IsBattle(string part) => part.Length > 1 && part[0] == 'B' && part[1..].Split('_').All(x => x.Length == 1 && char.IsAsciiDigit(x[0]));
 

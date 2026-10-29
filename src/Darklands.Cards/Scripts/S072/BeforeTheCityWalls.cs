@@ -26,18 +26,16 @@ public sealed class BeforeTheCityWalls : Card
             2 => 7,
             _ => -1,
         };
-        // DIVERGENCE: the original only fills the name and picture buffers (no card_load): the screen
-        // keeps the previous card ($CityE00, card 4, when the party comes from the city entry) until
-        // the engine redraws it from these buffers. It is shown here at once.
-        // C: a negative remainder leaves pic_buf as the last card left it, and the engine draws the card's texts with it.
-        if (picture >= 0)
-        {
-            Show(c, picture);
-        }
-        else
-        {
-            c.Screen.ShowWithTheLastPicture(Name);
-        }
+        // BUG: the card (R072+0x1494) never calls card_load: it only fills card_name and pic_buf (a negative remainder
+        // leaves pic_buf as the last card left it), so the screen keeps the previous card's picture and the
+        // option list (block 0) and the result texts are read from the previous card's message file (the
+        // boat landing's $Enter00, the initial test card's $Initi00, the sally port's $CityW03 or $CityW05),
+        // until the dawn wait's card_load_near, a member's sheet, the party information or a battle has
+        // $CityE00 loaded (see NameTheCard).
+        // DIVERGENCE: a block the previous card's file does not have ($Initi00 has 1 block, $CityW05 11, $Enter00 11) is printed from
+        //   msg_file + msg_index.ofs[n], an entry msg_load (R043+0x020E) did not set: undefined memory (what an earlier, longer file left;
+        //   01 0a 0e under the oracle for block 5 after $Initi00); the C# prints an empty text.
+        c.Screen.NameTheCard(Name, picture >= 0 ? PictureNames.Of(picture) : null);
         c.Next = Number;
         // C: only opt_on[0..4] are copied each round; lines 5..9 keep the previous card's opt_on and
         // opt_fn (and the switch has no case for them), so they are offered hidden here.
@@ -93,6 +91,7 @@ public sealed class BeforeTheCityWalls : Card
         if (!c.IsDaylight)
         {
             // DIVERGENCE: $CityE00.msg has no block 9; the original prints what follows the last block (bytes 07 02 0A under the oracle), the C# nothing.
+            // C: with the previous card's file still loaded (see Run) both print that file's block 9 when it has one.
             c.Screen.Text(9, TextFrame.BlankPage);
             c.WaitUntilHour(5);
         }

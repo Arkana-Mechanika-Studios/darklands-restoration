@@ -111,7 +111,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-625cb1** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2103` `BattleScreen.CharacterSheet`  
   original: `R022+0x0000` (1EF8:0000, draft)  
   why: a button held longer than the original's reload would give the battle a release (the sheet again); not modelled.
-- **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:77` `BuySellPage.Text`  
+- **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:80` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
 - **U-df0837** `uncertain` - `src/Darklands.Presentation/CharacterCreationScreen.cs:92` `CharacterCreationScreen.FigureImages`  

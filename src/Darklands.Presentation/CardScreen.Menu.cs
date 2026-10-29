@@ -55,8 +55,12 @@ public sealed partial class CardScreen
     // C: Up from no highlight cannot happen in the original (the cursor keys need the pointer over a line, which card_mouse has just highlighted).
     // DIVERGENCE: the pointer is not moved onto the line Up / Down select (the host owns it); the menu acts as if it were until the mouse moves. With GameUi.KeyboardCardMenus (an interface convenience, off unless a host turns it on): Up / Down also work while the pointer is off the lines (from no highlight: the first or last line), and the digits 1..9 choose the main list's lines in order.
     // DORMANT: the battle option kind (-1, marker 0x06): highlighting it calls R043+0x29CE, which does nothing (its message "Enemy stats will be displayed here" is never shown); leaving it redraws the panel, as here.
-    private int Select(List<OptionArea> areas, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint)
+    private int Select(List<OptionArea> areas, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Func<List<OptionArea>>? relaid = null)
     {
+        if (areas.Count == 0 && _cardName.Length > 0 && _messages?.Name != _cardName)
+        {
+            areas = WaitForLines(relaid ?? (() => _lastAreas));
+        }
         if (areas.Count == 0)
         {
             return 0;
@@ -287,6 +291,47 @@ public sealed partial class CardScreen
                 ClearHint();
             }
         }
+    }
+
+    /// <summary>
+    /// The menu of a card that only named itself (NameTheCard), on a block of the previous card's texts without option lines: nothing
+    /// can be chosen until the card is drawn again (a member's sheet from the portraits, the party information), which loads the named
+    /// card's texts and lays the block out anew; then the menu goes on with those lines.
+    /// </summary>
+    // orig: card_menu R043+0x1BD2 with an empty hotspot list DS:E96E
+    // C: each pass runs the menu bar, the party_icons_dirty redraw R043+0x1E82 and the portrait press R043+0x1E30 (member sheet, then
+    //   R043+0x1E82); the redraw's msg_load(DS:E957) and draw_text_wrapped(.., &DS:E96E, ..) give the menu the named card's lines
+    //   (card 0x5F after a guild's card: $Sneak00 block 0x0D). Only for that case; a menu without lines on the card's own texts keeps the deliberate fix of ChooseOnLastLayout (line 0).
+    private List<OptionArea> WaitForLines(Func<List<OptionArea>> relaid)
+    {
+        List<OptionArea> areas = [];
+        ui.Redraw = () =>
+        {
+            Redraw();
+            areas = relaid();
+        };
+        try
+        {
+            while (areas.Count == 0)
+            {
+                var action = ui.PollWithSheetKeys();
+                if (action is not { } a)
+                {
+                    ui.Idle();
+                    continue;
+                }
+                if (a.IsLeftClick && a.X < WindowX && OpenSheetAt(a.Y, refresh: false))
+                {
+                    Redraw();
+                    areas = relaid();
+                }
+            }
+        }
+        finally
+        {
+            ui.Redraw = null;
+        }
+        return areas;
     }
 
     /// <summary>Opens the box of an item or saint line next to the line.</summary>

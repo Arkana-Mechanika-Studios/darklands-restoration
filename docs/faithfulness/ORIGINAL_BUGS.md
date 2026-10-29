@@ -12,15 +12,15 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 95 | 22 | 73 |
-| cards | 64 | 2 | 62 |
+| cards | 66 | 2 | 64 |
 | events | 8 | 4 | 4 |
 | travel | 3 | 0 | 3 |
 | battles | 28 | 12 | 16 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 3 | 1 | 2 |
-| total | 203 | 43 | 160 |
+| screens/presentation | 4 | 1 | 3 |
+| total | 206 | 43 | 163 |
 
-## Core logic (200)
+## Core logic (202)
 
 ### rules (95)
 
@@ -310,7 +310,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (64)
+### cards (66)
 
 - **B-ae3eba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:93` `MainStreetAtNight.Walk`  
   original: `R046+0x0422` (1838:0422, matched), `R046+0x0466` (1838:0466, matched), `R046+0x04AA` (1838:04AA, matched) +7 more  
@@ -417,6 +417,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-751be8** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S067/JewelersGuildAtNight.cs:224` `JewelersGuildAtNight.FailedToGetIn`  
   original: `R067+0x1962` (1954:07A2, matched), `R029+0x1396` (0E76:1396, draft), `R039+0x0132` (1462:0132, matched)  
   why: the lowest Stealth (1..99) is the member number: practice_skill always draws its chance, then member_skill and add_skill address record DS:9C69 + n*0x80. Below 5 that is a party slot (a member, perhaps not the clumsy one, practises); 20 is the place actions of the last battle (RecordOverrun: its skill byte DS:A6CF is Place[11] of the .BSV's variables, written when slot 0 has a figure image, the message drawn below the screen and waited for); the others are program memory (RecordOverrun's DIVERGENCE). Not data-damaging: Place[11] is a finished battle's byte that a new battle sets to 0 for all 13 combatants (R002+0x19FA) before reading it, and the .SAV never changes (direct calls j_prac.py / j_call.py / j_bsv.py, local/batch/evid1o), so it is faithful in both behaviours.
+- **B-f40b26** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S067/SneakingThroughTheHall.cs:21` `SneakingThroughTheHall.Run`  
+  original: `R067+0x278A` (1A24:08CA, matched)  
+  why: the card (R067+0x1ECE) never calls card_load: it only fills card_name and pic_buf ("common"), so the screen keeps the previous card's picture and its blocks 6 and 0x0D, and those of every later text, are read from the previous card's message file (the guild's: $Black00, $Sword00 ...), until a member's sheet, the party information or a battle has the card loaded again (R043+0x1E82 and run_battle's card_load load card_name's texts, "$Sneak00"); see NameTheCard.
 - **B-ce730c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S068/ClimbingTheWallPastTheGuards.cs:45` `ClimbingTheWallPastTheGuards.Run`  
   original: `R068+0x2422` (19F9:0812, matched), `R068+0x2424` (19F9:0814, matched)  
   why: the rope line is greyed unless the last member carries a rope, whoever else has one.
@@ -429,7 +432,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:93` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
   original: `R071+0x02A8` (1838:02A8, matched)  
   why: the original makes $ChosenOneName the least agile member's Agility value (party_min_attr's result), not the member; a value past the party names whatever lies there (from 25 on a piece of this card's .MSG file: TextVariables.OutsideName).
-- **B-2ac103** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:171` `BeforeTheCityWalls.Disgrace`  
+- **B-37826f** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:29` `BeforeTheCityWalls.Run`  
+  original: `R072+0x1A0E` (1981:057E, matched)  
+  why: the card (R072+0x1494) never calls card_load: it only fills card_name and pic_buf (a negative remainder leaves pic_buf as the last card left it), so the screen keeps the previous card's picture and the option list (block 0) and the result texts are read from the previous card's message file (the boat landing's $Enter00, the initial test card's $Initi00, the sally port's $CityW03 or $CityW05), until the dawn wait's card_load_near, a member's sheet, the party information or a battle has $CityE00 loaded (see NameTheCard).
+- **B-2ac103** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:170` `BeforeTheCityWalls.Disgrace`  
   original: `R072+0x17D6` (1981:0346, matched)  
   why: at −40 or below the original draws improve_roll(v, −3, −9) and drops the result, so the standing stays as it is (the draw is still made).
 - **B-097711** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:38` `SallyPortInTheCityWall.Run`  
@@ -640,10 +646,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party_size: the writer tests all five ids, and a slot past party_size has status 0 (party_size is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (3)
+## Presentation and host (4)
 
-### screens/presentation (3)
+### screens/presentation (4)
 
+- **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:214` `BarterScreen.Purchase`  
+  original: `R032+0x0F60` (1462:0F60, draft)  
+  why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:241` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
