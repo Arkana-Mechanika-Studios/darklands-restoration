@@ -48,6 +48,14 @@
           Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\releases\$(Version)\release-notes.md')" />
   </ItemGroup>
 
+  <!-- the pack makers' guide (docs/PACKS.md) and the example sound pack (packs/audio-pack-example, generated tones), beside the
+       program in the build and in every release; the launcher offers the packs folder's packs -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\PACKS.md" Link="docs\PACKS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\audio-pack-example\**\*" Link="packs\audio-pack-example\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <!-- a release carries an empty MT32_ROMS folder beside the program, where the player puts MT-32 / CM-32L ROM files -->
   <Target Name="CreateMt32RomFolder" AfterTargets="Publish">
     <MakeDir Directories="$(PublishDir)MT32_ROMS" />

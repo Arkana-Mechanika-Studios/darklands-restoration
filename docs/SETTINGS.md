@@ -135,6 +135,7 @@ When nothing is found, or the folder named does not hold the game, the launcher 
 ## Launcher (SDL host)
 
 The launcher is the settings screen shown before the game: the game folder, the window size, fullscreen, the HD pack,
+the audio pack (both: None, the packs in a `packs` folder, or a folder browsed for or dropped; [PACKS.md](PACKS.md)),
 the sound card and the Roland ROM folder (MT-32 and/or CM-32L; with a sound test: ten seconds of the game's music through the drivers the game
 will use) and the start-up screen and opening animation. Beside them: the release notes (`RELEASE_NOTES.md` next to the
 program, copied there by the build from `releases/<version>/release-notes.md` when that is there), a link to the version's

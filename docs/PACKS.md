@@ -14,13 +14,24 @@ Packs are not part of the original game. With no pack set, the game looks and so
 | settings key ([SETTINGS.md](SETTINGS.md)) | `display.hdPack` | `sound.audioPack` |
 | command line | `--hd-pack <folder>` | `--audio-pack <folder>` |
 | environment | | `DARKLANDS_AUDIO_PACK` |
-| launcher | "HD pack" (drop the folder on the window) | not yet: use the settings file |
+| launcher | "HD pack" row | "Audio pack" row |
 | files | `*.png`, named after the asset | `*.ogg`, `*.wav`, named after the cue (catalogue below) |
 | manifest (optional) | `pack.json` | `audio.json` |
 | headless step | `hdpack:<folder>` | `audiopack:<folder>` |
 
 Problems (a missing folder, an unknown name, a broken file) are written to the console at the start; whatever cannot
 be used keeps the game's own picture or sound.
+
+### Choosing a pack in the launcher
+
+Put each pack in a folder of its own inside a `packs` folder: next to the program (the release's example is there),
+in the game folder, or next to the game folder. The launcher's "HD pack" and "Audio pack" rows then go through None and
+the packs found with ← and →; Enter (or a click) browses for a folder anywhere else, and a pack's folder dropped on the
+launcher window is taken as the pack of each kind it holds. The row shows the pack's name, marked (!) when it cannot be
+read as one; with the row chosen, the help line says how many pictures or sounds it replaces and whether its `audio.json` was read,
+or what is wrong with it. None turns the pack off. The choice is written into the settings file (`display.hdPack`,
+`sound.audioPack`); a pack given on the command line or by `DARKLANDS_AUDIO_PACK` is shown but cannot be changed there.
+The launcher's "how to make a pack" link opens this guide.
 
 ## Picture packs
 
@@ -122,11 +133,12 @@ Comments and trailing commas are allowed; paths are relative to the pack folder.
 
 ### The example pack
 
-[`docs/audio-pack-example`](audio-pack-example) replaces the map's travel pieces (also heard while creating the party)
+[`docs/audio-pack-example`](audio-pack-example) (in a release: `packs/audio-pack-example` next to the program)
+replaces the map's travel pieces (also heard while creating the party)
 with a soft generated drone and the battle's missed swing with a short generated chirp. It holds no music of the
-game: both files are test tones made with ffmpeg from a formula. Start the game with
-`--audio-pack docs/audio-pack-example` (or set `sound.audioPack`) and create a party: the creation screen's music
-is the drone; in a battle, a missed blow chirps.
+game: both files are test tones made with ffmpeg from a formula. Choose it in the launcher's "Audio pack" row (or
+start with `--audio-pack packs/audio-pack-example`, or set `sound.audioPack`) and create a party: the creation
+screen's music is the drone; in a battle, a missed blow chirps.
 
 ### Trying a pack without playing
 

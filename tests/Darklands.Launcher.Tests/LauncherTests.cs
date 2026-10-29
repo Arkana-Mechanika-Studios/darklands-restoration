@@ -107,7 +107,7 @@ public sealed class LauncherTests
             Down, Enter,        // fullscreen on
             Down, Down,
             Right, Right,       // sound: AdLib, then Sound Blaster
-            Down, Down, Enter,  // past the ROMs: the start-up screen off
+            Down, Down, Down, Enter,  // past the ROMs and the audio pack: the start-up screen off
             Escape]);
         Assert.Equal(LauncherChoice.Quit, result.Choice);
         Assert.Equal("1080x600", (string)result.Changes["display.resolution"]!);
@@ -170,8 +170,8 @@ public sealed class LauncherTests
     {
         var links = new List<string>();
         var tests = new List<string?>();
-        // Play, Discord (open it), then back up past Play, Save, every start, Opening animation, start-up screen to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        // Play, Discord (open it), then back up past Play, Save, every start, Opening animation, start-up screen, audio pack to the sound test
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
     }
@@ -227,6 +227,82 @@ public sealed class LauncherTests
         Assert.Equal(["Crash when the world map opens", "The Quickstart party is no longer drawn black.", "A linked fix"], items);
     }
 
+    /// <summary>Two pack folders in a packs folder: one of sounds, one of pictures.</summary>
+    private sealed class Packs : IDisposable
+    {
+        public Packs()
+        {
+            Directory.CreateDirectory(Sounds);
+            File.WriteAllBytes(Path.Combine(Sounds, "inn-1.ogg"), [0]);
+            Directory.CreateDirectory(Pictures);
+            File.WriteAllBytes(Path.Combine(Pictures, "COMMONSP.IMG#12.png"), [0]);
+        }
+
+        public string Root { get; } = Directory.CreateTempSubdirectory("dkpacks").FullName;
+
+        public string Sounds => Path.Combine(Root, "packs", "a-sounds");
+
+        public string Pictures => Path.Combine(Root, "packs", "b-pictures");
+
+        public IReadOnlyList<string> Find(string? gameFolder) => [Sounds, Pictures];
+
+        public void Dispose() => Directory.Delete(Root, recursive: true);
+    }
+
+    // from Play: Discord, the game folder, Change, window, fullscreen, HD pack, sound card, ROMs, then the audio pack (no sound test)
+    private static readonly LauncherInput[] ToAudioPack = [Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab];
+
+    [Fact]
+    public void ThePackRowsGoThroughNoneAndThePacksFoundAndTheSettingsKeepThem()
+    {
+        using var packs = new Packs();
+        var context = Context() with { FindPacks = packs.Find };
+        var sound = Run(context, [.. ToAudioPack, Right]);
+        Assert.Equal(packs.Sounds.Replace('\\', '/'), (string)sound.Changes["sound.audioPack"]!);
+        Assert.Equal(packs.Sounds, sound.Settings.AudioPack);
+        Assert.False(sound.Changes.ContainsKey("display.hdPack"));
+
+        // the picture pack row offers only the folder with pictures
+        var picture = Run(context, Tab, Tab, Tab, Tab, Tab, Tab, Right);
+        Assert.Equal(packs.Pictures.Replace('\\', '/'), (string)picture.Changes["display.hdPack"]!);
+
+        // the settings' pack comes back unchanged; None turns it off
+        var kept = Context(new GameSettings { GameFolder = Game, AudioPack = packs.Sounds }) with { FindPacks = packs.Find };
+        var unchanged = Run(kept);
+        Assert.Empty(unchanged.Changes);
+        Assert.Equal(packs.Sounds, unchanged.Settings.AudioPack);
+        var off = Run(kept, [.. ToAudioPack, new KeyPressed(LauncherKey.Left)]);
+        Assert.Equal("", (string)off.Changes["sound.audioPack"]!);
+        Assert.Null(off.Settings.AudioPack);
+    }
+
+    [Fact]
+    public void APackIsPickedOrDroppedByWhatItHolds()
+    {
+        using var packs = new Packs();
+        var picked = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = _ => packs.Sounds };
+        Assert.Equal(packs.Sounds, new Launcher().Run(Context(), picked).Settings.AudioPack);
+        var wrong = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = _ => packs.Pictures };
+        Assert.Empty(new Launcher().Run(Context(), wrong).Changes);
+
+        var dropped = Run(Context(), new PathDropped(packs.Pictures), new PathDropped(packs.Sounds));
+        Assert.Equal(packs.Pictures, dropped.Settings.HdPack);
+        Assert.Equal(packs.Sounds, dropped.Settings.AudioPack);
+
+        // a pack fixed by the command line is not changed
+        var fixedKeys = new Dictionary<string, string> { ["sound.audioPack"] = "--audio-pack" };
+        Assert.Empty(Run(Context(fixedKeys: fixedKeys), new PathDropped(packs.Sounds)).Changes);
+    }
+
+    [Fact]
+    public void TheGuideLinkOpensTheGuide()
+    {
+        var links = new List<string>();
+        // Play, Discord, then the guide
+        Run(Context(links: links) with { PackGuide = "https://example.org/PACKS.md" }, Tab, Tab, Enter);
+        Assert.Equal(["https://example.org/PACKS.md"], links);
+    }
+
     /// <summary>DARKLANDS_LAUNCHER_SHOTS=folder: writes the screen at a few sizes and states, to look at.</summary>
     [Fact]
     public void Screenshots()
@@ -243,6 +319,9 @@ public sealed class LauncherTests
             PngCodec.Write(new RgbaImage(width, height, surface.Frames[^1]), Path.Combine(folder, name + ".png"));
         }
         Shot("asked-1440x800", Context(tests: []), 1440, 800, [.. ToWindow, Escape]);
+        Shot("packs-1080x600", Context(tests: [], settings: new GameSettings { GameFolder = Game, AudioPack = Path.GetTempPath(), HdPack = @"C:\Packs\hd" })
+            with { PackGuide = "https://example.org/PACKS.md", DescribePack = _ => new PackStatus(0, 3, null) }, 1080, 600, [.. ToAudioPack, Tab, Tab, Escape]);
+        Shot("roms-help-1080x600", Context(tests: []) with { PackGuide = "https://example.org/PACKS.md" }, 1080, 600, [.. ToAudioPack, Escape]);
         Shot("notfound-1080x600", Nothing(), 1080, 600, Escape);
         Shot("typing-720x400", Context(), 720, 400, Tab, Tab, Enter, new TextTyped(@"Q:\Games"));
         Shot("wide-1920x1080", Context(), 1920, 1080, Escape);
