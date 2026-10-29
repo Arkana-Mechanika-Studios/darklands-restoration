@@ -122,6 +122,14 @@ empty `MT32_ROMS` folder beside it, in `artifacts/win-x64`; no .NET installation
 dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=win-x64
 ```
 
+A release for Linux x64 (also the Steam Deck: desktop mode and Steam as a non-Steam game; keyboard and mouse as on Windows) is built the same way, with `libmt32emu.so` beside the program (`artifacts/linux-x64`):
+
+```
+dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=linux-x64
+```
+
+SDL2 is not shipped on Linux: the program uses the system's `libSDL2-2.0.so.0` (Debian/Ubuntu `libsdl2-2.0-0`, already on SteamOS), or a copy placed beside the program. Pack it with `tar` so `DarklandsRP` stays executable (or `chmod +x DarklandsRP`). Without a game folder named, the program looks in Steam's libraries (including the Deck's SD card), Heroic's installed games, the usual GOG/Lutris folders and Wine prefixes (`~/.wine`, `WINEPREFIX`, Lutris, Heroic, Bottles, Proton) before asking. The workflow `.github/workflows/build.yml` builds, tests and publishes both systems.
+
 The launcher shows the release notes: write `releases/<version>/release-notes.md` (beside the repository) before
 publishing, and the build puts it next to the program as `RELEASE_NOTES.md`; without it the launcher only links to the
 release's page, `releases/tag/v<version>` on GitHub, so tag each release `v<version>`.
