@@ -140,3 +140,18 @@ driver command, so a tune an event starts (or fails to start) is a difference li
   `sound_compare` compares both per segment between the script's state steps (`report.json` "sound", a `sound:` line); a recording made before the
   patch has no `sound log on` line and is reported as not recorded. The original's start-up `sound_play(7)` (R000+0x052A, after the driver is
   loaded) is left out: the C# host plays it when its sound device is made.
+
+## Pictures of the original: `vis10.py`
+
+The lockstep machine stubs every graphics-driver slot, so it draws nothing. `vis10.py` runs a session with a subclass of `orig_side.Session`
+(its own file, so no recording's key changes and no recording is replaced: it runs live into its own recordings folder) that loads the game's
+own MGRAPHIC.EXE through the game's loader (root 047C:07CE, with DOS function 4B03h implemented here) and installer (root 047C:08C8), leaves
+those slots un-stubbed (misc.exe's keys and mouse, the sound driver and the key reads stay stubbed), tracks the VGA colour registers (ports
+3C7/3C8/3C9, INT 10h AH=10h, read-back included, since the driver's fades read the colours they start from) and reads the 320x200 mode-13h
+screen at A000:0000 at a script step. A script is an ordinary session script with `shot:<name>` (both sides save the screen at that step),
+`series:<name>,<n>,<ms>` or `<name>,<n>,p<k>` (before a key / click: n frames every ms milliseconds or k battle passes) and, for the original
+only, `shotsave:<name>` (the screen at the next file the game creates: a box shown while a save is written). `state:` steps must not be used:
+the state capture's copy and restore breaks the machine that has the driver loaded. Files are written as 64000 palette indices followed by
+the 256 colours (the C# host's `.idx` format); `vis10.py compose` makes the side-by-side PNG / GIF (3x, labelled), `vis10.py jobs` runs
+`vis10-sessions/jobs.txt`, `vis10.py index notes.json` writes an index page. The original runs far slower than a real PC, so its times in
+a GIF are not real times, and the C# host's frames are paired with it by pump or by battle pass, to about two of them.

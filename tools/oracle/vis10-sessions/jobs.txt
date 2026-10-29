@@ -1,0 +1,11 @@
+# id | steps | saved game (searched in the game's SAVES, scratch/vis10/saves, code/local/oracle-saves; - none) | shot or series = result name, ...
+D-751050|D-751050-load-no.steps|DKSAVE0.SAV|pressed=D-751050-load-screen-after-quit-no-then-D,afterno=D-751050-load-screen-after-quit-no
+D-b0c9a6|D-b0c9a6-chargen-row.steps|-|added=D-b0c9a6-new-member-row,heraldry=D-b0c9a6-new-member-row-after-H
+D-af566f|D-af566f-barter-palette.steps|DKSAVE0.SAV|barter1=D-af566f-barter-after-sheet,sheet=D-af566f-barter-sheet-open
+D-5de66d|D-5de66d-card-first-text.steps|DKSAVE0.SAV|card+idle1=D-5de66d-card-first-text
+D-ecc6f5|D-ecc6f5-sneaking.steps|DKSAVE0-card5f.sav|idle=D-ecc6f5-sneaking-card,moved2=D-ecc6f5-sneaking-card-after-pointer-moves
+D-d4f515|D-d4f515-citywalls.steps|DKSAVE0-card73.sav|idle=D-d4f515-before-the-city-walls,moved2=D-d4f515-before-the-city-walls-after-pointer-moves
+D-99119d|D-99119d-emptycell.steps|DKSAVE0-card16b.sav|idle=D-99119d-empty-prison-cell,after=D-99119d-empty-prison-cell-after-key
+D-b797f7|D-b797f7-save-in-battle.steps|DKSAVE99.SAV|saving=D-b797f7-saving-game-box-in-battle,comment=D-b797f7-save-comment-dialog-in-battle
+D-56a675|D-56a675-loot-palette.steps|DKSAVE0.SAV|loot1=D-56a675-loot-screen-after-D
+D-09fbc1|D-09fbc1-battle-cloud.steps|DKSAVE0.SAV|cloud=D-09fbc1-battle-cloud
