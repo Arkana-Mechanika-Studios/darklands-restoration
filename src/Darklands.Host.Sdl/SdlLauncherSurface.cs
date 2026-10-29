@@ -6,6 +6,7 @@ namespace Darklands.Host.Sdl;
 internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
 {
     private readonly SdlHost _host;
+    private readonly TypedKeys _typing = new();
     private IntPtr _texture;
     private (int Width, int Height) _textureSize;
 
@@ -28,7 +29,6 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
 
     public (int Width, int Height)? DisplaySize => _host.UsableScreen();
 
-    /// <summary>Windows' folder dialog; null elsewhere until the move to SDL3, whose dialog serves every system.</summary>
     /// <summary>Wakes <see cref="Wait"/> (from any thread): the launcher draws again.</summary>
     public static void Wake()
     {
@@ -36,10 +36,20 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
         SdlNative.SDL_PushEvent(ref e);
     }
 
+    /// <summary>Windows' folder dialog; on Linux SDL3's or a dialog program's (<see cref="LinuxDialogs"/>); null elsewhere.</summary>
     public Func<string, string?>? PickFolder
     {
         get
         {
+            if (OperatingSystem.IsLinux())
+            {
+                return title =>
+                {
+                    var folder = LinuxDialogs.PickFolder(title, PumpWhileOpen);
+                    SdlNative.SDL_FlushEvents(SdlNative.EventKeyDown, SdlNative.EventMouseWheel);
+                    return folder;
+                };
+            }
             if (!OperatingSystem.IsWindows())
             {
                 return null;
@@ -80,6 +90,21 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
         SdlNative.SDL_RenderPresent(_host.SdlRenderer);
     }
 
+    /// <summary>While a dialog is open: the window's events are handled (and dropped); false once the window is closed.</summary>
+    private static bool PumpWhileOpen()
+    {
+        while (SdlNative.SDL_PollEvent(out var e) != 0)
+        {
+            if (e.Type == SdlNative.EventQuit)
+            {
+                // kept for the launcher, which then closes
+                SdlNative.SDL_PushEvent(ref e);
+                return false;
+            }
+        }
+        return true;
+    }
+
     public IReadOnlyList<LauncherInput> Wait()
     {
         var inputs = new List<LauncherInput>();
@@ -89,7 +114,7 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
         }
         do
         {
-            if (ToInput(e) is { } input)
+            foreach (var input in _typing.Take(e, ToInput(e)))
             {
                 inputs.Add(input);
             }
@@ -101,6 +126,7 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
 
     public void TextInput(bool on)
     {
+        _typing.On = on;
         if (on)
         {
             SdlNative.SDL_StartTextInput();
@@ -149,6 +175,7 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
                     SdlNative.KeyHome => LauncherKey.Home,
                     SdlNative.KeyEnd => LauncherKey.End,
                     SdlNative.KeyV when control => LauncherKey.Paste,
+                    SdlNative.KeyInsert when shift => LauncherKey.Paste,
                     _ => null,
                 };
                 return key is { } k ? new KeyPressed(k, shift, control) : null;

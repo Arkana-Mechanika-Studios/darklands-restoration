@@ -46,6 +46,8 @@ public enum LauncherReason
 /// program or the game); null: none offered (a pack is still dropped or browsed for).</param>
 /// <param name="DescribePack">A folder → what it holds as a picture or sound pack (null: the launcher only counts its files).</param>
 /// <param name="PackGuide">The guide for pack makers (a link or a file), opened by "How to make a pack"; null: no link.</param>
+/// <param name="GivenGameFolder">The game folder the command line or the environment names (it overrides the settings file's), or
+/// null: the launcher shows it instead of the file's.</param>
 public sealed record LauncherContext(
     GameSettings Settings,
     IReadOnlyDictionary<string, string> FixedKeys,
@@ -61,7 +63,8 @@ public sealed record LauncherContext(
     string? ReleaseNotesLink = null,
     Func<string?, IReadOnlyList<string>>? FindPacks = null,
     Func<string, PackStatus>? DescribePack = null,
-    string? PackGuide = null);
+    string? PackGuide = null,
+    string? GivenGameFolder = null);
 
 /// <summary>A folder as a pack: how many pictures and sounds it replaces, and what could not be read (a broken manifest ...).</summary>
 public sealed record PackStatus(int Pictures, int Sounds, string? Problem)
@@ -147,7 +150,10 @@ public interface ILauncherSurface
     /// <summary>The clipboard's text, or null.</summary>
     string? Clipboard();
 
-    /// <summary>Asks the system for a folder (its own dialog); null when cancelled or not available.</summary>
+    /// <summary>
+    /// Asks the system for a folder (its own dialog); null when not available. The function returns null when the player
+    /// cancelled, and throws <see cref="NotSupportedException"/> (its message says why) when no dialog could be shown.
+    /// </summary>
     Func<string, string?>? PickFolder { get; }
 }
 

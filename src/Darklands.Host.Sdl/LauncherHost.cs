@@ -37,15 +37,17 @@ internal static class LauncherHost
 
     /// <summary>
     /// Shows the launcher; saves the changes into <paramref name="settingsPath"/> (its template is written when the file is
-    /// missing). Returns the settings to play with, or null when the player left.
+    /// missing). Returns the settings to play with, or null when the player left; <paramref name="saved"/>: changes were saved.
     /// </summary>
     public static GameSettings? Run(SdlHost host, LauncherReason reason, string? problem, GameSettings settings,
-        CommandLineOptions cli, string? settingsPath, string version)
+        CommandLineOptions cli, string? settingsPath, string version, out bool saved)
     {
         using var soundTest = new SoundTest(cli.GameCommandLine ?? settings.CommandLine ?? [], SdlLauncherSurface.Wake);
+        var (given, fixedKeys) = GivenGameFolder(cli, Environment.GetEnvironmentVariable,
+            folder => GameFolderSearch.GameFolderIn(folder, GameFiles.IsGameFolder) is not null);
         var context = new LauncherContext(
             settings,
-            cli.Overrides(Environment.GetEnvironmentVariable),
+            fixedKeys,
             version,
             reason,
             problem,
@@ -58,14 +60,33 @@ internal static class LauncherHost
             ReleasesPage + "/tag/v" + version,
             PackFolders,
             DescribePack,
-            PackGuide);
+            PackGuide,
+            given);
         LauncherResult result;
         using (var surface = new SdlLauncherSurface(host))
         {
             result = new Launcher.Launcher().Run(context, surface);
         }
         Save(settingsPath, result);
+        saved = result.Changes.Count > 0;
         return result.Choice == LauncherChoice.Play ? result.Settings : null;
+    }
+
+    /// <summary>
+    /// The game folder the command line (else DARKLANDS_DIR) names, and the settings the launcher cannot change. A named folder
+    /// that holds no game is not fixed: the player chooses another on the launcher (else the launcher could never start the game).
+    /// </summary>
+    internal static (string? Given, IReadOnlyDictionary<string, string> FixedKeys) GivenGameFolder(CommandLineOptions cli,
+        Func<string, string?> environment, Func<string, bool> holdsGame)
+    {
+        var fixedKeys = new Dictionary<string, string>(cli.Overrides(environment), StringComparer.Ordinal);
+        var given = !string.IsNullOrWhiteSpace(cli.GameFolder) ? cli.GameFolder
+            : environment("DARKLANDS_DIR") is { } dir && !string.IsNullOrWhiteSpace(dir) ? dir : null;
+        if (given is not null && !holdsGame(given))
+        {
+            fixedKeys.Remove("gameFolder");
+        }
+        return (given, fixedKeys);
     }
 
     private static void Save(string? settingsPath, LauncherResult result)

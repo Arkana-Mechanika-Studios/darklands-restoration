@@ -126,7 +126,8 @@ public static partial class GameFolderSearch
         }
 
         // the usual folders of a copy kept by hand, and of external disks
-        foreach (var usual in new[] { Path.Combine(home, "Darklands"), Path.Combine(home, "DARKLAND"), "/opt/Darklands", "/opt/darklands" })
+        foreach (var usual in new[] { Path.Combine(home, "Darklands"), Path.Combine(home, "DARKLAND"), Path.Combine(home, "Games", "DARKLAND"),
+            Path.Combine(home, "games", "Darklands"), Path.Combine(home, "games", "DARKLAND"), "/opt/Darklands", "/opt/darklands" })
         {
             yield return (usual, "a usual folder");
         }
