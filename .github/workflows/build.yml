@@ -1,0 +1,68 @@
+name: build
+
+# Builds and tests Darklands on Windows and Linux and publishes the player's program for both
+# (win-x64 and linux-x64, self-contained). The tests that need the original game files find none on a
+# runner (no DARKLANDS_DIR, no local/paths.json) and pass without checking anything, as on any machine
+# without the game; the full check against the original runs on the developer's machine.
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: windows-x64
+            os: windows-latest
+            rid: win-x64
+          - name: linux-x64
+            os: ubuntu-latest
+            rid: linux-x64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: SDL2 (Linux; the program loads the system's libSDL2-2.0.so.0)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-2.0-0
+
+      - name: Build
+        run: dotnet build Darklands.slnx -c Release
+
+      - name: Test
+        run: dotnet test Darklands.slnx -c Release --no-build
+
+      - name: Publish ${{ matrix.rid }}
+        run: dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=${{ matrix.rid }}
+
+      # tar keeps DarklandsRP executable on Linux; a zip is the usual form on Windows
+      - name: Pack (Linux)
+        if: runner.os == 'Linux'
+        run: tar -czf DarklandsRP-${{ matrix.rid }}.tar.gz -C artifacts/${{ matrix.rid }} .
+
+      - name: Pack (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path artifacts/${{ matrix.rid }}/* -DestinationPath DarklandsRP-${{ matrix.rid }}.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DarklandsRP-${{ matrix.rid }}
+          path: |
+            DarklandsRP-${{ matrix.rid }}.tar.gz
+            DarklandsRP-${{ matrix.rid }}.zip
+          if-no-files-found: error

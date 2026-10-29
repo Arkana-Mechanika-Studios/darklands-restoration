@@ -29,7 +29,22 @@ public static partial class GameFolderSearch
             return folder;
         }
         var sub = Path.Combine(folder, "DARKLAND");
-        return isGameFolder(sub) ? sub : null;
+        if (isGameFolder(sub))
+        {
+            return sub;
+        }
+        // a case-sensitive file system (Linux): the subfolder may be spelled darkland
+        if (Directory.Exists(folder))
+        {
+            foreach (var dir in Directory.EnumerateDirectories(folder))
+            {
+                if (string.Equals(Path.GetFileName(dir), "DARKLAND", StringComparison.OrdinalIgnoreCase) && isGameFolder(dir))
+                {
+                    return dir;
+                }
+            }
+        }
+        return null;
     }
 
     /// <summary>The first candidate that holds the game (itself or its DARKLAND subfolder), with where it came from; null when none does.</summary>
@@ -74,6 +89,14 @@ public static partial class GameFolderSearch
             {
                 yield return (installed, "Windows' installed programs");
             }
+        }
+        if (OperatingSystem.IsLinux())
+        {
+            foreach (var candidate in LinuxCandidates(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), Environment.GetEnvironmentVariable))
+            {
+                yield return candidate;
+            }
+            yield break;
         }
         foreach (var usual in UsualFolders())
         {

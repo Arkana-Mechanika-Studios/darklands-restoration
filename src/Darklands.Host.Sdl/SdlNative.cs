@@ -155,7 +155,11 @@ internal static class SdlNative
 
         yield return Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
         yield return "SDL2.dll";
+        // Linux (SteamOS included): a copy beside the program first, then the system's (the runtime tries ld.so's paths for a bare name)
+        yield return Path.Combine(AppContext.BaseDirectory, "libSDL2-2.0.so.0");
         yield return "libSDL2-2.0.so.0";
+        yield return "libSDL2-2.0.so";
+        yield return "libSDL2.so";
         yield return "libSDL2.dylib";
     }
 
