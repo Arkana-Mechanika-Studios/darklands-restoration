@@ -21,6 +21,9 @@ using Darklands.Rendering;
 //   seed:<n>                     the game's random seed
 //   clock:<n>,<n>,...            the clock's seeds in turn instead (srand((unsigned)time(0)) at the start and wherever the game
 //                                reseeds: tools/oracle/lockstep.py gives the original's); the last one stays
+//   ticks:<n>,<n>,...            the BIOS tick words the start screen's C and Q keys read as the party seed (0040:006C), in turn, the
+//                                last one staying (tools/oracle/lockstep.py gives the word the original's saved game holds); without
+//                                the step the first clock seed's low word
 //   hdpack:<folder>              replacement graphics (an HD pack, docs/SETTINGS.md display.hdPack; also from --settings): each
 //                                shot also saves <name>.hd.png, the frame with the replacements at hdscale:<n> (default 4) x 320x200
 //
@@ -117,6 +120,17 @@ if (clockStep is not null)
         clockSeeds.Enqueue(uint.Parse(v, System.Globalization.CultureInfo.InvariantCulture));
     }
     seed = clockSeeds.Peek();
+}
+// ticks:<n>,<n>,... - the BIOS tick words the party seed is taken from (the last stays).
+var ticksStep = steps.FirstOrDefault(s => s.StartsWith("ticks:", StringComparison.Ordinal));
+var partyTicks = new Queue<ushort>();
+if (ticksStep is not null)
+{
+    steps.Remove(ticksStep);
+    foreach (var v in ticksStep[6..].Split(','))
+    {
+        partyTicks.Enqueue(ushort.Parse(v, System.Globalization.CultureInfo.InvariantCulture));
+    }
 }
 uint NextSeed()
 {
@@ -329,6 +343,7 @@ OverlandScreen.PassHook = host.MapPass;
 var game = new DarklandsGame(host, OpenGame())
 {
     Seed = clockStep is null ? () => seed : NextSeed,
+    PartyTicks = () => partyTicks.Count > 1 ? partyTicks.Dequeue() : partyTicks.Count == 1 ? partyTicks.Peek() : (ushort)seed,
     PlayOpening = steps.Remove("intro") || fileSettings.Intro == true,
     ShowStartUp = steps.Remove("banner") || fileSettings.Banner == true,
     CommandLine = commandLine,

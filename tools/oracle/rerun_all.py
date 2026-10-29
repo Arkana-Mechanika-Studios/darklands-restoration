@@ -41,7 +41,7 @@ LOCAL = Path(os.environ.get("DARKLANDS_LOCAL", REPO / "local"))     # the git-ig
 SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence": "DKSAVE0.SAV", "save-load": "DKSAVE0.SAV",
             "gate-battle": "DKSAVE0.SAV", "shop": "DKSAVE0.SAV", "cache": "Dksave10.sav", "cache-revisit": "Dksave10.sav", "saints": "Dksave10.sav",
             "stay": "Dksave10.sav", "sheet": "Dksave10.sav", "wildcamp": "DKSAVE17.SAV", "alchemy": "Dksave10.sav",
-            "inventory": "Dksave10.sav", "chargen-party": None, "notices": "DKSAVE0.SAV", "university": "DKSAVE0.SAV",
+            "inventory": "Dksave10.sav", "chargen-party": None, "chargen-created": None, "notices": "DKSAVE0.SAV", "university": "DKSAVE0.SAV",
             "smiths": "DKSAVE0.SAV", "healer": "DKSAVE0.SAV", "churches": "DKSAVE0.SAV", "wharves": "DKSAVE0.SAV",
             "university-shop": "DKSAVE0.SAV",
             "stables": "DKSAVE0.SAV", "pawnshop": "DKSAVE0.SAV", "foreigntrader": "DKSAVE0.SAV", "banks": "DKSAVE0.SAV",

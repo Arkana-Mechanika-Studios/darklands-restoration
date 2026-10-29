@@ -64,6 +64,7 @@ public sealed class CharacterCreationScreen
     private readonly GameUi _ui;
     private readonly WorldData _world;
     private readonly Func<uint> _seed;
+    private readonly Func<ushort>? _partyTicks;
     private readonly CreationData _data;
     private readonly PartyPanel _panel;
     private readonly Canvas _back = new(new Screen());
@@ -75,12 +76,14 @@ public sealed class CharacterCreationScreen
     /// <summary>The game's leader variable: the menu never writes it, the sheet's Leader box does.</summary>
     private int _leader;
 
-    /// <param name="seed">The clock the original reads: the party seed and city at the click, names and reseeds after.</param>
-    public CharacterCreationScreen(GameUi ui, WorldData world, Func<uint> seed)
+    /// <param name="seed">The clock the original reads: the city at the click, names and reseeds after.</param>
+    /// <param name="partyTicks">The BIOS tick word read at the click: the party seed (none: the clock's low word).</param>
+    public CharacterCreationScreen(GameUi ui, WorldData world, Func<uint> seed, Func<ushort>? partyTicks = null)
     {
         _ui = ui;
         _world = world;
         _seed = seed;
+        _partyTicks = partyTicks;
         _data = CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE"));
         _panel = new PartyPanel(ui.Assets);
         _images = FigureImages(ui.Assets.Files);
@@ -138,7 +141,9 @@ public sealed class CharacterCreationScreen
     public GameState? Run()
     {
         // orig: R037+0x9DB2 case 'C': party_seed = BIOS ticks; the city was drawn at start-up (root 03A1) from the same clock
+        // orig: party_seed (DS:9C4A) is the BIOS tick word at the click (R037+0x9FD9), not time(0)'s: names are drawn from it (random_name) and the saved game holds it
         var seed = _seed();
+        var partySeed = _partyTicks?.Invoke() ?? NewGame.PartySeed(seed);
         var random = new MscRandom(seed);
         var startUpCity = random.Below(NewGame.StartingCities);
         // orig: R037+0x0000: thunk 09C0:18F1(0x14) (music), R037+0x4562, load_saved_game("default"), party[k][0] = 0
@@ -150,10 +155,10 @@ public sealed class CharacterCreationScreen
         {
             Shared.Image = 0;
         }
-        var (readyMade, slotImages) = ReadyMade(NewGame.PartySeed(seed));
+        var (readyMade, slotImages) = ReadyMade(partySeed);
         _sheetState = SheetState(random, startUpCity);
         _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages, _sheetState.Item);
-        var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, NewGame.PartySeed(seed), _seed);
+        var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, partySeed, _seed);
         DrawAll();
         while (true)
         {
@@ -186,6 +191,8 @@ public sealed class CharacterCreationScreen
                         creation.RecordBufferWord = s_recordBuffer;
                         if (new CharacterGeneratorScreen(_ui, _data, _world, creation).Run() is { } made)
                         {
+                            // orig: R037+0x38AA stores DS:907E (cur_loc, the start-up city here: the load of "default" leaves it) in the record's first word before writing it
+                            made.RosterLocation = startUpCity;
                             _roster.Add(made);
                         }
                     });
@@ -218,7 +225,7 @@ public sealed class CharacterCreationScreen
                     DrawList();
                     break;
                 case 'b' when _roster.Characters.Count > 0:
-                    if (_roster.ToParty(NewGame.PartySeed(seed), _leader) is { } party)
+                    if (_roster.ToParty(partySeed, _leader) is { } party)
                     {
                         PressDown('b');
                         var game = NewParty.Create(_world, seed, party, random, _seed);

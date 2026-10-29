@@ -352,6 +352,22 @@ public sealed class ScreenInputTests
         Assert.Equal(1, game.Party.LeaderIndex);
     }
 
+    // orig: R037+0x9DB2 case C: party_seed (DS:9C4A) = the BIOS tick word at 0040:006C, not time(0); the party "Begin the Adventure" starts holds it
+    // (lockstep chargen-created: the original's saved game +0x64 = 0x0B5A where the clock's seed was 7622)
+    [Fact]
+    public void TheCreatedPartysSeedIsTheBiosTickWordNotTheClocksSeed()
+    {
+        (int, MouseState)[] frames = [Up(5, 5), Key(Keys.ForCharacter('a')), Up(5, 5), Key(Keys.ForCharacter('b')), Up(5, 5)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, world))
+        {
+            return;
+        }
+        var game = new CharacterCreationScreen(ui, world, () => 7622, () => 0x0B5A).Run();
+        Assert.NotNull(game);
+        Assert.Equal(0x0B5A, game.Party.Seed);
+    }
+
     // orig: R037+0x7F06 (the formulae box) waits for a key or the button; a press closes it and stays down, so R037+0x4664's loop takes it
     // as a click: here on the list's first row ("Begin childhood"), which leaves the first step
     [Fact]

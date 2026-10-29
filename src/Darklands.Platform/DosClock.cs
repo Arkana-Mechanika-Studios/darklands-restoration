@@ -12,6 +12,13 @@ public static class DosClock
     /// <summary>The BIOS ticks in <paramref name="milliseconds"/> of real time (1193182 / 65536 a second).</summary>
     public static long BiosTicks(long milliseconds) => milliseconds * 1_193_182 / 65_536_000;
 
+    /// <summary>
+    /// The BIOS tick count's low word (0040:006C) at <paramref name="timeOfDay"/>: the count runs from midnight (the BIOS sets it from the
+    /// real-time clock at start-up and wraps it at 0x1800B0 a day), 1193182 / 65536 a second.
+    /// </summary>
+    // orig: R037+0x9DB2 cases 0x2E43 / 0x2E63 (C) and 0x1051 / 0x1071 (Q): party_seed (DS:9C4A) = the word at 0040:006C, read when the key is taken
+    public static ushort TickWordOfDay(TimeSpan timeOfDay) => (ushort)BiosTicks((long)timeOfDay.TotalMilliseconds);
+
     /// <summary>clock() after <paramref name="milliseconds"/> of real time: ten times DOS's hundredths of a second at the last BIOS tick.</summary>
     public static long Milliseconds(long milliseconds) => BiosTicks(milliseconds) * 6_553_600 / 1_193_180 * 10;
 
