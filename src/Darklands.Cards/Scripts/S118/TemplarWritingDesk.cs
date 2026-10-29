@@ -121,7 +121,7 @@ public sealed class TemplarWritingDesk : Card
     // orig: R118+0x23FA (1A2B:04CA) matched; tests: CardSmokeTests
     private static void CallOnASaint(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

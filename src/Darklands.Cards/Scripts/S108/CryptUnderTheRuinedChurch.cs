@@ -47,6 +47,9 @@ public sealed class CryptUnderTheRuinedChurch : Card
         menu[2] = c.ItemsUsable();
         menu[0] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
+        // C: item_fn slot 0 is the potion handler R108+0x0CDE, slots 1..3 bare retf (R108+0x0D30/0D32/0D34): Enter in the item box rates
+        // C: line 2 with slot 2's and line 5 with slot 1's.
+        menu.ItemBox = () => c.MenuSlot == 0 ? PotionHint(c, menu) : c.EmptyBoxHandler();
 
         return menu.Run(
             // orig: R108+0x04A8 (line 0); hint R108+0x054A (1838:054A) matched
@@ -73,12 +76,13 @@ public sealed class CryptUnderTheRuinedChurch : Card
     /// <summary>The potion's chance: its quality plus 10 and Artifice outside, (quality + 5) × 2 inside.</summary>
     // orig: R108+0x0CDE (1838:0CDE) matched
     // C: `r.a + 5 << 1` is (a + 5) * 2 (the shift binds looser).
-    // C: slots 1..3 have empty pop-up handlers (AX/DX); the card has only one potion, so they never show.
+    // C: slots 1..3 have bare retf handlers: the card lists one potion, so a click or a Shift hint never reaches them, but Enter does (see Run).
+    // C: The handler reads the entry's potion (menu_slot).
     private static OptionHint PotionHint(CardContext c, CardMenu menu)
     {
         var m = c.MenuMember;
         c.Variables.Chosen[0] = m;
-        var chance = c.ItemQuality(m, c.CardItems[c.MenuSlot]);
+        var chance = c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]);
         chance = menu.Block != 0 ? (chance + 5) * 2 : chance + c.Skill(m, (int)Skill.Artifice) + 10;
         return OptionHint.ChanceOf(chance, m);
     }
@@ -103,7 +107,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
     private void PrayForInsight(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
@@ -184,7 +188,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
     private static void AskASaintToPurify(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         var answer = c.InvokeSaint(c.MenuMember, saint);
         if (answer == -1)
         {

@@ -246,7 +246,7 @@ public sealed class ArrivalByBoat : Card
     // orig: R066+0x2786 (hint R066+0x285E)
     private void Pray(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

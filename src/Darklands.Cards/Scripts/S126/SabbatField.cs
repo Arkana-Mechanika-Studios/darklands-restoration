@@ -124,7 +124,7 @@ public sealed class SabbatField : Card
     private void PrayInASecludedSpot(CardContext c)
     {
         // C: menu_member / menu_slot are the globals the pop-up box set last (stale when chosen from the line itself).
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

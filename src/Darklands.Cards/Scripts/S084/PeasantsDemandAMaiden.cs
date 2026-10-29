@@ -237,7 +237,7 @@ public sealed class PeasantsDemandAMaiden : Card
     // orig: R084+0x123A (18DB:080A) matched; R084+0x1334 (18DB:0904) matched; tests: CardSmokeTests
     private static void CallASaint(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

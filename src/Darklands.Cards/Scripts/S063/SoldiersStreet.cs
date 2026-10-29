@@ -25,6 +25,9 @@ public sealed class SoldiersStreet : Card
         c.SetCardItems(0x5F, 0x60, 0x65, 0x61);
         c.SetCardSaints(0, 0x59, 0x61, 0x80);
         var menu = Menu(c, 0);
+        // C: text line 5 opens the item box: a choice there is rated by the item handlers (R063+0x13A2..: $ChosenOneName = the member,
+        // C: "Success is assured." beside the member), then line 5's action runs (CardMenu.ItemBox).
+        menu.ItemBox = () => c.MemberPopupHint();
         menu.Enable(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
         return menu.Run(

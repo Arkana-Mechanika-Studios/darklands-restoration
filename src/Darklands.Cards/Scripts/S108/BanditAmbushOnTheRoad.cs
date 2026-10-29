@@ -162,7 +162,7 @@ public sealed class BanditAmbushOnTheRoad : Card
     // C: unlike most cards the prayer does not make the member $ChosenOneName (the texts name the scout).
     private void PrayForPeacefulPassage(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

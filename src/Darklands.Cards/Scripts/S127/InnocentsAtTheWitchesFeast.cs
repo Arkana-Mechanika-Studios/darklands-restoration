@@ -52,6 +52,12 @@ public sealed class InnocentsAtTheWitchesFeast : Card
         c.Screen.Text(0);
         c.Next = Number;
         var menu = Menu(c, 1);
+        // C: the loop rates a pop-up choice with item_fn[0][menu_slot] (R127+0x1692..: $ChosenOneName = the member, "Success is
+        // C: assured."), the saint box's own handlers (R127+0x1782..: the prayer's chance beside the member) answer a Shift hint
+        // C: in the box and an Enter there.
+        menu.ItemBox = () => c.MemberPopupHint(SuccessAssured);
+        menu.SaintBox = c.SaintPopupChanceHint;
+        menu.PopupRatedByItems = true;
         menu.Enable(0, 1);
         c.SetCardItems();
         c.SetCardSaints(0x50, 0x30, 0x63);
@@ -152,7 +158,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
     private void PrayForTheInnocents(CardContext c, CardMenu menu)
     {
         // C: menu_member / menu_slot are the globals the pop-up box set last.
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

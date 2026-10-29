@@ -28,9 +28,14 @@ public abstract class Card
     /// <param name="c">The card's context.</param>
     /// <param name="block">The text block with the option lines.</param>
     /// <param name="resetsHandlers">False for a card whose reset installs no "screwed up." handlers (its unlisted lines keep the handlers an earlier card left).</param>
-    protected CardMenu Menu(CardContext c, int block = 0, bool resetsHandlers = true)
+    /// <remarks>
+    /// For a card that shows <c>card_options(options_block)</c> (OptionsBlockCards) the block is the game's
+    /// <see cref="CardContext.OptionsBlock"/>: <paramref name="block"/> is written there (the card's <c>options_block = n</c>),
+    /// null leaves what the card before left.
+    /// </remarks>
+    protected CardMenu Menu(CardContext c, int? block = 0, bool resetsHandlers = true)
     {
         var (copied, stale) = OptionFlagCopies.Of(GetType().Name);
-        return new(c, Number, block, copied, stale, resetsHandlers);
+        return new(c, Number, block, copied, stale, resetsHandlers, OptionsBlockCards.Binds(GetType().Name));
     }
 }

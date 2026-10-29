@@ -29,38 +29,31 @@ public sealed class RiverPiratesAtNight : Card
         menu[1] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
-        // C: after every choice the loop sets var_chosen1 = leader before the handler; a pop-up
-        // handler then names its own member. Each action does this first for line choices.
         // DORMANT: in text block 5 the option lines 1, 3, 4 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         // DORMANT: in text block 6 the option lines 1, 3, 4 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         // DORMANT: in text block 8 the option lines 1, 3, 4 are never offered (the switch to this block hides them); they can be offered in other blocks only.
+        // C: after each choice the loop sets $ChosenOneName to the leader, then calls the handler (a box handler may name its member), then
+        // C: the action.
+        menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
         return menu.Run(
             // orig: R114+0x19A2 (1995:03D2) matched; hint R114+0x19A8
-            new MenuLine(_ => { LeaderSpeaks(c); FightThePirates(c); }, () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => { FightThePirates(c); }, () => OptionHint.Say("Enter Combat")),
             // orig: R114+0x19E0 (line 1); hint R114+0x1A98 (1995:04C8) matched
-            new MenuLine(_ => { LeaderSpeaks(c); PrayForAid(c, menu); }, () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => { PrayForAid(c, menu); }, () => OptionHint.Say("Select a person and a saint.")),
             // orig: R114+0x1AD0 (1995:0500) matched; hint R114+0x1B2A
-            new MenuLine(_ => { LeaderSpeaks(c); c.LoseItems(Core.Characters.Who.Everybody); AtDawn(c, 3); }, () => OptionHint.Say(SuccessAssured)),
+            new MenuLine(_ => { c.LoseItems(Core.Characters.Who.Everybody); AtDawn(c, 3); }, () => OptionHint.Say(SuccessAssured)),
             // orig: R114+0x1B62 (line 3); hint R114+0x1BFC (1995:062C) matched
-            new MenuLine(p => { LeaderSpeaks(c); EscapeIntoTheDark(c, menu, p); },
+            new MenuLine(p => { EscapeIntoTheDark(c, menu, p); },
                 () => OptionHint.ChanceOf(c.PartyAverageEffectiveAgility() * 2, OptionHint.WholeParty)),
             // orig: R114+0x1C12 (line 4); hint R114+0x1CAC (1995:06DC) matched
-            new MenuLine(p => { LeaderSpeaks(c); CoverTheEscape(c, menu, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
+            new MenuLine(p => { CoverTheEscape(c, menu, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
             // DORMANT: lines 5..9 are never offered; actions R114+0x1CE4.. and hints R114+0x1CE6.. are empty
             // C: the hints return AX/DX; neutral hints are used.
-            new MenuLine(_ => LeaderSpeaks(c)),
-            new MenuLine(_ => LeaderSpeaks(c)),
-            new MenuLine(_ => LeaderSpeaks(c)),
-            new MenuLine(_ => LeaderSpeaks(c)),
-            new MenuLine(_ => LeaderSpeaks(c)));
-    }
-
-    private static void LeaderSpeaks(CardContext c)
-    {
-        if (!c.MenuPopup)
-        {
-            c.Variables.Chosen[0] = c.Leader;
-        }
+            new MenuLine(_ => { }),
+            new MenuLine(_ => { }),
+            new MenuLine(_ => { }),
+            new MenuLine(_ => { }),
+            new MenuLine(_ => { }));
     }
 
     /// <summary>The potion's chance: the party's average Agility plus its quality × 3/2, 5/3 or 7/3 by slot.</summary>
@@ -69,7 +62,7 @@ public sealed class RiverPiratesAtNight : Card
     {
         var m = c.MenuMember;
         c.Variables.Chosen[0] = m;
-        var quality = c.ItemQuality(m, c.CardItems[c.MenuSlot]);
+        var quality = c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]);
         var bonus = c.MenuSlot switch { 0 => quality * 3 / 2, 1 => quality * 5 / 3, _ => quality * 7 / 3 };
         return OptionHint.ChanceOf(c.PartyAverageEffectiveAgility() + bonus, m);
     }
@@ -97,7 +90,7 @@ public sealed class RiverPiratesAtNight : Card
     // C: this prayer does not make the praying member $ChosenOneName (the leader stays named).
     private void PrayForAid(CardContext c, CardMenu menu)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

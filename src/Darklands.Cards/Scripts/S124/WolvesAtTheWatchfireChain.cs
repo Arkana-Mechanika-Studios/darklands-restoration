@@ -99,7 +99,7 @@ public sealed class WolvesAtTheWatchfireChain : Card
     //   falls off its end after a failed one; ignored. A heard prayer from a slot outside 0..3 still goes to 322.
     private static void CallASaint(CardContext c, CardMenu menu)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

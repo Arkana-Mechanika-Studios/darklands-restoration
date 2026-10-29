@@ -99,7 +99,7 @@ public sealed class FamineHorseman : Card
     // C: returns 0 after a cancelled box (the line stays choosable), otherwise returns without a value (ignored).
     private void CallOnASaint(CardContext c, CardMenu menu)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;
@@ -122,8 +122,8 @@ public sealed class FamineHorseman : Card
     private static OptionHint SaintHint(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var low = c.SaintChanceLow(c.MenuMember, c.CardSaints[c.MenuSlot]);
-        var high = c.SaintChanceHigh(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var low = c.SaintChanceLow(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
+        var high = c.SaintChanceHigh(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         return OptionHint.Say(c.ChanceText(low, high));
     }
 

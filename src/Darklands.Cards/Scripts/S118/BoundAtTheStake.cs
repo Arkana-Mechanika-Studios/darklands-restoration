@@ -136,7 +136,7 @@ public sealed class BoundAtTheStake : Card
     // orig: R118+0x047C (1838:047C) matched; tests: CardSmokeTests
     private static void CallOnASaint(CardContext c)
     {
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         c.Variables.Chosen[0] = c.MenuMember;
         c.NameToSlot(1, saint, 0);
         var answer = c.InvokeSaint(c.MenuMember, saint);

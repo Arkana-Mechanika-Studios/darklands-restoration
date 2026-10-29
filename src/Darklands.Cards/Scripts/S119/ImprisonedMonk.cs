@@ -91,7 +91,7 @@ public sealed class ImprisonedMonk : Card
     {
         // C: menu_member / menu_slot are the globals the pop-up box set last; chosen from the option line itself the
         //   prayer uses whatever they still hold (the same here: c.MenuMember / c.MenuSlot).
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

@@ -87,7 +87,7 @@ public sealed class GargoylesAttack : Card
     // orig: R059+0x13CA (1929:04BA); -1 from the saint pop-up (cancelled) changes nothing
     private static void Pray(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

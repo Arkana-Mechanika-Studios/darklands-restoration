@@ -534,6 +534,10 @@ public sealed class CardOracleTests
             screen.PreloadTexts(texts);
         }
         var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames };
+        if (OptionsBlockStart is { } block)
+        {
+            c.OptionsBlock = block;
+        }
         c.Screens = new OracleScreens(screen.Log);
         // sound: music_play(x) is a "music x" line and then the driver's command (sound x, or sound 1 with the music off), sound_play(n)
         // a "sound n" line; the oracle's saved games hold music on (DS:01BF = 1). The presentation's wiring (DarklandsGame.Play)
@@ -655,6 +659,10 @@ public sealed class CardOracleTests
         {
             Core.Rules.TimePassage.PartyPerished -= Perished;
         }
+        if (OptionsBlockStart is not null)
+        {
+            screen.Log.Add($"options_block {c.OptionsBlock}");
+        }
         var random = state.Random is MscRandom msc ? msc.State.ToString("X8") : "?";
         (string, JsonObject)? sav = null;
         if (ok)
@@ -677,6 +685,13 @@ public sealed class CardOracleTests
     /// card_oracle.py run_direct does; run group D: the hint handlers of lines 0..9 (menu_member, menu_slot = line / 4, line % 4), the table's
     /// default ("screwed up."), the actions of lines 0..9 (each followed by the next card it set), group P: the item pop-up handlers of slots 0..3.
     /// </summary>
+    /// <summary>
+    /// DARKLANDS_CARD_ORACLE_OPTBLOCK=n (as card_oracle.py): every run starts with options_block (DS:EE53, <see cref="CardContext.OptionsBlock"/>) = n
+    /// and its trace ends with the value the card left ("options_block n").
+    /// </summary>
+    private static readonly int? OptionsBlockStart =
+        int.TryParse(Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_OPTBLOCK"), out var block) ? block : null;
+
     private static void Direct(Card card, CardContext c, OracleScreen screen, string group)
     {
         var method = card.GetType().GetMethod("DormantOptions", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic

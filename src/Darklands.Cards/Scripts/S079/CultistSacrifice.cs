@@ -56,7 +56,7 @@ public sealed class CultistSacrifice : Card
                     menu[4] = OptionState.Shown;
                 }
             }, () => NimblenessChance(c)),
-            new MenuLine(() => SlipOutAPotion(c), OptionHint.Saying(CardTexts.SelectPotion),
+            new MenuLine(chance => SlipOutAPotion(c, chance), OptionHint.Saying(CardTexts.SelectPotion),
                 () => PotionHint(c, c.MenuMember)),
             // orig: R079+0x2A08 (line 6); R079+0x2C08 (1A6E:08A8) matched; R079+0x2C92 (1A6E:0932) matched; R079+0x2D1C (1A6E:09BC) matched;
             // R079+0x2DA6 (1A6E:0A46) matched; tests: CardSmokeTests
@@ -238,10 +238,11 @@ public sealed class CultistSacrifice : Card
     }
 
     // orig: R079+0x2928 (1A6E:05C8) matched; R079+0x29D0 (1A6E:0670) matched; tests: CardSmokeTests
-    private static void SlipOutAPotion(CardContext c)
+    private static void SlipOutAPotion(CardContext c, int chance)
     {
         // C: the option line itself gives chance -1: the roll then always fails.
-        var chance = c.MenuPopup ? PotionHint(c, c.MenuMember).Chance : -1;
+        // C: the chance is the handler's the loop calls (CardMenu.Run): the option line's -1, the box's for a click there, and for Enter
+        // C: there opt_fn[k], the box's handler for slot k % 4.
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         c.Variables.Chosen[0] = c.MenuMember;
         if (c.Random(100) <= chance)
@@ -273,7 +274,7 @@ public sealed class CultistSacrifice : Card
     // orig: R079+0x2A08 (1A6E:06A8) matched; R079+0x2AC6 (1A6E:0766) matched; tests: CardSmokeTests
     private static void CallOnASaint(CardContext c)
     {
-        if (c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]) == -1)
+        if (c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]) == -1)
         {
             return;
         }

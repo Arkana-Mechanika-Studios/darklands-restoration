@@ -85,7 +85,7 @@ public sealed class EerieFountain : Card
     // orig: R119+0x0BF0 (18D0:0270) matched
     private static void PrayOverTheFountain(CardContext c)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

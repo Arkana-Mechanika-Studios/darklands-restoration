@@ -284,7 +284,7 @@ public sealed class SallyPortInTheCityWall : Card
     // C: any answer but −1 and 0 counts as the saint answering; the saint named in $NamedOneName is chosen by the pop-up slot.
     private void Pray(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

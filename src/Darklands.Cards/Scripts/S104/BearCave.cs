@@ -43,8 +43,10 @@ public sealed class BearCave : Card
         c.PartyMaxSkill((int)Skill.Stealth);
         c.Variables.Chosen[1] = c.BestMember;
 
-        // C: the registration installs the standard pop-up handlers, which name the member picked in the box.
-        menu.Popup = () => c.MemberPopupHint();
+        // C: the registration installs the standard pop-up handlers, which name the member picked in the box: the item box's say
+        // C: "Success is assured." beside the member (R104+0x0A4A..), the saint box's tell the prayer's chance for the party (R104+0x0B3A..).
+        menu.ItemBox = () => c.MemberPopupHint();
+        menu.SaintBox = c.SaintPopupHint;
         // DORMANT: in text block 17 the option lines 0..2, 4, 5 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R104+0x0318 (line 0); hint R104+0x0342 (1838:0342) matched
@@ -167,7 +169,7 @@ public sealed class BearCave : Card
     // orig: R104+0x0732 (1838:0732) matched; tests: CardSmokeTests
     private static void PrayToASaint(CardContext c)
     {
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         var answer = c.InvokeSaint(c.MenuMember, saint);
         if (answer == -1)
         {

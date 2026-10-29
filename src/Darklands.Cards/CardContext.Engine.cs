@@ -97,8 +97,88 @@ public sealed partial class CardContext
     /// <summary>The item/saint slot chosen in the pop-up (<c>menu_slot</c>).</summary>
     public int MenuSlot { get; set; }
 
+    /// <summary>
+    /// <c>menu_slot</c> as the box left it: the same as <see cref="MenuSlot"/>, except while the menu asks the box's handler for another
+    /// slot (Enter in a box rates line k with the handler for slot k % 4, <see cref="CardMenu"/>): <see cref="MenuSlot"/> then names that
+    /// handler, and a handler that reads <c>menu_slot</c> (most saint handlers and some item handlers) reads this.
+    /// </summary>
+    // orig: menu_slot DS:EE6A, set from the box's entry by card_menu R043+0x1CAE on Enter; the handler opt_fn[k] reads it as it stands
+    public int MenuEntrySlot
+    {
+        get => _menuEntrySlot ?? MenuSlot;
+        internal set => _menuEntrySlot = value;
+    }
+
+    private int? _menuEntrySlot;
+
+    /// <summary>Ends <see cref="MenuEntrySlot"/>'s difference from <see cref="MenuSlot"/> (CardMenu, after asking another slot's handler).</summary>
+    internal void ClearMenuEntrySlot() => _menuEntrySlot = null;
+
+    /// <summary>
+    /// A box handler that is a bare <c>retf</c> (installed for a slot the card lists no item or saint in): its chance is what AX holds at
+    /// the call, which mouse_hide (root 047C:12C3) leaves, and it names no member. Only Enter in a box reaches such a slot (line k rated
+    /// with the handler for slot k % 4); the box is reached with the pointer, so mouse_hide then runs the display driver's hide.
+    /// </summary>
+    // orig: e.g. R112+0x1438 / R112+0x143A / R108+0x0D30 retf; the loop: si = card_menu(..); mouse_hide(); l_a = (*opt_fn[si])() (R112+0x06ED..0x0700)
+    // DIVERGENCE (undefined-register): AX after mouse_hide with the pointer drawn is whatever the display driver's hide routine (reached through
+    // root 047C:052E) returns (with no pointer drawn it would be the line k). 0 is used, as the card oracle's mouse_hide returns.
+    public OptionHint EmptyBoxHandler() => OptionHint.ChanceOf(0, OptionHint.WholeParty);
+
     /// <summary>The choice came from the pop-up, not from an option line (<c>menu_popup</c>).</summary>
     public bool MenuPopup { get; set; }
+
+    /// <summary>
+    /// The item or saint box whose list the menu was left in (<see cref="PopupBox.None"/>: the main
+    /// lines). The screen sets it while the pointer is in a box (a Shift hint there asks the box's
+    /// handlers) and leaves it set when the choice is made there, by a click or by Enter.
+    /// </summary>
+    // orig: DS:EE42 (1 while the box's layout DS:EA64 is the menu's layout DS:E96E), with the kind of the box copied into DS:EA64 (DS:EB5A items, DS:EC50 saints) by card_mouse R043+0x239C
+    public PopupBox MenuBox { get; set; }
+
+    /// <summary>The states of the box's 20 entries (member × 4 + slot) as the box was opened (<see cref="PopupStates"/>).</summary>
+    // orig: DS:EA92 (the box layout's opt_on[20], written by R043+0x2CE2)
+    public OptionState[] MenuBoxStates { get; } = new OptionState[CardMenu.MaxLines];
+
+    /// <summary>
+    /// The states of an item (<paramref name="saints"/> false) or saint box's entries: entry
+    /// member × 4 + slot is enabled when the member has the item or knows the saint (every one while
+    /// <see cref="PopupListsAll"/>), shown greyed for the leader at Basic who lacks it and for a
+    /// known formula (not at Expert), hidden otherwise.
+    /// </summary>
+    // orig: the stores into DS:EA92 + i * 4 + j of R043+0x2CE2 (150B:2252) draft (bytes match): all 20 cleared, then for i < party_size of a status other than 0 and 5 and j with card_items/card_saints[j] != -1
+    public OptionState[] PopupStates(bool saints)
+    {
+        var states = new OptionState[CardMenu.MaxLines];
+        var list = saints ? CardSaints : CardItems;
+        var basic = State.Difficulty == Difficulty.Basic;
+        var members = State.Party.Members;
+        for (var i = 0; i < members.Count && i < 5; i++)
+        {
+            if (members[i].Status is CharacterStatus.Empty or CharacterStatus.Away)
+            {
+                continue;
+            }
+            for (var j = 0; j < 4; j++)
+            {
+                var entry = list[j];
+                if (entry == -1)
+                {
+                    continue;
+                }
+                var has = saints ? (Saints.Knows(State, i, entry) ? 1 : 0) : Inventory.Has(State, i, entry);
+                var leaderAtBasic = basic && State.Party.LeaderIndex == i;
+                if (has == 0 && !leaderAtBasic && !PopupListsAll)
+                {
+                    continue;
+                }
+                states[i * 4 + j] = leaderAtBasic && has == 0 && !PopupListsAll ? OptionState.Shown
+                    : !saints && State.Difficulty != Difficulty.Expert && has == 2 && !PopupListsAll ? OptionState.Shown
+                    : saints || has == 1 || PopupListsAll ? OptionState.Enabled
+                    : OptionState.Hidden;
+            }
+        }
+        return states;
+    }
 
     /// <summary>
     /// The pop-up boxes list every item and saint of the card for every member who can act, as if

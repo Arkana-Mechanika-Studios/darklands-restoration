@@ -105,7 +105,7 @@ public sealed class AlchemyMishap : Card
     private int SettleWithTheInnkeeper(CardContext c)
     {
         var damages = c.Variables.Money[0];
-        var menu = Menu(c);
+        var menu = Menu(c, null);
         menu.Enable(0, 1);
         menu[0] = c.State.Party.Purse < damages ? OptionState.Shown : OptionState.Enabled;
         // C: card_options(options_block) each round: the block the start-up (or an earlier card) left.

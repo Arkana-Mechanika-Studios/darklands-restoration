@@ -56,7 +56,7 @@ public sealed class KidnappersCampAtNight : Card
     private static void ImploreASaint(CardContext c)
     {
         c.Variables.Chosen[1] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

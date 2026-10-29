@@ -184,14 +184,16 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
                 }
             }
         }
+        if (BoxProbe)
+        {
+            ProbeBoxes(block);
+        }
         if (Context is { } c)
         {
             c.MenuPopup = false;
             if (probe && PopupKind(block, choice) is { } saints && PopupChoice(c, saints) is var (member, slot))
             {
-                c.MenuPopup = true;
-                c.MenuMember = member;
-                c.MenuSlot = slot;
+                BoxChoice(c, saints, member, slot);
             }
         }
         Log.Add($"choose {choice}");
@@ -220,13 +222,83 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
             c.MenuPopup = false;
             if (call.Slot is { } slot && PopupKind(block, call.Line) is { } saints)
             {
-                c.MenuPopup = true;
-                c.MenuMember = PopupMember(c, saints, slot);
-                c.MenuSlot = slot;
+                BoxChoice(c, saints, PopupMember(c, saints, slot), slot);
             }
         }
         Log.Add($"choose {call.Line}");
         return call.Line;
+    }
+
+    /// <summary>DARKLANDS_CARD_ORACLE_BOXKEY=1: a choice in a pop-up box is made with Enter (menu_popup stays 0), as card_oracle.py.</summary>
+    private static readonly bool BoxKey = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_BOXKEY") == "1";
+
+    /// <summary>DARKLANDS_CARD_ORACLE_BOXES=1: every menu asks each item/saint line's box handlers (trace lines "box &lt;line&gt; &lt;member&gt; &lt;slot&gt;"), as card_oracle.py.</summary>
+    private static readonly bool BoxProbe = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_BOXES") == "1";
+
+    private Func<int, OptionHint>? _popupHint;
+
+    public int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint)
+    {
+        _popupHint = popupHint;
+        return Choose(block, options, hint);
+    }
+
+    /// <summary>
+    /// A choice in the line's box as card_mouse leaves it (card_oracle.py box_choice): the pointer is in the box, so the menu's
+    /// layout is the box's (its handler table and its entries' states), and the entry was clicked (menu_popup 1) or, with
+    /// <see cref="BoxKey"/>, chosen with Enter.
+    /// </summary>
+    private static void BoxChoice(CardContext c, bool saints, int member, int slot)
+    {
+        c.MenuBox = saints ? PopupBox.Saints : PopupBox.Items;
+        c.PopupStates(saints).CopyTo(c.MenuBoxStates, 0);
+        c.MenuPopup = !BoxKey;
+        c.MenuMember = member;
+        c.MenuSlot = slot;
+    }
+
+    /// <summary><see cref="BoxProbe"/>: for each item/saint line of the block, its box's hint for every present member and listed slot, and $ChosenOneName after it.</summary>
+    private void ProbeBoxes(int block)
+    {
+        if (Context is not { } c || _popupHint is not { } popup)
+        {
+            return;
+        }
+        var blocks = Blocks();
+        if (block < 0 || block >= blocks.Count)
+        {
+            return;
+        }
+        var markers = blocks[block].Text.Where(b => b is 0x15 or 0x10 or 0x16 or 0x06).Take(CardMenu.MaxLines).ToList();
+        for (var k = 0; k < markers.Count; k++)
+        {
+            if (markers[k] is not (0x10 or 0x16))
+            {
+                continue;
+            }
+            var saints = markers[k] == 0x16;
+            var list = saints ? c.CardSaints : c.CardItems;
+            for (var i = 0; i < c.State.Party.Members.Count; i++)
+            {
+                if (c.State.Party.Members[i].Status is CharacterStatus.Empty or CharacterStatus.Away)
+                {
+                    continue;
+                }
+                for (var j = 0; j < 4; j++)
+                {
+                    if (list[j] == -1)
+                    {
+                        continue;
+                    }
+                    c.MenuBox = saints ? PopupBox.Saints : PopupBox.Items;
+                    c.MenuMember = i;
+                    c.MenuSlot = j;
+                    var r = popup(k);
+                    c.MenuBox = PopupBox.None;
+                    Log.Add($"box {k} {i} {j}: {Say(r)} c{c.Variables.Chosen[0]}");
+                }
+            }
+        }
     }
 
     /// <summary>The member a pop-up box gives a slot: the last who has the item / knows the saint, else the last present member.</summary>

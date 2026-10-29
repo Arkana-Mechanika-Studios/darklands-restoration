@@ -64,7 +64,7 @@ public sealed class PileOfBurnedBooks : Card
     // orig: R122+0x1838 matched
     private void PurifyTheRoom(CardContext c)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

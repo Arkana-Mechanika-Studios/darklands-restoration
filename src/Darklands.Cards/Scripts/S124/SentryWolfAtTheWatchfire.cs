@@ -105,7 +105,7 @@ public sealed class SentryWolfAtTheWatchfire : Card
     //   falls off its end after the fight; ignored.
     private static void CallASaint(CardContext c, CardMenu menu)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

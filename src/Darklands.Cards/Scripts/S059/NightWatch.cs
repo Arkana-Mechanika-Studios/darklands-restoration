@@ -146,7 +146,7 @@ public sealed class NightWatch : Card
     // orig: R059+0x076E (1838:076E); -1 from the saint pop-up (cancelled) leaves everything as it was
     private void Pray(CardContext c, CardMenu menu)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

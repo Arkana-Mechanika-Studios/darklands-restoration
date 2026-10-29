@@ -27,6 +27,9 @@ public sealed class RebelsBeforeTheCouncilHall : Card
         Show(c, Picture);
         c.Next = Number;
         var menu = Menu(c);
+        // C: the item box's handlers give the potion 100 % beside the member ($ChosenOneName unchanged); a choice there by a click
+        // C: or by Enter is rated by them (CardMenu.ItemBox), a choice of the line itself by its hint (-1).
+        menu.ItemBox = () => OptionHint.ChanceOf(100, c.MenuMember);
         menu.Enable(0, 1, 2, 4, 7);
         c.RandomName(c.City.Ordinal + 0x0C, c.LocationQuery(c.Here, 0x21) % 5 == 0 ? 1 : 0, 0);
         c.PartyMaxSkill((int)Skill.Stealth);
@@ -104,7 +107,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
             new MenuLine(chance => BreakInAtNight(c, chance, menu),
                 () => OptionHint.ChanceOf(BreakInChance(c), Who.Everybody)),
             // orig: R090+0x2B3A (1A66:085A); hint R090+0x2BDA; item hints R090+0x2DFA, R090+0x2E12 matched
-            new MenuLine(() => UseAPotion(c, c.MenuPopup ? 100 : -1), OptionHint.Saying(CardTexts.SelectPotion)),
+            new MenuLine(chance => UseAPotion(c, chance), OptionHint.Saying(CardTexts.SelectPotion)),
             // orig: R090+0x2C12 (1A66:0932); hint R090+0x2C24 matched
             // DORMANT: line 6 is always greyed out here.
             new MenuLine(() => { c.PassHours(22); c.Next = 0xBC; }, OptionHint.Saying(NoRisk)),
@@ -171,7 +174,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
             c.Variables.Chosen[0] = c.MenuMember;
         }
         c.Variables.Chosen[1] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

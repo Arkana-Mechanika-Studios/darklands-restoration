@@ -109,7 +109,7 @@ public sealed class ProveYourWorthToTheLord : Card
     // orig: R077+0x0310 (1838:0310) matched; R077+0x04AC (1838:04AC) matched; tests: CardSmokeTests
     private static void CallOnASaint(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

@@ -156,14 +156,14 @@ public sealed class BeforeTheMagistrate : Card
     // orig: R079+0x04D8 (1838:04D8) matched; R079+0x062A (1838:062A) matched; tests: CardSmokeTests
     private static void InvokeASaint(CardContext c, int picture)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
         }
         if (answer != 0)
         {
-            c.NameToSlot(1, c.CardSaints[c.MenuSlot], 0);
+            c.NameToSlot(1, c.CardSaints[c.MenuEntrySlot], 0);
             ShowPicture(c, SentencePicture);
             c.Screen.Text(2);
             c.AddAttribute(Who.Everybody, 0, -c.Random(0x14));

@@ -153,7 +153,7 @@ public sealed class SabbatFairFromTheHill : Card
     // C: an int function that falls off its end without a value (except `return 0` after a cancelled prayer); ignored.
     private static void CallASaint(CardContext c, CardMenu menu)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

@@ -39,7 +39,7 @@ public sealed class ConvincingTheCleric : Card
             new MenuLine(chance => Reason(c, chance), () => new OptionHint(100, "", 0)),
             new MenuLine(chance => Donate(c, chance), () => new OptionHint(100, "", OptionHint.WholeParty)),
             new MenuLine(_ => Threaten(c), () => new OptionHint(-1, SuccessAssured, c.Leader)),
-            new MenuLine(_ => Pray(c, ref standing), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
+            new MenuLine(_ => Pray(c, ref standing), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
             new MenuLine(_ => Leave(c), OptionHint.Saying(SuccessAssured)),
             // DORMANT: lines 6..9 (opt_flag_6..9 = 0, and the text has only six option lines): the first text,
             // time passes, back to the wilderness card. orig: R071+0x2544/05ee/0648/06a2, hints 05b2/060c/0666/06c0
@@ -146,7 +146,7 @@ public sealed class ConvincingTheCleric : Card
     private void Pray(CardContext c, ref int standing)
     {
         c.PassHours(1);
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

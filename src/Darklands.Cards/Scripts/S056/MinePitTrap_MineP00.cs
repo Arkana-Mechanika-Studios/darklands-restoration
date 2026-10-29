@@ -139,7 +139,7 @@ public sealed class MinePitTrap_MineP00 : Card
     private static OptionHint SaintHint(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         var low = c.SaintChanceLow(c.MenuMember, saint);
         return OptionHint.Say(c.ChanceText(low, c.SaintChanceHigh(c.MenuMember, saint)));
     }
@@ -148,7 +148,7 @@ public sealed class MinePitTrap_MineP00 : Card
     // orig: R056+0x02BA (1838:02BA) unmatched (checked against asm: the C returns an int without a value; the switch on menu_slot is a jump on 0..2 / 3)
     private void CallUponASaint(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

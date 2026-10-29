@@ -107,7 +107,7 @@ public sealed class SabbatAltarPreparation : Card
     private static void PrayToPurifyThePlace(CardContext c, CardMenu menu)
     {
         Add(c, Suspicion, 1);
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

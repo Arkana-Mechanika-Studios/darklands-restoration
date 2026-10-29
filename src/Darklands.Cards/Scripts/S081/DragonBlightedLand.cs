@@ -31,7 +31,7 @@ public sealed class DragonBlightedLand : Card
     {
         c.Screen.Show(MsgName, PictureNames.Of(Picture));
         c.Next = CardNumber;
-        var menu = Menu(c);
+        var menu = Menu(c, null);
         menu.Enable(0, 4);
         menu[1] = OptionState.Shown;
         // The blighted land is open country.
@@ -48,8 +48,7 @@ public sealed class DragonBlightedLand : Card
         // C: options_block (DS:EE53) is written only on the dragon's three ways in (R081+0x20B2 / 0x20E4 / 0x2114); when the ruined
         // outlaws' battle keeps the card, its menu shows the block the card before left. Direct call j_dragon.py (local/batch/evid1o):
         // R081+0x1848 with DS:EE53 = 0x2B, the blight query stubbed to 5, what = 7, run_battle stubbed to 5 -> card_options(0x2B).
-        // DIVERGENCE: options_block is held in CardContext.OptionsBlock, which only the cards that read it back write; the other
-        // cards' stores (some 350 in R044..R135, none outside the cards) are not modelled, so the retained block can differ.
+        // C: options_block is CardContext.OptionsBlock, which every card that writes it keeps (OptionsBlockCards and the cards' own stores).
         switch (what)
         {
             case 0:
@@ -143,7 +142,6 @@ public sealed class DragonBlightedLand : Card
         {
             return c.Next;
         }
-        menu.Block = c.OptionsBlock;
         return menu.Run(
             // orig: R081+0x2278 (19BC:0A38) asm; R081+0x2280 (19BC:0A40) asm; tests: CardSmokeTests
             // C: no roll: the hint's chance is shown, and the party always follows the dragon.
@@ -412,7 +410,7 @@ public sealed class DragonBlightedLand : Card
                 // DORMANT: slot 3 holds no saint: no name.
                 break;
         }
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return true;

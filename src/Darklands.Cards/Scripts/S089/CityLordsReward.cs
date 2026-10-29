@@ -41,6 +41,10 @@ public sealed class CityLordsReward : Card
         // C: DS:5204 = 1 for the menu loop (back to 0 after): the pop-ups list the formula and the saint for every member.
         c.PopupListsAll = true;
         var menu = Menu(c, 2);
+        // C: the pop-up handlers (R089+0x1162.., R089+0x1252..) name the member picked in the box: the formula box says "Success is
+        // C: assured." beside the member, the saint box tells the prayer's chance for the party.
+        menu.ItemBox = () => c.MemberPopupHint();
+        menu.SaintBox = c.SaintPopupHint;
         menu.Enable(0, 1, 2, 3, 4);
         var next = menu.Run(
             // orig: R089+0x0C9C (18CE:033C); hint R089+0x0CE6 matched
@@ -94,7 +98,7 @@ public sealed class CityLordsReward : Card
     private static void LearnTheFormula(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        LearnFormulaGroup(c, c.MenuMember, c.CardSaints[c.MenuSlot]);
+        LearnFormulaGroup(c, c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         c.Screen.Text(3);
         c.PassHours(1);
         c.Next = ToTheSquare(c);
@@ -122,7 +126,7 @@ public sealed class CityLordsReward : Card
     private static void LearnAboutTheSaint(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         // C: for saint −1 the bit is 0x80 >> −1 % 8 = 0x80 >> −1, a shift count masked to 31: no bit is set.
         if (saint >= 0)
         {

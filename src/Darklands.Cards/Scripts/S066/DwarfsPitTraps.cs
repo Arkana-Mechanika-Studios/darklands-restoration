@@ -221,7 +221,7 @@ public sealed class DwarfsPitTraps : Card
     // orig: R066+0x37B2 (hint R066+0x399A)
     private void Pray(CardContext c, CardMenu menu)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

@@ -136,8 +136,11 @@ public sealed class CardMenu
     /// <param name="copiedFlags">The lines (bit k: line k, k &lt; 10) whose state is the global <c>opt_flag_k</c>.</param>
     /// <param name="staleFlags">The copied lines the card never assigns: they keep what the card before left; the other copied flags start at 0.</param>
     /// <param name="resetsHandlers">The card's reset points all 20 handlers at its "screwed up." handler (false: its reset is empty).</param>
+    /// <param name="onOptionsBlock">The block is the game's <see cref="CardContext.OptionsBlock"/> (the card shows <c>card_options(options_block)</c>);
+    /// <paramref name="block"/> null then leaves the value the card before left (the card has not written it yet).</param>
     // C: the card function assigns every copied flag it ever assigns before its loop (OptionFlagCopies); the ports state only the non-zero ones.
-    public CardMenu(CardContext c, int stayOn, int block = 0, int copiedFlags = 0, int staleFlags = 0, bool resetsHandlers = true)
+    public CardMenu(CardContext c, int stayOn, int? block = 0, int copiedFlags = 0, int staleFlags = 0, bool resetsHandlers = true,
+        bool onOptionsBlock = false)
     {
         _c = c;
         if (resetsHandlers)
@@ -146,7 +149,11 @@ public sealed class CardMenu
         }
         _stayOn = stayOn;
         _copied = copiedFlags & 0x3FF;
-        Block = block;
+        _onOptionsBlock = onOptionsBlock;
+        if (block is { } b)
+        {
+            Block = b;
+        }
         for (var k = 0; k < 10; k++)
         {
             if (((_copied & ~staleFlags) >> k & 1) != 0)
@@ -156,8 +163,29 @@ public sealed class CardMenu
         }
     }
 
-    /// <summary>The text block with the option lines (<c>options_block</c>).</summary>
-    public int Block { get; set; }
+    private readonly bool _onOptionsBlock;
+    private int _block;
+
+    /// <summary>
+    /// The text block with the option lines: for a card that shows <c>card_options(options_block)</c> the game's
+    /// <see cref="CardContext.OptionsBlock"/> (a later card can read what this one left), else the card's own.
+    /// </summary>
+    // orig: options_block DS:EE53 (OptionsBlockCards)
+    public int Block
+    {
+        get => _onOptionsBlock ? _c.OptionsBlock : _block;
+        set
+        {
+            if (_onOptionsBlock)
+            {
+                _c.OptionsBlock = value;
+            }
+            else
+            {
+                _block = value;
+            }
+        }
+    }
 
     /// <summary>
     /// The card's loop draws its option text (<c>card_options</c>); false: it calls only
@@ -238,9 +266,35 @@ public sealed class CardMenu
     public Action? OnChoice { get; set; }
 
     /// <summary>
+    /// The item box's handler (the card's <c>item_fn</c> table): the hint of a choice in the item box,
+    /// whatever line opened it, reading <see cref="CardContext.MenuMember"/> and <see cref="CardContext.MenuSlot"/>
+    /// (a card's handler for slot j is this handler with <see cref="CardContext.MenuSlot"/> = j). None: the
+    /// pop-up hint of the line the box belongs to (<see cref="MenuLine.Popup"/>, else <see cref="Popup"/>, else its hint).
+    /// </summary>
+    // orig: item_fn DS:EC00 (5 x 4 far pointers; every card fills the five rows alike), the handler table of the item box's layout DS:EB5A (+0xA6)
+    public Func<OptionHint>? ItemBox { get; set; }
+
+    /// <summary>The saint box's handler (the card's <c>saint_fn</c> table); see <see cref="ItemBox"/>.</summary>
+    // orig: saint_fn DS:ECF6, the handler table of the saint box's layout DS:EC50 (+0xA6)
+    public Func<OptionHint>? SaintBox { get; set; }
+
+    /// <summary>
+    /// The card's loop rates a pop-up choice with the item table (<c>item_fn[0][menu_slot]</c>) whichever box
+    /// it was made in, not with the box's own table (<c>DS:EB0A[menu_slot]</c>).
+    /// </summary>
+    // orig: the loops of $Count04 (R105), $Balti01 (R111), $Witcd35 (R126+0x2C0E), $Witcd37 (R127+0x07C6), $Witcd39 (R127), $Witcd40 (R128), $MeetH02 (R132+0x034E), $DPost00 (R134); only $Witcd35, $Witcd37 and $MeetH02 have box lines
+    public bool PopupRatedByItems { get; set; }
+
+    /// <summary>
     /// Offers the lines (line k is <paramref name="lines"/>[k]) while <see cref="CardContext.Next"/>
     /// stays on the card; nothing is offered when the card has already moved on. Returns the next card.
     /// </summary>
+    // C: a box's layout (DS:EA64, copied from DS:EB5A or DS:EC50 when the box opens) holds the box's handler table at +0xA6 (DS:EB0A) and its
+    // C: entries' states at +0x2E (DS:EA92). When the pointer enters the box card_mouse copies the whole layout (0xF6 bytes) over the menu's
+    // C: (DS:E96E, R043+0x246B), whose +0xA6 is opt_fn (DS:EA14) and +0x2E opt_on (DS:E99C); a choice in the box (a click, R043+0x27A6, or Enter,
+    // C: R043+0x1C8A) returns with the box's layout still there. So after it opt_fn[k] is the box's handler for slot k % 4 and opt_on[k] the
+    // C: state of the box's entry k, for every k, until the card's loop installs its own; Enter leaves menu_popup 0, and the loop then rates
+    // C: the line with opt_fn[k], the box's handler for slot k % 4.
     public int Run(params MenuLine[] lines)
     {
         // C: a line the card does not list has no action (its switch has no case) and the handler left in opt_fn[k].
@@ -261,23 +315,69 @@ public sealed class CardMenu
             {
                 _c.OptionHandlers[k] = lines[k].AskHint;
             }
+            // C: a Shift hint in a box asks opt_fn[member * 4 + slot], which is then the box's table: the box's handler for the slot.
+            _c.MenuBox = PopupBox.None;
             var choice = DrawsOptions
-                ? _c.Screen.Choose(Block, states, Handler, k => PopupHint(Line(k)), AfterOptions)
-                : _c.Screen.ChooseOnLastLayout(states, Handler, k => PopupHint(Line(k)));
-            OnChoice?.Invoke();
+                ? _c.Screen.Choose(Block, states, Handler, k => BoxHint(_c.MenuBox, Line(k)), AfterOptions)
+                : _c.Screen.ChooseOnLastLayout(states, Handler, k => BoxHint(_c.MenuBox, Line(k)));
             var line = Line(choice);
+            if (_c.MenuBox != PopupBox.None)
+            {
+                var box = _c.MenuBox;
+                var boxLine = line;
+                for (var k = 0; k < MaxLines; k++)
+                {
+                    var slot = k % 4;
+                    _c.OptionHandlers[k] = () => SlotHint(box, boxLine, slot);
+                    if (!IsGlobal(k))
+                    {
+                        _states[k] = _c.MenuBoxStates[k];
+                    }
+                }
+            }
+            OnChoice?.Invoke();
             // C: l_a = menu_popup ? (*DS:EB0A[menu_slot])() : (*opt_fn[k])(): always called; the action gets l_a.a.
-            var hint = _c.MenuPopup ? PopupHint(line) : Handler(choice);
+            var hint = !_c.MenuPopup ? Handler(choice)
+                : PopupRatedByItems ? SlotHint(PopupBox.Items, line, _c.MenuSlot)
+                : BoxHint(_c.MenuBox, line);
             line.Choose(line.TakesTheChance ? hint.Chance : -1);
         }
+        _c.MenuBox = PopupBox.None;
         return _c.Next;
     }
 
-    /// <summary>The hint of a choice in a line's pop-up box: the line's own pop-up handler, else the menu's, else the line's hint.</summary>
-    private OptionHint PopupHint(MenuLine line)
+    /// <summary>
+    /// The hint of a choice in a pop-up box: the box's handler (<see cref="ItemBox"/> / <see cref="SaintBox"/>),
+    /// else the pop-up hint of the line the box belongs to (its own, else the menu's, else the line's hint).
+    /// </summary>
+    private OptionHint BoxHint(PopupBox box, MenuLine line)
     {
-        var rate = line.Popup ?? Popup;
+        var rate = (box == PopupBox.Saints ? SaintBox : box == PopupBox.Items ? ItemBox : null) ?? line.Popup ?? Popup;
         return rate is not null ? rate() : line.AskHint();
+    }
+
+    /// <summary>The box's handler for one slot (the card's function for that slot): <see cref="BoxHint"/> asked with <see cref="CardContext.MenuSlot"/> = the slot.</summary>
+    // orig: card_mouse R043+0x21D4 (150B:1744) draft: the box's layout, handler table included, becomes the menu's (R043+0x246B)
+    // C: every card that installs item_fn / saint_fn fills the five member rows alike (the loops for k_2 < 5), so the row the box's entry or the
+    // C: click uses (DS:EB0A[menu_slot] is row 0, a Shift hint row menu_member, Enter row k / 4) does not matter.
+    // DIVERGENCE (undefined-memory): a slot the card's reset installs no handler for keeps an earlier card's (null since start-up: the original then calls
+    // 0000:0000); a click or a Shift hint only reaches the slots the card lists items or saints in, but Enter rates line k with slot k % 4,
+    // which can be such a slot. The card's box handler (or the line's pop-up) answers for every slot here.
+    private OptionHint SlotHint(PopupBox box, MenuLine line, int slot)
+    {
+        // C: the handler for slot j is that slot's function; menu_slot stays the entry's (MenuEntrySlot), which handlers that read it see.
+        var chosen = _c.MenuSlot;
+        _c.MenuEntrySlot = chosen;
+        _c.MenuSlot = slot;
+        try
+        {
+            return BoxHint(box, line);
+        }
+        finally
+        {
+            _c.MenuSlot = chosen;
+            _c.ClearMenuEntrySlot();
+        }
     }
 
     /// <summary>
@@ -335,7 +435,7 @@ public sealed partial class CardContext
     public OptionHint SaintPopupHint()
     {
         Variables.Chosen[0] = MenuMember;
-        var saint = CardSaints[MenuSlot];
+        var saint = CardSaints[MenuEntrySlot];
         var low = SaintChanceLow(MenuMember, saint);
         return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)));
     }
@@ -347,7 +447,7 @@ public sealed partial class CardContext
     // orig: e.g. R119+0x0760 matched: saint_chance_lo, saint_chance_hi, chance_text; r.a = -1, r.b = menu_member
     public OptionHint SaintPopupChanceHint()
     {
-        var saint = CardSaints[MenuSlot];
+        var saint = CardSaints[MenuEntrySlot];
         var low = SaintChanceLow(MenuMember, saint);
         return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)), MenuMember);
     }
@@ -360,7 +460,7 @@ public sealed partial class CardContext
     public OptionHint SaintPopupMemberHint()
     {
         Variables.Chosen[0] = MenuMember;
-        var saint = CardSaints[MenuSlot];
+        var saint = CardSaints[MenuEntrySlot];
         var low = SaintChanceLow(MenuMember, saint);
         return OptionHint.Say(ChanceText(low, SaintChanceHigh(MenuMember, saint)), MenuMember);
     }

@@ -158,7 +158,7 @@ public sealed class LonelyMountainLake : Card
     // C: var_chosen1 = menu_member is stored between pushing the saint and pushing the member, before the prayer.
     private static void PrayForGuidance(CardContext c)
     {
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         c.Variables.Chosen[0] = c.MenuMember;
         var answer = c.InvokeSaint(c.MenuMember, saint);
         if (answer == -1)

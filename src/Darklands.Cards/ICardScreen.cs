@@ -13,6 +13,14 @@ public enum OptionState : byte
     Shown = 2,
 }
 
+/// <summary>The pop-up box of an option line: none, the card's items or its saints (the line's marker 0x10 / 0x16).</summary>
+public enum PopupBox
+{
+    None = 0,
+    Items = 1,
+    Saints = 2,
+}
+
 /// <summary>Where a card text is drawn.</summary>
 public enum TextFrame
 {

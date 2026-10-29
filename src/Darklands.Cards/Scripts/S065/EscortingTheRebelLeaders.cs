@@ -136,7 +136,7 @@ public sealed class EscortingTheRebelLeaders : Card
     // orig: R065+0x051A (hint R065+0x05A0)
     private static void Pray(CardContext c, Action dispersed)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

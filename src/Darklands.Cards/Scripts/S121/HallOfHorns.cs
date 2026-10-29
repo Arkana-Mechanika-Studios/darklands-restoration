@@ -84,7 +84,7 @@ public sealed class HallOfHorns : Card
     //   menu ignores it. Every outcome stays on the card.
     private static void Pray(CardContext c)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

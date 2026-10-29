@@ -109,7 +109,7 @@ public sealed class AssassinsAmbush : Card
     // orig: R070+0x155A, 0ce2, 0d6a, 0df2
     private static OptionHint SaintHint(CardContext c)
     {
-        var saint = c.CardSaints[c.MenuSlot];
+        var saint = c.CardSaints[c.MenuEntrySlot];
         var low = c.SaintChanceLow(c.MenuMember, saint);
         var high = c.SaintChanceHigh(c.MenuMember, saint);
         return new OptionHint(-1, c.ChanceText(low, high), c.MenuMember);
@@ -135,7 +135,7 @@ public sealed class AssassinsAmbush : Card
     private void PrayForInsight(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
@@ -158,7 +158,7 @@ public sealed class AssassinsAmbush : Card
     private void PrayInTheFight(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

@@ -105,7 +105,7 @@ public sealed class WitchPriestOrdination : Card
     // orig: R122+0x0F0A matched
     private void PurifyTheAltar(CardContext c)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return;

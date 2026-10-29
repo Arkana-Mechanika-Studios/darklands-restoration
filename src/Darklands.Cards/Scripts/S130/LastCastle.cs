@@ -38,8 +38,8 @@ internal static class LastCastle
     public static OptionHint SaintHintForChosen(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var low = c.SaintChanceLow(c.MenuMember, c.CardSaints[c.MenuSlot]);
-        var high = c.SaintChanceHigh(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var low = c.SaintChanceLow(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
+        var high = c.SaintChanceHigh(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         return OptionHint.Say(c.ChanceText(low, high));
     }
 }

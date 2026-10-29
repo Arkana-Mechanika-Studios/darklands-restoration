@@ -238,7 +238,7 @@ public sealed class NightAssaultOnTheKeep : Card
     // A saint slot past 3 cannot occur (four saints); its switch has no default, so nothing would happen.
     private static void PrayForAWayIn(CardContext c)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

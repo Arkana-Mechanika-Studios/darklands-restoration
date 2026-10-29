@@ -102,8 +102,8 @@ public sealed class LancersOfWar : Card
     private static OptionHint SaintHint(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        var low = c.SaintChanceLow(c.MenuMember, c.CardSaints[c.MenuSlot]);
-        var high = c.SaintChanceHigh(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var low = c.SaintChanceLow(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
+        var high = c.SaintChanceHigh(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         return OptionHint.Say(c.ChanceText(low, high));
     }
 
@@ -177,7 +177,7 @@ public sealed class LancersOfWar : Card
     // C: returns 0 after a cancelled box, otherwise returns without a value (ignored).
     private bool CallOnASaint(CardContext c, CardMenu menu, int background)
     {
-        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
             return false;

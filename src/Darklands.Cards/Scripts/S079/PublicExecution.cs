@@ -282,7 +282,7 @@ public sealed class PublicExecution : Card
     // orig: R079+0x1212 (18D8:0812) asm; R079+0x1386 (18D8:0986) asm; tests: CardSmokeTests
     private static void PrayForDeliverance(CardContext c, ref int standing)
     {
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
@@ -311,10 +311,10 @@ public sealed class PublicExecution : Card
                 break;
             case 2:
             case 3:
-                c.NameToSlot(1, c.CardSaints[c.MenuSlot], 0);
+                c.NameToSlot(1, c.CardSaints[c.MenuEntrySlot], 0);
                 ShowPicture(c, 355);
                 c.Screen.Text(2);
-                Verdict(c, c.CardSaints[c.MenuSlot], ref standing);
+                Verdict(c, c.CardSaints[c.MenuEntrySlot], ref standing);
                 break;
             default:
                 // DORMANT: no slot outside 0..3.

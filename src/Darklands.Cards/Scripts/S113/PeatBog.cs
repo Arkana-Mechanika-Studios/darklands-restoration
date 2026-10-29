@@ -73,7 +73,7 @@ public sealed class PeatBog : Card
     private static OptionHint PotionHint(CardContext c)
     {
         var m = c.MenuMember;
-        var quality = c.ItemQuality(m, c.CardItems[c.MenuSlot]) * 3 / 2;
+        var quality = c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]) * 3 / 2;
         var chance = c.MenuSlot switch { 0 => quality + 9, 1 => quality + 21, 2 => quality - 1, _ => 99 };
         return OptionHint.ChanceOf(chance, m);
     }
@@ -144,7 +144,7 @@ public sealed class PeatBog : Card
     private static void CallASaint(CardContext c)
     {
         c.Variables.Chosen[1] = c.MenuMember;
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;

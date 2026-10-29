@@ -153,7 +153,7 @@ public sealed class FactionLeadersRecruitment : Card
     {
         // C: the hour passes before the prayer, even when it is called off.
         c.PassHours(1);
-        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuSlot]);
+        var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)
         {
             return;
