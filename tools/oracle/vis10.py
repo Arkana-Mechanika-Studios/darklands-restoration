@@ -44,7 +44,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-ROOT = HERE.parent.parent.parent                    # the folder holding code\ / wt-*\ / game\ (the worktree sits beside code\)
+# the project root (holding code\, game\, scratch\): DARKLANDS_ROOT, else the folder that holds the repository (a worktree in
+# worktrees\<round> needs the variable: its parent folder is worktrees\)
+ROOT = Path(os.environ.get("DARKLANDS_ROOT") or HERE.parent.parent.parent)
 VGA_BASE = 0xA0000
 W, H = 320, 200
 
@@ -664,7 +666,7 @@ def main():
         headless = a[a.index("--headless") + 1] if "--headless" in a else None
         run(a[1], a[2], save, headless)
     elif a[0] == "jobs":
-        headless = a[a.index("--headless") + 1] if "--headless" in a else str(ROOT / "wt-vis10" / "src" / "Darklands.Host.Headless" / "bin" / "Release" / "net10.0" / "Darklands.Host.Headless.exe")
+        headless = a[a.index("--headless") + 1] if "--headless" in a else str(HERE.parent.parent / "src" / "Darklands.Host.Headless" / "bin" / "Release" / "net10.0" / "Darklands.Host.Headless.exe")
         jobs([x for x in a[1:] if not x.startswith("--") and x != headless], headless, ROOT / "scratch" / "vis10")
     elif a[0] == "index":
         import json

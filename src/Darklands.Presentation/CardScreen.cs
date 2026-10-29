@@ -81,8 +81,22 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: strcpy(card_name, name) and _fstrcpy(pic_buf, picture) with no card_load (R067+0x1ECE, R072+0x1494): the screen keeps the
     //   last card's picture and msg_file (DS:A895) the last card's texts; card_load_near(card_name, ..) (ShowPicture), the redraw R043+0x1E82
     //   and the card_load at the end of a battle load the named card's texts
+    // DIVERGENCE: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) the card is loaded and shown at once, with its own
+    //   picture and texts (card_load R043+0x0A9A), not the previous card's screen and texts.
     public void NameTheCard(string cardName, string? picture)
     {
+        if (ui.Options.CleanDrawing)
+        {
+            if (picture is null)
+            {
+                ShowWithTheLastPicture(cardName);
+            }
+            else
+            {
+                Show(cardName, picture);
+            }
+            return;
+        }
         _cardName = cardName;
         if (picture is not null)
         {
@@ -213,12 +227,15 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     public void PassTime(int hours) => Hourglass.Show(ui, context().State.Date, hours);
 
     // orig: the first lines of 04c4 for a text block, card_text's two arms, and R043+0x3376 (the frame): restores the text area from the picture page (gfx_copy_rect(screen_ptr, 0x43, 6, 0xf5, 0xbc, card_window, 7, 6)), fills it with 0xFF for how == 1
+    // C: a card screen that has drawn no picture yet (a card that only named itself, first after a load) restores from the picture page
+    //   another screen left: after the load screen that is LOADSCRN.PIC without its labels and list (R037+0x83FE pic_draw_pal(1, ..);
+    //   vis10 session D-d4f515)
     private void PrepareWindow(TextFrame frame)
     {
         ui.ReleaseScreen();
-        if (_picture is not null)
+        if ((_picture ?? ui.PicturePage) is { } page)
         {
-            RestoreWindowFrom(_picture);
+            RestoreWindowFrom(page);
         }
         if (frame == TextFrame.BlankPage)
         {

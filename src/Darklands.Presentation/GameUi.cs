@@ -377,6 +377,13 @@ public sealed class GameUi
     private Screen? _held;
 
     /// <summary>
+    /// The graphics driver's picture page (page 1) as the last screen that keeps it here left it: the load screen's picture, which a card
+    /// that only names itself right after a load restores its text window from.
+    /// </summary>
+    // orig: pic_draw_pal(1, "pics\loadscrn.pic") R037+0x83FE; the card window's text area is copied from page 1 (R043+0x3376)
+    public SavedScreen? PicturePage { get; set; }
+
+    /// <summary>
     /// Keeps the screen as it is now on show while the canvas is drawn on (the original's off-screen picture page): until
     /// <see cref="ReleaseScreen"/> or the next wait for input, a present shows the screen as it was here.
     /// </summary>

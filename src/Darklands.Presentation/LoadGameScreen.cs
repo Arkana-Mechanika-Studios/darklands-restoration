@@ -120,6 +120,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     {
         ui.Canvas.DrawPicture(ui.Assets.Picture("loadscrn"));
         _page = ui.Canvas.SaveScreen();
+        ui.PicturePage = _page;
         _button = ui.Assets.PictureExists("buttncr2") ? ui.Assets.Picture("buttncr2") : null;
         _count = folder.Count();
         _first = 0;

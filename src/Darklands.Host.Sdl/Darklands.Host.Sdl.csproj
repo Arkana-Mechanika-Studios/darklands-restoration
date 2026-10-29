@@ -56,6 +56,12 @@
           CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- the licence and the third-party notices beside the program in the build and in every release -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\THIRD_PARTY_NOTICES.md" Link="THIRD_PARTY_NOTICES.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <!-- a release carries an empty MT32_ROMS folder beside the program, where the player puts MT-32 / CM-32L ROM files -->
   <Target Name="CreateMt32RomFolder" AfterTargets="Publish">
     <MakeDir Directories="$(PublishDir)MT32_ROMS" />

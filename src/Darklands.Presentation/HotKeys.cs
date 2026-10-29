@@ -24,7 +24,8 @@ public sealed class GameOptions
 
     /// <summary>
     /// Draws the screens clean where the original's drawing shows a leftover (the Fixed and Classic + comfort presets): a new card's
-    /// picture at once rather than with its first text, no pressed-button picture after the load screen's "no". Off (Classic): as the
+    /// picture at once rather than with its first text, no pressed-button picture after the load screen's "no", a card that only names
+    /// itself (cards 0x5F and 0x73) loaded and shown with its own picture and texts. Off (Classic): as the
     /// original draws them. A drawing choice only: no game value depends on it.
     /// </summary>
     public bool CleanDrawing { get; set; }
