@@ -26,7 +26,8 @@ internal sealed class LauncherModel
     private static readonly double[] Factors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string? HdPack, string SoundCard, string? Roms, bool Banner, bool Intro, bool Always) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string? HdPack, string SoundCard, string? Roms, string? AudioPack, bool Banner, bool Intro, bool Always) _initial;
+    private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     public LauncherModel(LauncherContext context, (int Width, int Height)? display)
     {
@@ -38,6 +39,7 @@ internal sealed class LauncherModel
         HdPack = string.IsNullOrWhiteSpace(s.HdPack) ? null : s.HdPack;
         SoundCard = SoundCards.Any(c => c.Value == s.SoundCard) ? s.SoundCard! : "config";
         Mt32Roms = string.IsNullOrWhiteSpace(s.Mt32Roms) ? null : s.Mt32Roms;
+        AudioPack = string.IsNullOrWhiteSpace(s.AudioPack) ? null : s.AudioPack;
         Banner = s.Banner ?? true;
         Intro = s.Intro ?? true;
         Always = s.Launcher ?? false;
@@ -47,7 +49,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder, Windows[WindowIndex], Fullscreen, HdPack, SoundCard, Mt32Roms, Banner, Intro, Always);
+        _initial = (string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder, Windows[WindowIndex], Fullscreen, HdPack, SoundCard, Mt32Roms, AudioPack, Banner, Intro, Always);
     }
 
     public IReadOnlyList<(string Folder, string Source)> Found { get; }
@@ -70,6 +72,63 @@ internal sealed class LauncherModel
     public string? HdPack { get; set; }
 
     public string SoundCard { get; set; }
+
+    /// <summary>The sound pack's folder (replacement music and battle effects); null: none.</summary>
+    public string? AudioPack { get; set; }
+
+    /// <summary>The picture pack's (or the sound pack's) folder.</summary>
+    public string? PackOf(PackKind kind) => kind == PackKind.Pictures ? HdPack : AudioPack;
+
+    public void SetPack(PackKind kind, string? folder)
+    {
+        if (kind == PackKind.Pictures)
+        {
+            HdPack = folder;
+        }
+        else
+        {
+            AudioPack = folder;
+        }
+    }
+
+    /// <summary>What a folder holds as a pack (looked at once per folder: it reads the disk).</summary>
+    public PackStatus Pack(string folder)
+    {
+        if (!_packs.TryGetValue(folder, out var status))
+        {
+            status = _packs[folder] = Directory.Exists(folder)
+                ? (_context.DescribePack ?? PackStatus.Count)(folder)
+                : new PackStatus(0, 0, "The folder does not exist.");
+        }
+        return status;
+    }
+
+    /// <summary>Whether a folder holds a pack of that kind.</summary>
+    public bool Holds(string folder, PackKind kind) => kind == PackKind.Pictures ? Pack(folder).Pictures > 0 : Pack(folder).Sounds > 0;
+
+    /// <summary>None, then the packs of that kind found in the packs folders, then the one chosen when it is elsewhere.</summary>
+    public IReadOnlyList<string?> PackChoices(PackKind kind)
+    {
+        var found = _context.FindPacks?.Invoke(GameFolderChecked) ?? [];
+        var choices = new List<string?> { null };
+        choices.AddRange(found.Where(f => Holds(f, kind)));
+        if (PackOf(kind) is { } chosen && !choices.Contains(chosen))
+        {
+            choices.Add(chosen);
+        }
+        return choices;
+    }
+
+    /// <summary>The next (or previous) pack choice.</summary>
+    public void CyclePack(PackKind kind, int step)
+    {
+        var choices = PackChoices(kind);
+        var i = Math.Max(0, choices.ToList().IndexOf(PackOf(kind)));
+        SetPack(kind, choices[(i + step + choices.Count) % choices.Count]);
+    }
+
+    /// <summary>A pack folder's name as shown ("None" for none).</summary>
+    public static string PackLabel(string? folder) => folder is null ? "None" : Path.GetFileName(Path.TrimEndingDirectorySeparator(folder));
 
     /// <summary>The Roland (MT-32 / CM-32L) ROM folder chosen; null: the default (MT32_ROMS next to the program).</summary>
     public string? Mt32Roms
@@ -167,6 +226,10 @@ internal sealed class LauncherModel
         {
             changes["sound.mt32Roms"] = Mt32Roms?.Replace('\\', '/') ?? "";
         }
+        if (AudioPack != _initial.AudioPack)
+        {
+            changes["sound.audioPack"] = AudioPack?.Replace('\\', '/') ?? "";
+        }
         if (Banner != _initial.Banner)
         {
             changes["startup.banner"] = Banner;
@@ -198,6 +261,7 @@ internal sealed class LauncherModel
             HdPack = HdPack,
             SoundCard = SoundCard,
             Mt32Roms = Mt32Roms,
+            AudioPack = AudioPack,
             ConfigDrk = s.ConfigDrk,
             Banner = Banner,
             Intro = Intro,
@@ -245,4 +309,11 @@ internal sealed class LauncherModel
         }
         return sizes;
     }
+}
+
+/// <summary>The two kinds of pack the launcher sets: pictures (display.hdPack) and sounds (sound.audioPack).</summary>
+internal enum PackKind
+{
+    Pictures,
+    Sounds,
 }

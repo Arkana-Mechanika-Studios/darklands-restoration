@@ -61,6 +61,14 @@ launcher (it shows whether the ROMs of the chosen module are there). Without the
 plays instead, and the program says so. The launcher's sound card (`"card"` in the settings) chooses another card:
 AdLib, Sound Blaster, Sound Blaster Pro 2, MT-32 or CM-32L.
 
+## Picture and sound packs
+
+A pack replaces pictures (PNG files) or music and battle sounds (OGG or WAV files) without changing how the game plays.
+Put a pack's folder in the `packs` folder next to the program and choose it in the launcher's "HD pack" or "Audio pack"
+row (or drop the folder on the launcher). The release comes with a small example, `packs/audio-pack-example` (generated
+test tones). How to make your own, with the names of all the game's music and sounds: [`docs/PACKS.md`](docs/PACKS.md),
+also beside the program and linked from the launcher ("how to make a pack").
+
 ## Settings
 
 `darklands.settings.json`, next to the program, is commented and shows every default. The ones you may
@@ -71,6 +79,7 @@ want:
 | `gameFolder`, `savesFolder` | where your Darklands is; where the saves go |
 | `display.scale`, `display.resolution`, `display.fullscreen` | a bigger window (`2` = 1440x800), any size (`"1600x1000"`), full screen |
 | `sound.card`, `sound.mt32Roms` | the sound card; where the MT-32 ROMs are |
+| `display.hdPack`, `sound.audioPack` | a picture pack, a sound pack (`docs/PACKS.md`) |
 | `startup.banner`, `startup.intro` | skip the banner or the opening |
 
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
@@ -159,7 +168,7 @@ game sessions run in the original and in the rewrite side by side, compared afte
 | `src/Darklands.Cards` | the card engine and every card script |
 | `src/Darklands.Content`, `src/Darklands.Persistence` | the game files; saved games |
 | `src/Darklands.Simulation`, `src/Darklands.Presentation` | the game loop; the screens |
-| `src/Darklands.Audio`, `src/Darklands.Audio.Mt32` | the sound drivers in an emulated PC; MT-32 |
+| `src/Darklands.Audio`, `src/Darklands.Audio.Mt32` | the sound drivers in an emulated PC; MT-32; sound packs (docs/PACKS.md) |
 | `src/Darklands.Platform`, `src/Darklands.Host.*` | host interfaces and settings; the SDL and headless hosts |
 | `src/Darklands.DevConsole` | the developer console |
 | `src/Darklands.Rendering` | replacement graphics (HD packs) drawn over the game's frame, for any host |

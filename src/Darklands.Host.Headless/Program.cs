@@ -1,4 +1,5 @@
 using Darklands.Audio;
+using Darklands.Audio.Packs;
 using Darklands.Content;
 using Darklands.Platform;
 using Darklands.Presentation;
@@ -25,7 +26,8 @@ using Darklands.Rendering;
 //                                last one staying (tools/oracle/lockstep.py gives the word the original's saved game holds); without
 //                                the step the first clock seed's low word
 //   hdpack:<folder>              replacement graphics (an HD pack, docs/SETTINGS.md display.hdPack; also from --settings): each
-//                                shot also saves <name>.hd.png, the frame with the replacements at hdscale:<n> (default 4) x 320x200
+//                                shot also saves <name>.hd.png, the frame with the replacements at hdscale:<n> (default 4) x 320x200,
+//                                and <name>.assets.txt, the asset names on the screen (the names a pack's PNG files take)
 //
 // Game steps:
 //   saves:<folder>               the saved games' folder (default: SAVES beside the program, never the game folder)
@@ -33,6 +35,9 @@ using Darklands.Rendering;
 //   arg:<text>                   adds a word to the game's DOS command line (-Q, -O, -A<letter>)
 //   sound:config|adlib|sb|sbpro2|mt32|cm32l   runs the game's sound drivers in step with the script's clock (the game timer is
 //                                then the sound's, as in the SDL host); mt32roms:<folder> (default MT32_ROMS next to the program)
+//   audiopack:<folder>           replacement music and battle effects (an audio pack, docs/PACKS.md; also from --settings
+//                                sound.audioPack or DARKLANDS_AUDIO_PACK): the game's calls reach the drivers unchanged; with sound:
+//                                the wav has the replacements mixed in
 //   wav:<file>                   saves what the drivers play; trace:<file> writes the ticks, tunes, MIDI bytes, sample
 //                                transfers and cels shown (tools/intro/opening_timer.py compares the opening with the original's)
 //
@@ -165,6 +170,16 @@ if (hdPackStep is not null)
     pack.Problems.ToList().ForEach(Console.Error.WriteLine);
     ScriptedHost.HdRenderer = new HdRenderer(pack);
     ScriptedHost.HdScale = hdScaleStep is null ? 4 : int.Parse(hdScaleStep, System.Globalization.CultureInfo.InvariantCulture);
+}
+var audioPackStep = TakeStep("audiopack:") ?? resolved.AudioPack;
+if (audioPackStep is not null)
+{
+    var pack = AudioPack.Load(audioPackStep);
+    // decoded before the run, so that a scripted run always mixes the same samples
+    pack.PreloadAsync(HeadlessSound.Rate).GetAwaiter().GetResult();
+    pack.Problems.ToList().ForEach(Console.Error.WriteLine);
+    Console.Error.WriteLine($"audio pack: {pack.Folder}, {pack.Count} replacement(s)");
+    ScriptedHost.ReplacementSound = pack;
 }
 var host = new ScriptedHost(steps, output);
 var battleStep = steps.FirstOrDefault(s => s.StartsWith("battle:", StringComparison.Ordinal));
@@ -440,6 +455,9 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     /// <summary>The HD shots' size: this many times 320x200.</summary>
     public static int HdScale { get; set; } = 4;
 
+    /// <summary>The audiopack step's replacement sound (null: none): the host's audio goes through its decorator.</summary>
+    public static AudioPack? ReplacementSound { get; set; }
+
     private readonly TextFont _font = TextFont.FromEnvironment(SettingsTextFont ?? LocalPaths.Get("textfont", "DARKLANDS_TEXT_FONT"));
     private Screen? _last;
     private TextScreen? _lastText;
@@ -461,7 +479,9 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
 
     public IVideo Video => this;
     public IInput Input => this;
-    public IAudio Audio { get; set; } = new SilentAudio();
+    public IAudio Audio { get; set; } = ReplacementSound is { } pack
+        ? new PackAudio(new SilentAudio(), null, new PackMixer(pack, HeadlessSound.Rate))
+        : new SilentAudio();
     public IClock Clock => this;
     public IGameTimer Timer { get => _timer ??= new ClockGameTimer(this); set => _timer = value; }
     private IGameTimer? _timer;
@@ -544,6 +564,11 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 var (width, height) = (Screen.Width * HdScale, Screen.Height * HdScale);
                 var frame = HdRenderer.Render(_last, new DisplayRectangle(0, 0, width, height));
                 PngCodec.Write(FrameCompositor.Compose(frame, width, height), Path.Combine(output, name + ".hd.png"));
+                // for pack makers: the assets seen, with their size, pixels shown and whether the pack replaces them
+                File.WriteAllLines(Path.Combine(output, name + ".assets.txt"), _last.Owners.Where(id => id != 0).GroupBy(id => id)
+                    .Select(g => (Name: ScreenOwners.NameOf(g.Key) ?? "?", Size: ScreenOwners.SizeOf(g.Key), Pixels: g.Count()))
+                    .OrderBy(a => a.Name, StringComparer.Ordinal)
+                    .Select(a => $"{a.Name}\t{a.Size.Width}x{a.Size.Height}\t{a.Pixels} px{(HdRenderer.Pack.Has(a.Name) ? "\treplaced" : "")}"));
             }
             ShotsTaken++;
         }
@@ -858,16 +883,18 @@ internal sealed class LoggingAudio(IAudio inner, Action<string> write) : IAudio
 /// <summary>The game's sound drivers rendered in step with the scripted clock, to a .wav file and a trace.</summary>
 internal sealed class HeadlessSound : IDisposable
 {
-    private const int Rate = 44100;
+    public const int Rate = 44100;
     private readonly SynthAudio _audio;
+    private readonly IPcmSource _source;
     private readonly IMidiSynth? _synth;
     private readonly List<short>? _samples;
     private readonly string? _wav;
     private readonly short[] _buffer = new short[2 * Rate];
 
-    private HeadlessSound(SynthAudio audio, IMidiSynth? synth, string? wav, StreamWriter? trace)
+    private HeadlessSound(SynthAudio audio, IPcmSource source, IMidiSynth? synth, string? wav, StreamWriter? trace)
     {
         _audio = audio;
+        _source = source;
         _synth = synth;
         _wav = wav;
         _samples = wav is null ? null : new List<short>();
@@ -897,8 +924,10 @@ internal sealed class HeadlessSound : IDisposable
             _ => string.Create(System.Globalization.CultureInfo.InvariantCulture, $"sample {e.Tick} {e.Frame} {e.Context} {e.Value} {e.Delay:F6}"),
         });
         var audio = new SynthAudio(files, Rate, setup, synth, traced);
-        var sound = new HeadlessSound(audio, synth, wav, writer);
-        host.Audio = audio;
+        // an audio pack: the drivers render under its mixer (the timer is still theirs), the game's calls reach them unchanged
+        var mixer = ScriptedHost.ReplacementSound is { } pack ? new PackMixer(pack, Rate) { Source = audio, RenderedTicks = () => audio.RenderedTicks } : null;
+        var sound = new HeadlessSound(audio, (IPcmSource?)mixer ?? audio, synth, wav, writer);
+        host.Audio = mixer is null ? audio : new PackAudio(audio, audio, mixer);
         host.Timer = audio;
         host.Advanced = sound.RenderUntil;
         return sound;
@@ -912,7 +941,7 @@ internal sealed class HeadlessSound : IDisposable
         {
             var n = (int)Math.Min(frames, _buffer.Length / 2);
             var span = _buffer.AsSpan(0, n * 2);
-            _audio.Render(span);
+            _source.Render(span);
             _samples?.AddRange(span.ToArray());
             frames -= n;
         }

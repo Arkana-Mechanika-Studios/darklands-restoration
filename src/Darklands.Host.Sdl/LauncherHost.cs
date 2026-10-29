@@ -55,7 +55,10 @@ internal static class LauncherHost
             soundTest,
             ReleaseNotes(),
             url => SdlNative.SDL_OpenURL(url),
-            ReleasesPage + "/tag/v" + version);
+            ReleasesPage + "/tag/v" + version,
+            PackFolders,
+            DescribePack,
+            PackGuide);
         LauncherResult result;
         using (var surface = new SdlLauncherSurface(host))
         {
@@ -99,6 +102,48 @@ internal static class LauncherHost
         var mt32 = Mt32Roms.Find(folder, RolandModule.Mt32, out _) is not null;
         var cm32l = Mt32Roms.Find(folder, RolandModule.Cm32l, out _) is not null;
         return new RomStatus(folder, mt32, cm32l);
+    }
+
+    /// <summary>The guide for pack makers on the web (a copy is docs/PACKS.md beside the program).</summary>
+    private const string PackGuide = "https://github.com/Arkana-Mechanika-Studios/darklands-restoration/blob/master/docs/PACKS.md";
+
+    /// <summary>The subfolders of the packs folders: next to the program (the release's example pack is there) and next to the game.</summary>
+    internal static IReadOnlyList<string> PackFolders(string? gameFolder)
+    {
+        var roots = new List<string> { Path.Combine(AppContext.BaseDirectory, "packs") };
+        if (gameFolder is not null)
+        {
+            roots.Add(Path.Combine(gameFolder, "packs"));
+            if (Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(gameFolder)) is { } above)
+            {
+                roots.Add(Path.Combine(above, "packs"));
+            }
+        }
+        var folders = new List<string>();
+        foreach (var root in roots.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            try
+            {
+                if (Directory.Exists(root))
+                {
+                    folders.AddRange(Directory.EnumerateDirectories(root).Order(StringComparer.OrdinalIgnoreCase));
+                }
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+            }
+        }
+        return [.. folders.Distinct(StringComparer.OrdinalIgnoreCase)];
+    }
+
+    /// <summary>A folder as the game would read it: its pictures (an HD pack) and sounds (an audio pack, with audio.json's problems).</summary>
+    internal static PackStatus DescribePack(string folder)
+    {
+        var pictures = Darklands.Rendering.HdPack.Load(folder);
+        var sounds = Darklands.Audio.Packs.AudioPack.Load(folder);
+        var problem = sounds.Problems.Concat(pictures.Problems).FirstOrDefault(p => p.Contains(".json", StringComparison.Ordinal))
+            ?? sounds.Problems.FirstOrDefault();
+        return new PackStatus(pictures.Count, sounds.Count, problem);
     }
 
     /// <summary>The project's releases on GitHub (each version's page is /tag/v&lt;version&gt;).</summary>

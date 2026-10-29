@@ -5,3 +5,5 @@ docs/source-map/map.csv merge=union
 *.ttf binary
 *.png binary
 *.gz binary
+*.ogg binary
+*.wav binary

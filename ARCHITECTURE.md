@@ -87,6 +87,12 @@ drivers when the ROMs are missing). `SynthAudio` implements `IAudio` and renders
 processor runs at 3000 instructions per ms (DOSBox's default, the reference capture's): a sample starts
 as late into the driver's tick as its work takes.
 
+Sound packs (`Packs`, docs/PACKS.md; new code, not the game's) replace music and battle effects with OGG/WAV files
+named in `AudioCatalogue`. `PackAudio` decorates the host's `IAudio`: every call goes on to `SynthAudio` unchanged and
+its AX answers come back, so the drivers, their timer and the game run exactly as without a pack; `PackMixer` (the
+source the device plays, through `PackOutput`) renders the drivers under it, mutes them while a replacement plays and
+mixes the replacement in. NVorbis (MIT, NuGet) decodes Ogg Vorbis.
+
 ## Timing (one clock)
 
 `Darklands.Platform.IGameTimer` is the game's timer: the VGA's 70.086 Hz frames, a tick on six frames of

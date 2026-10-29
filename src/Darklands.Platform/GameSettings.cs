@@ -29,6 +29,9 @@ public sealed class GameSettings
 
     public string? Mt32Roms { get; set; }
 
+    /// <summary>A folder of replacement music and battle effects (an audio pack; not part of the game). Null: the game's own sound.</summary>
+    public string? AudioPack { get; set; }
+
     /// <summary>Values that replace the ones of the game's CONFIG.DRK (null: CONFIG.DRK as it is).</summary>
     public ConfigDrkSettings? ConfigDrk { get; set; }
 

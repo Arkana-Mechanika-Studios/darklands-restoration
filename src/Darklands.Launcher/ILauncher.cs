@@ -42,6 +42,10 @@ public enum LauncherReason
 /// <param name="ReleaseNotes">The release notes shipped with the program (Markdown; the first section is shown).</param>
 /// <param name="OpenLink">Opens a web link in the player's browser.</param>
 /// <param name="ReleaseNotesLink">The release notes of this version on the web, or null.</param>
+/// <param name="FindPacks">The game folder chosen (or null) → the pack folders offered (the subfolders of a packs folder next to the
+/// program or the game); null: none offered (a pack is still dropped or browsed for).</param>
+/// <param name="DescribePack">A folder → what it holds as a picture or sound pack (null: the launcher only counts its files).</param>
+/// <param name="PackGuide">The guide for pack makers (a link or a file), opened by "How to make a pack"; null: no link.</param>
 public sealed record LauncherContext(
     GameSettings Settings,
     IReadOnlyDictionary<string, string> FixedKeys,
@@ -54,7 +58,31 @@ public sealed record LauncherContext(
     ISoundTest? SoundTest,
     string ReleaseNotes,
     Action<string> OpenLink,
-    string? ReleaseNotesLink = null);
+    string? ReleaseNotesLink = null,
+    Func<string?, IReadOnlyList<string>>? FindPacks = null,
+    Func<string, PackStatus>? DescribePack = null,
+    string? PackGuide = null);
+
+/// <summary>A folder as a pack: how many pictures and sounds it replaces, and what could not be read (a broken manifest ...).</summary>
+public sealed record PackStatus(int Pictures, int Sounds, string? Problem)
+{
+    /// <summary>What a folder holds by its files alone: PNG files (pictures), OGG and WAV files (sounds).</summary>
+    public static PackStatus Count(string folder)
+    {
+        try
+        {
+            var files = Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories).Select(Path.GetExtension).ToList();
+            return new PackStatus(
+                files.Count(e => string.Equals(e, ".png", StringComparison.OrdinalIgnoreCase)),
+                files.Count(e => string.Equals(e, ".ogg", StringComparison.OrdinalIgnoreCase) || string.Equals(e, ".wav", StringComparison.OrdinalIgnoreCase)),
+                null);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            return new PackStatus(0, 0, e.Message);
+        }
+    }
+}
 
 /// <summary>
 /// The sound test: a little of the game's music on the chosen card. It may start in the background; whenever it starts
