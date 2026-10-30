@@ -19,7 +19,7 @@ The script is an ordinary tools/oracle/lockstep-sessions script with extra step 
                            (the C# host's .idx format; the original's colours are the VGA DAC's 6-bit values widened as (v << 2) | (v >> 4)).
   shotsave:<name>          (original only) the screen at the next file the game creates: the "Saving Game" box of a save. The C# host
                            has no such moment between two frames: its step is rec:<n> (frames rec00001.idx ... the host presents).
-  series:<name>,<n>,<ms>   (before a key / click / rclick step) frames <name>_00 .. <name>_<n-1>, one every <ms> milliseconds, from the
+  series:<name>,<n>,<ms>   (before a key / click / rclick / rup step) frames <name>_00 .. <name>_<n-1>, one every <ms> milliseconds, from the
                            moment that input is taken: the original dumps the screen on its emulated clock, the C# host after waits of
                            ms / 16 pumps (its pump is 16 ms; the host's first frame comes two pumps after the input). The times agree to
                            about two pumps, not exactly. series:<name>,<n>,p<k>: every k battle passes instead (in a battle the C# host's
@@ -101,7 +101,7 @@ class ShotList(list):
         elif item[0] == "series":
             name, n, spec = item[1].split(",")
             o.armed = (name, int(n), spec)
-        elif item[0] in ("key", "click", "rclick") and o.armed is not None:
+        elif item[0] in ("key", "click", "rclick", "rup") and o.armed is not None:
             name, n, spec = o.armed
             o.armed = None
             if spec.startswith("p"):         # every p battle passes (a battle's time is its passes; the host's first frame is three passes after the input)
