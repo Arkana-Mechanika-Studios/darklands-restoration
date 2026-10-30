@@ -8,7 +8,7 @@ oracles do, and the trace says which ones cover the code.
 The trace names the original **by its coordinates only**: places in `DARKLAND.EXE` 483.07
 that anyone can check against the game and the canonical RTLink atlas, independently of any
 decompilation. The semantics were read from a verified reference decompilation; its function
-names, source files and revision are not part of this repository. That reference is the Darklands-plus project (MIT licence); the source map builds on its analysis, and we thank its author. The mapping from a
+names, source files and revision are not part of this repository. The mapping from a
 coordinate to the reference's names and files is kept machine-local (see "The local mapping").
 
 ## Coordinates
