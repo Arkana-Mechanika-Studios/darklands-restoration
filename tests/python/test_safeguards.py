@@ -236,9 +236,18 @@ class Backup(unittest.TestCase):
         backup_local.main(["--src", str(self.src), "--dest", str(self.dst)])
         self.assertEqual((self.dst / "tools" / "a.py").read_text(), "longer text")
 
-    def test_refuses_e_drive_destination(self):
+    def test_refuses_a_forbidden_drive_destination(self):
         with self.assertRaises(SystemExit):
-            backup_local.main(["--src", str(self.src), "--dest", r"E:\somewhere\backup"])
+            backup_local.main(["--src", str(self.src), "--dest", r"E:\somewhere\backup", "--forbid-drive", "E"])
+
+    def test_refuses_without_a_destination(self):
+        old = os.environ.pop("DARKLANDS_BACKUP", None)
+        try:
+            with self.assertRaises(SystemExit):
+                backup_local.main(["--src", str(self.src)])
+        finally:
+            if old is not None:
+                os.environ["DARKLANDS_BACKUP"] = old
 
     def test_refuses_reparse_source(self):
         link = self.root / "lnk"

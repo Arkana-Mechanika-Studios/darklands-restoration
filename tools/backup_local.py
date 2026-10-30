@@ -1,13 +1,16 @@
-"""Back up the irreplaceable part of the shared local/ folder to G: (2026-10-30: local/ was deleted through a junction and E: could not undelete).
+"""Back up the irreplaceable part of the shared local/ folder to another disk (2026-10-30: local/ was deleted through a junction and its disk could not undelete).
 
-    python -I -B tools/backup_local.py [--src <local>] [--dest G:\\darklands-backup\\local] [--dry-run] [--prune]
+    python -I -B tools/backup_local.py [--src <local>] [--dest <backup folder>] [--forbid-drive X ...] [--dry-run] [--prune]
+
+The destination is --dest, else the DARKLANDS_BACKUP variable; --forbid-drive (repeatable) names a drive the backup must never be
+written to (the source's own disk).
 
 Mirror, copy only new or changed files (size or modification time), never delete in the backup unless --prune (which then removes
 backup files that are no longer selected from the source). Selected from the source:
   overnight/  tools/  checks/  merge-audit-*/  oracle-recordings/  oracle-saves/  (all files)
   forbidden-identifiers.txt and the *.md at the top level
   batch/**: *.md *.tsv *.csv *.txt *.json under 5 MB
-Run captures are skipped inside batch/ (folders replay-*, live-*, fights, sessions). Refuses to write anywhere on E:, and to run when
+Run captures are skipped inside batch/ (folders replay-*, live-*, fights, sessions). Refuses to write on a forbidden drive, and to run when
 the source or destination is a reparse point (junction/symlink); reparse points inside the source are skipped, never followed.
 """
 from __future__ import annotations
@@ -21,8 +24,7 @@ import sys
 from pathlib import Path
 
 REPARSE = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
-DEFAULT_DEST = r"G:\darklands-backup\local"
-FORBIDDEN_DRIVES = {"E"}
+FORBIDDEN_DRIVES: set = set()
 WHOLE_DIRS = ["overnight", "tools", "checks", "oracle-recordings", "oracle-saves"]
 WHOLE_GLOBS = ["merge-audit-*"]
 TOP_FILES = ["forbidden-identifiers.txt"]
@@ -54,7 +56,7 @@ def drive_of(path) -> str:
 def check_paths(src: str, dest: str) -> None:
     """Raise SystemExit on an unsafe source or destination."""
     if drive_of(dest) in FORBIDDEN_DRIVES:
-        sys.exit("REFUSED: the destination %s is on E:, where the originals live and where deleted data is unrecoverable" % dest)
+        sys.exit("REFUSED: the destination %s is on a forbidden drive (the originals' disk)" % dest)
     if not os.path.isdir(src):
         sys.exit("REFUSED: the source %s is not a folder" % src)
     if is_reparse(src):
@@ -177,10 +179,15 @@ def prune(dest: str, wanted: set, dry: bool) -> int:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--src", help="the local folder (default: DARKLANDS_LOCAL, else DARKLANDS_ROOT/code/local, else <repo>/local)")
-    ap.add_argument("--dest", default=DEFAULT_DEST)
+    ap.add_argument("--dest", default=os.environ.get("DARKLANDS_BACKUP"), help="backup folder (default: DARKLANDS_BACKUP)")
+    ap.add_argument("--forbid-drive", action="append", default=[], help="a drive letter the backup must never be written to")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--prune", action="store_true", help="also delete backup files that are no longer selected from the source")
     a = ap.parse_args(argv)
+    if not a.dest:
+        sys.exit("REFUSED: no destination: pass --dest or set DARKLANDS_BACKUP")
+    FORBIDDEN_DRIVES.clear()
+    FORBIDDEN_DRIVES.update(d.strip(":").upper() for d in a.forbid_drive)
     src = os.path.abspath(a.src or local_dir_default())
     dest = os.path.abspath(a.dest)
     check_paths(src, dest)
