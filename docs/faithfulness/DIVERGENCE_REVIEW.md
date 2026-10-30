@@ -41,7 +41,7 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### implement-later (0)
 
 
-## Done (82)
+## Done (83)
 
 Entries made faithful (the marker was replaced by the original behaviour, or reworded where a part stays out of reach): what changed, then the review's analysis.
 
@@ -61,6 +61,8 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
   analysis: party-leave writes the 0x80-byte record with status 5 for an away member before clearing the slot's status, so the roster record of a member reported away keeps status 5 (party-join later reads it back). The C# roster entry and the party slot are one object (CharacterRoster), so the record's status follows the slot's 0. Needs the roster records as separate copies of the slot memory (the record also keeps the pack/saints/formulas of its last full write, not the slot's current ones).
 - **D-2ace79** (was `reproduce`) - Not a divergence: the asm stores card-option-handler[1..7] (card-option-handler-1..7 are DS:EA18..EA30), so the card installs all eight handlers; the C# was right. The empty reset is now modelled (Menu(resetsHandlers: false): lines 8..19 keep earlier handlers; block 0 has eight lines).  
   analysis: Lines 1..7 keep the hint functions (card-option-handler) an earlier card left, called again when the line is chosen with their side effects; the previous card is a function of play history. Keep card-option-handler/item-handler-table/saint-handler-table as engine-global state in CardContext (the same state as the stale opt_flag family) and call them.
+- **D-2bf9a0** (was `document`) - visleads: Classic repeats the recolouring, the save 0xA0 wide and the transparent draw back (R037+0x440F..0x453C): the box's last columns stay over black as in the original (vis10 session D-b797f7); the clean drawing is D-86894b.  
+  analysis: 1462:43E6 recolours colour 0 to 5 and back around the input box (it only changes colour-5 pixels of the card behind); not repeated. Visual only.
 - **D-2c48f8** (was `justify`) - cards1o: the part in text-bank-file is reproduced (party[k].name for k from 25 to the end of the loaded .MSG: TextVariables.OutsideName, card oracle card 0x6C); the marker is now D-9654eb for the rest.  
   analysis: var_chosenK indexes party[] (DS:9C69, 5 x 0x80) unchecked; an index outside 0..4 reads the bytes before (menu-item records) or after (the combatant records 5..12) the party. text-slot-chosen-one..5 are set from member indexes (menu-owner-member, top-scoring-member, loops 0..4) or -1/-2 markers in a few cards; reproducing it needs the DGROUP layout around the party, not modelled. Indexes 0..4 are now faithful (Party.Slot keeps a removed member's bytes).
 - **D-2e6e6a** (was `document`) - Not a divergence: the original's outcome is fixed and equals the C#'s (see the analysis); the marker is now a C: note, no behaviour change.  
