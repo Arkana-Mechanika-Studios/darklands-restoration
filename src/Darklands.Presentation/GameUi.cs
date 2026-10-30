@@ -1,5 +1,6 @@
 using Darklands.Content;
 using Darklands.Platform;
+using Darklands.Presentation.Commands;
 using Darklands.Presentation.Graphics;
 
 namespace Darklands.Presentation;
@@ -459,7 +460,14 @@ public sealed class GameUi
     {
         ReleaseScreen();
         Present();
-        if (ReadHostKey(out var key))
+        // C: a waiting command stands for the player's key or click of this pass (docs/COMMANDS.md); the host's input waits for the next pass
+        var commanded = Commands.Count > 0;
+        var key = Keys.None;
+        if (commanded && CarryOutCommand(out key) is { } click)
+        {
+            return click;
+        }
+        if (commanded ? key != Keys.None : ReadHostKey(out key))
         {
             if (key == Keys.F12 && ScreenshotFolder is not null)
             {
@@ -480,6 +488,10 @@ public sealed class GameUi
             }
             return new PlayerAction(key, Mouse.X, Mouse.Y, MouseButtons.None);
         }
+        if (commanded)
+        {
+            return null;
+        }
         var buttons = Mouse.Buttons;
         var pressed = buttons & ~_previousButtons;
         _previousButtons = buttons;
@@ -497,6 +509,56 @@ public sealed class GameUi
         }
         return null;
     }
+
+    /// <summary>
+    /// The commands a script or an interface convenience issues (docs/COMMANDS.md): every loop that reads the player through
+    /// <see cref="Poll"/> takes the next one instead of the host's input, one per pass. Empty in normal play.
+    /// </summary>
+    public CommandQueue Commands { get; } = new();
+
+    /// <summary>
+    /// Where line n of the list the screen is choosing from is (a point inside it), for <see cref="ChooseLine"/>; null while no
+    /// screen offers such a list. The screen sets it while it chooses and clears it after.
+    /// </summary>
+    public Func<int, (int X, int Y)?>? CommandTargets { get; set; }
+
+    /// <summary>The next command as the input it stands for: a click (returned), a key (<paramref name="key"/>), or neither (a pointer move, or a line no list has).</summary>
+    // C: the host's pointer is moved, as the mouse driver's function 4 moves it for the game's own cursor keys; a host that cannot
+    //   move it keeps its pointer, and the next pass sees that one
+    private PlayerAction? CarryOutCommand(out int key)
+    {
+        key = Keys.None;
+        if (!Commands.TryTake(out var command))
+        {
+            return null;
+        }
+        switch (command)
+        {
+            case PressKey press:
+                key = press.Key;
+                return null;
+            case PointAt point:
+                _host.Input.MovePointer(OnScreenX(point.X), OnScreenY(point.Y));
+                return null;
+            case ClickAt click:
+                var (x, y) = (OnScreenX(click.X), OnScreenY(click.Y));
+                _host.Input.MovePointer(x, y);
+                return new PlayerAction(Keys.None, x, y, MouseButtons.Left);
+            case ChooseLine line when CommandTargets?.Invoke(line.Line) is { } target:
+                // C: the pointer first, the click in the next pass: the screen follows the pointer in between (a card's box opens,
+                //   the pointer enters it), as for a player's hand
+                _host.Input.MovePointer(OnScreenX(target.X), OnScreenY(target.Y));
+                Commands.PutFirst(new ClickAt(target.X, target.Y));
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    /// <summary>A command's point kept on the screen, as the host keeps a real pointer (0..319, 0..199): no click where no mouse can reach.</summary>
+    private static int OnScreenX(int x) => Math.Clamp(x, 0, Screen.Width - 1);
+
+    private static int OnScreenY(int y) => Math.Clamp(y, 0, Screen.Height - 1);
 
     /// <summary>
     /// One pass of a loop that reads the keyboard and the left button itself (no menu bar, no hot keys): a waiting key or a left

@@ -1,6 +1,7 @@
 using Darklands.Cards;
 using Darklands.Core;
 using Darklands.Platform;
+using Darklands.Presentation.Commands;
 using Darklands.Presentation.Graphics;
 
 namespace Darklands.Presentation;
@@ -192,6 +193,11 @@ public sealed partial class CardScreen
         }
 
         ui.Redraw = Refresh;
+        var outerTargets = ui.CommandTargets;
+        // a ChooseLine command's line: the box's while one is up, else the main list's (the point OptionPoint gives)
+        ui.CommandTargets = n => (box?.Layout ?? main) is var list && n >= 0 && n < list.Lines.Count
+            ? (list.X + 1, list.Lines[n].Y + 1)
+            : null;
         try
         {
             while (true)
@@ -213,84 +219,81 @@ public sealed partial class CardScreen
                     ui.Idle();
                     continue;
                 }
-                if (a.IsLeftClick && a.X < WindowX)
+                switch (CardIntent.Of(a, WindowX, ui.KeyboardCardMenus))
                 {
-                    // orig: R043+0x1E30 (a press with mouse_x < 0x3c): the sheet of the member in that row if there is one
-                    if (OpenSheetAt(a.Y, refresh: false))
-                    {
-                        Refresh();
-                    }
-                    continue;
-                }
-                if (a.IsLeftClick)
-                {
-                    // C: card_mouse R043+0x21D4 follows the pointer before its click test in the same call (the click is the release INT 33h function 6 reports), so a click
-                    //   is judged with the line under the pointer highlighted, even when the pointer reached it in the frame of the press.
-                    Track(a.X, a.Y);
-                }
-                if (a.IsLeftClick && current.At(a.X, a.Y) >= 0 && current.Highlight >= 0)
-                {
-                    // orig: the click part of card_mouse: the press position over a line of the list shown; outside the box (and no box up) the highlighted line is chosen; in the box menu_slot = opt % 4, menu_member = opt / 4, menu_popup = 1 and the main line is chosen; with a box up, a click on the main lines does nothing
-                    // C: the line chosen is menu_highlight (from the pointer), not the line under the press; they are the same line unless the pointer moved in between.
-                    if (InBox())
+                    case PressOnPortraits press:
+                        // orig: R043+0x1E30 (a press with mouse_x < 0x3c): the sheet of the member in that row if there is one
+                        if (OpenSheetAt(press.Y, refresh: false))
+                        {
+                            Refresh();
+                        }
+                        continue;
+                    case PressAt press:
+                        // C: card_mouse R043+0x21D4 follows the pointer before its click test in the same call (the click is the release INT 33h function 6 reports), so a click
+                        //   is judged with the line under the pointer highlighted, even when the pointer reached it in the frame of the press.
+                        Track(press.X, press.Y);
+                        if (current.At(press.X, press.Y) >= 0 && current.Highlight >= 0)
+                        {
+                            // orig: the click part of card_mouse: the press position over a line of the list shown; outside the box (and no box up) the highlighted line is chosen; in the box menu_slot = opt % 4, menu_member = opt / 4, menu_popup = 1 and the main line is chosen; with a box up, a click on the main lines does nothing
+                            // C: the line chosen is menu_highlight (from the pointer), not the line under the press; they are the same line unless the pointer moved in between.
+                            if (InBox())
+                            {
+                                var option = current.Lines[current.Highlight].Option;
+                                c.MenuSlot = option % 4;
+                                c.MenuMember = option / 4;
+                                c.MenuPopup = true;
+                                ui.WaitForButtonRelease();
+                                KeepTheBoxsLayout(box!);
+                                return main.Lines[main.Highlight].Option;
+                            }
+                            if (box is null)
+                            {
+                                ui.WaitForButtonRelease();
+                                return current.Lines[current.Highlight].Option;
+                            }
+                        }
+                        continue;
+                    case Confirm when current.Highlight != -1:
                     {
                         var option = current.Lines[current.Highlight].Option;
-                        c.MenuSlot = option % 4;
+                        if (!InBox())
+                        {
+                            return option;
+                        }
                         c.MenuMember = option / 4;
-                        c.MenuPopup = true;
-                        ui.WaitForButtonRelease();
+                        c.MenuSlot = option % 4;
                         KeepTheBoxsLayout(box!);
                         return main.Lines[main.Highlight].Option;
                     }
-                    if (box is null)
+                    // orig: R043+0x1CE5 (Up, 0x4800) and R043+0x1D46 (Down, 0x5000): only with DS:ED6C == 1, which card_mouse R043+0x21D4 sets when the
+                    // pointer is inside a line of the list shown (R043+0x2232); else the key is dropped (R043+0x1DEB)
+                    case MoveHighlight move when over || ui.KeyboardCardMenus:
                     {
-                        ui.WaitForButtonRelease();
-                        return current.Lines[current.Highlight].Option;
+                        var n = current.Lines.Count;
+                        var from = current.Highlight;
+                        if (from >= 0)
+                        {
+                            Highlight(current, from, false);
+                        }
+                        current.Highlight = move.Step > 0
+                            ? (from + 1) % n
+                            : from <= 0 ? n - 1 : from - 1;
+                        Highlight(current, current.Highlight, true);
+                        // orig: mouse_move(mouse_x, y[line] + 2)
+                        var line = current.Lines[current.Highlight];
+                        warped = (over ? mx : current.X + 1, line.Y + 2);
+                        continue;
                     }
-                    continue;
-                }
-                if (a.Key is Keys.Enter or Keys.Space && current.Highlight != -1)
-                {
-                    var option = current.Lines[current.Highlight].Option;
-                    if (!InBox())
-                    {
-                        return option;
-                    }
-                    c.MenuMember = option / 4;
-                    c.MenuSlot = option % 4;
-                    KeepTheBoxsLayout(box!);
-                    return main.Lines[main.Highlight].Option;
-                }
-                // orig: R043+0x1CE5 (Up, 0x4800) and R043+0x1D46 (Down, 0x5000): only with DS:ED6C == 1, which card_mouse R043+0x21D4 sets when the
-                // pointer is inside a line of the list shown (R043+0x2232); else the key is dropped (R043+0x1DEB)
-                if (a.Key is Keys.Up or Keys.Down && (over || ui.KeyboardCardMenus))
-                {
-                    var n = current.Lines.Count;
-                    var from = current.Highlight;
-                    if (from >= 0)
-                    {
-                        Highlight(current, from, false);
-                    }
-                    current.Highlight = a.Key == Keys.Down
-                        ? (from + 1) % n
-                        : from <= 0 ? n - 1 : from - 1;
-                    Highlight(current, current.Highlight, true);
-                    // orig: mouse_move(mouse_x, y[line] + 2)
-                    var line = current.Lines[current.Highlight];
-                    warped = (over ? mx : current.X + 1, line.Y + 2);
-                    continue;
-                }
-                // orig: R043+0x1C77..0x1D46 compare the key with 0x1C0D, 0x3920, 0x1000, 0x4800 and 0x5000 only (R043+0x33C6 takes the F keys):
-                // a digit is dropped there; the convenience below is not the original's
-                var digit = (a.Key & 0xFF) - '1';
-                if (ui.KeyboardCardMenus && !InBox() && a.Key >= '1' && digit is >= 0 and < 9 && digit < main.Lines.Count)
-                {
-                    return main.Lines[digit].Option;
+                    // orig: R043+0x1C77..0x1D46 compare the key with 0x1C0D, 0x3920, 0x1000, 0x4800 and 0x5000 only (R043+0x33C6 takes the F keys):
+                    // a digit is dropped there; the convenience below is not the original's
+                    case ChooseByNumber number when !InBox() && number.Index < main.Lines.Count:
+                        return main.Lines[number.Index].Option;
                 }
             }
         }
         finally
         {
+            ui.CommandTargets = outerTargets;
             ui.Redraw = null;
             if (hintShownFor != NoHint)
             {

@@ -463,21 +463,15 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
             {
                 // orig: wait_continue: any other key goes to card_global_keys (F1..F6, Ctrl-F1..F5)
                 var action = ui.WaitForActionWithSheetKeys();
-                if (action.Key is Keys.Enter or Keys.Space)
+                switch (Commands.CardIntent.Of(action, WindowX, numberKeys: false))
                 {
-                    return;
-                }
-                if (action.IsLeftClick)
-                {
-                    if (action.X < WindowX)
-                    {
-                        if (OpenSheetAt(action.Y, refresh: true))
-                        {
-                            continue;
-                        }
-                    }
-                    ui.WaitForButtonRelease();
-                    return;
+                    case Commands.Confirm:
+                        return;
+                    case Commands.PressOnPortraits press when OpenSheetAt(press.Y, refresh: true):
+                        continue;
+                    case Commands.PressOnPortraits or Commands.PressAt:
+                        ui.WaitForButtonRelease();
+                        return;
                 }
             }
         }

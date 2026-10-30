@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <!-- every product project: the rules read their compiled assemblies -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Darklands.Audio.Mt32\Darklands.Audio.Mt32.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Audio\Darklands.Audio.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Cards\Darklands.Cards.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Content\Darklands.Content.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Core\Darklands.Core.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.DevConsole\Darklands.DevConsole.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Host.Headless\Darklands.Host.Headless.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Host.Sdl\Darklands.Host.Sdl.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Launcher\Darklands.Launcher.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Persistence\Darklands.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Platform\Darklands.Platform.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Presentation\Darklands.Presentation.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Rendering\Darklands.Rendering.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Simulation\Darklands.Simulation.csproj" />
+  </ItemGroup>
+
+</Project>
