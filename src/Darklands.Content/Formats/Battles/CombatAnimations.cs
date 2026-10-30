@@ -3,7 +3,7 @@ using Darklands.Content.Formats.Graphics;
 namespace Darklands.Content.Formats.Battles;
 
 /// <summary>The combatants' animation files, loaded on first use from the catalogue of their picture code.</summary>
-// orig: sprite_file_load R014+0x3D2C (0E76:3D2C) draft (catalogue by the first letter;
+// orig: sprite-file-read R014+0x3D2C (0E76:3D2C) draft (catalogue by the first letter;
 // file name = code + "WK"/"CB" + weapon code, or code + "DY")
 public sealed class CombatAnimations(GameFiles files)
 {

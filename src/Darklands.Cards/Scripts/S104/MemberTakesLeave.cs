@@ -17,13 +17,13 @@ public sealed class MemberTakesLeave : Card
     public override int Run(CardContext c)
     {
         Show(c, Picture);
-        // The original sets next_card to its own number first; nothing reads it before it is
+        // The original sets following-card to its own number first; nothing reads it before it is
         // overwritten below.
         c.Next = Number;
         var note = c.Events.Find(0x47, -1, -1, -1, -1, -1);
         if (note != -1)
         {
-            // C: var_chosen1 = *events[i]: the record's first word, the event type (the member slot).
+            // C: text-slot-chosen-one = *events[i]: the record's first word, the event type (the member slot).
             var member = c.Events[note]!.Type;
             c.Variables.Chosen[0] = member;
             c.Screen.Text(0, TextFrame.BlankPage);

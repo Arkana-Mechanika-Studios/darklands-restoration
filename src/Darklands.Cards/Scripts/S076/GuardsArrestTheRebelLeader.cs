@@ -40,7 +40,7 @@ public sealed class GuardsArrestTheRebelLeader : Card
     private static void Fight(CardContext c, bool messengerComes)
     {
         // C: arguments are evaluated right to left: the third group, then the second, then the
-        // first (party_lore_level draws nothing, so only the two rand_mod calls matter).
+        // first (party-lore-rating draws nothing, so only the two roll-below calls matter).
         var third = c.PartyLoreLevel() % 3 + 1;
         var second = c.Random(4) + c.PartyLoreLevel() / 3 + 1;
         var first = c.Random(2) + c.PartyLoreLevel() / 4 + 1;

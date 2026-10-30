@@ -8,7 +8,7 @@ using Darklands.Core.Randomness;
 namespace Darklands.Cards.Tests;
 
 /// <summary>
-/// The personal-name tables of DARKLAND.EXE (random_name, name_to_slot kinds 2, 6, 7, 8) and the
+/// The personal-name tables of DARKLAND.EXE (made-up-name, label-to-slot kinds 2, 6, 7, 8) and the
 /// $Support words. They need the original game files (DARKLANDS_DIR, or the "game" key of local/paths.json) and are
 /// skipped without them; the original-byte comparison is in the Oracle tests (names.json).
 /// </summary>

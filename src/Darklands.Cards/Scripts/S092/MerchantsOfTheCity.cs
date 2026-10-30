@@ -86,7 +86,7 @@ public sealed class MerchantsOfTheCity : Card
             c.Screen.Text(1);
             c.Variables.Location = NearestCastle(c);
             c.State.SavedCard = c.IsDaylight ? 0x15 : 0x16;
-            // BUG: $Raubi01 (RobberKnightTaskRewarded) takes saved_card2 as the quest giver, but this is the castle's location:
+            // BUG: $Raubi01 (RobberKnightTaskRewarded) takes remembered-card-second as the quest giver, but this is the castle's location:
             // the reward (tag 3, owner 0, tested above) is not found, the card reads and frees events[-1], and the reward stays to be claimed again.
             c.State.SavedCard2 = c.Variables.Location;
             c.Next = 0x91;
@@ -144,7 +144,7 @@ public sealed class MerchantsOfTheCity : Card
     }
 
     /// <summary>The castle (map icon 2) nearest to this town.</summary>
-    // DIVERGENCE: the original reads the location record of cur_loc even in the wilderness
+    // DIVERGENCE: the original reads the location record of location-now even in the wilderness
     // (index −1, out of the table); here the party's map position is used then.
     private static int NearestCastle(CardContext c)
     {

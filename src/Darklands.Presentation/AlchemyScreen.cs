@@ -8,8 +8,8 @@ using Attribute = Darklands.Core.Characters.Attribute;
 
 namespace Darklands.Presentation;
 
-// orig: alchemy_screen R033+0x0000 (1462:0000) draft (register-level diffs); tests: CampAndSheetRulesTests (the bench), visual
-// C: the menu bar (menu_bar_run) comes with every GameUi.Poll (MenuBar).
+// orig: alchemy-screen-entry R033+0x0000 (1462:0000) draft (register-level diffs); tests: CampAndSheetRulesTests (the bench), visual
+// C: the menu bar (menu-bar-loop) comes with every GameUi.Poll (MenuBar).
 /// <summary>
 /// The alchemy screen. The batch page lists the alchemist's formulas on a scroll (Up/Down or
 /// a click picks one) with "Use this formula" and "Do something else"; the formula page sets
@@ -101,7 +101,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         }
     }
 
-    /// <summary>The batch or formula page again, as the loop does after the party information (party_icons_dirty).</summary>
+    /// <summary>The batch or formula page again, as the loop does after the party information (party-icons-stale).</summary>
     // orig: R033+0x047F..0x04DA
     // C: the picture DS:3232 loaded and shown, the party panel drawn again, then the batch page (DS:324E == 0) or the formula page
     private void RedrawAfterPartyInformation()
@@ -117,7 +117,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         }
     }
 
-    // orig: R033+0x16FA (alc_view) R033+0x16FA (15D1:000A) matched, with R033+0x1950, R033+0x1A2A and R033+0x1ABE
+    // orig: R033+0x16FA (alchemy-screen-body) R033+0x16FA (15D1:000A) matched, with R033+0x1950, R033+0x1A2A and R033+0x1ABE
     // DORMANT: R033+0x1B9A (an empty drawing step) does nothing.
     /// <summary>The formula page of the character sheet's list: names, mystic number, description and ingredients. Esc or a click leaves.</summary>
     public void ShowFormula(GameState state, int member, int formula)

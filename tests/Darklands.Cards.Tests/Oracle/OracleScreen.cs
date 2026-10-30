@@ -7,8 +7,8 @@ namespace Darklands.Cards.Tests.Oracle;
 /// The card screen of the card oracle: the same input as the original under tools/oracle/card_oracle.py
 /// and a trace in the same words. Texts are recorded as the bytes the player would read (the block
 /// after the $variables are expanded); a menu with its option states (the block's option lines), and
-/// probing, every offered line's hint as Shift over the line asks it (the original's card_mouse sets
-/// menu_member = line / 4 and menu_slot = line % 4 before it calls the line's handler); an item or
+/// probing, every offered line's hint as Shift over the line asks it (the original's card-mouse-handler sets
+/// menu-owner-member = line / 4 and menu-choice-index = line % 4 before it calls the line's handler); an item or
 /// saint line is chosen in its pop-up box the way <see cref="TracingScreen"/> does.
 /// </summary>
 public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) : ICardScreen
@@ -16,13 +16,13 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
     private static readonly object MessagesLock = new();
     private int _menus;
 
-    /// <summary>The card the last card_load / card_load_near loaded (the oracle's run.card_name): "show" when another is loaded.</summary>
+    /// <summary>The card the last card-run / card-run-near loaded (the oracle's run.card-title): "show" when another is loaded.</summary>
     private string _shown = "";
 
     /// <summary>The card whose message file is loaded (the oracle's run.texts_name): the texts are read from it.</summary>
     private string _texts = "";
 
-    /// <summary>card_name's buffer (DS:E3D4): set by a load and by a card that only names itself (NameTheCard).</summary>
+    /// <summary>card-title's buffer (DS:E3D4): set by a load and by a card that only names itself (NameTheCard).</summary>
     private string _named = "";
 
     public CardContext? Context { get; set; }
@@ -35,23 +35,23 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
 
     public List<string> Log { get; } = [];
 
-    /// <summary>"show" when the texts are another card's than the ones shown, else "picture" (as the oracle words card_load and card_load_near).</summary>
+    /// <summary>"show" when the texts are another card's than the ones shown, else "picture" (as the oracle words card-run and card-run-near).</summary>
     public void Show(string cardName, string picture)
     {
         Log.Add(cardName == _shown ? $"picture {picture.ToLowerInvariant()}" : $"show {cardName} {picture.ToLowerInvariant()}");
-        // card_load takes pic_buf, the picture the rules redraw after a battle or a prayer ("redraw" in the original's
+        // card-run takes image-buffer, the picture the rules redraw after a battle or a prayer ("redraw" in the original's
         // trace); the comparison reads this marker and drops it
         Log.Add($"main {picture.ToLowerInvariant()}");
         _shown = _texts = _named = cardName;
         _main = picture;
     }
 
-    /// <summary>pic_buf: empty in the oracle's start states (the original's card runs first after the load).</summary>
+    /// <summary>image-buffer: empty in the oracle's start states (the original's card runs first after the load).</summary>
     private string _main = "";
 
     public void ShowWithTheLastPicture(string cardName) => Show(cardName, _main);
 
-    /// <summary>card_load_near(card_name, picture): the oracle's "show" when card_name is not the card loaded last (it loads its texts).</summary>
+    /// <summary>card-run-near(card-title, picture): the oracle's "show" when card-title is not the card loaded last (it loads its texts).</summary>
     public void ShowPicture(string picture)
     {
         if (_named.Length > 0 && _named != _shown)
@@ -63,7 +63,7 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
         Log.Add($"picture {picture.ToLowerInvariant()}");
     }
 
-    /// <summary>strcpy(card_name), _fstrcpy(pic_buf): nothing is loaded or logged; pic_buf is the picture a later redraw takes ("main").</summary>
+    /// <summary>strcpy(card-title), _fstrcpy(image-buffer): nothing is loaded or logged; image-buffer is the picture a later redraw takes ("main").</summary>
     public void NameTheCard(string cardName, string? picture)
     {
         _named = cardName;
@@ -74,7 +74,7 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
         }
     }
 
-    /// <summary>run_battle's card_load(card_name, pic_buf): the oracle's "redraw" (the comparison drops it); the texts are card_name's.</summary>
+    /// <summary>battle-driver's card-run(card-title, image-buffer): the oracle's "redraw" (the comparison drops it); the texts are card-title's.</summary>
     public void ReloadAfterBattle()
     {
         if (_named.Length == 0)
@@ -117,7 +117,7 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
         {
             return "";
         }
-        // msg_file: the card's .MSG as the oracle loads it (the text variables can read it through party slots past the fifth)
+        // text-bank-file: the card's .MSG as the oracle loads it (the text variables can read it through party slots past the fifth)
         lock (MessagesLock)
         {
             Context.MessageFileBytes = CardHarness.Assets!.Messages(_texts).Bytes;
@@ -202,7 +202,7 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
 
     /// <summary>
     /// A handler call (tools/oracle/card_oracle.py hand_menu): the card gets the line whatever its state, as its loop's
-    /// <c>k = card_menu(..)</c> would return it, and then calls the line's handler and runs its action. With
+    /// <c>k = card-choice-menu(..)</c> would return it, and then calls the line's handler and runs its action. With
     /// <see cref="HandCall.Hints"/> every line's hint (0..19) is asked first; with <see cref="HandCall.Slot"/> the choice is made in
     /// the line's item or saint pop-up box on that slot, whoever holds the item.
     /// </summary>
@@ -229,7 +229,7 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
         return call.Line;
     }
 
-    /// <summary>DARKLANDS_CARD_ORACLE_BOXKEY=1: a choice in a pop-up box is made with Enter (menu_popup stays 0), as card_oracle.py.</summary>
+    /// <summary>DARKLANDS_CARD_ORACLE_BOXKEY=1: a choice in a pop-up box is made with Enter (popup-menu-box stays 0), as card_oracle.py.</summary>
     private static readonly bool BoxKey = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_BOXKEY") == "1";
 
     /// <summary>DARKLANDS_CARD_ORACLE_BOXES=1: every menu asks each item/saint line's box handlers (trace lines "box &lt;line&gt; &lt;member&gt; &lt;slot&gt;"), as card_oracle.py.</summary>
@@ -244,8 +244,8 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
     }
 
     /// <summary>
-    /// A choice in the line's box as card_mouse leaves it (card_oracle.py box_choice): the pointer is in the box, so the menu's
-    /// layout is the box's (its handler table and its entries' states), and the entry was clicked (menu_popup 1) or, with
+    /// A choice in the line's box as card-mouse-handler leaves it (card_oracle.py box_choice): the pointer is in the box, so the menu's
+    /// layout is the box's (its handler table and its entries' states), and the entry was clicked (popup-menu-box 1) or, with
     /// <see cref="BoxKey"/>, chosen with Enter.
     /// </summary>
     private static void BoxChoice(CardContext c, bool saints, int member, int slot)

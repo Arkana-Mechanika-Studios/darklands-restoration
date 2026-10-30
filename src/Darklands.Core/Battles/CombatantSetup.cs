@@ -21,7 +21,7 @@ public static class CombatantSetup
         c.ScreenPlace = (member.RosterLocation, member.OriginalRecord is { Length: >= 4 } r ? (short)(r[2] | r[3] << 8) : 0);
         // orig: the record is copied whole, so the destination (+0x08..+0x0B) and the aim delay (+0x1D) are what the saved game held (the last
         // fight's) until the member walks or aims, and a saved game written afterwards keeps them
-        // orig: so are the place (+0x04 / +0x06) and the facings (+0x19 / +0x1A): R002+0x1830 does not touch them and effect_start R014+0x4188 places
+        // orig: so are the place (+0x04 / +0x06) and the facings (+0x19 / +0x1A): R002+0x1830 does not touch them and effect-begin R014+0x4188 places
         // the able members only, so an unconscious or away member stays where the saved game's record put it (the view follows it there when it
         // is chosen, R014+0x1065, and a saved game written afterwards keeps it)
         if (member.OriginalRecord is { Length: > 0x1D } held)
@@ -66,7 +66,7 @@ public static class CombatantSetup
     /// What a screen opened during the battle may have changed in the member (pack, equipment,
     /// attributes and skills, the potion bytes) back into its combatant, the tactical state kept.
     /// </summary>
-    // orig: the party record IS the combatant record (combat_char_sheet works on it directly)
+    // orig: the party record IS the combatant record (fight-character-sheet works on it directly)
     public static void Refresh(Combatant c, Character member)
     {
         c.Status = member.Status;
@@ -97,7 +97,7 @@ public static class CombatantSetup
     }
 
     /// <summary>Writes what the battle changed back into the party member.</summary>
-    // orig: the party record is the combatant record itself; battle_run R002+0x0000 clears +0x02 and +0x3C of able/unconscious members afterwards
+    // orig: the party record is the combatant record itself; battle-entry R002+0x0000 clears +0x02 and +0x3C of able/unconscious members afterwards
     public static void BackToMember(Combatant c)
     {
         if (c.Member is not { } member)
@@ -106,7 +106,7 @@ public static class CombatantSetup
         }
         member.Status = c.Status;
         // BUG: the record's +0x00 word is the roster's location of the character and the combatant's scrx: the battle's last frame
-        // leaves the member's screen x there (cbt_screen_pos R014+0x99F6), which the inn's roster later reads as a location.
+        // leaves the member's screen x there (fighter-screen-position R014+0x99F6), which the inn's roster later reads as a location.
         member.RosterLocation = c.ScreenPlace.X;
         for (var k = 0; k < Character.AttributeCount; k++)
         {
@@ -135,8 +135,8 @@ public static class CombatantSetup
     /// <summary>Fills an enemy slot from its kind, facing <paramref name="facing"/>, on level <paramref name="floor"/>, and readies its weapon.</summary>
     /// <param name="slot">The animation slot of its kind (5 or 6).</param>
     /// <param name="activation">True when placed by an activation (keeps its class); false for reinforcements (fight hand to hand).</param>
-    // orig: level_enemies_load R020+0x0000 (1EF8:0000) draft (the .trn → .enm conversion);
-    // enemies_place R025+0x0000 (1EF8:0000) draft (the copy into the slot)
+    // orig: level-enemies-read R020+0x0000 (1EF8:0000) draft (the .trn → .enm conversion);
+    // enemy-placement-entry R025+0x0000 (1EF8:0000) draft (the copy into the slot)
     // orig: R025+0x0264..0x0267: the first 0x80 bytes of the kind's .enm record are copied over the slot, its bytes +0x1E/+0x1F (8, 8:
     //   R020+0x0000's loader) the step and frame delays
     // DIVERGENCE: the head bytes the loader does not write (the .enm buffer's earlier content in the original, 0 for a fresh load) are not
@@ -173,7 +173,7 @@ public static class CombatantSetup
         c.ShieldType = kind.ShieldType;
         for (var k = 0; k < Character.AttributeCount; k++)
         {
-            // C: level_enemies_load copies the current attributes into both the current and the maximum values.
+            // C: level-enemies-read copies the current attributes into both the current and the maximum values.
             c.Attributes[k] = kind.Attributes[k];
             c.Maximums[k] = kind.Attributes[k];
         }
@@ -196,7 +196,7 @@ public static class CombatantSetup
     }
 
     /// <summary>At the start of the fight every party member and every hand-to-hand enemy readies its hand weapon.</summary>
-    // orig: combat_main R014+0x0000 (0E76:0000) draft (the weapon_ready loop)
+    // orig: fight-main-loop R014+0x0000 (0E76:0000) draft (the weapon-armed loop)
     public static void ReadyHandWeapons(Battle battle)
     {
         for (var i = 0; i < Combatant.Count; i++)

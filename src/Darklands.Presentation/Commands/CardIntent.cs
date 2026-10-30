@@ -7,7 +7,7 @@ namespace Darklands.Presentation.Commands;
 /// action, the card screen carries out the intent (docs/COMMANDS.md). Whether an intent does something (a highlighted line, the
 /// pointer over the list, an open box) is the screen's to judge, as the original's loop does.
 /// </summary>
-// C: new code, not the game's: the tests of card_menu R043+0x1BD2 and wait_continue R043+0x32B6 on the key and the button, made explicit
+// C: new code, not the game's: the tests of card-choice-menu R043+0x1BD2 and press-to-continue R043+0x32B6 on the key and the button, made explicit
 public abstract record CardIntent
 {
     /// <summary>The intent of <paramref name="action"/>, null for an action the card screens drop.</summary>

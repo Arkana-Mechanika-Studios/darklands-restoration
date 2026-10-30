@@ -6,7 +6,7 @@ Runs, from the unchanged EXE, with generated characters:
   occupation_list  R037+0x691E  which occupations may come next (DS:8BD2[], DS:8C00, DS:8BFC)
   serve_term       R037+0x7BCC  one term (with its career events and items, followed for real)
   career_events    R037+0x7D8A  the items, saints and formulas of an occupation
-Item definitions are generated (item_defs far pointers seeded into a scratch segment); the
+Item definitions are generated (item-definition-table far pointers seeded into a scratch segment); the
 generator's own tables come from the EXE. Only inputs and results are stored; no game bytes.
 """
 from __future__ import annotations
@@ -27,7 +27,7 @@ AGE, ATTRS, SKILLS, SEX, ITEM_COUNT = 0xE81C, 0xE86E, 0xE875, 0xE821, 0xE888
 TAKEN, LAST, PREVIOUS, THIRD, BACKGROUND = 0x4402, 0x4428, 0x442A, 0x8C12, 0x8C02
 LIST, COUNT, CURSOR, POINTS, TERM_POINTS = 0x8BD2, 0x8C00, 0x8BFC, 0x8BFA, 0x8C48
 FAR = 0x2E38
-SAINTS, FORMULAS, KIT, ITEM_DEFS = 0x3B1A, 0x3B04, 0x3984, 0x0890
+SAINTS, FORMULAS, KIT, ITEM_DEFINITION_TABLE = 0x3B1A, 0x3B04, 0x3984, 0x0890
 ITEM_SEG = 0x6000
 SECTIONS = [136, 29, 37]
 FN = {"occupation_list": "22BE", "serve_term": "356C", "career_events": "372A"}
@@ -45,7 +45,7 @@ def far(offset: int, data: str, segment: int = FAR) -> dict:
     return {"segment": "%04X" % segment, "offset": "%04X" % offset, "hex": data}
 
 
-def item_defs(r):
+def item_definition_table(r):
     """200 item definitions: type (+0x1E), weight (+0x25), quality (+0x26) in 0x30-byte records."""
     defs, memory = [], []
     for k in range(200):
@@ -53,7 +53,7 @@ def item_defs(r):
         t, wt, q = r.randint(0, 255), r.randint(0, 40), r.randint(0, 99)
         rec[0x1E], rec[0x25], rec[0x26] = t, wt, q
         defs.append([t, wt, q])
-        memory.append(far(ITEM_DEFS + 4 * k, struct.pack("<HH", k * 0x30, ITEM_SEG).hex()))
+        memory.append(far(ITEM_DEFINITION_TABLE + 4 * k, struct.pack("<HH", k * 0x30, ITEM_SEG).hex()))
         memory.append(far(k * 0x30, rec.hex(), ITEM_SEG))
     return defs, memory
 
@@ -92,7 +92,7 @@ def cases(r):
     for _ in range(1500):
         inputs, memory = character(r, adult=r.random() < 0.85)
         out.append(("occupation_list", memory, [], inputs))
-    defs, def_memory = item_defs(r)
+    defs, def_memory = item_definition_table(r)
     for _ in range(600):
         adult = r.random() < 0.8
         inputs, memory = character(r, adult)

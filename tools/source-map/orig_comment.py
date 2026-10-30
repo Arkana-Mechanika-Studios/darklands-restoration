@@ -4,7 +4,7 @@ usage: python -I orig_comment.py R014+0x9F12 'root 0410:0008' [...]
 
 Each argument is a coordinate of docs/source-map/original-functions.csv (RNNN+0xPPPP, root SSSS:OOOO,
 thunk 09C0:XXXX, R136+0xPPPP); with the machine-local mapping local/reference-map.csv present, a
-readable name of the reference decompilation (card_load, party_delete ...) is accepted too. The comment
+readable name of the reference decompilation (card-run, party-wipe ...) is accepted too. The comment
 gives the coordinate, the link-time address and the source status:
 
   // orig: R014+0x9F12 (18BF:0102) draft

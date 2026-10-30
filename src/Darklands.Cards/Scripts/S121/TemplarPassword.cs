@@ -22,8 +22,8 @@ namespace Darklands.Cards.Scripts;
 //   other: R121+0x066C, R121+0x070E
 // DORMANT (generated): option slots 10..19 keep the default handler R121+0x070E ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class TemplarPassword : Card
 {
@@ -38,7 +38,7 @@ public sealed class TemplarPassword : Card
     {
         Show(c, Picture);
         c.Next = Number;
-        // C: the card never sets options_block; its menu always shows block 0 (card_options(0)).
+        // C: the card never sets settings-block; its menu always shows block 0 (card-option-lines(0)).
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 3, 4, 5);
         c.SetCardItems();

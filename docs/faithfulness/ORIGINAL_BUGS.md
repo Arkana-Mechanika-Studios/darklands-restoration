@@ -32,10 +32,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0).
 - **B-85e0e4** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:147` `ItemStores.Close`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
-  why: OriginalBehaviour.FixInnCacheRewrite - a known store's rewrite (cache_save R035+0x1468) lays the file out with a 101-byte header over offsets of a 198-byte one.
+  why: OriginalBehaviour.FixInnCacheRewrite - a known store's rewrite (stash-store R035+0x1468) lays the file out with a 101-byte header over offsets of a 198-byte one.
 - **B-3de49c** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:148` `ItemStores.Close`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
-  why: OriginalBehaviour.FixCacheStoreLimit - the append (cache_save(-1) R035+0x1468, the offset written at R035+0x1532) has no limit: the 99th store's offset lands at 198..199, over store 1's count byte and its first item.
+  why: OriginalBehaviour.FixCacheStoreLimit - the append (stash-store(-1) R035+0x1468, the offset written at R035+0x1532) has no limit: the 99th store's offset lands at 198..199, over store 1's count byte and its first item.
 - **B-cf6bdb** `bug`, no fix flag - `src/Darklands.Core/Items/ItemStores.cs:277` `ItemStores.Rewrite`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   why: the rewrite finds store 1 by the signed low byte of its offset (p = buf + (signed char)buf[2], cbw R035+0x1615 after the load at R035+0x15A2): with store 1 at 0x80 or later (a table of 128 bytes or more, the 198-byte one of a game's file too) the other stores are copied from the wrong bytes; and it reopens the file without truncating it (R035+0x15DD, mode 1), so bytes left after a shrunk store stay and a store appended after them is later copied into an earlier one. The compact layout (126-byte table, store 1 at 126) avoids the first; the second is reproduced.
@@ -59,13 +59,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the weapon-skill test reads +0x57, +0x5C, +0x59, +0x5A, +0x5B, +0x5D: Impact Weapons (+0x58) is not among them.
 - **B-af3f91** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:88` `CityPolitics.ConflictOutcome`  
   original: `R039+0x0EBE` (1462:0EBE, matched)  
-  why: ev8_resolve (R029+0x3E06, called at R039+0x0F3E) clears the group's facts here, the pacts 0x24 and 0x25 included, before the branches test them (loc_fact, R039+0x0F77 and after): with the politics quest under way the pact branches never run.
+  why: open-quest-resolve (R029+0x3E06, called at R039+0x0F3E) clears the group's facts here, the pacts 0x24 and 0x25 included, before the branches test them (place-flag, R039+0x0F77 and after): with the politics quest under way the pact branches never run.
 - **B-032561** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:176` `CityPolitics.SetUpCity`  
   original: `R039+0x0558` (1462:0558, matched)  
   why: the facts made here are 0xC, 6, 7, 0x17, 0x14, 3, 5, 4, 9, 0xA, 0x23, 1 and 2 (R039+0x0558): none of type 8, the guild secret the guild cards (R062..R065) clear and read, so that fact never exists.
 - **B-ea8f8b** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:218` `CityPolitics.DailyPolitics`  
   original: `R029+0x4180` (0E76:4180, draft)  
-  why: loc_side_get/loc_side_set and side*_percent work on cur_loc, not the event's city (kept).
+  why: place-side-read/place-side-write and side*_percent work on location-now, not the event's city (kept).
 - **B-8bb85e** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:240` `CityPolitics.DailyPolitics`  
   original: `R029+0x4180` (0E76:4180, draft)  
   why: setup makes no fact 0 (the leaning); the scan (EventLog.Next) finds the politics quest, whose value is the city's number, so the leaning is that number: 1 is read as "leaning 1" for the city numbered 1, anything else but -1 and 1 as "none".
@@ -74,7 +74,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the second contents test is written `!cats2 & city.cats`, so a job with cats2 != 0 is never open.
 - **B-b28ef4** `bug`, flag `FixItemQualityByFlags` - `src/Darklands.Core/Rules/Inventory.cs:134` `Inventory.BestQualityByFlags`  
   original: `R031+0x5F6C` (18E7:171C, draft)  
-  why: item_defs[0]->flags is tested for every stack (FixItemQualityByFlags).
+  why: item-definition-table[0]->flags is tested for every stack (FixItemQualityByFlags).
 - **B-d5aab5** `bug`, flag `FixPartyItemsAddedTwice` - `src/Darklands.Core/Rules/Inventory.cs:196` `Inventory.AddStack`  
   original: `R031+0x4A04` (18E7:01B4, draft)  
   why: (-2) the stack is joined and appended too (FixPartyItemsAddedTwice).
@@ -86,19 +86,19 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: i starts at nitems (FixKeepItemsOffByOne).
 - **B-42ba6c** `bug`, flag `FixRecordedListShift`, `FixShopSetSwap` - `src/Darklands.Core/Rules/LocationRules.cs:148` `LocationRules.Set`  
   original: `R029+0x1DFE` (0E76:1DFE, draft)  
-  why: 6 writes city_rec[0x66] and 11 city_rec[0x67] (FixShopSetSwap); 37 overwrites every occupied slot (FixRecordedListShift).
+  why: 6 writes city-record[0x66] and 11 city-record[0x67] (FixShopSetSwap); 37 overwrites every occupied slot (FixRecordedListShift).
 - **B-55afd6** `bug`, flag `FixHostileUnrestTest` - `src/Darklands.Core/Rules/LocationRules.cs:221` `LocationRules.Hostile`  
   original: `R039+0x00BA` (1462:00BA, matched)  
-  why: event_at(cur_loc, 0x13) has its arguments swapped (FixHostileUnrestTest); the three tests short-circuit in this order.
+  why: event-at-place(location-now, 0x13) has its arguments swapped (FixHostileUnrestTest); the three tests short-circuit in this order.
 - **B-e63363** `bug`, no fix flag - `src/Darklands.Core/Rules/LocationRules.cs:374` `LocationRules.FarOfType`  
   original: `R030+0x28F2` (1462:28F2, draft)  
   why: only the icon is tested: a pagan altar the party has purged (its cards closed, 0x62: PaganAltarOnTheHill) is still chosen as an errand's site, which can then never be done; NearestOfType's flag-4 test does not catch it either.
 - **B-dc949d** `bug`, no fix flag - `src/Darklands.Core/Rules/LootSharing.cs:34` `LootSharing.ReplaceFallenLeader`  
   original: `R040+0x0000` (1462:0000, draft)  
-  why: the second test reads party[leader] instead of party[i] (as in the source; loot_distribute is byte-matched): reproduced, no fix flag.
+  why: the second test reads party[leader] instead of party[i] (as in the source; loot-split-entry is byte-matched): reproduced, no fix flag.
 - **B-a84745** `bug`, flag `FixBestWeaponSkillNumber` - `src/Darklands.Core/Rules/MemberRules.cs:93` `MemberRules.BestWeaponSkill`  
   original: `R029+0x01C0` (0E76:01C0, draft)  
-  why: `best_skill = i` sits outside the if (missing braces): it ends as 6 (FixBestWeaponSkillNumber).
+  why: `top-skill-so-far = i` sits outside the if (missing braces): it ends as 6 (FixBestWeaponSkillNumber).
 - **B-2ffc47** `bug`, flag `FixSetAttributeMaximumLimit` - `src/Darklands.Core/Rules/MemberRules.cs:169` `MemberRules.SetAttributeMaximum`  
   original: `R029+0x0B84` (0E76:0B84, draft)  
   why: the clamp's result is dropped and v is stored as a char (FixSetAttributeMaximumLimit).
@@ -113,19 +113,19 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: a temporary attribute boost that is not wholly applied lowers the attribute for good: the boost is cut only by the excess over the maximum and then recorded in full, but AddAttribute keeps the attribute within 1..99 and under the maximum plus the largest single boost (R029+0x4E0C); the expiry takes back the recorded amount, so a boost cut short (an attribute near 99, or a second boost overlapping a larger one, in either order) leaves the attribute lower than before. The whole-party path above does the same.
 - **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:353` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
-  why: (-2) member_skill(-2) and add_skill(-2) for each present member (FixWholePartyBoosts).
+  why: (-2) member-ability(-2) and raise-skill-by(-2) for each present member (FixWholePartyBoosts).
 - **B-014a8d** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:126` `PartyQueries.MinAttributeSum`  
   original: `R029+0x1696` (0E76:1696, draft)  
-  why: best_value = a * 2 (FixAttributeSums); it writes best_value, not DS:9C1D, and also DS:9A44.
+  why: top-value-so-far = a * 2 (FixAttributeSums); it writes top-value-so-far, not DS:9C1D, and also DS:9A44.
 - **B-82a302** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:163` `PartyQueries.MaxAttributeSum`  
   original: `R029+0x179C` (0E76:179C, draft)  
-  why: best_value = a * 2 (FixAttributeSums); DS:9A44 is not written here.
+  why: top-value-so-far = a * 2 (FixAttributeSums); DS:9A44 is not written here.
 - **B-c48d94** `bug`, flag `FixLeavingMemberRecordTail` - `src/Darklands.Core/Rules/PartyRules.cs:186` `PartyRules.RemoveFromParty`  
   original: `R037+0x3B58` (1462:3B58, draft)  
-  why: OriginalBehaviour.FixLeavingMemberRecordTail - the write-back is the 0x80-byte member record (combatants + p * 0x80 at the record's start, item count +0x7E included): the file's saints (+0x80), formulas (+0x94) and pack entries (+0xAA) stay as it had them, the slot's own (saints_known, formulas, inventories) are not written; the roster entry is that mix
+  why: OriginalBehaviour.FixLeavingMemberRecordTail - the write-back is the 0x80-byte member record (combatants + p * 0x80 at the record's start, item count +0x7E included): the file's saints (+0x80), formulas (+0x94) and pack entries (+0xAA) stay as it had them, the slot's own (saints-learned, formulas, inventories) are not written; the roster entry is that mix
 - **B-3dcbd1** `bug`, flag `FixBattleSeed` - `src/Darklands.Core/Rules/PartyRules.cs:274` `PartyRules.BattleSeed`  
   original: `R029+0x2278` (0E76:2278, draft)  
-  why: seed -2 gets party_seed twice (FixBattleSeed).
+  why: seed -2 gets party-random-seed twice (FixBattleSeed).
 - **B-11a75a** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:71` `PotionEffects.Drink`  
   original: `R031+0x10AE` (1462:10AE, draft), `R031+0x43B2` (1462:43B2, draft), `R031+0x4CC4` (18E7:0474, draft)  
   why: the weapon potions add to the bonus byte without a limit and their bonus event (0x4A) is never undone (EventExpiry.UndoBoost): they last for good and stack, and the nibbles wrap (Deadly Blade's damage nibble loses its carry out of the byte, so a fourth potion can leave +1; Strongedge's carries into the damage nibble).
@@ -149,16 +149,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: so for a prayer for the party (-1) the weapon-skill boost reaches nobody (FixSaintWeaponSkillsForParty: the leader's weapons).
 - **B-537f55** `bug`, flag `FixSaintStandingInOpenCountry` - `src/Darklands.Core/Rules/SaintBook.cs:194` `SaintBook.StandingHereIfCarrying`  
   original: `R039+0x2FC4` (165C:1024, matched)  
-  why: so St.Cecilia called on in the open country raises no town's standing: the other saints' standing goes to the nearest city there (R039+0x2FC4 passes cur_loc as it is) (FixSaintStandingInOpenCountry).
+  why: so St.Cecilia called on in the open country raises no town's standing: the other saints' standing goes to the nearest city there (R039+0x2FC4 passes location-now as it is) (FixSaintStandingInOpenCountry).
 - **B-6878fe** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:214` `SaintBook.PragueStanding`  
   original: `R039+0x619A` (165C:41FA, matched)  
   why: in Prague the standing goes to u, a local the function never sets (165C:42D4 pushes [bp-2]; its frame's other words are the what-table), not to Prague: Prague's own standing never changes by this saint.
 - **B-fe1d2c** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:355` `SaintBook.VirtueForAllAtAPrice`  
   original: `R029+0x007C` (0E76:007C, draft)  
-  why: R039+0x4375..0x4394 shifts only AX of money_pfennigs (root 1367:00F2, DX:AX) right by two (`shr ax,2` at R039+0x4384) and pays that: the quarter wraps at 65536 pfennigs (about 273 florins), a larger purse pays far less than a quarter.
+  why: R039+0x4375..0x4394 shifts only AX of purse-in-pfennigs (root 1367:00F2, DX:AX) right by two (`shr ax,2` at R039+0x4384) and pays that: the quarter wraps at 65536 pfennigs (about 273 florins), a larger purse pays far less than a quarter.
 - **B-b81c7e** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:424` `SaintBook.new`  
   original: `R039+0x1FD4` (165C:0034, matched)  
-  why: the text (DARKLAND.SNT) gives Endurance as "healing only"; the code raises it for a day (raise_attr_temp), past its maximum when unhurt, and takes it back when the day ends (so do St.Agatha and St.Anthony).
+  why: the text (DARKLAND.SNT) gives Endurance as "healing only"; the code raises it for a day (stat-temporary-boost), past its maximum when unhurt, and takes it back when the day ends (so do St.Agatha and St.Anthony).
 - **B-22d300** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:429` `SaintBook.new`  
   original: `R039+0x2130` (165C:0190, matched)  
   why: Endurance "healing only" by the text (DARKLAND.SNT), a day's boost in the code (see St.Adrian).
@@ -167,10 +167,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: Strength and Endurance "healing only" by the text (DARKLAND.SNT), a day's boost of each in the code (see St.Adrian).
 - **B-49f1ff** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:460` `SaintBook.new`  
   original: `R039+0x2B22` (165C:0B82, matched)  
-  why: the text (DARKLAND.SNT) heals "a small amount of lost Strength and a fair amount of lost Endurance"; the code raises both for a day (raise_attr_temp), past their maxima when unhurt (see St.Adrian).
+  why: the text (DARKLAND.SNT) heals "a small amount of lost Strength and a fair amount of lost Endurance"; the code raises both for a day (stat-temporary-boost), past their maxima when unhurt (see St.Adrian).
 - **B-defa50** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:465` `SaintBook.new`  
   original: `R039+0x2BC0` (165C:0C20, matched)  
-  why: her text (DARKLAND.SNT) also "prevents death from wounds for a period (strength never goes below 1)": nothing records it, and damage_apply (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
+  why: her text (DARKLAND.SNT) also "prevents death from wounds for a period (strength never goes below 1)": nothing records it, and damage-resolve (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
 - **B-315695** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:483` `SaintBook.new`  
   original: `R039+0x31FA` (165C:125A, matched)  
   why: her text (DARKLAND.SNT) promises resistance to fire, as St.Erasmus's and St.Pantaleon's do; the code sets only the charm nibble (SetCharm(0xA0)): no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6 (0x20) count as +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection (Attacks.HitDamage), for good.
@@ -305,7 +305,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: taking from an inn store into a full pack loses the item: the store entry gives it up whatever AddStack did, and with 64 stacks and none that the item joins, AddStack adds nothing.
 - **B-700b91** `bug`, flag `FixShopStockSize` - `src/Darklands.Core/Rules/Trading.cs:252` `Trading.ShopHasItem`  
   original: `R032+0x1D18` (1462:1D18, draft)  
-  why: the original compares its uninitialised size slot where cur_loc was meant (checked against asm 1D72: mov dx,[bp-2]; cmp dx,5Ch; inc dx); OriginalBehaviour.FixShopStockSize uses the city size always.
+  why: the original compares its uninitialised size slot where location-now was meant (checked against asm 1D72: mov dx,[bp-2]; cmp dx,5Ch; inc dx); OriginalBehaviour.FixShopStockSize uses the city size always.
 - **B-fd421f** `bug`, no fix flag - `src/Darklands.Core/Rules/Trading.cs:336` `Trading.Buy`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
@@ -314,7 +314,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 - **B-ae3eba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:93` `MainStreetAtNight.Walk`  
   original: `R046+0x0422` (1838:0422, matched), `R046+0x0466` (1838:0466, matched), `R046+0x04AA` (1838:04AA, matched) +7 more  
-  why: the night places are fixed card numbers (only the gate and the inn ask the time), no hour passes on the way (advance_hours(0) at most), and the night encounter keeps the night place to return to after its hours: going between the main street and the side streets at night stays in the night cards at any hour, with the encounters of the night (card oracle at 12:00: 0x08 -> 0x0A -> 0x24 -> 0x08 -> 0x19).
+  why: the night places are fixed card numbers (only the gate and the inn ask the time), no hour passes on the way (pass-hours(0) at most), and the night encounter keeps the night place to return to after its hours: going between the main street and the side streets at night stays in the night cards at any hour, with the encounters of the night (card oracle at 12:00: 0x08 -> 0x0A -> 0x24 -> 0x08 -> 0x19).
 - **B-bdd6a8** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/SideStreetAtNight.cs:60` `SideStreetAtNight.Run`  
   original: `R046+0x1460` (194B:0330, matched), `R046+0x1432` (194B:0302, matched)  
   why: the main street is always the night one (0x08) and no hour passes: see MainStreetAtNight.Walk.
@@ -359,7 +359,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: practices everybody (who −2) once per able member, as the original does.
 - **B-556a53** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:248` `Footpads.ThrowAPotion`  
   original: `R053+0x0C36` (1838:0C36, matched), `R053+0x0C72` (1838:0C72, matched), `R053+0x0CAE` (1838:0CAE, matched) +1 more  
-  why: no take_item here: the potion stays in the pack.
+  why: no pick-up-item here: the potion stays in the pack.
 - **B-9ddbde** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:290` `Footpads.Fight`  
   original: `R053+0x02D6` (1838:02D6, matched)  
   why: the standing (and the battle's skill practice) is given before the thanks; a game saved at that text holds only this card (DS:A772 = 0x24), so loading it starts the card again (an hour, the ambush or the menu) with the gains kept, by day as by night: the fight can be repeated at will.
@@ -368,13 +368,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
 - **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:444` `CouncilHall.CallUponASaint`  
   original: `R054+0x25C6` (19DF:0B56, matched)  
-  why: unlike the audience (ReceiveACommission), the saint's way in never asks for a finished commission (ev24_at_owner(3, 0x0A, cur_loc)): a party that prays its way in to be paid gets a new commission instead.
+  why: unlike the audience (ReceiveACommission), the saint's way in never asks for a finished commission (resolved-quest-at-owner(3, 0x0A, location-now)): a party that prays its way in to be paid gets a new commission instead.
 - **B-0c78c7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:77` `CityWallSallyPort.ForceChance`  
   original: `R055+0x12EC` (1932:034C, matched)  
   why: the original passes the highest Strength VALUE (DS:8DFC) where the member NUMBER belongs, both in the Strength lookup and as the member the hint is about; the Strength of that slot is what counts (almost always an empty slot here: 0).
 - **B-83f56d** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:106` `CityWallSallyPort.BlastWithPotion`  
   original: `R055+0x1136` (1932:0196, matched)  
-  why: "menu_slot = 2" and "p_6 = 0x64" overwrite the chosen potion and the chance (the parameter is volatile), a left-over test cheat; the failure branch can never run (the draw is 0..99 against 100) but still draws.
+  why: "menu-choice-index = 2" and "param-plus-6 = 0x64" overwrite the chosen potion and the chance (the parameter is volatile), a left-over test cheat; the failure branch can never run (the draw is 0..99 against 100) but still draws.
 - **B-77afe4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:315` `CathedralByDay.AskForARelic`  
   original: `R056+0x2782` (19C4:0EC2, asm), `R056+0x26CA` (19C4:0E0A, asm)  
   why: the errand is made for giver 0, the town's merchants, where the card's own tests (an errand open, one done: option 8) look for 3, the bishop: the merchants pay for it and the canon gives a new errand at every visit.
@@ -395,10 +395,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: confession can take no time or negative time: standing / -10 + 11 hours is 0 at standing 110..119 and negative from 120 (reachable: a quest's resolution adds standing without a limit, R029+0x3E06); PassHours then turns the clock back, and the hour can become negative (R057+0x03CC).
 - **B-f30456** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:208` `CityChurchByDay.GiveATenth`  
   original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
-  why: party_max_skill(8) returns the skill value, which the original then uses as a member number.
+  why: party-ability-top(8) returns the skill value, which the original then uses as a member number.
 - **B-ca9994** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:99` `HandbillThugs_Polit01.EatTheHandbills`  
   original: `R057+0x21DC` (1A02:053C, matched)  
-  why: R057+0x21DC..0x2230 never writes next_card (DS:E48A): after the truce the card is shown again and the line can be chosen again, each time injuring the party, lowering the standing and passing an hour.
+  why: R057+0x21DC..0x2230 never writes following-card (DS:E48A): after the truce the card is shown again and the line can be chosen again, each time injuring the party, lowering the standing and passing an hour.
 - **B-d962b2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:302` `HandbillThugs_Polit01.Fight`  
   original: `R057+0x1F22` (1A02:0282, matched)  
   why: the case has no break; it fights the group of the main street and then, falling through, the group of the side street too, and only the second result counts.
@@ -416,28 +416,28 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: woken at night, the bowyers sell the smiths' goods: the night shop passes the smiths' categories (0xFF, 0x400) where the day shop passes the bowyers' (0x30, 0x83C).
 - **B-751be8** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S067/JewelersGuildAtNight.cs:224` `JewelersGuildAtNight.FailedToGetIn`  
   original: `R067+0x1962` (1954:07A2, matched), `R029+0x1396` (0E76:1396, draft), `R039+0x0132` (1462:0132, matched)  
-  why: the lowest Stealth (1..99) is the member number: practice_skill always draws its chance, then member_skill and add_skill address record DS:9C69 + n*0x80. Below 5 that is a party slot (a member, perhaps not the clumsy one, practises); 20 is the place actions of the last battle (RecordOverrun: its skill byte DS:A6CF is Place[11] of the .BSV's variables, written when slot 0 has a figure image, the message drawn below the screen and waited for); the others are program memory (RecordOverrun's DIVERGENCE). Not data-damaging: Place[11] is a finished battle's byte that a new battle sets to 0 for all 13 combatants (R002+0x19FA) before reading it, and the .SAV never changes (direct calls j_prac.py / j_call.py / j_bsv.py, local/batch/evid1o), so it is faithful in both behaviours.
+  why: the lowest Stealth (1..99) is the member number: exercise-skill always draws its chance, then member-ability and raise-skill-by address record DS:9C69 + n*0x80. Below 5 that is a party slot (a member, perhaps not the clumsy one, practises); 20 is the place actions of the last battle (RecordOverrun: its skill byte DS:A6CF is Place[11] of the .BSV's variables, written when slot 0 has a figure image, the message drawn below the screen and waited for); the others are program memory (RecordOverrun's DIVERGENCE). Not data-damaging: Place[11] is a finished battle's byte that a new battle sets to 0 for all 13 combatants (R002+0x19FA) before reading it, and the .SAV never changes (direct calls j_prac.py / j_call.py / j_bsv.py, local/batch/evid1o), so it is faithful in both behaviours.
 - **B-f40b26** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S067/SneakingThroughTheHall.cs:21` `SneakingThroughTheHall.Run`  
   original: `R067+0x278A` (1A24:08CA, matched)  
-  why: the card (R067+0x1ECE) never calls card_load: it only fills card_name and pic_buf ("common"), so the screen keeps the previous card's picture and its blocks 6 and 0x0D, and those of every later text, are read from the previous card's message file (the guild's: $Black00, $Sword00 ...), until a member's sheet, the party information or a battle has the card loaded again (R043+0x1E82 and run_battle's card_load load card_name's texts, "$Sneak00"); see NameTheCard.
+  why: the card (R067+0x1ECE) never calls card-run: it only fills card-title and image-buffer ("common"), so the screen keeps the previous card's picture and its blocks 6 and 0x0D, and those of every later text, are read from the previous card's message file (the guild's: $Black00, $Sword00 ...), until a member's sheet, the party information or a battle has the card loaded again (R043+0x1E82 and battle-driver's card-run load card-title's texts, "$Sneak00"); see NameTheCard.
 - **B-ce730c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S068/ClimbingTheWallPastTheGuards.cs:45` `ClimbingTheWallPastTheGuards.Run`  
   original: `R068+0x2422` (19F9:0812, matched), `R068+0x2424` (19F9:0814, matched)  
   why: the rope line is greyed unless the last member carries a rope, whoever else has one.
 - **B-8a4d61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S069/CityNews.cs:45` `CityNews.Run`  
   original: `R069+0x15A8` (195D:0358, matched)  
-  why: this line (shown only with the politics quest here) sets next_card 0xAE like the gossip line (R069+0x15AE), the idle-news card; the politics talk of the city is card 0xBF.
+  why: this line (shown only with the politics quest here) sets following-card 0xAE like the gossip line (R069+0x15AE), the idle-news card; the politics talk of the city is card 0xBF.
 - **B-fa0f93** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:75` `AffairsElsewhere.Run`  
   original: `R071+0x15A4` (1992:0004, matched)  
   why: outside a city the news test misses a negation: unlike the branch above, this one tests the mine quest without it, so the "nothing of interest" text appears here only while the mine quest runs (and not the robber knight's).
 - **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:95` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
   original: `R071+0x02A8` (1838:02A8, matched)  
-  why: the original makes $ChosenOneName the least agile member's Agility value (party_min_attr's result), not the member; a value past the party names whatever lies there (from 25 on a piece of this card's .MSG file: TextVariables.OutsideName).
+  why: the original makes $ChosenOneName the least agile member's Agility value (party-stat-low's result), not the member; a value past the party names whatever lies there (from 25 on a piece of this card's .MSG file: TextVariables.OutsideName).
 - **B-37826f** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:29` `BeforeTheCityWalls.Run`  
   original: `R072+0x1A0E` (1981:057E, matched)  
-  why: the card (R072+0x1494) never calls card_load: it only fills card_name and pic_buf (a negative remainder leaves pic_buf as the last card left it), so the screen keeps the previous card's picture and the option list (block 0) and the result texts are read from the previous card's message file (the boat landing's $Enter00, the initial test card's $Initi00, the sally port's $CityW03 or $CityW05), until the dawn wait's card_load_near, a member's sheet, the party information or a battle has $CityE00 loaded (see NameTheCard).
+  why: the card (R072+0x1494) never calls card-run: it only fills card-title and image-buffer (a negative remainder leaves image-buffer as the last card left it), so the screen keeps the previous card's picture and the option list (block 0) and the result texts are read from the previous card's message file (the boat landing's $Enter00, the initial test card's $Initi00, the sally port's $CityW03 or $CityW05), until the dawn wait's card-run-near, a member's sheet, the party information or a battle has $CityE00 loaded (see NameTheCard).
 - **B-2ac103** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:170` `BeforeTheCityWalls.Disgrace`  
   original: `R072+0x17D6` (1981:0346, matched)  
-  why: at −40 or below the original draws improve_roll(v, −3, −9) and drops the result, so the standing stays as it is (the draw is still made).
+  why: at −40 or below the original draws improvement-roll(v, −3, −9) and drops the result, so the standing stays as it is (the draw is still made).
 - **B-097711** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:38` `SallyPortInTheCityWall.Run`  
   original: `R073+0x2CB0` (1A7E:0850, matched)  
   why: the text's lines 1, 3 and 5 are "abandon the horses and ..." variants the script has no options for (MSGFILES): the lines are numbered in order, so from the second line on each runs another option (the second line climbs without ropes, the sewer-grate line prays, the alchemy line sneaks back), and the last three (pray, bribe, sneak back) do nothing.
@@ -452,7 +452,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: text 1 says the Schulz departs from the party whether or not he joined it (RobberKnightTaskOffered); no member is removed here: one who joined stays until his 90 days are up.
 - **B-0ea525** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S081/InsideTheRobberKnightsTower.cs:108` `InsideTheRobberKnightsTower.Fight`  
   original: `R081+0x01B8` (1838:01B8, matched)  
-  why: here the quest is not resolved (ev8_resolve is only called after a won battle): the knight is dead and the tower a ruin, but no patron ever pays for the quest (card oracle: result 1 with the target slain).
+  why: here the quest is not resolved (open-quest-resolve is only called after a won battle): the knight is dead and the tower a ruin, but no patron ever pays for the quest (card oracle: result 1 with the target slain).
 - **B-a015b0** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S081/InsideTheRobberKnightsTower.cs:175` `InsideTheRobberKnightsTower.SetTheTowerOnFire`  
   original: `R081+0x05D0` (1838:05D0, matched)  
   why: the battle's next card (0x0C, the map, after the knight's death) is overwritten below: the party is back before the ruined tower (0x93) and can go in, fire it and kill the knight again, for his loot each time; the leader practises Artifice each time, though the chance was the best member's (card oracle, 0x94 option 1).
@@ -470,40 +470,40 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the strength is given before the last text; a game saved at that text holds only the card (DS:A772 = 0xAF), so loading it runs this card again from its menu with the strength kept: the fruit can be eaten again and again (lockstep oracle: save at the text, load, eat: +4 then +8).
 - **B-ee49f7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:35` `CityLordsReward.Run`  
   original: `R089+0x0C5C` (18CE:02FC, matched)  
-  why: the original looks for a saint nobody in the party knows, starting from the city's own, but has no return statement: AX holds the last member_bit answer, 0 (checked against asm). So saint 0.
+  why: the original looks for a saint nobody in the party knows, starting from the city's own, but has no return statement: AX holds the last member-flag-bit answer, 0 (checked against asm). So saint 0.
 - **B-418c61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S089/CityLordsReward.cs:97` `CityLordsReward.LearnTheFormula`  
   original: `R089+0x0C08` (18CE:02A8, matched)  
   why: see the summary; the formula table's byte is set to 7 (bits 0-2: the group's three formulas).
 - **B-65bf20** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelMarch.cs:51` `RebelMarch.Run`  
   original: `R090+0x0A82` (18E0:0002, matched)  
-  why: the bribe line's flag is set from saints_usable() (meant for line 2, the prayer, which stays enabled); it also overrides the 0 set just above for the far squads.
+  why: the bribe line's flag is set from saints-available() (meant for line 2, the prayer, which stays enabled); it also overrides the 0 set just above for the far squads.
 - **B-45b1b4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelsBeforeTheFortress.cs:59` `RebelsBeforeTheFortress.Run`  
   original: `R090+0x161E` (1999:000E, matched)  
   why: as the original has it, carrying a rope (item 0x3B) greys out the climb with a rope; the test looks inverted.
 - **B-4df3ba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S092/MerchantsOfTheCity.cs:89` `MerchantsOfTheCity.Trade`  
   original: `R092+0x0792` (188F:0222, matched)  
-  why: $Raubi01 (RobberKnightTaskRewarded) takes saved_card2 as the quest giver, but this is the castle's location: the reward (tag 3, owner 0, tested above) is not found, the card reads and frees events[-1], and the reward stays to be claimed again.
+  why: $Raubi01 (RobberKnightTaskRewarded) takes remembered-card-second as the quest giver, but this is the castle's location: the reward (tag 3, owner 0, tested above) is not found, the card reads and frees events[-1], and the reward stays to be claimed again.
 - **B-805211** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:199` `SmallCaveUnderTheLedge.FightTheTatzelwurm`  
   original: `R106+0x1C28` (19BC:03E8, matched)  
-  why: R029 2474 returns how many members were away, not who left: var_chosen1 gets that count, so the text names party member [count], and the test against -1 always holds: the loss text and the Virtue practice come even when nobody was away.
+  why: R029 2474 returns how many members were away, not who left: text-slot-chosen-one gets that count, so the text names party member [count], and the test against -1 always holds: the loss text and the Virtue practice come even when nobody was away.
 - **B-c6aabd** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:179` `CryptUnderTheRuinedChurch.TakeTheItem`  
   original: `R108+0x07CA` (1838:07CA, matched)  
-  why: a victory has already left for the map (cur_loc -1), so the errand's thing is given only after a defeat.
+  why: a victory has already left for the map (location-now -1), so the errand's thing is given only after a defeat.
 - **B-03246c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S113/PeatBog.cs:26` `PeatBog.Run`  
   original: `R113+0x1428` (18F0:08A8, matched), `R113+0x1502` (18F0:0982, matched)  
   why: 0x64 (100) is the Rope's item type, passed where an item-flag mask belongs: the rope line is enabled by a polearm (0x04), a bow (0x20) or metal armour (0x40), and a Rope (flag 0x100) alone leaves it shown but disabled.
 - **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:79` `HussiteBand.ClaimFriendship`  
   original: `R114+0x0DCC` (18D3:041C, matched)  
-  why: `rand_mod(100) == p` where every other card has `<=`; kept as the original has it.
+  why: `roll-below(100) == p` where every other card has `<=`; kept as the original has it.
 - **B-08a606** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:98` `TemplarWritingDesk.LearnAFormula`  
   original: `R118+0x21DC` (1A2B:02AC, matched)  
-  why: the search tests formulas_known[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any n whose group of three has any formula known, not just n itself. If all groups do, the first n is learnt.
+  why: the search tests known-recipes[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any n whose group of three has any formula known, not just n itself. If all groups do, the first n is learnt.
 - **B-1eb8d6** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S128/CollectorsCommission.cs:108` `CollectorsCommission.Run`  
   original: `R128+0x0BF0` (18F7:0000, matched), `R128+0x138A` (18F7:079A, matched), `R128+0x13C6` (18F7:07D6, matched) +28 more  
   why: debt notes name their holder by +0x2A % 2 (Medici, Fugger), but MerchantHouseOffices finds them in office +0x2A % 4, so the named office is often not the one that holds them.
 - **B-586670** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:86` `StrangerBringsAMob.FightAWave`  
   original: `R128+0x03B8` (1838:03B8, matched)  
-  why: the offer's option lines are never switched on (R128+0x0806 cleared opt_on[] and the menu loop that copies the flags has not run yet), so the box offers nothing to choose.
+  why: the offer's option lines are never switched on (R128+0x0806 cleared card-option-enabled[] and the menu loop that copies the flags has not run yet), so the box offers nothing to choose.
 - **B-759d5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S130/CavernOfFireAndHail.cs:102` `CavernOfFireAndHail.CreepAcrossUnderArmour`  
   original: `R130+0x107E` (190C:033E, matched)  
   why: the original adds rand(10)+8 Endurance and rand(6)+6 Strength although text 6 says everyone is hurt (the prayer's path subtracts the same kind of amounts); kept as the original does it (no OriginalBehaviour flag yet).
@@ -518,7 +518,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 - **B-ace31b** `bug`, no fix flag - `src/Darklands.Core/Events/EventExpiry.cs:105` `EventExpiry.AlchemyResult`  
   original: `R029+0x3FB2` (0E76:3FB2, draft)  
-  why: the formula's risk works backwards: the explosion (longer = 1, the inn barred 120 days) comes when rand_mod(4 - risk) is not 0, so a low-risk formula (0) explodes three times in four and a high-risk one (2) half the time.
+  why: the formula's risk works backwards: the explosion (longer = 1, the inn barred 120 days) comes when roll-below(4 - risk) is not 0, so a low-risk formula (0) explodes three times in four and a high-risk one (2) half the time.
 - **B-024865** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:135` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: boosts given to the whole party are never taken back (FixEverybodyBoostsUndone).
@@ -527,7 +527,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the weapon potions' kind 0x4A events (Deadly Blade, Strongedge, Great Power: PotionEffects.Drink) run out here and nothing is undone: only kinds 0x48 and 0x49 are, so the bonus byte (+0x34) keeps them for good.
 - **B-dcf1be** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:138` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
-  why: the recorded amount is taken off whatever the attribute is by then (add_attr(owner, type, -value)): a boost that a night's rest (Endurance back to its maximum) or wounds (Strength) have already used up is taken off again and leaves the attribute below where it was; a saint's lowering (a negative value) is given back the same way.
+  why: the recorded amount is taken off whatever the attribute is by then (raise-attribute-by(owner, type, -value)): a boost that a night's rest (Endurance back to its maximum) or wounds (Strength) have already used up is taken off again and leaves the attribute below where it was; a saint's lowering (a negative value) is given back the same way.
 - **B-e1b48f** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:97` `EventLog.Reload`  
   original: `R043+0x0100` (1462:0100, matched)  
   why: the table comes back compacted, and what a battle put into the slots below the count is lost: a saint's boost (kind 0x48/0x49) or a price called in a battle is never undone, as its event, which would end it, is gone.
@@ -539,7 +539,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
 - **B-d8f504** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:270` `EventLog.Next`  
   original: `R029+0x324C` (0E76:324C, draft)  
-  why: asking for kind 0x1C (location facts) also returns the kind 8 events (R029+0x3279..0x3281: `cmp cx,0x1c`, `cmp ax,8`): every fact scan (loc_fact, loc_fact_value and the like) sees the quests. A city's politics quest (type 0, value = the city's number) answers "fact 0" of that city, which should be the leaning.
+  why: asking for kind 0x1C (location facts) also returns the kind 8 events (R029+0x3279..0x3281: `cmp cx,0x1c`, `cmp ax,8`): every fact scan (place-flag, place-flag-value and the like) sees the quests. A city's politics quest (type 0, value = the city's number) answers "fact 0" of that city, which should be the leaning.
 
 ### travel (3)
 
@@ -551,7 +551,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the block is read through the buffer's flat layout with no bounds check (R030+0x261D..0x2639): a column past 18 is the next row's cell (col + i - 19 of row + j + 1: the west side of the window, one row down) and a row past 49 is the bytes after the buffer (zeros and the stale icons of Fill, then the party icon table). The marker's column is up to 16 and its row up to 47, so up to 9 columns wrap and up to 7 rows fall past the buffer. Reproduced: a settlement there changes the bonus; one in the true cells beyond is not seen.
 - **B-b69cb8** `bug`, no fix flag - `src/Darklands.Simulation/Overland/RowBuffer.cs:54` `RowBuffer.Load`  
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
-  why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from overland_open, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
+  why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
 ### battles (28)
 
@@ -566,19 +566,19 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the penetration wraps: (bonus + weapon) & 15, so Strongedge or Great Power on a weapon of high penetration gives almost none ("after Great Power my bows only do 3-5 damage").
 - **B-08f8dd** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:406` `Attacks.QueueDamage`  
   original: `R014+0xAD5A` (18BF:08CA, draft)  
-  why: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's animation; traps) wraps past 127 to a negative queue, which damage_apply's signed test (jle 42) lets through: the target gains Endurance (and Strength, for the second byte) instead of losing it.
+  why: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's animation; traps) wraps past 127 to a negative queue, which damage-resolve's signed test (jle 42) lets through: the target gains Endurance (and Strength, for the second byte) instead of losing it.
 - **B-dd3d33** `bug`, flag `FixLootExitTestReadsWords` - `src/Darklands.Core/Battles/BattleEnd.cs:44` `BattleEnd.LootSkips`  
   original: `R040+0x0C22` (1462:0C22, draft)  
-  why: OriginalBehaviour.FixLootExitTestReadsWords - the test reads cbt_floor (a byte table, DS:A6B4) as words at 2 x slot: it skips slot s only when combatant 2s's floor is -99 (0x9D) and combatant 2s + 1's is -1 (0xFF), so a member who left is not skipped (direct calls of R040+0x0C22 from the battle state street-p100 with key D and DS:8DC4 = 0: member 1's floor byte 0x9D gives DS:8DC4 = 1 without the message; floor bytes 2, 3 = 0x9D, 0xFF give DS:8DC4 = 2 after R022+0x04E4); tests: BattleEndTests
+  why: OriginalBehaviour.FixLootExitTestReadsWords - the test reads fighter-floor-level (a byte table, DS:A6B4) as words at 2 x slot: it skips slot s only when combatant 2s's floor is -99 (0x9D) and combatant 2s + 1's is -1 (0xFF), so a member who left is not skipped (direct calls of R040+0x0C22 from the battle state street-p100 with key D and DS:8DC4 = 0: member 1's floor byte 0x9D gives DS:8DC4 = 1 without the message; floor bytes 2, 3 = 0x9D, 0xFF give DS:8DC4 = 2 after R022+0x04E4); tests: BattleEndTests
 - **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:373` `BattleEnd.ImproveSkills`  
   original: `R014+0x0694` (0E76:0694, draft)  
-  why: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or axe has weapon -1 (use_ammo), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
+  why: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or axe has weapon -1 (spend-ammunition), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
   original: `R004+0x1D90` (0E76:1D90, draft)  
   why: the original removes an empty group by shifting the later groups down but keeps testing the same (stale, zero) counter, so every group after the first empty one is removed too.
 - **B-d7cb44** `bug`, no fix flag - `src/Darklands.Core/Battles/CombatantSetup.cs:108` `CombatantSetup.BackToMember`  
   original: `R002+0x0000` (0E76:0000, draft)  
-  why: the record's +0x00 word is the roster's location of the character and the combatant's scrx: the battle's last frame leaves the member's screen x there (cbt_screen_pos R014+0x99F6), which the inn's roster later reads as a location.
+  why: the record's +0x00 word is the roster's location of the character and the combatant's scrx: the battle's last frame leaves the member's screen x there (fighter-screen-position R014+0x99F6), which the inn's roster later reads as a location.
 - **B-8fdd39** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/CastleGenerator.Forces.cs:149` `CastleGenerator.PlaceParty`  
   original: `R007+0x1D78` (15AF:1D78, draft)  
   why: the original draws until the room differs from the gate room, which never happens when the only room it can draw is the gate room (the game then freezes; the emulated original does not return for seed 49955, lore 3, cleared 28, specs (46,4,2) (60,6,8) (41,5,3)).
@@ -602,16 +602,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: OriginalBehaviour.FixStairsKeyWithoutSelection - R016+0x0165..0x0169 copies entry [DS:A6B2] of the two member tables without testing it: with nobody selected (0xFF) entry -1, DS:C77D = DS:C8B1 (the bytes before the tables).
 - **B-d71b85** `bug`, flag `FixDissolveKeyMember` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:515` `TacticalBattle.DissolveKey`  
   original: `R016+0x0F76` (1EF8:0F76, draft), `R014+0xB434` (18BF:0FA4, draft)  
-  why: OriginalBehaviour.FixDissolveKeyMember - R016+0x0FAF..0x0FBA: consume_slot(DS:A6B2, DS:C7CD): the selected member (outside order mode the party member under the pointer, R014+0xB785, else −1, R014+0xB7F5) with member 0's slot byte (absolute, not indexed), no test of either: another member's stack, or the entries before the packs.
+  why: OriginalBehaviour.FixDissolveKeyMember - R016+0x0FAF..0x0FBA: use-up-slot(DS:A6B2, DS:C7CD): the selected member (outside order mode the party member under the pointer, R014+0xB785, else −1, R014+0xB7F5) with member 0's slot byte (absolute, not indexed), no test of either: another member's stack, or the entries before the packs.
 - **B-e7ca8e** `bug`, flag `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:557` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
-  why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level_switch (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level_switch and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
+  why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
 - **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:440` `TacticalBattle.UseUpDissolveSlot`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
   why: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an empty pack's count becomes −1).
 - **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:461` `TacticalBattle.ConsumeSlotAsOriginal`  
   original: `R014+0xB434` (18BF:0FA4, draft)  
-  why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, consume_slot's removal (no shift, k past the count) lowers member m's own count.
+  why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, use-up-slot's removal (no shift, k past the count) lowers member m's own count.
 - **B-fd2f1c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:676` `EffectField.DropWornOut`  
   original: `R019+0x0914` (1EF8:0914, matched)  
   why: items are consumed until none of that type and quality is left: the spares stacked with the worn piece (worn down with it by WearItem) are thrown away with it.
@@ -647,7 +647,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
 - **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:410` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
-  why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party_size: the writer tests all five ids, and a slot past party_size has status 0 (party_size is one past the last slot of status != 0), so its record is left out as well.
+  why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
 ## Presentation and host (4)
 
@@ -661,10 +661,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
 - **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:440` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
-  why: party_delete_vec runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
+  why: party-wipe-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 - **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:412` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
-  why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from overland_open, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
+  why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
 
 ## Fix flags without a BUG marker nearby
 

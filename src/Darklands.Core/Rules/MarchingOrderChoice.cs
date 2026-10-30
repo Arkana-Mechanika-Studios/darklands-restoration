@@ -36,7 +36,7 @@ public sealed class MarchingOrderChoice
     public const int LengthAt = 5;
 
     /// <summary>The entries of a six-byte order, up to its length (the sixth entry is the length's own byte).</summary>
-    // C: readers loop `j < marching_len` over the bytes from DS:C624: the sixth is DS:C629 itself.
+    // C: readers loop `j < column-length` over the bytes from DS:C624: the sixth is DS:C629 itself.
     // DIVERGENCE: a length above 6 (a saved game's bytes) would read the globals after the order; here the entries stop at the sixth.
     public static IReadOnlyList<int> Entries(byte[] order) =>
         [.. Enumerable.Range(0, Math.Min((int)order[LengthAt], LengthAt + 1)).Select(k => (int)order[k])];

@@ -26,10 +26,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from card_oracle import DS, HOLDRAND, Oracle, PARTY_SIZE, CardRun  # noqa: E402
+from card_oracle import DS, HOLDRAND, Oracle, PARTY_HEADCOUNT, CardRun  # noqa: E402
 from dosmachine import Stop, linear  # noqa: E402
 
-SAINT_FNS_SEG_SLOT, SAINT_FNS = 0x7E2C, 0x2937      # far pointer table of the 136 saint functions
+SAINT_FNS_SEG_SLOT, SAINT_HANDLER_TABLES = 0x7E2C, 0x2937      # far pointer table of the 136 saint functions
 SAINT_MSGS = 0x01BD                                  # "show saintly changes" (Alt-C)
 KEYS = ["L3-O0", "L3-O4", "L120-O1", "L120-O7"]
 
@@ -41,7 +41,7 @@ def saint_entries(o: Oracle):
     seg = m.word(DS, SAINT_FNS_SEG_SLOT)
     out = []
     for i in range(136):
-        off, sg = struct.unpack("<HH", m.read(seg, SAINT_FNS + 4 * i, 4))
+        off, sg = struct.unpack("<HH", m.read(seg, SAINT_HANDLER_TABLES + 4 * i, 4))
         out.append((sg, off))
     return out
 
@@ -78,7 +78,7 @@ def run_saint(saint: int):
     runs = {}
     for key in KEYS:
         o.boot(key)
-        size = o.m.word(DS, PARTY_SIZE)
+        size = o.m.word(DS, PARTY_HEADCOUNT)
         for who in range(size):   # the prayer screen helps the member who prays (R034)
             for messages in (True, False):
                 runs["%s who %d %s" % (key, who, "messages" if messages else "quiet")] = run_help(o, key, saint, who, messages)

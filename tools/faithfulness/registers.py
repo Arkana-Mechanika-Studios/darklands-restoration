@@ -168,7 +168,23 @@ def make_id(m: scan.Marker, taken: set) -> str:
         i = f"{base}-{n}"
         n += 1
     taken.add(i)
-    return i
+    return pins().get(i, i)
+
+
+_PINS = None
+
+
+def pins() -> dict:
+    """id-pins.csv: computed_id -> kept_id. The ids hash the marker text; when a marker's wording is edited (a names scrub)
+    the published id is pinned here so that it stays stable."""
+    global _PINS
+    if _PINS is None:
+        _PINS = {}
+        p = HERE.parent.parent / "docs" / "faithfulness" / "id-pins.csv"
+        if p.exists():
+            with open(p, newline="", encoding="utf-8") as f:
+                _PINS = {r["computed_id"]: r["kept_id"] for r in csv.DictReader(f)}
+    return _PINS
 
 
 def read_csv(path: Path):

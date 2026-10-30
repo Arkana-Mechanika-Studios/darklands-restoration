@@ -27,7 +27,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
         menu.Set(OptionState.Enabled, 1, 2, 3, 4);
         // The disguise is kept in the game's saved-card word, as the original does.
         c.State.SavedCard = c.Random(100) <= 8 ? 1 : 0;
-        // C: rand_mod(4) + 1 << 1: the shift binds looser than +, so 2, 4, 6 or 8 days.
+        // C: roll-below(4) + 1 << 1: the shift binds looser than +, so 2, 4, 6 or 8 days.
         c.Variables.Numbers[0] = (c.Random(4) + 1) * 2;
         c.PartyMaxAttribute((int)Attribute.Perception);
         c.Variables.Chosen[0] = c.BestMember;
@@ -49,7 +49,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
         // DORMANT: in text block 13 the option lines 3, 5..9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         return menu.Run(
             // orig: R109+0x0614 (1838:0614) matched; hint R109+0x0666
-            // DORMANT: line 0 (news, on to card 0x6E) is never offered: opt_flag_0 is 0 on every path.
+            // DORMANT: line 0 (news, on to card 0x6E) is never offered: card-option-flag-0 is 0 on every path.
             new MenuLine(_ => ExchangeNews(c, menu), Unknown),
             // orig: R109+0x069E (1838:069E) matched; hint R109+0x076C
             new MenuLine(_ => Trade(c, menu), Unknown),
@@ -57,7 +57,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
             new MenuLine(p => AskToTravelAlong(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 (c.Skill(Who.Leader, (int)Skill.SpeakCommon) / 2 + c.Attribute(Who.Leader, (int)Attribute.Charisma) + c.PartyAverageSkill((int)Skill.Virtue)) / 2,
                 1, 99), c.Leader)),
-            // orig: R109+0x0880 (line 3); hint R109+0x0980 (1838:0980) matched (the placeholder str_saint_xxx)
+            // orig: R109+0x0880 (line 3); hint R109+0x0980 (1838:0980) matched (the placeholder text-saint-template)
             new MenuLine(_ => PrayForInsight(c, menu), () => OptionHint.Say("XXX Saint % success msg XXX.")),
             // orig: R109+0x09B8 (1838:09B8) matched; hint R109+0x0A04
             new MenuLine(_ => LetThemPass(c), () => OptionHint.Say(SuccessAssured)),
@@ -125,7 +125,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
 
     /// <summary>The merchants' wares depend on the party's map row (y modulo 10).</summary>
     // orig: R109+0x069E (1838:069E) matched; tests: CardSmokeTests
-    // C: party_y % 10 is C's signed remainder (y is never negative). cur_loc is cleared before the shop opens.
+    // C: party-map-row % 10 is C's signed remainder (y is never negative). location-now is cleared before the shop opens.
     private static void Trade(CardContext c, CardMenu menu)
     {
         if (Disguised(c))
@@ -229,7 +229,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
     /// arrives at the nearest city.
     /// </summary>
     // orig: R109+0x0A3C (1838:0A3C) matched; tests: CardSmokeTests
-    // C: load_city(cur_loc = nearest_city(party_x, party_y)); the party's map position is not moved.
+    // C: city-read(location-now = closest-city(party-map-column, party-map-row)); the party's map position is not moved.
     private static void TravelWithTheCaravan(CardContext c)
     {
         c.Screen.Text(14);
@@ -267,8 +267,8 @@ public sealed class MerchantCaravanOnTheRoad : Card
     /// hiding; beaten, the weakest member dies and the rest wake robbed and half dead.
     /// </summary>
     // orig: R109+0x036E (1838:036E) matched; tests: CardSmokeTests
-    // C: the kind coin is drawn first; then, arguments right to left, rand_mod(5) + 3 before rand_mod(3);
-    // then run_battle draws its seed (-1).
+    // C: the kind coin is drawn first; then, arguments right to left, roll-below(5) + 3 before roll-below(3);
+    // then battle-driver draws its seed (-1).
     private static void FightTheBandits(CardContext c, bool ambushed)
     {
         var kind = c.Random(2);

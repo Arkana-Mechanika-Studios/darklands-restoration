@@ -12,8 +12,8 @@ public sealed record StoredItem(int Code, int Quality, int Count);
 /// count} entries. A place refers to its store by <see cref="Location.CacheHandle"/> (−1: nothing
 /// stored there). The file only grows: a store emptied and given up by its place stays in it.
 /// </summary>
-// orig: cache.tmp, read and written by cache_load R035+0x1350 and cache_save R035+0x1468 (R035) matched; the empty file of a loaded or
-// new game is written by load_saved_game R037+0x4184 (1462:4184) matched (0x63, 0, then 0x62 zero words), a saved game's tail copied over
+// orig: cache.tmp, read and written by stash-load R035+0x1350 and stash-store R035+0x1468 (R035) matched; the empty file of a loaded or
+// new game is written by saved-game-read R037+0x4184 (1462:4184) matched (0x63, 0, then 0x62 zero words), a saved game's tail copied over
 // it by the loader (R037 1462:1C7D, fopen "wb")
 public sealed class ItemStores
 {
@@ -22,7 +22,7 @@ public sealed class ItemStores
 
     private List<byte> _file = [.. EmptyFile()];
 
-    /// <summary>CACHE.TMP as load_saved_game writes it before a saved game's tail replaces it: 0x63, no store, 0x62 zero offsets.</summary>
+    /// <summary>CACHE.TMP as saved-game-read writes it before a saved game's tail replaces it: 0x63, no store, 0x62 zero offsets.</summary>
     public static byte[] EmptyFile()
     {
         var bytes = new byte[EmptyFileSize];
@@ -41,7 +41,7 @@ public sealed class ItemStores
         [.. Enumerable.Range(1, _file.Count > 1 ? _file[1] : 0).Select(h => (IReadOnlyList<StoredItem>)(Read(h) ?? []))];
 
     /// <summary>Copies store <paramref name="handle"/> into the working table (none for −1); the table's entries after it stay.</summary>
-    // orig: cache_load R035+0x1350 (1462:1350) matched; tests: TradingAndLootTests
+    // orig: stash-load R035+0x1350 (1462:1350) matched; tests: TradingAndLootTests
     // C: `q++; q += handle * 2 - 1; p += *q; p += *++q << 8; DS:89F6 = *p++;` then {id word, qual, cnt} per entry (p a far pointer: 16-bit offsets).
     // DORMANT: "No cache file" (cache.tmp missing) prints and exits to DOS; the file is always present here.
     // DIVERGENCE: a store read past the file's end reads the heap after its buffer in the original (handle 0's offset is bytes 0..1, a handle past
@@ -80,7 +80,7 @@ public sealed class ItemStores
     /// (none given: every store counts as live).
     /// </summary>
     // DIVERGENCE: with OriginalBehaviour.FixCacheStoreLimit (or FixInnCacheRewrite) the original's Put never refuses; here a Put that would need a 63rd live
-    // store or a 128th entry of a store is refused when it is made (cache_key, R035 keys 0x1950/0x1970), the item staying in the member's pack, so that
+    // store or a 128th entry of a store is refused when it is made (stash-screen-keys, R035 keys 0x1950/0x1970), the item staying in the member's pack, so that
     // closing the screen cannot lose items.
     public bool CanPut(Location place, IReadOnlyList<Location>? places, StoreTable table, int code, int quality, OriginalBehaviour? behaviour)
     {
@@ -142,10 +142,10 @@ public sealed class ItemStores
     /// forget it (handle −1); a place without a store gets a new one at the end of the file,
     /// a known store rewrites the file.
     /// </summary>
-    // orig: cache_close R035+0x04BC (1462:04BC) and cache_save R035+0x1468 (1462:1468) matched; tests: TradingAndLootTests
-    // C: `if (DS:89F6 != 0) cache_save(locations[cur_loc]->cache); else locations[cur_loc]->cache = -1;` (DS:89F0, the count written, is DS:89F6).
-    // BUG: OriginalBehaviour.FixInnCacheRewrite - a known store's rewrite (cache_save R035+0x1468) lays the file out with a 101-byte header over offsets of a 198-byte one.
-    // BUG: OriginalBehaviour.FixCacheStoreLimit - the append (cache_save(-1) R035+0x1468, the offset written at R035+0x1532) has no limit: the 99th store's offset lands at 198..199, over store 1's count byte and its first item.
+    // orig: stash-screen-close R035+0x04BC (1462:04BC) and stash-store R035+0x1468 (1462:1468) matched; tests: TradingAndLootTests
+    // C: `if (DS:89F6 != 0) stash-store(locations[location-now]->cache); else locations[location-now]->cache = -1;` (DS:89F0, the count written, is DS:89F6).
+    // BUG: OriginalBehaviour.FixInnCacheRewrite - a known store's rewrite (stash-store R035+0x1468) lays the file out with a 101-byte header over offsets of a 198-byte one.
+    // BUG: OriginalBehaviour.FixCacheStoreLimit - the append (stash-store(-1) R035+0x1468, the offset written at R035+0x1532) has no limit: the 99th store's offset lands at 198..199, over store 1's count byte and its first item.
     public void Close(Location place, IReadOnlyList<StoredItem> items, OriginalBehaviour? behaviour = null, IReadOnlyList<Location>? places = null)
     {
         if (items.Count == 0)
@@ -167,8 +167,8 @@ public sealed class ItemStores
     }
 
     // DIVERGENCE: with OriginalBehaviour.FixInnCacheRewrite or FixCacheStoreLimit (data safety, switchable; on in the player's game) the append and the
-    // rewrite of a known store (cache_save R035+0x1468) are not made: the stores the places refer to are read by their offsets and the file is laid out
-    // compactly, the way the original's own cache_save reads and rewrites it without loss: byte 0 = 124, byte 1 the store count, the offsets from 2 (store h at 2h),
+    // rewrite of a known store (stash-store R035+0x1468) are not made: the stores the places refer to are read by their offsets and the file is laid out
+    // compactly, the way the original's own stash-store reads and rewrites it without loss: byte 0 = 124, byte 1 the store count, the offsets from 2 (store h at 2h),
     // store 1 at 126, the stores packed in handle order and nothing after the last. At most 62 stores, 127 entries a store; stores no place refers to are dropped
     // and the places' handles (Location +0x18) renumbered. The original lays out a 198-byte table, whose rewrite loses stores (cbw R035+0x1615), and
     // has no limit (the append at R035+0x1532). Put is refused beyond the limits (CanPut). A file the original itself wrote can already hold more than
@@ -215,7 +215,7 @@ public sealed class ItemStores
     }
 
     // DIVERGENCE: data safety (FixCacheStoreLimit): when no layout keeps every store offset and the file size within 16 bits (a file of at most 0xFFFF
-    // bytes: the original computes the next store's position, the file size, in 16 bits at cache_save R035+0x1468, so a size of 0x10000 or more wraps to
+    // bytes: the original computes the next store's position, the file size, in 16 bits at stash-store R035+0x1468, so a size of 0x10000 or more wraps to
     // 0 or low), the file is not laid out again. The store the screen is left from is written over its old bytes when it is no longer than they are
     // (a Get only shrinks it, a Put onto an existing entry changes a count; the stale bytes after a shrunk store stay, as in the original's own rewrite,
     // and no offset moves), else nothing is written. Places' handles stay. No offset past 0xFFFF is ever written; Put of a new entry or store is
@@ -252,8 +252,8 @@ public sealed class ItemStores
     /// <summary>Adds a store at the end of the file (as a place without one does when its screen closes); returns its handle.</summary>
     public int Add(IEnumerable<StoredItem> items) => Append([.. items]);
 
-    // C: cache_save(-1): `fgetc(fp); ncache = fgetc(fp); fseek(fp, 0L, 2); pos = ftell(fp); fputc(DS:89F0, fp); _dos_write(entries);
-    // C: fseek(fp, (long)((ncache + 1) * 2), 0); fputc(pos); fputc(pos >> 8); fseek(fp, 1L, 0); fputc(++ncache, fp); locations[cur_loc]->cache = ncache;`
+    // C: stash-store(-1): `fgetc(fp); ncache = fgetc(fp); fseek(fp, 0L, 2); pos = ftell(fp); fputc(DS:89F0, fp); _dos_write(entries);
+    // C: fseek(fp, (long)((ncache + 1) * 2), 0); fputc(pos); fputc(pos >> 8); fseek(fp, 1L, 0); fputc(++ncache, fp); locations[location-now]->cache = ncache;`
     // C: no limit: the 99th store's offset lands at 198..199, on the first store's count byte and the low byte of its first item.
     private int Append(IReadOnlyList<StoredItem> items)
     {
@@ -270,7 +270,7 @@ public sealed class ItemStores
         return (short)ncache;
     }
 
-    // C: cache_save(handle) on a known store: the file read into a buffer, reopened without truncation (fdopen "wb" on a handle opened for
+    // C: stash-store(handle) on a known store: the file read into a buffer, reopened without truncation (fdopen "wb" on a handle opened for
     // C: writing: bytes past the new end stay), `n = *q++; ncache = *q++; p += (char)*q;`, n and ncache written, n zero bytes, then each store
     // C: i < ncache in turn at the file position reached, its offset written at (i + 1) * 2: store `handle` from the working table
     // C: (`k = *p++; p += k << 2;` skips its old bytes), the others copied from p (`k = *p; _dos_write(p, (k << 2) + 1); p += (k << 2) + 1;`).

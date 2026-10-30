@@ -16,9 +16,9 @@ public static class MonthlyUpdate
     /// reads an undefined location record there).
     /// </summary>
     // orig: R029+0x281C (0E76:281C) matched; tests: PracticeAndItemsTests (birthdays castle sabbat)
-    // C: the birthday test uses (unsigned)(party_seed + cur_month) % 12 and the castle test months % 3: both the incremented month (12 = January before the year rolls).
+    // C: the birthday test uses (unsigned)(party-random-seed + month-now) % 12 and the castle test months % 3: both the incremented month (12 = January before the year rolls).
     // DIVERGENCE: in the wilderness the original reads locations[-1] (an undefined record) for the castle search; here the party's map position.
-    // C: `!ev8_exists(4) && !rand_mod(4)` short-circuits: no draw while a dragon quest is under way (the same for the mine).
+    // C: `!open-quest-exists(4) && !roll-below(4)` short-circuits: no draw while a dragon quest is under way (the same for the mine).
     public static void Run(GameState s, int month)
     {
         s.ReportSkillChanges = true;

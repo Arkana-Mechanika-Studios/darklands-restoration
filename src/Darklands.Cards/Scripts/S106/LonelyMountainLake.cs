@@ -26,7 +26,7 @@ public sealed class LonelyMountainLake : Card
 
     public override int Run(CardContext c)
     {
-        // The CardTable has no name for card 249; the code copies "$McGuf01" (DS:64EA) into card_name.
+        // The CardTable has no name for card 249; the code copies "$McGuf01" (DS:64EA) into card-title.
         c.Screen.Show("$McGuf01", PictureNames.Of(LakePicture));
         c.Next = Number;
         var menu = Menu(c, 0);
@@ -34,8 +34,8 @@ public sealed class LonelyMountainLake : Card
         // The guardian is kept in the game's saved-card word, as the original does.
         if (c.Events.QuestAt(10, c.Here))
         {
-            // C: event_find does not set last_event; event_f2e_of(last_event) reads the stale global.
-            // C: (cur_loc + 100) % 100 with idiv: a signed remainder, non-negative for any location.
+            // C: event-search does not set latest-event; event-detail-word-of(latest-event) reads the stale global.
+            // C: (location-now + 100) % 100 with idiv: a signed remainder, non-negative for any location.
             _ = c.Events.Find(8, -1, c.Here, -1, 10, -1);
             c.NameToSlot(0, c.EventDetail(c.LastEvent), 0);
             c.State.SavedCard = ((c.Here + 100) % 100) switch { <= 34 => NoGuardian, <= 56 => Vulcans, <= 78 => Spider, _ => Bears };
@@ -56,7 +56,7 @@ public sealed class LonelyMountainLake : Card
             // orig: R106+0x1396 (line 2); hint R106+0x14B2 (18B5:0CE2) asm
             new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R106+0x14EA (18B5:0D1A) asm; hint R106+0x14FC
-            // DORMANT: line 3 is never offered (opt_flag_3 = 0).
+            // DORMANT: line 3 is never offered (card-option-flag-3 = 0).
             new MenuLine(_ => { c.PassHours(0); c.Next = CardContext.MapCard; }, () => OptionHint.Say(SuccessAssured)),
             // DORMANT: lines 4..8 are never offered; actions R106+0x1534.. and hints R106+0x1536.. are bare retf.
             // C: those hints return whatever is in AX/DX; a neutral hint is used.
@@ -65,7 +65,7 @@ public sealed class LonelyMountainLake : Card
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
-            // orig: R106+0x1548 (18B5:0D78) asm; hint R106+0x1550 (leaves without clearing cur_loc)
+            // orig: R106+0x1548 (18B5:0D78) asm; hint R106+0x1550 (leaves without clearing location-now)
             new MenuLine(_ => c.Next = CardContext.MapCard, () => OptionHint.Say(NoRisk)));
     }
 
@@ -155,7 +155,7 @@ public sealed class LonelyMountainLake : Card
 
     /// <summary>A saint warns of the fire-creatures, or of a strong beast; without a guardian the lake feels peaceful.</summary>
     // orig: R106+0x1396 (18B5:0BC6) asm; tests: CardSmokeTests
-    // C: var_chosen1 = menu_member is stored between pushing the saint and pushing the member, before the prayer.
+    // C: text-slot-chosen-one = menu-owner-member is stored between pushing the saint and pushing the member, before the prayer.
     private static void PrayForGuidance(CardContext c)
     {
         var saint = c.CardSaints[c.MenuEntrySlot];
@@ -195,7 +195,7 @@ public sealed class LonelyMountainLake : Card
     /// things; lost, the fire consumes everybody in the cave — the whole party.
     /// </summary>
     // orig: R106+0x0A86 (18B5:02B6) asm; tests: CardSmokeTests
-    // C: right-to-left arguments: rand_mod(5) + 3 is the only draw before run_battle (seed -2 draws nothing).
+    // C: right-to-left arguments: roll-below(5) + 3 is the only draw before battle-driver (seed -2 draws nothing).
     private static void FightTheVulcans(CardContext c)
     {
         var vulcans = c.Random(5) + 3;
@@ -319,7 +319,7 @@ public sealed class LonelyMountainLake : Card
 
     /// <summary>The bears: won, the item is carried off; otherwise those who ran return mauled and the party limps away.</summary>
     // orig: R106+0x0E9C (18B5:06CC) asm; tests: CardSmokeTests
-    // C: add_attr(i, 1, -rand_mod(imin(member_attr(i, 1) + 1, 50))); every result but 0 and 1..4 also leaves.
+    // C: raise-attribute-by(i, 1, -roll-below(smaller-of(member-stat(i, 1) + 1, 50))); every result but 0 and 1..4 also leaves.
     private static void FightTheBears(CardContext c)
     {
         var bears = c.Random(5) + 3;

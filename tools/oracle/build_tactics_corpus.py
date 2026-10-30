@@ -1,5 +1,5 @@
-"""Original-byte corpus for the tactical engine's geometry (R014): cbt_collisions (1462:000A),
-line_blocked (1D69:000C) and distance3 (root 047C:1120).
+"""Original-byte corpus for the tactical engine's geometry (R014): fighter-collision-pass (1462:000A),
+sight-line-blocked (1D69:000C) and three-way-distance (root 047C:1120).
 
 usage: python -I build_tactics_corpus.py <DARKLAND.EXE> <out tactics.json>
 
@@ -23,12 +23,12 @@ from run_unit import run  # noqa: E402
 DS = 0x321A
 FLOOR_SEG = 0x20A5
 COMBATANTS = 0x9C55
-CBT_FLOOR, HALF_W, HALF_H, MOVING = 0xA6B4, 0xC80F, 0xC831, 0xA6D3
+FIGHTER_FLOOR_LEVEL, HALF_W, HALF_H, MOVING = 0xA6B4, 0xC80F, 0xC831, 0xA6D3
 FURN_H, FURN_W, FURN_X, FURN_Y, SIGHT = 0xC11D, 0xC12F, 0xD7BE, 0xD802, 0xC1CF
 STRICT, SEARCHING, SEARCH_TARGET, NO_SCENERY, NO_PEOPLE = 0xE0A2, 0xD697, 0xD6CD, 0xE13C, 0xC600
 LAST, PARTS = 0xD708, 0xE11C
-LOS_X0, LOS_Y0, LOS_X1, LOS_Y1 = 0xE0A5, 0xE0A3, 0xE0A9, 0xE0A7
-FLOOR_SHOWN = 0x11CA
+SIGHT_LINE_X0, SIGHT_LINE_Y0, SIGHT_LINE_X1, SIGHT_LINE_Y1 = 0xE0A5, 0xE0A3, 0xE0A9, 0xE0A7
+FLOOR_DISPLAYED = 0x11CA
 
 
 def h16(v: int) -> str:
@@ -89,7 +89,7 @@ def memory_of(cells, shapes, recs, floors, half_w, half_h, moving, sight):
     mem.append(ds(FURN_Y, bytes(b for s in shapes for b in s[3])))
     mem.append(ds(SIGHT, bytes([sight])))
     mem += [ds(COMBATANTS + 0x80 * k, rec) for k, rec in enumerate(recs)]
-    mem += [ds(CBT_FLOOR, floors), ds(HALF_W, half_w), ds(HALF_H, half_h), ds(MOVING, moving), ds(FLOOR_SHOWN, b"\x00")]
+    mem += [ds(FIGHTER_FLOOR_LEVEL, floors), ds(HALF_W, half_w), ds(HALF_H, half_h), ds(MOVING, moving), ds(FLOOR_DISPLAYED, b"\x00")]
     return mem
 
 
@@ -126,7 +126,7 @@ def main() -> None:
         inputs.update({"who": k, "x": x, "y": y, "strict": strict, "searching": searching, "target": target if target != 0xFF else -1,
                        "noScenery": scenery, "noPeople": people})
         inputs["combatants"] = [q.hex() for q in recs]
-        res = run(exe, {"unit": "cbt_collisions", "entry": {"segment": "1462", "offset": "000A"}, "sections": [136, 14],
+        res = run(exe, {"unit": "fighter-collision-pass", "entry": {"segment": "1462", "offset": "000A"}, "sections": [136, 14],
                         "ds": DS, "memory": mem, "args": [h16(COMBATANTS + 0x80 * k)], "follow": True})
         images = res["loadedImages"]
         changed = {int(c["offset"], 16): int(c["after"], 16) for c in res["dsChanged"]}
@@ -134,7 +134,7 @@ def main() -> None:
         def word(off):
             return changed.get(off, 0xA5) | changed.get(off + 1, 0xA5) << 8
 
-        out.append({"function": "cbt_collisions", "inputs": inputs, "ax": res["final"]["ax"],
+        out.append({"function": "fighter-collision-pass", "inputs": inputs, "ax": res["final"]["ax"],
                     "parts": [word(PARTS + 2 * p) for p in range(16)], "last": word(LAST)})
     for n in range(400):
         centre = (r.randint(5, 34), r.randint(5, 34))
@@ -149,18 +149,18 @@ def main() -> None:
         a = r.choice([-1, -1, -2, r.randint(0, 12)])
         b = r.choice([-1, r.randint(0, 12)])
         mode = r.choice([0, 0x80, 0x100])
-        mem += [ds(LOS_X0, struct.pack("<h", x0)), ds(LOS_Y0, struct.pack("<h", y0)), ds(LOS_X1, struct.pack("<h", x1)),
-                ds(LOS_Y1, struct.pack("<h", y1))]
+        mem += [ds(SIGHT_LINE_X0, struct.pack("<h", x0)), ds(SIGHT_LINE_Y0, struct.pack("<h", y0)), ds(SIGHT_LINE_X1, struct.pack("<h", x1)),
+                ds(SIGHT_LINE_Y1, struct.pack("<h", y1))]
         inputs.update({"from": [x0, y0], "to": [x1, y1], "a": a, "b": b, "mode": mode})
-        res = run(exe, {"unit": "line_blocked", "entry": {"segment": "1D69", "offset": "000C"}, "sections": [136, 14],
+        res = run(exe, {"unit": "sight-line-blocked", "entry": {"segment": "1D69", "offset": "000C"}, "sections": [136, 14],
                         "ds": DS, "memory": mem, "args": [h16(a), h16(b), h16(mode)], "follow": True})
-        out.append({"function": "line_blocked", "inputs": inputs, "ax": res["final"]["ax"]})
+        out.append({"function": "sight-line-blocked", "inputs": inputs, "ax": res["final"]["ax"]})
     for n in range(300):
         a = r.choice([0, 1, -1, 32767, -32768, r.randint(-3000, 3000), r.randint(-200, 200)])
         b = r.choice([0, 1, -1, 32767, -32768, r.randint(-3000, 3000), r.randint(-200, 200)])
-        res = run(exe, {"unit": "distance3", "entry": {"segment": "047C", "offset": "1120"}, "sections": [136],
+        res = run(exe, {"unit": "three-way-distance", "entry": {"segment": "047C", "offset": "1120"}, "sections": [136],
                         "ds": DS, "memory": [], "args": [h16(a), h16(b), "0000"], "follow": True})
-        out.append({"function": "distance3", "inputs": {"a": a, "b": b}, "ax": res["final"]["ax"]})
+        out.append({"function": "three-way-distance", "inputs": {"a": a, "b": b}, "ax": res["final"]["ax"]})
     corpus = {"authority": "test_only_original_byte_execution", "originalExeSha256": hashlib.sha256(exe).hexdigest().upper(),
               "loadedImages": images, "cases": out}
     Path(sys.argv[2]).write_text(json.dumps(corpus, indent=0) + "\n")

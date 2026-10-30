@@ -11,7 +11,7 @@ seg = b.item_table_segment(exe)
 REPS = [-32768, -32767, -20000, -10000, -1000, -656, -655, -654, -400, -200, -100, -99, -50, -20, -19, -18, -17, -16, -5, -4, -3, -2, -1, 0, 1, 2, 3, 20, 98, 99, 100, 101, 150, 200, 654, 655, 656, 1000, 16384, 20000, 32767]
 r = random.Random(20261027)
 out, images = [], None
-for fn in ("buy_price", "sell_price"):
+for fn in ("R032+0x192E", "R032+0x1B26"):
     for rep in REPS:
         for k in range(10):
             force = {"rep": rep, "curLoc": r.choice([5, 5, 5, 150]), "flags": 0 if k % 2 == 0 else r.choice([0, 8]),

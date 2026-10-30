@@ -8,7 +8,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R074+0x15D2 (1995:0002) matched; tests: CardSmokeTests
 // orig: R074+0x1CE8 (1995:0718) matched; R074+0x1D54 (1995:0784) matched; tests: CardSmokeTests
 // DORMANT: the "screwed up." default handler of the unlisted lines 6..19 (never offered).
-// C: every roll here succeeds when rand_mod(100) >= chance (the reverse of most cards): kept.
+// C: every roll here succeeds when roll-below(100) >= chance (the reverse of most cards): kept.
 public sealed class ChasedByTheCityGuard : Card
 {
     public const int CardNumber = 0x7A;
@@ -100,7 +100,7 @@ public sealed class ChasedByTheCityGuard : Card
     }
 
     // orig: R074+0x1A84 (1995:04B4) matched; tests: CardSmokeTests
-    // C: the loop runs over every slot below party_size, empty or not (an empty slot's skill counts).
+    // C: the loop runs over every slot below party-headcount, empty or not (an empty slot's skill counts).
     /// <summary>The clumsiest member (lowest skill 0x0F over all slots) and the city's size decide; night helps.</summary>
     private static OptionHint HidingChance(CardContext c)
     {
@@ -173,7 +173,7 @@ public sealed class ChasedByTheCityGuard : Card
         // C: the option line itself only asks for a member and a potion (chance -1, so the
         // ">= chance" roll always succeeds); member and slot are then whatever the pop-up left.
         // C: the chance is the handler's the loop calls (CardMenu.Run): the option line's -1, the box's for a click there, and for Enter
-        // C: there opt_fn[k], the box's handler for slot k % 4.
+        // C: there card-option-handler[k], the box's handler for slot k % 4.
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         if (c.Random(100) >= chance)
         {

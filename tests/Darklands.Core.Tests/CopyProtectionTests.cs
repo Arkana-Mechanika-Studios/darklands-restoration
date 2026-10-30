@@ -4,7 +4,7 @@ using Darklands.Core.World;
 namespace Darklands.Core.Tests;
 
 /// <summary>
-/// The copy-protection question's draws (R041+0x0000): the expected values come from the original's bytes run with its own rand_mod and
+/// The copy-protection question's draws (R041+0x0000): the expected values come from the original's bytes run with its own roll-below and
 /// _rand from the given generator state (the symbols as the _itoa arguments of the picture names, the named one from the substance
 /// table index, the state after the call).
 /// </summary>

@@ -20,7 +20,7 @@ public sealed class UnfinishedCityGate_CityG07 : Card
         // orig: R093+0x05CA (1838:05CA) matched (option and pop-up reset)
         c.SetCardSaints();
         c.SetCardItems();
-        // C: card_items[3] is stored between the saints, in the order 0x5F, 0x60, 0x65, saints 0
+        // C: card-item-lines[3] is stored between the saints, in the order 0x5F, 0x60, 0x65, saints 0
         // and 0x59, item 0x61, saints 0x61 and 0x80; the result is the same lists.
         c.SetCardItems(0x5F, 0x60, 0x65, 0x61);
         c.SetCardSaints(0, 0x59, 0x61, 0x80);

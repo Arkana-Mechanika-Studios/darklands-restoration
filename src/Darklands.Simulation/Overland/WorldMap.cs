@@ -79,13 +79,13 @@ public sealed class WorldMap
     // C: R030+0x20D2 takes a first column or row of 0 as 1 (R030+0x20D8..0x20E9) when it fills the cell buffer G, while the readers index
     //   G with the view's own DS:286A / DS:286C: the step R030+0x1300 (G[(y + 11) / 4][col] at R030+0x137B..0x1382), the camp watch
     //   R030+0x25BE (R030+0x261D..0x2639, R030+0x26AC..0x26B2) and the party drawing R030+0x16C6 (which also sets DS:D843)
-    // C: party_x / party_y (DS:286A + col - 1, row + DS:286E + DS:286C - 1) and the place scans of 1300 use the registers, not G: only the
-    //   terrain read moves. DS:286A is 0 whenever the view stands at the west border (overland_open and the scroll block clamp it there);
-    //   DS:286C is 0 only after overland_open placed a party at map row 16 or less (the scroll block keeps it at 1 or more).
+    // C: party-map-column / party-map-row (DS:286A + col - 1, row + DS:286E + DS:286C - 1) and the place scans of 1300 use the registers, not G: only the
+    //   terrain read moves. DS:286A is 0 whenever the view stands at the west border (world-map-start and the scroll block clamp it there);
+    //   DS:286C is 0 only after world-map-start placed a party at map row 16 or less (the scroll block keeps it at 1 or more).
     public static (int Column, int Row) BufferOffset(int viewColumn, int viewRows) => (viewColumn == 0 ? 1 : 0, viewRows == 0 ? 1 : 0);
 
     /// <summary>The map cell under a point in map pixels (the party's position).</summary>
-    // orig: rowk = (DS:2868 + 11) / 4; cold = ((rowk + DS:286E + DS:286C - 1) % 2 ? DS:2866 + 16 : DS:2866 + 24) / 16; party_x = DS:286A + cold - 1; party_y = rowk + DS:286E + DS:286C - 1 (R030+0x0C44)
+    // orig: rowk = (DS:2868 + 11) / 4; cold = ((rowk + DS:286E + DS:286C - 1) % 2 ? DS:2866 + 16 : DS:2866 + 24) / 16; party-map-column = DS:286A + cold - 1; party-map-row = rowk + DS:286E + DS:286C - 1 (R030+0x0C44)
     // C: these are the formulas with the view offsets folded into one absolute pixel: x = DS:2866 + 16 * DS:286A, y = DS:2868 + 4 * (DS:286E + DS:286C); the row parity (odd rows shifted right by half a tile) is that of the absolute row.
     public static (int Column, int Row) CellAt(int x, int y)
     {

@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 //     R123+0x1FAE
 //   other: R123+0x1C7C, R123+0x1D1E
 // DORMANT (generated): option slots 10..19 keep the default handler R123+0x1D1E ("screwed up.") and are never shown.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatFairFromTheHill : Card
 {
@@ -82,13 +82,13 @@ public sealed class SabbatFairFromTheHill : Card
             new MenuLine(_ => CallASaint(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint));
     }
 
-    // orig: the event_update(−1, −1, 0x1C, 7, n, 1, add) of R123+0x191C / _0554 / _0602 / _0718 matched
+    // orig: the event-advance(−1, −1, 0x1C, 7, n, 1, add) of R123+0x191C / _0554 / _0602 / _0718 matched
     private static void RaiseTheAlarm(CardContext c, int amount) =>
         c.Events.Update(-1, -1, 0x1C, AlarmFact, amount, FactTag, EventUpdate.Add);
 
     /// <summary>Down the hill ahead of a group of pilgrims (remembered for a day).</summary>
     // orig: R123+0x1724 matched
-    // C: it copies the path picture into pic_buf itself (the card's own picture from then on).
+    // C: it copies the path picture into image-buffer itself (the card's own picture from then on).
     private static void GoDownToThePath(CardContext c, CardMenu menu)
     {
         menu.Offer(1, 3, 4);
@@ -97,7 +97,7 @@ public sealed class SabbatFairFromTheHill : Card
     }
 
     // orig: R123+0x184C matched
-    // C: an int function that falls off its end without a value; ignored. It also sets pic_buf to the path picture.
+    // C: an int function that falls off its end without a value; ignored. It also sets image-buffer to the path picture.
     private static void WaitForTheTravellers(CardContext c, CardMenu menu)
     {
         menu.Offer(2, 5, 6, 7, 8);
@@ -106,7 +106,7 @@ public sealed class SabbatFairFromTheHill : Card
     }
 
     /// <summary>Back on the hill; the travellers can no longer be met.</summary>
-    // orig: the common tail of R123+0x191C / _0602 matched (pic_buf back to the fair picture)
+    // orig: the common tail of R123+0x191C / _0602 matched (image-buffer back to the fair picture)
     private static void BackToTheHill(CardContext c, CardMenu menu)
     {
         menu.Offer(0, 1, 2);
@@ -177,8 +177,8 @@ public sealed class SabbatFairFromTheHill : Card
     /// message buffer as it was, slots 1..3 say "Success is assured."; all point at the member in the box.
     /// </summary>
     // orig: R123+0x1D56 / _08ce / _0906 / _093e matched
-    // DORMANT: card_items stays all −1, so no line opens an item pop-up; kept unwired.
-    // C: slot 0 shows whatever msg_buf still holds; "Success is assured." stands in for it here.
+    // DORMANT: card-item-lines stays all −1, so no line opens an item pop-up; kept unwired.
+    // C: slot 0 shows whatever text-bank-buffer still holds; "Success is assured." stands in for it here.
     private static OptionHint ItemPopup(CardContext c, int slot) =>
         OptionHint.Say(SuccessAssured, c.MenuMember);
 }

@@ -1,10 +1,10 @@
 namespace Darklands.Cards;
 
 /// <summary>
-/// The cards whose loop shows its menu on the block <c>options_block</c> holds (<c>card_options(options_block)</c>):
+/// The cards whose loop shows its menu on the block <c>settings-block</c> holds (<c>card-option-lines(settings-block)</c>):
 /// their <see cref="CardMenu.Block"/> is the game's one <see cref="CardContext.OptionsBlock"/>, which later cards may read.
 /// </summary>
-// orig: options_block DS:EE53; the card functions below (reference C: `card_options(options_block)` in the loop; R081: push [DS:EE53] at R081+0x21D9)
+// orig: settings-block DS:EE53; the card functions below (reference C: `card-option-lines(settings-block)` in the loop; R081: push [DS:EE53] at R081+0x21D9)
 internal static class OptionsBlockCards
 {
     private static readonly HashSet<string> Cards = new(StringComparer.Ordinal)
@@ -72,6 +72,6 @@ internal static class OptionsBlockCards
         "DragonBlightedLand", // R081+0x1848 (asm)
     };
 
-    /// <summary>The card class shows its menu on <c>options_block</c>.</summary>
+    /// <summary>The card class shows its menu on <c>settings-block</c>.</summary>
     public static bool Binds(string cardClass) => Cards.Contains(cardClass);
 }

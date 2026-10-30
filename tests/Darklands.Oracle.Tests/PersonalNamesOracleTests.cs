@@ -8,11 +8,11 @@ namespace Darklands.Oracle.Tests;
 
 /// <summary>
 /// The name tables read from DARKLAND.EXE against the original program: every case of
-/// Corpus/names.json is <c>random_name</c> or <c>name_to_slot</c> run from the EXE bytes
+/// Corpus/names.json is <c>made-up-name</c> or <c>label-to-slot</c> run from the EXE bytes
 /// (tools/oracle/build_names_corpus.py); a name is compared by length and SHA-256.
 /// Needs DARKLAND.EXE (DARKLANDS_EXE, or DARKLAND.EXE in the game folder); without it the tests have nothing to compare.
 /// </summary>
-// orig: random_name R029+0x5CC4 and name_to_slot R029+0x1FB8 from the original bytes
+// orig: made-up-name R029+0x5CC4 and label-to-slot R029+0x1FB8 from the original bytes
 public sealed class PersonalNamesOracleTests
 {
     private static readonly Lazy<Corpus> Data = new(() => Corpus.Load("names.json"));
@@ -38,7 +38,7 @@ public sealed class PersonalNamesOracleTests
         {
             return;
         }
-        var cases = Data.Value.Cases("random_name");
+        var cases = Data.Value.Cases("R029+0x5CC4");
         Assert.NotEmpty(cases);
         var drawn = 0;
         foreach (var c in cases)
@@ -66,7 +66,7 @@ public sealed class PersonalNamesOracleTests
         {
             return;
         }
-        var cases = Data.Value.Cases("name_to_slot");
+        var cases = Data.Value.Cases("R029+0x1FB8");
         Assert.NotEmpty(cases);
         foreach (var c in cases)
         {

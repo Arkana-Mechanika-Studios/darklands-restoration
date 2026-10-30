@@ -28,17 +28,17 @@ public sealed class SoldiersClosingInAtTheWall : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 3, 4);
-        // C: the init helper R073+0x20F4 sets opt_on[0..19] = 1 (with the "screwed up." handler) and the loop copies only
+        // C: the init helper R073+0x20F4 sets card-option-enabled[0..19] = 1 (with the "screwed up." handler) and the loop copies only
         // flags 0..4: lines 5..19 stay enabled. The card's texts have seven option lines, two more than the code knows, so lines 5
         // and 6 are offered and do nothing (card oracle: CardOracleTests).
         menu.Enable(Enumerable.Range(5, 15).ToArray());
-        // C: cur_rep is the card's copy of the reputation, read at the start; nothing here changes it.
+        // C: reputation-now is the card's copy of the reputation, read at the start; nothing here changes it.
         var standing = c.LocationQuery(c.Here, 0);
         c.SetCardItems(0x65, 0x68);
         c.SetCardSaints(0x36, 0x3D, 0x59, 0x61);
         menu[0] = c.ItemsUsable();
         menu[2] = c.SaintsUsable();
-        // Line 1 is the sally port. C: opt_on[1] is copied from opt_flag_1 before the text is drawn,
+        // Line 1 is the sally port. C: card-option-enabled[1] is copied from card-option-flag-1 before the text is drawn,
         // and only the flag is cleared by a roll over 50: the port line is hidden from the next round on.
         var sallyPort = OptionState.Enabled;
         menu.EachRound = () =>
@@ -55,13 +55,13 @@ public sealed class SoldiersClosingInAtTheWall : Card
             }
         };
 
-        // C: a choice in a pop-up box calls the box's handler table (item_fn / saint_fn, the same for every line), and the
+        // C: a choice in a pop-up box calls the box's handler table (item-handler-table / saint-handler-table, the same for every line), and the
         // texts' boxes are not on the code's lines: text line 1 (alchemy, the horses left behind) opens the item box over
         // handler 1 (the sally port), text line 3 (pray) the saint box over handler 3 (the attack). Their box handlers are
         // the item and saint ones (the item slot 1 and every saint handler make the member $ChosenOneName).
         return menu.Run(
             new MenuLine(chance => ThrowAPotion(c, standing, chance), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
-            // orig: R073+0x1B62 (199E:0502) matched: advance_hours(0), next_card = 0x2F
+            // orig: R073+0x1B62 (199E:0502) matched: pass-hours(0), following-card = 0x2F
             new MenuLine(_ => { c.PassHours(0); c.Next = 0x2F; }, OptionHint.Saying(CardTexts.Unknown), () => PotionHint(c)),
             new MenuLine(_ => Pray(c, standing), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(_ => Attack(c, standing), OptionHint.Saying(CardTexts.EnterCombat), c.SaintPopupHint),

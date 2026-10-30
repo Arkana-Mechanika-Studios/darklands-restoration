@@ -49,7 +49,7 @@ public sealed class MemberRulesTests
         MemberRules.AddAttribute(s, 0, Str, -100);
         Assert.Equal(1, s.Party.Members[0][Attribute.Strength]);
         MemberRules.SetAttribute(s, 0, Str, 0);
-        Assert.Equal(0, s.Party.Members[0][Attribute.Strength]);    // set_attr allows 0
+        Assert.Equal(0, s.Party.Members[0][Attribute.Strength]);    // stat-assign allows 0
     }
 
     [Fact]

@@ -16,7 +16,7 @@ public sealed class GiantSpiderNest : Card
     private const int RoadPicture = 286;
     private const int CampPicture = 61;
 
-    // C: the card's picture buffer (pic_buf), set by the card load.
+    // C: the card's picture buffer (image-buffer), set by the card load.
     private int _cardPicture;
 
     public override int Number => 274;
@@ -47,14 +47,14 @@ public sealed class GiantSpiderNest : Card
             menu.Block = 0;
         }
         // C: the saints were set just before (0x4A/0x67/0x6B/0x79 for the ambush, else 0x36/0x3D/0x83 and
-        // 0x45 or 3 by the terrain DS:D843 in 4..14), but the registration's memset(card_saints, -1, 8) that
+        // 0x45 or 3 by the terrain DS:D843 in 4..14), but the registration's memset(card-saint-lines, -1, 8) that
         // follows erases them: no saint is available here until the spiders strike.
         c.SetCardSaints();
         c.SetCardItems(0x65, 0x66);
         menu[2] = c.ItemsUsable();
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
-        // C: item_fn slots 0/1 are the potion handlers R112+0x24B8 / R112+0x24FA, slots 2/3 bare retf (R112+0x253C / 0x253E): Enter in the
+        // C: item-handler-table slots 0/1 are the potion handlers R112+0x24B8 / R112+0x24FA, slots 2/3 bare retf (R112+0x253C / 0x253E): Enter in the
         // C: item box rates line 2 with slot 2's.
         menu.ItemBox = () => c.MenuSlot < 2 ? PotionHint(c) : c.EmptyBoxHandler();
 
@@ -92,7 +92,7 @@ public sealed class GiantSpiderNest : Card
     {
         var m = c.MenuMember;
         c.Variables.Chosen[0] = m;
-        // C: the handlers read the entry's item (menu_slot), whichever slot's handler runs.
+        // C: the handlers read the entry's item (menu-choice-index), whichever slot's handler runs.
         var aim = c.Attribute(m, (int)Attribute.Perception) + c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]);
         return OptionHint.ChanceOf(aim + (c.MenuSlot == 0 ? 4 : 19), m);
     }
@@ -232,10 +232,10 @@ public sealed class GiantSpiderNest : Card
 
     /// <summary>The spiders: won, fame and goodwill; fled, those away are lost; beaten, robbed and the weakest member dragged off.</summary>
     // orig: R112+0x19B0 (199D:0360) matched; tests: CardSmokeTests
-    // C: right-to-left arguments: the spider count is drawn before run_battle draws its seed (-1).
-    // C: party_x is declared `extern long` in the original, so the call pushes party_y and party_x: nearest_city(party_x) receives the party's (x, y); nothing is undefined (checked against the asm).
+    // C: right-to-left arguments: the spider count is drawn before battle-driver draws its seed (-1).
+    // C: party-map-column is declared `extern long` in the original, so the call pushes party-map-row and party-map-column: closest-city(party-map-column) receives the party's (x, y); nothing is undefined (checked against the asm).
     // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): result 5 takes the default arm and returns without leaving.
-    // DORMANT: the switch's explicit cases -0x40..-1 return without leaving, and results 6 and above (pit, timed exit) cannot occur on this object-less battlefield; run_battle never gives them.
+    // DORMANT: the switch's explicit cases -0x40..-1 return without leaving, and results 6 and above (pit, timed exit) cannot occur on this object-less battlefield; battle-driver never gives them.
     private static void FightTheSpiders(CardContext c, bool ambushed)
     {
         var spiders = c.Random(3) + c.PartyLoreLevel() / 5 * 3 + 1;

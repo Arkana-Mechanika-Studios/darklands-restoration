@@ -6,7 +6,7 @@
 "holdrand": "7B20",
 "cases": [
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0001",
 "changed": {},
 "inputs": {
@@ -61,7 +61,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -159,7 +159,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -269,7 +269,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -349,7 +349,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -462,7 +462,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -556,7 +556,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -637,7 +637,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -715,7 +715,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -792,7 +792,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -881,7 +881,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -955,7 +955,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -1064,7 +1064,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -1145,7 +1145,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -1251,7 +1251,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -1330,7 +1330,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -1411,7 +1411,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0001",
 "changed": {},
 "inputs": {
@@ -1465,7 +1465,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -1562,7 +1562,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -1675,7 +1675,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -1783,7 +1783,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -1866,7 +1866,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -1963,7 +1963,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -2053,7 +2053,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -2161,7 +2161,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -2244,7 +2244,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -2325,7 +2325,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -2415,7 +2415,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -2529,7 +2529,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -2633,7 +2633,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -2739,7 +2739,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -2832,7 +2832,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -2932,7 +2932,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -3015,7 +3015,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -3110,7 +3110,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -3184,7 +3184,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -3277,7 +3277,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -3365,7 +3365,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0001",
 "changed": {},
 "inputs": {
@@ -3421,7 +3421,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -3504,7 +3504,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -3602,7 +3602,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -3712,7 +3712,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -3809,7 +3809,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -3911,7 +3911,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -4000,7 +4000,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -4107,7 +4107,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0001",
 "changed": {},
 "inputs": {
@@ -4162,7 +4162,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -4265,7 +4265,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0001",
 "changed": {},
 "inputs": {
@@ -4321,7 +4321,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -4404,7 +4404,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -4497,7 +4497,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -4588,7 +4588,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -4669,7 +4669,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -4749,7 +4749,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -4849,7 +4849,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -4949,7 +4949,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -5044,7 +5044,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -5146,7 +5146,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0001",
 "changed": {},
 "inputs": {
@@ -5201,7 +5201,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -5309,7 +5309,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -5392,7 +5392,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -5490,7 +5490,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -5588,7 +5588,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -5676,7 +5676,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -5784,7 +5784,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -5893,7 +5893,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -5991,7 +5991,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -6071,7 +6071,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -6180,7 +6180,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -6265,7 +6265,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -6358,7 +6358,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -6464,7 +6464,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -6557,7 +6557,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -6657,7 +6657,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -6751,7 +6751,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0001",
 "changed": {},
 "inputs": {
@@ -6806,7 +6806,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -6897,7 +6897,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -6976,7 +6976,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -7055,7 +7055,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -7147,7 +7147,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -7231,7 +7231,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -7340,7 +7340,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -7441,7 +7441,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -7520,7 +7520,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -7614,7 +7614,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -7691,7 +7691,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -7799,7 +7799,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -7880,7 +7880,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -7965,7 +7965,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -8062,7 +8062,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -8143,7 +8143,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -8220,7 +8220,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -8309,7 +8309,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -8384,7 +8384,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -8479,7 +8479,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -8593,7 +8593,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0005",
 "changed": {},
 "inputs": {
@@ -8709,7 +8709,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -8792,7 +8792,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0003",
 "changed": {},
 "inputs": {
@@ -8875,7 +8875,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {
@@ -8973,7 +8973,7 @@
 }
 },
 {
-"function": "gen_battlefield",
+"function": "R005+0x0000",
 "ax": "0004",
 "changed": {},
 "inputs": {

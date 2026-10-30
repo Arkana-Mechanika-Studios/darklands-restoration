@@ -10,7 +10,7 @@ namespace Darklands.Oracle.Tests;
 
 /// <summary>
 /// The city battlefield generator against the original program: each scenario in
-/// Corpus/city.json is the original city_build run from DARKLAND.EXE on the player's
+/// Corpus/city.json is the original city-builder-entry run from DARKLAND.EXE on the player's
 /// IMAPS.CAT, DARKLAND.ENM and DARKLAND.LST (tools/oracle/build_city_corpus.py). Needs the game
 /// folder (DARKLANDS_DIR, or the "game" key of local/paths.json); without it the test passes vacuously.
 /// </summary>
@@ -32,7 +32,7 @@ public sealed class CityOracleTests
         var tables = CombatTablesReader.Read(DarklandsExecutable.Load(files));
         var maps = PreparedMaps.Load(files);
         var n = 0;
-        foreach (var c in Data.Value.Cases("city_build"))
+        foreach (var c in Data.Value.Cases("R010+0x0000"))
         {
             var s = c.Inputs;
             var bf = s.GetProperty("bf").GetInt32();

@@ -23,7 +23,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R120+0x25EA, R120+0x268C
 // DORMANT (generated): option slots 10..19 keep the default handler R120+0x268C ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class TemplarDoorGuard : Card
 {

@@ -7,7 +7,7 @@ public sealed partial class TacticalBattle
     /// <summary>DS:C654 / DS:C67F: the work list the loot screen shows (and the merges build).</summary>
     private readonly List<ItemStack> _lootList = [];
 
-    /// <summary>DS:1B98: the fight left loot (loot_pile_open does nothing otherwise).</summary>
+    /// <summary>DS:1B98: the fight left loot (loot-pile-opened does nothing otherwise).</summary>
     private bool _lootLeft;
 
     /// <summary>DS:D846: the block of the gathered loot when no pile took it (the leader's pile index is then −count).</summary>
@@ -18,7 +18,7 @@ public sealed partial class TacticalBattle
     /// within 16 pixels — merged with that pile's block into a new one that both piles then share; a set that drops nothing
     /// leaves an empty pile (−2). The new pile is moved into one screen tile.
     /// </summary>
-    // orig: cbt_dying R014+0x2324 (0E76:2324) draft (the loot pile part)
+    // orig: fighter-dying R014+0x2324 (0E76:2324) draft (the loot pile part)
     private void LeavePile(Combatant c, AnimationSlot slot)
     {
         var loot = Store.Loot;
@@ -145,7 +145,7 @@ public sealed partial class TacticalBattle
     /// merged into one list, which becomes the block of the first of those piles (the leader's pile); with no pile it is kept
     /// apart for the leader (−count).
     /// </summary>
-    // orig: loot_after_fight R014+0xEA10 (19CD:34A0) unmatched
+    // orig: post-fight-loot R014+0xEA10 (19CD:34A0) unmatched
     private void GatherLoot()
     {
         var loot = Store.Loot;
@@ -218,7 +218,7 @@ public sealed partial class TacticalBattle
     /// The member's pile (or the gathered loot kept apart) on the loot screen with the purse; what the party leaves goes back
     /// into the file as a new block for every pile that pointed at the old one.
     /// </summary>
-    // orig: loot_pile_open R014+0xE278 (19CD:2D08) matched
+    // orig: loot-pile-opened R014+0xE278 (19CD:2D08) matched
     private void OpenLootPile(int i)
     {
         if (!_lootLeft)
@@ -263,9 +263,9 @@ public sealed partial class TacticalBattle
                 }
             }
         }
-        // C: floor_view_draw(DS:17B0): the view drawn anew around the active member
+        // C: floor-view-paint(DS:17B0): the view drawn anew around the active member
         _view.Recentre(Battle.ActiveMember);
-        // C: then combat_draw R014+0x6818 (R014+0xE3B3), as each tick ends: its R014+0x99F6 (called at R014+0x6926) turns the attackers
+        // C: then fight-draw R014+0x6818 (R014+0xE3B3), as each tick ends: its R014+0x99F6 (called at R014+0x6926) turns the attackers
         //   toward their targets, then the draw list (its random draws) and the target cursor.
         TurnTowardTargets();
         Effects.Drawn(_view);

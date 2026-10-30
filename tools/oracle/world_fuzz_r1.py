@@ -25,7 +25,7 @@ import battle_calls as bc  # noqa: E402
 ALL_BITS = [0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x80, 0x40, 0x200, 0x400, 0x800, 0x1000, 0x2000, 0x4000, 0x8000]
 STRENGTH_BITS = [0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x80, 0x40, 0x200, 0x400, 0x1000]
 POLITICS = {"R039+0x0BF6", "R039+0x0D46", "R039+0x0EBE", "R039+0x0A34", "R039+0x0A7E", "R029+0x4180"}
-# expiry handlers of the event table (event_expiry_fns): coordinate -> handler number
+# expiry handlers of the event table (event-expiry-handlers): coordinate -> handler number
 HANDLERS = {"R029+0x3FB2": 1, "R029+0x4180": 2, "R029+0x4378": 3, "R029+0x4436": 4, "R029+0x4442": 5, "R029+0x448A": 6, "R029+0x450A": 7,
             "R029+0x4534": 8, "R029+0x4626": 9}
 GROUP = 2
@@ -54,7 +54,7 @@ class R1(wf.Fuzzer):
     # ---- helpers
     def fact_op(self, type_: int, value: int, loc: int | None = None, kind: int = KIND_FACT, tag: int = GROUP):
         """An edit that gives the fact (kind, type, loc, tag) the value: the state's own event when it has one, else a new one."""
-        loc = self.cur_loc() if loc is None else loc
+        loc = self.location_now() if loc is None else loc
         for i, e in enumerate(self.sav.events):
             if (struct.unpack_from("<H", e, 0x22)[0], struct.unpack_from("<H", e, 0x00)[0], struct.unpack_from("<H", e, 0x1C)[0],
                     struct.unpack_from("<H", e, 0x28)[0]) == (kind, type_, loc, tag):
@@ -94,14 +94,14 @@ class R1(wf.Fuzzer):
         if rng.random() < 0.5:
             ops.append({"s": "head", "o": 0x6C, "hex": w(rng.randrange(31)).hex()})
         if self.coord == "R029+0x4180" or rng.random() < 0.2:
-            ops.append({"s": "event+", "hex": event_hex(self.year(), KIND_FACT, 0xC, 0xFFFE, self.cur_loc(), 0x63, 0, 1, 2, GROUP)})
+            ops.append({"s": "event+", "hex": event_hex(self.year(), KIND_FACT, 0xC, 0xFFFE, self.location_now(), 0x63, 0, 1, 2, GROUP)})
         return ops
 
     def handler(self) -> list:
         rng = self.rng
         n = HANDLERS[self.coord]
         y = self.year()
-        loc = self.cur_loc()
+        loc = self.location_now()
         member = rng.randrange(max(1, len(self.sav.chars)))
         if n == 1:       # a brew is done: owner, formula, chance, potions, the mishap's sort, the formula's difficulty
             rec = event_hex(y, 0x1D, type_=rng.randrange(0, 33), owner=member, loc=loc, value=rng.choice([0, 1, 10, 50, 90, 99, 100, 120]),
@@ -160,7 +160,7 @@ def main():
     wf.FUNCTIONS["R029+0x0C76"] = [whom, wf.FUNCTIONS["R029+0x0C76"][1]]
     wf.FUNCTIONS.update({
         "R039+0x00BA": [], "R039+0x0102": [], "R039+0x15C2": [], "R039+0x11FC": [], "R039+0x1B0C": [],
-        # (value, <unused>, low): the function reads its first and third words; every caller passes value > low (clamp_range(low, value, rand_mod(value - low)))
+        # (value, <unused>, low): the function reads its first and third words; every caller passes value > low (limit-to-range(low, value, roll-below(value - low)))
         "R039+0x0000": [lambda r, f: r.choice([20, 50, 100, 500, 1000, 0x23, 0x0E, 8, 0x0F]), lambda r, f: 0, lambda r, f: r.choice([0, 1, 2, 4, 5, 10, 0x14, 6])],
         "R039+0x1D2C": [pick(-80, -11, -10, -9, 0, 9, 10, 49, 50, 100, 0xFFB0), pick(0, 1, 5, 50, 200, 1000)],
         "R039+0x1E06": [pick(0, 1, 2, 3, 4, 5, 0xFFFF)],

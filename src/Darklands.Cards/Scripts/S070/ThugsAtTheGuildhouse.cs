@@ -5,8 +5,8 @@ using Darklands.Core.Events;
 namespace Darklands.Cards.Scripts;
 
 /// <summary>
-/// "$Polit00": at night armed thugs try to break into a guildhouse (the guild in party_x, its
-/// politics fact in party_y). Scare them off, use a potion, call the watch, attack or charge;
+/// "$Polit00": at night armed thugs try to break into a guildhouse (the guild in party-map-column, its
+/// politics fact in party-map-row). Scare them off, use a potion, call the watch, attack or charge;
 /// beating them wins the guild over and some reward, fleeing or losing lets them do their work.
 /// </summary>
 // orig: R070+0x2894 (1AC1:0004) matched; tests: CardSmokeTests
@@ -95,7 +95,7 @@ public sealed class ThugsAtTheGuildhouse : Card
     /// A potion thrown at them. Both its option hint and its pop-up give the chance −1, so this
     /// always ends as a failed threat (the potion is used up).
     /// </summary>
-    // orig: R070+0x2F56 (hint R070+0x2FF0 "Of course the potion will work!", member menu_member)
+    // orig: R070+0x2F56 (hint R070+0x2FF0 "Of course the potion will work!", member menu-owner-member)
     private static void FrightenWithAPotion(CardContext c, CardMenu menu, int chance)
     {
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
@@ -149,8 +149,8 @@ public sealed class ThugsAtTheGuildhouse : Card
             9 or 10 => 0x11,
             _ => 0x56,
         };
-        // C: arguments right to left: the leader's quality, then the thugs' number (rand_mod(4)),
-        // then their quality (rand_mod(2)).
+        // C: arguments right to left: the leader's quality, then the thugs' number (roll-below(4)),
+        // then their quality (roll-below(2)).
         var leaderQuality = c.PartyLoreLevel() % 3 + 1;
         var thugs = c.Random(4) + c.PartyLoreLevel() / 3 + 1;
         var thugQuality = c.Random(2) + c.PartyLoreLevel() / 4 + 1;
@@ -196,7 +196,7 @@ public sealed class ThugsAtTheGuildhouse : Card
         }
     }
 
-    // C: cur_rep is the card's copy of the reputation: lowered, then written back.
+    // C: reputation-now is the card's copy of the reputation: lowered, then written back.
     private static void LoseStanding(CardContext c, ref int standing, int loss)
     {
         standing -= loss;

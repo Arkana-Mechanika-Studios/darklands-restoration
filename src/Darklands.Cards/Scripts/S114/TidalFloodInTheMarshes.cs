@@ -41,7 +41,7 @@ public sealed class TidalFloodInTheMarshes : Card
             // orig: R114+0x246E (line 2); hint R114+0x24C0 (1A3F:0450) matched
             new MenuLine(_ => Pray(c, menu), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R114+0x24F8 (1A3F:0488) matched; hint R114+0x2500
-            // DORMANT: lines 3 and 4 (other saints: cards 284 and 285) are never offered (opt_flag_3/4 = 0).
+            // DORMANT: lines 3 and 4 (other saints: cards 284 and 285) are never offered (card-option-flag-3/4 = 0).
             new MenuLine(_ => c.Next = 284, () => OptionHint.Say(NoRisk)),
             // orig: R114+0x2538 (1A3F:04C8) matched; hint R114+0x2540
             new MenuLine(_ => c.Next = 285, () => OptionHint.Say(NoRisk)),

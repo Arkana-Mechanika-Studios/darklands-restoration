@@ -2,7 +2,7 @@ using Darklands.Core.Characters;
 
 namespace Darklands.Core.Battles;
 
-/// <summary>The to-hit result of one attack (<c>to_hit_roll</c>).</summary>
+/// <summary>The to-hit result of one attack (<c>hit-roll</c>).</summary>
 public enum HitResult
 {
     /// <summary>No blow this tick (the attack-rate roll failed), or a plain miss.</summary>
@@ -20,18 +20,18 @@ public enum HitResult
 
 /// <summary>What one attack did: its to-hit result, the location hit, the damage, and the reaction shown.</summary>
 /// <param name="MissVariant">For a plain miss, which of four miss sequences is played (drawn here, as in the original).</param>
-/// <param name="Reaction">The attacker's next animation (cbt_anim): 1 weak hit, 2 hit, 6 parried, unchanged otherwise (−1).</param>
+/// <param name="Reaction">The attacker's next animation (fighter-animation): 1 weak hit, 2 hit, 6 parried, unchanged otherwise (−1).</param>
 public readonly record struct AttackOutcome(HitResult Result, int Location, int Damage, int MissVariant, int Reaction);
 
 /// <summary>
 /// Attack resolution and damage (R014 18BF): attack rate, to-hit chances for hand-to-hand and
 /// missile attacks, damage against armour, applying the damage, readying weapons, ammunition.
 /// </summary>
-// orig: R014 18BF (13 functions, 3 byte-matched per the draft notes); attack_rate, cbt_attack, to_hit_roll, 0592, hit_damage, damage_queue, damage_apply and weapon_ready were checked against and run against the original (Oracle:battle.json); the ammunition and pack helpers were read from the draft only
+// orig: R014 18BF (13 functions, 3 byte-matched per the draft notes); attack-speed, fighter-attack, hit-roll, 0592, hit-points-lost, damage-pending-list, damage-resolve and weapon-armed were checked against and run against the original (Oracle:battle.json); the ammunition and pack helpers were read from the draft only
 public static class Attacks
 {
     /// <summary>Works out the attack rate when it is marked stale (255).</summary>
-    // orig: attack_rate R014+0xA492 (18BF:0002) draft (byte-matched per the draft notes; checked against asm); tests: Oracle:battle.json
+    // orig: attack-speed R014+0xA492 (18BF:0002) draft (byte-matched per the draft notes; checked against asm); tests: Oracle:battle.json
     public static void UpdateAttackRate(Battle battle, int i)
     {
         var c = battle[i];
@@ -81,7 +81,7 @@ public static class Attacks
     /// <summary>One attack of <paramref name="a"/> on <paramref name="t"/>: to-hit, damage and the attacker's reaction.</summary>
     /// <param name="hasMissSequence">DS:C7D2[set]: the attacker's animation set has miss sequences.</param>
     /// <param name="noParrySequence">DS:C86B[slot] == 1: its animation slot has no parry sequence (then a parry plays the hit sequence).</param>
-    // orig: cbt_attack R014+0xA592 (18BF:0102) draft, checked against asm; tests: Oracle:battle.json
+    // orig: fighter-attack R014+0xA592 (18BF:0102) draft, checked against asm; tests: Oracle:battle.json
     // DIVERGENCE: the sound/animation sequences (DS:A3E7 rows, lengths DS:C8A7/DS:C84A) and the animation info pointer are
     // chosen by the battle screen from the outcome; the draws and the result follow the original exactly.
     public static AttackOutcome Attack(Battle battle, int a, int t, bool hasMissSequence = true, bool noParrySequence = false)
@@ -116,7 +116,7 @@ public static class Attacks
         var missVariant = -1;
         if (result == HitResult.None)
         {
-            // C: random_n(4) picks the miss sequence row (n + 2) * 5 of the attacker's set.
+            // C: roll-n(4) picks the miss sequence row (n + 2) * 5 of the attacker's set.
             missVariant = battle.RollScaled(4);
         }
         // C: r == 1 returns 1 even when the parry sequence is empty; with no parry sequence for
@@ -126,8 +126,8 @@ public static class Attacks
     }
 
     /// <summary>The to-hit roll; <paramref name="location"/> gets the hit location (0 vital, 1 limbs).</summary>
-    // orig: to_hit_roll R014+0xA738 (18BF:02A8) draft, checked against asm; tests: Oracle:battle.json
-    // DIVERGENCE (from the draft, not the game): the draft calls 0592 "missile_to_hit" and takes the inline branch for
+    // orig: hit-roll R014+0xA738 (18BF:02A8) draft, checked against asm; tests: Oracle:battle.json
+    // DIVERGENCE (from the draft, not the game): the draft calls 0592 "R014+0xAA22" and takes the inline branch for
     // melee; the asm takes 0592 when the attacker's action has the melee bit, so 0592 is the hand-to-hand chance and the
     // inline branch the missile chance. The draft also inverts the low-roll rescue: the asm rescues rolls of 5 or less.
     public static HitResult ToHit(Battle battle, int a, int t, out int location)
@@ -170,7 +170,7 @@ public static class Attacks
     }
 
     /// <summary>The missile chance: the attacker's aiming value against the target's dodge and shield, fewer when allies of the shooter crowd the target.</summary>
-    // orig: to_hit_roll R014+0xA738 R014+0xA7D8..0xAA1B (inline branch) draft, checked against asm
+    // orig: hit-roll R014+0xA738 R014+0xA7D8..0xAA1B (inline branch) draft, checked against asm
     private static int MissileChance(Battle battle, int a, int t)
     {
         var ca = battle[a];
@@ -256,7 +256,7 @@ public static class Attacks
     }
 
     /// <summary>The hand-to-hand chance: fighting values, shield and stances, the numbers on each side, clouds.</summary>
-    // orig: R014+0xAA22 (18BF:0592) draft ("missile_to_hit" in the draft), checked against asm; tests: Oracle:battle.json
+    // orig: R014+0xAA22 (18BF:0592) draft ("R014+0xAA22" in the draft), checked against asm; tests: Oracle:battle.json
     // DIVERGENCE (from the draft): against a berserk target the asm keeps the attacker's −skill/4 only when it is −10 or
     // lower and otherwise uses −10 (the draft writes the opposite clamp).
     public static int CloseCombatChance(Battle battle, int a, int t, byte stance)
@@ -326,7 +326,7 @@ public static class Attacks
     }
 
     /// <summary>The damage of a hit at <paramref name="location"/>; queues it on the target and returns the endurance damage.</summary>
-    // orig: hit_damage R014+0xAC08 (18BF:0778) draft, checked against asm; tests: Oracle:battle.json
+    // orig: hit-points-lost R014+0xAC08 (18BF:0778) draft, checked against asm; tests: Oracle:battle.json
     public static int HitDamage(Battle battle, int a, int t, HitResult result, int location)
     {
         var ca = battle[a];
@@ -381,7 +381,7 @@ public static class Attacks
     }
 
     /// <summary>Rolls damage of level <paramref name="level"/> (0..40) and queues it on <paramref name="t"/>; returns the endurance damage.</summary>
-    // orig: damage_queue R014+0xAD5A (18BF:08CA) draft, checked against draft; tests: Oracle:battle.json
+    // orig: damage-pending-list R014+0xAD5A (18BF:08CA) draft, checked against draft; tests: Oracle:battle.json
     public static int QueueDamage(Battle battle, int level, int t, int penetration, int armour)
     {
         level = Math.Clamp(level, 0, 40);
@@ -401,10 +401,10 @@ public static class Attacks
         }
         var target = battle[t];
         // C: the queue is a signed byte: the addition wraps at 8 bits.
-        // C: the queue is added to (18BF:093F, 18BF:0982 `add byte ptr`), never overwritten by a blow; only damage_apply, the
+        // C: the queue is added to (18BF:093F, 18BF:0982 `add byte ptr`), never overwritten by a blow; only damage-resolve, the
         //   battle setup and the knock-back's halving write it.
         // BUG: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's
-        //   animation; traps) wraps past 127 to a negative queue, which damage_apply's signed test (jle 42) lets through: the
+        //   animation; traps) wraps past 127 to a negative queue, which damage-resolve's signed test (jle 42) lets through: the
         //   target gains Endurance (and Strength, for the second byte) instead of losing it.
         target.QueuedEndurance = (sbyte)(target.QueuedEndurance + damage);
         int factor;
@@ -425,8 +425,8 @@ public static class Attacks
     }
 
     /// <summary>Applies the queued damage: endurance 0 = unconscious, strength 0 = dead (in a non-lethal fight both stop at 1).</summary>
-    // orig: damage_apply R014+0xAE1E (18BF:098E) draft (byte-matched per the draft notes); checked against asm; tests: Oracle:battle.json
-    // C: the function ends with party_panel_rows(0x100) (R014+0xAEC1..0xAEC4), skipped by the early return of a combatant that is not able
+    // orig: damage-resolve R014+0xAE1E (18BF:098E) draft (byte-matched per the draft notes); checked against asm; tests: Oracle:battle.json
+    // C: the function ends with party-panel-row-set(0x100) (R014+0xAEC1..0xAEC4), skipped by the early return of a combatant that is not able
     // (R014+0xAE36 jumps past it): true tells the caller that the panel rows are drawn anew (the battle screen's RowChanged(-1)).
     public static bool ApplyDamage(Battle battle, int i)
     {
@@ -474,8 +474,8 @@ public static class Attacks
 
     /// <summary>Readies weapon type <paramref name="weapon"/> (−1 with no missile flag: bare hands).</summary>
     /// <param name="missileFlag">0 for the hand weapon, 0x80 for the missile weapon (kept in bit 7 of +0x57).</param>
-    /// <param name="animationCode">Receives the two letters of the weapon's animations (anim_file[slot]).</param>
-    // orig: weapon_ready R014+0xAED0 (18BF:0A40) draft, checked against draft; tests: Oracle:battle.json
+    /// <param name="animationCode">Receives the two letters of the weapon's animations (animation-file-name[slot]).</param>
+    // orig: weapon-armed R014+0xAED0 (18BF:0A40) draft, checked against draft; tests: Oracle:battle.json
     public static void ReadyWeapon(Battle battle, int i, int weapon, int missileFlag, Action<string>? animationCode = null)
     {
         var tables = battle.Tables;
@@ -524,7 +524,7 @@ public static class Attacks
     }
 
     /// <summary>True when the readied weapon needs no ammunition or the combatant carries ammunition of quality 25.</summary>
-    // orig: can_fire R014+0xB092 (18BF:0C02) draft (byte-matched per the draft notes)
+    // orig: may-shoot R014+0xB092 (18BF:0C02) draft (byte-matched per the draft notes)
     public static bool CanFire(Battle battle, int i)
     {
         var c = battle[i];
@@ -534,7 +534,7 @@ public static class Attacks
 
     /// <summary>Uses one ammunition (or the thrown weapon itself); when it runs out the combatant goes back to its hand weapon.</summary>
     /// <param name="ranOut">Called when the ammunition ran out (the battle screen updates the panel and the AI).</param>
-    // orig: use_ammo R014+0xB0D8 (18BF:0C48) draft
+    // orig: spend-ammunition R014+0xB0D8 (18BF:0C48) draft
     // C: the AI reset for enemies (R014 1DB7:05C8), DS:A3D8 = 2 and the panel redraw are the caller's ranOut, the action state
     // 0x0D (DS:CA64) the caller's after the call.
     public static int UseAmmunition(Battle battle, int i, Action<int>? ranOut = null)
@@ -566,7 +566,7 @@ public static class Attacks
         battle[i].Items.Any(s => (byte)s.Type == type && (byte)s.Quality == quality);
 
     /// <summary>Takes one item of a type and quality; returns how many are left in that stack, or −1 when it is gone or was not there.</summary>
-    // orig: consume_item R014+0xB244 (18BF:0DB4) draft
+    // orig: use-up-item R014+0xB244 (18BF:0DB4) draft
     public static int ConsumeItem(Battle battle, int i, byte type, byte quality)
     {
         var items = battle[i].Items;
@@ -579,7 +579,7 @@ public static class Attacks
     }
 
     /// <summary>Takes one item from pack slot <paramref name="k"/>; −1 when the slot is used up (and removed).</summary>
-    // orig: consume_slot R014+0xB434 (18BF:0FA4) draft
+    // orig: use-up-slot R014+0xB434 (18BF:0FA4) draft
     public static int ConsumeSlot(Battle battle, int i, int k)
     {
         var items = battle[i].Items;

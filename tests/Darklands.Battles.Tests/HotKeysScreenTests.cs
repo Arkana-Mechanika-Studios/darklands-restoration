@@ -19,7 +19,7 @@ public class HotKeysScreenTests
         Assert.False(keys.Handle(Keys.F1 + 0x100));         // a loop that is not the card engine's or the map's: F2 is the screen's
         Assert.False(keys.Handle(Keys.CtrlF1 + 0x100));
         Assert.Empty(shown);
-        ui.SheetKeys = true;                                 // the card engine's wait (wait_continue, card_menu: card_global_keys)
+        ui.SheetKeys = true;                                 // the card engine's wait (press-to-continue, card-choice-menu: card-hotkeys)
         Assert.True(keys.Handle(Keys.F1 + 0x100));          // on a card: F2 opens member 1's sheet
         Assert.Equal([1], shown);
         keys.ScreensUp++;                                    // the camp, the sheet, barter ...: their own loops take F2 and Ctrl-F2

@@ -44,7 +44,7 @@ public sealed class WaysideShrineOfOurLady : Card
             menu[2] = OptionState.Shown;
         }
 
-        // C: after every choice, before its handler, the loop sets var_chosen1 = leader; each
+        // C: after every choice, before its handler, the loop sets text-slot-chosen-one = leader; each
         // action below does that first (the hints here have no side effects).
         menu.Popup = () => c.MemberPopupHint();
         return menu.Run(
@@ -72,7 +72,7 @@ public sealed class WaysideShrineOfOurLady : Card
     private static void LeaderSpeaks(CardContext c) => c.Variables.Chosen[0] = c.Leader;
 
     /// <summary>A few groschen a head plus a share of the purse, 1..24 groschen.</summary>
-    // C: (unsigned)money_pfennigs(purse) keeps the low 16 bits of the long, unsigned, before the division.
+    // C: (unsigned)purse-in-pfennigs(purse) keeps the low 16 bits of the long, unsigned, before the division.
     private static Money Offering(CardContext c, int perHead, int share) =>
         Money.From(0, Math.Clamp(c.PresentCount() * perHead + (ushort)c.State.Party.Purse.TotalPfennigs / share, 1, 24), 0);
 

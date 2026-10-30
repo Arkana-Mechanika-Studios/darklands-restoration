@@ -50,10 +50,10 @@ public sealed class CitySquareAtNight : Card
             // orig: R050+0x1174 (18FC:0534) + R050+0x1130 (18FC:04F0) R050 seg 18FC matched
             Sneak(c, 20, 30, () => c.Next = PrisonWindow),
             // orig: R050+0x121E (18FC:05DE) + R050+0x11D2 (18FC:0592) R050 seg 18FC matched
-            // DORMANT: opt_flag_3 is set to 0 and never to 1: this line (card 0x75) is never offered.
+            // DORMANT: card-option-flag-3 is set to 0 and never to 1: this line (card 0x75) is never offered.
             Sneak(c, 30, 35, () => { c.PassHours(0); c.Next = Hall117; }),
             // orig: R050+0x12D0 (18FC:0690) + R050+0x127C (18FC:063C) R050 seg 18FC matched
-            // C: "is_daylight() ? 0x31 : 0x31": the university either way.
+            // C: "daylight-test() ? 0x31 : 0x31": the university either way.
             Sneak(c, 50, 20, () => { c.PassHours(1); c.Next = University; }),
             // orig: R050+0x1388 (18FC:0748) + R050+0x132E (18FC:06EE) R050 seg 18FC matched
             Sneak(c, 45, 20, () => { c.PassHours(1); c.Next = c.IsDaylight ? MainStreet : MainStreetAtNight; }),

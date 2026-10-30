@@ -38,10 +38,10 @@ internal static class BankingHouses
     /// florin ($Money2).
     /// </summary>
     // orig: R060+0x2378 (1A36:0398) and R061+0x0CE8 (18CF:0378), the money part:
-    // money_add_fgp(party_money, DS:9072, 0, 0); money_set(var_money2, 0, 0, (DS:9072 << 1) + DS:9072 << 1); DS:9072 = 0;
-    // money_sub(party_money, var_money2). The Hanseatic League has no such option.
+    // purse-add-parts(party-purse, DS:9072, 0, 0); purse-assign(text-slot-amount-two, 0, 0, (DS:9072 << 1) + DS:9072 << 1); DS:9072 = 0;
+    // purse-difference(party-purse, text-slot-amount-two). The Hanseatic League has no such option.
     // C: the fee expression parses as (notes * 2 + notes) << 1 = 6 * notes in a 16-bit int: it wraps past 5461 florins
-    // of notes (pfennigs is an unsigned parameter of money_set); DS:9072 = 0 clears only the florins word.
+    // of notes (pfennigs is an unsigned parameter of purse-assign); DS:9072 = 0 clears only the florins word.
     public static void RedeemLetters(CardContext c)
     {
         var party = c.State.Party;
@@ -57,8 +57,8 @@ internal static class BankingHouses
     /// letter of credit for them; returns whether anything was deposited.
     /// </summary>
     // orig: R060+0x2444 (1A36:0464) and R061+0x0DA6 (18CF:0436), after their pop-up pictures:
-    // itoa(party_money[0]) preset in the prompt "Deposit how many Florins?" (thunk 09C0:20B7), v = clamp_range(0, 500, atoi(answer)),
-    // v = min(v, party_money[0]); if v != 0: opt_flag_0 = 1, money_sub_fgp(party_money, v, 0, 0), DS:9072 += v, money_set(var_money1, DS:9072, 0, 0).
+    // itoa(party-purse[0]) preset in the prompt "Deposit how many Florins?" (thunk 09C0:20B7), v = limit-to-range(0, 500, atoi(answer)),
+    // v = min(v, party-purse[0]); if v != 0: card-option-flag-0 = 1, purse-subtract-parts(party-purse, v, 0, 0), DS:9072 += v, purse-assign(text-slot-amount-one, DS:9072, 0, 0).
     // C: DS:9072 is a 16-bit int; the sum of deposits is not limited and wraps past 32767 florins (negative notes then hide the withdrawal option).
     public static bool DepositFlorins(CardContext c)
     {
@@ -87,7 +87,7 @@ internal static class BankingHouses
     // orig: R060+0x254E (1A36:056E) (50%, picture 225, text 1 on the picture), R061+0x0EAE
     // (18CF:053E) (50%, picture 195, text 1 on the picture), R061+0x260A (1A5F:039A) and R061+0x2812
     // (30%, picture 194, text 6): the part after the first roll succeeded.
-    // C: var_loc = nearest_loc_type(...) is stored after the text is shown (a $location variable in it is the previous one);
+    // C: text-slot-place = closest-place-of-kind(...) is stored after the text is shown (a $location variable in it is the previous one);
     // the quest event is thunk 09C0:2175(owner, castle, city ordinal + owner, 0xC, 2, 0), the far errand thunk 09C0:21B1(owner) (StartQuest10).
     // The hour is passed after the quest event in the castle branch and before the money in the far branch, as here.
     public static void GiveACommission(CardContext c, int owner, int houseCard, int deliveryPercent, int picture, int text, TextFrame frame)
@@ -116,7 +116,7 @@ internal static class BankingHouses
     }
 
     /// <summary>The raubritter castle nearest to the current place (map icon 2).</summary>
-    // orig: nearest_loc_type(locations[cur_loc]->x/y, 2), repeated inline in R060+0x2750, R061+0x1056, R061+0x2A00/0a7c
+    // orig: closest-place-of-kind(locations[location-now]->x/y, 2), repeated inline in R060+0x2750, R061+0x1056, R061+0x2A00/0a7c
     // (R060+0x2750, R061+0x1056, R061+0x2A00, R061+0x2CEC); the delivery castle for the commission and for the reward errand.
     public static int NearestCastle(CardContext c)
     {
@@ -125,19 +125,19 @@ internal static class BankingHouses
     }
 
     /// <summary>The house is busy for the party for 72 hours.</summary>
-    // orig: event_new(-2, cur_loc, 0x5f, 7, owner, 0, 0, 0x48, 0, 0) in each bank's refusal and reward branches (72 hours).
+    // orig: event-create(-2, location-now, 0x5f, 7, owner, 0, 0, 0x48, 0, 0) in each bank's refusal and reward branches (72 hours).
     public static void BusyForThreeDays(CardContext c, int owner) =>
         c.Events.Create(-2, c.Here, 0x5F, BusyKind, owner, 0, 0, 0x48, 0, 0);
 
     /// <summary>The house has a commission running for the party, or will not see it now.</summary>
-    // orig: ev8_owner_value(0xA, owner, cur_loc) || ev8_owner_value(3, owner, cur_loc) || event_type_at(7, owner, cur_loc) in the main
+    // orig: open-quest-owner-value(0xA, owner, location-now) || open-quest-owner-value(3, owner, location-now) || event-kind-at(7, owner, location-now) in the main
     // functions R060+0x1FEC, R061+0x0978, R061+0x2278 (the callers add their own reputation and favour tests).
     public static bool CommissionPending(CardContext c, int owner) =>
         c.Events.QuestWithValue(FarQuest, owner, c.Here) || c.Events.QuestWithValue(DeliveryQuest, owner, c.Here)
         || c.EventTypeAtHere(BusyKind, owner);
 
     /// <summary>A commission of the house has been carried out.</summary>
-    // orig: ev24_at_owner(0xA, owner, cur_loc) || ev24_at_owner(3, owner, cur_loc) in the same three main functions.
+    // orig: resolved-quest-at-owner(0xA, owner, location-now) || resolved-quest-at-owner(3, owner, location-now) in the same three main functions.
     public static bool CommissionDone(CardContext c, int owner) =>
         c.Events.ResolvedQuestAt(FarQuest, owner, c.Here) || c.Events.ResolvedQuestAt(DeliveryQuest, owner, c.Here);
 }

@@ -10,7 +10,7 @@ namespace Darklands.Oracle.Tests;
 
 /// <summary>
 /// The castle and keep battlefield generators against the original program: each scenario in
-/// Corpus/castle.json is the original gen_battlefield (R005, with the level planner R006 and the floor
+/// Corpus/castle.json is the original layout-battlefield-entry (R005, with the level planner R006 and the floor
 /// builder R007) run from DARKLAND.EXE on the player's DARKLAND.ENM and DARKLAND.LST
 /// (tools/oracle/build_castle_corpus.py). Needs the game folder (DARKLANDS_DIR, or the "game" key of local/paths.json);
 /// without it the test passes vacuously.
@@ -33,7 +33,7 @@ public sealed class CastleOracleTests
         var tables = CombatTablesReader.Read(DarklandsExecutable.Load(files));
         var n = 0;
         var failures = new List<string>();
-        foreach (var c in Data.Value.Cases("gen_battlefield"))
+        foreach (var c in Data.Value.Cases("R005+0x0000"))
         {
             try
             {

@@ -9,7 +9,7 @@ using Darklands.Simulation;
 namespace Darklands.Cards.Tests;
 
 /// <summary>
-/// The $name expansion of card texts (text_expand / var_expand in the card engine), the opening
+/// The $name expansion of card texts (text-substitute / text-slot-expand in the card engine), the opening
 /// card ($Party02) and the main loop's pass over a card. They need the original game files
 /// (DARKLANDS_DIR, or the "game" key of local/paths.json) and are skipped without them.
 /// </summary>
@@ -46,7 +46,7 @@ public sealed class TextAndOpeningTests
     [Fact]
     public void ADollarInsideANameDropsTheNameBeforeIt()
     {
-        // text_expand: a '$' always restarts the name buffer, so the first name is lost without a trace
+        // text-substitute: a '$' always restarts the name buffer, so the first name is lost without a trace
         if (Context() is not { } c)
         {
             return;
@@ -64,7 +64,7 @@ public sealed class TextAndOpeningTests
         {
             return;
         }
-        Assert.Equal("a $docks. b", Expand(c, "a $docks. b"));      // docks has no case in var_expand
+        Assert.Equal("a $docks. b", Expand(c, "a $docks. b"));      // docks has no case in text-slot-expand
         Assert.Equal("$ x", Expand(c, "$ x"));                      // the empty name comes out as "$"
         Assert.Equal("$", Expand(c, "$$"));
         Assert.Equal("$nonsense", Expand(c, "$nonsense"));
@@ -87,7 +87,7 @@ public sealed class TextAndOpeningTests
     [Fact]
     public void InTheWildernessThePlaceNameIsTheLastCityLoaded()
     {
-        // cur_loc < 0x5c is a signed compare: -1 takes the city branch and city_rec still holds the last city
+        // location-now < 0x5c is a signed compare: -1 takes the city branch and city-record still holds the last city
         if (Context(location: 3) is not { } c)
         {
             return;
@@ -143,7 +143,7 @@ public sealed class TextAndOpeningTests
             return;
         }
         var state = CardHarness.NewGame(seed: 5, location: 3);
-        // money_set(..., rand_mod(3) + 8, rand_mod(3) + 0xa): the arguments are drawn right to left; then day and month
+        // purse-assign(..., roll-below(3) + 8, roll-below(3) + 0xa): the arguments are drawn right to left; then day and month
         var twin = new MscRandom(((MscRandom)state.Random).State);
         var pfennigs = twin.Below(3) + 10;
         var groschen = twin.Below(3) + 8;
@@ -153,8 +153,8 @@ public sealed class TextAndOpeningTests
         Assert.Equal(Money.From(0, groschen, pfennigs), state.Party.Purse);
         Assert.Equal((9, day, month), (state.Date.Hour, (int)state.Date.Day, (int)state.Date.Month));
         Assert.Equal(9, state.Locations[3].Reputation);
-        Assert.True(state.Events.Started(0x63), "event_here(0x63, 0x2d0) is part of the card");
-        Assert.True(state.Events.QuestExists(Quests.Sabbat), "ev8_exists(1) is false -> the sabbat quest is started");
+        Assert.True(state.Events.Started(0x63), "event-here-test(0x63, 0x2d0) is part of the card");
+        Assert.True(state.Events.QuestExists(Quests.Sabbat), "open-quest-exists(1) is false -> the sabbat quest is started");
         Assert.Equal(6, next);                                        // option 2 ("No risk") goes to card 6
         Assert.Equal(
             [OptionState.Enabled, OptionState.Enabled, OptionState.Enabled, OptionState.Enabled],
@@ -180,7 +180,7 @@ public sealed class TextAndOpeningTests
     [Fact]
     public void TheOpeningCardNeedsNoStartingLocationToRun()
     {
-        // the original writes into locations[cur_loc] unchecked; here the wilderness just skips the reputation
+        // the original writes into locations[location-now] unchecked; here the wilderness just skips the reputation
         if (!CardHarness.Available)
         {
             return;

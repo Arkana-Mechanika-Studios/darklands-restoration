@@ -6,7 +6,7 @@ namespace Darklands.Core.Battles.Tactics;
 /// load of a battle) left; the battle file keeps them.
 /// </summary>
 // C: DS:D728, DS:D73B, DS:D7FE, DS:D947 (bytes) and DS:D945 (word) are written only by R014+0x35FC, R014+0xB576 (D73B = 0),
-// C: order_mode_enter R014+0xBC0C / order_mode_leave R014+0xBCA8 (D7FE), R016+0x0000 (D73B = 1), R016+0x0BD6 / R016+0x0CDC (D7FE)
+// C: command-mode-begin R014+0xBC0C / command-mode-end R014+0xBCA8 (D7FE), R016+0x0000 (D73B = 1), R016+0x0BD6 / R016+0x0CDC (D7FE)
 // C: and the restore R003+0x0CE8; saved in that order by R003+0x00DC (battle file +0x156A..+0x156F)
 // C: the original writes only 0 or 1 into the four bytes; a byte above 1 in a file read here counts as 1
 public sealed class CursorKeyState

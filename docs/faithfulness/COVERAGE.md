@@ -66,36 +66,36 @@ link-time address) for overlay functions; an exact coordinate matches too.
 | `root 09C0:*` | rtlink | 13 | RTLink/Plus overlay manager (vector handler, section loader); every vector is resolved to its target by this audit, overlays are ordinary classes in the C# |
 | `root 0D14:*` | rtlink | 38 | RTLink/Plus overlay cache (EMS/XMS/disk); memory management of overlays, no game effect |
 | `root 05F8:*` | memory | 10 | EMS driver interface (int 67h: present/allocate/map/free pages); .NET memory replaces expanded memory |
-| `root 05BA:*` | memory | 3 | mem_alloc/mem_free: DOS memory blocks with the "Insufficient system memory" exit; .NET allocation |
+| `root 05BA:*` | memory | 3 | heap-take/heap-give-back: DOS memory blocks with the "Insufficient system memory" exit; .NET allocation |
 | `R026+*` | memory | 8 | heap/swap-file manager core (XMS, EMS and swap-file block moves); the C# keeps its data in memory (no heap.fng, no swap) |
-| `R027+*` | memory | 21 | heap/swap-file manager (swap_create/save/load of the work buffers, hash table); data stays in .NET memory |
+| `R027+*` | memory | 21 | heap/swap-file manager (spill-file-create/save/load of the work buffers, hash table); data stays in .NET memory |
 | `R028+*` | memory | 36 | heap/swap-file manager start-up (heap.fng, TMP/TEMP, EMS/XMS detection); function-level matches in the reference, but no game logic: buffers stay in memory |
 | `R004+* (1212:*)` | memory | 2 | twin of R026 1ef8 (XMS block moves) linked into the battlefield loader; see R026 |
 | `R004+* (1223:*)` | memory | 2 | twin of R026 1f09 (swap-file block I/O); see R026 |
 | `R004+* (1237:*)` | memory | 4 | twin of R026 1f1d (EMS block moves); see R026 |
 | `R004+* (1262:*)` | memory | 19 | twin of R027 1f48 (swap blocks and hash table); see R027 |
 | `R004+* (1336:*)` | memory | 36 | twin of R028 1f48 (swap start-up); see R028 |
-| `R014+0x4BC6` | memory | 1 | path_ems_on: maps the path-finder's EMS page; the C# path finder keeps its tables in memory |
-| `R014+0x4BE2` | memory | 1 | path_ems_off: unmaps the path-finder's EMS page |
+| `R014+0x4BC6` | memory | 1 | route-ems-enable: maps the path-finder's EMS page; the C# path finder keeps its tables in memory |
+| `R014+0x4BE2` | memory | 1 | route-ems-disable: unmaps the path-finder's EMS page |
 | `root 047C:*` | driver | 46 | graphics/timer/sound driver interface: the self-patched far-jump table into MGRAPHIC.EXE and the sound drivers, the int 8 timer, page and palette calls. Replaced by IHost (IVideo, IAudio, IClock); the drawing the game asks for is ported in Darklands.Presentation, the sound and music in Darklands.Audio, the timer in IClock |
-| `root 03EC:000E` | driver | 0 | rect_copy_paged: copies a rectangle between video pages (save/restore under boxes); Presentation redraws instead (Screen/ScreenDrawing) |
-| `root 0410:031E` | driver | 0 | palette_save: reads the VGA palette (DAC); Presentation keeps its palette in memory |
-| `root 0410:0364` | driver | 1 | palette_restore: writes the saved VGA palette back |
+| `root 03EC:000E` | driver | 0 | page-to-page-box-copy: copies a rectangle between video pages (save/restore under boxes); Presentation redraws instead (Screen/ScreenDrawing) |
+| `root 0410:031E` | driver | 0 | palette-keep: reads the VGA palette (DAC); Presentation keeps its palette in memory |
+| `root 0410:0364` | driver | 1 | palette-reload: writes the saved VGA palette back |
 | `R043+* (1813:*)` | driver | 6 | VGA DAC palette writes (port 3C8h/3C9h) and screen blits used by the PAN player and palette fades; IVideo.Present with the palette replaces them |
 | `R043+* (182D:*)` | driver | 2 | VGA screen copy/fill used by the PAN player; IVideo replaces it |
-| `R043+0x3A1C` | driver | 0 | palette_fade's speed calibration (a timing loop that measures the machine); the C# fade runs on IClock time |
-| `R043+0x3A7C` | driver | 1 | palette_fade's DAC read (inp/outp port 3C7h/3C9h); Presentation keeps the palette in memory |
-| `R000+* (0FB2:*)` | driver | 1 | video_detect/video_restore: VGA detection and BIOS video mode on exit; the host opens its own window |
-| `R000+0x0092` | driver | 0 | bios_set_cursor (int 10h); no text cursor in the host |
+| `R043+0x3A1C` | driver | 0 | palette-ramp's speed calibration (a timing loop that measures the machine); the C# fade runs on IClock time |
+| `R043+0x3A7C` | driver | 1 | palette-ramp's DAC read (inp/outp port 3C7h/3C9h); Presentation keeps the palette in memory |
+| `R000+* (0FB2:*)` | driver | 1 | video-probe/video-reset: VGA detection and BIOS video mode on exit; the host opens its own window |
+| `R000+0x0092` | driver | 0 | text-cursor-position-call (int 10h); no text cursor in the host |
 | `root 044A:00A9` | driver | 0 | BIOS video (int 10h) text output used by the start-up messages |
 | `root 044A:019C` | driver | 0 | installs the int 9 keyboard handler (044A:020E: arrow/keypad state in 880h..889h); IInput (Darklands.Platform) delivers keys, the game logic reads them through GameUi |
 | `root 044A:01F4` | driver | 1 | removes the int 9 keyboard handler |
-| `root 044A:00F4` | dos-io | 0 | dos_print: int 21h/09h text output of start-up and fatal messages; the host reports errors itself |
+| `root 044A:00F4` | dos-io | 0 | dos-text-print: int 21h/09h text output of start-up and fatal messages; the host reports errors itself |
 | `root 044A:0100` | dos-io | 0 | int 21h query used by main's start-up checks (DOS version/memory); host start-up |
-| `root 044A:0122` | dos-io | 1 | int 21h call of game_shutdown (terminate); the host closes the program |
+| `root 044A:0122` | dos-io | 1 | int 21h call of game-exit (terminate); the host closes the program |
 | `root 044A:0133` | dos-io | 1 | helper of 044a_0100 (int 21h) |
-| `root 044A:014E` | memory | 1 | dos_alloc: int 21h/48h memory block; .NET allocation |
-| `root 044A:0164` | memory | 1 | dos_free: int 21h/49h; .NET allocation |
+| `root 044A:014E` | memory | 1 | dos-memory-grab: int 21h/48h memory block; .NET allocation |
+| `root 044A:0164` | memory | 1 | dos-memory-release: int 21h/49h; .NET allocation |
 | `root 044A:0181` | memory | 1 | int 21h/4Ah resize memory block; .NET allocation |
 | `root 044A:000A` | string-helper | 0 | strupr of a near string (a-z to A-Z); C# ToUpperInvariant on the ASCII names at the call site |
 | `root 044A:002C` | string-helper | 0 | far strcpy (near to far); C# string assignment |
@@ -103,27 +103,27 @@ link-time address) for overlay functions; an exact coordinate matches too.
 | `root 044A:005E` | string-helper | 1 | strlen of a far string; C# Length |
 | `root 044A:0076` | string-helper | 1 | memset of a far buffer; C# Array.Fill/new arrays |
 | `root 044A:008C` | string-helper | 1 | memcmp of far buffers (returns the remaining count); C# SequenceEqual at the call site |
-| `root 0617:*` | dos-io | 18 | file I/O helpers: open/create/close/read/save whole files, catalogs (.CAT) and their directory, picture files drawn from disk (pic_draw); Darklands.Content (GameFiles, catalog and PIC readers) and Darklands.Persistence read and write the same files |
+| `root 0617:*` | dos-io | 18 | file I/O helpers: open/create/close/read/save whole files, catalogs (.CAT) and their directory, picture files drawn from disk (image-paint); Darklands.Content (GameFiles, catalog and PIC readers) and Darklands.Persistence read and write the same files |
 | `root 05D9:*` | dos-io | 4 | fab_* buffered file reader of the PAN player (open/read/eof/close); the C# PanDecoder reads the whole file |
 | `root 030B:0318` | streaming | 1 | PAN ring buffer: makes room for the next read so the reader does not overtake the cel being shown; the C# reads the whole file first and shows the same cels at the same rate (Cinematics, PanDecoder) |
 | `root 030B:0450` | streaming | 1 | PAN player's empty interrupt routine (iret) installed while streaming |
 | `root 030B:0465` | streaming | 1 | PAN ring buffer: copies n bytes between linear addresses |
 | `root 030B:04CE` | streaming | 1 | PAN ring buffer: reads a word at a linear address |
 | `root 030B:04FC` | streaming | 1 | PAN ring buffer: reset of the read/show positions |
-| `root 0000:1354` | host | 1 | game_shutdown: restores video, removes the handlers, frees memory and exits to DOS; the host closes the window (quit is ported in the menu bar and hot keys) |
-| `root 0000:262E` | host | 0 | datafile_forget: closes the open catalogs before a reload; Darklands.Content opens files per read |
+| `root 0000:1354` | host | 1 | game-exit: restores video, removes the handlers, frees memory and exits to DOS; the host closes the window (quit is ported in the menu bar and hot keys) |
+| `root 0000:262E` | host | 0 | data-file-drop: closes the open catalogs before a reload; Darklands.Content opens files per read |
 | `R000+0x0022` | startup | 0 | main: start-up (config, memory, drivers, fonts) and the call of the main loop root 03A1; the hosts (Darklands.Host.*) and DarklandsGame do this, the main loop itself is ported |
 | `R000+0x1150` | startup | 0 | start-up memory check (EMS/XMS and the swap store, with the EMS error texts); no memory limits in .NET |
-| `R041+*` | copy-protection | 3 | the manual's symbol check (copyprot_run with its pictures and retries) only gates play; the C# skips the question (as the later CD release does) but makes its five random draws first (rand_mod 4, 20, 7, 7, 6: CopyProtection.Draw), so the generator goes on as the original's; no other game state depends on it |
-| `R015+0x0000` | debug | 1 | debug_mem_track: the developers' memory statistics in a battle; no game effect |
-| `root 0410:0068` | string-helper | 1 | word_fill(ptr, value, n): fill n words of a near array; the battle code's callers (combat_main, cbt_collisions, floor_view_draw, R019 0C80) clear their arrays with Array.Clear/Fill |
-| `root 0410:007E` | string-helper | 1 | word_fill_far: the same for a far array (combat_draw's tile tables, 1DB7:0028's trackers); Array.Fill in the C# |
-| `root 0410:02CA` | string-helper | 1 | index of a byte in a far array or n (path_trackers: the end of a path, the first 0xFF step); the C# path finder keeps the length itself |
-| `root 0410:02E6` | string-helper | 1 | index_of_word(far array, value, n): the first index holding the word, or n (nudge_pile, floor_view_draw, 14F7:118E: the screen tile of a cell); ITacticalView.ScreenTileOf |
+| `R041+*` | copy-protection | 3 | the manual's symbol check (copy-protection-entry with its pictures and retries) only gates play; the C# skips the question (as the later CD release does) but makes its five random draws first (roll-below 4, 20, 7, 7, 6: CopyProtection.Draw), so the generator goes on as the original's; no other game state depends on it |
+| `R015+0x0000` | debug | 1 | memory-debug-tracker: the developers' memory statistics in a battle; no game effect |
+| `root 0410:0068` | string-helper | 1 | word-array-fill(ptr, value, n): fill n words of a near array; the battle code's callers (fight-main-loop, fighter-collision-pass, floor-view-paint, R019 0C80) clear their arrays with Array.Clear/Fill |
+| `root 0410:007E` | string-helper | 1 | word-array-fill-far: the same for a far array (fight-draw's tile tables, 1DB7:0028's trackers); Array.Fill in the C# |
+| `root 0410:02CA` | string-helper | 1 | index of a byte in a far array or n (route-tracker-table: the end of a path, the first 0xFF step); the C# path finder keeps the length itself |
+| `root 0410:02E6` | string-helper | 1 | word-position(far array, value, n): the first index holding the word, or n (nudge_pile, floor-view-paint, 14F7:118E: the screen tile of a cell); ITacticalView.ScreenTileOf |
 | `R002+0x168A` | memory | 1 | allocates the party members' animation buffers with their sizes from TACANIM.DB; the C# animation library holds the decoded files |
-| `R020+0x05E6` | memory | 1 | level_load: points the combat buffers (sprite lists, trackers, loot list) into the battle's segments; .NET objects replace the layout |
-| `R014+0xEC60` | memory | 1 | shields_load: loads the party's shield pictures (pics\shieldX.pic) for the loot screen and keeps the old handles; the C# party panel loads its pictures itself |
-| `R014+0xECD6` | memory | 1 | shields_free: frees those pictures and puts the old handles back |
+| `R020+0x05E6` | memory | 1 | level-read: points the combat buffers (sprite lists, trackers, loot list) into the battle's segments; .NET objects replace the layout |
+| `R014+0xEC60` | memory | 1 | shields-read: loads the party's shield pictures (pics\shieldX.pic) for the loot screen and keeps the old handles; the C# party panel loads its pictures itself |
+| `R014+0xECD6` | memory | 1 | shields-release: frees those pictures and puts the old handles back |
 
 ## Function-pointer tables in data
 
@@ -164,7 +164,7 @@ treated as entry points (a thunk is an entry into its overlay); the status of th
   original index), and every function-pointer table in data (above).
 * **Edges**: calls (near/far calls, thunks resolved), and code pointer edges: a relocated segment
   immediate within four instructions of an offset immediate that, together, name a function entry
-  or a thunk (handler tables the card scripts fill at run time: `opt_fn`, `item_fn`, `saint_fn`;
+  or a thunk (handler tables the card scripts fill at run time: `card-option-handler`, `item-handler-table`, `saint-handler-table`;
   expiry handlers; comparators; hooks).
 * **Not seen**: near (16-bit) function pointers and indirect calls through computed addresses
   (none in the C; jump tables are inside functions), code reached only through the drivers loaded

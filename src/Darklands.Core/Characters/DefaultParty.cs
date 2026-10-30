@@ -6,16 +6,16 @@ namespace Darklands.Core.Characters;
 /// The four ready-made adventurers of "Quickstart" (Gretchen, Gunther, Hans and Ebhard),
 /// as the game sets them up.
 /// </summary>
-// Images: member_shield (DS:A668) as SAVES\DEFAULT stores it for the four (F60, F01, A00, C00).
+// Images: member-shield-picture (DS:A668) as SAVES\DEFAULT stores it for the four (F60, F01, A00, C00).
 // DIVERGENCE: the original reads the images from SAVES\DEFAULT when Quickstart begins (the load R037+0x4184, whose
-// open is not checked); without that file member_shield keeps its start-up contents. Here the images come with the
+// open is not checked); without that file member-shield-picture keeps its start-up contents. Here the images come with the
 // party, so a folder without SAVES\DEFAULT still plays. The colours need no such choice (see Colours).
 // C: what the original then does is read from the code, not run: the battle builds the figure's file name
-// from member_shield (R002, "pics\<code>short.pic"), finds no such picture and stops.
+// from member-shield-picture (R002, "pics\<code>short.pic"), finds no such picture and stops.
 public static class DefaultParty
 {
-    // orig: party_default R001+0x0000 (0E76:0000) draft
-    // C: the four records are taken from the original's Quickstart party (R001 party_default).
+    // orig: party-defaults R001+0x0000 (0E76:0000) draft
+    // C: the four records are taken from the original's Quickstart party (R001 party-defaults).
     public static Party Create(int seed)
     {
         var party = new Party { Seed = seed, Purse = Money.Zero };
@@ -86,10 +86,10 @@ public static class DefaultParty
     }
 
     /// <summary>
-    /// The figure colours (member_palette, 24 bytes per party slot) the Quickstart party is drawn
+    /// The figure colours (member-colours, 24 bytes per party slot) the Quickstart party is drawn
     /// with: Gretchen, Gunther, Hans, Ebhard and the empty fifth slot.
     /// </summary>
-    // orig: party_default R001+0x0000 (0E76:0000) draft, its last block R001+0x0797..0x09CD: immediate stores into member_palette
+    // orig: party-defaults R001+0x0000 (0E76:0000) draft, its last block R001+0x0797..0x09CD: immediate stores into member-colours
     // (checked against asm and the bytes of DARKLAND.EXE); the same 120 bytes as SAVES\DEFAULT at offset 0x111, which
     // the Quickstart load reads into a local and drops, so the colours never depend on that file.
     // tests: DefaultPartyTests, OriginalSaveTests, QuickstartColoursTests

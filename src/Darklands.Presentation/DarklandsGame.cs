@@ -50,7 +50,7 @@ public sealed class DarklandsGame
     public Func<uint> Seed { get; set; } = () => (uint)Environment.TickCount;
 
     /// <summary>The BIOS tick word (0040:006C) the start screen's Quickstart and Create characters take as the party seed; the game reads the BIOS counter, not <c>time(0)</c>.</summary>
-    // orig: R037+0x9DB2 (keys C and Q): party_seed (DS:9C4A) = the word at 0040:006C
+    // orig: R037+0x9DB2 (keys C and Q): party-random-seed (DS:9C4A) = the word at 0040:006C
     // C: a tester (the headless host's ticks: step) gives the word the original read; the default is the BIOS count's value now (Platform.DosClock)
     public Func<ushort> PartyTicks { get; set; } = () => DosClock.TickWordOfDay(DateTime.Now.TimeOfDay);
 
@@ -190,7 +190,7 @@ public sealed class DarklandsGame
                         PlayFrom(quickstart);
                         break;
                     // orig: R037+0x9DB2 case 0x1454/0x1474: DS:E89A = 1; if (R037+0x81B2()) return 0x11b (play); else the start screen again
-                    // C: the game in memory (at first the program start's, NewGame.StartUp) is what the load reads over: city_rec and the session globals.
+                    // C: the game in memory (at first the program start's, NewGame.StartUp) is what the load reads over: city-record and the session globals.
                     case StartChoice.LoadGame when new LoadGameScreen(_ui, Saves, LoadScreenTexts).Run(fromStartScreen: true, name => LoadSavedGame(name, _session ??= NewGame.StartUp(World, Seed()))) is { } loaded:
                         PlayFrom(loaded.State);
                         break;
@@ -212,7 +212,7 @@ public sealed class DarklandsGame
     private GameState? _session;
 
     /// <summary>Plays a game; a load while playing (Alt-L) goes on with the loaded game.</summary>
-    // orig: setjmp(DS:A752) in the main function: load_game_vec longjmps back to it and the loop continues with the loaded DS:A772
+    // orig: setjmp(DS:A752) in the main function: game-load-overlay-entry longjmps back to it and the loop continues with the loaded DS:A772
     private void PlayFrom(GameState state)
     {
         try
@@ -254,8 +254,8 @@ public sealed class DarklandsGame
     }
 
     /// <summary>Reads a saved game of the folder, with the messages the original shows while it loads.</summary>
-    // orig: R037+0x8ED4 (1C7D:0D24) matched: after the header show_difficulty(1), then
-    // text_box "Loading Game" until the file is read; opt_music and opt_sound come from the file
+    // orig: R037+0x8ED4 (1C7D:0D24) matched: after the header difficulty-display(1), then
+    // text-box-paint "Loading Game" until the file is read; music-setting and sound-setting come from the file
     // C: the options' menu ticks (DS:996E, DS:9982) are set too; there is no menu bar here.
     private LoadedGame LoadSavedGame(string name, GameState? running)
     {
@@ -292,17 +292,17 @@ public sealed class DarklandsGame
     }
 
     /// <summary>Alt-L while playing: "Loading is irreversable. Proceed?", then the load screen; the game goes on with what it gives.</summary>
-    // orig: load_game R037+0x8B76 (1C7D:09C6) matched: card_window->f10 = 3; the question;
+    // orig: game-load-entry R037+0x8B76 (1C7D:09C6) matched: card-text-window->f10 = 3; the question;
     // the debug log 1905("load", "a"), not reproduced (see Card.ShowPicture); in a battle (DS:907A == 1) the battle's pictures, sounds and level buffers are freed and its
     // flags reset; the card picture freed; `party[i][0] = 0` for the five slots; with DS:A891 == 3 the map's buffers freed; the events
     // freed; the load screen (DS:E89A = 0: no Return button); longjmp(DS:A752, -1)
     // BUG: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
     // C: the battle's and the map's buffers are their screens' own here; a load from a battle leaves the battle by the jump.
-    // orig: load_game R037+0x8B76 (1C7D:09C6) matched: in a battle (DS:907A = 1) its buffers are freed and cards_startup_vec(0) runs
+    // orig: game-load-entry R037+0x8B76 (1C7D:09C6) matched: in a battle (DS:907A = 1) its buffers are freed and cards-setup-overlay-entry(0) runs
     // (R043+0x078E: srand((unsigned)time(0)), TimePassage.Reseed) before the load screen
     private void LoadInGame(GameState state, bool inBattle = false)
     {
-        // orig: R037+0x8B76 card_window->f10 = 3 first: the question is in font 3 from Alt-L too (GameUi.CardWindowFont)
+        // orig: R037+0x8B76 card-text-window->f10 = 3 first: the question is in font 3 from Alt-L too (GameUi.CardWindowFont)
         _ui.CardWindowFont = 3;
         if (!new MessageBox(_ui).Ask("Loading is irreversable. Proceed?"))
         {
@@ -326,7 +326,7 @@ public sealed class DarklandsGame
     }
 
     /// <summary>Leaves the current place for the open country and travels until something happens.</summary>
-    // orig: overland_map R030+0x0000 (1462:0000) draft (bytes match): from a city (cur_loc < 92) the party starts at the city's exit point, from another place at its position, in the wilderness where it is; then `if (event_started(0x47)) return next_card = 0xf1;` and `if (!event_started(0x63)) { copyprot_run_vec(); event_here(0x63, 0x3e80); }` before overland_open
+    // orig: world-map-entry R030+0x0000 (1462:0000) draft (bytes match): from a city (location-now < 92) the party starts at the city's exit point, from another place at its position, in the wilderness where it is; then `if (event-begun-flag(0x47)) return following-card = 0xf1;` and `if (!event-begun-flag(0x63)) { copy-protection-overlay-entry(); event-here-test(0x63, 0x3e80); }` before world-map-start
     private int Travel(GameState state, PartyPanel panel, Action<int> sheet, Action<int> camp)
     {
         _map ??= new WorldMap(Content.Formats.Maps.WorldMapData.Decode(_ui.Assets.Files.Read("DARKLAND.MAP")), state.Locations);
@@ -345,8 +345,8 @@ public sealed class DarklandsGame
         }
         if (!state.Events.Started(CopyProtectionEvent))
         {
-            // DIVERGENCE: copyprot_run_vec (R041+0x0000) asks the copy-protection question (a symbol from the manual); it is not asked here (a host
-            //   choice, as the later CD release). Its five random draws are made (CopyProtection.Draw: rand_mod 4, 20, 7, 7 and 6, before anything else
+            // DIVERGENCE: copy-protection-overlay-entry (R041+0x0000) asks the copy-protection question (a symbol from the manual); it is not asked here (a host
+            //   choice, as the later CD release). Its five random draws are made (CopyProtection.Draw: roll-below 4, 20, 7, 7 and 6, before anything else
             //   of it), so the generator goes on as the original's; the event it leaves behind, for 0x3E80 hours (about 22 months), is created as in the original.
             //   Justified (evid1o): a right answer (a click on the picture or keys 1..4 against the symbol asked, R041+0x050E; key 5, top row or keypad,
             //   passes whatever was asked: R041+0x0537 / 0x0553) changes nothing else of the game: R041+0x04DA puts the screen back and restores DS:2816 /
@@ -372,7 +372,7 @@ public sealed class DarklandsGame
     private WorldMap? _map;
 
     /// <summary>Alt-S: the save dialog; inside a battle the battle's own Alt-S (BattleScreens.Save) saves it with the battle.</summary>
-    // orig: save_game_vec = save_game R037+0x2A68 (hot_keys key 0x1F00)
+    // orig: game-store-overlay-entry = game-store-entry R037+0x2A68 (hotkey-table key 0x1F00)
     private void SaveGame(GameState state, BattleScreens battles, Core.Battles.Tactics.TacticalBattle? battle = null)
     {
         if (battle is not null)
@@ -385,7 +385,7 @@ public sealed class DarklandsGame
         }
     }
 
-    // orig: the do/while of root 03A1:000A: a screen function returns the next screen number; 0x0C is the overland map (overland_map), -2..-6 start a battle, 0x62 ends the game, -0x63 quits
+    // orig: the do/while of root 03A1:000A: a screen function returns the next screen number; 0x0C is the overland map (world-map-entry), -2..-6 start a battle, 0x62 ends the game, -0x63 quits
     private TablePersonalNames? _personalNames;
 
     /// <summary>The battle view's centre (DS:C866 / DS:C886), a program global: a game loaded keeps it.</summary>
@@ -403,20 +403,20 @@ public sealed class DarklandsGame
     /// rest stand up again; if nobody is left (or all fell, result 5) the game ends with the
     /// death animation. Returns the card the battle leads to.
     /// </summary>
-    // orig: main loop root 03A1:000A (matched per the byte match) - cards_shutdown_vec,
-    //   combat_flags |= 4 (−3) / 8 (−5) / 0x80 (−6) / 0xC (−4), |= 1, battle_run(battle_mode, battle_enemy, battle_seed,
-    //   −1, A76C, 0, −1, A76E, 0, −1, A770, 0), status 3 → 0 with party_delete_vec, others but 0 and 5 → 1,
-    //   none left or battle_result == 5 → music 0x12, "death", exit; else cards_startup_vec and the result is the next screen.
-    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; the work files of cards_shutdown and cards_startup are
+    // orig: main loop root 03A1:000A (matched per the byte match) - cards-teardown-overlay-entry,
+    //   fight-flags |= 4 (−3) / 8 (−5) / 0x80 (−6) / 0xC (−4), |= 1, battle-entry(battle-kind, battle-enemy-group, encounter-seed,
+    //   −1, A76C, 0, −1, A76E, 0, −1, A770, 0), status 3 → 0 with party-wipe-overlay-entry, others but 0 and 5 → 1,
+    //   none left or battle-outcome == 5 → music 0x12, "death", exit; else cards-setup-overlay-entry and the result is the next screen.
+    // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; the work files of cards-teardown and cards-setup are
     //   kept in memory, their effects made (the events, the reseed, the city record: see CardContext.RunBattle).
-    // orig: cards_shutdown R043+0x054E writes the events to events.tmp and empties the table (EventLog.Shutdown); cards_startup
-    //   R043+0x078E (1462:078E) matched begins with srand((unsigned)time(0)): TimePassage.Reseed, and its world_load reads the events
-    //   back (EventLog.Reload). A load in the battle leaves it by the jump (LoadGameRequestedException): no cards_startup.
+    // orig: cards-teardown R043+0x054E writes the events to events.tmp and empties the table (EventLog.Shutdown); cards-setup
+    //   R043+0x078E (1462:078E) matched begins with srand((unsigned)time(0)): TimePassage.Reseed, and its world-read reads the events
+    //   back (EventLog.Reload). A load in the battle leaves it by the jump (LoadGameRequestedException): no cards-setup.
     // C: with DS:9081 bit 0 (GameState.ResumeBattle: a game saved in a battle) the card was skipped and the code is the DS:A764 the loop
     // holds (not a battle code after a load); R002+0x0000 takes the battle up from the battle file and clears the bit at its end.
     private int FightTheBattle(GameState state, CardContext context, BattleScreens battles, int code)
     {
-        // orig: root 03A1:000A calls cards_shutdown_vec (R043+0x054E) before the battle; it ends with sound_play(1) (root 047C:078A)
+        // orig: root 03A1:000A calls cards-teardown-overlay-entry (R043+0x054E) before the battle; it ends with sound-start(1) (root 047C:078A)
         state.Events.Shutdown();
         _ui.Audio.PlayMusic(Darklands.Audio.GameSounds.Stop);
         var orders = state.BattleOrders;
@@ -435,9 +435,9 @@ public sealed class DarklandsGame
             orders.Flags &= 0xFE10;
         }
         var members = state.Party.Members;
-        // orig: root 03A1:000A (matched per the byte match): party_delete_vec for each slot of status 3, before cards_startup
+        // orig: root 03A1:000A (matched per the byte match): party-wipe-overlay-entry for each slot of status 3, before cards-setup
         // C: the dead are deleted first (slot by slot, highest first here because DeleteMember trims empty slots at the end).
-        // BUG: party_delete_vec runs while the events are in events.tmp, so a member who died in the battle keeps the term and
+        // BUG: party-wipe-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and
         //   "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
         for (var i = members.Count - 1; i >= 0; i--)
         {
@@ -459,11 +459,11 @@ public sealed class DarklandsGame
             return CardDispatcher.EndOfGame;
         }
         state.Party.EnsureAbleLeader();
-        // C: cards_startup (thunk of R043+0x078E): the clock reseed, then world_load's city record and events (CardContext.RunBattle has the details).
+        // C: cards-setup (thunk of R043+0x078E): the clock reseed, then world-read's city record and events (CardContext.RunBattle has the details).
         Core.Rules.TimePassage.Reseed(state);
         Core.World.CityFile.ReloadAfterBattle(state);
         state.Events.Reload();
-        // orig: root 03A1:0438..0441: after cards_startup (thunk 09C0:1919(0), 03A1:0430) thunk 09C0:190F(0) = advance_hours(0), before the
+        // orig: root 03A1:0438..0441: after cards-setup (thunk 09C0:1919(0), 03A1:0430) thunk 09C0:190F(0) = pass-hours(0), before the
         // pass's own end calls it again (03A1:0463, CardDispatcher.FinishPass): two more clock reseeds (lockstep session dungeon-mine-doormsg:
         // the second second of the original's reload took the next clock seed)
         Core.Rules.TimePassage.Advance(state, 0);
@@ -497,11 +497,11 @@ public sealed class DarklandsGame
             _seenPositions = battles.SeenPositions;
             LoadInGame(state, inBattle: true);
         };
-        // orig: run_battle R029+0x2278: a card's own battle (battle_run with mode 0).
+        // orig: battle-driver R029+0x2278: a card's own battle (battle-entry with mode 0).
         context.Battle = (side, seed, p) => battles.Battle(new BattleRequest(side, seed,
             [(p[0], p[1], p[2]), (p[3], p[4], p[5]), (p[6], p[7], p[8])]));
         context.PlayFilm = steps => Cinematics.Film(steps);
-        // orig: run_battle R029+0x2278: nobody left after the battle: music_play(0x12), the death film, exit_(0)
+        // orig: battle-driver R029+0x2278: nobody left after the battle: music_play(0x12), the death film, exit_(0)
         context.AllDead = () =>
         {
             Cinematics.Death();
@@ -509,7 +509,7 @@ public sealed class DarklandsGame
         };
         // orig: music_play R043+0x09AE: the piece if music is on, else 1 (stop) — GameUi.PlayMusic applies the option.
         context.Music = tune => _ui.PlayMusic(tune);
-        // orig: sound_play root 047C:078A: straight to the towns-and-map driver, whatever the music option says.
+        // orig: sound-start root 047C:078A: straight to the towns-and-map driver, whatever the music option says.
         context.SoundPlayer = number => _ui.Audio.PlayMusic(number);
         // orig: music_play(5) R043+0x09AE: the AX of driver command 5 (or of the stop with music off), which $Shell00 keeps in DS:9C3D
         context.MusicPlaying = _ui.MusicPlaying;
@@ -543,10 +543,10 @@ public sealed class DarklandsGame
         _ui.GameKey = hotKeys.Handle;
         _ui.MenuBar = MenuBar.ForGame(_ui, state, Options, hotKeys);
         screens.MenuBarKey = hotKeys.Handle;
-        // orig: saint_pray (byte-matched): a saint row on the character sheet prays for that member.
+        // orig: saint-prayer (byte-matched): a saint row on the character sheet prays for that member.
         screens.ShowSaint = (member, saint) =>
             new SaintPrayerScreen(_ui, panel) { InBattle = () => battles.Fighting }.Pray(state, member, saint, Core.Rules.PrayerMode.ForMember, Core.Rules.SaintEffects.Instance);
-        // orig: hours_pass R029+0x255A: with nobody left, music_play(0x12), cards_shutdown_vec, the death film and exit_(n)
+        // orig: hours-elapse R029+0x255A: with nobody left, music_play(0x12), cards-teardown-overlay-entry, the death film and exit_(n)
         void Perished(GameState perished)
         {
             if (ReferenceEquals(perished, state))
@@ -570,7 +570,7 @@ public sealed class DarklandsGame
                     // orig: C / F8 on the map: thunk 09C0:1FF9 = R036+0x0000 (1462:0000) with the party's watch value (R030+0x25BE): the
                     //   wilderness stay with the day's poaching risk (CampScreen.CampInTheWild)
                     // orig: the map is card 0x0C of the table: root 03A1:000A ends its pass as any card's (03A1:0442..0463): the previous-screen
-                    //   word becomes 0x0C only after the map returns (a game saved on the map keeps the card before), then advance_hours(0)
+                    //   word becomes 0x0C only after the map returns (a game saved on the map keeps the card before), then pass-hours(0)
                     var afterMap = Travel(state, panel, context.Screens.CharacterSheet, screens.CampInTheWild);
                     if (CardDispatcher.IsBattle(afterMap))
                     {

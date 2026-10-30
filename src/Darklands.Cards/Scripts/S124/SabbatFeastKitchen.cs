@@ -28,9 +28,9 @@ namespace Darklands.Cards.Scripts;
 //   other: R124+0x24DE, R124+0x2BFC, R124+0x2C9E
 // DORMANT (generated): option slots 10..19 keep the default handler R124+0x2C9E ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// DIVERGENCE (generated): party_panel_rows(0x100) (root 0000:1716, a party-panel redraw) is left out; the screen redraws itself.
+// DIVERGENCE (generated): party-panel-row-set(0x100) (root 0000:1716, a party-panel redraw) is left out; the screen redraws itself.
 public sealed class SabbatFeastKitchen : Card
 {
     public override int Number => 323;
@@ -68,16 +68,16 @@ public sealed class SabbatFeastKitchen : Card
             showAgain, showAgain, showAgain, showAgain);
     }
 
-    // orig: the event_update(−1, −1, 0x1C, fact, n, 1, add) of the card's handlers matched
+    // orig: the event-advance(−1, −1, 0x1C, fact, n, 1, add) of the card's handlers matched
     private static void AddToFact(CardContext c, int fact, int amount) =>
         c.Events.Update(-1, -1, 0x1C, fact, amount, FactTag, EventUpdate.Add);
 
-    // orig: the event_new(0, cur_loc, 0, 0x1C, 9, …, 72, 0, 1) of the card's handlers matched
+    // orig: the event-create(0, location-now, 0, 0x1C, 9, …, 72, 0, 1) of the card's handlers matched
     private static void SpoilTheFeast(CardContext c) =>
         c.Events.Create(0, c.Here, 0, 0x1C, FeastSpoiledFact, 0, 0, 72, 0, FactTag);
 
     /// <summary>Everybody gains a point of Virtue and 10 Divine Favor.</summary>
-    // orig: the add_skill / add_attr pair of R124+0x2712 / _05ba matched
+    // orig: the raise-skill-by / raise-attribute-by pair of R124+0x2712 / _05ba matched
     private static void GoodDeed(CardContext c)
     {
         c.AddSkill(Who.Everybody, (int)Skill.Virtue, 1);
@@ -86,7 +86,7 @@ public sealed class SabbatFeastKitchen : Card
 
     /// <summary>The table with the infants; the baptism line is greyed out unless the best Religion beats a d100.</summary>
     // orig: R124+0x25DA matched
-    // C: rand_mod(100) is the only draw in the comparison, so the operands' order does not change the random stream.
+    // C: roll-below(100) is the only draw in the comparison, so the operands' order does not change the random stream.
     private static void ReadyToHelp(CardContext c, CardMenu menu)
     {
         menu.Offer(2, 2, 3, 4);
@@ -127,7 +127,7 @@ public sealed class SabbatFeastKitchen : Card
 
     /// <summary>The best Charisma plus half the best Common (that member speaks).</summary>
     // orig: R124+0x2956 matched
-    // C: checked against the asm: party_max_attr(5) is called before party_max_skill(10), so best_member (read as
+    // C: checked against the asm: party-stat-top(5) is called before party-ability-top(10), so top-scoring-member (read as
     //   unsigned char) is the best Common speaker; the halving is a signed division (never negative here).
     private static OptionHint PreachingChance(CardContext c)
     {
@@ -164,7 +164,7 @@ public sealed class SabbatFeastKitchen : Card
     /// </summary>
     // orig: R124+0x2988 matched
     // C: an int function: `return 0` after a cancelled prayer, `return;` without a value after a heard one, and
-    //   options_block (2) after a failed one; ignored.
+    //   settings-block (2) after a failed one; ignored.
     private static void CallASaint(CardContext c, CardMenu menu)
     {
         var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
@@ -201,7 +201,7 @@ public sealed class SabbatFeastKitchen : Card
 
     /// <summary>The cooks attack. Won: the infants are baptized (alarm +2, card 322); lost: card 334; else stay.</summary>
     // orig: R124+0x24DE matched
-    // C: rand_mod(3) is run_battle's only random argument; a result outside 0..4 leaves next_card unchanged.
+    // C: roll-below(3) is battle-driver's only random argument; a result outside 0..4 leaves following-card unchanged.
     private static void Fight(CardContext c)
     {
         var cooks = c.Random(3) + 3;

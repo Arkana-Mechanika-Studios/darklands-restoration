@@ -22,8 +22,8 @@ namespace Darklands.Cards.Scripts;
 //   saint pop-up: R133+0x0636, R133+0x06C0
 //   other: R133+0x05A6, R133+0x05FE
 // DORMANT (generated): option slots 10..19 keep the default handler R133+0x05FE ("screwed up.") and are never shown.
-// C (generated): opt_flag_6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// C (generated): card-option-flag-6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class FamineHorseman : Card
@@ -50,12 +50,12 @@ public sealed class FamineHorseman : Card
         menu[1] = c.SaintsUsable();
 
         var unknown = OptionHint.Saying(CardTexts.Unknown);
-        // C: every handler of this card redraws with card_load (the whole card, Show), not card_load_near.
+        // C: every handler of this card redraws with card-run (the whole card, Show), not card-run-near.
         // DORMANT: in text block 0 the option lines 2..4 are never offered (the first menu on this block never enables them); they can be offered in other blocks only.
         // DORMANT: in text block 3 the option lines 0, 1 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             // orig: R133+0x01A8 / R133+0x01F4 matched — approach him: block 3 (line 5 keeps its flag 1).
-            // C: the handler returns the value of var_chosen1 = leader; the menu ignores it.
+            // C: the handler returns the value of text-slot-chosen-one = leader; the menu ignores it.
             new MenuLine(_ =>
             {
                 menu.Offer(3, 2, 3, 4, 5);
@@ -129,8 +129,8 @@ public sealed class FamineHorseman : Card
 
     /// <summary>The horseman picks whose life he takes: a random slot, then the next occupied one.</summary>
     // orig: R133+0x0424 matched
-    // C: checked against the asm: var_chosen1 is a 16-bit int; the slot test reads party[var_chosen1 % 5]'s status
-    //   byte (0 = empty) and the hint stores var_chosen1 %= 5. The loop ends because a present member exists.
+    // C: checked against the asm: text-slot-chosen-one is a 16-bit int; the slot test reads party[text-slot-chosen-one % 5]'s status
+    //   byte (0 = empty) and the hint stores text-slot-chosen-one %= 5. The loop ends because a present member exists.
     private static OptionHint PickAVictim(CardContext c)
     {
         var victim = c.Random(c.PartySize);
@@ -145,7 +145,7 @@ public sealed class FamineHorseman : Card
 
     /// <summary>A member dies while more than two are present; then the horseman gives up.</summary>
     // orig: R133+0x0374 matched
-    // C: party[var_chosen1] (set by the hint just before) is written without a check; it is always 0..4 here.
+    // C: party[text-slot-chosen-one] (set by the hint just before) is written without a check; it is always 0..4 here.
     //   Declared int, the handler returns without a value (ignored).
     private void OfferALife(CardContext c)
     {

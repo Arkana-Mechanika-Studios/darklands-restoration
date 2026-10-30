@@ -40,7 +40,7 @@ public static class CitadelBattlefield
                 BuildRoom(g, "lc_g3", 0x15D, quality: 2, count: 1);
                 break;
             case 0x5B when specs[0].Type != 0:
-                // C: the argument tested is the first spec's type (p_a): the room with the stairs (two of its eight groups are dropped).
+                // C: the argument tested is the first spec's type (param-plus-0a): the room with the stairs (two of its eight groups are dropped).
                 BuildRoom(g, "lc_g4s", 0x160, quality: 2, count: 3, droppedGroups: 2);
                 break;
             case 0x5B:
@@ -59,7 +59,7 @@ public static class CitadelBattlefield
                 // DORMANT: the dispatcher only sends the eight citadel types here.
                 return 0;
         }
-        // C: combat_flags |= 1; unlike the other persistent battlefields no cleared-level memory is touched.
+        // C: fight-flags |= 1; unlike the other persistent battlefields no cleared-level memory is touched.
         g.Persistent = true;
         return 1;
     }

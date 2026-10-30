@@ -30,7 +30,7 @@ public sealed class HutOfTheBlondeWoman : Card
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 3, 4, 9);
         c.Variables.Chosen[0] = c.Leader;
-        // C: (party_y + party_x) % 2, a signed remainder; only its non-zero-ness counts.
+        // C: (party-map-row + party-map-column) % 2, a signed remainder; only its non-zero-ness counts.
         _witch = (c.Events.QuestExists(1) || c.Events.FactAnywhere(1, 1))
             && (c.State.MapPosition.Y + c.State.MapPosition.X) % 2 != 0;
         c.SetCardItems(0x65, 0x66, 0x67);
@@ -105,7 +105,7 @@ public sealed class HutOfTheBlondeWoman : Card
 
     /// <summary>Watching till dusk; a witch's wolves catch a clumsy watcher.</summary>
     // orig: R116+0x138A (191B:055A) matched; tests: CardSmokeTests
-    // C: advance_hours(hours_until(18) - 1): at 18:00 this passes -1 hours, as the original does.
+    // C: pass-hours(hours-remaining-until(18) - 1): at 18:00 this passes -1 hours, as the original does.
     private void WatchTheHut(CardContext c, CardMenu menu, int chance)
     {
         c.PassHours(c.HoursUntil(18) - 1);
@@ -157,7 +157,7 @@ public sealed class HutOfTheBlondeWoman : Card
             c.Screen.Text(11);
             c.AddSkill(Who.Everybody, (int)Skill.Virtue, -1);
             c.AddAttribute(Who.Everybody, (int)Attribute.DivineFavor, -20);
-            // The original leaves without clearing cur_loc here.
+            // The original leaves without clearing location-now here.
             c.Next = CardContext.MapCard;
             return;
         }
@@ -247,7 +247,7 @@ public sealed class HutOfTheBlondeWoman : Card
     /// cannot bite through). An hour passes after any result.
     /// </summary>
     // orig: R116+0x10CC (191B:029C) matched; tests: CardSmokeTests
-    // C: the only draw among run_battle's arguments is rand_mod(5) + 3 (the eighth); then run_battle draws its seed.
+    // C: the only draw among battle-driver's arguments is roll-below(5) + 3 (the eighth); then battle-driver draws its seed.
     // C: party[v]+0x37 is the vital armour's item type; types 0x49..0x4B protect from the wolves.
     private static void FightTheWitch(CardContext c)
     {

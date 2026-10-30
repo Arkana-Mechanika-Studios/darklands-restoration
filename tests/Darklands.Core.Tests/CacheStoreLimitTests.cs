@@ -221,7 +221,7 @@ public sealed class CacheStoreLimitTests
     [Fact]
     public void TheOriginalsRewriteOfAFixedFileLosesNothing()
     {
-        // the original's cache_save reads the compact table whole (README of the compact60 runs); the model of it agrees
+        // the original's stash-store reads the compact table whole (README of the compact60 runs); the model of it agrees
         var stores = new ItemStores();
         var places = Places(3);
         for (var i = 0; i < 3; i++)

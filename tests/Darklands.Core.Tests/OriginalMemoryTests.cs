@@ -28,11 +28,11 @@ public sealed class OriginalMemoryTests
     {
         var s = FullBut299();
         Assert.Equal(299, s.Events.Create(1, 5, 0, 0x40, 2, 0, 0, 100, 0, 3));
-        Assert.Equal(299, s.Events.Remove(0x40, 9, -1, -1, -1));   // type differs: AX = event_next's 299
+        Assert.Equal(299, s.Events.Remove(0x40, 9, -1, -1, -1));   // type differs: AX = event-follow-up's 299
         Assert.Equal(6, s.Events.Remove(0x40, 2, 6, -1, -1));      // location loaded and differs
         Assert.Equal(7, s.Events.Remove(0x40, 2, 5, 7, -1));       // owner loaded and differs
         Assert.Equal(4, s.Events.Remove(0x40, -1, -1, 1, 4));      // tag loaded and differs
-        Assert.Equal(0, s.Events.Remove(0x40, 2, 5, 1, 3));        // removed: event_free leaves 0
+        Assert.Equal(0, s.Events.Remove(0x40, 2, 5, 1, 3));        // removed: event-release leaves 0
         Assert.Null(s.Events[299]);
         Assert.Equal(299, s.Events.Remove(0x50, -1, -1, -1, -1));  // slot 299 empty now: the count (299 fillers)
     }
@@ -68,7 +68,7 @@ public sealed class OriginalMemoryTests
         Saints.Learn(s, Who.Leader, Cosmas);                  // byte 3, mask 0x80 >> 3
         Assert.DoesNotContain(Cosmas, s.Party.Leader.Saints);
         Assert.Equal(0x10, s.Party.Slot(4).Formulas.Bytes[2 + 3]);
-        // has_item and knows_item_type test the whole byte: member 4 "knows" potion group 5
+        // carries-item and item-type-known test the whole byte: member 4 "knows" potion group 5
         Assert.Equal(2, Inventory.Has(s, 4, Potions.FirstPotion + 5));
         Assert.True(Inventory.KnowsPotion(s, 4, Potions.FirstPotion + 5));
 
@@ -81,7 +81,7 @@ public sealed class OriginalMemoryTests
     public void APrayerForThePartyTeachesMember4sFormulaBytesAndChangesNoCharm()
     {
         var s = TestGame.Create();
-        SaintBook.Help(s, Who.Leader, Cosmas);                // teaches St.Damian: saints_known[-1][3] |= 2
+        SaintBook.Help(s, Who.Leader, Cosmas);                // teaches St.Damian: saints-learned[-1][3] |= 2
         Assert.DoesNotContain(Damian, s.Party.Leader.Saints);
         Assert.Equal(0x02, s.Party.Slot(4).Formulas.Bytes[5]);
     }

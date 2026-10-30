@@ -5,8 +5,8 @@ using Darklands.Core.Events;
 namespace Darklands.Cards.Tests;
 
 /// <summary>
-/// The dragon's blighted land (R081+0x1848): when the ruined outlaws' battle keeps the card, its menu shows options_block as the card
-/// before left it. The original's direct call (local/batch/evid1o j_dragon.py): DS:EE53 = 0x2B, what = 7, run_battle 5 -> card_options(0x2B);
+/// The dragon's blighted land (R081+0x1848): when the ruined outlaws' battle keeps the card, its menu shows settings-block as the card
+/// before left it. The original's direct call (local/batch/evid1o j_dragon.py): DS:EE53 = 0x2B, what = 7, battle-driver 5 -> card-option-lines(0x2B);
 /// on the dragon's ways in the card stores 0x0A / 0x0B / 0x0C there itself.
 /// </summary>
 public sealed class DragonRetainedBlockTests

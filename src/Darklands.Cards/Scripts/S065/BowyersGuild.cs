@@ -18,7 +18,7 @@ namespace Darklands.Cards.Scripts;
 // not modelled (it is not read by anything this port reconstructs).
 public sealed class BowyersGuild : Card
 {
-    /// <summary>The guild's number in the city politics facts and for the next cards (party_x); also the bit its facts use.</summary>
+    /// <summary>The guild's number in the city politics facts and for the next cards (party-map-column); also the bit its facts use.</summary>
     private const int Guild = 8;
 
     private const int PoliticsQuest = 2;
@@ -32,12 +32,12 @@ public sealed class BowyersGuild : Card
     {
         Show(c, MainPicture);
         c.Next = Number;
-        // C: opt_flag_9 is not set by this card: it keeps whatever the previous card left. The text has
+        // C: card-option-flag-9 is not set by this card: it keeps whatever the previous card left. The text has
         // no tenth line and the switch no case 9, so it is offered hidden here (see the dormant line 9).
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 4, 5, 6);
-        // C: this card tests ev8_at(2, loc) != 1 (the blacksmiths' card uses !): the call yields 0 or 1, so it is the same test.
-        // C: ev8_at (R029, not in the matched C) is taken to return exactly 0 or 1. (agrees with the original: ev8_at R029+0x3470 returns mov ax,1 or sub ax,ax in the asm; 8 of 9 blocks hit in 80 agreeing oracles)
+        // C: this card tests open-quest-at(2, loc) != 1 (the blacksmiths' card uses !): the call yields 0 or 1, so it is the same test.
+        // C: open-quest-at (R029, not in the matched C) is taken to return exactly 0 or 1. (agrees with the original: open-quest-at R029+0x3470 returns mov ax,1 or sub ax,ax in the asm; 8 of 9 blocks hit in 80 agreeing oracles)
         if (!c.Events.QuestAt(PoliticsQuest, c.Here))
         {
             menu[1] = menu[3] = menu[4] = menu[5] = OptionState.Hidden;
@@ -83,12 +83,12 @@ public sealed class BowyersGuild : Card
             new MenuLine(chance => SneakInUnderCover(c, chance), OptionHint.Saying(CardTexts.SelectPotion), () => PotionCoverHint(c)),
             // orig: R065+0x1A6C, hint R065+0x1A7E
             new MenuLine(_ => { c.PassHours(0); c.Next = CityStreets; }, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: line 7 (opt_flag_7 = 0): the city entry card after the first text.
+            // DORMANT: line 7 (card-option-flag-7 = 0): the city entry card after the first text.
             // orig: R065+0x1AB6, hint R065+0x1AD4 (100%, leader)
             new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 4; }, () => new OptionHint(100, SuccessAssured, c.Leader)),
-            // DORMANT: line 8 (opt_flag_8 = 0): the city entry card. orig: R065+0x1B0E, hint 0ef0 R065+0x1B20
+            // DORMANT: line 8 (card-option-flag-8 = 0): the city entry card. orig: R065+0x1B0E, hint 0ef0 R065+0x1B20
             new MenuLine(_ => { c.PassHours(0); c.Next = 4; }, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: line 9 has the "screwed up." handler and no action (stale opt_flag_9 only).
+            // DORMANT: line 9 has the "screwed up." handler and no action (stale card-option-flag-9 only).
             new MenuLine(_ => { }, OptionHint.Saying(CardTexts.ScrewedUp)));
     }
 
@@ -180,7 +180,7 @@ public sealed class BowyersGuild : Card
     private static void SeekAnAudience(CardContext c, CardMenu menu, int chance)
     {
         menu[2] = OptionState.Shown;
-        // C: hours_until(5) (R029+0x577A) is called and its result dropped (no effect).
+        // C: hours-remaining-until(5) (R029+0x577A) is called and its result dropped (no effect).
         NoteFact(c, 4);
         if (c.Events.QuestAt(PoliticsQuest, c.Here))
         {
@@ -232,9 +232,9 @@ public sealed class BowyersGuild : Card
     /// </summary>
     private static void OfferAJourneyman(CardContext c, CardMenu menu)
     {
-        // C: (unsigned) cur_loc_query(0x21) % 15: the remainder of the unsigned 16-bit value.
+        // C: (unsigned) location-now-query(0x21) % 15: the remainder of the unsigned 16-bit value.
         var skill = c.HereQuery(6) + (ushort)c.HereQuery(0x21) % 15 - 5;
-        // C: (unsigned)(party_seed + cur_loc) % 3: the sum wraps at 16 bits; 2 is the switch's default.
+        // C: (unsigned)(party-random-seed + location-now) % 3: the sum wraps at 16 bits; 2 is the switch's default.
         var kind = ((ushort)(c.State.Party.Seed + c.Here) % 3) switch { 0 => 5, 1 => 4, _ => 6 };
         if (!c.EventTypeAtHere(0x28, kind))
         {
@@ -242,7 +242,7 @@ public sealed class BowyersGuild : Card
         }
         c.Variables.Money[0] = Core.Economy.Money.From(0, 0, Math.Clamp(c.Random(skill + 100), 80, 150));
         c.PassHours(1);
-        // C: opt_flag_2 = 2 once more (the audience line was already shown at the start of the action).
+        // C: card-option-flag-2 = 2 once more (the audience line was already shown at the start of the action).
         menu[2] = OptionState.Shown;
         c.Screen.Text(0x17);
         c.Next = CityStreets;
@@ -284,7 +284,7 @@ public sealed class BowyersGuild : Card
             c.Support[0] = c.Random(3) - 1;
             c.SetSide(Guild, c.Support[0]);
             c.Screen.Text(0x0B);
-            // C: cur_rep is the card's copy of the reputation, read at the start: it is lowered and written back.
+            // C: reputation-now is the card's copy of the reputation, read at the start: it is lowered and written back.
             standing--;
             c.LocationSet(c.Here, 0, standing);
             c.PassHours(3);
@@ -318,7 +318,7 @@ public sealed class BowyersGuild : Card
     private static void SneakIn(CardContext c, int chance)
     {
         var roll = c.Random(100);
-        // C: hours_until(19) (R029+0x577A) is called and its result dropped.
+        // C: hours-remaining-until(19) (R029+0x577A) is called and its result dropped.
         NoteFact(c, 5);
         if (chance < roll)
         {
@@ -434,7 +434,7 @@ public sealed class BowyersGuild : Card
         {
             c.GuildCode = Guild;
         }
-        // C: the stealth path (0a44) leaves party_x as it was before going to 0x6C.
+        // C: the stealth path (0a44) leaves party-map-column as it was before going to 0x6C.
         c.Next = 0x6C;
     }
 }

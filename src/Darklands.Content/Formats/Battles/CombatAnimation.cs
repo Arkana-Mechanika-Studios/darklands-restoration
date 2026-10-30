@@ -8,7 +8,7 @@ namespace Darklands.Content.Formats.Battles;
 /// walking "WK", fighting "CB" or dying "DY"): the header values the battle keeps per animation set
 /// and the frames, 8 facings each (facing 0 back view, 2 right, 4 towards the viewer, 6 left).
 /// </summary>
-// orig: sprite_file_load R014+0x3D2C (0E76:3D2C) draft (header meanings per spec E §1.2,
+// orig: sprite-file-read R014+0x3D2C (0E76:3D2C) draft (header meanings per spec E §1.2,
 // verified on F60/E02/E03/M01 files)
 public sealed class CombatAnimation
 {

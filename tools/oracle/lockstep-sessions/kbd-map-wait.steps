@@ -1,4 +1,4 @@
-# Lockstep session (a held key with none waiting on the map): DKSAVE17 (a party on the map by night); Right held through the keyboard interrupt and no key in the buffer: the map's get_key (R030+0x0566, root 047C:0744 = INT 16h AH=0) waits for the next key; a state taken while it waits; the letter then read walks right; let go; a walk by click afterwards
+# Lockstep session (a held key with none waiting on the map): DKSAVE17 (a party on the map by night); Right held through the keyboard interrupt and no key in the buffer: the map's read-key (R030+0x0566, root 047C:0744 = INT 16h AH=0) waits for the next key; a state taken while it waits; the letter then read walks right; let go; a walk by click afterwards
 key:t
 wait:5
 key:l

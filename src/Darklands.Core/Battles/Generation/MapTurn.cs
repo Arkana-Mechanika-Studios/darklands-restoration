@@ -3,12 +3,12 @@ using System.Buffers.Binary;
 namespace Darklands.Core.Battles.Generation;
 
 /// <summary>
-/// Turning and mirroring a prepared map (<c>map_turn</c>): r & 3 quarter turns clockwise on
+/// Turning and mirroring a prepared map (<c>map-step</c>): r & 3 quarter turns clockwise on
 /// screen, then a mirror in x when r ≥ 4. Cells, floors, walls (east/west/north/south nibbles
 /// permuted), the party start, doors, objects, part lists, exits, chest groups, object extras,
 /// rectangles and the door tables all move with the map.
 /// </summary>
-// orig: map_turn R004+0x21BA (1091:000A) draft (9 of 13 functions byte-matched per the draft
+// orig: map-step R004+0x21BA (1091:000A) draft (9 of 13 functions byte-matched per the draft
 // notes; 0604, 0800, 0CCA and 1126 re-read against the asm by the spec, scratchpad A_battlefield_wild.md §13)
 public static class MapTurn
 {
@@ -60,7 +60,7 @@ public static class MapTurn
     }
 
     /// <summary>A facing 0..7 turned with the map.</summary>
-    // orig: facing_turn R004+0x3990 (1091:17E0) draft (byte-matched per the draft notes)
+    // orig: turn-heading R004+0x3990 (1091:17E0) draft (byte-matched per the draft notes)
     public static int TurnFacing(int facing, int r)
     {
         var f = (facing + 2 * (r & 3)) & 7;

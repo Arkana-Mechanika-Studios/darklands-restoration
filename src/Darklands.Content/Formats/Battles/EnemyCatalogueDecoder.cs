@@ -5,7 +5,7 @@ using Darklands.Core.Battles;
 namespace Darklands.Content.Formats.Battles;
 
 /// <summary>Decodes DARKLAND.ENM: 71 enemy templates (0xCC bytes) then 82 enemy types (0x18 bytes).</summary>
-// orig: battlefield_build R004+0x0000 loads darkland.enm whole into the enemy buffer (templates +0xB4C0, types +0xED54)
+// orig: battlefield-builder-entry R004+0x0000 loads darkland.enm whole into the enemy buffer (templates +0xB4C0, types +0xED54)
 public static class EnemyCatalogueDecoder
 {
     public const int TemplateCount = 71;

@@ -74,7 +74,7 @@ public sealed class PriestVisitsTheCell : Card
     }
 
     // orig: R076+0x0EB0 (1901:0220) matched; tests: CardSmokeTests
-    // C: party_x (CityMark) as the jail's note of a refused escape (0 becomes 2, else 1).
+    // C: party-map-column (CityMark) as the jail's note of a refused escape (0 becomes 2, else 1).
     /// <summary>A good chance means the abbot has the party released; a slim one, a tool smuggled in.</summary>
     private static void AskForEscape(CardContext c, int chance)
     {

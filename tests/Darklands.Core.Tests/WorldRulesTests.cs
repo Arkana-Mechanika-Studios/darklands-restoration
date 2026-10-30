@@ -169,7 +169,7 @@ public sealed class WorldRulesTests
     {
         var s = WithCity();
         // In a city without side facts, the "and not" update creates side 1's fact with
-        // ~bit (the event_update quirk): every other bit goes to side 1.
+        // ~bit (the event-advance quirk): every other bit goes to side 1.
         CityPolitics.SetSide(s, 0x1, -1);
         Assert.Equal(-1, CityPolitics.SideOf(s, 0x1));
         Assert.Equal(1, CityPolitics.SideOf(s, 0x2));

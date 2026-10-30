@@ -163,7 +163,7 @@ class State:
         self.m.hook(P(0x0410), 0x0314, self._wait_tick)
         self.answer = 0
         if "R022+0x03E4" in near:
-            # the yes/no question (root 0000:2522, the message box with two buttons) of do_surrender: answered at once with the job's first argument
+            # the yes/no question (root 0000:2522, the message box with two buttons) of yield-action: answered at once with the job's first argument
             self.m.stub(P(0x0000), 0x2522, lambda m: (self.answer, 0), record="root")
         self.stop_at = None             # (linear entry, SP when the near function has returned)
         for coord in near:
@@ -280,7 +280,7 @@ class State:
             m.releases = [args[0] & 0xFFFF, 0]
             m.presses = [0, 0]
             m.write(*orig_side.KEYBOARD_FLAGS, bytes([4 if args[1] else 0]))
-            m.mouse = [m.word(DS, orig_side.MOUSE_X), m.word(DS, orig_side.MOUSE_Y), m.byte(DS, orig_side.MOUSE_BUTTONS) & 1]
+            m.mouse = [m.word(DS, orig_side.POINTER_COLUMN), m.word(DS, orig_side.POINTER_ROW), m.byte(DS, orig_side.MOUSE_BUTTON_STATE) & 1]
             args = ()
         before = bytes(m.uc.mem_read(DS * 16, 0x10000))
         far_before = bytes(m.uc.mem_read(P(FAR_SEG) * 16, 0x10000))
@@ -332,7 +332,7 @@ MOUSED = {"R014+0xB576"}          # functions that read the mouse: the arguments
 ASKED = {"R022+0x03E4"}          # functions that ask a yes/no question: the first argument is the answer (1 yes), given by a stub of the question's function
 KEYED = {"R016+0x0000"}          # functions that read a key: the first argument is the key code (scan << 8 | character), given through the keyboard stubs
 
-GAPS: dict = {}          # (the loot is carried now: loot_after_fight is judged)
+GAPS: dict = {}          # (the loot is carried now: post-fight-loot is judged)
 
 
 def _runs(cat: "Catalog", coord: str, item: dict) -> bool:

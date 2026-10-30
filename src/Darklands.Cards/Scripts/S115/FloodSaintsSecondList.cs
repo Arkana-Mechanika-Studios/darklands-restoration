@@ -29,7 +29,7 @@ public sealed class FloodSaintsSecondList : Card
             // orig: R115+0x0278 (1838:0278) matched; hint R115+0x02FE
             new MenuLine(_ => Pray(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R115+0x0336 (1838:0336) matched; hint R115+0x033E
-            // C: next_card = 0x11C, this card itself (not 0x11D, the third list): the line does nothing.
+            // C: following-card = 0x11C, this card itself (not 0x11D, the third list): the line does nothing.
             new MenuLine(_ => c.Next = 284, () => OptionHint.Say(NoRisk)),
             // DORMANT: lines 3..9 are never offered; actions R115+0x0376.. and hints R115+0x0378.. are empty
             // C: the hints return AX/DX; neutral hints are used.
@@ -44,7 +44,7 @@ public sealed class FloodSaintsSecondList : Card
 
     /// <summary>Answered, the water stops rising (the last two saints after a day's wading); otherwise back to card 283.</summary>
     // orig: R115+0x0278 (1838:0278) matched; tests: CardSmokeTests
-    // C: invoke_saint(var_chosen1 = menu_member, ...): the member is named before the prayer. Both answers show text 2.
+    // C: call-on-saint(text-slot-chosen-one = menu-owner-member, ...): the member is named before the prayer. Both answers show text 2.
     private static void Pray(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;

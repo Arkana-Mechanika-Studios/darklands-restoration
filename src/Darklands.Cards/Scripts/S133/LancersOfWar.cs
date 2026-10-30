@@ -19,8 +19,8 @@ namespace Darklands.Cards.Scripts;
 //   saint pop-up: R133+0x103E, R133+0x10C8, R133+0x1152
 //   other: R133+0x0FA4, R133+0x1006
 // DORMANT (generated): option slots 10..19 keep the default handler R133+0x1006 ("screwed up.") and are never shown.
-// C (generated): opt_flag_5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// C (generated): card-option-flag-5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class LancersOfWar : Card
 {
@@ -39,13 +39,13 @@ public sealed class LancersOfWar : Card
 
     public override int Run(CardContext c)
     {
-        // C: every picture change of this card is a card_load (the whole card, Show), not card_load_near.
+        // C: every picture change of this card is a card-run (the whole card, Show), not card-run-near.
         Show(c, Picture);
         if (!c.Events.FactAnywhere(1, 0x16))
         {
             Show(c, ClosedGate);
             c.Screen.Text(0);
-            // C: this early return runs before the table set-up (card_items / card_saints keep the last card's values).
+            // C: this early return runs before the table set-up (card-item-lines / card-saint-lines keep the last card's values).
             BackToTheCourtyard(c);
             return c.Next;
         }
@@ -58,7 +58,7 @@ public sealed class LancersOfWar : Card
         c.SetCardSaints(0x0C, 0x36, 0x3D);
         menu[1] = c.SaintsUsable();
 
-        // C: background is pic_buf: the handlers read its current value (the saint's success changes it).
+        // C: background is image-buffer: the handlers read its current value (the saint's success changes it).
         return menu.Run(
             // orig: R133+0x096E / R133+0x0B5A matched
             new MenuLine(chance => SingleCombat(c, chance, background), () => ChampionsChance(c)),
@@ -80,7 +80,7 @@ public sealed class LancersOfWar : Card
 
     /// <summary>The best hand-weapon fighter (half the skill) becomes the champion.</summary>
     // orig: R133+0x0B5A matched
-    // C: the hint sets var_chosen1 to best_member (unsigned char), the champion of line 0.
+    // C: the hint sets text-slot-chosen-one to top-scoring-member (unsigned char), the champion of line 0.
     private static OptionHint ChampionsChance(CardContext c)
     {
         var chance = c.PartyBestHandWeaponSkill() / 2;
@@ -90,7 +90,7 @@ public sealed class LancersOfWar : Card
 
     /// <summary>Half the party's average Edged Weapons plus half its best hand-weapon skill.</summary>
     // orig: R133+0x0E48 matched
-    // C: both queries move best_member, which this hint does not use (r.b = −2); their order draws nothing.
+    // C: both queries move top-scoring-member, which this hint does not use (r.b = −2); their order draws nothing.
     private static OptionHint PartysChance(CardContext c)
     {
         var chance = c.PartyAverageSkill((int)Skill.EdgedWeapons) / 2 + c.PartyBestHandWeaponSkill() / 2;
@@ -134,7 +134,7 @@ public sealed class LancersOfWar : Card
     /// Strength and Endurance, both measured by $ChosenOneName's maximum.
     /// </summary>
     // orig: R133+0x0C70 matched
-    // C: the measure is var_chosen1 as it stands: whoever the champion hint, a saint box or an earlier card left
+    // C: the measure is text-slot-chosen-one as it stands: whoever the champion hint, a saint box or an earlier card left
     //   there (this line's own hint does not set it). On a defeat the C divides by −6: truncation toward zero, the
     //   same as −(max / 6).
     private void AttackThemAll(CardContext c, int chance, int background)

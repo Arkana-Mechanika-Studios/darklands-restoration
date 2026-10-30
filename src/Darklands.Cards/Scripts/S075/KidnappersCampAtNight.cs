@@ -32,7 +32,7 @@ public sealed class KidnappersCampAtNight : Card
         menu[2] = c.ItemsUsable();
         menu[1] = c.SaintsUsable();
 
-        // C: card_options(l_2) reads an uninitialised local.
+        // C: card-option-lines(local-minus-2) reads an uninitialised local.
         // UNCERTAIN: the first option list (block 0) is assumed.
         return menu.Run(
             // orig: R075+0x12E2 (193D:0292) matched; R075+0x12E4 (193D:0294) matched; tests: CardSmokeTests

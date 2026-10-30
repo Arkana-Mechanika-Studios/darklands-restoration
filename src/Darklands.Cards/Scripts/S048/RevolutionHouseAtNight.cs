@@ -45,9 +45,9 @@ public sealed class RevolutionHouseAtNight : Card
             states[4] = OptionState.Enabled;
         }
         // DORMANT: R048+0x1726 (190E:09C6) only resets the option flags and the default handlers (screwed up., success
-        // assured for the pop-ups) and clears card_saints/card_items; the loop below overwrites the flags.
+        // assured for the pop-ups) and clears card-saint-lines/card-item-lines; the loop below overwrites the flags.
         c.SetCardItems(0x5F, 0x65, 0x66);
-        // C: the potion option's state is replaced by items_usable() whatever the branches above decided.
+        // C: the potion option's state is replaced by usable-item-list() whatever the branches above decided.
         states[3] = c.ItemsUsable();
 
         _menu = Menu(c, 0);
@@ -96,7 +96,7 @@ public sealed class RevolutionHouseAtNight : Card
         };
         // DORMANT: R048+0x17C8 (190E:0A68) (option lines 10..19, "screwed up.") and the saint pop-up's hints
         // R048+0x18F0 (190E:0B90), R048+0x197A (190E:0C1A), R048+0x1A04 (190E:0CA4), R048+0x1A8E (190E:0D2E) are unreachable:
-        // the card has no more than ten option lines and card_saints stays empty (the hint would show the saint chance).
+        // the card has no more than ten option lines and card-saint-lines stays empty (the hint would show the saint chance).
         c.Next = Number;
         return _menu.Run(lines);
     }
@@ -159,7 +159,7 @@ public sealed class RevolutionHouseAtNight : Card
         // C: Charisma (-1 = leader), then the standing, then Speak Common.
         var bonus = (Math.Abs(c.HereQuery(0)) + c.Attribute(c.Leader, 5) + c.Skill(c.Leader, 0x0A)) / 2;
         var raw = c.PartyGet(4) / 0x14 - strength + bonus;
-        // C: the handler is declared int (it returns only r.a in AX): the hint's member is DX as clamp_range(0, 0x63, v) leaves it,
+        // C: the handler is declared int (it returns only r.a in AX): the hint's member is DX as limit-to-range(0, 0x63, v) leaves it,
         // its hi (0x63) when v is above it, else its lo (0) (checked against asm R029 1367:0066; card oracle: CardOracleTests).
         return OptionHint.ChanceOf(Math.Clamp(raw, 0, 99), raw > 0x63 ? 0x63 : 0);
     }

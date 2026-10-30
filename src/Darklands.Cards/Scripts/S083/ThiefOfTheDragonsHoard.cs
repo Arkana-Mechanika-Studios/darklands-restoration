@@ -50,14 +50,14 @@ public sealed class ThiefOfTheDragonsHoard : Card
                 break;
             case 4:
                 ShowPicture(c, Picture);
-                // orig: R083+0x161E: options_block = 4 (DS:EE53, which a later card may read); the other cases leave it.
+                // orig: R083+0x161E: settings-block = 4 (DS:EE53, which a later card may read); the other cases leave it.
                 c.OptionsBlock = 4;
                 break;
             default:
                 c.Next = 0x97;
                 break;
         }
-        // C: the growth is drawn as an argument of event_update.
+        // C: the growth is drawn as an argument of event-advance.
         var growth = c.Random(2);
         c.Events.Update(-1, -1, 0x1C, 1, growth, DragonQuest, EventUpdate.Add);
         c.Events.Update(-1, -1, 0x1C, 7, 1, DragonQuest, EventUpdate.Add);

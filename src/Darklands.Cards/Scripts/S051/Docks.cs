@@ -71,9 +71,9 @@ public sealed class Docks : Card
                 c.Variables.Money[k] = c.Variables.Money[k].Times(2);
             }
         }
-        // DORMANT: the original tests the same bit (loc_query 32 & 1) a second time here, so this branch
+        // DORMANT: the original tests the same bit (place-query 32 & 1) a second time here, so this branch
         //   (one port drawn at random, fares × 4) can never run:
-        //   r = rand_mod(4); sails[k] = r == k; fares × 4.
+        //   r = roll-below(4); sails[k] = r == k; fares × 4.
         else
         {
             for (var k = 0; k < 5; k++)
@@ -120,10 +120,10 @@ public sealed class Docks : Card
                 // orig: R051+0x2970 (19F2:0DD0) + R051+0x27E2 (19F2:0C42) R051 seg 19F2 unmatched
                 Passage(c, 3),
                 // orig: R051+0x2B84 (19F2:0FE4) + R051+0x29F6 (19F2:0E56) R051 seg 19F2 unmatched
-                // DORMANT: opt_flag_4 is 0: the fifth port (record word 0x52) is never offered.
+                // DORMANT: card-option-flag-4 is 0: the fifth port (record word 0x52) is never offered.
                 Passage(c, 4),
                 // orig: R051+0x2CBA (19F2:111A) + R051+0x2C0C (19F2:106C) R051 seg 19F2 unmatched
-                // DORMANT: opt_flag_5 is 0: the private passage is never offered (its event 0x39 then never set here).
+                // DORMANT: card-option-flag-5 is 0: the private passage is never offered (its event 0x39 then never set here).
                 new MenuLine(chance => SeekAPrivatePassage(c, chance), () => PrivateChance(c)),
                 // orig: R051+0x2D1E (19F2:117E) + R051+0x2D0A (19F2:116A) R051 seg 19F2 matched
                 new MenuLine(() => c.Next = c.IsDaylight ? MainStreet : MainStreetAtNight, OptionHint.Saying(SuccessAssured)),

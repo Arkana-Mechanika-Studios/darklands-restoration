@@ -24,11 +24,11 @@ A, B = 0xD000, 0xD010            # scratch struct addresses in DGROUP
 HOLDRAND = 0x7B20                # MSC rand() state (32-bit)
 S029 = "1367"
 FN = {
-    "money_set": (S029, "00a4"), "money_add_fgp": (S029, "0130"), "money_sub_fgp": (S029, "0180"),
-    "money_add": (S029, "01ec"), "money_sub": (S029, "023e"), "money_mul": (S029, "0290"),
-    "money_cmp": (S029, "02d4"), "date_set": (S029, "08ae"), "date_add_hours": (S029, "09ea"),
-    "days_between": (S029, "0ba4"), "hour_band": (S029, "0744"),
-    "rand_mod": ("0000", "0c70"), "random_n": ("0410", "0008"), "rand_1_n": ("0000", "0c8c"),
+    "R029+0x4FB4": (S029, "00a4"), "R029+0x5040": (S029, "0130"), "R029+0x5090": (S029, "0180"),
+    "R029+0x50FC": (S029, "01ec"), "R029+0x514E": (S029, "023e"), "R029+0x51A0": (S029, "0290"),
+    "R029+0x51E4": (S029, "02d4"), "R029+0x57BE": (S029, "08ae"), "R029+0x58FA": (S029, "09ea"),
+    "R029+0x5AB4": (S029, "0ba4"), "R029+0x5654": (S029, "0744"),
+    "root 0000:0C70": ("0000", "0c70"), "root 0410:0008": ("0410", "0008"), "root 0000:0C8C": ("0000", "0c8c"),
 }
 
 
@@ -57,17 +57,17 @@ def cases(r):
     for _ in range(60):
         m = rnd_money(r)
         fl, gr, pf = r.randint(-20, 200), r.randint(0, 900), r.randint(0, 900)
-        out.append(("money_set", {"memory": [{"offset": "%04X" % A, "hex": money_hex(m)}],
+        out.append(("R029+0x4FB4", {"memory": [{"offset": "%04X" % A, "hex": money_hex(m)}],
                                   "args": [h16(A), h16(fl), h16(gr), h16(pf)]},
                     {"m": m, "fl": fl, "gr": gr, "pf": pf}))
-    for name in ("money_add_fgp", "money_sub_fgp"):
+    for name in ("R029+0x5040", "R029+0x5090"):
         for _ in range(80):
             m = rnd_money(r)
             fl, gr, pf = r.randint(-20, 100), r.randint(-40, 100), r.randint(-40, 100)
             out.append((name, {"memory": [{"offset": "%04X" % A, "hex": money_hex(m)}],
                                "args": [h16(A), h16(fl), h16(gr), h16(pf)]},
                         {"m": m, "fl": fl, "gr": gr, "pf": pf}))
-    for name in ("money_add", "money_sub", "money_cmp"):
+    for name in ("R029+0x50FC", "R029+0x514E", "R029+0x51E4"):
         for _ in range(80):
             a, b = rnd_money(r), rnd_money(r)
             out.append((name, {"memory": [{"offset": "%04X" % A, "hex": money_hex(a)},
@@ -75,28 +75,28 @@ def cases(r):
                                "args": [h16(A), h16(B)]}, {"a": a, "b": b}))
     for _ in range(40):
         unit, n = rnd_money(r), r.randint(-2, 30)
-        out.append(("money_mul", {"memory": [{"offset": "%04X" % A, "hex": money_hex([7, 7, 7])},
+        out.append(("R029+0x51A0", {"memory": [{"offset": "%04X" % A, "hex": money_hex([7, 7, 7])},
                                              {"offset": "%04X" % B, "hex": money_hex(unit)}],
                                   "args": [h16(A), h16(B), h16(n)]}, {"unit": unit, "n": n}))
     for _ in range(80):
         y, mo, d, hr = r.randint(1400, 1500), r.randint(0, 30), r.randint(0, 400), r.randint(0, 200)
-        out.append(("date_set", {"memory": [{"offset": "%04X" % A, "hex": "00" * 8}],
+        out.append(("R029+0x57BE", {"memory": [{"offset": "%04X" % A, "hex": "00" * 8}],
                                  "args": [h16(A), h16(y), h16(mo), h16(d), h16(hr)]},
                     {"year": y, "month": mo, "day": d, "hour": hr}))
     for _ in range(100):
         dt, hours = rnd_date(r), r.choice([0, 1, 2, 5, 23, 24, 25, 48, 100, 720, 2000, 8760])
-        out.append(("date_add_hours", {"memory": [{"offset": "%04X" % A, "hex": "".join(w(x) for x in dt)}],
+        out.append(("R029+0x58FA", {"memory": [{"offset": "%04X" % A, "hex": "".join(w(x) for x in dt)}],
                                        "args": [h16(A), h16(DS), h16(hours)]}, {"date": dt, "hours": hours}))
     for _ in range(80):
         a, b = rnd_date(r), rnd_date(r)
         a[2], b[2] = a[2] % 12, b[2] % 12   # day numbers index the 12-entry month table
         b[3] = a[3] + r.randint(-3, 3)
-        out.append(("days_between", {"memory": [{"offset": "%04X" % A, "hex": "".join(w(x) for x in a)},
+        out.append(("R029+0x5AB4", {"memory": [{"offset": "%04X" % A, "hex": "".join(w(x) for x in a)},
                                                 {"offset": "%04X" % B, "hex": "".join(w(x) for x in b)}],
                                      "args": [h16(A), h16(B)]}, {"a": a, "b": b}))
     for hr in range(-2, 26):
-        out.append(("hour_band", {"memory": [], "args": [h16(hr)]}, {"hour": hr}))
-    for name in ("rand_mod", "random_n"):
+        out.append(("R029+0x5654", {"memory": [], "args": [h16(hr)]}, {"hour": hr}))
+    for name in ("root 0000:0C70", "root 0410:0008"):
         for _ in range(80):
             state = r.getrandbits(32)
             n = r.choice([-1, 0, 1, 2, 3, 6, 10, 100, 1000, 32767, r.randint(2, 500)])
@@ -106,17 +106,17 @@ def cases(r):
 
 
 def targeted(r):
-    """Cases for the branches the random cases miss (docs/faithfulness/branches-missed.csv): money_set
-    without a carry, money_cmp of equal sums (also written differently), days_between beyond 32000 days."""
+    """Cases for the branches the random cases miss (docs/faithfulness/branches-missed.csv): purse-assign
+    without a carry, purse-compare of equal sums (also written differently), days-from-to beyond 32000 days."""
     out = []
     for fl, gr, pf in [(3, 0, 0), (3, 19, 11), (3, 20, 11), (3, 19, 12), (0, 0, 0), (-5, 5, 5), (7, 40, 0), (7, 0, 24)]:
         m = rnd_money(r)
-        out.append(("money_set", {"memory": [{"offset": "%04X" % A, "hex": money_hex(m)}],
+        out.append(("R029+0x4FB4", {"memory": [{"offset": "%04X" % A, "hex": money_hex(m)}],
                                   "args": [h16(A), h16(fl), h16(gr), h16(pf)]},
                     {"m": m, "fl": fl, "gr": gr, "pf": pf}))
     for a, b in [([1000, 0, 0], [0, 0, 0]), ([0, 0, 0], [1000, 0, 0]), ([3000, 5, 5], [300, 0, 0]), ([1, 0, 0], [1, 0, 0]), ([1, 0, 0], [0, 20, 0]), ([0, 1, 0], [0, 0, 12]), ([2, 3, 4], [2, 3, 4]),
                  ([-1, 20, 0], [0, 0, 0]), ([0, 0, 0], [0, 0, 0])]:
-        out.append(("money_cmp", {"memory": [{"offset": "%04X" % A, "hex": money_hex(a)},
+        out.append(("R029+0x51E4", {"memory": [{"offset": "%04X" % A, "hex": money_hex(a)},
                                              {"offset": "%04X" % B, "hex": money_hex(b)}],
                                   "args": [h16(A), h16(B)]}, {"a": a, "b": b}))
     # 16-bit day numbers: ta/tb wrap, so (int)(tb - ta) >= 0 with a long difference above 32000 needs
@@ -124,12 +124,12 @@ def targeted(r):
     for ya, yb in [(1400, 1311), (1400, 1312), (1400, 1490), (1400, 1491), (1401, 1312), (1450, 1450), (1400, 1489),
                    (1309, 1400), (1309, 1580), (1310, 1400), (1310, 1401), (1310, 1580)]:
         a, b = [0, 0, 0, ya], [0, 0, 0, yb]
-        out.append(("days_between", {"memory": [{"offset": "%04X" % A, "hex": "".join(w(x) for x in a)},
+        out.append(("R029+0x5AB4", {"memory": [{"offset": "%04X" % A, "hex": "".join(w(x) for x in a)},
                                                 {"offset": "%04X" % B, "hex": "".join(w(x) for x in b)}],
                                      "args": [h16(A), h16(B)]}, {"a": a, "b": b}))
     for n in (-5, -1, 0, 1, 2, 3, 6, 100):
         state = r.getrandbits(32)
-        out.append(("rand_1_n", {"memory": [{"offset": "%04X" % HOLDRAND, "hex": struct.pack("<I", state).hex()}],
+        out.append(("root 0000:0C8C", {"memory": [{"offset": "%04X" % HOLDRAND, "hex": struct.pack("<I", state).hex()}],
                                  "args": [h16(n)]}, {"state": state, "n": n}))
     for dy in (-200, -100, -88, -87, 87, 88, 100, 200):
         a = rnd_date(r)
@@ -137,7 +137,7 @@ def targeted(r):
         b = rnd_date(r)
         b[2] %= 12
         b[3] = a[3] + dy
-        out.append(("days_between", {"memory": [{"offset": "%04X" % A, "hex": "".join(w(x) for x in a)},
+        out.append(("R029+0x5AB4", {"memory": [{"offset": "%04X" % A, "hex": "".join(w(x) for x in a)},
                                                 {"offset": "%04X" % B, "hex": "".join(w(x) for x in b)}],
                                      "args": [h16(A), h16(B)]}, {"a": a, "b": b}))
     return out

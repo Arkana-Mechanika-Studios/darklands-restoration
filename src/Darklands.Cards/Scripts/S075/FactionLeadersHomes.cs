@@ -61,7 +61,7 @@ public sealed class FactionLeadersHomes : Card
     /// Calling on a leader puts the party on his side. When the party already serves that side
     /// (the city's fact value), they sit down to plan; otherwise the leader's offer follows.
     /// </summary>
-    // C: the side kept in party_x (CardContext.CityMark).
+    // C: the side kept in party-map-column (CardContext.CityMark).
     private static void JoinSide(CardContext c, int side, int servesThatSide)
     {
         c.CityMark = side;

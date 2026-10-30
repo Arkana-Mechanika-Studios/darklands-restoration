@@ -9,7 +9,7 @@ namespace Darklands.Persistence;
 /// <c>struct mon</c> (level%d.trn) and <see cref="EnemyGroup"/> as the 0x1E-byte <c>struct group</c>
 /// (level%d.atv). Used by the oracle tests and battle files.
 /// </summary>
-// orig: struct mon / struct group (R004 enemy buffer bf_monsters +0x180, bf_groups +0xA200)
+// orig: struct mon / struct group (R004 enemy buffer battlefield-monster-table +0x180, battlefield-group-table +0xA200)
 public static class EnemyRecords
 {
     public const int KindSize = 0xD6;

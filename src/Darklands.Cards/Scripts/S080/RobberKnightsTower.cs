@@ -270,7 +270,7 @@ public sealed class RobberKnightsTower : Card
                 c.Screen.Text(3);
                 ShowPicture(c, picture);
                 c.Events.Create(-2, c.Here, 0x5B, 0x1C, 5, 0, 0, 0x48, 0, 3);
-                // C: the raid count is updated with op opt_flag_6, which was just set to 1 (add).
+                // C: the raid count is updated with op card-option-flag-6, which was just set to 1 (add).
                 CountRaids(c, 2, 1);
                 return true;
             case 1:

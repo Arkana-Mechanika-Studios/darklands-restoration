@@ -9,7 +9,7 @@ using Darklands.Presentation.Battles;
 namespace Darklands.Battles.Tests;
 
 /// <summary>
-/// The parts of combat_mode_leave (R014+0x0D86), combat_recover (R014+0x0DEE) and the end of the battle (R014+0x0694) that BattleEnd hands to the
+/// The parts of fight-mode-exit (R014+0x0D86), fight-recovery (R014+0x0DEE) and the end of the battle (R014+0x0694) that BattleEnd hands to the
 /// tactical battle (IBattleEndActions, TacticalBattle.AfterBattle) happen there. They need the game files and pass vacuously without.
 /// </summary>
 public sealed class BattleEndDelegationTests

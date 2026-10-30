@@ -3,7 +3,7 @@ using Darklands.Cards;
 namespace Darklands.Presentation.Graphics;
 
 /// <summary>What choosing an option line does: a plain choice, or a pop-up of items or saints.</summary>
-// orig: hs->type[] written by draw_text_wrapped root 0265:0134 draft (8 of 10 functions of the file match, this one does not): marker 0x15 -> 0, 0x10 -> 1, 0x16 -> 2, 0x06 -> -1; tests: none (drawing; needs a font and a screen)
+// orig: hs->type[] written by text-paint-wrapped root 0265:0134 draft (8 of 10 functions of the file match, this one does not): marker 0x15 -> 0, 0x10 -> 1, 0x16 -> 2, 0x06 -> -1; tests: none (drawing; needs a font and a screen)
 public enum OptionKind
 {
     Battle = -1,
@@ -23,9 +23,9 @@ public sealed record OptionArea(int Option, OptionKind Kind, int Y, int Height);
 /// (0x01 … 0x13), option lines (0x15 plain, 0x10 items, 0x16 saints, 0x06 battle) and an
 /// illuminated first capital.
 /// </summary>
-// orig: draw_text_wrapped root 0265:0134 draft (the C is read directly; it does not match the bytes: loop shapes and stack slots only); measure_text_wrapped root 0265:0654 (same layout without drawing) is the second copy of this logic and is not needed here; tests: none (drawing; needs a font and a screen)
+// orig: text-paint-wrapped root 0265:0134 draft (the C is read directly; it does not match the bytes: loop shapes and stack slots only); wrapped-text-size root 0265:0654 (same layout without drawing) is the second copy of this logic and is not needed here; tests: none (drawing; needs a font and a screen)
 // C: written from the loop line by line, including its quirks: the 0x01 and 0x13 branches advance the cursor twice (once in the branch, once at the loop end), so the byte after a conditional marker is skipped and counted; an empty segment widens the column by one pixel for the rest of the text; the indent width is a char cast to unsigned char.
-// DIVERGENCE: `stop` (StopAtFirstOption), `init` (the hotspot table reset) and `icon` (the drop cap) are the C's parameters; init is always on here. The original draws a character with the driver's char_width/gfx_text (asm); the glyph widths come from the font file here (TextPainter.Advance), so a byte the font lacks counts as width 0.
+// DIVERGENCE: `stop` (StopAtFirstOption), `init` (the hotspot table reset) and `icon` (the drop cap) are the C's parameters; init is always on here. The original draws a character with the driver's glyph-width/gfx-text-draw (asm); the glyph widths come from the font file here (TextPainter.Advance), so a byte the font lacks counts as width 0.
 public sealed class CardTextLayout(TextPainter painter)
 {
     public const byte Paragraph = 0x14;
@@ -56,7 +56,7 @@ public sealed class CardTextLayout(TextPainter painter)
         public int? Spacing { get; init; }
 
         /// <summary>How each line sits in the column: left, centred or right-aligned.</summary>
-        // orig: DS:01BC (DGROUP byte, 0 left, 1 centred, 2 right) switch before each gfx_text in draw_text_wrapped; the side-window texts (R043+0x27E6, R043+0x29D0) and the party-panel status texts set it to 1 around the call
+        // orig: DS:01BC (DGROUP byte, 0 left, 1 centred, 2 right) switch before each gfx-text-draw in text-paint-wrapped; the side-window texts (R043+0x27E6, R043+0x29D0) and the party-panel status texts set it to 1 around the call
         public TextAlignment Alignment { get; init; } = TextAlignment.Left;
 
         /// <summary>Picture for an illuminated capital, or null to draw the first letter normally.</summary>
@@ -72,7 +72,7 @@ public sealed class CardTextLayout(TextPainter painter)
     }
 
     /// <summary>Draws <paramref name="text"/> in the column (x, y, width) and returns the option areas.</summary>
-    // orig: draw_text_wrapped(w, text, width, x, y, spacing, hs, init, stop, leading, icon, color) root 0265:0134
+    // orig: text-paint-wrapped(w, text, width, x, y, spacing, hs, init, stop, leading, icon, color) root 0265:0134
     public List<OptionArea> Draw(Canvas canvas, byte[] text, int x, int y, int width, Settings settings)
     {
         var areas = new List<OptionArea>();
@@ -93,7 +93,7 @@ public sealed class CardTextLayout(TextPainter painter)
         if (settings.DropCap is { } dropCap && text.Length > 0 && text[0] is > (byte)'@' and < (byte)'[' &&
             dropCap(text[0]) is { } cap)
         {
-            // C: the letter is a saved driver picture (gfx_save_rect at start-up) drawn with gfx_draw_pic: colour 0 transparent, its black is colour 5.
+            // C: the letter is a saved driver picture (gfx-rect-save at start-up) drawn with gfx-picture-draw: colour 0 transparent, its black is colour 5.
             canvas.Draw(cap, x, y, transparent: true);
             lineX = x + DropCapSize;
             lineWidth = width - DropCapSize;
@@ -283,11 +283,11 @@ public sealed class CardTextLayout(TextPainter painter)
     }
 
     /// <summary>Where the next line would start after the last <see cref="Draw"/>: the text's bottom edge.</summary>
-    // orig: the y that measure_text_wrapped root 0265:0654 returns in the high word (minus 1): the side-window hint centres itself on it (R043+0x27E6)
+    // orig: the y that wrapped-text-size root 0265:0654 returns in the high word (minus 1): the side-window hint centres itself on it (R043+0x27E6)
     public int EndY { get; private set; }
 
     /// <summary>The height the text would take in a column of <paramref name="width"/> (lines times line height plus leading), without drawing anywhere visible.</summary>
-    // orig: measure_text_wrapped root 0265:0654 draft (8 of 10 functions of its file match, this one does not): same layout, no output
+    // orig: wrapped-text-size root 0265:0654 draft (8 of 10 functions of its file match, this one does not): same layout, no output
     // DIVERGENCE: measured by running the drawing layout on a scratch screen instead of a second copy of the loop; the C's copy has one difference: it does not track conditional passages (0x01 .. 0x13) and counts the bytes of a skipped option line differently, which the texts measured (hints, short messages) do not contain.
     public int MeasureHeight(byte[] text, int width, int leading) => MeasureHeight(text, width, new Settings { Leading = leading });
 
@@ -299,8 +299,8 @@ public sealed class CardTextLayout(TextPainter painter)
         return EndY;
     }
 
-    // C: the width of the part of the line before the 0x1D marker is text_pixel_width of a copy of the raw bytes, control codes included (their char_width is whatever the driver gives them); here the control codes are left out, which is the same only if they have no width in the font.
-    // C: char_width (drv+0x11A9) gives a code outside the font's first..last range no width: fonts 1 and 2 start at 0x1F, so in the card
+    // C: the width of the part of the line before the 0x1D marker is text-width-px of a copy of the raw bytes, control codes included (their glyph-width is whatever the driver gives them); here the control codes are left out, which is the same only if they have no width in the font.
+    // C: glyph-width (drv+0x11A9) gives a code outside the font's first..last range no width: fonts 1 and 2 start at 0x1F, so in the card
     //   window's font the control codes take no room; font 0 starts at code 0 and gives them the widths of its table. checked against asm
     private static bool IsOptionMarker(byte c) => c is PlainOption or ItemOption or SaintOption or BattleOption;
 

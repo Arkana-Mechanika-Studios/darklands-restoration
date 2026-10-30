@@ -30,7 +30,7 @@ public sealed class DragonsMaidenContest : Card
         c.Next = CardNumber;
         var menu = Menu(c);
         menu.Enable(0, 1, 2);
-        // C: the growth is drawn as an argument of event_update.
+        // C: the growth is drawn as an argument of event-advance.
         var growth = c.Random(2);
         c.Events.Update(-1, -1, 0x1C, 1, growth, DragonQuest, EventUpdate.Add);
         if (c.Events.FactAnywhere(DragonQuest, 5))
@@ -42,7 +42,7 @@ public sealed class DragonsMaidenContest : Card
         {
             c.Events.Create(-2, c.Here, 0, 0x1C, 5, 0, 0, 26280, 0, DragonQuest);
         }
-        // C: the reference's party_count_able counts able women; one alone is not offered either.
+        // C: the reference's party-able-total counts able women; one alone is not offered either.
         if (c.AbleWomen() <= 1)
         {
             menu[1] = OptionState.Hidden;
@@ -97,7 +97,7 @@ public sealed class DragonsMaidenContest : Card
         c.SetAttribute(queen, 0, 1);
         ShowPicture(c, Picture);
         c.Screen.Text(3);
-        // C: arguments are evaluated right to left: rand_mod(4) (second group) before rand_mod(5).
+        // C: arguments are evaluated right to left: roll-below(4) (second group) before roll-below(5).
         var second = c.Random(4) + 3;
         var first = c.Random(5) + 3;
         switch (c.RunBattle(0x63, -1, 0x0B, 2, first, 4, 2, second, -1, 0, 0))
@@ -113,7 +113,7 @@ public sealed class DragonsMaidenContest : Card
                 break;
             case 1:
             case 2:
-                // C: card_load (not card_load_near) here: the same texts are loaded again.
+                // C: card-run (not card-run-near) here: the same texts are loaded again.
                 ShowPicture(c, 224);
                 c.Screen.Text(5);
                 ShowPicture(c, 121);

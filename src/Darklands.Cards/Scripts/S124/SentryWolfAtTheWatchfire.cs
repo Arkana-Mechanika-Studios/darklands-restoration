@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R124+0x023A, R124+0x07F4, R124+0x0896
 // DORMANT (generated): option slots 10..19 keep the default handler R124+0x0896 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SentryWolfAtTheWatchfire : Card
 {
@@ -71,13 +71,13 @@ public sealed class SentryWolfAtTheWatchfire : Card
             new MenuLine(_ => c.PassHours(0), assured));
     }
 
-    // orig: the event_update(−1, −1, 0x1C, 7, n, 1, add) of the card's handlers matched
+    // orig: the event-advance(−1, −1, 0x1C, 7, n, 1, add) of the card's handlers matched
     private static void RaiseTheAlarm(CardContext c, int amount) =>
         c.Events.Update(-1, -1, 0x1C, 7, amount, 1, EventUpdate.Add);
 
     /// <summary>The best Virtue less 25.</summary>
     // orig: R124+0x0338 matched
-    // C: the chance may be negative (no wrap); rand_mod(100) <= it then never succeeds.
+    // C: the chance may be negative (no wrap); roll-below(100) <= it then never succeeds.
     private static OptionHint VirtueChance(CardContext c)
     {
         var chance = c.PartyMaxSkill((int)Skill.Virtue) - 25;
@@ -172,7 +172,7 @@ public sealed class SentryWolfAtTheWatchfire : Card
     /// card 334. Any other result stays here.
     /// </summary>
     // orig: R124+0x023A matched
-    // C: rand_mod(2) is run_battle's only random argument; a result outside 0..4 leaves next_card unchanged.
+    // C: roll-below(2) is battle-driver's only random argument; a result outside 0..4 leaves following-card unchanged.
     private static void Fight(CardContext c)
     {
         var enemies = c.Random(2) + 4;

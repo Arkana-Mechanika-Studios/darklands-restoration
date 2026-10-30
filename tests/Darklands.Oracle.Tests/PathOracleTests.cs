@@ -7,7 +7,7 @@ using Darklands.Core.Randomness;
 namespace Darklands.Oracle.Tests;
 
 /// <summary>
-/// The path search against the original path_find (trackers, waypoint pruning, the AI's path
+/// The path search against the original route-search (trackers, waypoint pruning, the AI's path
 /// hook, the shortcut pass) on generated floors (tools/oracle/build_path_corpus.py → Corpus/path.json).
 /// </summary>
 public sealed class PathOracleTests

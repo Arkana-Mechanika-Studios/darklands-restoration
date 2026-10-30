@@ -10,7 +10,7 @@ namespace Darklands.Core.Battles;
 /// applies to every level (colour variants from the location, merged duplicates, group
 /// bonuses, the special troops' training, group money).
 /// </summary>
-// orig: R004 0E76 (enemy buffer DS:DADD: mon_template, bf_monsters, bf_groups, mon_count, group_count)
+// orig: R004 0E76 (enemy buffer DS:DADD: monster-prototype, battlefield-monster-table, battlefield-group-table, monster-total, group-total)
 public sealed class BattlefieldForces
 {
     public const int MaxLevels = 16;
@@ -22,7 +22,7 @@ public sealed class BattlefieldForces
     private readonly CombatTables _tables;
     private readonly IRandomSource _random;
 
-    // orig: monsters_clear R004+0x04CC (0E76:04CC) draft; groups_clear R004+0x1060 (0E76:1060) draft
+    // orig: monsters-reset R004+0x04CC (0E76:04CC) draft; groups-reset R004+0x1060 (0E76:1060) draft
     public BattlefieldForces(EnemyCatalogue catalogue, IReadOnlyList<ItemDefinition> items, CombatTables tables, IRandomSource random)
     {
         _catalogue = catalogue;
@@ -40,17 +40,17 @@ public sealed class BattlefieldForces
     /// <summary>Which of the original's bugs are fixed.</summary>
     public OriginalBehaviour Behaviour { get; set; } = OriginalBehaviour.Faithful;
 
-    /// <summary>bf_monsters / mon_count: the kinds of each level.</summary>
+    /// <summary>battlefield-monster-table / monster-total: the kinds of each level.</summary>
     public List<EnemyKind>[] Kinds { get; } = new List<EnemyKind>[MaxLevels];
 
-    /// <summary>mon_template: the template of each kind (the variant chosen).</summary>
+    /// <summary>monster-prototype: the template of each kind (the variant chosen).</summary>
     public List<int>[] Templates { get; } = new List<int>[MaxLevels];
 
-    /// <summary>bf_groups / group_count: the groups of each level.</summary>
+    /// <summary>battlefield-group-table / group-total: the groups of each level.</summary>
     public List<EnemyGroup>[] Groups { get; } = new List<EnemyGroup>[MaxLevels];
 
-    /// <summary><c>roll_dice</c>: n dice of d sides; d = 1 gives n without a draw; nothing below 1.</summary>
-    // orig: roll_dice R004+0x20F6 (0E76:20F6) draft (byte-matched per the draft notes)
+    /// <summary><c>dice-roll</c>: n dice of d sides; d = 1 gives n without a draw; nothing below 1.</summary>
+    // orig: dice-roll R004+0x20F6 (0E76:20F6) draft (byte-matched per the draft notes)
     public int RollDice(int n, int d)
     {
         if (d < 1 || n < 1)
@@ -64,7 +64,7 @@ public sealed class BattlefieldForces
         var sum = 0;
         for (var i = 0; i < n; i++)
         {
-            // C: rand() % d + 1 with plain rand() (not rand_mod: no "below 2 counts as 2").
+            // C: rand() % d + 1 with plain rand() (not roll-below: no "below 2 counts as 2").
             sum += _random.NextRaw() % d + 1;
         }
         return sum;
@@ -75,7 +75,7 @@ public sealed class BattlefieldForces
     /// to level <paramref name="level"/>, or finds the same kind already there; returns its index
     /// (−1 for an unknown type).
     /// </summary>
-    // orig: monster_type_map R004+0x06AA (0E76:06AA) draft; checked against draft R004+0x06AA..0x0AB6 (type walk, variant, palettes, weapon choice, weapon item); tests: Oracle:enemies.json
+    // orig: monster-type-lookup R004+0x06AA (0E76:06AA) draft; checked against draft R004+0x06AA..0x0AB6 (type walk, variant, palettes, weapon choice, weapon item); tests: Oracle:enemies.json
     public int AddKind(int level, int type, int quality)
     {
         if (type < 0 || type >= 0x52)
@@ -331,8 +331,8 @@ public sealed class BattlefieldForces
     /// missile users demoted when mixed with others, duplicates merged, group bonuses, special
     /// troops' training, and the levels each kind appears on.
     /// </summary>
-    /// <param name="variantSeed">rand() after srand(cur_loc): the same location always gives the same colours.</param>
-    // orig: monsters_fixup R004+0x122C (0E76:122C) draft (163 differences in the
+    /// <param name="variantSeed">rand() after srand(location-now): the same location always gives the same colours.</param>
+    // orig: monsters-repair R004+0x122C (0E76:122C) draft (163 differences in the
     // draft's byte comparison: jump-table addresses and register choice); tests: Oracle:enemies.json (120 chained scenarios)
     public void FixKinds(int levels, int variantSeed)
     {
@@ -639,7 +639,7 @@ public sealed class BattlefieldForces
     /// The loader's pass over the groups: empty entries and groups dropped, leaders that shoot or
     /// cast made to fight hand to hand (a casting leader is no leader), group money rolled.
     /// </summary>
-    // orig: groups_fixup R004+0x1D90 (0E76:1D90) draft (2 differences in the draft's byte comparison); tests: Oracle:enemies.json
+    // orig: groups-repair R004+0x1D90 (0E76:1D90) draft (2 differences in the draft's byte comparison); tests: Oracle:enemies.json
     public void FixGroups(int levels)
     {
         for (var level = 0; level < levels; level++)

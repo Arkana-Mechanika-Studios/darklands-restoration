@@ -475,7 +475,7 @@ public sealed class CampAndSheetRulesTests
         Assert.Equal((5, 11), (s.Date.Hour, (int)s.Date.Day));
     }
 
-    /// <summary>The day passes through advance_hours, so the hourglass shows once, before the clock moves (R036+0x147A).</summary>
+    /// <summary>The day passes through pass-hours, so the hourglass shows once, before the clock moves (R036+0x147A).</summary>
     [Fact]
     public void TheDayShowsTheHourglassBeforeTheClockMoves()
     {

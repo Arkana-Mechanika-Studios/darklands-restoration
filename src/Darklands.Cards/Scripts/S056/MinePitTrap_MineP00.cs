@@ -9,9 +9,9 @@ namespace Darklands.Cards.Scripts;
 /// climb, potion, pyramid or saint leave the party in the pit or take it on to the next card.
 /// </summary>
 // orig: R056+0x0000 (1838:0000) matched; tests: CardSmokeTests
-// orig: R056+0x0540 (1838:0540) matched (init helper: clears the 20 option flags, installs the item and saint pop-up handlers for the 5 member rows and empties the card_items and card_saints lists; the card then fills 2 items and 4 saints)
-// DORMANT: R056+0x05CA (1838:05CA) the init helper points opt_fn[0..19] at this "screwed up." default; lines 6..19 are cleared (flag 0) and the MSG has only 6 lines, so it never runs.
-// DORMANT: item_fn[k][2] and item_fn[k][3] are never installed by the init helper (they keep stale handlers) and card_items has only two entries, so those pop-up slots are empty and cannot be chosen.
+// orig: R056+0x0540 (1838:0540) matched (init helper: clears the 20 option flags, installs the item and saint pop-up handlers for the 5 member rows and empties the card-item-lines and card-saint-lines lists; the card then fills 2 items and 4 saints)
+// DORMANT: R056+0x05CA (1838:05CA) the init helper points card-option-handler[0..19] at this "screwed up." default; lines 6..19 are cleared (flag 0) and the MSG has only 6 lines, so it never runs.
+// DORMANT: item-handler-table[k][2] and item-handler-table[k][3] are never installed by the init helper (they keep stale handlers) and card-item-lines has only two entries, so those pop-up slots are empty and cannot be chosen.
 public sealed class MinePitTrap_MineP00 : Card
 {
     public const int CardNumber = 0x30;
@@ -36,7 +36,7 @@ public sealed class MinePitTrap_MineP00 : Card
     {
         Show(c, Picture);
         var pyramid = c.PresentCount() < 3 ? OptionState.Shown : OptionState.Enabled;
-        // C: party_max_eff_attr2() sets best_member: the best climber (highest effective agility) is named in the texts.
+        // C: party-effective-stat-two-top() sets top-scoring-member: the best climber (highest effective agility) is named in the texts.
         _ = c.PartyMaxEffectiveAgility();
         c.Variables.Chosen[0] = c.BestMember;
         c.SetCardItems(0x68, 0x66);
@@ -117,7 +117,7 @@ public sealed class MinePitTrap_MineP00 : Card
             c.Next = StartBattle;
             return;
         }
-        // The climber fails and falls back: the original changes his Endurance by +1..10 with add_attr, kept as is.
+        // The climber fails and falls back: the original changes his Endurance by +1..10 with raise-attribute-by, kept as is.
         c.AddAttribute(c.Variables.Chosen[0], 0, c.Random(10) + 1);
         c.Screen.Text(2);
         CloseOption(ClimberOption);
@@ -145,7 +145,7 @@ public sealed class MinePitTrap_MineP00 : Card
     }
 
     /// <summary>A saint answers: the way out opens (slots 0..2) or the party is carried out (slot 3), and the dwarfs come.</summary>
-    // orig: R056+0x02BA (1838:02BA) unmatched (checked against asm: the C returns an int without a value; the switch on menu_slot is a jump on 0..2 / 3)
+    // orig: R056+0x02BA (1838:02BA) unmatched (checked against asm: the C returns an int without a value; the switch on menu-choice-index is a jump on 0..2 / 3)
     private void CallUponASaint(CardContext c)
     {
         var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
@@ -183,7 +183,7 @@ public sealed class MinePitTrap_MineP00 : Card
         {
             0 => OptionHint.Say(SuccessAssured, c.MenuMember),
             1 => OptionHint.ChanceOf(c.PartyAverageAttribute(2) + 0x28, c.MenuMember),
-            // item_fn[k][2..3] are never installed (stale handlers); card_items has only two entries, so the slots stay empty.
+            // item-handler-table[k][2..3] are never installed (stale handlers); card-item-lines has only two entries, so the slots stay empty.
             _ => OptionHint.Say(CardTexts.ScrewedUp),
         };
     }

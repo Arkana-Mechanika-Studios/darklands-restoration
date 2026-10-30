@@ -32,7 +32,7 @@ public sealed class RenewingAcquaintances : Card
         return menu.Run(
             // orig: lines 0..7: R072+0x0DAE, 029c, 02e6, 0330, 037a, 03c4, 040e, 0458
             Line(c), Line(c), Line(c), Line(c), Line(c), Line(c), Line(c), Line(c),
-            // DORMANT: line 8 (opt_flag_8 = 0). orig: R072+0x1002
+            // DORMANT: line 8 (card-option-flag-8 = 0). orig: R072+0x1002
             Line(c),
             // orig: R072+0x104C
             // C: the original function has no return statement and the action is a call with its value dropped;

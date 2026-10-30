@@ -266,7 +266,7 @@ internal readonly struct ExitRecord(byte[] image, int at)
 /// An item pile of a section (0x2C bytes at +0x300E): a spot in the prepared map where the generator drops loot (or, for a few
 /// sections, makes a locked door), with room for four item entries.
 /// </summary>
-// C: the draft calls these "groups" (struct grp2); they hold item types and weights (bf_items +0x25), hence "pile".
+// C: the draft calls these "groups" (struct grp2); they hold item types and weights (battlefield-item-table +0x25), hence "pile".
 internal readonly struct PileRecord(byte[] image, int at)
 {
     private const int EntriesAt = 0x14;

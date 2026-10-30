@@ -26,7 +26,7 @@ public sealed class FriarSellingPardons : Card
         var menu = Menu(c);
         menu.Enable(0, 1, 2);
         var purse = c.State.Party.Purse.TotalPfennigs;
-        // C: money_pfennigs is a long; the pardon costs (unsigned)(pfennigs) / 60 + 3 per slot.
+        // C: purse-in-pfennigs is a long; the pardon costs (unsigned)(pfennigs) / 60 + 3 per slot.
         if (purse <= 0)
         {
             // C: the price ($Money1) then keeps an earlier card's value; the line is hidden.
@@ -161,7 +161,7 @@ public sealed class FriarSellingPardons : Card
 
     // orig: R075+0x1B14 (19BE:02B4) matched; tests: CardSmokeTests
     // C: (100 - skill) / 14 + 1 is the C's -(skill - 100) / 14 + 1 (division truncates toward 0;
-    // skills are at most 99, so it is positive); the loop runs over every slot below party_size.
+    // skills are at most 99, so it is positive); the loop runs over every slot below party-headcount.
     /// <summary>
     /// The curse wastes each member's endurance and strength (and their maxima) and divine
     /// favour, the less the better the member's virtue (skill 9).

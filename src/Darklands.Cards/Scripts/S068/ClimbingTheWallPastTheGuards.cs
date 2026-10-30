@@ -12,7 +12,7 @@ namespace Darklands.Cards.Scripts;
 // orig: handler setup R068+0x2422 (empty: nothing installed for pop-ups, so the item and
 // saint lists and pop-up handlers of the card before stay as they were); unused-line handler R068+0x2424 ("screwed up.")
 // C: the card sets the window globals DS:EE72 = 7 and DS:EE70 = 0; they are not modelled (nothing reconstructed reads them).
-// C: the card does not clear card_items/card_saints or install pop-up handlers (stale from the previous card); its text has no item or
+// C: the card does not clear card-item-lines/card-saint-lines or install pop-up handlers (stale from the previous card); its text has no item or
 // saint line and it never asks for usable items or saints, so those stale tables are never consulted: nothing to reconstruct.
 public sealed class ClimbingTheWallPastTheGuards : Card
 {
@@ -41,7 +41,7 @@ public sealed class ClimbingTheWallPastTheGuards : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-        // C: v_di is overwritten for every member, so only the last member's rope counts (1 without members).
+        // C: local-in-di is overwritten for every member, so only the last member's rope counts (1 without members).
         // BUG: the rope line is greyed unless the last member carries a rope, whoever else has one.
         var rope = true;
         for (var who = 0; who < c.PartySize; who++)

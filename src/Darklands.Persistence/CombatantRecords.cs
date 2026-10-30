@@ -139,7 +139,7 @@ public static class CombatantRecords
     }
 
     /// <summary>+0x0E: the near pointer to the animation set's info block for the pose (an address in the original's data segment).</summary>
-    // orig: cbt_set_anim R014+0x38B6 (0E76:38B6) draft, checked against the asm (0x3C2E..0x3C38 for dying): &DS:CAB4[slot] walking
+    // orig: fighter-start-animation R014+0x38B6 (0E76:38B6) draft, checked against the asm (0x3C2E..0x3C38 for dying): &DS:CAB4[slot] walking
     // (0x90-byte blocks), &DS:CEAE[slot] (0x70-byte blocks, also R014's ANIMINFO) fighting and hit, &DS:D1E4[slot] (0x40-byte blocks) dying
     // C: before any pose the battle's reset (R002's 1830) leaves &DS:CAB4[i]; the blocks' addresses were read in the original's memory
     private static int InfoPointer(Combatant c) => c.Pose switch

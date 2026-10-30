@@ -76,7 +76,7 @@ public sealed class BattleSaveTests
         var r = resumed.Battle;
 
         // the fight taken up again shows "Battlefield save rules are in effect" (DS:1776) for 150 ticks after its set-up (R014+0x0000), the
-        // clock running in show_message's wait (root 0000:24BC)
+        // clock running in notice-display's wait (root 0000:24BC)
         Assert.Equal((ushort)(b.Clock + 150), r.Clock);
         Assert.Equal(b.FloorShown, r.FloorShown);
         Assert.Equal(b.PartyFloor, r.PartyFloor);

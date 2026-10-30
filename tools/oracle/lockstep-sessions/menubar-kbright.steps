@@ -1,4 +1,4 @@
-# Lockstep session: load DKSAVE0, the menu bar at the Pressburg card: F10 keyboard menu, Right with no item chosen (root 0000:0EE4 reads items[-1].sub: best_member for Game, the dropdown's right edge DS:987B for Party), Right, Down, Down, Enter, then the inn card still answers
+# Lockstep session: load DKSAVE0, the menu bar at the Pressburg card: F10 keyboard menu, Right with no item chosen (root 0000:0EE4 reads items[-1].sub: top-scoring-member for Game, the dropdown's right edge DS:987B for Party), Right, Down, Down, Enter, then the inn card still answers
 key:t
 wait:5
 key:l

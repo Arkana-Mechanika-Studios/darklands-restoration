@@ -58,7 +58,7 @@ public sealed class BankNotesTests
     [Fact]
     public void DismissingAMemberTakesAFifthOfTheWholeTriple()
     {
-        // The share is (unsigned)money_pfennigs / 5, subtracted with money_sub_fgp(0, 0, share).
+        // The share is (unsigned)purse-in-pfennigs / 5, subtracted with purse-subtract-parts(0, 0, share).
         var notes = Money.From(40, 10, 6);
         var share = (ushort)notes.TotalPfennigs / 5;
         var left = notes.Subtract(0, 0, share);

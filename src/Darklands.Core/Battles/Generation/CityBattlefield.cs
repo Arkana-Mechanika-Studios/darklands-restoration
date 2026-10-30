@@ -11,7 +11,7 @@ namespace Darklands.Core.Battles.Generation;
 public static class CityBattlefield
 {
     /// <summary>Builds the battlefield; returns the number of levels and sets the start level.</summary>
-    // orig: city_build R010+0x0000 (1432:0000) draft (byte-matched per the draft notes)
+    // orig: city-builder-entry R010+0x0000 (1432:0000) draft (byte-matched per the draft notes)
     public static int Build(GenerationState g, int battlefield, out int start, (int Type, int Quality, int Count)[] specs)
     {
         var type = BattleType(g, battlefield);
@@ -33,7 +33,7 @@ public static class CityBattlefield
     }
 
     /// <summary>The city battle type (1..9) for a battlefield type; several types choose at random.</summary>
-    // orig: city_battle_type R010+0x0102 (1432:0102) draft (byte-matched per the draft notes)
+    // orig: city-fight-kind R010+0x0102 (1432:0102) draft (byte-matched per the draft notes)
     // C: each random arm returns for every roll result (no fall-through happens).
     public static int BattleType(GenerationState g, int battlefield) => battlefield switch
     {
@@ -313,8 +313,8 @@ public static class CityBattlefield
             g.Timed = true;
         }
         level.ObjectCount = 0;
-        // orig: level_save R010+0x2DE0 (1432:2DE0) draft (fn matched): buffer k is written
-        //   as "level%d.flr" of its level number through swap_save (R004+0x4BCA); g.Save keeps it in memory under that number.
+        // orig: level-write R010+0x2DE0 (1432:2DE0) draft (fn matched): buffer k is written
+        //   as "level%d.flr" of its level number through spill-file-store (R004+0x4BCA); g.Save keeps it in memory under that number.
         // DORMANT: a buffer outside 0..1 is not saved; every caller (08aa, 1516, 1b22, 2526) passes 0 or 1.
         g.Save(level);
         return 1;
@@ -640,7 +640,7 @@ public static class CityBattlefield
             l.ObjectCount = 0;
             g.Save(l);
         }
-        // C: city_build reports start level 0 even when 0x2C/0x2D put the party on level 1: the caller stores 0 through the start-level pointer after
+        // C: city-builder-entry reports start level 0 even when 0x2C/0x2D put the party on level 1: the caller stores 0 through the start-level pointer after
         //   R010+0x1516 returns (R010+0x00BC jumps to R010+0x006F `mov word ptr [bx],0`).
         return 2;
     }

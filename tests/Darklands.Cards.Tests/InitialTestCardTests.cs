@@ -21,7 +21,7 @@ public sealed class InitialTestCardTests
         Assert.Equal(Money.From(200, 0, 0), state.Party.Purse);
         Assert.Equal(0, state.PreviousCard);
         Assert.Contains("show $Initi00 xhouse3", screen.Log);
-        // C: opt_flag_2 = 2 (shown), opt_flag_4 = 0 (hidden), the others 1.
+        // C: card-option-flag-2 = 2 (shown), card-option-flag-4 = 0 (hidden), the others 1.
         Assert.Equal(OptionState.Shown, screen.LastOptions[2]);
         Assert.Equal(OptionState.Hidden, screen.LastOptions[4]);
     }

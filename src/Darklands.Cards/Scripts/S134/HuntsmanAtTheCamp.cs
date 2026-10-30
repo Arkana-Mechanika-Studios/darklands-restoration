@@ -27,9 +27,9 @@ namespace Darklands.Cards.Scripts;
 //     R134+0x152A
 // DORMANT (generated): option slots 10..19 keep the default handler R134+0x1352 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: clamp_range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
+// C: limit-to-range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
 public sealed class HuntsmanAtTheCamp : Card
 {
     public override int Number => 361;
@@ -50,7 +50,7 @@ public sealed class HuntsmanAtTheCamp : Card
         var pfennigs = c.Random(24) + 36;
         c.Variables.Money[0] = Money.From(0, 0, pfennigs);
         c.Variables.Money[1] = Money.From(0, 0, pfennigs * c.PresentCount());
-        // C: money_cmp compares the totals in pfennigs as unsigned longs; the purse is never negative here.
+        // C: purse-compare compares the totals in pfennigs as unsigned longs; the purse is never negative here.
         if (guard == -1)
         {
             menu.Block = 1;
@@ -77,7 +77,7 @@ public sealed class HuntsmanAtTheCamp : Card
             new MenuLine(_ => Fight(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // DORMANT: lines 6..9 are never enabled. Their actions (R134+0x12EA / _06de / _06e2 / _06e6) and
             //   hints (R134+0x12EC / _06e0 / _06e4 / _06e8) are empty functions.
-            // C: an empty hint leaves msg_buf and the result as they were (stale); read here as the default hint.
+            // C: an empty hint leaves text-bank-buffer and the result as they were (stale); read here as the default hint.
             new MenuLine(() => { }), new MenuLine(() => { }), new MenuLine(() => { }), new MenuLine(() => { }));
     }
 
@@ -130,7 +130,7 @@ public sealed class HuntsmanAtTheCamp : Card
     }
 
     // orig: R134+0x1180 matched
-    // C: the second money_sub argument is printed as -0x115E: the near address 0xEEA2, i.e. var_money2 ($Money2).
+    // C: the second purse-difference argument is printed as -0x115E: the near address 0xEEA2, i.e. text-slot-amount-two ($Money2).
     /// <summary>$Money1 when the guard saw them coming, else $Money2 (per head).</summary>
     private static void PayTheRent(CardContext c)
     {
@@ -142,7 +142,7 @@ public sealed class HuntsmanAtTheCamp : Card
     }
 
     // orig: R134+0x11F8 matched
-    // C: after a cancelled prayer (−1) the handler returns before restoring var_chosen1, which keeps the praying member.
+    // C: after a cancelled prayer (−1) the handler returns before restoring text-slot-chosen-one, which keeps the praying member.
     /// <summary>The praying member is $ChosenOneName for the texts, then the guard again (unless the prayer was cancelled).</summary>
     private void CallOnASaint(CardContext c, CardMenu menu)
     {
@@ -171,7 +171,7 @@ public sealed class HuntsmanAtTheCamp : Card
     /// <summary>The huntsman's men, more and better the more the party is known (party lore level).</summary>
     // orig: R134+0x0EBC matched
     // DORMANT: the C takes a flag (battle 0x30 when set, else 0x2F) but both callers pass 0, so only 0x2F is used.
-    // C: arguments right to left: the count's rand_mod(4) is drawn before the level's rand_mod(2).
+    // C: arguments right to left: the count's roll-below(4) is drawn before the level's roll-below(2).
     private static void Fight(CardContext c)
     {
         var lore = c.PartyLoreLevel();
@@ -204,7 +204,7 @@ public sealed class HuntsmanAtTheCamp : Card
         }
     }
 
-    // orig: (the shared tail of the handlers: cur_loc = -1; next_card = 0x0C)
+    // orig: (the shared tail of the handlers: location-now = -1; following-card = 0x0C)
     private static void Leave(CardContext c)
     {
         c.State.CurrentLocation = GameState.Wilderness;
@@ -212,5 +212,5 @@ public sealed class HuntsmanAtTheCamp : Card
     }
 
     // DORMANT: R134+0x138A, _077c, _077e, _0780 and _091a are empty functions nothing calls.
-    // C: the table set-up R134+0x12FA fills only saint_fn and clears only card_saints (not card_items).
+    // C: the table set-up R134+0x12FA fills only saint-handler-table and clears only card-saint-lines (not card-item-lines).
 }

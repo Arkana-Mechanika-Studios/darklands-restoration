@@ -26,10 +26,10 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>
-    /// enemies_place for the first enemy (record 5) of a dragon fight: weapon type 40 takes the dragon's animation code for the rest
+    /// enemy-placement-entry for the first enemy (record 5) of a dragon fight: weapon type 40 takes the dragon's animation code for the rest
     /// of the battle.
     /// </summary>
-    // orig: enemies_place R025+0x0000 (1EF8:0000) draft, 0x0779..0x07AA (checked against the asm): `if (DS:C21A != 0 && si == 5)`
+    // orig: enemy-placement-entry R025+0x0000 (1EF8:0000) draft, 0x0779..0x07AA (checked against the asm): `if (DS:C21A != 0 && si == 5)`
     // 20A5:763B..763C = "D7" when DS:C21A == 'I', else "CD"; after the slot's files were loaded (0x0733) and the weapon readied (0x042B)
     private void DragonWeaponForFight(int si)
     {
@@ -40,11 +40,11 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>
-    /// melee_exchanges, for the dragon about to strike while the battle runs: when it is breathing (action 0x100) any party slot will
+    /// close-combat-rounds, for the dragon about to strike while the battle runs: when it is breathing (action 0x100) any party slot will
     /// do, else a member fighting hand to hand (11 draws at most; one found makes it breathe only every 6th blow from now on);
     /// either way until the one drawn is able or none was found. Then it turns to one of facings 1..4.
     /// </summary>
-    // orig: melee_exchanges R014+0x2A4A (0E76:2A4A) draft, 0x2A98..0x2B36 (checked against the asm)
+    // orig: close-combat-rounds R014+0x2A4A (0E76:2A4A) draft, 0x2A98..0x2B36 (checked against the asm)
     // C: with every party slot unable a breathing dragon draws for ever (the battle would have ended before)
     private void DragonPicksVictim(Combatant c)
     {
@@ -76,11 +76,11 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>
-    /// melee_frame, the dragon's blow landing while the battle runs: every DS:C21F-th blow (counted by cbt_attack) it breathes next:
+    /// melee_frame, the dragon's blow landing while the battle runs: every DS:C21F-th blow (counted by fighter-attack) it breathes next:
     /// the breathing animation, the use-item action and spell type 8 at power 50.
     /// </summary>
     // orig: melee_frame R014+0x199C (0E76:199C) draft, 0x19F8..0x1A47 (checked against the asm): DS:C26E (unsigned) idiv DS:C21F
-    // (signed), the code copied to anim_file[5] (*DS:117E), DS:9EE5 = 0x100, DS:CA11 = 8, DS:C97F = 50
+    // (signed), the code copied to animation-file-name[5] (*DS:117E), DS:9EE5 = 0x100, DS:CA11 = 8, DS:C97F = 50
     private void DragonMayBreathe(Combatant c)
     {
         if (Battle.DragonBlowCount % Battle.DragonBreathInterval != 0 || Battle.Result != BattleResult.Running)
@@ -94,11 +94,11 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>
-    /// enemy_turn in a dragon fight: a dragon doing nothing is set to attack at once (and the fight made real, every combatant
+    /// enemy-move-phase in a dragon fight: a dragon doing nothing is set to attack at once (and the fight made real, every combatant
     /// joining it); either way the usual enemy turn does not run.
     /// </summary>
-    // orig: enemy_turn R018+0x0706 (1F43:0256) draft, 0x0729..0x079D (checked against the asm): `if ((DS:9EE5 & 0x1BE) == 0)`
-    // DS:9EE5 = 0x12, DS:D9A0 (engage time of 5) = clock, DS:CA69 = 7, anim_file[5] = DS:216E / DS:2171, DS:A6C1 = DS:9721 = 1,
+    // orig: enemy-move-phase R018+0x0706 (1F43:0256) draft, 0x0729..0x079D (checked against the asm): `if ((DS:9EE5 & 0x1BE) == 0)`
+    // DS:9EE5 = 0x12, DS:D9A0 (engage time of 5) = clock, DS:CA69 = 7, animation-file-name[5] = DS:216E / DS:2171, DS:A6C1 = DS:9721 = 1,
     // DS:DA49 = clock + 300, R018+0x1472(i) for i < 13; then (and otherwise) the turn ends
     private void DragonTurn()
     {

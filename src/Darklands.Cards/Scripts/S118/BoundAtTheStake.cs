@@ -23,7 +23,7 @@ public sealed class BoundAtTheStake : Card
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 4);
         c.Variables.Chosen[0] = c.Leader;
-        // C: party_x is declared `extern long`, so the call pushes party_y and party_x (and 0x24): nearest_loc_type gets (x, y, 0x24); nothing is undefined (checked against the asm).
+        // C: party-map-column is declared `extern long`, so the call pushes party-map-row and party-map-column (and 0x24): closest-place-of-kind gets (x, y, 0x24); nothing is undefined (checked against the asm).
         c.Variables.Location = c.NearestLocationOfType(c.State.MapPosition.X, c.State.MapPosition.Y, 0x24);
         c.Variables.Location2 = c.SabbatSite();
         // C: the slots are assigned out of order: items 0, 2, saints 0, 1, then item 1 and saint 2 (0x67 both).
@@ -63,7 +63,7 @@ public sealed class BoundAtTheStake : Card
         return OptionHint.ChanceOf(c.Skill(m, (int)Skill.Artifice) + (c.MenuSlot == 1 ? 30 : 50), m);
     }
 
-    // C: (party_max_attr(1) - 0x23) * 5, unclamped (negative for a weak party); the strongest member is shown.
+    // C: (party-stat-top(1) - 0x23) * 5, unclamped (negative for a weak party); the strongest member is shown.
     private static OptionHint StrengthHint(CardContext c)
     {
         var chance = (c.PartyMaxAttribute((int)Attribute.Strength) - 35) * 5;

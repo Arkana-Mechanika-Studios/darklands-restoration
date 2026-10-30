@@ -270,7 +270,7 @@ internal sealed partial class CastleGenerator
 
     /// <summary>Does a cell of this room kind get an object? (1 in 20 in the ground-level halls, 1 in 6 in rooms of kinds 2..5 above, never elsewhere.)</summary>
     // orig: R007+0x3B92 (15AF:3B92) draft
-    // C: the original's parameter called l here is the level; roll_dice(1, 0) makes no draw and is never 1.
+    // C: the original's parameter called l here is the level; dice-roll(1, 0) makes no draw and is never 1.
     private bool ObjectChance(int l, int kind)
     {
         int n;

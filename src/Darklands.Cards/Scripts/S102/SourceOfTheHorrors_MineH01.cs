@@ -127,7 +127,7 @@ public sealed class SourceOfTheHorrors_MineH01 : Card
 
     /// <summary>A prayer always works here: the card asks no saint (Saint 0x2B in slot 1 brings the roof down, the others angels).</summary>
     // orig: R102+0x0A26 (18A6:0346) matched
-    // C: no invoke_saint is made; the pop-up's hint only names the one who prays.
+    // C: no call-on-saint is made; the pop-up's hint only names the one who prays.
     private static void Pray(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;

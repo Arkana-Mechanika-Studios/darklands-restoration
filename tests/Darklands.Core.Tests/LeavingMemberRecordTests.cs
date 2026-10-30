@@ -4,7 +4,7 @@ using Darklands.Core.Rules;
 namespace Darklands.Core.Tests;
 
 /// <summary>
-/// party_remove (R037+0x3B58) writes back only the 0x80-byte member record, and party_add (R037+0x3CD6) leaves the slot's figure
+/// party-leave (R037+0x3B58) writes back only the 0x80-byte member record, and party-join (R037+0x3CD6) leaves the slot's figure
 /// (card oracle, local/batch/cards1o: cards 0x0D, 0x8D and 0x120).
 /// </summary>
 public sealed class LeavingMemberRecordTests

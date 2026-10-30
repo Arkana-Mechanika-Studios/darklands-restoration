@@ -74,7 +74,7 @@ public sealed class TemplarWritingDesk : Card
 
     /// <summary>A successful copy teaches the best Read &amp; Write + Latin member three formulas.</summary>
     // orig: R118+0x21DC (1A2B:02AC) matched; tests: CardSmokeTests
-    // C: party_max_skill_sum is called again (its result unused) to set the best member before the roll.
+    // C: party-ability-top-sum is called again (its result unused) to set the best member before the roll.
     private static void CopyTheSymbol(CardContext c, CardMenu menu, int chance)
     {
         menu[1] = OptionState.Shown;
@@ -95,7 +95,7 @@ public sealed class TemplarWritingDesk : Card
     /// A random formula 0..65, moved on (wrapping) past any whose byte of the formula table
     /// already holds a known formula, then learnt.
     /// </summary>
-    // BUG: the search tests formulas_known[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any n
+    // BUG: the search tests known-recipes[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any n
     // whose group of three has any formula known, not just n itself. If all groups do, the first n is learnt.
     private static void LearnAFormula(CardContext c, Character scholar)
     {

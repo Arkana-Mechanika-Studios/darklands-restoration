@@ -5,13 +5,13 @@ using Darklands.Presentation.Graphics;
 namespace Darklands.Presentation.Battles;
 
 /// <summary>
-/// The battlefield as the original draws it (<c>floor_view_draw</c>): a window of 14 rows ×
+/// The battlefield as the original draws it (<c>floor-view-paint</c>): a window of 14 rows ×
 /// 10 cells around a centre cell, in the oblique projection where a map point (x, y) is
 /// shown at (x − y + 136, y + 105) relative to the centre cell's corner. Cells are drawn
 /// row by row: north wall and its decoration, floor and floor decoration, west wall and its
 /// decoration, furniture, then the east and south walls.
 /// </summary>
-// orig: floor_view_draw R017+0x0000 (1EF8:0000) draft; tests: BattlefieldViewTests
+// orig: floor-view-paint R017+0x0000 (1EF8:0000) draft; tests: BattlefieldViewTests
 // orig: R000+0x0114 (0E76:0114) draft (the slot screen-position tables, R136+0x415E..4b4a)
 // The wall-hiding and corner-variant conditions were checked against the asm (R017+0x01FD..0x029E)
 // and agree with the old engine's CleanCombatTerrain.
@@ -38,7 +38,7 @@ public sealed class BattlefieldView
     public int CameraY => CentreRow * BattlefieldLevel.CellHeight;
 
     /// <summary>The screen position of a map point.</summary>
-    // orig: cbt_screen_pos R014+0x99F6 (14F7:31E6) draft (foot point: x − y + 0x88, y + 0x69)
+    // orig: fighter-screen-position R014+0x99F6 (14F7:31E6) draft (foot point: x − y + 0x88, y + 0x69)
     public (int X, int Y) ToScreen(int x, int y) =>
         (Left + x - CameraX - (y - CameraY) + ProjectionX, y - CameraY + ProjectionY);
 
@@ -46,9 +46,9 @@ public sealed class BattlefieldView
     /// The map point under a screen position (on the floor): the pointer's ground point of the order, group and throw cursors.
     /// It is the exact inverse of <see cref="ToScreen"/>.
     /// </summary>
-    // orig: combat_mouse R014+0xB576 (19CD:0006), the hover R014+0xC044 and the click R014+0xC33C
-    // R014+0xC33C draft, checked against asm (R014+0xB68A group cursor, R014+0xC22C hover, R014+0xC5FD click): with mx = mouse_x − 60,
-    // h = mouse_y − R136+0x41F4, map y = h + DS:C293, map x = h − R136+0x4BE0 + mx − 16 + DS:C26C. R136+0x41F4 / R136+0x4BE0 are entry 75
+    // orig: fight-mouse R014+0xB576 (19CD:0006), the hover R014+0xC044 and the click R014+0xC33C
+    // R014+0xC33C draft, checked against asm (R014+0xB68A group cursor, R014+0xC22C hover, R014+0xC5FD click): with mx = pointer-column − 60,
+    // h = pointer-row − R136+0x41F4, map y = h + DS:C293, map x = h − R136+0x4BE0 + mx − 16 + DS:C26C. R136+0x41F4 / R136+0x4BE0 are entry 75
     // (row 7, column 5) of the slot tables R000+0x0114 fills: the floor y −7 + 16 × 7 = 0x69 and x −(24 + 16) + 32 × 5 = 0x78;
     // DS:C26C / DS:C293 are the view origin (centre cell × 32, × 16). 0x78 + 16 = 0x88, the projection's x offset: no further shift.
     public (int X, int Y) ToMap(int screenX, int screenY)
@@ -59,7 +59,7 @@ public sealed class BattlefieldView
     }
 
     /// <summary>Where a cursor sprite of the given size standing on map point (x, y) is drawn: centred on the point, its bottom on it (screen pixels).</summary>
-    // orig: combat_draw R014+0x6818 (14F7:0008) draft (the ground cursor:
+    // orig: fight-draw R014+0x6818 (14F7:0008) draft (the ground cursor:
     // sy = DS:E1B6 − DS:C293, DS:E1C2 = DS:E1B4 − DS:C26C − sy + 0x88 − DS:E1B8 / 2, DS:E1BE = sy − DS:E1C0 + 0x69)
     public (int X, int Y) CursorTopLeft(int x, int y, int width, int height)
     {
@@ -68,7 +68,7 @@ public sealed class BattlefieldView
     }
 
     /// <summary>The cell shown in view slot (row, column), relative to the centre.</summary>
-    // orig: DS:1FC6 / DS:2052 (the slot offset tables floor_view_draw reads); BattlefieldViewTests compares this formula with the EXE's tables.
+    // orig: DS:1FC6 / DS:2052 (the slot offset tables floor-view-paint reads); BattlefieldViewTests compares this formula with the EXE's tables.
     public static (int Dx, int Dy) SlotOffset(int row, int column) => (column + row / 2 - 8, row - 7);
 
     /// <summary>Screen position (relative to the view) of the floor tile of a slot.</summary>
@@ -93,7 +93,7 @@ public sealed class BattlefieldView
     // screen draws the panel (BattleScreen.DrawPanel) and the piles (tb.LootPiles) itself. A missing tile clears DS:E22F and then DS:E230,
     // two latches only R017+0x0000 itself reads (the root and all other overlays never touch them), so a missing tile is simply not drawn
     // here with no other effect. The animated decorations (EffectField.AnimatedPieces) show the
-    // frame R014+0x6818 drew by lot for them (R014+0x8286..: 20A5:6EEA / 6F2A / 3474[n × 2 + random_n(2)], the second frame
+    // frame R014+0x6818 drew by lot for them (R014+0x8286..: 20A5:6EEA / 6F2A / 3474[n × 2 + roll-n(2)], the second frame
     // possibly none).
     /// <summary>The frame (0, 1; −1 none) the renderer drew of the animated piece of a layer (0 north wall, 1 west wall, 2 floor) at a cell.</summary>
     public Func<int, int, int, int>? PieceFrame { get; set; }

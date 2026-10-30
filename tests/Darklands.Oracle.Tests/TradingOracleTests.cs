@@ -10,7 +10,7 @@ namespace Darklands.Oracle.Tests;
 
 /// <summary>
 /// The barter rules against the original program: every case in Corpus/trading.json is the
-/// result of executing item_quality, buy_price, sell_price or shop_has_item (overlay R032)
+/// result of executing item-grade, price-to-buy, price-to-sell or shop-stocks-item (overlay R032)
 /// from DARKLAND.EXE with a generated item, place, city and party
 /// (tools/oracle/build_trading_corpus.py).
 /// </summary>
@@ -21,10 +21,10 @@ public sealed class TradingOracleTests
     private static readonly Lazy<Corpus> Data = new(() => Corpus.Load("trading.json"));
 
     [Theory]
-    [InlineData("item_quality")]
-    [InlineData("buy_price")]
-    [InlineData("sell_price")]
-    [InlineData("shop_has_item")]
+    [InlineData("thunk 09C0:205D")]
+    [InlineData("R032+0x192E")]
+    [InlineData("R032+0x1B26")]
+    [InlineData("R032+0x1D18")]
     public void MatchesTheOriginalFunction(string function)
     {
         var cases = Raw(function);
@@ -36,15 +36,15 @@ public sealed class TradingOracleTests
             var slot = Int(i, "slot");
             var result = function switch
             {
-                "item_quality" => Trading.OfferedQuality(s, shop, Code),
-                "buy_price" => Trading.BuyPrice(s, shop, Code),
-                "sell_price" => Trading.SellPrice(s, Code, Int(i, "quality")),
+                "thunk 09C0:205D" => Trading.OfferedQuality(s, shop, Code),
+                "R032+0x192E" => Trading.BuyPrice(s, shop, Code),
+                "R032+0x1B26" => Trading.SellPrice(s, Code, Int(i, "quality")),
                 _ => Trading.ShopHasItem(s, shop, Code, ref slot) ? 1 : 0,
             };
             var expected = (short)Corpus.Hex(c.GetProperty("ax").GetString()!);
             Assert.True(expected == (short)result, $"{function}: original {expected}, port {result}; {i}");
             Assert.True(c.GetProperty("holdrand").GetUInt32() == ((MscRandom)s.Random).State, $"{function}: random state; {i}");
-            if (function == "shop_has_item")
+            if (function == "R032+0x1D18")
             {
                 Assert.True(c.GetProperty("slot").GetInt32() == (short)slot, $"stale slot: original {c.GetProperty("slot").GetInt32()}, port {slot}; {i}");
             }
@@ -52,7 +52,7 @@ public sealed class TradingOracleTests
     }
 
     /// <summary>
-    /// The whole stock listing (draw_barter_screen with its drawing calls skipped but leaving
+    /// The whole stock listing (trade-screen-paint with its drawing calls skipped but leaving
     /// their return addresses on the stack, as the stock test's stale size slot depends on them).
     /// </summary>
     [Fact]

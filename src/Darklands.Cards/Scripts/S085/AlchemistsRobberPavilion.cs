@@ -93,7 +93,7 @@ public sealed class AlchemistsRobberPavilion : Card
     // orig: R085+0x1524 (1973:0174) matched; tests: CardSmokeTests
     private static void FightTheAlchemist(CardContext c)
     {
-        // C: arguments are evaluated right to left: the guards' count (rand_mod(5)) is drawn before the first group's.
+        // C: arguments are evaluated right to left: the guards' count (roll-below(5)) is drawn before the first group's.
         var second = c.Random(5) + 3;
         var first = c.Random(2) + c.PartyLoreLevel() / 4 + 1;
         var third = c.PartyLoreLevel() / 5 != 0 ? 1 : 2;

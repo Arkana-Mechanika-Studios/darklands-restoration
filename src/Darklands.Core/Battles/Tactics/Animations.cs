@@ -33,29 +33,29 @@ public interface IAnimationLibrary
 }
 
 /// <summary>
-/// One animation slot's tables as the battle keeps them (indexed by <c>cbt_anim_set</c>: 0..4 the
+/// One animation slot's tables as the battle keeps them (indexed by <c>fighter-animation-set</c>: 0..4 the
 /// party, 5/6 enemy walking, 7/8 enemy fighting, 9/10 enemy dying). Loading a file overwrites the
 /// header values; the step tables only from files with a motion block; the hit sequences only from
 /// files with a weapon code.
 /// </summary>
-// orig: sprite_file_load R014+0x3D2C (0E76:3D2C) draft (the per-slot tables DS:1182, DS:118E,
+// orig: sprite-file-read R014+0x3D2C (0E76:3D2C) draft (the per-slot tables DS:1182, DS:118E,
 // DS:C763, DS:C799, DS:C7D2, DS:C803, DS:C83F, DS:C8CA, DS:D5DE, DS:C681, DS:C6F4, DS:C908, DS:A3E7, DS:C84A, DS:C86B, DS:C8A7)
 public sealed class AnimationSlot
 {
     /// <summary>DS:11B2[slot]: the file currently loaded ("" none).</summary>
     public string FileName { get; private set; } = "";
 
-    /// <summary>anim_buffers (DS:CA45[slot]) is not 0: the slot's buffers are allocated (from its first load until it is freed).</summary>
+    /// <summary>animation-frame-buffers (DS:CA45[slot]) is not 0: the slot's buffers are allocated (from its first load until it is freed).</summary>
     public bool HasBuffer { get; set; }
 
-    /// <summary>The file name cleared, the header values and the buffers kept (loot_screen R014+0xE6C0).</summary>
+    /// <summary>The file name cleared, the header values and the buffers kept (loot-view R014+0xE6C0).</summary>
     public void ForgetFile() => FileName = "";
 
     /// <summary>
     /// The slot's buffers freed and its file name cleared; the header values (DS:C799 and the other per-slot tables) stay as the last file
     /// left them, which the next fight in the slot reads until it loads another file.
     /// </summary>
-    // orig: enemy_anim_free6 R025+0x0C02 (1EF8:0C02) matched: frees the buffers (DS:CA45) and writes 0 to the first byte of the names (DS:11B2 ..)
+    // orig: enemy-sprite-release-b R025+0x0C02 (1EF8:0C02) matched: frees the buffers (DS:CA45) and writes 0 to the first byte of the names (DS:11B2 ..)
     public void Free()
     {
         FileName = "";

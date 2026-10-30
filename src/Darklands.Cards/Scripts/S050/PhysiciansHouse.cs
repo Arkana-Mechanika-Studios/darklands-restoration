@@ -37,7 +37,7 @@ public sealed class PhysiciansHouse : Card
         var arrivedAtNight = !c.IsDaylight;
         if (c.HereQuery(0) > -40)
         {
-            // C: an is_daylight() whose result is thrown away.
+            // C: an daylight-test() whose result is thrown away.
             _ = c.IsDaylight;
         }
         c.Screen.Show(MsgName, PictureNames.Of(Picture));
@@ -61,7 +61,7 @@ public sealed class PhysiciansHouse : Card
         int skill;
         if (!c.EventAtHere(PhysicianSkill))
         {
-            // C: (unsigned) loc_query 33 % 10, then the city size and a draw: the size first, then the draw.
+            // C: (unsigned) place-query 33 % 10, then the city size and a draw: the size first, then the draw.
             var digit = (int)((ushort)c.HereQuery(0x21) % 10);
             var size = c.HereQuery(2);
             skill = (short)((c.Random(4) + size - 3) * digit);
@@ -266,7 +266,7 @@ public sealed class PhysiciansHouse : Card
     {
         var speech = c.Skill(c.Leader, 0x0A);
         var charisma = c.Attribute(c.Leader, 5);
-        // C: an unsigned division: (unsigned)(loc_query 33 + month) % 30.
+        // C: an unsigned division: (unsigned)(place-query 33 + month) % 30.
         var luck = (int)((ushort)(c.HereQuery(0x21) + c.State.Date.Month) % 30);
         var chance = speech + charisma + luck + c.StandingSeen;
         return OptionHint.ChanceOf(Math.Clamp(chance, 0, 0x4B), c.Leader);

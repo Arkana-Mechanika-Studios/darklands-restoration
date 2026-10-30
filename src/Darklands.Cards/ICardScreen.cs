@@ -60,8 +60,8 @@ public interface ICardScreen
     /// <summary>Changes the picture behind the current card's texts.</summary>
     void ShowPicture(string picture);
 
-    /// <summary>Shows a card with the picture the last <see cref="Show"/> drew (pic_buf left as it was): its texts are loaded.</summary>
-    // orig: card_load(card_name, pic_buf) R043+0x0A9A with a pic_buf the card did not fill (R113+0x0656: no case of the picture switch matched)
+    /// <summary>Shows a card with the picture the last <see cref="Show"/> drew (image-buffer left as it was): its texts are loaded.</summary>
+    // orig: card-run(card-title, image-buffer) R043+0x0A9A with a image-buffer the card did not fill (R113+0x0656: no case of the picture switch matched)
     // C: a screen that keeps no picture (the scripted test screens) shows the card without one.
     void ShowWithTheLastPicture(string cardName) => Show(cardName, "");
 
@@ -70,7 +70,7 @@ public interface ICardScreen
     /// last card's picture and the texts stay the last card's, until the card shows a picture of its own (<see cref="ShowPicture"/>),
     /// the card is drawn again after a full screen, or a battle ends (<see cref="ReloadAfterBattle"/>): those load the named card's texts.
     /// </summary>
-    // C: strcpy(card_name, ..) and _fstrcpy(pic_buf, ..) with no card_load: R067+0x1ECE (1A24:000E, "$Sneak00") and R072+0x1494
+    // C: strcpy(card-title, ..) and _fstrcpy(image-buffer, ..) with no card-run: R067+0x1ECE (1A24:000E, "$Sneak00") and R072+0x1494
     //   (1981:0004, "$CityE00"), the only two card functions that name a card without loading it
     // C: a screen that keeps no texts of its own (the scripted test screens) shows the card, as before.
     void NameTheCard(string cardName, string? picture)
@@ -86,8 +86,8 @@ public interface ICardScreen
     }
 
     /// <summary>The card loaded again from its name and picture buffers at the end of a battle: its texts are the named card's.</summary>
-    // orig: card_load(card_name, pic_buf) R043+0x0A9A
-    // C: the last call of run_battle R029+0x2278 (CardContext.RunBattle).
+    // orig: card-run(card-title, image-buffer) R043+0x0A9A
+    // C: the last call of battle-driver R029+0x2278 (CardContext.RunBattle).
     // C: a screen that keeps no texts of its own does nothing.
     void ReloadAfterBattle()
     {
@@ -113,16 +113,16 @@ public interface ICardScreen
     /// <see cref="CardContext.MenuSlot"/> and <see cref="CardContext.MenuPopup"/> and returns the line.
     /// <paramref name="popupHint"/> is the hint of a choice in line k's box, asked with the member and slot set.
     /// </summary>
-    // orig: card_options R043+0x0F2A (150B:049A) draft (function matched) + card_menu R043+0x1BD2 (150B:1142) draft (bytes match) with card_mouse R043+0x21D4 (150B:1744) draft (bytes match): the pop-up's handler table is item_fn / saint_fn (DS:EC00 / DS:ECF6), copied into the menu's own with the box layout
+    // orig: card-option-lines R043+0x0F2A (150B:049A) draft (function matched) + card-choice-menu R043+0x1BD2 (150B:1142) draft (bytes match) with card-mouse-handler R043+0x21D4 (150B:1744) draft (bytes match): the pop-up's handler table is item-handler-table / saint-handler-table (DS:EC00 / DS:ECF6), copied into the menu's own with the box layout
     // C: a screen without pop-up boxes (the scripted test screens) chooses as the three-argument Choose does.
     int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint) =>
         Choose(block, options, hint);
 
     /// <summary>
     /// <see cref="Choose(int, IReadOnlyList{OptionState}, Func{int, OptionHint}?, Func{int, OptionHint}?)"/> with a step the card
-    /// takes between card_options (the text drawn, waited out and the lines faded in) and card_menu (the choice).
+    /// takes between card-option-lines (the text drawn, waited out and the lines faded in) and card-choice-menu (the choice).
     /// </summary>
-    // orig: R061+0x2278 (1A5F:0008) `card_options(1); advance_hours(1);` before `card_menu(...)`: the hour passes after the text block was shown and continued, not before it
+    // orig: R061+0x2278 (1A5F:0008) `card-option-lines(1); pass-hours(1);` before `card-choice-menu(...)`: the hour passes after the text block was shown and continued, not before it
     // C: a screen that does not separate the two (the scripted test screens) takes the step first.
     int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Action? afterOptions)
     {
@@ -133,10 +133,10 @@ public interface ICardScreen
     /// <summary>
     /// Runs the menu without drawing a text: on the option lines of the last text the screen laid out
     /// (any card's, a result text's too), each choosable when its line's state here is enabled. For a
-    /// card whose loop calls card_menu without card_options.
+    /// card whose loop calls card-choice-menu without card-option-lines.
     /// </summary>
-    // orig: card_menu R043+0x1BD2 on the hotspot list DS:E96E (count, y[], height[], option index[], type[]) that the last
-    // draw_text_wrapped left; opt_on[k] sets only the enabled byte of the line whose option index is k
+    // orig: card-choice-menu R043+0x1BD2 on the hotspot list DS:E96E (count, y[], height[], option index[], type[]) that the last
+    // text-paint-wrapped left; card-option-enabled[k] sets only the enabled byte of the line whose option index is k
     // C: a screen without a text layout of its own (the scripted test screens) offers block 0.
     int ChooseOnLastLayout(IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint) =>
         Choose(0, options, hint, popupHint);

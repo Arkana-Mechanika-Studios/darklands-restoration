@@ -18,7 +18,7 @@ public sealed class BlastedLand : Card
         c.SetCardItems();
         c.Screen.Text(0);
         c.State.CurrentLocation = -1;
-        // C: the function returns 0x0C directly (next_card keeps the card's number).
+        // C: the function returns 0x0C directly (following-card keeps the card's number).
         return 0x0C;
     }
 }

@@ -66,7 +66,7 @@ public sealed class BattleAssets
     private readonly Dictionary<string, Pic?> _portraits = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>An enemy's picture for the Enemy Info ("E02SWST.PIC" in EINFO.CAT), null when the catalogue lacks it.</summary>
-    // orig: R021+0x03FE (1EF8:03FE) matched: datafile_select("einfo.cat"), pic_load
+    // orig: R021+0x03FE (1EF8:03FE) matched: data-file-choose("einfo.cat"), image-read
     public Pic? EnemyPortrait(string name)
     {
         if (_portraits.TryGetValue(name, out var pic))

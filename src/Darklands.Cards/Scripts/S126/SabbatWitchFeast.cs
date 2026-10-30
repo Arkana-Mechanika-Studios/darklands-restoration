@@ -29,7 +29,7 @@ namespace Darklands.Cards.Scripts;
 //     R126+0x3642
 // DORMANT (generated): option slots 10..19 keep the default handler R126+0x3642 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 1, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatWitchFeast : Card
 {
@@ -49,7 +49,7 @@ public sealed class SabbatWitchFeast : Card
         Show(c, Picture);
         c.Next = Number;
         var menu = Menu(c, 2);
-        // C: the loop rates a pop-up choice with item_fn[0][menu_slot] (R126+0x367A..: $ChosenOneName = the member, "Success is
+        // C: the loop rates a pop-up choice with item-handler-table[0][menu-choice-index] (R126+0x367A..: $ChosenOneName = the member, "Success is
         // C: assured."), the saint box's own handlers (R126+0x376A..: the prayer's chance beside the member) answer a Shift hint
         // C: in the box and an Enter there.
         menu.ItemBox = () => c.MemberPopupHint(SuccessAssured);
@@ -86,7 +86,7 @@ public sealed class SabbatWitchFeast : Card
             new MenuLine(_ => LeaveInShame(c), assured),
             // orig: R126+0x312C matched
             // C: declared int, falls off its end without a value (ignored). Line 7 (the prayer) is enabled without
-            //   saints_usable: this card never asks whether anyone knows one of its saints.
+            //   saints-available: this card never asks whether anyone knows one of its saints.
             new MenuLine(_ => { c.Screen.Text(3); menu.Offer(12, 5, 6, 7); }, assured),
             new MenuLine(_ => c.Next = 0x14D, assured),
             new MenuLine(chance => BaptizeTheInnocents(c, chance), () => BaptismChance(c)),
@@ -146,7 +146,7 @@ public sealed class SabbatWitchFeast : Card
 
     /// <summary>The best Charisma plus half the best Speak Common.</summary>
     // orig: R126+0x33D2 matched
-    // C: party_max_attr / party_max_skill also set best_member, which nothing on this card reads afterwards.
+    // C: party-stat-top / party-ability-top also set top-scoring-member, which nothing on this card reads afterwards.
     private static OptionHint PreachingChance(CardContext c)
     {
         var chance = c.PartyMaxAttribute((int)Attribute.Charisma);
@@ -220,8 +220,8 @@ public sealed class SabbatWitchFeast : Card
 
     /// <summary>A small menu of its own (block 16, lines 8 and 9): fly away on the stolen ointment or stay.</summary>
     // orig: R126+0x2F1E matched
-    // C: the box writes opt_on[] directly (lines 8, 9 on, all others off) and re-points opt_fn[8], opt_fn[9] at the
-    //   same hints; opt_flag_0..9 are untouched. No option handler runs: only the chosen line counts.
+    // C: the box writes card-option-enabled[] directly (lines 8, 9 on, all others off) and re-points card-option-handler[8], card-option-handler[9] at the
+    //   same hints; card-option-flag-0..9 are untouched. No option handler runs: only the chosen line counts.
     private void OfferTheOintment(CardContext c)
     {
         ShowPicture(c, OintmentPicture);
@@ -256,7 +256,7 @@ public sealed class SabbatWitchFeast : Card
     // C: returns 0 after a cancelled box, otherwise falls off its end without a value (ignored).
     private static void PrayForTheInnocents(CardContext c)
     {
-        // C: menu_member / menu_slot are the globals the pop-up box set last.
+        // C: menu-owner-member / menu-choice-index are the globals the pop-up box set last.
         var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
@@ -281,7 +281,7 @@ public sealed class SabbatWitchFeast : Card
                 c.Screen.Text(10);
                 break;
             default:
-                // DORMANT: a slot outside 0..3 (only a stale menu_slot) answers the prayer with nothing at all.
+                // DORMANT: a slot outside 0..3 (only a stale menu-choice-index) answers the prayer with nothing at all.
                 return;
         }
         c.AddSkill(Who.Everybody, (int)Skill.Virtue, 1);

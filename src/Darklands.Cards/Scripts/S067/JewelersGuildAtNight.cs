@@ -11,7 +11,7 @@ namespace Darklands.Cards.Scripts;
 /// outside, or try to get into the guildhouse.
 /// </summary>
 // orig: R067+0x11C4 (1954:0004) matched; tests: CardSmokeTests
-// orig: handler setup R067+0x1B7C (1954:09BC) is empty: the item/saint handlers and opt_on[10..19]
+// orig: handler setup R067+0x1B7C (1954:09BC) is empty: the item/saint handlers and card-option-enabled[10..19]
 // of the previous card stay. The card lists the same items and saints as the unfinished shop cards but
 // has no pop-up line, so nothing reads them.
 public sealed class JewelersGuildAtNight : Card
@@ -38,7 +38,7 @@ public sealed class JewelersGuildAtNight : Card
         {
             menu[0] = menu[1] = OptionState.Shown;
         }
-        // C: written `ev8_at(2, cur_loc) != 1`; the function answers 0 or 1.
+        // C: written `open-quest-at(2, location-now) != 1`; the function answers 0 or 1.
         if (!c.Events.QuestAt(PoliticsQuest, c.Here))
         {
             menu[1] = menu[2] = menu[3] = menu[4] = menu[5] = menu[6] = OptionState.Hidden;
@@ -47,7 +47,7 @@ public sealed class JewelersGuildAtNight : Card
         {
             menu[6] = OptionState.Shown;
         }
-        // C: loc_reputation(cur_loc), the same value as loc_query(cur_loc, 0).
+        // C: place-standing(location-now), the same value as place-query(location-now, 0).
         var standing = c.Reputation(c.Here);
         c.SetCardItems(0x5F, 0x60, 0x65, 0x61);
         c.SetCardSaints(0, 0x59, 0x61, 0x80);
@@ -60,7 +60,7 @@ public sealed class JewelersGuildAtNight : Card
             new MenuLine(chance => PickTheLock(c, chance), () => BreakInChance(c)),
             new MenuLine(chance => BreakInAndLeave(c, chance), () => BreakInChance(c)),
             new MenuLine(chance => BreakInAndNoteIt(c, chance), () => BreakInChance(c)),
-            // DORMANT: lines 7 and 8 are never offered (opt_flag_7 = opt_flag_8 = 0); their actions are the same as line 9's.
+            // DORMANT: lines 7 and 8 are never offered (card-option-flag-7 = card-option-flag-8 = 0); their actions are the same as line 9's.
             // orig: R067+0x1A96 (1954:08D6) hint (100 %, the leader) with action 08b8 R067+0x1A78;
             // hint R067+0x1AEE "Success is assured." with action 0910 R067+0x1AD0.
             new MenuLine(_ => LeaveForTheCity(c), () => new OptionHint(100, SuccessAssured, c.Leader)),
@@ -75,7 +75,7 @@ public sealed class JewelersGuildAtNight : Card
     private static OptionHint KnockChance(CardContext c, int standing)
     {
         var chance = c.Attribute(c.Leader, (int)Attribute.Charisma) + c.Skill(c.Leader, (int)Skill.SpeakCommon) / 2 + standing;
-        // C: imax(chance, 90) where the other guilds clamp to 0..90, so the chance is always 90..99.
+        // C: larger-of(chance, 90) where the other guilds clamp to 0..90, so the chance is always 90..99.
         chance = Math.Max(chance, 0x5A);
         return new OptionHint(Math.Clamp(chance, 0, 99), "", c.Leader);
     }
@@ -96,7 +96,7 @@ public sealed class JewelersGuildAtNight : Card
             c.Screen.Text(2, TextFrame.BlankPage);
         }
         c.Events.Update(-2, c.Here, FactKind, 3, Guild, PoliticsQuest, EventUpdate.Or);
-        // C: cur_rep, the card's copy of the reputation, is lowered and written back.
+        // C: reputation-now, the card's copy of the reputation, is lowered and written back.
         standing--;
         c.LocationSet(c.Here, 0, standing);
     }
@@ -124,7 +124,7 @@ public sealed class JewelersGuildAtNight : Card
         var untilDawn = Core.Time.TimeOfDay.HoursUntil(c.State.Date.Hour, 5);
         if (c.Random(100) < 8)
         {
-            // C: imax(2, rand_mod(untilDawn - 1)) is computed and dropped; the draw is made.
+            // C: larger-of(2, roll-below(untilDawn - 1)) is computed and dropped; the draw is made.
             c.Random(untilDawn - 1);
             c.Variables.Numbers[0] = 1;
             c.Screen.Text(3);
@@ -218,10 +218,10 @@ public sealed class JewelersGuildAtNight : Card
         }
         else
         {
-            // C: var_chosen1 takes the value party_min_skill returns, the lowest skill itself (the
-            // other guilds' cards use best_member): that number is then passed as the member.
-            // orig: R067+0x1A0A party_min_skill(0xF) (R029+0x1396), DS:EE8C = AX, practice_skill(AX, 0xF, 0, 10, 0) through thunk 09C0:1F63 (R039+0x0132)
-            // BUG: the lowest Stealth (1..99) is the member number: practice_skill always draws its chance, then member_skill and add_skill
+            // C: text-slot-chosen-one takes the value party-ability-low returns, the lowest skill itself (the
+            // other guilds' cards use top-scoring-member): that number is then passed as the member.
+            // orig: R067+0x1A0A party-ability-low(0xF) (R029+0x1396), DS:EE8C = AX, exercise-skill(AX, 0xF, 0, 10, 0) through thunk 09C0:1F63 (R039+0x0132)
+            // BUG: the lowest Stealth (1..99) is the member number: exercise-skill always draws its chance, then member-ability and raise-skill-by
             // address record DS:9C69 + n*0x80. Below 5 that is a party slot (a member, perhaps not the clumsy one, practises); 20 is the place
             // actions of the last battle (RecordOverrun: its skill byte DS:A6CF is Place[11] of the .BSV's variables, written when slot 0 has a
             // figure image, the message drawn below the screen and waited for); the others are program memory (RecordOverrun's DIVERGENCE).

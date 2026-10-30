@@ -12,7 +12,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 69,
@@ -21,7 +21,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -30,7 +30,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 71,
@@ -39,7 +39,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -48,7 +48,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -57,7 +57,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 34,
@@ -66,14 +66,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 14475
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -121,7 +121,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 22,
@@ -130,7 +130,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 12,
@@ -139,7 +139,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 2,
@@ -148,7 +148,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -157,7 +157,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -166,7 +166,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 57,
@@ -175,7 +175,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 26,
@@ -184,14 +184,14 @@
 "ax": 4
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 8732
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -226,7 +226,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -235,7 +235,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 8,
@@ -244,7 +244,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -253,7 +253,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -262,7 +262,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -271,7 +271,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 34,
@@ -280,7 +280,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -289,14 +289,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 27000
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -347,7 +347,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -356,7 +356,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 55,
@@ -365,7 +365,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 58,
@@ -374,7 +374,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 14,
@@ -383,7 +383,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -392,7 +392,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 27,
@@ -401,7 +401,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -410,14 +410,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 3802
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -452,7 +452,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 26,
@@ -461,7 +461,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -470,7 +470,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -479,7 +479,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 75,
@@ -488,7 +488,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -497,7 +497,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 51,
@@ -506,7 +506,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 27,
@@ -515,14 +515,14 @@
 "ax": 3
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 14222
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -561,7 +561,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 12,
@@ -570,7 +570,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 14,
@@ -579,7 +579,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 18,
@@ -588,7 +588,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -597,14 +597,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 26614
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -652,7 +652,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -661,7 +661,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -670,7 +670,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 50,
@@ -679,7 +679,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -688,14 +688,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 263
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -738,7 +738,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 50,
@@ -747,14 +747,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 27020
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -787,7 +787,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 65,
@@ -796,7 +796,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -805,7 +805,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -814,7 +814,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -823,7 +823,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -832,14 +832,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 24877
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -871,7 +871,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -880,7 +880,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -889,7 +889,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 24,
@@ -898,14 +898,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 7340
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -938,7 +938,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -947,14 +947,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 4100
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -992,7 +992,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -1001,14 +1001,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 5513
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -1046,7 +1046,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 63,
@@ -1055,7 +1055,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -1064,14 +1064,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 18134
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -1112,7 +1112,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -1121,7 +1121,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 20,
@@ -1130,7 +1130,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 63,
@@ -1139,14 +1139,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 13058
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -1190,7 +1190,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -1199,7 +1199,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 43,
@@ -1208,7 +1208,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -1217,14 +1217,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 2593
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -1266,7 +1266,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 80,
@@ -1275,7 +1275,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -1284,7 +1284,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 29,
@@ -1293,7 +1293,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 8,
@@ -1302,7 +1302,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -1311,14 +1311,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 13235
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -1365,7 +1365,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 30,
@@ -1374,7 +1374,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 9,
@@ -1383,7 +1383,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 73,
@@ -1392,14 +1392,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 24420
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -1443,7 +1443,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 70,
@@ -1452,7 +1452,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -1461,7 +1461,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -1470,7 +1470,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 -1,
@@ -1479,7 +1479,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -1488,14 +1488,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 23693
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -1544,7 +1544,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -1553,7 +1553,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -1562,7 +1562,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 3,
@@ -1571,14 +1571,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 30203
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -1618,7 +1618,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 20,
@@ -1627,7 +1627,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -1636,14 +1636,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 17144
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -1677,7 +1677,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -1686,7 +1686,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -1695,7 +1695,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 30,
@@ -1704,7 +1704,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 -1,
@@ -1713,7 +1713,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 -1,
@@ -1722,7 +1722,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -1731,14 +1731,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 25549
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -1783,7 +1783,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 42,
@@ -1792,7 +1792,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -1801,7 +1801,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 31,
@@ -1810,7 +1810,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 74,
@@ -1819,7 +1819,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 79,
@@ -1828,7 +1828,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -1837,7 +1837,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -1846,14 +1846,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 28946
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -1901,7 +1901,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 37,
@@ -1910,7 +1910,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 34,
@@ -1919,7 +1919,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -1928,14 +1928,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 14034
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -1972,7 +1972,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -1981,7 +1981,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -1990,7 +1990,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 76,
@@ -1999,14 +1999,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 8039
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -2045,7 +2045,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -2054,7 +2054,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 21,
@@ -2063,7 +2063,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 33,
@@ -2072,7 +2072,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 26,
@@ -2081,7 +2081,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -2090,14 +2090,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 22079
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -2132,7 +2132,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -2141,14 +2141,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 15693
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -2183,7 +2183,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -2192,7 +2192,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -2201,7 +2201,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 28,
@@ -2210,7 +2210,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 50,
@@ -2219,7 +2219,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 81,
@@ -2228,14 +2228,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 12367
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -2271,7 +2271,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 13,
@@ -2280,7 +2280,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 47,
@@ -2289,7 +2289,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -2298,14 +2298,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 13176
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -2340,7 +2340,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -2349,7 +2349,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -2358,7 +2358,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -2367,7 +2367,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -2376,7 +2376,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 36,
@@ -2385,14 +2385,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 699
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -2426,7 +2426,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 73,
@@ -2435,7 +2435,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 50,
@@ -2444,7 +2444,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -2453,7 +2453,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 71,
@@ -2462,7 +2462,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 12,
@@ -2471,7 +2471,7 @@
 "ax": 4
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 69,
@@ -2480,14 +2480,14 @@
 "ax": 5
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 1459
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -2529,7 +2529,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -2538,7 +2538,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 39,
@@ -2547,7 +2547,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 11,
@@ -2556,7 +2556,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 24,
@@ -2565,7 +2565,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 73,
@@ -2574,7 +2574,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 70,
@@ -2583,7 +2583,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -2592,14 +2592,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 24612
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -2654,7 +2654,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 26,
@@ -2663,14 +2663,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 6164
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -2705,7 +2705,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 -1,
@@ -2714,7 +2714,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 16,
@@ -2723,7 +2723,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 2,
@@ -2732,7 +2732,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 -1,
@@ -2741,7 +2741,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -2750,7 +2750,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 8,
@@ -2759,7 +2759,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -2768,14 +2768,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 803
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -2825,7 +2825,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -2834,7 +2834,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -2843,7 +2843,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 37,
@@ -2852,7 +2852,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 46,
@@ -2861,7 +2861,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 11,
@@ -2870,14 +2870,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 11285
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -2919,7 +2919,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -2928,7 +2928,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -2937,14 +2937,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 31452
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -2981,7 +2981,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -2990,7 +2990,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -2999,7 +2999,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -3008,7 +3008,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 30,
@@ -3017,7 +3017,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -3026,7 +3026,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 12,
@@ -3035,14 +3035,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 7056
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -3085,7 +3085,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -3094,7 +3094,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 62,
@@ -3103,7 +3103,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 31,
@@ -3112,7 +3112,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -3121,7 +3121,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -3130,14 +3130,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 25777
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -3181,7 +3181,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -3190,14 +3190,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 20103
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -3231,7 +3231,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -3240,7 +3240,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -3249,7 +3249,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 4,
@@ -3258,7 +3258,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -3267,14 +3267,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 6683
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -3315,7 +3315,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -3324,7 +3324,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -3333,14 +3333,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 26174
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -3374,7 +3374,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 8,
@@ -3383,7 +3383,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -3392,14 +3392,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 24742
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -3439,7 +3439,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 74,
@@ -3448,7 +3448,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 39,
@@ -3457,7 +3457,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 48,
@@ -3466,7 +3466,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -3475,7 +3475,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 12,
@@ -3484,7 +3484,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 31,
@@ -3493,14 +3493,14 @@
 "ax": 4
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 19669
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -3539,7 +3539,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -3548,7 +3548,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 62,
@@ -3557,7 +3557,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 32,
@@ -3566,7 +3566,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 10,
@@ -3575,7 +3575,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -3584,7 +3584,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -3593,7 +3593,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -3602,14 +3602,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 10362
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -3655,7 +3655,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 73,
@@ -3664,14 +3664,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 15513
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -3702,7 +3702,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 4,
@@ -3711,7 +3711,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 31,
@@ -3720,7 +3720,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -3729,7 +3729,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 7,
@@ -3738,14 +3738,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 27578
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -3782,7 +3782,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 72,
@@ -3791,7 +3791,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -3800,7 +3800,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 33,
@@ -3809,7 +3809,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -3818,7 +3818,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 80,
@@ -3827,7 +3827,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -3836,7 +3836,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -3845,14 +3845,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 32386
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -3894,7 +3894,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -3903,7 +3903,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 8,
@@ -3912,7 +3912,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 5,
@@ -3921,7 +3921,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -3930,7 +3930,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -3939,14 +3939,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 1416
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -3987,7 +3987,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 66,
@@ -3996,7 +3996,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 38,
@@ -4005,7 +4005,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 80,
@@ -4014,7 +4014,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -4023,7 +4023,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -4032,14 +4032,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 11901
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -4079,7 +4079,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -4088,7 +4088,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -4097,14 +4097,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 13326
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -4144,7 +4144,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 11,
@@ -4153,7 +4153,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 27,
@@ -4162,7 +4162,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 34,
@@ -4171,7 +4171,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 15,
@@ -4180,7 +4180,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -4189,7 +4189,7 @@
 "ax": 4
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -4198,14 +4198,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 14832
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -4242,7 +4242,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -4251,7 +4251,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 13,
@@ -4260,7 +4260,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 20,
@@ -4269,7 +4269,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -4278,7 +4278,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -4287,7 +4287,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -4296,14 +4296,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 10708
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -4343,7 +4343,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 6,
@@ -4352,7 +4352,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -4361,7 +4361,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -4370,7 +4370,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 67,
@@ -4379,7 +4379,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 24,
@@ -4388,7 +4388,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 40,
@@ -4397,7 +4397,7 @@
 "ax": 4
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -4406,14 +4406,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 19297
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -4452,7 +4452,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -4461,14 +4461,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 20678
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -4510,7 +4510,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 50,
@@ -4519,7 +4519,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 16,
@@ -4528,7 +4528,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 9,
@@ -4537,7 +4537,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 44,
@@ -4546,7 +4546,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -4555,14 +4555,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 19078
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -4597,7 +4597,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -4606,14 +4606,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 2898
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -4655,7 +4655,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 -1,
@@ -4664,7 +4664,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -4673,7 +4673,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -4682,7 +4682,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -4691,7 +4691,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 56,
@@ -4700,7 +4700,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -4709,14 +4709,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 25216
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -4761,7 +4761,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 9,
@@ -4770,7 +4770,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 47,
@@ -4779,14 +4779,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 18067
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -4821,7 +4821,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -4830,7 +4830,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 37,
@@ -4839,7 +4839,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -4848,7 +4848,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -4857,14 +4857,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 30677
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -4899,7 +4899,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 40,
@@ -4908,7 +4908,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -4917,7 +4917,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 15,
@@ -4926,7 +4926,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 60,
@@ -4935,14 +4935,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 28582
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -4977,7 +4977,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -4986,7 +4986,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 2,
@@ -4995,7 +4995,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -5004,7 +5004,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 18,
@@ -5013,7 +5013,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 6,
@@ -5022,14 +5022,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 21038
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -5080,7 +5080,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 27,
@@ -5089,7 +5089,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 8,
@@ -5098,14 +5098,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 25893
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -5153,7 +5153,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 44,
@@ -5162,7 +5162,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 2,
@@ -5171,7 +5171,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -5180,14 +5180,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 18142
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -5242,7 +5242,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -5251,7 +5251,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -5260,7 +5260,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 19,
@@ -5269,7 +5269,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 47,
@@ -5278,7 +5278,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 51,
@@ -5287,14 +5287,14 @@
 "ax": 3
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 7951
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -5326,7 +5326,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 3,
@@ -5335,7 +5335,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 9,
@@ -5344,14 +5344,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 29527
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -5390,7 +5390,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 41,
@@ -5399,7 +5399,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 9,
@@ -5408,7 +5408,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -5417,7 +5417,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -5426,14 +5426,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 10642
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -5486,7 +5486,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -5495,7 +5495,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -5504,7 +5504,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 40,
@@ -5513,7 +5513,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 35,
@@ -5522,7 +5522,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -5531,14 +5531,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 27564
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -5593,7 +5593,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 6,
@@ -5602,7 +5602,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -5611,7 +5611,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 37,
@@ -5620,14 +5620,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 9638
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -5670,7 +5670,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 27,
@@ -5679,7 +5679,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 79,
@@ -5688,7 +5688,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -5697,7 +5697,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 19,
@@ -5706,14 +5706,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 9015
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -5752,7 +5752,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -5761,7 +5761,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 14,
@@ -5770,7 +5770,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 38,
@@ -5779,14 +5779,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 19338
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -5831,7 +5831,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 21,
@@ -5840,14 +5840,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 8850
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -5880,7 +5880,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 63,
@@ -5889,7 +5889,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 45,
@@ -5898,7 +5898,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -5907,7 +5907,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -5916,7 +5916,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -5925,7 +5925,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 72,
@@ -5934,7 +5934,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 5,
@@ -5943,14 +5943,14 @@
 "ax": 3
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 8965
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -5988,7 +5988,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -5997,7 +5997,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 52,
@@ -6006,7 +6006,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 75,
@@ -6015,7 +6015,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -6024,7 +6024,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 50,
@@ -6033,7 +6033,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -6042,7 +6042,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 10,
@@ -6051,14 +6051,14 @@
 "ax": 4
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 15897
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -6096,7 +6096,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -6105,7 +6105,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -6114,7 +6114,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -6123,7 +6123,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 32,
@@ -6132,14 +6132,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 29142
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -6183,7 +6183,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 6,
@@ -6192,7 +6192,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 12,
@@ -6201,14 +6201,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 3138
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -6247,7 +6247,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -6256,7 +6256,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -6265,14 +6265,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 1175
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -6317,7 +6317,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 35,
@@ -6326,7 +6326,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -6335,7 +6335,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -6344,7 +6344,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -6353,7 +6353,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 58,
@@ -6362,14 +6362,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 27426
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -6417,7 +6417,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -6426,7 +6426,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 46,
@@ -6435,7 +6435,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 62,
@@ -6444,7 +6444,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 8,
@@ -6453,7 +6453,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -6462,14 +6462,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 937
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -6511,7 +6511,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -6520,7 +6520,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -6529,14 +6529,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 4517
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -6583,7 +6583,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -6592,7 +6592,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -6601,7 +6601,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 31,
@@ -6610,7 +6610,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 81,
@@ -6619,7 +6619,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -6628,7 +6628,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 57,
@@ -6637,14 +6637,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 558
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -6691,7 +6691,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 74,
@@ -6700,7 +6700,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 6,
@@ -6709,7 +6709,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -6718,7 +6718,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -6727,14 +6727,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 11500
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -6773,7 +6773,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 13,
@@ -6782,7 +6782,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 42,
@@ -6791,7 +6791,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -6800,14 +6800,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 23439
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -6842,7 +6842,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -6851,14 +6851,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 15868
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -6899,7 +6899,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -6908,7 +6908,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 14,
@@ -6917,14 +6917,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 19651
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -6964,7 +6964,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -6973,7 +6973,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -6982,7 +6982,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -6991,14 +6991,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 11331
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -7037,7 +7037,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -7046,7 +7046,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 61,
@@ -7055,7 +7055,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 67,
@@ -7064,7 +7064,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -7073,7 +7073,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 53,
@@ -7082,14 +7082,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 15101
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -7139,7 +7139,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -7148,7 +7148,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -7157,7 +7157,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 57,
@@ -7166,7 +7166,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -7175,7 +7175,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 19,
@@ -7184,7 +7184,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -7193,7 +7193,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 52,
@@ -7202,14 +7202,14 @@
 "ax": 3
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 12811
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -7259,7 +7259,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 -1,
@@ -7268,7 +7268,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -7277,7 +7277,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 25,
@@ -7286,14 +7286,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 18841
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -7337,7 +7337,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -7346,7 +7346,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -7355,7 +7355,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 2,
@@ -7364,7 +7364,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 50,
@@ -7373,14 +7373,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 31326
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -7423,7 +7423,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 64,
@@ -7432,7 +7432,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 24,
@@ -7441,14 +7441,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 12478
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -7478,7 +7478,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -7487,7 +7487,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -7496,7 +7496,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -7505,7 +7505,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -7514,7 +7514,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -7523,7 +7523,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -7532,14 +7532,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 24643
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -7569,7 +7569,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 49,
@@ -7578,7 +7578,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 75,
@@ -7587,7 +7587,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 38,
@@ -7596,7 +7596,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 70,
@@ -7605,7 +7605,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -7614,7 +7614,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -7623,14 +7623,14 @@
 "ax": 4
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 1748
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -7669,7 +7669,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 56,
@@ -7678,7 +7678,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -7687,7 +7687,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -7696,7 +7696,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 40,
@@ -7705,7 +7705,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 70,
@@ -7714,14 +7714,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 3138
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -7772,7 +7772,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 11,
@@ -7781,7 +7781,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -7790,7 +7790,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 48,
@@ -7799,7 +7799,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -7808,7 +7808,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -7817,7 +7817,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -7826,14 +7826,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 9952
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -7879,7 +7879,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -7888,7 +7888,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 55,
@@ -7897,7 +7897,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -7906,7 +7906,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -7915,7 +7915,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 66,
@@ -7924,14 +7924,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 13027
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -7970,7 +7970,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -7979,7 +7979,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 55,
@@ -7988,7 +7988,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 70,
@@ -7997,7 +7997,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -8006,7 +8006,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 78,
@@ -8015,7 +8015,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 11,
@@ -8024,14 +8024,14 @@
 "ax": 3
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 24384
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -8063,7 +8063,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 8,
@@ -8072,7 +8072,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 50,
@@ -8081,14 +8081,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 20212
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -8124,7 +8124,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -8133,7 +8133,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -8142,14 +8142,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 22940
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -8188,7 +8188,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -8197,7 +8197,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -8206,7 +8206,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -8215,7 +8215,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -8224,7 +8224,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 69,
@@ -8233,7 +8233,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -8242,7 +8242,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 24,
@@ -8251,14 +8251,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 6860
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -8306,7 +8306,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -8315,14 +8315,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 12523
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -8356,7 +8356,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -8365,7 +8365,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 55,
@@ -8374,14 +8374,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 30653
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -8417,7 +8417,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 14,
@@ -8426,7 +8426,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -8435,7 +8435,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -8444,7 +8444,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -8453,7 +8453,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 63,
@@ -8462,7 +8462,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -8471,14 +8471,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 16565
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -8518,7 +8518,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 25,
@@ -8527,7 +8527,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -8536,14 +8536,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 13157
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -8590,7 +8590,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -8599,7 +8599,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -8608,7 +8608,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -8617,7 +8617,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 68,
@@ -8626,7 +8626,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -8635,7 +8635,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 42,
@@ -8644,7 +8644,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -8653,14 +8653,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 20321
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -8698,7 +8698,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 28,
@@ -8707,7 +8707,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -8716,7 +8716,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 5,
@@ -8725,7 +8725,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -8734,7 +8734,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 10,
@@ -8743,7 +8743,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 24,
@@ -8752,7 +8752,7 @@
 "ax": 4
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -8761,14 +8761,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 11834
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -8809,7 +8809,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 46,
@@ -8818,7 +8818,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 72,
@@ -8827,7 +8827,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 49,
@@ -8836,14 +8836,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 14710
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -8886,7 +8886,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -8895,7 +8895,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 38,
@@ -8904,7 +8904,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 67,
@@ -8913,7 +8913,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 12,
@@ -8922,7 +8922,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -8931,14 +8931,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 23947
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -8975,7 +8975,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -8984,7 +8984,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -8993,7 +8993,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -9002,14 +9002,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 1591
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -9042,7 +9042,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 63,
@@ -9051,7 +9051,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 24,
@@ -9060,7 +9060,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 75,
@@ -9069,7 +9069,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 60,
@@ -9078,7 +9078,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -9087,7 +9087,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -9096,7 +9096,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -9105,14 +9105,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 5613
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -9153,7 +9153,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 42,
@@ -9162,7 +9162,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 10,
@@ -9171,7 +9171,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 49,
@@ -9180,7 +9180,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 15,
@@ -9189,7 +9189,7 @@
 "ax": 3
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 67,
@@ -9198,14 +9198,14 @@
 "ax": 4
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 1296
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -9244,7 +9244,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 71,
@@ -9253,7 +9253,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -9262,7 +9262,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -9271,7 +9271,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -9280,7 +9280,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -9289,7 +9289,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 35,
@@ -9298,7 +9298,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -9307,14 +9307,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 15885
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -9348,7 +9348,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -9357,7 +9357,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -9366,7 +9366,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -9375,14 +9375,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 17257
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -9422,7 +9422,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 26,
@@ -9431,7 +9431,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 70,
@@ -9440,7 +9440,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -9449,7 +9449,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -9458,7 +9458,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 67,
@@ -9467,14 +9467,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 26019
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -9518,7 +9518,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 56,
@@ -9527,7 +9527,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -9536,7 +9536,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 77,
@@ -9545,14 +9545,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 24866
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -9590,7 +9590,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -9599,7 +9599,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 82,
@@ -9608,7 +9608,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -9617,7 +9617,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 24,
@@ -9626,14 +9626,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 30173
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -9682,7 +9682,7 @@
 "levels": 3,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 2,
 33,
@@ -9691,7 +9691,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 43,
@@ -9700,7 +9700,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 45,
@@ -9709,14 +9709,14 @@
 "ax": 0
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 3,
 14368
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 3
 ]
@@ -9761,7 +9761,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 82,
@@ -9770,14 +9770,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 19595
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -9813,7 +9813,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 36,
@@ -9822,7 +9822,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -9831,7 +9831,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -9840,7 +9840,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 47,
@@ -9849,7 +9849,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -9858,7 +9858,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -9867,14 +9867,14 @@
 "ax": -1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 6649
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]
@@ -9910,7 +9910,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 57,
@@ -9919,7 +9919,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -9928,7 +9928,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 18,
@@ -9937,7 +9937,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -9946,7 +9946,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 -1,
@@ -9955,7 +9955,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 76,
@@ -9964,14 +9964,14 @@
 "ax": 3
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 13204
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -10013,7 +10013,7 @@
 "levels": 2,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 7,
@@ -10022,7 +10022,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 41,
@@ -10031,7 +10031,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 6,
@@ -10040,7 +10040,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 77,
@@ -10049,7 +10049,7 @@
 "ax": 2
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 -1,
@@ -10058,7 +10058,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 82,
@@ -10067,7 +10067,7 @@
 "ax": -1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 1,
 77,
@@ -10076,14 +10076,14 @@
 "ax": 1
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 2,
 2593
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 2
 ]
@@ -10131,7 +10131,7 @@
 "levels": 1,
 "calls": [
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 43,
@@ -10140,7 +10140,7 @@
 "ax": 0
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 5,
@@ -10149,7 +10149,7 @@
 "ax": 1
 },
 {
-"call": "monster_type_map",
+"call": "R004+0x06AA",
 "args": [
 0,
 79,
@@ -10158,14 +10158,14 @@
 "ax": 2
 },
 {
-"call": "monsters_fixup",
+"call": "R004+0x122C",
 "args": [
 1,
 26062
 ]
 },
 {
-"call": "groups_fixup",
+"call": "R004+0x1D90",
 "args": [
 1
 ]

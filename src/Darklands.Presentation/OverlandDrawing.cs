@@ -77,7 +77,7 @@ public sealed class OverlandPage
     private const int AreaHeight = 184;
 
     /// <summary>The map buffer's corner left out of the view: 20d2 draws the cells from (0, 0) of its buffer and copies it from (8, 8) to (60, 16).</summary>
-    // orig: gfx_copy_rect(DS:284E, 8, 8, 0x104, 0xB8, screen, 0x3C, 0x10) at R030+0x2599..0x25AD; the view's first cell (column DS:286A, row DS:286E + DS:286C) is drawn at (0 or 8, 0) of the buffer
+    // orig: gfx-rect-copy(DS:284E, 8, 8, 0x104, 0xB8, screen, 0x3C, 0x10) at R030+0x2599..0x25AD; the view's first cell (column DS:286A, row DS:286E + DS:286C) is drawn at (0 or 8, 0) of the buffer
     private const int BufferCrop = 8;
 
     // orig: 16c6's own buffer, the window DS:282A (page 1 at (280, 20), 0x37 x 0x32, pictures clipped to its last column 0x37 and row 0x32)
@@ -184,8 +184,8 @@ public sealed class OverlandPage
     }
 
     /// <summary>The clock picture at (289, 0), as the step draws it when an hour passed.</summary>
-    // orig: gfx_draw_pic(screen, 289, 0, DS:E400[hour / 3]) in R030+0x20D2
-    // C: the step draws the same picture the same way after advance_hours(1) (OverlandScreen's HourPassed)
+    // orig: gfx-picture-draw(screen, 289, 0, DS:E400[hour / 3]) in R030+0x20D2
+    // C: the step draws the same picture the same way after pass-hours(1) (OverlandScreen's HourPassed)
     public void DrawClock(IndexedImage? clock)
     {
         if (clock is not null)

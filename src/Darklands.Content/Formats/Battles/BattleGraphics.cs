@@ -72,7 +72,7 @@ public static class BattleImages
 /// HITSEQ.DTA: per weapon animation code (56 codes, listed in the program at DS:1836) the attack
 /// sequence, the aim/parry sequence, three frames for the miss sequences, and their lengths.
 /// </summary>
-// orig: R002+0x1750 (0E76:1750) draft loads it; sprite_file_load R014+0x3D2C selects a row (spec E §1.6)
+// orig: R002+0x1750 (0E76:1750) draft loads it; sprite-file-read R014+0x3D2C selects a row (spec E §1.6)
 public sealed class HitSequences
 {
     private readonly Dictionary<string, HitRow> _rows;
@@ -97,7 +97,7 @@ public sealed class HitSequences
 }
 
 /// <summary>ENEMYPAL.DAT: 71 enemy colour schemes, each 16 colours for one of the ranges 32, 48 or 64, and an optional colour cycle.</summary>
-// orig: enemies_place R025+0x0000 (1EF8:0000) draft applies them (spec E §1.8)
+// orig: enemy-placement-entry R025+0x0000 (1EF8:0000) draft applies them (spec E §1.8)
 public sealed class EnemyPalettes
 {
     private readonly byte[] _data;
@@ -115,7 +115,7 @@ public sealed class EnemyPalettes
     public ReadOnlySpan<byte> Colors(int scheme) => _data.AsSpan(53 * scheme + 1, 48);
 
     /// <summary>The scheme's colour cycle: the first and last colour (first 0xFF: none), the frames per step and the cycle slot.</summary>
-    // orig: enemies_place R025+0x067E..0x069E keeps the record's bytes +0x31, +0x32, +0x33, +0x34 for root 047C:0362(+0x34, +0x33, +0x31, +0x32)
+    // orig: enemy-placement-entry R025+0x067E..0x069E keeps the record's bytes +0x31, +0x32, +0x33, +0x34 for root 047C:0362(+0x34, +0x33, +0x31, +0x32)
     public (int First, int Last, int Reload, int Slot) Cycle(int scheme) =>
         (_data[53 * scheme + 0x31], _data[53 * scheme + 0x32], _data[53 * scheme + 0x33], _data[53 * scheme + 0x34]);
 }

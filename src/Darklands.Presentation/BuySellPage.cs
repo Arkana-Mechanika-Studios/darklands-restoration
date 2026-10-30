@@ -12,7 +12,7 @@ namespace Darklands.Presentation;
 /// bytes, restores parts from the clean picture, recolours rows (highlights) and tells which
 /// part of the page the pointer is over. Coordinates are the original's.
 /// </summary>
-// orig: the page code the three overlays copy: barter (R032), item cache (R035) and loot (R040); the hit rectangles and the hover code are identical in barter_screen R032+0x0000, cache_screen R035+0x0000 and R040+0x01C8
+// orig: the page code the three overlays copy: barter (R032), item cache (R035) and loot (R040); the hit rectangles and the hover code are identical in trade-screen-entry R032+0x0000, stash-screen R035+0x0000 and R040+0x01C8
 // C: the C tests are strict (x > 0x50 && x < 0xE6 ...); rows are (y − top) / 8 or >> 3, as written.
 public sealed class BuySellPage(GameUi ui, PartyPanel panel)
 {
@@ -47,7 +47,7 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     /// <summary>Draws the picture (taking its colours), copies its right part to the screen and draws the party column.</summary>
     public void DrawBackground(Party party)
     {
-        // C: pic_draw_pal(1, "pics\\buysell.pic", cur_palette) draws into the back page; set_palette; gfx_copy_rect(back_win, 0x3C, 0, 0x104, 0xC8, screen_win, 0x3C, 0).
+        // C: image-paint-palette(1, "pics\\buysell.pic", palette-now) draws into the back page; palette-load; gfx-rect-copy(backdrop-window, 0x3C, 0, 0x104, 0xC8, screen-window, 0x3C, 0).
         _picture = ui.Assets.Picture("buysell");
         ui.Canvas.UsePalette(_picture);
         Restore(0x3C, 0, 0x104, 0xC8);
@@ -55,11 +55,11 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The party column (the original's party panel frames and rows).</summary>
-    // orig: party_panel_frames(0x100) and party_panel_rows(0x100) (root, resident) as PartyPanel; the argument 0x100 is the mask 0x1F (all five rows: root 0000:1591 `cmp bx,0x100` then `mov dx,0x1f`, and 0000:171F the same in party_panel_rows), as the panel draws
+    // orig: party-panel-frame-set(0x100) and party-panel-row-set(0x100) (root, resident) as PartyPanel; the argument 0x100 is the mask 0x1F (all five rows: root 0000:1591 `cmp bx,0x100` then `mov dx,0x1f`, and 0000:171F the same in party-panel-row-set), as the panel draws
     public void DrawParty(Party party) => panel.Draw(ui.Canvas, party);
 
     /// <summary>Copies a part of the clean picture back onto the screen.</summary>
-    // orig: gfx_copy_rect(back_win, x, y, w, h, screen_win, x, y) — graphics driver thunk root 047C (asm driver)
+    // orig: gfx-rect-copy(backdrop-window, x, y, w, h, screen-window, x, y) — graphics driver thunk root 047C (asm driver)
     public void Restore(int x, int y, int width, int height)
     {
         var image = (_picture ?? ui.Assets.Picture("buysell")).Image;
@@ -76,7 +76,7 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     /// Draws a line of text in <paramref name="color"/>. Bytes from 0x80 change the colour to
     /// their low seven bits (0xFF: back to <paramref name="color"/>), as the game's text driver does.
     /// </summary>
-    // orig: gfx_text(screen_win, x, y, s) — graphics driver thunk root 047C:055A (asm driver; colour-byte rule as decoded from the driver code)
+    // orig: gfx-text-draw(screen-window, x, y, s) — graphics driver thunk root 047C:055A (asm driver; colour-byte rule as decoded from the driver code)
     // UNCERTAIN: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
     public void Text(int x, int y, string text, byte color)
     {
@@ -93,7 +93,7 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>Replaces colour <paramref name="from"/> by <paramref name="to"/> in a rectangle.</summary>
-    // orig: gfx_recolor_rect(screen_win, x, y, w, h, from, to) — graphics driver thunk root 047C:04DC (asm driver)
+    // orig: gfx-rect-recolour(screen-window, x, y, w, h, from, to) — graphics driver thunk root 047C:04DC (asm driver)
     public void Recolor(int x, int y, int width, int height, byte from, byte to) =>
         ui.Canvas.Recolor(x, y, width, height, from, to);
 
@@ -134,8 +134,8 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     /// <param name="keys">The key of each line (a line past the table gives none).</param>
     /// <param name="leaveHeight">The height of the strip un-lit when the pointer leaves the menu (8, 9 on the barter screen).</param>
     // orig: R032+0x00FE..0x023E, R035 and R040's copies of the same tests (byte-matched C; the barter draft checked against the asm):
-    // `if (!(mouse_buttons & 1) && over the menu) { hover } else if ((mouse_buttons & 1) && over the menu) { while (mouse_buttons & 1);
-    // row = (mouse_y - 0x1b) / 8; switch (row) ... } else if (!(mouse_buttons & 1) && lit != -1) { un-light }`; tests: BuySellInputTests
+    // `if (!(mouse-button-state & 1) && over the menu) { hover } else if ((mouse-button-state & 1) && over the menu) { while (mouse-button-state & 1);
+    // row = (pointer-row - 0x1b) / 8; switch (row) ... } else if (!(mouse-button-state & 1) && lit != -1) { un-light }`; tests: BuySellInputTests
     // C: the row after the release is a signed division truncated toward zero (cwd / sar): a pointer a little above the menu gives row 0.
     // C: with nothing lit (−1) the hover's un-highlight recolours the strip at y 0x13 (the line above the menu), as the original does.
     public int MenuStep(ref int lit, IReadOnlyList<int> keys, int leaveHeight)
@@ -165,18 +165,18 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
         return 0;
     }
 
-    /// <summary>The left button is held now with the pointer where <paramref name="at"/> says (the loop's `(mouse_buttons &amp; 1) &amp;&amp; …` tests).</summary>
+    /// <summary>The left button is held now with the pointer where <paramref name="at"/> says (the loop's `(mouse-button-state &amp; 1) &amp;&amp; …` tests).</summary>
     public bool Held(Func<int, int, bool> at) => ui.Mouse.Left && at(ui.Mouse.X, ui.Mouse.Y);
 
     /// <summary>The row <paramref name="at"/> gives for the pointer while the left button is held, or null.</summary>
     public int? HeldRow(Func<int, int, int?> at) => ui.Mouse.Left ? at(ui.Mouse.X, ui.Mouse.Y) : null;
 
-    /// <summary>`while (mouse_buttons &amp; 1);`: the button is waited out.</summary>
+    /// <summary>`while (mouse-button-state &amp; 1);`: the button is waited out.</summary>
     public void WaitForRelease() => ui.WaitForButtonRelease();
 
     /// <summary>The end of one pass of the loop (<see cref="GameUi.KeyAfterTheMouse"/>).</summary>
     // orig: `root 0000:0000(DS:9419, 0); if (root 047C:073D()) mkey = root 047C:0744();` at the end of the loops of R032+0x0000, R035+0x0000, R040+0x01C8
-    // C: only barter's loop has the party_icons_dirty test between the two (R032+0x06BF): <paramref name="redrawIfDirty"/>; its redraw keeps the mouse's key.
+    // C: only barter's loop has the party-icons-stale test between the two (R032+0x06BF): <paramref name="redrawIfDirty"/>; its redraw keeps the mouse's key.
     public int KeyAfterTheMouse(int mouseKey, Action? redrawIfDirty = null) => ui.KeyAfterTheMouse(mouseKey, redrawIfDirty, redrawKeepsTheKey: true);
 
     /// <summary>A key code for a click on a menu line, using the screen's table (0: none).</summary>

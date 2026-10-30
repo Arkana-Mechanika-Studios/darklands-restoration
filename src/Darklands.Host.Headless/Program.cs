@@ -862,7 +862,7 @@ internal sealed class NoGameScreens : Darklands.Cards.IGameScreens
 }
 
 /// <summary>
-/// The audio of the host with each driver command written as a line "sound n": the numbers of the original's sound_play(n)
+/// The audio of the host with each driver command written as a line "sound n": the numbers of the original's sound-start(n)
 /// (root 047C:078A), whoever asked (music_play R043+0x09AE, the battle's effects R014+0x465E, a card's own call).
 /// </summary>
 internal sealed class LoggingAudio(IAudio inner, Action<string> write) : IAudio

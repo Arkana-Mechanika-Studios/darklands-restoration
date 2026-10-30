@@ -25,7 +25,7 @@ public sealed class BearCave : Card
     public override int Run(CardContext c)
     {
         Show(c, CavePicture);
-        // C: locations[cur_loc] + 0x0C (the arrival card) only when not in the wilderness.
+        // C: locations[location-now] + 0x0C (the arrival card) only when not in the wilderness.
         if (c.State.Here is { } place)
         {
             place.ArrivalCard = CardContext.ClosedCard;
@@ -72,7 +72,7 @@ public sealed class BearCave : Card
             new MenuLine(p => Flee(c, p),
                 () => OptionHint.ChanceOf(c.PartyAverageAttribute((int)Attribute.Agility), OptionHint.WholeParty)),
             // orig: R104+0x092C (1838:092C) matched; hint R104+0x0938
-            // DORMANT: line 9 is never offered (opt_flag_9 = 0); it would only let no time pass and stay.
+            // DORMANT: line 9 is never offered (card-option-flag-9 = 0); it would only let no time pass and stay.
             new MenuLine(_ => c.PassHours(0), Assured));
     }
 
@@ -98,7 +98,7 @@ public sealed class BearCave : Card
             menu[3] = OptionState.Enabled;
             return;
         }
-        // C: the chance is doubled in place (v_si <<= 1) for the second roll; 16-bit, but at most 198.
+        // C: the chance is doubled in place (local-in-si <<= 1) for the second roll; 16-bit, but at most 198.
         if (c.Random(100) < chance * 2)
         {
             c.Screen.Text(3);
@@ -129,8 +129,8 @@ public sealed class BearCave : Card
     // orig: R104+0x0452 (1838:0452) matched (also the tail of R104+0x04DE); tests: CardSmokeTests
     private static void FaceTheBear(CardContext c, CardMenu menu, int block)
     {
-        // C: the original copies the bear picture into pic_buf (the card's own picture buffer);
-        // nothing in this card reloads pic_buf afterwards, so it has no further effect.
+        // C: the original copies the bear picture into image-buffer (the card's own picture buffer);
+        // nothing in this card reloads image-buffer afterwards, so it has no further effect.
         ShowPicture(c, BearPicture);
         menu.Block = block;
         menu.Set(OptionState.Hidden, 0, 1, 2, 3, 4, 5);
@@ -144,7 +144,7 @@ public sealed class BearCave : Card
     {
         var watch = c.Random(c.PartySize);
         c.Variables.Chosen[0] = watch;
-        // C: member_attr(...) > rand_mod(100): member_attr draws nothing, so the order does not matter.
+        // C: member-stat(...) > roll-below(100): member-stat draws nothing, so the order does not matter.
         if (c.Attribute(watch, (int)Attribute.Perception) > c.Random(100))
         {
             ShowPicture(c, BearPicture);
@@ -205,7 +205,7 @@ public sealed class BearCave : Card
     // orig: R104+0x08FC (1838:08FC) matched; tests: CardSmokeTests
     private static void Flee(CardContext c, int chance)
     {
-        // C: both arms of `rand_mod(100) <= p` are the same; the draw is kept for the random sequence.
+        // C: both arms of `roll-below(100) <= p` are the same; the draw is kept for the random sequence.
         _ = c.Random(100) <= chance;
         c.LeaveForTheMap();
     }
@@ -217,8 +217,8 @@ public sealed class BearCave : Card
     // orig: R104+0x0288 (1838:0288) matched; tests: CardSmokeTests
     private static void FightTheBear(CardContext c, int victoryText)
     {
-        // C: run_battle's arguments are evaluated right to left; the only draw among them is the
-        // bear count, made before run_battle draws its own seed (-1 = random).
+        // C: battle-driver's arguments are evaluated right to left; the only draw among them is the
+        // bear count, made before battle-driver draws its own seed (-1 = random).
         var bears = c.Random(3) + c.PartyLoreLevel() / 5 + 1;
         switch (c.RunBattle(0x68, -1, 0x3A, bears, 1, -1, 0, 0, -1, 0, 0))
         {

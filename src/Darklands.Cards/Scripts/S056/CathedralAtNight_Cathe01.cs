@@ -8,8 +8,8 @@ namespace Darklands.Cards.Scripts;
 /// sanctuary, leave, or, after finishing the bishop's task, ask for the promised relic.
 /// </summary>
 // orig: R056+0x2838 (1ABB:0008) matched; tests: CardSmokeTests
-// orig: R056+0x3034 (1ABB:0804) matched (init helper: enables all 20 option lines and empties card_items and card_saints; the card uses neither)
-// DORMANT: R056+0x306C (1ABB:083C) the init helper points opt_fn[0..19] at this "screwed up." default; lines 0..5 get their own handlers, lines 6..9 are cleared by the entry and lines 10..19 stay enabled but the MSG has only 6 lines, so it never runs.
+// orig: R056+0x3034 (1ABB:0804) matched (init helper: enables all 20 option lines and empties card-item-lines and card-saint-lines; the card uses neither)
+// DORMANT: R056+0x306C (1ABB:083C) the init helper points card-option-handler[0..19] at this "screwed up." default; lines 0..5 get their own handlers, lines 6..9 are cleared by the entry and lines 10..19 stay enabled but the MSG has only 6 lines, so it never runs.
 public sealed class CathedralAtNight_Cathe01 : Card
 {
     public const int CardNumber = 0x33;

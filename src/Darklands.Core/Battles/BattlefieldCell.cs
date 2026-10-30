@@ -5,7 +5,7 @@ namespace Darklands.Core.Battles;
 /// decorations on them, its furniture, and whether it is outside the field. Tile numbers
 /// (1..15, 0 none) index the battlefield's tile sets.
 /// </summary>
-// orig: floor_view_draw R017+0x0000 (1EF8:0000) draft (how the cell long is decoded); checked against the asm R017+0x0154..0x01DE
+// orig: floor-view-paint R017+0x0000 (1EF8:0000) draft (how the cell long is decoded); checked against the asm R017+0x0154..0x01DE
 public readonly record struct BattlefieldCell(uint Bits)
 {
     /// <summary>A cell outside the battlefield: nothing is drawn and nobody may enter.</summary>

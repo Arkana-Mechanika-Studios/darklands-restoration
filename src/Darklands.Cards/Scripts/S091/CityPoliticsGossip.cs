@@ -6,7 +6,7 @@ namespace Darklands.Cards.Scripts;
 /// change of government, or leave.
 /// </summary>
 /// <remarks>
-/// The original never sets the first line's flag: it shows as the card before left opt_flag_0
+/// The original never sets the first line's flag: it shows as the card before left card-option-flag-0
 /// (normally a city hub card, which leaves it offered or greyed).
 /// </remarks>
 // orig: R091+0x0BA8 (18F2:0008) matched; tests: CardSmokeTests
@@ -22,7 +22,7 @@ public sealed class CityPoliticsGossip : Card
         c.Next = Number;
         // (The original takes its own copy of the reputation here, which nothing reads.)
         var menu = Menu(c);
-        // C: opt_flag_0 is never assigned: line 0 is what the card before left (OptionFlagCopies stale bit 0).
+        // C: card-option-flag-0 is never assigned: line 0 is what the card before left (OptionFlagCopies stale bit 0).
         menu.Enable(1, 2, 3, 4, 5, 6, 7, 8, 9);
         // orig: R091+0x11F8 (18F2:0658) matched (resets the handlers only)
         return menu.Run(

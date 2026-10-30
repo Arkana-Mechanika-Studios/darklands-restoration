@@ -27,7 +27,7 @@ public sealed class RefugeesFromThePlague : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 9);
-        // C: (unsigned)money_pfennigs(purse): the low 16 bits of the long, unsigned, then / 20 + 1.
+        // C: (unsigned)purse-in-pfennigs(purse): the low 16 bits of the long, unsigned, then / 20 + 1.
         var gift = Money.From(0, 0, Math.Clamp((ushort)c.State.Party.Purse.TotalPfennigs / 20 + 1, 1, 480));
         c.Variables.Money[0] = gift;
         if (c.State.Party.Purse < gift)
@@ -95,7 +95,7 @@ public sealed class RefugeesFromThePlague : Card
 
     /// <summary>Most such bands (86 in 100) are true refugees; otherwise they are bandits, sensed or not.</summary>
     // orig: R109+0x259C (1A52:03FC) matched; tests: CardSmokeTests
-    // C: rand_mod(100) <= party_max_attr(3): the query draws nothing.
+    // C: roll-below(100) <= party-stat-top(3): the query draws nothing.
     private static void GiveFoodAndClothing(CardContext c, CardMenu menu, Money gift)
     {
         if (c.Random(100) <= 85)
@@ -224,7 +224,7 @@ public sealed class RefugeesFromThePlague : Card
 
     /// <summary>The bandits; whatever happens, the party moves on.</summary>
     // orig: R109+0x2424 (1A52:0284) matched; tests: CardSmokeTests
-    // C: arguments right to left: rand_mod(5) + 3 is drawn before rand_mod(3); then run_battle draws its seed (-1).
+    // C: arguments right to left: roll-below(5) + 3 is drawn before roll-below(3); then battle-driver draws its seed (-1).
     private static void FightTheBandits(CardContext c)
     {
         var lore = c.PartyLoreLevel();

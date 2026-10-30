@@ -5,7 +5,7 @@ using Attribute = Darklands.Core.Characters.Attribute;
 namespace Darklands.Cards.Scripts;
 
 /// <summary>
-/// "$Revol02": the leader of a faction (the rebels when party_x is 0, the old lord's men
+/// "$Revol02": the leader of a faction (the rebels when party-map-column is 0, the old lord's men
 /// otherwise) sizes the party up. Offer your swords for pay, argue for the cause, speak of
 /// virtue or ask a saint; a party that once betrayed the faction must first talk its way past
 /// that.
@@ -60,7 +60,7 @@ public sealed class FactionLeadersRecruitment : Card
             c.Variables.Money[0] = Core.Economy.Money.From(0, 0, (c.HereQuery(2) + 4) * 3);
             menu[1] = OptionState.Hidden;
         }
-        // C: cur_rep is read and not used. The handler setup clears card_items only; card_saints[3]
+        // C: reputation-now is read and not used. The handler setup clears card-item-lines only; card-saint-lines[3]
         // keeps the previous card's value (written here slot by slot).
         _ = c.LocationQuery(c.Here, 0);
         c.CardSaints[0] = 0x6A;
@@ -76,7 +76,7 @@ public sealed class FactionLeadersRecruitment : Card
             new MenuLine(chance => Persuade(c, rebels, chance, 3, 4), () => CauseChance(c, 30)),
             new MenuLine(chance => Persuade(c, rebels, chance, 3, 4), () => CauseChance(c, 40)),
             new MenuLine(chance => Persuade(c, rebels, chance, 5, 6), () => VirtueChance(c)),
-            // DIVERGENCE: this card installs no saint pop-up handlers (saint_fn keeps the previous card's);
+            // DIVERGENCE: this card installs no saint pop-up handlers (saint-handler-table keeps the previous card's);
             // the standard saint rating stands in for them.
             new MenuLine(_ => Pray(c, rebels), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // DORMANT: lines 5, 6, 8, 9 (opt_flag = 0): time passes. orig: R073+0x086A/08ae/093c/0980 (hints 0876/08ba/0948/098c)

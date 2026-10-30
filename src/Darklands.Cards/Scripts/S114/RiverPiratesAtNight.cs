@@ -68,7 +68,7 @@ public sealed class RiverPiratesAtNight : Card
     }
 
     /// <summary>Morning on the shore: the text, the hours till dawn, and on with the voyage.</summary>
-    // C: card_load(card_name, pic_buf2): a full card load with the dawn picture; pic_buf itself is left alone.
+    // C: card-run(card-title, image-buffer-two): a full card load with the dawn picture; image-buffer itself is left alone.
     private void AtDawn(CardContext c, int text)
     {
         Show(c, DawnPicture);
@@ -131,7 +131,7 @@ public sealed class RiverPiratesAtNight : Card
 
     /// <summary>The pirates: won, the captain's florin; fled, those away come back; beaten, robbed down to a few pfennigs.</summary>
     // orig: R114+0x1836 (1995:0266) matched; tests: CardSmokeTests
-    // C: arguments right to left: rand_mod(4) (fifth) is drawn before rand_mod(3) (fourth); then run_battle draws its seed.
+    // C: arguments right to left: roll-below(4) (fifth) is drawn before roll-below(3) (fourth); then battle-driver draws its seed.
     // A result above 4 leaves the party on the card, as in the original.
     private void FightThePirates(CardContext c)
     {

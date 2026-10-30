@@ -13,7 +13,7 @@ public sealed partial class TacticalBattle
     /// the missile and spell actions, place actions, pushes and dying; then the missiles fly and
     /// the damage numbers are set.
     /// </summary>
-    // orig: combat_actions R014+0x116E (0E76:116E) draft (spec D §2.1, asm-verified)
+    // orig: fight-action-table R014+0x116E (0E76:116E) draft (spec D §2.1, asm-verified)
     private void CombatActions()
     {
         var again = new bool[Combatant.Count];
@@ -98,7 +98,7 @@ public sealed partial class TacticalBattle
     public static Action<string>? StepTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_STEP_TRACE") is null ? null : Console.WriteLine;
 
     /// <summary>One step along the path (or the step queued by a key).</summary>
-    // orig: cbt_step R014+0x1624 (0E76:1624) draft (spec D §2.3, asm-verified)
+    // orig: fighter-step R014+0x1624 (0E76:1624) draft (spec D §2.3, asm-verified)
     private void Step(int i, int set)
     {
         var c = Battle[i];
@@ -189,7 +189,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>Single file: before the head steps, every follower re-paths to the one in front.</summary>
-    // orig: cbt_step R014+0x1624 (0E76:1624) draft (the single-file block, spec D §2.3)
+    // orig: fighter-step R014+0x1624 (0E76:1624) draft (the single-file block, spec D §2.3)
     private void FollowTheHead()
     {
         for (var k = 1; k < MarchingOrder.Count; k++)
@@ -205,8 +205,8 @@ public sealed partial class TacticalBattle
                 b.RepathAt = (ushort)(Scaled(60) + Clock + 30);
                 b.Moving = true;
                 b.Action = CombatAction.Walk;
-                // orig: cbt_step R014+0x1738..0x1747 DS:CA30[b] = the path byte; 0xFF (the path ended at once: the follower stands next to the
-                // one in front) is the byte of "no step", which cbt_step's first test (R014+0x162D) returns on: QueuedStep is −1 for that here
+                // orig: fighter-step R014+0x1738..0x1747 DS:CA30[b] = the path byte; 0xFF (the path ended at once: the follower stands next to the
+                // one in front) is the byte of "no step", which fighter-step's first test (R014+0x162D) returns on: QueuedStep is −1 for that here
                 b.QueuedStep = b.Path[b.PathIndex] == 0xFF ? -1 : b.Path[b.PathIndex];
             }
         }
@@ -249,7 +249,7 @@ public sealed partial class TacticalBattle
             // C: a hit with no target (the cave dragon's blow after DragonPicksVictim found nobody, target -1: fight cave60, B22-L06) takes the hit
             //   path with t = -1 (R014+0x1A80..0x1B9B): no sound, action state 7 (R014+0x1B0E), the party's hit-skill bit
             // DIVERGENCE: not reproduced, the original then works on undefined memory: the knock-back test reads record -1's target byte (DS:9C1F,
-            //   only for a heavy hit), queued damage[-1] (DS:D70A) and, when it is above 0, writes was-hit[-1] (DS:D4F1); damage_apply(-1)
+            //   only for a heavy hit), queued damage[-1] (DS:D70A) and, when it is above 0, writes was-hit[-1] (DS:D4F1); damage-resolve(-1)
             //   (R014+0xAE1E) and the test after it read record -1's status byte (DS:9BE9, the menu bar's sub-menu item records), which act only
             //   for a value of 1, 2 or 3
             c.State = ActionState.Ready;
@@ -306,8 +306,8 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The missile weapon: draw and loose, reload, aim.</summary>
-    /// <param name="set">The animation set combat_actions worked out at the head of the combatant's pass (R014+0x11C4, pushed at R014+0x1288).</param>
-    // orig: cbt_missile_action R014+0x1BA0 (0E76:1BA0) draft (spec D §2.5, asm-verified); the aim sequence and its length are the caller's set's
+    /// <param name="set">The animation set fight-action-table worked out at the head of the combatant's pass (R014+0x11C4, pushed at R014+0x1288).</param>
+    // orig: fighter-shoot-action R014+0x1BA0 (0E76:1BA0) draft (spec D §2.5, asm-verified); the aim sequence and its length are the caller's set's
     // (R014+0x1E3F: DS:C8A7[set], R014+0x1E67: DS:A3EC + 30 * set)
     private void MissileAction(int i, int set)
     {
@@ -350,7 +350,7 @@ public sealed partial class TacticalBattle
                 }
                 if (Attacks.UseAmmunition(Battle, i, RanOutOfAmmunition) == -1)
                 {
-                    // use_ammo readied the hand weapon already; again here only to record its animation code.
+                    // spend-ammunition readied the hand weapon already; again here only to record its animation code.
                     ReadyWeapon(i, c.DefaultWeapon, 0);
                     c.State = ActionState.Finished;
                     return;
@@ -436,7 +436,7 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>use_ammo's caller part when the ammunition ran out: an enemy archer fights hand to hand.</summary>
+    /// <summary>spend-ammunition's caller part when the ammunition ran out: an enemy archer fights hand to hand.</summary>
     private void RanOutOfAmmunition(int i)
     {
         if (i >= Combatant.PartySlots)
@@ -448,7 +448,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>A spell: chant, then the cast frames, then the spell flies.</summary>
-    /// <param name="set">The animation set combat_actions worked out at the head of the combatant's pass (R014+0x11C4, pushed at R014+0x12A0).</param>
+    /// <param name="set">The animation set fight-action-table worked out at the head of the combatant's pass (R014+0x11C4, pushed at R014+0x12A0).</param>
     // orig: spell_action R014+0x1F00 (0E76:1F00) draft (spec D §2.6, asm-verified); the cast sequence is the caller's set's (R014+0x203E)
     private void SpellAction(int i, int set)
     {
@@ -501,7 +501,7 @@ public sealed partial class TacticalBattle
                     if (Battle.DragonFight != 0 && i == 5)
                     {
                         // C: the dragon goes back to its claws: state 7, action 0x12, no victim, its fighting animation
-                        // (R014+0x2115..0x2150: DS:CA69, DS:9EE5, DS:9F1F, anim_file[5] = DS:17DC / DS:17DF).
+                        // (R014+0x2115..0x2150: DS:CA69, DS:9EE5, DS:9F1F, animation-file-name[5] = DS:17DC / DS:17DF).
                         c.State = ActionState.Ready;
                         c.Action = CombatAction.StandardAttack;
                         c.Target = -1;
@@ -519,8 +519,8 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>cbt_cancel_action: no place action, no order, no exchange.</summary>
-    // orig: cbt_cancel_action R014+0x27AC (0E76:27AC) draft
+    /// <summary>fighter-cancel-action: no place action, no order, no exchange.</summary>
+    // orig: fighter-cancel-action R014+0x27AC (0E76:27AC) draft
     private void CancelAction(int i)
     {
         var c = Battle[i];
@@ -530,7 +530,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The enemies fighting combatant i stop (it left the field).</summary>
-    // orig: cbt_forget_target R014+0x27CC (0E76:27CC) draft
+    // orig: fighter-drop-target R014+0x27CC (0E76:27CC) draft
     private void ForgetTarget(int i)
     {
         for (var k = Combatant.PartySlots; k < Combatant.Count; k++)
@@ -547,7 +547,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>Pushed back: one walk step backwards per tick through the 3-frame hit sequence; attackers follow.</summary>
-    // orig: combat_actions R014+0x116E (0E76:116E) draft (push_back_step, spec D §2.1, asm-verified)
+    // orig: fight-action-table R014+0x116E (0E76:116E) draft (push_back_step, spec D §2.1, asm-verified)
     private void PushBackStep(int i, int set, bool[] again)
     {
         var c = Battle[i];
@@ -610,7 +610,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The pusher makes one follow-up step after the one it pushed.</summary>
-    // orig: combat_actions R014+0x116E (0E76:116E) draft (pusher_follow_step, spec D §2.1, asm-verified)
+    // orig: fight-action-table R014+0x116E (0E76:116E) draft (pusher_follow_step, spec D §2.1, asm-verified)
     private void PusherFollowStep(int i, int set)
     {
         var c = Battle[i];
@@ -640,7 +640,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>Falling, then death: the corpse is processed once (loot pile, waves, shooters stop).</summary>
-    // orig: cbt_dying R014+0x2324 (0E76:2324) draft (spec D §2.8, asm-verified)
+    // orig: fighter-dying R014+0x2324 (0E76:2324) draft (spec D §2.8, asm-verified)
     private void Dying(int i, int set)
     {
         var c = Battle[i];

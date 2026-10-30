@@ -41,7 +41,7 @@ public sealed record CreationData(CreationTables Tables, IReadOnlyList<string> T
 
 /// <summary>Reads <see cref="CreationData"/> from the data section of DARKLAND.EXE 483.07.</summary>
 // orig: R136+0x8690 (texts at 290E:1DDF), R136+0xA487, R136+0xA73B, R136+0xA577, R136+0xB1F5, R136+0xB351, R136+0xBBB1,
-// R136+0xA9EF, R136+0xABA7, R136+0xAD0F, R136+0xAF5B, member_palette = R136+0x33FC (data record R136) declared in
+// R136+0xA9EF, R136+0xABA7, R136+0xAD0F, R136+0xAF5B, member-colours = R136+0x33FC (data record R136) declared in
 //,,; tests: CreationOracleTests
 // C: R136+0xA487 is the same pointer table as R136+0x8690.s from entry 6 on (1DF7 = 1DDF + 6 x 4).
 public static class CreationDataDecoder

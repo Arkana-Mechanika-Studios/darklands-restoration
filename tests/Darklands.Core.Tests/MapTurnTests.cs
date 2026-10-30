@@ -5,7 +5,7 @@ using Darklands.Core.Battles.Generation;
 namespace Darklands.Core.Tests;
 
 /// <summary>
-/// map_turn's point and box rules (R004 1091: 074e, 0bb6, 0da4, 0fb6, 1334): only the fields a
+/// map-step's point and box rules (R004 1091: 074e, 0bb6, 0da4, 0fb6, 1334): only the fields a
 /// case writes change, and the mirror works on the values just stored (values worked out from
 /// the C by hand).
 /// </summary>

@@ -27,9 +27,9 @@ public sealed class SlumDistrict_SlumD00 : Card
 
     // orig: R052+0x16A8 (19A2:0008) matched (entry: lodging price, option states, menu loop)
     // orig: R052+0x1DB8 (19A2:0718) matched (init helper: enables all 20 option lines, installs the "screwed up." default and the pop-up handlers, clears the item and saint slots)
-    // DORMANT: R052+0x1E5A (19A2:07BA): the "screwed up." default hint for opt_fn[0..19]; lines 0..9 have their own hints and lines 10..19 have no text line.
-    // DORMANT: R052+0x1E92 (19A2:07F2), R052+0x1ECE (19A2:082E), R052+0x1F0A (19A2:086A), R052+0x1F46 (19A2:08A6): item pop-up handlers (success assured for the chosen member); card_items stay empty, so no item pop-up exists.
-    // DORMANT: R052+0x1F82 (19A2:08E2), R052+0x200C (19A2:096C), R052+0x2096 (19A2:09F6), R052+0x2120 (19A2:0A80): saint pop-up handlers (chance text of the chosen saint); card_saints stay empty, so no saint pop-up exists.
+    // DORMANT: R052+0x1E5A (19A2:07BA): the "screwed up." default hint for card-option-handler[0..19]; lines 0..9 have their own hints and lines 10..19 have no text line.
+    // DORMANT: R052+0x1E92 (19A2:07F2), R052+0x1ECE (19A2:082E), R052+0x1F0A (19A2:086A), R052+0x1F46 (19A2:08A6): item pop-up handlers (success assured for the chosen member); card-item-lines stay empty, so no item pop-up exists.
+    // DORMANT: R052+0x1F82 (19A2:08E2), R052+0x200C (19A2:096C), R052+0x2096 (19A2:09F6), R052+0x2120 (19A2:0A80): saint pop-up handlers (chance text of the chosen saint); card-saint-lines stay empty, so no saint pop-up exists.
     public override int Run(CardContext c)
     {
         Show(c, Picture);

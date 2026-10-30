@@ -4,7 +4,7 @@ using Darklands.Core.Battles.Generation;
 namespace Darklands.Content.Formats.Battles;
 
 /// <summary>The members of LCASTLE (Baphomet's citadel: a level, tile description and group list per room), decoded.</summary>
-// orig: datafile_select("lcastle") in R013+0x0000; file_read_all root 05D9:019A decodes a member
+// orig: data-file-choose("lcastle") in R013+0x0000; file-read-whole root 05D9:019A decodes a member
 public sealed class CitadelFiles(CatArchive archive) : ICitadelFiles
 {
     public static CitadelFiles Load(GameFiles files) => new(CatArchive.Decode(files.Read("LCASTLE")));

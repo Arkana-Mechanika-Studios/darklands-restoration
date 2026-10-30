@@ -9,7 +9,7 @@ public sealed partial class TacticalBattle
     /// card; members who already left make it a flight for those (result 2), the others are taken;
     /// members on another level than the enemies leave the fight going on.
     /// </summary>
-    // orig: do_surrender R022+0x03E4 (1EF8:03E4) matched
+    // orig: yield-action R022+0x03E4 (1EF8:03E4) matched
     // C: the card is the level's word at +0x1F44 (the "Unknown" exit card) and, with members gone, the one after it (+0x1F46).
     public void Surrender()
     {
@@ -75,7 +75,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The enemy kinds the Enemy Info shows: the first two different animation slots among the enemies present, with a combatant of each.</summary>
-    // orig: enemy_info R021+0x02CE (1EF8:02CE) matched
+    // orig: enemy-details R021+0x02CE (1EF8:02CE) matched
     public List<int> EnemyInfoKinds()
     {
         var list = new List<int>();
@@ -108,7 +108,7 @@ public sealed partial class TacticalBattle
     public int EnemyKindIndex(int slot) => slot is >= 0 and < 7 ? _slotKind[slot] : -1;
 
     /// <summary>The marching order the player chose (Change Marching Order); in single file the others follow again.</summary>
-    // orig: choose_party_order R022+0x051C (1EF8:051C) draft (the end: single_file_vec when move_mode is 2); R022+0x07AA matched
+    // orig: party-order-chooser R022+0x051C (1EF8:051C) draft (the end: single-file-march-overlay-entry when travel-mode is 2); R022+0x07AA matched
     public void SetMarchingOrder(IReadOnlyList<int> order)
     {
         MarchingOrder.Clear();
@@ -121,7 +121,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>Alt-O in the battle's key switch: everybody stops and real combat ends.</summary>
-    // orig: combat_keys R016+0x0000 (1EF8:0000) draft (case 0x1800)
+    // orig: fight-keys R016+0x0000 (1EF8:0000) draft (case 0x1800)
     // C: a debugging key left in; the hot key (Change Marching Order) takes Alt-O first when that entry is on.
     public void StopEverything()
     {
@@ -135,8 +135,8 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The group cursor while the left button is held travelling together: the leader's box at the point, free or blocked.</summary>
-    // orig: combat_mouse R014+0xB576 (19CD:0006) draft (the group cursor; DS:DA4B its timeout)
-    // C: `DS:DA4B = DS:D7FE == 0 ? combat_clock + 60 : combat_clock + 1800`: with the cursor keys on (order mode's DS:D7FE) the cursor stays 30 s.
+    // orig: fight-mouse R014+0xB576 (19CD:0006) draft (the group cursor; DS:DA4B its timeout)
+    // C: `DS:DA4B = DS:D7FE == 0 ? fight-clock + 60 : fight-clock + 1800`: with the cursor keys on (order mode's DS:D7FE) the cursor stays 30 s.
     public void GroupCursor(MapPoint ground, bool cursorKeys = false)
     {
         if (MarchingOrder.Count == 0)
@@ -159,7 +159,7 @@ public sealed partial class TacticalBattle
     private ushort _groupCursorUntil;
 
     /// <summary>The keyboard's click while travelling together: the group cursor stays a second (DS:DA4B = clock + 60).</summary>
-    // orig: R014+0xB838.. `if (DS:D73B == 1) { if (move_mode != 0) DS:DA4B = combat_clock + 60; ... }`
+    // orig: R014+0xB838.. `if (DS:D73B == 1) { if (travel-mode != 0) DS:DA4B = fight-clock + 60; ... }`
     public void KeepGroupCursor() => _groupCursorUntil = (ushort)(Clock + 60);
 
     /// <summary>Travelling together, the group cursor goes a second after the last move (DS:DA4B &lt; clock).</summary>
@@ -188,7 +188,7 @@ public sealed partial class TacticalBattle
     /// a shooter whose missile weapon is gone stops shooting and readies the hand weapon; the attack
     /// rates are worked out again.
     /// </summary>
-    // orig: combat_char_sheet R022+0x0000 (1EF8:0000) draft (the end: the 0x80 loop and memset of the rates)
+    // orig: fight-character-sheet R022+0x0000 (1EF8:0000) draft (the end: the 0x80 loop and memset of the rates)
     public void MembersBackToCombat()
     {
         for (var i = 0; i < Combatant.PartySlots; i++)
@@ -217,7 +217,7 @@ public sealed partial class TacticalBattle
         {
             c.AttackRate = 0xFF;
         }
-        // orig: R022+0x03A6..0x03B0: floor_view_draw(-1) and combat_draw (R014+0x6818), the same two calls as the battle's set-up (R014+0x02FF /
+        // orig: R022+0x03A6..0x03B0: floor-view-paint(-1) and fight-draw (R014+0x6818), the same two calls as the battle's set-up (R014+0x02FF /
         // 0x0307): the draw list's random draws (the animated pieces of the view) come once more as the sheet closes
         _view.MapChanged();
         TurnTowardTargets();

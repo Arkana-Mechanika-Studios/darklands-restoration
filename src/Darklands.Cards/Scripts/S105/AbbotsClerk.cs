@@ -11,7 +11,7 @@ namespace Darklands.Cards.Scripts;
 /// corrupt (by the place's number, as at its gate, card 245).
 /// </summary>
 // orig: R105+0x1DA6 (1A12:0006) matched; tests: CardSmokeTests
-// orig: R105+0x273A (1A12:099A) matched (registration: no item or saint lines; the pop-up call of this card reads item_fn[menu_slot], never used)
+// orig: R105+0x273A (1A12:099A) matched (registration: no item or saint lines; the pop-up call of this card reads item-handler-table[menu-choice-index], never used)
 public sealed class AbbotsClerk : Card
 {
     private const int ClerkPicture = 262;
@@ -24,7 +24,7 @@ public sealed class AbbotsClerk : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 4, 8, 9);
-        // C: the pop-up branch of the loop calls (*item_fn[menu_slot])() — a row of the 2-D table, i.e. its first entry, left over from an earlier card. This card has no pop-up lines, so it never runs.
+        // C: the pop-up branch of the loop calls (*item-handler-table[menu-choice-index])() — a row of the 2-D table, i.e. its first entry, left over from an earlier card. This card has no pop-up lines, so it never runs.
         var donation = Donation(c);
         c.Variables.Money[0] = donation;
         if (c.State.Party.Purse < donation)
@@ -62,14 +62,14 @@ public sealed class AbbotsClerk : Card
             // orig: R105+0x234C (1A12:05AC) matched; hint R105+0x2472
             new MenuLine(_ => PayForPrayers(c, donation), NoRiskForTheLeader(c)),
             // orig: R105+0x24AC (1A12:070C) matched; hint R105+0x24FE
-            // DORMANT: line 5 (store goods) is never offered (opt_flag_5 = 0).
+            // DORMANT: line 5 (store goods) is never offered (card-option-flag-5 = 0).
             new MenuLine(_ => { ShowPicture(c, 290); c.Screen.Text(5); c.Screens.ItemStore(); c.PassHours(1); c.Next = 246; }, NoRiskForTheLeader(c)),
             // DORMANT: lines 6 and 7 are never offered; each lets no time pass (R105+0x2538, R105+0x257C).
             new MenuLine(_ => c.PassHours(0), Assured),
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R105+0x25C0 (1A12:0820) matched; hint R105+0x2688
             new MenuLine(_ => SleepInACell(c), () => OptionHint.Say("You can always encounter the unknown")),
-            // orig: R105+0x26C0 (1A12:0920) matched; hint R105+0x2702 (leaves without clearing cur_loc)
+            // orig: R105+0x26C0 (1A12:0920) matched; hint R105+0x2702 (leaves without clearing location-now)
             new MenuLine(_ => { c.Variables.Chosen[0] = c.Leader; ShowPicture(c, 179); c.Screen.Text(8); c.Next = CardContext.MapCard; }, Assured));
     }
 

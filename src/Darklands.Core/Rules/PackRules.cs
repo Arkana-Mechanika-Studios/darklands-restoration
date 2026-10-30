@@ -45,8 +45,8 @@ public static class PackRules
         Inventory.EquipmentWeight(s, member);
     }
 
-    // orig: R031+0x4850 (give_one) R031+0x4850 (18E7:0000) draft (bytes match); tests: CampAndSheetRulesTests
-    // DORMANT: the original first maps idx through equipped_type(from, idx) when slot == 6 (the equipment box), which is no list and never gives.
+    // orig: R031+0x4850 (hand-over-one) R031+0x4850 (18E7:0000) draft (bytes match); tests: CampAndSheetRulesTests
+    // DORMANT: the original first maps idx through worn-item-type(from, idx) when slot == 6 (the equipment box), which is no list and never gives.
     /// <summary>Gives one item of stack <paramref name="index"/> to another member whose pack has room.</summary>
     public static void GiveOne(GameState s, int from, int to, int index)
     {
@@ -57,7 +57,7 @@ public static class PackRules
         }
     }
 
-    // orig: R031+0x48CC (give_stack) R031+0x48CC (18E7:007C) draft (bytes match); tests: CampAndSheetRulesTests
+    // orig: R031+0x48CC (hand-over-stack) R031+0x48CC (18E7:007C) draft (bytes match); tests: CampAndSheetRulesTests
     // DORMANT: the slot == 6 mapping as for GiveOne.
     /// <summary>Gives the whole stack <paramref name="index"/> to another member whose pack has room.</summary>
     public static void GiveStack(GameState s, int from, int to, int index)
@@ -69,7 +69,7 @@ public static class PackRules
         }
     }
 
-    // orig: R031+0x5922 (item_move) R031+0x5922 (18E7:10D2) draft (bytes match); tests: CampAndSheetRulesTests
+    // orig: R031+0x5922 (item-relocate) R031+0x5922 (18E7:10D2) draft (bytes match); tests: CampAndSheetRulesTests
     /// <summary>Moves stack <paramref name="from"/> to position <paramref name="to"/>, the stacks between shifting over.</summary>
     public static void Move(GameState s, int member, int from, int to)
     {

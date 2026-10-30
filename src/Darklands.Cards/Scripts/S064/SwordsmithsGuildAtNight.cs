@@ -10,7 +10,7 @@ namespace Darklands.Cards.Scripts;
 /// break in.
 /// </summary>
 // orig: R064+0x0000 (1838:0000) matched; tests: CardSmokeTests
-// orig: handler setup R064+0x09F6 (1838:09F6) is empty: the item/saint handlers and opt_on[10..19]
+// orig: handler setup R064+0x09F6 (1838:09F6) is empty: the item/saint handlers and card-option-enabled[10..19]
 // of the previous card stay (no pop-up line here, so nothing reads them).
 public sealed class SwordsmithsGuildAtNight : Card
 {
@@ -38,7 +38,7 @@ public sealed class SwordsmithsGuildAtNight : Card
         {
             menu[3] = OptionState.Shown;
         }
-        // C: written `ev8_at(2, cur_loc) != 1`; the function answers 0 or 1, so this is the same test as the other guilds'.
+        // C: written `open-quest-at(2, location-now) != 1`; the function answers 0 or 1, so this is the same test as the other guilds'.
         if (!c.Events.QuestAt(PoliticsQuest, c.Here))
         {
             menu[1] = menu[2] = menu[3] = OptionState.Hidden;
@@ -54,7 +54,7 @@ public sealed class SwordsmithsGuildAtNight : Card
             new MenuLine(chance => KnockForTheMaster(c, chance), () => MasterChance(c, standing)),
             new MenuLine(_ => WatchTheGuildhouse(c), OptionHint.Saying(CardTexts.Unknown)),
             new MenuLine(chance => BreakIn(c, menu, chance), () => BreakInChance(c)),
-            // DORMANT: lines 4..8 are never offered (opt_flag_4..8 = 0); their actions do nothing.
+            // DORMANT: lines 4..8 are never offered (card-option-flag-4..8 = 0); their actions do nothing.
             // orig: R064+0x096C (1838:096C) (hint R064+0x096E (1838:096E) "Success is assured."), R064+0x09A6 (1838:09A6) and the
             // empty functions up to R064+0x09B4 (1838:09B4).
             // C: lines 5..8 use empty void functions as their hint handlers: their struct res would be
@@ -94,7 +94,7 @@ public sealed class SwordsmithsGuildAtNight : Card
             c.Screen.Text(2, TextFrame.BlankPage);
         }
         c.Events.Update(-2, c.Here, FactKind, 3, Guild, PoliticsQuest, EventUpdate.Or);
-        // C: cur_rep, the card's copy of the reputation, is lowered and written back.
+        // C: reputation-now, the card's copy of the reputation, is lowered and written back.
         standing--;
         c.LocationSet(c.Here, 0, standing);
     }
@@ -140,7 +140,7 @@ public sealed class SwordsmithsGuildAtNight : Card
         {
             c.Screen.Text(1);
             c.PassHours(1);
-            // C: party_x is not set here: the guild hall card gets whatever guild was handed on last.
+            // C: party-map-column is not set here: the guild hall card gets whatever guild was handed on last.
             c.Next = 0x6A;
             return;
         }
@@ -160,11 +160,11 @@ public sealed class SwordsmithsGuildAtNight : Card
         {
             // C: % keeps the sign of a negative value; such a remainder matches no secret.
             var secret = (c.LocationQuery(c.Here, 0x21) + 4) % 7;
-            // C: && stops early: the second roll (rand_mod(1000)) is made only for the matching secret.
+            // C: && stops early: the second roll (roll-below(1000)) is made only for the matching secret.
             if (secret == 0 && c.Random(1000) % 2 != 0)
             {
                 Witnessed(c, 4, 0x78, 8);
-                // C: card_text(8, v_si) passes the secret (0) as the frame.
+                // C: card-text-block(8, local-in-si) passes the secret (0) as the frame.
             }
             else if (secret == 1 && c.Random(1000) % 5 == 0)
             {
@@ -258,7 +258,7 @@ public sealed class SwordsmithsGuildAtNight : Card
             if (c.Events.FactValue(PoliticsQuest, 0x17, c.Here) == Guild)
             {
                 c.SavedCard = CityStreets;
-                // C: party_x is not set on this path: the guild hall card gets whatever guild was handed on last.
+                // C: party-map-column is not set on this path: the guild hall card gets whatever guild was handed on last.
                 c.Next = 0x5F;
                 return;
             }

@@ -6,8 +6,8 @@ namespace Darklands.Core.Characters;
 /// five party slots holds. While a character is in the party, the roster entry and the party
 /// member are the same object.
 /// </summary>
-// orig: charactr.tmp (int count, int ids[5], char member_shield[5][4], count 0x22A-byte records), kept by
-// R037+0x38AA (append), party_remove R037+0x3B58, party_add R037+0x3CD6, party_delete R037+0x3F30 and
+// orig: charactr.tmp (int count, int ids[5], char member-shield-picture[5][4], count 0x22A-byte records), kept by
+// R037+0x38AA (append), party-leave R037+0x3B58, party-join R037+0x3CD6, party-wipe R037+0x3F30 and
 // R037+0x4048 (delete, later records move down) draft; tests: OriginalSaveTests
 public sealed class CharacterRoster
 {
@@ -23,18 +23,18 @@ public sealed class CharacterRoster
     // the slot memory of a slot whose id is -1 (a loaded slot without a record, what a member who left kept there): no entry of the roster
     private readonly HashSet<Character> _offRoster = new(ReferenceEqualityComparer.Instance);
 
-    // a second party slot's copy of an entry's character (party_add of a character already in the party), and the entry it names
+    // a second party slot's copy of an entry's character (party-join of a character already in the party), and the entry it names
     private readonly Dictionary<Character, int> _secondSlots = new(ReferenceEqualityComparer.Instance);
 
     /// <summary><paramref name="copy"/>, in a party slot, is a second slot of roster entry <paramref name="entry"/> (its own copy of the record).</summary>
-    // C: party_add R037+0x3CD6 reads the entry's record into the slot whoever else holds it: two slots then name the same entry.
+    // C: party-join R037+0x3CD6 reads the entry's record into the slot whoever else holds it: two slots then name the same entry.
     public void KeepSecondSlot(Character copy, int entry) => _secondSlots[copy] = entry;
 
     /// <summary>
     /// <paramref name="residue"/> is what a slot without a roster entry holds: a status a card later gives it (a random member who is
     /// nobody) does not make it a member of the roster.
     /// </summary>
-    // C: only add_member (R029+0x4650), party_add (R037+0x3CD6) and the inn's roster write ids[slot]; party[slot][0] alone is not
+    // C: only join-party-member (R029+0x4650), party-join (R037+0x3CD6) and the inn's roster write ids[slot]; party[slot][0] alone is not
     // C: the roster, and the saved game (R037+0x2ACE) writes the records of charactr.tmp, so such a slot is saved as no member.
     public void MarkOffRoster(Character residue) => _offRoster.Add(residue);
 
@@ -74,7 +74,7 @@ public sealed class CharacterRoster
     }
 
     /// <summary>A roster of just the party: its present members in slot order (a new game's charactr.tmp).</summary>
-    // orig: R037+0x9DB2 key Q: load_saved_game("default") writes the four default records and ids 0, 1, 2, 3, -1
+    // orig: R037+0x9DB2 key Q: saved-game-read("default") writes the four default records and ids 0, 1, 2, 3, -1
     // C: the file's records are the members as they were written (KeepStored).
     public void Reset(Party party)
     {
@@ -100,13 +100,13 @@ public sealed class CharacterRoster
     /// character of status 0), a present member not on the roster gets a new entry at the end
     /// (a hireling), any other slot holds none.
     /// </summary>
-    // C: the original keeps charactr.tmp in step at every change (party_add, party_remove, party_delete, add_member: `idx[slot] = cnt++`);
+    // C: the original keeps charactr.tmp in step at every change (party-join, party-leave, party-wipe, join-party-member: `idx[slot] = cnt++`);
     // here the changes the model makes without the roster are caught up with when the game is saved.
     public void Reconcile(Party party)
     {
         for (var slot = 0; slot < PartySlots.Length; slot++)
         {
-            // C: ids[] is the five slots' whatever party_size is: a slot past it keeps its entry while it still holds that entry's record
+            // C: ids[] is the five slots' whatever party-headcount is: a slot past it keeps its entry while it still holds that entry's record
             //   (a loaded slot of status 0 after the last occupied one).
             var member = slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot);
             var entry = PartySlots[slot];
@@ -130,8 +130,8 @@ public sealed class CharacterRoster
         }
     }
 
-    /// <summary>A member leaves the party for the roster (party_remove: <c>ids[p] = -1</c>, the record stays).</summary>
-    // orig: party_remove R037+0x3B58 (1462:3B58) matched
+    /// <summary>A member leaves the party for the roster (party-leave: <c>ids[p] = -1</c>, the record stays).</summary>
+    // orig: party-leave R037+0x3B58 (1462:3B58) matched
     public void LeaveParty(int slot)
     {
         if (slot >= 0 && slot < PartySlots.Length)

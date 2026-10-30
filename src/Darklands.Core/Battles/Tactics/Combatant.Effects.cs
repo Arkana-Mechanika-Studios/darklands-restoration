@@ -1,8 +1,8 @@
 namespace Darklands.Core.Battles;
 
 /// <summary>The temporary modifiers of the battle's effects on a combatant (DS:A532, 0x12 bytes per combatant).</summary>
-// orig: DS:A532[13] (struct mod) matched; the timers are rebased and tested by combat_main /
-// melee_exchanges R014+0x2A4A and ended by R014+0x0694
+// orig: DS:A532[13] (struct mod) matched; the timers are rebased and tested by fight-main-loop /
+// close-combat-rounds R014+0x2A4A and ended by R014+0x0694
 public sealed class EffectModifiers
 {
     /// <summary>−536 (65000): the timer is not running.</summary>
@@ -27,7 +27,7 @@ public sealed class EffectModifiers
 
     public ushort HeldUntil { get; set; } = Off;
 
-    /// <summary>combat_state_clear (R020 06B6): everything off.</summary>
+    /// <summary>fight-state-reset (R020 06B6): everything off.</summary>
     public void Clear()
     {
         Array.Clear(Attributes);

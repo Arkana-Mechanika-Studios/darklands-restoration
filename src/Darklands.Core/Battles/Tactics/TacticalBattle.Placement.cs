@@ -30,16 +30,16 @@ public sealed partial class TacticalBattle
     /// <summary>The view origin cell the screen should centre (DS:C866 / DS:C886) after a placement; null when the view follows the leader.</summary>
     public (int Column, int Row)? ViewOrigin { get; set; }
 
-    /// <summary>DS:11B1: the view follows the active member (combat_tick's test); set by choosing a member, cleared by a placement and
+    /// <summary>DS:11B1: the view follows the active member (fight-tick's test); set by choosing a member, cleared by a placement and
     /// by scrolling the view.</summary>
-    // orig: set by R016+0x09BC and 0x0A2C; cleared by effect_start R014+0x4188 and R016+0x0B92
+    // orig: set by R016+0x09BC and 0x0A2C; cleared by effect-begin R014+0x4188 and R016+0x0B92
     public bool FollowsActive { get; set; }
 
     /// <summary>
     /// The party arrives at (x, y) facing <paramref name="dir"/>: the marching order in a
     /// five-slot formation, those that do not fit at random free spots in sight.
     /// </summary>
-    // orig: effect_start R014+0x4188 (0E76:4188) draft (spec D §8.2, asm-verified)
+    // orig: effect-begin R014+0x4188 (0E76:4188) draft (spec D §8.2, asm-verified)
     public void PlaceParty(int x, int y, int dir)
     {
         if (x == -1 && y == -1)
@@ -146,7 +146,7 @@ public sealed partial class TacticalBattle
     /// Places combatant <paramref name="who"/> around a spot facing away from the spot's direction:
     /// enemies try the 12 offsets from the far end; members the first 12, then random spots in sight.
     /// </summary>
-    // orig: place_around R024+0x08F2 (1EF8:08F2) draft (asm-verified per spec D §8.3; the draft
+    // orig: place-nearby R024+0x08F2 (1EF8:08F2) draft (asm-verified per spec D §8.3; the draft
     // tries 13 offsets for members, the asm 12)
     private bool PlaceAround(int who, MapPoint spot, int dir)
     {
@@ -255,7 +255,7 @@ public sealed partial class TacticalBattle
     /// Hidden encounters on the party's level: one whose spot a member sees, or comes near
     /// enough to (stealth + streetwise), is placed and removed from the list.
     /// </summary>
-    // orig: activations_check R014+0x4442 (0E76:4442) draft (spec D §1.10, asm-verified)
+    // orig: trigger-check R014+0x4442 (0E76:4442) draft (spec D §1.10, asm-verified)
     private bool CheckActivations()
     {
         var result = false;
@@ -306,7 +306,7 @@ public sealed partial class TacticalBattle
     /// reinforcement wave (mode 1) into the free records 5..12: each kind into one of the two enemy
     /// animation slots, at the corner of its box first, then at random spots in sight of the spot.
     /// </summary>
-    // orig: enemies_place R025+0x0000 (1EF8:0000) draft (decoded fully per the draft notes;
+    // orig: enemy-placement-entry R025+0x0000 (1EF8:0000) draft (decoded fully per the draft notes;
     // the placement part asm-verified per spec D §8.4: the flags word is masked with 0xFE00, the draft clears only 5 bits)
     // DIVERGENCE: the palettes (ENEMYPAL.DAT ranges) are the screen's; in mode 1 the original adds money from an
     // uninitialised encounter pointer — no money is added here.
@@ -533,8 +533,8 @@ public sealed partial class TacticalBattle
         return new Money((short)fl, (short)gr, (short)pf);
     }
 
-    /// <summary>combat_recover's search: a woken member is put on a free spot right of / below where it lay, in sight.</summary>
-    // orig: combat_recover R014+0x0DEE (0E76:0DEE) draft (spec D §1.7, asm-verified)
+    /// <summary>fight-recovery's search: a woken member is put on a free spot right of / below where it lay, in sight.</summary>
+    // orig: fight-recovery R014+0x0DEE (0E76:0DEE) draft (spec D §1.7, asm-verified)
     private void PlaceWoken(int i)
     {
         var c = Battle[i];

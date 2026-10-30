@@ -43,7 +43,7 @@ public sealed class GateOfTheSixKeys : Card
     }
 
     // orig: (part of R133+0x11DC) matched
-    // C: && short-circuits: count_items stops at the first key missing (no side effects either way).
+    // C: && short-circuits: item-tally stops at the first key missing (no side effects either way).
     /// <summary>The keys are looked for in this order (the test stops at the first one missing).</summary>
     private static bool HasAllSixKeys(CardContext c) =>
         new[] { 0x8F, 0x8C, 0x8E, 0x8D, 0x90, 0x91 }.All(key => c.CountItems(Who.Everybody, key) != 0);

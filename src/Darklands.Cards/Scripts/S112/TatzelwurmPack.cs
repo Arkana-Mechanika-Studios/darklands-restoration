@@ -17,7 +17,7 @@ public sealed class TatzelwurmPack : Card
     private const int RoadPicture = 286;
     private const int WurmPicture = 331;
 
-    // C: the card's picture buffer (pic_buf), changed by each full reload of the card.
+    // C: the card's picture buffer (image-buffer), changed by each full reload of the card.
     private int _cardPicture;
 
     public override int Number => 273;
@@ -50,7 +50,7 @@ public sealed class TatzelwurmPack : Card
         c.SetCardSaints(0x36, 0x3D, 0x83, 3);
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
-        // C: item_fn slots 0/1 are the potion handlers R112+0x1398 / R112+0x13E8, slots 2/3 bare retf (R112+0x1438 / 0x143A): Enter in the
+        // C: item-handler-table slots 0/1 are the potion handlers R112+0x1398 / R112+0x13E8, slots 2/3 bare retf (R112+0x1438 / 0x143A): Enter in the
         // C: item box rates line 2 with slot 2's.
         menu.ItemBox = () => c.MenuSlot < 2 ? PotionHint(c) : c.EmptyBoxHandler();
 
@@ -69,7 +69,7 @@ public sealed class TatzelwurmPack : Card
             // orig: R112+0x0E0C (line 5); hint R112+0x0F20 (1881:0A90) matched
             new MenuLine(p => SneakAround(c, menu, p), Unknown),
             // orig: R112+0x0F58 (1881:0AC8) matched; hint R112+0x0F64
-            // C: the battle kind is chosen by options_block (non-zero: the ambush kind).
+            // C: the battle kind is chosen by settings-block (non-zero: the ambush kind).
             new MenuLine(_ => FightTheWurms(c, menu.Block != 0), () => OptionHint.Say("Enter Combat")),
             // orig: R112+0x0F9C (line 7); hint R112+0x10B4 (1881:0C24) matched
             new MenuLine(p => ScoutItOut(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
@@ -100,7 +100,7 @@ public sealed class TatzelwurmPack : Card
         return OptionHint.ChanceOf(Math.Clamp(aim + (c.MenuSlot == 0 ? 13 : 21), 1, 99), m);
     }
 
-    // C: party_min_skill(0x11) is only called for a mounted party.
+    // C: party-ability-low(0x11) is only called for a mounted party.
     private static OptionHint RideHint(CardContext c)
     {
         var chance = c.PartyGet(5) != 0 ? Math.Clamp(c.PartyMinSkill((int)Skill.Riding) * 2, 25, 99) : 0;
@@ -143,9 +143,9 @@ public sealed class TatzelwurmPack : Card
         c.Next = 273;
     }
 
-    /// <summary>The prayer. The original also takes an item from the member: card_items[menu_slot], the potion in the saint's slot.</summary>
+    /// <summary>The prayer. The original also takes an item from the member: card-item-lines[menu-choice-index], the potion in the saint's slot.</summary>
     // orig: R112+0x0BFC (1881:076C) matched; tests: CardSmokeTests
-    // C: take_item(menu_member, card_items[menu_slot]) runs before the prayer, even if the prayer is cancelled.
+    // C: pick-up-item(menu-owner-member, card-item-lines[menu-choice-index]) runs before the prayer, even if the prayer is cancelled.
     private void PrayForDeliverance(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
@@ -169,7 +169,7 @@ public sealed class TatzelwurmPack : Card
             FightTheWurms(c, true);
             return;
         }
-        // C: this card_load uses the second picture buffer, so pic_buf (the card's picture) is not changed.
+        // C: this card-run uses the second picture buffer, so image-buffer (the card's picture) is not changed.
         Show(c, 16);
         c.Screen.Text(5);
         Show(c, _cardPicture);
@@ -218,7 +218,7 @@ public sealed class TatzelwurmPack : Card
     /// one throws the worst rider (and, on a low roll, the mounts bolt and are lost, but the wurms follow them).
     /// </summary>
     // orig: R112+0x10EC (1881:0C5C) matched; tests: CardSmokeTests
-    // C: the roll is drawn first, even when the chance is 0; card_text(7, p_6) passes the chance (0) as the frame.
+    // C: the roll is drawn first, even when the chance is 0; card-text-block(7, param-plus-6) passes the chance (0) as the frame.
     private void RideForIt(CardContext c, int chance)
     {
         var roll = c.Random(100);
@@ -260,7 +260,7 @@ public sealed class TatzelwurmPack : Card
 
     /// <summary>The wurms: won, fame and goodwill; fled, those away are lost; beaten, the weakest member is torn apart.</summary>
     // orig: R112+0x07B2 (1881:0322) matched; tests: CardSmokeTests
-    // C: party_x is declared `extern long` in the original, so the call pushes party_y and party_x: nearest_city(party_x) receives the party's (x, y); nothing is undefined (checked against the asm).
+    // C: party-map-column is declared `extern long` in the original, so the call pushes party-map-row and party-map-column: closest-city(party-map-column) receives the party's (x, y); nothing is undefined (checked against the asm).
     private void FightTheWurms(CardContext c, bool ambushed)
     {
         switch (c.RunBattle(ambushed ? 0x2E : 0x2F, -1, 0x3B, 1, c.PartyLoreLevel() / 3 + 1, -1, 0, 0, -1, 0, 0))

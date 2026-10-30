@@ -16,7 +16,7 @@ public sealed class StormAtSea : Card
     {
         Show(c, 0);
         c.Next = Number;
-        // C: the prayer line is enabled without saints_usable(), so it is offered even when nobody knows a saint.
+        // C: the prayer line is enabled without saints-available(), so it is offered even when nobody knows a saint.
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1);
         c.SetCardSaints(0x2D, 0x63, 0x33, 0x12);
@@ -68,7 +68,7 @@ public sealed class StormAtSea : Card
 
     /// <summary>Two saints calm the storm; the other two save the party in the water (but the ship sails on here); otherwise no answer.</summary>
     // orig: R113+0x02D4 (1838:02D4) matched; tests: CardSmokeTests
-    // C: invoke_saint(var_chosen1 = menu_member, ...): the member is named before the prayer.
+    // C: call-on-saint(text-slot-chosen-one = menu-owner-member, ...): the member is named before the prayer.
     private static void PrayForAid(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;

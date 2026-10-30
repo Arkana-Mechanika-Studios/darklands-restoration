@@ -29,7 +29,7 @@ public sealed class VillageChapel : Card
         c.Variables.Chosen[0] = c.Leader;
         c.Variables.Location = c.Here;
         c.Next = CardNumber;
-        // C: money_pfennigs is a long, kept in a 16-bit int: large purses wrap here.
+        // C: purse-in-pfennigs is a long, kept in a 16-bit int: large purses wrap here.
         var pfennigs = (short)c.State.Party.Purse.TotalPfennigs;
         var menu = Menu(c);
         menu.Enable(0, 1, 2, 3, 5);
@@ -64,7 +64,7 @@ public sealed class VillageChapel : Card
     // orig: R078+0x104C (191C:020C) matched; R078+0x1152 (191C:0312) matched; tests: CardSmokeTests
     private static void AttendMass(CardContext c)
     {
-        // C: the original asks cur_band() twice; the first answer is discarded.
+        // C: the original asks time-band-now() twice; the first answer is discarded.
         if (TimeOfDay.Band(c.State.Date.Hour) == 1)
         {
             if (c.EventAtHere(VillageEvil))

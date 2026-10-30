@@ -19,7 +19,7 @@ public static class GameSounds
 
     /// <summary>Pause and resume (the game's pause, Alt-P).</summary>
     // orig: root 0000:1080 (0000:1080) draft - "Game Paused":
-    //   sound_play(2), wait for a key, sound_play(3).
+    //   sound-start(2), wait for a key, sound-start(3).
     public const int Pause = 2;
 
     public const int Resume = 3;
@@ -27,7 +27,7 @@ public static class GameSounds
     /// <summary>Asks for the number of the piece playing (the game saves it to restore it later).</summary>
     // orig: R034+0x0000, R034+0x0102, R036+0x0082, R030+0x00A8 and R088+0x0B20: DS:9C3D = music_play(5),
     //   a piece of their own, then music_play(DS:9C3D) (R030+0x00A8 keeps it only).
-    // C: music_play is a void function; its callers read the AX that sound_play left (ASOUND.DC image 20D0h: number 5 returns
+    // C: music_play is a void function; its callers read the AX that sound-start left (ASOUND.DC image 20D0h: number 5 returns
     //   [CA60h], the number last stored). With music off it plays 1 instead and AX is what the handler of 1 leaves: 0 on the FM
     //   and Roland drivers (the play slot clears AX before the handler, which does not set it; tests: DriverTests); the speaker
     //   driver's handler leaves a value of its own, which the emulated driver gives too.
@@ -46,7 +46,7 @@ public static class GameSounds
 
     /// <summary>Plays a piece of music if music is on; otherwise stops the music.</summary>
     // orig: R043+0x09AE (1462:09ae) matched - music_play(x):
-    //   if (opt_music) sound_play(x); else sound_play(1). tests: GameSoundsTests
+    //   if (music-setting) sound-start(x); else sound-start(1). tests: GameSoundsTests
     public static void PlayMusic(IAudio audio, int piece, bool musicOn) =>
         audio.PlayMusic(MusicNumber(piece, musicOn));
 
@@ -60,7 +60,7 @@ public static class GameSounds
 
     /// <summary>True when the battle sound may play under the sound options.</summary>
     // orig: R014+0x465E (0e76:465e) draft -
-    //   (opt_sound == 1 && n >= 10) || n == 0x12 || (opt_music == 1 && n >= 7 && n <= 9).
+    //   (sound-setting == 1 && n >= 10) || n == 0x12 || (music-setting == 1 && n >= 7 && n <= 9).
     //   tests: GameSoundsTests
     // C: n is a signed int; the options are chars compared with 1 (they only hold 0 or 1).
     public static bool BattleSoundAllowed(int effect, bool effectsOn, bool musicOn) =>

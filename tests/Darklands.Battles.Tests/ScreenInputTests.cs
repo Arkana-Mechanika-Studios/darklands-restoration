@@ -257,7 +257,7 @@ public sealed class ScreenInputTests
             (bool)typeof(CharacterSheetScreen).GetField("_open", flags)!.GetValue(sheet)!);
     }
 
-    // orig: R031+0x161C: the Ctrl-F1..F5 case tests `slot < party_size` (DS:A67E); the character menu's sheet has party_size 0
+    // orig: R031+0x161C: the Ctrl-F1..F5 case tests `slot < party-headcount` (DS:A67E); the character menu's sheet has party-headcount 0
     [Theory]
     [InlineData(false, 1)]
     [InlineData(true, 0)]
@@ -279,7 +279,7 @@ public sealed class ScreenInputTests
         state.Party.LeaderIndex = 0;
         sheet.Show(state, 0);
         Assert.False(host.QuitRequested);
-        // Ctrl-F2 (0x5F00) makes the second member the leader, unless party_size is 0
+        // Ctrl-F2 (0x5F00) makes the second member the leader, unless party-headcount is 0
         Assert.Equal(leader, state.Party.LeaderIndex);
     }
 
@@ -363,7 +363,7 @@ public sealed class ScreenInputTests
 
     /// <summary>
     /// P (R031+0x1B2C) has no count test either: a potion entry left past the end is drunk and taken (R031+0x4CC4: its count byte 1 -> 0,
-    /// item_delete), which lowers the pack's signed count to -1.
+    /// item-erase), which lowers the pack's signed count to -1.
     /// </summary>
     [Fact]
     public void PDrinksAnEntryPastThePacksEnd()
@@ -382,7 +382,7 @@ public sealed class ScreenInputTests
         Assert.Equal(-1, state.Party.Slot(0).Pack.Stacks);
     }
 
-    // orig: R037+0x01C0 (a press on the party column, x < 0x3C, opens member_sheet for slot y / 0x28 when the slot is filled)
+    // orig: R037+0x01C0 (a press on the party column, x < 0x3C, opens member-sheet-screen for slot y / 0x28 when the slot is filled)
     [Fact]
     public void TheCreationMenuOpensTheSheetOfAMembersFigure()
     {
@@ -403,7 +403,7 @@ public sealed class ScreenInputTests
         Assert.Equal(1, game.Party.LeaderIndex);
     }
 
-    // orig: R037+0x9DB2 case C: party_seed (DS:9C4A) = the BIOS tick word at 0040:006C, not time(0); the party "Begin the Adventure" starts holds it
+    // orig: R037+0x9DB2 case C: party-random-seed (DS:9C4A) = the BIOS tick word at 0040:006C, not time(0); the party "Begin the Adventure" starts holds it
     // (lockstep chargen-created: the original's saved game +0x64 = 0x0B5A where the clock's seed was 7622)
     [Fact]
     public void TheCreatedPartysSeedIsTheBiosTickWordNotTheClocksSeed()
@@ -480,10 +480,10 @@ public sealed class ScreenInputTests
     }
 
     /// <summary>
-    /// The card menu takes Up / Down only with the pointer over one of its lines and never a digit, as the original's card_menu;
+    /// The card menu takes Up / Down only with the pointer over one of its lines and never a digit, as the original's card-choice-menu;
     /// GameUi.KeyboardCardMenus (off by default) adds both.
     /// </summary>
-    // orig: R043+0x1BD2: Up 0x4800 (R043+0x1CE5) and Down 0x5000 (R043+0x1D46) need DS:ED6C == 1 (card_mouse R043+0x21D4: the pointer inside
+    // orig: R043+0x1BD2: Up 0x4800 (R043+0x1CE5) and Down 0x5000 (R043+0x1D46) need DS:ED6C == 1 (card-mouse-handler R043+0x21D4: the pointer inside
     // a line, R043+0x2232), Enter / Space (R043+0x1C77) a highlighted line (DS:E96F != 0xFF); a digit matches none of its compares
     [Theory]
     [InlineData(false, 1)]

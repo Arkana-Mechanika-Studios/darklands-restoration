@@ -9,9 +9,9 @@ namespace Darklands.Cards.Scripts;
 // orig: R074+0x0BEA (18F6:000A) matched; tests: CardSmokeTests
 // orig: R074+0x1370 (18F6:0790) matched; R074+0x1372 (18F6:0792) matched; R074+0x13AA (18F6:07CA) matched; R074+0x1434 (18F6:0854) matched; R074+0x14BE (18F6:08DE) matched; R074+0x1548 (18F6:0968) matched; tests: CardSmokeTests
 // DORMANT: the registration routine is empty, so the "screwed up." default and the four saint
-// pop-up hints are never installed, and card_items/card_saints keep an earlier card's values
+// pop-up hints are never installed, and card-item-lines/card-saint-lines keep an earlier card's values
 // (no line of this card uses them).
-// C: party_x (DS:E3D0, the map X) is read as the side taken in the city: see CardContext.CityMark.
+// C: party-map-column (DS:E3D0, the map X) is read as the side taken in the city: see CardContext.CityMark.
 public sealed class FactionPlanningSession : Card
 {
     public const int CardNumber = 0x79;

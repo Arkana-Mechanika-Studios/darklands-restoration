@@ -22,31 +22,31 @@ from run_unit import run  # noqa: E402
 
 DS = 0x321A
 HOLDRAND = 0x7B20
-CUR_MONTH, CUR_LOC, PARTY_SEED, PARTY_X, PARTY_Y = 0x00E4, 0x907E, 0x9C4A, 0xE3D0, 0xE3D2
-CITY_REC, LEADER, PARTY_SIZE, REPORT, PARTY = 0x9785, 0x907B, 0xA67E, 0x26BC, 0x9C69
+MONTH_NOW, LOCATION_NOW, PARTY_RANDOM_SEED, PARTY_MAP_COLUMN, PARTY_MAP_ROW = 0x00E4, 0x907E, 0x9C4A, 0xE3D0, 0xE3D2
+CITY_RECORD, LEADER, PARTY_HEADCOUNT, REPORT, PARTY = 0x9785, 0x907B, 0xA67E, 0x26BC, 0x9C69
 LOC_TABLE_SEG, LOC_TABLE_OFF = 0x2E38, 0x10BE
 LOC_SEG, CITY_SEG = 0x6000, 0x7000
 LOC_SIZE = 0x40                       # record spacing in the scratch segment (records are 0x3A)
 FN = {
-    "loc_query": ("0E76", "1A8E", [136, 29]),
-    "loc_reputation_adj": ("0E76", "19D0", [136, 29]),
-    "improve_roll": ("0E76", "18A8", [136, 29]),
-    "add_attr": ("0E76", "0A72", [136, 29]),
-    "practice_skill": ("1462", "0132", [136, 29, 39]),
-    "loc_set": ("0E76", "1DFE", [136, 29]),
-    "party_lore_level": ("1462", "0470", [136, 29, 39]),
+    "place-query": ("0E76", "1A8E", [136, 29]),
+    "place-standing-adjust": ("0E76", "19D0", [136, 29]),
+    "improvement-roll": ("0E76", "18A8", [136, 29]),
+    "raise-attribute-by": ("0E76", "0A72", [136, 29]),
+    "exercise-skill": ("1462", "0132", [136, 29, 39]),
+    "place-assign": ("0E76", "1DFE", [136, 29]),
+    "party-lore-rating": ("1462", "0470", [136, 29, 39]),
 }
 # party queries (R029 0e76): name -> (offset, number of skill/attribute arguments, attributes?)
 QUERIES = {
-    "member_best_skill": ("01C0", -1, False), "party_best_skill_lo": ("021E", 0, False),
-    "party_best_skill_hi": ("026A", 0, False), "party_min_skill": ("1396", 1, False),
-    "party_min_skill2": ("13DE", 2, False), "party_min_skill_sum": ("1446", 2, False),
-    "party_max_skill": ("14A4", 1, False), "party_max_skill_women": ("14EC", 1, False),
-    "party_max_skill2": ("153A", 2, False), "party_max_skill_sum": ("15A2", 2, False),
-    "party_avg_skill": ("1600", 1, False), "party_min_attr": ("164A", 1, True),
-    "party_min_attr_sum": ("1696", 2, True), "party_max_attr": ("16FE", 1, True),
-    "party_max_attr_women": ("174A", 1, True), "party_max_attr_sum": ("179C", 2, True),
-    "party_avg_attr": ("1800", 1, True), "party_max_attr_skill": ("184A", -2, True),
+    "member-top-skill": ("01C0", -1, False), "party-top-ability-low": ("021E", 0, False),
+    "party-top-ability-high": ("026A", 0, False), "party-ability-low": ("1396", 1, False),
+    "party-ability-low-two": ("13DE", 2, False), "party-ability-low-sum": ("1446", 2, False),
+    "party-ability-top": ("14A4", 1, False), "party_max_skill_women": ("14EC", 1, False),
+    "party-ability-top-two": ("153A", 2, False), "party-ability-top-sum": ("15A2", 2, False),
+    "party-ability-mean": ("1600", 1, False), "party-stat-low": ("164A", 1, True),
+    "party_min_attr_sum": ("1696", 2, True), "party-stat-top": ("16FE", 1, True),
+    "party_max_attr_women": ("174A", 1, True), "party-stat-top-sum": ("179C", 2, True),
+    "party-stat-mean": ("1800", 1, True), "party_max_attr_skill": ("184A", -2, True),
 }
 for _name, (_off, _n, _a) in QUERIES.items():
     FN[_name] = ("0E76", _off, [136, 29])
@@ -75,10 +75,10 @@ def location_record(r, rep):
     return rec
 
 
-def locations(r, count, cur_loc):
+def locations(r, count, location_now):
     """Location records 0..count-1 (and the current one) with their far-pointer table."""
     recs, memory = {}, []
-    for i in list(range(count)) + ([cur_loc] if cur_loc >= 0 else []):
+    for i in list(range(count)) + ([location_now] if location_now >= 0 else []):
         recs[i] = location_record(r, r.randint(-99, 99))
     for i, rec in recs.items():
         memory.append({"segment": "%04X" % LOC_TABLE_SEG, "offset": "%04X" % (LOC_TABLE_OFF + 4 * i),
@@ -88,7 +88,7 @@ def locations(r, count, cur_loc):
 
 
 def party_records(r, size=5):
-    """Five member records; slots from `size` on are empty, as party_size implies."""
+    """Five member records; slots from `size` on are empty, as party-headcount implies."""
     members, memory = [], []
     for i in range(5):
         rec = bytearray(0x80)
@@ -107,19 +107,19 @@ def party_records(r, size=5):
 def cases(r):
     out = []
     for _ in range(400):
-        cur_loc = r.choice([-1, 2, 150])
+        location_now = r.choice([-1, 2, 150])
         what = r.randint(0, 44)
-        if cur_loc == -1 and what in (39, 40, 41):
+        if location_now == -1 and what in (39, 40, 41):
             continue
-        recs, memory = locations(r, 4, cur_loc)
+        recs, memory = locations(r, 4, location_now)
         city = bytes(r.randint(0, 255) for _ in range(0x30))
         month, seed, x, y = r.randint(0, 11), r.randint(0, 0x7FFF), r.randint(0, 330), r.randint(0, 930)
         memory += [{"segment": "%04X" % CITY_SEG, "offset": "0040", "hex": city.hex()},
-                   ds(CITY_REC, struct.pack("<HH", 0, CITY_SEG).hex()), ds(CUR_LOC, w(cur_loc)),
-                   ds(CUR_MONTH, w(month)), ds(PARTY_SEED, w(seed)), ds(PARTY_X, w(x)), ds(PARTY_Y, w(y))]
+                   ds(CITY_RECORD, struct.pack("<HH", 0, CITY_SEG).hex()), ds(LOCATION_NOW, w(location_now)),
+                   ds(MONTH_NOW, w(month)), ds(PARTY_RANDOM_SEED, w(seed)), ds(PARTY_MAP_COLUMN, w(x)), ds(PARTY_MAP_ROW, w(y))]
         loc = r.randint(0, 3)
-        out.append(("loc_query", memory, [h16(loc), h16(what)],
-                    {"loc": loc, "what": what, "curLoc": cur_loc, "locations": recs, "city": city.hex(),
+        out.append(("place-query", memory, [h16(loc), h16(what)],
+                    {"loc": loc, "what": what, "curLoc": location_now, "locations": recs, "city": city.hex(),
                      "month": month, "seed": seed, "x": x, "y": y}))
     for _ in range(150):
         state = r.getrandbits(32)
@@ -130,19 +130,19 @@ def cases(r):
         struct.pack_into("<h", rec, 0x12, rep)
         memory[-1]["hex"] = rec.hex()
         memory.append(ds(HOLDRAND, struct.pack("<I", state).hex()))
-        out.append(("loc_reputation_adj", memory, [h16(0), h16(a), h16(b)], {"state": state, "rep": rep, "a": a, "b": b}))
+        out.append(("place-standing-adjust", memory, [h16(0), h16(a), h16(b)], {"state": state, "rep": rep, "a": a, "b": b}))
     for _ in range(150):
         state = r.getrandbits(32)
         v, lo = r.randint(-5, 105), r.randint(0, 6)
         hi = lo + r.randint(-1, 12)
-        out.append(("improve_roll", [ds(HOLDRAND, struct.pack("<I", state).hex())], [h16(v), h16(lo), h16(hi)],
+        out.append(("improvement-roll", [ds(HOLDRAND, struct.pack("<I", state).hex())], [h16(v), h16(lo), h16(hi)],
                     {"state": state, "v": v, "lo": lo, "hi": hi}))
     for _ in range(200):
         members, memory = party_records(r)
         who, k, d = r.choice([-2, -1, 0, 1, 2, 3, 4]), r.randint(0, 6), r.randint(-120, 120)
         leader = r.randint(0, 4)
         memory += [ds(LEADER, "%02X" % leader)]
-        out.append(("add_attr", memory, [h16(who), h16(k), h16(d)],
+        out.append(("raise-attribute-by", memory, [h16(who), h16(k), h16(d)],
                     {"members": members, "leader": leader, "who": who, "k": k, "d": d}))
     for _ in range(250):
         size = r.randint(1, 5)
@@ -151,15 +151,15 @@ def cases(r):
         who, k = r.choice([-2, -1, 0, 1, 2, 3, 4]), r.randint(0, 18)
         mode, pct, lvl = r.choice([0, 1, 2]), r.choice([1, 3, 5, 10, 20, 30, 40]), r.randint(0, 4)
         leader = r.randint(0, size - 1)
-        memory += [ds(LEADER, "%02X" % leader), ds(PARTY_SIZE, w(size)), ds(REPORT, w(0)),
+        memory += [ds(LEADER, "%02X" % leader), ds(PARTY_HEADCOUNT, w(size)), ds(REPORT, w(0)),
                    ds(HOLDRAND, struct.pack("<I", state).hex())]
-        out.append(("practice_skill", memory, [h16(who), h16(k), h16(mode), h16(pct), h16(lvl)],
+        out.append(("exercise-skill", memory, [h16(who), h16(k), h16(mode), h16(pct), h16(lvl)],
                     {"members": members, "leader": leader, "size": size, "state": state, "who": who, "k": k,
                      "mode": mode, "pct": pct, "lvl": lvl}))
     for _ in range(150):
-        cur_loc = r.choice([2, 150])
+        location_now = r.choice([2, 150])
         what = r.choice([0, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 32, 37, 37, 37, 9, 1])
-        recs, memory = locations(r, 2, cur_loc)
+        recs, memory = locations(r, 2, location_now)
         rec = bytearray.fromhex(recs["1"])
         struct.pack_into("<hhh", rec, 0x1C, *[r.choice([0, 0, 5]) for _ in range(3)])
         recs["1"] = rec.hex()
@@ -167,10 +167,10 @@ def cases(r):
         memory.append({"segment": "%04X" % LOC_SEG, "offset": "%04X" % LOC_SIZE, "hex": rec.hex()})
         city = bytes(r.randint(0, 255) for _ in range(0x30))
         memory += [{"segment": "%04X" % CITY_SEG, "offset": "0040", "hex": city.hex()},
-                   ds(CITY_REC, struct.pack("<HH", 0, CITY_SEG).hex()), ds(CUR_LOC, w(cur_loc))]
+                   ds(CITY_RECORD, struct.pack("<HH", 0, CITY_SEG).hex()), ds(LOCATION_NOW, w(location_now))]
         value = r.choice([0, 1, 7, 0x40, 99, -5, 300])
-        out.append(("loc_set", memory, [h16(1), h16(what), h16(value)],
-                    {"loc": 1, "what": what, "value": value, "curLoc": cur_loc, "locations": recs, "city": city.hex()}))
+        out.append(("place-assign", memory, [h16(1), h16(what), h16(value)],
+                    {"loc": 1, "what": what, "value": value, "curLoc": location_now, "locations": recs, "city": city.hex()}))
     for name, (_, n, attributes) in QUERIES.items():
         for _ in range(40):
             members, memory = party_records(r)
@@ -182,7 +182,7 @@ def cases(r):
             out.append((name, memory, [h16(a) for a in args], {"members": members, "leader": leader, "args": args}))
     for _ in range(60):
         members, memory = party_records(r)
-        out.append(("party_lore_level", memory, [], {"members": members, "leader": 0}))
+        out.append(("party-lore-rating", memory, [], {"members": members, "leader": 0}))
     return out + targeted(random.Random(20261017))
 
 
@@ -199,15 +199,15 @@ def party_with_status(r, statuses):
 
 def targeted(r):
     """Cases for the branches the random cases above miss (docs/faithfulness/branches-missed.csv):
-    every reputation band, cur_loc at the city/location/wilderness limits, the city-word comparisons
-    and the uprising flag of loc_query, loc_set's out-of-range selector, queries and the lore level
-    with 0..5 present members, practice_skill for the party with no slot in use."""
+    every reputation band, location-now at the city/location/wilderness limits, the city-word comparisons
+    and the uprising flag of place-query, place-assign's out-of-range selector, queries and the lore level
+    with 0..5 present members, exercise-skill for the party with no slot in use."""
     out = []
 
-    def query(loc, what, cur_loc, rep=None, flags=None, city=None, month=None):
-        recs, memory = locations(r, 4, cur_loc)
+    def query(loc, what, location_now, rep=None, flags=None, city=None, month=None):
+        recs, memory = locations(r, 4, location_now)
         if rep is not None or flags is not None:
-            for key in {str(loc), str(cur_loc)} & set(recs):
+            for key in {str(loc), str(location_now)} & set(recs):
                 rec = bytearray.fromhex(recs[key])
                 if rep is not None:
                     struct.pack_into("<h", rec, 0x12, rep)
@@ -221,10 +221,10 @@ def targeted(r):
         month = r.randint(0, 11) if month is None else month
         seed, x, y = r.randint(0, 0x7FFF), r.randint(0, 330), r.randint(0, 930)
         memory += [{"segment": "%04X" % CITY_SEG, "offset": "0040", "hex": city.hex()},
-                   ds(CITY_REC, struct.pack("<HH", 0, CITY_SEG).hex()), ds(CUR_LOC, w(cur_loc)),
-                   ds(CUR_MONTH, w(month)), ds(PARTY_SEED, w(seed)), ds(PARTY_X, w(x)), ds(PARTY_Y, w(y))]
-        out.append(("loc_query", memory, [h16(loc), h16(what)],
-                    {"loc": loc, "what": what, "curLoc": cur_loc, "locations": recs, "city": city.hex(),
+                   ds(CITY_RECORD, struct.pack("<HH", 0, CITY_SEG).hex()), ds(LOCATION_NOW, w(location_now)),
+                   ds(MONTH_NOW, w(month)), ds(PARTY_RANDOM_SEED, w(seed)), ds(PARTY_MAP_COLUMN, w(x)), ds(PARTY_MAP_ROW, w(y))]
+        out.append(("place-query", memory, [h16(loc), h16(what)],
+                    {"loc": loc, "what": what, "curLoc": location_now, "locations": recs, "city": city.hex(),
                      "month": month, "seed": seed, "x": x, "y": y}))
 
     for rep in (-99, -76, -75, -74, -41, -40, -39, -11, -10, -9, 10, 11, 49, 50, 51, 99):
@@ -242,21 +242,21 @@ def targeted(r):
             city = bytearray(r.randint(0, 255) for _ in range(0x30))
             struct.pack_into("<h", city, 0x6C - 0x40, first_day[month] + delta)
             query(1, 35, 2, city=bytes(city), month=month)
-    # loc_set: a selector past the switch's table
+    # place-assign: a selector past the switch's table
     for what in (42, 45, 100, 0x7FFF):
-        cur_loc = 2
-        recs, memory = locations(r, 2, cur_loc)
+        location_now = 2
+        recs, memory = locations(r, 2, location_now)
         city = bytes(r.randint(0, 255) for _ in range(0x30))
         memory += [{"segment": "%04X" % CITY_SEG, "offset": "0040", "hex": city.hex()},
-                   ds(CITY_REC, struct.pack("<HH", 0, CITY_SEG).hex()), ds(CUR_LOC, w(cur_loc))]
-        out.append(("loc_set", memory, [h16(1), h16(what), h16(5)],
-                    {"loc": 1, "what": what, "value": 5, "curLoc": cur_loc, "locations": recs, "city": city.hex()}))
+                   ds(CITY_RECORD, struct.pack("<HH", 0, CITY_SEG).hex()), ds(LOCATION_NOW, w(location_now))]
+        out.append(("place-assign", memory, [h16(1), h16(what), h16(5)],
+                    {"loc": 1, "what": what, "value": 5, "curLoc": location_now, "locations": recs, "city": city.hex()}))
     # the party queries and the lore level with 0..5 present members
     patterns = [[0] * 5, [1, 0, 0, 0, 0], [0, 0, 0, 0, 2], [1, 1, 0, 0, 0], [0, 5, 0, 2, 0], [1, 1, 1, 0, 0],
                 [1, 2, 0, 5, 1], [1, 1, 1, 1, 1], [5, 5, 5, 5, 5]]
     for statuses in patterns:
         members, memory = party_with_status(r, statuses)
-        out.append(("party_lore_level", memory, [], {"members": members, "leader": 0}))
+        out.append(("party-lore-rating", memory, [], {"members": members, "leader": 0}))
         for name, (_, n, attributes) in QUERIES.items():
             leader = r.randint(0, 4)
             mem = memory + [ds(LEADER, "%02X" % leader)]
@@ -264,12 +264,12 @@ def targeted(r):
                     [r.randint(0, 6), r.randint(0, 18)] if n == -2 else
                     [r.randint(0, 6 if attributes else 18) for _ in range(n)])
             out.append((name, mem, [h16(a) for a in args], {"members": members, "leader": leader, "args": args}))
-    # practice_skill for the whole party while no slot is in use (party_size 0) and with one slot
+    # exercise-skill for the whole party while no slot is in use (party-headcount 0) and with one slot
     for size in (0, 1):
         members, memory = party_records(r, size)
         state = r.getrandbits(32)
-        memory += [ds(LEADER, "00"), ds(PARTY_SIZE, w(size)), ds(REPORT, w(0)), ds(HOLDRAND, struct.pack("<I", state).hex())]
-        out.append(("practice_skill", memory, [h16(-2), h16(3), h16(1), h16(20), h16(2)],
+        memory += [ds(LEADER, "00"), ds(PARTY_HEADCOUNT, w(size)), ds(REPORT, w(0)), ds(HOLDRAND, struct.pack("<I", state).hex())]
+        out.append(("exercise-skill", memory, [h16(-2), h16(3), h16(1), h16(20), h16(2)],
                     {"members": members, "leader": 0, "size": size, "state": state, "who": -2, "k": 3,
                      "mode": 1, "pct": 20, "lvl": 2}))
     return out

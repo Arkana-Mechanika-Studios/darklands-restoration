@@ -26,7 +26,7 @@ public sealed class ConventInfirmary : Card
         Show(c, CellPicture);
         c.Next = Number;
         // The clerk asks for a pfennig per thousand the party carries, plus one.
-        // C: money_pfennigs is a long cast to unsigned 16 bits before the division (wraps above 65,535).
+        // C: purse-in-pfennigs is a long cast to unsigned 16 bits before the division (wraps above 65,535).
         var contribution = Money.FromPfennigs((ushort)c.State.Party.Purse.TotalPfennigs / 1000 + 1);
         c.Variables.Money[0] = contribution;
         if (!c.EventAtHere(NursedHere))

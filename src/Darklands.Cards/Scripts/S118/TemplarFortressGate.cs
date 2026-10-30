@@ -27,7 +27,7 @@ public sealed class TemplarFortressGate : Card
             // orig: R118+0x16FA (1984:023A) matched; hint R118+0x1742
             new MenuLine(_ => EnterTheGraveyard(c), Unknown),
             // orig: R118+0x177A (1984:02BA) matched; hint R118+0x1782
-            // C: next_card = 0x0C with no time passing.
+            // C: following-card = 0x0C with no time passing.
             new MenuLine(_ => c.Next = CardContext.MapCard, Unknown),
             // orig: R118+0x17BA (1984:02FA) matched; hint R118+0x18A4
             new MenuLine(_ => CallOnASaint(c, menu), () => OptionHint.Say("Select a person and a saint.")),
@@ -64,7 +64,7 @@ public sealed class TemplarFortressGate : Card
     /// Unanswered, the darkness reaches Heaven. The saint line is spent either way.
     /// </summary>
     // orig: R118+0x17BA (1984:02FA) matched; tests: CardSmokeTests
-    // C: the card is reloaded (card_load_near) only after the fourth saint's vision or no answer.
+    // C: the card is reloaded (card-run-near) only after the fourth saint's vision or no answer.
     private void CallOnASaint(CardContext c, CardMenu menu)
     {
         var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
@@ -87,7 +87,7 @@ public sealed class TemplarFortressGate : Card
                     c.Screen.Text(4);
                     return;
                 case 3:
-                    // C: event_new(-2, cur_loc, 0, 0x1C, 0x12, 0, 0, DS:270F, 0, 1): the address 0x270F = 9999, forever.
+                    // C: event-create(-2, location-now, 0, 0x1C, 0x12, 0, 0, DS:270F, 0, 1): the address 0x270F = 9999, forever.
                     c.Events.Create(-2, c.Here, 0, 0x1C, 0x12, 0, 0, 9999, 0, 1);
                     ShowPicture(c, 181);
                     c.Screen.Text(5);

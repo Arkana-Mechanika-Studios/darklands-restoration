@@ -313,8 +313,8 @@ internal sealed partial class CastleGenerator
     }
 
     /// <summary>The enemy kind of a request group when that group may be placed on this level; −1 otherwise.</summary>
-    // orig: the pattern if (30e6(...)) m = monster_type_map(lv, type, quality) (Forces.AddKind),
-    // repeated inline in R007+0x224E, R007+0x23D4 and R007+0x2CDC, each calling monster_type_map R004+0x06AA
+    // orig: the pattern if (30e6(...)) m = monster-type-lookup(lv, type, quality) (Forces.AddKind),
+    // repeated inline in R007+0x224E, R007+0x23D4 and R007+0x2CDC, each calling monster-type-lookup R004+0x06AA
     private int KindFor(int battlefield, int l, int k, int side, GroupSpec spec) =>
         MayPlaceGroup(battlefield, l, k, side) ? _g.Forces.AddKind(l - _lowestLevel, spec.Type, spec.Quality) : -1;
 
@@ -931,7 +931,7 @@ internal sealed partial class CastleGenerator
     /// <summary>Adds an enemy group (up to three kinds with counts) to the level's list and marks its cell.</summary>
     // orig: R007+0x316C (15AF:316C) draft; checked against asm
     // C: outside the keep halls a group holds at most four enemies in all; a cleared level (memory bit) halves the counts, rounding up.
-    // C: bf_groups is one flat array of 16 × 10 records and the slot is lv × 10 + group_count[lv] with no limit: an eleventh group of
+    // C: battlefield-group-table is one flat array of 16 × 10 records and the slot is lv × 10 + group-total[lv] with no limit: an eleventh group of
     // a level is written into the next level's first record, which that level's first group (written later) fills again; both
     // levels then share the record (fields a group does not write keep what the earlier one left). Reachable: a level of the
     // room-per-group battlefields (1..7, 0x7A) can get 10 or 11 groups.
@@ -1046,13 +1046,13 @@ internal sealed partial class CastleGenerator
         }
     }
 
-    /// <summary>bf_groups as the original lays it out (16 levels × 10 records, the defaults of groups_clear until written).</summary>
+    /// <summary>battlefield-group-table as the original lays it out (16 levels × 10 records, the defaults of groups-reset until written).</summary>
     private readonly EnemyGroup?[] _groupSlots = new EnemyGroup?[BattlefieldForces.MaxLevels * BattlefieldForces.MaxGroups];
 
-    /// <summary>group_count of each level (not limited to 10).</summary>
+    /// <summary>group-total of each level (not limited to 10).</summary>
     private readonly int[] _groupCount = new int[BattlefieldForces.MaxLevels];
 
-    /// <summary>Each level's list is its group_count records from slot lv × 10 on (an overflowing level reads into the next).</summary>
+    /// <summary>Each level's list is its group-total records from slot lv × 10 on (an overflowing level reads into the next).</summary>
     private void SyncGroups()
     {
         for (var lv = 0; lv < BattlefieldForces.MaxLevels; lv++)
@@ -1070,7 +1070,7 @@ internal sealed partial class CastleGenerator
         }
     }
 
-    // DIVERGENCE: past the 160th record the original writes into mon_templates (B4C0); such records are kept apart here.
+    // DIVERGENCE: past the 160th record the original writes into monster-prototype-table (B4C0); such records are kept apart here.
     private EnemyGroup GroupSlot(int slot)
     {
         if (slot < _groupSlots.Length)

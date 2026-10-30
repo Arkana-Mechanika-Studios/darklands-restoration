@@ -13,7 +13,7 @@ namespace Darklands.Core.Battles.Generation;
 public static class MineBattlefield
 {
     /// <summary>Builds the mine of a battlefield type; returns the number of levels (the party starts on level 0).</summary>
-    // orig: mine_build R009+0x0000 (1432:0000) draft (byte-matched per the draft notes); tests:
+    // orig: mine-builder-entry R009+0x0000 (1432:0000) draft (byte-matched per the draft notes); tests:
     // Oracle:mine.json
     // C: the specs are the caller's words a..h: (type, quality, count) of the first two enemy specs, then the type and quality of the
     // third, which the fixed-layout mines read as the section to build and its turn.
@@ -77,7 +77,7 @@ internal sealed partial class MineBuilder
 
     private BattlefieldForces Forces => _g.Forces;
 
-    // C: the specs are the caller's words a..h of mine_build; they are passed on as the layouts need them.
+    // C: the specs are the caller's words a..h of mine-builder-entry; they are passed on as the layouts need them.
     public int Build(int t, (int Type, int Quality, int Count)[] specs)
     {
         _nextPileId = 0;
@@ -401,7 +401,7 @@ internal sealed partial class MineBuilder
     /// <summary>Special one-section mines 0x6c and 0x6d (0x6d: floor tile 7 under the first enemy group).</summary>
     // orig: R009+0x0990 (1432:0990) draft (close per the draft notes: 6.00 keeps the offset and
     // segment of DS:E037 across the store); tests: Oracle:mine.json
-    // C: bf_groups->pos is read whether or not a group was made (the first record of level 0: zeros if none).
+    // C: battlefield-group-table->pos is read whether or not a group was made (the first record of level 0: zeros if none).
     private int SpecialMine(int t)
     {
         var rotation = 0;

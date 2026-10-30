@@ -24,15 +24,15 @@ public sealed class GameScreens : IGameScreens
         _itemStore = new ItemStoreScreen(_page, state, this);
     }
 
-    // orig: R029+0x21AA (0E76:21AA) (barter wrapper: name ?? R136+0xA70F[shop], then barter_screen_vec = thunk 09C0:1EFF → barter_screen R032+0x0000) draft
+    // orig: R029+0x21AA (0E76:21AA) (barter wrapper: name ?? R136+0xA70F[shop], then trade-screen-overlay-entry = thunk 09C0:1EFF → trade-screen-entry R032+0x0000) draft
     // DIVERGENCE: the wrapper's card-picture redraw afterwards (thunk 09C0:1EA5) is the card screen's job here.
     public void Barter(int shop, string name, long categories) =>
         new BarterScreen(_page, _state, this, shop, name, categories).Run();
 
-    // orig: item_cache_screen_vec = thunk 09C0:1ED7 → cache_screen R035+0x0000 (1462:0000) matched
+    // orig: stash-screen-overlay-entry = thunk 09C0:1ED7 → stash-screen R035+0x0000 (1462:0000) matched
     public void ItemStore() => _itemStore.Run();
 
-    // orig: loot_distribute_vec = thunk 09C0:1DAB → loot_distribute R040+0x0000 (1462:0000) draft (byte-matched function)
+    // orig: loot-split-overlay-entry = thunk 09C0:1DAB → loot-split-entry R040+0x0000 (1462:0000) draft (byte-matched function)
     public void Loot(IList<ItemStack> items, Money money) => new LootScreen(_page, _state, items) { CannotView = CannotView }.Run(money);
 
     /// <summary>The battle's test of the loot screen's D (BattleScreens.LootSkipsMember): true skips the slot after the "can't view" message.</summary>

@@ -39,7 +39,7 @@ public sealed class MonasteryAtNight : Card
     // orig: R058+0x0000 (1838:0000) matched (entry: option flags, the offering, the test that turns the party away, the option table)
     // orig: R058+0x08CE (1838:08CE) matched (init helper: disables all 20 option lines and gives them the "screwed up." handler; the card then enables lines 0, 3, 4 and 8)
     // DORMANT: R058+0x08F0 (1838:08F0): the "screwed up." handler the init installs on all 20 lines; lines 1, 2, 5, 6, 7, 9 keep their own handlers and 10..19 are disabled, so it never runs.
-    // DORMANT: the else branch of "if (next_card == 0x38)" (a plain "return next_card") cannot run: next_card was just set to 0x38 and the init changes nothing.
+    // DORMANT: the else branch of "if (following-card == 0x38)" (a plain "return following-card") cannot run: following-card was just set to 0x38 and the init changes nothing.
     // C: the turning-away test sits at the top of every round of the menu loop, but nothing a round
     //   that stays on the card does (only the hidden lines 1 and 2 stay) changes the standing, the
     //   fame or the Virtue, so it is tested once, before the first menu.
@@ -129,7 +129,7 @@ public sealed class MonasteryAtNight : Card
                 }
             }
             c.EventHere(PrayersBought, 0xA8);
-            // C: opt_flag_0 = 2 here; the card ends, so it is never shown again.
+            // C: card-option-flag-0 = 2 here; the card ends, so it is never shown again.
         }
         else
         {

@@ -131,7 +131,7 @@ public sealed class ScreenDrawingLeadsTests
     }
 
     // orig: R002+0x0378..0x037B root 047C:0584(0x1C0) sets colours 0..15 to the driver's sixteen in every battle; R002+0x03B4..0x03C6 fills
-    // colours 16..255 with 0xFF before the parts are copied and set_palette (root 0410:0397) writes the bytes as they are: the DAC shows the
+    // colours 16..255 with 0xFF before the parts are copied and palette-load (root 0410:0397) writes the bytes as they are: the DAC shows the
     // colours no part sets (235..242, 255; 32..79 where no enemy scheme takes them) white (vis10 sessions D-09fbc1, D-b797f7, D-56a675: local/batch/batpal)
     [Fact]
     public void ABattleSetsTheSixteenStartUpColoursAndWhiteWhereNoPartIsCopied()
@@ -163,7 +163,7 @@ public sealed class ScreenDrawingLeadsTests
         }
     }
 
-    // orig: root 0000:0012..0x0033: menu_bar_run sets the card window's font to 1 and runs the hot keys with it (root 0000:0CAA); its items
+    // orig: root 0000:0012..0x0033: menu-bar-loop sets the card window's font to 1 and runs the hot keys with it (root 0000:0CAA); its items
     // run with the font put back (root 0000:014C..0x0158): Alt-Q's box is font 1 (rows 93..106), the Game menu's Quit to DOS font 3 (92..106);
     // the battle's Alt-S "Saving Game" box is the same box (vis10 session D-b797f7: local/batch/batpal)
     [Theory]
@@ -202,7 +202,7 @@ public sealed class ScreenDrawingLeadsTests
         Assert.Equal(3, ui.CardWindowFont);
     }
 
-    // orig: root 0000:014C..0x0158: menu_bar_run puts the card window's font back (3) before it calls the chosen item: the Game menu's
+    // orig: root 0000:014C..0x0158: menu-bar-loop puts the card window's font back (3) before it calls the chosen item: the Game menu's
     // Quit to DOS, chosen through the bar (F10, Down to the last item, Enter), asks in font 3 (rows 92..106; font 1 would be 93)
     [Fact]
     public void AMenuBarChoiceThroughTheBarAsksInFontThree()
@@ -285,7 +285,7 @@ public sealed class ScreenDrawingLeadsTests
     }
 
     // The real paths of a game: F1 on the first card opens the sheet, where Alt-Q (a hot key) asks in font 1 and the menu bar's Quit to DOS (F10, Down to the last item, Enter) asks
-    // in font 3 (AUDIT b25 F1: was 1); Alt-Q on the card asks in font 1 (a hot key); Alt-L asks in font 3 (load_game R037+0x8B76 sets 3 first)
+    // in font 3 (AUDIT b25 F1: was 1); Alt-Q on the card asks in font 1 (a hot key); Alt-L asks in font 3 (game-load-entry R037+0x8B76 sets 3 first)
     [Fact]
     public void TheSheetsMenuBarTheHotKeysAndAltLAskInTheirFonts()
     {
@@ -360,7 +360,7 @@ public sealed class ScreenDrawingLeadsTests
         Assert.Equal([(Keys.AltP, 1), (Keys.AltQ, 3)], seen);
     }
 
-    // orig: R067+0x1ECE / R072+0x1494 fill card_name and pic_buf without card_load (the previous card stays on the screen); with
+    // orig: R067+0x1ECE / R072+0x1494 fill card-title and image-buffer without card-run (the previous card stays on the screen); with
     // GameOptions.CleanDrawing the card is loaded and drawn at once
     [Theory]
     [InlineData(false)]

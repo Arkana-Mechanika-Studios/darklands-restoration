@@ -23,7 +23,7 @@ public sealed class ClothmakersStreet_Cloth00 : Card
     /// <summary>Politics of a city: the quest events of tag 2 and the facts (kind 0x1C) of group 2 at the location.</summary>
     private const int Politics = 2;
 
-    /// <summary>The guild's own faction bit in the side table (loc_side_get/set).</summary>
+    /// <summary>The guild's own faction bit in the side table (place-side-read/set).</summary>
     private const int GuildBit = 0x40;
 
     // the meaning of the fact numbers is a guess from how the cards use them:
@@ -35,8 +35,8 @@ public sealed class ClothmakersStreet_Cloth00 : Card
 
     // orig: R053+0x0EC4 (1924:0004) matched (entry: option states from the city's politics, the items and the menu loop)
     // orig: R053+0x1DAE (1924:0EEE) matched (init helper: enables all 20 option lines, installs the "screwed up." default and the pop-up handlers; the entry then fills lines 0..8, so lines 9..19 stay enabled without a text line)
-    // DORMANT: R053+0x1E50 (1924:0F90): the "screwed up." default hint for opt_fn[0..19]; lines 0..8 have their own hints and lines 9..19 have no text line.
-    // DORMANT: R053+0x1F48 (1924:1088), R053+0x1FD2 (1924:1112), R053+0x205C (1924:119C), R053+0x20E6 (1924:1226): saint pop-up handlers (chance text of the chosen saint); card_saints stay empty (-1) and no option uses saints.
+    // DORMANT: R053+0x1E50 (1924:0F90): the "screwed up." default hint for card-option-handler[0..19]; lines 0..8 have their own hints and lines 9..19 have no text line.
+    // DORMANT: R053+0x1F48 (1924:1088), R053+0x1FD2 (1924:1112), R053+0x205C (1924:119C), R053+0x20E6 (1924:1226): saint pop-up handlers (chance text of the chosen saint); card-saint-lines stay empty (-1) and no option uses saints.
     public override int Run(CardContext c)
     {
         Show(c, Picture);

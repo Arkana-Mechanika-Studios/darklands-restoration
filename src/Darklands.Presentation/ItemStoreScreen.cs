@@ -18,7 +18,7 @@ namespace Darklands.Presentation;
 // C: the per-member arrays are module statics (DGROUP 37BA..37F5) initialised once and never reset: list in use, tops and cursors persist across visits and places.
 public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScreens screens)
 {
-    // C: menu rows give G, P, C, Esc; row 4 (below Leave) gives no key. The L key itself is not handled by cache_key (only Esc leaves).
+    // C: menu rows give G, P, C, Esc; row 4 (below Leave) gives no key. The L key itself is not handled by stash-screen-keys (only Esc leaves).
     private static readonly int[] MenuKeys = [0x2247, 0x1950, 0x2E43, Keys.Escape];
 
     private const string GetLine = "\u008C G\u00FFet an item from cache";
@@ -42,10 +42,10 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     private Pack PackOf(int member) => Party.Slot(member).Pack;
 
     /// <summary>Runs the screen at the current place until the player leaves; the store is written back.</summary>
-    // orig: cache_screen R035+0x0000 (1462:0000) matched; main loop (its argument DS:89F8 is unused)
+    // orig: stash-screen R035+0x0000 (1462:0000) matched; main loop (its argument DS:89F8 is unused)
     public void Run()
     {
-        // DIVERGENCE: in the open country the original indexes locations[-1] (cur_loc −1); the screen does not open here.
+        // DIVERGENCE: in the open country the original indexes locations[-1] (location-now −1); the screen does not open here.
         if (state.Here is not { } place)
         {
             return;
@@ -53,7 +53,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         var leaderBefore = Party.LeaderIndex;
         _member = Party.LeaderIndex;
         DrawScreen(place);
-        // orig: R035+0x0000 `while (mouse_buttons & 1);` before the loop (the click that opened the screen is waited out)
+        // orig: R035+0x0000 `while (mouse-button-state & 1);` before the loop (the click that opened the screen is waited out)
         page.WaitForRelease();
         var lit = -1;
         try
@@ -74,7 +74,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         }
         finally
         {
-            // orig: cache_close R035+0x04BC (1462:04BC) matched: save (or forget an empty store) and leader = DS:89EE; fonts are host state (not modelled).
+            // orig: stash-screen-close R035+0x04BC (1462:04BC) matched: save (or forget an empty store) and leader = DS:89EE; fonts are host state (not modelled).
             state.ItemStores.Close(place, _store, state.Behaviour, state.Locations);
             Party.LeaderIndex = leaderBefore;
         }
@@ -132,7 +132,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
             key = Keys.Down;
             _usingStore[Member] = true;
         }
-        // C: the original loops `row = mouse_y / 0x28; while (row != -1) { row = member_sheet_vec(row); panel redrawn }`; member_sheet returns -1 on every
+        // C: the original loops `row = pointer-row / 0x28; while (row != -1) { row = member-sheet-overlay-entry(row); panel redrawn }`; member-sheet-screen returns -1 on every
         //   path (its only two returns give -1), the member shown changing inside the sheet: the loop runs once, as here, and IGameScreens.CharacterSheet
         //   needs no result.
         if (page.HeldRow(BuySellPage.MemberAt) is { } member)
@@ -144,10 +144,10 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         return key;
     }
 
-    // orig: cache_key R035+0x0A46 (1462:0A46) matched; every case kept (Alt-Q, P/p, D/d, G/g, C/c, Up, Left/Right, Down); other keys do nothing
+    // orig: stash-screen-keys R035+0x0A46 (1462:0A46) matched; every case kept (Alt-Q, P/p, D/d, G/g, C/c, Up, Left/Right, Down); other keys do nothing
     private void HandleKey(int key)
     {
-        // C: case 0x1000 (Alt-Q): cache_close then quit_to_dos (the finally block writes the store back).
+        // C: case 0x1000 (Alt-Q): stash-screen-close then exit-to-system (the finally block writes the store back).
         // DORMANT: with a GameUi.GameKey hook installed, HotKeys takes Alt-Q first; reached only without the hook.
         if (key == Keys.AltQ)
         {
@@ -183,7 +183,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         }
     }
 
-    // orig: cache_key R035+0x0A46 matched, case P; the rule is Storing.Put
+    // orig: stash-screen-keys R035+0x0A46 matched, case P; the rule is Storing.Put
     private void Put()
     {
         var index = _packRow[Member] + _packTop[Member];
@@ -216,7 +216,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     }
 
     /// <summary>D: one item of the <em>leader's</em> stack at the member's lit row is thrown away.</summary>
-    // orig: cache_key R035+0x0A46 matched, case D (0x2044/0x2064): item_take_one_vec(leader, row + top)
+    // orig: stash-screen-keys R035+0x0A46 matched, case D (0x2044/0x2064): item-take-single-overlay-entry(leader, row + top)
     private void DropFromLeader()
     {
         var index = _packRow[Member] + _packTop[Member];
@@ -230,7 +230,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         page.Light(0x50, _packRow[Member] * 8 + 0x1B, 0x5F);
     }
 
-    // orig: cache_key R035+0x0A46 matched, case G; the rule is Storing.Get
+    // orig: stash-screen-keys R035+0x0A46 matched, case G; the rule is Storing.Get
     private void Get()
     {
         var index = _storeTop[Member] + _storeRow[Member];
@@ -257,7 +257,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     }
 
     /// <summary>C: the next present member (counting up to the party size).</summary>
-    // orig: cache_key R035+0x0A46 matched, case C (0x2E43/0x2E63)
+    // orig: stash-screen-keys R035+0x0A46 matched, case C (0x2E43/0x2E63)
     private void ShowTheNextMember()
     {
         page.DrawParty(Party);
@@ -266,14 +266,14 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         {
             _member = (_member + 1) % size;
         }
-        // C: (DS:89F2 + 1) % party_size (not % 5 as on the barter screen).
+        // C: (DS:89F2 + 1) % party-headcount (not % 5 as on the barter screen).
         while (Party.PresentMember(_member) is null);
         Redraw();
         // C: copied from the barter screen: the highlight lands on the Leave line (0x33), not on "Cache another person's items" (0x2B).
         page.Recolor(0x50, 0x33, 0xC8, 9, BuySellPage.Ink, BuySellPage.Lit);
     }
 
-    // orig: cache_key R035+0x0A46 matched, case 0x4800
+    // orig: stash-screen-keys R035+0x0A46 matched, case 0x4800
     private void MoveUp()
     {
         if (_usingStore[Member])
@@ -314,7 +314,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         }
     }
 
-    // orig: cache_key R035+0x0A46 matched, case 0x5000 (both cursors are kept inside their lists)
+    // orig: stash-screen-keys R035+0x0A46 matched, case 0x5000 (both cursors are kept inside their lists)
     private void MoveDown()
     {
         if (_usingStore[Member])
@@ -363,7 +363,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         }
     }
 
-    // orig: cache_key R035+0x0A46 matched, cases 0x4B00/0x4D00 (no switch to an empty store)
+    // orig: stash-screen-keys R035+0x0A46 matched, cases 0x4B00/0x4D00 (no switch to an empty store)
     private void SwitchLists()
     {
         if (_usingStore[Member])
@@ -399,7 +399,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     }
 
     /// <summary>The first drawing; the store is read here.</summary>
-    // orig: draw_cache_screen R035+0x0510 (1462:0510) matched; reads the store (cache_load)
+    // orig: stash-screen-paint R035+0x0510 (1462:0510) matched; reads the store (stash-load)
     private void DrawScreen(Core.World.Location place)
     {
         page.DrawBackground(Party);
@@ -425,7 +425,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     }
 
     /// <summary>The whole page again (another member, or after a character sheet).</summary>
-    // orig: redraw_cache_screen R035+0x0782 (1462:0782) matched
+    // orig: stash-screen-repaint R035+0x0782 (1462:0782) matched
     private void Redraw()
     {
         page.DrawBackground(Party);
@@ -463,7 +463,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     }
 
     /// <summary>Four of the member's stacks (here the quality reads "q", not "-Qual").</summary>
-    // orig: draw_member_items R035+0x11AC (1462:11AC) matched (its lines say "q", the others "-Qual")
+    // orig: member-items-paint R035+0x11AC (1462:11AC) matched (its lines say "q", the others "-Qual")
     private void DrawPackItems()
     {
         page.Restore(0x72, 0x93, 0xB6, 0x20);
@@ -474,7 +474,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         }
     }
 
-    // orig: draw_cache_items R035+0x1292 (1462:1292) matched
+    // orig: stash-items-paint R035+0x1292 (1462:1292) matched
     private void DrawStoreItems()
     {
         page.Restore(0x52, 0x55, 0xB6, 0x20);

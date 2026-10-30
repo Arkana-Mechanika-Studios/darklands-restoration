@@ -47,7 +47,7 @@ public sealed class HermitByTheFire : Card
             new MenuLine(_ => HearOfASaint(c, 2), NoRiskForAll),
             // orig: R114+0x0842 (1838:0842) matched; hint R114+0x08FE
             new MenuLine(_ => HearOfASaint(c, 3), NoRiskForAll),
-            // orig: R114+0x0936 (1838:0936) matched; hint R114+0x093E (leaves without clearing cur_loc)
+            // orig: R114+0x0936 (1838:0936) matched; hint R114+0x093E (leaves without clearing location-now)
             new MenuLine(_ => c.Next = CardContext.MapCard, NoRiskForAll),
             // orig: R114+0x0976 (1838:0976) matched (empty); hint R114+0x0978 (empty)
             // DORMANT: line 9 is never offered. UNCERTAIN: its hint returns AX/DX; a neutral hint is used.
@@ -60,7 +60,7 @@ public sealed class HermitByTheFire : Card
     /// The hermit's name: a random personal name in $Named2, and its first word (at most nine
     /// letters) in $Named1.
     /// </summary>
-    // C: random_name(time(0), 0, 1), then _fstrncpy(named[0], named[1], clamp(0, 9, strcspn(named[1], " "))) and a terminator.
+    // C: made-up-name(time(0), 0, 1), then _fstrncpy(named[0], named[1], clamp(0, 9, strcspn(named[1], " "))) and a terminator.
     // DIVERGENCE: the seed is the wall clock (time(0)); the game's injected clock seed is used, 0 without one.
     private static void NameTheHermit(CardContext c)
     {
@@ -125,7 +125,7 @@ public sealed class HermitByTheFire : Card
     /// <summary>A random saint (0..135): new to the member, it is learnt; known already, only good stories.</summary>
     // orig: R114+0x0566 (1838:0566) matched (twins 065a, 074e, 0842 for members 1..3); tests: CardSmokeTests
     // C: the member's 20-byte saint bit set at R136+0xE15C + 0x14 × member, bit 0x80 >> (saint % 8) of byte saint / 8.
-    // C: (hours_until(12) + 24) % 25: a day and the hours to noon, folded into 0..24.
+    // C: (hours-remaining-until(12) + 24) % 25: a day and the hours to noon, folded into 0..24.
     private static void HearOfASaint(CardContext c, int member)
     {
         var saint = c.Random(0x88);

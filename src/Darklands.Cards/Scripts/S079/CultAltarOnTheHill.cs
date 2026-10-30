@@ -79,7 +79,7 @@ public sealed class CultAltarOnTheHill : Card
     // orig: R079+0x187C (19A0:01FC) matched; tests: CardSmokeTests
     private static void FightTheDemon(CardContext c)
     {
-        // C: arguments are evaluated right to left: rand_mod(3) + 1 (third group), rand_mod(5), then the first group's rand_mod(3).
+        // C: arguments are evaluated right to left: roll-below(3) + 1 (third group), roll-below(5), then the first group's roll-below(3).
         var third = c.Random(3) + 1;
         var second = c.Random(5) + 4;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 1;
@@ -179,7 +179,7 @@ public sealed class CultAltarOnTheHill : Card
 
     // orig: R079+0x1BCC (19A0:054C) matched; R079+0x1D4A (19A0:06CA) matched; tests: CardSmokeTests
     // C: the chance is the handler's the loop calls: the option line's -1 (member and slot whatever the pop-up left), the item box's
-    // C: for a click there, or for Enter there opt_fn[1], the box's handler for slot 1 (CardMenu.Run).
+    // C: for a click there, or for Enter there card-option-handler[1], the box's handler for slot 1 (CardMenu.Run).
     private static void BurnOutTheTaint(CardContext c, int chance)
     {
         c.PassHours(1);

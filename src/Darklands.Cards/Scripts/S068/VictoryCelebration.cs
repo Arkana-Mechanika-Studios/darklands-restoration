@@ -20,7 +20,7 @@ public sealed class VictoryCelebration : Card
     {
         Show(c, 0);
         c.Next = Number;
-        // C: opt_flag_6..9 are not set by this card (stale from the previous one); their actions are
+        // C: card-option-flag-6..9 are not set by this card (stale from the previous one); their actions are
         // empty. They are offered hidden here (DORMANT lines below).
         var menu = Menu(c, 3);
         menu.Enable(0, 1, 2, 3, 4, 5);
@@ -64,7 +64,7 @@ public sealed class VictoryCelebration : Card
     }
 
     // C: the item records are built by hand: the definition's type and weight bytes, the quality
-    // as a char (the low byte), count 1, then add_item_rec; AddItemWithQuality builds the same record.
+    // as a char (the low byte), count 1, then give-item-record-form; AddItemWithQuality builds the same record.
 
     /// <summary>A horse (0x45) for every member.</summary>
     // orig: R068+0x02EC (hint 038c)

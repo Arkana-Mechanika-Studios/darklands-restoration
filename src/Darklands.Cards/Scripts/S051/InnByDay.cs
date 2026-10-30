@@ -29,13 +29,13 @@ public sealed class InnByDay : Card
 
     public override int Run(CardContext c)
     {
-        // C: the music piece is drawn: rand_mod(2) ? 9 : 10.
+        // C: the music piece is drawn: roll-below(2) ? 9 : 10.
         c.PlayMusic(c.Random(2) != 0 ? 9 : 0x0A);
         var picture = Picture;
         Show(c, picture);
         var states = new[] { OptionState.Enabled, OptionState.Enabled, OptionState.Enabled, OptionState.Enabled, OptionState.Enabled,
             OptionState.Hidden, OptionState.Enabled, OptionState.Enabled, OptionState.Enabled, OptionState.Hidden };
-        // C: loc_query 39: something is stored here.
+        // C: place-query 39: something is stored here.
         if (c.HereQuery(0x27) != 0)
         {
             states[5] = OptionState.Enabled;
@@ -111,7 +111,7 @@ public sealed class InnByDay : Card
             // orig: R051+0x11F2 (18C9:08E2) + R051+0x11D4 (18C9:08C4) R051 seg 18C9 matched
             new MenuLine(() => { c.PassHours(1); c.Next = c.IsDaylight ? SideStreet : SideStreetAtNight; }, OptionHint.Saying(SuccessAssured)),
             // orig: R051+0x1248 (18C9:0938) + R051+0x122A (18C9:091A) R051 seg 18C9 matched
-            // DORMANT: opt_flag_9 is 0: a second way to the side streets is never offered.
+            // DORMANT: card-option-flag-9 is 0: a second way to the side streets is never offered.
             new MenuLine(() => { c.PassHours(1); c.Next = c.IsDaylight ? SideStreet : SideStreetAtNight; }, OptionHint.Saying(SuccessAssured)));
     }
 
@@ -126,7 +126,7 @@ public sealed class InnByDay : Card
     /// </summary>
     private static void SitInTheCommonRoom(CardContext c, int chance)
     {
-        // C: all five slots are walked (the party record's end), not only party_size.
+        // C: all five slots are walked (the party record's end), not only party-headcount.
         for (var i = 0; i < 5; i++)
         {
             if (c.Status(i) != CharacterStatus.Empty)

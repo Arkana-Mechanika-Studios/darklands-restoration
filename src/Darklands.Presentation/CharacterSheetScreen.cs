@@ -17,10 +17,10 @@ namespace Darklands.Presentation;
 /// 1..5 give (Shift: the stack); dragging moves, readies or gives an item. A click on another
 /// member in the panel shows that member; on the same member, or Esc, leaves.
 /// </summary>
-// orig: member_sheet R031+0x0124 (1462:0124) draft (the byte match: 1 compare-order line; an earlier port's check matched the
+// orig: member-sheet-screen R031+0x0124 (1462:0124) draft (the byte match: 1 compare-order line; an earlier port's check matched the
 //   bytes with an alias of `who` for the equality guard, the logic unchanged); tests: none (visual, headless)
-// DORMANT: R031+0x0000 (inventory_leave) opens the sheet from a state without the world data loaded and writes LOCS.TMP/EVENTS.TMP afterwards; nothing in this game opens the sheet that way.
-// DIVERGENCE: the pointer does not change to the hand pictures (handicon, handicn2) over lists; the menu bar (menu_bar_run) comes with GameUi.Poll (MenuBar), its Alt keys through MenuBarKey.
+// DORMANT: R031+0x0000 (pack-screen-exit) opens the sheet from a state without the world data loaded and writes LOCS.TMP/EVENTS.TMP afterwards; nothing in this game opens the sheet that way.
+// DIVERGENCE: the pointer does not change to the hand pictures (handicon, handicn2) over lists; the menu bar (menu-bar-loop) comes with GameUi.Poll (MenuBar), its Alt keys through MenuBarKey.
 // orig: the combat branch of R031+0x0124 (DS:907A == 1 and the member on floor 0x9D: thunk 09C0:1D51 = R022+0x04E4) for a portrait
 //   click, F1..F5 and Enter on a member box: CannotView (BattleScreens.CannotViewMember); tests: SheetCannotViewTests
 public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formula> formulas, IReadOnlyList<string> saintNames,
@@ -101,7 +101,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     private readonly int[,] _top = new int[19, Party.MaxMembers];
     private readonly int[,] _selected = new int[19, Party.MaxMembers];
 
-    /// <summary>The back page (the game's back_win) the sheet restores rectangles from.</summary>
+    /// <summary>The back page (the game's backdrop-window) the sheet restores rectangles from.</summary>
     private readonly Screen _backScreen = new();
 
     private GameState _s = null!;
@@ -137,18 +137,18 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     /// <summary>Sets the Save Game and Load Saved Game items of the hot keys and the menu bar (1 on, 2 off).</summary>
     public Action<int>? SaveAndLoad { get; set; }
 
-    /// <summary>The game's party_size where the party shown is not the game's party (the character menu: 0); null: the party's members.</summary>
-    // C: the Ctrl-F1..F5 case of the original's key handler tests `slot < party_size` (DS:A67E, signed) before the status
+    /// <summary>The game's party-headcount where the party shown is not the game's party (the character menu: 0); null: the party's members.</summary>
+    // C: the Ctrl-F1..F5 case of the original's key handler tests `slot < party-headcount` (DS:A67E, signed) before the status
     public Func<int>? PartySize { get; set; }
 
-    // C: member_sheet sets DS:9920 = DS:9934 = 2 once the member is there (R031+0x0144) (no Save Game, no Load Saved Game while the sheet is up); R031+0x08F6
+    // C: member-sheet-screen sets DS:9920 = DS:9934 = 2 once the member is there (R031+0x0144) (no Save Game, no Load Saved Game while the sheet is up); R031+0x08F6
     //   on leaving (Esc, the member's own portrait or F key) sets both to 1, whatever they were before (a sheet opened from a stay leaves saving on); the return on an empty
     //   member box skips it
     public void Show(GameState state, int who)
     {
         _s = state;
         _who = who;
-        // orig: member_sheet's guard: status 0 or 5 leaves at once
+        // orig: member-sheet-screen's guard: status 0 or 5 leaves at once
         if (Member.Status is CharacterStatus.Empty or CharacterStatus.Away)
         {
             return;
@@ -162,7 +162,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         Outline(_cursor, CursorColor);
         // orig: R031+0x018C the button waited out after drawing
         ScreenDrawing.WaitForRelease(ui);
-        // C: the screen below keeps no GameUi.Redraw while the sheet is up: the party information sets party_icons_dirty for the sheet's own test
+        // C: the screen below keeps no GameUi.Redraw while the sheet is up: the party information sets party-icons-stale for the sheet's own test
         var below = ui.Redraw;
         ui.Redraw = null;
         try
@@ -199,7 +199,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         }
     }
 
-    /// <summary>party_icons_dirty in the sheet's loop: the open box closed and the sheet drawn again, the cursor frame not.</summary>
+    /// <summary>party-icons-stale in the sheet's loop: the open box closed and the sheet drawn again, the cursor frame not.</summary>
     // orig: R031+0x06D2: if DS:9C46 { DS:9C46 = 0; the panel (root 0000:1588 / 0000:1716 with 0x100), R031+0x2518(member, 0xB), DS:867E = 0, the saved panel
     //   area DS:867A freed (0 after), R031+0x0A82(member) } (no R031+0x1D44: the cursor frame comes back with the next move)
     private void RedrawAfterPartyInformation()
@@ -221,7 +221,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             }
             else if (_open && b.IsList && b.PanelX <= x && b.PanelW + b.PanelX >= x && b.PanelY <= y && b.PanelY + 9 >= y)
             {
-                // orig: the scroll's up arrow: `while (mouse_buttons & 1) { step; R030+0x3096(200); }` (R031+0x0286, R031+0x036A): the
+                // orig: the scroll's up arrow: `while (mouse-button-state & 1) { step; R030+0x3096(200); }` (R031+0x0286, R031+0x036A): the
                 // button is tested before each step, and the 200 ms wait follows every step, the last one too
                 while (ui.Mouse.Left)
                 {
@@ -535,7 +535,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 return;
             case 'p' when _cursor == PackBox && _open:
                 // C: R031+0x1B2C: as for A and U no test of the pack's count: a line past the end drinks the entry left there (the count of the
-                // pack, a signed char, goes down all the same: item_delete; -1 from an empty pack), and the list count DS:E7A4 follows it signed.
+                // pack, a signed char, goes down all the same: item-erase; -1 from an empty pack), and the list count DS:E7A4 follows it signed.
                 if (!PotionEffects.CanDrink(_s, Member.Pack[Index].Code))
                 {
                     return;
@@ -589,7 +589,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             //   per line), 0 (BSS, read so at start-up) until a battle lists 19 or more Throw lines for a member, then the low byte of a
             //   potion-name pointer (DS:114A / DS:114E[]: 0xB0..0x14, never 0 or 5); while it is 0 the original returns as here. After such a
             //   battle the give goes on when DS:9C53, the last sub-menu's text column (MenuBar), is below 0x40 as a signed byte:
-            //   give_one / give_stack(who, −1) add the item to the leader, member 0 (add_item_rec's −1, R031+0x4850), and take it from the
+            //   hand-over-one / hand-over-stack(who, −1) add the item to the leader, member 0 (give-item-record-form's −1, R031+0x4850), and take it from the
             //   member even when member 0's pack is full (the item is lost). That history (a Throw list of 19 lines, the menu bar's
             //   geometry) is the same not-modelled UI memory as DS:9C53 elsewhere (SaintBook, TacticalBattle.Dungeon): not reproduced.
             if (to < 0)
@@ -603,12 +603,12 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             }
             if (ui.ShiftHeld)
             {
-                // orig: R031+0x48CC (give_stack) R031+0x48CC (18E7:007C) via PackRules.GiveStack
+                // orig: R031+0x48CC (hand-over-stack) R031+0x48CC (18E7:007C) via PackRules.GiveStack
                 PackRules.GiveStack(_s, _who, (key & 0xF) - 1, Index);
             }
             else
             {
-                // orig: R031+0x4850 (give_one) R031+0x4850 (18E7:0000) via PackRules.GiveOne
+                // orig: R031+0x4850 (hand-over-one) R031+0x4850 (18E7:0000) via PackRules.GiveOne
                 PackRules.GiveOne(_s, _who, (key & 0xF) - 1, Index);
             }
             RedrawBodyUnderPanel();
@@ -658,7 +658,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     var to = Math.Max(0, (my - b.PanelY - k) / 8);
                     if (Member.Pack.Count > to)
                     {
-                        // orig: R031+0x5922 (item_move) R031+0x5922 (18E7:10D2) via PackRules.Move
+                        // orig: R031+0x5922 (item-relocate) R031+0x5922 (18E7:10D2) via PackRules.Move
                         PackRules.Move(_s, _who, _top[k, _who] + (y - b.PanelY - k) / 8, _top[k, _who] + to);
                         DrawListPanel(k);
                     }
@@ -667,7 +667,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 {
                     if (k == FormulaeBox)
                     {
-                        // orig: alc_view_vec → R033+0x16FA (alc_view), formula from R031+0x42AC
+                        // orig: alchemy-screen-overlay-entry → R033+0x16FA (alchemy-screen-body), formula from R031+0x42AC
                         alchemy.ShowFormula(_s, _who, NthFormula(index));
                     }
                     else
@@ -847,7 +847,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         var b = Boxes[k];
         if (color == 0xFF)
         {
-            // DIVERGENCE: the original redraws only panel row k − 12 (party_panel_frames(k − 12)); here the whole panel.
+            // DIVERGENCE: the original redraws only panel row k − 12 (party-panel-frame-set(k − 12)); here the whole panel.
             DrawPanel();
             return;
         }
@@ -1082,7 +1082,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 string[] none = ["No Weapon", "No Vitals Armor", "No Limb Armor", "No Shield", "No Missile Weapon"];
                 for (var slot = 0; slot < 5; slot++)
                 {
-                    // C: the original indexes the item list with equipped_item's result, −1 included, when the type is set but no stack matches.
+                    // C: the original indexes the item list with worn-item's result, −1 included, when the type is set but no stack matches.
                     var code = Inventory.EquippedType(_s, _who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_s, _who, (EquipmentSlot)slot) : -1;
                     if (code != -1)
                     {

@@ -8,8 +8,8 @@ namespace Darklands.Oracle.Tests;
 
 /// <summary>
 /// The event table's work file around a battle against the original program (Corpus/eventsfile.json,
-/// tools/oracle/build_eventsfile_corpus.py): cards_shutdown writes the events in use to EVENTS.TMP in slot
-/// order and empties every slot (EventLog.Shutdown); world_load reads the file's n records back into slots
+/// tools/oracle/build_eventsfile_corpus.py): cards-teardown writes the events in use to EVENTS.TMP in slot
+/// order and empties every slot (EventLog.Shutdown); world-read reads the file's n records back into slots
 /// 0..n−1 and leaves slots n and up as they are (EventLog.Reload).
 /// </summary>
 public sealed class EventsFileOracleTests
@@ -19,7 +19,7 @@ public sealed class EventsFileOracleTests
     [Fact]
     public void ShutdownWritesAndEmptiesWhatTheOriginalDoes()
     {
-        var cases = Data.Value.Cases("cards_shutdown");
+        var cases = Data.Value.Cases("R043+0x054E");
         Assert.NotEmpty(cases);
         foreach (var c in cases)
         {
@@ -38,7 +38,7 @@ public sealed class EventsFileOracleTests
     [Fact]
     public void ReloadReadsBackWhatTheOriginalReadsBack()
     {
-        var cases = Data.Value.Cases("world_load");
+        var cases = Data.Value.Cases("R043+0x0100");
         Assert.NotEmpty(cases);
         foreach (var c in cases)
         {

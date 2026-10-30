@@ -7,7 +7,7 @@ namespace Darklands.Presentation.Battles;
 /// The combatants' animation files for the battle rules (header values, step tables, HITSEQ
 /// rows) and for drawing (the frames, recoloured for party members).
 /// </summary>
-// orig: sprite_file_load R014+0x3D2C (0E76:3D2C) draft (spec E §1.3); the party recolouring
+// orig: sprite-file-read R014+0x3D2C (0E76:3D2C) draft (spec E §1.3); the party recolouring
 // R014+0x1060A (1EC9:00DA) draft (0xEB..0xF2 → 80 + 8·slot)
 public sealed class AnimationLibrary(BattleAssets assets) : IAnimationLibrary
 {

@@ -86,11 +86,11 @@ public sealed class Character
     public char ShieldLetter { get; set; } = 'A';
 
     /// <summary>The figure the member is drawn with (pics\<code>small.pic, the <code>C.CAT sprites): "F01", "F60", "A00", "C00".</summary>
-    // orig: member_shield[slot] (DS:A668, 4 bytes per party slot); saved with the party block of charactr.tmp
+    // orig: member-shield-picture[slot] (DS:A668, 4 bytes per party slot); saved with the party block of charactr.tmp
     public string Image { get; set; } = "F01";
 
     /// <summary>The figure's own colours: 8 VGA triples (0..63) for colours 235..242.</summary>
-    // orig: member_palette = R136+0x33FC[slot] (24 bytes)
+    // orig: member-colours = R136+0x33FC[slot] (24 bytes)
     public byte[] ImagePalette { get; set; } = new byte[24];
 
     public int[] Attributes { get; } = new int[AttributeCount];
@@ -131,7 +131,7 @@ public sealed class Character
 
     /// <summary>Total weight of the equipped items.</summary>
     // orig: party DS:9C69
-    // C: record byte +0x35 is a signed char (member_fatigue cbw): values above 127 read back negative.
+    // C: record byte +0x35 is a signed char (member-tiredness cbw): values above 127 read back negative.
     public int Encumbrance { get; set; }
 
     /// <summary>Weapon potions in effect (record +0x34): high nibble the damage bonus, low nibble the penetration bonus.</summary>
@@ -164,14 +164,14 @@ public sealed class Character
     /// Where the character was left (the record's first word: the location when the character
     /// was made or last left the party); the inn's roster lists the characters left there.
     /// </summary>
-    // orig: struct chr +0x00 (R037 seg 1462): R037+0x38AA stores cur_loc for a new character, party_remove R037+0x3B58 for one who leaves
+    // orig: struct chr +0x00 (R037 seg 1462): R037+0x38AA stores location-now for a new character, party-leave R037+0x3B58 for one who leaves
     public int RosterLocation { get; set; }
 
     /// <summary>
     /// The 0x22A-byte record this character was read from (CHARACTR.TMP / a saved game), kept by
     /// the persistence layer so that the bytes this model does not name are written back as
     /// they were; for a hireling, the member record (at least <see cref="MemberRecordSize"/>
-    /// bytes) with what <c>add_member</c> stores there. What the model names is written over
+    /// bytes) with what <c>join-party-member</c> stores there. What the model names is written over
     /// it wherever it is used; the rules never read it. Null for characters made by this program.
     /// </summary>
     public byte[]? OriginalRecord { get; set; }

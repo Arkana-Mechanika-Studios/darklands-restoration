@@ -21,7 +21,7 @@ namespace Darklands.Cards.Scripts;
 //     R128+0x1270, R128+0x1282, R128+0x12B0,
 //     R128+0x1352
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
 public sealed class CollectorsCommission : Card
 {
@@ -29,7 +29,7 @@ public sealed class CollectorsCommission : Card
 
     private const int Picture = 356;
 
-    /// <summary>The name kinds (name_to_slot kind 8) of the four kinds of owner, by the quest's first data word.</summary>
+    /// <summary>The name kinds (label-to-slot kind 8) of the four kinds of owner, by the quest's first data word.</summary>
     private static readonly int[] OwnerNames = [0, 6, 8, 7];
 
     public override int Run(CardContext c)
@@ -45,10 +45,10 @@ public sealed class CollectorsCommission : Card
         c.Variables.Location2 = c.NearestCity(site?.X ?? 0, site?.Y ?? 0);
         var siteKind = site?.Icon ?? -1;
         var owner = c.Events[quest]?.Data1 ?? 0;
-        // C: party_seed + cur_loc + 0x11C1.. is 16-bit int arithmetic; random_name takes it as it is.
+        // C: party-random-seed + location-now + 0x11C1.. is 16-bit int arithmetic; made-up-name takes it as it is.
         var nameSeed = c.State.Party.Seed + c.Here;
 
-        // card_text(k, 2) below: frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
+        // card-text-block(k, 2) below: frame mode 2 drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike).
         switch (c.EventType(quest))
         {
             case 0:
@@ -129,7 +129,7 @@ public sealed class CollectorsCommission : Card
         return c.State.SavedCard2;
     }
 
-    // DIVERGENCE: the original reads locations[var_loc] (and the event record) without a check; a missing one is
+    // DIVERGENCE: the original reads locations[text-slot-place] (and the event record) without a check; a missing one is
     //   treated here as no place (site kind −1, map position 0,0) and an empty slot as owner 0.
     /// <summary>The original reads the location record without a check; a missing one is treated as no place.</summary>
     private static Core.World.Location? PlaceAt(CardContext c, int loc) =>
@@ -137,7 +137,7 @@ public sealed class CollectorsCommission : Card
 
     /// <summary>The owner's title into $NamedOneName/$NamedTwoName (a negative remainder names nobody, as in the original).</summary>
     // C: +0x2A % 4 is a signed remainder (negative for a negative word), and then no case matches: nobody is named.
-    // C: name_to_slot kind 8 (titles) is read from the EXE's table (PersonalNames, NameToSlot).
+    // C: label-to-slot kind 8 (titles) is read from the EXE's table (PersonalNames, NameToSlot).
     private static void NameTheOwner(CardContext c, int kind, int slot)
     {
         if (kind is >= 0 and < 4)

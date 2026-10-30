@@ -7,8 +7,8 @@ namespace Darklands.Cards.Scripts;
 /// next Mass (waiting for it), ask the boy when it will be, seek sanctuary, or leave.
 /// </summary>
 // orig: R057+0x09FE (18D7:000E) matched; tests: CardSmokeTests
-// orig: R057+0x0F02 (18D7:0512) matched (init helper: enables all 20 option lines and empties card_items and card_saints; the card uses neither)
-// DORMANT: R057+0x0F3A (18D7:054A) the init helper points opt_fn[0..19] at this "screwed up." default; lines 0..3 get their own handlers and lines 4..19 stay enabled but the MSG has only 4 lines, so it never runs.
+// orig: R057+0x0F02 (18D7:0512) matched (init helper: enables all 20 option lines and empties card-item-lines and card-saint-lines; the card uses neither)
+// DORMANT: R057+0x0F3A (18D7:054A) the init helper points card-option-handler[0..19] at this "screwed up." default; lines 0..3 get their own handlers and lines 4..19 stay enabled but the MSG has only 4 lines, so it never runs.
 public sealed class ChurchAtNight_CityC01 : Card
 {
     public const int CardNumber = 0x35;

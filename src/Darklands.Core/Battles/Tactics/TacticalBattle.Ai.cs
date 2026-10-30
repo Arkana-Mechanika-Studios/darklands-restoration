@@ -25,7 +25,7 @@ public sealed partial class TacticalBattle
     private int _enemyRethinkInterval;
 
     /// <summary>The AI's part of a tick: who reaches whom, following moved targets, and in real combat engaging, fighting back and rethinking.</summary>
-    // orig: ai_tick R014+0xF418 (1DB7:0008) draft (asm-verified per spec D §5.1)
+    // orig: enemy-ai-step R014+0xF418 (1DB7:0008) draft (asm-verified per spec D §5.1)
     private void AiTick()
     {
         if (Paused)
@@ -304,7 +304,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>i goes for t: attacks at once when already there, else walks there with the attack queued.</summary>
-    // orig: ai_set_target R014+0x1003A (1DB7:0C2A) draft (asm-verified per spec D §5.8)
+    // orig: enemy-ai-pick-target R014+0x1003A (1DB7:0C2A) draft (asm-verified per spec D §5.8)
     private void SetTarget(int i, int t)
     {
         var c = Battle[i];
@@ -332,8 +332,8 @@ public sealed partial class TacticalBattle
 
     /// <summary>
     /// A debugging aid for the oracle (no effect in play: <see cref="ClockPhase"/> is null there): a rethink's path search in the
-    /// scheduler is where the original's long passes spend their emulated time (the path costs and the path search of ai_rethink
-    /// R014+0x10232 / ai_set_target R014+0x1003A), and both then read the combat clock DS:07D4 for the re-path time
+    /// scheduler is where the original's long passes spend their emulated time (the path costs and the path search of enemy-ai-replan
+    /// R014+0x10232 / enemy-ai-pick-target R014+0x1003A), and both then read the combat clock DS:07D4 for the re-path time
     /// (R014+0x1031F: clock + 30). The tester measures that time only as the callbacks that came before the melee exchanges
     /// (phase -2), so they are given here, before the clock is read, rather than after the scheduler.
     /// </summary>
@@ -393,8 +393,8 @@ public sealed partial class TacticalBattle
     /// i rethinks its target t: chases it when out of reach; when t is down it answers whoever
     /// hits it, else helps against whoever attacks the most endangered, else takes the nearest.
     /// </summary>
-    // orig: ai_rethink R014+0x10232 (1DB7:0E22) draft (asm-verified per spec D §5.11; the
-    // draft's "target down" test reads the wrong flag byte: the asm tests the corpse-processed flag, cbt_flags[t][1] & 1)
+    // orig: enemy-ai-replan R014+0x10232 (1DB7:0E22) draft (asm-verified per spec D §5.11; the
+    // draft's "target down" test reads the wrong flag byte: the asm tests the corpse-processed flag, fighter-flags[t][1] & 1)
     private void Rethink(int i, int t)
     {
         if (Battle.DragonFight != 0 && i == 5)
@@ -539,8 +539,8 @@ public sealed partial class TacticalBattle
         _best[i] = (best, i);
     }
 
-    /// <summary>index_of_min_int over row i (13 words): the last minimum.</summary>
-    // orig: index_of_min_int root 0410:02A8 (the tie-break read in the asm: 0410:02B9 jg skips only a greater word, so an equal one replaces the minimum)
+    /// <summary>smallest-int-index over row i (13 words): the last minimum.</summary>
+    // orig: smallest-int-index root 0410:02A8 (the tie-break read in the asm: 0410:02B9 jg skips only a greater word, so an equal one replaces the minimum)
     private int IndexOfMinimumCost(int i)
     {
         var k = 0;
@@ -554,8 +554,8 @@ public sealed partial class TacticalBattle
         return k;
     }
 
-    /// <summary>index_of_min_byte: the last minimum.</summary>
-    // orig: index_of_min_byte root 0410:01DC (the tie-break read in the asm: 0410:01EC ja skips only a greater byte, so an equal one replaces the minimum)
+    /// <summary>smallest-byte-index: the last minimum.</summary>
+    // orig: smallest-byte-index root 0410:01DC (the tie-break read in the asm: 0410:01EC ja skips only a greater byte, so an equal one replaces the minimum)
     private static int IndexOfMinimum(byte[] values)
     {
         var k = 0;
@@ -572,9 +572,9 @@ public sealed partial class TacticalBattle
     /// <summary>The other side's slots.</summary>
     private static (int Lo, int Hi) Opponents(int i) => i < Combatant.PartySlots ? (Combatant.PartySlots, Combatant.Count) : (0, Combatant.PartySlots);
 
-    /// <summary>distance3: an integer approximation of the distance (all unsigned 16-bit).</summary>
-    // orig: distance3 root 047C:1120 draft (checked: big + small/4, + 3t/16 when t = 2·small − big > 0, − d/64); tests: Oracle:tactics.json
-    // DORMANT: distance3's third argument is a threshold: an approximation below it is replaced by the exact root (047C:1170 jb 1177:
+    /// <summary>three-way-distance: an integer approximation of the distance (all unsigned 16-bit).</summary>
+    // orig: three-way-distance root 047C:1120 draft (checked: big + small/4, + 3t/16 when t = 2·small − big > 0, − d/64); tests: Oracle:tactics.json
+    // DORMANT: three-way-distance's third argument is a threshold: an approximation below it is replaced by the exact root (047C:1170 jb 1177:
     // the squares a·a + b·b and the integer square root of 047C:11B4). All eight callers (R014, R018, R019, R023) pass 0, so the exact
     // path never runs and the threshold is left out here; it would matter only for a caller passing a positive limit.
     public static int Distance(int a, int b)

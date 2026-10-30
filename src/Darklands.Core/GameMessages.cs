@@ -6,7 +6,7 @@ namespace Darklands.Core;
 /// </summary>
 public interface IGameMessages
 {
-    /// <summary>A message box shown for <paramref name="ticks"/> timer ticks, with no key waited for (<c>show_message</c>, root 0000:24BC).</summary>
+    /// <summary>A message box shown for <paramref name="ticks"/> timer ticks, with no key waited for (<c>notice-display</c>, root 0000:24BC).</summary>
     void Show(string text, int ticks = 100);
 
     /// <summary>A note beside a member's portrait; <paramref name="good"/> news is shown bright, bad news red.</summary>

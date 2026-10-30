@@ -38,7 +38,7 @@ public sealed class OptionPopupTests
     [Fact]
     public void TheCardEngineKeepsTheBoxsStatesAsTheBoxShowsThem()
     {
-        // CardContext.PopupStates (what opt_on becomes after a choice in the box, CardMenu.Run) is the box's own state table
+        // CardContext.PopupStates (what card-option-enabled becomes after a choice in the box, CardMenu.Run) is the box's own state table
         if (Setup() is not var (c, painter))
         {
             return;

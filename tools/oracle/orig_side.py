@@ -33,20 +33,20 @@ DRIVER_LOAD, DRIVER_SLOTS = (P(0x047C), 0x07CE), (P(0x047C), 0x08C8)
 MAIN = (P(0x0E76), 0x0022)          # R000+0x0022
 SAVE_RECT = (P(0x047C), 0x04D5)
 EMS_CHECK, MOUSE_INIT = (P(0x05F8), 0x0064), (P(0x047C), 0x11F6)
-MOUSE_X, MOUSE_Y, MOUSE_BUTTONS, MOUSE_PRESSES, MOUSE_SHIFT, MOUSE_ON = 0x6EEC, 0x6EEE, 0x6EF0, 0x6EF2, 0x6EFA, 0x6EFB
+POINTER_COLUMN, POINTER_ROW, MOUSE_BUTTON_STATE, MOUSE_PRESSES, MOUSE_SHIFT, MOUSE_ON = 0x6EEC, 0x6EEE, 0x6EF0, 0x6EF2, 0x6EFA, 0x6EFB
 KEYBOARD_FLAGS = (0x40, 0x17)       # 0040:0017, the BIOS keyboard flags (Shift, Ctrl, Alt held): the BIOS data area
 SHIFT_BITS, CTRL_BIT = 3, 4         # its two Shift bits (shift:on) and its Ctrl bit (ctrl:on)
-COPY_PROTECTION = (P(0x1462), 0x0000)  # R041+0x0000 (thunk 09C0:1FD1)
-COPY_PROTECTION_DRAWS = (4, 20, 7, 7, 6)   # its rand_mod calls, R041+0x0014, 0x0021, 0x002D, 0x0052, 0x007B, before anything else of it
-CHAR_WIDTH, FONT_HEIGHT = (P(0x047C), 0x04E3), (P(0x047C), 0x051B)
+COPY_PROTECTION_CHECK = (P(0x1462), 0x0000)  # R041+0x0000 (thunk 09C0:1FD1)
+COPY_PROTECTION_DRAWS = (4, 20, 7, 7, 6)   # its roll-below calls, R041+0x0014, 0x0021, 0x002D, 0x0052, 0x007B, before anything else of it
+GLYPH_WIDTH, FONT_LINE_HEIGHT = (P(0x047C), 0x04E3), (P(0x047C), 0x051B)
 HOTSPOTS = 0xE96E                   # the card menu's hot spots: count, highlight, width, x, y[20], height[20] (bytes)
 PIC_OPEN, PIC_CLOSE = (P(0x047C), 0x05BC), (P(0x047C), 0x05AE)
 # the graphics driver's memory-picture batch (its entries 18 and 7: begin = one DOS block of the largest size, end = the block cut to
 # what the pictures between used, or freed when none) and its line writer (entry 34, the line kept without its zero ends)
 PIC_BATCH_BEGIN, PIC_BATCH_END, PIC_LINE = (P(0x047C), 0x0545), (P(0x047C), 0x04F8), (P(0x047C), 0x05B5)
-KEY_PRESSED, GET_KEY = (P(0x047C), 0x073D), (P(0x047C), 0x0744)   # driver slots: a key waiting? / the next key (scan << 8 | char)
+KEY_WAITING_TEST, READ_KEY = (P(0x047C), 0x073D), (P(0x047C), 0x0744)   # driver slots: a key waiting? / the next key (scan << 8 | char)
 CARD, HOLDRAND = 0xA772, 0x7B20     # the card being run; the random generator's state (MSC holdrand)
-SAVE_ITEM, LOAD_ITEM = 0x9920, 0x9934  # the Game menu's Save Game / Load Saved Game flags (1 on), which hot_keys obeys
+SAVE_ITEM, LOAD_ITEM = 0x9920, 0x9934  # the Game menu's Save Game / Load Saved Game flags (1 on), which hotkey-table obeys
 SAV_WRITE = (P(0x1462), 0x2ACE)        # R037+0x2ACE (comment): the saved-game writer
 MACHINE_STATE = ("resident", "trampolines", "call_stack", "mcbs", "dta", "scratch_sp", "count", "next_irq", "irqs", "pit_divisor",
                  "pit_latch", "pit_write", "vsync", "ems_pages", "ems_map", "ems_saved", "waits", "pic_size", "pic_arena", "progress", "held", "button_read", "_dos_extended", "_ticked", "battle_passes", "_buffered", "still_clock", "still_passes", "press_ms", "idle_mark", "idle_since", "mouse", "presses", "releases", "press_at", "release_at", "rheld", "held_bit", "map_reads")
@@ -55,14 +55,14 @@ IDLE_POLLS = 2000
 BATTLE_PAUSE_PASSES = 296           # the battle's start pause (it waits for Space, the combat clock standing still): the key is given after this many passes at one
                                     # clock value, the C# host's pause under the script's wait:300 (298 passes at one value with one more set-up tick); the original's
                                     # ms-based idle test would give it after however many passes IDLE_MS takes at the speed the text drawn in them runs
-BATTLE_PASS_LIN = P(0x0E76) * 16 + 0x3166   # R014+0x3166 combat_input, called once a pass of the battle's loop
-CLEAR_TIMERS_VEC = (P(0x09C0), 0x1C61)  # R014+0x010B's vector to R020+0x06B6 (combat_state_clear: the combat clock back to 0)
-STOCK_LOOP = (P(0x1462), 0x0A4C, 0x0AE2)   # R032+0x0A4C..0x0AE2: draw_barter_screen's stock listing (the loop that calls shop_has_item for every item)
+BATTLE_PASS_LIN = P(0x0E76) * 16 + 0x3166   # R014+0x3166 fight-input, called once a pass of the battle's loop
+CLEAR_TIMERS_VEC = (P(0x09C0), 0x1C61)  # R014+0x010B's vector to R020+0x06B6 (fight-state-reset: the combat clock back to 0)
+STOCK_LOOP = (P(0x1462), 0x0A4C, 0x0AE2)   # R032+0x0A4C..0x0AE2: trade-screen-paint's stock listing (the loop that calls shop-stocks-item for every item)
 STOCK_LOOP_STACK = 0x400             # the dead stack below the loop's SP that a timer interrupt there leaves as it found it
 ENEMY_TURN_VEC = (P(0x09C0), 0x1C43)    # R014+0x0280's vector to R018+0x0706 (the enemies' turn), after the set-up's file loads
-WALL_DRAWS = ((0x8381, 0x838B), (0x8438, 0x8442), (0x84AE, 0x84BE))   # R014+0x827A: push 2; call random_n; (after)
+WALL_DRAWS = ((0x8381, 0x838B), (0x8438, 0x8442), (0x84AE, 0x84BE))   # R014+0x827A: push 2; call roll-n; (after)
 NEXT_TICK = 0xD9E4                 # the clock value of the battle's next combat tick (set at R014+0x0311)
-COMBAT_CLOCK = 0x07D4               # the combat clock the timer callback counts while the battle runs
+FIGHT_CLOCK = 0x07D4               # the combat clock the timer callback counts while the battle runs
 CALLBACKS = 0x07D6                  # a word the timer callback counts at every call (root 047C:0048), held clock or not
 ACTIVATIONS_AT = 0xDA4F     # DS word: the combat clock of the next activations check (R014+0x0332 sets it to the clock + 120)
 TIMER_CALLBACK = (P(0x047C), 0x000A)   # the game's timer callback (its counters, the combat clock DS:07D4), called by its INT 8 handler
@@ -89,7 +89,7 @@ class Session(Machine):
         super().__init__(exe, game, **kw)
         self.seen_int: dict = {}
         self.sheet_in = self.sheet_out = None   # the timer callbacks counted at the combat sheet (R022+0x0066 / +0x03C6; sessions hook them)
-        self.box_in = self.box_out = None       # the same for show_message (root 0000:24BC) in a battle pass outside the menu bar (run_original hooks it)
+        self.box_in = self.box_out = None       # the same for notice-display (root 0000:24BC) in a battle pass outside the menu bar (run_original hooks it)
         self.menu_calls, self.menu_out = [], None   # the menu bar's runs in a battle (run_original hooks root 0000:0000)
         # no sound card: without CONFIG.DRK the program takes nsound.dlc (DS:A876 = 'n'), as the C# headless host plays without sound;
         # a sound driver would be loaded by the stubbed misc.exe slots and unloaded (freed) by every battle start (R002+0x0025)
@@ -127,9 +127,9 @@ class Session(Machine):
         for off in self.driver_slots():
             if self.root[DRIVER_SEG * 16 - BASE + off] == 0xE8:
                 self.write(DRIVER_SEG, off + 3, struct.pack("<HH", 0x50, EMS_SEG))
-        for off in [o for o in self.driver_slots() if (DRIVER_SEG, o) not in (KEY_PRESSED, GET_KEY, SAVE_RECT, PIC_OPEN, PIC_CLOSE, PIC_BATCH_BEGIN, PIC_BATCH_END, PIC_LINE, CHAR_WIDTH, FONT_HEIGHT)]:
+        for off in [o for o in self.driver_slots() if (DRIVER_SEG, o) not in (KEY_WAITING_TEST, READ_KEY, SAVE_RECT, PIC_OPEN, PIC_CLOSE, PIC_BATCH_BEGIN, PIC_BATCH_END, PIC_LINE, GLYPH_WIDTH, FONT_LINE_HEIGHT)]:
             self.stub(DRIVER_SEG, off, self._driver("047C:%04X" % off), "driver 047C:%04X" % off)
-        # gfx_save_rect(page, x, y, w, h) (driver entry 2, body 0x0BB7): a memory picture of the screen's rectangle, in the batch's block
+        # gfx-rect-save(page, x, y, w, h) (driver entry 2, body 0x0BB7): a memory picture of the screen's rectangle, in the batch's block
         # as the pictures below (segment 0 outside a batch); its caller frees the batch's first one later
         self.stub(*SAVE_RECT, self._save_rect, "save_rect")
         # a picture drawn into memory (root 0617:045C): 047C:05BC(width, height) opens it, 047C:05B5(line) adds each line, 047C:05AE
@@ -143,15 +143,15 @@ class Session(Machine):
         self.stub(*PIC_OPEN, self._pic_open, "pic_open")
         self.stub(*PIC_LINE, self._pic_line, "pic_line")
         self.stub(*PIC_CLOSE, self._pic_close, "pic_close")
-        # the driver's font metrics (char_width 047C:04E3(font, ch), font_height 047C:051B(font)): the wrapping of the card texts and so the
+        # the driver's font metrics (glyph-width 047C:04E3(font, ch), font-line-height 047C:051B(font)): the wrapping of the card texts and so the
         # menus' hot spots (DS:E96E) follow the real fonts.
         self.fonts = self._read_fonts(game)
-        self.stub(*CHAR_WIDTH, self._char_width, "char_width")
-        self.stub(*FONT_HEIGHT, self._font_height, "font_height")
+        self.stub(*GLYPH_WIDTH, self._char_width, "glyph-width")
+        self.stub(*FONT_LINE_HEIGHT, self._font_height, "font-line-height")
         # the copy-protection question (R041+0x0000, asked by the first visit to the map): it passes at once, as the C# has it (no
-        # question, see COVERAGE.md R041), after the five draws it makes before anything else: the original's own rand_mod (root
+        # question, see COVERAGE.md R041), after the five draws it makes before anything else: the original's own roll-below (root
         # 0000:0C70) with 4, 20, 7, 7 and 6, as the function calls it (CopyProtection.Draw); a wrong answer would end the program
-        self.stub(*COPY_PROTECTION, self._copy_protection, "copy_protection", record="R041")
+        self.stub(*COPY_PROTECTION_CHECK, self._copy_protection, "copy-protection-check", record="R041")
         self._copy_protection.__func__.outside = True        # it runs code of the original (a nested call): outside the emulation's hook
         self.script: list[tuple[str, str]] = []
         self.states: dict[str, bytes] = {}
@@ -159,13 +159,13 @@ class Session(Machine):
         self.rheld = False               # rdown: the right button held until rup (the menu bar)
         self.held_bit = 1                # the button bit of the click being held (1 left, 2 right)
         self.button_read = False
-        self.map_reads = 0               # the map passes that saw the click's left button down (overland_loop R030+0x02E6), logged at the release
+        self.map_reads = 0               # the map passes that saw the click's left button down (world-map-loop R030+0x02E6), logged at the release
         self._dos_extended = 0
         self.press_ms = 0
         self._polled = None
         for lin in POLL_POINTS | {TRACK_POINT}:
             self._hook_address(lin)
-        # overland_loop R030+0x02DC: `test byte [DS:6EF0], 1; jne 02E6`: the map pass found the left button down (it aims at the pointer);
+        # world-map-loop R030+0x02DC: `test byte [DS:6EF0], 1; jne 02E6`: the map pass found the left button down (it aims at the pointer);
         # the passes a click is held for follow how long each pass takes in the emulator, so the release logs them ("maphold n") and
         # lockstep.py holds the C# host's click for as many map passes
         self.hook(P(0x1462), 0x02E6, lambda m: setattr(m, "map_reads", m.map_reads + 1) if m.held else None, record="R030")
@@ -181,7 +181,7 @@ class Session(Machine):
         self.hook(*CLEAR_TIMERS_VEC, lambda m: setattr(m, "_setting_up", [None]) if 14 in m.resident else None)
         self.hook(*ENEMY_TURN_VEC, self._enemy_turn)
         self._hook_address(BATTLE_PASS_LIN)
-        # The stock listing reads an uninitialised stack word of shop_has_item ([bp-2], R032+0x1D18, the draw_barter_screen frame's dead
+        # The stock listing reads an uninitialised stack word of shop-stocks-item ([bp-2], R032+0x1D18, the trade-screen-paint frame's dead
         # stack) that a timer interrupt taken inside this loop overwrites with its own frame and pushes (university-shop.steps: a tick
         # wrote 0 there, so the first item was tested with the city-size row instead of row 1 and the stock differed: the first
         # P bought nothing). On a real PC that is the chance of the tick's phase, not behaviour the C# can follow, so an interrupt taken
@@ -190,7 +190,7 @@ class Session(Machine):
         self._restore_stack = None
         self.hook(STOCK_LOOP[0], STOCK_LOOP[1], lambda m: setattr(m, "in_stock_loop", True), record="R032")
         self.hook(STOCK_LOOP[0], STOCK_LOOP[2], lambda m: setattr(m, "in_stock_loop", False), record="R032")
-        self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._button_read, begin=DS * 16 + MOUSE_BUTTONS, end=DS * 16 + MOUSE_BUTTONS + 1)
+        self.uc.hook_add(unicorn.UC_HOOK_MEM_READ, self._button_read, begin=DS * 16 + MOUSE_BUTTON_STATE, end=DS * 16 + MOUSE_BUTTON_STATE + 1)
         # the BIOS keyboard flags (0040:0017: Shift, Ctrl, Alt held; R031+0x10AE and R016+0x0294 test them: give one against give the stack) are
         # the BIOS data area's byte, 0 (nothing held) until the script's shift:on gives the two Shift bits and its ctrl:on the Ctrl bit
         self.shift = 0
@@ -219,8 +219,8 @@ class Session(Machine):
         self._fast_base = self._fast_lo = self._fast_hi = 0
         self._fast_trace = None
         self._fast_io = self._fast_cov = None
-        self.stub(*KEY_PRESSED, self._key_pressed, "key_pressed")
-        self.stub(*GET_KEY, self._get_key, "get_key")
+        self.stub(*KEY_WAITING_TEST, self._key_pressed, "key-waiting-test")
+        self.stub(*READ_KEY, self._get_key, "read-key")
         self._key_pressed.__func__.outside = True
         self._get_key.__func__.outside = True
 
@@ -245,7 +245,7 @@ class Session(Machine):
 
     def _enemy_turn(self, m):
         if self._setting_up is not None and self._setting_up[0] is None:
-            self._setting_up[0] = self.word(DS, COMBAT_CLOCK)
+            self._setting_up[0] = self.word(DS, FIGHT_CLOCK)
 
     def _release(self):
         """A click is let go CLICK_MS after the press once the game has read the button (DS:6EF0): held longer, a map pass aims at
@@ -255,7 +255,7 @@ class Session(Machine):
         if self.map_reads:
             self.log.append("maphold %d" % self.map_reads)
             self.map_reads = 0
-        self.put_word(DS, MOUSE_BUTTONS, 2 if self.rheld else 0)
+        self.put_word(DS, MOUSE_BUTTON_STATE, 2 if self.rheld else 0)
         self.mouse[2] = 2 if self.rheld else 0
         self.releases[bit >> 1] += 1
         self.release_at[bit >> 1] = (self.mouse[0], self.mouse[1])
@@ -294,9 +294,9 @@ class Session(Machine):
 
     def _mouse_init(self, m):
         self.write(DS, MOUSE_SHIFT, bytes([1]))
-        self.put_word(DS, MOUSE_X, 160)
-        self.put_word(DS, MOUSE_Y, 100)
-        self.put_word(DS, MOUSE_BUTTONS, 0)
+        self.put_word(DS, POINTER_COLUMN, 160)
+        self.put_word(DS, POINTER_ROW, 100)
+        self.put_word(DS, MOUSE_BUTTON_STATE, 0)
         self.write(DS, MOUSE_ON, bytes([0xFF]))
         return (0xFFFF, 0)
 
@@ -308,8 +308,8 @@ class Session(Machine):
         left button (let go at the next poll); after either the game waits again before the next step."""
         if self.held:
             return None
-        # a key handed to the game stays in the keyboard buffer until a get_key takes it (a message panel looks at it with key_pressed
-        # and goes on without taking it, as R021+0x01E2 does; the box and flush_keys R002+0x0769 after it then find it): without this
+        # a key handed to the game stays in the keyboard buffer until a read-key takes it (a message panel looks at it with key-waiting-test
+        # and goes on without taking it, as R021+0x01E2 does; the box and key-buffer-clear R002+0x0769 after it then find it): without this
         # the next panel waited for another idle period and the key was taken later than in the real buffer (orders-attack-b)
         if self._buffered:
             if self.script and self.script[0][0] == "key":
@@ -327,7 +327,7 @@ class Session(Machine):
             self.bwait_log.append([int(self.script.pop(0)[1]), None])
         if self.bwait is not None:
             if self.battle_passes < self.bwait:
-                # a loop that polls without passing combat_input (a menu, a sheet) is idle: the passes to wait for would never come
+                # a loop that polls without passing fight-input (a menu, a sheet) is idle: the passes to wait for would never come
                 self.bwait_polls = self.bwait_polls + 1 if self.battle_passes == self.bwait_seen else 0
                 self.bwait_seen = self.battle_passes
                 if self.bwait_polls < IDLE_POLLS:
@@ -381,8 +381,8 @@ class Session(Machine):
                 x, y = (int(v) for v in value.split(","))
             else:                                   # rup: the pointer stays
                 x, y = self.mouse[0], self.mouse[1]
-            self.put_word(DS, MOUSE_X, x)
-            self.put_word(DS, MOUSE_Y, y)
+            self.put_word(DS, POINTER_COLUMN, x)
+            self.put_word(DS, POINTER_ROW, y)
             self.mouse[0], self.mouse[1] = x, y
             if kind in ("click", "rclick"):
                 # the driver's event callback (root 047C:1395) stores the button state in DS:6EF0 and ORs it into the press word DS:6EF2
@@ -395,7 +395,7 @@ class Session(Machine):
                 self.button_read = False
                 self.map_reads = 0
                 self.press_ms = self.ms
-                self.put_word(DS, MOUSE_BUTTONS, self.mouse[2])
+                self.put_word(DS, MOUSE_BUTTON_STATE, self.mouse[2])
                 self.put_word(DS, MOUSE_PRESSES, self.word(DS, MOUSE_PRESSES) | bit)
             elif kind == "rdown":
                 # the right button held (no automatic release, the next steps are taken with it down) until rup
@@ -403,14 +403,14 @@ class Session(Machine):
                 self.mouse[2] |= 2
                 self.presses[1] += 1
                 self.press_at[1] = (x, y)
-                self.put_word(DS, MOUSE_BUTTONS, self.word(DS, MOUSE_BUTTONS) | 2)
+                self.put_word(DS, MOUSE_BUTTON_STATE, self.word(DS, MOUSE_BUTTON_STATE) | 2)
                 self.put_word(DS, MOUSE_PRESSES, self.word(DS, MOUSE_PRESSES) | 2)
             elif kind == "rup":
                 self.rheld = False
                 self.mouse[2] &= ~2
                 self.releases[1] += 1
                 self.release_at[1] = (x, y)
-                self.put_word(DS, MOUSE_BUTTONS, self.word(DS, MOUSE_BUTTONS) & ~2)
+                self.put_word(DS, MOUSE_BUTTON_STATE, self.word(DS, MOUSE_BUTTON_STATE) & ~2)
             # the battle pass the pointer step is taken at (as the keys' lines give theirs): lockstep.click_holds measures a click's hold from it
             where = " (battle pass %d)" % self.battle_passes if 14 in self.resident and self.battle_passes else ""
             self.log.append("%s %s at %d ms%s in %s" % (kind, value, self.ms, where, " < ".join(self.call_stack[-3:])))
@@ -426,7 +426,7 @@ class Session(Machine):
         byte and INT 9 runs through the vector table, with an interrupt frame (the flags with IF set) as its return. The game's own handler (root
         044A:020E, installed by root 044A:019C) then keeps DS:0880..0889 itself; it chains to the vector it found (the machine's IRET), so the BIOS
         key ring is not fed: the buffered key a real press also makes is the script's key step. Run at the step, from the stub that took it
-        (a poll, or a get_key, inside which a real INT 16h wait takes interrupts too)."""
+        (a poll, or a read-key, inside which a real INT 16h wait takes interrupts too)."""
         codes = bytearray(bytes.fromhex(value))
         if kind == "kup":
             codes[-1] |= 0x80
@@ -447,7 +447,7 @@ class Session(Machine):
                 del self.vfs.files[k]
             self.ensure(37)
             if self.byte(DS, 0x907A) == 1:
-                # in a battle the writer frees DS:A65E at its end (R037+0x37E1), the picture its caller save_game R037+0x2A68 loads in a
+                # in a battle the writer frees DS:A65E at its end (R037+0x37E1), the picture its caller game-store-entry R037+0x2A68 loads in a
                 # batch of its own just before (R037+0x2A8E..0x2AA1): loaded here too, else the writer frees a picture inside the start's batch
                 self._pic_batch_begin(self)
                 self.put_word(DS, 0xA65E, self.call(P(0x0617), 0x045C, [0x41F2])[0])
@@ -482,7 +482,7 @@ class Session(Machine):
         self.vfs.files, self.vfs.deleted, self.vfs.handles = files, deleted, handles
 
     def _on_code(self, uc, address, size, _):
-        # the battle's pass (combat_input, R014+0x3166): one call of the game's timer callback first, as the C# headless host's one tick
+        # the battle's pass (fight-input, R014+0x3166): one call of the game's timer callback first, as the C# headless host's one tick
         # a pass (DARKLANDS_BATTLE_TICK_PER_PASS); the time-based timer waits BATTLE_QUIET bytes, so it only comes in a pass that blocks
         if address == BATTLE_PASS_LIN and 14 in self.resident:
             if self.pass_keys and not self._ticked and self.depth == 1:
@@ -509,18 +509,18 @@ class Session(Machine):
                     self.log.append("sheet callbacks %d,%d (battle pass %d)" % (during, (self.word(DS, CALLBACKS) - mark) & 0xFFFF, self.battle_passes - 1))
                     self.sheet_out = None
                 _menu_flush(self)
-                clock = self.word(DS, COMBAT_CLOCK)
+                clock = self.word(DS, FIGHT_CLOCK)
                 self.still_clock, self.still_passes = clock, (self.still_passes + 1 if clock == self.still_clock else 1)
                 if self._setting_up is not None:
                     loads = self._setting_up[0] or 0
                     read = (self.word(DS, NEXT_TICK) - 8) & 0xFFFF
                     # the fourth number: the part of the late ticks before R014+0x0332 read the clock for the next activations check
                     # (DS:DA4F, 120 later)
-                    self.set_up_ticks.append((loads, read - loads, self.word(DS, COMBAT_CLOCK) - read,
+                    self.set_up_ticks.append((loads, read - loads, self.word(DS, FIGHT_CLOCK) - read,
                                               (self.word(DS, ACTIVATIONS_AT) - 120 - read) & 0xFFFF))
                     self._setting_up = None
                 if self.battle_trace is not None:
-                    self.battle_trace.append("pass clock %d rand %08X" % (self.word(DS, COMBAT_CLOCK), struct.unpack("<I", self.read(DS, HOLDRAND, 4))[0]))
+                    self.battle_trace.append("pass clock %d rand %08X" % (self.word(DS, FIGHT_CLOCK), struct.unpack("<I", self.read(DS, HOLDRAND, 4))[0]))
                 ss, sp = self.reg("SS"), (self.reg("SP") - 4) & 0xFFFF
                 self.write(ss, sp, struct.pack("<HH", address - self.reg("CS") * 16, self.reg("CS")))
                 self.set_reg("SP", sp)
@@ -575,19 +575,19 @@ class Session(Machine):
         return None
 
     def _key_pressed(self, m):
-        # the waiting key's code without taking it (as INT 16h function 1): hot_keys (root 0000:0CAA) looks at it and takes only its own
+        # the waiting key's code without taking it (as INT 16h function 1): hotkey-table (root 0000:0CAA) looks at it and takes only its own
         # the overland map's own loop (R030+0x0540 and R030+0x056D, return 1462:0545 / 1462:0572) looks at the keyboard before it
-        # calls the menu bar (hot_keys looks second, root 0000:0CAF) and throws away a key it does not know: an Alt key (the hot keys
+        # calls the menu bar (hotkey-table looks second, root 0000:0CAF) and throws away a key it does not know: an Alt key (the hot keys
         # Alt-S, Alt-L ...) delivered to it is lost, whereas the rewrite handles hot keys first. A real key press goes to whichever
-        # look follows it; the script's Alt keys are delivered to hot_keys' look.
+        # look follows it; the script's Alt keys are delivered to hotkey-table' look.
         due = next((s for s in self.script if s[0] in INPUT_KINDS), None)
         if (due and due[0] == "key" and (due[1].lower().startswith("alt") or due[1].lower() in ("f6", "f10"))
                 and self.call_stack and self.call_stack[-1].startswith("R030+")
                 and self.word(self.reg("SS"), self.reg("SP")) in (0x0545, 0x0572)):
             return (0, 0)
         # likewise the card menu's own look (R043+0x1BD2, return 150B:11DC, which only knows Enter, Space and the cursor keys and drops the rest) and the
-        # "press a key" wait's (wait_continue R043+0x32B6, return 150B:288E, which takes any key to go on) come after the menu bar's pass in the same
-        # loop: an Alt key the script has due waits for hot_keys' look of the next pass (menubar: Alt-O; save-load: Alt-L after the rest)
+        # "press a key" wait's (press-to-continue R043+0x32B6, return 150B:288E, which takes any key to go on) come after the menu bar's pass in the same
+        # loop: an Alt key the script has due waits for hotkey-table' look of the next pass (menubar: Alt-O; save-load: Alt-L after the rest)
         if (due and due[0] == "key" and (due[1].lower().startswith("alt") or due[1].lower() in ("f6", "f10"))
                 and self.word(self.reg("SS"), self.reg("SP") + 2) == P(0x150B) and self.word(self.reg("SS"), self.reg("SP")) in (0x11DC, 0x288E)):
             return (0, 0)
@@ -595,7 +595,7 @@ class Session(Machine):
         return (0 if k is None else k, 0)
 
     def _get_key(self, m):
-        # get_key waits for a key: the game is idle at once (a click still held is let go first)
+        # read-key waits for a key: the game is idle at once (a click still held is let go first)
         if self.held:
             self._release()
         self._drop_bwait()
@@ -612,7 +612,7 @@ class Session(Machine):
         self.waits = 0
         self.idle_since = self.ms
         self.still_passes = 0           # a key ends the battle's pause
-        self.log.append("key %04X at %d ms (battle pass %d, clock %d) in %s" % (k, self.ms, self.battle_passes, self.word(DS, COMBAT_CLOCK), " < ".join(self.call_stack[-4:])))
+        self.log.append("key %04X at %d ms (battle pass %d, clock %d) in %s" % (k, self.ms, self.battle_passes, self.word(DS, FIGHT_CLOCK), " < ".join(self.call_stack[-4:])))
         return (k, 0)
 
     # ---- the clock ---------------------------------------------------------------------
@@ -770,7 +770,7 @@ class Session(Machine):
         return self.fonts[min(max(idx, 0), len(self.fonts) - 1)]
 
     def _char_width(self, m):
-        # orig: char_width drv+0x11A9: 0 for a byte with the top bit set or outside first..last; the fixed width (header -5) when
+        # orig: glyph-width drv+0x11A9: 0 for a byte with the top bit set or outside first..last; the fixed width (header -5) when
         # non-zero, else the width table; plus the spacing (header -3)
         f, ch = self._font_of(m.arg(0)), m.arg(1) & 0xFF
         if f is None:
@@ -780,7 +780,7 @@ class Session(Machine):
         return ((f[2] or f[6][ch - f[0]]) + f[4], 0)
 
     def _font_height(self, m):
-        # orig: font_height drv+0x11FA: the glyph height (header -4) plus the line spacing (header -2)
+        # orig: font-line-height drv+0x11FA: the glyph height (header -4) plus the line spacing (header -2)
         f = self._font_of(m.arg(0))
         return (8, 0) if f is None else (f[3] + f[5], 0)
 
@@ -1027,13 +1027,13 @@ class Session(Machine):
         if handler == self._poll:
             return ("poll",)
         if handler == self._key_pressed:
-            return ("key_pressed",)
+            return ("key-waiting-test",)
         if handler == self._get_key:
-            return ("get_key",)
+            return ("read-key",)
         return ("dos_key", handler.__defaults__[0])         # _on_int's `lambda m, f=ah: m._dos_key(f)`
 
     def _handler_of(self, kind):
-        return {"poll": lambda: self._poll, "key_pressed": lambda: self._key_pressed, "get_key": lambda: self._get_key,
+        return {"poll": lambda: self._poll, "key-waiting-test": lambda: self._key_pressed, "read-key": lambda: self._get_key,
                 "dos_key": lambda: (lambda m, f=kind[-1]: m._dos_key(f))}[kind[0]]()
 
     def plan_snapshot(self, left: int, take):
@@ -1047,7 +1047,7 @@ class Session(Machine):
         if plan is None or len(self.script) != plan[0]:
             return
         kind = self._handler_kind(handler)
-        if kind[0] == "get_key" or (kind[0] == "dos_key" and kind[1] in (0x07, 0x08)) or self.waits >= IDLE_POLLS:
+        if kind[0] == "read-key" or (kind[0] == "dos_key" and kind[1] in (0x07, 0x08)) or self.waits >= IDLE_POLLS:
             self.snap_plan = None
             plan[1](self, kind)
 
@@ -1117,8 +1117,8 @@ def key_code(name: str) -> int:
 
 CARD_CALL = (P(0x03A1), 0x02CC)        # the main loop's `call far es:[bx]` of the card table (DS:A772 = the card)
 SRAND = (P(0x06A1), 0x29A4)
-SOUND_PLAY = (P(0x047C), 0x078A)        # sound_play(n): the sound driver's one command (a tune, an effect, 1 = stop the music, 2 / 3 = pause / resume, 5 = which?)
-MUSIC_PLAY = (P(0x1462), 0x09AE)        # R043 (thunk 09C0:18F1): music_play(x) = `if (DS:01BF) sound_play(x); else sound_play(1)`
+SOUND_START = (P(0x047C), 0x078A)        # sound-start(n): the sound driver's one command (a tune, an effect, 1 = stop the music, 2 / 3 = pause / resume, 5 = which?)
+MUSIC_PLAY = (P(0x1462), 0x09AE)        # R043 (thunk 09C0:18F1): music_play(x) = `if (DS:01BF) sound-start(x); else sound-start(1)`
 SRAND_CLOCK_CALL = bytes([0x9A, 0xA8, 0x23]) + struct.pack("<H", P(0x06A1))   # call far 06A1:23A8 (time), five bytes before the return into the srand call
 
 
@@ -1243,7 +1243,7 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
     each battle's set-up ticks). cov_out, when given, is filled with the coverage record."""
     s = Session(exe.read_bytes(), game, max_instructions=budget, coverage=cov_out is not None)
     if no_wall_draws:
-        # an experiment: the animated pieces' picture variant (random_n(2) in R014+0x827A, each combat_draw) leaves the game's generator as
+        # an experiment: the animated pieces' picture variant (roll-n(2) in R014+0x827A, each fight-draw) leaves the game's generator as
         # it was (the C# makes those draws: it then parts from the original at the battle's first frame)
         kept = {}
         for before, after in WALL_DRAWS:
@@ -1268,7 +1268,7 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
     s.hook(P(0x0000), 0x0000, _menu_enter)
     s.hook(P(0x0000), 0x0080, _menu_up)
     s.hook(P(0x0000), 0x01D0, _menu_leave)
-    # show_message (root 0000:24BC .. its leave at 0000:251F) in a battle pass outside the bar: the timer callbacks of its wait of DS:07D2 and of
+    # notice-display (root 0000:24BC .. its leave at 0000:251F) in a battle pass outside the bar: the timer callbacks of its wait of DS:07D2 and of
     # the rest of the pass (the tick it can make due, and that tick's draw): the C# host has no time of its own there either
     s.hook(P(0x0000), 0x24BC, _box_enter)
     s.hook(P(0x0000), 0x251F, _box_leave)
@@ -1276,11 +1276,11 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
     if getattr(battle_trace, "records", False):
         battle_trace.session = s
     if isinstance(battle_trace, ClockTrace):
-        s.hook(P(0x1DB7), 0x0D36, lambda m: battle_trace.phase_clocks.append((-1, m.word(DS, COMBAT_CLOCK))), record="R014")
-        s.hook(P(0x0E76), 0x2A4A, lambda m: battle_trace.phase_clocks.append((-2, m.word(DS, COMBAT_CLOCK))), record="R014")
-        s.hook(P(0x06A1), 0x29B6, lambda m: battle_trace.draw_clocks.append(m.word(DS, COMBAT_CLOCK)))
-        s.hook(P(0x0E76), 0x1052, lambda m: battle_trace.sched_clocks.append((-4, len(battle_trace.draw_clocks), m.word(DS, COMBAT_CLOCK))), record="R014")
-        s.hook(P(0x0E76), 0x10A1, lambda m: battle_trace.sched_clocks.append((-5, len(battle_trace.draw_clocks), m.word(DS, COMBAT_CLOCK))), record="R014")
+        s.hook(P(0x1DB7), 0x0D36, lambda m: battle_trace.phase_clocks.append((-1, m.word(DS, FIGHT_CLOCK))), record="R014")
+        s.hook(P(0x0E76), 0x2A4A, lambda m: battle_trace.phase_clocks.append((-2, m.word(DS, FIGHT_CLOCK))), record="R014")
+        s.hook(P(0x06A1), 0x29B6, lambda m: battle_trace.draw_clocks.append(m.word(DS, FIGHT_CLOCK)))
+        s.hook(P(0x0E76), 0x1052, lambda m: battle_trace.sched_clocks.append((-4, len(battle_trace.draw_clocks), m.word(DS, FIGHT_CLOCK))), record="R014")
+        s.hook(P(0x0E76), 0x10A1, lambda m: battle_trace.sched_clocks.append((-5, len(battle_trace.draw_clocks), m.word(DS, FIGHT_CLOCK))), record="R014")
     seeds = []
     def srand(m):
         # a clock seed when the call follows `call time` (06A1:23A8; push ax): srand((unsigned)time(0)); other seeds come from the game
@@ -1294,7 +1294,7 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
     # sound: every call of the driver's command and every music request, in order (tools/oracle/lockstep.py compares them with the C# host's
     # "sound n" / "music x" lines, DARKLANDS_SOUND_LOG); no sound card is emulated, the calls return at once
     s.log.append("sound log on")
-    s.hook(*SOUND_PLAY, lambda m: m.log.append("sound %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))))
+    s.hook(*SOUND_START, lambda m: m.log.append("sound %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))))
     s.hook(*MUSIC_PLAY, lambda m: m.log.append("music %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))), record="R043")
     snap = snapshots.load() if snapshots is not None else None
     full = list(s.script)

@@ -5,7 +5,7 @@ namespace Darklands.Core.Battles.Generation;
 /// keep in its yard, upper floors, a battlement level) planned room by room, then drawn as floor images with doors, stairs,
 /// furniture, chests and the enemy groups the battlefield type asks for. The planner is <see cref="CastleGenerator"/>.
 /// </summary>
-// orig: gen_battlefield R005+0x0000 (1432:0000) draft and castle_build
+// orig: layout-battlefield-entry R005+0x0000 (1432:0000) draft and castle-builder-entry
 // R007+0x0000 (15AF:0000) draft (drafts "COMPLETE" but mostly unmatched; checked against the asm
 // where the oracle disagreed); tests: Oracle:castle.json
 public static class CastleBattlefield

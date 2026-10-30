@@ -22,13 +22,13 @@ public sealed class CardScriptMemory(Core.Battles.BattleOrders orders)
 // orig: main loop of root seg 03A1 reading DS:A766..DS:A770 when a card returns −2..−6
 public sealed class BattleWords(Core.Battles.BattleOrders orders)
 {
-    /// <summary>DS:A766 <c>battle_mode</c>.</summary>
+    /// <summary>DS:A766 <c>battle-kind</c>.</summary>
     public int Mode { get => orders.Mode; set => orders.Mode = value; }
 
-    /// <summary>DS:A768 <c>battle_enemy</c>.</summary>
+    /// <summary>DS:A768 <c>battle-enemy-group</c>.</summary>
     public int Enemy { get => orders.Enemy; set => orders.Enemy = value; }
 
-    /// <summary>DS:A76A <c>battle_seed</c>.</summary>
+    /// <summary>DS:A76A <c>encounter-seed</c>.</summary>
     public int Seed { get => orders.Seed; set => orders.Seed = value; }
 
     /// <summary>DS:A76C, DS:A76E, DS:A770: the fifth, eighth and eleventh arguments of the battle call.</summary>
@@ -39,7 +39,7 @@ public sealed class BattleWords(Core.Battles.BattleOrders orders)
     public int Word770 { get => orders.EnemyTypes[2]; set => orders.EnemyTypes[2] = value; }
 }
 
-/// <summary>The personal-name tables of the game program (R029 <c>random_name</c> and <c>name_to_slot</c>).</summary>
+/// <summary>The personal-name tables of the game program (R029 <c>made-up-name</c> and <c>label-to-slot</c>).</summary>
 public enum NameTable
 {
     /// <summary>108 men's first names (R136+0xA9EF).</summary>
@@ -54,7 +54,7 @@ public enum NameTable
     /// <summary>16 merchant family names (R136+0xAF5B).</summary>
     MerchantFamilies,
 
-    /// <summary>16 dragon names (R136+0xA637; <c>name_to_slot</c> kind 6).</summary>
+    /// <summary>16 dragon names (R136+0xA637; <c>label-to-slot</c> kind 6).</summary>
     Dragons,
 
     /// <summary>38 dwarf names (R136+0xA677; kind 7).</summary>
@@ -85,7 +85,7 @@ public sealed class NoPersonalNames : IPersonalNames
 }
 
 /// <summary>The name tables read from DARKLAND.EXE (see <c>PersonalNamesDecoder</c>).</summary>
-// orig: far pointer tables R136+0xA9EF, R136+0xABA7, R136+0xAD0F, R136+0xAF5B, R136+0xA637, R136+0xA677, R136+0xA797 (record R136) read by random_name R029+0x5CC4 and name_to_slot R029+0x1FB8; tests: PersonalNamesTests
+// orig: far pointer tables R136+0xA9EF, R136+0xABA7, R136+0xAD0F, R136+0xAF5B, R136+0xA637, R136+0xA677, R136+0xA797 (record R136) read by made-up-name R029+0x5CC4 and label-to-slot R029+0x1FB8; tests: PersonalNamesTests
 // DIVERGENCE: an index outside a table gives "" (the original reads whatever follows the table in memory).
 public sealed class TablePersonalNames(Darklands.Content.Formats.Characters.PersonalNameData data) : IPersonalNames
 {
@@ -107,7 +107,7 @@ public sealed class TablePersonalNames(Darklands.Content.Formats.Characters.Pers
         {
             return list[index];
         }
-        // C: name_to_slot reads its three tables unchecked: an index outside one reads the far pointer next to it
+        // C: label-to-slot reads its three tables unchecked: an index outside one reads the far pointer next to it
         // (index -1 of the dragons is the last fame title, of the dwarfs the last dragon), as long as it points into the data image.
         var start = table switch
         {
@@ -127,19 +127,19 @@ public sealed class TablePersonalNames(Darklands.Content.Formats.Characters.Pers
 /// <summary>Helpers the card scripts of overlays R059..R073 share.</summary>
 public sealed partial class CardContext
 {
-    /// <summary>A roll against a chance as the scripts make it: <c>rand_mod(100) &lt;= chance</c>.</summary>
+    /// <summary>A roll against a chance as the scripts make it: <c>roll-below(100) &lt;= chance</c>.</summary>
     public bool Succeeds(int chance) => Random(100) <= chance;
 
     /// <summary>
-    /// A member is gone for good (R037 <c>party_delete</c>): the member's term and "has left"
+    /// A member is gone for good (R037 <c>party-wipe</c>): the member's term and "has left"
     /// events are cancelled, the slot is emptied, an able member takes over as leader if needed,
     /// and the party ends after its last occupied slot; the character leaves the roster
     /// (CHARACTR.TMP) for good.
     /// </summary>
-    // orig: R037+0x3F30 party_delete R037+0x3F30 (1462:3F30) draft; tests: DeleteMemberTests (the original's bytes run on twelve parties, local/batch/nmB)
-    // C: event_find/event_free of kinds 0x43 and 0x47 for the slot; party[p][0] = 0; `if (leader == p)` the first of the five slots with
+    // orig: R037+0x3F30 party-wipe R037+0x3F30 (1462:3F30) draft; tests: DeleteMemberTests (the original's bytes run on twelve parties, local/batch/nmB)
+    // C: event-search/event-release of kinds 0x43 and 0x47 for the slot; party[p][0] = 0; `if (leader == p)` the first of the five slots with
     //   status 1 (other than p) becomes the leader byte DS:907B, and with none the byte keeps p (Party.Leader then reads the emptied slot,
-    //   as the original's party[leader]); R037+0x4048(ids[p]) drops the character from charactr.tmp; party_size DS:A67E becomes one past the
+    //   as the original's party[leader]); R037+0x4048(ids[p]) drops the character from charactr.tmp; party-headcount DS:A67E becomes one past the
     //   last slot whose status is not 0. A slot past the party (status 0 already) still passes the leadership on when it is the leader's.
     // DIVERGENCE: the shield picture is the party panel's.
     // DORMANT: for a slot past the party the original also calls R037+0x4048 with that slot's charactr.tmp id, which is no character's
@@ -187,8 +187,8 @@ public sealed partial class CardContext
     // orig: R043+0x09AE (1462:09AE) (file 4/6 matched; this function not checked)
     public void PlaySong(int song) => PlayMusic(song);
 
-    /// <summary>Plays a sound or tune directly (root <c>sound_play</c>, whatever the music option says).</summary>
-    // orig: root 047C:078A sound_play (root 047C:078A) (resident code)
+    /// <summary>Plays a sound or tune directly (root <c>sound-start</c>, whatever the music option says).</summary>
+    // orig: root 047C:078A sound-start (root 047C:078A) (resident code)
     public void PlaySound(int sound) => SoundPlayer?.Invoke(sound);
 
     /// <summary>The direct sound player, supplied by the presentation.</summary>
@@ -203,11 +203,11 @@ public sealed partial class CardContext
 
     // ---- text input, names ------------------------------------------------------------
 
-    /// <summary>The text box (R037 <c>text_input</c>: prompt, text to edit, longest length → the text entered), supplied by the presentation.</summary>
+    /// <summary>The text box (R037 <c>text-prompt</c>: prompt, text to edit, longest length → the text entered), supplied by the presentation.</summary>
     public Func<string, string, int, string>? TextInput { get; set; }
 
     /// <summary>Asks the player to edit a short text; without a text box the text is taken as it stands (Enter).</summary>
-    // orig: thunk 09C0:20B7 text_input (R037 1462:43E6) R037+0x43E6 draft
+    // orig: thunk 09C0:20B7 text-prompt (R037 1462:43E6) R037+0x43E6 draft
     public string AskText(string prompt, string initial, int maxLength) => TextInput?.Invoke(prompt, initial, maxLength) ?? initial;
 
     /// <summary>C's <c>atoi</c>: an optional sign and the leading digits, 0 when there are none.</summary>
@@ -234,19 +234,19 @@ public sealed partial class CardContext
     public IPersonalNames PersonalNames { get; set; } = NoPersonalNames.Instance;
 
     /// <summary>
-    /// The bytes of the .MSG file whose texts the card screen shows (the original's <c>msg_file</c>, DS:A895), set by the screen;
+    /// The bytes of the .MSG file whose texts the card screen shows (the original's <c>text-bank-file</c>, DS:A895), set by the screen;
     /// the text variables read it through party slots past the fifth (<see cref="TextVariables"/>).
     /// </summary>
-    // orig: msg_file DS:A895, filled by msg_load R043+0x020E (file_load_far of the whole .MSG, under 6000 bytes)
+    // orig: text-bank-file DS:A895, filled by text-bank-read R043+0x020E (file-load-far-buffer of the whole .MSG, under 6000 bytes)
     public byte[]? MessageFileBytes { get; set; }
 
     /// <summary>
-    /// A random personal name into $Named1..5 (R029 <c>random_name</c>): the generator is
+    /// A random personal name into $Named1..5 (R029 <c>made-up-name</c>): the generator is
     /// seeded with the party seed + <paramref name="seed"/> so the same person keeps the same
     /// name, kind 0..5 picks the tables (men's or women's first names, with a surname, a
     /// merchant family name or alone), and the generator is then reseeded from the clock.
     /// </summary>
-    // orig: R029+0x5CC4 random_name R029+0x5CC4 (1367:0DB4) matched
+    // orig: R029+0x5CC4 made-up-name R029+0x5CC4 (1367:0DB4) matched
     // C: srand takes an unsigned 16-bit seed; strcpy/strcat order draws the first name before the surname.
     // DIVERGENCE: srand(time(0)) at the end is the injected ClockSeed (no reseed when there is none); the name tables come from PersonalNames (TablePersonalNames over the EXE's tables; none loaded: empty names).
     public void RandomName(int seed, int kind, int slot)
@@ -266,7 +266,7 @@ public sealed partial class CardContext
             _ => slot >= 0 && slot < Variables.Named.Length ? Variables.Named[slot] : "",
         };
         // DIVERGENCE: a slot past $NamedFiveName ($Snuck00 asks for slot 0x27) makes the original write
-        // beyond var_named; here the name is drawn but not stored.
+        // beyond text-slot-named; here the name is drawn but not stored.
         if (slot >= 0 && slot < Variables.Named.Length)
         {
             Variables.Named[slot] = name;
@@ -312,10 +312,10 @@ public sealed partial class CardContext
 
     /// <summary>
     /// The guild a guild card hands over to the next card ($Guild00, $Snuck00 ...): the original
-    /// stores it in <c>party_x</c>, the party's map column (DS:E3D0), which is free while the
+    /// stores it in <c>party-map-column</c>, the party's map column (DS:E3D0), which is free while the
     /// party is in a city; it is kept in the same place here.
     /// </summary>
-    // orig: party_x DS:E3D0 written by the guild cards (e.g. R062+0x217A) and read by the cards they lead to
+    // orig: party-map-column DS:E3D0 written by the guild cards (e.g. R062+0x217A) and read by the cards they lead to
     public int GuildCode
     {
         get => State.MapPosition.X;
@@ -324,9 +324,9 @@ public sealed partial class CardContext
 
     /// <summary>
     /// The guild's politics fact a card hands over with <see cref="GuildCode"/>: the original keeps
-    /// it in <c>party_y</c>, the party's map row (DS:E3D2).
+    /// it in <c>party-map-row</c>, the party's map row (DS:E3D2).
     /// </summary>
-    // orig: party_y DS:E3D2 read as a location-fact type by $Polit00 (R070+0x2D1A)
+    // orig: party-map-row DS:E3D2 read as a location-fact type by $Polit00 (R070+0x2D1A)
     // C: which card sets it before $Polit00 is not established.
     public int GuildFact
     {
@@ -334,8 +334,8 @@ public sealed partial class CardContext
         set => State.MapPosition = State.MapPosition with { Y = value };
     }
 
-    /// <summary>$Support .. $Support6 (<c>var_support0..6</c>, DS:ED5E): a side −1/0/1 per text (the same array as <see cref="CardVariables.Support"/>, which <see cref="TextVariables"/> reads).</summary>
-    // orig: var_support0..var_support6 R043+0x1316 case 59..65: R136+0xB1EB[var_support] with R136+0xB1EB = the middle entry of the three-string table at 290E:2B57, so −1 oppose, 0 are undecided about, 1 support
+    /// <summary>$Support .. $Support6 (<c>text-slot-support-zero..6</c>, DS:ED5E): a side −1/0/1 per text (the same array as <see cref="CardVariables.Support"/>, which <see cref="TextVariables"/> reads).</summary>
+    // orig: text-slot-support-zero..text-slot-support-six R043+0x1316 case 59..65: R136+0xB1EB[var_support] with R136+0xB1EB = the middle entry of the three-string table at 290E:2B57, so −1 oppose, 0 are undecided about, 1 support
     public int[] Support => Variables.Support;
 
     // ShopNames is shared: see CardContext.Services.cs.
@@ -353,10 +353,10 @@ public sealed partial class CardContext
         Screens.Barter(shop, name ?? (shop >= 0 && shop < ShopNames.Length ? ShopNames[shop] : ""), (uint)(ushort)low | (long)(ushort)high << 16);
     }
 
-    /// <summary>The card that was shown before this one (<c>prev_screen</c>).</summary>
+    /// <summary>The card that was shown before this one (<c>earlier-screen</c>).</summary>
     public int PreviousCard => State.PreviousCard;
 
-    /// <summary>The card a script remembered to return to (<c>saved_card</c>).</summary>
+    /// <summary>The card a script remembered to return to (<c>remembered-card</c>).</summary>
     public int SavedCard
     {
         get => State.SavedCard;
@@ -370,7 +370,7 @@ public sealed partial class CardContext
     private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Core.GameState, Dictionary<int, int>> DataWordsOf = new();
 
     /// <summary>
-    /// A word of the data segment (<c>D_xxxx</c>) that only one card uses and never resets, so it
+    /// A word of the data segment (<c>DS:xxxx</c>) that only one card uses and never resets, so it
     /// keeps its value for later visits; 0 until written (the words used so far start as 0 in the
     /// program image). Not saved with the game, like the original.
     /// </summary>

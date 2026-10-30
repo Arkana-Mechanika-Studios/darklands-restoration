@@ -23,7 +23,7 @@ namespace Darklands.Cards.Scripts;
 //     R119+0x08F8
 //   other: R119+0x0596, R119+0x0638
 // DORMANT (generated): option slots 10..19 keep the default handler R119+0x0638 ("screwed up.") and are never shown.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class ImprisonedMonk : Card
 {
@@ -42,7 +42,7 @@ public sealed class ImprisonedMonk : Card
         //   fills slots 0..9; slots 10..19 keep it but are never shown (CardMenu offers lines 0..9 only).
         // DORMANT: the item pop-up handlers R119+0x0670 / _06ac / _06e8 / _0724 (R119+0x0670..0x0724:
         //   $ChosenOneName = the member in the box, "You can always encounter the unknown") need a usable item, but
-        //   card_items stays all −1 here, so no line opens an item box. Kept (unwired) as ItemPopup below.
+        //   card-item-lines stays all −1 here, so no line opens an item box. Kept (unwired) as ItemPopup below.
         c.SetCardItems();
         c.SetCardSaints(0x5D, 0x3D, 0x6A, 0x43);
         menu[2] = c.SaintsUsable();
@@ -76,7 +76,7 @@ public sealed class ImprisonedMonk : Card
 
     /// <summary>The card's item pop-up handlers (all four slots alike): the member in the box becomes $ChosenOneName.</summary>
     // orig: R119+0x0670 (1838:0670) matched; also _06ac, _06e8, _0724 (identical)
-    // DORMANT: no item is ever usable on this card (card_items all −1).
+    // DORMANT: no item is ever usable on this card (card-item-lines all −1).
     private static Func<OptionHint> ItemPopup(CardContext c) => () => c.MemberPopupHint(CardTexts.Unknown);
 
     private static void Leave(CardContext c, int next)
@@ -89,7 +89,7 @@ public sealed class ImprisonedMonk : Card
     // orig: R119+0x02E0 (1838:02E0) matched
     private static void PrayOverHim(CardContext c)
     {
-        // C: menu_member / menu_slot are the globals the pop-up box set last; chosen from the option line itself the
+        // C: menu-owner-member / menu-choice-index are the globals the pop-up box set last; chosen from the option line itself the
         //   prayer uses whatever they still hold (the same here: c.MenuMember / c.MenuSlot).
         var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
@@ -104,7 +104,7 @@ public sealed class ImprisonedMonk : Card
     // orig: R119+0x0526 (1838:0526) matched
     private static OptionHint ConfessionChance(CardContext c)
     {
-        // C: party_max_skill sets best_member, which the handler then reads (truncated to unsigned char).
+        // C: party-ability-top sets top-scoring-member, which the handler then reads (truncated to unsigned char).
         var chance = c.PartyMaxSkill((int)Core.Characters.Skill.Religion);
         return OptionHint.ChanceOf(chance, c.BestMember);
     }

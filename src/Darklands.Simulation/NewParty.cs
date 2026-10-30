@@ -14,7 +14,7 @@ public static class NewParty
     /// <paramref name="seed"/>; the game then goes on with <paramref name="random"/>, the generator
     /// character creation used (its names reseed it from the clock), or a fresh one from the seed.
     /// </summary>
-    // orig: R037+0x9DB2 (1E26:0172) matched, case 0x2E43 (C): party_seed = BIOS ticks;
+    // orig: R037+0x9DB2 (1E26:0172) matched, case 0x2E43 (C): party-random-seed = BIOS ticks;
     // R037+0x0000 returns 1 after "Begin the Adventure", and the main loop (root 03A1:000A) shows card 0x29
     // C: unlike Quickstart there is no load of SAVES\DEFAULT's party; the menu already read its characters into charactr.tmp.
     public static GameState Create(WorldData world, uint seed, Party party, IRandomSource? random = null, Func<uint>? clockSeed = null)

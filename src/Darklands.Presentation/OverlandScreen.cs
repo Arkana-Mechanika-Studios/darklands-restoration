@@ -12,9 +12,9 @@ namespace Darklands.Presentation;
 /// The travel screen: a window onto the world map right of the party panel, with the season's
 /// colour, the place icons and the party, moved by keys or by clicking where to go.
 /// </summary>
-// orig: overland_open R030+0x00A8 (1462:00A8) + overland_loop R030+0x02C0 (1462:02C0, matched) + the key handler R030+0x0C44 (unmatched) + the drawing R030+0x16C6 (party), R030+0x20D2 (map), R030+0x1F30 (pictures, matched), all; tests: OverlandTests, OverlandTests, OverlandTests
+// orig: world-map-start R030+0x00A8 (1462:00A8) + world-map-loop R030+0x02C0 (1462:02C0, matched) + the key handler R030+0x0C44 (unmatched) + the drawing R030+0x16C6 (party), R030+0x20D2 (map), R030+0x1F30 (pictures, matched), all; tests: OverlandTests, OverlandTests, OverlandTests
 // DIVERGENCE: the original keeps the party as view-relative registers over a cell buffer of the view and scrolls the view in jumps of 128 pixels across and 92 down when the marker comes within 20 pixels of an edge (Scroll below follows those jumps and thresholds). Here the page (OverlandPage) is drawn from absolute map positions (WorldMap) with the same view.
-// DIVERGENCE: not ported from the loop: the joystick (DS:E3FA/DS:E3FB, taken as centred: no stick; the held keys DS:0880..DS:0882 are, see HeldKey), the "party_icons_dirty" reload after the menu bar (the bar itself, right button and F10, comes with GameUi.Poll). The copy-protection check of overland_map is DarklandsGame.Travel's (the question left out, its random draws made).
+// DIVERGENCE: not ported from the loop: the joystick (DS:E3FA/DS:E3FB, taken as centred: no stick; the held keys DS:0880..DS:0882 are, see HeldKey), the "DS:9C46" reload after the menu bar (the bar itself, right button and F10, comes with GameUi.Poll). The copy-protection check of world-map-entry is DarklandsGame.Travel's (the question left out, its random draws made).
 public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 {
     private const int AreaX = 60;
@@ -23,17 +23,17 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private const int AreaHeight = 184;
 
     /// <summary>The map buffer's corner left out of the view: 20d2 draws the cells from (0, 0) of its 260x184 buffer and copies it from (8, 8) to (60, 16).</summary>
-    // orig: gfx_copy_rect(DS:284E, 8, 8, 0x104, 0xB8, screen, 0x3C, 0x10) at R030+0x2599..0x25AD; the view's first cell (column DS:286A, row DS:286E + DS:286C) is drawn at (0 or 8, 0) of the buffer
+    // orig: gfx-rect-copy(DS:284E, 8, 8, 0x104, 0xB8, screen, 0x3C, 0x10) at R030+0x2599..0x25AD; the view's first cell (column DS:286A, row DS:286E + DS:286C) is drawn at (0 or 8, 0) of the buffer
     private const int BufferCrop = 8;
 
     /// <summary>The pause after every pass of the loop: R030+0x3096(delayc) with delayc = 30, a busy wait on clock() (GameUi.DelayClock).</summary>
-    // orig: delayc = 30; R030+0x3096(delayc) at the bottom of overland_loop (R030+0x0C2F..0x0C35); the body is delay_ticks R030 seg 1767 in matched (spins until clock() has advanced by the argument)
+    // orig: delayc = 30; R030+0x3096(delayc) at the bottom of world-map-loop (R030+0x0C2F..0x0C35); the body is wait-ticks R030 seg 1767 in matched (spins until clock() has advanced by the argument)
     // C: clock() moves only at a BIOS tick, by 50 or 60 (DosClock), so the wait ends at the next tick and a pass lasts one tick (54.9 ms: 18.2
     //   passes a second) while its own work takes less (the emulated original's passes: 50 or 66.7 ms, the game's 60 Hz timer interrupts
     //   passing the BIOS its ticks, about 12,000 bytes of code standing, 44,000 a step, 270,000 when an hour passes)
     private const int StepClock = 30;
 
-    /// <summary>delay_ticks(75) of the wait-in-place loop (key A or F7), twice per pass.</summary>
+    /// <summary>wait-ticks(75) of the wait-in-place loop (key A or F7), twice per pass.</summary>
     private const int RestMilliseconds = 75;
 
     /// <summary>The marker's sprite row for "standing", used while waiting in place (direction 9).</summary>
@@ -44,7 +44,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 
     /// <summary>Whether 20d2 is due: the view moved, the background changed or the screen is drawn again after another one.</summary>
     // orig: `if (occ != DS:286C || DS:286A != oad) 20d2(...)` after the scroll block of R030+0x0C44, `if (m != DS:2860) 20d2(...)` after an hour in
-    //   R030+0x1300, and the redraws of overland_open, the `redraw` label of 0c44, the portrait click and the menu bar's party_icons_dirty
+    //   R030+0x1300, and the redraws of world-map-start, the `redraw` label of 0c44, the portrait click and the menu bar's party-icons-stale
     private bool _mapDirty = true;
     // orig: the view of R030: DS:286A the first column shown, DS:286E the first row of the row buffer, DS:286C the first row shown in it; the
     //   marker's position in the view is DS:2866 / DS:2868 (here _x - _originX, _y - _originY)
@@ -71,7 +71,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private string _coordinates = "";
 
     /// <summary>Travels until a place is reached or something happens; returns the card to show.</summary>
-    // orig: overland_open R030+0x00A8 (1462:00A8) (music, the first draw) and overland_loop R030+0x02C0 (1462:02C0) (the passes);
+    // orig: world-map-start R030+0x00A8 (1462:00A8) (music, the first draw) and world-map-loop R030+0x02C0 (1462:02C0) (the passes);
     // the return value is the `sel` branch of the loop: a location's arrival card, its own encounter card (2000), a road encounter
     // (1000), or the camp ambush
     public int Travel(GameState state, Func<int, bool>? eventStarted = null)
@@ -90,14 +90,14 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 
     private int TravelLoop(GameState state, Func<int, bool>? eventStarted)
     {
-        // orig: overland_open R030+0x00A8: DS:9C3D = thunk 09C0:18F1(5) (the piece playing, kept: nothing on the map plays it back), then
-        //   `if (rand_mod(2)) thunk 09C0:18F1(0x14) else thunk 09C0:18F1(0x13)`: one draw of the generator and a travel tune; tests: MusicTests
+        // orig: world-map-start R030+0x00A8: DS:9C3D = thunk 09C0:18F1(5) (the piece playing, kept: nothing on the map plays it back), then
+        //   `if (roll-below(2)) thunk 09C0:18F1(0x14) else thunk 09C0:18F1(0x13)`: one draw of the generator and a travel tune; tests: MusicTests
         ui.SaveMusic();
         ui.PlayMusic(state.Random.Below(2) != 0 ? 0x14 : 0x13);
-        // orig: `DS:A891 = 3;` in overland_open R030+0x00A8 (the map-leave mode, GameState.MapLeaveMode)
+        // orig: `DS:A891 = 3;` in world-map-start R030+0x00A8 (the map-leave mode, GameState.MapLeaveMode)
         state.MapLeaveMode = 3;
         PlaceParty(state);
-        // orig: overland_open R030+0x022B: R030+0x1C76 allocates the row buffer and reads the rows from DS:286E (R030+0x1DD4(file, DS:286E, -1)),
+        // orig: world-map-start R030+0x022B: R030+0x1C76 allocates the row buffer and reads the rows from DS:286E (R030+0x1DD4(file, DS:286E, -1)),
         //   then R030+0x1F30 the pictures
         map.Rows.Open(_viewTop);
         LoadPictures();
@@ -105,7 +105,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         var travel = new OverlandTravel(state, map, eventStarted);
         travel.HourPassed = () =>
         {
-            // orig: R030+0x1300 after advance_hours(1): the clock picture onto the screen, then 2dd6 and 20d2 when the background changed
+            // orig: R030+0x1300 after pass-hours(1): the clock picture onto the screen, then 2dd6 and 20d2 when the background changed
             TimePassage.Advance(state, 1);
             _page.DrawClock(Clock(state));
             var background = _background;
@@ -129,11 +129,11 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             // orig: R030+0x0C44's F1..F5 / Ctrl-F1..F5 cases (HotKeys, with GameUi.SheetKeys)
             var action = ui.PollWithSheetKeys();
             var key = action?.Key ?? Keys.None;
-            // orig: R030+0x0540..0x066A: `if (key_pressed() || DS:0880 || DS:0881 || DS:0882) { key = get_key(); if (key_pressed()) key =
-            //   get_key(); else key = the held key's (HeldKey, or the key read); DS:0880 = DS:0881 = DS:0882 = 0; }`: a second waiting key is
+            // orig: R030+0x0540..0x066A: `if (key-waiting-test() || DS:0880 || DS:0881 || DS:0882) { key = read-key(); if (key-waiting-test()) key =
+            //   read-key(); else key = the held key's (HeldKey, or the key read); DS:0880 = DS:0881 = DS:0882 = 0; }`: a second waiting key is
             //   taken in the same pass and replaces the first, so the two presses a held key leaves in the buffer (BiosKeyBuffer) make one step,
             //   and the walk stops within a pass of the key's release
-            // C: with a key held (the keyboard interrupt's bytes) and none waiting, get_key waits for the next key (root 047C:0744, INT 16h
+            // C: with a key held (the keyboard interrupt's bytes) and none waiting, read-key waits for the next key (root 047C:0744, INT 16h
             //   AH=0); the held key then replaces it: the ` and \ keys and the keypad's - and + (DS:088A) walk as Up, Left, Down and Right
             //   do, and any key read while Enter is held is Enter
             var held = ui.Directions;
@@ -147,7 +147,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 held.ClearForTheMap();
             }
 
-            // C: `if (mouse_buttons & 1)`: while the left button is HELD, a point right of x = 0x3c steers the marker, a point at or left of it clears the target and opens the sheet of the member in that row.
+            // C: `if (mouse-button-state & 1)`: while the left button is HELD, a point right of x = 0x3c steers the marker, a point at or left of it clears the target and opens the sheet of the member in that row.
             // DIVERGENCE: the portrait click opens the sheet once per press (the original would reopen it every pass while the button stays down); the steering follows the held button as in the original.
             var mouse = ui.Mouse;
             PassHook?.Invoke(true);
@@ -155,7 +155,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             {
                 if (mouse.X > AreaX)
                 {
-                    // C: mxe = mouse_x - 0x41; mye = mouse_y - 0x15: a point of the view (overland_loop's locals), not of the map: when the view
+                    // C: mxe = pointer-column - 0x41; mye = pointer-row - 0x15: a point of the view (world-map-loop's locals), not of the map: when the view
                     //   jumps (0c44 moves DS:2866 / DS:2868 by 128 / 92 pixels) the target stays where it was in the view
                     target = (mouse.X - AreaX - 5, mouse.Y - AreaY - 5);
                 }
@@ -168,8 +168,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             // C: the right button with a Shift key held shows "character X:%02d Y:%02d" at (0x58, 0x1f) in white, until the next redraw.
             _coordinates = ui.Mouse.Right && ui.ShiftHeld ? CoordinateText() : "";
 
-            // orig: the start of R030+0x0C44 (+0x54/+0x63), every pass: party_x / party_y = the cell under the marker (after the last pass's
-            //   scroll). The menu bar (Poll above) comes before it, as menu_bar_run does in overland_loop: a save there holds the cell of the
+            // orig: the start of R030+0x0C44 (+0x54/+0x63), every pass: party-map-column / party-map-row = the cell under the marker (after the last pass's
+            //   scroll). The menu bar (Poll above) comes before it, as menu-bar-loop does in world-map-loop: a save there holds the cell of the
             //   previous pass, the one the last walk stepped from.
             var (cellColumn, cellRow) = WorldMap.CellAt(_x, _y);
             state.MapPosition = new Core.World.MapPosition(cellColumn, cellRow);
@@ -218,7 +218,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     }
 
     /// <summary>Opens a member's character sheet (a click on the portrait), if the slot holds someone.</summary>
-    // orig: the `mouse_x <= 0x3c` arm at the top of overland_loop: `sel = mouse_y / 40; if (party[sel].present) { free the map icons; member_sheet_vec(sel); redraw ... }`
+    // orig: the `pointer-column <= 0x3c` arm at the top of world-map-loop: `sel = pointer-row / 40; if (party[sel].present) { free the map icons; member-sheet-overlay-entry(sel); redraw ... }`
     public Action<int>? CharacterSheet { get; init; }
 
     /// <summary>Camps on the map (C or F8). Receives the party's watch value (<see cref="WorldMap.CampWatch"/>); the screen it opens advances the clock itself.</summary>
@@ -236,7 +236,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     }
 
     // orig: case 0x1e41 / 0x1e61 / 0x4100 ('A', 'a', F7) of R030+0x0C44, written from the C
-    // C: the marker stands (sprite row 9) and every pass lets one step's time go by at the same place, with delay_ticks(75) before and after; the loop ends on a key press (checked after both delays) or when a mouse button is down (checked at the top). Any result of 1300 other than "walked on" leaves the loop: an arrival, an encounter, or a blocked step (impossible in place). DS:A891 is 1 until the first step and 3 after it.
+    // C: the marker stands (sprite row 9) and every pass lets one step's time go by at the same place, with wait-ticks(75) before and after; the loop ends on a key press (checked after both delays) or when a mouse button is down (checked at the top). Any result of 1300 other than "walked on" leaves the loop: an arrival, an encounter, or a blocked step (impossible in place). DS:A891 is 1 until the first step and 3 after it.
     private int? Rest(GameState state, OverlandTravel travel)
     {
         _frame = 0;
@@ -252,10 +252,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         }
     }
 
-    // orig: R030+0x0C44 case 0x1E41: `goto test; do { if (mouse_buttons & 3) break; delay_ticks(75); kf = 1300(...); DS:A891 = 3;
-    //   if (kf != -1) return kf; 16c6(..., 9); delay_ticks(75); test: } while (!key_pressed());` (delay_ticks R030+0x3096 spins on the
+    // orig: R030+0x0C44 case 0x1E41: `goto test; do { if (mouse-button-state & 3) break; wait-ticks(75); kf = 1300(...); DS:A891 = 3;
+    //   if (kf != -1) return kf; 16c6(..., 9); wait-ticks(75); test: } while (!key-waiting-test());` (wait-ticks R030+0x3096 spins on the
     //   clock without an input test): a key pressed during the first delay still lets that step's time pass, and the key stays in the
-    //   buffer for the map's next pass (key_pressed only looks); tests: OverlandKeyTests.AKeyInTheRestsFirstDelayStillLetsTheStepHappen; lockstep sessions with the rest key agree (replay)
+    //   buffer for the map's next pass (key-waiting-test only looks); tests: OverlandKeyTests.AKeyInTheRestsFirstDelayStillLetsTheStepHappen; lockstep sessions with the rest key agree (replay)
     private int? RestLoop(GameState state, OverlandTravel travel)
     {
         while (!ui.KeyWaiting)
@@ -280,8 +280,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         return null;
     }
 
-    // orig: case 0x2e43 / 0x2e63 / 0x4200 ('C', 'c', F8) of R030+0x0C44: free the icon buffer, thunk 09C0:1FF9(25be()) (thunk 09C0:1FF9 = the camp, R036+0x0000), `if (event_started(0x5f)) return 1000`, then reload the pictures and redraw
-    // C: 1000 is the road-encounter branch, which for an ambush in camp (event 0x5f) is rand_mod(2) ? 0x16a : 0x169.
+    // orig: case 0x2e43 / 0x2e63 / 0x4200 ('C', 'c', F8) of R030+0x0C44: free the icon buffer, thunk 09C0:1FF9(25be()) (thunk 09C0:1FF9 = the camp, R036+0x0000), `if (event-begun-flag(0x5f)) return 1000`, then reload the pictures and redraw
+    // C: 1000 is the road-encounter branch, which for an ambush in camp (event 0x5f) is roll-below(2) ? 0x16a : 0x169.
     private int? CampOnTheMap(GameState state, OverlandTravel travel)
     {
         // C: 25be reads the cell buffer 20d2 filled for the view (Draw), under the marker as the view's registers place it: at the west / north
@@ -296,8 +296,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 
     private static bool IsCampKey(int key) => key == Keys.F8 || Keys.IsLetter(key, 'c') && (key >> 8) == 0x2E;
 
-    // orig: sprintf(bufk, "character X:%02d Y:%02d", colh, rowo) in overland_loop
-    // C: the numbers are NOT the party's cell: the row is (DS:2868 + 11) / 4 + DS:286E + DS:286C (one more than party_y, no - 1) and the column uses +9 (odd rows) or +17 (even rows) where the party's cell uses +16 / +24 and -1; the display is a debugging aid and keeps its own arithmetic.
+    // orig: sprintf(bufk, "character X:%02d Y:%02d", colh, rowo) in world-map-loop
+    // C: the numbers are NOT the party's cell: the row is (DS:2868 + 11) / 4 + DS:286E + DS:286C (one more than party-map-row, no - 1) and the column uses +9 (odd rows) or +17 (even rows) where the party's cell uses +16 / +24 and -1; the display is a debugging aid and keeps its own arithmetic.
     private string CoordinateText()
     {
         var row = (_y + 11) / WorldMap.RowHeight;
@@ -338,15 +338,15 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         return result;
     }
 
-    // orig: the start of overland_open: x = party_x = city exit (cities) or the location's own position, view centred with DS:2866 = 0x82 and DS:2868 = 0x40 (hence the 130 and 64), then cur_loc = -1 in overland_loop
-    // C: for a city (cur_loc < 92) the party leaves from the exit point of the city record (exit_x, exit_y); for another place from the place's own x, y; in the wilderness from party_x, party_y.
-    // orig: overland_open R030+0x00A8 (1462:015A..0222) places the view and the marker for party (x, y) in rows of 4 and columns of 16 pixels:
+    // orig: the start of world-map-start: x = party-map-column = city exit (cities) or the location's own position, view centred with DS:2866 = 0x82 and DS:2868 = 0x40 (hence the 130 and 64), then location-now = -1 in world-map-loop
+    // C: for a city (location-now < 92) the party leaves from the exit point of the city record (exit-column, exit-row); for another place from the place's own x, y; in the wilderness from party-map-column, party-map-row.
+    // orig: world-map-start R030+0x00A8 (1462:015A..0222) places the view and the marker for party (x, y) in rows of 4 and columns of 16 pixels:
     //   top = max(y / 100 - 1, 0) * 100 (DS:286E); r = y - top - 16 (DS:286C); while r > 0x53 the top moves down 24 rows; marker y DS:2868 = 0x40;
     //   near the map's bottom (height - top - 0x30 < r) DS:2868 = (top - height + r + 0x40) * 4, DS:286E = height - 0x83, DS:286C = 0x53;
     //   DS:286C < 0 becomes 0; marker x DS:2866 = 0x82 with the view column DS:286A = x - 8, near the right edge (x - 8 > width - 0x11)
     //   DS:2866 = (x - 8 - width) * 16 + 0x192 with DS:286A = width - 0x11, at the left (x - 8 <= 0) DS:2866 = 0x82 - (x - 8) with DS:286A = 0.
     // C: in one absolute pixel (WorldMap.CellAt) the marker stands at (16 x + 2, 4 y) away from the edges. Every pass of 0c44, the idle one
-    //   included, sets party_x/party_y from the cell under the marker (R030+0x0C44 +0x54/+0x63): (16 x + 2, 4 y) is cell (x, y + 1), so the
+    //   included, sets party-map-column/party-map-row from the cell under the marker (R030+0x0C44 +0x54/+0x63): (16 x + 2, 4 y) is cell (x, y + 1), so the
     //   party stands one row south of the exit point as soon as the map runs (the first pass comes before any step or save).
     // C: x - 8 <= 0 puts the marker at 0x82 - (x - 8) pixels, not 16 x + 2 (a column near the left edge reads another cell); kept.
     private void PlaceParty(GameState state)
@@ -410,7 +410,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             if (map.Height - _viewTop - 0x30 <= _viewRows)
             {
                 // BUG: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the
-                //   buffer's top was not already there (a top of 0x318 from overland_open, the party walking south), the row buffer keeps the
+                //   buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the
                 //   rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's
                 //   registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
                 _viewTop = map.Height - 0x83;
@@ -502,7 +502,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     }
 
     /// <summary>The map pictures' colours (cards and sheets change the palette), with the season's changes.</summary>
-    // orig: pic_draw_pal(1, "pics\\mapicons.pic", cur_palette) (reloads the palette of MAPICONS.PIC) followed by R030+0x2DD6 and set_palette(cur_palette) - in 1f30, after a sheet (0c44's redraw label) and after a portrait click
+    // orig: image-paint-palette(1, "pics\\mapicons.pic", palette-now) (reloads the palette of MAPICONS.PIC) followed by R030+0x2DD6 and palette-load(palette-now) - in 1f30, after a sheet (0c44's redraw label) and after a portrait click
     private void UseMapPalette(GameState state)
     {
         _mapDirty = true;
@@ -511,7 +511,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     }
 
     // orig: R030+0x2DD6, see SeasonPalette; the background is DS:2860, the colour the map buffer is cleared to before the tiles are drawn (root 047C:04EA(1, DS:2860) in 20d2)
-    // C: overland_open first sets DS:2860 from the month alone (winter 0xF, 6 in April, September and October, 0x68 otherwise); 1f30 then calls 2dd6 which recomputes it with the day of the month, so only the second values are ever drawn.
+    // C: world-map-start first sets DS:2860 from the month alone (winter 0xF, 6 in April, September and October, 0x68 otherwise); 1f30 then calls 2dd6 which recomputes it with the day of the month, so only the second values are ever drawn.
     private void ApplySeason(GameState state)
     {
         var palette = new CanvasPaletteBytes(ui.Canvas);
@@ -628,7 +628,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         _ => (0, 0),
     };
 
-    // orig: the "direction towards the mouse target" ladder of overland_loop (DS:2866 / DS:2868 against mxe / mye): both axes differ -> the diagonal key, one axis -> the arrow, equal -> 0x4c35 and mxe = 0
+    // orig: the "direction towards the mouse target" ladder of world-map-loop (DS:2866 / DS:2868 against mxe / mye): both axes differ -> the diagonal key, one axis -> the arrow, equal -> 0x4c35 and mxe = 0
     private (int, int) TowardTarget((int X, int Y)? target)
     {
         if (target is not { } t)

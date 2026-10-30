@@ -45,7 +45,7 @@ public sealed class GameScreens2 : IGameScreens
 
     /// <summary>
     /// The game's menu-bar keys (Alt-Q, Alt-P, Alt-S …) while the sheet is up; true when one was handled.
-    /// UNCERTAIN: which keys the original's menu_bar_run takes inside the sheet is not traced; only the Alt keys are passed.
+    /// UNCERTAIN: which keys the original's menu-bar-loop takes inside the sheet is not traced; only the Alt keys are passed.
     /// </summary>
     public Func<int, bool>? MenuBarKey
     {
@@ -87,7 +87,7 @@ public sealed class GameScreens2 : IGameScreens
 
     public void Alchemy(int member, int place) => Keeping(() => _alchemy.Use(_state, _state.Party.Resolve(member), place));
 
-    // orig: barter_open R032+0x0000 sets DS:9920 = DS:9934 = 2 and barter_close R032+0x076C sets them to 1
+    // orig: barter_open R032+0x0000 sets DS:9920 = DS:9934 = 2 and trade-screen-close R032+0x076C sets them to 1
     public void Barter(int shop, string name, long categories)
     {
         SetSaveAndLoad(2);

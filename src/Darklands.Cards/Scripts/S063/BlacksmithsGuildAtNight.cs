@@ -10,7 +10,7 @@ namespace Darklands.Cards.Scripts;
 /// break in.
 /// </summary>
 // orig: R063+0x0000 (1838:0000) matched; tests: CardSmokeTests
-// orig: handler setup R063+0x09EE is empty: the item/saint handlers and opt_on[10..19]
+// orig: handler setup R063+0x09EE is empty: the item/saint handlers and card-option-enabled[10..19]
 // of the previous card stay (no pop-up line here, so nothing reads them).
 public sealed class BlacksmithsGuildAtNight : Card
 {
@@ -52,7 +52,7 @@ public sealed class BlacksmithsGuildAtNight : Card
             new MenuLine(chance => KnockForTheMaster(c, chance), () => MasterChance(c, standing)),
             new MenuLine(_ => WatchTheGuildhouse(c), OptionHint.Saying(CardTexts.Unknown)),
             new MenuLine(chance => BreakIn(c, menu, chance), () => BreakInChance(c)),
-            // DORMANT: lines 4..8 are never offered (opt_flag_4..8 = 0); their actions do nothing.
+            // DORMANT: lines 4..8 are never offered (card-option-flag-4..8 = 0); their actions do nothing.
             // orig: R063+0x0964 (hint 0966 "Success is assured."), 099e R063+0x099E and the
             // empty functions at 09a0..09ac.
             // C: lines 5..8 use empty void functions as their hint handlers: their struct res would be
@@ -92,7 +92,7 @@ public sealed class BlacksmithsGuildAtNight : Card
             c.Screen.Text(2, TextFrame.BlankPage);
         }
         c.Events.Update(-2, c.Here, FactKind, 3, 2, PoliticsQuest, EventUpdate.Or);
-        // C: cur_rep, the card's copy of the reputation, is lowered and written back.
+        // C: reputation-now, the card's copy of the reputation, is lowered and written back.
         standing--;
         c.LocationSet(c.Here, 0, standing);
     }
@@ -138,7 +138,7 @@ public sealed class BlacksmithsGuildAtNight : Card
         {
             c.Screen.Text(1);
             c.PassHours(1);
-            // C: party_x is not set here: the guild hall card gets whatever guild was handed on last.
+            // C: party-map-column is not set here: the guild hall card gets whatever guild was handed on last.
             c.Next = 0x6A;
             return;
         }
@@ -158,11 +158,11 @@ public sealed class BlacksmithsGuildAtNight : Card
         {
             // C: % keeps the sign of a negative value; such a remainder matches no secret.
             var secret = (c.LocationQuery(c.Here, 0x21) + 2) % 7;
-            // C: && stops early: the second roll (rand_mod(1000)) is made only for the matching secret.
+            // C: && stops early: the second roll (roll-below(1000)) is made only for the matching secret.
             if (secret == 0 && c.Random(1000) % 2 != 0)
             {
                 Witnessed(c, 4, 0x78, 8);
-                // C: card_text(8, v_si) passes the secret (0) as the frame.
+                // C: card-text-block(8, local-in-si) passes the secret (0) as the frame.
             }
             else if (secret == 1 && c.Random(1000) % 5 == 0)
             {

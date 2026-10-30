@@ -45,7 +45,7 @@ public sealed class CardMenuTests
         // Once by the screen, once on the choice.
         Assert.Equal((2, 42), (asked, got));
 
-        // l_a = (*opt_fn[k])() runs whether the action uses it or not.
+        // local-minus-0a = (*card-option-handler[k])() runs whether the action uses it or not.
         c.Next = 1;
         asked = 0;
         menu.Run(new MenuLine(() => c.Next = 2, () => { asked++; return OptionHint.ChanceOf(42, 0); }));
@@ -123,7 +123,7 @@ public sealed class CardMenuTests
         var (c, _) = Context();
         c.State.OptionFlags[3] = 2;
         c.State.OptionFlags[4] = 1;
-        // lines 3 and 4 are copied from opt_flag_3/4; the card never assigns 4 (stale), so 3 starts at 0
+        // lines 3 and 4 are copied from card-option-flag-3/4; the card never assigns 4 (stale), so 3 starts at 0
         var menu = new CardMenu(c, 1, 0, copiedFlags: 0b11000, staleFlags: 0b10000);
         Assert.Equal(OptionState.Hidden, menu[3]);
         Assert.Equal(OptionState.Enabled, menu[4]);

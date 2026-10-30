@@ -12,7 +12,7 @@ game's keyboard interrupt, root 044A:020E, which keeps DS:0880..0889: held direc
 in a battle give them after a bwait: they reach the original at the head of the next pass); wait/shot steps are for the C# only.
 bwait:<n> is for orders in a battle (the idle test below never passes where animated pieces draw random numbers, and a running battle is
 never idle): the steps after it are given n + 1 battle passes after the previous one (the original) / after wait:<n - 3> frames (the C#
-host, a frame being a pass there). A menu or a sheet (a loop that does not pass combat_input) is idle after IDLE_POLLS polls, as before
+host, a frame being a pass there). A menu or a sheet (a loop that does not pass fight-input) is idle after IDLE_POLLS polls, as before
 (each bwait waits its own polls there).
 Keep the pointer off the battle view's edges (x < 68, y < 8 or > 191, x > 311): the original scrolls the view there, which the C# does not. State steps inside a battle do
 not compare (the C# writes the party, the original the battle's save): a state the original wrote in a battle (the difficulty byte's bit 7) while
@@ -32,14 +32,14 @@ the C# host reports one running ("in-battle") compares the card only, and the se
      takes it), DOS console input (INT 21h 0Bh/07h/08h, the load's question) and the mouse (INT 33h 3/5/6,
      DS:6EEC..6EFB) from the script (fn 5/6 give the pointer at that button's last press/release, as the driver does); the screen-save and picture buffers (047C:04D5, 047C:05BC/05AE) as real DOS
      blocks; fixed font metrics (6 x 8, as card_oracle), so menus are chosen by line (option:<n>);
-   * the copy-protection question (R041+0x0000) passes at once, as the C# has it, after the five draws it makes first (rand_mod 4, 20, 7, 7, 6,
-     the original's own rand_mod run by the stub);
-   * a step is given when the game is idle: IDLE_POLLS polls (key_pressed, or the menu bar's handler root 0000:0000
+   * the copy-protection question (R041+0x0000) passes at once, as the C# has it, after the five draws it makes first (roll-below 4, 20, 7, 7, 6,
+     the original's own roll-below run by the stub);
+   * a step is given when the game is idle: IDLE_POLLS polls (key-waiting-test, or the menu bar's handler root 0000:0000
      every screen's loop calls) and IDLE_MS of emulated time with no random number drawn and the same card; a click
      holds the button CLICK_MS once the game has read it;
    * the battle: one call of the game's timer callback (047C:000A) at the head of each pass (R014+0x3166), the
      time-based timer kept out of the pass (the C# host then advances one 60 Hz tick a pass); the ticks each battle's
-     set-up takes (combat_state_clear to the enemies' turn, then to the first pass: its loads run at the emulator's
+     set-up takes (fight-state-reset to the enemies' turn, then to the first pass: its loads run at the emulator's
      speed) are measured and given to the C# (DARKLANDS_BATTLE_SETUP_TICKS);
    * state:<name> runs the original's own saved-game writer (R037 1462:2ACE) on a copy of the machine;
    * every srand((unsigned)time(0)) (a call that follows `call time`) is recorded: the clock seeds; the other
@@ -84,7 +84,7 @@ import orig_side  # noqa: E402
 from orig_side import BWAIT_ACTUAL, ClockTrace, TraceList, key_code, run_original, stale_destinations  # noqa: E402,F401
 
 BWAIT_FRAMES = 3                    # the C# host's frames a step costs beyond its wait (see run_rewrite)
-# the hot keys whose message box (show_message root 0000:24BC, 0x3C ticks) holds the pass: Alt-M, Alt-F, Alt-C, Alt-D (outside the menu bar's
+# the hot keys whose message box (notice-display root 0000:24BC, 0x3C ticks) holds the pass: Alt-M, Alt-F, Alt-C, Alt-D (outside the menu bar's
 # keyboard mode, where root 0000:0DD2 takes them without acting); the C# host's frames of that box: its draw, the 1000 ms delay at 32 ms a
 # frame (the host's pump and the delay's sleep), the restore; 33 (round B1 tier 2: with 34 the next step came one battle pass after the original's at
 # 18 of 22 box keys in 14 sessions, the other four with another lag between)
@@ -425,8 +425,8 @@ def bar_list_clicks(log, steps) -> set[int]:
     return out
 
 
-def hot_keys(log, steps) -> set[int]:
-    """The key steps the original read in a battle pass by the menu bar routine's hot keys (root 0000:0000 from combat_input R014+0x3166:
+def hotkey_table(log, steps) -> set[int]:
+    """The key steps the original read in a battle pass by the menu bar routine's hot keys (root 0000:0000 from fight-input R014+0x3166:
     root 0000:0CAA, the line's innermost frame R014+0x0000) where nothing came up (no box, bar or sheet callbacks line follows): a refused
     or silent hot key (F6, Alt-S in real combat ...). The log's input lines are matched to the input steps in order; the matching stops at
     the first line whose kind is not its step's."""
@@ -448,10 +448,10 @@ def hot_keys(log, steps) -> set[int]:
 
 def map_holds(log, steps) -> dict[int, int]:
     """{index of a click step: the map passes the original saw its left button down}, from the log's "maphold n" lines (written at the click's
-    release when overland_loop R030+0x02DC found the button down in n passes; empty when the log's input lines are not the steps'). The
+    release when world-map-loop R030+0x02DC found the button down in n passes; empty when the log's input lines are not the steps'). The
     original lets a click go CLICK_MS after the game read the button, which spans as many map passes as the emulator takes for them (a pass
     that steps and draws takes longer than one that stands); the target is aimed again at every pass that sees the button down, so after a
-    blocked step (the target dropped, overland_loop's sel == 9999) a pass with the button still down walks on (round R2: L1, L2). The C#
+    blocked step (the target dropped, world-map-loop's sel == 9999) a pass with the button still down walks on (round R2: L1, L2). The C#
     host holds the click for as many passes of its map loop (mapclick:x,y,n). The log's input lines are matched to the input steps in order
     (a run that ended early logs fewer); the matching stops at the first line whose kind is not its step's."""
     kinds = orig_side.INPUT_KINDS          # the steps the original logs as input lines ("<kind> <value> at ...")
@@ -470,7 +470,7 @@ def map_holds(log, steps) -> dict[int, int]:
 
 def rup_boxes(log) -> list[bool]:
     """For each release of the held right button (rup) in the original's log, in order: whether the menu bar's run it ended showed a message
-    box (the next "menu callbacks" line counts show_message's 0x3C ticks)."""
+    box (the next "menu callbacks" line counts notice-display's 0x3C ticks)."""
     out, waiting = [], False
     for l in log:
         if l.startswith("rup "):
@@ -496,7 +496,7 @@ def resume_clocks(trace) -> list[int]:
 def loot_ticks(jumps, log):
     """(jumps, [(clock, ticks)]): the clock jumps of the passes followed by a loot screen (a key read in R040 at clock c, the jump of the pass
     whose head had c - 1) without their ticks after the pass, those being given to the C# at the loot screen: the end test R014+0x08FE runs
-    combat_recover R014+0x0DEE (each member's next recovery = the clock) before the loot screen, whose emulated time the timer counts."""
+    fight-recovery R014+0x0DEE (each member's next recovery = the clock) before the loot screen, whose emulated time the timer counts."""
     at = set()
     for l in log:
         if l.startswith("key ") and "< R040+0x0000" in l and ", clock " in l:
@@ -519,7 +519,7 @@ def sheet_callbacks(log) -> list[tuple[int, int]]:
 
 def box_callbacks(log) -> list[tuple[int, int]]:
     """[(during, after)] for each hot key's message box in a battle, from the original's log ("box callbacks 13,16 (battle pass 746)" after the
-    key line of Alt-D / F / M / C): the timer callbacks of show_message's wait and of the rest of its pass."""
+    key line of Alt-D / F / M / C): the timer callbacks of notice-display's wait and of the rest of its pass."""
     out, last = [], None
     for l in log:
         if l.startswith("key ") and "(battle pass " in l:
@@ -561,7 +561,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     # (no entry in BWAIT_ACTUAL): the next key there comes when the battle is idle; the C# waits the passes the original's log shows
     gaps = iter(dialog_gaps(log or (), steps, len(BWAIT_ACTUAL)))
     in_list = list_keys(log or (), steps)
-    hot = hot_keys(log or (), steps)
+    hot = hotkey_table(log or (), steps)
     runs = sheet_runs(log or (), steps)
     bar_clicks = bar_list_clicks(log or (), steps)
     holds = click_holds(log or (), steps, BWAIT_ACTUAL, in_list)
@@ -585,11 +585,11 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
                 cost = BWAIT_FRAMES - sheet_clicks.get(i, 0)
             if i and steps[i - 1][0] in ("move", "kdown", "kup"):
                 # a move has no idle frames in the host (one frame, the step's own); the original takes the bwait at once at the poll after the move,
-                # in the same pass (a key: at the poll after the get_key that takes it), so the next step comes n passes after the move: wait:<n - 2>
+                # in the same pass (a key: at the poll after the read-key that takes it), so the next step comes n passes after the move: wait:<n - 2>
                 # (a key's make or break code, kdown / kup, likewise: the host feeds it to its keyboard interrupt model in the step's frame)
                 cost -= 1
             if i and steps[i - 1][0] == "rup" and next(boxed, False):
-                # the right button let go in a battle on an item whose message box shows (rdown .. rup; the original's bar run counted show_message's
+                # the right button let go in a battle on an item whose message box shows (rdown .. rup; the original's bar run counted notice-display's
                 # 0x3C ticks, its "menu callbacks 60,n"): the C# host's box goes on over its frames before the battle's next pass, where the
                 # original's next pass comes at once (the box's time is DARKLANDS_BATTLE_MENU_CALLBACKS)
                 cost -= RUP_FRAMES
@@ -606,7 +606,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
             if i >= 3 and steps[i - 1] == ("key", "esc") and steps[i - 3][0] == "key" and steps[i - 3][1] in ("f1", "f2", "f3", "f4", "f5"):
                 cost -= 1                   # the sheet that Esc closes passes no battle pass in the frame it ends in
             if i and i - 1 in hot and steps[i - 1][1].lower() not in BOX_KEYS:
-                # a key the hot keys of the menu bar routine took (root 0000:0000 at the head of combat_input R014+0x3166) with nothing coming up:
+                # a key the hot keys of the menu bar routine took (root 0000:0000 at the head of fight-input R014+0x3166) with nothing coming up:
                 # the original's bwait counts from R016's poll in the same pass (a key the battle's own keys read, R016+0x0021, from the next
                 # pass's), so its next step comes n passes after it, not n + 1 (round C3: F6 in gen-bkeys-51, gen-bkeys-39; Alt-S in b3-save-fight3)
                 cost += 1
@@ -677,7 +677,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
         # the same for the menu bar's runs in a battle (root 0000:0000 with the bar up): the C# host has no time there either
         env["DARKLANDS_BATTLE_MENU_CALLBACKS"] = ";".join("%d,%d" % p for p in menus)
     if boxes:
-        # and for the hot keys' message boxes in a battle (show_message's wait of the timer's tick byte)
+        # and for the hot keys' message boxes in a battle (notice-display's wait of the timer's tick byte)
         env["DARKLANDS_BATTLE_BOX_CALLBACKS"] = ";".join("%d,%d" % p for p in boxes)
     run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
@@ -737,13 +737,13 @@ def sound_lines(lines, rewrite: bool) -> list[tuple[str, str]]:
 
 
 def sound_compare(log, output: str, original_cut: bool = False) -> dict:
-    """The sound requests of the original (sound_play root 047C:078A, music_play R043+0x09AE) against the C# host's, per segment between the
+    """The sound requests of the original (sound-start root 047C:078A, music_play R043+0x09AE) against the C# host's, per segment between the
     script's state steps. {"original": n, "rewrite": n, "agree": bool, "first": {...} | None, "segments": {name: {"original": [...], "rewrite": [...]}}
     for the segments that differ}; original_cut: the original stopped at its budget while the C# ran on (a fight): the C#'s requests after the
     original's last one are not compared; "recorded": False when the original's log has no "sound log on" line (a recording made before patch 06)."""
     theirs, mine = sound_lines(log, False), sound_lines(output.splitlines(), True)
     if theirs[:1] == [("start", "sound 7")]:
-        # orig: R000+0x052A: sound_play(7) right after the driver is loaded at the program's start (the "ready" tune). The C# host plays it when its
+        # orig: R000+0x052A: sound-start(7) right after the driver is loaded at the program's start (the "ready" tune). The C# host plays it when its
         # SynthAudio is made (the driver start, SynthAudio ctor); the silent headless host has no driver, so there is nothing to compare
         theirs = theirs[1:]
     if original_cut and theirs:
@@ -813,7 +813,7 @@ def compare(steps, original: dict, rewrite: dict, fresh: bool = False, items: in
                     d["head"]["0"] = head
                 else:
                     del d["head"]
-            # +0x64 (party_seed): a game begun from the start screen (no saved game) takes it from the BIOS timer word at 0040:006C
+            # +0x64 (party-random-seed): a game begun from the start screen (no saved game) takes it from the BIOS timer word at 0040:006C
             # (R037+0x9DB2, keys C and Q), a read of the original's time that the C# host (whose clock is the srand seeds) cannot repeat:
             # the host is given the word the first saved game holds (party_ticks, the ticks: step), and then the party seed is compared like
             # any field; only a session with no state to take the word from keeps it apart ("party seed"), not as a difference
@@ -848,7 +848,7 @@ def main():
     ap.add_argument("--budget", type=int, default=2_000_000_000)
     ap.add_argument("--battle-trace", action="store_true", help="original-battle.trace / rewrite-battle.trace: each battle pass")
     ap.add_argument("--battle-records", action="store_true", help="as --battle-trace, each pass line with the combatant records, queued damage and attack rates (battle_oracle.py's), compared by combat clock: report.json's battle")
-    ap.add_argument("--no-wall-draws", action="store_true", help="experiment: R014+0x827A's random_n(2) leaves the generator as it was")
+    ap.add_argument("--no-wall-draws", action="store_true", help="experiment: R014+0x827A's roll-n(2) leaves the generator as it was")
     ap.add_argument("--coverage", action="store_true", help="<out>/cov/cov-0.jsonl: the original's blocks and branch outcomes (kept only if all states agree)")
     import recording
     recording.add_arguments(ap)
@@ -869,7 +869,7 @@ def main():
         snapshots = None
         if not a.no_snapshot and not a.no_wall_draws:
             sparts, n = orig_side.session_start(steps)
-            # key_pressed looks ahead at the next step that is a key, a move, a click or an option (an Alt key is let through only at some of the map
+            # key-waiting-test looks ahead at the next step that is a key, a move, a click or an option (an Alt key is let through only at some of the map
             # loop's looks), so the state at the start point depends on it: it is part of the key
             ahead = next(((k, v) for k, v in list(steps)[n:] if k in orig_side.INPUT_KINDS), None)
             snapshots = recording.Snapshot(a.recordings, "session", {**{k: parts[k] for k in recording.COMMON_KEYS}, **sparts, "ahead": ahead, "coverage": a.coverage})

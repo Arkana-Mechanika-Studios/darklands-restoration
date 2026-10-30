@@ -6,7 +6,7 @@ namespace Darklands.Cards.Scripts;
 /// and the picture depend on how the city is ruled.
 /// </summary>
 // orig: R113+0x0656 (189D:0006) matched; tests: CardSmokeTests
-// orig: R113+0x0B1C (189D:04CC) matched (registration: sets every opt_on to 1; only lines 0..4 exist in the texts)
+// orig: R113+0x0B1C (189D:04CC) matched (registration: sets every card-option-enabled to 1; only lines 0..4 exist in the texts)
 public sealed class WalledCityApproach_CityE00 : Card
 {
     private const int NightPicture = 6;
@@ -15,10 +15,10 @@ public sealed class WalledCityApproach_CityE00 : Card
 
     public override int Run(CardContext c)
     {
-        // C: sound_play(6) (root 047C:078A) directly, not through the music setting.
+        // C: sound-start(6) (root 047C:078A) directly, not through the music setting.
         c.PlaySound(6);
-        // C: cur_loc_query(0x21) % 3 is a signed remainder; a negative value matches no case and card_load takes pic_buf as the
-        //   last card left it (the oracle's saved games: walled free cities, an empty pic_buf after the load).
+        // C: location-now-query(0x21) % 3 is a signed remainder; a negative value matches no case and card-run takes image-buffer as the
+        //   last card left it (the oracle's saved games: walled free cities, an empty image-buffer after the load).
         var picture = (c.HereQuery(0x21) % 3) switch { 0 => 4, 1 => 6, 2 => 7, _ => -1 };
         if (picture < 0)
         {
@@ -32,7 +32,7 @@ public sealed class WalledCityApproach_CityE00 : Card
         // C: the option text is chosen anew before each menu; every choice leaves the card, so it cannot change.
         var menu = Menu(c, TextForTheRule(c));
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 4);
-        // C: cur_rep = loc_reputation(cur_loc) is stored for the texts ($PlaceAttitude).
+        // C: reputation-now = place-standing(location-now) is stored for the texts ($PlaceAttitude).
         var size = c.LocationQuery(c.Here, 2);
         c.Variables.Numbers[0] = size / 2 + 1;
         c.Variables.Numbers[1] = size / 2 + 2;
@@ -106,7 +106,7 @@ public sealed class WalledCityApproach_CityE00 : Card
         ShowPicture(c, NightPicture);
         c.Screen.Text(4);
         var hours = c.LocationQuery(c.Here, 2) / 2 + 2;
-        // C: get_hour() (R029+0x5650, matched: returns cur_hour) + hours.
+        // C: read-hour() (R029+0x5650, matched: returns hour-now) + hours.
         var end = c.State.Date.Hour + hours;
         if (end <= 24 && end != hours)
         {

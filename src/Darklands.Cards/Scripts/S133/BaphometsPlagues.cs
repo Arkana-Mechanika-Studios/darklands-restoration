@@ -17,11 +17,11 @@ namespace Darklands.Cards.Scripts;
 //   option 1: action R133+0x186C; hint R133+0x1BD2
 //   other: R133+0x1C0A, R133+0x1C42
 // DORMANT (generated): option slots 10..19 keep the default handler R133+0x1C42 ("screwed up.") and are never shown.
-// C (generated): opt_flag_2/3/4/5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// C (generated): card-option-flag-2/3/4/5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class BaphometsPlagues : Card
 {
     public override int Number => 359;
@@ -99,9 +99,9 @@ public sealed class BaphometsPlagues : Card
         {
             here.ArrivalCard = NothingHere;
         }
-        // C: the original also calls nearest_city here and ignores the answer (no side effect).
+        // C: the original also calls closest-city here and ignores the answer (no side effect).
         // DIVERGENCE: the loops over the cities and the location writes are bounded by the location list here; the C
-        //   indexes the 92 cities and locations[cur_loc ± k] without a check.
+        //   indexes the 92 cities and locations[location-now ± k] without a check.
         for (var city = 0; city < Math.Min(Cities, c.State.Locations.Count); city++)
         {
             c.AdjustReputation(city, 20, 20);
@@ -110,7 +110,7 @@ public sealed class BaphometsPlagues : Card
         TheCastleMoves(c);
         c.PassHours(2);
         var nearest = GoToTheNearestCity(c);
-        // DIVERGENCE: the C calls loc_reputation_adj(v_si, 50, 50) even when no city was found (v_si = −1), on the
+        // DIVERGENCE: the C calls place-standing-adjust(local-in-si, 50, 50) even when no city was found (local-in-si = −1), on the
         //   record before the location table (and with its random draws); the C# skips it then.
         if (nearest != -1)
         {
@@ -121,7 +121,7 @@ public sealed class BaphometsPlagues : Card
 
     /// <summary>Hope, the seventh key: the closing film, then the inn of the nearest city.</summary>
     // orig: R133+0x186C matched
-    // C: the film runs only while films are on (DS:0BF2 clear); it reloads the card (card_load with pic_buf, the
+    // C: the film runs only while films are on (DS:0BF2 clear); it reloads the card (card-run with image-buffer, the
     //   card's picture) afterwards, as Show does here.
     private void Refuse(CardContext c)
     {
@@ -138,7 +138,7 @@ public sealed class BaphometsPlagues : Card
         {
             c.AdjustReputation(nearest, 50, 50);
         }
-        // C: 40/40 and 20/20 are positive, so loc_reputation_adj draws its "will it change" roll and the amount.
+        // C: 40/40 and 20/20 are positive, so place-standing-adjust draws its "will it change" roll and the amount.
         for (var city = 0; city < Math.Min(Cities, c.State.Locations.Count); city++)
         {
             c.AdjustReputation(city, 40, 40);
@@ -146,7 +146,7 @@ public sealed class BaphometsPlagues : Card
         c.GiveReward(99);
         // C: with no city found the C reads the record at (−1) × 0x26E + 1 of darkland.cty and the description at (−1) × 0x50 + 1 of
         //   darkland.dsc: the runtime's fseek takes the position past the end, the reads return nothing and both keep what they held,
-        //   as here (and nearest_city never returns −1).
+        //   as here (and closest-city never returns −1).
         if (nearest != -1)
         {
             // The city's record (and with it its description) of the city the party woke in.
@@ -182,7 +182,7 @@ public sealed class BaphometsPlagues : Card
     }
 
     /// <summary>The party is now at the city nearest to its map position (city 0x22 if none); returns that city or −1.</summary>
-    // orig: the cur_loc choice repeated inline in R133+0x169E / _04dc matched
+    // orig: the location-now choice repeated inline in R133+0x169E / _04dc matched
     private static int GoToTheNearestCity(CardContext c)
     {
         var nearest = c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y);

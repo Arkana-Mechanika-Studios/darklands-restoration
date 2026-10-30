@@ -22,10 +22,10 @@ public sealed partial class TacticalBattle
     /// The marching order is kept when it lists exactly the able members; otherwise it becomes
     /// the able members in slot order.
     /// </summary>
-    /// <param name="message">marching_order_rebuild's argument: 1 from G and Q (R016+0x0C1B, R016+0x0D22), 0 at the battle's start (R014+0x000D).</param>
-    // orig: marching_order_rebuild R016+0x0DA6 (1EF8:0DA6) draft; R016+0x0E2E (1EF8:0E2E) draft
+    /// <param name="message">column-order-recompute's argument: 1 from G and Q (R016+0x0C1B, R016+0x0D22), 0 at the battle's start (R014+0x000D).</param>
+    // orig: column-order-recompute R016+0x0DA6 (1EF8:0DA6) draft; R016+0x0E2E (1EF8:0E2E) draft
     // C: R016+0x0E54..0x0E73: a rebuilt order with the argument 1 copies the far string 286B:0231 to a buffer and shows it for 60 ticks
-    // C: (show_message root 0000:24BC: the battle waits, the timer runs; the clock too unless DS:07D3 holds it).
+    // C: (notice-display root 0000:24BC: the battle waits, the timer runs; the clock too unless DS:07D3 holds it).
     // C: (checked with the draft of R016+0x0DA6) kept when the length is not 0, every entry's combatant has status 1 and every able member
     // C: is in it: an order that names a member twice (Change Marching Order's F keys) is kept.
     // DIVERGENCE: an entry past the thirteen combatant records (a saved game's bytes) reads past the records; here it makes the order rebuilt.
@@ -80,7 +80,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>Shift-F1..F5 / Ctrl-click: the member becomes the leader too.</summary>
-    // orig: member_activate R016+0x09BC (1EF8:09BC) draft (byte-matched)
+    // orig: member-make-active R016+0x09BC (1EF8:09BC) draft (byte-matched)
     public void ActivateMember(int i)
     {
         if (i is < 0 or >= Combatant.PartySlots)
@@ -104,7 +104,7 @@ public sealed partial class TacticalBattle
 
     /// <summary>An arrow key: the active member takes one step that way this tick (not when the party travels as a group).</summary>
     /// <param name="direction">Compass 0 north … 7 north-west.</param>
-    // orig: combat_keys R016+0x0000 (1EF8:0000) draft (spec D §7.1)
+    // orig: fight-keys R016+0x0000 (1EF8:0000) draft (spec D §7.1)
     public void StepKey(int direction)
     {
         if (Battle.PartyFloor != Battle.FloorShown)
@@ -128,10 +128,10 @@ public sealed partial class TacticalBattle
 
     /// <summary>G: travel as a group on or off (the caller tests the menu entry's enable byte).</summary>
     // orig: R016+0x0BD6 (1EF8:0BD6) draft (byte-matched; checked against the asm)
-    // C: move_mode = move_mode == 1 ? 0 : 1; on: the text DS:074A, the ticks of the Orders entries DS:07AA = 1 / DS:07BC = 2 (the first
-    // C: bytes of their texts; here read from MoveMode when drawn), DS:D7FE = 1, marching_order_rebuild(1), DS:A6D3[0..4] = 0 and for
-    // C: the five party records +0x4A = 0xFF, order_queue_clear(i), +0x10 = 0; off: the text DS:0768, both ticks 2, DS:D7FE = 0,
-    // C: DS:9681 = 2 when DS:D610 == 0, the same clears without order_queue_clear; then show_message(text, 60), order_menu_reset and
+    // C: travel-mode = travel-mode == 1 ? 0 : 1; on: the text DS:074A, the ticks of the Orders entries DS:07AA = 1 / DS:07BC = 2 (the first
+    // C: bytes of their texts; here read from MoveMode when drawn), DS:D7FE = 1, column-order-recompute(1), DS:A6D3[0..4] = 0 and for
+    // C: the five party records +0x4A = 0xFF, command-queue-reset(i), +0x10 = 0; off: the text DS:0768, both ticks 2, DS:D7FE = 0,
+    // C: DS:9681 = 2 when DS:D610 == 0, the same clears without command-queue-reset; then notice-display(text, 60), command-menu-reset and
     // C: DS:9609 = 1 when DS:A695 == 1
     public void ToggleGroup()
     {
@@ -164,9 +164,9 @@ public sealed partial class TacticalBattle
 
     /// <summary>Q: single file on or off (the caller tests the menu entry's enable byte).</summary>
     // orig: R016+0x0CDC (1EF8:0CDC) draft (byte-matched; checked against the asm)
-    // C: DS:D7FE = 0, move_mode = move_mode == 2 ? 0 : 2; on: the text DS:0788, the ticks DS:07AA = 2 / DS:07BC = 1,
-    // C: marching_order_rebuild(1), single_file; off: the text DS:0768, both ticks 2, DS:9695 = 2 when DS:D610 == 0, DS:A6D3[0..4] = 0 and
-    // C: for the five party records +0x4A = 0xFF, +0x10 = 0; then show_message(text, 60), order_menu_reset and DS:9609 = 1 when DS:A695 == 1
+    // C: DS:D7FE = 0, travel-mode = travel-mode == 2 ? 0 : 2; on: the text DS:0788, the ticks DS:07AA = 2 / DS:07BC = 1,
+    // C: column-order-recompute(1), single-file-march; off: the text DS:0768, both ticks 2, DS:9695 = 2 when DS:D610 == 0, DS:A6D3[0..4] = 0 and
+    // C: for the five party records +0x4A = 0xFF, +0x10 = 0; then notice-display(text, 60), command-menu-reset and DS:9609 = 1 when DS:A695 == 1
     public void ToggleSingleFile()
     {
         CursorKeysOn = false;
@@ -217,7 +217,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The head stops; every other member follows the one in front.</summary>
-    // orig: single_file R016+0x0E7E (1EF8:0E7E) draft (byte-matched)
+    // orig: single-file-march R016+0x0E7E (1EF8:0E7E) draft (byte-matched)
     // C: no test of the length: the head is DS:C624[0] (cbw) even when the length is 0 (nobody able: a rebuild leaves the bytes as they were),
     // C: so that stale member is activated (R016+0x09BC, which refuses empty, dead, away and departed members) and its path byte 0 becomes 0xFF;
     // C: the followers' loop (R016+0x0EC8, length > 1) does not run.
@@ -357,7 +357,7 @@ public sealed partial class TacticalBattle
 
     /// <summary>A click with the party travelling as a group or in single file: the formation (or the head) walks to the point.</summary>
     /// <returns>False when the move is refused (blocked).</returns>
-    // orig: combat_mouse R014+0xB576 (19CD:0006) draft (the group move) and group_move R014+0xC75C (19CD:11EC)
+    // orig: fight-mouse R014+0xB576 (19CD:0006) draft (the group move) and group_move R014+0xC75C (19CD:11EC)
     // draft (outline, unverified per spec D §7.4)
     // C: checked against the asm (R014+0xB8E8..0xBB4C): DS:DA4B = clock + 60 first; each path found shows the free ground cursor (DS:D845 =
     // 0xFE), a refusal the blocked one (0xFD) with the sound 0x12 (R014+0x4694)

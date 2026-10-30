@@ -9,7 +9,7 @@ namespace Darklands.Core.Characters;
 /// saint s is bit 0x80 &gt;&gt; (s &amp; 7) of byte s &gt;&gt; 3). The bytes themselves are
 /// <see cref="Bytes"/>: the original also writes and tests whole bytes there.
 /// </summary>
-// orig: formulas R136+0xE08F + 0x5F = 2E38:07BE (0x16 bytes per member), saints_known 2E38:082C (0x14 bytes per member)
+// orig: formulas R136+0xE08F + 0x5F = 2E38:07BE (0x16 bytes per member), saints-learned 2E38:082C (0x14 bytes per member)
 public sealed class KnownBits : ICollection<int>, IReadOnlyCollection<int>
 {
     private readonly bool _saints;

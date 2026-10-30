@@ -18,7 +18,7 @@ internal sealed class SoundDriver : ITimerClient
     public const ushort SampleSegment = 0x2000;
 
     private const int StartSlot = 100;     // root 047C:0783
-    private const int PlaySlot = 101;      // root 047C:078A sound_play
+    private const int PlaySlot = 101;      // root 047C:078A sound-start
     private const int StopSlot = 102;      // root 047C:0791
     private const int FrameTickSlot = 103; // root 047C:0798
     private const int FastTickSlot = 104;  // root 047C:079F
@@ -59,7 +59,7 @@ internal sealed class SoundDriver : ITimerClient
     }
 
     /// <summary>The driver's one command: a piece of music, a sound, or a control number.</summary>
-    // orig: root 047C:078A (047c:078a) root seg 047C asm - sound_play(n),
+    // orig: root 047C:078A (047c:078a) root seg 047C asm - sound-start(n),
     //   slot 101; ASOUND.DC image 20BFh: numbers above 3Bh are ignored, 5 returns the number last
     //   played, the others are stored and dispatched through the word table at image 1FD0h.
     //   tests: DriverTests

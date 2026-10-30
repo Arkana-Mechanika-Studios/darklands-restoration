@@ -21,7 +21,7 @@ internal static class StreetPolitics
     /// other streets (as the original does): there the agent is likelier before the faction's
     /// fact 6 is known, and the side that rises is the other one.
     /// </summary>
-    // orig: the post-menu politics block of R045+0x0C40, R046+0x0000 and R046+0x0724: ev8_at(2) and fact value -1 -> chance 5 by day or 15 by night, minus (max Strength - 33), +10 for fact 6; a draw at most that calls card 0x37 with the street saved; then facts 0x15/0x16 pick the uprising cards 0xBD/0xBE (unless event 0x3E) and 0x80/0x7B.
+    // orig: the post-menu politics block of R045+0x0C40, R046+0x0000 and R046+0x0724: open-quest-at(2) and fact value -1 -> chance 5 by day or 15 by night, minus (max Strength - 33), +10 for fact 6; a draw at most that calls card 0x37 with the street saved; then facts 0x15/0x16 pick the uprising cards 0xBD/0xBE (unless event 0x3E) and 0x80/0x7B.
     public static int AfterTheChoice(CardContext c, int street, int next, bool mainStreetByDay)
     {
         var here = c.Here;

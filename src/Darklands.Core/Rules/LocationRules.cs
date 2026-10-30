@@ -4,7 +4,7 @@ using Darklands.Core.World;
 namespace Darklands.Core.Rules;
 
 /// <summary>
-/// Locations: standing, the <c>loc_query</c>/<c>loc_set</c> values, hostility, local prices,
+/// Locations: standing, the <c>place-query</c>/<c>place-assign</c> values, hostility, local prices,
 /// and finding places on the map. Codes 2..11, 15..35, 40 and 41 read the <em>current city
 /// record</em> whatever location is asked about, as in the original.
 /// </summary>
@@ -12,21 +12,21 @@ public static class LocationRules
 {
     // ---- standing -------------------------------------------------------------------
 
-    /// <summary>The party's standing at a location, −99..99 (<c>loc_reputation</c>).</summary>
-    // orig: loc_reputation R029+0x199C (0E76:199C) matched
+    /// <summary>The party's standing at a location, −99..99 (<c>place-standing</c>).</summary>
+    // orig: place-standing R029+0x199C (0E76:199C) matched
     public static int Reputation(GameState s, int loc) => s.Locations[loc].Reputation;
 
     // orig: R029+0x19B4 (0E76:19B4) matched
     public static void SetReputation(GameState s, int loc, int value) => s.Locations[loc].Reputation = (short)value;
 
     /// <summary>
-    /// A random change of standing (<c>loc_reputation_adj</c>): with chance (100 − |standing|) %
+    /// A random change of standing (<c>place-standing-adjust</c>): with chance (100 − |standing|) %
     /// it moves by |a| + rnd(|b| − |a|), up if <paramref name="b"/> &gt; 0, else down, kept in
     /// −99..99. Returns the (possibly unchanged) standing.
     /// </summary>
-    // orig: loc_reputation_adj R029+0x19D0 (0E76:19D0) matched; tests: Oracle:rules.json loc_reputation_adj; WorldRulesTests
-    // C: the rise adds a (not |a|): r += rand_mod(|b| - |a|) + a; the fall subtracts |a| + rand_mod(|b| - |a|); the chance draw comes first.
-    // C: loc -1 (the open country) reads locations[-1], the last four bytes of enemy_items (2E38:10BA, 0 in play: a null far pointer),
+    // orig: place-standing-adjust R029+0x19D0 (0E76:19D0) matched; tests: Oracle:rules.json R029+0x19D0; WorldRulesTests
+    // C: the rise adds a (not |a|): r += roll-below(|b| - |a|) + a; the fall subtracts |a| + roll-below(|b| - |a|); the chance draw comes first.
+    // C: loc -1 (the open country) reads locations[-1], the last four bytes of enemy-loot (2E38:10BA, 0 in play: a null far pointer),
     // C: so rep is the word at 0000:0012 (NullPage.Int4Segment): |rep| > 100, the test fails, nothing is written, but the chance is drawn.
     public static int AdjustReputation(GameState s, int loc, int a, int b)
     {
@@ -49,8 +49,8 @@ public static class LocationRules
         return r;
     }
 
-    /// <summary>The standing band 0 (≥ 51) .. 5 (≤ −75), <c>loc_query</c> 1.</summary>
-    // orig: loc_query R029+0x1A8E (0E76:1A8E) draft
+    /// <summary>The standing band 0 (≥ 51) .. 5 (≤ −75), <c>place-query</c> 1.</summary>
+    // orig: place-query R029+0x1A8E (0E76:1A8E) draft
     // C: case 1 has no return: the band is left in AX (checked against the asm).
     public static int ReputationBand(int reputation) => reputation switch
     {
@@ -62,10 +62,10 @@ public static class LocationRules
         _ => 0,
     };
 
-    // ---- loc_query / loc_set --------------------------------------------------------
+    // ---- place-query / place-assign --------------------------------------------------------
 
     /// <summary>
-    /// A location value (<c>loc_query</c>; the reference's numbering). 0 standing, 1 its band, 2 city
+    /// A location value (<c>place-query</c>; the reference's numbering). 0 standing, 1 its band, 2 city
     /// size (1 in the wilderness, 2 outside cities), 3..11 shop qualities, 12..14 the
     /// location's three local values, 15..31 city buildings, 32 the location flags, 33 the
     /// local random seed, 34 the city's exit x, 35 within 14 days of the city's festival,
@@ -73,12 +73,12 @@ public static class LocationRules
     /// type words (swapped after an uprising). Codes the original has no case for return 0
     /// below 42 and the code itself from 42 on (what the original leaves in its register).
     /// </summary>
-    // orig: loc_query R029+0x1A8E (0E76:1A8E) draft; cur_loc_query R029+0x1A7E (0E76:1A7E) matched; tests: Oracle:rules.json loc_query; WorldRulesTests
+    // orig: place-query R029+0x1A8E (0E76:1A8E) draft; location-now-query R029+0x1A7E (0E76:1A7E) matched; tests: Oracle:rules.json R029+0x1A8E; WorldRulesTests
     // C: checked against the asm (jump table 0..0x29, unsigned): codes above 41, negative ones included, return the code (AX); 40 takes +5A when flag 0x80 is set, else +58, and 41 the other way round.
     // DORMANT: codes 19, 21, 22, 25, 30, 36 jump straight to the exit after `shl ax,1; xchg bx,ax` (their entries in the jump table at R029+0x1AA8 all
     //   point to R029+0x1DFA): they return the caller's BX; here 0. No call passes them (every literal code in the scripts and rules, and the day + 3 of the
     //   market search, is another one).
-    // DIVERGENCE: 39..41 read locations[cur_loc]: in the wilderness that is the far pointer before the table (locations[-1]); here an empty record.
+    // DIVERGENCE: 39..41 read locations[location-now]: in the wilderness that is the far pointer before the table (locations[-1]); here an empty record.
     public static int Query(GameState s, int loc, int what)
     {
         var city = s.City;
@@ -138,15 +138,15 @@ public static class LocationRules
     }
 
     /// <summary>
-    /// Changes a location value (<c>loc_set</c>): 0 standing, 2 city size, 3..8 and 11 shop
+    /// Changes a location value (<c>place-assign</c>): 0 standing, 2 city size, 3..8 and 11 shop
     /// qualities, 12..14 local values, 32 adds flag bits, 37 records a value. Original quirks:
-    /// 6 and 11 write each other's shop (6 sets the shop <c>loc_query</c> 11 reads and the
+    /// 6 and 11 write each other's shop (6 sets the shop <c>place-query</c> 11 reads and the
     /// other way round), and 37, while the third slot is free, overwrites every occupied slot
     /// with the value instead of shifting the list.
     /// </summary>
-    // orig: loc_set R029+0x1DFE (0E76:1DFE) matched; tests: Oracle:rules.json loc_set; WorldRulesTests
-    // BUG: 6 writes city_rec[0x66] and 11 city_rec[0x67] (FixShopSetSwap); 37 overwrites every occupied slot (FixRecordedListShift).
-    // DORMANT: codes 1, 9, 10 and the other loc_query codes have no case: nothing is written.
+    // orig: place-assign R029+0x1DFE (0E76:1DFE) matched; tests: Oracle:rules.json R029+0x1DFE; WorldRulesTests
+    // BUG: 6 writes city-record[0x66] and 11 city-record[0x67] (FixShopSetSwap); 37 overwrites every occupied slot (FixRecordedListShift).
+    // DORMANT: codes 1, 9, 10 and the other place-query codes have no case: nothing is written.
     public static void Set(GameState s, int loc, int what, int value)
     {
         var place = s.Locations[loc];
@@ -212,13 +212,13 @@ public static class LocationRules
     // ---- hostility and prices -------------------------------------------------------
 
     /// <summary>
-    /// The current location is hostile (<c>loc_hostile</c>): an <see cref="EventKinds.Hostile"/>
+    /// The current location is hostile (<c>place-hostile</c>): an <see cref="EventKinds.Hostile"/>
     /// event, or standing −75 or lower, or −10 or lower during unrest. Original bug: the unrest
     /// test asks for an event of kind "current location" at location 0x13, so it practically
     /// never holds.
     /// </summary>
-    // orig: loc_hostile_impl R039+0x00BA (1462:00BA) matched; tests: WorldRulesTests
-    // BUG: event_at(cur_loc, 0x13) has its arguments swapped (FixHostileUnrestTest); the three tests short-circuit in this order.
+    // orig: place-hostile-inner R039+0x00BA (1462:00BA) matched; tests: WorldRulesTests
+    // BUG: event-at-place(location-now, 0x13) has its arguments swapped (FixHostileUnrestTest); the three tests short-circuit in this order.
     public static bool Hostile(GameState s)
     {
         var here = s.CurrentLocation;
@@ -234,11 +234,11 @@ public static class LocationRules
 
     /// <summary>
     /// A local price between <paramref name="low"/> and <paramref name="value"/>: the value
-    /// +25 % when the location flags (<c>loc_query</c> 32) are 1, +50 % when they are 2, +20 %
+    /// +25 % when the location flags (<c>place-query</c> 32) are 1, +50 % when they are 2, +20 %
     /// each for the price events, then rnd(value − low) kept in low..value.
     /// </summary>
     // orig: R039+0x0000 (1462:0000) matched
-    // C: loc_query(cur_loc, 0x20) is the location flags; unrest (0x13) before expensive (0x12); clamp_range(lo, v, rand_mod(v - lo)).
+    // C: place-query(location-now, 0x20) is the location flags; unrest (0x13) before expensive (0x12); limit-to-range(lo, v, roll-below(v - lo)).
     public static int LocalPrice(GameState s, int value, int low)
     {
         var kind = Query(s, s.CurrentLocation, 32);
@@ -267,7 +267,7 @@ public static class LocationRules
     /// × 8/3 when the location flags are 2 and × 5/3 when they are 8; kept in 1..1000.
     /// </summary>
     // orig: R039+0x1D2C (1462:1D2C) matched
-    // C: the second test is `(cur_loc != -1 || cur_loc >= 0x5C)`, i.e. not in the wilderness.
+    // C: the second test is `(location-now != -1 || location-now >= 0x5C)`, i.e. not in the wilderness.
     public static int ServicePrice(GameState s, int reputation, int value)
     {
         value++;
@@ -299,7 +299,7 @@ public static class LocationRules
 
     /// <summary>Map distance: the larger axis plus half the smaller, with y counted a third.</summary>
     // orig: the distance (dx = |x-X|, dy = |y-Y|/3, the larger plus half the smaller),
-    // repeated inline in nearest_city_impl R030+0x271A (1462:271A) and R034+0x1A86
+    // repeated inline in closest-city-inner R030+0x271A (1462:271A) and R034+0x1A86
     public static int Distance(int x1, int y1, int x2, int y2)
     {
         var dx = Math.Abs(x2 - x1);
@@ -307,8 +307,8 @@ public static class LocationRules
         return dx >= dy ? dy / 2 + dx : dx / 2 + dy;
     }
 
-    /// <summary>The nearest city to a map position, not counting a city standing exactly there (<c>nearest_city</c>).</summary>
-    // orig: nearest_city_impl R030+0x271A (1462:271A) matched; tests: WorldRulesTests
+    /// <summary>The nearest city to a map position, not counting a city standing exactly there (<c>closest-city</c>).</summary>
+    // orig: closest-city-inner R030+0x271A (1462:271A) matched; tests: WorldRulesTests
     public static int NearestCity(GameState s, int x, int y)
     {
         var best = -1;
@@ -332,10 +332,10 @@ public static class LocationRules
 
     /// <summary>
     /// The nearest location with map icon <paramref name="icon"/> that is not at the position
-    /// and not destroyed (flag 4) (<c>nearest_loc_type</c>); if there is none, the current
+    /// and not destroyed (flag 4) (<c>closest-place-of-kind</c>); if there is none, the current
     /// location (−1 in the wilderness).
     /// </summary>
-    // orig: nearest_loc_type_impl R030+0x2842 (1462:2842) matched; tests: WorldRulesTests
+    // orig: closest-place-of-kind-inner R030+0x2842 (1462:2842) matched; tests: WorldRulesTests
     public static int NearestOfType(GameState s, int x, int y, int icon)
     {
         var best = -1;
@@ -362,7 +362,7 @@ public static class LocationRules
     /// 100 + rnd 100, else the nearest (<see cref="NearestOfType"/>).
     /// </summary>
     // orig: R030+0x28F2 (1462:28F2) matched; tests: WorldRulesTests
-    // C: rand_mod(100) is drawn before the scan; destroyed places (flag 4) are not skipped here, unlike nearest_loc_type.
+    // C: roll-below(100) is drawn before the scan; destroyed places (flag 4) are not skipped here, unlike closest-place-of-kind.
     public static int FarOfType(GameState s, int x, int y, int icon)
     {
         var best = -1;

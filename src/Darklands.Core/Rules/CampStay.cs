@@ -135,11 +135,11 @@ public sealed class CampStay
 
     private void ListTeachers() => TeacherList();
 
-    // orig: event_find(0x28, skill, cur_loc, -1, -1, -1) as R036+0x08EC, R036+0x1858 and R036+0x147A use it
+    // orig: event-search(0x28, skill, location-now, -1, -1, -1) as R036+0x08EC, R036+0x1858 and R036+0x147A use it
     // C: R036+0x147A (the day itself) tests for -1 (1462:1589) and then neither pays nor practises.
     // DIVERGENCE: with no teacher of the skill here (the list's rows stale: TeacherList) R036+0x08EC (key T) and R036+0x1858 (the day's
     //   cost) read the fee of events[-1] unguarded (1462:0BAF, 1462:18ED: les bx, es:[bx+1B2C] with bx = -4): the far pointer at 2E38:1B28,
-    //   the tail of var_named[4], 0 in play, so the fee is the word at 0000:001E (the INT 7 vector's segment, F000 under DOSBox: the
+    //   the tail of text-slot-named[4], 0 in play, so the fee is the word at 0000:001E (the INT 7 vector's segment, F000 under DOSBox: the
     //   "-4096pfs" players see); here no fee is shown or added. The day itself (R036+0x147A) finds no teacher and the member relaxes.
     /// <summary>The teacher of a skill here (−1: none).</summary>
     private TimedEvent? Teacher(int skill)
@@ -161,7 +161,7 @@ public sealed class CampStay
 
     /// <summary>Alchemy needs a known formula.</summary>
     // orig: R036+0x1E80 (1462:1E80) draft(fn matched): 1 when one of the member's
-    //   0x16 formulas_known bytes is non-zero (the A key and the menu line's colour both ask it).
+    //   0x16 known-recipes bytes is non-zero (the A key and the menu line's colour both ask it).
     // C: `cmp byte ptr [si+0x7BE], 0` (R036+0x1E9B) tests the whole byte: bits 3..7 (not formulas; only a file can set them) count too;
     //   unit run of R036+0x1E80 (t_alch.py, local/batch/evid1): byte 0x80 -> 1, 0x08 -> 1, 0x07 -> 1, 0 -> 0; tests: CampAndSheetRulesTests
     public bool CanDoAlchemy(int i) => Member(i).Formulas.Bytes.Any(b => b != 0);
@@ -307,7 +307,7 @@ public sealed class CampStay
     // ---- spending a day -------------------------------------------------------------
 
     // orig: key S of R036+0x08EC (draft, bytes match)
-    // C: the rough-sleeping test is rand_mod(100) >= clamp_range(0x19, 0x5F, best Streetwise + 0x19); the wild test draws rand_mod(0x32) twice (the order does not matter for a sum).
+    // C: the rough-sleeping test is roll-below(100) >= limit-to-range(0x19, 0x5F, best Streetwise + 0x19); the wild test draws roll-below(0x32) twice (the order does not matter for a sum).
     // C: Days (DS:3ABE) is counted even when the day could not be paid.
     /// <summary>
     /// "Spend a day": first the checks that can end the stay (turned out of other lodging; the
@@ -353,9 +353,9 @@ public sealed class CampStay
     /// <summary>Shows the hourglass while the day's hours pass (the presentation's; null: nothing shown).</summary>
     public Action<int>? Hourglass { get; init; }
 
-    // orig: camp_spend_day = R036+0x147A (1462:147A) draft (unmatched: the member loop's shape), checked against asm
+    // orig: camp-day-passes = R036+0x147A (1462:147A) draft (unmatched: the member loop's shape), checked against asm
     /// <summary>
-    /// The day itself (<c>camp_spend_day</c>): unless the purse cannot pay the day's cost
+    /// The day itself (<c>camp-day-passes</c>): unless the purse cannot pay the day's cost
     /// ("Not Enough Money"), every able member does the activity, lodging is paid, the poaching
     /// risk grows (also at the inn: harmless), and time passes to the next 05:00 at least nine
     /// hours away. Faithful quirks: regaining strength may pass the maximum (time passing caps
@@ -379,7 +379,7 @@ public sealed class CampStay
         }
         PayLodging();
         var hours = TimeOfDay.HoursUntil(_s.Date.Hour, 5);
-        // orig: R036+0x147A: advance_hours(hours_until(5) < 9 ? hours_until(5) + 24 : hours_until(5)), with its hourglass
+        // orig: R036+0x147A: pass-hours(hours-remaining-until(5) < 9 ? hours-remaining-until(5) + 24 : hours-remaining-until(5)), with its hourglass
         TimePassage.Advance(_s, hours < 9 ? hours + 24 : hours, Hourglass);
         for (var i = 0; i < Party.MaxMembers; i++)
         {

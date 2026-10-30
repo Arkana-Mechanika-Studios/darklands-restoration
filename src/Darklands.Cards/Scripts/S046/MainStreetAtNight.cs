@@ -25,9 +25,9 @@ public sealed class MainStreetAtNight : Card
 
     // orig: R046+0x0000 (1838:0000) matched (entry: music, the option flags, the danger draw, the optional notice and the menu loop; the politics tail is StreetPolitics.AfterTheChoice)
     // orig: R046+0x06EA (1838:06EA) matched (init helper: empty in the original, it sets no option defaults)
-    // DORMANT: R046+0x06EC (1838:06EC) matched: a "screwed up." default handler that nothing installs (the empty init helper never points opt_fn at it), so it never runs; the card has no items or saints, so there is no pop-up handler either.
+    // DORMANT: R046+0x06EC (1838:06EC) matched: a "screwed up." default handler that nothing installs (the empty init helper never points card-option-handler at it), so it never runs; the card has no items or saints, so there is no pop-up handler either.
     // C: the original keeps option lines 10..19 untouched (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
-    // C: ten options; hint and action pair up one to one in opt_fn and the dispatch switch. Every hint is 100 minus the danger drawn on arrival (the C# Safety).
+    // C: ten options; hint and action pair up one to one in card-option-handler and the dispatch switch. Every hint is 100 minus the danger drawn on arrival (the C# Safety).
     public override int Run(CardContext c)
     {
         c.PlayMusic(6);
@@ -91,7 +91,7 @@ public sealed class MainStreetAtNight : Card
     /// <summary>An option that walks to a place; met trouble first leads to the night encounter, which remembers the place.</summary>
     // orig: action handlers R046+0x0422, R046+0x0466, R046+0x04AA, R046+0x04EE, R046+0x053A, R046+0x057E, R046+0x05BE, R046+0x0602, R046+0x0646, R046+0x06A6 (see the option lines); the inn option is written out in Run
     // BUG: the night places are fixed card numbers (only the gate and the inn ask the time), no hour passes on the way
-    // (advance_hours(0) at most), and the night encounter keeps the night place to return to after its hours: going between
+    // (pass-hours(0) at most), and the night encounter keeps the night place to return to after its hours: going between
     // the main street and the side streets at night stays in the night cards at any hour, with the encounters of the night
     // (card oracle at 12:00: 0x08 -> 0x0A -> 0x24 -> 0x08 -> 0x19).
     private MenuLine Walk(CardContext c, Func<int> place, bool passTime = false) =>

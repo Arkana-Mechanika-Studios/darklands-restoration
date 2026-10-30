@@ -26,8 +26,8 @@ namespace Darklands.Cards.Scripts;
 //     R125+0x1820
 //   other: R125+0x0F96, R125+0x14BE, R125+0x1560
 // DORMANT (generated): option slots 10..19 keep the default handler R125+0x1560 ("screwed up.") and are never shown.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatBroomstickRiders : Card
 {
@@ -67,7 +67,7 @@ public sealed class SabbatBroomstickRiders : Card
     }
 
     // orig: R125+0x0F96 matched
-    // C: no random argument; a result outside 0..4 leaves next_card unchanged (the card stays).
+    // C: no random argument; a result outside 0..4 leaves following-card unchanged (the card stays).
     private static void FightTheRiders(CardContext c)
     {
         switch (c.RunBattle(0x4B, -1, 0x29, 3, 2, 0x0D, 2, 6, -1, 0, 0))
@@ -88,7 +88,7 @@ public sealed class SabbatBroomstickRiders : Card
     /// of whoever the last party query found (nothing on this option asks one).
     /// </summary>
     // orig: R125+0x10F2 matched
-    // C: add_skill reads best_member (as unsigned char) as some earlier query left it (stale global).
+    // C: raise-skill-by reads top-scoring-member (as unsigned char) as some earlier query left it (stale global).
     private static void TakeARide(CardContext c)
     {
         c.Screen.Text(3);
@@ -101,8 +101,8 @@ public sealed class SabbatBroomstickRiders : Card
 
     /// <summary>Speak Common of the member found last, plus half the best Charisma.</summary>
     // orig: R125+0x126A matched
-    // C: the same code as R125+0x053A (checked against the asm there): member_skill reads the stale best_member
-    //   before party_max_attr(5) sets it; the hint then names the best Charisma.
+    // C: the same code as R125+0x053A (checked against the asm there): member-ability reads the stale top-scoring-member
+    //   before party-stat-top(5) sets it; the hint then names the best Charisma.
     private static OptionHint PreachingChance(CardContext c)
     {
         var chance = c.Skill(c.BestMember, (int)Skill.SpeakCommon);
@@ -111,7 +111,7 @@ public sealed class SabbatBroomstickRiders : Card
     }
 
     // orig: R125+0x1192 matched
-    // C: party_max_skill(9) is called only to set best_member, which add_skill reads as unsigned char.
+    // C: party-ability-top(9) is called only to set top-scoring-member, which raise-skill-by reads as unsigned char.
     private static void Preach(CardContext c, int chance)
     {
         if (c.Random(100) <= chance)

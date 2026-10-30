@@ -28,7 +28,7 @@ public sealed class BackToTheApocalypseCourtyard : Card
     public override int Run(CardContext c)
     {
         Show(c, 0);
-        // C: switch (prev_screen) with no default: any other previous card adds no flag.
+        // C: switch (earlier-screen) with no default: any other previous card adds no flag.
         c.LastCastleFlags |= c.State.PreviousCard switch
         {
             345 => 0x01,

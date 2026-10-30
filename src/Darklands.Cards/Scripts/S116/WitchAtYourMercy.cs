@@ -84,12 +84,12 @@ public sealed class WitchAtYourMercy : Card
     }
 
     /// <summary>
-    /// formulas_known[member][n / 3] |= 1 &lt;&lt; n % 3 as the original computes it, overflow included:
+    /// known-recipes[member][n / 3] |= 1 &lt;&lt; n % 3 as the original computes it, overflow included:
     /// byte n / 3 of a 22-byte row runs into the next members' rows and, past the fifth member's,
     /// into the saints table that follows (20 bytes per member, bit 0x80 &gt;&gt; saint % 8).
     /// </summary>
     // C: flat byte t = member × 0x16 + n / 3; t < 0x6E: formula (t % 0x16) × 3 + n % 3 of member t / 0x16;
-    // otherwise byte u = t − 0x6E of saints_known (R136+0xE15C): saint (u % 20) × 8 + 7 − n % 3 of member u / 20.
+    // otherwise byte u = t − 0x6E of saints-learned (R136+0xE15C): saint (u % 20) × 8 + 7 − n % 3 of member u / 20.
     private static void SetFormulaBit(CardContext c, int member, int n)
     {
         var t = member * 0x16 + n / 3;

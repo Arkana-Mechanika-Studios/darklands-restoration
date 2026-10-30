@@ -36,13 +36,13 @@ public sealed class LeavingByTheWall : Card
     // orig: R058+0x1E76 (1A1F:0006) matched (entry: option flags, the bribe, the saints, the option table)
     // orig: R058+0x2ED4 (1A1F:1064) matched (init helper: enables all 20 lines with "screwed up.", installs the three saint pop-up handlers, clears the slots)
     // DORMANT: R058+0x2F36 (1A1F:10C6): the "screwed up." handler the init installs on all 20 lines; lines 0..9 get their own, 10..19 are enabled but the MSG has no line for them, so it never runs.
-    // C: the text has ten option lines (0..9); lines 0, 1 and 2 of the item pop-up do not exist here (no card_items).
+    // C: the text has ten option lines (0..9); lines 0, 1 and 2 of the item pop-up do not exist here (no card-item-lines).
     public override int Run(CardContext c)
     {
         Show(c, Picture);
         var lines = new OptionState[10];
         Array.Fill(lines, OptionState.Enabled);
-        // C: cur_rep = cur_loc_query(0) is overwritten a few lines further down before anything reads it.
+        // C: reputation-now = location-now-query(0) is overwritten a few lines further down before anything reads it.
         c.StandingSeen = c.HereQuery(0);
         if (c.EventAtHere(SewerStuck))
         {
@@ -189,7 +189,7 @@ public sealed class LeavingByTheWall : Card
     /// </summary>
     // orig: R058+0x22FE (1A1F:048E) matched
     // orig: R058+0x247E (1A1F:060E) matched (byte-identical body)
-    // C: the handler sets var_chosen1 whenever it is called (before each choice); when nobody counts it keeps its old value.
+    // C: the handler sets text-slot-chosen-one whenever it is called (before each choice); when nobody counts it keeps its old value.
     private static OptionHint StrongestChance(CardContext c)
     {
         var best = 0;
@@ -263,7 +263,7 @@ public sealed class LeavingByTheWall : Card
     // orig: R058+0x2876 (1A1F:0A06) matched (byte-identical body)
     // orig: R058+0x2A7E (1A1F:0C0E) matched (byte-identical body)
     // orig: R058+0x2CD2 (1A1F:0E62) matched (byte-identical body)
-    // C: var_chosen1 = (unsigned char)best_member; party_min_skill leaves the member it found in best_member.
+    // C: text-slot-chosen-one = (unsigned char)top-scoring-member; party-ability-low leaves the member it found in top-scoring-member.
     private static OptionHint StealthChance(CardContext c)
     {
         var chance = c.PartyMinSkill(Stealth);
@@ -338,7 +338,7 @@ public sealed class LeavingByTheWall : Card
     /// </summary>
     // orig: R058+0x28BA (1A1F:0A4A) matched (line 5, no wait)
     // orig: R058+0x2AC2 (1A1F:0C52) matched (line 6, waits for dark after rolling)
-    // C: the roll l_4 is made first and is used both against the chance and as the fall bar.
+    // C: the roll local-minus-4 is made first and is used both against the chance and as the fall bar.
     private static bool SneakOverTheWall(CardContext c, int chance, bool waitsForDark)
     {
         var injured = 0;

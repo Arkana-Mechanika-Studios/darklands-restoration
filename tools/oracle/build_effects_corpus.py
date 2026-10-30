@@ -1,7 +1,7 @@
-"""Original-byte corpus for the battle's effects (R019 and the R014 cloud tests): effect_spell
+"""Original-byte corpus for the battle's effects (R019 and the R014 cloud tests): effect-cast
 (1EF8:0000, with everything it calls: the cloud, flash and blast effects, the modifiers, the
-worn armour, damage_queue/damage_apply, weapon_ready, consume_item), the area test
-R014+0x469E, cloud_blocks_line (1EC9:0142) and the Throw list (1EF8:0C80).
+worn armour, damage-pending-list/damage-resolve, weapon-armed, use-up-item), the area test
+R014+0x469E, cloud-on-line-test (1EC9:0142) and the Throw list (1EF8:0C80).
 
 usage: python -I build_effects_corpus.py <DARKLAND.EXE> <out effects.json>
 
@@ -28,21 +28,21 @@ DS = 0x321A
 FLOOR_SEG = 0x20A5
 HOLDRAND = 0x7B20
 COMBATANTS = 0x9C55
-CBT_FLOOR, HALF_W, HALF_H = 0xA6B4, 0xC80F, 0xC831
+FIGHTER_FLOOR_LEVEL, HALF_W, HALF_H = 0xA6B4, 0xC80F, 0xC831
 FURN_H, FURN_W, FURN_X, FURN_Y, SIGHT = 0xC11D, 0xC12F, 0xD7BE, 0xD802, 0xC1CF
-FLOOR_SHOWN, CLOCK, DELAYED = 0x11CA, 0x07D4, 0xD842
+FLOOR_DISPLAYED, CLOCK, DELAYED = 0x11CA, 0x07D4, 0xD842
 CLOUDS, CLOUD_COUNT = 0xA2EB, 0xA33D
 AREAS, AREA_COUNT = 0xA342, 0xA395
 MARKERS, MARKER_COUNT = 0xA396, 0xA531
 MODS, IMMUNE, FLASH_UNTIL, ACTION_STATE = 0xA532, 0xC927, 0xDA89, 0xCA64
 FLASH_SEG, FLASH_OFF = 0x20A5, 0x35EE
 FLASH1, FLASH2 = 0xD4C3, 0xD4C5
-ATTACK_RATE, QUEUED, SHOWN = 0xD493, 0xD70C, 0xD4C7
-REAL_COMBAT, DEMO = 0xA6C1, 0xC21A
+ATTACK_SPEED, QUEUED, SHOWN = 0xD493, 0xD70C, 0xD4C7
+GENUINE_FIGHT, DEMO = 0xA6C1, 0xC21A
 ANIM_FILE_TABLE, SCRATCH = 0x1174, 0xFD00
 INV_SEG, PARTY_INV, ENEMY_INV = 0x2E38, 0x003E, 0x0DBE   # enemy i: R136+0xE50E[i] = 0x0DBE + (i - 5) * 0x60
 MENU, MENU_STATE, MENU_NAMES = 0x9A47, 0x97DD, 0x114E
-STUBS = {"0E76:465E": "sound", "0000:1716": "party_panel_rows"}
+STUBS = {"0E76:465E": "sound", "0000:1716": "party-panel-row-set"}
 ARMOUR = [0xFF, 0x43, 0x44, 0x48, 0x4C, 0x50, 0x54]
 
 
@@ -187,18 +187,18 @@ def memory_of(cells, shapes, recs, packs, floors, immune, mods, sight, lists, cl
             ds(SIGHT, bytes([sight]))]
     mem += [ds(COMBATANTS + 0x80 * k, rec) for k, rec in enumerate(recs)]
     mem.append(ds(COMBATANTS + 13 * 0x80 + 0x14, b"\x00"))
-    mem += [ds(CBT_FLOOR, floors), ds(HALF_W, bytes([5] * 13)), ds(HALF_H, bytes([2] * 13)), ds(FLOOR_SHOWN, b"\x00"),
+    mem += [ds(FIGHTER_FLOOR_LEVEL, floors), ds(HALF_W, bytes([5] * 13)), ds(HALF_H, bytes([2] * 13)), ds(FLOOR_DISPLAYED, b"\x00"),
             ds(CLOCK, struct.pack("<H", clock)), ds(DELAYED, b"\x01"), ds(HOLDRAND, struct.pack("<I", state)),
             ds(IMMUNE, b"".join(struct.pack("<H", v) for v in immune)), ds(MODS, b"".join(mods)),
             ds(FLASH_UNTIL, bytes(26)), ds(ACTION_STATE, bytes([7] * 13)), far(FLASH_SEG, FLASH_OFF, bytes(13 * 6)),
             ds(FLASH1, struct.pack("<H", 0x1234)), ds(FLASH2, struct.pack("<H", 0x5678)),
-            ds(ATTACK_RATE, bytes([0x40] * 13)), ds(QUEUED, bytes(26)), ds(SHOWN, bytes(13)), ds(REAL_COMBAT, b"\x01"),
+            ds(ATTACK_SPEED, bytes([0x40] * 13)), ds(QUEUED, bytes(26)), ds(SHOWN, bytes(13)), ds(GENUINE_FIGHT, b"\x01"),
             ds(DEMO, b"\x00")]
     for kind, count, data in lists:
         base, counter = {"clouds": (CLOUDS, CLOUD_COUNT), "areas": (AREAS, AREA_COUNT), "markers": (MARKERS, MARKER_COUNT)}[kind]
         # the ninth record is the original's bytes after the array: keep them as they are in the image
         mem += [ds(base, data[: 8 * (10 if kind != "markers" else 8)]), ds(counter, bytes([count]))]
-    # anim_file[slot]: the weapon code of each animation slot ("PT" for a caster)
+    # animation-file-name[slot]: the weapon code of each animation slot ("PT" for a caster)
     mem.append(ds(ANIM_FILE_TABLE, b"".join(struct.pack("<H", SCRATCH + 4 * k) for k in range(7))))
     for k, code in enumerate(codes):
         mem.append(ds(SCRATCH + 4 * k, code.encode() + b"\x00"))
@@ -261,12 +261,12 @@ def main() -> None:
         side = r.choice([0, 0, 0, 1])
         args = [x, y, thrower, typ, dur, target, side]
         inputs["args"] = args
-        res = run(exe, dict(common, unit="effect_spell", entry={"segment": "1EF8", "offset": "0000"}, memory=mem,
+        res = run(exe, dict(common, unit="effect-cast", entry={"segment": "1EF8", "offset": "0000"}, memory=mem,
                             args=[h16(a) for a in args], read=reads()))
         images = res["loadedImages"]
         party, enemies = bytes.fromhex(res["reads"][1]), bytes.fromhex(res["reads"][2])
         packs = [(party[k * 0x180:] if k < 5 else enemies[(k - 5) * 0x60:])[: 6 * len(inputs["packs"][k])].hex() for k in range(13)]
-        out.append({"function": "effect_spell", "inputs": inputs, "ax": res["final"]["ax"], "dx": res["final"]["dx"],
+        out.append({"function": "effect-cast", "inputs": inputs, "ax": res["final"]["ax"], "dx": res["final"]["dx"],
                     "calls": [c["callee"] for c in res["calls"]], "changed": changed(res), "flash": res["reads"][0], "packs": packs})
     for _ in range(200):
         centre, mem, inputs = case(r)
@@ -284,14 +284,14 @@ def main() -> None:
         centre, mem, inputs = case(r)
         a, t = r.randint(0, 12), r.randint(0, 12)
         inputs["args"] = [a, t]
-        res = run(exe, dict(common, unit="cloud_blocks_line", entry={"segment": "1EC9", "offset": "0142"}, memory=mem,
+        res = run(exe, dict(common, unit="cloud-on-line-test", entry={"segment": "1EC9", "offset": "0142"}, memory=mem,
                             args=[h16(a), h16(t)], trace={"%05x" % (0x1EC9 * 16 + 0x146): "framed"}))
         w = res["trace"][0]["frame"]
         sw = lambda v: v - 0x10000 if v >= 0x8000 else v
         inputs["residue"] = [sw(w[21]), sw(w[20]), sw(w[19]), sw(w[18])]
-        out.append({"function": "cloud_blocks_line", "inputs": inputs, "ax": res["final"]["ax"], "changed": {}})
+        out.append({"function": "cloud-on-line-test", "inputs": inputs, "ax": res["final"]["ax"], "changed": {}})
     for _ in range(200):
-        # to_hit_roll's missile branch with clouds about: its rand_1_n(100) leaves the words cloud_blocks_line starts from
+        # hit-roll's missile branch with clouds about: its roll-one-to-n(100) leaves the words cloud-on-line-test starts from
         centre, mem, inputs = case(r)
         a, t = r.randint(0, 12), r.randint(0, 12)
         recs = [bytearray.fromhex(x) for x in inputs["combatants"]]
@@ -301,11 +301,11 @@ def main() -> None:
         mem.append(ds(COMBATANTS + 0x80 * a, bytes(recs[a])))
         rates = bytes(r.choice([100, 90, 50]) for _ in range(13))
         reach = bytes(r.choice([0, 0, 1]) for _ in range(13 * 13))
-        mem += [ds(ATTACK_RATE, rates), far(0x20A5, 0x7900, reach)]
+        mem += [ds(ATTACK_SPEED, rates), far(0x20A5, 0x7900, reach)]
         inputs["rates"] = rates.hex()
         inputs["reach"] = reach.hex()
         inputs["args"] = [a, t]
-        res = run(exe, dict(common, unit="to_hit_roll", entry={"segment": "18BF", "offset": "02A8"}, memory=mem,
+        res = run(exe, dict(common, unit="hit-roll", entry={"segment": "18BF", "offset": "02A8"}, memory=mem,
                             args=[h16(a), h16(t), h16(0xFE00)]))
         out.append({"function": "to_hit_clouds", "inputs": inputs, "ax": res["final"]["ax"], "changed": changed(res)})
     for _ in range(100):

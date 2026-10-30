@@ -29,7 +29,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R124+0x1EC2, R124+0x1F64
 // DORMANT (generated): option slots 10..19 keep the default handler R124+0x1F64 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class HighSabbatField : Card
 {
@@ -56,7 +56,7 @@ public sealed class HighSabbatField : Card
 
     public override int Run(CardContext c)
     {
-        // C: both early ways out return the card number without storing it in next_card (and before card_load).
+        // C: both early ways out return the card number without storing it in following-card (and before card-run).
         if (c.Events.FactAnywhere(FactTag, OverFact))
         {
             return 0x14A;
@@ -120,10 +120,10 @@ public sealed class HighSabbatField : Card
         return c.Next;
     }
 
-    // orig: loc_fact_value_any(1, 7) as the card's handlers call it matched
+    // orig: place-flag-value-any(1, 7) as the card's handlers call it matched
     private static int Alarm(CardContext c) => c.Events.FactValueAnywhere(FactTag, AlarmFact);
 
-    // orig: the event_update(−1, −1, 0x1C, fact, n, 1, add) of the card's handlers matched
+    // orig: the event-advance(−1, −1, 0x1C, fact, n, 1, add) of the card's handlers matched
     private static void AddToFact(CardContext c, int fact, int amount) =>
         c.Events.Update(-1, -1, 0x1C, fact, amount, FactTag, EventUpdate.Add);
 
@@ -168,7 +168,7 @@ public sealed class HighSabbatField : Card
         c.Screen.Text(1);
         c.AddSkill(Who.Everybody, (int)Skill.Virtue, -3);
         c.AddAttribute(Who.Everybody, (int)Attribute.DivineFavor, -20);
-        // DIVERGENCE: the C writes locations[cur_loc] without a check; the C# skips it in the wilderness.
+        // DIVERGENCE: the C writes locations[location-now] without a check; the C# skips it in the wilderness.
         if (c.HerePlace is { } here)
         {
             here.ArrivalCard = 317;
@@ -233,7 +233,7 @@ public sealed class HighSabbatField : Card
 
     /// <summary>Hours of honest cooking calm the cult a little (the prayer line is not checked here, as in the original).</summary>
     // orig: R124+0x1D96 matched
-    // C: an int function returning options_block (0); ignored.
+    // C: an int function returning settings-block (0); ignored.
     private static void HelpTheCook(CardContext c, CardMenu menu)
     {
         AddToFact(c, TimeFact, 1);

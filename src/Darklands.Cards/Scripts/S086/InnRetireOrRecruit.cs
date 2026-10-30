@@ -164,14 +164,14 @@ public sealed class InnRetireOrRecruit : Card
         var party = c.State.Party;
         if (!c.Events.HasType(HirelingTerm, slot))
         {
-            // C: money_pfennigs is a long stored into an unsigned (16-bit) variable, then divided unsigned:
+            // C: purse-in-pfennigs is a long stored into an unsigned (16-bit) variable, then divided unsigned:
             // purses over 65535 pfennigs (273 florins) give a wrapped share.
             var purseShare = (ushort)party.Purse.TotalPfennigs / 5;
             party.Purse = party.Purse.Subtract(0, 0, purseShare);
             // C: DS:9072 is the bank notes' money triple; the same 16-bit share is taken from it.
             var storedShare = (ushort)party.BankNotes.TotalPfennigs / 5;
             party.BankNotes = party.BankNotes.Subtract(0, 0, storedShare);
-            // C: the share is only taken from the purse and the notes: nothing stores it (thunk 09C0:1EC3 = party_remove writes the
+            // C: the share is only taken from the purse and the notes: nothing stores it (thunk 09C0:1EC3 = party-leave writes the
             // C: member's 0x80-byte record and no money); the character leaves for the roster.
             c.RemoveMember(slot);
         }

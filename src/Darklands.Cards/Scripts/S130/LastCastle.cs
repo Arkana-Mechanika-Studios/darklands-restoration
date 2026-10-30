@@ -12,7 +12,7 @@ internal static class LastCastle
 
     /// <summary>Ends the card with a fight (battle mode 0) against <paramref name="enemy"/>, on a fresh seed.</summary>
     // orig: the battle ending repeated inline in the R130..R133 last-castle handlers (e.g. R130+0x0EDA) matched
-    // C: battle_seed = rand_mod(1000) is the last draw of the handler, after battle_mode / battle_enemy are set.
+    // C: encounter-seed = roll-below(1000) is the last draw of the handler, after battle-kind / battle-enemy-group are set.
     public static void Fight(CardContext c, int enemy)
     {
         c.BattleMode = 0;
@@ -34,7 +34,7 @@ internal static class LastCastle
     /// and the chance text (lower chance first) is shown for the whole party.
     /// </summary>
     // orig: the saint pop-up handlers of the last-castle cards (e.g. R130+0x14D6) matched
-    // C: saint_chance_lo is called first (stored), then saint_chance_hi as chance_text's argument.
+    // C: saint-odds-low is called first (stored), then saint-odds-high as chance-line's argument.
     public static OptionHint SaintHintForChosen(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;

@@ -17,7 +17,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
     private const int CryptPicture = 354;
     private const int SkeletonsPicture = 174;
 
-    // C: the card's own picture buffer (pic_buf); a lost battle replaces it with the crypt.
+    // C: the card's own picture buffer (image-buffer); a lost battle replaces it with the crypt.
     private int _cardPicture;
 
     public override int Number => 256;
@@ -29,13 +29,13 @@ public sealed class CryptUnderTheRuinedChurch : Card
         c.Next = Number;
         if (!c.Events.QuestAt(10, c.Here))
         {
-            // Nothing here; the original returns 0x0C without changing next_card.
+            // Nothing here; the original returns 0x0C without changing following-card.
             c.Screen.Text(18);
             return CardContext.MapCard;
         }
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 2, 9);
-        // C: event_find does not set last_event; event_f2e_of(last_event) reads the stale global.
+        // C: event-search does not set latest-event; event-detail-word-of(latest-event) reads the stale global.
         _ = c.Events.Find(8, -1, c.Here, -1, 10, -1);
         c.NameToSlot(0, c.EventDetail(c.LastEvent), 0);
         if (c.EventAtHere(0x55))
@@ -47,7 +47,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
         menu[2] = c.ItemsUsable();
         menu[0] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
-        // C: item_fn slot 0 is the potion handler R108+0x0CDE, slots 1..3 bare retf (R108+0x0D30/0D32/0D34): Enter in the item box rates
+        // C: item-handler-table slot 0 is the potion handler R108+0x0CDE, slots 1..3 bare retf (R108+0x0D30/0D32/0D34): Enter in the item box rates
         // C: line 2 with slot 2's and line 5 with slot 1's.
         menu.ItemBox = () => c.MenuSlot == 0 ? PotionHint(c, menu) : c.EmptyBoxHandler();
 
@@ -77,7 +77,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
     // orig: R108+0x0CDE (1838:0CDE) matched
     // C: `r.a + 5 << 1` is (a + 5) * 2 (the shift binds looser).
     // C: slots 1..3 have bare retf handlers: the card lists one potion, so a click or a Shift hint never reaches them, but Enter does (see Run).
-    // C: The handler reads the entry's potion (menu_slot).
+    // C: The handler reads the entry's potion (menu-choice-index).
     private static OptionHint PotionHint(CardContext c, CardMenu menu)
     {
         var m = c.MenuMember;
@@ -87,7 +87,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
         return OptionHint.ChanceOf(chance, m);
     }
 
-    // C: no clamp; best_member is left by the skill query.
+    // C: no clamp; top-scoring-member is left by the skill query.
     private static OptionHint RubbleHint(CardContext c) =>
         OptionHint.ChanceOf(c.PartyAverageAttribute((int)Attribute.Strength) + c.PartyMaxSkill((int)Skill.Artifice) / 2, OptionHint.WholeParty);
 
@@ -176,7 +176,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
         ShowPicture(c, SkeletonsPicture);
         c.Screen.Text(7);
         FightTheSkeletons(c, menu);
-        // BUG: a victory has already left for the map (cur_loc -1), so the errand's thing is given only after a defeat.
+        // BUG: a victory has already left for the map (location-now -1), so the errand's thing is given only after a defeat.
         c.FinishQuest10(c.Here);
     }
 
@@ -240,7 +240,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
             ShowPicture(c, 63);
             c.Screen.Text(5);
             c.PracticeSkill(c.MenuMember, (int)Skill.Virtue, 1, 10, 0);
-            // The original leaves for the map without clearing cur_loc here.
+            // The original leaves for the map without clearing location-now here.
             c.Next = CardContext.MapCard;
             return;
         }
@@ -256,7 +256,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
     /// outside without the item and may go back in.
     /// </summary>
     // orig: R108+0x02B0 (1838:02B0) matched; tests: CardSmokeTests
-    // C: right-to-left arguments: the number of skeletons is drawn before run_battle draws its random seed.
+    // C: right-to-left arguments: the number of skeletons is drawn before battle-driver draws its random seed.
     private void FightTheSkeletons(CardContext c, CardMenu menu)
     {
         var skeletons = c.Random(5) + 3;

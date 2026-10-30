@@ -1,4 +1,4 @@
-# Lockstep session (held keys, running battle): the gate battle from DKSAVE0 (as orders-attack-b) unpaused again; Ebhard (2) chosen, Up held through the keyboard interrupt 20 passes (combat_keys R016+0x0000 takes the held key's arrow every pass the buffer is empty, R014+0x3166's tail), let go; the keypad's 7 (Home) held 15 passes; Shift held with Left held (the view scrolls instead); paused and unpaused, the battle runs to its end
+# Lockstep session (held keys, running battle): the gate battle from DKSAVE0 (as orders-attack-b) unpaused again; Ebhard (2) chosen, Up held through the keyboard interrupt 20 passes (fight-keys R016+0x0000 takes the held key's arrow every pass the buffer is empty, R014+0x3166's tail), let go; the keypad's 7 (Home) held 15 passes; Shift held with Left held (the view scrolls instead); paused and unpaused, the battle runs to its end
 key:t
 wait:5
 key:l

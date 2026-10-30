@@ -32,7 +32,7 @@ public sealed class BattleOracleTests
     });
 
     public static TheoryData<string> Functions() =>
-        ["attack_rate", "to_hit_roll", "hit_damage", "damage_queue", "damage_apply", "weapon_ready", "skill_try_improve"];
+        ["R014+0xA492", "R014+0xA738", "R014+0xAC08", "R014+0xAD5A", "R014+0xAE1E", "R014+0xAED0", "R021+0x0000"];
 
     [Theory]
     [MemberData(nameof(Functions))]
@@ -61,7 +61,7 @@ public sealed class BattleOracleTests
         var label = $"{function} case {n}";
         switch (function)
         {
-            case "attack_rate":
+            case "R014+0xA492":
                 {
                     var k = args[0];
                     Attacks.UpdateAttackRate(battle, k);
@@ -69,7 +69,7 @@ public sealed class BattleOracleTests
                     Assert.True(c.FinalByte(Combatants + 0x80 * k + 0x1D, Record(i, k)[0x1D]) == (byte)battle[k].AimDelay, label);
                     break;
                 }
-            case "to_hit_roll":
+            case "R014+0xA738":
                 {
                     battle.Clouds = new FixedClouds(i.GetProperty("cloud").GetInt32() == 1);
                     var result = Attacks.ToHit(battle, args[0], args[1], out var location);
@@ -78,7 +78,7 @@ public sealed class BattleOracleTests
                     Assert.True(c.FinalUInt32(Data.Value.HoldRand, state) == random.State, label + " random");
                     break;
                 }
-            case "hit_damage":
+            case "R014+0xAC08":
                 {
                     var r = Attacks.HitDamage(battle, args[0], args[1], (HitResult)args[2], args[3]);
                     Assert.True((short)c.Ax == (short)r, $"{label}: {r} vs {(short)c.Ax}");
@@ -86,7 +86,7 @@ public sealed class BattleOracleTests
                     Assert.True(c.FinalUInt32(Data.Value.HoldRand, state) == random.State, label + " random");
                     break;
                 }
-            case "damage_queue":
+            case "R014+0xAD5A":
                 {
                     var r = Attacks.QueueDamage(battle, args[0], args[1], args[2], args[3]);
                     Assert.True((short)c.Ax == (short)r, $"{label}: {r} vs {(short)c.Ax}");
@@ -94,7 +94,7 @@ public sealed class BattleOracleTests
                     Assert.True(c.FinalUInt32(Data.Value.HoldRand, state) == random.State, label + " random");
                     break;
                 }
-            case "damage_apply":
+            case "R014+0xAE1E":
                 {
                     var k = args[0];
                     Attacks.ApplyDamage(battle, k);
@@ -106,7 +106,7 @@ public sealed class BattleOracleTests
                     CheckQueue(c, i, battle, k, label);
                     break;
                 }
-            case "skill_try_improve":
+            case "R021+0x0000":
                 {
                     battle.Difficulty = i.GetProperty("difficulty").GetInt32();
                     var (m, skill) = (args[0], args[1]);
@@ -116,14 +116,14 @@ public sealed class BattleOracleTests
                     Assert.True(c.FinalUInt32(Data.Value.HoldRand, state) == random.State, label + " random");
                     break;
                 }
-            case "weapon_ready":
+            case "R014+0xAED0":
                 {
                     var k = args[0];
                     var code = "";
                     Attacks.ReadyWeapon(battle, k, args[1], args[2], x => code = x);
                     if (i.TryGetProperty("dragonCode", out _))
                     {
-                        // the animation code copied into anim_file[slot] (the generator points slot s at DS:FD00 + 4s)
+                        // the animation code copied into animation-file-name[slot] (the generator points slot s at DS:FD00 + 4s)
                         var at = AnimFiles + 4 * Record(i, k)[0x16];
                         Assert.True(c.FinalByte(at, 0) == code[0] && c.FinalByte(at + 1, 0) == code[1], $"{label}: code {code}");
                     }

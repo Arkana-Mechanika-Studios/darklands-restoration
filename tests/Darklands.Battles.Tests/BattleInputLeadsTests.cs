@@ -13,7 +13,7 @@ public sealed class BattleInputLeadsTests
     private const BindingFlags Any = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
     /// <summary>
-    /// cbt_paths (far 20A5:6238) and DS:D6FB are not cleared when a battle starts (R002+0x1830): zeros in a fresh program, else what the
+    /// fighter-path-table (far 20A5:6238) and DS:D6FB are not cleared when a battle starts (R002+0x1830): zeros in a fresh program, else what the
     /// program holds (the last battle's or the last load's battle file). A member made to walk without a path given (Flee, then Space)
     /// takes those bytes as its path (approach R014+0x2CCA queues byte 0 = a step) and does not arrive at once (lockstep session gen-bheld-22).
     /// </summary>
@@ -49,7 +49,7 @@ public sealed class BattleInputLeadsTests
     }
 
     /// <summary>
-    /// DS:907B is the game's one leader byte: member_activate R016+0x09BC (Ctrl-click, Shift-F) and combat_over R014+0x08FE change the
+    /// DS:907B is the game's one leader byte: member-make-active R016+0x09BC (Ctrl-click, Shift-F) and fight-finished R014+0x08FE change the
     /// party's leader itself, which a save after the battle writes at head+0x3D (lockstep sessions gen-bheld-45, gen-bsafe-46 ...).
     /// </summary>
     [Fact]
@@ -70,7 +70,7 @@ public sealed class BattleInputLeadsTests
     }
 
     /// <summary>
-    /// game_difficulty (DS:906A) is one byte: Alt-D in a battle (hot_keys root 0000:0CAA) changes the difficulty the skill gains of the
+    /// difficulty-setting (DS:906A) is one byte: Alt-D in a battle (hotkey-table root 0000:0CAA) changes the difficulty the skill gains of the
     /// battle's end read (R014+0x0694, R021+0x0000: d4 at Standard, d5 at Expert; lockstep session gen-bkeys-05).
     /// </summary>
     [Fact]
@@ -94,7 +94,7 @@ public sealed class BattleInputLeadsTests
 
     /// <summary>
     /// The battle's Game items start with their tick byte (R000+0x083E: "\x02Save Game", "\x02Load Saved Game", "\x01Show Changes" ...;
-    /// the sub-menu "\x02Basic" ...), 6 pixels in font 1: the dropdown menu_dropdown_open root 0000:07D4 opens is that much wider, so a
+    /// the sub-menu "\x02Basic" ...), 6 pixels in font 1: the dropdown dropdown-open root 0000:07D4 opens is that much wider, so a
     /// release at its right edge (x 176 on the screen) is still on the item and not on its sub-menu (lockstep sessions gen-bkeys-32, -33).
     /// </summary>
     [Fact]

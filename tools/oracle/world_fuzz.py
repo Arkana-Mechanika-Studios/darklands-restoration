@@ -174,11 +174,11 @@ class Fuzzer:
                     struct.pack_into("<H", rec, o, v & 0xFFFF)
                 return {"s": "event+", "hex": rec.hex()}
             return {"s": "event-", "i": rng.randrange(max(1, len(s.events)))}
-        p = rng.randrange(self.places) if rng.random() < 0.5 else self.cur_loc()
+        p = rng.randrange(self.places) if rng.random() < 0.5 else self.location_now()
         name, o, w, dom = rng.choice(LOC_BYTES)
         return {"s": "place", "i": p, "o": o, "hex": self.value(dom).to_bytes(w, "little").hex()}
 
-    def cur_loc(self) -> int:
+    def location_now(self) -> int:
         v = struct.unpack_from("<h", self.sav.head, 0x7C)[0]
         return v if 0 <= v < self.places else 0
 
@@ -198,7 +198,7 @@ class Fuzzer:
 
     def derive(self, args, ops):
         """Arguments that follow the state (the month the monthly update is called for is the date's).
-        R029+0x281C: its callers (R029+0x5537, R029+0x55CD) increment cur_month DS:00E4 and pass it, and the function reads DS:00E4
+        R029+0x281C: its callers (R029+0x5537, R029+0x55CD) increment month-now DS:00E4 and pass it, and the function reads DS:00E4
         itself for the birthdays: the argument is the loaded month (DS:00E4 = the header's), never another (12 would need DS:00E4 = 12)."""
         if self.coord == "R029+0x281C":
             head = bytearray(self.st.sav[:HEAD_END])
@@ -319,7 +319,7 @@ def anyword(rng, f):
 
 
 def place_(rng, f):
-    return rng.choice([rng.randrange(f.places), rng.randrange(f.places), f.cur_loc(), 0xFFFF])
+    return rng.choice([rng.randrange(f.places), rng.randrange(f.places), f.location_now(), 0xFFFF])
 
 
 def kind_(rng, f):
@@ -347,7 +347,7 @@ def evalue_(rng, f):
 
 
 def eloc_(rng, f):
-    return rng.choice(f.elocs if f.elocs and rng.random() < 0.6 else [rng.randrange(f.places), f.cur_loc(), 0xFFFF])
+    return rng.choice(f.elocs if f.elocs and rng.random() < 0.6 else [rng.randrange(f.places), f.location_now(), 0xFFFF])
 
 
 def amount_(rng, f):
@@ -409,7 +409,7 @@ FUNCTIONS = {
 }
 
 
-# functions whose every caller runs in a city (cur_loc a place): not called from a state in the open country.
+# functions whose every caller runs in a city (location-now a place): not called from a state in the open country.
 # R039+0x0EBE: its 36 call sites (thunk 09C0:217F) are all in the uprising cards R065, R068, R074, R076, R089, R090, R091.
 IN_A_CITY = {"R039+0x0EBE"}
 # functions that read the map view's buffer: the party stays where the view is
@@ -445,7 +445,7 @@ def main():
             if (folder / (name + ".json")).exists():
                 continue
             if coord in IN_A_CITY and struct.unpack_from("<h", st.sav, 0x7C)[0] < 0:
-                print(coord, name, "skipped: called only in a city, the state is in the open country (cur_loc -1)", flush=True)
+                print(coord, name, "skipped: called only in a city, the state is in the open country (location-now -1)", flush=True)
                 continue
             rng = random.Random("%s|%s|%d" % (name, coord, a.seed))
             try:

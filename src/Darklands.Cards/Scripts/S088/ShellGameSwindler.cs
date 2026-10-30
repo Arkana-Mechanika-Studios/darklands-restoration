@@ -104,7 +104,7 @@ public sealed class ShellGameSwindler : Card
                         block = 6;
                         break;
                     default:
-                        // DORMANT: rand_mod(3) is 0..2.
+                        // DORMANT: roll-below(3) is 0..2.
                         block = 4;
                         break;
                 }

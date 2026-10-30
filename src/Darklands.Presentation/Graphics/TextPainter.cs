@@ -5,7 +5,7 @@ namespace Darklands.Presentation.Graphics;
 /// <summary>Draws text in one of the game's bitmap fonts (1 bit per pixel, up to 16 pixels wide).</summary>
 // orig: the graphics driver's string output drv+0x1223 (root thunk 047C:055A, driver slot 21; asm), its parts drv+0x1374 (font set-up),
 //   drv+0x12A8 (right clip), drv+0x1254 (left clip), drv+0x130A (rows), drv+0x0FF3 (the glyph loop) and drv+0x0FDC (colour codes);
-//   char_width drv+0x11A9 (root 047C:04E3) and font_height drv+0x11FA (root 047C:051B); reached through draw_text root 0265:006E.
+//   glyph-width drv+0x11A9 (root 047C:04E3) and font-line-height drv+0x11FA (root 047C:051B); reached through text-paint root 0265:006E.
 //   checked against asm; tests: tools/visuals/compare.py
 // C: per byte of the string: 0 ends it; a byte with the top bit set is a colour code (colour = byte & 0x7F, 0xFF back to the call's
 //   colour) and takes no room; a byte outside the font's first..last range takes no room and draws nothing; any other byte advances
@@ -15,21 +15,21 @@ namespace Darklands.Presentation.Graphics;
 //   an opaque background, is not used by the screens here); the last character also draws its spacing column (always clear).
 // C: the colour left by the last colour code is written back into the window record (+0x0C), so the window's later texts keep it;
 //   Draw returns it (DrawColor) for callers that reproduce this.
-// C: draw_text doubles x and the window's x0/x1 when the screen page is the 640-wide mode; the game runs in 320x200, so that branch is not written.
-// DORMANT: the hi-res (doubled x) branch of draw_text / draw_text_far.
+// C: text-paint doubles x and the window's x0/x1 when the screen page is the 640-wide mode; the game runs in 320x200, so that branch is not written.
+// DORMANT: the hi-res (doubled x) branch of text-paint / text-paint-far-string.
 public sealed class TextPainter(FntFont font)
 {
     public FntFont Font => font;
 
-    /// <summary>The font's line height (font_height): the glyph height plus the font's line spacing.</summary>
-    // orig: font_height drv+0x11FA: the header bytes at -4 (height) + -2 (line spacing) before the glyph data
+    /// <summary>The font's line height (font-line-height): the glyph height plus the font's line spacing.</summary>
+    // orig: font-line-height drv+0x11FA: the header bytes at -4 (height) + -2 (line spacing) before the glyph data
     public int LineHeight => font.CharacterHeight + font.LineSpacing;
 
     /// <summary>The colour the last <see cref="Draw(Canvas, int, int, ReadOnlySpan{byte}, byte, int)"/> ended with (after its colour codes).</summary>
     public byte DrawColor { get; private set; }
 
     /// <summary>Horizontal advance of one character: its width plus the font's spacing (0 for a colour code or a code the font lacks).</summary>
-    // orig: char_width drv+0x11A9: 0 for a byte with the top bit set or outside first..last; fixed width (header -5) when non-zero, else the width table; plus the spacing (header -3)
+    // orig: glyph-width drv+0x11A9: 0 for a byte with the top bit set or outside first..last; fixed width (header -5) when non-zero, else the width table; plus the spacing (header -3)
     public int Advance(byte c) =>
         c != 0 && c < 0x80 && font.Contains(c)
             ? (font.Unknown05 != 0 ? font.Unknown05 : font.GetCharacterWidth(c)) + font.CharacterSpacing

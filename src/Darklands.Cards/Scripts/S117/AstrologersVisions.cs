@@ -18,9 +18,9 @@ public sealed class AstrologersVisions : Card
         Show(c, 142);
         c.Variables.Chosen[0] = c.Leader;
         c.Next = CardContext.MapCard;
-        // C: advance_hours(opt_flag_9 = 1): the flag assignment is the argument, so one hour passes.
+        // C: pass-hours(card-option-flag-9 = 1): the flag assignment is the argument, so one hour passes.
         c.PassHours(1);
-        // C: event_value_at(0x5C, here) is the value of the visit note card 292 creates (100: no bit 1 or 2 set).
+        // C: event-datum-at(0x5C, here) is the value of the visit note card 292 creates (100: no bit 1 or 2 set).
         var seen = c.EventValueHere(0x5C);
         if (c.Events.QuestExists(1) && c.PartyLoreLevel() >= 3)
         {
@@ -96,7 +96,7 @@ public sealed class AstrologersVisions : Card
         {
             c.Screen.Text(0);
         }
-        // The original returns 0x0C directly (next_card is also 0x0C).
+        // The original returns 0x0C directly (following-card is also 0x0C).
         return CardContext.MapCard;
     }
 }

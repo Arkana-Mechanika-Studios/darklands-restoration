@@ -665,7 +665,7 @@ public sealed class TradingAndLootTests
         Assert.Equal(new StoredItem(8, 20, 1), table[1]);  // left by the first store
         Assert.Equal(4, Storing.Get(s, table, 0, 1));      // row 1 past the end: item 8 for Gretchen
         Assert.Equal(8, s.Party.Members[0].Pack[3].Code);
-        Assert.Empty(table);                               // its count reached 0: cache_take shifts nothing and drops the count to 0
+        Assert.Empty(table);                               // its count reached 0: stash-take shifts nothing and drops the count to 0
         Assert.Equal(new StoredItem(9, 25, 1), table[0]);  // item 9 is still in its entry, but the store now looks empty
     }
 
@@ -821,7 +821,7 @@ public sealed class TradingAndLootTests
 
         var places = Play(fix, out var fixedStores);
         Assert.Equal([1, 2, 3], places.Select(p => p.CacheHandle));
-        // cache_load's reading: byte 1 stores, the offset word of store h at 2h, a count byte, then {item word, quality, count}
+        // stash-load's reading: byte 1 stores, the offset word of store h at 2h, a count byte, then {item word, quality, count}
         var file = fixedStores.File;
         Assert.Equal(124, file[0]);
         Assert.Equal(3, file[1]);

@@ -22,7 +22,7 @@ public sealed class RobberKnightTaskRewarded : Card
         c.RandomName(c.EventValue(quest), 0, 0);
         c.RandomName(c.Variables.Location + 0x44C, 0, 1);
         c.Events.Free(quest);
-        // C: the script keeps loc_query(cur_loc, 0) in cur_rep; nothing reads it.
+        // C: the script keeps place-query(location-now, 0) in reputation-now; nothing reads it.
         switch (patron)
         {
             case 0x12:

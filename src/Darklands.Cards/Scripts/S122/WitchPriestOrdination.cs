@@ -26,7 +26,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R122+0x11B4, R122+0x1256
 // DORMANT (generated): option slots 10..19 keep the default handler R122+0x1256 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class WitchPriestOrdination : Card
 {
@@ -59,7 +59,7 @@ public sealed class WitchPriestOrdination : Card
 
     /// <summary>The worst Stealth in the party, doubled, decides whether they stay unseen.</summary>
     // orig: R122+0x0DD6 / R122+0x0EA4 matched (identical hints of lines 0 and 2)
-    // C: party_min_skill sets best_member, read afterwards as unsigned char; the shift cannot overflow (at most 198).
+    // C: party-ability-low sets top-scoring-member, read afterwards as unsigned char; the shift cannot overflow (at most 198).
     private static OptionHint StealthChance(CardContext c)
     {
         var chance = c.PartyMinSkill((int)Skill.Stealth) << 1;
@@ -67,7 +67,7 @@ public sealed class WitchPriestOrdination : Card
     }
 
     // orig: R122+0x0D60 matched
-    // C: success is rand_mod(100) < chance (strict), unlike most cards' <=.
+    // C: success is roll-below(100) < chance (strict), unlike most cards' <=.
     private void WaitToHearMore(CardContext c, CardMenu menu, int chance)
     {
         if (c.Random(100) < chance)
@@ -92,7 +92,7 @@ public sealed class WitchPriestOrdination : Card
     }
 
     /// <summary>A noise gives them away: the three men throw off their cloaks and attack.</summary>
-    // C: the C reloads the whole card (card_load, not card_load_near) with the ambush picture; Show does the same.
+    // C: the C reloads the whole card (card-run, not card-run-near) with the ambush picture; Show does the same.
     private void Noticed(CardContext c)
     {
         Show(c, AmbushPicture);

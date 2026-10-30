@@ -110,10 +110,10 @@ public sealed class DwarfStoneBox_MineB01 : Card
             // The equipped weapon's pack stack is found (the search leaves its index) and worn too.
             c.EquippedItem(i, 0);
             var index = c.State.Party.Last.Skill;
-            // C: with no weapon equipped the original wears the entry at the index the last search left (best_skill, DS:99EB:
+            // C: with no weapon equipped the original wears the entry at the index the last search left (top-skill-so-far, DS:99EB:
             // another member's search, or an index past this member's stacks): that entry of this member's 64 (a stale one past
             // the last stack, or the memory after the pack for an index outside it: Pack's flat model) loses the quality
-            // orig: R101+0x01E6 matched: `inventories[i][best_skill].f3 -= d; if (!...f3) ...f3 = 1;`; tests: OriginalMemoryTests
+            // orig: R101+0x01E6 matched: `inventories[i][top-skill-so-far].f3 -= d; if (!...f3) ...f3 = 1;`; tests: OriginalMemoryTests
             // C: the stack's quality is an unsigned byte; only an exact 0 becomes 1 (it may wrap to 255…).
             var worn = (byte)(m.Pack[index].Quality - damage);
             m.Pack[index] = m.Pack[index] with { Quality = worn == 0 ? 1 : worn };

@@ -145,7 +145,7 @@ def chain(g, pred, lst):
 EVENT_HELPERS = {"0xe76, 0x360c": ("tag", "type", "location", 0x1C),        # fact(tag, type, location)
                  "0xe76, 0x3878": ("kind", "location"),                   # event at location
                  "0xe76, 0x392c": ("kind", "type", "location")}           # event type at location
-CUR_LOC = 0x907E
+LOCATION_NOW = 0x907E
 
 
 def helper(insns, call, sa, sb, opf, jm, want_taken, self_test, unary):
@@ -166,7 +166,7 @@ def helper(insns, call, sa, sb, opf, jm, want_taken, self_test, unary):
         o = i.operands[0]
         if o.type == cx.X86_OP_IMM:
             args.append(o.imm)
-        elif o.type == cx.X86_OP_MEM and direct_mem(o) and direct_mem(o)[1] == CUR_LOC:
+        elif o.type == cx.X86_OP_MEM and direct_mem(o) and direct_mem(o)[1] == LOCATION_NOW:
             args.append("cur")
         else:
             return {"skip": "helper-arg-not-constant"}

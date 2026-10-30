@@ -9,7 +9,7 @@ namespace Darklands.Core.Battles;
 /// original's width and sign: they are <see cref="sbyte"/> or <see cref="byte"/> as the code
 /// reads them.
 /// </summary>
-// orig: combatants DS:9C55 (struct cbt, 13 × 0x80); per-combatant tables cbt_attack_rate DS:D493, cbt_queued_damage DS:D70C, cbt_damage_shown DS:D4C7, cbt_floor DS:A6B4
+// orig: combatants DS:9C55 (struct cbt, 13 × 0x80); per-combatant tables fighter-attack-speed DS:D493, fighter-pending-damage DS:D70C, fighter-damage-popup DS:D4C7, fighter-floor-level DS:A6B4
 public sealed partial class Combatant
 {
     public const int PartySlots = 5;
@@ -29,7 +29,7 @@ public sealed partial class Combatant
     /// <summary>The party member this combatant stands for (party slots only).</summary>
     public Character? Member { get; set; }
 
-    /// <summary>+0x00 / +0x02 (scrx, scry): the sprite's top left in the view where the last frame drew it (cbt_screen_pos R014+0x99F6).</summary>
+    /// <summary>+0x00 / +0x02 (scrx, scry): the sprite's top left in the view where the last frame drew it (fighter-screen-position R014+0x99F6).</summary>
     public (int X, int Y) ScreenPlace { get; set; }
 
     /// <summary>Map position in pixels (+0x04, +0x06).</summary>
@@ -168,31 +168,31 @@ public sealed partial class Combatant
 
     public sbyte MaximumStrength => Maximums[(int)Characters.Attribute.Strength];
 
-    /// <summary>cbt_attack_rate: chance in 100 of a blow each tick; 255 = to be worked out again.</summary>
+    /// <summary>fighter-attack-speed: chance in 100 of a blow each tick; 255 = to be worked out again.</summary>
     public byte AttackRate { get; set; } = 0xFF;
 
-    /// <summary>cbt_queued_damage: endurance and strength losses applied at the next damage step.</summary>
+    /// <summary>fighter-pending-damage: endurance and strength losses applied at the next damage step.</summary>
     public sbyte QueuedEndurance { get; set; }
 
     public sbyte QueuedStrength { get; set; }
 
-    /// <summary>cbt_damage_shown: endurance lost since the last display.</summary>
+    /// <summary>fighter-damage-popup: endurance lost since the last display.</summary>
     public sbyte DamageShown { get; set; }
 
-    /// <summary>cbt_floor: the level it is on (−99 left through an exit).</summary>
+    /// <summary>fighter-floor-level: the level it is on (−99 left through an exit).</summary>
     public int Floor { get; set; }
 
-    /// <summary>enemy_class: 0 hand to hand, 1 missiles, 2 casts spells.</summary>
+    /// <summary>enemy-kind: 0 hand to hand, 1 missiles, 2 casts spells.</summary>
     public int EnemyClass { get; set; }
 
     public bool IsAble => Status == CharacterStatus.Able;
 
-    /// <summary>cbt_half_w / cbt_half_h (DS:C80F, DS:C831): half the collision box, from the animation set's header.</summary>
+    /// <summary>fighter-half-width / fighter-half-height (DS:C80F, DS:C831): half the collision box, from the animation set's header.</summary>
     public int HalfWidth { get; set; } = 5;
 
     public int HalfHeight { get; set; } = 2;
 
-    /// <summary>cbt_moving (DS:A6D3): following a path.</summary>
+    /// <summary>fighter-moving (DS:A6D3): following a path.</summary>
     public bool Moving { get; set; }
 
     /// <summary>DS:D68D (party): which skills were used in this battle, for the skill improvement at its end.</summary>

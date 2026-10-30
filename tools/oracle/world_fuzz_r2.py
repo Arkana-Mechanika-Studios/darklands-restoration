@@ -42,11 +42,11 @@ class R2(r1.R1):
         ops = []
         for k in range(have, target):
             ops.append({"s": "event+", "hex": r1.event_hex(y, rng.choice([0x3B, 0x3D, 0x47, 0x52, 0x60]), type_=rng.randrange(0, 5), owner=rng.choice([0xFFFE, 0, 1]),
-                                                          loc=self.cur_loc(), value=rng.randrange(0, 5), flags=1, handler=0, tag=rng.randrange(0, 4))})
+                                                          loc=self.location_now(), value=rng.randrange(0, 5), flags=1, handler=0, tag=rng.randrange(0, 4))})
         if rng.random() < 0.5:
             # a matching-looking event in the last slot (the scan's last candidate)
             ops.append({"s": "event+", "hex": r1.event_hex(y, rng.choice(self.ekinds or [0x3B]), type_=rng.choice(self.etypes or [0]), owner=rng.choice([0xFFFE, 0xFFFF, 0]),
-                                                          loc=rng.choice([self.cur_loc(), 0]), value=rng.randrange(0, 4), flags=1, handler=0, tag=rng.choice(self.etags or [0]),
+                                                          loc=rng.choice([self.location_now(), 0]), value=rng.randrange(0, 4), flags=1, handler=0, tag=rng.choice(self.etags or [0]),
                                                           d1=rng.randrange(3))})
         return ops
 
@@ -64,8 +64,8 @@ class R2(r1.R1):
             y = self.year()
             have = len(self.sav.events) + len(ops)
             for _ in range(max(0, 299 - have)):
-                ops.append({"s": "event+", "hex": r1.event_hex(y, rng.choice([0x3B, 0x3D, 0x47, 0x52, 0x60]), type_=rng.randrange(0, 5), owner=0xFFFE, loc=self.cur_loc(), flags=1)})
-            other = (self.cur_loc() + 1 + rng.randrange(max(1, self.places - 1))) % max(1, self.places)
+                ops.append({"s": "event+", "hex": r1.event_hex(y, rng.choice([0x3B, 0x3D, 0x47, 0x52, 0x60]), type_=rng.randrange(0, 5), owner=0xFFFE, loc=self.location_now(), flags=1)})
+            other = (self.location_now() + 1 + rng.randrange(max(1, self.places - 1))) % max(1, self.places)
             ops.append({"s": "event+", "hex": r1.event_hex(y, r1.KIND_QUEST, type_=rng.randrange(0, 12), owner=rng.choice([0xFFFE, other]), loc=other,
                                                           value=rng.randrange(3), extra=rng.randrange(3), tag=rng.randrange(1, 14), d1=rng.randrange(5), d2=rng.randrange(5))})
         if n == 6:

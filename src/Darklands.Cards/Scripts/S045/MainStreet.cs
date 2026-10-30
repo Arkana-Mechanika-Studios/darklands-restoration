@@ -32,7 +32,7 @@ public sealed class MainStreet : Card
     // orig: R045+0x162C (18FC:09EC) matched (init helper: empty in the original, it sets no option defaults)
     // DORMANT: the empty init helper installs no default "screwed up." handler and the card has no items or saints, so only option lines 0..9 exist; there is no pop-up handler.
     // C: the original keeps option lines 10..19 untouched here (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
-    // C: the options use the order square 0, fortress 1, market 2, church 3, business 4, inn 5, docks 6, side street 7, other gate 8, Places 9 in both opt_fn and the dispatch switch; hint and action pair up one to one.
+    // C: the options use the order square 0, fortress 1, market 2, church 3, business 4, inn 5, docks 6, side street 7, other gate 8, Places 9 in both card-option-handler and the dispatch switch; hint and action pair up one to one.
     public override int Run(CardContext c)
     {
         c.PlayMusic(6);
@@ -90,13 +90,13 @@ public sealed class MainStreet : Card
         new(chance => GoIfUnseen(c, chance, place, passTime), () => Safety(leastChance));
 
     /// <summary>Safe in a friendly city; in a hostile one the chance not to be noticed, at least <paramref name="least"/>.</summary>
-    // orig: hint handlers R045+0x10E2, R045+0x1162, R045+0x11F4, R045+0x1286, R045+0x1318, R045+0x13B8, R045+0x144A, R045+0x14B4, R045+0x1542, R045+0x15D4 (see the option lines): success assured when DS:57B0 is 0, else clamp_range(least, 100, 100 - DS:57B0)
+    // orig: hint handlers R045+0x10E2, R045+0x1162, R045+0x11F4, R045+0x1286, R045+0x1318, R045+0x13B8, R045+0x144A, R045+0x14B4, R045+0x1542, R045+0x15D4 (see the option lines): success assured when DS:57B0 is 0, else limit-to-range(least, 100, 100 - DS:57B0)
     private OptionHint Safety(int least) =>
         _watchfulness == 0
             ? OptionHint.Say(SuccessAssured)
             : OptionHint.ChanceOf(Math.Clamp(100 - _watchfulness, least, 100), OptionHint.WholeParty);
 
-    // orig: action handlers R045+0x10BA, R045+0x113A, R045+0x11BA, R045+0x124C, R045+0x12DE, R045+0x1370, R045+0x1410, R045+0x14A2, R045+0x150C, R045+0x159A (see the option lines): the roll is rand_mod(100) >= chance and DS:57B0, else the place; the side street action R045+0x14A2 skips the roll
+    // orig: action handlers R045+0x10BA, R045+0x113A, R045+0x11BA, R045+0x124C, R045+0x12DE, R045+0x1370, R045+0x1410, R045+0x14A2, R045+0x150C, R045+0x159A (see the option lines): the roll is roll-below(100) >= chance and DS:57B0, else the place; the side street action R045+0x14A2 skips the roll
     // C: the original draws the number first and tests it before DS:57B0, the C# keeps that order (the draw is always made).
     private void GoIfUnseen(CardContext c, int chance, int place, bool passTime)
     {

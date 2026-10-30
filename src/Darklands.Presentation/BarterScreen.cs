@@ -58,19 +58,19 @@ public sealed class BarterScreen
     private Core.Characters.Pack PackOf(int member) => Party.Slot(member).Pack;
 
     /// <summary>Runs the screen until the player leaves.</summary>
-    // orig: barter_screen R032+0x0000 (1462:0000) draft (unmatched: registers/slots); main loop
+    // orig: trade-screen-entry R032+0x0000 (1462:0000) draft (unmatched: registers/slots); main loop
     // C: on entry the five members' modes are set to buying, their counts, tops and cursors and the shared shop top/cursor to 0 (the field initialisers).
     public void Run()
     {
         DrawScreen();
-        // orig: R032+0x00F7 `while (mouse_buttons & 1);` before the loop (checked against the asm)
+        // orig: R032+0x00F7 `while (mouse-button-state & 1);` before the loop (checked against the asm)
         _page.WaitForRelease();
         var lit = -1;
         try
         {
             while (true)
             {
-                // orig: R032+0x06B2: menu_bar_run(DS:9419, 0) (GameUi.Poll's: MenuBar, HotKeys); R032+0x06BF: if DS:9C46 { DS:9C46 = 0; the picture 0x2F29
+                // orig: R032+0x06B2: menu-bar-loop(DS:9419, 0) (GameUi.Poll's: MenuBar, HotKeys); R032+0x06BF: if DS:9C46 { DS:9C46 = 0; the picture 0x2F29
                 //   reloaded into DS:E48C and shown, the panel (root 0000:1588 / 0000:1716 with 0x100), R032+0x0B30 (Redraw) } (the pass's key kept); a waiting key
                 var key = _page.KeyAfterTheMouse(MouseStep(ref lit), Redraw);
                 if (key == Keys.Escape || BuySellPage.Is(key, 'L'))
@@ -85,7 +85,7 @@ public sealed class BarterScreen
         }
         finally
         {
-            // orig: barter_close R032+0x076C (1462:076C) draft (byte-matched function): restores the fonts, the panel mode flags DS:9920/DS:9934 and leader = DS:884C.
+            // orig: trade-screen-close R032+0x076C (1462:076C) draft (byte-matched function): restores the fonts, the panel mode flags DS:9920/DS:9934 and leader = DS:884C.
             // DIVERGENCE: fonts and panel mode flags are host state not modelled here; only the leader is restored.
             Party.LeaderIndex = _leaderBefore;
         }
@@ -148,7 +148,7 @@ public sealed class BarterScreen
             _buying[_member] = true;
             ShowBuying();
         }
-        // C: member_sheet_vec(row) returns the member to show next; barter ignores it and redraws (pic, palette, panel, the lists).
+        // C: member-sheet-overlay-entry(row) returns the member to show next; barter ignores it and redraws (pic, palette, panel, the lists).
         if (_page.HeldRow(BuySellPage.MemberAt) is { } member)
         {
             _screens.CharacterSheet(member);
@@ -158,10 +158,10 @@ public sealed class BarterScreen
         return key;
     }
 
-    // orig: barter_key R032+0x0F60 (1462:0F60) draft (byte-matched function); every case kept (Alt-Q, P/p, S/s, D/d, L/l in Run, B/b, Up, Down, Ctrl-F1..F5 falling into Left/Right); other keys do nothing
+    // orig: trade-screen-keys R032+0x0F60 (1462:0F60) draft (byte-matched function); every case kept (Alt-Q, P/p, S/s, D/d, L/l in Run, B/b, Up, Down, Ctrl-F1..F5 falling into Left/Right); other keys do nothing
     private void HandleKey(int key)
     {
-        // C: case 0x1000 (Alt-Q) calls barter_close then quit_to_dos; the finally block restores the leader.
+        // C: case 0x1000 (Alt-Q) calls trade-screen-close then exit-to-system; the finally block restores the leader.
         // DORMANT: with a GameUi.GameKey hook installed, HotKeys takes Alt-Q first (and asks); reached only without the hook.
         if (key == Keys.AltQ)
         {
@@ -202,7 +202,7 @@ public sealed class BarterScreen
         }
     }
 
-    // orig: barter_key R032+0x0F60 draft, case P; the rule is Trading.Buy
+    // orig: trade-screen-keys R032+0x0F60 draft, case P; the rule is Trading.Buy
     private void Purchase()
     {
         // C: only the list in use (DS:8842[who]) and the count DS:885C != 0 are tested; the code is DS:86A2[top + row].
@@ -227,7 +227,7 @@ public sealed class BarterScreen
         _page.Light(0x52, _shopRow * 8 + 0x55, 0x5F);
     }
 
-    // orig: barter_key R032+0x0F60 draft, case S; the rule is Trading.Sell
+    // orig: trade-screen-keys R032+0x0F60 draft, case S; the rule is Trading.Sell
     private void Sell()
     {
         var index = _packRow[_member] + _packTop[_member];
@@ -259,7 +259,7 @@ public sealed class BarterScreen
     }
 
     /// <summary>D: one item of the <em>leader's</em> stack at the bartering member's lit row is thrown away.</summary>
-    // orig: barter_key R032+0x0F60 draft, case D (0x2044/0x2064): item_take_one_vec(leader, row + top), the count stored for the bartering member, a 0x5F-wide highlight in the menu area
+    // orig: trade-screen-keys R032+0x0F60 draft, case D (0x2044/0x2064): item-take-single-overlay-entry(leader, row + top), the count stored for the bartering member, a 0x5F-wide highlight in the menu area
     private void DropFromLeader()
     {
         var index = _packRow[_member] + _packTop[_member];
@@ -273,7 +273,7 @@ public sealed class BarterScreen
         _page.Light(0x50, _packRow[_member] * 8 + 0x1B, 0x5F);
     }
 
-    // orig: barter_key R032+0x0F60 draft, case B (0x3042/0x3062)
+    // orig: trade-screen-keys R032+0x0F60 draft, case B (0x3042/0x3062)
     private void BarterForTheNextMember()
     {
         _page.DrawParty(Party);
@@ -287,7 +287,7 @@ public sealed class BarterScreen
         _page.Recolor(0x50, 0x33, 0xC8, 9, BuySellPage.Ink, BuySellPage.Lit);
     }
 
-    // orig: barter_key R032+0x0F60 draft, case 0x4800
+    // orig: trade-screen-keys R032+0x0F60 draft, case 0x4800
     private void MoveUp()
     {
         if (_buying[_member])
@@ -328,7 +328,7 @@ public sealed class BarterScreen
         }
     }
 
-    // orig: barter_key R032+0x0F60 draft, case 0x5000
+    // orig: trade-screen-keys R032+0x0F60 draft, case 0x5000
     // C: the shop cursor is kept inside the list (one step back) but the pack cursor only inside the four rows.
     private void MoveDown()
     {
@@ -375,7 +375,7 @@ public sealed class BarterScreen
     }
 
     /// <summary>Ctrl-F1..F5: a present member leads the haggling; then the lists switch, as the original falls through.</summary>
-    // orig: barter_key R032+0x0F60 draft, cases 0x5E00..0x6200 (falls through into the list switch); prices on screen are not recomputed
+    // orig: trade-screen-keys R032+0x0F60 draft, cases 0x5E00..0x6200 (falls through into the list switch); prices on screen are not recomputed
     private void ChooseLeader(int member)
     {
         if (Party.PresentMember(member) is null)
@@ -387,7 +387,7 @@ public sealed class BarterScreen
         SwitchLists();
     }
 
-    // orig: barter_key R032+0x0F60 draft, cases 0x4B00/0x4D00
+    // orig: trade-screen-keys R032+0x0F60 draft, cases 0x4B00/0x4D00
     private void SwitchLists()
     {
         if (_buying[_member])
@@ -425,7 +425,7 @@ public sealed class BarterScreen
     }
 
     /// <summary>The first drawing: the page, both lists, and the day's stock (which seeds the generator).</summary>
-    // orig: draw_barter_screen R032+0x078E (1462:078E) draft (byte-matched function); the stock loop is Trading.Stock
+    // orig: trade-screen-paint R032+0x078E (1462:078E) draft (byte-matched function); the stock loop is Trading.Stock
     private void DrawScreen()
     {
         _page.DrawBackground(Party);
@@ -441,7 +441,7 @@ public sealed class BarterScreen
         {
             _page.Text(0x75, 0x93 + i * 8, PackLine(pack[i]), BuySellPage.Ink);
         }
-        // C: the pack lines above were priced before the stock listing seeds the generator (sell_price draws under the clock seed, in a flag-8 place).
+        // C: the pack lines above were priced before the stock listing seeds the generator (price-to-sell draws under the clock seed, in a flag-8 place).
         _stock = Trading.Stock(_state, _shop);
         // orig: R032+0x0ACD: DS:86A2[DS:8850] = k for every item for sale; the entries past the list's end are left as they were
         for (var i = 0; i < _stock.Codes.Count && i < _page.BarterListing.Length; i++)
@@ -459,8 +459,8 @@ public sealed class BarterScreen
     }
 
     /// <summary>The whole page again (after another member is chosen or a character sheet).</summary>
-    // orig: redraw_barter_screen R032+0x0B30 (1462:0B30) draft (byte-matched function)
-    // DIVERGENCE: the original redraws the picture without set_palette (the palette left by a character sheet stays); the picture's colours are applied here.
+    // orig: trade-screen-repaint R032+0x0B30 (1462:0B30) draft (byte-matched function)
+    // DIVERGENCE: the original redraws the picture without palette-load (the palette left by a character sheet stays); the picture's colours are applied here.
     private void Redraw()
     {
         _page.DrawBackground(Party);
@@ -501,7 +501,7 @@ public sealed class BarterScreen
     }
 
     /// <summary>Four of the member's stacks with what the shop pays.</summary>
-    // orig: draw_member_items R032+0x1770 (1462:1770) draft (byte-matched function)
+    // orig: member-items-paint R032+0x1770 (1462:1770) draft (byte-matched function)
     private void DrawPackItems()
     {
         _page.Restore(0x72, 0x93, 0xB6, 0x20);
@@ -513,7 +513,7 @@ public sealed class BarterScreen
     }
 
     /// <summary>Four of the goods with their prices (the original prints the price only three wide here).</summary>
-    // orig: draw_shop_items R032+0x1870 (1462:1870) draft (byte-matched function)
+    // orig: shop-items-paint R032+0x1870 (1462:1870) draft (byte-matched function)
     private void DrawShopItems()
     {
         _page.Restore(0x52, 0x55, 0xB9, 0x20);
@@ -524,7 +524,7 @@ public sealed class BarterScreen
         }
     }
 
-    // orig: barter_key R032+0x0F60 draft: gfx_copy_rect(back_win, 0x49, 9, 0xEE, 9) and the purse line again, after P and S
+    // orig: trade-screen-keys R032+0x0F60 draft: gfx-rect-copy(backdrop-window, 0x49, 9, 0xEE, 9) and the purse line again, after P and S
     private void RedrawPurse()
     {
         _page.Restore(0x49, 9, 0xEE, 9);
@@ -551,7 +551,7 @@ public sealed class BarterScreen
     private string PackLine(Core.Characters.ItemStack stack)
     {
         var code = stack.Code & 0xFFF;
-        // C: sprintf arguments right to left: quality, count, name, then sell_price (a flag-8 draw per line).
+        // C: sprintf arguments right to left: quality, count, name, then price-to-sell (a flag-8 draw per line).
         var price = (ushort)Trading.SellPrice(_state, code, stack.Quality);
         return Invariant($"{price,5}pf  {_state.Item(code).Name}  ({stack.Count,3}) {stack.Quality,2}q");
     }
@@ -560,7 +560,7 @@ public sealed class BarterScreen
     private string ShopLine(int code, int price, bool wide)
     {
         var d = _state.Item(code);
-        // C: "%5upf" prints the price word unsigned; draw_shop_items uses "%3dpf" (signed, three wide).
+        // C: "%5upf" prints the price word unsigned; shop-items-paint uses "%3dpf" (signed, three wide).
         var shown = wide ? Invariant($"{(ushort)price,5}") : Invariant($"{(short)price,3}");
         return Invariant($"{shown}pf  {d.Name}  {Trading.OfferedQuality(_state, _shop, code),3}q  {(sbyte)d.Weight,3}lbs");
     }

@@ -13,8 +13,8 @@ namespace Darklands.Cards.Scripts;
 //     R130+0x1E0E
 //   other: R130+0x1BCC, R130+0x1C38
 // DORMANT (generated): option slots 10..19 keep the default handler R130+0x1C38 ("screwed up.") and are never shown.
-// C (generated): opt_flag_3/4/5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// C (generated): card-option-flag-3/4/5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class GateOfDarkness : Card
 {
@@ -26,7 +26,7 @@ public sealed class GateOfDarkness : Card
     {
         if (!c.Events.FactAnywhere(1, 0x16))
         {
-            // C: this early return runs before the table set-up, so card_items / card_saints keep the last card's values
+            // C: this early return runs before the table set-up, so card-item-lines / card-saint-lines keep the last card's values
             //   (nothing reads them before the next card clears them).
             Show(c, 231);
             c.Screen.Text(3);
@@ -64,7 +64,7 @@ public sealed class GateOfDarkness : Card
         if (result != 0)
         {
             c.NameToSlot(1, c.CardSaints[c.MenuEntrySlot], 0);
-            // C: card_load (the whole card), not card_load_near.
+            // C: card-run (the whole card), not card-run-near.
             Show(c, 289);
             c.Screen.Text(1);
             LastCastle.Fight(c, DarknessEnemy);

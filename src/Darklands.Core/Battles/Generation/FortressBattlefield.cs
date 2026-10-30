@@ -54,7 +54,7 @@ public static class FortressBattlefield
     // orig: R011+0x0000 (1432:0000) draft (byte-matched per the draft notes); call order and arguments checked against asm; tests: Oracle:special.json
     // C: the meaning of the two specs' qualities the fortress tests: the second (== 1) shrinks every group by one, the third (== 1) starts the party on level 1.
     // DORMANT: Context.ForceMap (DS:C100, always -1) would force the start level to a number 0..15.
-    // DIVERGENCE: the four level buffers (alloc_buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept. Its only store is R011+0x04ED; no instruction of the root or the 136 overlays reads it.
+    // DIVERGENCE: the four level buffers (request-work-buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept. Its only store is R011+0x04ED; no instruction of the root or the 136 overlays reads it.
     public static int BuildFortress(GenerationState g, int battlefield, out int start, (int Type, int Quality, int Count)[] specs)
     {
         _ = battlefield;
@@ -381,7 +381,7 @@ public static class FortressBattlefield
         }
     }
 
-    /// <summary>bf_monsters[level * 12 + kind].+0x0C = value, with the original's unchecked index.</summary>
+    /// <summary>battlefield-monster-table[level * 12 + kind].+0x0C = value, with the original's unchecked index.</summary>
     // DIVERGENCE: a kind of −1 addresses the last kind of the level before (or, for level 0, the enemy buffer's header, which nothing reads); only the former is kept.
     private static void FlagKind(GenerationState g, int level, int kind, int value)
     {

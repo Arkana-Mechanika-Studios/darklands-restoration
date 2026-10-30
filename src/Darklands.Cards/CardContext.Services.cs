@@ -52,9 +52,9 @@ public sealed partial class CardContext
     public void Camp(int mode) => Screens.Camp(mode);
 
     /// <summary>The items stored at a location (R029 225c).</summary>
-    // orig: R029+0x225C (0E76:225C) draft(fn matched): item_cache_screen_vec(location), then card_load(card_name, pic_buf)
-    // C: cache_screen does not use its argument (it works on cur_loc), so the location is not passed on.
-    // DIVERGENCE: the card's redraw afterwards (card_load) is the card screen's job here, as for the shop and the camp.
+    // orig: R029+0x225C (0E76:225C) draft(fn matched): stash-screen-overlay-entry(location), then card-run(card-title, image-buffer)
+    // C: stash-screen does not use its argument (it works on location-now), so the location is not passed on.
+    // DIVERGENCE: the card's redraw afterwards (card-run) is the card screen's job here, as for the shop and the camp.
     public void OpenItemStore(int location) => Screens.ItemStore();
 
     // ---- locations ------------------------------------------------------------------
@@ -68,7 +68,7 @@ public sealed partial class CardContext
     public Core.Battles.BattleOrders BattleSetup => State.BattleOrders;
 
     /// <summary>
-    /// The result of the last battle (<c>battle_result</c>, DS:A893): what the main loop's
+    /// The result of the last battle (<c>battle-outcome</c>, DS:A893): what the main loop's
     /// battle (a card returning −2..−6) ended with; the battle code sets it.
     /// </summary>
     // C: set by the battle screen when a fight ends; 0 (a victory) before any battle.
@@ -80,7 +80,7 @@ public sealed partial class CardContext
 
     // ---- random personal names -------------------------------------------------------
 
-    // RandomName (random_name) is shared: see CardContext.Memory.cs (PersonalNames supplies the name lists).
+    // RandomName (made-up-name) is shared: see CardContext.Memory.cs (PersonalNames supplies the name lists).
 
     // ---- the party roster (charactr.tmp) ----------------------------------------------
 
@@ -104,7 +104,7 @@ public sealed partial class CardContext
     }
 
     /// <summary>
-    /// The party's standing as a card last read it (<c>cur_rep</c>): city cards set it when the
+    /// The party's standing as a card last read it (<c>reputation-now</c>): city cards set it when the
     /// party arrives and later cards use that value, not the live one (<see cref="ReputationHere"/>).
     /// </summary>
     public int StandingSeen

@@ -46,7 +46,7 @@ public sealed class GameAssets(GameFiles files)
     /// The font in a graphics-driver font slot (1..3). The driver fills slot n with font n−1
     /// of FONTS.FNT.
     /// </summary>
-    // orig: the driver loader root 047C:07CE("mgraphic.exe", "fonts.fnt") (called from R000+0x052A (0E76:052A) game start) and font_load root 0617:02F6 (slot, idx, name) draft (the C copies font number idx of the file into the driver's slot); the driver itself (mgraphic.exe, asm) is not in the sources; status asm
+    // orig: the driver loader root 047C:07CE("mgraphic.exe", "fonts.fnt") (called from R000+0x052A (0E76:052A) game start) and font-read root 0617:02F6 (slot, idx, name) draft (the C copies font number idx of the file into the driver's slot); the driver itself (mgraphic.exe, asm) is not in the sources; status asm
     // C: "slot n holds font n-1" is how the screens look (card text = slot 1, party panel = slot 3), not read from the driver; the C names only the slot argument. Slots outside 1..3 are clamped here (the original has the slot count of the driver).
     public FntFont Font(int slot)
     {
@@ -55,7 +55,7 @@ public sealed class GameAssets(GameFiles files)
     }
 
     /// <summary>A saint's description for the prayer screen (DARKLAND.SNT record), "" when there is none.</summary>
-    // orig: saint_load_bg R034+0x0720 (1462:0720) matched: fopen("darkland.snt", "r"),
+    // orig: saint-backdrop-load R034+0x0720 (1462:0720) matched: fopen("darkland.snt", "r"),
     //   fseek(saint * 360 + 1), fread 360 bytes
     // C: text mode: CR LF would read as LF and ^Z would end the read; the stock file has neither.
     // DIVERGENCE: without the file the original prints "saint file" and exits to DOS; here the description is empty.
@@ -68,7 +68,7 @@ public sealed class GameAssets(GameFiles files)
         return _saints is not null && saint >= 0 && saint < _saints.Descriptions.Count ? _saints.Descriptions[saint].Text : "";
     }
 
-    /// <summary>True when the game's MSGFILES holds a message file of that card name (as msg_load would find it: name + ".MSG", 12 characters).</summary>
+    /// <summary>True when the game's MSGFILES holds a message file of that card name (as text-bank-read would find it: name + ".MSG", 12 characters).</summary>
     public bool IsGameMessageFile(string cardName)
     {
         _messageArchive ??= files.Exists("MSGFILES") ? new MsgFilesArchiveDecoder().Decode(files.Read("MSGFILES")) : null;
@@ -95,7 +95,7 @@ public sealed class GameAssets(GameFiles files)
         if (!_messages.TryGetValue(cardName, out var file))
         {
             _messageArchive ??= new MsgFilesArchiveDecoder().Decode(files.Read("MSGFILES"));
-            // C: msg_load asks the catalogue for name + ".msg", and catalog_find compares names with strnicmp(.., 12)
+            // C: text-bank-read asks the catalogue for name + ".msg", and catalog-lookup compares names with strnicmp(.., 12)
             // (root 0617:0736): a card named "$MeetI00.msg" finds "$MEETI00.MSG" by its first twelve characters.
             var wanted = cardName + ".MSG";
             var key = wanted.Length > 12 ? wanted[..12] : wanted;
@@ -113,7 +113,7 @@ public sealed class GameAssets(GameFiles files)
 /// <summary>A card's texts: the blocks of one .MSG file.</summary>
 public sealed record MessageFile(string Name, IReadOnlyList<MessageBlock> Blocks)
 {
-    /// <summary>The file's bytes as msg_load reads them into msg_file (DS:A895).</summary>
+    /// <summary>The file's bytes as text-bank-read reads them into text-bank-file (DS:A895).</summary>
     public byte[] Bytes { get; init; } = [];
 }
 
@@ -124,7 +124,7 @@ public sealed record MessageFile(string Name, IReadOnlyList<MessageBlock> Blocks
 public sealed record MessageBlock(int X, int Y, int Width, byte[] Text)
 {
     /// <summary>A card's block as the scanner stores it: y clamped to 0..200 and x to 0..320 (signed), the width as read.</summary>
-    // C: the MSG scanner (R043+0x0C9E, cited on MsgCardDocumentParser) does this: the y byte through clamp_range(y, 0, 0xC8) (R029+0x4F76) into DS:E90B, the x word through clamp_range(x, 0, 0x140) into DS:E8D9, the width word as it is
+    // C: the MSG scanner (R043+0x0C9E, cited on MsgCardDocumentParser) does this: the y byte through limit-to-range(y, 0, 0xC8) (R029+0x4F76) into DS:E90B, the x word through limit-to-range(x, 0, 0x140) into DS:E8D9, the width word as it is
     public static MessageBlock From(Formats.Text.MsgCard card) =>
         new(card.ScannerValues.BoundedTextX, card.ScannerValues.BoundedTextY, card.Layout.TextMaxX, card.RawTextBytes);
 }

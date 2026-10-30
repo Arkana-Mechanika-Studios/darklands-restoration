@@ -76,7 +76,7 @@ public sealed class NightAssaultOnTheKeep : Card
             // DORMANT: lines 5, 6, 8 and 9 are never offered (opt_flag = 0); each lets no time pass (R105+0x0CCC/0d10/0d94/0dd8).
             new MenuLine(_ => c.PassHours(0), Assured),
             new MenuLine(_ => c.PassHours(0), Assured),
-            // orig: R105+0x0D54 (1838:0D54) matched (leaves without clearing cur_loc)
+            // orig: R105+0x0D54 (1838:0D54) matched (leaves without clearing location-now)
             new MenuLine(_ => c.Next = CardContext.MapCard, Assured),
             new MenuLine(_ => c.PassHours(0), Assured),
             new MenuLine(_ => c.PassHours(0), Assured));
@@ -92,7 +92,7 @@ public sealed class NightAssaultOnTheKeep : Card
     /// </summary>
     private static Money Bribe(CardContext c)
     {
-        // C: money_pfennigs returns a long; clamp_range (no prototype) reads its low word as the value.
+        // C: purse-in-pfennigs returns a long; limit-to-range (no prototype) reads its low word as the value.
         var pfennigs = Math.Clamp((int)(short)c.State.Party.Purse.TotalPfennigs, 1, 20000);
         return Money.From(0, pfennigs / 100 + 12, 0);
     }
@@ -279,7 +279,7 @@ public sealed class NightAssaultOnTheKeep : Card
 
     /// <summary>The potion is used up; it opens the gate, blasts it, or sets the stables afire — or the member stumbles.</summary>
     // orig: R105+0x0AE8 (1838:0AE8) matched; tests: CardSmokeTests
-    // C: -(rand_mod(3) - -3) is drawn before -rand_mod(3) (two statements); a slot past 2 succeeds silently and stays.
+    // C: -(roll-below(3) - -3) is drawn before -roll-below(3) (two statements); a slot past 2 succeeds silently and stays.
     private static void UseAPotion(CardContext c, int chance)
     {
         var m = c.MenuMember;
@@ -331,7 +331,7 @@ public sealed class NightAssaultOnTheKeep : Card
     // orig: R105+0x035E (1838:035E) matched; tests: CardSmokeTests
     private static void StormTheKeep(CardContext c, int wayIn)
     {
-        // C: party_x is declared `extern long` in the original, so the call pushes party_y and party_x: nearest_city(party_x) receives the party's (x, y); nothing is undefined (checked against the asm).
+        // C: party-map-column is declared `extern long` in the original, so the call pushes party-map-row and party-map-column: closest-city(party-map-column) receives the party's (x, y); nothing is undefined (checked against the asm).
         int NearestCity() => c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y);
 
         if (!LordIsCruel(c))
@@ -344,7 +344,7 @@ public sealed class NightAssaultOnTheKeep : Card
         else
         {
             // C: the switch is on a char argument; any value but 0..2 takes the default (0x7E), as way 3 does.
-            // C: run_battle's arguments are evaluated right to left; the guard count is the only draw, made before the battle.
+            // C: battle-driver's arguments are evaluated right to left; the guard count is the only draw, made before the battle.
             var side = wayIn switch { 0 => 0x7B, 1 => 0x7C, 2 => 0x7D, _ => 0x7E };
             var guards = c.Random(5) + 3;
             switch (c.RunBattle(side, -2, 3, 2, guards, 0x24, 4, 1, -1, 0, 0))

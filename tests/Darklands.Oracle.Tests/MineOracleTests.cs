@@ -12,7 +12,7 @@ using Darklands.Persistence;
 namespace Darklands.Oracle.Tests;
 
 /// <summary>
-/// The mine battlefield generator against the original program: each scenario in Corpus/mine.json is the original mine_build run
+/// The mine battlefield generator against the original program: each scenario in Corpus/mine.json is the original mine-builder-entry run
 /// from DARKLAND.EXE on the player's IMAPS.CAT, DARKLAND.ENM and DARKLAND.LST (tools/oracle/build_mine_corpus.py). Needs the game
 /// folder (DARKLANDS_DIR, or the "game" key of local/paths.json); without it the test passes vacuously.
 /// </summary>
@@ -52,7 +52,7 @@ public sealed class MineOracleTests
         var maps = PreparedMaps.Load(files);
         var failures = new List<string>();
         var n = 0;
-        foreach (var c in Data.Value.Cases("mine_build"))
+        foreach (var c in Data.Value.Cases("R009+0x0000"))
         {
             var s = c.Inputs;
             var bf = s.GetProperty("bf").GetInt32();

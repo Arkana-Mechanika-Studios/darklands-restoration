@@ -94,7 +94,7 @@ public sealed class SaintPrayerTests
         Assert.Equal(expected ? PrayerOutcome.Succeeded : PrayerOutcome.Failed, p.Outcome(success));
         Assert.Equal(PrayerOutcome.Failed, new SaintPrayer(s, 3, Aidan, PrayerMode.ForMember).Outcome(true));
     }
-    /// <summary>saint_pray R034+0x0166..0x01F5: the message before the saint's help, after the extra loss, before the offer is spent.</summary>
+    /// <summary>saint-prayer R034+0x0166..0x01F5: the message before the saint's help, after the extra loss, before the offer is spent.</summary>
     [Theory]
     [InlineData(1u)]
     [InlineData(2u)]

@@ -5,7 +5,7 @@ namespace Darklands.Core.Economy;
 /// 1 groschen = 12 pfennigs). Components are 16-bit like the original purse, and every
 /// operation follows the original carry and borrow rules, including their wrap-around.
 /// </summary>
-// orig: money_copy R029+0x50DE (1367:01CE) matched: d->pf = s->pf, d->gr = s->gr, d->fl = s->fl;
+// orig: purse-duplicate R029+0x50DE (1367:01CE) matched: d->pf = s->pf, d->gr = s->gr, d->fl = s->fl;
 //   copying a purse is the assignment of this value type (no normalisation, as in the original).
 public readonly record struct Money(short Florins, short Groschen, short Pfennigs) : IComparable<Money>
 {
@@ -15,7 +15,7 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
     public static Money Zero => default;
 
     /// <summary>Builds a normalised amount, carrying pfennigs and groschen upwards.</summary>
-    // orig: money_set R029+0x4FB4 (1367:00A4) matched; tests: CoreValuesOracleTests (Oracle:core.json money_set); CoreValueRulesTests
+    // orig: purse-assign R029+0x4FB4 (1367:00A4) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x4FB4); CoreValueRulesTests
     // C: gr and pf are unsigned parameters (a negative amount carries as 65536 - x); fl += gr / 20 stays signed.
     public static Money From(int florins, int groschen, int pfennigs)
     {
@@ -39,10 +39,10 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
     public static Money FromPfennigs(int pfennigs) => From(0, 0, pfennigs);
 
     /// <summary>Total value in pfennigs.</summary>
-    // orig: money_pfennigs R029+0x5002 (1367:00F2) matched; tests: CoreValueRulesTests
+    // orig: purse-in-pfennigs R029+0x5002 (1367:00F2) matched; tests: CoreValueRulesTests
     public long TotalPfennigs => ((long)Florins * GroschenPerFlorin + Groschen) * PfennigsPerGroschen + Pfennigs;
 
-    // orig: money_add_fgp R029+0x5040 (1367:0130) matched; tests: CoreValuesOracleTests (Oracle:core.json money_add_fgp)
+    // orig: purse-add-parts R029+0x5040 (1367:0130) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x5040)
     // C: pf / 12 is a signed division, the groschen carry divides (unsigned)gr / 20.
     public Money Add(int florins, int groschen, int pfennigs)
     {
@@ -63,8 +63,8 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
         return new Money((short)(fl + florins), gr, pf);
     }
 
-    // orig: money_add R029+0x50FC (1367:01EC) matched; tests: CoreValuesOracleTests (Oracle:core.json money_add)
-    // C: unlike money_add_fgp both carries divide signed (a->gr / 20).
+    // orig: purse-sum R029+0x50FC (1367:01EC) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x50FC)
+    // C: unlike purse-add-parts both carries divide signed (a->gr / 20).
     public Money Add(Money other)
     {
         var pf = (short)(Pfennigs + other.Pfennigs);
@@ -85,7 +85,7 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
     }
 
     /// <summary>Subtracts, borrowing from the next larger unit; the florins may go negative.</summary>
-    // orig: money_sub_fgp R029+0x5090 (1367:0180) matched; tests: CoreValuesOracleTests (Oracle:core.json money_sub_fgp)
+    // orig: purse-subtract-parts R029+0x5090 (1367:0180) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x5090)
     // C: the borrow q = (unsigned)(11 - pf) / 12 is unsigned; the stores wrap at 16 bits.
     public Money Subtract(int florins, int groschen, int pfennigs)
     {
@@ -108,11 +108,11 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
         return new Money((short)(fl - florins), gr, pf);
     }
 
-    // orig: money_sub R029+0x514E (1367:023E) matched; tests: CoreValuesOracleTests (Oracle:core.json money_sub)
+    // orig: purse-difference R029+0x514E (1367:023E) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x514E)
     public Money Subtract(Money other) => Subtract(other.Florins, other.Groschen, other.Pfennigs);
 
     /// <summary>The amount added to itself <paramref name="count"/> times (0 for count &lt; 1).</summary>
-    // orig: money_mul R029+0x51A0 (1367:0290) matched; tests: CoreValuesOracleTests (Oracle:core.json money_mul)
+    // orig: purse-scale R029+0x51A0 (1367:0290) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x51A0)
     public Money Times(int count)
     {
         var total = Zero;
@@ -124,7 +124,7 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
     }
 
     /// <summary>Compares the pfennig totals as unsigned 32-bit values, like the original.</summary>
-    // orig: money_cmp R029+0x51E4 (1367:02D4) matched; tests: CoreValuesOracleTests (Oracle:core.json money_cmp)
+    // orig: purse-compare R029+0x51E4 (1367:02D4) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x51E4)
     // C: both totals are long products stored in unsigned long: a negative purse compares as a huge one.
     public int CompareTo(Money other)
     {
@@ -139,9 +139,9 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
     public static bool operator >=(Money a, Money b) => a.CompareTo(b) >= 0;
 
     /// <summary>"3 florins, 2 groschen and 1 pfennig".</summary>
-    // orig: money_format R029+0x5286 (1367:0376) matched; itoa_commas root 0265:09B2 (0265:09B2) matched; tests: CoreValueRulesTests
+    // orig: purse-to-text R029+0x5286 (1367:0376) matched; number-with-separators root 0265:09B2 (0265:09B2) matched; tests: CoreValueRulesTests
     // C: in `if (fl == 1) if (m->pf) ", " else " and "` the else belongs to the inner if: after florins ", " when pfennigs follow, else " and ".
-    // C: itoa_commas (root 0265:09B2, assembly only) groups thousands with ',': the asm writes 0x2C before the third digit from the right; agrees with the original in the oracles (9 of 10 blocks hit).
+    // C: number-with-separators (root 0265:09B2, assembly only) groups thousands with ',': the asm writes 0x2C before the third digit from the right; agrees with the original in the oracles (9 of 10 blocks hit).
     public override string ToString()
     {
         var text = new System.Text.StringBuilder();

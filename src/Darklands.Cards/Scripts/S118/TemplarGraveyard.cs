@@ -21,7 +21,7 @@ public sealed class TemplarGraveyard : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 2, 3);
-        // C: random_name(party_seed + cur_loc + 0x314.., 0, slot): the stones' names are fixed per place.
+        // C: made-up-name(party-random-seed + location-now + 0x314.., 0, slot): the stones' names are fixed per place.
         var seed = c.State.Party.Seed + c.Here;
         c.RandomName(seed + 0x314, 0, 0);
         c.RandomName(seed + 0x315, 0, 1);

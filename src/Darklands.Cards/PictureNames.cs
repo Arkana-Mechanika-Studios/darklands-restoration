@@ -1,8 +1,8 @@
 namespace Darklands.Cards;
 
 /// <summary>Names of the card pictures (PICS\<name>.PIC), by picture number.</summary>
-// orig: pic_names = R136+0xC0A0, far data table: 360 far string pointers from 2CAF:0A47 (picture n is at 2CAF:0A47 + 4n; card scripts address picture n at pic_names+0x0A47+4n, e.g. +0x0F97 = 340, +0x0A57 = 4) with the strings after it (object R136 seg 2CAF); data, no source status; tests: CardSmokeTests (every card shows its picture)
-// C: the 360 names below equal the string pool of R136 seg 2CAF in order (common ... xms129); the index of a script's pic_names+0xXXXX is (XXXX - 0xA47) / 4. Picture names repeat on purpose (e.g. "common" at 0 and 66, "xjbrown" twice): the table is not a set.
+// orig: image-file-names = R136+0xC0A0, far data table: 360 far string pointers from 2CAF:0A47 (picture n is at 2CAF:0A47 + 4n; card scripts address picture n at image-file-names+0x0A47+4n, e.g. +0x0F97 = 340, +0x0A57 = 4) with the strings after it (object R136 seg 2CAF); data, no source status; tests: CardSmokeTests (every card shows its picture)
+// C: the 360 names below equal the string pool of R136 seg 2CAF in order (common ... xms129); the index of a script's image-file-names+0xXXXX is (XXXX - 0xA47) / 4. Picture names repeat on purpose (e.g. "common" at 0 and 66, "xjbrown" twice): the table is not a set.
 public static class PictureNames
 {
     public static readonly string[] All =

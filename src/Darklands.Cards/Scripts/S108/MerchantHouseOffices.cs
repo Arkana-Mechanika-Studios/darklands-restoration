@@ -32,7 +32,7 @@ public sealed class MerchantHouseOffices : Card
     // C: its value before the first choice is 0: DS:EEB4 is in the BSS the start-up clears (root 06A1:009D..00B7, `rep stosb` from DS:83B6 to F400).
     private int _office;
 
-    // C: pic_buf, the card's picture: the hall, or an office's door once the party stands before one
+    // C: image-buffer, the card's picture: the hall, or an office's door once the party stands before one
     // (the leading merchant's office keeps the hall). After a failed attempt the card shows it again.
     private int _picture = HallPicture;
 
@@ -47,7 +47,7 @@ public sealed class MerchantHouseOffices : Card
         menu.Set(OptionState.Enabled, 3, 4, 5, 6, 9);
         if (c.Events.QuestAt(10, c.Here))
         {
-            // C: event_find does not set last_event; event_f2e_of(last_event) reads the stale global.
+            // C: event-search does not set latest-event; event-detail-word-of(latest-event) reads the stale global.
             _ = c.Events.Find(8, -1, c.Here, -1, 10, -1);
             c.Variables.Item = c.EventDetail(c.LastEvent);
             c.NameToSlot(0, c.EventDetail(c.LastEvent), 0);
@@ -159,7 +159,7 @@ public sealed class MerchantHouseOffices : Card
     }
 
     /// <summary>The office's trap burns the member's face: Charisma and Perception (and their maxima) fall, and injuries.</summary>
-    // C: member_attr(...) / -3 and / -6 truncate toward zero, as C# division does.
+    // C: member-stat(...) / -3 and / -6 truncate toward zero, as C# division does.
     private static void SprungTheTrap(CardContext c)
     {
         var m = c.Variables.Chosen[0];
@@ -272,10 +272,10 @@ public sealed class MerchantHouseOffices : Card
                 ShowPicture(c, 189);
                 c.Screen.Text(6);
                 ShowPicture(c, _picture);
-                // The original does not change next_card: the party stays upstairs.
+                // The original does not change following-card: the party stays upstairs.
                 return;
             }
-            // C: rand_mod(100) < party_avg_eff_attr2(): the average draws nothing.
+            // C: roll-below(100) < party-effective-stat-two-mean(): the average draws nothing.
             if (c.Random(100) < c.PartyAverageEffectiveAgility())
             {
                 c.Screen.Text(18, TextFrame.BlankPage);
@@ -300,7 +300,7 @@ public sealed class MerchantHouseOffices : Card
     /// office (the quest's first data word modulo 4).
     /// </summary>
     // orig: R108+0x1308 (1925:0438) matched; tests: CardSmokeTests
-    // C: (A || B || C) && rand_mod(100) >= ...: the roll is drawn only when one of the events exists.
+    // C: (A || B || C) && roll-below(100) >= ...: the roll is drawn only when one of the events exists.
     private void SearchTheOffice(CardContext c)
     {
         if ((c.EventTypeAtHere(0x17, 1) || c.EventTypeAtHere(0x17, 2) || c.EventTypeAtHere(0x17, 3))
@@ -335,8 +335,8 @@ public sealed class MerchantHouseOffices : Card
         c.Next = 0x16;
     }
 
-    // C: events[event_find(...)] + 0x2A is the quest's first data word; % 4 is C's signed remainder.
-    // C: in a house without the quest event_find gives -1 and events[-1] is the tail of var_named[4] (2E38:1B28), 0 in play: the word is
+    // C: events[event-search(...)] + 0x2A is the quest's first data word; % 4 is C's signed remainder.
+    // C: in a house without the quest event-search gives -1 and events[-1] is the tail of text-slot-named[4] (2E38:1B28), 0 in play: the word is
     // C: read at 0000:002A, the INT 0Ah vector's segment (NullPage), a multiple of 4: office 0 "holds the item" (text 4 and thunk 09C0:214D on no quest).
     private bool ItemIsInThisOffice(CardContext c)
     {
@@ -351,9 +351,9 @@ public sealed class MerchantHouseOffices : Card
     /// 0x7A); beaten down, stripped and dumped, or taken to the dungeon (card 0x0D).
     /// </summary>
     // orig: R108+0x1156 (1925:0286) matched; tests: CardSmokeTests
-    // C: right-to-left arguments: the guard count is drawn before run_battle (seed -2 draws nothing).
+    // C: right-to-left arguments: the guard count is drawn before battle-driver (seed -2 draws nothing).
     // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): result 5 takes the default arm and returns without a change.
-    // DORMANT: the switch's explicit cases -0x40..-1 return without a change, and results 6 and above (pit, timed exit) cannot occur on these object-less battlefields; run_battle never gives them.
+    // DORMANT: the switch's explicit cases -0x40..-1 return without a change, and results 6 and above (pit, timed exit) cannot occur on these object-less battlefields; battle-driver never gives them.
     private static void FightTheGuards(CardContext c)
     {
         var guards = c.Random(5) + 3;

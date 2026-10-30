@@ -23,7 +23,7 @@ public sealed class HermitsGlade : Card
         {
             // The original looks the quest up but then names the item of the last event
             // created or visited, not of the event it found.
-            // C: event_find does not set last_event; event_f2e_of(last_event) reads the stale global.
+            // C: event-search does not set latest-event; event-detail-word-of(latest-event) reads the stale global.
             _ = c.Events.Find(8, -1, c.Here, -1, 10, -1);
             c.NameToSlot(0, c.EventDetail(c.LastEvent), 0);
         }
@@ -39,7 +39,7 @@ public sealed class HermitsGlade : Card
             // orig: R106+0x0396 (line 2); hint R106+0x0432 (1838:0432) matched
             new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R106+0x046A (1838:046A) matched; hint R106+0x048A
-            // DORMANT: line 3 (rest eight hours, +1 Divine Favour, leave) is never offered (opt_flag_3 = 0).
+            // DORMANT: line 3 (rest eight hours, +1 Divine Favour, leave) is never offered (card-option-flag-3 = 0).
             new MenuLine(_ => { c.PassHours(8); c.AddAttribute(Core.Characters.Who.Everybody, (int)Core.Characters.Attribute.DivineFavor, 1); c.Next = CardContext.MapCard; }, Assured),
             // DORMANT: lines 4..8 are never offered; their actions and hints (R106+0x04C6..04d8) are empty functions.
             // C: those hints return whatever is in AX/DX; a neutral hint is used.
@@ -48,7 +48,7 @@ public sealed class HermitsGlade : Card
             new MenuLine(_ => { }, Assured),
             new MenuLine(_ => { }, Assured),
             new MenuLine(_ => { }, Assured),
-            // orig: R106+0x04DA (1838:04DA) matched; hint R106+0x04E2 (leaves without clearing cur_loc)
+            // orig: R106+0x04DA (1838:04DA) matched; hint R106+0x04E2 (leaves without clearing location-now)
             new MenuLine(_ => c.Next = CardContext.MapCard, () => OptionHint.Say(NoRisk)));
     }
 

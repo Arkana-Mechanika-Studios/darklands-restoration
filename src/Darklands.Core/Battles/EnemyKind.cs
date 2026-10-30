@@ -7,7 +7,7 @@ namespace Darklands.Core.Battles;
 /// record): its template, weapon, missile weapon, armour, shield, attributes, skills, money,
 /// components and the items it carries. Fields keep the original's widths.
 /// </summary>
-// orig: bf_monsters (R004 enemy buffer +0x180, 16 levels × 12 kinds); defaults from monsters_clear R004+0x04CC
+// orig: battlefield-monster-table (R004 enemy buffer +0x180, 16 levels × 12 kinds); defaults from monsters-reset R004+0x04CC
 public sealed class EnemyKind
 {
     public const int MaxItems = 16;
@@ -139,7 +139,7 @@ public sealed class EnemyKind
 /// A group of enemies on a level (<c>struct group</c>, 0x1E bytes, the level%d.atv record):
 /// where it waits, how far it spreads, up to three kinds with their numbers, and its money.
 /// </summary>
-// orig: bf_groups (R004 enemy buffer +0xA200, 16 levels × 10 groups); defaults from groups_clear R004+0x1060
+// orig: battlefield-group-table (R004 enemy buffer +0xA200, 16 levels × 10 groups); defaults from groups-reset R004+0x1060
 public sealed class EnemyGroup
 {
     /// <summary>+0x00/+0x02: where it starts (map pixels), +0x04 how far it spreads.</summary>
@@ -184,7 +184,7 @@ public sealed class EnemyGroup
 
     public sbyte ReinforcementFacing { get; set; } = -1;
 
-    /// <summary>+0x1D: never set by groups_clear (C: it keeps whatever the buffer held); 0 here.</summary>
+    /// <summary>+0x1D: never set by groups-reset (C: it keeps whatever the buffer held); 0 here.</summary>
     public sbyte Byte1D { get; set; }
 
     /// <summary>A group from its 0x1E-byte record (<c>level%d.atv</c>, the groups of a prepared battlefield file).</summary>

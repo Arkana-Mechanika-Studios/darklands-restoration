@@ -9,7 +9,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R046+0x1132 (194B:0002) matched; tests: CardSmokeTests
 // DORMANT: R046+0x1A12 (194B:08E2): an empty function nothing calls.
-// C: the option lines are copied from opt_flag_0..9 only; the option table has no init loop here,
+// C: the option lines are copied from card-option-flag-0..9 only; the option table has no init loop here,
 //   so lines 10..19 keep whatever the card before left (stale globals): the text has 10 lines,
 //   so they cannot be picked.
 public sealed class SideStreetAtNight : Card
@@ -32,7 +32,7 @@ public sealed class SideStreetAtNight : Card
 
     public override int Run(CardContext c)
     {
-        // C: sound_play(6) (root 047C:078A) directly, not through the music setting (music_play): the silence plays even with music off.
+        // C: sound-start(6) (root 047C:078A) directly, not through the music setting (music_play): the silence plays even with music off.
         c.PlaySound(6);
         Show(c, Picture);
         OptionState IfThere(int building) => c.HereQuery(building) != 0 ? OptionState.Enabled : OptionState.Hidden;
@@ -119,7 +119,7 @@ public sealed class SideStreetAtNight : Card
         _danger == 0 ? OptionHint.Say(SuccessAssured) : OptionHint.ChanceOf(100 - _danger, OptionHint.WholeParty);
 
     /// <summary>The roll against the option's chance (the hint handler runs first, as in the original).</summary>
-    // C: rand_mod(100) is drawn even when nothing threatens: the && tests the roll first.
+    // C: roll-below(100) is drawn even when nothing threatens: the && tests the roll first.
     // (the line's chance is asked here, not rated by the menu: the draw comes first and the lines have no pop-up.)
     private bool TroubleOnTheWay(CardContext c) => c.Random(100) >= Safety().Chance && _danger != 0;
 
@@ -156,7 +156,7 @@ public sealed class SideStreetAtNight : Card
     /// </summary>
     private static int ThievesMayWaylay(CardContext c, int next)
     {
-        // C: the operands of '>' are unsequenced; only rand_mod draws, so the order does not matter.
+        // C: the operands of '>' are unsequenced; only roll-below draws, so the order does not matter.
         var stealth = Math.Clamp((c.PartyAverageSkill(0x0F) + c.PartyAverageSkill(0x10)) / 2, 0, 99);
         if (!(stealth > c.Random(100)) && next != NightEncounter)
         {

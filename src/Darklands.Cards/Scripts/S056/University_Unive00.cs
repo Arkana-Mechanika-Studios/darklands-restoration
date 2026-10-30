@@ -11,9 +11,9 @@ namespace Darklands.Cards.Scripts;
 /// remain.
 /// </summary>
 // orig: R056+0x088C (18C0:000C) matched; tests: CardSmokeTests
-// orig: R056+0x14D6 (18C0:0C56) matched (init helper: enables all 20 option lines, installs the 4 item and 4 saint pop-up handlers per member row and empties card_items and card_saints; the card fills neither)
-// DORMANT: R056+0x1578 (18C0:0CF8) the init helper points opt_fn[0..19] at this "screwed up." default; lines 0..9 get their own handlers and lines 10..19 stay enabled but the MSG has no line for them, so it never runs.
-// DORMANT: R056+0x15B0 (18C0:0D30), R056+0x15EC (18C0:0D6C), R056+0x1628 (18C0:0DA8) and R056+0x1664 (18C0:0DE4) the item pop-up handlers (item slots 0..3, each "success is assured" naming the member): the card has no items (card_items stays empty), so no pop-up slot can be chosen.
+// orig: R056+0x14D6 (18C0:0C56) matched (init helper: enables all 20 option lines, installs the 4 item and 4 saint pop-up handlers per member row and empties card-item-lines and card-saint-lines; the card fills neither)
+// DORMANT: R056+0x1578 (18C0:0CF8) the init helper points card-option-handler[0..19] at this "screwed up." default; lines 0..9 get their own handlers and lines 10..19 stay enabled but the MSG has no line for them, so it never runs.
+// DORMANT: R056+0x15B0 (18C0:0D30), R056+0x15EC (18C0:0D6C), R056+0x1628 (18C0:0DA8) and R056+0x1664 (18C0:0DE4) the item pop-up handlers (item slots 0..3, each "success is assured" naming the member): the card has no items (card-item-lines stays empty), so no pop-up slot can be chosen.
 // DORMANT: R056+0x16A0 (18C0:0E20), R056+0x172A (18C0:0EAA), R056+0x17B4 (18C0:0F34) and R056+0x183E (18C0:0FBE) the saint pop-up handlers (saint slots 0..3, the member's chance with the saint): the card has no saints, so none can be chosen.
 public sealed class University_Unive00 : Card
 {

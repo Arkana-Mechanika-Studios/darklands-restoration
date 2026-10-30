@@ -319,9 +319,9 @@ public sealed class CardOracleStates
             var value = p.Value.GetInt32();
             switch (Convert.ToInt32(p.Name, 16))
             {
-                case 0xA88D: state.PreviousCard = value; break;     // prev_screen (+0x8A)
+                case 0xA88D: state.PreviousCard = value; break;     // earlier-screen (+0x8A)
                 case 0xA891: state.MapLeaveMode = value; break;     // map-leave mode (+0xA4)
-                case 0xE3D0: state.MapPosition = state.MapPosition with { X = value }; break;  // party_x (+0x7E)
+                case 0xE3D0: state.MapPosition = state.MapPosition with { X = value }; break;  // party-map-column (+0x7E)
                 default: throw new ArgumentException(p.Name);
             }
         }

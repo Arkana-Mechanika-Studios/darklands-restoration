@@ -25,7 +25,7 @@ public sealed class NotModelledEvidenceTests
         Assert.Equal(1, state.CurrentCard);
     }
 
-    // invoke_saint R029+0x2180: the prayer screen is wired by the presentation; the headless context fails the prayer (0)
+    // call-on-saint R029+0x2180: the prayer screen is wired by the presentation; the headless context fails the prayer (0)
     [Fact]
     public void InvokeSaintNeedsThePrayerScreen()
     {
@@ -40,7 +40,7 @@ public sealed class NotModelledEvidenceTests
         Assert.Equal(103, context.InvokeSaint(1, 3));
     }
 
-    // msg_load R043+0x0A9A refuses a catalogue entry of 6000 bytes or more (message box, then quit): no shipped message file is that large
+    // text-bank-read R043+0x0A9A refuses a catalogue entry of 6000 bytes or more (message box, then quit): no shipped message file is that large
     [Fact]
     public void NoMessageFileReachesMsgLoadsSizeLimit()
     {

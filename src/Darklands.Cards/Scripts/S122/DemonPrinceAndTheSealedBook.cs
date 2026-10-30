@@ -27,9 +27,9 @@ namespace Darklands.Cards.Scripts;
 //     R122+0x0AA6
 //   other: R122+0x0744, R122+0x07E6
 // DORMANT (generated): option slots 10..19 keep the default handler R122+0x07E6 ("screwed up.") and are never shown.
-// C (generated): opt_flag_4/5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
+// C (generated): card-option-flag-4/5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class DemonPrinceAndTheSealedBook : Card
 {
@@ -78,7 +78,7 @@ public sealed class DemonPrinceAndTheSealedBook : Card
     {
         c.Events.Create(-2, c.Here, 0, 0x1C, 1, 0, 0, EventLog.Forever, 0, FactTag);
         c.GiveReward(4);
-        // DIVERGENCE: the C writes locations[cur_loc], [cur_loc + 1] and [cur_loc - 4] without any check; the C#
+        // DIVERGENCE: the C writes locations[location-now], [location-now + 1] and [location-now - 4] without any check; the C#
         //   skips a place outside the location list (the wilderness, or the first/last records).
         if (c.HerePlace is { } here)
         {
@@ -94,9 +94,9 @@ public sealed class DemonPrinceAndTheSealedBook : Card
             OpenAsWayOut(before);
         }
         c.PassHours(2);
-        // C: this path never calls card_load; card_load_near(card_name, book) shows the card and loads its texts, as Show does.
+        // C: this path never calls card-run; card-run-near(card-title, book) shows the card and loads its texts, as Show does.
         Show(c, BookPicture);
-        // card_text(1, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
+        // card-text-block(1, 2): frame mode 2 drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike).
         c.Screen.Text(1);
         return 0x0C;
     }

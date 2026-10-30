@@ -612,7 +612,7 @@ internal sealed partial class CastleGenerator
 
     /// <summary>Records a stair at (x, y) in a room: up is cell kind 9, down is 10; link is the partner stair on the neighbouring level or −1.</summary>
     // orig: R006+0x4484 (18FA:0FD4) draft
-    // C: the partner's link is written through gen_exits[level * 4 + link ∓ 4], i.e. stair `link` of the level below (when this stair goes down)
+    // C: the partner's link is written through layout-exit-list[level * 4 + link ∓ 4], i.e. stair `link` of the level below (when this stair goes down)
     // or above (when it goes up); the stair count is not bounded by the four slots a level has.
     private void RecordStair(int x, int y, int up, int room, int side, int link)
     {

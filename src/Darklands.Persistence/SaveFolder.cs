@@ -149,7 +149,7 @@ public sealed class SaveFolder(string path)
         return true;
     }
 
-    // C: `path[strlen(path) - 3] = 0; strcat(path, "bsv");` (the delete) and sprintf("saves\\%s.bsv", name less its last 4 characters) (battle_save).
+    // C: `path[strlen(path) - 3] = 0; strcat(path, "bsv");` (the delete) and sprintf("saves\\%s.bsv", name less its last 4 characters) (battle-store).
     private static string BattleFileOf(string fileName) => fileName.Length >= 3 ? fileName[..^3] + "bsv" : fileName + ".bsv";
 
     /// <summary>The file of that name in the folder, whatever the case of its letters (DOS names are case-blind).</summary>

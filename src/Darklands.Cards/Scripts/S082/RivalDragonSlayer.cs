@@ -32,14 +32,14 @@ public sealed class RivalDragonSlayer : Card
         };
         Show(c, picture);
         c.Next = CardNumber;
-        // C: options_block is written only by the meetings that show the menu (below); the others leave what the card before left.
+        // C: settings-block is written only by the meetings that show the menu (below); the others leave what the card before left.
         var menu = Menu(c, null);
         menu.Enable(0, 1, 2, 3);
         c.RandomName(c.DragonDetail() + 0x25, 0, 0);
         // C: name kind 6 (the dragons' names) is read from the EXE's table (PersonalNames, NameToSlot).
         c.NameToSlot(6, c.DragonDetail(), 1);
         c.RandomName(c.DragonDetail() + 0x26, 0, 2);
-        // options_block keeps an earlier card's value for meetings outside 0..5 (the card then leaves anyway).
+        // settings-block keeps an earlier card's value for meetings outside 0..5 (the card then leaves anyway).
         var block = 0;
         meeting = c.Events.FactValueAnywhere(DragonQuest, 3);
         switch (meeting)
@@ -93,7 +93,7 @@ public sealed class RivalDragonSlayer : Card
                 new MenuLine(() => { c.PassHours(1); c.State.CurrentLocation = -1; c.Next = 0x0C; }, OptionHint.Saying(SuccessAssured)));
         }
         // Every passage spreads the blight and counts the meeting.
-        // C: the growth is drawn as an argument of event_update.
+        // C: the growth is drawn as an argument of event-advance.
         var growth = c.Random(2);
         c.Events.Update(-1, -1, 0x1C, 1, growth, DragonQuest, EventUpdate.Add);
         c.Events.Update(-1, -1, 0x1C, 3, 1, DragonQuest, EventUpdate.Add);
@@ -174,7 +174,7 @@ public sealed class RivalDragonSlayer : Card
             c.Next = 0x0C;
             return;
         }
-        // C: arguments are evaluated right to left: rand_mod(3) + 1, then rand_mod(5), then the first group.
+        // C: arguments are evaluated right to left: roll-below(3) + 1, then roll-below(5), then the first group.
         var third = c.Random(3) + 1;
         var second = c.Random(5) + 4;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 1;
@@ -207,8 +207,8 @@ public sealed class RivalDragonSlayer : Card
                 // Taken to the nearest city's dungeon.
                 ShowPicture(c, 13);
                 c.Screen.Text(0x0D);
-                // C: nearest_city(*(long far *)(locations[cur_loc] + 4)): in the wilderness (cur_loc -1) locations[-1] is the last four
-                // C: bytes of enemy_items (2E38:10BA), 0 in play, so the position read is the INT 1 vector at 0000:0004 (NullPage): a
+                // C: closest-city(*(long far *)(locations[location-now] + 4)): in the wilderness (location-now -1) locations[-1] is the last four
+                // C: bytes of enemy-loot (2E38:10BA), 0 in play, so the position read is the INT 1 vector at 0000:0004 (NullPage): a
                 // C: point far beyond the map's north-west corner, whose nearest city is the party's prison wherever it was met.
                 var (x, y) = c.Here >= 0 ? (c.State.Locations[c.Here].Position.X, c.State.Locations[c.Here].Position.Y)
                     : (Core.World.NullPage.Int1Offset, Core.World.NullPage.Int1Segment);

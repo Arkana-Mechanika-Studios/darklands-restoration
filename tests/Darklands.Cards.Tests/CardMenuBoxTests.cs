@@ -3,10 +3,10 @@ using Darklands.Cards;
 namespace Darklands.Cards.Tests;
 
 /// <summary>
-/// A choice in an item or saint pop-up box (card_menu R043+0x1BD2 / card_mouse R043+0x21D4): the box's handler table rates it,
-/// whatever line the box belongs to; a choice there leaves the box's layout as the menu's (its handlers in opt_fn, its entries'
-/// states in opt_on) until the card installs its own; Enter there rates the line with opt_fn[k], the box's handler for slot k % 4.
-/// And options_block: the block of the cards that show card_options(options_block) is the game's CardContext.OptionsBlock.
+/// A choice in an item or saint pop-up box (card-choice-menu R043+0x1BD2 / card-mouse-handler R043+0x21D4): the box's handler table rates it,
+/// whatever line the box belongs to; a choice there leaves the box's layout as the menu's (its handlers in card-option-handler, its entries'
+/// states in card-option-enabled) until the card installs its own; Enter there rates the line with card-option-handler[k], the box's handler for slot k % 4.
+/// And settings-block: the block of the cards that show card-option-lines(settings-block) is the game's CardContext.OptionsBlock.
 /// </summary>
 public sealed class CardMenuBoxTests
 {
@@ -98,7 +98,7 @@ public sealed class CardMenuBoxTests
         menu.Run(new MenuLine(_ => { }), new MenuLine(chance => { got = chance; c.Next = 2; }));
         Assert.Equal(53, got);
 
-        // a card whose loop calls item_fn[0][menu_slot] (R105, R111, R126, R127, R128, R132, R134): the item table even for the saint box
+        // a card whose loop calls item-handler-table[0][menu-choice-index] (R105, R111, R126, R127, R128, R132, R134): the item table even for the saint box
         (c, _) = Context(line: 1, PopupBox.Saints, member: 0, slot: 2, click: true);
         menu = new CardMenu(c, 1) { ItemBox = () => OptionHint.ChanceOf(30 + c.MenuSlot, 0), SaintBox = () => OptionHint.ChanceOf(50, 0), PopupRatedByItems = true };
         menu.Enable(0, 1);
@@ -128,8 +128,8 @@ public sealed class CardMenuBoxTests
         {
             return;
         }
-        // Enter on member 1's slot 0 entry of the item box over line 2: menu_popup stays 0, the card calls opt_fn[2], which is the box's
-        // handler for slot 2 (item_fn[0][2]); menu_member and menu_slot are the entry's
+        // Enter on member 1's slot 0 entry of the item box over line 2: popup-menu-box stays 0, the card calls card-option-handler[2], which is the box's
+        // handler for slot 2 (item-handler-table[0][2]); menu-owner-member and menu-choice-index are the entry's
         var (c, _) = Context(line: 2, PopupBox.Items, member: 1, slot: 0, click: false);
         var menu = new CardMenu(c, 1) { ItemBox = () => OptionHint.ChanceOf(40 + c.MenuSlot, c.MenuMember) };
         menu.Enable(0, 1, 2);
@@ -146,8 +146,8 @@ public sealed class CardMenuBoxTests
         {
             return;
         }
-        // Enter on member 0's slot 1 entry of the item box over line 2: the loop calls opt_fn[2], the handler for slot 2 (e.g. R112+0x391A),
-        // which reads card_items[menu_slot] with menu_slot still the entry's 1 (card_menu R043+0x1CAE)
+        // Enter on member 0's slot 1 entry of the item box over line 2: the loop calls card-option-handler[2], the handler for slot 2 (e.g. R112+0x391A),
+        // which reads card-item-lines[menu-choice-index] with menu-choice-index still the entry's 1 (card-choice-menu R043+0x1CAE)
         var (c, _) = Context(line: 2, PopupBox.Items, member: 0, slot: 1, click: false);
         var menu = new CardMenu(c, 1) { ItemBox = () => OptionHint.ChanceOf(10 * c.MenuSlot + c.MenuEntrySlot, c.MenuMember) };
         menu.Enable(0, 1, 2);
@@ -164,7 +164,7 @@ public sealed class CardMenuBoxTests
         {
             return;
         }
-        // item_fn slots 2/3 bare retf (R112+0x1438 / 0x143A): Enter in the item box over line 2 rates it with slot 2's, a click on slot 0 with slot 0's
+        // item-handler-table slots 2/3 bare retf (R112+0x1438 / 0x143A): Enter in the item box over line 2 rates it with slot 2's, a click on slot 0 with slot 0's
         foreach (var (click, expected) in new[] { (false, 0), (true, 55) })
         {
             var (c, _) = Context(line: 2, PopupBox.Items, member: 0, slot: 0, click: click);
@@ -184,7 +184,7 @@ public sealed class CardMenuBoxTests
             return;
         }
         // the card lists lines 0..1; its reset enabled the others (as 076's); the choice in the box (member 1, slot 2: entry 6)
-        // leaves opt_on[k] = the box's entry states and opt_fn[k] = the box's handler for slot k % 4 for every line it does not install
+        // leaves card-option-enabled[k] = the box's entry states and card-option-handler[k] = the box's handler for slot k % 4 for every line it does not install
         var (c, screen) = Context(line: 0, PopupBox.Saints, member: 1, slot: 2, click: true, then: 6);
         var menu = new CardMenu(c, 1) { SaintBox = () => { c.Variables.Chosen[0] = c.MenuMember; return OptionHint.ChanceOf(60 + c.MenuSlot, 0); } };
         menu.Enable(Enumerable.Range(0, 20).ToArray());
@@ -195,7 +195,7 @@ public sealed class CardMenuBoxTests
         Assert.Equal(OptionState.Enabled, screen.Menus[1][6]);
         Assert.Equal(OptionState.Hidden, screen.Menus[1][5]);
         Assert.Equal(OptionState.Hidden, screen.Menus[1][2]);
-        // line 6 has no action, but its handler (the box's for slot 2) was called on the choice: $ChosenOneName = menu_member
+        // line 6 has no action, but its handler (the box's for slot 2) was called on the choice: $ChosenOneName = menu-owner-member
         Assert.Equal(62, c.OptionHandlers[6]!().Chance);
         Assert.Equal(1, c.Variables.Chosen[0]);
     }
@@ -213,7 +213,7 @@ public sealed class CardMenuBoxTests
         var rounds = 0;
         menu.EachRound = () => { if (++rounds == 3) { c.Next = 2; } };
         menu.Run(new MenuLine(_ => { }), new MenuLine(_ => { }));
-        // opt_on[0..1] = opt_flag_0..1 every round: the box's states do not stay
+        // card-option-enabled[0..1] = card-option-flag-0..1 every round: the box's states do not stay
         Assert.Equal(OptionState.Enabled, screen.Menus[1][0]);
         Assert.Equal(OptionState.Enabled, screen.Menus[1][1]);
     }

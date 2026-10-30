@@ -46,7 +46,7 @@ public sealed class FortressGuardDesk : Card
     //   R135+0x0490 R135+0x04CC R135+0x0556 R135+0x05E0 R135+0x066A
     // C: the line hints leave r uninitialised (stale stack): read as "Success is assured." for the whole party. The
     //   item pop-up hints say "Success is assured." too (and set $ChosenOneName to the member in the box).
-    // C: the reference file names them act_/hlp_/opt_/register_ + offset (card_witcd42 = R135+0x0000).
+    // C: the reference file names them act_/hlp_/opt_/register_ + offset (card-script-R135-0000 = R135+0x0000).
     internal static MenuLine[] DormantOptions(CardContext c) =>
         [.. Enumerable.Range(0, 10).Select(k => new MenuLine(
             _ => CardMenu.ShowFirstTextAndEnd(c, showFirstText: false), OptionHint.Saying(CardTexts.SuccessAssured),

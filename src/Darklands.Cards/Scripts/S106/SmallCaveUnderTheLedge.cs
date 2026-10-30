@@ -31,10 +31,10 @@ public sealed class SmallCaveUnderTheLedge : Card
         // The guardian is kept in the game's saved-card word, as the original does.
         if (c.Events.QuestAt(10, c.Here))
         {
-            // C: event_find does not set last_event; event_f2e_of(last_event) reads the stale global.
+            // C: event-search does not set latest-event; event-detail-word-of(latest-event) reads the stale global.
             _ = c.Events.Find(8, -1, c.Here, -1, 10, -1);
             c.NameToSlot(0, c.EventDetail(c.LastEvent), 0);
-            // C: (cur_loc + 100) % 100, a signed remainder, non-negative for any location.
+            // C: (location-now + 100) % 100, a signed remainder, non-negative for any location.
             var v = (c.Here + 100) % 100;
             c.State.SavedCard = v <= 25 ? Unguarded : v <= 50 ? Tatzelwurm : Bandits;
         }
@@ -62,7 +62,7 @@ public sealed class SmallCaveUnderTheLedge : Card
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
-            // orig: R106+0x1EF0 (19BC:06B0) matched; hint R106+0x1EF8 (leaves without clearing cur_loc)
+            // orig: R106+0x1EF0 (19BC:06B0) matched; hint R106+0x1EF8 (leaves without clearing location-now)
             new MenuLine(_ => c.Next = CardContext.MapCard, () => OptionHint.Say(SuccessAssured)));
     }
 
@@ -143,7 +143,7 @@ public sealed class SmallCaveUnderTheLedge : Card
 
     /// <summary>The bandits: won, a lesson in Virtue; fled, a night in hiding; beaten, those who ran come back robbed.</summary>
     // orig: R106+0x1AF2 (19BC:02B2) matched; tests: CardSmokeTests
-    // C: right-to-left arguments: rand_mod(5) + 3 is the only draw before run_battle (seed -2 draws nothing).
+    // C: right-to-left arguments: roll-below(5) + 3 is the only draw before battle-driver (seed -2 draws nothing).
     // DORMANT: text 15 (the beaten companions found alive) is never shown by this card.
     private static void FightTheBandits(CardContext c)
     {
@@ -196,7 +196,7 @@ public sealed class SmallCaveUnderTheLedge : Card
             case 2:
             case 3:
             case 4:
-                // BUG: R029 2474 returns how many members were away, not who left: var_chosen1 gets that count, so the
+                // BUG: R029 2474 returns how many members were away, not who left: text-slot-chosen-one gets that count, so the
                 // text names party member [count], and the test against -1 always holds: the loss text and the Virtue
                 // practice come even when nobody was away.
                 c.Variables.Chosen[0] = c.OneOfTheAwayLeaves();

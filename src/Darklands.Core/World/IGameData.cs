@@ -11,7 +11,7 @@ public interface IGameData
     /// <summary>The item list, by item code.</summary>
     IReadOnlyList<ItemDefinition> ItemDefinitions { get; }
 
-    /// <summary>A fresh copy of a city's DARKLAND.CTY record (<c>load_city</c>).</summary>
+    /// <summary>A fresh copy of a city's DARKLAND.CTY record (<c>city-read</c>).</summary>
     CityRecord LoadCity(int city);
 
     /// <summary>

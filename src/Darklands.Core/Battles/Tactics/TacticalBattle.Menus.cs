@@ -3,7 +3,7 @@ namespace Darklands.Core.Battles.Tactics;
 public sealed partial class TacticalBattle
 {
     /// <summary>The menus at the start of a battle: Attack off, Walk and Halt on, the place entries off, the "(Ldr)" / "(All)" suffixes.</summary>
-    // orig: battle_menus_enable R000+0x0F04 (0E76:0F04) draft; battle_run sets
+    // orig: battle-menus-switch-on R000+0x0F04 (0E76:0F04) draft; battle-entry sets
     // DS:9429 (Orders) 1, DS:9433 (Attack) 2 and the other enables 2 (R002+0x0000), Party Info (DS:987F) among them (R002+0x0258: F6 and the
     // item refused for the whole battle; R002+0x0760 puts 1 back at its end); tests: HotKeyFlagsTests
     private void InitMenus()
@@ -24,7 +24,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The order menu back to its state outside order mode.</summary>
-    // orig: order_menu_reset R014+0xDE12 (19CD:28A2) matched
+    // orig: command-menu-reset R014+0xDE12 (19CD:28A2) matched
     public void ResetOrderMenu()
     {
         var m = Menus;
@@ -58,7 +58,7 @@ public sealed partial class TacticalBattle
     /// combat the Attack menu (and its Throw list; a held member cannot attack, a member without a
     /// missile weapon or ammunition cannot shoot); the place entries of where it stands.
     /// </summary>
-    // orig: order_menu_build R014+0xDF28 (19CD:29B8) draft
+    // orig: command-menu-build R014+0xDF28 (19CD:29B8) draft
     private void BuildOrderMenu(int a)
     {
         ResetOrderMenu();
@@ -182,7 +182,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The per-tick enables of Travel As Group / Single File (only while the party may move together).</summary>
-    // orig: combat_tick R014+0x0F58 (0E76:0F58) draft (DS:9681 / DS:9695)
+    // orig: fight-tick R014+0x0F58 (0E76:0F58) draft (DS:9681 / DS:9695)
     private void GroupEntries()
     {
         if (GroupMoveAllowed)

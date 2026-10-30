@@ -27,7 +27,7 @@ public sealed class MineVillage : Card
     public override int Run(CardContext c)
     {
         Show(c, Picture);
-        c.RandomName(c.Here + 8, 0, 0); // random_name: the head miner's name (the EXE's name tables via PersonalNames)
+        c.RandomName(c.Here + 8, 0, 0); // made-up-name: the head miner's name (the EXE's name tables via PersonalNames)
         if (c.State.PreviousCard == QuestHandOver)
         {
             c.Screen.Text(0);

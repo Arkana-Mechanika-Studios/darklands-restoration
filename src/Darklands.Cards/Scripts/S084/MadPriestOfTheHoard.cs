@@ -71,7 +71,7 @@ public sealed class MadPriestOfTheHoard : Card
     {
         ShowPicture(c, 307);
         c.Screen.Text(1);
-        // C: arguments are evaluated right to left: rand_mod(4) (second group) before rand_mod(5).
+        // C: arguments are evaluated right to left: roll-below(4) (second group) before roll-below(5).
         var second = c.Random(4) + 3;
         var first = c.Random(5) + 3;
         var result = c.RunBattle(0x64, -1, 0x21, 2, first, 0, 2, second, -1, 0, 0);

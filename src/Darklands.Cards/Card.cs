@@ -9,28 +9,28 @@ public abstract class Card
     public abstract int Run(CardContext c);
 
     /// <summary>The card's MSG name from the card table.</summary>
-    // orig: strcpy(card_name, "$Xxxxnn") at the top of every card function (DS:E3D4); the table is derived from those calls, see CardTable
+    // orig: strcpy(card-title, "$Xxxxnn") at the top of every card function (DS:E3D4); the table is derived from those calls, see CardTable
     public string Name => CardTable.Find(Number)?.Name ?? $"card {Number}";
 
     /// <summary>Shows the card with one of the numbered card pictures.</summary>
-    // orig: R043+0x0A9A (150B:000A) draft (bytes match; the byte-match summary counts 22 of the file's 28 functions); tests: CardSmokeTests (card_load: pics\<pic>.pic, text colour 15 for pictures starting with 'x', msgfiles\<name>.msg)
-    // C: the card scripts pass pic_names[n] (a far string) in pic_buf; the number-to-name table is PictureNames.
-    // DIVERGENCE (host): card_load also appends a MEM.LOG line first (R043+0x0000: free DOS memory from INT 21h/48h, the event count, the party's lore level and the date; a debug file nothing reads back); card_load_near does not.
+    // orig: R043+0x0A9A (150B:000A) draft (bytes match; the byte-match summary counts 22 of the file's 28 functions); tests: CardSmokeTests (card-run: pics\<pic>.pic, text colour 15 for pictures starting with 'x', msgfiles\<name>.msg)
+    // C: the card scripts pass image-file-names[n] (a far string) in image-buffer; the number-to-name table is PictureNames.
+    // DIVERGENCE (host): card-run also appends a MEM.LOG line first (R043+0x0000: free DOS memory from INT 21h/48h, the event count, the party's lore level and the date; a debug file nothing reads back); card-run-near does not.
     protected void Show(CardContext c, int picture) => c.Screen.Show(Name, PictureNames.Of(picture));
 
-    // orig: R043+0x0BA0 (150B:0110) draft (matches); tests: CardSmokeTests (card_load_near: the same without the MEM.LOG line and the DS:E957 card-name store)
-    // C: card_load_near is card_load without the MEM.LOG line, the card-name store (DS:E957) and the panel redraw (see Show).
+    // orig: R043+0x0BA0 (150B:0110) draft (matches); tests: CardSmokeTests (card-run-near: the same without the MEM.LOG line and the DS:E957 card-name store)
+    // C: card-run-near is card-run without the MEM.LOG line, the card-name store (DS:E957) and the panel redraw (see Show).
     protected static void ShowPicture(CardContext c, int picture) => c.Screen.ShowPicture(PictureNames.Of(picture));
 
     /// <summary>A new option menu of this card on text block <paramref name="block"/>, offered while the card stays on its own number.</summary>
-    // orig: see CardMenu (card_options, card_menu and the do/while loop every card script runs)
+    // orig: see CardMenu (card-option-lines, card-choice-menu and the do/while loop every card script runs)
     // C: the lines the card's function copies from opt_flag_k every round are the global flags (OptionFlagCopies, generated from the C).
     /// <param name="c">The card's context.</param>
     /// <param name="block">The text block with the option lines.</param>
     /// <param name="resetsHandlers">False for a card whose reset installs no "screwed up." handlers (its unlisted lines keep the handlers an earlier card left).</param>
     /// <remarks>
-    /// For a card that shows <c>card_options(options_block)</c> (OptionsBlockCards) the block is the game's
-    /// <see cref="CardContext.OptionsBlock"/>: <paramref name="block"/> is written there (the card's <c>options_block = n</c>),
+    /// For a card that shows <c>card-option-lines(settings-block)</c> (OptionsBlockCards) the block is the game's
+    /// <see cref="CardContext.OptionsBlock"/>: <paramref name="block"/> is written there (the card's <c>settings-block = n</c>),
     /// null leaves what the card before left.
     /// </remarks>
     protected CardMenu Menu(CardContext c, int? block = 0, bool resetsHandlers = true)

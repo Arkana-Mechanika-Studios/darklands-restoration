@@ -33,13 +33,13 @@ public sealed class SallyPortInTheCityWall : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 3, 4, 5, 6);
-        // C: the init helper sets opt_on[0..19] = 1 (with the "screwed up." handler) and the loop copies only flags 0..6: lines
+        // C: the init helper sets card-option-enabled[0..19] = 1 (with the "screwed up." handler) and the loop copies only flags 0..6: lines
         // 7..19 stay enabled; the card's text has ten option lines, so lines 7..9 are offered and do nothing (card oracle: CardOracleTests).
         // BUG: the text's lines 1, 3 and 5 are "abandon the horses and ..." variants the script has no options for (MSGFILES): the
         // lines are numbered in order, so from the second line on each runs another option (the second line climbs without ropes,
         // the sewer-grate line prays, the alchemy line sneaks back), and the last three (pray, bribe, sneak back) do nothing.
         menu.Enable(Enumerable.Range(7, 13).ToArray());
-        // C: cur_rep is the card's copy of the reputation; the bribe line's rating refreshes it.
+        // C: reputation-now is the card's copy of the reputation; the bribe line's rating refreshes it.
         var standing = c.LocationQuery(c.Here, 0);
         // The scan stops at the first member with a rope; without members the flag stays 0.
         var rope = false;
@@ -88,7 +88,7 @@ public sealed class SallyPortInTheCityWall : Card
             new MenuLine(_ => UseAPotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             new MenuLine(_ => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(_ => BribeAGuard(c, standing, bribe, menu), () => BribeHint(c, ref standing)),
-            // C: a choice in a pop-up box is rated by the card's box handler for the slot (DS:EB0A[menu_slot]: item_fn or saint_fn),
+            // C: a choice in a pop-up box is rated by the card's box handler for the slot (DS:EB0A[menu-choice-index]: item-handler-table or saint-handler-table),
             // C: whatever line opened it: the text's line 6 (alchemy) opens the potion box and runs the sneak-back case, line 7
             // C: (prayer) opens the saints' box and has no case; the saint handler still makes the praying member $ChosenOneName.
             new MenuLine(_ => { c.PassHours(0); c.Next = Wilderness; }, OptionHint.Saying(SuccessAssured), () => PotionHint(c)),
@@ -245,7 +245,7 @@ public sealed class SallyPortInTheCityWall : Card
     /// the chance to 100 itself, so the third potion's text (the fire, 0xA) is always shown and everybody is singed.
     /// </summary>
     // orig: R073+0x29FE (hint R073+0x2AB4 "Select a person and a potion.")
-    // C: `menu_slot = 2` is a real store in the code (mov ds:[EE6A],2); no item is taken from the pack.
+    // C: `menu-choice-index = 2` is a real store in the code (mov ds:[EE6A],2); no item is taken from the pack.
     private void UseAPotion(CardContext c)
     {
         c.Events.Renew(-2, c.Here, 0, EventKinds.Unrest, 1, 0x63, 0, 0x18, 0, 0);
@@ -303,7 +303,7 @@ public sealed class SallyPortInTheCityWall : Card
 
     /// <summary>The bribe works (100%) unless the party's name is bad (−10 or worse), which is read afresh here.</summary>
     // orig: R073+0x2C3A
-    // C: cur_rep is assigned in the handler (`(cur_rep = loc_query(cur_loc, 0)) <= -10`), so it is refreshed
+    // C: reputation-now is assigned in the handler (`(reputation-now = place-query(location-now, 0)) <= -10`), so it is refreshed
     // whenever the line is rated (also for a hint).
     private static OptionHint BribeHint(CardContext c, ref int standing)
     {

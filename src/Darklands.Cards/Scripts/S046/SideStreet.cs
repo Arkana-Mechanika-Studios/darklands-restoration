@@ -27,10 +27,10 @@ public sealed class SideStreet : Card
     // orig: R046+0x1130 (18AA:0A10) matched (init helper: empty in the original, it sets no option defaults)
     // DORMANT: the empty init helper installs no default "screwed up." handler and the card has no items or saints, so only option lines 0..9 exist; there is no pop-up handler.
     // C: the original keeps option lines 10..19 untouched (no init loop), so they hold stale values from the last card that set them; the card's MSG has no line for them and the menu cannot select them.
-    // C: ten options; hint and action pair up one to one in opt_fn and the dispatch switch. Each action sets the next card to 1 (Challenged) when the draw is not under the chance and the watchfulness is not 0.
+    // C: ten options; hint and action pair up one to one in card-option-handler and the dispatch switch. Each action sets the next card to 1 (Challenged) when the draw is not under the chance and the watchfulness is not 0.
     public override int Run(CardContext c)
     {
-        // C: sound_play(6) (root 047C:078A) directly, not through the music setting (music_play): the silence plays even with music off.
+        // C: sound-start(6) (root 047C:078A) directly, not through the music setting (music_play): the silence plays even with music off.
         c.PlaySound(6);
         Show(c, Picture);
         c.StandingSeen = c.HereQuery(0);
@@ -90,7 +90,7 @@ public sealed class SideStreet : Card
             () => Safety(leastChance));
 
     /// <summary>Safe in a friendly city; in a hostile one the chance not to be spotted, at least <paramref name="least"/>.</summary>
-    // orig: hint handlers R046+0x0BB6, R046+0x0C48, R046+0x0CDA, R046+0x0D6C, R046+0x0DFE, R046+0x0E90, R046+0x0F22, R046+0x0FB4, R046+0x1046, R046+0x10D8 (see the option lines): success assured when DS:57C8 is 0, else clamp_range(least, 100, 100 - DS:57C8)
+    // orig: hint handlers R046+0x0BB6, R046+0x0C48, R046+0x0CDA, R046+0x0D6C, R046+0x0DFE, R046+0x0E90, R046+0x0F22, R046+0x0FB4, R046+0x1046, R046+0x10D8 (see the option lines): success assured when DS:57C8 is 0, else limit-to-range(least, 100, 100 - DS:57C8)
     private OptionHint Safety(int least) =>
         _watchfulness == 0
             ? OptionHint.Say(SuccessAssured)

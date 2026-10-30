@@ -12,7 +12,7 @@ namespace Darklands.Core.Battles;
 /// the ammunition table into the armour values. The whole block is kept so that any index reads
 /// what the original reads.
 /// </remarks>
-// orig: weapon tables R136+0x75AC..R136+0x7822 (read by weapon_ready R014+0xAED0, to_hit_roll, can_fire)
+// orig: weapon tables R136+0x75AC..R136+0x7822 (read by weapon-armed R014+0xAED0, hit-roll, may-shoot)
 public sealed class CombatTables
 {
     /// <summary>Far offset of the block kept: one byte before the first table (skill category), which a weapon of −1 reads.</summary>
@@ -64,11 +64,11 @@ public sealed class CombatTables
     public IReadOnlyList<int> NeighbourhoodPatterns { get; }
 
     /// <summary>DS:1B88: added to the 2d6 roll's quotient for damage levels 0..7.</summary>
-    // orig: DS:1B88 (read by damage_queue R014+0xAD5A)
+    // orig: DS:1B88 (read by damage-pending-list R014+0xAD5A)
     public int LowDamageAddition(int level) => _lowDamage[level];
 
     /// <summary>DS:22D2: the die of a skill gain in battle, by difficulty (0 basic .. 2 expert).</summary>
-    // orig: DS:22D2 (R021 data, read by skill_try_improve R021+0x0000)
+    // orig: DS:22D2 (R021 data, read by ability-improve-attempt R021+0x0000)
     public int SkillGainDie(int difficulty) => (sbyte)_skillGain[4 + difficulty];
 
     /// <summary>DS:22CE: added to a skill gain in battle, by difficulty.</summary>

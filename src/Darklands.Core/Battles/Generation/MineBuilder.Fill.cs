@@ -452,7 +452,7 @@ internal sealed partial class MineBuilder
     }
 
     /// <summary>Adds the two kinds a group plan names to the level's kinds and sets their kill bytes; returns their kind indexes (−1 none).</summary>
-    // C: monster_type_map, then bf_monsters[level * 12 + kind].x0c = flag, for the first kind and then for the second.
+    // C: monster-type-lookup, then battlefield-monster-table[level * 12 + kind].x0c = flag, for the first kind and then for the second.
     private (int First, int Second) AddPlannedKinds(int level, MineGroupPlan plan)
     {
         var first = Forces.AddKind(level, plan.Type1, plan.Quality1);
@@ -483,7 +483,7 @@ internal sealed partial class MineBuilder
     /// </summary>
     // orig: R009+0x23D6 (1432:23D6) draft (unmatched draft, far off per the draft notes); tests:
     // Oracle:mine.json
-    // DIVERGENCE: the original writes the group into slot group_count of level lvno even past 10 (into the next level's slots); the list grows here.
+    // DIVERGENCE: the original writes the group into slot group-total of level lvno even past 10 (into the next level's slots); the list grows here.
     private void PlaceGroup(int t, int type1, int count1, int reinforcement1, int type2, int count2, int reinforcement2, int section, bool posted,
         int spot, int pointY, int facing)
     {

@@ -191,7 +191,7 @@ class Fuzzer:
     def gen_args(self) -> list[int]:
         args = [f(self.rng, self) for f in self.args_spec]
         if self.coord in ("R014+0x1BA0", "R014+0x1F00") and args:
-            # the caller's animation set (combat_actions R014+0x11C4, 14F7:343C): the slot (+0x16), past the party's by the pose (+0x18)
+            # the caller's animation set (fight-action-table R014+0x11C4, 14F7:343C): the slot (+0x16), past the party's by the pose (+0x18)
             rec = self.records[args[0] % 13]
             slot, pose = rec[0x16] - (rec[0x16] >> 7 << 8), rec[0x18] - (rec[0x18] >> 7 << 8)
             args.append(slot if slot < 5 else slot + 2 if pose in (2, 3) else slot + 4 if pose == 4 else slot)
@@ -418,7 +418,7 @@ class Fuzzer:
                 rec[0x17] = rng.choice([15, 20, 30, 120])
                 rec[0x18] = rng.choice([0, 0, 0, 1])
                 if rec[0x10] == 0xFF and (rec[0x14] & 0x7F) < 6 and (rec[0x11] & 0x7F) == 0:
-                    # a weapon missile at a spot: missile_launch leaves done 0 only for a hit exchange, rolled against a target (R018+0x0212..0x024D)
+                    # a weapon missile at a spot: shot-launch leaves done 0 only for a hit exchange, rolled against a target (R018+0x0212..0x024D)
                     rec[0x11] |= 1
                 ops.append({"w": "ds", "o": 0x944D + 0x1A * i, "hex": bytes(rec).hex()})
         elif pick == "spells":

@@ -202,7 +202,7 @@ public sealed class CultistSacrifice : Card
     }
 
     // orig: R079+0x2906 (1A6E:05A6) matched; tests: CardSmokeTests
-    // C: party_max_attr(0x0F) reads past the seven attributes: record +0x49 + 0x0F = +0x58,
+    // C: party-stat-top(0x0F) reads past the seven attributes: record +0x49 + 0x0F = +0x58,
     // which is skill 1; the result is kept in the attribute query's globals (DS:9C1D, DS:9A44).
     private static OptionHint NimblenessChance(CardContext c)
     {
@@ -242,7 +242,7 @@ public sealed class CultistSacrifice : Card
     {
         // C: the option line itself gives chance -1: the roll then always fails.
         // C: the chance is the handler's the loop calls (CardMenu.Run): the option line's -1, the box's for a click there, and for Enter
-        // C: there opt_fn[k], the box's handler for slot k % 4.
+        // C: there card-option-handler[k], the box's handler for slot k % 4.
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         c.Variables.Chosen[0] = c.MenuMember;
         if (c.Random(100) <= chance)

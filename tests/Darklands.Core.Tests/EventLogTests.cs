@@ -27,7 +27,7 @@ public sealed class EventLogTests
         var i = s.Events.CreateHere(0x0B, EventLog.Forever);
 
         Assert.Equal(new GameDate(23, 31, 12, 1499), s.Events[i]!.End);
-        Assert.Equal(100, s.Events[i]!.Value);   // event_here's value
+        Assert.Equal(100, s.Events[i]!.Value);   // event-here-test's value
         Assert.Equal(s.CurrentLocation, s.Events[i]!.Location);
     }
 
@@ -41,7 +41,7 @@ public sealed class EventLogTests
         Assert.False(s.Events.At(0x30, 5));
         Assert.False(s.Events.Started(0x30));
         Assert.Equal(0, s.Events.ValueAt(0x30, 5));
-        Assert.Equal(9, s.Events.Value(0x30));   // event_value does not ask
+        Assert.Equal(9, s.Events.Value(0x30));   // event-datum does not ask
         Assert.Equal(1, s.Events.Count(0x30));
         Assert.True(s.Events.Exists(0x30));
     }
@@ -191,7 +191,7 @@ public sealed class EventLogTests
     }
 
     /// <summary>
-    /// cards_shutdown / world_load around a battle: the battle runs on an empty table, what it adds below the file's
+    /// cards-teardown / world-read around a battle: the battle runs on an empty table, what it adds below the file's
     /// count is lost (a boost called in the battle is never undone), the rest stays, and the table comes back compacted.
     /// </summary>
     [Fact]

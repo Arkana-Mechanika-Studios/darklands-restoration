@@ -9,7 +9,7 @@ namespace Darklands.Cards.Scripts;
 /// bank meets guarded clerks, and one in very bad standing is thrown out.
 /// </summary>
 // orig: R060+0x1FEC (1A36:000C) matched; tests: CardSmokeTests
-// orig: handler setup R060+0x2C10 (opt_on[*]=1, screwed-up handler 0cd2, item handlers 0d0a/0d46/0d82/0dbe,
+// orig: handler setup R060+0x2C10 (card-option-enabled[*]=1, screwed-up handler 0cd2, item handlers 0d0a/0d46/0d82/0dbe,
 // saint handlers 0dfa/0e84/0f0e/0f98: standard pop-ups, no items or saints listed)
 public sealed class FuggerBank : Card
 {
@@ -24,14 +24,14 @@ public sealed class FuggerBank : Card
     public override int Run(CardContext c)
     {
         var memory = c.Memory;
-        // C: cur_rep = loc_query(cur_loc, 0) is read once here; it is never written back and the later tests use this copy.
+        // C: reputation-now = place-query(location-now, 0) is read once here; it is never written back and the later tests use this copy.
         var standing = c.LocationQuery(c.Here, 0);
         // C: the picture is chosen with DS:4BB6 (the Fugger favour) before the "++" below.
         var picture = standing >= 0 && c.State.FuggerStanding >= 0 ? WelcomePicture : GuardedPicture;
         Show(c, picture);
         c.Next = Number;
         // C: DS:EE72 = 7 and DS:EE70 = 0 (text window state) are set here; not modelled.
-        // C: opt_flag_0,1,2,6,7 = 1; opt_flag_3,4,5,8,9 = 0 (lines 4, 5, 8, 9 stay hidden: dormant below).
+        // C: card-option-flag-0,1,2,6,7 = 1; card-option-flag-3,4,5,8,9 = 0 (lines 4, 5, 8, 9 stay hidden: dormant below).
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 6, 7);
         c.Variables.Chosen[0] = c.Leader;
@@ -49,12 +49,12 @@ public sealed class FuggerBank : Card
         {
             c.State.FuggerStanding++;
         }
-        // C: ev8_owner_value(10, 8) || ev8_owner_value(3, 8) || event_type_at(7, 8) || cur_loc_query(0) < 0 || DS:4BB6 < 0.
+        // C: open-quest-owner-value(10, 8) || open-quest-owner-value(3, 8) || event-kind-at(7, 8) || location-now-query(0) < 0 || DS:4BB6 < 0.
         if (BankingHouses.CommissionPending(c, House) || c.HereQuery(0) < 0 || c.State.FuggerStanding < 0)
         {
             menu[2] = OptionState.Hidden;
         }
-        // C: ev24_at_owner(10, 8) || ev24_at_owner(3, 8): a finished commission lets the party report it.
+        // C: resolved-quest-at-owner(10, 8) || resolved-quest-at-owner(3, 8): a finished commission lets the party report it.
         if (BankingHouses.CommissionDone(c, House))
         {
             menu[2] = OptionState.Hidden;
@@ -78,20 +78,20 @@ public sealed class FuggerBank : Card
             }
             menu.Block = standing >= 0 && c.State.FuggerStanding >= 0 ? 0 : 2;
         };
-        // C: var_chosen1 = leader after every choice, before the handler runs.
+        // C: text-slot-chosen-one = leader after every choice, before the handler runs.
         menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
         return menu.Run(
             // orig: R060+0x2378 (line 0); handler R060+0x240A (assured, 100%, leader)
             new MenuLine(_ => RedeemLetters(c, menu, picture), () => new OptionHint(100, SuccessAssured, c.Leader)),
-            // orig: R060+0x2444 (line 1); handler R060+0x2514: clamp(0, 99, (Charisma << 1) + cur_rep + favour)
+            // orig: R060+0x2444 (line 1); handler R060+0x2514: clamp(0, 99, (Charisma << 1) + reputation-now + favour)
             new MenuLine(_ => BuyALetter(c, menu, picture),
                 () => new OptionHint(Math.Clamp((c.Attribute(c.Leader, (int)Attribute.Charisma) << 1) + standing + c.State.FuggerStanding, 0, 99), "", c.Leader)),
-            // orig: R060+0x254E (line 2); handler R060+0x26FE: clamp(10, 50, loc_query(cur_loc, 0) + (cur_loc_query(0xC) + party_get(4)))
+            // orig: R060+0x254E (line 2); handler R060+0x26FE: clamp(10, 50, place-query(location-now, 0) + (location-now-query(0xC) + party-read(4)))
             new MenuLine(chance => AskForACommission(c, menu, picture, chance),
                 () => new OptionHint(Math.Clamp(c.LocationQuery(c.Here, 0) + (c.HereQuery(0xC) + c.PartyGet(4)), 10, 50), "", c.Leader)),
             // orig: R060+0x2750 (line 3); handler R060+0x29E8 (assured)
             new MenuLine(_ => ReportTheCommission(c, menu, picture), OptionHint.Saying(SuccessAssured)),
-            // DORMANT: lines 4 and 5 (opt_flag_4 = opt_flag_5 = 0, set nowhere): show the first text and leave for the city entry card.
+            // DORMANT: lines 4 and 5 (card-option-flag-4 = card-option-flag-5 = 0, set nowhere): show the first text and leave for the city entry card.
             // orig: handler R060+0x2A3E, action 0a40 R060+0x2A20
             new MenuLine(_ => Leave(c), OptionHint.Saying(SuccessAssured)),
             // orig: handler R060+0x2A94, action 0a96 R060+0x2A76
@@ -100,7 +100,7 @@ public sealed class FuggerBank : Card
             new MenuLine(_ => c.Next = c.IsDaylight ? 0x15 : 0x16, OptionHint.Saying(SuccessAssured)),
             // orig: handler R060+0x2B2C, action 0b38 R060+0x2B18
             new MenuLine(_ => c.Next = c.IsDaylight ? 9 : 10, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: lines 8 and 9 (opt_flag_8 = opt_flag_9 = 0, set nowhere): the same "leave" as lines 4 and 5.
+            // DORMANT: lines 8 and 9 (card-option-flag-8 = card-option-flag-9 = 0, set nowhere): the same "leave" as lines 4 and 5.
             // orig: handler R060+0x2B82, action 0b84 R060+0x2B64
             new MenuLine(_ => Leave(c), OptionHint.Saying(SuccessAssured)),
             // orig: handler R060+0x2BD8, action 0bda R060+0x2BBA
@@ -134,8 +134,8 @@ public sealed class FuggerBank : Card
     // orig: R060+0x254E (1A36:056E)
     private void AskForACommission(CardContext c, CardMenu menu, int picture, int chance)
     {
-        // C: opt_flag_2 = 2 (shown, greyed) is written before the roll; the first roll is rand_mod(100) <= chance, the
-        // second (inside GiveACommission) rand_mod(100) < 50.
+        // C: card-option-flag-2 = 2 (shown, greyed) is written before the roll; the first roll is roll-below(100) <= chance, the
+        // second (inside GiveACommission) roll-below(100) < 50.
         menu[2] = OptionState.Shown;
         if (c.Succeeds(chance))
         {
@@ -157,7 +157,7 @@ public sealed class FuggerBank : Card
         if (c.Events.ResolvedQuestAt(BankingHouses.DeliveryQuest, House, c.Here))
         {
             c.State.FuggerStanding += 5;
-            // C: l = *(int *)(events[last_event] + 0x2e): the reward item of the finished commission (0 = money).
+            // C: l = *(int *)(events[latest-event] + 0x2e): the reward item of the finished commission (0 = money).
             var reward = c.EventDetail(c.LastEvent);
             if (reward == 0)
             {
@@ -198,7 +198,7 @@ public sealed class FuggerBank : Card
             c.Screen.Text(9);
             c.Next = c.IsDaylight ? 0x15 : 0x16;
         }
-        // C: opt_flag_3 = 0 at the end of every branch.
+        // C: card-option-flag-3 = 0 at the end of every branch.
         menu[3] = OptionState.Hidden;
     }
 

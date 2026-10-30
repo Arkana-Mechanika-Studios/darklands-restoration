@@ -6,7 +6,7 @@ namespace Darklands.Core.Characters.Creation;
 /// that hold copies of them. The menu fills only the first four slots.
 /// </summary>
 // orig: R037+0x0444 (1462:0444) draft (key handler; the charactr.tmp
-// layout: int count, int ids[5], char member_shield[5][4], count records of 0x22A); tests: CreationRosterTests
+// layout: int count, int ids[5], char member-shield-picture[5][4], count records of 0x22A); tests: CreationRosterTests
 // C: a slot holds the record read from the file when the character was added (fread into combatants), so a change
 // made in the slot (heraldry) is lost when the character leaves the party and joins again.
 public sealed class CreationRoster
@@ -18,11 +18,11 @@ public sealed class CreationRoster
     private readonly Character?[] _members = new Character?[Party.MaxMembers];
     private readonly Func<int, Items.ItemDefinition> _item;
 
-    /// <summary>The stack index equipped_item leaves (the program's party-query global; the new game does not carry it).</summary>
+    /// <summary>The stack index worn-item leaves (the program's party-query global; the new game does not carry it).</summary>
     private readonly PartyQueryResult _last = new();
 
-    /// <param name="slotPalettes">The five slots' figure colours (member_palette), kept per slot.</param>
-    /// <param name="slotImages">The five slots' figure images (member_shield) as the menu starts, kept per slot.</param>
+    /// <param name="slotPalettes">The five slots' figure colours (member-colours), kept per slot.</param>
+    /// <param name="slotImages">The five slots' figure images (member-shield-picture) as the menu starts, kept per slot.</param>
     /// <param name="item">The item list's definition of a code (the weights of the equipped items); null: every item weighs 0.</param>
     public CreationRoster(IEnumerable<Character> characters, IReadOnlyList<byte[]> slotPalettes, IReadOnlyList<string>? slotImages = null,
         Func<int, Items.ItemDefinition>? item = null)
@@ -37,7 +37,7 @@ public sealed class CreationRoster
     }
 
     /// <summary>Each slot's figure image: it stays with the slot after its member leaves.</summary>
-    // C: member_shield[il] is only written by the add and image commands; deleting from the party clears the id, not the image.
+    // C: member-shield-picture[il] is only written by the add and image commands; deleting from the party clears the id, not the image.
     public string[] SlotImages { get; } = ["", "", "", "", ""];
 
     /// <summary>Each slot's figure colours: they stay with the slot, whoever joins it.</summary>
@@ -76,7 +76,7 @@ public sealed class CreationRoster
     /// </summary>
     // orig: R037+0x0444 case 0x1E41/0x1E61 (A)
     // C: the record keeps its own shield letter, but the menu loads PICS\SHIELDA.PIC for the new slot (the screen shows the letter A until H).
-    // C: the R037 menu does not reset the slot's colours (member_palette[il]); the member takes what the slot held
+    // C: the R037 menu does not reset the slot's colours (member-colours[il]); the member takes what the slot held
     // (the R038 twin, R038+0x02F8, does reset them).
     public int AddToParty(int character, string image)
     {
@@ -99,7 +99,7 @@ public sealed class CreationRoster
             SlotPalettes[slot][k] = PortraitColours.InnStartPalette[k];
         }
         member.ImagePalette = SlotPalettes[slot];
-        // orig: R037+0x0D5F status = 1, then R037+0x0D67 equip_weight (thunk 09C0:2049 = R031+0x5C5A) for the slot: the encumbrance is
+        // orig: R037+0x0D5F status = 1, then R037+0x0D67 gear-weight (thunk 09C0:2049 = R031+0x5C5A) for the slot: the encumbrance is
         // recomputed from the equipped items (a made character, nothing equipped, gets 0 for the generator's 0x0A); proved by the unit
         // run of R031+0x5C5A (+0x35 = 0x0A, all equipment FF -> 00) and the lockstep session chargen-created (the saved record's +0x49 = 00)
         Rules.Inventory.EquipmentWeight(member, _item, _last);
@@ -161,7 +161,7 @@ public sealed class CreationRoster
     }
 
     /// <summary>Changes the figure image of the character's party copy.</summary>
-    // orig: R037+0x0444 case 0x1F53/0x1F73 (S): strcpy(member_shield[il], DS:E7E2[DS:E7E0])
+    // orig: R037+0x0444 case 0x1F53/0x1F73 (S): strcpy(member-shield-picture[il], DS:E7E2[DS:E7E0])
     public bool SetImage(int character, string image)
     {
         var slot = SlotOf(character);
@@ -178,7 +178,7 @@ public sealed class CreationRoster
     /// "Begin the Adventure" (B): the party is the slots up to the last filled one; empty slots in
     /// between stay as empty members. Null when no slot is filled.
     /// </summary>
-    // orig: R037+0x0444 case 0x3042/0x3062 (B): party_size = last slot with ids[il] != -1, plus one; party[il][0] = 0 for empty slots
+    // orig: R037+0x0444 case 0x3042/0x3062 (B): party-headcount = last slot with ids[il] != -1, plus one; party[il][0] = 0 for empty slots
     // C: the menu never writes `leader`: it stays as it was (0 after start-up, BSS), even when slot 0 is empty; the leader rules of
     // C: play (an unable leader is replaced when time passes, the loot screen's) take over from there.
     /// <param name="seed">The party's seed.</param>
@@ -200,7 +200,7 @@ public sealed class CreationRoster
         var party = new Party { Seed = seed, Purse = Economy.Money.Zero };
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            // C: an empty slot keeps the figure the slot held (member_shield / member_palette), which the saved game writes
+            // C: an empty slot keeps the figure the slot held (member-shield-picture / member-colours), which the saved game writes
             party.Members.Add(_members[i] ?? new Character { Status = CharacterStatus.Empty, Image = SlotImages[i], ImagePalette = SlotPalettes[i] });
         }
         party.TrimToSize();

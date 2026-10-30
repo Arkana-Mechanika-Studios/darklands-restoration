@@ -41,7 +41,7 @@ public sealed class WitchCultVillage : Card
     // orig: R078+0x0B90 (18DE:0130) matched; R078+0x0CDA (18DE:027A) matched; tests: CardSmokeTests
     private static void DefendYourselves(CardContext c)
     {
-        // C: arguments are evaluated right to left: rand_mod(4) (second group) before rand_mod(3).
+        // C: arguments are evaluated right to left: roll-below(4) (second group) before roll-below(3).
         var third = c.PartyLoreLevel() / 4 + 1;
         var second = c.Random(4) + c.PartyLoreLevel() / 3 + 1;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 3;

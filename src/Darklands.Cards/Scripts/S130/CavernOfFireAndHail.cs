@@ -16,7 +16,7 @@ namespace Darklands.Cards.Scripts;
 //   saint pop-up: R130+0x14D6, R130+0x1560, R130+0x15EA
 //   other: R130+0x13F0, R130+0x1462
 // DORMANT (generated): option slots 10..19 keep the default handler R130+0x1462 ("screwed up.") and are never shown.
-// C (generated): opt_flag_5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
+// C (generated): card-option-flag-5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class CavernOfFireAndHail : Card
@@ -42,10 +42,10 @@ public sealed class CavernOfFireAndHail : Card
         menu[3] = c.ItemsUsable();
         menu[2] = c.SaintsUsable();
 
-        // C: every handler of this card redraws with card_load (the whole card, Show), not card_load_near.
+        // C: every handler of this card redraws with card-run (the whole card, Show), not card-run-near.
         return menu.Run(
             // orig: R130+0x0EDA / R130+0x106A matched
-            // C: the hint's party_min_eff_attr2 also sets best_member (unused by the hint, r.b = −2).
+            // C: the hint's party-effective-stat-two-low also sets top-scoring-member (unused by the hint, r.b = −2).
             new MenuLine(chance => RunAcross(c, chance), () => OptionHint.ChanceOf(c.PartyMinEffectiveAgility(), OptionHint.WholeParty)),
             // orig: R130+0x107E / R130+0x1128 matched
             new MenuLine(_ => CreepAcrossUnderArmour(c), OptionHint.Saying(CardTexts.Unknown)),
@@ -62,8 +62,8 @@ public sealed class CavernOfFireAndHail : Card
     /// agility, the slowest member falls (×2); otherwise everyone slides and falls (×3).
     /// </summary>
     // orig: R130+0x0EDA matched
-    // C: the roll is drawn before party_min_eff_attr2, whose best_member (unsigned char) becomes $ChosenOneName; the
-    //   ×2 test's party_max_eff_attr2 moves best_member again but nothing reads it. Each harm is one draw per
+    // C: the roll is drawn before party-effective-stat-two-low, whose top-scoring-member (unsigned char) becomes $ChosenOneName; the
+    //   ×2 test's party-effective-stat-two-top moves top-scoring-member again but nothing reads it. Each harm is one draw per
     //   statement, in the order agility, endurance, strength, then the battle seed; products stay below 32767.
     private void RunAcross(CardContext c, int chance)
     {
@@ -150,7 +150,7 @@ public sealed class CavernOfFireAndHail : Card
     }
 
     /// <summary>Fact 1/0x18, kept for good: the Second Seal is broken and the gate of the burning lake opens.</summary>
-    // orig: the event_new repeated inline in R130+0x107E / _0420 / _0592 matched
+    // orig: the event-create repeated inline in R130+0x107E / _0420 / _0592 matched
     private static void BreakTheSecondSeal(CardContext c) =>
         c.Events.Create(-2, c.Here, 0, 0x1C, 0x18, 0, 0, Core.Events.EventLog.Forever, 0, 1);
 }

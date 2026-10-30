@@ -15,7 +15,7 @@ namespace Darklands.Cards.Scripts;
 // saint pop-ups R062+0x2CE4/110e/1198/1222 (standard, no saints listed: never offered)
 public sealed class BlacksmithsGuild : Card
 {
-    /// <summary>The guild's number in the city politics facts and for the next cards (party_x).</summary>
+    /// <summary>The guild's number in the city politics facts and for the next cards (party-map-column).</summary>
     private const int Guild = 2;
 
     private const int PoliticsQuest = 2;
@@ -29,7 +29,7 @@ public sealed class BlacksmithsGuild : Card
     {
         Show(c, StreetPicture);
         c.Next = Number;
-        // C: opt_flag_9 is not set by this card: it keeps whatever the previous card left. The text has
+        // C: card-option-flag-9 is not set by this card: it keeps whatever the previous card left. The text has
         // no tenth line and the switch no case 9, so it is offered hidden here (see the dormant line 9).
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 4, 5, 6);
@@ -77,12 +77,12 @@ public sealed class BlacksmithsGuild : Card
             new MenuLine(chance => SneakIn(c, chance), () => SneakChance(c)),
             new MenuLine(chance => SneakInUnderCover(c, chance), OptionHint.Saying(CardTexts.SelectPotion), () => PotionCoverHint(c)),
             new MenuLine(_ => { c.PassHours(0); c.Next = CityStreets; }, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: line 7 (opt_flag_7 = 0): the city entry card after the first text.
+            // DORMANT: line 7 (card-option-flag-7 = 0): the city entry card after the first text.
             // orig: R062+0x2AA8, hint R062+0x2AC6 (100%, leader)
             new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 4; }, () => new OptionHint(100, SuccessAssured, c.Leader)),
-            // DORMANT: line 8 (opt_flag_8 = 0): the city entry card. orig: R062+0x2B00, hint 0eb2
+            // DORMANT: line 8 (card-option-flag-8 = 0): the city entry card. orig: R062+0x2B00, hint 0eb2
             new MenuLine(_ => { c.PassHours(0); c.Next = 4; }, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: line 9 has the "screwed up." handler and no action (stale opt_flag_9 only).
+            // DORMANT: line 9 has the "screwed up." handler and no action (stale card-option-flag-9 only).
             new MenuLine(_ => { }, OptionHint.Saying(CardTexts.ScrewedUp)));
     }
 
@@ -174,7 +174,7 @@ public sealed class BlacksmithsGuild : Card
     private static void SeekAnAudience(CardContext c, CardMenu menu, int chance)
     {
         menu[2] = OptionState.Shown;
-        // C: hours_until(5) (R029+0x577A) is called and its result dropped (no effect).
+        // C: hours-remaining-until(5) (R029+0x577A) is called and its result dropped (no effect).
         NoteFact(c, 4);
         if (c.Events.QuestAt(PoliticsQuest, c.Here))
         {
@@ -223,7 +223,7 @@ public sealed class BlacksmithsGuild : Card
     /// <summary>The masters offer one of their journeymen ($Money1 a day); two hiring events of a week.</summary>
     private static void OfferAJourneyman(CardContext c)
     {
-        // C: (unsigned) cur_loc_query(0x21) % 15: the remainder of the unsigned 16-bit value.
+        // C: (unsigned) location-now-query(0x21) % 15: the remainder of the unsigned 16-bit value.
         var skill = c.HereQuery(4) + (ushort)c.HereQuery(0x21) % 15 - 5;
         if (!c.EventTypeAtHere(0x28, 0))
         {
@@ -275,7 +275,7 @@ public sealed class BlacksmithsGuild : Card
             c.Support[0] = c.Random(3) - 1;
             c.SetSide(Guild, c.Support[0]);
             c.Screen.Text(0x0B);
-            // C: cur_rep is the card's copy of the reputation, read at the start: it is lowered and written back.
+            // C: reputation-now is the card's copy of the reputation, read at the start: it is lowered and written back.
             standing--;
             c.LocationSet(c.Here, 0, standing);
             c.PassHours(3);
@@ -309,7 +309,7 @@ public sealed class BlacksmithsGuild : Card
     private static void SneakIn(CardContext c, int chance)
     {
         var roll = c.Random(100);
-        // C: hours_until(19) (R029+0x577A) is called and its result dropped.
+        // C: hours-remaining-until(19) (R029+0x577A) is called and its result dropped.
         NoteFact(c, 5);
         if (chance < roll)
         {
@@ -425,7 +425,7 @@ public sealed class BlacksmithsGuild : Card
         {
             c.GuildCode = Guild;
         }
-        // C: the stealth path (0a06) leaves party_x as it was before going to 0x6C.
+        // C: the stealth path (0a06) leaves party-map-column as it was before going to 0x6C.
         c.Next = 0x6C;
     }
 }

@@ -10,8 +10,8 @@ namespace Darklands.Oracle.Tests;
 /// <summary>
 /// The rules that read outside their data against the original program (Corpus/memory.json,
 /// tools/oracle/build_memory_corpus.py): the event scans that end at slot 299 return the AX the
-/// original leaves, set_member_bit(who) writes 2E38:082C + who × 0x14 + bit / 8 unresolved, and
-/// has_item's formula test reads the byte 2E38:075F + who × 0x16 + code wherever it lands.
+/// original leaves, member-flag-set(who) writes 2E38:082C + who × 0x14 + bit / 8 unresolved, and
+/// carries-item's formula test reads the byte 2E38:075F + who × 0x16 + code wherever it lands.
 /// </summary>
 public sealed class MemoryOracleTests
 {
@@ -23,7 +23,7 @@ public sealed class MemoryOracleTests
     [Fact]
     public void EventRemoveReturnsWhatTheOriginalReturns()
     {
-        foreach (var c in Data.Value.Cases("event_remove"))
+        foreach (var c in Data.Value.Cases("R029+0x3CDE"))
         {
             var (s, a) = Log(c);
             var ax = s.Events.Remove(a[0], a[1], a[2], a[3], a[4]);
@@ -34,7 +34,7 @@ public sealed class MemoryOracleTests
     [Fact]
     public void LocFactsClearReturnsWhatTheOriginalReturns()
     {
-        foreach (var c in Data.Value.Cases("loc_facts_clear"))
+        foreach (var c in Data.Value.Cases("R029+0x3D92"))
         {
             var (s, a) = Log(c);
             Check(c, s, s.Events.ClearFacts(a[0], a[1]));
@@ -44,7 +44,7 @@ public sealed class MemoryOracleTests
     [Fact]
     public void TheBoostMaximumReturnsWhatTheOriginalReturns()
     {
-        foreach (var c in Data.Value.Cases("event_48_max"))
+        foreach (var c in Data.Value.Cases("R029+0x4E0C"))
         {
             var (s, a) = Log(c);
             Assert.Equal((short)c.Ax, (short)s.Events.AttributeBoost(a[0], a[1]));
@@ -54,7 +54,7 @@ public sealed class MemoryOracleTests
     [Fact]
     public void SetMemberBitWritesTheByteTheOriginalWrites()
     {
-        foreach (var c in Data.Value.Cases("set_member_bit"))
+        foreach (var c in Data.Value.Cases("R029+0x1302"))
         {
             var s = Party();
             Saints.Learn(s, Int(c.Inputs, "who"), Int(c.Inputs, "bit"));
@@ -67,7 +67,7 @@ public sealed class MemoryOracleTests
     [Fact]
     public void HasItemReadsTheByteTheOriginalReads()
     {
-        foreach (var c in Data.Value.Cases("has_item"))
+        foreach (var c in Data.Value.Cases("R029+0x118E"))
         {
             var s = Party();
             s.Party.SetMemoryByte(Int(c.Inputs, "byte"), 1);

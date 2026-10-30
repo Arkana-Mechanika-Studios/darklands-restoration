@@ -17,8 +17,8 @@ public sealed class TradingRepOracleTests
     private const int Code = 7;
 
     [Theory]
-    [InlineData("buy_price")]
-    [InlineData("sell_price")]
+    [InlineData("R032+0x192E")]
+    [InlineData("R032+0x1B26")]
     public void ReputationTermMatchesTheOriginal(string function)
     {
         if (Environment.GetEnvironmentVariable("DARKLANDS_TRADING_REP") is not { Length: > 0 } path || !File.Exists(path))
@@ -33,7 +33,7 @@ public sealed class TradingRepOracleTests
             n++;
             var i = c.GetProperty("inputs");
             var (s, shop) = Setup(i);
-            var result = function == "buy_price" ? Trading.BuyPrice(s, shop, Code) : Trading.SellPrice(s, Code, Int(i, "quality"));
+            var result = function == "R032+0x192E" ? Trading.BuyPrice(s, shop, Code) : Trading.SellPrice(s, Code, Int(i, "quality"));
             var expected = (short)Corpus.Hex(c.GetProperty("ax").GetString()!);
             if (expected != (short)result || c.GetProperty("holdrand").GetUInt32() != ((MscRandom)s.Random).State)
             {

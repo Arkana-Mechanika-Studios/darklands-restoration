@@ -26,7 +26,7 @@ public sealed class HamletSquare : Card
         c.PlayMusic(0x29);
         Show(c, Picture);
         c.Next = CardNumber;
-        // C: the script keeps loc_query(cur_loc, 0) in cur_rep; no line of this card reads it.
+        // C: the script keeps place-query(location-now, 0) in reputation-now; no line of this card reads it.
         MaybeTheVillageFallsUnderEvil(c);
         c.SetCardItems();
         c.SetCardSaints(Saints);
@@ -60,7 +60,7 @@ public sealed class HamletSquare : Card
         {
             return;
         }
-        // C: party_x is passed as a long: the party's map x and y.
+        // C: party-map-column is passed as a long: the party's map x and y.
         var map = c.State.MapPosition;
         var nearestOf8 = c.NearestLocationOfType(map.X, map.Y, 8);
         var divisor = c.NearestLocationOfType(map.X, map.Y, 0x0A) == nearestOf8 ? 3 : 10;

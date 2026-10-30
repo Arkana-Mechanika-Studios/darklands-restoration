@@ -25,7 +25,7 @@ public static class ItemFlags
     /// <summary>A missile weapon (thrown, bow, missile device).</summary>
     public const uint MissileWeapon = 0x0800_0030;
 
-    /// <summary>A mount (horse): <c>party_get(5)</c> and the riding speed use it.</summary>
+    /// <summary>A mount (horse): <c>party-read(5)</c> and the riding speed use it.</summary>
     public const uint Mount = 0x0000_2000;
 }
 

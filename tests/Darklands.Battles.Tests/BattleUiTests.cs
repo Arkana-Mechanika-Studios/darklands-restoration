@@ -93,7 +93,7 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
-    /// A won fight: the loot screen, then the battle view again in the battle's colours (palette_restore, floor_view_draw, combat_draw), the
+    /// A won fight: the loot screen, then the battle view again in the battle's colours (palette-reload, floor-view-paint, fight-draw), the
     /// "BattleResults - victory" box over it, the box taken away. The picture of before the battle never comes back in the battle's colours.
     /// </summary>
     [Fact]
@@ -153,7 +153,7 @@ public sealed class BattleUiTests
         Assert.InRange(x1, 190, 319);
         Assert.InRange(y0, 80, 100);
         Assert.InRange(y1, 100, 120);
-        // the box's ground is colour 0xFF (show_message's f0e)
+        // the box's ground is colour 0xFF (notice-display's f0e)
         var ground = 0;
         for (var y = y0; y <= y1; y++)
         {
@@ -368,7 +368,7 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
-    /// show_message (root 0000:24BC) over a battle: the caller waits in delay_ticks (root 0410:0302) for the message's ticks while the timer
+    /// notice-display (root 0000:24BC) over a battle: the caller waits in wait-ticks (root 0410:0302) for the message's ticks while the timer
     /// callback (root 047C:000A) counts DS:07D1 and, unless the clock stands, the combat clock; no tick of the battle runs meanwhile and the box is
     /// gone when the call returns ("USE STAIRS..." DS:064A from R014+0xBF8C, R014+0xC3E0, R016+0x00F0; the direct calls of R014+0xBCA8 with the
     /// party split: DS:07D1 +150 at the delay's return, the clock +150 in castle-p600, unmoved in the paused states). The message is shown
@@ -411,7 +411,7 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
-    /// The original hides the mouse pointer (mouse_hide root 047C:12C3) before the box of show_message (root 0000:24BC) and shows it again
+    /// The original hides the mouse pointer (pointer-hide root 047C:12C3) before the box of notice-display (root 0000:24BC) and shows it again
     /// (root 047C:1293) after the wait: while a message waits, the frame does not depend on where the pointer is.
     /// </summary>
     [Fact]
@@ -451,8 +451,8 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
-    /// The battle bar's Game > Difficulty > Expert (R000+0x083E: DS:99EC[2] = set_difficulty_expert, root 0000:1428) sets the difficulty and
-    /// shows show_difficulty(1)'s box (root 0000:1438: show_message(text, 0x3C), root 0000:24BC) in the card window's font that menu_bar_run
+    /// The battle bar's Game > Difficulty > Expert (R000+0x083E: DS:99EC[2] = difficulty-hard-set, root 0000:1428) sets the difficulty and
+    /// shows difficulty-display(1)'s box (root 0000:1438: notice-display(text, 0x3C), root 0000:24BC) in the card window's font that menu-bar-loop
     /// put back before the sub-item (root 0000:019D..0x01A9: font 3), with the pointer hidden meanwhile (root 047C:12C3); the original's
     /// screen: vis10 session tleads-battle-difficulty (the box's pixels identical).
     /// </summary>
@@ -592,7 +592,7 @@ public sealed class BattleUiTests
             }
         }
 
-        /// <summary>Plays the steps until the battle ends; returns battle_result.</summary>
+        /// <summary>Plays the steps until the battle ends; returns battle-outcome.</summary>
         public int Fight(IEnumerable<string> steps)
         {
             _host.Queue(steps);

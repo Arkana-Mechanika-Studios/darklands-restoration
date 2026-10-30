@@ -60,8 +60,8 @@ public abstract class DwarfRiddleDoor : Card
     /// <paramref name="opensWith"/> stands (it lasts an hour after another wrong choice);
     /// otherwise the curse strikes and this choice leaves its own fact <paramref name="leaves"/>.
     /// </summary>
-    // orig: the statue handlers of MineT10 (R095) and MineT17 (R097): loc_fact(0x0C, k, cur_loc) ? right : wrong
-    // + event_new(-2, cur_loc, 0x5A, 0x1C, j, 0x63, 0, 1, 0, 0x0C).
+    // orig: the statue handlers of MineT10 (R095) and MineT17 (R097): place-flag(0x0C, k, location-now) ? right : wrong
+    // + event-create(-2, location-now, 0x5A, 0x1C, j, 0x63, 0, 1, 0, 0x0C).
     protected MenuLine Shifting(CardContext c, int opensWith, int leaves, int rightText, int wrongText, Attribute attribute) =>
         new(() =>
         {
@@ -77,8 +77,8 @@ public abstract class DwarfRiddleDoor : Card
     /// <summary>The tag of the mine quest's location facts.</summary>
     protected const int MineQuestTag = 0x0C;
 
-    // orig: the wrong-answer handlers: var_chosen1 = leader; card_text(n, 0); add_attr(leader, a, -1);
-    // add_attr_max(leader, a, -1); next_card = own number.
+    // orig: the wrong-answer handlers: text-slot-chosen-one = leader; card-text-block(n, 0); raise-attribute-by(leader, a, -1);
+    // raise-attribute-cap-by(leader, a, -1); following-card = own number.
     private void Curse(CardContext c, int text, Attribute attribute)
     {
         c.Variables.Chosen[0] = c.Leader;
@@ -88,9 +88,9 @@ public abstract class DwarfRiddleDoor : Card
         c.Next = Number;
     }
 
-    // orig: the right-answer handlers: card_load_near(open door, +0x0DA7); card_text(n, 2); card_load(door, +0x0DA3)
+    // orig: the right-answer handlers: card-run-near(open door, +0x0DA7); card-text-block(n, 2); card-run(door, +0x0DA3)
     // (some doors skip the picture or the redraw); then the sort helper (some pass an hour first).
-    // C: card_text(n, 2) is drawn like card_text(n, 0): the engine treats how 2 as 0.
+    // C: card-text-block(n, 2) is drawn like card-text-block(n, 0): the engine treats how 2 as 0.
     private void GoThrough(CardContext c, int text, bool doorOpens, bool doorShownAgain)
     {
         if (doorOpens)
@@ -115,7 +115,7 @@ public abstract class DwarfRiddleDoor : Card
         };
     }
 
-    // orig: the turn-away handlers: battle_mode = 1; next_card = -2.
+    // orig: the turn-away handlers: battle-kind = 1; following-card = -2.
     private static void Fight(CardContext c)
     {
         c.BattleMode = 1;

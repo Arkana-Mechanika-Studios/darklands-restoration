@@ -11,7 +11,7 @@ namespace Darklands.Core.Events;
 public static class EventExpiry
 {
     // orig: R029+0x3F30 (0E76:3F30) matched; tests: EventLogTests
-    // C: after the handler the original reads events[i]->kind again even if the handler freed the slot (a null pointer, not kind 8, then event_free does nothing); here a freed slot is skipped.
+    // C: after the handler the original reads events[i]->kind again even if the handler freed the slot (a null pointer, not kind 8, then event-release does nothing); here a freed slot is skipped.
     public static void Run(GameState s)
     {
         var log = s.Events;
@@ -41,7 +41,7 @@ public static class EventExpiry
     }
 
     /// <summary>Runs an event's expiry handler.</summary>
-    // orig: event_expiry_fns R136+0xAF9F; R029+0x3FB0 (0E76:3FB0) matched; R029+0x4436 (0E76:4436) matched; event_expire_msg R029+0x4442 (0E76:4442) matched; R029+0x4626 (0E76:4626) matched; tests: PracticeAndItemsTests
+    // orig: event-expiry-handlers R136+0xAF9F; R029+0x3FB0 (0E76:3FB0) matched; R029+0x4436 (0E76:4436) matched; event-expiry-notice R029+0x4442 (0E76:4442) matched; R029+0x4626 (0E76:4626) matched; tests: PracticeAndItemsTests
     // DORMANT: handler 0 (R029+0x3FB0) is empty; a handler number above 9 would call past the table in the original (nothing creates one).
     public static void Handle(GameState s, TimedEvent e)
     {
@@ -56,11 +56,11 @@ public static class EventExpiry
             case ExpiryHandler.ResolveQuestsHere:
                 Quests.ResolveAt(s, e);
                 break;
-            // orig: R029+0x4436: event_here(0x3B, 24).
+            // orig: R029+0x4436: event-here-test(0x3B, 24).
             case ExpiryHandler.FollowUp:
                 s.Events.CreateHere(EventKinds.FollowUp, 24);
                 break;
-            // orig: event_expire_msg R029+0x4442: party[type0][0] != 0 (any status but empty).
+            // orig: event-expiry-notice R029+0x4442: party[type0][0] != 0 (any status but empty).
             case ExpiryHandler.MemberTermEnds:
                 if (s.Party.PresentMember(e.Type) is not null)
                 {
@@ -95,7 +95,7 @@ public static class EventExpiry
     /// of quality 10 × grade + the potion's own quality ("Alchemy Success").
     /// </summary>
     // orig: R029+0x3FB2 (0E76:3FB2) matched; tests: PracticeAndItemsTests
-    // C: rand_mod(4 - f2c) is drawn before rand_mod(2), and both before the cur_loc test.
+    // C: roll-below(4 - f2c) is drawn before roll-below(2), and both before the location-now test.
     // C: the messages are root 0000:24BC(text, 100): a framed box for 100 ticks (R029+0x3FB2, no key waited for).
     // C: the stack takes the item record's type (+1E, a signed char), quality (+26) + 10 x grade and weight (+25).
     public static void AlchemyResult(GameState s, TimedEvent e)
@@ -103,7 +103,7 @@ public static class EventExpiry
         if (e.Value <= s.Random.Below(100))
         {
             // BUG: the formula's risk works backwards: the explosion (longer = 1, the inn barred 120 days) comes when
-            // rand_mod(4 - risk) is not 0, so a low-risk formula (0) explodes three times in four and a high-risk one (2) half the time.
+            // roll-below(4 - risk) is not 0, so a low-risk formula (0) explodes three times in four and a high-risk one (2) half the time.
             var longer = s.Random.Below(4 - e.Data2) != 0 ? 1 : 0;
             if (s.Random.Below(2) != 0 && s.CurrentLocation != GameState.Wilderness)
             {
@@ -135,7 +135,7 @@ public static class EventExpiry
     // BUG: boosts given to the whole party are never taken back (FixEverybodyBoostsUndone).
     // BUG: the weapon potions' kind 0x4A events (Deadly Blade, Strongedge, Great Power: PotionEffects.Drink) run out here
     // and nothing is undone: only kinds 0x48 and 0x49 are, so the bonus byte (+0x34) keeps them for good.
-    // BUG: the recorded amount is taken off whatever the attribute is by then (add_attr(owner, type, -value)): a boost that a
+    // BUG: the recorded amount is taken off whatever the attribute is by then (raise-attribute-by(owner, type, -value)): a boost that a
     // night's rest (Endurance back to its maximum) or wounds (Strength) have already used up is taken off again and leaves the
     // attribute below where it was; a saint's lowering (a negative value) is given back the same way.
     public static void UndoBoost(GameState s, TimedEvent e)

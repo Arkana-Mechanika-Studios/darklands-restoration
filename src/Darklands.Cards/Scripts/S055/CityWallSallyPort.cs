@@ -32,7 +32,7 @@ public sealed class CityWallSallyPort : Card
     // orig: R055+0x14A4 (1932:0504) matched (init helper: enables all 20 lines with the "screwed up." default handler, installs the item pop-up handlers 0..2 on the 5 member rows, empties the item and saint slots)
     // DORMANT: R055+0x1506 (1932:0566): the "screwed up." handler of lines 3..19; the init loop enables them but the card text has three lines and the menu loop copies only flags 0..2.
     // DORMANT: the init helper installs no item handler for slot 3, no saint handlers and the card has three items and no saints; slot 3 keeps a stale handler that nothing can call.
-    // C: the original also calls do_nothing() (an empty stub) after reading the standing.
+    // C: the original also calls idle-action() (an empty stub) after reading the standing.
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -103,7 +103,7 @@ public sealed class CityWallSallyPort : Card
     /// through, loses a little standing, and is hurt.
     /// </summary>
     // orig: R055+0x1136 (1932:0196) matched
-    // BUG: "menu_slot = 2" and "p_6 = 0x64" overwrite the chosen potion and the chance (the parameter is volatile), a left-over test cheat; the failure branch can never run (the draw is 0..99 against 100) but still draws.
+    // BUG: "menu-choice-index = 2" and "param-plus-6 = 0x64" overwrite the chosen potion and the chance (the parameter is volatile), a left-over test cheat; the failure branch can never run (the draw is 0..99 against 100) but still draws.
     private void BlastWithPotion(CardContext c, int chance)
     {
         _ = chance;
@@ -167,13 +167,13 @@ public sealed class CityWallSallyPort : Card
     /// </summary>
     // orig: R055+0x1316 (1932:0376) matched
     // C: arguments are evaluated right to left, so the second draw (of 4) comes before the first (of 2).
-    // C: the standing is the one the card read on arrival (cur_rep), also for the ban at the end.
+    // C: the standing is the one the card read on arrival (reputation-now), also for the ban at the end.
     private void FightTheGuards(CardContext c)
     {
         var lore = c.PartyLoreLevel();
         var archers = c.Random(4) + lore / 3 + 1;
         var guards = c.Random(2) + lore / 4 + 1;
-        // The battle seed adds the card number (next_card still holds it) to the location.
+        // The battle seed adds the card number (following-card still holds it) to the location.
         var result = c.RunBattle(0x54, CardNumber + c.Here, 8, guards, archers, 0x21, lore % 3 + 1, 1, -1, 0, 0);
         var standing = c.StandingSeen;
         if (standing <= -0x28)

@@ -1,11 +1,11 @@
 namespace Darklands.Core.World;
 
 /// <summary>
-/// The working copy of the current city's DARKLAND.CTY record (<c>city_rec</c>): loaded when
-/// a city is set up, read and changed by <c>loc_query</c>/<c>loc_set</c>. The original keeps
+/// The working copy of the current city's DARKLAND.CTY record (<c>city-record</c>): loaded when
+/// a city is set up, read and changed by <c>place-query</c>/<c>place-assign</c>. The original keeps
 /// the last loaded city while the party is elsewhere, and so does this.
 /// </summary>
-// orig: load_city R029+0x4E68 (0E76:4E68) matched; city_rec DS:9785
+// orig: city-read R029+0x4E68 (0E76:4E68) matched; city-record DS:9785
 public sealed class CityRecord
 {
     public const int Size = 0x26E;
@@ -25,32 +25,32 @@ public sealed class CityRecord
     /// <summary>The city (location index 0..91) the record belongs to.</summary>
     public int City { get; }
 
-    /// <summary>City size 3..8 (<c>loc_query</c> 2).</summary>
+    /// <summary>City size 3..8 (<c>place-query</c> 2).</summary>
     public int CitySize { get => Word(0x40); set => SetWord(0x40, value); }
 
-    /// <summary>Map x the party leaves to (<c>loc_query</c> 34).</summary>
+    /// <summary>Map x the party leaves to (<c>place-query</c> 34).</summary>
     public int ExitX => Word(0x46);
 
-    /// <summary>The city's ordinal 0..91; plus the party seed it seeds the city's randomness (<c>loc_query</c> 33).</summary>
+    /// <summary>The city's ordinal 0..91; plus the party seed it seeds the city's randomness (<c>place-query</c> 33).</summary>
     public int Ordinal => Word(0x56);
 
-    /// <summary>0 free city, 1 ruled, 2 capital (<c>loc_query</c> 40/41, swapped after an uprising).</summary>
+    /// <summary>0 free city, 1 ruled, 2 capital (<c>place-query</c> 40/41, swapped after an uprising).</summary>
     public int CityType => Word(0x58);
 
-    /// <summary>The other city-type word (0..3) <c>loc_query</c> 40/41 swaps with <see cref="CityType"/>.</summary>
+    /// <summary>The other city-type word (0..3) <c>place-query</c> 40/41 swaps with <see cref="CityType"/>.</summary>
     public int OtherCityType => Word(0x5A);
 
     /// <summary>The building bits (<see cref="CityContents"/>).</summary>
     public int Contents => Word(0x5E);
 
     /// <summary>A shop's quality (0 = no shop).</summary>
-    // orig: loc_query R029+0x1A8E (0E76:1A8E) draft
-    // C: city_rec[0x62..0x6A] are signed chars.
+    // orig: place-query R029+0x1A8E (0E76:1A8E) draft
+    // C: city-record[0x62..0x6A] are signed chars.
     public int Shop(CityShop shop) => (sbyte)_bytes[(int)shop];
 
     public void SetShop(CityShop shop, int quality) => _bytes[(int)shop] = (byte)quality;
 
-    /// <summary>The city's festival day of the year (<c>loc_query</c> 35 tests "within 14 days").</summary>
+    /// <summary>The city's festival day of the year (<c>place-query</c> 35 tests "within 14 days").</summary>
     public int FestivalDay => Word(0x6C);
 
     /// <summary>A raw byte of the record, for scripts that read the record directly.</summary>
@@ -76,12 +76,12 @@ public enum CityShop
     Swordsmith = 0x64,
     Armorer = 0x65,
 
-    /// <summary>A shop of unknown trade (<c>loc_query</c> 11; <c>loc_set</c> 6 writes it).</summary>
+    /// <summary>A shop of unknown trade (<c>place-query</c> 11; <c>place-assign</c> 6 writes it).</summary>
     UnknownShop = 0x66,
     Bowyer = 0x67,
     Tinker = 0x68,
 
-    /// <summary>A second shop of unknown trade (<c>loc_query</c> 10).</summary>
+    /// <summary>A second shop of unknown trade (<c>place-query</c> 10).</summary>
     UnknownShop2 = 0x69,
     Clothier = 0x6A,
 }

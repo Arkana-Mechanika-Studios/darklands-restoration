@@ -37,7 +37,7 @@
 ],
 "cases": [
 {
-"function": "cards_shutdown",
+"function": "R043+0x054E",
 "inputs": {
 "table": [
 null,
@@ -652,7 +652,7 @@ null
 "freed": 4
 },
 {
-"function": "cards_shutdown",
+"function": "R043+0x054E",
 "inputs": {
 "table": [
 "bf94c19681d29e523bd9c8f67c5e2fb94580fef33f36cb1ea010423689cb5678e05f0e8ac157e94a3cb04d4472bd6eb7",
@@ -1568,7 +1568,7 @@ null
 "freed": 304
 },
 {
-"function": "cards_shutdown",
+"function": "R043+0x054E",
 "inputs": {
 "table": [
 null,
@@ -2190,7 +2190,7 @@ null
 "freed": 10
 },
 {
-"function": "cards_shutdown",
+"function": "R043+0x054E",
 "inputs": {
 "table": [
 null,
@@ -2840,7 +2840,7 @@ null
 "freed": 38
 },
 {
-"function": "cards_shutdown",
+"function": "R043+0x054E",
 "inputs": {
 "table": [
 null,
@@ -3526,7 +3526,7 @@ null
 "freed": 74
 },
 {
-"function": "cards_shutdown",
+"function": "R043+0x054E",
 "inputs": {
 "table": [
 "8cdb5655fa6e5c0299e6279f1e96310e84e20bf6e03582a770a157b507f17f28a17fe07092655492fe453ebd2e8f6116",
@@ -4292,7 +4292,7 @@ null
 "freed": 154
 },
 {
-"function": "cards_shutdown",
+"function": "R043+0x054E",
 "inputs": {
 "table": [
 null,
@@ -5158,7 +5158,7 @@ null
 "freed": 254
 },
 {
-"function": "cards_shutdown",
+"function": "R043+0x054E",
 "inputs": {
 "table": [
 "3bd6150fdb39ce4426cd7c5b9ea9125db413692fb1a2af4f1e121b7f8db4c8c89c8b663d6dfda837b1ef43b0285ef674",
@@ -6068,7 +6068,7 @@ null
 "freed": 298
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 null,
@@ -6681,7 +6681,7 @@ null
 "freed": 0
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 null,
@@ -7296,7 +7296,7 @@ null
 "freed": 0
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 null,
@@ -7915,7 +7915,7 @@ null
 "freed": 0
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 null,
@@ -8569,7 +8569,7 @@ null
 "freed": 0
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 null,
@@ -9223,7 +9223,7 @@ null
 "freed": 0
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 "bc6d0d231ae9432892270fd8f8218c44a26f7007e1aa9987520a433cc1fe957fcb479a89127a557559df765b1761b7b7",
@@ -9957,7 +9957,7 @@ null
 "freed": 0
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 null,
@@ -10870,7 +10870,7 @@ null
 "freed": 0
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 "835c07900445c96c34186da409c78f9fd3e86d332acab3e6e653f42949b980e7397f2f72c7720ecd6f4c54338dee5554",
@@ -11784,7 +11784,7 @@ null,
 "freed": 0
 },
 {
-"function": "world_load",
+"function": "R043+0x0100",
 "inputs": {
 "table": [
 "026a59d0e7487a4b487423c7866c212cf7914278224d49acf8d1438a47473ab7fe8ee48fcf55f29c515ca48397f49929",

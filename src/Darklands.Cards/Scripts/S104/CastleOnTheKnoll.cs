@@ -23,7 +23,7 @@ public sealed class CastleOnTheKnoll : Card
     {
         Show(c, CastlePicture);
         c.Next = Number;
-        // C: the block is chosen anew each round (party_seed + (char)cur_loc & 1); it cannot change.
+        // C: the block is chosen anew each round (party-random-seed + (char)location-now & 1); it cannot change.
         var menu = Menu(c, LordIsCruel(c) ? 0 : 10);
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 9);
         if (c.EventAtHere(0x5A))
@@ -46,7 +46,7 @@ public sealed class CastleOnTheKnoll : Card
             new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R104+0x19F2 (1982:0552) matched
             new MenuLine(_ => { c.PassHours(c.HoursUntil(18) + 6); c.Next = 244; }, Assured),
-            // DORMANT: lines 4..8 are never offered (opt_flag_4..8 = 0); each only lets no time pass.
+            // DORMANT: lines 4..8 are never offered (card-option-flag-4..8 = 0); each only lets no time pass.
             // orig: R104+0x1A48 (line 4)
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R104+0x1A8C (line 5)
@@ -57,14 +57,14 @@ public sealed class CastleOnTheKnoll : Card
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R104+0x1B58 (line 8)
             new MenuLine(_ => c.PassHours(0), Assured),
-            // orig: R104+0x1B9C (1982:06FC) matched (leaves without clearing cur_loc)
+            // orig: R104+0x1B9C (1982:06FC) matched (leaves without clearing location-now)
             new MenuLine(_ => { c.PassHours(0); c.Next = CardContext.MapCard; }, Assured));
     }
 
     private static OptionHint Assured() => OptionHint.Say(SuccessAssured);
 
     /// <summary>Each castle's lord is either just or cruel, by the party's seed and the place.</summary>
-    // C: (char)cur_loc keeps bit 0, so the parity is that of party_seed + cur_loc.
+    // C: (char)location-now keeps bit 0, so the parity is that of party-random-seed + location-now.
     private static bool LordIsCruel(CardContext c) => ((c.State.Party.Seed + (sbyte)c.Here) & 1) != 0;
 
     /// <summary>The leader's speech, charm and fame; a cruel lord's guards are harder to win over.</summary>

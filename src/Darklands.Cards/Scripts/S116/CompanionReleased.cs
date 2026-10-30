@@ -14,7 +14,7 @@ public sealed class CompanionReleased : Card
     {
         // The name is copied from a data block (DS:66A6, "$Dunge04"). The companion joins before the card is drawn.
         var note = c.Events.Find(0x4D, -1, c.Here, -1, -1, -1);
-        // C: var_chosen1 = party_add(*events[v]): the event's first word (its type) is the character.
+        // C: text-slot-chosen-one = party-join(*events[v]): the event's first word (its type) is the character.
         // DIVERGENCE: without such an event the original reads and frees events[-1]; here nobody joins.
         c.Variables.Chosen[0] = c.Events[note] is { } e ? c.CharacterJoins(e.Type) : -1;
         if (note != -1)
@@ -23,7 +23,7 @@ public sealed class CompanionReleased : Card
         }
         Show(c, 310);
         c.Screen.Text(0);
-        // The original returns the card without setting next_card.
+        // The original returns the card without setting following-card.
         return c.IsDaylight ? 0x12 : 0x19;
     }
 }

@@ -7,23 +7,23 @@ public static class Practice
 {
     /// <summary>
     /// A gain of <paramref name="low"/> + rnd(high − low) with chance |100 − value| %, else
-    /// <paramref name="low"/> (<c>improve_roll</c>; the original computes a 0..99 limit of the
+    /// <paramref name="low"/> (<c>improvement-roll</c>; the original computes a 0..99 limit of the
     /// value and ignores it). The chance roll comes first.
     /// </summary>
-    // orig: improve_roll R029+0x18A8 (0E76:18A8) matched; tests: Oracle:rules.json improve_roll; PracticeAndItemsTests
-    // C: clamp99(v) is called and its result dropped; abs(100 - v) >= rand_mod(100), then rand_mod(hi - lo) (n < 2 counts as 2).
+    // orig: improvement-roll R029+0x18A8 (0E76:18A8) matched; tests: Oracle:rules.json R029+0x18A8; PracticeAndItemsTests
+    // C: limit-to-0-99(v) is called and its result dropped; abs(100 - v) >= roll-below(100), then roll-below(hi - lo) (n < 2 counts as 2).
     public static int ImproveRoll(GameState s, int value, int low, int high) =>
         Math.Abs(100 - value) >= s.Random.Below(100) ? s.Random.Below(high - low) + low : low;
 
     /// <summary>
-    /// Practising a skill (<c>practice_skill</c>; mode 1 = a success, otherwise a failure).
+    /// Practising a skill (<c>exercise-skill</c>; mode 1 = a success, otherwise a failure).
     /// One member: chance <paramref name="percent"/> × 3.3 % on success, × 1.1 % otherwise
     /// (the roll is made whether or not the member is present). −2: every able member rolls
     /// separately with × 1.5 % or × 0.5 %. The gain is <see cref="ImproveRoll"/>(skill,
     /// level + 1, 2 × (level + 2)), at least 1.
     /// </summary>
-    // orig: practice_skill_impl R039+0x0132 (1462:0132) matched; tests: Oracle:rules.json practice_skill; PracticeAndItemsTests
-    // C: -2 loops i < party_size and draws only for status-1 members (&& short-circuit); one member always draws first.
+    // orig: exercise-skill-inner R039+0x0132 (1462:0132) matched; tests: Oracle:rules.json thunk 09C0:1F63; PracticeAndItemsTests
+    // C: -2 loops i < party-headcount and draws only for status-1 members (&& short-circuit); one member always draws first.
     public static void PracticeSkill(GameState s, int who, int skill, int mode, int percent, int level)
     {
         who = s.Party.Resolve(who);
@@ -50,11 +50,11 @@ public static class Practice
         Math.Clamp(ImproveRoll(s, MemberRules.Skill(s, member, skill), level + 1, (level + 2) * 2), 1, 99);
 
     /// <summary>
-    /// A reward of size 0..5 (<c>give_reward</c>): 0, 3, 10, 25, 64 or 200 fame, ×2/3 at
+    /// A reward of size 0..5 (<c>award-prize</c>): 0, 3, 10, 25, 64 or 200 fame, ×2/3 at
     /// Basic and ×3/2 at Expert, added to the party's fame. Returns the new fame.
     /// </summary>
-    // orig: give_reward_impl R039+0x1E06 (1462:1E06) matched; tests: MemberRulesTests
-    // C: `party_set(4, v = party_get(4) + v); return v;` returns the new fame (16-bit), not the reward.
+    // orig: award-prize-inner R039+0x1E06 (1462:1E06) matched; tests: MemberRulesTests
+    // C: `party-write(4, v = party-read(4) + v); return v;` returns the new fame (16-bit), not the reward.
     public static int GiveReward(GameState s, int size)
     {
         int[] sizes = [0, 3, 10, 25, 64];

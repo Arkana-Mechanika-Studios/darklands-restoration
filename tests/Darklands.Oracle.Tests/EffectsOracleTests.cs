@@ -11,8 +11,8 @@ using Darklands.Persistence;
 namespace Darklands.Oracle.Tests;
 
 /// <summary>
-/// The battle's effects (R019 effect_spell and everything it calls, the area test 0E76:469E,
-/// cloud_blocks_line 1EC9:0142 and the Throw list 1EF8:0C80) against the original program
+/// The battle's effects (R019 effect-cast and everything it calls, the area test 0E76:469E,
+/// cloud-on-line-test 1EC9:0142 and the Throw list 1EF8:0C80) against the original program
 /// (tools/oracle/build_effects_corpus.py → Corpus/effects.json). The weapon tables come from the
 /// player's EXE (DARKLANDS_DIR, or the "game" key of local/paths.json); without it the test passes vacuously.
 /// </summary>
@@ -42,9 +42,9 @@ public sealed class EffectsOracleTests
             return;
         }
         var n = 0;
-        foreach (var c in Data.Value.Cases("effect_spell"))
+        foreach (var c in Data.Value.Cases("R019+0x0000"))
         {
-            var label = $"effect_spell case {n++}";
+            var label = $"effect-cast case {n++}";
             var (battle, field, codes, sounds) = Scene(c.Inputs);
             var a = Args(c.Inputs);
             field.Lands(a[0], a[1], a[2], a[3], a[4], a[5], a[6]);
@@ -113,19 +113,19 @@ public sealed class EffectsOracleTests
             return;
         }
         var n = 0;
-        foreach (var c in Data.Value.Cases("cloud_blocks_line"))
+        foreach (var c in Data.Value.Cases("R014+0x10672"))
         {
             var (_, field, _, _) = Scene(c.Inputs);
             var a = Args(c.Inputs);
             var w = c.Inputs.GetProperty("residue").EnumerateArray().Select(v => v.GetInt32()).ToArray();
             var mine = field.LineCrossesCloud(a[0], a[1], (w[0], w[1], w[2], w[3]));
-            Assert.True((c.Ax == 1) == mine, $"cloud_blocks_line case {n}: {c.Ax} vs {mine}");
+            Assert.True((c.Ax == 1) == mine, $"cloud-on-line-test case {n}: {c.Ax} vs {mine}");
             n++;
         }
         Assert.True(n > 0);
     }
 
-    /// <summary>to_hit_roll's missile chance with clouds about: the cloud test starts from what its rand_1_n(100) left on the stack.</summary>
+    /// <summary>hit-roll's missile chance with clouds about: the cloud test starts from what its roll-one-to-n(100) left on the stack.</summary>
     [Fact]
     public void ToHitThroughCloudsIsTheOriginals()
     {
@@ -219,7 +219,7 @@ public sealed class EffectsOracleTests
             {
                 Assert.True(c.FinalByte(Mods + 0x12 * k + b, mods[k][b]) == bytes[b], $"{label}: modifiers {k} +0x{b:X2}");
             }
-            Assert.True(c.FinalByte(ActionStates + k, 7) == (byte)battle[k].State, $"{label}: cbt_action {k}");
+            Assert.True(c.FinalByte(ActionStates + k, 7) == (byte)battle[k].State, $"{label}: fighter-action {k}");
             Assert.True((ushort)c.FinalInt16(FlashUntil + 2 * k, 0) == battle[k].FlashUntil, $"{label}: DS:DA89 {k}");
             Assert.True(c.FinalByte(AttackRates + k, 0x40) == battle[k].AttackRate, $"{label}: rate {k}");
             Assert.True(c.FinalByte(Queued + 2 * k, 0) == (byte)battle[k].QueuedEndurance, $"{label}: queued {k}");
@@ -233,7 +233,7 @@ public sealed class EffectsOracleTests
             var mine = codes[s];
             for (var b = 0; b < 2; b++)
             {
-                Assert.True(c.FinalByte(Scratch + 4 * s + b, (byte)seed[b]) == (byte)mine[b], $"{label}: anim_file[{s}]");
+                Assert.True(c.FinalByte(Scratch + 4 * s + b, (byte)seed[b]) == (byte)mine[b], $"{label}: animation-file-name[{s}]");
             }
         }
     }

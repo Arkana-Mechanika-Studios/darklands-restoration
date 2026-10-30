@@ -29,7 +29,7 @@ public sealed class BrewingBench
     private readonly GameState _s;
     private readonly int[] _stock;
 
-    // orig: R033+0x0658: batch rows from formulas_known (3 bits per potion, in formula order), then R033+0x14E6, then the ingredient count
+    // orig: R033+0x0658: batch rows from known-recipes (3 bits per potion, in formula order), then R033+0x14E6, then the ingredient count
     /// <summary>
     /// Opens the bench: lists the member's formulas, takes back the member's unfinished brews
     /// (their batches are shown again and their ingredients return to the alchemist) and counts
@@ -91,8 +91,8 @@ public sealed class BrewingBench
     }
 
     // orig: R033+0x1390 (1462:1390) draft (register-level diffs); tests: CampAndSheetRulesTests
-    // C: the original calls event_renew with nine arguments; the tenth (the tag it matches on and stores) is the caller's saved SI (R033+0x060E): the key code that confirmed (0x1F73 for s, 0x1F53 for S).
-    // C: event_renew extends a matching brew (same formula, place, owner, key) by 0 hours and keeps its old chance and batches.
+    // C: the original calls event-refresh with nine arguments; the tenth (the tag it matches on and stores) is the caller's saved SI (R033+0x060E): the key code that confirmed (0x1F73 for s, 0x1F53 for S).
+    // C: event-refresh extends a matching brew (same formula, place, owner, key) by 0 hours and keeps its old chance and batches.
     /// <summary>
     /// Brews the batches of a row: records the brew (ending at once, so the next passage of
     /// time completes it) and takes the ingredients from the party, the alchemist first.
@@ -102,9 +102,9 @@ public sealed class BrewingBench
         var log = _s.Events;
         log.Renew(Alchemist, _s.CurrentLocation, b.Count, EventKinds.Brew, b.Formula.Index, Chance(b),
             (int)ExpiryHandler.AlchemyResult, 0, (int)EventFlags.CallExpiryHandler, key);
-        // C: event_renew's return is not used: the place and risk go to events[last_event]. With the log full (renew returns -1
-        // C: without setting it) that is the last brew event its scan visited; last_event -1 or 300 (no brew event at all, or
-        // C: the scan ran past slot 299) points at events[-1]/[300], outside the table (the tail of var_named[4] and the word after
+        // C: event-refresh's return is not used: the place and risk go to events[latest-event]. With the log full (renew returns -1
+        // C: without setting it) that is the last brew event its scan visited; latest-event -1 or 300 (no brew event at all, or
+        // C: the scan ran past slot 299) points at events[-1]/[300], outside the table (the tail of text-slot-named[4] and the word after
         // C: the table: host memory, nothing written here).
         if (log[log.Last] is { } e)
         {
@@ -223,7 +223,7 @@ public static class Brewing
     /// How many of each ingredient the formula page counts: every party slot below the party size,
     /// even one whose member has left (status 0, the pack still in the slot), and the codes 0x48..0x5F.
     /// </summary>
-    // orig: alc_load R033+0x17F6 (15D1:0106) matched: for (i = 0; i < party_size; i++) if (nitems > 0) for (j < nitems) if (0x48 <= id <= 0x5f) DS:E7A6[id - 0x48] += qty
+    // orig: alchemy-data-load R033+0x17F6 (15D1:0106) matched: for (i = 0; i < party-headcount; i++) if (nitems > 0) for (j < nitems) if (0x48 <= id <= 0x5f) DS:E7A6[id - 0x48] += qty
     // C: DS:E7A6 has 0x17 entries (0x48..0x5E): the count of 0x5F (the first potion) is added to the word after it, DS:E7D4 = DS:E7D4, the
     // C: brewing bench's row, which the bench sets to 0 when it opens (R033+0x0000) before reading it; the formula page never shows it.
     public static int[] IngredientsOnTheFormulaPage(GameState s)
@@ -298,7 +298,7 @@ public static class Brewing
         }
     }
 
-    // orig: event_remove(0x1D, -1, -1, -1, -1) in R036+0x082C (1462:082C) draft (bytes match)
+    // orig: event-delete(0x1D, -1, -1, -1, -1) in R036+0x082C (1462:082C) draft (bytes match)
     /// <summary>Leaving the camp: every brew not yet done is lost (its ingredients were used).</summary>
     public static void AbandonAll(GameState s) => s.Events.Remove(EventKinds.Brew, -1, -1, -1, -1);
 }

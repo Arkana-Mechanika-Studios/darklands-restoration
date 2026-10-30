@@ -53,7 +53,7 @@ internal sealed partial class CastleGenerator
         }
     }
 
-    // orig: the stores of ints into floor_img (F.comp, F.list, door and rectangle records)
+    // orig: the stores of ints into floor-picture (F.comp, F.list, door and rectangle records)
     private void PutWord(int at, int value)
     {
         Img[at] = (byte)value;

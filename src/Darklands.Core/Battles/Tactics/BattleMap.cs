@@ -7,7 +7,7 @@ namespace Darklands.Core.Battles.Tactics;
 /// <param name="BoxY">DS:D802: the box centre's y offset, per orientation.</param>
 public sealed record FurnitureShape(int Width, int Height, int[] BoxX, int[] BoxY);
 
-/// <summary>What blocked a position (<c>cbt_collisions</c>'s result).</summary>
+/// <summary>What blocked a position (<c>fighter-collision-pass</c>'s result).</summary>
 public readonly record struct Blocking(int Mask)
 {
     public const int FurnitureBit = 0x2000;
@@ -26,7 +26,7 @@ public readonly record struct Blocking(int Mask)
 
 /// <summary>
 /// The level being fought on, for movement and sight: which positions are free
-/// (<c>cbt_collisions</c>) and whether a line is blocked (<c>line_blocked</c>).
+/// (<c>fighter-collision-pass</c>) and whether a line is blocked (<c>sight-line-blocked</c>).
 /// </summary>
 public sealed class BattleMap
 {
@@ -41,8 +41,8 @@ public sealed class BattleMap
     /// clip tests that the original makes one after another from the same frame, with nothing else called between, has its own; at the
     /// start of a run they hold another function's leftovers, taken here as a clean stack's zeros.
     /// </summary>
-    // orig: R014+0xF284's [bp-4] / [bp-2]. Probed in the gate battle: SS:FC44 under enemy_sees (R018+0x06AB), SS:FC6A under enemy_turn's
-    // missile test (R018+0x0BE7), SS:FCC6 under melee_exchanges' (R014+0x2A4A); each run began with leftovers outside the box tested
+    // orig: R014+0xF284's [bp-4] / [bp-2]. Probed in the gate battle: SS:FC44 under enemy-line-of-sight (R018+0x06AB), SS:FC6A under enemy-move-phase's
+    // missile test (R018+0x0BE7), SS:FCC6 under close-combat-rounds' (R014+0x2A4A); each run began with leftovers outside the box tested
     // (12358,17201; 4504,-874; 423,9 ...) and within a run held the previous test's point
     public sealed class ClipResidue
     {
@@ -90,7 +90,7 @@ public sealed class BattleMap
     /// free, void centre cell, or the mask of what is in the way (walls, furniture, combatants).
     /// </summary>
     /// <param name="who">The combatant whose size is used (record +0x1C) and who is ignored among the others.</param>
-    // orig: cbt_collisions R014+0x5ECA (1462:000A) draft (spec D §4.2: the single-wall
+    // orig: fighter-collision-pass R014+0x5ECA (1462:000A) draft (spec D §4.2: the single-wall
     // clauses, furniture and combatants checked against the asm); tests: Oracle:tactics.json (500 cases)
     public Blocking Collides(int who, int x, int y)
     {
@@ -228,7 +228,7 @@ public sealed class BattleMap
     /// <param name="a">−1 walls and furniture only; −2 people block fully and the result is 50 + who; else the shooter.</param>
     /// <param name="b">The target (never blocks).</param>
     /// <param name="mode">0x100 (a throw) uses the shooter's thrown-weapons skill (+0x6F), else the readied skill (+0x59).</param>
-    // orig: line_blocked R014+0xEF3C (1D69:000C) draft (asm-verified per spec D §4.3); tests: Oracle:tactics.json (400 cases)
+    // orig: sight-line-blocked R014+0xEF3C (1D69:000C) draft (asm-verified per spec D §4.3); tests: Oracle:tactics.json (400 cases)
     /// <param name="residue">The clip point left by the caller's earlier tests of its run (<see cref="ClipResidue"/>); null: a run of its own.</param>
     public int LineBlocked(MapPoint from, MapPoint to, int a = -1, int b = -1, int mode = 0, ClipResidue? residue = null)
     {
@@ -315,7 +315,7 @@ public sealed class BattleMap
             return true;
         }
         // C: the intersection point is an uninitialised local when neither bottom nor top applies (known original bug DL 0036):
-        // in the game it holds whatever the stack held (line_blocked's locals, or interrupt residue).
+        // in the game it holds whatever the stack held (sight-line-blocked's locals, or interrupt residue).
         // DIVERGENCE: here it keeps the point of the previous clip test of the same run (ClipResidue), a run starting at (0, 0) as on a clean
         // stack, where the original reads another function's leftovers (undefined memory; they agree when they lie outside the box, as in
         // every run probed).

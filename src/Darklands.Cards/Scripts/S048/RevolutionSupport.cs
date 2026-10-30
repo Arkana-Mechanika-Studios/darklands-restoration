@@ -18,10 +18,10 @@ internal static class RevolutionSupport
     /// x position (zero = the first side) and the cards that lead here set it, so it is read
     /// from the map position as is.
     /// </summary>
-    // C: party_x (DS:E3D0) is the map x position, reused by the political cards as the party's side.
+    // C: party-map-column (DS:E3D0) is the map x position, reused by the political cards as the party's side.
     public static bool AtFirstSidesHouse(CardContext c) => c.State.MapPosition.X == 0;
 
-    /// <summary>A timed event of the revolt for the party's current city (event_new(-2, cur_loc, 0x5a, 0x1c, type, 0, 0, hours, 0, 2)).</summary>
+    /// <summary>A timed event of the revolt for the party's current city (event-create(-2, location-now, 0x5a, 0x1c, type, 0, 0, hours, 0, 2)).</summary>
     public static void NewRevoltEvent(CardContext c, int type, int hours) =>
         c.Events.Create(-2, c.Here, 0x5A, RevoltEventKind, type, 0, 0, hours, 0, Politics);
 

@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R124+0x0E30, R124+0x1272, R124+0x1314
 // DORMANT (generated): option slots 10..19 keep the default handler R124+0x1314 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class WolvesAtTheWatchfireChain : Card
 {
@@ -124,7 +124,7 @@ public sealed class WolvesAtTheWatchfireChain : Card
 
     /// <summary>The wolves attack. Won: into the crowd (alarm +3, card 322); lost: card 334; else stay.</summary>
     // orig: R124+0x0E30 matched
-    // C: rand_mod(2) is run_battle's only random argument; a result outside 0..4 leaves next_card unchanged.
+    // C: roll-below(2) is battle-driver's only random argument; a result outside 0..4 leaves following-card unchanged.
     private static void Fight(CardContext c)
     {
         var wolves = c.Random(2) + 4;
