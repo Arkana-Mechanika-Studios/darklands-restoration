@@ -34,10 +34,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-ecbac4** `uncertain` - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:173` `CityChurchByDay.AskForTheNextMass`  
   original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
   why: in the small and late hours (band 0 and 1) the original names the hour of an uninitialised local (whatever its stack slot held); the C# names hour 0.
-- **U-f8b007** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:33` `HandbillThugs_Polit01.StalePopupChance`  
+- **U-4c93ee** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:33` `HandbillThugs_Polit01.StalePopupChance`  
   original: `R057+0x27AC` (1A02:0B0C, matched)  
   why: derived from the stack layout (card-choice-menu's saved BP lies in the handler's unset result word).
-- **U-5c568e** `uncertain` - `src/Darklands.Cards/Scripts/S074/CityGateInWartime.cs:141` `CityGateInWartime.Befriend`  
+- **U-c18edd** `uncertain` - `src/Darklands.Cards/Scripts/S074/CityGateInWartime.cs:141` `CityGateInWartime.Befriend`  
   original: `R074+0x0376` (1838:0376, matched)  
   why: it is taken as 0 (failure), which then overrides following-card = 1 and keeps the party at the gate; a non-zero leftover would instead let the party in (text 5).
 - **U-4ffac2** `uncertain` - `src/Darklands.Cards/Scripts/S075/KidnappersCampAtNight.cs:36` `KidnappersCampAtNight.Run`  
@@ -64,7 +64,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-2a08c3** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Stairs.cs:11` `CastleGenerator.ContinueStairs`  
   original: `R006+0x34B8` (18FA:0008, draft)  
   why: slotn is uninitialised in the original when the placement failed before the strip search; 0 is used here and CutFromStrip then cuts strip 0 (the original cuts whatever the stack held).
-- **U-315ad7** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleWork.cs:12` `CastleWork`  
+- **U-8f4107** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleWork.cs:12` `CastleWork`  
   original: `R005+0x005C` (1432:005C, draft)  
   why: the original allocates the segment once and layout-reset leaves a few fields alone (the stairs' link and side words, the area beyond 0xBA1D); they start at 0 here and keep their values between calls.
 - **U-5bdb14** `uncertain` - `src/Darklands.Core/Battles/Generation/MineBattlefield.cs:65` `MineBuilder.StaleStackWord`  
@@ -90,7 +90,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:80` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
-- **U-839c0b** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
+- **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
   original: `R029+0x2204` (0E76:2204, draft), `R029+0x222A` (0E76:222A, draft)  
   why: which keys the original's menu-bar-loop takes inside the sheet is not traced; only the Alt keys are passed.
 - **U-797153** `uncertain` - `src/Darklands.Presentation/MarchingOrderScreen.cs:20` `MarchingOrderScreen`  
