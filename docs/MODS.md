@@ -133,6 +133,7 @@ the game starts without it:
 * a value of the wrong type (`"number": "400"` instead of `400`, `"hours": "1"`), JSON that cannot be read;
 * a page that leads nowhere, a missing `next`, a character the game's font lacks;
 * a card the rules above refuse (a new card without `savesAs`, a game number without `"overrides": true` ...);
+* two cards of the mod with the same `name` (compared without regard to case);
 * a card `name` that is one of the game's message files (also the game's spare texts that no card uses) or another mod's
   card name;
 * a link to a card number that no card of the game and no played mod defines (a mod that leads to another mod's card is

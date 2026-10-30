@@ -335,6 +335,16 @@ public sealed class ModCardTests
     }
 
     [Fact]
+    public void TwoCardsWithTheSameNameInOneModRefuseTheMod()
+    {
+        var mod = ModWith("""{ "cards": [ { "number": 366, "name": "$Dup00", "savesAs": 2, "pages": [ { "text": "x", "next": 2 } ] }, { "number": 367, "name": "$dup00", "savesAs": 2, "pages": [ { "text": "y", "next": 2 } ] } ] }""");
+        var set = LoadMods(mod);
+        Assert.Empty(set.Played);
+        Assert.Contains(set.Log, l => l.Contains("card 367 has the name \"$dup00\" of card 366"));
+        Assert.Contains(set.Log, l => l.Contains("is not played"));
+    }
+
+    [Fact]
     public void TheGamesMessageFilesThatAreNoCardNamesAreRefusedToo()
     {
         if (CardHarness.Assets is not { } assets)
