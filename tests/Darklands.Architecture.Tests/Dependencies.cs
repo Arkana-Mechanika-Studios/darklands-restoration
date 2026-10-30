@@ -35,6 +35,9 @@ internal static class Dependencies
 
     private static readonly Dictionary<string, List<Use>> Cache = [];
 
+    /// <summary>The tokens a scan could not resolve (a use the rules would not see); the tests require none.</summary>
+    public static List<string> Unresolved { get; } = [];
+
     /// <summary>Every use the types of <paramref name="assembly"/> make of types outside the base library's System.Object.</summary>
     public static IReadOnlyList<Use> Uses(string assembly)
     {
@@ -167,6 +170,10 @@ internal static class Dependencies
                 catch (Exception e) when (e is ArgumentException or BadImageFormatException or TypeLoadException or MissingMemberException)
                 {
                     member = null;
+                    lock (Unresolved)
+                    {
+                        Unresolved.Add($"{owner.FullName}.{method.Name}: token 0x{token:X8} ({e.GetType().Name})");
+                    }
                 }
                 switch (member)
                 {

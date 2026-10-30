@@ -99,6 +99,12 @@ public sealed class CommandLayerTests
         // no list to choose from: the line is dropped
         Assert.Null(ui.Poll());
         Assert.Equal(0, ui.Commands.Count);
+        // a point off the screen is taken to its edge, as the host keeps a real pointer: no click where no mouse can reach
+        ui.Commands.Enqueue([new ClickAt(-5, 500), new PointAt(400, -3)]);
+        Assert.True(ui.Poll() is { IsLeftClick: true, X: 0, Y: 199 });
+        Assert.Equal((0, 199), (host.Mouse.X, host.Mouse.Y));
+        Assert.Null(ui.Poll());
+        Assert.Equal((319, 0), (host.Mouse.X, host.Mouse.Y));
         ui.CommandTargets = n => n == 2 ? (150, 90) : null;
         ui.Commands.Enqueue(new ChooseLine(2));
         Assert.Null(ui.Poll());

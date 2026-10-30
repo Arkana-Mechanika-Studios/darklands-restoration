@@ -44,6 +44,14 @@ its actions without named intents. Loops that read the keyboard or the button th
 - The keyboard convenience of the card menus (`GameUi.KeyboardCardMenus`, off unless a host turns it on): Up / Down from no
   highlight and the digits 1..9 choose without the pointer, and a digit on an item or saint line chooses the line without an entry
   of its box. It predates the layer and is not player-equivalent; when it is rebuilt on `ChooseLine` it will be.
+- A commanded click is a press and its release in one pass: the host's buttons never show it. Loops that test the held button
+  themselves (`WaitForButtonRelease` returns at once, the battle screen, the button held on the map) do not see it; such a click
+  is lost, no impossible action is made. During a commanded pass the host's buttons are not sampled: a hand pressing at the same
+  moment is seen one pass later.
+- A `Poll` loop that keeps only part of what it reads (a timed wait or a film that ends on a key, `WaitForKey`) uses up a click
+  or pointer move queued for the next screen, as it loses a player's click there. A script waits for the screen it means
+  (e.g. `CommandTargets` set) before it queues.
+- `ClickAt` and `PointAt` points off the screen are taken to its nearest edge (0..319, 0..199), as the hosts keep a real pointer.
 - A host that cannot move its pointer (`IInput.MovePointer` ignored) keeps its own pointer after a commanded click; the SDL and
   headless hosts move it.
 

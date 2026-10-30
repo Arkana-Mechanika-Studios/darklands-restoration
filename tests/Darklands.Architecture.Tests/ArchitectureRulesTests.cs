@@ -44,6 +44,17 @@ public sealed class ArchitectureRulesTests
         [Sdl] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, Launcher, Presentation],
     };
 
+    /// <summary>The scan sees every use: no member or type token of the product code is left unresolved.</summary>
+    [Fact]
+    public void EveryTokenOfTheProductCodeResolves()
+    {
+        foreach (var name in Dependencies.Products)
+        {
+            Assert.NotEmpty(Dependencies.Uses(name));
+        }
+        Assert.Empty(Dependencies.Unresolved);
+    }
+
     [Fact]
     public void EveryProductAssemblyHasARow()
     {

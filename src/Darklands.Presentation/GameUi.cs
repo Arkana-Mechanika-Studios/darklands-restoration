@@ -538,21 +538,27 @@ public sealed class GameUi
                 key = press.Key;
                 return null;
             case PointAt point:
-                _host.Input.MovePointer(point.X, point.Y);
+                _host.Input.MovePointer(OnScreenX(point.X), OnScreenY(point.Y));
                 return null;
             case ClickAt click:
-                _host.Input.MovePointer(click.X, click.Y);
-                return new PlayerAction(Keys.None, click.X, click.Y, MouseButtons.Left);
+                var (x, y) = (OnScreenX(click.X), OnScreenY(click.Y));
+                _host.Input.MovePointer(x, y);
+                return new PlayerAction(Keys.None, x, y, MouseButtons.Left);
             case ChooseLine line when CommandTargets?.Invoke(line.Line) is { } target:
                 // C: the pointer first, the click in the next pass: the screen follows the pointer in between (a card's box opens,
                 //   the pointer enters it), as for a player's hand
-                _host.Input.MovePointer(target.X, target.Y);
+                _host.Input.MovePointer(OnScreenX(target.X), OnScreenY(target.Y));
                 Commands.PutFirst(new ClickAt(target.X, target.Y));
                 return null;
             default:
                 return null;
         }
     }
+
+    /// <summary>A command's point kept on the screen, as the host keeps a real pointer (0..319, 0..199): no click where no mouse can reach.</summary>
+    private static int OnScreenX(int x) => Math.Clamp(x, 0, Screen.Width - 1);
+
+    private static int OnScreenY(int y) => Math.Clamp(y, 0, Screen.Height - 1);
 
     /// <summary>
     /// One pass of a loop that reads the keyboard and the left button itself (no menu bar, no hot keys): a waiting key or a left

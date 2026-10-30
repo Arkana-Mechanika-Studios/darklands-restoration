@@ -13,10 +13,10 @@ public abstract record PlayerCommand;
 /// <summary>A key press, as a game key code (<see cref="Keys"/>): the hot keys and the menu bar's F10 see it as they see a typed key.</summary>
 public sealed record PressKey(int Key) : PlayerCommand;
 
-/// <summary>The pointer moved to (x, y) and the left button pressed there.</summary>
+/// <summary>The pointer moved to (x, y) and the left button pressed there; a point off the screen is taken to its nearest edge, as a real pointer stops there.</summary>
 public sealed record ClickAt(int X, int Y) : PlayerCommand;
 
-/// <summary>The pointer moved to (x, y), no button.</summary>
+/// <summary>The pointer moved to (x, y), no button; kept on the screen as <see cref="ClickAt"/>.</summary>
 public sealed record PointAt(int X, int Y) : PlayerCommand;
 
 /// <summary>
