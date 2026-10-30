@@ -114,6 +114,28 @@ public sealed class MessageBox(GameUi ui)
         ui.Present();
     }
 
+    /// <summary>A few lines, one box each from row 0x32 down, until a key is pressed; then what they covered comes back.</summary>
+    // DIVERGENCE: no original: the restoration's own notice (a saved game whose mods are not loaded, DarklandsGame.LoadSavedGame),
+    //   drawn with the pause box's boxes and read the same way (any key, no hot keys).
+    public void Notice(IReadOnlyList<string> lines)
+    {
+        var saved = new List<SavedRegion>();
+        var row = 0x32;
+        foreach (var line in lines)
+        {
+            saved.Add(Draw(line, row));
+            row += ui.CardWindowText.LineHeight + 9;
+        }
+        while (ui.PollKeyOnly() == 0)
+        {
+        }
+        for (var i = saved.Count - 1; i >= 0; i--)
+        {
+            ui.Canvas.Restore(saved[i]);
+        }
+        ui.Present();
+    }
+
     private const int Centred = -1;
 
     /// <summary>Frames <paramref name="text"/> at text row <paramref name="y"/> (−1: mid-screen) and returns what it covered.</summary>

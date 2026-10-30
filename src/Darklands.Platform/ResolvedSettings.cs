@@ -42,6 +42,9 @@ public sealed class CommandLineOptions
 
     public bool NoConsole { get; set; }
 
+    /// <summary>The mods of --mod (each given once per --mod); empty: the settings file's.</summary>
+    public List<string> Mods { get; set; } = [];
+
     /// <summary>
     /// The settings-file keys this command line (or an environment variable) overrides, each with what overrides it
     /// ("--fullscreen", "DARKLANDS_DIR"): a settings screen shows them as fixed, since changing the file would not change them.
@@ -76,6 +79,7 @@ public sealed class CommandLineOptions
         By("startup.banner", NoBanner, "--no-banner");
         By("startup.intro", NoIntro, "--no-intro");
         By("startup.commandLine", GameCommandLine is not null, "--");
+        By("mods", Mods.Count > 0, "--mod");
         return fixedKeys;
     }
 }
@@ -113,6 +117,12 @@ public sealed class ResolvedSettings
     public string? AudioPack { get; private init; }
 
     public ConfigDrkSettings? ConfigDrk { get; private init; }
+
+    /// <summary>The mods to play with, as given (folders or names in a mods folder); empty: none, the game's own cards (Classic).</summary>
+    public IReadOnlyList<string> Mods { get; private init; } = [];
+
+    /// <summary>True when <see cref="Mods"/> came from the command line (relative folders are then the current folder's), else the settings file's.</summary>
+    public bool ModsFromCommandLine { get; private init; }
 
     public bool ShowBanner { get; private init; }
 
@@ -182,6 +192,8 @@ public sealed class ResolvedSettings
             Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),
             AudioPack = Pick(cli.AudioPack, "DARKLANDS_AUDIO_PACK", file.AudioPack),
             ConfigDrk = file.ConfigDrk,
+            Mods = cli.Mods.Count > 0 ? cli.Mods.ToList() : file.Mods?.Where(m => !string.IsNullOrWhiteSpace(m)).ToList() ?? [],
+            ModsFromCommandLine = cli.Mods.Count > 0,
             ShowBanner = !cli.NoBanner && (file.Banner ?? true),
             PlayIntro = !cli.NoIntro && (file.Intro ?? true),
             AlwaysLaunch = file.Launcher ?? false,

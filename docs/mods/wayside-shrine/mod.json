@@ -1,0 +1,48 @@
+// The example mod of docs/MODS.md: a small new encounter before a city's gate by day.
+// Play with it: DarklandsRP --mod wayside-shrine (or "mods": ["wayside-shrine"] in the settings file).
+{
+  "name": "The wayside shrine",
+  "version": "1.0",
+  "description": "Now and then an old pilgrim keeps a little shrine on the road before a city's gate.",
+  "cards": [
+    {
+      // Runs in place of the game's card 2 (the city gate by day). Back from the shrine (or from the gate itself) it goes
+      // straight to the game's own gate card; otherwise, one time in four, the party meets the pilgrim first.
+      "number": 2,
+      "overrides": true,
+      "name": "$ShrGt00",
+      "pages": [
+        { "id": "start", "ifPreviousCard": [2, 366], "next": "original", "otherwise": "roll" },
+        { "id": "roll", "chance": 25, "next": 366, "otherwise": "original" }
+      ]
+    },
+    {
+      // A new card. A game saved here names card 2 (the gate) in its .SAV, so the original game can load it.
+      "number": 366,
+      "name": "$Shrin00",
+      "savesAs": 2,
+      "picture": 4,
+      "pages": [
+        {
+          "id": "shrine",
+          "text": "A stone's throw from the gate of $PlaceName stands a weathered wooden shrine, its little roof green with moss. An old pilgrim sits beside it, a wooden bowl at his feet, and nods to you as you come near.\nWhat will you do?",
+          "options": [
+            { "text": "...drop a groschen into the pilgrim's bowl.", "if": { "groschen": 1 }, "do": { "groschen": -1 }, "next": "gift" },
+            { "text": "...kneel at the shrine and pray a while.", "do": { "hours": 1 }, "next": "prayer" },
+            { "text": "...nod back and walk on to the gate.", "next": 2 }
+          ]
+        },
+        {
+          "id": "gift",
+          "text": "The coin rings in the bowl. The old man smiles a gap-toothed smile. \"May the road be kind to you, friends, and the gatekeepers kinder still.\" You leave him humming a hymn to himself.",
+          "next": 2
+        },
+        {
+          "id": "prayer",
+          "text": "You kneel on the worn stones while carts creak past on the road. When you rise, an hour later, the pilgrim is asleep in the sun and the line at the gate has hardly moved.",
+          "next": 2
+        }
+      ]
+    }
+  ]
+}

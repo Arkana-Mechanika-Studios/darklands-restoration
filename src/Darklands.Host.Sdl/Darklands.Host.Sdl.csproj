@@ -56,6 +56,14 @@
           CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- the mod makers' guide (docs/MODS.md) and the example mod (mods/wayside-shrine), beside the program in the build and in every
+       release; a mod is played only when named (on the command line or in the settings file) -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\MODS.md" Link="docs\MODS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\mods\**\*" Link="mods\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <!-- the licence and the third-party notices beside the program in the build and in every release -->
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />

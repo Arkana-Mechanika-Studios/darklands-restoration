@@ -4,6 +4,7 @@ using Darklands.Core;
 using Darklands.Persistence;
 using Darklands.Platform;
 using Darklands.Simulation;
+using Darklands.Simulation.Mods;
 using Darklands.Simulation.Overland;
 
 namespace Darklands.Presentation;
@@ -16,7 +17,8 @@ public sealed class DarklandsGame
     private readonly GameUi _ui;
     private readonly GameFiles _files;
     private WorldData? _worldData;
-    private readonly CardDispatcher _cards = new();
+    private CardDispatcher _cards = new();
+    private ModSet _mods = ModSet.None();
     private readonly IHost _host;
 
     public DarklandsGame(IHost host, GameFiles files)
@@ -69,7 +71,37 @@ public sealed class DarklandsGame
                 ?? Path.Combine(gameFolder, "SAVES")
             : Path.Combine(gameFolder, "SAVES");
 
-    private SaveFolder Saves => new(SaveDirectory);
+    private SaveFolder Saves => new(SaveDirectory) { Mods = SaveMods };
+
+    /// <summary>
+    /// The mods this game runs with (docs/MODS.md); default none: the game's own cards only (Classic). Setting it registers
+    /// the mods' card texts and makes the dispatcher run the registry's cards.
+    /// </summary>
+    // DIVERGENCE: no original: mod cards (a registry beside the game's card table, CardRegistry) and their saves' companion files (ModdedSaves).
+    public ModSet Mods
+    {
+        get => _mods;
+        set
+        {
+            _mods = value;
+            foreach (var texts in value.Texts)
+            {
+                _ui.Assets.AddMessages(texts);
+            }
+            _cards = new CardDispatcher(value.Cards);
+        }
+    }
+
+    /// <summary>Where the game's own notes go (the mods' lines, a companion file it could not use); a host passes its console.</summary>
+    public Action<string>? Log { get; set; }
+
+    /// <summary>What the save folder needs of the mods: none (null) without a mod card, so Classic saves as before.</summary>
+    private SaveMods? SaveMods => _mods.Cards.HasModCards
+        ? new SaveMods { Active = _mods.Marks, SavedCardOf = n => _mods.Cards.ModCards.TryGetValue(n, out var r) ? r.SavesAs : null, HasCard = _mods.Cards.Contains }
+        : null;
+
+    /// <summary>The card numbers a saved game's header takes for the mods' new cards (the headless host's state writer), null without mods.</summary>
+    public Func<int, int?>? SavedCardOf => SaveMods?.SavedCardOf;
 
     private IReadOnlyList<string>? _loadScreenTexts;
 
@@ -235,6 +267,26 @@ public sealed class DarklandsGame
         Options.Music = loaded.Music;
         Options.SoundEffects = loaded.SoundEffects;
         box.Close(shown);
+        // DIVERGENCE: no original: a game saved with mods (its companion file, ModdedSaves) that are not loaded now goes on without
+        //   them, from the game's cards its .SAV names; the player is told which mods are missing.
+        if (loaded.Mods.Problem is { } problem)
+        {
+            Log?.Invoke($"{name}: {problem}");
+        }
+        if (loaded.Mods.MissingMods is { Count: > 0 } missing)
+        {
+            Log?.Invoke($"{name} was saved with mods not loaded now ({string.Join(", ", missing)}): the game goes on without them");
+            var lines = new List<string> { missing.Count == 1 ? "This game was saved with the mod" : "This game was saved with the mods" };
+            lines.AddRange(missing.Select(m => m.ToString()));
+            lines.Add("which is not loaded now. It goes on");
+            lines.Add("without it. Press a key.");
+            if (missing.Count > 1)
+            {
+                lines[^2] = "which are not loaded now. It goes on";
+                lines[^1] = "without them. Press a key.";
+            }
+            box.Notice(lines);
+        }
         return loaded;
     }
 

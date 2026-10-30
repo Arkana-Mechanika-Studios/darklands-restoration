@@ -38,6 +38,8 @@ using Darklands.Rendering;
 //   audiopack:<folder>           replacement music and battle effects (an audio pack, docs/PACKS.md; also from --settings
 //                                sound.audioPack or DARKLANDS_AUDIO_PACK): the game's calls reach the drivers unchanged; with sound:
 //                                the wav has the replacements mixed in
+//   mod:<folder or name>         plays with that mod (docs/MODS.md; one step per mod, in load order; the settings file's mods
+//                                are not read here): its cards are registered and its saves get a companion file
 //   wav:<file>                   saves what the drivers play; trace:<file> writes the ticks, tunes, MIDI bytes, sample
 //                                transfers and cels shown (tools/intro/opening_timer.py compares the opening with the original's)
 //
@@ -366,6 +368,27 @@ var game = new DarklandsGame(host, OpenGame())
     StartWithSave = loadStep?[5..],
 };
 game.Options.Apply(resolved);
+// the game's own notes (a saved game's mods missing, a companion file it could not use) on the error output
+game.Log = Console.Error.WriteLine;
+// mod:<folder or name> (one step per mod): the mods' cards (docs/MODS.md); without the step the game's own cards only
+var modSteps = steps.Where(s => s.StartsWith("mod:", StringComparison.Ordinal)).ToList();
+if (modSteps.Count > 0)
+{
+    steps.RemoveAll(modSteps.Contains);
+    var modFolders = new List<string>();
+    foreach (var step in modSteps)
+    {
+        if (Darklands.Simulation.Mods.ModSet.Find(step[4..], game.Ui.Assets.Files.Root, Environment.CurrentDirectory) is { } modFolder)
+        {
+            modFolders.Add(modFolder);
+        }
+        else
+        {
+            Console.Error.WriteLine($"mod {step[4..]}: no folder with a mod.json found (as given, or in a mods folder next to the program or the game)");
+        }
+    }
+    game.Mods = Darklands.Simulation.Mods.ModSet.Load(modFolders, Console.Error.WriteLine);
+}
 if (savesStep is not null)
 {
     game.SaveDirectory = savesStep[6..];
@@ -395,7 +418,7 @@ host.State = name =>
 {
     if (game.Playing is { } playing)
     {
-        var (sav, _) = Darklands.Persistence.OriginalSaves.Write(playing, "Darklands", game.Options.Music, game.Options.SoundEffects);
+        var (sav, _) = Darklands.Persistence.OriginalSaves.Write(playing, "Darklands", game.Options.Music, game.Options.SoundEffects, savedCardOf: game.SavedCardOf);
         File.WriteAllBytes(Path.Combine(output, name + ".sav"), sav);
         var random = playing.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?";
         // " in-battle": a battle runs (tools/oracle/lockstep.py compares no state taken inside a battle on both sides)

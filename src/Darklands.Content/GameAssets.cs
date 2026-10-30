@@ -68,6 +68,21 @@ public sealed class GameAssets(GameFiles files)
         return _saints is not null && saint >= 0 && saint < _saints.Descriptions.Count ? _saints.Descriptions[saint].Text : "";
     }
 
+    /// <summary>
+    /// Adds a mod card's texts: <see cref="Messages"/> gives them for its name from now on. A name of the game's own cards
+    /// is refused (ArgumentException): a mod's texts never replace the game's.
+    /// </summary>
+    public void AddMessages(MessageFile file)
+    {
+        _messageArchive ??= files.Exists("MSGFILES") ? new MsgFilesArchiveDecoder().Decode(files.Read("MSGFILES")) : null;
+        var wanted = file.Name + ".MSG";
+        if (_messageArchive?.Find(wanted.Length > 12 ? wanted[..12] : wanted) is not null)
+        {
+            throw new ArgumentException($"{file.Name} is a message file of the game; a mod card needs a name of its own", nameof(file));
+        }
+        _messages[file.Name] = file;
+    }
+
     /// <summary>The text blocks of a card's .MSG file in MSGFILES ("$Party02").</summary>
     public MessageFile Messages(string cardName)
     {

@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 50 entries; recommendations: document: 1, justify: 40, keep: 9.
+- Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 1, justify: 40, keep: 11.
 - Part B (undefined-memory in core logic): 151 entries; determinism: deterministic: 1, n/a: 83, no: 54, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -214,7 +214,7 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
 
 Each is a core-logic divergence where the C# does something the original does not. Action: `implement` (make it as the original), `justify` (keep, with the reason given), `implement-later` (blocked on a missing subsystem), `remove-marker` (the divergence is gone; the marker is to be removed).
 
-### rules (12)
+### rules (14)
 
 #### not-modelled (1)
 
@@ -254,7 +254,7 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: own text (the original has none, its Put never refuses): shown by the item store screen when OriginalBehaviour.FixCacheStoreLimit (data safety) refuses a Put; the item stays in the pack.  
   recommendation: **justify** (checked against the original) - The message of a refused Put: the original has no text for it (its Put never refuses); own text.
 
-#### other (4)
+#### other (6)
 
 - **D-b8f363** `other` - `src/Darklands.Core/Characters/Creation/Occupation.cs:50` `CreationTables`  
   original: `R136+0xBBB1` (290E:3521, data)  
@@ -272,6 +272,14 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R037+0x3B58` (1462:3B58, draft)  
   divergence: the shield picture is the party panel's (loaded on demand).  
   recommendation: **justify** (checked against the original) - party_remove (R037 3b58) frees the slot's shield picture handle; the C# party panel loads shield pictures on demand from Character.ShieldLetter, so no game state differs (presentation resource handling only).
+- **D-18a7b4** `other` - `src/Darklands.Simulation/Mods/DataCard.cs:74` `DataCard.Run`  
+  original: `root 03A1:000A` (03A1:000A, matched), `R136+0xD090` (2DAE:0000, data)  
+  divergence: no original: a mod's card (docs/MODS.md, CardRegistry); the game's table holds none, Classic never runs one.  
+  recommendation: **keep** (checked against the original) - New code for mods (1.0 pillar 3, docs/MODS.md): a data card runs only when a mod registered it in CardRegistry; Classic registers none, so no game of the game's own cards reaches it. Tests: ModCardTests.
+- **D-e27a0f** `other` - `src/Darklands.Simulation/Mods/DataCard.cs:126` `DataCard.Run`  
+  original: `root 03A1:000A` (03A1:000A, matched), `R136+0xD090` (2DAE:0000, data)  
+  divergence: no original: a mod card whose pages lead round in a circle (chance pages only) is ended here.  
+  recommendation: **keep** (checked against the original) - New code for mods (1.0 pillar 3): the guard of a mod's data card whose branch pages lead round in a circle; never reached by the game's own cards. Tests: ModCardTests.
 
 ### cards (15)
 
@@ -297,7 +305,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R066+0x263E` (19EC:0AFE, matched)  
   divergence: the original sets the card before the previous one (DS:A88F) and prev_screen (DS:A88D) to the street card (R066+0x271F, R066+0x2732); the main loop then sets DS:A88F = DS:A88D (the street card) and DS:A88D = this card (root 03A1:000A), and DS:A88F has no reader in the EXE (only these two stores), so it is not kept; FinishPass sets PreviousCard as the loop does.  
   recommendation: **justify** (checked against the original) - R066+0x271F / 0x2732 store the street card (9 by day, 10 at night) into DS:A88F and DS:A88D; the main loop (root +0x3E5F..0x3E68) then sets DS:A88F = DS:A88D and DS:A88D = DS:A772. DS:A88F has no reader anywhere in the EXE (absolute references in the root and the 136 overlays: only these two stores), so the 'two cards back' remark of the old note was wrong and nothing can observe it. CardDispatcher.FinishPass sets PreviousCard as the loop does; test NotModelledEvidenceTests.FinishPassMovesTheCardsDown.
-- **D-5dc345** `not-modelled` - `src/Darklands.Simulation/CardDispatcher.cs:83` `UnknownCard`  
+- **D-5dc345** `not-modelled` - `src/Darklands.Simulation/CardDispatcher.cs:89` `UnknownCard`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   divergence: no original: the original calls whatever R136+0xD090[number] holds; every card of the table has a script, so only a number outside it gets here.  
   recommendation: **justify** (checked against the original) - A fallback for a card number outside R136+0xD090[]'s table: test NotModelledEvidenceTests.EveryCardOfTheTableHasAScript shows every card of the table has a script, so the original's call of whatever the slot holds is never reached with a valid number.
@@ -436,7 +444,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### deliberate-fix (1)
 
-- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:378` `OriginalSaves.static`  
+- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:394` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: with the fix (data safety, switchable; on in the player's game) the record of the status-0 slot is written like the others and the count is true.  
   recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixSaveWriterSkipsEmptySlots, on in the player's game): the original writes a short file for a party slot of status 0 (the Wild Hunt) that it can crash loading; fixed, every roster record is written and the count is true. The faithful short file is reproduced (D-be90b2).
@@ -455,7 +463,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.
-- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:406` `OriginalSaves.static`  
+- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:422` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the original always writes 414 records; a state with another number of places (tests) writes what it has.  
   recommendation: **justify** - Only tests use a state with another number of places; the game always has 414.
@@ -1066,15 +1074,15 @@ Where the original reads or writes outside its defined data, the outcome can sti
 
 ### persistence (4)
 
-- **D-be90b2** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:97` `OriginalSaves.Read`  
+- **D-be90b2** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:107` `OriginalSaves.Read`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: depending on those bytes the original either goes on with the garbled game (DKSAVE40's re-save) or stops with run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.  
   deterministic: **no** (checked against the original); action: **keep** - Checked against the original: losing to the Wild Hunt (card 0x41, card oracle with the battle lost, 24 runs) makes 483.07 write a save one record short; loading that file in the lockstep oracle ends in run-time error R6001 (null pointer assignment, exit 255) inside R037+0x8ED4, while DKSAVE40's own short re-save loads garbled. Which happens depends on heap and file bytes; a crash to DOS is not reproduced on purpose (user decision 2026-10-22): the rewrite loads the garbled game. A later 'fixed' mode would stop the Wild Hunt writing such files.
-- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:197` `OriginalSaves.Read`  
+- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:207` `OriginalSaves.Read`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: more than 300 events would overrun the original's table; the rest are dropped.  
   deterministic: **n/a** (checked against the original); action: **document** - R037+0x8ED4 reads nevents from the save and does events[id]=alloc_buffer(0x30)+read for id<n with no bound; the game itself writes only non-empty slots (at most 300), so only a hand-edited or corrupt .sav can exceed 300, and then events[300..] would run on into 2E38:1FDC.. (the data before the R136+0xF92C icon table). Cannot occur with the game's own saves; keep the C# truncation.
-- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:280` `OriginalSaves.static`  
+- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:290` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but save_game's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.
