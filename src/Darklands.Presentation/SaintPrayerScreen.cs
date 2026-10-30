@@ -74,7 +74,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     // orig: saint-prayer-party R034+0x0000 / saint-prayer R034+0x0102
     public PrayerOutcome Pray(GameState state, int member, int saint, PrayerMode mode, ISaintEffects effects)
     {
-        // orig: saint-prayer-party always, saint-prayer `if (DS:907A != 1)`: DS:9C3D = music_play(5); music_play(13)
+        // orig: saint-prayer-party always, saint-prayer `if (DS:907A != 1)`: DS:9C3D = music-start(5); music-start(13)
         var music = mode == PrayerMode.ForParty || InBattle?.Invoke() != true;
         if (music)
         {
@@ -106,8 +106,8 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     /// <summary>True inside a battle (DS:907A == 1): a member's prayer then leaves the music alone.</summary>
     public Func<bool>? InBattle { get; init; }
 
-    // orig: saint-prayer-party: music_play(DS:9C3D) on each of its three returns; saint-prayer: `if (DS:907A != 1 && DS:9C3D != -1)`
-    //   music_play(DS:9C3D) on both of its returns
+    // orig: saint-prayer-party: music-start(DS:9C3D) on each of its three returns; saint-prayer: `if (DS:907A != 1 && DS:9C3D != -1)`
+    //   music-start(DS:9C3D) on both of its returns
     private void PlayBack(PrayerMode mode, bool music)
     {
         if (mode == PrayerMode.ForParty || music && ui.SavedMusic.Value != -1)

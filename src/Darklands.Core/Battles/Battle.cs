@@ -138,7 +138,7 @@ public sealed class Battle
 
     /// <summary>difficulty-setting: 0 basic, 1 standard, 2 expert.</summary>
     // C: difficulty-setting (DS:906A) is the game's one byte: Alt-D in a battle (hotkey-table root 0000:0CAA, case 0x2000) and the Game menu's
-    // C: Difficulty items (set_difficulty_* root 0000:1408..1428) write it, and the skill gains of the battle's end (R014+0x0694, the die of
+    // C: Difficulty items (difficulty-set-* root 0000:1408..1428) write it, and the skill gains of the battle's end (R014+0x0694, the die of
     // C: R021+0x0000) read it then
     // C: with DifficultyOf set, the difficulty is that game's (GameState.Difficulty); without (tests), the battle's own value.
     public int Difficulty

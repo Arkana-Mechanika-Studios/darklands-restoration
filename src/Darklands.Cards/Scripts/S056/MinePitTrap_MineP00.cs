@@ -26,7 +26,7 @@ public sealed class MinePitTrap_MineP00 : Card
 
     private const int ClimberOption = 0, SaintOption = 2, PyramidOption = 4;
 
-    // The options array lives in Run so that the actions can close a line (opt_flag = 2) while the card stays.
+    // The options array lives in Run so that the actions can close a line (option-flag = 2) while the card stays.
     private CardMenu _menu = null!;
 
     public override int Number => CardNumber;

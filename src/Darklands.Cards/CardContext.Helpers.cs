@@ -21,10 +21,10 @@ public sealed partial class CardContext
     // PlayMusic (R043 09ae), PlaySound (sound-start), RandomName, ShopNames and the shops are shared:
     // see CardContext.Services.cs and CardContext.Memory.cs.
 
-    // orig: R043+0x09AE (1462:09AE) matched, music_play(5) (driver command 5: the number last played, root 047C:078A); tests: CardSmokeTests
-    // C: music_play is typed void, but its callers ($Shell00) keep the AX the driver left (GameSounds.CurrentPiece); with music off
+    // orig: R043+0x09AE (1462:09AE) matched, music-start(5) (driver command 5: the number last played, root 047C:078A); tests: CardSmokeTests
+    // C: music-start is typed void, but its callers ($Shell00) keep the AX the driver left (GameSounds.CurrentPiece); with music off
     //   it plays the stop instead and gives that call's AX.
-    /// <summary>music_play(5): which piece of music is playing, supplied by the presentation (GameUi.MusicPlaying).</summary>
+    /// <summary>music-start(5): which piece of music is playing, supplied by the presentation (GameUi.MusicPlaying).</summary>
     public Func<int>? MusicPlaying { get; set; }
 
     /// <summary>The piece now playing, or −1 when the presentation cannot tell.</summary>

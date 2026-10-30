@@ -426,7 +426,7 @@ CityPolitics.Strength(),R039+0x0BF6;R039+0x0D46,R039+0x0BF6;R039+0x0D46,matched,
 CityPolitics.Percent(),R039+0x0E96;R039+0x0EAA,R039+0x0E96;R039+0x0EAA,matched,WorldRulesTests,
 CityPolitics.ConflictOutcome(),R039+0x0EBE,R039+0x0EBE,matched,,
 CityPolitics.SetUpCity(),R039+0x0558,R039+0x0558,matched,WorldRulesTests,divergence: `while (!place-query(loc d + 3))` loops forever in a city without any shop; here the search
-CityPolitics.DailyPolitics(),R029+0x4180,R029+0x4180,matched,WorldRulesTests; FidelityFixTests,16-bit wrap of seed + day fixed in the fidelity pass | bug: place-side-read/place-side-write and side*_percent work on location-now not the event's city (kept).
+CityPolitics.DailyPolitics(),R029+0x4180,R029+0x4180,matched,WorldRulesTests; FidelityFixTests,16-bit wrap of seed + day fixed in the fidelity pass | bug: place-side-read/place-side-write and side-*-share work on location-now not the event's city (kept).
 Quests.Resolve(),R029+0x3E06,R029+0x3E06,matched,EventLogTests,divergence: when the log is full the original writes f2e/f2c through events[-1]; here nothing is writt
 Quests.ResolveAt(),R029+0x4378,R029+0x4378,matched,,write through uninitialised k left out | divergence: `events[k]->f2e = events[i]->f2e` writes through the uninitialised local k; left out.
 Quests.StartDragon(),R039+0x11FC,R039+0x11FC,matched,WorldRulesTests,
@@ -818,7 +818,7 @@ Darklands.Presentation.LootScreen.DrawScreen(),R040+0x06E2,R040+0x06E2,draft,Hos
 Darklands.Presentation.LootScreen.Redraw(),R040+0x0952,R040+0x0952,draft,Host.Headless screen:loot,divergence: palette applied
 Darklands.Presentation.LootScreen.DrawPackItems(),R040+0x1372,R040+0x1372,draft,,byte-matched function
 Darklands.Presentation.LootScreen.DrawPileItems(),R040+0x145E,R040+0x145E,draft,,byte-matched function
-Darklands.Presentation.BuySellPage,R032+0x0000;R035+0x0000;R040+0x01C8,R032+0x0000,draft,Host.Headless screens,shared hit rectangles and hover code (copies in the three overlays); gfx_* are asm driver thunks (root 047C)
+Darklands.Presentation.BuySellPage,R032+0x0000;R035+0x0000;R040+0x01C8,R032+0x0000,draft,Host.Headless screens,shared hit rectangles and hover code (copies in the three overlays); gfx-* are asm driver thunks (root 047C)
 Darklands.Presentation.GameScreens,R029+0x21AA;R035+0x0000;R040+0x0000,R029+0x21AA,draft,,dispatch to the three screens; others go to the fallback
 Darklands.Audio.Driver.SoundDriver,root 047C:08C8;root 047C:07CE,root 047C:08C8,asm,DriverTests,thunk for slot k at 047C:04C7+7k; driver image 2Eh/30h/32h slot table
 Darklands.Audio.Driver.SoundDriver.Start(),root 047C:0783;R000+0x052A;root 03A1:000A;R133+0x186C,root 047C:0783,asm,DriverTests,slot 100 (ASOUND.DC image 2048h)
@@ -827,9 +827,9 @@ Darklands.Audio.Driver.SoundDriver.Stop(),root 047C:0791,root 047C:0791,draft,Dr
 Darklands.Audio.Driver.SoundDriver.FrameTick(),root 047C:0798,root 047C:0798,asm,MachineTests;DriverTests,slot 103 from 047C:000A (ASOUND.DC image 214Bh)
 Darklands.Audio.Driver.SoundDriver.FastTick(),root 047C:079F,root 047C:079F,asm,MachineTests;DriverTests,slot 104 from int 8 at 047C:01EA (ASOUND.DC image 215Fh)
 Darklands.Audio.Driver.GameTimer,root 047C:0066;root 047C:02A2;root 047C:01EA;root 047C:000A,root 047C:0066,asm,MachineTests;GameTimerTests,divergence: no vertical-retrace sync; frame period 4280h (the capture's 70.086 Hz); the ticks of a frame come from Platform.FrameTicker
-Darklands.Audio.GameSounds.MusicNumber(),R043+0x09AE,R043+0x09AE,matched,GameSoundsTests,music_play
-Darklands.Audio.GameSounds.RequestCurrentPiece(),R043+0x09AE,R043+0x09AE,matched,DriverTests,music_play(5): the AX of driver command 5 (music off: of the stop)
-Darklands.Audio.GameSounds.BattleSoundAllowed(),R014+0x465E,R014+0x465E,draft,GameSoundsTests,battle_sound option filter
+Darklands.Audio.GameSounds.MusicNumber(),R043+0x09AE,R043+0x09AE,matched,GameSoundsTests,music-start
+Darklands.Audio.GameSounds.RequestCurrentPiece(),R043+0x09AE,R043+0x09AE,matched,DriverTests,music-start(5): the AX of driver command 5 (music off: of the stop)
+Darklands.Audio.GameSounds.BattleSoundAllowed(),R014+0x465E,R014+0x465E,draft,GameSoundsTests,battle-sound option filter
 Darklands.Audio.GameSounds,root 03A1:000A;root 0000:1080,root 03A1:000A,matched,GameSoundsTests,control numbers 0 2 3 5 6 7; uncertain: meaning of 6 and 7
 Darklands.Audio.SynthAudio,root 03A1:000A;R133+0x186C;R000+0x052A;R002+0x0000;R037+0x8B76;root 0000:11F2,root 03A1:000A,matched,DriverTests;RolandDriverTests;OpeningTimingTests,divergence: DGT loaded per piece; driver swap at first request after a battle starts or ends; requests carried out at a timer tick
 Darklands.Audio.SynthAudio.PlayMusicNow(),root 047C:078A,root 047C:078A,draft,DriverTests,a number carried out at once and its AX returned; divergence: the waiting requests go first
@@ -1130,7 +1130,7 @@ DropCaps,root 03A1:000A;root 0265:0134,root 03A1:000A;root 0265:0134,unmatched,,
 TextPainter,drv+0x1223;drv+0x11A9;drv+0x11FA;drv+0x0FF3,root 047C:055A;root 047C:04E3;root 047C:051B,asm,tools/visuals/compare.py,driver text output from the asm: colour codes; codes outside the font take no room; right clip at the window edge; mov/and/or/xor by the colour word; dormant: hi-res doubled x branch
 GameUi,root 0000:0000;root 047C:073D;R030+0x3096,root 0000:0000;root 047C:073D;R030+0x3096,asm,,edge-triggered events instead of polling; waits sleep 16 ms
 GameUi.PlayMusic(),R043+0x09AE,R043+0x09AE,matched,,plays the tune if music is on else stops it
-GameUi.SaveMusic(),R043+0x09AE,R043+0x09AE,matched,MusicTests,DS:9C3D = music_play(5) (shared by the prayer screen; the camp; the map; $Shell00); RestoreMusic plays it back
+GameUi.SaveMusic(),R043+0x09AE,R043+0x09AE,matched,MusicTests,DS:9C3D = music-start(5) (shared by the prayer screen; the camp; the map; $Shell00); RestoreMusic plays it back
 GameUi.FlushKeys(),root 0000:1384,root 0000:1384,draft,,discard waiting keys
 QuitGameException,root 0000:13A0,root 0000:13A0,draft,,unwinds instead of exit(0)
 Keys,root 0000:0CAA,root 0000:0CAA,draft,,Ctrl-F1..F5 and Alt-O codes added; scan code in the high byte as the BIOS gives
@@ -1684,7 +1684,7 @@ Darklands.Cards.Scripts.BoundAtTheStake,R118+0x0000;R118+0x02BC;R118+0x034E;R118
 Darklands.Cards.Scripts.TemplarGraveyard,R118+0x08AA;R118+0x0B7E;R118+0x0C0C;R118+0x0C6E;R118+0x0D2A;R118+0x0E02,R118+0x08AA,matched,CardSmokeTests,battles via return -2 (CardBattle mode enemy seed flags); dormant: text 4
 Darklands.Cards.Scripts.TemplarFortressGate,R118+0x14C2;R118+0x16FA;R118+0x177A;R118+0x17BA;R118+0x18DC,R118+0x14C2,matched,CardSmokeTests,battle via return -2 with CardBattle.Parameters; dormant: lines 3-9
 Darklands.Cards.Scripts.TemplarWritingDesk,R118+0x1F3C;R118+0x2174;R118+0x21DC;R118+0x23A4;R118+0x23FA;R118+0x246C;R118+0x24B2,R118+0x1F3C,matched,CardSmokeTests,BUG: formula search uses && not &; battles via return -2/-3; dormant: lines 5-9 and texts 2 8
-CardMenu,R043+0x0F2A;R043+0x1BD2;R044+0x1A50,R043+0x0F2A;R043+0x1BD2;R044+0x1A50,draft,GoldenTraceTests;CardSmokeTests,"card-option-lines + card-choice-menu and the do/while every card script runs (opt_flag_k 0 hidden 1 enabled 2 shown, settings-block, the chosen handler's r.a); divergence: lines start hidden instead of the stale global flags"
+CardMenu,R043+0x0F2A;R043+0x1BD2;R044+0x1A50,R043+0x0F2A;R043+0x1BD2;R044+0x1A50,draft,GoldenTraceTests;CardSmokeTests,"card-option-lines + card-choice-menu and the do/while every card script runs (option-flag_k 0 hidden 1 enabled 2 shown, settings-block, the chosen handler's r.a); divergence: lines start hidden instead of the stale global flags"
 MenuLine,R044+0x25BA,R044+0x25BA,matched,GoldenTraceTests,"card-option-handler / item-handler-table / saint-handler-table and the per-option action; the reset's 'screwed up.' handler for lines without one; divergence: lines whose action takes no chance are not rated again on the choice"
 CardMenu.ShowFirstTextAndEnd(),R119+0x10C8,R119+0x10C8,matched,GoldenTraceTests,the repeat-the-opening handler of option lines the text does not have (R119..R135)
 CardContext.MemberPopupHint(),R059+0x0BFC;R119+0x0670,R059+0x0BFC;R119+0x0670,matched,GoldenTraceTests,the item pop-up handler most cards install (names the member)

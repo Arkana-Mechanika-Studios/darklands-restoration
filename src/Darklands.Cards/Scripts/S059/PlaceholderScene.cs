@@ -30,7 +30,7 @@ public abstract class PlaceholderScene : Card
         c.SetCardItems(0x5F, 0x60, 0x65, 0x61);
         c.SetCardSaints(0, 0x59, 0x61, 0x80);
 
-        // All ten opt_flag_k are 1 (every line enabled); card-option-enabled[10..19] are never copied and the text has ten lines.
+        // All ten option-flag_k are 1 (every line enabled); card-option-enabled[10..19] are never copied and the text has ten lines.
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         var lines = new MenuLine[10];

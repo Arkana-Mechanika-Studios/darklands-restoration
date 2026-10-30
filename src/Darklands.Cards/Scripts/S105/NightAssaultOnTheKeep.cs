@@ -73,7 +73,7 @@ public sealed class NightAssaultOnTheKeep : Card
             new MenuLine(_ => PrayForAWayIn(c), () => OptionHint.Say("Select a person and a saint.")),
             // orig: R105+0x0AE8 (line 4); hint R105+0x0C94 (1838:0C94) matched
             new MenuLine(p => UseAPotion(c, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
-            // DORMANT: lines 5, 6, 8 and 9 are never offered (opt_flag = 0); each lets no time pass (R105+0x0CCC/0d10/0d94/0dd8).
+            // DORMANT: lines 5, 6, 8 and 9 are never offered (option-flag = 0); each lets no time pass (R105+0x0CCC/0d10/0d94/0dd8).
             new MenuLine(_ => c.PassHours(0), Assured),
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R105+0x0D54 (1838:0D54) matched (leaves without clearing location-now)

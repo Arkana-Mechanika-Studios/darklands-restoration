@@ -215,7 +215,7 @@ public static class CityPolitics
     /// location, and the seventh-day test the current city record's seed.
     /// </summary>
     // orig: R029+0x4180 (0E76:4180) matched; tests: WorldRulesTests; FidelityFixTests
-    // BUG: place-side-read/place-side-write and side*_percent work on location-now, not the event's city (kept).
+    // BUG: place-side-read/place-side-write and side-*-share work on location-now, not the event's city (kept).
     // C: bit = 1 << roll-below(16) is a 16-bit int (0x8000 is negative) compared with the market day fact.
     public static void DailyPolitics(GameState s, TimedEvent e)
     {

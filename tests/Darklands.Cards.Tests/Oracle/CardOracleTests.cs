@@ -98,7 +98,7 @@ public sealed class CardOracleTests
         var entries = corpus.RootElement.GetProperty("cards").EnumerateObject().ToList();
         var clock = Convert.ToUInt32(corpus.RootElement.GetProperty("clock").GetString()!, 16);
         var dump = Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_DUMP");
-        // "sound": true in the corpus: its traces hold the sound-start / music_play lines (card_oracle.py since the audio round); older corpora do not
+        // "sound": true in the corpus: its traces hold the sound-start / music-start lines (card_oracle.py since the audio round); older corpora do not
         var soundTrace = corpus.RootElement.TryGetProperty("sound", out var soundFlag) && soundFlag.GetBoolean();
         Parallel.ForEach(entries, entry =>
         {
@@ -257,7 +257,7 @@ public sealed class CardOracleTests
         return CompareResult(expected, actual, end, random, sav, dump is { Length: > 0 } ? Path.Combine(dump, $"{card.Number:X3} {runName}.txt") : null, texts, ignoreTexts);
     }
 
-    /// <summary>A trace line of the sound device: <c>sound n</c> (sound-start, root 047C:078A) or <c>music x</c> (music_play, R043+0x09AE).</summary>
+    /// <summary>A trace line of the sound device: <c>sound n</c> (sound-start, root 047C:078A) or <c>music x</c> (music-start, R043+0x09AE).</summary>
     public static bool IsSound(string line) => line.StartsWith("sound ", StringComparison.Ordinal) || line.StartsWith("music ", StringComparison.Ordinal);
 
     /// <summary>A run's trace, end, random state and saved game against the original's (null: they agree).</summary>
@@ -539,7 +539,7 @@ public sealed class CardOracleTests
             c.OptionsBlock = block;
         }
         c.Screens = new OracleScreens(screen.Log);
-        // sound: music_play(x) is a "music x" line and then the driver's command (sound x, or sound 1 with the music off), sound-start(n)
+        // sound: music-start(x) is a "music x" line and then the driver's command (sound x, or sound 1 with the music off), sound-start(n)
         // a "sound n" line; the oracle's saved games hold music on (DS:01BF = 1). The presentation's wiring (DarklandsGame.Play)
         // is the same: Music = GameUi.PlayMusic, SoundPlayer = Audio.PlayMusic, MusicPlaying = GameUi.MusicPlaying.
         var audio = new OracleAudio(screen.Log);
@@ -570,7 +570,7 @@ public sealed class CardOracleTests
             return battleResults is null ? 0 : battleResults[Math.Min(battles++, battleResults.Length - 1)];
         };
         // the films (root 030B:0004 plays each animation; the oracle records them)
-        // orig: R133+0x186C: cards-teardown (sound-start(1)), then each scene's tune (music_play) and its PAN film; Cinematics.Film does the same
+        // orig: R133+0x186C: cards-teardown (sound-start(1)), then each scene's tune (music-start) and its PAN film; Cinematics.Film does the same
         c.PlayFilm = steps =>
         {
             audio.StopMusic();
@@ -593,7 +593,7 @@ public sealed class CardOracleTests
         // nobody left: hours-elapse R029+0x255A and battle-driver R029+0x2278 play the death film (the oracle records it) and end the program
         // (the original's run stops at the kbhit after the film, INT 21h AH=0Bh); the game's host does the same (DarklandsGame: Perished,
         // AllDead), the harness records the film and stops the run
-        // orig: battle-driver R029+0x2278: music_play(0x12), then the film (Cinematics.Death)
+        // orig: battle-driver R029+0x2278: music-start(0x12), then the film (Cinematics.Death)
         c.AllDead = () =>
         {
             screen.Log.Add("music 18");
@@ -605,7 +605,7 @@ public sealed class CardOracleTests
         {
             if (ReferenceEquals(perished, state))
             {
-                // orig: hours-elapse R029+0x255A: music_play(0x12), cards-teardown-overlay-entry (sound-start(1)), then the film (Cinematics.DeathAfterShutdown)
+                // orig: hours-elapse R029+0x255A: music-start(0x12), cards-teardown-overlay-entry (sound-start(1)), then the film (Cinematics.DeathAfterShutdown)
                 screen.Log.Add("music 18");
                 Darklands.Audio.GameSounds.PlayMusic(audio, 0x12, musicOn: true);
                 audio.StopMusic();

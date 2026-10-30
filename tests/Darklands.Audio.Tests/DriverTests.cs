@@ -46,7 +46,7 @@ public sealed class DriverTests
 
     /// <summary>
     /// Number 5 answers the number last stored (the pieces and the stop alike) and is not stored itself;
-    /// the stop (what music_play(5) plays with music off) leaves AX 0 on the FM and Roland drivers; the speaker driver's
+    /// the stop (what music-start(5) plays with music off) leaves AX 0 on the FM and Roland drivers; the speaker driver's
     /// handler leaves a value of its own. (NSOUND.DLC's play slot is a bare far return: AX is the caller's.)
     /// </summary>
     [Theory]

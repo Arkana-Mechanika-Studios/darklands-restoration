@@ -69,11 +69,11 @@ public sealed class Cinematics(GameUi ui)
     public void Opening() => PlayScenes(OpeningScenes, afterSkip: [0, 7], measured: true);
 
     /// <summary>The party has perished (after a battle).</summary>
-    // orig: see DeathCue; the same in battle-driver R029+0x2278 (music_play(0x12), pointer-hide, then the film unless DS:0BF2)
+    // orig: see DeathCue; the same in battle-driver R029+0x2278 (music-start(0x12), pointer-hide, then the film unless DS:0BF2)
     public void Death() => PlayScenes([(DeathCue, Animations ? "death" : null)]);
 
     /// <summary>The party has perished while time passed: the death tune, the card engine's stop, then the film.</summary>
-    // orig: hours-elapse R029+0x255A (0E76:255A) draft (bytes match): pointer-hide, music_play(0x12), cards-teardown-overlay-entry (R043+0x054E ends with
+    // orig: hours-elapse R029+0x255A (0E76:255A) draft (bytes match): pointer-hide, music-start(0x12), cards-teardown-overlay-entry (R043+0x054E ends with
     //   sound-start(1), root 047C:078A), then root 030B:0004("death") unless DS:0BF2; tests: MusicTests
     public void DeathAfterShutdown()
     {

@@ -2,7 +2,7 @@ using Darklands.Cards.Scripts;
 
 namespace Darklands.Cards.Tests;
 
-/// <summary>The cards' music requests: through the music option (music_play) or straight to the driver (sound-start).</summary>
+/// <summary>The cards' music requests: through the music option (music-start) or straight to the driver (sound-start).</summary>
 public sealed class MusicCardTests
 {
     private static (CardContext Context, List<string> Requests) Context(Core.GameState state, ScriptedScreen screen, int playing)

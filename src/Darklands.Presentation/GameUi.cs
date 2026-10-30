@@ -37,7 +37,7 @@ public readonly record struct PlayerAction(int Key, int X, int Y, MouseButtons C
 /// The screen and the player, for code that runs step by step like the original: draw,
 /// then wait for the player. Every wait keeps the window responsive and shows the pointer.
 /// </summary>
-// orig: the screen/key/mouse/timing calls the C screens use directly: gfx_* (root 047c, asm), key-waiting-test/read-key, menu-bar-loop root 0000:0000 (which calls hotkey-table on every poll, see HotKeys), wait-ticks R030+0x3096 (1767:0046) matched; tests: none (needs a host)
+// orig: the screen/key/mouse/timing calls the C screens use directly: gfx-* (root 047c, asm), key-waiting-test/read-key, menu-bar-loop root 0000:0000 (which calls hotkey-table on every poll, see HotKeys), wait-ticks R030+0x3096 (1767:0046) matched; tests: none (needs a host)
 // DIVERGENCE: waits sleep 16 ms per frame instead of spinning; the pointer (the COMMONSP.IMG gauntlet) is drawn into a copy of the screen (the original draws the mouse cursor through the driver); F12 saves a screenshot (host feature).
 public sealed class GameUi
 {
@@ -209,9 +209,9 @@ public sealed class GameUi
     public Action<string>? Trace { get; set; }
 
     /// <summary>
-    /// A tester's aid, off in play (DARKLANDS_SOUND_LOG in the headless host): receives "music x" for each music_play(x) request, before the
+    /// A tester's aid, off in play (DARKLANDS_SOUND_LOG in the headless host): receives "music x" for each music-start(x) request, before the
     /// option makes of it what it does; the driver's own commands ("sound n") are logged by the host around <see cref="Audio"/>.
-    /// tools/oracle/lockstep.py compares both with the original's music_play (R043+0x09AE) and sound-start (root 047C:078A) calls.
+    /// tools/oracle/lockstep.py compares both with the original's music-start (R043+0x09AE) and sound-start (root 047C:078A) calls.
     /// </summary>
     public Action<string>? SoundLog { get; set; }
 
@@ -224,14 +224,14 @@ public sealed class GameUi
     public Func<int, char?>? BattleStatusLetter { get; set; }
 
     /// <summary>Plays a music cue unless music is off; then it silences instead.</summary>
-    // orig: music_play = thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) `if (music-setting) sound-start(x); else sound-start(1);` (sound-start(1) stops the music)
+    // orig: music-start = thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) `if (music-setting) sound-start(x); else sound-start(1);` (sound-start(1) stops the music)
     public void PlayMusic(int tune)
     {
         SoundLog?.Invoke($"music {tune}");
         Audio.PlayMusic(Darklands.Audio.GameSounds.MusicNumber(tune, Options.Music));
     }
 
-    /// <summary>music_play(5): the number of the piece playing (with music off the stop is played instead and its AX given).</summary>
+    /// <summary>music-start(5): the number of the piece playing (with music off the stop is played instead and its AX given).</summary>
     // orig: thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) matched; its callers keep the AX the driver left (GameSounds.CurrentPiece)
     public int MusicPlaying()
     {
@@ -243,11 +243,11 @@ public sealed class GameUi
     // orig: DS:9C3D (an int of the game's data, zero at start: past the data image's initialised bytes)
     public System.Runtime.CompilerServices.StrongBox<int> SavedMusic { get; } = new(0);
 
-    /// <summary>DS:9C3D = music_play(5): the piece playing is kept.</summary>
+    /// <summary>DS:9C3D = music-start(5): the piece playing is kept.</summary>
     // orig: thunk 09C0:18F1(5) with its result stored to DS:9C3D, repeated inline in R034+0x0000, R034+0x0102, R036+0x0082, R030+0x00A8
     public void SaveMusic() => SavedMusic.Value = MusicPlaying();
 
-    /// <summary>music_play(DS:9C3D): the kept piece again.</summary>
+    /// <summary>music-start(DS:9C3D): the kept piece again.</summary>
     // orig: thunk 09C0:18F1(DS:9C3D), repeated inline in R034+0x0000, R034+0x0102, R036+0x082C
     public void RestoreMusic() => PlayMusic(SavedMusic.Value);
 

@@ -65,7 +65,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the facts made here are 0xC, 6, 7, 0x17, 0x14, 3, 5, 4, 9, 0xA, 0x23, 1 and 2 (R039+0x0558): none of type 8, the guild secret the guild cards (R062..R065) clear and read, so that fact never exists.
 - **B-ea8f8b** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:218` `CityPolitics.DailyPolitics`  
   original: `R029+0x4180` (0E76:4180, draft)  
-  why: place-side-read/place-side-write and side*_percent work on location-now, not the event's city (kept).
+  why: place-side-read/place-side-write and side-*-share work on location-now, not the event's city (kept).
 - **B-8bb85e** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:240` `CityPolitics.DailyPolitics`  
   original: `R029+0x4180` (0E76:4180, draft)  
   why: setup makes no fact 0 (the leaning); the scan (EventLog.Next) finds the politics quest, whose value is the city's number, so the leaning is that number: 1 is read as "leaning 1" for the city numbered 1, anything else but -1 and 1 as "none".

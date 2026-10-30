@@ -103,7 +103,7 @@ public sealed class AlchemistsShop : Card
             new MenuLine(chance => AskForATask(c, menu, chance), asLeader),
             // DORMANT: line 5 (card-option-flag-5 = 0) has an empty action. orig: R066+0x1662 (hint 0924 R066+0x1664)
             new MenuLine(_ => { }, asLeader),
-            // DORMANT: lines 6..8 (opt_flag = 0): time passes. orig: R066+0x167E/0982/09c6 (hints 094a/098e/09d2)
+            // DORMANT: lines 6..8 (option-flag = 0): time passes. orig: R066+0x167E/0982/09c6 (hints 094a/098e/09d2)
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),

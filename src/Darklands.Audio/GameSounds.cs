@@ -11,7 +11,7 @@ public static class GameSounds
 {
     /// <summary>Towns-and-map driver: start again from silence (pressed key in the opening).</summary>
     // orig: root 03A1:000A (03a1:000a) matched - a key waiting after
-    //   the opening: music_play(0), getch(), music_play(7).
+    //   the opening: music-start(0), getch(), music-start(7).
     public const int Reset = 0;
 
     /// <summary>Stop the music (fading).</summary>
@@ -25,9 +25,9 @@ public static class GameSounds
     public const int Resume = 3;
 
     /// <summary>Asks for the number of the piece playing (the game saves it to restore it later).</summary>
-    // orig: R034+0x0000, R034+0x0102, R036+0x0082, R030+0x00A8 and R088+0x0B20: DS:9C3D = music_play(5),
-    //   a piece of their own, then music_play(DS:9C3D) (R030+0x00A8 keeps it only).
-    // C: music_play is a void function; its callers read the AX that sound-start left (ASOUND.DC image 20D0h: number 5 returns
+    // orig: R034+0x0000, R034+0x0102, R036+0x0082, R030+0x00A8 and R088+0x0B20: DS:9C3D = music-start(5),
+    //   a piece of their own, then music-start(DS:9C3D) (R030+0x00A8 keeps it only).
+    // C: music-start is a void function; its callers read the AX that sound-start left (ASOUND.DC image 20D0h: number 5 returns
     //   [CA60h], the number last stored). With music off it plays 1 instead and AX is what the handler of 1 leaves: 0 on the FM
     //   and Roland drivers (the play slot clears AX before the handler, which does not set it; tests: DriverTests); the speaker
     //   driver's handler leaves a value of its own, which the emulated driver gives too.
@@ -45,12 +45,12 @@ public static class GameSounds
     public const int Ready = 7;
 
     /// <summary>Plays a piece of music if music is on; otherwise stops the music.</summary>
-    // orig: R043+0x09AE (1462:09ae) matched - music_play(x):
+    // orig: R043+0x09AE (1462:09ae) matched - music-start(x):
     //   if (music-setting) sound-start(x); else sound-start(1). tests: GameSoundsTests
     public static void PlayMusic(IAudio audio, int piece, bool musicOn) =>
         audio.PlayMusic(MusicNumber(piece, musicOn));
 
-    /// <summary>music_play(5): the number last played if music is on (else the stop is played); the AX the callers keep.</summary>
+    /// <summary>music-start(5): the number last played if music is on (else the stop is played); the AX the callers keep.</summary>
     // orig: R043+0x09AE (1462:09ae) matched; tests: GameSoundsTests
     public static int RequestCurrentPiece(IAudio audio, bool musicOn) =>
         musicOn ? audio.RequestCurrentPiece() : audio.PlayMusicNow(Stop);

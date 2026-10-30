@@ -135,7 +135,7 @@ absent. Tests that need reference-side data read `local/reference-map.csv` and p
   `linked_segment:linked_offset` the target, which the index gives in its `target` column
   (`thunk 09C0:190F` = `R029+0x54D8`, pass-hours; `thunk 09C0:1FB3`/`thunk 09C0:1FBD` =
   `R030+0x29BC`/`R030+0x29FA`, compass directions; `thunk 09C0:1FF9` = the camp `R036+0x0000`;
-  `thunk 09C0:18DD` = the start screen `R037+0x9C48`; `thunk 09C0:18F1` = `music_play` `R043+0x09AE`).
+  `thunk 09C0:18DD` = the start screen `R037+0x9C48`; `thunk 09C0:18F1` = `music-start` `R043+0x09AE`).
 * **Disassembling a draft.** Payload bytes of a record are at `payload_raw + offset` in `DARKLAND.EXE`
   (record `payload_raw` in the atlas); 16-bit capstone from that address reads the function. The draft
   C of `R030+0x0C44` and `R030+0x1300` was checked this way.

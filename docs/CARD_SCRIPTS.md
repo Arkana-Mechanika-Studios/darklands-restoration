@@ -41,7 +41,7 @@ public sealed class AtTheInn : Card              // a name that says what the sc
 ```
 
 The menu (`CardMenu`, `src/Darklands.Cards/CardMenu.cs`) is the original's loop: the states are
-`opt_flag_k` (every line starts hidden; actions may change them and `menu.Block`, the next round
+`option-flag_k` (every line starts hidden; actions may change them and `menu.Block`, the next round
 shows it), line k is `card-option-handler[k]` and its action. `Run` offers the lines while `c.Next` is the card's
 number (it does not set it). The chosen line is rated again on the choice, as the original does (the
 line's `Popup` hint, else `menu.Popup`, for a choice made in the item or saint pop-up box), so the
@@ -53,7 +53,7 @@ A non-hidden line without a `MenuLine` shows "screwed up." and does nothing. The
 refactoring must leave them unchanged.
 
 * Picture numbers: `image-file-names.f_XXXX` is picture `(0xXXXX - 0x0A47) / 4` in `PictureNames`.
-* `opt_flag_k` 0/1/2 → `menu[k] = OptionState.Hidden/Enabled/Shown`.
+* `option-flag_k` 0/1/2 → `menu[k] = OptionState.Hidden/Enabled/Shown`.
 * `card-text-block(i, how)` → `c.Screen.Text(i)` (`how` 1 → `TextFrame.BlankPage`).
 * `pass-hours(n)` → `c.PassHours(n)`; `roll-below(n)` → `c.Random(n)`.
 * Hint functions (`struct res` with `.a = chance or -1`, `.b = member or -2`) → `OptionHint`.
@@ -80,7 +80,7 @@ listed in `OriginalBehaviour` (each with a fix flag where cheap); do not "fix" t
 | `member-top-skill`, `party-top-ability-low/hi` | `c.BestWeaponSkill`, `c.PartyBestHandWeaponSkill`, `c.PartyBestMissileSkill` |
 | `party-lowest/max/avg_skill`, `party-lowest/max_skill2`, `party-lowest/max_skill_sum` | `c.PartyMinSkill`, `c.PartyMaxSkill`, `c.PartyAverageSkill` (one or two skills), `c.PartyMinSkillSum`, `c.PartyMaxSkillSum` |
 | `party-lowest/max/avg_attr`, `party-stat-top-sum` | `c.PartyMinAttribute`, `c.PartyMaxAttribute`, `c.PartyAverageAttribute`, `c.PartyMaxAttributeSum` |
-| `member-effective-stat-two`, `party_*_eff_attr2(_bonus)` | `c.EffectiveAgility`, `c.PartyAverage/Min/MaxEffectiveAgility`, `c.PartyMax/MinMountedAgility` |
+| `member-effective-stat-two`, `party-effective-stat-two-mean/lowest/highest(-bonus)` | `c.EffectiveAgility`, `c.PartyAverage/Min/MaxEffectiveAgility`, `c.PartyMax/MinMountedAgility` |
 | `top-scoring-member`, `top-value-so-far`, `top-skill-so-far` | `c.BestMember`, `c.BestValue`, `c.BestSkillFound` (`c.BestAttributeValue` for attribute queries) |
 | `party-able-total` (able **women**), `party-here-total`, `party-all-fit` | `c.AbleWomen()`, `c.PresentCount()`, `c.PartyAllWell()` |
 | `party-read`, `party-write` (4 fame, 5 all mounted, 6 stone) | `c.PartyGet`, `c.PartySet` |
@@ -95,7 +95,7 @@ listed in `OriginalBehaviour` (each with a fix flag where cheap); do not "fix" t
 | `location-now`, `city-record`, `city-read` | `c.Here`, `c.City`, `c.LoadCity` |
 | `place-query`, `location-now-query`, `place-assign`, `reputation-now` | `c.LocationQuery`, `c.HereQuery`, `c.LocationSet`, `c.ReputationHere` |
 | `place-standing`, `place-standing-adjust`, `place-hostile` | `c.Reputation`, `c.AdjustReputation`, `c.Hostile()` |
-| `place-side-read/set`, `side1/2_strength`, `side1/2_percent`, `fight-resolution` | `c.SideOf`, `c.SetSide`, `c.SideStrength(∓1)`, `c.SidePercent(∓1)`, `c.ConflictOutcome` |
+| `place-side-read/set`, `side-one/two-strength`, `side-one/two-share`, `fight-resolution` | `c.SideOf`, `c.SetSide`, `c.SideStrength(∓1)`, `c.SidePercent(∓1)`, `c.ConflictOutcome` |
 | `closest-city`, `closest-place-of-kind`, `thunk 09C0:1F13` | `c.NearestCity`, `c.NearestLocationOfType`, `c.FarLocationOfType` |
 | `event-create`, `event-refresh`, `event-advance`, `event-release` | `c.Events.Create`, `.Renew`, `.Update(…, EventUpdate.Add)`, `.Free` |
 | `event-here-test`, `event-here-by-type`, `event-here-lengthen` | `c.EventHere(kind, hours)`, `c.EventHere(kind, type, hours)`, `c.ExtendEventHere` |

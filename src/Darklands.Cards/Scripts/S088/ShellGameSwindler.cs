@@ -25,7 +25,7 @@ public sealed class ShellGameSwindler : Card
     public override int Run(CardContext c)
     {
         // The music playing now is remembered (driver command 5) and brought back on leaving.
-        // orig: R088+0x0B20: DS:9C3D = music_play(5); music_play(0x10)
+        // orig: R088+0x0B20: DS:9C3D = music-start(5); music-start(0x10)
         c.SavedMusic.Value = c.CurrentMusic;
         c.PlayMusic(ShellGameMusic);
         Show(c, Picture);
@@ -149,7 +149,7 @@ public sealed class ShellGameSwindler : Card
                 block = c.Random(100) % 2 != 0 ? 1 : 2;
             }, OptionHint.Saying("The hand is quicker than the eye")));
 
-        // orig: R088+0x0B20: music_play(DS:9C3D) after the loop
+        // orig: R088+0x0B20: music-start(DS:9C3D) after the loop
         c.PlayMusic(c.SavedMusic.Value);
         return result;
     }

@@ -104,7 +104,7 @@ link-time address) for overlay functions; an exact coordinate matches too.
 | `root 044A:0076` | string-helper | 1 | memset of a far buffer; C# Array.Fill/new arrays |
 | `root 044A:008C` | string-helper | 1 | memcmp of far buffers (returns the remaining count); C# SequenceEqual at the call site |
 | `root 0617:*` | dos-io | 18 | file I/O helpers: open/create/close/read/save whole files, catalogs (.CAT) and their directory, picture files drawn from disk (image-paint); Darklands.Content (GameFiles, catalog and PIC readers) and Darklands.Persistence read and write the same files |
-| `root 05D9:*` | dos-io | 4 | fab_* buffered file reader of the PAN player (open/read/eof/close); the C# PanDecoder reads the whole file |
+| `root 05D9:*` | dos-io | 4 | picture-file-* buffered file reader of the PAN player (open/read/eof/close); the C# PanDecoder reads the whole file |
 | `root 030B:0318` | streaming | 1 | PAN ring buffer: makes room for the next read so the reader does not overtake the cel being shown; the C# reads the whole file first and shows the same cels at the same rate (Cinematics, PanDecoder) |
 | `root 030B:0450` | streaming | 1 | PAN player's empty interrupt routine (iret) installed while streaming |
 | `root 030B:0465` | streaming | 1 | PAN ring buffer: copies n bytes between linear addresses |

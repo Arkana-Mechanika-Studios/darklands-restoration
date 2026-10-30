@@ -501,17 +501,17 @@ public sealed class DarklandsGame
         context.Battle = (side, seed, p) => battles.Battle(new BattleRequest(side, seed,
             [(p[0], p[1], p[2]), (p[3], p[4], p[5]), (p[6], p[7], p[8])]));
         context.PlayFilm = steps => Cinematics.Film(steps);
-        // orig: battle-driver R029+0x2278: nobody left after the battle: music_play(0x12), the death film, exit_(0)
+        // orig: battle-driver R029+0x2278: nobody left after the battle: music-start(0x12), the death film, exit_(0)
         context.AllDead = () =>
         {
             Cinematics.Death();
             throw new GameOverException();
         };
-        // orig: music_play R043+0x09AE: the piece if music is on, else 1 (stop) — GameUi.PlayMusic applies the option.
+        // orig: music-start R043+0x09AE: the piece if music is on, else 1 (stop) — GameUi.PlayMusic applies the option.
         context.Music = tune => _ui.PlayMusic(tune);
         // orig: sound-start root 047C:078A: straight to the towns-and-map driver, whatever the music option says.
         context.SoundPlayer = number => _ui.Audio.PlayMusic(number);
-        // orig: music_play(5) R043+0x09AE: the AX of driver command 5 (or of the stop with music off), which $Shell00 keeps in DS:9C3D
+        // orig: music-start(5) R043+0x09AE: the AX of driver command 5 (or of the stop with music off), which $Shell00 keeps in DS:9C3D
         context.MusicPlaying = _ui.MusicPlaying;
         context.SavedMusic = _ui.SavedMusic;
         var shops = new GameScreens(_ui, panel, state, new ScreensUnavailable(screen));
@@ -546,7 +546,7 @@ public sealed class DarklandsGame
         // orig: saint-prayer (byte-matched): a saint row on the character sheet prays for that member.
         screens.ShowSaint = (member, saint) =>
             new SaintPrayerScreen(_ui, panel) { InBattle = () => battles.Fighting }.Pray(state, member, saint, Core.Rules.PrayerMode.ForMember, Core.Rules.SaintEffects.Instance);
-        // orig: hours-elapse R029+0x255A: with nobody left, music_play(0x12), cards-teardown-overlay-entry, the death film and exit_(n)
+        // orig: hours-elapse R029+0x255A: with nobody left, music-start(0x12), cards-teardown-overlay-entry, the death film and exit_(n)
         void Perished(GameState perished)
         {
             if (ReferenceEquals(perished, state))

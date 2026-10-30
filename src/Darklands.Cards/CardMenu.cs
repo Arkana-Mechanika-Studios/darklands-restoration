@@ -102,7 +102,7 @@ public sealed class MenuLine
 
 /// <summary>
 /// A card's option menu: the text block that lists the option lines (<c>settings-block</c>), each
-/// line's state (<c>opt_flag_k</c>: hidden, enabled, shown greyed), and the lines' handlers. A card
+/// line's state (<c>option-flag_k</c>: hidden, enabled, shown greyed), and the lines' handlers. A card
 /// sets the states, then <see cref="Run"/> offers the lines until a choice moves the game away
 /// from the card. Choices may change the states and the block; the next round shows the change.
 /// </summary>
@@ -113,7 +113,7 @@ public sealed class MenuLine
 /// the handler's chance if it takes one). A line with a state but no handler shows "screwed up."
 /// and does nothing.
 /// </remarks>
-// orig: card-option-lines R043+0x0F2A (150B:049A) draft (function matched) + card-choice-menu R043+0x1BD2 (150B:1142) draft; the loop is the do { card-option-enabled[k] = opt_flag_k; card-option-handler[k] = ...; card-option-lines(settings-block); k = card-choice-menu(card-text-window, card-second-window); local-minus-0a = popup-menu-box ? DS:EB0A[menu-choice-index]() : card-option-handler[k](); switch (k) ... } while (following-card == N) every card script wraps around them (e.g. R044+0x1A50 (19DD:0000) matched); tests: GoldenTraceTests, CardSmokeTests
+// orig: card-option-lines R043+0x0F2A (150B:049A) draft (function matched) + card-choice-menu R043+0x1BD2 (150B:1142) draft; the loop is the do { card-option-enabled[k] = option-flag_k; card-option-handler[k] = ...; card-option-lines(settings-block); k = card-choice-menu(card-text-window, card-second-window); local-minus-0a = popup-menu-box ? DS:EB0A[menu-choice-index]() : card-option-handler[k](); switch (k) ... } while (following-card == N) every card script wraps around them (e.g. R044+0x1A50 (19DD:0000) matched); tests: GoldenTraceTests, CardSmokeTests
 // C: a card script sets following-card to its own number before its start-up (which may already leave) and loops while it is unchanged; the menu loops while CardContext.Next is the number given (the card's own, or the marker it uses).
 // C: before the first menu the script's reset clears card-option-enabled[0..19], points card-option-handler[0..19] at its "screwed up." handler and fills card-item-lines/card-saint-lines with -1; a new menu has every line hidden, lines without a handler are MenuLine.Missing, the pop-up lists are reset with SetCardItems/SetCardSaints.
 // C: the original keeps one global set of flags (card-option-flag-0..9, GameState.OptionFlags) for all cards and each card copies some of them
@@ -133,7 +133,7 @@ public sealed class CardMenu
     /// <param name="c">The card's context.</param>
     /// <param name="stayOn">The menu is offered while <see cref="CardContext.Next"/> is this (the card's own number).</param>
     /// <param name="block">The text block with the option lines.</param>
-    /// <param name="copiedFlags">The lines (bit k: line k, k &lt; 10) whose state is the global <c>opt_flag_k</c>.</param>
+    /// <param name="copiedFlags">The lines (bit k: line k, k &lt; 10) whose state is the global <c>option-flag_k</c>.</param>
     /// <param name="staleFlags">The copied lines the card never assigns: they keep what the card before left; the other copied flags start at 0.</param>
     /// <param name="resetsHandlers">The card's reset points all 20 handlers at its "screwed up." handler (false: its reset is empty).</param>
     /// <param name="onOptionsBlock">The block is the game's <see cref="CardContext.OptionsBlock"/> (the card shows <c>card-option-lines(settings-block)</c>);
@@ -193,7 +193,7 @@ public sealed class CardMenu
     /// </summary>
     public bool DrawsOptions { get; set; } = true;
 
-    /// <summary>A line's state: <c>opt_flag_k</c> for a line the card copies from the global flags, else the line's own (starting hidden).</summary>
+    /// <summary>A line's state: <c>option-flag_k</c> for a line the card copies from the global flags, else the line's own (starting hidden).</summary>
     public OptionState this[int line]
     {
         get => IsGlobal(line) ? (OptionState)(byte)_c.State.OptionFlags[line] : _states[line];
@@ -215,7 +215,7 @@ public sealed class CardMenu
     private readonly OptionState?[] _overrides = new OptionState?[MaxLines];
 
     /// <summary>
-    /// Sets the state the screen gets for a line every round without touching <c>opt_flag_k</c>
+    /// Sets the state the screen gets for a line every round without touching <c>option-flag_k</c>
     /// (a card that writes <c>card-option-enabled[k]</c> after the copy).
     /// </summary>
     public void Override(int line, OptionState state) => _overrides[line] = state;
@@ -309,7 +309,7 @@ public sealed class CardMenu
             {
                 break;
             }
-            // C: card-option-enabled[k] = (char)opt_flag_k for the copied lines and card-option-handler[k] = the card's handler for the lines it installs, every round.
+            // C: card-option-enabled[k] = (char)option-flag_k for the copied lines and card-option-handler[k] = the card's handler for the lines it installs, every round.
             var states = Enumerable.Range(0, MaxLines).Select(k => _overrides[k] ?? this[k]).ToArray();
             for (var k = 0; k < lines.Length && k < MaxLines; k++)
             {

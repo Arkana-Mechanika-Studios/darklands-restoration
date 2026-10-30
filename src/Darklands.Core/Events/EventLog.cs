@@ -4,7 +4,7 @@ namespace Darklands.Core.Events;
 
 /// <summary>
 /// The 300 timed-event slots and every operation the rules and card scripts use on them
-/// (<c>event_*</c>, <c>ev8_*</c>, <c>ev24_*</c>, <c>place-flag*</c>). Durations are in hours;
+/// (<c>event-*</c>, <c>open-quest-*</c>, <c>resolved-quest-*</c>, <c>place-flag*</c>). Durations are in hours;
 /// <see cref="Forever"/> hours means "until the end of 1499".
 /// </summary>
 /// <remarks>
@@ -48,7 +48,7 @@ public sealed class EventLog
     /// queries report nothing. Nothing in the game is known to set it.
     /// </summary>
     // orig: DS:00F0
-    // C: tested by event-present, event-at-place, event-kind, event-kind-at, R029 3996 and the value_at/value_type queries only.
+    // C: tested by event-present, event-at-place, event-kind, event-kind-at, R029 3996 and the datum-at/datum-kind queries only.
     public bool QueriesSuppressed { get; set; }
 
     /// <summary>Events in use, with their slots.</summary>

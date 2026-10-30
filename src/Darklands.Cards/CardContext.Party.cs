@@ -400,7 +400,7 @@ public sealed partial class CardContext
     //   battle saw, and the events: EventLog.Reload), party-panel-frame-set/rows; the reseed is TimePassage.Reseed (before pass-hours(0)).
     // orig: battle-driver begins with cards-teardown-overlay-entry (R043+0x054E), which writes the events to events.tmp and empties the table
     //   (EventLog.Shutdown: the battle and party-wipe-overlay-entry after it run on an empty table) and ends with sound-start(1) (root 047C:078A):
-    //   the music stops before the battle driver is loaded; with nobody left after the battle: music_play(0x12), the death film and
+    //   the music stops before the battle driver is loaded; with nobody left after the battle: music-start(0x12), the death film and
     //   exit_(0) (AllDead).
     public int RunBattle(int side, int seed, params int[] parameters)
     {

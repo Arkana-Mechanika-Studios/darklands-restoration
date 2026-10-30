@@ -22,7 +22,7 @@ public sealed class RoadOutOfTheEmpire : Card
         menu.Popup = () => c.MemberPopupHint();
 
         return menu.Run(
-            // DORMANT: lines 0..8 are never offered (opt_flag = 0). Actions R111+0x1280, R111+0x12BA,
+            // DORMANT: lines 0..8 are never offered (option-flag = 0). Actions R111+0x1280, R111+0x12BA,
             // R111+0x12F4, R111+0x132E, R111+0x1368 are empty; 0342..040e let no time pass.
             new MenuLine(_ => { }, Unknown),
             new MenuLine(_ => { }, Unknown),

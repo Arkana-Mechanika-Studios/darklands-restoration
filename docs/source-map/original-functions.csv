@@ -1739,7 +1739,7 @@ R037+0x84BA,1C7D:030A,988,function,matched,bytematch-600a+audit,,
 R037+0x8896,1C7D:06E6,632,function,matched,bytematch-600a+audit,,
 R037+0x8B0E,1C7D:095E,103,function,matched,bytematch-600a+audit,,
 R037+0x8B76,1C7D:09C6,861,function,matched,bytematch-600a+audit,,
-R037+0x8ED4,1C7D:0D24,3233,function,matched,bytematch-600a,,"audit symbol recheck disagrees (DIFF at an unresolved lcall; its symbol table lacks _copy_rect_saved, which this index resolves from the reference C at 03EC:000E)"
+R037+0x8ED4,1C7D:0D24,3233,function,matched,bytematch-600a,,"audit symbol recheck disagrees (DIFF at an unresolved lcall; its symbol table lacks blit-from-saved, which this index resolves from the reference C at 03EC:000E)"
 R037+0x9B76,1C7D:19C6,153,function,matched,bytematch-600a+audit,,
 R037+0x9C10,1C7D:1A60,56,function,matched,bytematch-600a+audit,,
 R037+0x9C48,1E26:0008,158,function,matched,bytematch-600a,,

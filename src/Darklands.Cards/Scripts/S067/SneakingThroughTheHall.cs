@@ -42,7 +42,7 @@ public sealed class SneakingThroughTheHall : Card
             // C: line 3 leads to card 0x62, the main loop's end-of-game code.
             // orig: R067+0x24E8 (hint 0646)
             new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: lines 4..8 (opt_flag = 0) have empty actions (067e, 06b8, 06f2, 072a, 0764).
+            // DORMANT: lines 4..8 (option-flag = 0) have empty actions (067e, 06b8, 06f2, 072a, 0764).
             // C: line 6's hint (R067+0x25B4) leaves its chance unset (r.b = leader is overwritten by -2; r.a is a stack leftover); here −1.
             new MenuLine(_ => { }, OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => { }, OptionHint.Saying(SuccessAssured)),

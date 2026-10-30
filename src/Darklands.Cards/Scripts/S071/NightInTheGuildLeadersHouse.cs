@@ -48,7 +48,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
             new MenuLine(_ => { }, () => SneakChance(c)),
             // DORMANT: line 4 (card-option-flag-4 = 0): back to the card before. orig: R071+0x07DE (hint 07f0)
             new MenuLine(_ => { c.PassHours(0); c.Next = c.PreviousCard; }, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: lines 5..8 (opt_flag = 0): card 0x62. orig: R071+0x0828/0872/08bc/0906 (hints 083a/0884/08ce/0918)
+            // DORMANT: lines 5..8 (option-flag = 0): card 0x62. orig: R071+0x0828/0872/08bc/0906 (hints 083a/0884/08ce/0918)
             new MenuLine(_ => LeaveTheGame(c), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => LeaveTheGame(c), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => LeaveTheGame(c), OptionHint.Saying(SuccessAssured)),

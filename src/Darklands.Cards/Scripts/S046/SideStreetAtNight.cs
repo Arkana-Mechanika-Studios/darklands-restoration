@@ -32,7 +32,7 @@ public sealed class SideStreetAtNight : Card
 
     public override int Run(CardContext c)
     {
-        // C: sound-start(6) (root 047C:078A) directly, not through the music setting (music_play): the silence plays even with music off.
+        // C: sound-start(6) (root 047C:078A) directly, not through the music setting (music-start): the silence plays even with music off.
         c.PlaySound(6);
         Show(c, Picture);
         OptionState IfThere(int building) => c.HereQuery(building) != 0 ? OptionState.Enabled : OptionState.Hidden;

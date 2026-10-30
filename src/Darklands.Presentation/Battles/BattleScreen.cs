@@ -1435,7 +1435,7 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The bar's loop with the pointer of the screens shown (the battle's own cursor is not drawn meanwhile).</summary>
     // orig: root 0000:0000: `if (mouse-cursor-default != mouse-cursor-now && DS:907A == 1 && DS:9C4C == 1) root 047C:124F(0, 0, ...)` while the bar is up
     // C: root 0000:0000 holds the combat clock (DS:07D3 = 1 at 0x003D, 0 at 0x01CB) while the bar is up; the timer callbacks go on
-    // C: the battle's pointer is the driver's (DS:907A == 1: root 047C:124F swaps it for the default pointer shape at the mouse, restoring what it covered):
+    // C: the battle's pointer is the driver's (DS:907A == 1: root 047C:124F sets the default pointer shape, root 047C:12C3 hides the pointer and restores what it covered, root 047C:1293 draws the default one at the mouse):
     //   it never stays in the picture under the bar or a box the bar's items show (vis10 session tleads-battle-difficulty; tests: BattleUiTests)
     private void RunMenu(Action run)
     {

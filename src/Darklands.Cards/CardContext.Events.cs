@@ -3,8 +3,8 @@ using Darklands.Core.Events;
 namespace Darklands.Cards;
 
 /// <summary>
-/// Timed events for card scripts: <see cref="Events"/> has every <c>event_*</c>,
-/// <c>ev8_*</c>, <c>ev24_*</c> and <c>place-flag*</c> operation; the shortcuts here cover the
+/// Timed events for card scripts: <see cref="Events"/> has every <c>event-*</c>,
+/// <c>open-quest-*</c>, <c>resolved-quest-*</c> and <c>place-flag*</c> operation; the shortcuts here cover the
 /// common "at the current location" forms.
 /// </summary>
 public sealed partial class CardContext

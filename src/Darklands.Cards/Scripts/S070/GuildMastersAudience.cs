@@ -78,7 +78,7 @@ public sealed class GuildMastersAudience : Card
             new MenuLine(chance => PressTheLeader(c, guild, chance), () => BlackmailChance(c)),
             // DORMANT: line 4 (card-option-flag-4 = 0) does nothing. orig: R070+0x2314 (hint 0ba6 "No risk.", leader)
             new MenuLine(_ => { }, () => new OptionHint(-1, NoRisk, c.Leader)),
-            // DORMANT: lines 5..8 (opt_flag = 0): time passes. orig: R070+0x2350/0c24/0c68/0cac (hints 0bec/0c30/0c74/0cb8)
+            // DORMANT: lines 5..8 (option-flag = 0): time passes. orig: R070+0x2350/0c24/0c68/0cac (hints 0bec/0c30/0c74/0cb8)
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),

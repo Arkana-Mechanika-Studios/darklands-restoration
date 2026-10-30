@@ -63,7 +63,7 @@ public sealed class BanditAmbushOnTheRoad : Card
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
-        // DORMANT: option line 7 is never offered: no path of this card enables it (opt_flag / card-option-enabled stay 0 in every block), so the action R108+0x2C14 and hint R108+0x2C9A never run in play.
+        // DORMANT: option line 7 is never offered: no path of this card enables it (option-flag / card-option-enabled stay 0 in every block), so the action R108+0x2C14 and hint R108+0x2C9A never run in play.
         return menu.Run(
             // orig: R108+0x266C (1A3F:05FC) matched; hint R108+0x26AA
             new MenuLine(_ => { ShowPicture(c, BanditsPicture); c.Screen.Text(17); Fight(c, true); }, Unknown),

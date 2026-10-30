@@ -24,7 +24,7 @@ public abstract class Card
 
     /// <summary>A new option menu of this card on text block <paramref name="block"/>, offered while the card stays on its own number.</summary>
     // orig: see CardMenu (card-option-lines, card-choice-menu and the do/while loop every card script runs)
-    // C: the lines the card's function copies from opt_flag_k every round are the global flags (OptionFlagCopies, generated from the C).
+    // C: the lines the card's function copies from option-flag_k every round are the global flags (OptionFlagCopies, generated from the C).
     /// <param name="c">The card's context.</param>
     /// <param name="block">The text block with the option lines.</param>
     /// <param name="resetsHandlers">False for a card whose reset installs no "screwed up." handlers (its unlisted lines keep the handlers an earlier card left).</param>

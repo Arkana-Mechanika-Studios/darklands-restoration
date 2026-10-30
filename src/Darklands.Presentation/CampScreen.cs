@@ -72,7 +72,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     public void Stay(GameState state, int mode)
     {
         SaveAndLoad?.Invoke(2);
-        // orig: R036+0x0082: DS:9C3D = music_play(5); `if (mode == 1) music_play(0x15); else if (roll-below(2)) music_play(9); else music_play(10);`
+        // orig: R036+0x0082: DS:9C3D = music-start(5); `if (mode == 1) music-start(0x15); else if (roll-below(2)) music-start(9); else music-start(10);`
         ui.SaveMusic();
         ui.PlayMusic((CampPlace)mode == CampPlace.Wilderness ? WildMusic : state.Random.Below(2) != 0 ? 9 : 10);
         _s = state;
@@ -84,7 +84,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         {
             if (Run())
             {
-                // orig: R036+0x082C: the unfinished brews lost (event-delete(0x1D, ...)), the fonts back, music_play(DS:9C3D)
+                // orig: R036+0x082C: the unfinished brews lost (event-delete(0x1D, ...)), the fonts back, music-start(DS:9C3D)
                 Brewing.AbandonAll(state);
                 ui.RestoreMusic();
                 SaveAndLoad?.Invoke(1);

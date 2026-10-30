@@ -79,7 +79,7 @@ public sealed class FactionLeadersRecruitment : Card
             // DIVERGENCE: this card installs no saint pop-up handlers (saint-handler-table keeps the previous card's);
             // the standard saint rating stands in for them.
             new MenuLine(_ => Pray(c, rebels), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
-            // DORMANT: lines 5, 6, 8, 9 (opt_flag = 0): time passes. orig: R073+0x086A/08ae/093c/0980 (hints 0876/08ba/0948/098c)
+            // DORMANT: lines 5, 6, 8, 9 (option-flag = 0): time passes. orig: R073+0x086A/08ae/093c/0980 (hints 0876/08ba/0948/098c)
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
             // orig: R073+0x08F2 (hint 0904 "No risk."): leave.
