@@ -54,6 +54,9 @@ Darklands.Launcher       the settings screen before the game (references Platfor
                          only the SDL host references it, through ILauncher)
 ```
 
+Screens read the player only through `GameUi`; a script or an interface convenience plays through the same door with player
+commands (a key, a click, a line of the list shown), which the screens carry out as the player's own input (docs/COMMANDS.md).
+
 ## Core domain (Darklands.Core)
 
 | Area | Types | Notes |
@@ -158,6 +161,8 @@ not followed yet.
   function from the player's `DARKLAND.EXE` (Unicorn, see `tools/oracle`), over generated inputs, and
   the results must agree.
 * `tests/Darklands.Cards.Tests`: every card, the golden card traces, the card oracle's results.
+* `tests/Darklands.Architecture.Tests`: the dependency direction above, on the compiled assemblies, with the places that break it
+  today as known exceptions (docs/ARCHITECTURE-RULES.md).
 * `tests/Darklands.Battles.Tests`, `Darklands.Persistence.Tests`, `Darklands.Audio.Tests`,
   `Darklands.Platform.Tests`, `Darklands.DevConsole.Tests`, `Darklands.Host.Sdl.Tests`,
   `Darklands.Rendering.Tests`: the screens and battles, saved games, the sound drivers, settings, the console,
