@@ -3,10 +3,10 @@
 usage: python -I build_wild_corpus.py <DARKLAND.EXE> <game folder> <out wild.json> [scenarios] [workers]
 
 wild_main runs from the unchanged EXE (sections 136 data, 4 loader, 8 generator) on the enemy
-buffer prepared as battlefield_build prepares it (darkland.enm/.lst, monsters_clear, groups_clear,
+buffer prepared as battlefield-builder-entry prepares it (darkland.enm/.lst, monsters-reset, groups-reset,
 the tile-description defaults). Its I/O is stubbed by hooks: the level buffer allocation, the read
 of iwild* (decoded here from the player's IMAPS.CAT), the level save (captured) and
-party_lore_level (a scripted lore level). The party's able members, the terrain under the party,
+party-lore-rating (a scripted lore level). The party's able members, the terrain under the party,
 the month and the two debugging globals forceMap (DS:C100) and forceSide (DS:C0FE) are written into
 the data segment before the call.
 Stored: the request, and per scenario the saved level image, the tile description, the kind and
@@ -26,14 +26,14 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from run_unit import run  # noqa: E402
-from build_enemy_corpus import Machine, MON_COUNT, GROUP_COUNT, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
+from build_enemy_corpus import Machine, MONSTER_TOTAL, GROUP_TOTAL, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
 from build_city_corpus import cat_members, cat_decode  # noqa: E402
 
 LEVEL_SEG = 0x5000
-CUR_LOC, COMBAT_FLAGS = 0x907E, 0x9080
+LOCATION_NOW, FIGHT_FLAGS = 0x907E, 0x9080
 WORLD_TERRAIN, MONTH, FORCE_MAP, FORCE_SIDE = 0xD843, 0x00E4, 0xC100, 0xC0FE
 PARTY, PARTY_STRIDE = 0x9C69, 0x80
-TILE_DESC = 0xF504
+TILE_DESCRIPTION = 0xF504
 WILD_TYPES = list(range(0x2E, 0x56)) + [0x61, 0x62, 0x63] + list(range(0x6F, 0x7A))
 CALLSITES = {"1432f": "alloc", "143ad": "free", "147e3": "read", "1439e": "save", "15ad0": "lore", "16d94": "lore"}
 
@@ -44,14 +44,14 @@ def init_worker(exe_path: str, game_path: str) -> None:
     game = Path(game_path)
     exe = Path(exe_path).read_bytes()
     base = Machine(exe, (game / "DARKLAND.ENM").read_bytes(), (game / "DARKLAND.LST").read_bytes())
-    base.call("monsters_clear", [])
-    base.call("groups_clear", [])
-    base.enemy[TILE_DESC:TILE_DESC + 0xC4] = bytes(0xC4)
+    base.call("monsters-reset", [])
+    base.call("groups-reset", [])
+    base.enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4] = bytes(0xC4)
     for at in (0x0A, 0x24, 0x3D, 0x57, 0x70, 0x8A, 0xA4):
-        base.enemy[TILE_DESC + at:TILE_DESC + at + 16] = b"\xff" * 16
-    base.enemy[TILE_DESC + 0x23] = 2
+        base.enemy[TILE_DESCRIPTION + at:TILE_DESCRIPTION + at + 16] = b"\xff" * 16
+    base.enemy[TILE_DESCRIPTION + 0x23] = 2
     for at in (0x56, 0x89, 0xA3):
-        base.enemy[TILE_DESC + at] = 8
+        base.enemy[TILE_DESCRIPTION + at] = 8
     _G.update(exe=exe, lst=(game / "DARKLAND.LST").read_bytes(), imaps=cat_members(game / "IMAPS.CAT"),
               snapshot=(bytes(base.enemy), dict(base.ds)))
 
@@ -95,8 +95,8 @@ def run_scenario(sc: dict) -> dict:
     exe, lst, imaps = _G["exe"], _G["lst"], _G["imaps"]
     memory_enemy = bytearray(_G["snapshot"][0])
     ds = dict(_G["snapshot"][1])
-    words = ((HOLDRAND, struct.pack("<I", sc["seed"])), (CUR_LOC, struct.pack("<h", -1)),
-             (COMBAT_FLAGS, b"\x00\x00"), (WORLD_TERRAIN, struct.pack("<h", sc["terrain"])),
+    words = ((HOLDRAND, struct.pack("<I", sc["seed"])), (LOCATION_NOW, struct.pack("<h", -1)),
+             (FIGHT_FLAGS, b"\x00\x00"), (WORLD_TERRAIN, struct.pack("<h", sc["terrain"])),
              (MONTH, struct.pack("<h", sc["month"])), (FORCE_MAP, struct.pack("<h", sc["forceMap"])),
              (FORCE_SIDE, struct.pack("<h", sc["forceSide"])))
     for off, data in words:
@@ -144,15 +144,15 @@ def run_scenario(sc: dict) -> dict:
 
     levels = int(res["final"]["ax"], 16)
     kinds = [[bytes(enemy[KINDS + (lv * 12 + k) * 0xD6:KINDS + (lv * 12 + k + 1) * 0xD6]).hex()
-              for k in range(ds_word(MON_COUNT + 2 * lv))] for lv in range(2)]
+              for k in range(ds_word(MONSTER_TOTAL + 2 * lv))] for lv in range(2)]
     groups = [[bytes(enemy[GROUPS + (lv * 10 + g) * 0x1E:GROUPS + (lv * 10 + g + 1) * 0x1E]).hex()
-               for g in range(ds_word(GROUP_COUNT + 2 * lv))] for lv in range(2)]
+               for g in range(ds_word(GROUP_TOTAL + 2 * lv))] for lv in range(2)]
     holdrand = struct.unpack("<I", bytes(after_ds.get(HOLDRAND + k, ds[HOLDRAND + k]) for k in range(4)))[0]
     out_levels = {name: {"sha256": hashlib.sha256(d).hexdigest(), "data": d.hex()} for name, d in saved.items()}
     return {"function": "wild_main", "ax": "%04X" % levels, "changed": {}, "inputs": {
         **sc, "levels": levels, "reads": reads, "saved": out_levels,
-        "terrainDescription": bytes(enemy[TILE_DESC:TILE_DESC + 0xC4]).hex(), "kinds": kinds, "groups": groups,
-        "holdrand": holdrand, "combatFlags": ds_word(COMBAT_FLAGS)}}
+        "terrainDescription": bytes(enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4]).hex(), "kinds": kinds, "groups": groups,
+        "holdrand": holdrand, "combatFlags": ds_word(FIGHT_FLAGS)}}
 
 
 def main() -> None:

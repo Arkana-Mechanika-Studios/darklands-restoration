@@ -49,7 +49,7 @@ public sealed class CityBarracks : Card
                 c.State.SavedCard2 = CitySquareByNight;
                 c.Next = RecruitCard;
             }, Assured),
-            // DORMANT: lines 2..4 (opt_flag_2..4 = 0). orig: R073+0x0FFE, 0318 R073+0x1048, 0362 R073+0x1092
+            // DORMANT: lines 2..4 (card-option-flag-2..4 = 0). orig: R073+0x0FFE, 0318 R073+0x1048, 0362 R073+0x1092
             new MenuLine(_ => LeaveForNotWorking(c), Assured),
             new MenuLine(_ => LeaveForNotWorking(c), Assured),
             new MenuLine(_ => LeaveForNotWorking(c), Assured),
@@ -59,7 +59,7 @@ public sealed class CityBarracks : Card
             new MenuLine(_ => { c.PassHours(1); c.Next = c.IsDaylight ? 6 : 8; }, Assured),
             // orig: R073+0x1188: out by a side street
             new MenuLine(_ => { c.PassHours(1); c.Next = c.IsDaylight ? 9 : 0x0A; }, Assured),
-            // DORMANT: lines 8 and 9 (opt_flag_8, opt_flag_9 = 0). orig: R073+0x11DE, 04f8 R073+0x1228
+            // DORMANT: lines 8 and 9 (card-option-flag-8, card-option-flag-9 = 0). orig: R073+0x11DE, 04f8 R073+0x1228
             new MenuLine(_ => LeaveForNotWorking(c), Assured),
             new MenuLine(_ => LeaveForNotWorking(c), Assured));
     }

@@ -20,7 +20,7 @@ public sealed class PracticeAndItemsTests
 
         Practice.PracticeSkill(s, 2, Alchemy, 1, 10, 2);
 
-        // chance 10 x 3.3 = 33 %; gain improve_roll(48, 3, 8): chance |100 - 48| %, then 3 + rnd 5
+        // chance 10 x 3.3 = 33 %; gain improvement-roll(48, 3, 8): chance |100 - 48| %, then 3 + rnd 5
         var expected = before;
         if (twin.Below(100) <= 33)
         {
@@ -93,7 +93,7 @@ public sealed class PracticeAndItemsTests
         Assert.Equal(-1, Inventory.Take(s, 0, 50));
     }
 
-    // count_items R029+0x0C76 with who >= 5 counts the last battle's enemy items (not modelled; no caller passes it)
+    // item-tally R029+0x0C76 with who >= 5 counts the last battle's enemy items (not modelled; no caller passes it)
     [Fact]
     public void CountingForANumberPastTheMembersIsZero()
     {

@@ -50,9 +50,9 @@ public sealed partial class CardContext(GameState state, WorldData world, ICardS
     public int Next { get; set; }
 
     /// <summary>Lets hours pass: party recovery, the clock, the hourglass.</summary>
-    // orig: advance_hours R029+0x54D8 (1367:05C8) matched; pass_hours_hourglass R043+0x3494 (150B:2A04) draft
+    // orig: pass-hours R029+0x54D8 (1367:05C8) matched; hourglass-wait R043+0x3494 (150B:2A04) draft
     public void PassHours(int hours) => TimePassage.Advance(state, hours, screen.PassTime);
 
-    // orig: rand_mod root 0000:0C70 (0000:0C70) matched
+    // orig: roll-below root 0000:0C70 (0000:0C70) matched
     public int Random(int below) => state.Random.Below(below);
 }

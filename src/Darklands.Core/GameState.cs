@@ -91,28 +91,28 @@ public sealed class GameState
     public StoreTable StoreTable { get; set; } = new();
 
     /// <summary>
-    /// The card engine's ten option flags (<c>opt_flag_0..9</c>, DS:EE76..EE88): one set for all
+    /// The card engine's ten option flags (<c>card-option-flag-0..9</c>, DS:EE76..EE88): one set for all
     /// cards, which copy them into their lines' states every round; a card that leaves one
     /// unassigned shows what the card before left. Not saved (a load keeps the running game's).
     /// </summary>
-    // orig: opt_flag_0 DS:EE76 (declared char) .. opt_flag_9 DS:EE88 (words), BSS: 0 at start-up
+    // orig: card-option-flag-0 DS:EE76 (declared char) .. card-option-flag-9 DS:EE88 (words), BSS: 0 at start-up
     public int[] OptionFlags { get; set; } = new int[10];
 
     /// <summary>
-    /// The hirelings counted when one last joined (<c>DS:A67C</c>): event_count(0x43) after
-    /// <c>add_member</c>, 0 for the default party, and the saved word on loading. A term that ends or
+    /// The hirelings counted when one last joined (<c>DS:A67C</c>): event-total(0x43) after
+    /// <c>join-party-member</c>, 0 for the default party, and the saved word on loading. A term that ends or
     /// is removed later does not change it.
     /// </summary>
-    // orig: DS:A67C: add_member R029+0x4650 (end), R037 seg 1E26 key Q (= 0), load_saved_game R037 seg 1C7D (fread), the save (R037 seg 1462 fwrite); read by R081 1962
+    // orig: DS:A67C: join-party-member R029+0x4650 (end), R037 seg 1E26 key Q (= 0), saved-game-read R037 seg 1C7D (fread), the save (R037 seg 1462 fwrite); read by R081 1962
     public int HirelingCount { get; set; }
 
     /// <summary>
     /// The last castle's progress (DS:160C): bits 1, 2, 4, 8, 0x10, 0x20, 0x40 the Horsemen and
     /// trials overcome, 0x1010 / 0x2020 further steps of the ending. Not in the .SAV: a load keeps
     /// the running game's value unless the game was saved with a battle file, whose variables
-    /// hold it (battle_save/battle_restore at +0x1974).
+    /// hold it (battle-store/battle-reload at +0x1974).
     /// </summary>
-    // orig: DS:160C (R003 seg 0E76 battle_save/battle_restore; set and tested by the LastC cards R130..R135)
+    // orig: DS:160C (R003 seg 0E76 battle-store/battle-reload; set and tested by the LastC cards R130..R135)
     public int LastCastleFlags { get; set; }
 
     /// <summary>The item list and city records (from the game files).</summary>
@@ -122,7 +122,7 @@ public sealed class GameState
     public IGameMessages Messages { get; set; } = new GameMessageLog();
 
     /// <summary>
-    /// The working copy of the city record (<c>city_rec</c>): the current city's, or the last
+    /// The working copy of the city record (<c>city-record</c>): the current city's, or the last
     /// city's while the party is elsewhere. Loaded on first use.
     /// </summary>
     public CityRecord City

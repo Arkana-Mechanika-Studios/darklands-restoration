@@ -18,7 +18,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R131+0x07BE, R131+0x083C, R131+0x08B0,
 //     R131+0x08EC, R131+0x0928
 // DORMANT (generated): option slots 10..19 keep the default handler R131+0x083C ("screwed up.") and are never shown.
-// C (generated): opt_flag_5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
+// C (generated): card-option-flag-5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class LakeOfFire : Card
 {
@@ -34,8 +34,8 @@ public sealed class LakeOfFire : Card
     {
         if (!c.Events.FactAnywhere(1, 0x18))
         {
-            // C: the closed gate is drawn from pic_buf2 (pic_buf keeps the last card's picture); this early return runs
-            //   before the table set-up, so card_items / card_saints keep the last card's values (unread).
+            // C: the closed gate is drawn from image-buffer-two (image-buffer keeps the last card's picture); this early return runs
+            //   before the table set-up, so card-item-lines / card-saint-lines keep the last card's values (unread).
             Show(c, 231);
             c.Screen.Text(12);
             c.BattleMode = 1;
@@ -50,7 +50,7 @@ public sealed class LakeOfFire : Card
         menu[2] = c.ItemsUsable();
         menu[3] = c.SaintsUsable();
 
-        // C: every handler of this card redraws with card_load (the whole card, Show), not card_load_near.
+        // C: every handler of this card redraws with card-run (the whole card, Show), not card-run-near.
         return menu.Run(
             // orig: R131+0x01EC / R131+0x0362 matched
             new MenuLine(chance => WadeAcross(c, chance), () => WeakestTimesThree(c, Strength)),
@@ -66,7 +66,7 @@ public sealed class LakeOfFire : Card
 
     /// <summary>Three times the lowest value of the attribute; that member becomes $ChosenOneName.</summary>
     // orig: R131+0x0362 matched (also _04e0)
-    // C: the hint itself sets var_chosen1 to best_member (unsigned char); the product stays below 32767.
+    // C: the hint itself sets text-slot-chosen-one to top-scoring-member (unsigned char); the product stays below 32767.
     private static OptionHint WeakestTimesThree(CardContext c, int attribute)
     {
         var chance = c.PartyMinAttribute(attribute) * 3;
@@ -76,7 +76,7 @@ public sealed class LakeOfFire : Card
 
     /// <summary>Within the chance all get across scorched (text 1); within three times it the weakest is burned badly too (text 2); else everyone is burned and turns back (text 3).</summary>
     // orig: R131+0x01EC matched
-    // C: party_min_attr runs before the roll; chance × 3 cannot exceed 16 bits (chance ≤ 300).
+    // C: party-stat-low runs before the roll; chance × 3 cannot exceed 16 bits (chance ≤ 300).
     private void WadeAcross(CardContext c, int chance)
     {
         c.PartyMinAttribute(Strength);
@@ -138,7 +138,7 @@ public sealed class LakeOfFire : Card
     }
 
     // orig: R131+0x0508 matched
-    // C: menu_member / menu_slot are the globals the pop-up box set last.
+    // C: menu-owner-member / menu-choice-index are the globals the pop-up box set last.
     private void UseTheFirewallPotion(CardContext c)
     {
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
@@ -179,7 +179,7 @@ public sealed class LakeOfFire : Card
                     c.Screen.Text(8);
                     ShowTheSteamingHall(c);
                     break;
-                // DORMANT: a stale menu_slot outside 0..3 skips the texts and goes straight to the fight.
+                // DORMANT: a stale menu-choice-index outside 0..3 skips the texts and goes straight to the fight.
             }
             LastCastle.Fight(c, LakeEnemy);
             return;

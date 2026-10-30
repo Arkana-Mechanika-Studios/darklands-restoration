@@ -12,7 +12,7 @@ namespace Darklands.Core.Battles.Generation;
 /// (the value written in a room's cells): 2 keep hall, 3 tower, 4 gate house, 5 building, 6 gate path,
 /// 7 corridor, 8 wall segment.
 /// </remarks>
-// orig: R005 1432 gen_battlefield R005+0x0000 and R006 15af..1abf,  (drafts "COMPLETE", mostly unmatched)
+// orig: R005 1432 layout-battlefield-entry R005+0x0000 and R006 15af..1abf,  (drafts "COMPLETE", mostly unmatched)
 internal sealed partial class CastleGenerator
 {
     private const int X0 = 0;
@@ -27,33 +27,33 @@ internal sealed partial class CastleGenerator
     private readonly CastleWork _w = new();
 
     // The generator's globals (DS words of the original).
-    private readonly int[] _roomCount = new int[CastleWork.Levels];       // gen_rooms
+    private readonly int[] _roomCount = new int[CastleWork.Levels];       // layout-room-list
     private readonly int[] _lastKeepRoom = new int[CastleWork.Levels];    // DS:DB4F: last room of the keep and its towers
     private readonly int[] _lastCastleRoom = new int[CastleWork.Levels];  // DS:DB59: last room before the corridors and the outer wall
     private readonly int[] _stripCount = new int[CastleWork.Levels];      // DS:DB67
-    private readonly int[] _stairCount = new int[CastleWork.Levels];      // gen_exit_count
-    private readonly int[] _bounds = new int[4];                          // keep_x0, DS:DB3F, DS:DB41, DS:DB43: bounding box of the rooms (not the gate path)
-    private int _level;            // gen_level
-    private int _lowestLevel;      // gen_level_lo
-    private int _highestLevel;     // gen_level_hi
+    private readonly int[] _stairCount = new int[CastleWork.Levels];      // layout-exit-total
+    private readonly int[] _bounds = new int[4];                          // room-bounds-left, DS:DB3F, DS:DB41, DS:DB43: bounding box of the rooms (not the gate path)
+    private int _level;            // layout-depth
+    private int _lowestLevel;      // layout-depth-min
+    private int _highestLevel;     // layout-depth-max
     private int _topLevel;         // DS:DB7F
     private int _lastLevel;        // DS:DB83
     private int _topLevelBuilt;    // DS:DB87
     private int _cellarBuilt;      // DS:DB88
     private int _gateRoom;         // DS:DB63: the gate path room of level 1
-    private int _gateSide;         // gate_side
+    private int _gateSide;         // gate-wall-side
 
     public CastleGenerator(GenerationState g)
     {
         _g = g;
     }
 
-    /// <summary>One die roll, roll_dice(1, sides): 0 without a draw below 1 side, 1 without a draw for 1 side.</summary>
-    // orig: roll_dice R004+0x20F6 (0E76:20F6) draft (byte-matched per the draft notes); see BattlefieldForces.RollDice
+    /// <summary>One die roll, dice-roll(1, sides): 0 without a draw below 1 side, 1 without a draw for 1 side.</summary>
+    // orig: dice-roll R004+0x20F6 (0E76:20F6) draft (byte-matched per the draft notes); see BattlefieldForces.RollDice
     private int Roll(int sides) => _g.Roll(sides);
 
-    /// <summary>roll_dice(count, sides).</summary>
-    // orig: roll_dice R004+0x20F6 (0E76:20F6) draft
+    /// <summary>dice-roll(count, sides).</summary>
+    // orig: dice-roll R004+0x20F6 (0E76:20F6) draft
     private int Dice(int count, int sides) => _g.Forces.RollDice(count, sides);
 
     // orig: the C macros min and max of R006 seg 16E1 and R006 seg 1637 (plain int operands)
@@ -71,7 +71,7 @@ internal sealed partial class CastleGenerator
     private int RoomKind(int level, int room) => _w.RoomKind(level, room);
 
     /// <summary>Cell index (level * 40 + x) * 40 + y, the subscript the original computes by hand everywhere.</summary>
-    // orig: the index arithmetic of gen_cell_walls, gen_cell_type and gen_cell_door
+    // orig: the index arithmetic of layout-cell-walls, layout-cell-kind and layout-cell-door
     private static int CellIndex(int level, int x, int y) => (level * CastleWork.Cells + x) * CastleWork.Cells + y;
 
     /// <summary>Is a cell kind a room floor (2..8)?</summary>
@@ -82,8 +82,8 @@ internal sealed partial class CastleGenerator
     public int LevelCount => _highestLevel - _lowestLevel + 1;
 
     /// <summary>Plans the levels for a battlefield type; returns the number of levels.</summary>
-    // orig: gen_battlefield R005+0x0000 (1432:0000) draft; checked against asm (calls and order)
-    // C: n is counted before castle_build runs and the start level it reports is relative to the lowest level.
+    // orig: layout-battlefield-entry R005+0x0000 (1432:0000) draft; checked against asm (calls and order)
+    // C: n is counted before castle-builder-entry runs and the start level it reports is relative to the lowest level.
     public int Plan(int battlefield)
     {
         ClearWork();
@@ -96,7 +96,7 @@ internal sealed partial class CastleGenerator
     }
 
     /// <summary>Clears the work area and the bounding box.</summary>
-    // orig: gen_clear R005+0x005C (1432:005C) draft; checked against asm
+    // orig: layout-reset R005+0x005C (1432:005C) draft; checked against asm
     private void ClearWork()
     {
         _w.Clear();
@@ -115,7 +115,7 @@ internal sealed partial class CastleGenerator
     /// <summary>Plans each level in turn: 1, 2 ... up to the last, then the cellar 0.</summary>
     // orig: R005+0x022A (1432:022A) draft; checked against asm (order of the calls)
     // C: the last level number is re-read by the loop test and may be lowered by the stair planner when no way up was found.
-    // C: gen_level stays at the last value the loop set, even when that level was skipped; the final widen uses it.
+    // C: layout-depth stays at the last value the loop set, even when that level was skipped; the final widen uses it.
     private void PlanLevels(int battlefield)
     {
         _lowestLevel = 6;

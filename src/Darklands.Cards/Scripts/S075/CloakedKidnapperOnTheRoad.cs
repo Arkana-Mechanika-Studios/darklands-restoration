@@ -26,7 +26,7 @@ public sealed class CloakedKidnapperOnTheRoad : Card
         var menu = Menu(c);
         menu.Enable(0, 2);
         menu[1] = c.SaintsUsable();
-        // C: the loop calls card_menu without card_options or card_text (card_load draws only the picture), so the menu works
+        // C: the loop calls card-choice-menu without card-option-lines or card-text-block (card-run draws only the picture), so the menu works
         // C: on the option lines the screen last laid out (the previous card's last text) with this card's states and handlers.
         menu.DrawsOptions = false;
 

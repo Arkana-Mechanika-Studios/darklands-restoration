@@ -83,7 +83,7 @@ public sealed class MenuBarTests
         }
         // (the first frame shows the bar: the menu opens under the cursor before the keys move it)
         bar.Run(keyboard: true);
-        // the item's flag stays set on the way into its sub-menu: both run, the item first (menu_bar_run)
+        // the item's flag stays set on the way into its sub-menu: both run, the item first (menu-bar-loop)
         Assert.Equal(["three", "three-b"], log);
     }
 
@@ -160,8 +160,8 @@ public sealed class MenuBarTests
     }
 
     /// <summary>
-    /// The Game items' word before the table is DS:991C, whose high byte DS:991D is best_member: after a query that left best_member != 0,
-    /// F10 and Right do not move to Party (root 0000:0EE4; direct call of the original: DS:9C41 = 0 for best_member 1, 2, 4, 0xFF, DS:9C2F = 3 for 0).
+    /// The Game items' word before the table is DS:991C, whose high byte DS:991D is top-scoring-member: after a query that left top-scoring-member != 0,
+    /// F10 and Right do not move to Party (root 0000:0EE4; direct call of the original: DS:9C41 = 0 for top-scoring-member 1, 2, 4, 0xFF, DS:9C2F = 3 for 0).
     /// </summary>
     [Theory]
     [InlineData(0, true)]

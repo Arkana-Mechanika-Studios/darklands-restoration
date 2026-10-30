@@ -1,7 +1,7 @@
 namespace Darklands.Core.Battles;
 
-/// <summary>How a battle ended (<c>battle_result</c>, DS:A893); <c>battle_run</c> returns it to the cards.</summary>
-// orig: combat_over R014+0x08FE (0E76:08FE) draft; battle_run R002+0x0000 (result texts)
+/// <summary>How a battle ended (<c>battle-outcome</c>, DS:A893); <c>battle-entry</c> returns it to the cards.</summary>
+// orig: fight-finished R014+0x08FE (0E76:08FE) draft; battle-entry R002+0x0000 (result texts)
 public enum BattleResult
 {
     /// <summary>−1: still fighting.</summary>
@@ -28,6 +28,6 @@ public enum BattleResult
     /// <summary>7: a timed exit.</summary>
     TimedExit = 7,
 
-    /// <summary>8: left the field before any fight ("leave"); battle_run reports it as 2.</summary>
+    /// <summary>8: left the field before any fight ("leave"); battle-entry reports it as 2.</summary>
     LeftBeforeFight = 8,
 }

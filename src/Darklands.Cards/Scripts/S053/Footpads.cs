@@ -60,7 +60,7 @@ public sealed class Footpads : Card
                 c.State.CurrentLocation = -1;
                 c.State.SavedCard = OverlandMap;
             }
-            // C: the card returns saved_card, not the next card the fight chose (they are the same, or the map).
+            // C: the card returns remembered-card, not the next card the fight chose (they are the same, or the map).
             return c.State.SavedCard;
         }
         var block = 1;
@@ -245,7 +245,7 @@ public sealed class Footpads : Card
     }
 
     /// <summary>A potion scatters the robbers. (The potion is not used up: original.)</summary>
-    // BUG: no take_item here: the potion stays in the pack.
+    // BUG: no pick-up-item here: the potion stays in the pack.
     private static void ThrowAPotion(CardContext c)
     {
         ShowPicture(c, PotionPicture);
@@ -254,7 +254,7 @@ public sealed class Footpads : Card
         c.Next = c.State.SavedCard;
     }
 
-    // C: outside any location (no city and not just off the road) place is -1: loc_reputation_adj reads the null record
+    // C: outside any location (no city and not just off the road) place is -1: place-standing-adjust reads the null record
     // C: locations[-1], draws its chance and writes nothing (LocationRules.AdjustReputation).
     private static void AdjustStanding(CardContext c, int place, int a, int b) => c.AdjustReputation(place, a, b);
 
@@ -280,7 +280,7 @@ public sealed class Footpads : Card
         {
             robbers = ambushed ? 0x2E : 0x2F;
         }
-        // C: arguments right to left: the lore level, the draw rand_mod(lore), the party's size, then the lore again.
+        // C: arguments right to left: the lore level, the draw roll-below(lore), the party's size, then the lore again.
         var draw = c.Random(c.PartyLoreLevel());
         var count = Math.Clamp(draw, c.PresentCount(), 8);
         var groups = c.PartyLoreLevel() / 4 + 1;

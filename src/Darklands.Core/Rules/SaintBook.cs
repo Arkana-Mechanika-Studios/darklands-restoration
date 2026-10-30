@@ -11,7 +11,7 @@ public sealed class SaintEffects : ISaintEffects
 {
     public static readonly SaintEffects Instance = new();
 
-    // orig: saint_fns[s](who, x, 8) R136+0xAFC7 via R039 seg 165C (see SaintBook); x (the favor) is unused by every help
+    // orig: saint-handler-tables[s](who, x, 8) R136+0xAFC7 via R039 seg 165C (see SaintBook); x (the favor) is unused by every help
     public void Help(GameState state, int who, int saint, int favor) => SaintBook.Help(state, who, saint);
 }
 
@@ -37,19 +37,19 @@ public sealed class SaintEffects : ISaintEffects
 /// </remarks>
 // orig: the 138 saint functions R039+0x1FD4 .. R039+0x986A (case 8 of each; one per Table row,
 //   coordinate R039+0x1FA0+offset, linked 165C:offset) matched;
-//   called through saint_fns R136+0xAFC7 (the table order = saint order, checked by Oracle:saints.json);
+//   called through saint-handler-tables R136+0xAFC7 (the table order = saint order, checked by Oracle:saints.json);
 //   tests: SaintBookTests, Oracle:saints.json
-// C: every boost is `raise_attr_temp/lower_skill_temp(who, k, rand_mod(n) + m, h)`: the one random draw in
+// C: every boost is `stat-temporary-boost/skill-temporary-drop(who, k, roll-below(n) + m, h)`: the one random draw in
 //   the arguments is made before the callee runs (which draws again for the duration), so the order of
 //   draws is the statement order; the other arguments are constants (MSC's right-to-left evaluation
 //   changes nothing here).
-// C: the accessors the saints call (raise_attr_temp, lower_skill_temp, heal_attr_pct, add_item, count_items_flags ...)
+// C: the accessors the saints call (stat-temporary-boost, skill-temporary-drop, heal-attribute-percent, give-one-item-form, item-tally-by-flags ...)
 //   resolve who = -1 (a prayer "for the party", DS:89EA = -1) to the leader; the saint bodies that index the
 //   records themselves do not: party[-1].f03 is DS:9BEC (in the menu-item records, 0) so the "man" branch is
 //   taken, party[-1].f41 is DS:9C2A (the high byte of the UI word DS:9C29: no member's charms change) and
-//   saints_known[-1] is member 4's formula bytes 2..21 (IfWoman, SetCharm, AddCharm, Teach).
-// C: equip_bonuses R029+0x0792 does not resolve -1 either (its equipped_item reads party[-1]): EquippedWeaponSkills.
-// DORMANT: R039+0x9578 and R039+0x97B2 are saint functions that saint_fns does not list
+//   saints-learned[-1] is member 4's formula bytes 2..21 (IfWoman, SetCharm, AddCharm, Teach).
+// C: gear-bonus-sums R029+0x0792 does not resolve -1 either (its worn-item reads party[-1]): EquippedWeaponSkills.
+// DORMANT: R039+0x9578 and R039+0x97B2 are saint functions that saint-handler-tables does not list
 //   (Unlisted below); `what` outside 0..8 returns t[what] past the 7-entry table (stack garbage) — no
 //   caller passes it.
 public static class SaintBook
@@ -91,12 +91,12 @@ public static class SaintBook
     // ---- the boons ------------------------------------------------------------------
 
     /// <summary>An attribute raised by <paramref name="least"/>..<paramref name="most"/> points for a day.</summary>
-    // orig: raise_attr_temp(who, k, rand_mod(n) + m, 0x18) R029+0x4C04
+    // orig: stat-temporary-boost(who, k, roll-below(n) + m, 0x18) R029+0x4C04
     private static Boon Boost(Attribute a, int least, int most) => (s, who, _) =>
         MemberRules.RaiseAttributeTemporarily(s, who, (int)a, s.Random.Below(most - least + 1) + least, 24);
 
     /// <summary>A skill raised by <paramref name="least"/>..<paramref name="most"/> points for <paramref name="hours"/> (24; St.Barbara 5 and 10).</summary>
-    // orig: lower_skill_temp(who, k, rand_mod(n) + m, h) R029+0x4B08 (the reference's name; it raises)
+    // orig: skill-temporary-drop(who, k, roll-below(n) + m, h) R029+0x4B08 (the reference's name; it raises)
     private static Boon Boost(Skill k, int least, int most, int hours = 24) => (s, who, _) =>
         MemberRules.RaiseSkillTemporarily(s, who, (int)k, s.Random.Below(most - least + 1) + least, hours);
 
@@ -105,28 +105,28 @@ public static class SaintBook
         [.. Enumerable.Range((int)EdgedWeapons, 7).Select(k => Boost((Skill)k, least, most))];
 
     /// <summary>A skill raised by rnd 4 + Virtue / 5 + 1 (St.John Climacus).</summary>
-    // C: rand_mod(4) + member_skill(who, 9) / 5 + 1 — member_skill draws nothing, so the evaluation order does
+    // C: roll-below(4) + member-ability(who, 9) / 5 + 1 — member-ability draws nothing, so the evaluation order does
     //   not matter; Virtue is read afresh for each skill (none of the boosted skills is Virtue).
     private static Boon VirtueBoost(Skill k) => (s, who, _) =>
         MemberRules.RaiseSkillTemporarily(s, who, (int)k, s.Random.Below(4) + MemberRules.Skill(s, who, (int)Virtue) / 5 + 1, 24);
 
     /// <summary>An attribute lowered by <paramref name="least"/>..<paramref name="most"/> points for a day.</summary>
-    // C: written -(rand_mod(n) - 0xfffb): 0xfffb is an unsigned int, so the sum is computed modulo 2^16 and
+    // C: written -(roll-below(n) - 0xfffb): 0xfffb is an unsigned int, so the sum is computed modulo 2^16 and
     //   passed as int: -(rnd + 5), a penalty (the header comments of R039 seg 165C omit these).
     private static Boon Lower(Attribute a, int least, int most) => (s, who, _) =>
         MemberRules.RaiseAttributeTemporarily(s, who, (int)a, -(s.Random.Below(most - least + 1) + least), 24);
 
     /// <summary>An attribute lowered by half its maximum for a day.</summary>
-    // C: -(member_attr_max(who, k) / 2), signed division of a non-negative maximum.
+    // C: -(member-stat-cap(who, k) / 2), signed division of a non-negative maximum.
     private static Boon LowerByHalf(Attribute a) => (s, who, _) =>
         MemberRules.RaiseAttributeTemporarily(s, who, (int)a, -(MemberRules.AttributeMaximum(s, who, (int)a) / 2), 24);
 
     /// <summary>Heals <paramref name="percent"/> % of what the attribute lacks of its maximum.</summary>
-    // orig: heal_attr_pct R029+0x08F2
+    // orig: heal-attribute-percent R029+0x08F2
     private static Boon Heal(Attribute a, int percent) => (s, who, _) => MemberRules.HealAttribute(s, who, (int)a, percent);
 
     /// <summary>The skills of the equipped weapons raised by <paramref name="least"/>..<paramref name="most"/> for a day.</summary>
-    // orig: equip_bonuses R029+0x0792
+    // orig: gear-bonus-sums R029+0x0792
     private static Boon WeaponSkills(int least, int most) => (s, who, given) =>
         EquippedWeaponSkills(s, who, given, s.Random.Below(most - least + 1) + least);
 
@@ -137,8 +137,8 @@ public static class SaintBook
     private static Boon LowerWeaponSkills(int least, int most) => (s, who, given) =>
         EquippedWeaponSkills(s, who, given, -(s.Random.Below(most - least + 1) + least));
 
-    /// <summary>equip_bonuses for the member as given: the points are drawn by the saint body before the call either way.</summary>
-    // orig: R029+0x0792 passes who as it is to equipped_item (thunk 09C0:1E9B -> R031+0x5D06), which does not resolve -1: it reads
+    /// <summary>gear-bonus-sums for the member as given: the points are drawn by the saint body before the call either way.</summary>
+    // orig: R029+0x0792 passes who as it is to worn-item (thunk 09C0:1E9B -> R031+0x5D06), which does not resolve -1: it reads
     //   the record before the members' (weapon type DS:9C26, missile type DS:9BF7, pack count DS:9C53) and the pack bytes before
     //   the pack table (2E38:FEC0).
     // BUG: so for a prayer for the party (-1) the weapon-skill boost reaches nobody (FixSaintWeaponSkillsForParty: the leader's weapons).
@@ -164,8 +164,8 @@ public static class SaintBook
     /// The standing changes by <paramref name="a"/>/<paramref name="b"/> here, or at the city
     /// nearest to the party, if that place is one of <paramref name="places"/> (none: anywhere).
     /// </summary>
-    // orig: what = cur_loc == -1 ? nearest_city(party_x, party_y) : cur_loc; [switch (what) case ...:]
-    //   loc_reputation_adj(what, a, b) (19d0, LocationRules.AdjustReputation), repeated inline in the saint functions
+    // orig: what = location-now == -1 ? closest-city(party-map-column, party-map-row) : location-now; [switch (what) case ...:]
+    //   place-standing-adjust(what, a, b) (19d0, LocationRules.AdjustReputation), repeated inline in the saint functions
     private static Boon Standing(int a, int b, params int[] places) => (s, _, _) =>
     {
         var where = s.CurrentLocation == GameState.Wilderness
@@ -178,7 +178,7 @@ public static class SaintBook
     };
 
     /// <summary>The standing changes only while the party is at <paramref name="place"/> itself (St.Stephen).</summary>
-    // orig: if (cur_loc == 0x55) loc_reputation_adj(cur_loc, 15, 0x19)
+    // orig: if (location-now == 0x55) place-standing-adjust(location-now, 15, 0x19)
     private static Boon StandingOnlyAt(int place, int a, int b) => (s, _, _) =>
     {
         if (s.CurrentLocation == place)
@@ -188,11 +188,11 @@ public static class SaintBook
     };
 
     /// <summary>The standing here changes when the member carries an item of the kinds <paramref name="mask"/> (St.Cecilia).</summary>
-    // orig: if (count_items_flags(who, 0x20000000L)) loc_reputation_adj(cur_loc, 0x14, 0x3c)
-    // C: in the open country cur_loc is -1: loc_reputation_adj reads the null record locations[-1], draws its chance and writes nothing.
+    // orig: if (item-tally-by-flags(who, 0x20000000L)) place-standing-adjust(location-now, 0x14, 0x3c)
+    // C: in the open country location-now is -1: place-standing-adjust reads the null record locations[-1], draws its chance and writes nothing.
     // orig: R039+0x2FC4
     // BUG: so St.Cecilia called on in the open country raises no town's standing: the other saints' standing goes to the nearest
-    //   city there (R039+0x2FC4 passes cur_loc as it is) (FixSaintStandingInOpenCountry).
+    //   city there (R039+0x2FC4 passes location-now as it is) (FixSaintStandingInOpenCountry).
     private static Boon StandingHereIfCarrying(uint mask, int a, int b) => (s, who, _) =>
     {
         if (Inventory.CountWithFlags(s, who, mask) != 0)
@@ -209,12 +209,12 @@ public static class SaintBook
     /// the place (or the nearest city) is one of the Bohemian ones (Prague included, which only
     /// the nearest-city case can reach).
     /// </summary>
-    // orig: if (cur_loc == 0x46) loc_reputation_adj(u, 15, 0x19); else { what = ...; switch (what) { case 0x44..0x47,
-    //   0x49, 0x4a: loc_reputation_adj(what, 10, 0x14); } } (R039+0x619A)
+    // orig: if (location-now == 0x46) place-standing-adjust(u, 15, 0x19); else { what = ...; switch (what) { case 0x44..0x47,
+    //   0x49, 0x4a: place-standing-adjust(what, 10, 0x14); } } (R039+0x619A)
     // BUG: in Prague the standing goes to u, a local the function never sets (165C:42D4 pushes [bp-2]; its frame's other words
     //   are the what-table), not to Prague: Prague's own standing never changes by this saint.
     // DIVERGENCE: u is whatever the stack slot holds: for a prayer for the party (R034+0x0000) the return offset 0x0C84 that
-    //   rand_mod's call of rand left there, so loc_reputation_adj reads the far pointer at locations + 4 * 0x0C84, past the
+    //   roll-below's call of rand left there, so place-standing-adjust reads the far pointer at locations + 4 * 0x0C84, past the
     //   414 places, draws its chance and may write a word through it (memory not modelled); here Prague's own standing changes.
     private static readonly Boon PragueStanding = (s, who, _) =>
     {
@@ -230,24 +230,24 @@ public static class SaintBook
     };
 
     /// <summary>A day's travel blessing for the party (renewed while it is on water).</summary>
-    // orig: event_new(-2, 0, 0x63, 0x4b, 0, 0, 9, 0x18, 1, 0) R029+0x2C4E
+    // orig: event-create(-2, 0, 0x63, 0x4b, 0, 0, 9, 0x18, 1, 0) R029+0x2C4E
     // C: the meaning of kind 0x4B (EventKinds.TravelBlessing) is a guess from its expiry handler.
     private static readonly Boon TravelBlessing = (s, _, _) =>
         s.Events.Create(Who.Everybody, 0, 0x63, EventKinds.TravelBlessing, 0, 0, (int)ExpiryHandler.RenewTravelBlessing, 24, 1, 0);
 
     /// <summary>The party's event of <paramref name="kind"/> here for <paramref name="hours"/>.</summary>
-    // orig: event_here(kind, hours)
+    // orig: event-here-test(kind, hours)
     private static Boon EventHere(int kind, int hours) => (s, _, _) => s.Events.CreateHere(kind, hours);
 
     /// <summary>The help depends on whether the member is a woman (record byte +0x03).</summary>
     // orig: if (party[who].f03 == 0) ... else ...
-    // C: +0x03 is taken as "is a woman" as elsewhere in the port (party_count_able counts it).
+    // C: +0x03 is taken as "is a woman" as elsewhere in the port (party-able-total counts it).
     // C: who as given: party[-1].f03 is DS:9BEC, inside the menu-item records, 0 unless the menu code stored there: the f03 == 0 branch.
     private static Boon IfWoman(Boon[] woman, Boon[] man) => (s, who, given) =>
         Grant(s, who, given, given != Who.Leader && s.Party.Slot(who).IsFemale ? woman : man);
 
     /// <summary>The help comes only while an able woman is in the party (St.Agnes; her chance needs one too).</summary>
-    // orig: if (party_count_able()) { ... } R029+0x007C
+    // orig: if (party-able-total()) { ... } R029+0x007C
     private static Boon IfAbleWomen(Boon[] boons) => (s, who, given) =>
     {
         if (PartyQueries.AbleWomen(s) != 0)
@@ -265,7 +265,7 @@ public static class SaintBook
     }
 
     /// <summary>The member learns another saint.</summary>
-    // orig: saints_known[who][3] |= 2 (bit 30, St.Damian) / |= 0x10 (bit 27, St.Cosmas): bits are MSB-first
+    // orig: saints-learned[who][3] |= 2 (bit 30, St.Damian) / |= 0x10 (bit 27, St.Cosmas): bits are MSB-first
     // C: who as given: for -1 the bit goes to member 4's formula byte 5 (Saints.Learn).
     private static Boon Teach(int saint) => (s, _, given) => Saints.Learn(s, given, saint);
 
@@ -325,7 +325,7 @@ public static class SaintBook
     };
 
     /// <summary>St.Alexis: a party with no florins and no groschen gets 3..9 groschen (its pfennigs stay).</summary>
-    // orig: if (party_money.fl == 0 && party_money.gr == 0) party_money.gr = rand_mod(7) + 3
+    // orig: if (party-purse.fl == 0 && party-purse.gr == 0) party-purse.gr = roll-below(7) + 3
     private static readonly Boon AlmsForThePenniless = (s, _, _) =>
     {
         if (s.Party.Purse is { Florins: 0, Groschen: 0 })
@@ -335,7 +335,7 @@ public static class SaintBook
     };
 
     /// <summary>St.Dorothy of Montau: a member who carries no edged weapon gets a long sword.</summary>
-    // orig: if (!count_items_flags(who, 1L)) add_item(who, 3)
+    // orig: if (!item-tally-by-flags(who, 1L)) give-one-item-form(who, 3)
     private static readonly Boon SwordForTheUnarmed = (s, who, _) =>
     {
         if (Inventory.CountWithFlags(s, who, EdgedWeapon) == 0)
@@ -348,11 +348,11 @@ public static class SaintBook
     /// St.Edward the Confessor: every present member's Virtue is raised to at least 20; then
     /// (when anyone is present) the purse loses a quarter of its pfennig total.
     /// </summary>
-    // orig: for (flag = i = 0, p = party; p < party + 5; i++, p++) if (p->status) { if (member_skill(i, 9) < 0x14)
-    //   set_skill(i, 9, 0x14); flag = 1; } if (flag) money_sub_fgp(&party_money, 0, 0, (unsigned)money_pfennigs(&party_money) >> 2)
-    // C: money_pfennigs returns a long; the (unsigned) cast keeps its low 16 bits before the shift, so a purse
+    // orig: for (flag = i = 0, p = party; p < party + 5; i++, p++) if (p->status) { if (member-ability(i, 9) < 0x14)
+    //   ability-assign(i, 9, 0x14); flag = 1; } if (flag) purse-subtract-parts(&party-purse, 0, 0, (unsigned)purse-in-pfennigs(&party-purse) >> 2)
+    // C: purse-in-pfennigs returns a long; the (unsigned) cast keeps its low 16 bits before the shift, so a purse
     //   of 65536 pfennigs or more loses a quarter of the remainder only.
-    // BUG: R039+0x4375..0x4394 shifts only AX of money_pfennigs (root 1367:00F2, DX:AX) right by two (`shr ax,2` at R039+0x4384) and
+    // BUG: R039+0x4375..0x4394 shifts only AX of purse-in-pfennigs (root 1367:00F2, DX:AX) right by two (`shr ax,2` at R039+0x4384) and
     //   pays that: the quarter wraps at 65536 pfennigs (about 273 florins), a larger purse pays far less than a quarter.
     private static readonly Boon VirtueForAllAtAPrice = (s, _, _) =>
     {
@@ -375,7 +375,7 @@ public static class SaintBook
     };
 
     /// <summary>St.Giles of Portugal: a point of current Strength (rest restores it) and a point of Virtue.</summary>
-    // orig: add_attr(who, 1, -1); add_skill(who, 9, -1) (the Virtue loss is reported like any skill change)
+    // orig: raise-attribute-by(who, 1, -1); raise-skill-by(who, 9, -1) (the Virtue loss is reported like any skill change)
     private static readonly Boon Penance = (s, who, _) =>
     {
         MemberRules.AddAttribute(s, who, (int)Strength, -1);
@@ -383,7 +383,7 @@ public static class SaintBook
     };
 
     /// <summary>St.Raymond Lull: an attribute below 9 is set to 9.</summary>
-    // orig: if (member_attr(who, k) < 9) set_attr(who, k, 9)
+    // orig: if (member-stat(who, k) < 9) stat-assign(who, k, 9)
     private static Boon RaiseToNine(Attribute a) => (s, who, _) =>
     {
         if (MemberRules.Attribute(s, who, (int)a) < 9)
@@ -393,7 +393,7 @@ public static class SaintBook
     };
 
     /// <summary>St.Matthew: the standing with the Fugger and with the Medici bankers each rise by 20..39.</summary>
-    // orig: DS:4BB6 += rand_mod(0x14) + 0x14; DS:4BB8 += rand_mod(0x14) + 0x14 (DS:4BB6 read by $fugge00, DS:4BB8 by $Medic00)
+    // orig: DS:4BB6 += roll-below(0x14) + 0x14; DS:4BB8 += roll-below(0x14) + 0x14 (DS:4BB6 read by $fugge00, DS:4BB8 by $Medic00)
     // C: 16-bit ints: they wrap at 32767.
     private static readonly Boon BankersFavor = (s, _, _) =>
     {
@@ -407,7 +407,7 @@ public static class SaintBook
     /// Saint functions the game's table does not list (their table values: feast day 206, class 7,
     /// favor 27..52, Virtue 19, base 35; and feast day 244, class 5, favor 25..60, Virtue 31, base 23).
     /// </summary>
-    // DORMANT: no saint number reaches them (saint_fns lists R039+0x7D0C for St.Paul the Simple, whose
+    // DORMANT: no saint number reaches them (saint-handler-tables lists R039+0x7D0C for St.Paul the Simple, whose
     //   table values R039+0x9578 duplicates, and nothing at all for R039+0x97B2). Kept for completeness.
     public static readonly SaintHelp[] Unlisted =
     [
@@ -416,12 +416,12 @@ public static class SaintBook
         new("R039+0x97B2", [Heal(Endurance, 50), Heal(Strength, 100), Boost(Religion, 8, 15), Boost(Healing, 12, 23)]),
     ];
 
-    /// <summary>Each saint's help with its original function, in saint order (DARKLAND.LST, saint_fns).</summary>
+    /// <summary>Each saint's help with its original function, in saint order (DARKLAND.LST, saint-handler-tables).</summary>
     private static readonly SaintHelp[] Table =
     [
         // 0 St.Adrian
         // orig: R039+0x1FD4
-        // BUG: the text (DARKLAND.SNT) gives Endurance as "healing only"; the code raises it for a day (raise_attr_temp), past its
+        // BUG: the text (DARKLAND.SNT) gives Endurance as "healing only"; the code raises it for a day (stat-temporary-boost), past its
         // maximum when unhurt, and takes it back when the day ends (so do St.Agatha and St.Anthony).
         new("R039+0x1FD4", [Boost(Endurance, 8, 15), Boost(Charisma, 6, 11), .. AllWeapons(15, 29)]),
         // 1 St.Agatha
@@ -458,12 +458,12 @@ public static class SaintBook
         // 12 St.Apollinarius
         // orig: R039+0x2B22
         // BUG: the text (DARKLAND.SNT) heals "a small amount of lost Strength and a fair amount of lost Endurance"; the code raises both
-        // for a day (raise_attr_temp), past their maxima when unhurt (see St.Adrian).
+        // for a day (stat-temporary-boost), past their maxima when unhurt (see St.Adrian).
         new("R039+0x2B22", [Boost(Strength, 2, 4), Boost(Endurance, 8, 23)]),
         // 13 St.Barbara
         // orig: R039+0x2BC0
         // BUG: her text (DARKLAND.SNT) also "prevents death from wounds for a period (strength never goes below 1)": nothing records
-        // it, and damage_apply (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
+        // it, and damage-resolve (R014+0xAE1E, 18BF:098E) lets Strength fall to 0 (dead) in a real fight whoever prayed to her.
         new("R039+0x2BC0", [Boost(Artifice, 15, 29, hours: 5), Boost(MissileDevices, 20, 39, hours: 10)]),
         // 14 St.Bathildis
         new("R039+0x2C5E", [Boost(Intelligence, 4, 8), Boost(Perception, 3, 6)]),

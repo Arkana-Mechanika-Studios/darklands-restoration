@@ -67,8 +67,8 @@ public sealed class TimedEvent
     /// <summary>When it ends (the expiry pass removes it at or after this date).</summary>
     public GameDate End { get; set; }
 
-    /// <summary>Lets the event run <paramref name="hours"/> longer (<c>date_add_hours</c> on its end).</summary>
-    // orig: date_add_hours R029+0x58FA (1367:09EA) matched
+    /// <summary>Lets the event run <paramref name="hours"/> longer (<c>date-plus-hours</c> on its end).</summary>
+    // orig: date-plus-hours R029+0x58FA (1367:09EA) matched
     public void Extend(int hours) => End = End.AddHours(hours);
 
     public override string ToString() =>

@@ -15,7 +15,7 @@ public sealed class PartyAtTheInn : Card
 {
     public const int CardNumber = 0x29;
 
-    // orig: pic_names+0x0F97 (340); the lone adventurer's picture is +0x0F9B (341)
+    // orig: image-file-names+0x0F97 (340); the lone adventurer's picture is +0x0F9B (341)
     private const int Picture = 340;
     private const int AlonePicture = 341;
 
@@ -32,21 +32,21 @@ public sealed class PartyAtTheInn : Card
         Show(c, Picture);
 
         // DIVERGENCE: the card also sets DS:EE72 = 7 and DS:EE70 = 0 (flags of the pop-up boxes the menu draws: with DS:EE72 >= 0 a bordered box is filled behind a pop-up, R043+0x2ACA); nothing here uses pop-ups on this card. DS:EE70 has no reader anywhere in the EXE (the root and all 136 overlays hold only stores to it) and DS:EE72 is read once, at R043+0x2BFC (a sign test; all 366 stores to it write 7 or 0), so neither store changes any behaviour.
-        // orig: var_chosen1..4 = leader, 1, 2, 3 ($ChosenOneName ... $ChosenFourName)
+        // orig: text-slot-chosen-one..4 = leader, 1, 2, 3 ($ChosenOneName ... $ChosenFourName)
         c.Variables.Chosen[0] = state.Party.LeaderIndex;
         c.Variables.Chosen[1] = 1;
         c.Variables.Chosen[2] = 2;
         c.Variables.Chosen[3] = 3;
 
-        // C: *(int far *)(locations[cur_loc] + 0x12) = 9 sets the local reputation of the starting city; the original does not check cur_loc.
-        // DIVERGENCE: with no location here (the wilderness, cur_loc = -1) nothing is written; the original would write into locations[-1].
+        // C: *(int far *)(locations[location-now] + 0x12) = 9 sets the local reputation of the starting city; the original does not check location-now.
+        // DIVERGENCE: with no location here (the wilderness, location-now = -1) nothing is written; the original would write into locations[-1].
         if (state.Here is { } inn)
         {
             inn.Reputation = 9;
         }
         StartTheAdventure(c);
 
-        // orig: R054+0x1134 (the card's own reset): all twenty option states hidden, card_saints / card_items = -1
+        // orig: R054+0x1134 (the card's own reset): all twenty option states hidden, card-saint-lines / card-item-lines = -1
         c.SetCardItems();
         c.SetCardSaints();
 
@@ -54,7 +54,7 @@ public sealed class PartyAtTheInn : Card
         if (state.Party.Members.Count == 1)
         {
             ShowPicture(c, AlonePicture);
-            menuText = 1;   // C: v_di = 1 is both the text block and (opt_flag_1 = v_di) the option state "enabled"
+            menuText = 1;   // C: local-in-di = 1 is both the text block and (card-option-flag-1 = local-in-di) the option state "enabled"
         }
         else
         {
@@ -62,7 +62,7 @@ public sealed class PartyAtTheInn : Card
             menuText = 6;
         }
 
-        // orig: opt_on[0..3] = 1, opt_on[4..9] = 0; opt_fn[0..9] = R054+0x0DC8 .. 074c (the hints), the handlers after the menu are 0410 .. 0740
+        // orig: card-option-enabled[0..3] = 1, card-option-enabled[4..9] = 0; card-option-handler[0..9] = R054+0x0DC8 .. 074c (the hints), the handlers after the menu are 0410 .. 0740
         var menu = Menu(c, menuText);
         menu.Enable(0, 1, 2, 3);
         c.Next = Number;
@@ -71,7 +71,7 @@ public sealed class PartyAtTheInn : Card
             new MenuLine(() => { c.PassHours(1); c.Next = 0x0C; }),                                                  // R054+0x0E14 / R054+0x0E02: an hour passes, then the map (card 0x0C)
             new MenuLine(() => c.Next = 0x06, OptionHint.Saying(NoRisk)),                                              // R054+0x0E54 / R054+0x0E4C: card 6
             new MenuLine(() => c.Next = 0x09, OptionHint.Saying(NoRisk)),                                              // R054+0x0E94 / R054+0x0E8C: card 9
-            // DORMANT: options 4..9 are never offered (opt_flag_4..9 = 0) and nothing sets them. Option 4 is a start-up cheat: it gives the leader a set of items, puts the party at location 0xB9 (map 0xC0, 0x39F) and goes to card 0x167. 5..9 only pass 0 hours and say "Success is assured.".
+            // DORMANT: options 4..9 are never offered (card-option-flag-4..9 = 0) and nothing sets them. Option 4 is a start-up cheat: it gives the leader a set of items, puts the party at location 0xB9 (map 0xC0, 0x39F) and goes to card 0x167. 5..9 only pass 0 hours and say "Success is assured.".
             new MenuLine(StartInTheCheatPlace, OptionHint.Saying(SuccessAssured)),            // R054+0x0FA8 / R054+0x0ECC
             new MenuLine(() => c.PassHours(0), OptionHint.Saying(SuccessAssured)),            // 063c / 0630
             new MenuLine(() => c.PassHours(0), OptionHint.Saying(SuccessAssured)),            // 0680 / 0674
@@ -100,15 +100,15 @@ public sealed class PartyAtTheInn : Card
     }
 
     /// <summary>A new game starts at 09:00 on a day between 24 and 29 of May to August, with 8–10 groschen and 10–12 pfennigs.</summary>
-    // orig: the money_set / cur_hour / cur_day / cur_month / event_here(0x63, 0x2d0) / ev8_exists(1) part of R054+0x09B8 (R029+0x4FB4 money_set, R029+0x2930 event_here, R029+0x32FE ev8_exists, thunk 09C0:1F1D)
+    // orig: the purse-assign / hour-now / day-now / month-now / event-here-test(0x63, 0x2d0) / open-quest-exists(1) part of R054+0x09B8 (R029+0x4FB4 purse-assign, R029+0x2930 event-here-test, R029+0x32FE open-quest-exists, thunk 09C0:1F1D)
     private static void StartTheAdventure(CardContext c)
     {
         var state = c.State;
-        // C: money_set(party_money, 0, rand_mod(3) + 8, rand_mod(3) + 0xa): the arguments are evaluated right to left, so the pfennigs are drawn first.
+        // C: purse-assign(party-purse, 0, roll-below(3) + 8, roll-below(3) + 0xa): the arguments are evaluated right to left, so the pfennigs are drawn first.
         var pfennigs = c.Random(3) + 10;
         var groschen = c.Random(3) + 8;
         state.Party.Purse = Money.From(0, groschen, pfennigs);
-        // C: hour 9; day = rand_mod(6) + 0x18 (24..29) is drawn before month = rand_mod(4) + 4 (May..August): two statements, so top to bottom.
+        // C: hour 9; day = roll-below(6) + 0x18 (24..29) is drawn before month = roll-below(4) + 4 (May..August): two statements, so top to bottom.
         var day = c.Random(6) + 24;
         var month = c.Random(4) + 4;
         state.Date = state.Date with { Hour = 9, Day = (short)day, Month = (short)month };
@@ -125,8 +125,8 @@ public sealed class PartyAtTheInn : Card
     }
 
     /// <summary>The pact: one text for each member beyond the second, each with its own picture.</summary>
-    // orig: the else branch of R054+0x09B8: card_load_near with pic_names+0x0F9F/+0x0FA3/+0x0F8B/+0x0F93/+0x0F8F (342, 343, 337, 339, 338) and card_text(2..5, 2)
-    // C: party_present_count() is called twice (>= 3, then >= 4); no text in between changes the party, so one count serves.
+    // orig: the else branch of R054+0x09B8: card-run-near with image-file-names+0x0F9F/+0x0FA3/+0x0F8B/+0x0F93/+0x0F8F (342, 343, 337, 339, 338) and card-text-block(2..5, 2)
+    // C: party-here-total() is called twice (>= 3, then >= 4); no text in between changes the party, so one count serves.
     private static void TellThePact(CardContext c)
     {
         var present = c.State.Party.Present.Count();

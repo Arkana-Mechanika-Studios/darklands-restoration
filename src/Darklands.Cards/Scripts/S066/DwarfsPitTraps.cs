@@ -31,7 +31,7 @@ public sealed class DwarfsPitTraps : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 3, 4);
-        // The trap is options_block (DS:EE53), the text block of the option list.
+        // The trap is settings-block (DS:EE53), the text block of the option list.
         menu.Block = c.Random(5);
         SetUpTheTrap(c, menu);
 

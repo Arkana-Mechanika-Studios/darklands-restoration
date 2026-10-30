@@ -18,9 +18,9 @@ internal static class Adapters
 
         // ---- time passing
         ["R029+0x255A"] = c => { TimePassage.Recover(c.State, c.S(0)); return null; },
-        // R029+0x281C reads cur_month DS:00E4 for the birthdays; its callers (R029+0x5537, R029+0x55CD) pass DS:00E4 just incremented
+        // R029+0x281C reads month-now DS:00E4 for the birthdays; its callers (R029+0x5537, R029+0x55CD) pass DS:00E4 just incremented
         ["R029+0x281C"] = c => c.S(0) != c.State.Date.Month
-            ? throw new WorldCallsTests.SkipJob("a month other than cur_month (its callers pass DS:00E4 itself)")
+            ? throw new WorldCallsTests.SkipJob("a month other than month-now (its callers pass DS:00E4 itself)")
             : Run(() => MonthlyUpdate.Run(c.State, c.S(0))),
         ["R029+0x54D8"] = c => { TimePassage.Advance(c.State, c.S(0)); return null; },
         ["R029+0x5590"] = c => { TimePassage.AdvanceDays(c.State, c.S(0)); return null; },
@@ -78,11 +78,11 @@ internal static class Adapters
         ["R039+0x0D46"] = c => CityPolitics.Strength(c.State, -1),
         // R039+0x0EBE: its 36 call sites (thunk 09C0:217F) are the uprising cards R065, R068, R074, R076, R089, R090, R091, run in a city
         ["R039+0x0EBE"] = c => c.State.CurrentLocation < 0
-            ? throw new WorldCallsTests.SkipJob("in the open country (cur_loc -1): every caller runs in a city")
+            ? throw new WorldCallsTests.SkipJob("in the open country (location-now -1): every caller runs in a city")
             : Run(() => CityPolitics.ConflictOutcome(c.State, c.S(0), c.S(1), c.S(2))),
         ["R039+0x0A34"] = c => CityPolitics.SideOf(c.State, c.S(0)),
         ["R039+0x0A7E"] = c => Run(() => CityPolitics.SetSide(c.State, c.S(0), c.S(1))),
-        // the expiry handlers (event_expiry_fns): the argument is the expiring event's slot; the rewrite's dispatcher runs the handler of that event
+        // the expiry handlers (event-expiry-handlers): the argument is the expiring event's slot; the rewrite's dispatcher runs the handler of that event
         ["R029+0x3FB2"] = c => Handler(c, 1),
         ["R029+0x4180"] = c => Handler(c, 2),
         ["R029+0x4378"] = c => Handler(c, 3),
@@ -147,7 +147,7 @@ internal static class Adapters
         }
     }
 
-    /// <summary>season_palette R030+0x2DD6: cur_month DS:00E4, cur_day DS:00E2, the palette DS:E48C (768 bytes), the map's background DS:2860.</summary>
+    /// <summary>season_palette R030+0x2DD6: month-now DS:00E4, day-now DS:00E2, the palette DS:E48C (768 bytes), the map's background DS:2860.</summary>
     private static int? SeasonPaletteCall(WorldCallsTests.Context c)
     {
         var before = new int[768];
@@ -243,7 +243,7 @@ internal static class Adapters
         switch (result.Outcome)
         {
             case StepOutcome.Walked:
-                // party_x/party_y are left to the next pass of the key handler (R030+0x0C44 sets them from the marker) in both
+                // party-map-column/party-map-row are left to the next pass of the key handler (R030+0x0C44 sets them from the marker) in both
                 return -1;
             case StepOutcome.Blocked:
                 return 9999;

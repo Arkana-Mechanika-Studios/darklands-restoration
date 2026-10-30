@@ -23,11 +23,11 @@ public sealed class RulesOracleTests
 
     public static TheoryData<string> Functions() =>
     [
-        "loc_query", "loc_set", "loc_reputation_adj", "improve_roll", "add_attr", "practice_skill", "party_lore_level",
-        "member_best_skill", "party_best_skill_lo", "party_best_skill_hi", "party_min_skill", "party_min_skill2",
-        "party_min_skill_sum", "party_max_skill", "party_max_skill_women", "party_max_skill2", "party_max_skill_sum",
-        "party_avg_skill", "party_min_attr", "party_min_attr_sum", "party_max_attr", "party_max_attr_women",
-        "party_max_attr_sum", "party_avg_attr", "party_max_attr_skill",
+        "R029+0x1A8E", "R029+0x1DFE", "R029+0x19D0", "R029+0x18A8", "R029+0x0A72", "thunk 09C0:1F63", "thunk 09C0:1C1B",
+        "R029+0x01C0", "R029+0x021E", "R029+0x026A", "R029+0x1396", "R029+0x13DE",
+        "R029+0x1446", "R029+0x14A4", "party_max_skill_women", "R029+0x153A", "R029+0x15A2",
+        "R029+0x1600", "R029+0x164A", "party_min_attr_sum", "R029+0x16FE", "party_max_attr_women",
+        "R029+0x179C", "R029+0x1800", "party_max_attr_skill",
     ];
 
     private const int BestValue = DataSegment * 16 + 0x99E6;
@@ -54,7 +54,7 @@ public sealed class RulesOracleTests
         var i = c.Inputs;
         switch (function)
         {
-            case "loc_query":
+            case "R029+0x1A8E":
                 {
                     var s = WithLocations(i);
                     var cur = Int(i, "curLoc");
@@ -66,10 +66,10 @@ public sealed class RulesOracleTests
                     s.Party.Seed = Int(i, "seed");
                     s.MapPosition = new MapPosition(Int(i, "x"), Int(i, "y"));
                     var what = Int(i, "what");
-                    Assert.True((short)c.Ax == (short)LocationRules.Query(s, Int(i, "loc"), what), $"loc_query {what} at {cur}");
+                    Assert.True((short)c.Ax == (short)LocationRules.Query(s, Int(i, "loc"), what), $"place-query {what} at {cur}");
                     break;
                 }
-            case "loc_reputation_adj":
+            case "R029+0x19D0":
                 {
                     var s = WithLocations(i);
                     s.Locations[0].Reputation = Int(i, "rep");
@@ -81,7 +81,7 @@ public sealed class RulesOracleTests
                     Assert.Equal(c.FinalUInt32(Data.Value.HoldRand, State(i)), random.State);
                     break;
                 }
-            case "improve_roll":
+            case "R029+0x18A8":
                 {
                     var s = new GameState(new MscRandom(State(i)));
                     var v = Practice.ImproveRoll(s, Int(i, "v"), Int(i, "lo"), Int(i, "hi"));
@@ -89,14 +89,14 @@ public sealed class RulesOracleTests
                     Assert.Equal(c.FinalUInt32(Data.Value.HoldRand, State(i)), ((MscRandom)s.Random).State);
                     break;
                 }
-            case "add_attr":
+            case "R029+0x0A72":
                 {
                     var (s, records) = WithParty(i, 0);
                     MemberRules.AddAttribute(s, Int(i, "who"), Int(i, "k"), Int(i, "d"));
                     AssertMembers(c, s, records, 0x49, m => m.Attributes);
                     break;
                 }
-            case "practice_skill":
+            case "thunk 09C0:1F63":
                 {
                     var (s, records) = WithParty(i, State(i));
                     s.ReportSkillChanges = false;
@@ -105,7 +105,7 @@ public sealed class RulesOracleTests
                     Assert.Equal(c.FinalUInt32(Data.Value.HoldRand, State(i)), ((MscRandom)s.Random).State);
                     break;
                 }
-            case "loc_set":
+            case "R029+0x1DFE":
                 {
                     var s = WithLocations(i);
                     var cur = Int(i, "curLoc");
@@ -132,7 +132,7 @@ public sealed class RulesOracleTests
                     }
                     break;
                 }
-            case "party_lore_level":
+            case "thunk 09C0:1C1B":
                 {
                     var (s, _) = WithParty(i, 0);
                     Assert.Equal((short)c.Ax, (short)PartyQueries.LoreLevel(s));
@@ -152,23 +152,23 @@ public sealed class RulesOracleTests
         int Arg(int k) => a[k];
         var result = function switch
         {
-            "member_best_skill" => MemberRules.BestWeaponSkill(s, Arg(0)),
-            "party_best_skill_lo" => PartyQueries.BestHandWeaponSkill(s),
-            "party_best_skill_hi" => PartyQueries.BestMissileSkill(s),
-            "party_min_skill" => PartyQueries.MinSkill(s, Arg(0)),
-            "party_min_skill2" => PartyQueries.MinSkill(s, Arg(0), Arg(1)),
-            "party_min_skill_sum" => PartyQueries.MinSkillSum(s, Arg(0), Arg(1)),
-            "party_max_skill" => PartyQueries.MaxSkill(s, Arg(0)),
+            "R029+0x01C0" => MemberRules.BestWeaponSkill(s, Arg(0)),
+            "R029+0x021E" => PartyQueries.BestHandWeaponSkill(s),
+            "R029+0x026A" => PartyQueries.BestMissileSkill(s),
+            "R029+0x1396" => PartyQueries.MinSkill(s, Arg(0)),
+            "R029+0x13DE" => PartyQueries.MinSkill(s, Arg(0), Arg(1)),
+            "R029+0x1446" => PartyQueries.MinSkillSum(s, Arg(0), Arg(1)),
+            "R029+0x14A4" => PartyQueries.MaxSkill(s, Arg(0)),
             "party_max_skill_women" => PartyQueries.MaxSkillOfWomen(s, Arg(0)),
-            "party_max_skill2" => PartyQueries.MaxSkill(s, Arg(0), Arg(1)),
-            "party_max_skill_sum" => PartyQueries.MaxSkillSum(s, Arg(0), Arg(1)),
-            "party_avg_skill" => PartyQueries.AverageSkill(s, Arg(0)),
-            "party_min_attr" => PartyQueries.MinAttribute(s, Arg(0)),
+            "R029+0x153A" => PartyQueries.MaxSkill(s, Arg(0), Arg(1)),
+            "R029+0x15A2" => PartyQueries.MaxSkillSum(s, Arg(0), Arg(1)),
+            "R029+0x1600" => PartyQueries.AverageSkill(s, Arg(0)),
+            "R029+0x164A" => PartyQueries.MinAttribute(s, Arg(0)),
             "party_min_attr_sum" => PartyQueries.MinAttributeSum(s, Arg(0), Arg(1)),
-            "party_max_attr" => PartyQueries.MaxAttribute(s, Arg(0)),
+            "R029+0x16FE" => PartyQueries.MaxAttribute(s, Arg(0)),
             "party_max_attr_women" => PartyQueries.MaxAttributeOfWomen(s, Arg(0)),
-            "party_max_attr_sum" => PartyQueries.MaxAttributeSum(s, Arg(0), Arg(1)),
-            "party_avg_attr" => PartyQueries.AverageAttribute(s, Arg(0)),
+            "R029+0x179C" => PartyQueries.MaxAttributeSum(s, Arg(0), Arg(1)),
+            "R029+0x1800" => PartyQueries.AverageAttribute(s, Arg(0)),
             "party_max_attr_skill" => PartyQueries.MaxAttributePlusSkill(s, Arg(0), Arg(1)),
             _ => throw new InvalidOperationException(function),
         };

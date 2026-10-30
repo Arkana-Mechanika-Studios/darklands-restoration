@@ -46,7 +46,7 @@ public sealed class SwayingAMerchantLeader : Card
     }
 
     // DORMANT: the chance is always 100, so the else branch (texts 2 and 3) is never reached.
-    // C: practice_skill with mode 7 (not 0 or 1), as the original passes it.
+    // C: exercise-skill with mode 7 (not 0 or 1), as the original passes it.
     private static void Charm(CardContext c, int chance)
     {
         c.PassHours(1);

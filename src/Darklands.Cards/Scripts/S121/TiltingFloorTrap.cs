@@ -25,9 +25,9 @@ namespace Darklands.Cards.Scripts;
 //     R121+0x2664
 //   other: R121+0x2302, R121+0x23A4
 // DORMANT (generated): option slots 10..19 keep the default handler R121+0x23A4 ("screwed up.") and are never shown.
-// C (generated): opt_flag_5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
+// C (generated): card-option-flag-5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class TiltingFloorTrap : Card
 {
     public override int Number => 311;
@@ -46,11 +46,11 @@ public sealed class TiltingFloorTrap : Card
     public override int Run(CardContext c)
     {
         Show(c, Picture);
-        // C: the early way out runs before the table set-up (R121+0x2302), so card_items / card_saints and the
+        // C: the early way out runs before the table set-up (R121+0x2302), so card-item-lines / card-saint-lines and the
         //   option handlers stay as the previous card left them; nothing reads them before the next card sets its own.
         if (c.Events.FactAnywhere(1, TrapDisarmedFact))
         {
-            // the original passes frame mode 2, drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
+            // the original passes frame mode 2, drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike).
             c.Screen.Text(0);
             c.BattleMode = 1;
             return c.Next = -2;
@@ -68,7 +68,7 @@ public sealed class TiltingFloorTrap : Card
         var unknown = OptionHint.Saying(CardTexts.Unknown);
         return menu.Run(
             // orig: R121+0x1E9E / R121+0x1F00 matched — leap: the least agile member's effective agility.
-            // C: party_min_eff_attr2 / party_max_skill set best_member, which the hints read (as unsigned char).
+            // C: party-effective-stat-two-low / party-ability-top set top-scoring-member, which the hints read (as unsigned char).
             new MenuLine(chance => Leap(c, chance), () => OptionHint.ChanceOf(c.PartyMinEffectiveAgility(), c.BestMember)),
             // orig: R121+0x1F1C / R121+0x1F7E matched — disarm: half the best Artifice (signed /2, never negative).
             new MenuLine(chance => Disarm(c, chance), () => OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.Artifice) / 2, c.BestMember)),
@@ -122,7 +122,7 @@ public sealed class TiltingFloorTrap : Card
     {
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         ShowPicture(c, Picture);
-        c.Screen.Text(6); // card_text(k, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike)
+        c.Screen.Text(6); // card-text-block(k, 2): frame mode 2 drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike)
         Across(c, 1);
     }
 

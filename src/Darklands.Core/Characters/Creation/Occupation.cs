@@ -21,12 +21,12 @@ public sealed record Occupation(
     IReadOnlyList<int> SkillLimits,
     int Savings);
 
-/// <summary>The personal-name tables of <c>random_name</c>.</summary>
+/// <summary>The personal-name tables of <c>made-up-name</c>.</summary>
 /// <param name="MaleNames">First names for men.</param>
 /// <param name="FemaleNames">First names for women.</param>
 /// <param name="Surnames">Family names and bynames ("of Zollern").</param>
 /// <param name="PatricianSurnames">The short list of patrician family names.</param>
-// orig: R136+0xA9EF, R136+0xABA7, R136+0xAD0F, R136+0xAF5B (far string tables 290E, record R136) read by random_name; tests: CreationOracleTests
+// orig: R136+0xA9EF, R136+0xABA7, R136+0xAD0F, R136+0xAF5B (far string tables 290E, record R136) read by made-up-name; tests: CreationOracleTests
 public sealed record NameTables(
     IReadOnlyList<string> MaleNames,
     IReadOnlyList<string> FemaleNames,

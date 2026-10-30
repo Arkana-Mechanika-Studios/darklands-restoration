@@ -20,7 +20,7 @@ public sealed class RobberKnightTaskOffered : Card
         var patron = c.State.SavedCard;
         var quest = c.Events.Find(8, -1, -1, c.State.SavedCard2, 3, -1);
         c.Variables.Location = c.State.SavedCard2;
-        // C: nearest_city takes the castle's position word pair (+4, +6) as one long.
+        // C: closest-city takes the castle's position word pair (+4, +6) as one long.
         var castle = c.State.Locations[c.Variables.Location];
         c.Variables.Location2 = c.NearestCity(castle.X, castle.Y);
         // DIVERGENCE: without the quest (slot -1) the original reads through a stray pointer; 0 here.
@@ -58,7 +58,7 @@ public sealed class RobberKnightTaskOffered : Card
                 break;
         }
         c.Screen.Text(0x0E);
-        // C: the script keeps loc_reputation(cur_loc) in cur_rep; nothing reads it.
+        // C: the script keeps place-standing(location-now) in reputation-now; nothing reads it.
         c.SetCardSaints();
         c.SetCardItems();
         if (c.Next != CardNumber)

@@ -13,7 +13,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R057+0x0000 (1838:0000) asm; tests: CardSmokeTests
 // DORMANT: R057+0x098E (1838:098E), the init, enables all 20 lines with the "screwed up."
-//   handler R057+0x09C6 and clears card_items/card_saints; lines 7..19 have no action (and
+//   handler R057+0x09C6 and clears card-item-lines/card-saint-lines; lines 7..19 have no action (and
 //   no text line).
 public sealed class CityChurchByDay : Card
 {
@@ -68,7 +68,7 @@ public sealed class CityChurchByDay : Card
             // orig: R057+0x08CA (1838:08CA) + R057+0x088E (1838:088E) R057 seg 1838 asm
             new MenuLine(() => { ShowPicture(c, NavePicture); c.Screen.Text(8); c.Next = Sanctuary; }, OptionHint.Saying(SuccessAssured)),
             // orig: R057+0x0910 (1838:0910) + R057+0x0902 (1838:0902) R057 seg 1838 asm
-            // C: is_daylight() is called and its answer thrown away: the main street by day (card 6) even at night.
+            // C: daylight-test() is called and its answer thrown away: the main street by day (card 6) even at night.
             new MenuLine(() => { _ = c.IsDaylight; c.Next = MainStreet; }, OptionHint.Saying(SuccessAssured)),
             // orig: R057+0x0956 (1838:0956) + R057+0x0948 (1838:0948) R057 seg 1838 asm
             new MenuLine(() => { _ = c.IsDaylight; c.Next = SideStreet; }, OptionHint.Saying(SuccessAssured)));
@@ -205,7 +205,7 @@ public sealed class CityChurchByDay : Card
     /// value (original bug), then of the able members after him in turn, while the gift
     /// lasts; a large gift (over 600 pfennigs) also teaches Virtue (a thirtieth of Religion).
     /// </summary>
-    // BUG: party_max_skill(8) returns the skill value, which the original then uses as a member number.
+    // BUG: party-ability-top(8) returns the skill value, which the original then uses as a member number.
     // C: all values are 16-bit words: the gift is the low word of the tenth, compared signed.
     private static void GiveATenth(CardContext c)
     {

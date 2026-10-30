@@ -140,7 +140,7 @@ public sealed class BattleEndTests
 
     /// <summary>
     /// R014+0x0A54..0x0AC3: nobody able left on the enemies' floor, somebody able on another: the party's floor is shown, and before the end test
-    /// returns the view is drawn around si (floor_view_draw, 09C0:1C2F) and a frame is drawn (combat_draw, 14F7:0008): si is the first able member,
+    /// returns the view is drawn around si (floor-view-paint, 09C0:1C2F) and a frame is drawn (fight-draw, 14F7:0008): si is the first able member,
     /// or the new leader when the leader went Away.
     /// </summary>
     [Fact]

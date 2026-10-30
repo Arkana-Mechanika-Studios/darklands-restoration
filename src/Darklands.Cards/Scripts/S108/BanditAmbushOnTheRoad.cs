@@ -18,7 +18,7 @@ public sealed class BanditAmbushOnTheRoad : Card
     private const int BanditsPicture = 287;
     private const int CampPicture = 61;
 
-    // C: the card's picture buffer (pic_buf) changes when the card is reloaded with the ambush.
+    // C: the card's picture buffer (image-buffer) changes when the card is reloaded with the ambush.
     private int _cardPicture;
 
     public override int Number => 258;
@@ -33,7 +33,7 @@ public sealed class BanditAmbushOnTheRoad : Card
         var scout = c.BestMember;
         c.Variables.Chosen[0] = scout;
         var watchfulness = c.Attribute(scout, (int)Attribute.Perception) + c.Random(10) + c.Skill(scout, (int)Skill.Woodwise) / 2;
-        // C: `rand_mod(100) > v && !event_started(0x4F)`: the roll is made first, every time.
+        // C: `roll-below(100) > v && !event-begun-flag(0x4F)`: the roll is made first, every time.
         if (c.Random(100) > watchfulness && !c.Events.Started(0x4F))
         {
             _cardPicture = AmbushPicture;
@@ -63,7 +63,7 @@ public sealed class BanditAmbushOnTheRoad : Card
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
 
-        // DORMANT: option line 7 is never offered: no path of this card enables it (opt_flag / opt_on stay 0 in every block), so the action R108+0x2C14 and hint R108+0x2C9A never run in play.
+        // DORMANT: option line 7 is never offered: no path of this card enables it (opt_flag / card-option-enabled stay 0 in every block), so the action R108+0x2C14 and hint R108+0x2C9A never run in play.
         return menu.Run(
             // orig: R108+0x266C (1A3F:05FC) matched; hint R108+0x26AA
             new MenuLine(_ => { ShowPicture(c, BanditsPicture); c.Screen.Text(17); Fight(c, true); }, Unknown),
@@ -258,9 +258,9 @@ public sealed class BanditAmbushOnTheRoad : Card
     /// their number and quality grow with the party's lore. Whatever happens, the party moves on.
     /// </summary>
     // orig: R108+0x239A (1A3F:032A) matched; tests: CardSmokeTests
-    // C: arguments right to left: in clamp_range(present, 7, rand_mod(5) + lore/3 + 1) the rand_mod(5) is drawn
-    // first, then rand_mod(2) for the fourth argument, then run_battle draws its seed (-1).
-    // C: party_x is declared `extern long` in the original, so the call pushes party_y and party_x: nearest_city(party_x) receives the party's (x, y); nothing is undefined (checked against the asm).
+    // C: arguments right to left: in limit-to-range(present, 7, roll-below(5) + lore/3 + 1) the roll-below(5) is drawn
+    // first, then roll-below(2) for the fourth argument, then battle-driver draws its seed (-1).
+    // C: party-map-column is declared `extern long` in the original, so the call pushes party-map-row and party-map-column: closest-city(party-map-column) receives the party's (x, y); nothing is undefined (checked against the asm).
     private static void Fight(CardContext c, bool warned)
     {
         int NearestCity() => c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y);

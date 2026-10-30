@@ -250,7 +250,7 @@ internal static class ImageOverlay
         var status = Combatants + Record * k + 0x14;
         if (k >= Combatant.PartySlots && input.Ds[status] == 0 && expected.Ds[status] == 0 && ds != status)
         {
-            // an enemy slot empty before and after: enemies_place tries its spots in the free record (R025) and leaves what it wrote there when
+            // an enemy slot empty before and after: enemy-placement-entry tries its spots in the free record (R025) and leaves what it wrote there when
             // no spot is found; an empty record's bytes are read by nothing until a placement fills it
             return true;
         }

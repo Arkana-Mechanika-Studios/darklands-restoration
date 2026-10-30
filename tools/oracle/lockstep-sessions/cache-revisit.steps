@@ -1,5 +1,5 @@
 # Lockstep session: load DKSAVE10 (a party at the Gasthaus, no store yet), store an item with the innkeeper (P), leave, go back in, store
-# another (P), leave. The first visit appends the store (cache_save(-1) R035+0x1468: the 198-byte header of the loaded game's file); the
+# another (P), leave. The first visit appends the store (stash-store(-1) R035+0x1468: the 198-byte header of the loaded game's file); the
 # revisit rewrites CACHE.TMP as a known store, with a 101-byte header (p += (char)*q): states left2 on diverge (D-40780d)
 key:t
 wait:5

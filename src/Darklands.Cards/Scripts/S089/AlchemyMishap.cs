@@ -54,7 +54,7 @@ public sealed class AlchemyMishap : Card
                 }
                 c.AdjustReputation(c.Here, -6 - c.Random(9), -0x10);
                 c.Screen.Text(blewUp ? 7 : 3, TextFrame.BlankPage);
-                // C: the original sets neither the damages ($Money1) nor options_block here: the menu shows
+                // C: the original sets neither the damages ($Money1) nor settings-block here: the menu shows
                 // the values the last cards left (stale globals), as here.
                 return SettleWithTheInnkeeper(c);
             case VillageInn:
@@ -85,7 +85,7 @@ public sealed class AlchemyMishap : Card
                 {
                     c.Screen.Text(3, TextFrame.BlankPage);
                 }
-                // C: cur_loc = -1: the camp is left for the map.
+                // C: location-now = -1: the camp is left for the map.
                 c.State.CurrentLocation = Core.GameState.Wilderness;
                 return CardContext.OverlandMapCard;
         }
@@ -108,7 +108,7 @@ public sealed class AlchemyMishap : Card
         var menu = Menu(c, null);
         menu.Enable(0, 1);
         menu[0] = c.State.Party.Purse < damages ? OptionState.Shown : OptionState.Enabled;
-        // C: card_options(options_block) each round: the block the start-up (or an earlier card) left.
+        // C: card-option-lines(settings-block) each round: the block the start-up (or an earlier card) left.
         menu.EachRound = () => menu.Block = c.OptionsBlock;
         // orig: R089+0x0910 (1887:0420) matched (resets the option handlers only)
         return menu.Run(

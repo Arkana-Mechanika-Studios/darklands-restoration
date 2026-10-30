@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R125+0x022C, R125+0x0996, R125+0x0A38
 // DORMANT (generated): option slots 10..19 keep the default handler R125+0x0A38 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatMockBaptism : Card
 {
@@ -89,7 +89,7 @@ public sealed class SabbatMockBaptism : Card
 
     /// <summary>In the line the party may overhear where the next sabbat is (text 4) or not (text 5).</summary>
     // orig: R125+0x03F8 matched
-    // C: an int function returning the new options_block; ignored.
+    // C: an int function returning the new settings-block; ignored.
     private static void GetInLine(CardContext c, CardMenu menu, int chance)
     {
         menu.Offer(0, 4, 5);
@@ -99,7 +99,7 @@ public sealed class SabbatMockBaptism : Card
 
     /// <summary>Speak Common of the member found last, plus half the best Charisma.</summary>
     // orig: R125+0x053A matched
-    // C: checked against the asm: member_skill reads best_member (as unsigned char) BEFORE party_max_attr(5) sets it,
+    // C: checked against the asm: member-ability reads top-scoring-member (as unsigned char) BEFORE party-stat-top(5) sets it,
     //   i.e. the member some earlier query left there (stale global); the hint then names the best Charisma.
     private static OptionHint PreachingChance(CardContext c)
     {
@@ -109,7 +109,7 @@ public sealed class SabbatMockBaptism : Card
     }
 
     // orig: R125+0x0462 matched
-    // C: party_max_skill(9) is called only to set best_member, which add_skill reads as unsigned char.
+    // C: party-ability-top(9) is called only to set top-scoring-member, which raise-skill-by reads as unsigned char.
     private static void Preach(CardContext c, int chance)
     {
         if (c.Random(100) <= chance)
@@ -129,7 +129,7 @@ public sealed class SabbatMockBaptism : Card
     }
 
     // orig: R125+0x022C matched
-    // C: no random argument; a result outside 0..4 leaves next_card unchanged (the card stays).
+    // C: no random argument; a result outside 0..4 leaves following-card unchanged (the card stays).
     private static void FightTheLine(CardContext c)
     {
         switch (c.RunBattle(0x4A, -1, 0x29, 3, 2, 0x0D, 2, 6, -1, 0, 0))

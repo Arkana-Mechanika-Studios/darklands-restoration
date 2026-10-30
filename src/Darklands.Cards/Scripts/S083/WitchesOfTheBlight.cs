@@ -31,7 +31,7 @@ public sealed class WitchesOfTheBlight : Card
         c.State.CurrentLocation = -1;
         // C: the picture buffer is the card's: these scenes change it for later redraws.
         var picture = Picture;
-        // options_block keeps an earlier card's value when the card leaves at once (case 0): the sabbat test below reads it.
+        // settings-block keeps an earlier card's value when the card leaves at once (case 0): the sabbat test below reads it.
         int? block = null;
         switch (c.Events.FactValueAnywhere(DragonQuest, 4))
         {
@@ -60,7 +60,7 @@ public sealed class WitchesOfTheBlight : Card
                 block = 4;
                 break;
         }
-        // C: the growth is drawn as an argument of event_update.
+        // C: the growth is drawn as an argument of event-advance.
         var growth = c.Random(2);
         c.Events.Update(-1, -1, 0x1C, 1, growth, DragonQuest, EventUpdate.Add);
         c.Events.Update(-1, -1, 0x1C, 4, 1, DragonQuest, EventUpdate.Add);
@@ -187,7 +187,7 @@ public sealed class WitchesOfTheBlight : Card
             {
                 c.PracticeSkill(Who.Everybody, 0x11, 1, 10, 0);
             }
-            // C: next_card is not changed: the menu comes back.
+            // C: following-card is not changed: the menu comes back.
             return;
         }
         ShowPicture(c, SabbatPicture);

@@ -50,7 +50,7 @@ public sealed class SaintsOracleTests
         }
     }
 
-    /// <summary>The table values of the two functions saint_fns does not list (SaintBook.Unlisted).</summary>
+    /// <summary>The table values of the two functions saint-handler-tables does not list (SaintBook.Unlisted).</summary>
     private static SaintInfo Unlisted(int offset) => offset switch
     {
         0x75D8 => new SaintInfo(206, 7, 27, 52, 19, 35, 1),
@@ -86,7 +86,7 @@ public sealed class SaintsOracleTests
 
     /// <summary>
     /// Cases aimed at branches the generated ones leave open (Corpus/saints-flip.json, tools/oracle/flip_units.py): the party in
-    /// the open country (nearest_city stubbed to the city next to it), the whole party (who -2), and the places the saints'
+    /// the open country (closest-city stubbed to the city next to it), the whole party (who -2), and the places the saints'
     /// functions compare the current location with.
     /// </summary>
     [Fact]
@@ -109,7 +109,7 @@ public sealed class SaintsOracleTests
     }
 
     /// <summary>
-    /// The events the help starts, in order, against the original's recorded event_new / event_here
+    /// The events the help starts, in order, against the original's recorded event-create / event-here-test
     /// calls (an empty log, so each boost's event is made as in the original).
     /// </summary>
     private static void CheckEvents(OracleCase c)
@@ -125,7 +125,7 @@ public sealed class SaintsOracleTests
             var a = actual[k];
             var e = expected[k];
             var words = e.Skip(1).Select(x => (int)(short)x.GetInt32()).ToArray();
-            if (e[0].GetString() == "event_here")
+            if (e[0].GetString() == "R029+0x2930")
             {
                 Assert.Equal((words[0], words[1]), (a.Kind, Hours(a)));
                 Assert.Equal((-2, s.CurrentLocation, 100), (a.Owner, a.Location, a.Value));
@@ -198,7 +198,7 @@ public sealed class SaintsOracleTests
             .ToDictionary(p => int.Parse(p.Name, CultureInfo.InvariantCulture), p => Convert.FromHexString(p.Value.GetString()!));
         for (var k = 0; k < 414; k++)
         {
-            // the record's icon (+0), map position (+4, +6): nearest_city reads them when the party is in the open country
+            // the record's icon (+0), map position (+4, +6): closest-city reads them when the party is in the open country
             s.Locations.Add(locRecords.TryGetValue(k, out var rec)
                 ? new Location { Index = k, Icon = BitConverter.ToInt16(rec, 0), X = BitConverter.ToInt16(rec, 4), Y = BitConverter.ToInt16(rec, 6) }
                 : new Location { Index = k });

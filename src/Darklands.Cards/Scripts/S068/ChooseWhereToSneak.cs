@@ -30,7 +30,7 @@ public sealed class ChooseWhereToSneak : Card
 
         return menu.Run(
             // Lines 0..6: the locked places are not finished: nothing happens (c.Next is unchanged, the question is asked again).
-            // orig: R068+0x0BC2, 0296, 02dc, 0320, 0364, 03a8, 03ec (advance_hours(0) only); hints 025e, 02a2 (leader), 02e8, 032c, 0370, 03b4, 03f8 (100%, whole party)
+            // orig: R068+0x0BC2, 0296, 02dc, 0320, 0364, 03a8, 03ec (pass-hours(0) only); hints 025e, 02a2 (leader), 02e8, 032c, 0370, 03b4, 03f8 (100%, whole party)
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => c.PassHours(0), () => new OptionHint(-1, SuccessAssured, c.Leader)),
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),

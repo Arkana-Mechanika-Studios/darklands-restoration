@@ -12,7 +12,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R066+0x0D48 (190C:0008) asm (the reference has no C for R066 seg 190C); tests: CardSmokeTests
 // orig: handler setup R066+0x178C (all twenty lines on, unused-line handler 0aee "screwed up.",
-// item pop-ups 0b26/0b56/0b86/0bb6, saint pop-ups 0be6/0c70/0cfa/0d84; card_items and card_saints cleared)
+// item pop-ups 0b26/0b56/0b86/0bb6, saint pop-ups 0be6/0c70/0cfa/0d84; card-item-lines and card-saint-lines cleared)
 public sealed class AlchemistsShop : Card
 {
     private const int ShopPicture = 74;
@@ -51,20 +51,20 @@ public sealed class AlchemistsShop : Card
         }
         // Whether he sees the party at all: his whim (party seed + place, 0..29) against the party's
         // best alchemist (10..99). After the knowledge card (0x53) he always does.
-        // C: the result is kept in saved_card2 (DS:E896); the comparison is unsigned.
+        // C: the result is kept in remembered-card-second (DS:E896); the comparison is unsigned.
         var whim = (ushort)(c.State.Party.Seed + c.Here) % 30;
         c.State.SavedCard2 = whim < (ushort)Math.Clamp(c.PartyMaxSkill((int)Skill.Alchemy), 10, 99) ? 1 : 0;
         if (c.PreviousCard == AlchemicalKnowledge)
         {
             c.State.SavedCard2 = 1;
         }
-        // C: cur_rep (loc_reputation) is read and not used.
+        // C: reputation-now (place-standing) is read and not used.
         _ = c.Reputation(c.Here);
         c.SetCardItems();
         c.SetCardSaints();
         var offered = c.Random(21);
         c.Variables.Texts[1] = FormulaName(c, offered);
-        // C: the formula number goes into card_items[0]; no line of this card offers the item pop-up.
+        // C: the formula number goes into card-item-lines[0]; no line of this card offers the item pop-up.
         c.CardItems[0] = offered;
         if (c.EventAtHere(ExchangeAsked))
         {
@@ -101,7 +101,7 @@ public sealed class AlchemistsShop : Card
             new MenuLine(chance => AskAboutKnowledge(c, chance), asLeader),
             new MenuLine(chance => OfferAnExchange(c, menu, chance), asLeader),
             new MenuLine(chance => AskForATask(c, menu, chance), asLeader),
-            // DORMANT: line 5 (opt_flag_5 = 0) has an empty action. orig: R066+0x1662 (hint 0924 R066+0x1664)
+            // DORMANT: line 5 (card-option-flag-5 = 0) has an empty action. orig: R066+0x1662 (hint 0924 R066+0x1664)
             new MenuLine(_ => { }, asLeader),
             // DORMANT: lines 6..8 (opt_flag = 0): time passes. orig: R066+0x167E/0982/09c6 (hints 094a/098e/09d2)
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
@@ -178,7 +178,7 @@ public sealed class AlchemistsShop : Card
     // orig: R066+0x11FE
     private void ImproveTheStone(CardContext c, CardMenu menu, int chance)
     {
-        // C: cur_loc_query(0x21) is called once more and its value dropped.
+        // C: location-now-query(0x21) is called once more and its value dropped.
         _ = c.HereQuery(0x21);
         c.Variables.Numbers[0] = StoneOnOffer(c);
         menu[0] = OptionState.Shown;
@@ -259,7 +259,7 @@ public sealed class AlchemistsShop : Card
     /// A formula for the leader: from a random start, the first formula of a group the leader
     /// knows none of (or the start again after a full round).
     /// </summary>
-    // C: the test reads the whole byte of formulas_known (R136+0xE0EE, three formulas per byte), not the
+    // C: the test reads the whole byte of known-recipes (R136+0xE0EE, three formulas per byte), not the
     // formula's own bit; the (1 << s % 3) test beside it is always true. Checked against the asm.
     private void TeachAFormula(CardContext c)
     {

@@ -185,12 +185,12 @@ public sealed class OverlandKeyTests
     [Fact]
     public void AHeldDirectionWithNoKeyWaitingWaitsForTheNextKey()
     {
-        // R030+0x0549..0x0566: no key waiting but DS:0880 set: get_key waits (the screen stands), then the held Right replaces the key
+        // R030+0x0549..0x0566: no key waiting but DS:0880 set: read-key waits (the screen stands), then the held Right replaces the key
         var steps = Walk(["d:4D"], [], [], [], [0x2D78], [], ["u:4D"], [0x2D78]);
         if (steps is not null)
         {
             Assert.Equal(["step d=1,0"], steps.Select(s => s[..10]));
-            // and with no key at all, no step: the map waits in get_key for good
+            // and with no key at all, no step: the map waits in read-key for good
             Assert.Empty(Walk(["d:4D"])!);
         }
     }

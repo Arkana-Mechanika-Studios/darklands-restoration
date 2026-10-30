@@ -21,7 +21,7 @@ public sealed class GroveByDay_CityG05 : Card
 
     // orig: R052+0x0AC6 (18E4:0006) matched (entry: music, picture, option states, menu loop)
     // orig: R052+0x104C (18E4:058C) matched (init helper: switches all 20 option lines off and installs the "screwed up." default; the entry then enables lines 0..2, 8 and 9)
-    // DORMANT: R052+0x106E (18E4:05AE): the "screwed up." default hint for opt_fn[0..19]; every line the card can show has its own hint, the others are never selectable.
+    // DORMANT: R052+0x106E (18E4:05AE): the "screwed up." default hint for card-option-handler[0..19]; every line the card can show has its own hint, the others are never selectable.
     public override int Run(CardContext c)
     {
         c.PlayMusic(Music);

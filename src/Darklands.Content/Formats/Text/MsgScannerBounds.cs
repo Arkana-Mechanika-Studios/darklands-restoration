@@ -4,7 +4,7 @@ namespace Darklands.Content.Formats.Text;
 /// Signed bounds helper used by the MSG card scanner.
 /// </summary>
 /// <remarks>
-/// The original helper (R029+0x4F76, clamp_range) compares signed words and returns upper, lower, or
+/// The original helper (R029+0x4F76, limit-to-range) compares signed words and returns upper, lower, or
 /// the input value; this helper does the same for the data parser.
 /// </remarks>
 public static class MsgScannerBounds

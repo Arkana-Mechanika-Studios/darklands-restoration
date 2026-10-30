@@ -26,7 +26,7 @@ public sealed class PublicExecution : Card
     {
         c.Screen.Show(MsgName, PictureNames.Of(Picture));
         c.Next = CardNumber;
-        // C: the script's copy of the reputation (cur_rep, DS:EE74); the fight lowers it.
+        // C: the script's copy of the reputation (reputation-now, DS:EE74); the fight lowers it.
         var standing = c.LocationQuery(c.Here, 0);
         c.SetCardItems();
         c.SetCardSaints(5, 0x3F, 0x4E, 0x50);
@@ -222,7 +222,7 @@ public sealed class PublicExecution : Card
     // orig: R079+0x0B64 (18D8:0164) asm; tests: CardSmokeTests
     private static void FightTheGuards(CardContext c, ref int standing)
     {
-        // C: arguments are evaluated right to left: rand_mod(4) (second group) before rand_mod(2).
+        // C: arguments are evaluated right to left: roll-below(4) (second group) before roll-below(2).
         var third = c.PartyLoreLevel() % 3 + 1;
         var second = c.Random(4) + c.PartyLoreLevel() / 3 + 1;
         var first = c.Random(2) + c.PartyLoreLevel() / 4 + 1;

@@ -32,7 +32,7 @@ public sealed class SavedGameStateCardTests
     [Fact]
     public void ANegativePictureQueryKeepsTheLastPicture()
     {
-        // R113+0x0687 / R072+0x14C5: cur_loc_query(0x21) % 3 < 0 matches no case; the card is drawn with pic_buf as it is
+        // R113+0x0687 / R072+0x14C5: location-now-query(0x21) % 3 < 0 matches no case; the card is drawn with image-buffer as it is
         if (!CardHarness.Available)
         {
             return;
@@ -74,7 +74,7 @@ public sealed class SavedGameStateCardTests
     [Fact]
     public void APrayerLeavesTheWhispererAsTheCardChoseHim()
     {
-        // R101+0x0E00 does not write var_chosen1 (DS:EE8C); only the pop-up hint R101+0x10E0 does
+        // R101+0x0E00 does not write text-slot-chosen-one (DS:EE8C); only the pop-up hint R101+0x10E0 does
         if (!CardHarness.Available)
         {
             return;

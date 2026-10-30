@@ -87,7 +87,7 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
             s.script.pop(0)             # the C#'s steps
         if (len(t) > paused and s.script and s.script[0][0] == "key"
                 and len({line.split()[2] for line in t[-paused:]}) == 1):
-            # peeked as key_pressed does; get_key takes it from the script
+            # peeked as key-waiting-test does; read-key takes it from the script
             if not given_keys or given_keys[-1] != len(t):
                 given_keys.append(len(t))
                 s.log.append("%s due in the battle's pause at pass %d" % (s.script[0][1], len(t)))
@@ -101,9 +101,9 @@ def run_original(exe: Path, game: str, steps, save: Path, request, passes: int, 
         if bytes(m.uc.mem_read(ret - 14, 5)) == orig_side.SRAND_CLOCK_CALL:
             seeds.append(m.arg(0))
     s.hook(*orig_side.SRAND, srand)
-    # sound: every sound_play(n) and music_play(x) in order, for battle_oracle.py's comparison with the C# host's requests (patch 06; orig_side.run_original has the same)
+    # sound: every sound-start(n) and music_play(x) in order, for battle_oracle.py's comparison with the C# host's requests (patch 06; orig_side.run_original has the same)
     s.log.append("sound log on")
-    s.hook(*orig_side.SOUND_PLAY, lambda m: m.log.append("sound %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))))
+    s.hook(*orig_side.SOUND_START, lambda m: m.log.append("sound %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))))
     s.hook(*orig_side.MUSIC_PLAY, lambda m: m.log.append("music %d at %d ms in %s" % (m.sarg(0), m.ms, " < ".join(m.call_stack[-2:]))), record="R043")
     if snap is not None:
         s.restore_state(snap)

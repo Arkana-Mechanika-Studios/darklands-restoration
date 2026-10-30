@@ -25,9 +25,9 @@ namespace Darklands.Cards.Scripts;
 //     R134+0x1D38, R134+0x1ED8
 // DORMANT (generated): option slots 10..19 keep the default handler R134+0x1D00 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 4, 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: clamp_range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
+// C: limit-to-range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
 public sealed class BanditsNearTheCamp : Card
 {
     public override int Number => 362;
@@ -65,13 +65,13 @@ public sealed class BanditsNearTheCamp : Card
             new MenuLine(chance => LayAnAmbush(c, chance), () => AmbushChance(c)),
             // orig: R134+0x1A8C .. R134+0x1C4E (hints R134+0x1AAA .. R134+0x1C6C) matched
             // DORMANT: lines 4..9 are never enabled; their handlers show text 0 and go to 0x62 ("Success is assured.").
-            // C: this card never sets item_fn, so an item pop-up would run whatever the previous card left there;
+            // C: this card never sets item-handler-table, so an item pop-up would run whatever the previous card left there;
             //   the table's generic item hint stands in for it (unreachable: no item line).
             .. CardMenu.FirstTextAndEndTable(c, SuccessAssured)[4..]]);
     }
 
     // DORMANT: R134+0x1D38, _081a, _081c, _081e and _09b8 are empty functions nothing calls.
-    // C: the table set-up R134+0x1CA8 fills only saint_fn and clears only card_saints (not card_items).
+    // C: the table set-up R134+0x1CA8 fills only saint-handler-table and clears only card-saint-lines (not card-item-lines).
 
     /// <summary>The praying member is $ChosenTwoName; only a full success (1) sends the bandits away.</summary>
     // orig: R134+0x1922 matched
@@ -127,8 +127,8 @@ public sealed class BanditsNearTheCamp : Card
 
     /// <summary>The bandits, more and better the more the party is known (party lore level).</summary>
     // orig: R134+0x177E matched
-    // C: run_battle's arguments are evaluated right to left: the count's rand_mod(4) (5th argument) is drawn before
-    //   the level's rand_mod(2) (4th). party_lore_level and party_present_count draw nothing.
+    // C: battle-driver's arguments are evaluated right to left: the count's roll-below(4) (5th argument) is drawn before
+    //   the level's roll-below(2) (4th). party-lore-rating and party-here-total draw nothing.
     private static void Fight(CardContext c, bool surprised)
     {
         var lore = c.PartyLoreLevel();

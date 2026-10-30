@@ -31,7 +31,7 @@ public sealed class EmptyPrisonCell : Card
         // text as an option list without lines (which also waits for the player).
         Show(c, Picture);
         c.Next = Number;
-        // DIVERGENCE: the C calls card_options(0) R043+0x0F2A, which draws block 0 as an option list and does not wait; with no
+        // DIVERGENCE: the C calls card-option-lines(0) R043+0x0F2A, which draws block 0 as an option list and does not wait; with no
         //   menu after it the text would only flash before the battle screen. The C# shows it as a text and waits.
         c.Screen.Text(0);
         c.BattleMode = 1;

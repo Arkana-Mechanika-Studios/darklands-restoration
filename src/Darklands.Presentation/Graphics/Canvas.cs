@@ -237,8 +237,8 @@ public sealed class Canvas(Screen screen)
         Copy(region.Pixels, region.Owners, region.Texels, 0, region.Width, region.Height, region.X, region.Y, transparent: false);
 
     /// <summary>Puts back a rectangle the way the driver draws a saved picture: its colour-0 pixels are transparent.</summary>
-    // orig: gfx_save_rect drv+0x0BB7 (root 047C:04D5) keeps a rectangle as rows of [count, skip, pixels] without the zeros at the ends of
-    //   each row (drv+0x0B15); gfx_draw_pic drv+0x0D7D / drv+0x0D9E (root 047C:05A5) draws such a picture skipping every colour-0 pixel;
+    // orig: gfx-rect-save drv+0x0BB7 (root 047C:04D5) keeps a rectangle as rows of [count, skip, pixels] without the zeros at the ends of
+    //   each row (drv+0x0B15); gfx-picture-draw drv+0x0D7D / drv+0x0D9E (root 047C:05A5) draws such a picture skipping every colour-0 pixel;
     //   the callers that save under a box recolour 0 to 5 around the save to keep their black. checked against asm
     public void RestoreTransparent(SavedRegion region) =>
         Copy(region.Pixels, region.Owners, region.Texels, 0, region.Width, region.Height, region.X, region.Y, transparent: true);

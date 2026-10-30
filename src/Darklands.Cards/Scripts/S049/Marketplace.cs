@@ -101,7 +101,7 @@ public sealed class Marketplace : Card
                 },
                 Safety),
             // orig: R049+0x1A44 (1893:1494) + R049+0x19FC (1893:144C) R049 seg 1893 matched
-            // DORMANT: opt_flag_7 is set to 0, so this line (to the main street) is never offered.
+            // DORMANT: card-option-flag-7 is set to 0, so this line (to the main street) is never offered.
             Leave(c, () => c.IsDaylight ? MainStreet : MainStreetAtNight, Safety),
             // orig: R049+0x1AD6 (1893:1526) + R049+0x1A8E (1893:14DE) R049 seg 1893 matched
             Leave(c, () => c.IsDaylight ? MainStreet : MainStreetAtNight, Safety),

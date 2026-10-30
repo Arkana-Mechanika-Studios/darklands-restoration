@@ -18,7 +18,7 @@ public sealed class TextConsole(TextScreen screen)
     // orig: int 10h AX = 3
     public void SetMode() => screen.Clear();
 
-    // orig: bios_set_cursor R000+0x0092 (0E76:0092) draft, bytes matched: int 10h AH = 2, page 0
+    // orig: text-cursor-position-call R000+0x0092 (0E76:0092) draft, bytes matched: int 10h AH = 2, page 0
     public void SetCursor(int row, int column)
     {
         screen.CursorRow = row;
@@ -52,7 +52,7 @@ public sealed class TextConsole(TextScreen screen)
     }
 
     /// <summary>DOS function 9: prints up to the '$'.</summary>
-    // orig: dos_print root 044A:00F4 (asm): int 21h AH = 9
+    // orig: dos-text-print root 044A:00F4 (asm): int 21h AH = 9
     public void DosPrint(ReadOnlySpan<byte> text)
     {
         foreach (var c in text)

@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R122+0x1BF6, R122+0x1C98
 // DORMANT (generated): option slots 10..19 keep the default handler R122+0x1C98 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class PileOfBurnedBooks : Card
 {
@@ -76,7 +76,7 @@ public sealed class PileOfBurnedBooks : Card
         }
         Show(c, BookPicture);
         c.Screen.Text(4);
-        // C: card_load(card_name, pic_buf): pic_buf still holds the card's own picture.
+        // C: card-run(card-title, image-buffer): image-buffer still holds the card's own picture.
         Show(c, BurnedBooksPicture);
         c.Screen.Text(3);
         StudyTheBook(c);
@@ -93,7 +93,7 @@ public sealed class PileOfBurnedBooks : Card
     }
 
     /// <summary>The best Latin speaker gains 15 points of Latin.</summary>
-    // C: party_max_skill is called only for its side effect on best_member, which add_skill reads as unsigned char.
+    // C: party-ability-top is called only for its side effect on top-scoring-member, which raise-skill-by reads as unsigned char.
     private static void StudyTheBook(CardContext c)
     {
         c.PartyMaxSkill((int)Skill.SpeakLatin);

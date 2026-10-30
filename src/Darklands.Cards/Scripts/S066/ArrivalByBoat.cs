@@ -237,7 +237,7 @@ public sealed class ArrivalByBoat : Card
         ShowPicture(c, ChasePicture);
         c.Screen.Text(8);
         c.PracticeSkill(Who.Everybody, (int)Skill.Stealth, 0, 10, 0);
-        // DIVERGENCE: the original sets the card before the previous one (DS:A88F) and prev_screen (DS:A88D) to the street card (R066+0x271F,
+        // DIVERGENCE: the original sets the card before the previous one (DS:A88F) and earlier-screen (DS:A88D) to the street card (R066+0x271F,
         // R066+0x2732); the main loop then sets DS:A88F = DS:A88D (the street card) and DS:A88D = this card (root 03A1:000A), and DS:A88F has no reader
         // in the EXE (only these two stores), so it is not kept; FinishPass sets PreviousCard as the loop does.
         c.Next = 1;
@@ -275,7 +275,7 @@ public sealed class ArrivalByBoat : Card
         c.PassHours(c.Random(12));
         var city = c.City.Word(PortWords[port]);
         c.State.CurrentLocation = city;
-        // C: the original reads that city's DARKLAND.CTY record into city_rec and its DARKLAND.DSC description.
+        // C: the original reads that city's DARKLAND.CTY record into city-record and its DARKLAND.DSC description.
         c.LoadCity(city);
         LookAtThePort(c, menu);
         c.Next = Number;

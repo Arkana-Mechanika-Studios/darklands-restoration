@@ -7,7 +7,7 @@ namespace Darklands.Persistence;
 /// the loader copies a saved game's tail into the file, the writer copies the file back.
 /// </summary>
 // orig: the cache.tmp copy of the loader R037 (1462:1C7D) and of the writer R037+0x2ACE (1462:2ACE); the file's layout and its reads and
-// writes are ItemStores' (cache_load R035+0x1350, cache_save R035+0x1468); tests: OriginalSaveTests
+// writes are ItemStores' (stash-load R035+0x1350, stash-store R035+0x1468); tests: OriginalSaveTests
 public static class CacheFile
 {
     public static ItemStores Read(ReadOnlySpan<byte> file)

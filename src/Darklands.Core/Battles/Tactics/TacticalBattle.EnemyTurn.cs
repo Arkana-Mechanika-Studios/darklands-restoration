@@ -16,11 +16,11 @@ public sealed partial class TacticalBattle
     private readonly BattleMap.ClipResidue _seesResidue = new(), _turnResidue = new();
 
     /// <summary>Which party members the enemies see (all of them right after the alarm).</summary>
-    // orig: enemy_sees R018+0x04B6 (1F43:0006) draft (asm-verified per spec D §6.1)
+    // orig: enemy-line-of-sight R018+0x04B6 (1F43:0006) draft (asm-verified per spec D §6.1)
     private int EnemySees(bool[] seen)
     {
         Array.Clear(seen);
-        // orig: R018+0x04B6..0x0704 calls nothing but line_blocked (R018+0x06AB): its tests are one run of clip tests (BattleMap.ClipResidue)
+        // orig: R018+0x04B6..0x0704 calls nothing but sight-line-blocked (R018+0x06AB): its tests are one run of clip tests (BattleMap.ClipResidue)
         _seesResidue.Point = default;
         var count = 0;
         var alive = Battle.Combatants.Take(Combatant.PartySlots).Count(c => c.IsAble);
@@ -90,7 +90,7 @@ public sealed partial class TacticalBattle
     /// visible member: hand-to-hand fighters walk to it, archers shoot from 32 pixels or more (else
     /// close in or find a spot), casters cast now and then.
     /// </summary>
-    // orig: enemy_turn R018+0x0706 (1F43:0256) draft (near-match; key conditions
+    // orig: enemy-move-phase R018+0x0706 (1F43:0256) draft (near-match; key conditions
     // checked against the asm per spec D §6.2)
     private void EnemyTurn()
     {
@@ -547,7 +547,7 @@ public sealed partial class TacticalBattle
             return false;
         }
         GivePath(e);
-        // orig: R018+0x113A (1F43:0C8A) 0E00: `es:[e * 0xFA + 0x624C] = 0xFF` right after path_give, the path array starting at 20A5:6238: byte 20.
+        // orig: R018+0x113A (1F43:0C8A) 0E00: `es:[e * 0xFA + 0x624C] = 0xFF` right after route-hand-over, the path array starting at 20A5:6238: byte 20.
         en.Path[20] = 0xFF;
         en.Action = CombatAction.Walk;
         en.PathIndex = 0;

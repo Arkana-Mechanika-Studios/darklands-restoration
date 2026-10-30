@@ -52,7 +52,7 @@ public sealed class Blizzard_MeetB03 : Card
     // orig: R113+0x1A12 (19B5:0242) matched; tests: CardSmokeTests
     // C: the kind tests compare the whole flag word (== 0x400L), not a bit; the roll is drawn only for those items (&&).
     // C: the stack count (record +0x6A) is read anew each step, so after a spoiled stack is removed the next one is skipped.
-    // DORMANT: add_attr keeps Strength at 1 or more, so the "Strength <= 0" repair never applies.
+    // DORMANT: raise-attribute-by keeps Strength at 1 or more, so the "Strength <= 0" repair never applies.
     private static void KeepGoing(CardContext c)
     {
         var days = c.Random(4) + 2;

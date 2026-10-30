@@ -22,13 +22,13 @@ public static class MemberRules
 
     // ---- skills ---------------------------------------------------------------------
 
-    /// <summary><c>member_skill</c>.</summary>
-    // orig: member_skill R029+0x01A0 (0E76:01A0) matched; tests: MemberRulesTests; RecordOverrunTests (a member past the records)
+    /// <summary><c>member-ability</c>.</summary>
+    // orig: member-ability R029+0x01A0 (0E76:01A0) matched; tests: MemberRulesTests; RecordOverrunTests (a member past the records)
     public static int Skill(GameState s, int who, int skill) =>
         RecordOverrun.Outside(s.Party.Resolve(who)) ? RecordOverrun.Skill(s, s.Party.Resolve(who), skill) : s.Party.Slot(who).Skills[skill];
 
-    /// <summary>Sets a skill, kept in 0..99 (<c>set_skill</c>).</summary>
-    // orig: set_skill R029+0x02B8 (0E76:02B8) matched; clamp root 0410:001A (0410:001A) asm; tests: MemberRulesTests
+    /// <summary>Sets a skill, kept in 0..99 (<c>ability-assign</c>).</summary>
+    // orig: ability-assign R029+0x02B8 (0E76:02B8) matched; clamp root 0410:001A (0410:001A) asm; tests: MemberRulesTests
     // C: no presence test; root 0410:001A(v, 0, 99) clamps.
     // DIVERGENCE: who -2 or past the slots: the original writes outside the records; here the write is dropped (Party.Slot gives a scratch member).
     public static void SetSkill(GameState s, int who, int skill, int value) =>
@@ -36,10 +36,10 @@ public static class MemberRules
 
     /// <summary>
     /// Adds to a skill, kept in 0..99, and reports "&lt;skill&gt; changed from X to Y" when
-    /// <see cref="GameState.ReportSkillChanges"/> (<c>add_skill</c>; −2: every present member).
+    /// <see cref="GameState.ReportSkillChanges"/> (<c>raise-skill-by</c>; −2: every present member).
     /// </summary>
-    // orig: add_skill R029+0x02EA (0E76:02EA) matched; tests: MemberRulesTests; Oracle:rules.json (through practice_skill)
-    // C: the report text is also copied into msg_buf (DS:9085) and shown with thunk 09C0:1E91(member, 15 up / 12 down) only while DS:26BC is set; here Messages.Report.
+    // orig: raise-skill-by R029+0x02EA (0E76:02EA) matched; tests: MemberRulesTests; Oracle:rules.json (through exercise-skill)
+    // C: the report text is also copied into text-bank-buffer (DS:9085) and shown with thunk 09C0:1E91(member, 15 up / 12 down) only while DS:26BC is set; here Messages.Report.
     public static void AddSkill(GameState s, int who, int skill, int change)
     {
         if (change == 0)
@@ -86,11 +86,11 @@ public static class MemberRules
     }
 
     /// <summary>
-    /// The best of the member's seven weapon skills (<c>member_best_skill</c>). Original bug:
+    /// The best of the member's seven weapon skills (<c>member-top-skill</c>). Original bug:
     /// <see cref="PartyQueryResult.Skill"/> is set on every step, so it always ends as 6.
     /// </summary>
-    // orig: member_best_skill R029+0x01C0 (0E76:01C0) matched; tests: MemberRulesTests; FidelityFixTests; Oracle:rules.json
-    // BUG: `best_skill = i` sits outside the if (missing braces): it ends as 6 (FixBestWeaponSkillNumber).
+    // orig: member-top-skill R029+0x01C0 (0E76:01C0) matched; tests: MemberRulesTests; FidelityFixTests; Oracle:rules.json
+    // BUG: `top-skill-so-far = i` sits outside the if (missing braces): it ends as 6 (FixBestWeaponSkillNumber).
     public static int BestWeaponSkill(GameState s, int who)
     {
         var m = s.Party.Slot(who);
@@ -108,7 +108,7 @@ public static class MemberRules
                 last.Skill = k;
             }
         }
-        // DORMANT: `if (best_skill == -1) { best_skill = 0; return 0; }` - best_skill is an unsigned
+        // DORMANT: `if (top-skill-so-far == -1) { top-skill-so-far = 0; return 0; }` - top-skill-so-far is an unsigned
         // char, so the test never holds in the original. With the fix (no skill above 0) it is
         // what keeps the reported skill from being stale.
         if (s.Behaviour.FixBestWeaponSkillNumber && last.Value == 0)
@@ -121,24 +121,24 @@ public static class MemberRules
 
     // ---- attributes -----------------------------------------------------------------
 
-    /// <summary>The current attribute (<c>member_attr</c>).</summary>
-    // orig: member_attr R029+0x05EE (0E76:05EE) matched
+    /// <summary>The current attribute (<c>member-stat</c>).</summary>
+    // orig: member-stat R029+0x05EE (0E76:05EE) matched
     public static int Attribute(GameState s, int who, int attribute) => s.Party.Slot(who).Attributes[attribute];
 
-    /// <summary>The attribute's maximum (<c>member_attr_max</c>).</summary>
-    // orig: member_attr_max R029+0x0B64 (0E76:0B64) matched
+    /// <summary>The attribute's maximum (<c>member-stat-cap</c>).</summary>
+    // orig: member-stat-cap R029+0x0B64 (0E76:0B64) matched
     public static int AttributeMaximum(GameState s, int who, int attribute) => s.Party.Slot(who).AttributeMaximums[attribute];
 
     /// <summary>
     /// The highest an attribute may be: its maximum plus the largest temporary boost.
     /// </summary>
-    // orig: event_48_max R029+0x4E0C (0E76:4E0C) matched
-    // C: event_48_max(i, k) + p[7] (the maximum byte) as an int, compared with the signed attribute byte.
+    // orig: attribute-overshoot-limit R029+0x4E0C (0E76:4E0C) matched
+    // C: attribute-overshoot-limit(i, k) + p[7] (the maximum byte) as an int, compared with the signed attribute byte.
     public static int AttributeCap(GameState s, int member, int attribute) =>
         s.Events.AttributeBoost(member, attribute) + s.Party.Slot(member).AttributeMaximums[attribute];
 
-    /// <summary>Sets an attribute, kept in 0..99 and under its cap (<c>set_attr</c>; −2: every present member).</summary>
-    // orig: set_attr R029+0x0988 (0E76:0988) matched; tests: MemberRulesTests
+    /// <summary>Sets an attribute, kept in 0..99 and under its cap (<c>stat-assign</c>; −2: every present member).</summary>
+    // orig: stat-assign R029+0x0988 (0E76:0988) matched; tests: MemberRulesTests
     // C: one member is written whatever its status; -2 only the present ones.
     public static void SetAttribute(GameState s, int who, int attribute, int value)
     {
@@ -149,8 +149,8 @@ public static class MemberRules
         }
     }
 
-    /// <summary>Adds to an attribute, kept in 1..99 and under its cap (<c>add_attr</c>; −2: every present member).</summary>
-    // orig: add_attr R029+0x0A72 (0E76:0A72) matched; tests: MemberRulesTests; Oracle:rules.json add_attr
+    /// <summary>Adds to an attribute, kept in 1..99 and under its cap (<c>raise-attribute-by</c>; −2: every present member).</summary>
+    // orig: raise-attribute-by R029+0x0A72 (0E76:0A72) matched; tests: MemberRulesTests; Oracle:rules.json R029+0x0A72
     public static void AddAttribute(GameState s, int who, int attribute, int change)
     {
         foreach (var i in Targets(s, who, presentOnly: true))
@@ -162,16 +162,16 @@ public static class MemberRules
     }
 
     /// <summary>
-    /// Sets an attribute maximum (<c>set_attr_max</c>). Original bug: the 0..99 limit is
+    /// Sets an attribute maximum (<c>stat-cap-assign</c>). Original bug: the 0..99 limit is
     /// computed and then ignored, so the value is stored as given.
     /// </summary>
-    // orig: set_attr_max R029+0x0B84 (0E76:0B84) matched; tests: MemberRulesTests
+    // orig: stat-cap-assign R029+0x0B84 (0E76:0B84) matched; tests: MemberRulesTests
     // BUG: the clamp's result is dropped and v is stored as a char (FixSetAttributeMaximumLimit).
     public static void SetAttributeMaximum(GameState s, int who, int attribute, int value) =>
         s.Party.Slot(who).AttributeMaximums[attribute] = s.Behaviour.FixSetAttributeMaximumLimit ? Math.Clamp(value, 0, 99) : (sbyte)value;
 
-    /// <summary>Adds to an attribute maximum, kept in 1..99 (<c>add_attr_max</c>; −2: every present member).</summary>
-    // orig: add_attr_max R029+0x0BB6 (0E76:0BB6) matched
+    /// <summary>Adds to an attribute maximum, kept in 1..99 (<c>raise-attribute-cap-by</c>; −2: every present member).</summary>
+    // orig: raise-attribute-cap-by R029+0x0BB6 (0E76:0BB6) matched
     public static void AddAttributeMaximum(GameState s, int who, int attribute, int change)
     {
         foreach (var i in Targets(s, who, presentOnly: true))
@@ -183,9 +183,9 @@ public static class MemberRules
 
     /// <summary>
     /// Restores <paramref name="percent"/> % of what an attribute lacks of its maximum, kept in
-    /// 1..99 (<c>heal_attr_pct</c>; −2: every present member).
+    /// 1..99 (<c>heal-attribute-percent</c>; −2: every present member).
     /// </summary>
-    // orig: heal_attr_pct R029+0x08F2 (0E76:08F2) matched
+    // orig: heal-attribute-percent R029+0x08F2 (0E76:08F2) matched
     // C: (max - a) * pct / 100 is a signed 16-bit product and division (truncates toward zero); one member is healed whatever its status.
     public static void HealAttribute(GameState s, int who, int attribute, int percent)
     {
@@ -200,8 +200,8 @@ public static class MemberRules
     }
 
     /// <summary>The members a <c>who</c> argument covers (one member: only if <paramref name="presentOnly"/> allows).</summary>
-    // orig: the who-resolution (-1 the leader, -2 everyone present) repeated inline in set_attr R029+0x0988, add_attr R029+0x0A72,
-    // repeated inline in heal_attr_pct R029+0x08F2 and add_attr_max R029+0x0BB6
+    // orig: the who-resolution (-1 the leader, -2 everyone present) repeated inline in stat-assign R029+0x0988, raise-attribute-by R029+0x0A72,
+    // repeated inline in heal-attribute-percent R029+0x08F2 and raise-attribute-cap-by R029+0x0BB6
     // C: -2 loops over the five slots with party[i][0] != 0; one member: -1 resolves to the leader.
     private static IEnumerable<int> Targets(GameState s, int who, bool presentOnly)
     {
@@ -224,12 +224,12 @@ public static class MemberRules
 
     // ---- encumbrance and agility ----------------------------------------------------
 
-    /// <summary>The weight the member carries in equipment (<c>member_fatigue</c>, record +0x35).</summary>
-    // orig: member_fatigue R029+0x00C6 (0E76:00C6) matched
+    /// <summary>The weight the member carries in equipment (<c>member-tiredness</c>, record +0x35).</summary>
+    // orig: member-tiredness R029+0x00C6 (0E76:00C6) matched
     public static int Encumbrance(GameState s, int who) => s.Party.Slot(who).Encumbrance;
 
     /// <summary>Sets the encumbrance, not below 0 (stored in the record's signed byte).</summary>
-    // orig: set_member_fatigue R029+0x00E4 (0E76:00E4) matched; tests: FidelityFixTests
+    // orig: member-tiredness-set R029+0x00E4 (0E76:00E4) matched; tests: FidelityFixTests
     public static void SetEncumbrance(GameState s, int who, int value) => s.Party.Slot(who).Encumbrance = (sbyte)Math.Max(value, 0);
 
     /// <summary>Adds to the encumbrance, not below 0.</summary>
@@ -258,8 +258,8 @@ public static class MemberRules
         return limit / 2 >= load ? 0 : load <= limit ? 1 : load <= (ushort)(limit * 3) / 2 ? 2 : 3;
     }
 
-    /// <summary>Agility as burden allows: all of it, 2/3, 1/3, or 1 (<c>member_eff_attr2</c>).</summary>
-    // orig: member_eff_attr2 R029+0x06DE (0E76:06DE) matched; tests: PracticeAndItemsTests
+    /// <summary>Agility as burden allows: all of it, 2/3, 1/3, or 1 (<c>member-effective-stat-two</c>).</summary>
+    // orig: member-effective-stat-two R029+0x06DE (0E76:06DE) matched; tests: PracticeAndItemsTests
     // DIVERGENCE: the original does not resolve -1 for the Agility byte (DS:9CB4[-1] reads the bytes before the records; only the band resolves it); callers pass a slot (CardContext resolves -1 first).
     // DORMANT: the switch has no default; R029+0x013A only returns 0..3.
     public static int EffectiveAgility(GameState s, int member)
@@ -279,12 +279,12 @@ public static class MemberRules
     /// <summary>
     /// Raises an attribute for about <paramref name="hours"/> (6 + rnd 3 + hours − 5 hours),
     /// recorded as an <see cref="EventKinds.AttributeBoost"/> event that undoes it
-    /// (<c>raise_attr_temp</c>). A member already above the maximum gets only the rest of the
+    /// (<c>stat-temporary-boost</c>). A member already above the maximum gets only the rest of the
     /// boost. Original bugs (−2): a member whose excess is larger than the boost ends the whole
     /// call, and the reduced boost carries over to the next members.
     /// </summary>
-    // orig: raise_attr_temp R029+0x4C04 (0E76:4C04) matched; tests: MemberRulesTests
-    // C: the event (one rand_mod(3) draw) is written before add_attr.
+    // orig: stat-temporary-boost R029+0x4C04 (0E76:4C04) matched; tests: MemberRulesTests
+    // C: the event (one roll-below(3) draw) is written before raise-attribute-by.
     // BUG: (-2) a member above the boost ends the call and the reduced boost carries over (FixWholePartyBoosts).
     public static void RaiseAttributeTemporarily(GameState s, int who, int attribute, int points, int hours)
     {
@@ -342,15 +342,15 @@ public static class MemberRules
 
     /// <summary>
     /// Raises a skill for about <paramref name="hours"/>, at most to 99, recorded as a
-    /// <see cref="EventKinds.SkillBoost"/> event (the reference's misnamed <c>lower_skill_temp</c>).
+    /// <see cref="EventKinds.SkillBoost"/> event (the reference's misnamed <c>skill-temporary-drop</c>).
     /// Reports only with the "saintly changes" option. Original bug (−2): for each present
     /// member it adds the boost to <em>everybody</em> and records an event owned by −2, so each
     /// member gains the boost once per present member; the 99 limit is taken from an undefined
     /// record (here: skill 0) and the capped boost carries over.
     /// </summary>
-    // orig: lower_skill_temp R029+0x4B08 (0E76:4B08) draft; tests: MemberRulesTests
-    // C: checked against the asm (4b08 differs in register/slot use only): add_skill runs before event_new and its rand_mod(3).
-    // BUG: (-2) member_skill(-2) and add_skill(-2) for each present member (FixWholePartyBoosts).
+    // orig: skill-temporary-drop R029+0x4B08 (0E76:4B08) draft; tests: MemberRulesTests
+    // C: checked against the asm (4b08 differs in register/slot use only): raise-skill-by runs before event-create and its roll-below(3).
+    // BUG: (-2) member-ability(-2) and raise-skill-by(-2) for each present member (FixWholePartyBoosts).
     // DIVERGENCE: member -2's skill is a byte before the records in the original (undefined); here 0.
     public static void RaiseSkillTemporarily(GameState s, int who, int skill, int points, int hours)
     {
@@ -407,8 +407,8 @@ public static class MemberRules
         }
     }
 
-    // orig: event_new R029+0x2C4E (0E76:2C4E) draft
-    // C: event_new(who, cur_loc, 0x63, kind, k, d, 6, rand_mod(3) + h - 5, 1, 0).
+    // orig: event-create R029+0x2C4E (0E76:2C4E) draft
+    // C: event-create(who, location-now, 0x63, kind, k, d, 6, roll-below(3) + h - 5, 1, 0).
     private static void RecordBoost(GameState s, int owner, int kind, int type, int points, int hours) =>
         s.Events.Create(owner, s.CurrentLocation, 0x63, kind, type, points, (int)ExpiryHandler.UndoTemporaryBoost,
             s.Random.Below(3) + hours - 5, (int)EventFlags.CallExpiryHandler, 0);
@@ -417,8 +417,8 @@ public static class MemberRules
     /// Raises the weapon skills the equipped weapon and missile weapon are made for by
     /// <paramref name="points"/> for a day (a saint's help).
     /// </summary>
-    // orig: equip_bonuses R029+0x0792 (0E76:0792) matched
-    // C: weapon flag bits 1, 2, 4, 8 -> skills 0, 1, 3, 2; missile weapon 0x10, 0x20, 0x8000000 -> 4, 5, 6; each a 24-hour lower_skill_temp, in that order.
+    // orig: gear-bonus-sums R029+0x0792 (0E76:0792) matched
+    // C: weapon flag bits 1, 2, 4, 8 -> skills 0, 1, 3, 2; missile weapon 0x10, 0x20, 0x8000000 -> 4, 5, 6; each a 24-hour skill-temporary-drop, in that order.
     public static void BoostEquippedWeaponSkills(GameState s, int who, int points)
     {
         if (Inventory.Equipped(s, who, EquipmentSlot.Weapon) is var weapon and not -1)
@@ -459,8 +459,8 @@ public static class MemberRules
     /// its maximum; Endurance loses rnd(mult × End / 20 + 1) − 1, at least the Strength loss
     /// and <paramref name="minEndurance"/>, at most its maximum. Neither falls below 1.
     /// </summary>
-    // orig: injure_impl R039+0x026A (1462:026A) matched; tests: MemberRulesTests
-    // C: -2 loops i < party_size over status != 0; one member is not resolved here (member_attr and add_attr resolve -1).
+    // orig: wound-inner R039+0x026A (1462:026A) matched; tests: MemberRulesTests
+    // C: -2 loops i < party-headcount over status != 0; one member is not resolved here (member-stat and raise-attribute-by resolve -1).
     public static void Injure(GameState s, int who, int minStrength, int minEndurance, int multiplier)
     {
         if (who == Who.Everybody)
@@ -479,8 +479,8 @@ public static class MemberRules
         }
     }
 
-    // orig: injure_impl R039+0x026A (1462:026A) matched
-    // C: the current value (not the maximum) scales the loss: rand_mod(mult * cur / 40 + 1) - 1, imax with a, imin with the maximum; Endurance after the Strength change, imax with d then b.
+    // orig: wound-inner R039+0x026A (1462:026A) matched
+    // C: the current value (not the maximum) scales the loss: roll-below(mult * cur / 40 + 1) - 1, larger-of with a, smaller-of with the maximum; Endurance after the Strength change, larger-of with d then b.
     private static void InjureOne(GameState s, int who, int minStrength, int minEndurance, int multiplier)
     {
         const int strength = (int)Characters.Attribute.Strength;

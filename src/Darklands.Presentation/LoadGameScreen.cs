@@ -13,7 +13,7 @@ namespace Darklands.Presentation;
 /// </summary>
 // orig: R037+0x81B2 (1C7D:0002) with its set-up R037+0x83FE, draw R037+0x847E,
 // key handler R037+0x84BA, list R037+0x8896, labels R037+0x8B0E, clean-up
-// R037+0x83C8 (mem_free of the button, the fonts back), delete R037+0x9B76, count R037+0x9C10, all
+// R037+0x83C8 (heap-give-back of the button, the fonts back), delete R037+0x9B76, count R037+0x9C10, all
 // matched; tests: LoadScreenTests
 // C: DS:E89A is 1 when the start screen opened it: only then is the third button drawn and do R and its button leave.
 // C: root 047C:1320(6, 0, 0, 0) on leaving (0218) and the 0568/056f pair around the set-up are the graphics driver's page
@@ -41,7 +41,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     /// <summary>Runs the screen; returns the game the player loaded, or null when he left it.</summary>
     /// <param name="fromStartScreen">The start screen opened it (DS:E89A == 1).</param>
     /// <param name="load">Reads the chosen file (R037+0x8ED4 behind the "Loading Game" box).</param>
-    // orig: R037+0x81B2: `while (mouse_buttons & 1);` then the loop: hover over the buttons (0x44 < x < 0xc6, 0x2d < y < 0x5a)
+    // orig: R037+0x81B2: `while (mouse-button-state & 1);` then the loop: hover over the buttons (0x44 < x < 0xc6, 0x2d < y < 0x5a)
     // lights the row's label (colour 8 -> 9), a click there picks L / D / (from the start screen) Esc by (y - 0x2d) / 15, a click in the
     // list (0xc3 < x < 0x140, 0x14 < y < 0xa5) moves the cursor to row (y - 0x14) / 16 if it is shown; a waiting key replaces a click;
     // Esc (and from the start screen R/r) leaves with 0, a key the handler answers with 0x11b loads (1)
@@ -114,7 +114,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
 
     private static bool InButtons(int x, int y) => x > 0x44 && x < 0xC6 && y > 0x2D && y < 0x5A;
 
-    // orig: R037+0x83FE: pic_draw_pal(1, "pics\\loadscrn.pic"), DS:E88A = pic_load("pics\\buttnCR2.pic"), back_win_colour = 8,
+    // orig: R037+0x83FE: image-paint-palette(1, "pics\\loadscrn.pic"), DS:E88A = image-read("pics\\buttnCR2.pic"), backdrop-window-colour = 8,
     // fonts 1, DS:8C4C = R037+0x9C10(), DS:8C52 = 0, DS:8C50 = 0
     private void SetUp()
     {
@@ -154,7 +154,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // (0xc6, row * 16 + 7 / + 0xf) and in colour 0x10 one pixel up and left; `if (DS:8C4C <= DS:8C50) DS:8C50 = DS:8C54 - 1;` and the
     // highlight (0x10 -> 0x12 in 0xc4, row * 16 + 0x16, 0x7b x 0x10)
     // C: the rows are counted from 1 when drawn (DS:8C54 is incremented first), so row r is at y = (r + 1) * 16 + 6.
-    // C: with no saved game the function returns before its mouse_show: the pointer stays hidden (the driver counts hides).
+    // C: with no saved game the function returns before its pointer-show: the pointer stays hidden (the driver counts hides).
     // DIVERGENCE: the pointer stays visible (the host's pointer has no hide count).
     // C: the names of rows not shown this time stay in R136+0x1145E from an earlier list (a later delete of such a row reads them).
     private void DrawList()
@@ -195,7 +195,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         Highlight(true);
     }
 
-    // orig: gfx_recolor_rect(screen_win, 0xc4, (DS:8C50 << 4) + 0x16, 0x7b, 0x10, 0x10, 0x12) and back (0x12 -> 0x10)
+    // orig: gfx-rect-recolour(screen-window, 0xc4, (DS:8C50 << 4) + 0x16, 0x7b, 0x10, 0x10, 0x12) and back (0x12 -> 0x10)
     private void Highlight(bool on)
     {
         if (on)
@@ -217,7 +217,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     {
         if (key == Keys.AltQ)
         {
-            // C: 0218 frees the button picture before quit_to_dos asks; after "no" the screen goes on without it.
+            // C: 0218 frees the button picture before exit-to-system asks; after "no" the screen goes on without it.
             if (new MessageBox(ui).Ask("Quit to DOS?"))
             {
                 throw new QuitGameException();
@@ -283,7 +283,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
                 Highlight(true);
                 break;
             case Keys.End:
-                // orig: DS:8C52 = clamp_range(0, 9999, DS:8C4C - 9); DS:8C50 = clamp_range(0, DS:8C4C, 8);
+                // orig: DS:8C52 = limit-to-range(0, 9999, DS:8C4C - 9); DS:8C50 = limit-to-range(0, DS:8C4C, 8);
                 // C: with fewer than nine games the cursor is put one past them; the list puts it back on the last row.
                 _first = Math.Clamp(_count - Rows, 0, 9999);
                 _cursor = Math.Clamp(8, 0, Math.Max(_count, 0));
@@ -312,7 +312,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     }
 
     // orig: R037+0x84BA (1C7D:030A) case 0x2044/0x2064: the three labels' highlight off (0x45, 0x2f, 0x80 x 0x2d, 9 -> 8), buttnCR2 at
-    // (0x41, 0x3b), s[1] at (0x52, 0x3f); ask_yes_no("Delete this Game?"): 9b76(R136+0x1145E[DS:8C50]) (SaveFolder.Delete) and the
+    // (0x41, 0x3b), s[1] at (0x52, 0x3f); yes-no-prompt("Delete this Game?"): 9b76(R136+0x1145E[DS:8C50]) (SaveFolder.Delete) and the
     // list again; then the button area
     // (0x41, 0x3b, 0x82 x 0xe) from the page, s[1] at (0x52, 0x3f) and its highlight (0x45, 0x3e, 0x80 x 8, 8 -> 9)
     // C: the label comes back one pixel lower (0x3f) than the first drawing put it (0x3e).

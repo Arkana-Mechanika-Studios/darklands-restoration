@@ -15,8 +15,8 @@ public sealed class CoreValuesOracleTests
 
     public static TheoryData<string> Functions() =>
     [
-        "money_set", "money_add_fgp", "money_sub_fgp", "money_add", "money_sub", "money_mul",
-        "money_cmp", "date_set", "date_add_hours", "days_between", "hour_band", "rand_mod", "random_n", "rand_1_n",
+        "R029+0x4FB4", "R029+0x5040", "R029+0x5090", "R029+0x50FC", "R029+0x514E", "R029+0x51A0",
+        "R029+0x51E4", "R029+0x57BE", "R029+0x58FA", "R029+0x5AB4", "R029+0x5654", "root 0000:0C70", "root 0410:0008", "root 0000:0C8C",
     ];
 
     [Theory]
@@ -36,47 +36,47 @@ public sealed class CoreValuesOracleTests
         var i = c.Inputs;
         switch (function)
         {
-            case "money_set":
+            case "R029+0x4FB4":
                 AssertMoneyAtA(c, MoneyOf(i, "m"), Money.From(Int(i, "fl"), Int(i, "gr"), Int(i, "pf")));
                 break;
-            case "money_add_fgp":
+            case "R029+0x5040":
                 AssertMoneyAtA(c, MoneyOf(i, "m"), MoneyOf(i, "m").Add(Int(i, "fl"), Int(i, "gr"), Int(i, "pf")));
                 break;
-            case "money_sub_fgp":
+            case "R029+0x5090":
                 AssertMoneyAtA(c, MoneyOf(i, "m"), MoneyOf(i, "m").Subtract(Int(i, "fl"), Int(i, "gr"), Int(i, "pf")));
                 break;
-            case "money_add":
+            case "R029+0x50FC":
                 AssertMoneyAtA(c, MoneyOf(i, "a"), MoneyOf(i, "a").Add(MoneyOf(i, "b")));
                 break;
-            case "money_sub":
+            case "R029+0x514E":
                 AssertMoneyAtA(c, MoneyOf(i, "a"), MoneyOf(i, "a").Subtract(MoneyOf(i, "b")));
                 break;
-            case "money_mul":
+            case "R029+0x51A0":
                 AssertMoneyAtA(c, new Money(7, 7, 7), MoneyOf(i, "unit").Times(Int(i, "n")));
                 break;
-            case "money_cmp":
+            case "R029+0x51E4":
                 Assert.Equal((short)c.Ax, (short)MoneyOf(i, "a").CompareTo(MoneyOf(i, "b")));
                 break;
-            case "date_set":
+            case "R029+0x57BE":
                 AssertDateAtA(c, default, GameDate.Create(Int(i, "year"), Int(i, "month"), Int(i, "day"), Int(i, "hour")));
                 break;
-            case "date_add_hours":
+            case "R029+0x58FA":
                 AssertDateAtA(c, DateOf(i, "date"), DateOf(i, "date").AddHours(Int(i, "hours")));
                 break;
-            case "days_between":
+            case "R029+0x5AB4":
                 Assert.Equal((short)c.Ax, (short)DateOf(i, "a").DaysSince(DateOf(i, "b")));
                 break;
-            case "hour_band":
+            case "R029+0x5654":
                 Assert.Equal((short)c.Ax, (short)TimeOfDay.Band(Int(i, "hour")));
                 break;
-            case "rand_mod":
-            case "random_n":
-            case "rand_1_n":
+            case "root 0000:0C70":
+            case "root 0410:0008":
+            case "root 0000:0C8C":
                 {
                     var random = new MscRandom(i.GetProperty("state").GetUInt32());
                     var n = Int(i, "n");
-                    // rand_1_n (root 0000:0C8C, 1..n with n < 2 counting as 2) is Battle.RollOneTo: Below(n) + 1
-                    var value = function == "rand_mod" ? random.Below(n) : function == "random_n" ? random.Scaled(n) : random.Below(n) + 1;
+                    // roll-one-to-n (root 0000:0C8C, 1..n with n < 2 counting as 2) is Battle.RollOneTo: Below(n) + 1
+                    var value = function == "root 0000:0C70" ? random.Below(n) : function == "root 0410:0008" ? random.Scaled(n) : random.Below(n) + 1;
                     Assert.Equal((short)c.Ax, (short)value);
                     Assert.Equal(c.FinalUInt32(Data.Value.HoldRand, i.GetProperty("state").GetUInt32()), random.State);
                     break;

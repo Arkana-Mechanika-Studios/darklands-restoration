@@ -33,9 +33,9 @@ public sealed class RebelMobInTheStreets : Card
             || previous == 0x7C;
         var menu = Menu(c, facingTheMob ? 0x0B : 0);
         menu.Enable(0);
-        // C: opt_flag_1 = 0 and nothing sets it again: the back-off line is never offered.
+        // C: card-option-flag-1 = 0 and nothing sets it again: the back-off line is never offered.
         menu[1] = OptionState.Hidden;
-        // C: opt_on[2] = opt_flag_2 (never assigned: what the card before left), then opt_on[2] = 1 when facing the mob (opt_flag_2 stays).
+        // C: card-option-enabled[2] = card-option-flag-2 (never assigned: what the card before left), then card-option-enabled[2] = 1 when facing the mob (card-option-flag-2 stays).
         if (facingTheMob)
         {
             menu.Override(2, OptionState.Enabled);
@@ -45,7 +45,7 @@ public sealed class RebelMobInTheStreets : Card
             new MenuLine(() => BackOff(c), OptionHint.Saying("Cowards!")),
             // orig: R074+0x2442 (1A42:03A2) matched; R074+0x2444 (1A42:03A4) matched; tests: CardSmokeTests
             // DORMANT: talking to the crowd: the original has no code behind this line (it does nothing and the menu returns).
-            // C: away from the mob, line 2 takes opt_flag_2, which this card never sets (a stale
+            // C: away from the mob, line 2 takes card-option-flag-2, which this card never sets (a stale
             // global of an earlier card); block 0 has no third line, so it is taken as hidden.
             // C: if a stale value 1 left the line enabled in block 0, choosing it would also do nothing.
             new MenuLine(() => { }, OptionHint.Saying("No Code!")));
@@ -97,7 +97,7 @@ public sealed class RebelMobInTheStreets : Card
     }
 
     // orig: R074+0x23E6 (1A42:0346) matched; R074+0x2418 (1A42:0378) matched; tests: CardSmokeTests
-    // DORMANT: line 1 is never offered (opt_flag_1 = 0), so the party never backs off here.
+    // DORMANT: line 1 is never offered (card-option-flag-1 = 0), so the party never backs off here.
     /// <summary>The city remembers the party's cowardice for 60 days.</summary>
     private static void BackOff(CardContext c)
     {

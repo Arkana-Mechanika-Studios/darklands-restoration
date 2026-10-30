@@ -9,7 +9,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R110+0x1C52 (19FD:0002) matched; tests: CardSmokeTests
 // orig: R110+0x21AC (19FD:055C) matched (registration: item pop-ups R110+0x226E/0638 give 100 and name the member; saint pop-ups do not)
-// C: the loop calls card_menu without card_options or card_text (card_load draws only the picture), so the menu works on the option
+// C: the loop calls card-choice-menu without card-option-lines or card-text-block (card-run draws only the picture), so the menu works on the option
 // C: lines the screen last laid out (the previous card's last text) with this card's states and handlers (CardMenu.DrawsOptions = false).
 // DORMANT: R110+0x1E90 (text 11, then the map; hidden in db bytes),
 // R110+0x1E8E, R110+0x22A2 and R110+0x22A4 are never called.
@@ -49,7 +49,7 @@ public sealed class UnfinishedArmyScouts_Meeta03 : Card
             new MenuLine(p => { c.PracticeSkill(Who.Everybody, (int)Skill.Woodwise, c.Random(100) <= p ? 7 : 0, 10, 0); c.Next = 267; },
                 () => OptionHint.ChanceOf(100, OptionHint.WholeParty)),
             // orig: R110+0x2140 (19FD:04F0) matched; hint R110+0x2192
-            // DORMANT: line 8 (run and hide) is never offered (opt_flag_8 = 0).
+            // DORMANT: line 8 (run and hide) is never offered (card-option-flag-8 = 0).
             new MenuLine(p => RunAndHide(c, p), () => OptionHint.ChanceOf(100, OptionHint.WholeParty)),
             // orig: R110+0x21A8 (19FD:0558) matched (empty); hint R110+0x21AA (empty)
             // DORMANT: line 9 is never offered. UNCERTAIN: its hint returns AX/DX; a neutral hint is used.

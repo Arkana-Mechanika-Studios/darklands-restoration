@@ -30,10 +30,10 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
 
     /// <summary>Builds the box of an item line (<paramref name="saints"/> false) or a saint line.</summary>
     /// <param name="darkPicture">The card picture's name starts with 'x' (white text): carried items are listed in colour 15, not 0.</param>
-    // orig: R043+0x2CE2(win, unused, kind): kind 1 lists card_items through has_item (1 carried, 2 formula known), kind 2 card_saints through member_bit; for each member i < party_size: status 1 builds "\x81" + name + "\xff\n" (and counts the name's width); every slot j: status 0 or 5 -> "\x15\n"; a listed item/saint the member has, or any at Basic for the leader, or any while DS:5204 -> "\x15 " + colour + name ("\x87" grey and state 2 for the Basic leader who lacks it, "\x84" state 2 for a known formula unless at Expert, "\x80" / "\x8f" state 1 when carried or DS:5204, else "\x83" state 0) + " (count)" when carried + "\n"; otherwise "\x15\n"; a member with any line adds name + lines + "\x14", else only the lines; finally the last two bytes are cut off; returns the widest line + 6
+    // orig: R043+0x2CE2(win, unused, kind): kind 1 lists card-item-lines through carries-item (1 carried, 2 formula known), kind 2 card-saint-lines through member-flag-bit; for each member i < party-headcount: status 1 builds "\x81" + name + "\xff\n" (and counts the name's width); every slot j: status 0 or 5 -> "\x15\n"; a listed item/saint the member has, or any at Basic for the leader, or any while DS:5204 -> "\x15 " + colour + name ("\x87" grey and state 2 for the Basic leader who lacks it, "\x84" state 2 for a known formula unless at Expert, "\x80" / "\x8f" state 1 when carried or DS:5204, else "\x83" state 0) + " (count)" when carried + "\n"; otherwise "\x15\n"; a member with any line adds name + lines + "\x14", else only the lines; finally the last two bytes are cut off; returns the widest line + 6
     // C: the name is kept from the last member of status 1: a member of another status (2 unconscious, 3 dead) whose slots qualify gets the previous member's name above his lines; before any status-1 member it is uninitialised stack (DIVERGENCE: empty here).
-    // C: the widths are text_pixel_width of the raw strings, control and colour codes included (char_width: a colour code is 0 wide; the box's font 0 starts at code 0, so 0x15 and 0x14 count with their glyph widths, see TextPainter.Advance); the name's width is counted for every status-1 member, listed or not.
-    // C: the count is itoa_commas(count_items(i, item)); rn is the has_item answer until then.
+    // C: the widths are text-width-px of the raw strings, control and colour codes included (glyph-width: a colour code is 0 wide; the box's font 0 starts at code 0, so 0x15 and 0x14 count with their glyph widths, see TextPainter.Advance); the name's width is counted for every status-1 member, listed or not.
+    // C: the count is number-with-separators(item-tally(i, item)); rn is the carries-item answer until then.
     public static OptionPopupText Build(CardContext c, bool saints, TextPainter painter, bool darkPicture)
     {
         var state = c.State;
@@ -111,7 +111,7 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
         }
         if (text.Count > 0)
         {
-            // C: msg_buf[strlen(msg_buf) - 2] = 0
+            // C: text-bank-buffer[strlen(text-bank-buffer) - 2] = 0
             text.RemoveRange(Math.Max(0, text.Count - 2), Math.Min(2, text.Count));
         }
         return new OptionPopupText([.. text], states, widest + 6);
@@ -123,7 +123,7 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
         return line;
     }
 
-    // orig: R136+0x114F4, the second name list of the saints in darkland.lst (filled by world_load R043+0x0100): the short names
+    // orig: R136+0x114F4, the second name list of the saints in darkland.lst (filled by world-read R043+0x0100): the short names
     private static string SaintName(CardContext c, int saint) =>
         saint >= 0 && saint < c.World.Items.Saints.Count ? c.World.Items.Saints[saint].ShortName : "";
 }

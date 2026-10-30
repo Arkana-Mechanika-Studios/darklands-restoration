@@ -1,11 +1,11 @@
-"""Original-byte corpus for the path search (R014 12F7: path_find with its trackers, waypoint
+"""Original-byte corpus for the path search (R014 12F7: route-search with its trackers, waypoint
 pruning, the AI's path hook and the shortcut pass).
 
 usage: python -I build_path_corpus.py <DARKLAND.EXE> <out path.json>
 
-Each case runs the original path_find from the unchanged EXE (sections 136 data + 14 code) on a
+Each case runs the original route-search from the unchanged EXE (sections 136 data + 14 code) on a
 generated floor and generated combatants and step tables. The work-area offsets are those
-level_load (R020 05E6) sets. Only inputs and results are stored; no game bytes.
+level-read (R020 05E6) sets. Only inputs and results are stored; no game bytes.
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ from run_unit import run  # noqa: E402
 DS = 0x321A
 FLOOR_SEG = 0x20A5
 COMBATANTS = 0x9C55
-CBT_FLOOR, HALF_W, HALF_H, MOVING = 0xA6B4, 0xC80F, 0xC831, 0xA6D3
+FIGHTER_FLOOR_LEVEL, HALF_W, HALF_H, MOVING = 0xA6B4, 0xC80F, 0xC831, 0xA6D3
 FURN_H, FURN_W, FURN_X, FURN_Y = 0xC11D, 0xC12F, 0xD7BE, 0xD802
 STEP_X, STEP_Y = 0xC681, 0xC6F4
 WORK_SEG = 0x9000
@@ -32,9 +32,9 @@ PATH = 0x71BA
 NDOORS = 0x1F52
 # the busy-cursor calls (12F7:03B6 on, 03D2 off) are the screen's: stubbed
 # and so are the EMS page mappings of the work area (root 05F8:0117), which is plain memory here
-CALLSITES = {"12ff5": "busy_on", "13369": "busy_on", "138f4": "busy_off", "132a6": "ems_map_page", "13339": "ems_map_page",
-             "13350": "ems_map_page"}
-# the work-area layout level_load (R020 1EF8:05E6) sets (offsets in the work segment)
+CALLSITES = {"12ff5": "busy_on", "13369": "busy_on", "138f4": "busy_off", "132a6": "ems-page-map", "13339": "ems-page-map",
+             "13350": "ems-page-map"}
+# the work-area layout level-read (R020 1EF8:05E6) sets (offsets in the work segment)
 WORK = {0xE0EA: 0, 0xE0EC: 0x9C4, 0xE0EE: 0x9CE, 0xE0F0: 0x9D8, 0xE0F2: 0x9E2, 0xE0F4: 0x9F6, 0xE0F6: 0xA0A, 0xE0F8: 0xA1E,
         0xE0FA: 0xA32, 0xE0FC: 0xA46, 0xE0FE: 0xA5A, 0xE100: 0xA64, 0xE102: 0xA6E, 0xE104: 0xD8E, 0xE106: 0x10AE, 0xE108: 0x13CE,
         0xE10A: 0x13D8, 0xE10C: 0x14D2, 0xE10E: 0x1522, 0xE110: 0x1572, 0xE112: 0x15C2, 0xE114: 0x1752, 0xD6F7: WORK_SEG,
@@ -116,13 +116,13 @@ def main() -> None:
         mem += [ds(FURN_H, bytes(s[1] for s in shapes)), ds(FURN_W, bytes(s[0] for s in shapes)),
                 ds(FURN_X, bytes(b for s in shapes for b in s[2])), ds(FURN_Y, bytes(b for s in shapes for b in s[3]))]
         mem += [ds(COMBATANTS + 0x80 * k, rec) for k, rec in enumerate(recs)]
-        mem += [ds(CBT_FLOOR, bytes(floors)), ds(HALF_W, bytes(half_w)), ds(HALF_H, bytes(half_h)), ds(MOVING, bytes(moving))]
+        mem += [ds(FIGHTER_FLOOR_LEVEL, bytes(floors)), ds(HALF_W, bytes(half_w)), ds(HALF_H, bytes(half_h)), ds(MOVING, bytes(moving))]
         sx = bytes(v & 0xFF for v in steps_x)
         sy = bytes(v & 0xFF for v in steps_y)
         mem += [ds(STEP_X + 10 * s, sx) for s in range(11)] + [ds(STEP_Y + 10 * s, sy) for s in range(11)]
         mem += [ds(off, struct.pack("<H", v)) for off, v in WORK.items()]
         mem += [ds(0xE0A2, b"\x00"), ds(0xE13C, b"\x00"), ds(0xC600, b"\x00"), ds(0xD697, b"\x00")]
-        res = run(exe, {"unit": "path_find", "entry": {"segment": "12F7", "offset": "000A"}, "sections": [136, 14],
+        res = run(exe, {"unit": "route-search", "entry": {"segment": "12F7", "offset": "000A"}, "sections": [136, 14],
                         "ds": DS, "memory": mem, "args": [h16(who)], "follow": True, "track_all": True,
                         "callsites": CALLSITES, "stub": list(set(CALLSITES.values())),
                         "max_instructions": 30000000})
@@ -136,9 +136,9 @@ def main() -> None:
         path = bytes(byte(FLOOR_SEG * 16 + PATH + k, 0xEE) for k in range(250))
         trackers = None
         if "--trackers" in sys.argv:
-            # path_trackers alone (12F7:03EA) on the same scene, the searcher's record copied to a scratch spot
+            # route-tracker-table alone (12F7:03EA) on the same scene, the searcher's record copied to a scratch spot
             scratch = 0xF800
-            res2 = run(exe, {"unit": "path_trackers", "entry": {"segment": "12F7", "offset": "03EA"}, "sections": [136, 14],
+            res2 = run(exe, {"unit": "route-tracker-table", "entry": {"segment": "12F7", "offset": "03EA"}, "sections": [136, 14],
                              "ds": DS, "memory": mem + [ds(scratch, bytes(me))], "args": [h16(scratch)], "follow": True,
                              "track_all": True, "callsites": CALLSITES, "stub": list(set(CALLSITES.values())),
                              "max_instructions": 30000000})
@@ -147,7 +147,7 @@ def main() -> None:
             winner = ch2.get(DS * 16 + 0x84E6, 0) | ch2.get(DS * 16 + 0x84E7, 0) << 8
             steps = bytes(ch2.get(WORK_SEG * 16 + (winner & 0xFF) * 250 + k, 0) for k in range(min(e116 + 1, 250))) if int(res2["final"]["ax"], 16) & 0x7FFF == 1 else b""
             trackers = {"ax": res2["final"]["ax"], "length": e116, "steps": steps.hex()}
-        out.append({"function": "path_find", "ax": res["final"]["ax"], "length": length, "path": path.hex(), "trackers": trackers, "inputs": {
+        out.append({"function": "route-search", "ax": res["final"]["ax"], "length": length, "path": path.hex(), "trackers": trackers, "inputs": {
             "cells": [[x, y, v] for (x, y), v in cells.items()], "shapes": [[s[0], s[1], s[2], s[3]] for s in shapes],
             "combatants": [rec.hex() for rec in recs], "floors": bytes(floors).hex(), "halfW": bytes(half_w).hex(),
             "halfH": bytes(half_h).hex(), "moving": bytes(moving).hex(), "stepX": steps_x, "stepY": steps_y, "who": who}})

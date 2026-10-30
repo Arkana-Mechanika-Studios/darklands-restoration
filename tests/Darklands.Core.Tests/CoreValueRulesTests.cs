@@ -44,7 +44,7 @@ public sealed class CoreValueRulesTests
     [Fact]
     public void TheMonthlyUpdateRunsWithTheClockAlreadyMoved()
     {
-        // orig: cur_day and cur_month are the globals: the update sees the new month's first day, the year not yet rolled
+        // orig: day-now and month-now are the globals: the update sees the new month's first day, the year not yet rolled
         var seen = new List<GameDate>();
         Calendar.AdvanceHours(new GameDate(22, 31, 4, 1400), 7, (date, _) => seen.Add(date));
 

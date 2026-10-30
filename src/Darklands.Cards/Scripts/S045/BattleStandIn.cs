@@ -13,7 +13,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT: R045+0x0976 (init) also sets the pop-up handlers R045+0x0A50, R045+0x0A8E,
 //   R045+0x0ACC, R045+0x0B0A (items) and R045+0x0B48, R045+0x0B86,
 //   R045+0x0BC4, R045+0x0C02 (saints): each names the pop-up's member ($ChosenOneName)
-//   and says "screwed up."; the card offers no item or saint line (items_usable/saints_usable are
+//   and says "screwed up."; the card offers no item or saint line (usable-item-list/saints-available are
 //   never asked), so the pop-up never opens.
 // DORMANT: R045+0x0866, R045+0x08BC, R045+0x08F2, R045+0x0928,
 //   R045+0x095E: hint handlers written for options 5..9 but never installed (options 5..9
@@ -43,7 +43,7 @@ public sealed class BattleStandIn : Card
         return menu.Run(
             // orig: R045+0x0726 (188B:01F6) + R045+0x0714 (188B:01E4) R045 seg 188B matched
             // DIVERGENCE: the original goes to screen 0, which is card 0 ($Initi00, a normal overlay vector that
-            //   sets the purse to 200 florins and prev_screen to 0); that card is not in the C# card table, so the C# goes back
+            //   sets the purse to 200 florins and earlier-screen to 0); that card is not in the C# card table, so the C# goes back
             //   to the card before, as the dispatcher does with unknown cards. No card leads here in play.
             new MenuLine(() => GoTo(c, c.State.PreviousCard), () => OptionHint.ChanceOf(100, c.Leader)),
             // orig: R045+0x0750 (188B:0220) + R045+0x073E (188B:020E) R045 seg 188B matched

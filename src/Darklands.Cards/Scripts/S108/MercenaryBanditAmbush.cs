@@ -68,7 +68,7 @@ public sealed class MercenaryBanditAmbush : Card
                 c.PartyAverageEffectiveAgility() + c.PartyAverageSkill((int)Skill.Woodwise) * 2, 1, 99), OptionHint.WholeParty)),
             // orig: R108+0x3AE2 (1B3A:0AC2) matched; hint R108+0x3AEC
             new MenuLine(_ => Fight(c, false), () => OptionHint.Say(SuccessAssured)),
-            // DORMANT: line 7 ("sneak up and see who they are", in text block 0) is never offered (opt_flag_7 = 0);
+            // DORMANT: line 7 ("sneak up and see who they are", in text block 0) is never offered (card-option-flag-7 = 0);
             // lines 7..9 have empty actions R108+0x3B24/0b08/0b0c and hints R108+0x3B26/0b0a/0b0e
             // C: the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
@@ -88,7 +88,7 @@ public sealed class MercenaryBanditAmbush : Card
         return OptionHint.ChanceOf(c.MenuSlot == 0 ? perception + 1 : perception + 7, m);
     }
 
-    // C: member_skill(var_chosen1 = best_member, 0xA): the most charming member is named inside the argument.
+    // C: member-ability(text-slot-chosen-one = top-scoring-member, 0xA): the most charming member is named inside the argument.
     private static OptionHint TalkHint(CardContext c)
     {
         var charm = c.PartyMaxAttribute((int)Attribute.Charisma) * 4;
@@ -201,7 +201,7 @@ public sealed class MercenaryBanditAmbush : Card
 
     /// <summary>The mercenaries, more and better than card 258's bandits as the party's lore grows; then the party moves on.</summary>
     // orig: R108+0x332C (1B3A:030C) matched; tests: CardSmokeTests
-    // C: arguments right to left: rand_mod(4) (inside clamp_range) is drawn before rand_mod(3), then run_battle draws its seed.
+    // C: arguments right to left: roll-below(4) (inside limit-to-range) is drawn before roll-below(3), then battle-driver draws its seed.
     private static void Fight(CardContext c, bool warned)
     {
         int NearestCity() => c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y);

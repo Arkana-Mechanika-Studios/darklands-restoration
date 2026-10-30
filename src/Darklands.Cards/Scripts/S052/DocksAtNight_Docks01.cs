@@ -14,7 +14,7 @@ public sealed class DocksAtNight_Docks01 : Card
 
     private const int Picture = 68;
 
-    /// <summary>The picture shown while the swimmers are counted (pic_names+0x0DF7).</summary>
+    /// <summary>The picture shown while the swimmers are counted (image-file-names+0x0DF7).</summary>
     private const int SwimmersPicture = 236;
 
     private const int Docks = 0x1F, MainStreet = 0x06, MainStreetAtNight = 0x08, SideStreet = 0x09, SideStreetAtNight = 0x0A,
@@ -27,9 +27,9 @@ public sealed class DocksAtNight_Docks01 : Card
 
     // orig: R052+0x0000 (1838:0000) unmatched (entry: option states by month and mounts, text block by season, menu loop; checked against asm)
     // orig: R052+0x06D4 (1838:06D4) matched (init helper: enables all 20 option lines, clears the item and saint slots)
-    // DORMANT: R052+0x0776 (1838:0776): the init helper points opt_fn[0..19] at this "screwed up." default; the card installs its own handler for lines 0..9, and lines 10..19 (left enabled by the helper) have no text line, so it never runs.
-    // DORMANT: R052+0x07AE (1838:07AE), R052+0x07EA (1838:07EA), R052+0x0826 (1838:0826), R052+0x0862 (1838:0862): item pop-up handlers ("success is assured" for the chosen member); card_items stay empty (-1), so no item pop-up exists.
-    // DORMANT: R052+0x089E (1838:089E), R052+0x0928 (1838:0928), R052+0x09B2 (1838:09B2), R052+0x0A3C (1838:0A3C): saint pop-up handlers (chance text of the chosen saint); card_saints stay empty, so no saint pop-up exists.
+    // DORMANT: R052+0x0776 (1838:0776): the init helper points card-option-handler[0..19] at this "screwed up." default; the card installs its own handler for lines 0..9, and lines 10..19 (left enabled by the helper) have no text line, so it never runs.
+    // DORMANT: R052+0x07AE (1838:07AE), R052+0x07EA (1838:07EA), R052+0x0826 (1838:0826), R052+0x0862 (1838:0862): item pop-up handlers ("success is assured" for the chosen member); card-item-lines stay empty (-1), so no item pop-up exists.
+    // DORMANT: R052+0x089E (1838:089E), R052+0x0928 (1838:0928), R052+0x09B2 (1838:09B2), R052+0x0A3C (1838:0A3C): saint pop-up handlers (chance text of the chosen saint); card-saint-lines stay empty, so no saint pop-up exists.
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -62,7 +62,7 @@ public sealed class DocksAtNight_Docks01 : Card
             new MenuLine(() => c.Next = c.IsDaylight ? MainStreet : MainStreetAtNight),
             // orig: R052+0x04D4 (1838:04D4) matched (option 4: side street); hint R052+0x04EC (success assured)
             new MenuLine(() => c.Next = c.IsDaylight ? SideStreet : SideStreetAtNight),
-            // DORMANT: options 5..9 (R052+0x0524 (1838:0524), R052+0x057A (1838:057A), R052+0x05D0 (1838:05D0), R052+0x0628 (1838:0628), R052+0x067E (1838:067E)): the entry clears opt_flag_5..9, so they are never offered (and the MSG has no lines for them). Each shows text 0 and goes to the outskirts (card 4).
+            // DORMANT: options 5..9 (R052+0x0524 (1838:0524), R052+0x057A (1838:057A), R052+0x05D0 (1838:05D0), R052+0x0628 (1838:0628), R052+0x067E (1838:067E)): the entry clears card-option-flag-5..9, so they are never offered (and the MSG has no lines for them). Each shows text 0 and goes to the outskirts (card 4).
             // Their hints: R052+0x0542 (1838:0542), R052+0x0598 (1838:0598), R052+0x05EE (1838:05EE, 100% for the leader), R052+0x0646 (1838:0646), R052+0x069C (1838:069C).
             new MenuLine(() => LeaveForOutskirts(c)),
             new MenuLine(() => LeaveForOutskirts(c)),

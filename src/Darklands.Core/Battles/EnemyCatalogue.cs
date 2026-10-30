@@ -8,7 +8,7 @@ public readonly record struct DiceEntry(sbyte Sides, sbyte Add, sbyte Quality);
 /// kind with its looks, attributes, skills, equipment choices, what it may carry and the dice
 /// for group bonuses and group money.
 /// </summary>
-// orig: mon_templates (R004 enemy buffer +0xB4C0, darkland.enm +0), read by monster_type_map R004+0x06AA
+// orig: monster-prototype-table (R004 enemy buffer +0xB4C0, darkland.enm +0), read by monster-type-lookup R004+0x06AA
 public sealed class EnemyTemplate
 {
     public const int Size = 0xCC;
@@ -50,7 +50,7 @@ public sealed class EnemyTemplate
 
     /// <summary>
     /// +0x30: the effects the enemy does not feel, a bit per effect type 0..11 (copied to the kind's +0x5E,
-    /// then to DS:C927 of its combatant, which R019 effect_spell and cbt_step test).
+    /// then to DS:C927 of its combatant, which R019 effect-cast and fighter-step test).
     /// </summary>
     // C: read as "money" before; the values (gnomes, demons, the dragon 1; gargoyles 2; evil alchemists 0xA00) and
     // R019's (DS:C927[i] &amp; (1 &lt;&lt; type)) make it a mask of effect types.
@@ -126,7 +126,7 @@ public sealed class EnemyTemplate
 }
 
 /// <summary>One enemy type of DARKLAND.ENM (0x18 bytes; <c>struct etype</c>): the template of its first variant, its name and how it fights.</summary>
-// orig: enemy_types (R004 enemy buffer +0xED54, darkland.enm +0x3894)
+// orig: enemy-type-table (R004 enemy buffer +0xED54, darkland.enm +0x3894)
 public sealed class EnemyType
 {
     public const int Size = 0x18;

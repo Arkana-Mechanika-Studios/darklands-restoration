@@ -89,7 +89,7 @@ public sealed class BattleScreenTests
         var (sav, bsv) = BattleSaveTests.SaveInBattle(state, tactics);
         var loaded = Persistence.OriginalSaves.Read(sav, bsv, "dksave1.sav", WorldData.Load(files)).State.Party.Members[4];
         var record = loaded.OriginalRecord!;
-        // C: the record is the combatant record: where the hireling stands, and add_member's +0x1C (the slot) the battle keeps
+        // C: the record is the combatant record: where the hireling stands, and join-party-member's +0x1C (the slot) the battle keeps
         Assert.Equal(b[4].Position, new MapPoint((short)(record[4] | record[5] << 8), (short)(record[6] | record[7] << 8)));
         Assert.Equal(4, record[0x1C]);
         Assert.Equal(member.Attributes, loaded.Attributes);

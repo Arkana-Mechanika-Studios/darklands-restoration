@@ -19,7 +19,7 @@ namespace Darklands.Cards.Scripts;
 //     R119+0x270E, R119+0x272C, R119+0x2768,
 //     R119+0x280A
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class CapturedAfterDefeat : Card
 {
     public override int Number => 303;
@@ -31,9 +31,9 @@ public sealed class CapturedAfterDefeat : Card
     public override int Run(CardContext c)
     {
         Show(c, Picture);
-        // the original passes frame mode 2 to card_text; drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike) (on the picture).
+        // the original passes frame mode 2 to card-text-block; drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike) (on the picture).
         c.Screen.Text(0);
-        // C: the card function returns 0x131 directly: it never sets next_card, never fills the option table and
+        // C: the card function returns 0x131 directly: it never sets following-card, never fills the option table and
         //   never runs a menu.
         return DungeonCell;
     }

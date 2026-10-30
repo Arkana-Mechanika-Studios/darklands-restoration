@@ -5,7 +5,7 @@ interrupt's frame work root 047C:000A calls on every frame while DS:07D8 != 0) c
 usage: python -I -B palette_cycle.py <out.json.gz> <state> [frames]
 
 Cases: the battlefield's three cycles (R002+0x04D2..0x04FA: 0362(1, 4, 0x10, 0x15), 0362(2, 6, 0x18, 0x1E), 0362(4, 5, 0x16, 0x17), then
-R014+0x02D5..0x02EB: 03DA(1), 03DA(-2), 03DA(4)); then each ENEMYPAL.DAT scheme with a cycle (+0x31 != 0xFF) as enemies_place takes it
+R014+0x02D5..0x02EB: 03DA(1), 03DA(-2), 03DA(4)); then each ENEMYPAL.DAT scheme with a cycle (+0x31 != 0xFF) as enemy-placement-entry takes it
 (R025+0x0958..0x098D: 0362(d, c, a, b) with a, b, c, d = +0x31, +0x32, +0x33, +0x34, then 03DA(d)) on top of the battlefield's; a stop of
 slot 3 (R014+0x0D99) half way; a second take of slot 3 by the next scheme (the three schemes of an enemy share d = 3). The DAC starts as a
 pattern (and the scheme's 48 bytes at its range, as the palette upload R025+0x094B leaves it); after every 042A call the DAC is kept.

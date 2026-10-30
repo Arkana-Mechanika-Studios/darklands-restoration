@@ -20,7 +20,7 @@ namespace Darklands.Cards.Tests.Oracle;
 /// <item><c>ed&lt;d1&gt;_&lt;d2&gt;_&lt;d3&gt;</c> the three data words of the event created last (<c>ev..</c> before it); <c>er&lt;kind&gt;_&lt;type&gt;_&lt;tag&gt;</c> removes the matching events (-1: any)</item>
 /// <item><c>sq</c>, <c>sr</c> the first / second saved card = the slot of the event created last (a card that names a quest event slot)</item>
 /// <item><c>iq&lt;code&gt;_&lt;quality&gt;_&lt;count&gt;</c> every member carries that stack (quality and count as given); <c>ac&lt;attribute&gt;_&lt;v&gt;</c> the current attribute alone (the maximum stays)</item>
-/// <item><c>rn&lt;seed&gt;</c> the random generator's seed; <c>ml&lt;n&gt;</c> the map-leave mode; <c>pc&lt;n&gt;</c> the previous card (prev_screen); <c>sc&lt;n&gt;</c>, <c>sd&lt;n&gt;</c> the two saved cards</item>
+/// <item><c>rn&lt;seed&gt;</c> the random generator's seed; <c>ml&lt;n&gt;</c> the map-leave mode; <c>pc&lt;n&gt;</c> the previous card (earlier-screen); <c>sc&lt;n&gt;</c>, <c>sd&lt;n&gt;</c> the two saved cards</item>
 /// </list>
 /// </summary>
 public static class CardOracleAtoms
@@ -141,7 +141,7 @@ public static class CardOracleAtoms
                 state.Party.Seed = n[0];
                 return true;
             case "lf":
-                // the flag byte of the place the party stands in (loc_query 32: 1, 2, 0x80 ...), replaced
+                // the flag byte of the place the party stands in (place-query 32: 1, 2, 0x80 ...), replaced
                 if (state.Here is { } flagged)
                 {
                     flagged.Flags = n[0];

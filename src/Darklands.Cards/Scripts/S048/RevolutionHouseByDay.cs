@@ -33,7 +33,7 @@ public sealed class RevolutionHouseByDay : Card
         var states = new OptionState[10];
         states[0] = states[1] = states[2] = states[3] = states[4] = states[9] = OptionState.Enabled;
         c.StandingSeen = c.HereQuery(0);
-        // C: loc_query(cur_loc, 0x21) is called once here and its result dropped.
+        // C: place-query(location-now, 0x21) is called once here and its result dropped.
         var firstSide = RevolutionSupport.AtFirstSidesHouse(c);
         var events = c.Events;
         if (firstSide)
@@ -50,7 +50,7 @@ public sealed class RevolutionHouseByDay : Card
             {
                 states[3] = states[4] = OptionState.Shown;
             }
-            // orig: R029+0x5CC4 (1367:0DB4) matched (random_name via the shared c.RandomName)
+            // orig: R029+0x5CC4 (1367:0DB4) matched (made-up-name via the shared c.RandomName)
             c.RandomName(c.City.Ordinal + 0x0C, c.HereQuery(0x21) % 5 == 0 ? 1 : 0, 0);
         }
         else
@@ -67,7 +67,7 @@ public sealed class RevolutionHouseByDay : Card
             {
                 states[3] = states[4] = OptionState.Shown;
             }
-            // orig: R029+0x5CC4 (1367:0DB4) matched (random_name via the shared c.RandomName)
+            // orig: R029+0x5CC4 (1367:0DB4) matched (made-up-name via the shared c.RandomName)
             c.RandomName(c.City.Ordinal + 0x16, 2, 0);
         }
         // The side that holds the city: the house is closed to the party's own kind.
@@ -87,7 +87,7 @@ public sealed class RevolutionHouseByDay : Card
         // DORMANT: R048+0x0B5A (1838:0B5A) only resets the option flags and the default handlers (screwed up.,
         // success assured for the potion pop-up's four slots); the loop below overwrites them all.
         c.SetCardItems(0x5F, 0x65, 0x61, 0x66);
-        // C: the potion option's state is replaced by items_usable() whatever the branches above decided.
+        // C: the potion option's state is replaced by usable-item-list() whatever the branches above decided.
         states[4] = c.ItemsUsable();
 
         _menu = Menu(c, _alternateOptionBlock ? 5 : 0);
@@ -151,7 +151,7 @@ public sealed class RevolutionHouseByDay : Card
     // orig: R048+0x03D6 (1838:03D6) matched
     private void GatherGossip(CardContext c, bool firstSide, int chance)
     {
-        // C: advance_hours(rand_mod(2) + 1) runs before the success draw.
+        // C: pass-hours(roll-below(2) + 1) runs before the success draw.
         c.PassHours(c.Random(2) + 1);
         if (c.Random(100) <= chance)
         {

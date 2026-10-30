@@ -9,7 +9,7 @@ public static class EventKinds
     /// <summary>A quest under way (tag = quest number, Location = its site, Value = a city).</summary>
     public const int Quest = 0x08;
 
-    /// <summary>Hostile location (with reputation; <c>loc_hostile</c>).</summary>
+    /// <summary>Hostile location (with reputation; <c>place-hostile</c>).</summary>
     public const int Hostile = 0x11;
 
     /// <summary>Prices +20% here (?).</summary>
@@ -84,7 +84,7 @@ public static class EventKinds
 }
 
 /// <summary>What happens when an event with <see cref="EventFlags.CallExpiryHandler"/> ends (the original's table of ten).</summary>
-// orig: event_expiry_fns R136+0xAF9F
+// orig: event-expiry-handlers R136+0xAF9F
 // C: read from the EXE: vectors 1E2D..1E87 = R029+0x3FB0 (0, empty), 3fb2, 4180, 4378, 4436, 4442, 448a, 450a, 4534, 4626 (1..9).
 public enum ExpiryHandler
 {
@@ -119,7 +119,7 @@ public enum ExpiryHandler
     RenewTravelBlessing = 9,
 }
 
-/// <summary>How <see cref="EventLog.Update"/> changes the value (<c>event_update</c> op).</summary>
+/// <summary>How <see cref="EventLog.Update"/> changes the value (<c>event-advance</c> op).</summary>
 public enum EventUpdate
 {
     Set = 0,

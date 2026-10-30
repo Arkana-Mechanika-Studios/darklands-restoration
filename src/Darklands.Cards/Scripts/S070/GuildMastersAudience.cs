@@ -6,7 +6,7 @@ using Attribute = Darklands.Core.Characters.Attribute;
 namespace Darklands.Cards.Scripts;
 
 /// <summary>
-/// "$Guild00": an audience with the masters of the guild handed on in party_x. Ask about
+/// "$Guild00": an audience with the masters of the guild handed on in party-map-column. Ask about
 /// training, argue the city's politics with them, buy their support, or press them with the
 /// guild leader's secret (and the evidence for it).
 /// </summary>
@@ -49,7 +49,7 @@ public sealed class GuildMastersAudience : Card
         }
         else if (side == 1 && c.SideOf(guild) == 2)
         {
-            // DORMANT: loc_side_get returns −1, 0 or 1, never 2.
+            // DORMANT: place-side-read returns −1, 0 or 1, never 2.
             menu[1] = menu[2] = menu[3] = OptionState.Hidden;
         }
         else if (side == -1)
@@ -76,7 +76,7 @@ public sealed class GuildMastersAudience : Card
                 () => new OptionHint(Math.Clamp(Math.Max(Insight(c), Bearing(c)), 0, 99), "", c.Leader)),
             new MenuLine(_ => BuyTheirSupport(c, menu, guild), () => new OptionHint(-1, NoRisk, c.Leader)),
             new MenuLine(chance => PressTheLeader(c, guild, chance), () => BlackmailChance(c)),
-            // DORMANT: line 4 (opt_flag_4 = 0) does nothing. orig: R070+0x2314 (hint 0ba6 "No risk.", leader)
+            // DORMANT: line 4 (card-option-flag-4 = 0) does nothing. orig: R070+0x2314 (hint 0ba6 "No risk.", leader)
             new MenuLine(_ => { }, () => new OptionHint(-1, NoRisk, c.Leader)),
             // DORMANT: lines 5..8 (opt_flag = 0): time passes. orig: R070+0x2350/0c24/0c68/0cac (hints 0bec/0c30/0c74/0cb8)
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
@@ -90,7 +90,7 @@ public sealed class GuildMastersAudience : Card
     private static int Fact(CardContext c, int type) => c.Events.FactValue(PoliticsQuest, type, c.Here);
 
     /// <summary>The contribution that buys the guild ($Money1, in pfennigs): richer parties pay more, bigger cities more.</summary>
-    // C: (unsigned)money_pfennigs(): the purse in pfennigs cut to 16 bits; the rest is unsigned 16-bit arithmetic.
+    // C: (unsigned)purse-in-pfennigs(): the purse in pfennigs cut to 16 bits; the rest is unsigned 16-bit arithmetic.
     private static int Contribution(CardContext c)
     {
         var pfennigs = (ushort)c.State.Party.Purse.TotalPfennigs;
@@ -113,7 +113,7 @@ public sealed class GuildMastersAudience : Card
     {
         if (c.Succeeds(chance))
         {
-            // C: (unsigned) cur_loc_query(0x21) % 15: the unsigned remainder; no "already there" test here.
+            // C: (unsigned) location-now-query(0x21) % 15: the unsigned remainder; no "already there" test here.
             int Teacher(int skillQuery) => c.HereQuery(skillQuery) + (ushort)c.HereQuery(0x21) % 15 - 5;
             int skill;
             switch (guild)
@@ -163,7 +163,7 @@ public sealed class GuildMastersAudience : Card
     /// neutral, or from neutral to the cause); charm (text 4) or bearing (text 5) wins it.
     /// </summary>
     // orig: R070+0x1CCE (hint R070+0x1E8C)
-    // C: the hint's imax(a, b) evaluates b (bearing) first; neither draws.
+    // C: the hint's larger-of(a, b) evaluates b (bearing) first; neither draws.
     private void ArgueThePolitics(CardContext c, CardMenu menu, int guild, int chance)
     {
         c.PassHours(1);

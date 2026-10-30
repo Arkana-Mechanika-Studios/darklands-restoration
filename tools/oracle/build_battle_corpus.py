@@ -1,7 +1,7 @@
-"""Original-byte corpus for the battle's attack rules (R014 18BF): attack_rate, to_hit_roll
-(with the hand-to-hand chance 0592 and the inline missile chance), hit_damage + damage_queue,
-damage_apply and weapon_ready; and the dragon fights (DS:C21A 'I' / 'Z'): to_hit_roll with the dragon (record
-5) with or without a victim, weapon_ready of weapon type 40 with the animation code enemies_place gives it (20A5:763B).
+"""Original-byte corpus for the battle's attack rules (R014 18BF): attack-speed, hit-roll
+(with the hand-to-hand chance 0592 and the inline missile chance), hit-points-lost + damage-pending-list,
+damage-resolve and weapon-armed; and the dragon fights (DS:C21A 'I' / 'Z'): hit-roll with the dragon (record
+5) with or without a victim, weapon-armed of weapon type 40 with the animation code enemy-placement-entry gives it (20A5:763B).
 
 usage: python -I build_battle_corpus.py <DARKLAND.EXE> <out battle.json>
 
@@ -26,17 +26,17 @@ from run_unit import CoverageSet, commit_coverage, run  # noqa: E402
 DS = 0x321A
 HOLDRAND = 0x7B20
 COMBATANTS = 0x9C55
-ATTACK_RATE, QUEUED, SHOWN = 0xD493, 0xD70C, 0xD4C7
-REAL_COMBAT, DRAGON_FIGHT, CLOUDS = 0xA6C1, 0xC21A, 0xA33D
+ATTACK_SPEED, QUEUED, SHOWN = 0xD493, 0xD70C, 0xD4C7
+GENUINE_FIGHT, DRAGON_FIGHT, CLOUDS = 0xA6C1, 0xC21A, 0xA33D
 REACH_SEG, REACH_OFF = 0x20A5, 0x7900
 ANIM_FILE_TABLE = 0x1174
 CODES_SEG, DRAGON_CODE = 0x20A5, 0x763B   # weapon type 40's animation code ("DG"; "D7" / "CD" in a dragon fight)
 SCRATCH = 0xFD00
 CRIT = 0xFE00
 SEG = "18BF"
-FN = {"attack_rate": "0002", "to_hit_roll": "02A8", "hit_damage": "0778", "damage_queue": "08CA",
-      "damage_apply": "098E", "weapon_ready": "0A40", "skill_try_improve": "0000"}
-CALLSITES = {"19045": "cloud_blocks_line", "1930f": "inside_cloud", "19624": "party_panel_rows", "1f158": "skill_message_box"}
+FN = {"attack-speed": "0002", "hit-roll": "02A8", "hit-points-lost": "0778", "damage-pending-list": "08CA",
+      "damage-resolve": "098E", "weapon-armed": "0A40", "ability-improve-attempt": "0000"}
+CALLSITES = {"19045": "cloud-on-line-test", "1930f": "inside_cloud", "19624": "party-panel-row-set", "1f158": "skill_message_box"}
 DIFFICULTY = 0x906A
 
 
@@ -106,7 +106,7 @@ def battle(r):
     real = r.choice([0, 1, 1])
     memory = [ds(COMBATANTS + 0x80 * i, rec) for i, rec in enumerate(recs)]
     memory += [{"segment": "%04X" % REACH_SEG, "offset": "%04X" % REACH_OFF, "hex": reach.hex()},
-               ds(ATTACK_RATE, rates), ds(QUEUED, queued), ds(SHOWN, shown), ds(REAL_COMBAT, bytes([real])),
+               ds(ATTACK_SPEED, rates), ds(QUEUED, queued), ds(SHOWN, shown), ds(GENUINE_FIGHT, bytes([real])),
                ds(DRAGON_FIGHT, b"\x00"), ds(CLOUDS, b"\x00"), ds(HOLDRAND, struct.pack("<I", state)),
                ds(COMBATANTS + 13 * 0x80 + 0x14, b"\x00")]  # the 14th "status" the enemies' loop reads
     inputs = {"combatants": [x.hex() for x in recs], "reach": reach.hex(), "rates": rates.hex(),
@@ -114,13 +114,13 @@ def battle(r):
     return memory, inputs
 
 
-COUNTS = (("attack_rate", 100), ("to_hit_roll", 250), ("hit_damage", 150), ("damage_queue", 60),
-          ("damage_apply", 80), ("weapon_ready", 100), ("skill_try_improve", 120))
+COUNTS = (("attack-speed", 100), ("hit-roll", 250), ("hit-points-lost", 150), ("damage-pending-list", 60),
+          ("damage-resolve", 80), ("weapon-armed", 100), ("ability-improve-attempt", 120))
 # more of the same generated battles (docs/faithfulness/branches-missed.csv: the rarer combinations of the
 # allies next to a target, the attackers of one combatant, shields and loads); a generator of its own so
 # the cases above stay as they were
-MORE = (("attack_rate", 600), ("to_hit_roll", 4000), ("hit_damage", 1500), ("damage_queue", 600),
-        ("damage_apply", 600), ("weapon_ready", 1000), ("skill_try_improve", 600))
+MORE = (("attack-speed", 600), ("hit-roll", 4000), ("hit-points-lost", 1500), ("damage-pending-list", 600),
+        ("damage-resolve", 600), ("weapon-armed", 1000), ("ability-improve-attempt", 600))
 
 
 def cases(r, counts=COUNTS):
@@ -129,23 +129,23 @@ def cases(r, counts=COUNTS):
         for _ in range(count):
             memory, inputs = battle(r)
             results = {}
-            if name == "attack_rate":
+            if name == "attack-speed":
                 i = r.randint(0, 12)
                 args = [i]
-            elif name == "to_hit_roll":
+            elif name == "hit-roll":
                 a, t = r.randint(0, 12), r.randint(0, 12)
                 cloud = r.choice([0, 0, 0, 1])
                 inputs["cloud"] = cloud
-                results = {"cloud_blocks_line": [{"ax": cloud}]}
+                results = {"cloud-on-line-test": [{"ax": cloud}]}
                 args = [a, t, CRIT]
-            elif name == "hit_damage":
+            elif name == "hit-points-lost":
                 a, t = r.randint(0, 12), r.randint(0, 12)
                 args = [a, t, r.choice([2, 3]), r.randint(0, 1)]
-            elif name == "damage_queue":
+            elif name == "damage-pending-list":
                 args = [r.randint(-5, 45), r.randint(0, 12), r.randint(-2, 12), r.randint(-2, 12)]
-            elif name == "damage_apply":
+            elif name == "damage-resolve":
                 args = [r.randint(0, 12)]
-            elif name == "skill_try_improve":
+            elif name == "ability-improve-attempt":
                 difficulty = r.randint(0, 2)
                 memory.append(ds(DIFFICULTY, bytes([difficulty])))
                 inputs["difficulty"] = difficulty
@@ -162,7 +162,7 @@ def cases(r, counts=COUNTS):
 
 
 # the dragon fights: kept whatever their coverage (a generator of its own, after the others)
-DRAGON = (("to_hit_roll", 120), ("weapon_ready", 60))
+DRAGON = (("hit-roll", 120), ("weapon-armed", 60))
 
 
 def dragon_cases(r):
@@ -171,7 +171,7 @@ def dragon_cases(r):
         fight = r.choice([0x49, 0x5A])
         memory.append(ds(DRAGON_FIGHT, bytes([fight])))
         inputs["dragon"] = fight
-        if name == "to_hit_roll":
+        if name == "hit-roll":
             a = r.choice([5, 5, int(args[0], 16)])
             args[0] = h16(a)
             inputs["args"][0] = a
@@ -198,7 +198,7 @@ def main() -> None:
     base = cases(r)
     more = cases(random.Random(20261019), MORE)
     for n, (name, memory, args, inputs, results) in enumerate(base + more + dragon_cases(random.Random(20261019 + 1))):
-        seg, sections = ("1EF8", [136, 14, 21]) if name == "skill_try_improve" else (SEG, [136, 14])
+        seg, sections = ("1EF8", [136, 14, 21]) if name == "ability-improve-attempt" else (SEG, [136, 14])
         res = run(exe, {"unit": name, "entry": {"segment": seg, "offset": FN[name]}, "sections": sections,
                         "ds": DS, "memory": memory, "args": args, "follow": True, "callsites": CALLSITES,
                         "stub": list(CALLSITES.values()), "results": results, "coverage": True,

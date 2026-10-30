@@ -26,10 +26,10 @@ namespace Darklands.Cards.Scripts;
 //   other: R123+0x05CC, R123+0x066E
 // DORMANT (generated): option slots 10..19 keep the default handler R123+0x066E ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 4, 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class PreceptorOfTheTemplars : Card
 {
     public override int Number => 316;
@@ -46,11 +46,11 @@ public sealed class PreceptorOfTheTemplars : Card
         if (!c.Events.FactAnywhere(FactTag, PreceptorFoughtFact))
         {
             c.Events.Create(-2, c.Here, 0, 0x1C, PreceptorFoughtFact, 0, 0, 99, 0, FactTag);
-            c.Screen.Text(0); // card_text(0, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike)
+            c.Screen.Text(0); // card-text-block(0, 2): frame mode 2 drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike)
             c.CombatFlags |= 8;
             c.BattleMode = 1;
-            // C: returns −3 without storing it in next_card (which keeps the previous card's value), and before the
-            //   table set-up R123+0x05CC, so card_items / card_saints stay as the previous card left them.
+            // C: returns −3 without storing it in following-card (which keeps the previous card's value), and before the
+            //   table set-up R123+0x05CC, so card-item-lines / card-saint-lines stay as the previous card left them.
             return -3;
         }
 

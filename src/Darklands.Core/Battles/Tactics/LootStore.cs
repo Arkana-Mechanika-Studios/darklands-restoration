@@ -17,7 +17,7 @@ public sealed class LootStore
     /// <summary>The file's records, in file order.</summary>
     public List<ItemStack> Records { get; } = [];
 
-    /// <summary>loot_piles (far 20A5:59C8, 12-byte records) / loot_pile_count (cleared for a new battlefield).</summary>
+    /// <summary>loot-pile-table (far 20A5:59C8, 12-byte records) / loot-pile-total (cleared for a new battlefield).</summary>
     public List<LootPile> Piles { get; } = [];
 
     /// <summary>DS:C7A4[20]: each chest's offset in the file (by the chest's loot index).</summary>
@@ -81,7 +81,7 @@ public sealed class LootStore
     // orig: R014+0xE7C8 (19CD:3258) unmatched
     public void Take(List<ItemStack> work, int keep, int[] counts, int[] offsets, int n)
     {
-        // C: the file is read whole and written back (file_save) whatever was taken.
+        // C: the file is read whole and written back (file-write) whatever was taken.
         FileExists = true;
         if (work.Count > keep)
         {

@@ -37,9 +37,9 @@ so scripted runs never touch the game folder.
   of DARKLAND.LOC) and `GameState.OriginalSave` (the header, the slot images and colours, the
   cache file, the battle file).
 * Values the original recomputes when it saves are written as read while what they are computed
-  from is unchanged: `party_size` (from the slots), `DS:A67C` (hirelings, from the 0x43 events),
-  the header's place name (from `cur_loc`), CACHE.TMP (from the item stores). DKSAVE40 (party
-  size 6 for four members, year 1447) and DKSAVE0/1 (place names that are not `cur_loc`'s)
+  from is unchanged: `party-headcount` (from the slots), `DS:A67C` (hirelings, from the 0x43 events),
+  the header's place name (from `location-now`), CACHE.TMP (from the item stores). DKSAVE40 (party
+  size 6 for four members, year 1447) and DKSAVE0/1 (place names that are not `location-now`'s)
   show that the player's folder holds files the formula would not reproduce.
 * Texts (names, comment, place) are kept byte for byte while they read the same; a new text is
   followed by zeros (the original leaves stack bytes after it).
@@ -53,43 +53,43 @@ back byte for byte, and each of the 18 .BSV files with its .SAV.
 |---|---|---|---|---|
 | 0x000 | 0x15 | place name | `Locations[CurrentLocation].Name` or "Wilderness" | derived, kept as read while the place is unchanged |
 | 0x015 | 0x4F | comment | `LoadedGame.Comment`; the save dialog's text | named |
-| 0x064 | 2 | `party_seed` | `Party.Seed` | named |
+| 0x064 | 2 | `party-random-seed` | `Party.Seed` | named |
 | 0x066 | 2 | 7 | — | constant (the loader skips it) |
 | 0x068 | 8 | year, month, day, hour | `Date` | named |
 | 0x070 | 6 | purse fl/gr/pf | `Party.Purse` | named |
 | 0x076 | 4 | zero long | — | constant |
-| 0x07A | 2 | `party_fame` | `Party.Fame` | named |
-| 0x07C | 2 | `cur_loc` | `CurrentLocation` | named |
-| 0x07E | 4 | `party_x`, `party_y` | `MapPosition` | named |
+| 0x07A | 2 | `party-renown` | `Party.Fame` | named |
+| 0x07C | 2 | `location-now` | `CurrentLocation` | named |
+| 0x07E | 4 | `party-map-column`, `party-map-row` | `MapPosition` | named |
 | 0x082 | 2 | `DS:A772` (card) | `CurrentCard` | named |
 | 0x084 | 2 | `DS:E898` (card text state) | — | raw |
-| 0x086 | 2 | `saved_card` | `SavedCard` | named |
-| 0x088 | 2 | `saved_card2` | `SavedCard2` | named |
-| 0x08A | 2 | `prev_screen` | `PreviousCard` | named |
+| 0x086 | 2 | `remembered-card` | `SavedCard` | named |
+| 0x088 | 2 | `remembered-card-second` | `SavedCard2` | named |
+| 0x08A | 2 | `earlier-screen` | `PreviousCard` | named |
 | 0x08C | 6 | `DS:9072..9076` bank notes | `Party.BankNotes` | named |
 | 0x092 | 2 | `DS:9078` philosopher's stone | `Party.PhilosophersStone` | named |
 | 0x094 | 2 | `DS:A67C` hirelings | count of 0x43 events | derived, kept as read while the count is unchanged |
-| 0x096 | 1 | `game_difficulty` (bit 7: saved in a battle) | `Difficulty`, `ResumeBattle` | named; bit 7 set by a save in a battle, read as DS:9081 bit 0 |
+| 0x096 | 1 | `difficulty-setting` (bit 7: saved in a battle) | `Difficulty`, `ResumeBattle` | named; bit 7 set by a save in a battle, read as DS:9081 bit 0 |
 | 0x097 | 2 | `DS:DB27` last battle place | `Battlefield.LastLocation` | named |
 | 0x099 | 2 | `DS:DA34` cleared levels | `Battlefield.ClearedLevels` | named (the .BSV's copy wins on load, as in the original) |
 | 0x09B | 6 | marching order (DS:C624) | `BattleFile` variables +0x1573 | written from the battle file's copy (one global) |
 | 0x0A1 | 1 | `leader` | `Party.LeaderIndex` | named |
-| 0x0A2 | 2 | `opt_music`, `opt_sound` | `LoadedGame.Music/SoundEffects` → `GameOptions` | named |
+| 0x0A2 | 2 | `music-setting`, `sound-setting` | `LoadedGame.Music/SoundEffects` → `GameOptions` | named |
 | 0x0A4 | 2 | `DS:A891` | `MapLeaveMode` | named |
 | 0x0A6 | 0x49 | zero byte, 36 zero words | — | constant |
-| 0x0EF | 2 | `party_size` | — | derived, kept as read while the slots are unchanged |
+| 0x0EF | 2 | `party-headcount` | — | derived, kept as read while the slots are unchanged |
 | 0x0F1 | 2 | character count | `Roster.Characters.Count` | named |
 | 0x0F3 | 10 | party slots | `Roster.PartySlots` | named |
-| 0x0FD | 20 | `member_shield` (figure image per slot) | `Character.Image` of the slot | named; empty slots raw |
-| 0x111 | 0x78 | `member_palette` per slot | `Character.ImagePalette` of the slot | named; empty slots raw |
+| 0x0FD | 20 | `member-shield-picture` (figure image per slot) | `Character.Image` of the slot | named; empty slots raw |
+| 0x111 | 0x78 | `member-colours` per slot | `Character.ImagePalette` of the slot | named; empty slots raw |
 | 0x189 | n × 0x22A | the roster's records | `Roster.Characters` (party slots: the same objects as `Party.Members`) | see below |
 | … | 2 + m × 0x30 | the events in slot order | `Events` (loaded into slots 0..m−1) | all 24 words named |
 | … | 2 + 414 × 0x3A | the places | `Locations` | see below |
-| … | rest | CACHE.TMP | `ItemStores` | the file's bytes, read and written as the original's cache_load / cache_save do |
+| … | rest | CACHE.TMP | `ItemStores` | the file's bytes, read and written as the original's stash-load / stash-store do |
 
 Not in the file (as in the original): the random generator's state, the bankers' standings
-(`DS:4BB6..4BBA`), the saintly-changes option, `city_rec` and `city_desc` (reread from
-DARKLAND.CTY / DARKLAND.DSC at `cur_loc`). A load from inside a game carries them over from the
+(`DS:4BB6..4BBA`), the saintly-changes option, `city-record` and `city-description` (reread from
+DARKLAND.CTY / DARKLAND.DSC at `location-now`). A load from inside a game carries them over from the
 running game, as the original keeps its memory.
 
 ### Character record (0x22A)
@@ -116,7 +116,7 @@ Named: icon +0x00, x/y +0x04/+0x06, notice range +0x08, danger +0x0A, arrival an
 ### CACHE.TMP
 
 Byte 0 = 0x63, byte 1 = number of stores, the store h's offset at 2h, stores of a count byte and
-{item word, quality, count}. Written as `cache_save(-1)` builds it: the 198-byte header of the
+{item word, quality, count}. Written as `stash-store(-1)` builds it: the 198-byte header of the
 empty file, then the stores in handle order. The original has no limit: the 99th store's offset
 overwrites store 1's first bytes, and its rewrite of a known store garbles any table of 128 bytes or more.
 
@@ -129,7 +129,7 @@ the stores packed in handle order with nothing after the last, at most 127 entri
 ## The .BSV file
 
 A 0x2A-byte header of block sizes, then PKWARE DCL imploded blocks: the battle variables
-(0x1978 bytes, in `battle_save`'s order: `DS:907A`, `cbt_paths`, … `marching_order` at +0x1573,
+(0x1978 bytes, in `battle-store`'s order: `DS:907A`, `fighter-path-table`, … `column-order` at +0x1573,
 `DS:D661` level count at +0x16E4, `DS:DA34` at +0x16F3 …), per level the floor image (0x33FC,
 object functions as numbers 0..8), the .atv and the .enm data, then the work files `DS:1164` and
 `DS:1162`. `BattleSaveFile` explodes and splits it; the levels' floors are `BattlefieldLevel`s.
@@ -179,7 +179,7 @@ file, as in the original). Load Saved Game works in a battle and leaves it.
 Reproduced on purpose: Alt-L empties the party slots and the events before the load screen, and
 Esc there goes on with that game (`OriginalBehaviour.FixLoadScreenEscape` fixes it); a game
 saved in this session is named in lower case (`DS:A680`) and can be deleted from the list (the
-original compares the names case-sensitively); the wilderness `city_rec` after a load is the
+original compares the names case-sensitively); the wilderness `city-record` after a load is the
 first 0x26E bytes of DARKLAND.CTY; the delete label is redrawn a pixel lower; stale row names
 serve a delete on an empty list.
 

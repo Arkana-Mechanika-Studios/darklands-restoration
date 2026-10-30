@@ -4,7 +4,7 @@ using Darklands.Platform;
 namespace Darklands.Presentation.Graphics;
 
 /// <summary>Draws row-run sprites (colour 0 transparent), clipped to a rectangle of the screen.</summary>
-// orig: gfx_draw_pic of a sprite (root 047C, the graphics driver; asm)
+// orig: gfx-picture-draw of a sprite (root 047C, the graphics driver; asm)
 public static class SpriteDrawing
 {
     private static readonly Clip WholeScreen = new(0, 0, Canvas.Width, Canvas.Height);

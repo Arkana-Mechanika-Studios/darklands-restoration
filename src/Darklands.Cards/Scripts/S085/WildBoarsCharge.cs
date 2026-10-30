@@ -88,7 +88,7 @@ public sealed class WildBoarsCharge : Card
 
     /// <summary>The riding hint: the best rider, at a chance of 1%.</summary>
     // C: the original asks the party's best riding skill (skill 0x11) but then passes the
-    // constant 0 to clamp_range(1, 99, .) (checked against the assembly): the chance is always 1.
+    // constant 0 to limit-to-range(1, 99, .) (checked against the assembly): the chance is always 1.
     private static OptionHint OutrunChance(CardContext c)
     {
         c.PartyMaxSkill(0x11);

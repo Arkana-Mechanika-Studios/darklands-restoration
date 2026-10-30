@@ -11,7 +11,7 @@ public sealed class GroupCTests
     [InlineData(1, 99, 50, 50)]
     [InlineData(1, 99, -5, 1)]
     [InlineData(1, 99, 120, 99)]
-    // clamp_range tests the upper bound first: crossed bounds give the upper one for large values.
+    // limit-to-range tests the upper bound first: crossed bounds give the upper one for large values.
     [InlineData(1, 0, 5, 0)]
     [InlineData(1, 0, -3, 1)]
     public void ClampRangeTestsTheUpperBoundFirst(int low, int high, int value, int expected) =>

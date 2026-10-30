@@ -60,8 +60,8 @@ internal static class SabbatFieldFacts
         c.Events.Create(0, c.Here, 0, EventKinds.LocationFact, fact, 0, 0, hours, 0, Group);
 
     /// <summary>The sabbat site no longer holds the sabbat: arriving there leads to the abandoned site.</summary>
-    // orig: R126+0x0000 (1838:0000) matched (the write `*(int far *)(locations[cur_loc] + 0xc) = 0x13d` is inlined in each sabbat card that abandons the site; also R126 seg 199D, R127+0x0AC2)
-    // DIVERGENCE: the C writes word 6 of locations[cur_loc] without a check; the C# skips it when the party is not at
+    // orig: R126+0x0000 (1838:0000) matched (the write `*(int far *)(locations[location-now] + 0xc) = 0x13d` is inlined in each sabbat card that abandons the site; also R126 seg 199D, R127+0x0AC2)
+    // DIVERGENCE: the C writes word 6 of locations[location-now] without a check; the C# skips it when the party is not at
     //   a place (the wilderness), where the C would write outside the location table.
     public static void AbandonSite(CardContext c)
     {

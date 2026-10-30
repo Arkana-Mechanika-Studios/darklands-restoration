@@ -5,7 +5,7 @@ namespace Darklands.Battles.Tests.BattleCalls;
 
 /// <summary>
 /// The order mode's state paired with the original's memory: the member being given an order, the order chosen, the cursor, the spot clicked, the
-/// throw chosen, the pause and the move mode, the marching order. The keys (R016), order_mode_enter / leave (R014+0xBC0C, 0xBCA8) and the menus read
+/// throw chosen, the pause and the move mode, the marching order. The keys (R016), command-mode-begin / leave (R014+0xBC0C, 0xBCA8) and the menus read
 /// and write these. Each entry is a place of the original's data segment and the property or field of <see cref="TacticalBattle"/> that keeps it.
 /// </summary>
 internal static class OrderOverlay
@@ -15,7 +15,7 @@ internal static class OrderOverlay
     public const int ThrowPotion = 0xC1CE, ThrowQuality = 0xC1F2, ThrowAtTargetOnly = 0xE1C8, CursorKeys = 0xD7FE, MoveMode = 0xC102, FollowsActive = 0x11B1;
     public const int SelectedFlags = 0x9064;
 
-    /// <summary>+0x10 of record -1 (the bytes before combatant 0): the order order_mode_leave reads and writes with nobody selected.</summary>
+    /// <summary>+0x10 of record -1 (the bytes before combatant 0): the order command-mode-end reads and writes with nobody selected.</summary>
     public const int ActionBeforeRecords = 0x9BE5;
     public const int KeyMoved = 0xE079, PendingFlag = 0xD6F1, PendingMember = 0xD6ED, MarchingOrderAt = 0xC624, MarchingOrderLength = 0xC629;
 
@@ -123,11 +123,11 @@ internal static class OrderOverlay
     }
 
     /// <summary>
-    /// order_mode_leave with nobody selected gives an order to record -1 (the bytes before combatant 0) when the cursor target is a combatant (>= 1) or a
+    /// command-mode-end with nobody selected gives an order to record -1 (the bytes before combatant 0) when the cursor target is a combatant (>= 1) or a
     /// free spot (-2) and the order is not a place action nor refused (R014+0xBCB7..0xBD09, 0xBD60, 0xBF0E): the rewrite keeps no record -1.
     /// </summary>
     /// <summary>
-    /// order_mode_leave with nobody selected gives the order to record -1 (TacticalBattle.GiveToRecordBeforeCombatants): DS:17B0 = 0xFF there is
+    /// command-mode-end with nobody selected gives the order to record -1 (TacticalBattle.GiveToRecordBeforeCombatants): DS:17B0 = 0xFF there is
     /// not reproduced (the view and the keys then read record -1, the menu records: undefined memory), so the original's write is taken over.
     /// </summary>
     public static void TakeActiveMemberMinusOne(BattleCallsTests.Context c, CallJob job)

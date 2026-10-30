@@ -1,13 +1,13 @@
-"""Original-byte corpus for the event table's work file around a battle: cards_shutdown writes EVENTS.TMP and
-empties the table, world_load reads it back into slots 0..n-1.
+"""Original-byte corpus for the event table's work file around a battle: cards-teardown writes EVENTS.TMP and
+empties the table, world-read reads it back into slots 0..n-1.
 
 usage: python -I build_eventsfile_corpus.py <DARKLAND.EXE> <out eventsfile.json>
 
-cards_shutdown (R043+0x054E) and world_load (R043+0x0100) run from the unchanged bytes with every call stubbed: the
-DOS and C run-time file calls are served from files kept here in memory (only EVENTS.TMP exists for world_load, so its
+cards-teardown (R043+0x054E) and world-read (R043+0x0100) run from the unchanged bytes with every call stubbed: the
+DOS and C run-time file calls are served from files kept here in memory (only EVENTS.TMP exists for world-read, so its
 other files take their error paths, whose message and exit are stubbed too), alloc hands out fresh segments and
-free_buffer is recorded. The 300 far pointers of events[] (2E38:1B2C) point at records in a scratch segment. Stored
-per case: the table before (record bytes or null per slot), what EVENTS.TMP holds after cards_shutdown, and the table
+release-work-buffer is recorded. The 300 far pointers of events[] (2E38:1B2C) point at records in a scratch segment. Stored
+per case: the table before (record bytes or null per slot), what EVENTS.TMP holds after cards-teardown, and the table
 after (per slot: null, "kept" = the pointer that was there, or the bytes of a new record). Records are random bytes;
 no game bytes are stored.
 """
@@ -31,12 +31,12 @@ SLOTS = 300
 REC_SEG = 0x7000                  # scratch segment of the table's records (0x30 bytes each, 300 fit)
 ALLOC_SEG = 0x8000                # alloc's fresh 0x30-byte blocks (3 paragraphs each)
 SECTIONS = [29, 43, 136]
-FN = {"cards_shutdown": ("1462", "054e"), "world_load": ("1462", "0100")}
+FN = {"R043+0x054E": ("1462", "054e"), "R043+0x0100": ("1462", "0100")}
 DOS = {  # far targets of the file calls (R043 and the C run-time in 06A1 / 05BA)
     "06A1:2C6B": "findfirst", "06A1:2C9E": "dos_open", "06A1:2C3D": "dos_creat", "06A1:2CB6": "dos_read",
     "06A1:2CBD": "dos_write", "06A1:2C28": "dos_close", "06A1:1D2A": "fdopen", "06A1:0716": "fread",
     "06A1:1DE2": "fseek", "06A1:05E2": "fclose", "06A1:0900": "printf", "06A1:01D7": "exit",
-    "05BA:0004": "alloc", "05BA:00C2": "free_buffer",
+    "05BA:0004": "alloc", "05BA:00C2": "release-work-buffer",
 }
 
 
@@ -129,7 +129,7 @@ class Files:
             self.next_seg += (a[0] + 15) // 16
             return seg, 0
 
-        def free_buffer(uc, a):
+        def release_work_buffer(uc, a):
             self.freed.append(a[0])
             return 0, 0
 
@@ -138,7 +138,7 @@ class Files:
 
         return {"findfirst": findfirst, "dos_open": dos_open, "dos_creat": dos_creat, "dos_read": dos_read,
                 "dos_write": dos_write, "dos_close": nothing, "fdopen": fdopen, "fread": fread, "fseek": fseek,
-                "fclose": nothing, "printf": nothing, "exit": nothing, "alloc": alloc, "free_buffer": free_buffer}
+                "fclose": nothing, "printf": nothing, "exit": nothing, "alloc": alloc, "release-work-buffer": release_work_buffer}
 
 
 def table_after(exe, spec, files: Files, before: list):
@@ -179,19 +179,19 @@ def main() -> None:
     shutdowns += [random_table(r, f) for f in (0.02, 0.1, 0.3, 0.5, 0.8, 0.97)]
     for before in shutdowns:
         files = Files({})
-        res, after = table_after(exe, spec_for("cards_shutdown", before), files, before)
+        res, after = table_after(exe, spec_for("cards-teardown", before), files, before)
         images = res["loadedImages"]
         tmp = files.files["events.tmp"]
         n = struct.unpack_from("<H", tmp, 0)[0]
-        cases.append({"function": "cards_shutdown", "inputs": {"table": before}, "ax": "0000", "changed": {},
+        cases.append({"function": "cards-teardown", "inputs": {"table": before}, "ax": "0000", "changed": {},
                       "file": [tmp[2 + 0x30 * k:2 + 0x30 * (k + 1)].hex() for k in range(n)], "count": n,
                       "fileLength": len(tmp), "after": after, "freed": len(files.freed)})
     for n, fill in ((0, 0.2), (1, 0.0), (5, 0.1), (40, 0.3), (40, 0.0), (120, 0.6), (299, 0.05), (300, 0.5), (17, 1.0)):
         battle = random_table(r, fill)
         file = [r.randbytes(0x30).hex() for _ in range(n)]
         files = Files({"events.tmp": struct.pack("<H", n) + b"".join(bytes.fromhex(x) for x in file)})
-        res, after = table_after(exe, spec_for("world_load", battle), files, battle)
-        cases.append({"function": "world_load", "inputs": {"table": battle, "file": file}, "ax": "0000", "changed": {},
+        res, after = table_after(exe, spec_for("world-read", battle), files, battle)
+        cases.append({"function": "world-read", "inputs": {"table": battle, "file": file}, "ax": "0000", "changed": {},
                       "after": after, "freed": len(files.freed)})
     corpus = {
         "authority": "test_only_original_byte_execution",

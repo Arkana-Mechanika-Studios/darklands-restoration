@@ -9,7 +9,7 @@ namespace Darklands.Cards.Scripts;
 /// receive a party the city hates, and keeps a famous party waiting less.
 /// </summary>
 // orig: R061+0x2278 (1A5F:0008) matched; tests: CardSmokeTests
-// orig: handler setup R061+0x326E (opt_on[*]=1, screwed-up handler 10a0, item handlers 10d8/1114/1150/118c,
+// orig: handler setup R061+0x326E (card-option-enabled[*]=1, screwed-up handler 10a0, item handlers 10d8/1114/1150/118c,
 // saint handlers 11c8/1252/12dc/1366: standard pop-ups, no items or saints listed)
 public sealed class HanseaticLeague : Card
 {
@@ -25,21 +25,21 @@ public sealed class HanseaticLeague : Card
         Show(c, 356);
         // C: DS:EE72 = 7 and DS:EE70 = 0 (text window state) are set here; not modelled.
         c.Next = Number;
-        // C: opt_flag_0,1,7,8,9 = 1; opt_flag_2..6 = 0 (lines 2 and 3 are switched on when a commission can be reported;
+        // C: card-option-flag-0,1,7,8,9 = 1; card-option-flag-2..6 = 0 (lines 2 and 3 are switched on when a commission can be reported;
         // lines 4, 5 and 6 are never switched on: dormant below).
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 7, 8, 9);
         c.Variables.Chosen[0] = c.Leader;
         c.RandomName(c.City.Ordinal + House, 0, 0);
-        // C: cur_rep = loc_query(cur_loc, 0), read once; it is not written back.
+        // C: reputation-now = place-query(location-now, 0), read once; it is not written back.
         var standing = c.LocationQuery(c.Here, 0);
-        // C: ev8_owner_value(10, 7) || ev8_owner_value(3, 7) || event_type_at(7, 7): a commission is running or the house is busy.
+        // C: open-quest-owner-value(10, 7) || open-quest-owner-value(3, 7) || event-kind-at(7, 7): a commission is running or the house is busy.
         if (BankingHouses.CommissionPending(c, House))
         {
             menu[0] = OptionState.Hidden;
             menu[1] = OptionState.Hidden;
         }
-        // C: ev24_at_owner(10, 7) || ev24_at_owner(3, 7): a finished commission lets the party report it.
+        // C: resolved-quest-at-owner(10, 7) || resolved-quest-at-owner(3, 7): a finished commission lets the party report it.
         if (BankingHouses.CommissionDone(c, House))
         {
             menu[0] = OptionState.Hidden;
@@ -48,7 +48,7 @@ public sealed class HanseaticLeague : Card
             menu[3] = OptionState.Enabled;
         }
 
-        // C: these three early exits come before the menu loop; cur_rep is compared with -0x4b (-75) and -0x32 (-50).
+        // C: these three early exits come before the menu loop; reputation-now is compared with -0x4b (-75) and -0x32 (-50).
         if (standing <= -75 && c.PreviousCard == 1)
         {
             return c.Next = 0x15;
@@ -74,8 +74,8 @@ public sealed class HanseaticLeague : Card
         menu.EachRound = () =>
         {
             // C: DS:9082 is the party's fame; the test is made at the top of every round and the hour passes after
-            // card_options(1) (text block 1) was shown and continued, before card_menu (AfterOptions).
-            // orig: R061+0x2278 (1A5F:0008): `if (fame / 10 + favour + cur_rep <= 20) { card_options(1); advance_hours(1); } else card_options(0);`
+            // card-option-lines(1) (text block 1) was shown and continued, before card-choice-menu (AfterOptions).
+            // orig: R061+0x2278 (1A5F:0008): `if (fame / 10 + favour + reputation-now <= 20) { card-option-lines(1); pass-hours(1); } else card-option-lines(0);`
             // A long wait before a snotty clerk sees the party.
             waits = c.State.Party.Fame / 10 + c.State.HanseStanding + standing <= 20;
             menu.Block = waits ? 1 : 0;
@@ -89,18 +89,18 @@ public sealed class HanseaticLeague : Card
         };
         var charm = () => new OptionHint(Math.Clamp((c.Attribute(c.Leader, (int)Attribute.Charisma) << 1) + c.State.HanseStanding + standing, 0, 99), "", c.Leader);
         return menu.Run(
-            // orig: R061+0x260A (line 0); handler R061+0x27DA: clamp(10, 50, cur_rep / 2 + favour / 2 + fame)
+            // orig: R061+0x260A (line 0); handler R061+0x27DA: clamp(10, 50, reputation-now / 2 + favour / 2 + fame)
             new MenuLine(chance => SeekACommission(c, menu, chance, waitFirst: true),
                 () => new OptionHint(Math.Clamp(standing / 2 + c.State.HanseStanding / 2 + c.State.Party.Fame, 10, 50), "", c.Leader)),
-            // orig: R061+0x2812 (line 1); handler R061+0x29D8: clamp(10, 50, cur_rep + fame)
+            // orig: R061+0x2812 (line 1); handler R061+0x29D8: clamp(10, 50, reputation-now + fame)
             new MenuLine(chance => SeekACommission(c, menu, chance, waitFirst: false),
                 () => new OptionHint(Math.Clamp(standing + c.State.Party.Fame, 10, 50), "", c.Leader)),
-            // orig: R061+0x2A00 (line 2); handler R061+0x2CB2: clamp(0, 99, (Charisma << 1) + favour + cur_rep)
+            // orig: R061+0x2A00 (line 2); handler R061+0x2CB2: clamp(0, 99, (Charisma << 1) + favour + reputation-now)
             new MenuLine(_ => ReportTheCommission(c, favourChanges: true), charm),
             // orig: R061+0x2CEC (line 3); handler R061+0x2F94 (assured)
             new MenuLine(_ => ReportTheCommission(c, favourChanges: false), OptionHint.Saying(SuccessAssured)),
-            // DORMANT: lines 4, 5 and 6 (opt_flag_4..6 = 0, set nowhere): lines 4 and 5 show the first text and leave for the
-            // city entry card; line 6 only calls advance_hours(0) and stays in the menu.
+            // DORMANT: lines 4, 5 and 6 (card-option-flag-4..6 = 0, set nowhere): lines 4 and 5 show the first text and leave for the
+            // city entry card; line 6 only calls pass-hours(0) and stays in the menu.
             // orig: handler R061+0x2FEA, action 0d5c R061+0x2FCC
             new MenuLine(_ => Leave(c), OptionHint.Saying(SuccessAssured)),
             // orig: handler R061+0x3040, action 0db2 R061+0x3022
@@ -119,8 +119,8 @@ public sealed class HanseaticLeague : Card
     // orig: R061+0x260A (1A5F:039A) for waitFirst; R061+0x2812 (1A5F:05A2) for the bold request
     private void SeekACommission(CardContext c, CardMenu menu, int chance, bool waitFirst)
     {
-        // C: both lines are greyed (opt_flag_0 = opt_flag_1 = 2) first; rand_mod(100) <= chance, then (inside
-        // GiveACommission) rand_mod(100) < 30. Only the humble request (039a) loses an hour on a refusal.
+        // C: both lines are greyed (card-option-flag-0 = card-option-flag-1 = 2) first; roll-below(100) <= chance, then (inside
+        // GiveACommission) roll-below(100) < 30. Only the humble request (039a) loses an hour on a refusal.
         menu[0] = OptionState.Shown;
         menu[1] = OptionState.Shown;
         if (c.Succeeds(chance))
@@ -159,7 +159,7 @@ public sealed class HanseaticLeague : Card
                 c.SavedCard = Number;
                 c.Next = BankingHouses.ErrandRewardCard;
                 c.State.SavedCard2 = House;
-                // C: R029+0x4AA4(saved_card2 = 7) ends the hirelings' terms with value 7.
+                // C: R029+0x4AA4(remembered-card-second = 7) ends the hirelings' terms with value 7.
                 c.EndTerms(House);
                 BankingHouses.BusyForThreeDays(c, House);
                 return;
@@ -199,10 +199,10 @@ public sealed class HanseaticLeague : Card
     {
         var here = c.State.Locations[c.Here];
         c.Variables.Named[2] = c.LocationName(c.NearestCityPassingOverOneHere(here.X, here.Y));
-        // C: !event_at(0x2e, cur_loc) && rand_mod(100) <= chance: the roll is drawn only when the clerks have not talked in the last ten days.
+        // C: !event-at-place(0x2e, location-now) && roll-below(100) <= chance: the roll is drawn only when the clerks have not talked in the last ten days.
         if (!c.EventAtHere(ClerksTalk) && c.Succeeds(chance))
         {
-            // C: DS:4BBA = imin(++DS:4BBA, 99).
+            // C: DS:4BBA = smaller-of(++DS:4BBA, 99).
             c.State.HanseStanding = Math.Min(c.State.HanseStanding + 1, 99);
             c.PassHours(1);
             c.Screen.Text(7);

@@ -41,14 +41,14 @@ public sealed class DragonBlightedLand : Card
             menu[1] = OptionState.Enabled;
         }
         var blight = c.Events.FactValueAnywhere(DragonQuest, 1);
-        // C: the growth is drawn as an argument of event_update, before the event is chosen.
+        // C: the growth is drawn as an argument of event-advance, before the event is chosen.
         var growth = c.Random(2);
         c.Events.Update(-1, -1, 0x1C, 1, growth, DragonQuest, EventUpdate.Add);
         var what = blight < 2 ? c.Random(3) : blight < 4 ? c.Random(8) : c.Random(10) + 3;
-        // C: options_block (DS:EE53) is written only on the dragon's three ways in (R081+0x20B2 / 0x20E4 / 0x2114); when the ruined
+        // C: settings-block (DS:EE53) is written only on the dragon's three ways in (R081+0x20B2 / 0x20E4 / 0x2114); when the ruined
         // outlaws' battle keeps the card, its menu shows the block the card before left. Direct call j_dragon.py (local/batch/evid1o):
-        // R081+0x1848 with DS:EE53 = 0x2B, the blight query stubbed to 5, what = 7, run_battle stubbed to 5 -> card_options(0x2B).
-        // C: options_block is CardContext.OptionsBlock, which every card that writes it keeps (OptionsBlockCards and the cards' own stores).
+        // R081+0x1848 with DS:EE53 = 0x2B, the blight query stubbed to 5, what = 7, battle-driver stubbed to 5 -> card-option-lines(0x2B).
+        // C: settings-block is CardContext.OptionsBlock, which every card that writes it keeps (OptionsBlockCards and the cards' own stores).
         switch (what)
         {
             case 0:
@@ -237,7 +237,7 @@ public sealed class DragonBlightedLand : Card
 
     private static void RuinedOutlaws(CardContext c)
     {
-        // C: arguments are evaluated right to left: rand_mod(4) (second group) before rand_mod(3).
+        // C: arguments are evaluated right to left: roll-below(4) (second group) before roll-below(3).
         var third = c.PartyLoreLevel() / 4 + 1;
         var second = c.Random(4) + c.PartyLoreLevel() / 3 + 1;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 3;
@@ -310,7 +310,7 @@ public sealed class DragonBlightedLand : Card
                     if (pack[i].Type == 0x6C)
                     {
                         var q = pack[i].Quality;
-                        // C: clamp_range(1, q - 1, q - rand): the upper bound wins when they cross.
+                        // C: limit-to-range(1, q - 1, q - rand): the upper bound wins when they cross.
                         pack[i] = pack[i] with { Quality = (byte)CardContext.ClampRange(1, q - 1, q - c.Random(10)) };
                     }
                 }
@@ -338,12 +338,12 @@ public sealed class DragonBlightedLand : Card
         c.PracticeSkill(Who.Everybody, 0x11, 0, 10, 0);
         c.Injure(Who.Everybody, 2, 5, 20);
         c.PassHours(2);
-        // C: next_card is not changed: the dragon is still there.
+        // C: following-card is not changed: the dragon is still there.
     }
 
-    /// <summary>Mounted, the party's riding (each slot below party_size); on foot, its agility.</summary>
+    /// <summary>Mounted, the party's riding (each slot below party-headcount); on foot, its agility.</summary>
     // orig: R081+0x293A (19BC:10FA) asm; R081+0x29CE (19BC:118E) asm
-    // C: an empty slot below party_size counts too.
+    // C: an empty slot below party-headcount counts too.
     private static OptionHint PotionHint(CardContext c, int member)
     {
         c.Variables.Chosen[0] = member;
@@ -371,7 +371,7 @@ public sealed class DragonBlightedLand : Card
     // orig: R081+0x24E2 (19BC:0CA2) asm; R081+0x25C2 (19BC:0D82) asm; tests: CardSmokeTests
     private static void UseAPotion(CardContext c, int chance)
     {
-        // C: the chance is the menu's l_a.a: the pop-up hint's, or -1 from the option line itself (the potion then always fails).
+        // C: the chance is the menu's local-minus-0a.a: the pop-up hint's, or -1 from the option line itself (the potion then always fails).
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         if (c.Random(100) <= chance)
         {

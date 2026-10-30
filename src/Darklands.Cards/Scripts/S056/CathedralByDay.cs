@@ -14,7 +14,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R056+0x18C8 (19C4:0008) asm; tests: CardSmokeTests
 // UNCERTAIN: 0354 and 0514 are read from the disassembly only.
 // DORMANT: R056+0x27C8 (19C4:0F08), the init, closes all lines with the "screwed up." handler
-//   R056+0x2800 and clears card_items/card_saints; line 9 (flag 0, no handler of its own) stays closed.
+//   R056+0x2800 and clears card-item-lines/card-saint-lines; line 9 (flag 0, no handler of its own) stays closed.
 public sealed class CathedralByDay : Card
 {
     public const int CardNumber = 0x32;
@@ -49,7 +49,7 @@ public sealed class CathedralByDay : Card
         var rest = (short)((short)purse - third);
         c.Variables.Money[0] = Money.FromPfennigs(third);
         c.Variables.Money[1] = Money.FromPfennigs(rest);
-        // C: loc_query 38 is the cathedral's patron saint, 37 the relic it keeps.
+        // C: place-query 38 is the cathedral's patron saint, 37 the relic it keeps.
         if (c.HereQuery(0x26) == 0)
         {
             states[3] = OptionState.Hidden;

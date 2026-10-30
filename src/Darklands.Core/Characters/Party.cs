@@ -22,9 +22,9 @@ public sealed class Party
 
     /// <summary>
     /// The leader's slot. The leader byte may name a slot past <see cref="Members"/>: a leader removed from the last slot while no
-    /// other member is able keeps the index (party_remove / party_delete); that slot's record is then the emptied one (<see cref="Slot"/>).
+    /// other member is able keeps the index (party-leave / party-wipe); that slot's record is then the emptied one (<see cref="Slot"/>).
     /// </summary>
-    // C: party[leader] reads the fixed five-slot table (DS:9C69), whatever party_size is.
+    // C: party[leader] reads the fixed five-slot table (DS:9C69), whatever party-headcount is.
     public Character Leader => LeaderIndex >= 0 && LeaderIndex < Members.Count ? Members[LeaderIndex] : Slot(LeaderIndex);
 
     public IEnumerable<Character> Able => Members.Where(m => m.IsAble);
@@ -32,7 +32,7 @@ public sealed class Party
     public IEnumerable<Character> Present => Members.Where(m => m.IsPresent);
 
     /// <summary>Makes the first able member the leader if the current leader cannot lead.</summary>
-    // orig: hours_pass R029+0x255A (0E76:255A) matched; tests: EventLogTests
+    // orig: hours-elapse R029+0x255A (0E76:255A) matched; tests: EventLogTests
     // C: `if (party[leader][0] != 1)` takes the first status-1 slot of five; with none the leader stays.
     public void EnsureAbleLeader()
     {
@@ -49,14 +49,14 @@ public sealed class Party
 
     public int BestSkill(Skill skill) => Able.Select(m => m[skill]).DefaultIfEmpty(0).Max();
 
-    /// <summary>The party owns the philosopher's stone (<c>party_get(6)</c>).</summary>
+    /// <summary>The party owns the philosopher's stone (<c>party-read(6)</c>).</summary>
     public int PhilosophersStone { get; set; }
 
     /// <summary>
     /// The money held with the bankers, "bank notes" (DS:9072/9074/9076: a florins, groschen, pfennigs word triple like the
     /// purse; save header +0x8C/+0x8E/+0x90). The party screen shows only its florins under "Notes".
     /// </summary>
-    // orig: DS:9072 (save: R037 seg 1C7D / R037 seg 1462 read and write the three words after prev_screen); tests: BankNotesTests
+    // orig: DS:9072 (save: R037 seg 1C7D / R037 seg 1462 read and write the three words after earlier-screen); tests: BankNotesTests
     // C: the cards use DS:9072 as an int (only the florins word: deposit, redeem, display, R133 reset) or as a struct money
     // (DS:9072 as char[] in R086, R105, R110, R132); both views are the same three words, so one Money serves both.
     public Money BankNotes { get; set; }
@@ -102,20 +102,20 @@ public sealed class Party
 
     /// <summary>
     /// The record a slot past <see cref="Members"/> still holds (a departed member's, or a loaded slot's), null if none was left there:
-    /// party_remove and party_delete clear only the status byte, so the name, sex, figure and record bytes stay until a member takes the slot.
+    /// party-leave and party-wipe clear only the status byte, so the name, sex, figure and record bytes stay until a member takes the slot.
     /// </summary>
-    // C: party DS:9C69 (the 0x80-byte records from DS:9C55, the status byte at +0x14); party_delete R037+0x3F30 writes the status byte and nothing else of the record
+    // C: party DS:9C69 (the 0x80-byte records from DS:9C55, the status byte at +0x14); party-wipe R037+0x3F30 writes the status byte and nothing else of the record
     public Character? SpareRecord(int index) => index >= Members.Count && index < MaxMembers && _departed[index] ? _spare[index] : null;
 
     // the slots a member left (TrimToSize), as opposed to a slot only read past the party (Slot)
     private readonly bool[] _departed = new bool[MaxMembers];
 
     /// <summary>
-    /// The party size becomes one past the last occupied slot (<c>party_size</c>); the slots
+    /// The party size becomes one past the last occupied slot (<c>party-headcount</c>); the slots
     /// dropped keep their member's bytes (name, pack, formulas, saints), as the original's slot
     /// memory does when only the status byte is cleared.
     /// </summary>
-    // C: party_remove / party_delete clear party[p][0] and recount party_size; the 0x80-byte record and the slot's tables stay.
+    // C: party-leave / party-wipe clear party[p][0] and recount party-headcount; the 0x80-byte record and the slot's tables stay.
     public void TrimToSize()
     {
         while (Members.Count > 0 && !Members[^1].IsPresent)
@@ -127,7 +127,7 @@ public sealed class Party
     }
 
     /// <summary>The six bytes before member 0's pack (2E38:0038..003D, entry −1 of member 0): zero in the image, written only through that entry.</summary>
-    // orig: data_file[0].pad00 + 0x38 (2E38:0038); the 2E38 segment is zero in the EXE image (R136)
+    // orig: data-file-handle[0].pad00 + 0x38 (2E38:0038); the 2E38 segment is zero in the EXE image (R136)
     public ItemStack BeforeFirstPack { get; set; } = Pack.Zero;
 
     /// <summary>Pack entry −1 or 64 of slot <paramref name="slot"/>: the neighbouring member's entry or the bytes around the packs.</summary>
@@ -164,7 +164,7 @@ public sealed class Party
     /// packs, the five packs, the five formula tables and the five saint tables. Other offsets
     /// (the item-definition pointers from 0x890 on, the header before 0x38) are not modelled: 0.
     /// </summary>
-    // orig: data_file / inventories 2E38:003E, R136+0xE08F + 0x5F = formulas 2E38:07BE, saints_known 2E38:082C, item_defs 2E38:0890 (far pointers: heap addresses)
+    // orig: data-file-handle / inventories 2E38:003E, R136+0xE08F + 0x5F = formulas 2E38:07BE, saints-learned 2E38:082C, item-definition-table 2E38:0890 (far pointers: heap addresses)
     public int MemoryByte(int offset)
     {
         if (offset is >= PacksAt - EntryBytes and < PacksAt)
@@ -212,7 +212,7 @@ public sealed class Party
         }
     }
 
-    /// <summary>The 2E38 offset of saint byte <paramref name="index"/> of slot <paramref name="who"/> (<c>saints_known[who][index]</c>, unresolved: −1 is the 20 bytes before slot 0's).</summary>
+    /// <summary>The 2E38 offset of saint byte <paramref name="index"/> of slot <paramref name="who"/> (<c>saints-learned[who][index]</c>, unresolved: −1 is the 20 bytes before slot 0's).</summary>
     public static int SaintByteOffset(int who, int index) => SaintsAt + who * SaintBytes + index;
 
     /// <summary>The 2E38 offset of formula byte <paramref name="index"/> of slot <paramref name="who"/>.</summary>
@@ -260,28 +260,28 @@ public static class Who
 }
 
 /// <summary>
-/// What the last party query found (<c>best_member</c>, <c>best_value</c>, <c>best_skill</c>,
+/// What the last party query found (<c>top-scoring-member</c>, <c>top-value-so-far</c>, <c>top-skill-so-far</c>,
 /// and the attribute queries' own value). The values are bytes, as in the original.
 /// </summary>
-// orig: best_member DS:991D
-// C: best_value and best_skill are unsigned chars, best_member a char, DS:9C1D an unsigned char: the stored values are bytes.
+// orig: top-scoring-member DS:991D
+// C: top-value-so-far and top-skill-so-far are unsigned chars, top-scoring-member a char, DS:9C1D an unsigned char: the stored values are bytes.
 public sealed class PartyQueryResult
 {
-    /// <summary>The member found (<c>best_member</c>).</summary>
+    /// <summary>The member found (<c>top-scoring-member</c>).</summary>
     public int Member { get; set; }
 
-    /// <summary>The skill value found (<c>best_value</c>).</summary>
+    /// <summary>The skill value found (<c>top-value-so-far</c>).</summary>
     public int Value { get; set; }
 
-    /// <summary>The skill found by the best-skill queries (<c>best_skill</c>); also the pack slot of the last equipment lookup.</summary>
+    /// <summary>The skill found by the best-skill queries (<c>top-skill-so-far</c>); also the pack slot of the last equipment lookup.</summary>
     public int Skill { get; set; }
 
     /// <summary>The attribute value found by the attribute queries (DS:9C1D).</summary>
     public int AttributeValue { get; set; }
 
     /// <summary>
-    /// The member found by the min/max attribute queries (DS:9A44, set beside <c>best_member</c>
-    /// by <c>party_min_attr</c>, R029 1696, <c>party_max_attr</c> and R029 174a only).
+    /// The member found by the min/max attribute queries (DS:9A44, set beside <c>top-scoring-member</c>
+    /// by <c>party-stat-low</c>, R029 1696, <c>party-stat-top</c> and R029 174a only).
     /// </summary>
     public int AttributeMember { get; set; }
 }

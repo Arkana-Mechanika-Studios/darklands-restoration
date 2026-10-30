@@ -100,7 +100,7 @@ public sealed class FortressGuardpost : Card
             c.Screen.Text(4);
             BecomeKnown(c);
             ShowPicture(c, GuardsPicture);
-            // C: only options_block changes; the option flags stay as they were.
+            // C: only settings-block changes; the option flags stay as they were.
             menu.Block = 1;
             return;
         }

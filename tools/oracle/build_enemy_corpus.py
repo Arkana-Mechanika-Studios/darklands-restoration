@@ -1,11 +1,11 @@
-"""Original-byte corpus for the battlefield builder's enemy records (R004 0E76): monster_type_map,
-monsters_fixup and groups_fixup, chained as a generator uses them.
+"""Original-byte corpus for the battlefield builder's enemy records (R004 0E76): monster-type-lookup,
+monsters-repair and groups-repair, chained as a generator uses them.
 
 usage: python -I build_enemy_corpus.py <DARKLAND.EXE> <game folder> <out enemies.json>
 
-The enemy buffer (segment 0x6000) is set up as battlefield_build does (darkland.enm at +0xB4C0,
+The enemy buffer (segment 0x6000) is set up as battlefield-builder-entry does (darkland.enm at +0xB4C0,
 the pointers in DS:DB29..DB35, darkland.lst at segment 0x7000), cleared by the original
-monsters_clear and groups_clear, then each scenario runs a chain of original calls, carrying the
+monsters-reset and groups-reset, then each scenario runs a chain of original calls, carrying the
 memory from call to call. Stored: the calls and their inputs, and per scenario the resulting
 kind and group records, counts and random state (results only; no game bytes).
 """
@@ -25,10 +25,10 @@ from run_unit import run  # noqa: E402
 DS = 0x321A
 HOLDRAND = 0x7B20
 ENEMY_SEG, ITEM_SEG = 0x6000, 0x7000
-MON_COUNT, GROUP_COUNT = 0xDAE5, 0xDB05
+MONSTER_TOTAL, GROUP_TOTAL = 0xDAE5, 0xDB05
 KINDS, GROUPS, TEMPLATES = 0x180, 0xA200, 0xB4C0
-FN = {"monsters_clear": "04CC", "monster_type_map": "06AA", "groups_clear": "1060", "monsters_fixup": "122C",
-      "groups_fixup": "1D90"}
+FN = {"monsters-reset": "04CC", "monster-type-lookup": "06AA", "groups-reset": "1060", "monsters-repair": "122C",
+      "groups-repair": "1D90"}
 
 
 class Machine:
@@ -43,7 +43,7 @@ class Machine:
         self.put_ds(0xDB29, ptrs)
         self.put_ds(0xDADD, struct.pack("<H", ENEMY_SEG))
         self.put_ds(0xDAE3, struct.pack("<H", ITEM_SEG))
-        self.put_ds(MON_COUNT, bytes(64))
+        self.put_ds(MONSTER_TOTAL, bytes(64))
         self.put_ds(HOLDRAND, bytes(4))
 
     def put_ds(self, offset: int, data: bytes) -> None:
@@ -79,9 +79,9 @@ def scenario(m: Machine, r: random.Random):
         level = r.randint(0, levels - 1)
         t = r.choice([r.randint(0, 0x51), r.randint(0, 0x51), r.randint(0, 0x51), -1, 0x52, 0x4D])
         q = r.randint(0, 6)
-        ax = m.call("monster_type_map", [level, t, q])
-        calls.append({"call": "monster_type_map", "args": [level, t, q], "ax": (ax ^ 0x8000) - 0x8000})
-    kinds = m.counts(MON_COUNT)
+        ax = m.call("monster-type-lookup", [level, t, q])
+        calls.append({"call": "monster-type-lookup", "args": [level, t, q], "ax": (ax ^ 0x8000) - 0x8000})
+    kinds = m.counts(MONSTER_TOTAL)
     groups = []
     for level in range(levels):
         n = r.randint(0, 3)
@@ -96,14 +96,14 @@ def scenario(m: Machine, r: random.Random):
             struct.pack_into("<hhh", rec, 0, r.randint(0, 1200), r.randint(0, 600), r.choice([0, 16, 32]))
             m.enemy[GROUPS + (level * 10 + g) * 0x1E:GROUPS + (level * 10 + g + 1) * 0x1E] = rec
             recs.append(rec.hex())
-        m.put_ds(GROUP_COUNT + 2 * level, struct.pack("<h", n))
+        m.put_ds(GROUP_TOTAL + 2 * level, struct.pack("<h", n))
         groups.append(recs)
     seed = r.randint(0, 0x7FFF)
-    m.call("monsters_fixup", [levels, seed])
-    calls.append({"call": "monsters_fixup", "args": [levels, seed]})
-    m.call("groups_fixup", [levels])
-    calls.append({"call": "groups_fixup", "args": [levels]})
-    kinds, gcount = m.counts(MON_COUNT), m.counts(GROUP_COUNT)
+    m.call("monsters-repair", [levels, seed])
+    calls.append({"call": "monsters-repair", "args": [levels, seed]})
+    m.call("groups-repair", [levels])
+    calls.append({"call": "groups-repair", "args": [levels]})
+    kinds, gcount = m.counts(MONSTER_TOTAL), m.counts(GROUP_TOTAL)
     out_kinds = [[bytes(m.enemy[KINDS + (l * 12 + k) * 0xD6:KINDS + (l * 12 + k + 1) * 0xD6]).hex() for k in range(kinds[l])]
                  for l in range(levels)]
     out_groups = [[bytes(m.enemy[GROUPS + (l * 10 + g) * 0x1E:GROUPS + (l * 10 + g + 1) * 0x1E]).hex() for g in range(gcount[l])]
@@ -120,8 +120,8 @@ def main() -> None:
     lst = (game / "DARKLAND.LST").read_bytes()
     r = random.Random(20261019)
     base = Machine(exe, enm, lst)
-    base.call("monsters_clear", [])
-    base.call("groups_clear", [])
+    base.call("monsters-reset", [])
+    base.call("groups-reset", [])
     snapshot = (bytes(base.enemy), dict(base.ds))
     scenarios = []
     for _ in range(int(sys.argv[4]) if len(sys.argv) > 4 else 60):

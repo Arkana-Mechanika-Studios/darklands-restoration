@@ -6,7 +6,7 @@ namespace Darklands.Cards.Scripts;
 
 /// <summary>
 /// "$Snuck00": the party has crept into the guild's living quarters at night (the guild in
-/// party_x, its secret's fact in party_y). Search the leader's papers for evidence, wait, or
+/// party-map-column, its secret's fact in party-map-row). Search the leader's papers for evidence, wait, or
 /// loom over his sleeping family to change the guild's mind; a stumble raises the house.
 /// </summary>
 // orig: R071+0x0000 (1838:0000) matched; tests: CardSmokeTests
@@ -46,7 +46,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
             // orig: hint R071+0x07CC matched
             // C: line 3 is offered but its action (07ca) is empty.
             new MenuLine(_ => { }, () => SneakChance(c)),
-            // DORMANT: line 4 (opt_flag_4 = 0): back to the card before. orig: R071+0x07DE (hint 07f0)
+            // DORMANT: line 4 (card-option-flag-4 = 0): back to the card before. orig: R071+0x07DE (hint 07f0)
             new MenuLine(_ => { c.PassHours(0); c.Next = c.PreviousCard; }, OptionHint.Saying(SuccessAssured)),
             // DORMANT: lines 5..8 (opt_flag = 0): card 0x62. orig: R071+0x0828/0872/08bc/0906 (hints 083a/0884/08ce/0918)
             new MenuLine(_ => LeaveTheGame(c), OptionHint.Saying(SuccessAssured)),
@@ -70,7 +70,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
 
     /// <summary>The party's average Stealth, better before dawn and worse by day.</summary>
     // orig: R071+0x026E (hints 068e, 06c2, 07b8, 07cc)
-    // C: a void function used as an int: its value is AX after the last call, clamp99(v).
+    // C: a void function used as an int: its value is AX after the last call, limit-to-0-99(v).
     private static OptionHint SneakChance(CardContext c)
     {
         var value = c.PartyAverageSkill((int)Skill.Stealth);
@@ -93,7 +93,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
         if (c.Random(2) == 1)
         {
             // BUG: the original makes $ChosenOneName the least agile member's Agility value
-            // (party_min_attr's result), not the member; a value past the party names whatever lies there (from 25 on a piece of
+            // (party-stat-low's result), not the member; a value past the party names whatever lies there (from 25 on a piece of
             // this card's .MSG file: TextVariables.OutsideName).
             c.Variables.Chosen[0] = c.PartyMinAttribute((int)Attribute.Agility);
             c.Screen.Text(1);
@@ -120,7 +120,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
     /// a locked chest (Artifice), a woman in the monastery, a hidden compartment.
     /// </summary>
     // orig: R071+0x0328 (hint 068e)
-    // C: the function ends with `return next_card = saved_card` on every path, so a blunder's
+    // C: the function ends with `return following-card = remembered-card` on every path, so a blunder's
     // street card is replaced by the saved card as well.
     private static void SearchForEvidence(CardContext c, ref int standing, int chance)
     {
@@ -179,7 +179,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
                         else if (c.PartyMaxAttribute((int)Attribute.Perception) << 1 >= c.Random(100))
                         {
                             FoundTheEvidence(c);
-                            // C: slot 0x27 lies past var_named (see RandomName); $NamedOneName stays as it was.
+                            // C: slot 0x27 lies past text-slot-named (see RandomName); $NamedOneName stays as it was.
                             c.RandomName(c.City.Ordinal + 0x1B, 1, 0x27);
                             c.Screen.Text(7);
                         }
@@ -200,7 +200,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
                         }
                         break;
                     case 5:
-                        // DORMANT: x % 5 is never 5. The original compares with best_member here.
+                        // DORMANT: x % 5 is never 5. The original compares with top-scoring-member here.
                         if (c.Random(50) > (byte)c.BestMember)
                         {
                             c.Screen.Text(3);

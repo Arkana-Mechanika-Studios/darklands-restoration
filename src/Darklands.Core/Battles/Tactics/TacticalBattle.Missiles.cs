@@ -44,7 +44,7 @@ public sealed record Recoverable(int Item, int Kind, int Quality, int Count, int
 
 public sealed partial class TacticalBattle
 {
-    /// <summary>missile_recs / missile_count.</summary>
+    /// <summary>shot-records / shot-total.</summary>
     public List<Missile> Missiles { get; } = [];
 
     /// <summary>The thrown weapons and arrows on the ground.</summary>
@@ -55,7 +55,7 @@ public sealed partial class TacticalBattle
     /// <paramref name="target"/> (−1 a spot): a weapon missile (type 0) by the readied weapon, a
     /// spell (type ≥ 6) by the caster's sprite family. A missing shot flies past (extend_miss).
     /// </summary>
-    // orig: missile_launch R018+0x0000 (1EF8:0000) matched
+    // orig: shot-launch R018+0x0000 (1EF8:0000) matched
     // C: traps (who −1/−2, from the line-of-sight globals) go through LaunchTrapMissile.
     // DIVERGENCE: the speed and sprite of an unknown weapon (uninitialised in the original) are 15 / 5 here.
     public void LaunchMissile(int who, int target, int type, int spell = 0, int power = 0)
@@ -138,8 +138,8 @@ public sealed partial class TacticalBattle
     /// A trap's dart (who −1: it hits, −2: it misses and flies on) from the start of the dart's line
     /// at <paramref name="target"/> (−1: to the line's end), its sprite and speed by the dart weapon.
     /// </summary>
-    // orig: missile_launch R018+0x0000 (1EF8:0000) matched (the who &lt; 0 branch)
-    // C: the record's shooter is −1 for both (a shooter of 15 after the &amp; 0xF of missiles_advance); a weapon outside the switch leaves
+    // orig: shot-launch R018+0x0000 (1EF8:0000) matched (the who &lt; 0 branch)
+    // C: the record's shooter is −1 for both (a shooter of 15 after the &amp; 0xF of shots-fly); a weapon outside the switch leaves
     // the sprite and speed uninitialised (5 / 15 here, DIVERGENCE).
     private void LaunchTrapMissile(int who, int target, int facing, int weapon, MapPoint from, MapPoint to)
     {
@@ -247,7 +247,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>Every missile flies on (homing on a target on its floor); on arrival a hit applies its damage.</summary>
-    // orig: missiles_advance R014+0xED10 (1D47:0000) draft (spec D §4.9, asm-verified)
+    // orig: shots-fly R014+0xED10 (1D47:0000) draft (spec D §4.9, asm-verified)
     // C: an arrived missile is not skipped (only its done byte keeps a hit from counting twice); the draw at the end of the tick removes
     // it after drawing it once (RemoveArrivedMissiles).
     private void AdvanceMissiles()
@@ -267,7 +267,7 @@ public sealed partial class TacticalBattle
             }
             if ((m.Sprite & 0x7F) < 6)
             {
-                // C: a spot target (−1) reads cbt_floor[−1] (DS:A6B3); a spot shot never hits here.
+                // C: a spot target (−1) reads fighter-floor-level[−1] (DS:A6B3); a spot shot never hits here.
                 if (m.Done == 0 && t >= 0 && m.Floor == Battle[t].Floor)
                 {
                     var target = Battle[t];
@@ -284,10 +284,10 @@ public sealed partial class TacticalBattle
                         }
                         else
                         {
-                            // C: a trap's missile (shooter 15) writes past the 13-entry arrays on the fixed DS layout: cbt_anim[15]
-                            // is cbt_action[2] (member 2's action state is cleared, twice), cbt_special[15] is cbt_moving[0]
-                            // (member 0 stops following its path); cbt_action[15] and combatants[15].f10 land in picture
-                            // handles (nothing to model) and party_panel_rows is skipped for 15.
+                            // C: a trap's missile (shooter 15) writes past the 13-entry arrays on the fixed DS layout: fighter-animation[15]
+                            // is fighter-action[2] (member 2's action state is cleared, twice), fighter-special-action[15] is fighter-moving[0]
+                            // (member 0 stops following its path); fighter-action[15] and combatants[15].f10 land in picture
+                            // handles (nothing to model) and party-panel-row-set is skipped for 15.
                             Battle[2].State = ActionState.Idle;
                             Battle[0].Moving = false;
                         }
@@ -298,7 +298,7 @@ public sealed partial class TacticalBattle
             }
             else
             {
-                // The spell or potion lands (thunk 09C0:1DC9: effect_spell with the shooter, type, quality, target and level).
+                // The spell or potion lands (thunk 09C0:1DC9: effect-cast with the shooter, type, quality, target and level).
                 // C: the type and quality bytes are pushed zero-extended, the target and level sign-extended.
                 Effects.Lands(m.Goal.X, m.Goal.Y, sh, (byte)m.Spell, (byte)m.Power, (sbyte)m.Target, (sbyte)m.Floor);
             }
@@ -306,9 +306,9 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>The missiles that arrived go once drawn (the draw's missile loop calls missile_remove after queueing their sprite).</summary>
-    // orig: combat_draw R014+0x6818 (14F7:0008) draft (the missile loop R014+0x6B22..0x6D4A, from the last missile down: after the sprite
-    // R014+0x6D39 `if (done < 0) missile_remove(k)` via 09C0:1D79); missile_remove R018+0x027E (1EF8:027E) matched
+    /// <summary>The missiles that arrived go once drawn (the draw's missile loop calls shot-delete after queueing their sprite).</summary>
+    // orig: fight-draw R014+0x6818 (14F7:0008) draft (the missile loop R014+0x6B22..0x6D4A, from the last missile down: after the sprite
+    // R014+0x6D39 `if (done < 0) shot-delete(k)` via 09C0:1D79); shot-delete R018+0x027E (1EF8:027E) matched
     // C: the renderer here draws later, from the state the tick left: the removed ones are kept for it until the next tick (ArrivedShown).
     private void RemoveArrivedMissiles()
     {

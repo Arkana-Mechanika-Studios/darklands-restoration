@@ -10,9 +10,9 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R114+0x09B4 (18D3:0004) matched; tests: CardSmokeTests
 // orig: R114+0x1260 (18D3:08B0) matched (registration: saint pop-ups only, they do not name the member)
-// C: the registration does not set item_fn (DS:EC00), so a potion chosen in line 4's pop-up box calls (DS:EB0A[menu_slot] = item_fn[slot],
+// C: the registration does not set item-handler-table (DS:EC00), so a potion chosen in line 4's pop-up box calls (DS:EB0A[menu-choice-index] = item-handler-table[slot],
 //   R043's card loop) the far pointer an earlier card registered, into whatever code is loaded there now, and line 4 gets its AX as the chance.
-//   Direct calls j_hussite.py (local/batch/evid1o), card_menu stubbed to that choice: from the Tyrnau map state the gate card's pointers
+//   Direct calls j_hussite.py (local/batch/evid1o), card-choice-menu stubbed to that choice: from the Tyrnau map state the gate card's pointers
 //   213D:0D7E (slot 0) run R114 code that returns 0x223C (the potion always works), 213D:0DE8 (slot 1) runs into an invalid instruction,
 //   213D:0E50 (slot 2) returns 0, slot 3 and every slot after a load or a card without item handlers (banks-markt: all 0000:0000) jump to 0000:0000.
 // DIVERGENCE: that call is not reproduced (an earlier card's code pointer into another overlay's bytes: undefined); the pop-up's choice
@@ -33,7 +33,7 @@ public sealed class HussiteBand : Card
         c.Variables.Chosen[0] = c.Leader;
         var city = c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y);
         c.Variables.Location = city;
-        // C: locations[var_loc] + 0x14 is the place's flag byte; 0x80 marks a city in revolt.
+        // C: locations[text-slot-place] + 0x14 is the place's flag byte; 0x80 marks a city in revolt.
         var place = c.State.Locations[city];
         if ((place.Flags & 0x80) != 0)
         {
@@ -76,7 +76,7 @@ public sealed class HussiteBand : Card
 
     /// <summary>Talking the rebels round; the original only succeeds when the roll equals the chance exactly.</summary>
     // orig: R114+0x0DCC (18D3:041C) matched; tests: CardSmokeTests
-    // BUG: `rand_mod(100) == p` where every other card has `<=`; kept as the original has it.
+    // BUG: `roll-below(100) == p` where every other card has `<=`; kept as the original has it.
     private static void ClaimFriendship(CardContext c, int chance)
     {
         if (c.Random(100) == chance)
@@ -97,7 +97,7 @@ public sealed class HussiteBand : Card
     /// but unanswered the rebels attack (after the text of an answered prayer, as in the original).
     /// </summary>
     // orig: R114+0x0E8A (18D3:04DA) matched; tests: CardSmokeTests
-    // C: invoke_saint(var_chosen1 = menu_member, ...): the member is named before the prayer.
+    // C: call-on-saint(text-slot-chosen-one = menu-owner-member, ...): the member is named before the prayer.
     private static void PrayToABohemianSaint(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
@@ -130,7 +130,7 @@ public sealed class HussiteBand : Card
             case 0:
             case 1:
                 c.Screen.Text(4);
-                // The original leaves without clearing cur_loc here.
+                // The original leaves without clearing location-now here.
                 c.Next = CardContext.MapCard;
                 c.AdjustReputation(c.Variables.Location, 5, 10);
                 break;
@@ -174,7 +174,7 @@ public sealed class HussiteBand : Card
     /// race all the same.
     /// </summary>
     // orig: R114+0x10F0 (18D3:0740) matched; tests: CardSmokeTests
-    // C: rand_mod(100) <= party_avg_eff_attr2(): the average draws nothing.
+    // C: roll-below(100) <= party-effective-stat-two-mean(): the average draws nothing.
     private static void ThrowAPotionAndRun(CardContext c, int chance)
     {
         if (c.Random(100) <= chance)
@@ -208,7 +208,7 @@ public sealed class HussiteBand : Card
 
     /// <summary>The rebels: whatever happens, the party's name in the nearest city suffers.</summary>
     // orig: R114+0x0C70 (18D3:02C0) matched; tests: CardSmokeTests
-    // C: arguments right to left: rand_mod(4) (fifth) is drawn before rand_mod(2) (fourth); then run_battle draws its seed.
+    // C: arguments right to left: roll-below(4) (fifth) is drawn before roll-below(2) (fourth); then battle-driver draws its seed.
     private static void FightTheHussites(CardContext c)
     {
         var lore = c.PartyLoreLevel();

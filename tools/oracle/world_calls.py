@@ -177,11 +177,11 @@ class WState(bc.State):
         self.stop_at = None
         self.in_writer = False
         # the saved-game writer also writes the battle file (R003+0x00DC, 31 million bytes of code): not part of what is compared (the .SAV is)
-        self.m.stub(P(0x0E76), 0x00DC, lambda m: (0, 0) if self.in_writer else None, "battle_save", record="R003")
+        self.m.stub(P(0x0E76), 0x00DC, lambda m: (0, 0) if self.in_writer else None, "R003+0x00DC", record="R003")
         self.in_load = False
         # the load redraws the menu bar after it sets the difficulty (root 0000:1438): drawing, 50 million bytes of code, not part of the state
         self.m.stub(P(0x0000), 0x1438, lambda m: (0, 0) if self.in_load else None, "set_difficulty_menu", record="root")
-        self.m.stub(P(0x0E76), 0x0CE8, lambda m: (0, 0) if self.in_load else None, "battle_restore", record="R003")
+        self.m.stub(P(0x0E76), 0x0CE8, lambda m: (0, 0) if self.in_load else None, "R003+0x0CE8", record="R003")
         for coord in near:
             i = self.cat.info(coord)
             self.m.hook(i["seg"], i["off"], self._near_end, record=i["record"] if i["record"] == "root" else "R%03d" % i["record"])

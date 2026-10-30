@@ -16,10 +16,10 @@ public sealed class CityOutskirts : Card
 
     public override int Number => CardNumber;
 
-    // orig: R045+0x0000 (1838:0000) matched (entry: music, the numbers for the texts, the text block by city kind (cur_loc_query 0x28 selects card_options 6/5/0) and the menu loop)
+    // orig: R045+0x0000 (1838:0000) matched (entry: music, the numbers for the texts, the text block by city kind (location-now-query 0x28 selects card-option-lines 6/5/0) and the menu loop)
     // orig: R045+0x04C0 (1838:04C0) matched (init helper: enables all 20 option lines and clears the item and saint slots; the card then fills lines 0..4)
-    // DORMANT: R045+0x04F8 (1838:04F8) matched: the init helper points opt_fn[0..19] at this "screwed up." default; lines 5..19 stay enabled but the card's MSG has no line for them and the menu cannot select them, so it never runs.
-    // DORMANT: the card has no items and no saints (card_items/card_saints stay -1), so no item_fn/saint_fn pop-up handler exists or is ever opened.
+    // DORMANT: R045+0x04F8 (1838:04F8) matched: the init helper points card-option-handler[0..19] at this "screwed up." default; lines 5..19 stay enabled but the card's MSG has no line for them and the menu cannot select them, so it never runs.
+    // DORMANT: the card has no items and no saints (card-item-lines/card-saint-lines stay -1), so no item-handler-table/saint-handler-table pop-up handler exists or is ever opened.
     public override int Run(CardContext c)
     {
         c.PlayMusic(c.IsDaylight ? 0x1B : 0x1C);
@@ -27,7 +27,7 @@ public sealed class CityOutskirts : Card
         c.StandingSeen = c.Reputation(c.Here);
         c.Variables.Numbers[0] = c.HereQuery(2) / 2 + 1;
         c.Variables.Numbers[1] = c.HereQuery(2) / 2 + 2;
-        // The text depends on the city's kind (loc_query 40): 1 the usual one, 0 and others their own.
+        // The text depends on the city's kind (place-query 40): 1 the usual one, 0 and others their own.
         var block = c.HereQuery(0x28) switch
         {
             0 => 5,
@@ -105,7 +105,7 @@ public sealed class CityOutskirts : Card
         ShowPicture(c, NightPicture);
         c.Screen.Text(4);
         var hours = c.HereQuery(2) / 2 + 2;
-        // C: get_hour() (R029+0x5650, matched: returns cur_hour) + hours.
+        // C: read-hour() (R029+0x5650, matched: returns hour-now) + hours.
         var end = c.State.Date.Hour + hours;
         if (end <= 24 && end != hours)
         {

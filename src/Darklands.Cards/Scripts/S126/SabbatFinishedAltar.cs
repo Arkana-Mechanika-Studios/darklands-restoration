@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R126+0x0DD0, R126+0x1266, R126+0x1308
 // DORMANT (generated): option slots 10..19 keep the default handler R126+0x1308 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 3, 4, 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatFinishedAltar : Card
 {
@@ -73,7 +73,7 @@ public sealed class SabbatFinishedAltar : Card
     }
 
     // orig: R126+0x0EE0 matched
-    // C: the hint sets only r.a / r.b (msg_buf keeps its last text); the average Stealth is the chance.
+    // C: the hint sets only r.a / r.b (text-bank-buffer keeps its last text); the average Stealth is the chance.
     private static OptionHint SabotageChance(CardContext c) =>
         OptionHint.ChanceOf(c.PartyAverageSkill((int)Skill.Stealth), OptionHint.WholeParty);
 
@@ -97,7 +97,7 @@ public sealed class SabbatFinishedAltar : Card
 
     /// <summary>The witches catch the saboteurs: a win or a flight (0, 1) raises suspicion, a defeat drops the party away.</summary>
     // orig: R126+0x0DD0 matched
-    // C: any other battle result (−0x40..−1 and the cases past 4) returns without changing next_card; the menu loops.
+    // C: any other battle result (−0x40..−1 and the cases past 4) returns without changing following-card; the menu loops.
     private static void FightTheGuards(CardContext c)
     {
         switch (c.RunBattle(0x4D, -1, 0x1C, 4, 2, 0x29, 3, 6, -1, 0, 0))

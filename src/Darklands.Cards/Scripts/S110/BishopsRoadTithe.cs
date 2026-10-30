@@ -25,7 +25,7 @@ public sealed class BishopsRoadTithe : Card
     {
         Show(c, BishopPicture);
         c.Next = Number;
-        // C: options_block is written after the empty-purse test (R110+0x013C): that way out leaves the block the card before left.
+        // C: settings-block is written after the empty-purse test (R110+0x013C): that way out leaves the block the card before left.
         var menu = Menu(c, null);
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 4, 5);
         c.State.SavedCard2 = 0;
@@ -35,7 +35,7 @@ public sealed class BishopsRoadTithe : Card
         {
             c.Screen.Text(16);
             c.State.CurrentLocation = Core.GameState.Wilderness;
-            // The original returns 0x0C without changing next_card.
+            // The original returns 0x0C without changing following-card.
             return CardContext.MapCard;
         }
         // C: (unsigned) of the long pfennig counts keeps their low 16 bits, unsigned, before dividing.
@@ -103,7 +103,7 @@ public sealed class BishopsRoadTithe : Card
         return OptionHint.ChanceOf(chance, m);
     }
 
-    // C: party_min_eff_attr2_bonus() is evaluated before member_skill(best_member, …) (checked against the asm),
+    // C: party-effective-stat-two-low-bonus() is evaluated before member-ability(top-scoring-member, …) (checked against the asm),
     // so the Riding is that of the least nimble rider it found.
     private static OptionHint EscapeHint(CardContext c)
     {
@@ -222,7 +222,7 @@ public sealed class BishopsRoadTithe : Card
         c.Next = 264;
     }
 
-    /// <summary>The guards take money and weapons (the original leaves for the map without clearing cur_loc).</summary>
+    /// <summary>The guards take money and weapons (the original leaves for the map without clearing location-now).</summary>
     // orig: R110+0x0A3C (1838:0A3C) matched; tests: CardSmokeTests
     private void Submit(CardContext c)
     {
@@ -238,7 +238,7 @@ public sealed class BishopsRoadTithe : Card
     /// away come back robbed; beaten, robbed. Every member then loses 2 Virtue and 25 Divine Favour.
     /// </summary>
     // orig: R110+0x031A (1838:031A) matched; tests: CardSmokeTests
-    // C: arguments right to left: rand_mod(2) + 4 is drawn before rand_mod(3); then run_battle draws its seed (-1).
+    // C: arguments right to left: roll-below(2) + 4 is drawn before roll-below(3); then battle-driver draws its seed (-1).
     private void FightTheGuard(CardContext c)
     {
         var lore = c.PartyLoreLevel();

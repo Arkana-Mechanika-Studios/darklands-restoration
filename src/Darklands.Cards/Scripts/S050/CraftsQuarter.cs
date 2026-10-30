@@ -27,7 +27,7 @@ public sealed class CraftsQuarter : Card
         Show(c, Picture);
         var physician = OptionState.Enabled;
         var apothecary = OptionState.Enabled;
-        // C: loc_query 33 is the location's own random seed; with the year it decides, in small towns, which shops are there.
+        // C: place-query 33 is the location's own random seed; with the year it decides, in small towns, which shops are there.
         if (c.HereQuery(2) <= 3 && (c.HereQuery(0x21) + c.State.Date.Year) % 3 == 0)
         {
             physician = OptionState.Hidden;
@@ -51,17 +51,17 @@ public sealed class CraftsQuarter : Card
             // orig: R050+0x1830 (1982:0390) + R050+0x17F4 (1982:0354) R050 seg 1982 matched
             Visit(c, () => Apothecary, roused: false),
             // orig: R050+0x1904 (1982:0464) + R050+0x18AE (1982:040E) R050 seg 1982 matched
-            // DORMANT: opt_flag_2 is 0: the jeweller is never offered here.
+            // DORMANT: card-option-flag-2 is 0: the jeweller is never offered here.
             Visit(c, () => c.IsDaylight ? Jeweller : JewellerAtNight, roused: true),
             // orig: R050+0x19D8 (1982:0538) + R050+0x1982 (1982:04E2) R050 seg 1982 matched
             Visit(c, () => c.IsDaylight ? Artificer : ArtificerAtNight, roused: true),
             // orig: R050+0x1AAC (1982:060C) + R050+0x1A56 (1982:05B6) R050 seg 1982 matched
             Visit(c, () => c.IsDaylight ? Clothmaker : ClothmakerAtNight, roused: true),
             // orig: R050+0x1B3C (1982:069C) + R050+0x1B2A (1982:068A) R050 seg 1982 matched
-            // DORMANT: opt_flag_5 is 0 (it would lead to card 0x62, "no go").
+            // DORMANT: card-option-flag-5 is 0 (it would lead to card 0x62, "no go").
             new MenuLine(() => { c.PassHours(0); c.Next = NoGo; }, OptionHint.Saying(SuccessAssured)),
             // orig: R050+0x1B86 (1982:06E6) + R050+0x1B74 (1982:06D4) R050 seg 1982 matched
-            // DORMANT: opt_flag_6 is 0 (card 0x62 as well).
+            // DORMANT: card-option-flag-6 is 0 (card 0x62 as well).
             new MenuLine(() => { c.PassHours(0); c.Next = NoGo; }, OptionHint.Saying(SuccessAssured)),
             // orig: R050+0x1BD0 (1982:0730) + R050+0x1BBE (1982:071E) R050 seg 1982 matched
             new MenuLine(() => { c.PassHours(1); c.Next = MilitaryCrafts; }, OptionHint.Saying(SuccessAssured)),
@@ -87,7 +87,7 @@ public sealed class CraftsQuarter : Card
     /// Goes to a shop; a roll above the chance meets the night encounter (never when the chance
     /// is "assured", −1). The later shops are roused at night: an hour first.
     /// </summary>
-    // C: the first two actions test "chance + 1 != 0" (p_6++ then p_6), the others "chance != -1": the same condition.
+    // C: the first two actions test "chance + 1 != 0" (param-plus-6++ then param-plus-6), the others "chance != -1": the same condition.
     private static MenuLine Visit(CardContext c, Func<int> shop, bool roused) =>
         new(chance =>
             {

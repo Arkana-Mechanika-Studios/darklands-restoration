@@ -5,7 +5,7 @@ namespace Darklands.Cards.Scripts;
 /// (best Read/Write skill 10 or less) has them explained by a friendly citizen in the daytime, and
 /// goes away frustrated at night; one that can read sees the notices themselves. Which notices:
 /// the city's state (besieged, under special precautions), the politics quest, and the curfew.
-/// Then the party goes back to the card that sent it (saved_card2); the card has no menu.
+/// Then the party goes back to the card that sent it (remembered-card-second); the card has no menu.
 /// </summary>
 // orig: R071+0x0D82 (1910:0002) matched; tests: CardSmokeTests
 // orig: handler setup R071+0x11B2 (called, but nothing below it is ever offered: the card has no menu loop)
@@ -18,14 +18,14 @@ public sealed class OfficialNotices : Card
 
     public override int Number => 0x6D;
 
-    // C: the original function is declared void; the dispatcher gets AX, which at the end holds saved_card2 just stored in next_card.
+    // C: the original function is declared void; the dispatcher gets AX, which at the end holds remembered-card-second just stored in following-card.
     public override int Run(CardContext c)
     {
         Show(c, NoticePicture);
         // C: DS:EE72 = 7 and DS:EE70 = 0 are set here and never read by this card.
         c.Next = Number;
 
-        // C: party_max_skill is called again in the second test (no side effects beyond "best member found").
+        // C: party-ability-top is called again in the second test (no side effects beyond "best member found").
         if (c.PartyMaxSkill(ReadWrite) <= 10 && c.IsDaylight)
         {
             c.Screen.Text(4);

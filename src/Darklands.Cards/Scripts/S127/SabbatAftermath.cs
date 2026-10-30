@@ -25,7 +25,7 @@ internal static class SabbatAftermath
     /// <summary>Coming back to this place shows the abandoned site (the original writes it without checking that the party is at a place).</summary>
     public static void MarkTheSiteAbandoned(CardContext c)
     {
-        // DIVERGENCE: the C writes locations[cur_loc]->arrival card without a check; the C# skips it in the wilderness.
+        // DIVERGENCE: the C writes locations[location-now]->arrival card without a check; the C# skips it in the wilderness.
         if (c.HerePlace is { } place)
         {
             place.ArrivalCard = AbandonedSite;
@@ -42,8 +42,8 @@ internal static class SabbatAftermath
     /// when the innocents were saved (fact 9). Staying puts the scene's picture back.
     /// </summary>
     // orig: R127+0x0AC2 matched (and its twins in the other sabbat files)
-    // C: the box writes opt_on[] directly and re-points opt_fn of its lines at "Success is assured." hints;
-    //   opt_flag_0..9 are untouched and no option handler runs: only the chosen line counts.
+    // C: the box writes card-option-enabled[] directly and re-points card-option-handler of its lines at "Success is assured." hints;
+    //   card-option-flag-0..9 are untouched and no option handler runs: only the chosen line counts.
     public static void OfferTheOintment(CardContext c, int offerBlock, int escapeBlock, int escapeLine,
         int scenePicture, Func<int, OptionHint> hint, params int[] lines)
     {

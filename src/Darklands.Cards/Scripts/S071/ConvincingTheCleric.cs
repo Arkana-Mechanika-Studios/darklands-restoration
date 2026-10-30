@@ -7,7 +7,7 @@ namespace Darklands.Cards.Scripts;
 /// "$Cleri00": while the city's politics quest runs, the party talks to the cleric (the
 /// church's side, bit 0x400) to win him over: with charisma and reputation, with virtue and
 /// religion, with a donation, with a threat, or by prayer. The guild number that brought the
-/// party here (party_x) is the fact the success is booked under.
+/// party here (party-map-column) is the fact the success is booked under.
 /// </summary>
 // orig: R071+0x1FB6 (1A33:0006) matched; tests: CardSmokeTests
 // orig: handler setup R071+0x26AC (standard saint pop-ups 0796/081e/08a6/092e, unused-line handler
@@ -26,7 +26,7 @@ public sealed class ConvincingTheCleric : Card
     {
         Show(c, 0);
         c.Next = Number;
-        // Lines 0..5 are offered; lines 6..9 are switched off (opt_flag_6..9 = 0).
+        // Lines 0..5 are offered; lines 6..9 are switched off (card-option-flag-6..9 = 0).
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 3, 4, 5);
         c.Support[0] = c.SideOf(ClergySide);
@@ -41,7 +41,7 @@ public sealed class ConvincingTheCleric : Card
             new MenuLine(_ => Threaten(c), () => new OptionHint(-1, SuccessAssured, c.Leader)),
             new MenuLine(_ => Pray(c, ref standing), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
             new MenuLine(_ => Leave(c), OptionHint.Saying(SuccessAssured)),
-            // DORMANT: lines 6..9 (opt_flag_6..9 = 0, and the text has only six option lines): the first text,
+            // DORMANT: lines 6..9 (card-option-flag-6..9 = 0, and the text has only six option lines): the first text,
             // time passes, back to the wilderness card. orig: R071+0x2544/05ee/0648/06a2, hints 05b2/060c/0666/06c0
             new MenuLine(_ => Dormant(c), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => Dormant(c), OptionHint.Saying(SuccessAssured)),
@@ -142,7 +142,7 @@ public sealed class ConvincingTheCleric : Card
     // orig: R071+0x245C (hint R071+0x24C2 "Select a person and a saint.")
     // C: time passes before the saint is called, even if the prayer is cancelled (answer -1 returns at once);
     // answer - 1 == 0: only an answer of exactly 1 works.
-    // C: cur_rep (the card's copy of the reputation, not written back) rises by 5; nothing reads it afterwards.
+    // C: reputation-now (the card's copy of the reputation, not written back) rises by 5; nothing reads it afterwards.
     private void Pray(CardContext c, ref int standing)
     {
         c.PassHours(1);

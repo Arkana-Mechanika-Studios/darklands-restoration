@@ -24,7 +24,7 @@ public sealed class RiddleDoor_MineT08 : DwarfRiddleDoor
         Wrong(c, 1, Attribute.Agility),
         // orig: R094+0x0E4C (18E1:03BC); hint R094+0x0E88 matched
         Wrong(c, 1, Attribute.Agility),
-        // DORMANT: line 5 R094+0x0EC2 (18E1:0432) (battle_mode = 1, next -2); hint R094+0x0ED0 (18E1:0440) "Success is assured.", party: the text has no line for it
+        // DORMANT: line 5 R094+0x0EC2 (18E1:0432) (battle-kind = 1, next -2); hint R094+0x0ED0 (18E1:0440) "Success is assured.", party: the text has no line for it
         TurnAway(c),
     ];
 }

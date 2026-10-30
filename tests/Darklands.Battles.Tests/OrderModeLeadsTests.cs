@@ -93,7 +93,7 @@ public sealed class OrderModeLeadsTests
     }
 
     /// <summary>
-    /// R014+0x2256..0x2263: Dissolve Lock calls consume_slot (R014+0xB434) with the slot byte DS:C7CD[m] found when the order was given,
+    /// R014+0x2256..0x2263: Dissolve Lock calls use-up-slot (R014+0xB434) with the slot byte DS:C7CD[m] found when the order was given,
     /// whatever the pack holds then: past the last stack the stale entry's count goes down and, when it was 1, the pack's count (the last
     /// stack lost); slot 0xFF (the Eater-Water gone) is entry 255, for member 0 member 3's entry 63. With OriginalBehaviour.FixStaleDissolveSlot
     /// only an Eater-Water is used up.
@@ -139,7 +139,7 @@ public sealed class OrderModeLeadsTests
     }
 
     /// <summary>
-    /// R016+0x0F9A..0x0FBA: the Dissolve key outside order mode calls consume_slot (R014+0xB434) with the selected member DS:A6B2 (the
+    /// R016+0x0F9A..0x0FBA: the Dissolve key outside order mode calls use-up-slot (R014+0xB434) with the selected member DS:A6B2 (the
     /// member under the pointer, else −1) and member 0's slot byte DS:C7CD, with no test: the pointer on member 1 uses up member 1's
     /// entry at member 0's slot; nobody selected with slot 0xFF uses up member 2's entry 63 (entry −64 + 255); nobody selected with a slot
     /// below 64 writes before the packs (not modelled: nothing changes). With OriginalBehaviour.FixDissolveKeyMember the leader's
@@ -197,8 +197,8 @@ public sealed class OrderModeLeadsTests
     }
 
     /// <summary>
-    /// combat_draw R014+0x6818 calls R014+0x99F6 (at R014+0x6926) whatever its caller: the draws after a loot pile (R014+0xE3B3) and a
-    /// chest (R023+0x1532, after floor_view_draw(DS:17B0)) turn an attacker toward its target, as the tick end's draw does.
+    /// fight-draw R014+0x6818 calls R014+0x99F6 (at R014+0x6926) whatever its caller: the draws after a loot pile (R014+0xE3B3) and a
+    /// chest (R023+0x1532, after floor-view-paint(DS:17B0)) turn an attacker toward its target, as the tick end's draw does.
     /// </summary>
     [Fact]
     public void TheDrawsAfterALootPileAndAChestTurnTheAttackers()
@@ -237,7 +237,7 @@ public sealed class OrderModeLeadsTests
         }
     }
 
-    /// <summary>combat_draw (R014+0x6D39) removes an arrived missile in the tick that drew it.</summary>
+    /// <summary>fight-draw (R014+0x6D39) removes an arrived missile in the tick that drew it.</summary>
     [Fact]
     public void AnArrivedMissileGoesInTheTickThatDrawsIt()
     {

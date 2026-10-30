@@ -59,11 +59,11 @@ class Saints:
         b = self.b
         spec = {"unit": "saint_%04x" % off, "entry": {"segment": "%04X" % b.SAINT_SEG, "offset": "%04X" % off},
                 "sections": b.SECTIONS, "ds": b.DS, "memory": memory, "args": args, "follow": True,
-                "stub_targets": {"0E76:2C4E": "event_new", "0E76:2930": "event_here"},
-                "arg_words": {"event_new": 11, "event_here": 3}}
+                "stub_targets": {"0E76:2C4E": "R029+0x2C4E", "0E76:2930": "R029+0x2930"},
+                "arg_words": {"R029+0x2C4E": 11, "R029+0x2930": 3}}
         if wild is not False:
-            spec["stub_targets"]["09C0:1FA9"] = "nearest_city"
-            spec["results"] = {"nearest_city": [{"ax": wild, "dx": 0}] * 12}
+            spec["stub_targets"]["09C0:1FA9"] = "thunk 09C0:1FA9"
+            spec["results"] = {"thunk 09C0:1FA9": [{"ax": wild, "dx": 0}] * 12}
         return spec, None
 
     # -- the memory of a case from its inputs (checked against the generator's in selftest)
@@ -72,20 +72,20 @@ class Saints:
         ds = rules.ds
         memory = [ds(b.PARTY + 0x80 * i, hx) for i, hx in enumerate(inputs["members"])]
         if function == "chance":
-            return memory + [ds(b.PARTY_SIZE, rules.w(inputs["size"]))]
+            return memory + [ds(b.PARTY_HEADCOUNT, rules.w(inputs["size"]))]
         for i, hx in inputs["locations"].items():
             i = int(i)
             memory.append({"segment": "%04X" % rules.LOC_TABLE_SEG, "offset": "%04X" % (rules.LOC_TABLE_OFF + 4 * i),
                            "hex": struct.pack("<HH", i * rules.LOC_SIZE, rules.LOC_SEG).hex()})
             memory.append({"segment": "%04X" % rules.LOC_SEG, "offset": "%04X" % (i * rules.LOC_SIZE), "hex": hx})
-        memory += [ds(b.LEADER, "%02X" % inputs["leader"]), ds(b.PARTY_SIZE, rules.w(inputs["size"])), ds(b.REPORT, rules.w(0)),
-                   ds(b.SAINT_MSGS, "00"), ds(b.CUR_LOC, rules.w(inputs["curLoc"])),
+        memory += [ds(b.LEADER, "%02X" % inputs["leader"]), ds(b.PARTY_HEADCOUNT, rules.w(inputs["size"])), ds(b.REPORT, rules.w(0)),
+                   ds(b.SAINT_MSGS, "00"), ds(b.LOCATION_NOW, rules.w(inputs["curLoc"])),
                    ds(b.HOLDRAND, struct.pack("<I", inputs["state"]).hex()),
                    ds(b.PURSE, struct.pack("<hhh", *inputs["purse"]).hex()),
                    ds(b.FUGGER, struct.pack("<hh", *inputs["bankers"]).hex()),
                    {"segment": "%04X" % b.SAINTS_KNOWN_SEG, "offset": "%04X" % b.SAINTS_KNOWN_OFF, "hex": inputs["known"]}]
-        if "x" in inputs:   # the party in the open country: its map position (nearest_city R030+0x271A reads it)
-            memory += [ds(rules.PARTY_X, rules.w(inputs["x"])), ds(rules.PARTY_Y, rules.w(inputs["y"]))]
+        if "x" in inputs:   # the party in the open country: its map position (closest-city R030+0x271A reads it)
+            memory += [ds(rules.PARTY_MAP_COLUMN, rules.w(inputs["x"])), ds(rules.PARTY_MAP_ROW, rules.w(inputs["y"]))]
         return memory
 
     def args_of(self, function, inputs):
@@ -105,12 +105,12 @@ class Saints:
         return self.spec_of(base.function, base.meta["off"], self.args_of(base.function, inputs), memory, inputs["near"] if "x" in inputs else False)
 
     def extra(self, base, uni=None):
-        """Domain-aware variants: the party in the open country (cur_loc -1) at (x, y); nearest_city (R030, an overlay that
+        """Domain-aware variants: the party in the open country (location-now -1) at (x, y); closest-city (R030, an overlay that
         cannot be loaded with R039) is stubbed to answer `near`, a city placed next to the party."""
         if base.function != "help":
             return
         if base.inputs["saint"] not in self.b.DIRECT and base.inputs["who"] != -2:
-            inp = copy.deepcopy(base.inputs)    # who -2: the whole party (as the rules corpus's add_attr / practice_skill)
+            inp = copy.deepcopy(base.inputs)    # who -2: the whole party (as the rules corpus's raise-attribute-by / exercise-skill)
             inp["who"] = -2
             yield inp
         for v in range(3):
@@ -320,7 +320,7 @@ class Chargen(InputAdapter):
         for k, (t, wt, q) in enumerate(defs):
             rec = bytearray(0x30)
             rec[0x1E], rec[0x25], rec[0x26] = t, wt, q
-            self.def_memory.append(b.far(b.ITEM_DEFS + 4 * k, struct.pack("<HH", k * 0x30, b.ITEM_SEG).hex()))
+            self.def_memory.append(b.far(b.ITEM_DEFINITION_TABLE + 4 * k, struct.pack("<HH", k * 0x30, b.ITEM_SEG).hex()))
             self.def_memory.append(b.far(k * 0x30, rec.hex(), b.ITEM_SEG))
         out = []
         for n, (name, memory, args, inputs) in enumerate(cases):
@@ -399,7 +399,7 @@ class CorpusInputs(InputAdapter):
 class Battle(CorpusInputs):
     name = "battle"
     corpus = "battle"
-    functions = {"attack_rate", "to_hit_roll", "hit_damage", "damage_queue", "damage_apply", "weapon_ready", "skill_try_improve"}
+    functions = {"attack-speed", "hit-roll", "hit-points-lost", "damage-pending-list", "damage-resolve", "weapon-armed", "ability-improve-attempt"}
 
     def __init__(self, exe):
         import build_battle_corpus as b
@@ -412,22 +412,22 @@ class Battle(CorpusInputs):
         recs = [bytes.fromhex(x) for x in i["combatants"]]
         memory = [ds(b.COMBATANTS + 0x80 * k, rec) for k, rec in enumerate(recs)]
         memory += [{"segment": "%04X" % b.REACH_SEG, "offset": "%04X" % b.REACH_OFF, "hex": i["reach"]},
-                   ds(b.ATTACK_RATE, bytes.fromhex(i["rates"])), ds(b.QUEUED, bytes.fromhex(i["queued"])),
-                   ds(b.SHOWN, bytes.fromhex(i["shown"])), ds(b.REAL_COMBAT, bytes([i["real"]])),
+                   ds(b.ATTACK_SPEED, bytes.fromhex(i["rates"])), ds(b.QUEUED, bytes.fromhex(i["queued"])),
+                   ds(b.SHOWN, bytes.fromhex(i["shown"])), ds(b.GENUINE_FIGHT, bytes([i["real"]])),
                    ds(b.DRAGON_FIGHT, bytes([i.get("dragon", 0)])), ds(b.CLOUDS, b"\x00"),
                    ds(b.HOLDRAND, struct.pack("<I", i["state"])), ds(b.COMBATANTS + 13 * 0x80 + 0x14, b"\x00")]
         name = base.function
         results = {}
-        if name == "to_hit_roll":
-            results = {"cloud_blocks_line": [{"ax": i["cloud"]}]}
-        if name == "skill_try_improve":
+        if name == "hit-roll":
+            results = {"cloud-on-line-test": [{"ax": i["cloud"]}]}
+        if name == "ability-improve-attempt":
             memory.append(ds(b.DIFFICULTY, bytes([i["difficulty"]])))
-        if name == "weapon_ready":
+        if name == "weapon-armed":
             memory.append(ds(b.ANIM_FILE_TABLE, b"".join(struct.pack("<H", b.SCRATCH + 4 * k) for k in range(7))))
             if i.get("dragonCode"):
                 memory.append({"segment": "%04X" % b.CODES_SEG, "offset": "%04X" % b.DRAGON_CODE, "hex": i["dragonCode"].encode().hex()})
         args = [b.h16(a) for a in i["args"]]
-        seg, sections = ("1EF8", [136, 14, 21]) if name == "skill_try_improve" else (b.SEG, [136, 14])
+        seg, sections = ("1EF8", [136, 14, 21]) if name == "ability-improve-attempt" else (b.SEG, [136, 14])
         spec = {"unit": name, "entry": {"segment": seg, "offset": b.FN[name]}, "sections": sections, "ds": b.DS,
                 "memory": memory, "args": args, "follow": True, "callsites": b.CALLSITES,
                 "stub": list(b.CALLSITES.values()), "results": results}
@@ -451,7 +451,7 @@ class Battle(CorpusInputs):
 class Tactics(CorpusInputs):
     name = "tactics"
     corpus = "tactics"
-    functions = {"cbt_collisions", "line_blocked"}
+    functions = {"fighter-collision-pass", "sight-line-blocked"}
 
     def __init__(self, exe):
         import build_tactics_corpus as b
@@ -469,33 +469,33 @@ class Tactics(CorpusInputs):
     def rebuild(self, base, i):
         b = self.b
         mem = self.scene_memory(i)
-        if base.function == "cbt_collisions":
+        if base.function == "fighter-collision-pass":
             target = i["target"] if i["target"] != -1 else 0xFF
             mem += [b.ds(b.STRICT, bytes([i["strict"]])), b.ds(b.SEARCHING, bytes([i["searching"]])),
                     b.ds(b.SEARCH_TARGET, bytes([target])), b.ds(b.NO_SCENERY, bytes([i["noScenery"]])),
                     b.ds(b.NO_PEOPLE, bytes([i["noPeople"]])), b.ds(b.PARTS, bytes([0xA5]) * 32),
                     b.ds(b.LAST, bytes([0xA5, 0xA5]))]
-            spec = {"unit": "cbt_collisions", "entry": {"segment": "1462", "offset": "000A"}, "sections": [136, 14],
+            spec = {"unit": "fighter-collision-pass", "entry": {"segment": "1462", "offset": "000A"}, "sections": [136, 14],
                     "ds": b.DS, "memory": mem, "args": [b.h16(b.COMBATANTS + 0x80 * i["who"])], "follow": True}
         else:
             x0, y0 = i["from"]
             x1, y1 = i["to"]
-            mem += [b.ds(b.LOS_X0, struct.pack("<h", x0)), b.ds(b.LOS_Y0, struct.pack("<h", y0)),
-                    b.ds(b.LOS_X1, struct.pack("<h", x1)), b.ds(b.LOS_Y1, struct.pack("<h", y1))]
-            spec = {"unit": "line_blocked", "entry": {"segment": "1D69", "offset": "000C"}, "sections": [136, 14],
+            mem += [b.ds(b.SIGHT_LINE_X0, struct.pack("<h", x0)), b.ds(b.SIGHT_LINE_Y0, struct.pack("<h", y0)),
+                    b.ds(b.SIGHT_LINE_X1, struct.pack("<h", x1)), b.ds(b.SIGHT_LINE_Y1, struct.pack("<h", y1))]
+            spec = {"unit": "sight-line-blocked", "entry": {"segment": "1D69", "offset": "000C"}, "sections": [136, 14],
                     "ds": b.DS, "memory": mem, "args": [b.h16(i["a"]), b.h16(i["b"]), b.h16(i["mode"])], "follow": True}
         return spec, None
 
     def record(self, base, inputs, res):
         b = self.b
-        if base.function == "line_blocked":
-            return {"function": "line_blocked", "inputs": inputs, "ax": res["final"]["ax"]}
+        if base.function == "sight-line-blocked":
+            return {"function": "sight-line-blocked", "inputs": inputs, "ax": res["final"]["ax"]}
         changed = {int(c["offset"], 16): int(c["after"], 16) for c in res["dsChanged"]}
 
         def word(off):
             return changed.get(off, 0xA5) | changed.get(off + 1, 0xA5) << 8
 
-        return {"function": "cbt_collisions", "inputs": inputs, "ax": res["final"]["ax"],
+        return {"function": "fighter-collision-pass", "inputs": inputs, "ax": res["final"]["ax"],
                 "parts": [word(b.PARTS + 2 * p) for p in range(16)], "last": word(b.LAST)}
 
     def selftest(self, bases):
@@ -511,7 +511,7 @@ class Tactics(CorpusInputs):
 class Core(CorpusInputs):
     name = "core"
     corpus = "core"
-    functions = {"money_cmp"}
+    functions = {"purse-compare"}
 
     def __init__(self, exe):
         import build_core_corpus as b
@@ -649,10 +649,10 @@ Saints.extra = _saints_extra_all
 
 
 class Path_(CorpusInputs):
-    """path_find on the 60 generated scenes (the sweep's runs cost seconds: only a few bases are worth it)."""
+    """route-search on the 60 generated scenes (the sweep's runs cost seconds: only a few bases are worth it)."""
     name = "path"
     corpus = "path"
-    functions = {"path_find"}
+    functions = {"route-search"}
 
     def __init__(self, exe):
         import build_path_corpus as b
@@ -672,14 +672,14 @@ class Path_(CorpusInputs):
         mem += [ds(b.FURN_H, bytes(s[1] for s in shapes)), ds(b.FURN_W, bytes(s[0] for s in shapes)),
                 ds(b.FURN_X, bytes(v for s in shapes for v in s[2])), ds(b.FURN_Y, bytes(v for s in shapes for v in s[3]))]
         mem += [ds(b.COMBATANTS + 0x80 * k, bytes(rec)) for k, rec in enumerate(recs)]
-        mem += [ds(b.CBT_FLOOR, bytes.fromhex(i["floors"])), ds(b.HALF_W, bytes.fromhex(i["halfW"])),
+        mem += [ds(b.FIGHTER_FLOOR_LEVEL, bytes.fromhex(i["floors"])), ds(b.HALF_W, bytes.fromhex(i["halfW"])),
                 ds(b.HALF_H, bytes.fromhex(i["halfH"])), ds(b.MOVING, bytes.fromhex(i["moving"]))]
         sx = bytes(v & 0xFF for v in i["stepX"])
         sy = bytes(v & 0xFF for v in i["stepY"])
         mem += [ds(b.STEP_X + 10 * s, sx) for s in range(11)] + [ds(b.STEP_Y + 10 * s, sy) for s in range(11)]
         mem += [ds(off, struct.pack("<H", v)) for off, v in b.WORK.items()]
         mem += [ds(0xE0A2, b"\x00"), ds(0xE13C, b"\x00"), ds(0xC600, b"\x00"), ds(0xD697, b"\x00")]
-        spec = {"unit": "path_find", "entry": {"segment": "12F7", "offset": "000A"}, "sections": [136, 14], "ds": b.DS,
+        spec = {"unit": "route-search", "entry": {"segment": "12F7", "offset": "000A"}, "sections": [136, 14], "ds": b.DS,
                 "memory": mem, "args": [b.h16(i["who"])], "follow": True, "track_all": True, "callsites": b.CALLSITES,
                 "stub": list(set(b.CALLSITES.values())), "max_instructions": 30000000}
         return spec, None

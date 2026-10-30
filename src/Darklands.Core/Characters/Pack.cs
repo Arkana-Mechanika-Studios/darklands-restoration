@@ -3,13 +3,13 @@ using System.Collections;
 namespace Darklands.Core.Characters;
 
 /// <summary>
-/// A member's pack as the original keeps it: 64 six-byte entries (<c>data_file[who].items</c>,
+/// A member's pack as the original keeps it: 64 six-byte entries (<c>data-file-handle[who].items</c>,
 /// 2E38:003E + who × 0x180) and a signed-char stack count (<c>nitems</c>, record +0x7E). Only the
 /// first <see cref="Count"/> entries are stacks; the entries after them keep whatever was last
 /// there (deleting a stack shifts the later entries down and leaves the old last entry where it
-/// was), and the original's list screens and <c>keep_items_pct</c> read and write them.
+/// was), and the original's list screens and <c>item-keep-percent</c> read and write them.
 /// </summary>
-// orig: inventories / data_file[who].items 2E38:003E (0x180 bytes per member); nitems = party[who] +0x6A (record +0x7E), a char
+// orig: inventories / data-file-handle[who].items 2E38:003E (0x180 bytes per member); nitems = party[who] +0x6A (record +0x7E), a char
 // C: the five packs follow each other, so entry -1 of member k is entry 63 of member k - 1 (2E38:0038..003D, zero, for member 0)
 // C: and entry 64 of member 4 is the first six formula bytes of member 0 (2E38:07BE); see Party.EntryOutside.
 public sealed class Pack : IReadOnlyList<ItemStack>
@@ -24,7 +24,7 @@ public sealed class Pack : IReadOnlyList<ItemStack>
     /// <summary>The party slot this pack was last reached through (for entries −1 and 64), or null.</summary>
     internal (Party Party, int Slot)? Home { get; set; }
 
-    /// <summary>The stack count as the original stores it: a signed char (−1 after <c>keep_items_pct</c> on an empty pack).</summary>
+    /// <summary>The stack count as the original stores it: a signed char (−1 after <c>item-keep-percent</c> on an empty pack).</summary>
     public int Stacks { get; set; }
 
     /// <summary>The stacks to look at: <see cref="Stacks"/>, as the loops <c>i &lt; nitems</c> see it (none when negative).</summary>
@@ -51,10 +51,10 @@ public sealed class Pack : IReadOnlyList<ItemStack>
     public IReadOnlyList<ItemStack> Entries => _entries;
 
     /// <summary>
-    /// Appends a stack the way <c>add_item_rec</c> does: written at entry <see cref="Stacks"/> while
+    /// Appends a stack the way <c>give-item-record-form</c> does: written at entry <see cref="Stacks"/> while
     /// that is below 64 (a count of −1 writes entry −1, outside this pack), then the count goes up.
     /// </summary>
-    // orig: add_item_rec_impl R031+0x4A04 (18E7:01B4) draft
+    // orig: give-item-record-inner R031+0x4A04 (18E7:01B4) draft
     // C: `if (nitems < 0x40) { items[nitems] = it; nitems++; }` with nitems a signed char.
     public void Add(ItemStack stack)
     {
@@ -75,11 +75,11 @@ public sealed class Pack : IReadOnlyList<ItemStack>
     }
 
     /// <summary>
-    /// Deletes entry <paramref name="index"/> as <c>item_delete</c> does: entries index+1 .. Stacks
+    /// Deletes entry <paramref name="index"/> as <c>item-erase</c> does: entries index+1 .. Stacks
     /// move down one (the last move reads the stale entry after the stacks, entry 64 of a full
     /// pack being outside it), then the count goes down, whatever the index was.
     /// </summary>
-    // orig: item_delete R031+0x4C56 (18E7:0406) matched
+    // orig: item-erase R031+0x4C56 (18E7:0406) matched
     // C: `for (i = idx; i < nitems; i++) items[i] = items[i + 1]; nitems--;` (an index at or past the count copies nothing).
     public void RemoveAt(int index)
     {

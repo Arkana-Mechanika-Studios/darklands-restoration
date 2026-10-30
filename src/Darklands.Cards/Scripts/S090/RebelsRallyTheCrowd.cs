@@ -35,7 +35,7 @@ public sealed class RebelsRallyTheCrowd : Card
             menu.Block = withMercenaries ? 1 : 0;
             menu[3] = OptionState.Hidden;
         }
-        // orig: R090+0x07C0 (1838:07C0) matched (handlers and card_saints only)
+        // orig: R090+0x07C0 (1838:07C0) matched (handlers and card-saint-lines only)
         c.SetCardSaints(0x0C, 0x7E, 0x36, 0x3D);
         // C: the prayer flag is set after the branch above, so it overrides its 0 (lines 2 and 3).
         menu[2] = c.SaintsUsable();

@@ -25,7 +25,7 @@ public sealed class RevolutionStarts : Card
         c.RandomName(c.City.Ordinal + 0x0C, c.LocationQuery(c.Here, 0x21) % 5 == 0 ? 1 : 0, 0);
         c.RandomName(c.City.Ordinal + 0x23, 1, 1);
         var fromTheMainStreet = c.State.PreviousCard is 6 or 8;
-        // C: var_named[2] (R136+0xF402) gets a copy of name 0 or name 1 (far strcpy, 30-byte slots).
+        // C: text-slot-named[2] (R136+0xF402) gets a copy of name 0 or name 1 (far strcpy, 30-byte slots).
         c.Variables.Named[2] = fromTheMainStreet ? c.Variables.Named[0] : c.Variables.Named[1];
         var menu = Menu(c);
         menu.Enable(0, 1);

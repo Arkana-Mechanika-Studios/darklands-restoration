@@ -24,7 +24,7 @@ public sealed class SpecialJobRumors : Card
         Show(c, CommonPicture);
         // C: DS:EE72 = 7 and DS:EE70 = 0 are set here and never read by this card.
         c.Next = Number;
-        // Line 0 starts "shown only" (opt_flag_0 = 2); line 9 is always open.
+        // Line 0 starts "shown only" (card-option-flag-0 = 2); line 9 is always open.
         var menu = Menu(c, 0);
         menu[0] = OptionState.Shown;
         menu[9] = OptionState.Enabled;
@@ -47,7 +47,7 @@ public sealed class SpecialJobRumors : Card
             new MenuLine(_ => c.Next = JobCard, Assured),
             new MenuLine(_ => RumourOfTheAristocrat(c), Assured),
             new MenuLine(_ => RumourOfTheEnemy(c), Assured),
-            // DORMANT: lines 3..8 (opt_flag_3..8 = 0): empty actions.
+            // DORMANT: lines 3..8 (card-option-flag-3..8 = 0): empty actions.
             // orig: R069+0x1B34, 0422 R069+0x1B72, 045c R069+0x1BAC, 0496 R069+0x1BE6, 04d0 R069+0x1C20, 050a R069+0x1C5A
             // C: the hint handler of line 3 (R069+0x1B36) also assigns the leader to r.a, then overwrites it: it is rated like the others.
             new MenuLine(_ => { }, Assured),
@@ -56,7 +56,7 @@ public sealed class SpecialJobRumors : Card
             new MenuLine(_ => { }, Assured),
             new MenuLine(_ => { }, Assured),
             new MenuLine(_ => { }, Assured),
-            // orig: R069+0x1C94: back to the card the party came from (saved_card2)
+            // orig: R069+0x1C94: back to the card the party came from (remembered-card-second)
             new MenuLine(_ => { c.PassHours(1); c.Next = c.State.SavedCard2; }, Assured));
     }
 

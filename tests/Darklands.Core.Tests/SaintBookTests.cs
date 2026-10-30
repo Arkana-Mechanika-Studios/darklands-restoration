@@ -108,7 +108,7 @@ public sealed class SaintBookTests
         var twin = TestGame.Twin(s);
         SaintBook.Help(s, Who.Leader, giles);
 
-        // R039+0x501E draws rnd 10 for equip_bonuses either way; only a boost made draws its duration.
+        // R039+0x501E draws rnd 10 for gear-bonus-sums either way; only a boost made draws its duration.
         var lowered = Boosts(s, EventKinds.SkillBoost).Where(e => e.Type == (int)Skill.EdgedWeapons).ToList();
         Assert.Equal(fixedGame ? 1 : 0, lowered.Count);
         Assert.Contains(Boosts(s, EventKinds.SkillBoost), e => e.Type == (int)Skill.Stealth);

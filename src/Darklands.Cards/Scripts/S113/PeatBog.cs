@@ -22,7 +22,7 @@ public sealed class PeatBog : Card
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 4, 5);
         c.PartyMinEffectiveAgility();
         c.Variables.Chosen[0] = c.BestMember;
-        // C: count_items_flags(-2, 0x64, 0): the long mask 0x64 passed as two words.
+        // C: item-tally-by-flags(-2, 0x64, 0): the long mask 0x64 passed as two words.
         // BUG: 0x64 (100) is the Rope's item type, passed where an item-flag mask belongs: the rope line is enabled by a
         //   polearm (0x04), a bow (0x20) or metal armour (0x40), and a Rope (flag 0x100) alone leaves it shown but disabled.
         if (c.CountItemsWithFlags(Who.Everybody, 0x64) == 0)
@@ -59,7 +59,7 @@ public sealed class PeatBog : Card
     /// Hauling: the party's average Agility plus its average Strength (times <paramref name="strength"/>),
     /// less what the sinking member carries when <paramref name="burdened"/>.
     /// </summary>
-    // C: party[var_chosen1][0x35] is the member's carried weight as a signed char.
+    // C: party[text-slot-chosen-one][0x35] is the member's carried weight as a signed char.
     private static OptionHint HaulHint(CardContext c, int strength, bool burdened)
     {
         var chance = c.PartyAverageAttribute((int)Attribute.Agility) + c.PartyAverageAttribute((int)Attribute.Strength) * strength;
@@ -211,7 +211,7 @@ public sealed class PeatBog : Card
     /// curse costs everybody Divine Favour, Charisma and Strength.
     /// </summary>
     // orig: R113+0x123C (18F0:06BC) matched; tests: CardSmokeTests
-    // C: the curse test is opt_flag_1 != 2 — "pull by hand" not yet failed — not whether anything was tried.
+    // C: the curse test is card-option-flag-1 != 2 — "pull by hand" not yet failed — not whether anything was tried.
     private static void LeaveThemToTheirFate(CardContext c, CardMenu menu)
     {
         if (menu[1] != OptionState.Shown)

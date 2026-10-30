@@ -20,7 +20,7 @@ public sealed class RescueAtTheExecution : Card
         c.SetCardItems(0x5F, 0x60, 0x65, 0x61);
         c.SetCardSaints(0, 0x59, 0x61, 0x80);
         c.Screen.Text(0, TextFrame.BlankPage);
-        // The original returns the card without setting next_card.
+        // The original returns the card without setting following-card.
         return c.IsDaylight ? 0x12 : 0x19;
     }
 }

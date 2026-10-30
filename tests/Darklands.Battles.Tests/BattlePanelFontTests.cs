@@ -7,7 +7,7 @@ using Darklands.Presentation.Graphics;
 namespace Darklands.Battles.Tests;
 
 /// <summary>
-/// The battle's party panel is drawn by the same routines as the map's (party_panel_rows root 0000:1716, member_bars root 0000:1A9C) on the
+/// The battle's party panel is drawn by the same routines as the map's (party-panel-row-set root 0000:1716, member-gauge-bars root 0000:1A9C) on the
 /// window DS:0156, whose font is slot 1 (checked at every call of both routines over a played gate battle): the values are in that font,
 /// each followed by a space, in the name's colour.
 /// </summary>

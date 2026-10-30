@@ -536,7 +536,7 @@ METHOD = """## Method and limits
   original index), and every function-pointer table in data (above).
 * **Edges**: calls (near/far calls, thunks resolved), and code pointer edges: a relocated segment
   immediate within four instructions of an offset immediate that, together, name a function entry
-  or a thunk (handler tables the card scripts fill at run time: `opt_fn`, `item_fn`, `saint_fn`;
+  or a thunk (handler tables the card scripts fill at run time: `card-option-handler`, `item-handler-table`, `saint-handler-table`;
   expiry handlers; comparators; hooks).
 * **Not seen**: near (16-bit) function pointers and indirect calls through computed addresses
   (none in the C; jump tables are inside functions), code reached only through the drivers loaded

@@ -45,7 +45,7 @@ public sealed class EscortingTheRebelLeaders : Card
         // The rebels' strength (side 1 in percent of side −1) sets how many crowds stand in the way:
         // three from 200%, two from 50%, else one. Block 0 is the first crowd, 2 a later one, 3/4 the
         // last before the fortress or the square.
-        // C: side2_percent() is asked afresh in each test, so the band can change between rounds; a
+        // C: side-two-share() is asked afresh in each test, so the band can change between rounds; a
         // count past the band's number (after the band fell) keeps showing the last crowd's block.
         menu.EachRound = () =>
         {
@@ -85,7 +85,7 @@ public sealed class EscortingTheRebelLeaders : Card
             new MenuLine(chance => ThrowAPotion(c, chance, Dispersed), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             new MenuLine(_ => Fight(c, Dispersed), OptionHint.Saying(CardTexts.EnterCombat)),
             new MenuLine(_ => RunAway(c), OptionHint.Saying("Coward!")),
-            // DORMANT: lines 5..9 (opt_flag_5..9 = 0): time passes, nothing else.
+            // DORMANT: lines 5..9 (card-option-flag-5..9 = 0): time passes, nothing else.
             // orig: R065+0x0746/078a/07ce/0812/0856, hints 0752/0796/07da/081e/0862
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),
@@ -104,7 +104,7 @@ public sealed class EscortingTheRebelLeaders : Card
 
     /// <summary>The most charismatic member (or whoever last used the pop-up) speaks to the crowd.</summary>
     // orig: R065+0x0424
-    // C: var_chosen1 is also set by the pop-up handlers, so a speech after using an item or a saint is
+    // C: text-slot-chosen-one is also set by the pop-up handlers, so a speech after using an item or a saint is
     // made by that member.
     private static void MakeASpeech(CardContext c, CardMenu menu, int chance, Action dispersed)
     {
@@ -209,7 +209,7 @@ public sealed class EscortingTheRebelLeaders : Card
     // orig: R065+0x0300 (option R065+0x0684, hint 068e)
     private static void Fight(CardContext c, Action dispersed)
     {
-        // C: arguments are evaluated right to left: the ringleaders (rand_mod(4)) are drawn before the mob (rand_mod(5)).
+        // C: arguments are evaluated right to left: the ringleaders (roll-below(4)) are drawn before the mob (roll-below(5)).
         var ringleaders = c.Random(4) + 3;
         var mob = c.Random(5) + 3;
         switch (c.RunBattle(0x25, c.Here + 0x70, 0x0C, 2, mob, 0, 2, ringleaders, -1, 0, 0))

@@ -33,9 +33,9 @@ public interface IGameScreens
 
 /// <summary>
 /// What a card asks for when it starts a fight: battlefield kind, seed and up to three enemy
-/// groups (type, quality, number); <paramref name="Mode"/> is battle_run's mode (0 a new
+/// groups (type, quality, number); <paramref name="Mode"/> is battle-entry's mode (0 a new
 /// battlefield, 1 back onto the last one, 2 through a door of it, 3 through a door onto level
-/// <paramref name="Battlefield"/>); <paramref name="Persistent"/> is combat_flags bit 0 (the main
+/// <paramref name="Battlefield"/>); <paramref name="Persistent"/> is fight-flags bit 0 (the main
 /// loop's battles: winning does not end the battle, the party leaves through an exit); <paramref name="Resume"/> is bit 0x100 of the
 /// combat flags (DS:9080) (a game saved in a battle: the battle is taken up again from the program's battle file).
 /// </summary>

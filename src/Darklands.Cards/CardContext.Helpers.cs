@@ -9,16 +9,16 @@ public sealed partial class CardContext
 {
     // ---- numbers --------------------------------------------------------------------
 
-    // orig: clamp_range R029+0x4F76 (1367:0066) matched; tests: CardSmokeTests
+    // orig: limit-to-range R029+0x4F76 (1367:0066) matched; tests: CardSmokeTests
     /// <summary>
-    /// <c>clamp_range(lo, hi, v)</c> exactly: the upper bound is tested first, so when
+    /// <c>limit-to-range(lo, hi, v)</c> exactly: the upper bound is tested first, so when
     /// <paramref name="low"/> exceeds <paramref name="high"/> a large value gives
     /// <paramref name="high"/> (Math.Clamp would throw). Use it where the bounds can cross.
     /// </summary>
     public static int ClampRange(int low, int high, int value) => value > high ? high : value < low ? low : value;
 
     // ---- music -------------------------------------------------------------------------
-    // PlayMusic (R043 09ae), PlaySound (sound_play), RandomName, ShopNames and the shops are shared:
+    // PlayMusic (R043 09ae), PlaySound (sound-start), RandomName, ShopNames and the shops are shared:
     // see CardContext.Services.cs and CardContext.Memory.cs.
 
     // orig: R043+0x09AE (1462:09AE) matched, music_play(5) (driver command 5: the number last played, root 047C:078A); tests: CardSmokeTests
@@ -36,15 +36,15 @@ public sealed partial class CardContext
 
     // ---- the party's composition -----------------------------------------------------
 
-    // orig: party_remove R037+0x3B58 (1462:3B58) draft(fn matched): PartyRules.RemoveFromParty; tests: CardSmokeTests
+    // orig: party-leave R037+0x3B58 (1462:3B58) draft(fn matched): PartyRules.RemoveFromParty; tests: CardSmokeTests
     /// <summary>
-    /// A member leaves the party but stays on the roster (party_remove, <see cref="PartyRules.RemoveFromParty"/>):
+    /// A member leaves the party but stays on the roster (party-leave, <see cref="PartyRules.RemoveFromParty"/>):
     /// the leader passes to the first other able member; the slot becomes empty and the character is
     /// left at the current place.
     /// </summary>
     public void RemoveMember(int slot) => PartyRules.RemoveFromParty(State, slot);
 
-    // DeleteMember (party_delete) is shared: see CardContext.Memory.cs.
+    // DeleteMember (party-wipe) is shared: see CardContext.Memory.cs.
 
     // orig: DS:A67C; tests: CardSmokeTests
     // C: the cached count (GameState.HirelingCount): set when a hireling joins, by the default party and by a load.
@@ -91,11 +91,11 @@ public sealed partial class CardContext
         set => State.MapLeaveMode = value;
     }
 
-    // orig: party_x DS:E3D0; tests: CardSmokeTests
+    // orig: party-map-column DS:E3D0; tests: CardSmokeTests
     // C: the cards' reuse of the map X while in a city.
     /// <summary>
     /// A mark city cards keep while the party is in a city, in the map position's X (the reference's
-    /// <c>party_x</c>), which the travel map sets again when the party leaves: the side taken
+    /// <c>party-map-column</c>), which the travel map sets again when the party leaves: the side taken
     /// in a political struggle (0 the rebels, 1 the government), a failed jail escape (2) ...
     /// </summary>
     public int CityMark

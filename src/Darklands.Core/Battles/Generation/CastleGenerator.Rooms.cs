@@ -4,7 +4,7 @@ namespace Darklands.Core.Battles.Generation;
 internal sealed partial class CastleGenerator
 {
     /// <summary>Adds a room to the current level: its rectangle, kind and cells, then the room graph (which rooms it touches and may be joined to).</summary>
-    // orig: gen_add_room R006+0x4A8C (1A57:000C) draft
+    // orig: layout-add-room R006+0x4A8C (1A57:000C) draft
     // C: the call that looks for touching rooms overwrites dir, x0 and x1 (they are not used afterwards).
     private void AddRoom(int kind, int x0, int x1, int y0, int y1, int dir)
     {

@@ -30,7 +30,7 @@ public sealed class InsideTheRobberKnightsTower : Card
             c.Screen.Text(0x0A);
             Fight(c, 5);
         }
-        // C: the start-up also calls do_nothing(); the knight's name is drawn after that fight.
+        // C: the start-up also calls idle-action(); the knight's name is drawn after that fight.
         c.RandomName(c.Here + 0x44C, 0, 0);
         c.SetCardSaints();
         c.SetCardItems();
@@ -65,7 +65,7 @@ public sealed class InsideTheRobberKnightsTower : Card
     private static void Fight(CardContext c, int kind)
     {
         var here = c.Here;
-        // C: arguments are evaluated right to left: rand_mod(2) (last) before rand_mod(3).
+        // C: arguments are evaluated right to left: roll-below(2) (last) before roll-below(3).
         var last = c.Random(2) + 2;
         var eighth = c.Random(3) + 1;
         var result = c.RunBattle(kind, -2, here % 4 != 0 ? 0x23 : 0x26, 3, 1, 0x12, here % 3 + 2, eighth, 3, here % 3 + 1, last);
@@ -105,7 +105,7 @@ public sealed class InsideTheRobberKnightsTower : Card
                 ShowPicture(c, 38);
                 c.Screen.Text(7);
                 c.PassHours(1);
-                // BUG: here the quest is not resolved (ev8_resolve is only called after a won battle): the knight is dead
+                // BUG: here the quest is not resolved (open-quest-resolve is only called after a won battle): the knight is dead
                 // and the tower a ruin, but no patron ever pays for the quest (card oracle: result 1 with the target slain).
                 TheTowerFalls(c);
                 c.Next = 0x0C;

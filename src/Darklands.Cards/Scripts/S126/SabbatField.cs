@@ -30,7 +30,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R126+0x0756, R126+0x07F8
 // DORMANT (generated): option slots 10..19 keep the default handler R126+0x07F8 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatField : Card
 {
@@ -123,7 +123,7 @@ public sealed class SabbatField : Card
     // C: returns 0 after a cancelled box, otherwise falls off its end without a value (ignored).
     private void PrayInASecludedSpot(CardContext c)
     {
-        // C: menu_member / menu_slot are the globals the pop-up box set last (stale when chosen from the line itself).
+        // C: menu-owner-member / menu-choice-index are the globals the pop-up box set last (stale when chosen from the line itself).
         var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
@@ -131,9 +131,9 @@ public sealed class SabbatField : Card
         }
         if (result != 0)
         {
-            // C: the drunk talker (picture 158, text 2) is a switch on menu_slot with cases 0..3 only (two identical
+            // C: the drunk talker (picture 158, text 2) is a switch on menu-choice-index with cases 0..3 only (two identical
             //   case groups); a slot outside 0..3 skips him and goes straight to the news.
-            // DORMANT: menu_slot is outside 0..3 only if a stale global holds such a value; card_saints has 4 slots.
+            // DORMANT: menu-choice-index is outside 0..3 only if a stale global holds such a value; card-saint-lines has 4 slots.
             if (c.MenuSlot is >= 0 and <= 3)
             {
                 ShowPicture(c, PrayerAnsweredPicture);

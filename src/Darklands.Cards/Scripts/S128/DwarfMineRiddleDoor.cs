@@ -55,7 +55,7 @@ public abstract class DwarfMineRiddleDoor : Card
 
     // orig: R128+0x1FE6 + R128+0x1F4E matched (and the twins R129+0x01D4 + _01b2,
     //   R129+0x0906 + _01bc, R129+0x0E80 + _01d6)
-    // C: card_load(card_name, pic_buf) reloads the whole card (Show) before the quest stage is asked.
+    // C: card-run(card-title, image-buffer) reloads the whole card (Show) before the quest stage is asked.
     private void OpenTheDoor(CardContext c)
     {
         ShowPicture(c, OpenDoorPicture);
@@ -88,11 +88,11 @@ public abstract class DwarfMineRiddleDoor : Card
 //   option 2: action R128+0x2068; hint R128+0x2076
 //   other: R128+0x1F4E, R128+0x20AE, R128+0x20E6
 // DORMANT (generated): option slots 10..19 keep the default handler R128+0x20E6 ("screwed up.") and are never shown.
-// C (generated): opt_flag_3/4/5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// C (generated): card-option-flag-3/4/5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class DwarfAndKoboldStatues : DwarfMineRiddleDoor
 {
     public override int Number => 339;

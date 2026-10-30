@@ -37,11 +37,11 @@ public static class Keys
     public const int F12 = 0x8600;
 
     /// <summary>Ctrl-F1..F5 (scan codes 0x5E..0x62): make that party member the leader.</summary>
-    // orig: cases 0x5e00 .. 0x6200 of card_global_keys R043+0x33C6 and R030+0x0C44 (the C comments call them Shift-F keys; Shift-F1 is 0x5400)
+    // orig: cases 0x5e00 .. 0x6200 of card-hotkeys R043+0x33C6 and R030+0x0C44 (the C comments call them Shift-F keys; Shift-F1 is 0x5400)
     public const int CtrlF1 = 0x5E00;
     public const int CtrlF5 = 0x6200;
 
-    // orig: the scan code of each Alt key in hot_keys root 0000:0CAA: Q 0x1000, O 0x1800, P 0x1900, S 0x1F00, D 0x2000, F 0x2100, L 0x2600, C 0x2E00, M 0x3200
+    // orig: the scan code of each Alt key in hotkey-table root 0000:0CAA: Q 0x1000, O 0x1800, P 0x1900, S 0x1F00, D 0x2000, F 0x2100, L 0x2600, C 0x2E00, M 0x3200
     public const int AltO = 0x1800;
     public const int AltQ = 0x1000;
     public const int AltS = 0x1F00;

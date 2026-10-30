@@ -91,7 +91,7 @@ public sealed class FortressDungeonCell : Card
 
     /// <summary>The best Artifice, doubled with lockpicks.</summary>
     // orig: R120+0x0CC4 matched
-    // C: party_max_skill sets best_member, which the hint reads (as unsigned char); the doubling cannot pass 32767.
+    // C: party-ability-top sets top-scoring-member, which the hint reads (as unsigned char); the doubling cannot pass 32767.
     private static OptionHint LockChance(CardContext c)
     {
         var chance = c.PartyMaxSkill((int)Skill.Artifice);
@@ -116,7 +116,7 @@ public sealed class FortressDungeonCell : Card
 
     // orig: R120+0x0CF8 matched
     // C: an int function that falls off its end without a value (except `return 0` after a cancelled prayer); the
-    //   menu ignores it. A menu_slot outside 0..3 shows nothing and stays on the card (no slot beyond 3 exists).
+    //   menu ignores it. A menu-choice-index outside 0..3 shows nothing and stays on the card (no slot beyond 3 exists).
     private static void Pray(CardContext c)
     {
         var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
@@ -179,7 +179,7 @@ public sealed class FortressDungeonCell : Card
         OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.SpeakLatin), c.BestMember);
 
     // orig: R120+0x0F2C matched
-    // C: an int function: the success branch returns without a value, the failure returns options_block (0); ignored.
+    // C: an int function: the success branch returns without a value, the failure returns settings-block (0); ignored.
     private static void ReadThePlaque(CardContext c, CardMenu menu, int chance)
     {
         if (c.Random(100) < chance)

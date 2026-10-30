@@ -2,7 +2,7 @@ using Darklands.Core.Battles.Tactics;
 
 namespace Darklands.Core.Battles;
 
-/// <summary>What a combatant's current action has reached (<c>cbt_action</c>, DS:CA64).</summary>
+/// <summary>What a combatant's current action has reached (<c>fighter-action</c>, DS:CA64).</summary>
 public enum ActionState : byte
 {
     Idle = 0,
@@ -25,7 +25,7 @@ public enum ActionState : byte
     Finished = 13,
 }
 
-/// <summary>The melee reaction state (<c>cbt_anim</c>, DS:CA57): the outcome of the last swing, or a push.</summary>
+/// <summary>The melee reaction state (<c>fighter-animation</c>, DS:CA57): the outcome of the last swing, or a push.</summary>
 public enum Exchange : byte
 {
     None = 0,
@@ -36,13 +36,13 @@ public enum Exchange : byte
     PusherFollowing = 5,
     Parried = 6,
 
-    /// <summary>Set for freshly placed enemies (enemies_place).</summary>
+    /// <summary>Set for freshly placed enemies (enemy-placement-entry).</summary>
     Placed = 7,
 
     AfterPush = 0x0E,
 }
 
-/// <summary>An action at a place ordered from the menu (<c>cbt_special</c>, DS:A6C4).</summary>
+/// <summary>An action at a place ordered from the menu (<c>fighter-special-action</c>, DS:A6C4).</summary>
 public enum PlaceAction : byte
 {
     None = 0,
@@ -50,7 +50,7 @@ public enum PlaceAction : byte
     Stairs = 2,
     PickDoorLock = 3,
 
-    /// <summary>4: disarm the chest's trap (chest_disarm; on failure it goes off).</summary>
+    /// <summary>4: disarm the chest's trap (chest-disarm-trap; on failure it goes off).</summary>
     DisarmChestTrap = 4,
     OpenChest = 5,
     PickChestLock = 6,
@@ -72,7 +72,7 @@ public enum Pose : sbyte
     Walking = 5,
 }
 
-/// <summary>cbt_flags (DS:A696 word per combatant).</summary>
+/// <summary>fighter-flags (DS:A696 word per combatant).</summary>
 [Flags]
 public enum TacticalFlags : ushort
 {
@@ -146,7 +146,7 @@ public sealed partial class Combatant
     /// <summary>DS:CA30: the path byte to take this tick, −1 none.</summary>
     public int QueuedStep { get; set; } = -1;
 
-    /// <summary>cbt_paths[i] (far 20A5:6238 + i·250) and DS:D6FB, the index of the next byte.</summary>
+    /// <summary>fighter-path-table[i] (far 20A5:6238 + i·250) and DS:D6FB, the index of the next byte.</summary>
     // orig: neither is cleared when a battle starts (R002+0x1830 resets the other per-combatant tables): zeros in a fresh program, else
     // what the last battle or the last load's battle file left (TacticalBattle.StalePaths); a walk ordered without a path given
     // (Flee, then Space) follows those bytes (lockstep session gen-bheld-22)
@@ -154,7 +154,7 @@ public sealed partial class Combatant
 
     public int PathIndex { get; set; }
 
-    /// <summary>The clock times of the next step (DS:D9CA), the next frame (DS:D9B0), the next swing (cbt_engage_time), the next re-path (DS:D97C).</summary>
+    /// <summary>The clock times of the next step (DS:D9CA), the next frame (DS:D9B0), the next swing (fighter-engage-delay), the next re-path (DS:D97C).</summary>
     public ushort NextStepAt { get; set; }
 
     public ushort NextFrameAt { get; set; }
@@ -170,7 +170,7 @@ public sealed partial class Combatant
 
     public ushort AimEndAt { get; set; }
 
-    /// <summary>cbt_giveup_timeout (DS:D962) and the give-up flag (DS:D5E9) of the moved-target follow.</summary>
+    /// <summary>fighter-give-up-timer (DS:D962) and the give-up flag (DS:D5E9) of the moved-target follow.</summary>
     public ushort GiveUpUntil { get; set; }
 
     public bool GaveUp { get; set; }
@@ -183,10 +183,10 @@ public sealed partial class Combatant
 
     public ushort DamageNumberUntil { get; set; }
 
-    /// <summary>cbt_was_hit (DS:D4F2).</summary>
+    /// <summary>fighter-was-hit (DS:D4F2).</summary>
     public bool WasHit { get; set; }
 
-    /// <summary>cbt_anim_seq / cbt_anim_len: the frames played and how many.</summary>
+    /// <summary>fighter-animation-sequence / fighter-animation-length: the frames played and how many.</summary>
     public int[] Sequence { get; } = new int[10];
 
     public int SequenceLength { get; set; } = 1;
@@ -217,7 +217,7 @@ public sealed partial class Combatant
 
     public TacticalFlags Flags { get; set; }
 
-    /// <summary>order_queues[i][3]: orders taken one by one on arrival.</summary>
+    /// <summary>command-queue-table[i][3]: orders taken one by one on arrival.</summary>
     public CombatAction[] Orders { get; } = new CombatAction[3];
 
     /// <summary>seenpos[i][j] (20A5:79A9): where i last saw j near its path (X = −1 none).</summary>
@@ -279,7 +279,7 @@ public sealed partial class Combatant
     /// <summary>DS:C7CD: the pack slot of the weakest Eater-Water (item 99), −1 none.</summary>
     public int DissolveSlot { get; set; } = -1;
 
-    /// <summary>DS:C8B2: the stairs record on its new level that leads back (take_exit).</summary>
+    /// <summary>DS:C8B2: the stairs record on its new level that leads back (use-exit).</summary>
     // C: a byte array never cleared (BSS): 0 at the start, then whatever the last stairs left (stale between battles).
     public int StairsBack { get; set; }
 
@@ -289,15 +289,15 @@ public sealed partial class Combatant
     /// <summary>DS:D62B: a word per combatant the battle file saves and restores (nothing else reads or writes it).</summary>
     public short SavedWord { get; set; }
 
-    /// <summary>The members selected in order mode (cbt_selected).</summary>
+    /// <summary>The members selected in order mode (fighter-selected).</summary>
     public bool Selected { get; set; }
 
-    /// <summary>Clears the order queue (order_queue_clear).</summary>
+    /// <summary>Clears the order queue (command-queue-reset).</summary>
     // orig: R014+0x3D0C (0E76:3D0C) draft (byte-matched per the draft notes)
     public void ClearOrders() => Array.Clear(Orders);
 
     /// <summary>Queues an order in the first free slot (dropped when full).</summary>
-    // orig: order_queue R014+0x3C86 (0E76:3C86) draft (byte-matched per the draft notes)
+    // orig: command-queue R014+0x3C86 (0E76:3C86) draft (byte-matched per the draft notes)
     public void QueueOrder(CombatAction order)
     {
         var k = Array.IndexOf(Orders, CombatAction.None);

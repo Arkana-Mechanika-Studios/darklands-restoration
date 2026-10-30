@@ -10,8 +10,8 @@ namespace Darklands.Cards.Scripts;
 /// sent off at the gate (the card then goes to the church).
 /// </summary>
 // orig: R057+0x0F72 (192F:0002) matched; tests: CardSmokeTests
-// orig: R057+0x1C46 (192F:0CD6) matched (init helper: clears the 20 option lines and points opt_fn[0..19] at the default; there is no item or saint pop-up on this card)
-// DORMANT: R057+0x1C68 (192F:0CF8) the "screwed up." default for opt_fn[0..19]; lines 0..9 get their own handlers and lines 10..19 stay cleared, so it never runs.
+// orig: R057+0x1C46 (192F:0CD6) matched (init helper: clears the 20 option lines and points card-option-handler[0..19] at the default; there is no item or saint pop-up on this card)
+// DORMANT: R057+0x1C68 (192F:0CF8) the "screwed up." default for card-option-handler[0..19]; lines 0..9 get their own handlers and lines 10..19 stay cleared, so it never runs.
 public sealed class Monastery_CityM00 : Card
 {
     public const int CardNumber = 0x36;
@@ -261,7 +261,7 @@ public sealed class Monastery_CityM00 : Card
     /// already given; 75 or more is a sure thing.
     /// </summary>
     // orig: R057+0x17CC (192F:085C) matched ("cannot print stale" in the tool's note: hand-built, checked against the asm)
-    // C: party_max_attr_sum(0xb, 0xc) is called with SKILL numbers but reads the member record as an attribute table (+0x49 + k): bytes 0xb and 0xc there are the Intelligence and Charisma MAXIMA, not Latin and Read-and-Write; the value kept is twice the first byte (see MaxOfRecordBytes).
+    // C: party-stat-top-sum(0xb, 0xc) is called with SKILL numbers but reads the member record as an attribute table (+0x49 + k): bytes 0xb and 0xc there are the Intelligence and Charisma MAXIMA, not Latin and Read-and-Write; the value kept is twice the first byte (see MaxOfRecordBytes).
     private static OptionHint LibraryChance(CardContext c)
     {
         var chance = MaxOfRecordBytes(c, 0x0B, 0x0C);
@@ -283,12 +283,12 @@ public sealed class Monastery_CityM00 : Card
     }
 
     /// <summary>
-    /// The original's <c>party_max_attr_sum</c> over raw record bytes: member record byte
+    /// The original's <c>party-stat-top-sum</c> over raw record bytes: member record byte
     /// <c>0x49 + k</c> is attribute k for k 0..6, the attribute maximum k-7 for k 7..13, then the
     /// skills. It keeps twice the first byte of the best sum (original bug, see
     /// <c>OriginalBehaviour.FixAttributeSums</c>) and the member's slot.
     /// </summary>
-    // orig: R029+0x179C (party_max_attr_sum) draft (checked against asm)
+    // orig: R029+0x179C (party-stat-top-sum) draft (checked against asm)
     private static int MaxOfRecordBytes(CardContext c, int first, int second)
     {
         static int Byte(Character m, int k) =>

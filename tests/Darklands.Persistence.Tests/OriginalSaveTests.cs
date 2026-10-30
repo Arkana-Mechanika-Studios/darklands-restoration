@@ -134,10 +134,10 @@ public sealed class OriginalSaveTests
     private const int BattlefieldImageSize = 0x33FC;
 
     /// <summary>
-    /// A saved game as the original's writer (R037+0x2ACE) writes it straight after loading it: party_size recounted from the slots,
+    /// A saved game as the original's writer (R037+0x2ACE) writes it straight after loading it: party-headcount recounted from the slots,
     /// and a party slot whose status is 0 written as nothing, without the charactr.tmp read past it, so the entries after it come that
-    /// many records late and the file that many records short of the count (DKSAVE40, from another tool: party_size 6 for four slots,
-    /// slots 0 and 1 of status 0; written by 483.07 in the lockstep oracle with party_size 4 and records 0, 1, 2, 3, 4, 7 of 8).
+    /// many records late and the file that many records short of the count (DKSAVE40, from another tool: party-headcount 6 for four slots,
+    /// slots 0 and 1 of status 0; written by 483.07 in the lockstep oracle with party-headcount 4 and records 0, 1, 2, 3, 4, 7 of 8).
     /// A file the original wrote itself comes back as it was.
     /// </summary>
     private static byte[] AsTheOriginalWritesIt(byte[] sav)
@@ -227,7 +227,7 @@ public sealed class OriginalSaveTests
     [Fact]
     public void ALoadedSlotOfStatusZeroPastThePartyKeepsItsIdAndIsSkippedToo()
     {
-        // The writer tests ids[] of all five slots: the last slot of status 0 is past party_size after loading, keeps its id, and its
+        // The writer tests ids[] of all five slots: the last slot of status 0 is past party-headcount after loading, keeps its id, and its
         // record is left out like any status-0 slot's (B-1cec30).
         var state = SampleGame();
         state.Behaviour = OriginalBehaviour.DataSafe;
@@ -397,7 +397,7 @@ public sealed class OriginalSaveTests
         Assert.Equal((17, 30), (again[0x51], again[0x58]));
         // The bytes the model does not name are as they were.
         Assert.Equal(record.AsSpan(0x02, 0x10).ToArray(), again.AsSpan(0x02, 0x10).ToArray());
-        // item_delete moved the stale entry 3 down into entry 2 and left entry 3 as it was.
+        // item-erase moved the stale entry 3 down into entry 2 and left entry 3 as it was.
         Assert.Equal(record.AsSpan(0xAA + 3 * 6, 6).ToArray(), again.AsSpan(0xAA + 2 * 6, 6).ToArray());
         Assert.Equal(record.AsSpan(0xAA + 3 * 6, 0x22A - 0xAA - 3 * 6).ToArray(), again.AsSpan(0xAA + 3 * 6).ToArray());
     }
@@ -518,7 +518,7 @@ public sealed class OriginalSaveTests
         Assert.Equal([0, -1, 2, 3, -1], file.PartyIds);
         Assert.Equal(4, file.Characters.Count);
 
-        // add_member (R029+0x4650) there: a new entry, the figure argument, and the zero slot memory's weapon qualities (+0x58/+0x5A)
+        // join-party-member (R029+0x4650) there: a new entry, the figure argument, and the zero slot memory's weapon qualities (+0x58/+0x5A)
         back = OriginalSaves.Read(sav, [], "x.sav", NoGameData.Instance).State;
         Assert.Equal(1, Core.Rules.PartyRules.AddMember(back, "Wolf Bauer", "Wolf", "F01", 100, 1));
         file = SaveFile.Parse(OriginalSaves.Write(back).Sav);

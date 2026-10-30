@@ -31,7 +31,7 @@ public sealed class WorldCallsTests(Xunit.Abstractions.ITestOutputHelper output)
         public int[] Args => Job.Args;
 
         /// <summary>
-        /// Set by an adapter whose rewrite call did more than the original function: the road encounter's card, which overland_loop R030+0x02C0
+        /// Set by an adapter whose rewrite call did more than the original function: the road encounter's card, which world-map-loop R030+0x02C0
         /// chooses (its sel == 1000 branch) right after 0c44 returns 1300's 1000, with no draw in between (0c44 returns at once). The rewrite's
         /// first draws must then be the original's exactly (the generator's state after as many draws as the original made is the original's);
         /// the draws after them are the loop's.

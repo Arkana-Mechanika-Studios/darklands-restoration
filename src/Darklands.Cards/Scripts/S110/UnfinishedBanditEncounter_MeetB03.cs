@@ -9,7 +9,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R110+0x0D8E (1910:000E) matched; tests: CardSmokeTests
 // orig: R110+0x1282 (1910:0502) matched (registration: item pop-ups R110+0x1344/05de give 100 and name the member; saint pop-ups do not)
-// C: the loop calls card_menu without card_options or card_text (card_load draws only the picture), so the menu works on the option
+// C: the loop calls card-choice-menu without card-option-lines or card-text-block (card-run draws only the picture), so the menu works on the option
 // C: lines the screen last laid out (the previous card's last text) with this card's states and handlers (CardMenu.DrawsOptions = false).
 // DORMANT: R110+0x0FCA (text 11, then the map), R110+0x1378 and R110+0x137A are never called.
 public sealed class UnfinishedBanditEncounter_MeetB03 : Card

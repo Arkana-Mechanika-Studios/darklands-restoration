@@ -20,8 +20,8 @@ public enum TileKind
 /// and which of its tiles fill the battlefield's tile numbers 1..15. The decoration and furniture
 /// kinds also give the number below which tiles are animated.
 /// </summary>
-// orig: tile_desc (R004 enemy buffer +0xF504), written by the generators, saved as terrain.fil by battlefield_build R004+0x0000
-// and read by battle_tiles_load R002+0x0C8C; defaults from R004+0x1134 (byte-matched per the draft notes)
+// orig: tile-description (R004 enemy buffer +0xF504), written by the generators, saved as terrain.fil by battlefield-builder-entry R004+0x0000
+// and read by battle-tileset-load R002+0x0C8C; defaults from R004+0x1134 (byte-matched per the draft notes)
 public sealed class TerrainDescription
 {
     public const int Size = 0xC4;
@@ -87,7 +87,7 @@ public sealed class TerrainDescription
 
     /// <summary>The tile numbers below which tiles of a decoration or furniture kind are animated (−1 for kinds without it).</summary>
     /// <summary>+0xA3: furniture tiles from this number on block sight (DS:C1CF once the tile set is loaded).</summary>
-    // C: the furniture section's "animated below" byte doubles as the sight limit (furniture_load R024 07A2 sets DS:C1CF).
+    // C: the furniture section's "animated below" byte doubles as the sight limit (furniture-sprites-load R024 07A2 sets DS:C1CF).
     public int FirstSightBlockingFurniture => Bytes[0xA3];
 
     public int AnimatedBelow(TileKind kind) => AnimatedAt[(int)kind] < 0 ? -1 : Bytes[AnimatedAt[(int)kind]];

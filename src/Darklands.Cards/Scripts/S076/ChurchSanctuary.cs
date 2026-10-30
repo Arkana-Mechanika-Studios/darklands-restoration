@@ -8,7 +8,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R076+0x0430 (187B:0000) matched; tests: CardSmokeTests
 // orig: R076+0x098E (187B:055E) matched; R076+0x09C6 (187B:0596) matched; tests: CardSmokeTests
 // DORMANT: the "screwed up." default handler of the unlisted lines 5..19 (never offered).
-// C: card_load with another picture reloads the same texts; ShowPicture shows the picture only.
+// C: card-run with another picture reloads the same texts; ShowPicture shows the picture only.
 // C: texts 4..8 (a second menu, the priest's warnings and the forced departure) and 12 (a failed escape
 // ending in capture) are never shown by this card, the only one that loads $Sanct00; an indirect loader is not excluded.
 public sealed class ChurchSanctuary : Card
@@ -77,7 +77,7 @@ public sealed class ChurchSanctuary : Card
             c.Next = 0x0D;
             return;
         }
-        // C: arguments are evaluated right to left (party_lore_level draws nothing).
+        // C: arguments are evaluated right to left (party-lore-rating draws nothing).
         var third = c.Random(3) + 1;
         var second = c.Random(5) + 4;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 1;
@@ -123,7 +123,7 @@ public sealed class ChurchSanctuary : Card
     private static OptionHint ChanceToSneakOut(CardContext c)
     {
         var chance = Math.Clamp(c.PartyMinSkillSum(0x0F, 0x10), 10, 99);
-        // C: best_member is read as an unsigned char.
+        // C: top-scoring-member is read as an unsigned char.
         c.Variables.Chosen[0] = (byte)c.BestMember;
         return OptionHint.ChanceOf(chance, (byte)c.BestMember);
     }

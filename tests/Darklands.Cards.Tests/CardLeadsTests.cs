@@ -21,7 +21,7 @@ public sealed class CardLeadsTests
     [Fact]
     public void AChosenIndexPastThePartyReadsTheLoadedMessageFile()
     {
-        // party[k] is DS:9C69 + 0x80k (name +0x2A, sex +3) and msg_file DS:A895: slot 29's name starts at file offset 638 (card 0x6C
+        // party[k] is DS:9C69 + 0x80k (name +0x2A, sex +3) and text-bank-file DS:A895: slot 29's name starts at file offset 638 (card 0x6C
         // puts the least agile member's Agility, 29, there: "With a crash storeroom. You slide ..." in the original)
         if (Context() is not { } c)
         {

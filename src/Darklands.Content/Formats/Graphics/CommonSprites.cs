@@ -7,7 +7,7 @@ namespace Darklands.Content.Formats.Graphics;
 /// the party-panel frames (plain and lit for the selected member), the corners of framed boxes, the
 /// backgrounds of a panel row and of the whole panel column, and the dead member's shield.
 /// </summary>
-// orig: R000+0x1010 (0E76:1010) draft: file_load_far("commonsp.img"), alloc_buffer(first word, "CnnmSp"), then the 14 paragraph offsets of the header become cursor_default, DS:A3D6, DS:A3E5, DS:A2E9, DS:A33B, DS:A33E, DS:A392, DS:A660, DS:A662, DS:A664, DS:A666, DS:A626, DS:A628, DS:A2E5 in that order; tests: CommonSpritesTests
+// orig: R000+0x1010 (0E76:1010) draft: file-load-far-buffer("commonsp.img"), request-work-buffer(first word, "CnnmSp"), then the 14 paragraph offsets of the header become mouse-cursor-default, DS:A3D6, DS:A3E5, DS:A2E9, DS:A33B, DS:A33E, DS:A392, DS:A660, DS:A662, DS:A664, DS:A666, DS:A626, DS:A628, DS:A2E5 in that order; tests: CommonSpritesTests
 public sealed class CommonSprites
 {
     /// <summary>The number of sprites in the file.</summary>
@@ -18,7 +18,7 @@ public sealed class CommonSprites
     /// <summary>All fourteen sprites, in file order.</summary>
     public ImageBank Bank { get; }
 
-    /// <summary>The ordinary mouse pointer (<c>cursor_default</c>).</summary>
+    /// <summary>The ordinary mouse pointer (<c>mouse-cursor-default</c>).</summary>
     public RowRunSprite Pointer => Bank[0];
 
     /// <summary>The line above a panel row (<c>DS:A3D6</c>); lit: <see cref="PanelTopLit"/>.</summary>

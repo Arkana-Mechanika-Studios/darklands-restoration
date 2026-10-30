@@ -20,13 +20,13 @@ public static class Quests
 
     /// <summary>
     /// Resolves the quests with <paramref name="tag"/> at <paramref name="loc"/> (−1 = any;
-    /// <c>ev8_resolve</c>): each becomes a resolved quest (for a year) at its city, the
+    /// <c>open-quest-resolve</c>): each becomes a resolved quest (for a year) at its city, the
     /// city's standing changes by the quest's <see cref="TimedEvent.Data1"/> (unclamped), the
     /// party gets the reward of size <see cref="TimedEvent.Data2"/>; then the quests' facts
     /// (and the quests themselves) are cleared.
     /// </summary>
-    // orig: ev8_resolve R029+0x3E06 (0E76:3E06) matched; tests: EventLogTests
-    // C: event_new(f1a, f1e, f20, 0x24, f1a, type0, 0, 8760 (the address DS:2238), 0, f28); rep += f2a unclamped; give_reward(f2c); then f2e and f2c of the new event.
+    // orig: open-quest-resolve R029+0x3E06 (0E76:3E06) matched; tests: EventLogTests
+    // C: event-create(f1a, f1e, f20, 0x24, f1a, type0, 0, 8760 (the address DS:2238), 0, f28); rep += f2a unclamped; award-prize(f2c); then f2e and f2c of the new event.
     // DIVERGENCE: when the log is full the original writes f2e/f2c through events[-1]; here nothing is written.
     public static void Resolve(GameState s, int tag, int loc)
     {
@@ -85,7 +85,7 @@ public static class Quests
     /// units are ravaged (the first one shows the dragon when the quest is of the first sort).
     /// </summary>
     // orig: R039+0x11FC (1462:11FC) matched; tests: WorldRulesTests
-    // C: nearest_loc_type(rand_mod(300), rand_mod(900), 15): arguments right to left, y is drawn first.
+    // C: closest-place-of-kind(roll-below(300), roll-below(900), 15): arguments right to left, y is drawn first.
     public static void StartDragon(GameState s)
     {
         if (s.Events.Find(EventKinds.Quest, -1, -1, -1, Dragon, -1) != -1)
@@ -141,7 +141,7 @@ public static class Quests
     /// for a year.
     /// </summary>
     // orig: R039+0x15C2 (1462:15C2) matched
-    // C: nearest_loc_type(rand_mod(300), rand_mod(600) + 300, 6): y first.
+    // C: closest-place-of-kind(roll-below(300), roll-below(600) + 300, 6): y first.
     public static void StartMine(GameState s)
     {
         if (s.Events.Find(EventKinds.Quest, -1, -1, -1, Mine, -1) != -1)
@@ -190,7 +190,7 @@ public static class Quests
 
     /// <summary>The fact that ends on the sabbat's day and starts it at a random sabbat site.</summary>
     // orig: R039+0x1B0C (1462:1B0C) matched; R029+0x4534 (0E76:4534) matched
-    // C: days_until(&d) * 24 is a 16-bit product; the site is drawn after the event exists.
+    // C: days-remaining-until(&d) * 24 is a 16-bit product; the site is drawn after the event exists.
     // DIVERGENCE: when the log is full the original writes the site through events[-1] (R039+0x1BFD, R029+0x4592: into 0000:002A, the INT 0Ah vector's
     //   segment); here nothing is written. No sabbat is planned from then on (the quest still exists, so nothing starts it again): SabbatSite gives -1.
     private static void PlanSabbat(GameState s, int day, int days)
@@ -236,7 +236,7 @@ public static class Quests
     /// 145, 162, 172, 265, 304 and 360 by the month, chosen at random.
     /// </summary>
     // orig: R039+0x1C22 (1462:1C22) matched
-    // DORMANT: case 0 (cur_month + 1 == 0) is the default's draw; it would need a month of -1.
+    // DORMANT: case 0 (month-now + 1 == 0) is the default's draw; it would need a month of -1.
     public static int FeastDayNearThisMonth(GameState s)
     {
         var r = s.Random;
@@ -271,7 +271,7 @@ public static class Quests
     // ---- the quests' details --------------------------------------------------------
 
     // orig: R039+0x1510 (1462:1510) matched
-    // C: without a quest the function falls through with AX = event_find's -1 (checked against the asm): -1, as here.
+    // C: without a quest the function falls through with AX = event-search's -1 (checked against the asm): -1, as here.
     private static int Field(GameState s, int tag, Func<TimedEvent, int> field) =>
         s.Events[s.Events.Find(EventKinds.Quest, -1, -1, -1, tag, -1)] is { } q ? field(q) : -1;
 
@@ -312,12 +312,12 @@ public static class Quests
         s.Events[s.Events.Find(Fact, 4, -1, -1, Sabbat, -1)] is { } f ? f.Data1 : -1;
 
     /// <summary>The planned sabbat's day of the month (<c>thunk 09C0:21A7</c>).</summary>
-    // orig: R039+0x1CD2 (1462:1CD2) matched; mday_of_yday R029+0x5892 (1367:0982) matched
-    // C: declared void: the day comes back in AX from mday_of_yday.
+    // orig: R039+0x1CD2 (1462:1CD2) matched; day-of-month-from-year-day R029+0x5892 (1367:0982) matched
+    // C: declared void: the day comes back in AX from day-of-month-from-year-day.
     public static int SabbatDayOfMonth(GameState s) => DayOfMonth(s.Events.FactValueAnywhere(Sabbat, 4));
 
     /// <summary>The planned sabbat's month (<c>thunk 09C0:20DF</c>).</summary>
-    // orig: R039+0x1CE8 (1462:1CE8) matched; month_of_yday R029+0x5848 (1367:0938) matched
+    // orig: R039+0x1CE8 (1462:1CE8) matched; month-from-year-day R029+0x5848 (1367:0938) matched
     public static int SabbatMonth(GameState s) => MonthOf(s.Events.FactValueAnywhere(Sabbat, 4));
 
     /// <summary>The month (0..11) of a day of the year.</summary>
@@ -326,7 +326,7 @@ public static class Quests
     /// <summary>The day of the month of a day of the year (a day equal to the month's length stays in it).</summary>
     public static int DayOfMonth(int dayOfYear) => SplitDayOfYear(dayOfYear).Day;
 
-    // orig: month_of_yday R029+0x5848 (1367:0938) matched; mday_of_yday R029+0x5892 (1367:0982) matched
+    // orig: month-from-year-day R029+0x5848 (1367:0938) matched; day-of-month-from-year-day R029+0x5892 (1367:0982) matched
     private static (int Month, int Day) SplitDayOfYear(int d)
     {
         while (d >= GameDate.DaysPerYear)
@@ -380,7 +380,7 @@ public static class Quests
         {
             log.Create(-2, factLocation, 0, Fact, t, 0, 0, 9998, 0, 3);
         }
-        // C: no return statement: AX still holds the last event_new's result (checked against
+        // C: no return statement: AX still holds the last event-create's result (checked against
         // the asm: nothing after the call touches AX), i.e. the 0x2B event's slot.
         return log.Create(-2, factLocation, 0, 0x2B, 0, 1, 0, EventLog.Forever, 0, 0);
     }
@@ -390,7 +390,7 @@ public static class Quests
     /// (<see cref="TimedEvent.Data1"/> 0..135) and item (<see cref="TimedEvent.Data3"/> 139..170), and its fact 5.
     /// </summary>
     // orig: R039+0x1F00 (1462:1F00) matched
-    // C: the item (rand_mod(0x20) + 0x8B) is drawn before the saint (rand_mod(0x88)).
+    // C: the item (roll-below(0x20) + 0x8B) is drawn before the saint (roll-below(0x88)).
     public static void StartQuest7(GameState s)
     {
         if (s.Events.QuestExists(7))
@@ -419,7 +419,7 @@ public static class Quests
     // orig: R039+0x1712 (1462:1712) matched
     // DIVERGENCE: region kinds 1, 2, 9 and others leave k and v uninitialised in the original; here sort 0 and item 0.
     // DIVERGENCE: in the wilderness the original reads locations[-1]; here position 0, 0.
-    // C: the var_loc the original sets is CardContext's $LocName (the site returned here).
+    // C: the text-slot-place the original sets is CardContext's $LocName (the site returned here).
     public static int StartQuest10(GameState s, int region, out int site)
     {
         var r = s.Random;

@@ -6,7 +6,7 @@ using Attribute = Darklands.Core.Characters.Attribute;
 namespace Darklands.Core.Rules;
 
 /// <summary>The five equipment slots, in the game's order.</summary>
-// orig: equipped_type R031+0x5CB0 (18E7:1460) matched
+// orig: worn-item-type R031+0x5CB0 (18E7:1460) matched
 public enum EquipmentSlot
 {
     Weapon = 0,
@@ -41,15 +41,15 @@ public static class Inventory
     // ---- counting -------------------------------------------------------------------
 
     /// <summary>
-    /// How many items of <paramref name="code"/> are carried (<c>count_items</c>). The shop and
+    /// How many items of <paramref name="code"/> are carried (<c>item-tally</c>). The shop and
     /// stash lists the original also counts for who ≥ 5 are not modelled (0).
     /// </summary>
-    // orig: count_items R029+0x0C76 (0E76:0C76) matched; tests: PracticeAndItemsTests
-    // DIVERGENCE: who >= 5 counts the 16-entry lists at R136+0xE68E (with the quantities read from inventories[who - 5], an original bug); not modelled, 0. The lists are enemy_items (the last battle's enemies' items, battle state); no caller passes who >= 5 (the cards pass -2, -1 or a member).
+    // orig: item-tally R029+0x0C76 (0E76:0C76) matched; tests: PracticeAndItemsTests
+    // DIVERGENCE: who >= 5 counts the 16-entry lists at R136+0xE68E (with the quantities read from inventories[who - 5], an original bug); not modelled, 0. The lists are enemy-loot (the last battle's enemies' items, battle state); no caller passes who >= 5 (the cards pass -2, -1 or a member).
     public static int Count(GameState s, int who, int code) => Count(s, who, st => CodeOf(st) == code);
 
-    /// <summary>How many carried items have any of the kind bits in <paramref name="mask"/> (<c>count_items_flags</c>).</summary>
-    // orig: count_items_flags R029+0x0DD8 (0E76:0DD8) matched
+    /// <summary>How many carried items have any of the kind bits in <paramref name="mask"/> (<c>item-tally-by-flags</c>).</summary>
+    // orig: item-tally-by-flags R029+0x0DD8 (0E76:0DD8) matched
     public static int CountWithFlags(GameState s, int who, uint mask) => Count(s, who, st => (s.Item(CodeOf(st)).Flags & mask) != 0);
 
     private static int Count(GameState s, int who, Func<ItemStack, bool> match)
@@ -64,9 +64,9 @@ public static class Inventory
 
     /// <summary>
     /// The best quality of the carried items with any of the bits in <paramref name="mask"/>
-    /// (<c>best_item_quality</c>); who ≥ 5 looks at the first 16 stacks of member who − 5.
+    /// (<c>top-quality-of-item</c>); who ≥ 5 looks at the first 16 stacks of member who − 5.
     /// </summary>
-    // orig: best_item_quality R029+0x0F54 (0E76:0F54) matched
+    // orig: top-quality-of-item R029+0x0F54 (0E76:0F54) matched
     // C: who >= 5 reads the first 16 entries of member who - 5 whatever its stack count (stale entries included).
     public static int BestQualityWithFlags(GameState s, int who, uint mask)
     {
@@ -80,19 +80,19 @@ public static class Inventory
     }
 
     /// <summary>All items of exactly <paramref name="code"/> the present members carry.</summary>
-    // orig: party_item_total R029+0x1128 (0E76:1128) matched
+    // orig: party-item-sum R029+0x1128 (0E76:1128) matched
     public static int PartyTotal(GameState s, int code) =>
         Carriers(s).SelectMany(i => Pack(s, i)).Where(st => st.Code == code).Sum(st => st.Count);
 
     /// <summary>
     /// 1 if the member carries <paramref name="code"/>, 2 if the member knows a formula for it
-    /// (potions), else 0 (<c>has_item</c>). Faithful quirk: the formula test reads the byte at
+    /// (potions), else 0 (<c>carries-item</c>). Faithful quirk: the formula test reads the byte at
     /// 2E38:075F + member × 22 + code, the formula table for potion codes; for other codes it lands
     /// in another member's formulas, below the table in member 4's pack entries 48..63, or above it
     /// in the saint tables (<see cref="Party.MemoryByte"/>). Any bit counts, not only the three formula bits.
     /// </summary>
-    // orig: has_item R029+0x118E (0E76:118E) matched; tests: PracticeAndItemsTests
-    // DIVERGENCE: has_item does not resolve -1 (DS:9CD3[-1] is the record before slot 0); here -1 is the leader.
+    // orig: carries-item R029+0x118E (0E76:118E) matched; tests: PracticeAndItemsTests
+    // DIVERGENCE: carries-item does not resolve -1 (DS:9CD3[-1] is the record before slot 0); here -1 is the leader.
     // C: `if (R136+0xE08F[who][code])`: one byte of segment 2E38 at 0x75F + who * 0x16 + code (packs, formulas, saints; Party.MemoryByte).
     public static int Has(GameState s, int who, int code)
     {
@@ -105,7 +105,7 @@ public static class Inventory
     }
 
     /// <summary>The member (−2: any present member) knows a formula of potion group <paramref name="potion"/> (0..21 from code 0x5F).</summary>
-    // orig: knows_item_type R029+0x11FA (0E76:11FA) matched
+    // orig: item-type-known R029+0x11FA (0E76:11FA) matched
     public static bool KnowsPotion(GameState s, int who, int potionCode)
     {
         who = s.Party.Resolve(who);
@@ -117,8 +117,8 @@ public static class Inventory
     /// <summary>Byte <paramref name="index"/> from the start of the five members' formula tables (22 bytes each) is not zero; outside them it is the bytes around (<see cref="Party.MemoryByte"/>).</summary>
     private static bool FormulaByte(GameState s, int index) => s.Party.MemoryByte(Party.FormulaByteOffset(0, index)) != 0;
 
-    /// <summary>The best quality of <paramref name="code"/> carried (<c>item_quality</c>).</summary>
-    // orig: item_quality_impl R031+0x5E48 (18E7:15F8) matched
+    /// <summary>The best quality of <paramref name="code"/> carried (<c>item-grade</c>).</summary>
+    // orig: item-grade-inner R031+0x5E48 (18E7:15F8) matched
     public static int BestQuality(GameState s, int who, int code)
     {
         var members = who == Who.Everybody ? Carriers(s) : [s.Party.Resolve(who)];
@@ -126,12 +126,12 @@ public static class Inventory
     }
 
     /// <summary>
-    /// <c>item_quality_flags</c>. Original bug: it compares the kind bits of item 0 instead of
+    /// <c>item-grade-flags</c>. Original bug: it compares the kind bits of item 0 instead of
     /// each stack's, so it is the best quality of everything carried when item 0's bits equal
     /// <paramref name="flags"/>, else 0.
     /// </summary>
-    // orig: item_quality_flags_impl R031+0x5F6C (18E7:171C) matched
-    // BUG: item_defs[0]->flags is tested for every stack (FixItemQualityByFlags).
+    // orig: item-grade-flags-inner R031+0x5F6C (18E7:171C) matched
+    // BUG: item-definition-table[0]->flags is tested for every stack (FixItemQualityByFlags).
     public static int BestQualityByFlags(GameState s, int who, uint flags)
     {
         var fixedTest = s.Behaviour.FixItemQualityByFlags;
@@ -153,8 +153,8 @@ public static class Inventory
     }
 
     /// <summary>A random item code (of the first 172) whose kind bits are exactly <paramref name="flags"/>; −1 if none.</summary>
-    // orig: random_item_flags R031+0x60E4 (18E7:1894) matched
-    // DIVERGENCE: rand_mod(n) counts n < 2 as 2, so with 0 or 1 matching items k can pass the last one and the original falls off the loop (AX undefined); here -1.
+    // orig: random-item-flag-set R031+0x60E4 (18E7:1894) matched
+    // DIVERGENCE: roll-below(n) counts n < 2 as 2, so with 0 or 1 matching items k can pass the last one and the original falls off the loop (AX undefined); here -1.
     public static int RandomItemWithFlags(GameState s, uint flags)
     {
         var codes = Enumerable.Range(0, 172).Where(i => s.Item(i).Flags == flags).ToList();
@@ -164,12 +164,12 @@ public static class Inventory
 
     // ---- adding ---------------------------------------------------------------------
 
-    /// <summary>One item of default quality (<c>add_item</c>).</summary>
-    // orig: add_item_impl R031+0x4978 (18E7:0128) matched
+    /// <summary>One item of default quality (<c>give-one-item-form</c>).</summary>
+    // orig: give-item-inner R031+0x4978 (18E7:0128) matched
     public static int Add(GameState s, int who, int code) => AddMany(s, who, code, 1);
 
-    /// <summary><paramref name="count"/> items of default quality (<c>add_items</c>).</summary>
-    // orig: add_items_impl R031+0x4930 (18E7:00E0) matched
+    /// <summary><paramref name="count"/> items of default quality (<c>give-several-items</c>).</summary>
+    // orig: give-several-items-inner R031+0x4930 (18E7:00E0) matched
     // C: the stack's type, quality and weight are the item record's signed chars stored in unsigned bytes.
     public static int AddMany(GameState s, int who, int code, int count)
     {
@@ -178,7 +178,7 @@ public static class Inventory
     }
 
     /// <summary>One item of the given quality.</summary>
-    // orig: add_item_q R031+0x49BE (18E7:016E) matched
+    // orig: give-item-with-quality R031+0x49BE (18E7:016E) matched
     public static int AddWithQuality(GameState s, int who, int code, int quality)
     {
         var d = s.Item(code);
@@ -187,11 +187,11 @@ public static class Inventory
 
     /// <summary>
     /// Adds a stack, joining an equal stack (code, type and quality) when the total stays
-    /// within 255 (<c>add_item_rec</c>); returns the member's stack count. Original bug (−2):
+    /// within 255 (<c>give-item-record-form</c>); returns the member's stack count. Original bug (−2):
     /// each present member gets the items twice, joined to an equal stack <em>and</em> appended
     /// as a new one.
     /// </summary>
-    // orig: add_item_rec_impl R031+0x4A04 (18E7:01B4) draft; tests: PracticeAndItemsTests
+    // orig: give-item-record-inner R031+0x4A04 (18E7:01B4) draft; tests: PracticeAndItemsTests
     // C: checked against the asm (01b4 differs in a byte temp only): code, type and quality compare exactly, cnt + it.cnt <= 0xFF; -1 refuses a 65th stack with the count.
     // BUG: (-2) the stack is joined and appended too (FixPartyItemsAddedTwice).
     // DIVERGENCE: (-2) the original returns party[5].nitems (a byte after the records); here the last member's count.
@@ -225,7 +225,7 @@ public static class Inventory
             own[join] = own[join] with { Count = own[join].Count + stack.Count };
             return own.Stacks;
         }
-        // C: appended while nitems < 0x40 (signed): a count of -1 (keep_items_pct on an empty pack) writes entry -1, which is the
+        // C: appended while nitems < 0x40 (signed): a count of -1 (item-keep-percent on an empty pack) writes entry -1, which is the
         // C: previous member's entry 63 (2E38:0038 for member 0), and the count becomes 0: the item is lost.
         // BUG: a 65th stack is dropped without a word (quest items too): nothing tries another member, and the callers do not test the pack.
         own.Add(stack);
@@ -239,9 +239,9 @@ public static class Inventory
 
     /// <summary>
     /// Takes one item of <paramref name="code"/> (−2: from the first present member who has
-    /// one); returns the member's stack count, or −1 if there was none (<c>take_item</c>).
+    /// one); returns the member's stack count, or −1 if there was none (<c>pick-up-item</c>).
     /// </summary>
-    // orig: take_item_impl R031+0x4D24 (18E7:04D4) matched
+    // orig: pick-up-item-inner R031+0x4D24 (18E7:04D4) matched
     public static int Take(GameState s, int who, int code)
     {
         who = s.Party.Resolve(who);
@@ -258,7 +258,7 @@ public static class Inventory
     }
 
     /// <summary>Takes one item off stack <paramref name="index"/>; an emptied stack is unequipped and removed.</summary>
-    // orig: item_take_one R031+0x4CC4 (18E7:0474) matched; tests: PracticeAndItemsTests
+    // orig: item-take-single R031+0x4CC4 (18E7:0474) matched; tests: PracticeAndItemsTests
     // C: --cnt on an unsigned char: a count of 0 becomes 255 and the stack stays.
     public static int TakeAt(GameState s, int who, int index)
     {
@@ -295,9 +295,9 @@ public static class Inventory
 
     /// <summary>
     /// Removes the first stack of <paramref name="code"/> (−2: from every present member);
-    /// the stack count, or −1 if there was none (<c>remove_item_stack</c>).
+    /// the stack count, or −1 if there was none (<c>item-stack-take-out</c>).
     /// </summary>
-    // orig: remove_item_stack_impl R031+0x4EB8 (18E7:0668) matched
+    // orig: item-stack-take-out-inner R031+0x4EB8 (18E7:0668) matched
     // DIVERGENCE: (-2) with nobody carrying the code the original returns the uninitialised r; here -1.
     public static int RemoveStack(GameState s, int who, int code)
     {
@@ -325,10 +325,10 @@ public static class Inventory
     /// last stack drops out but stays in its entry, and the next deletion before it shifts it
     /// back in.
     /// </summary>
-    // orig: item_remove_stack R031+0x5024 (18E7:07D4) matched; item_delete R031+0x4C56 (18E7:0406) matched
-    // C: item_unequip(who, idx, 9) reads items[idx] whatever the count (a stale entry: its code's flags, type and quality against
-    // C: the equipped ones), then item_delete shifts items[idx + 1 .. nitems] down and decrements the signed count (Pack.RemoveAt).
-    // DORMANT: item_remove_stack(-2) (every present member, returning an uninitialised sum) has no caller among the ported rules.
+    // orig: item-stack-erase R031+0x5024 (18E7:07D4) matched; item-erase R031+0x4C56 (18E7:0406) matched
+    // C: item-unwear(who, idx, 9) reads items[idx] whatever the count (a stale entry: its code's flags, type and quality against
+    // C: the equipped ones), then item-erase shifts items[idx + 1 .. nitems] down and decrements the signed count (Pack.RemoveAt).
+    // DORMANT: item-stack-erase(-2) (every present member, returning an uninitialised sum) has no caller among the ported rules.
     public static int RemoveStackAt(GameState s, int who, int index)
     {
         who = s.Party.Resolve(who);
@@ -338,8 +338,8 @@ public static class Inventory
         return pack.Stacks;
     }
 
-    /// <summary>Removes every stack with any kind bit of <paramref name="mask"/> (<c>remove_items_flags</c>); the stack count (0 for −2).</summary>
-    // orig: remove_items_flags_impl R031+0x549A (18E7:0C4A) matched
+    /// <summary>Removes every stack with any kind bit of <paramref name="mask"/> (<c>items-take-out-by-flags</c>); the stack count (0 for −2).</summary>
+    // orig: items-take-out-by-flags-inner R031+0x549A (18E7:0C4A) matched
     public static int RemoveWithFlags(GameState s, int who, uint mask)
     {
         who = s.Party.Resolve(who);
@@ -361,12 +361,12 @@ public static class Inventory
     }
 
     /// <summary>
-    /// Loses things (<c>lose_items</c>): stacks heavier than 2 always, weight 2 with chance
+    /// Loses things (<c>drop-items</c>): stacks heavier than 2 always, weight 2 with chance
     /// (Agility + Stealth) / 4 %, lighter ones with (Agility + Stealth) / 2 %. −2: every present
     /// member, and the purse is emptied.
     /// </summary>
-    // orig: lose_items_impl R031+0x50A4 (18E7:0854) matched
-    // C: weight * cnt == 2 and < 2 draw rand_mod(100) only when the weight test holds (&&); -2 empties the purse first.
+    // orig: drop-items-inner R031+0x50A4 (18E7:0854) matched
+    // C: weight * cnt == 2 and < 2 draw roll-below(100) only when the weight test holds (&&); -2 empties the purse first.
     public static void Lose(GameState s, int who)
     {
         who = s.Party.Resolve(who);
@@ -402,12 +402,12 @@ public static class Inventory
     }
 
     /// <summary>
-    /// Each stack survives with <paramref name="percent"/> % (<c>keep_items_pct</c>; −2: every
+    /// Each stack survives with <paramref name="percent"/> % (<c>item-keep-percent</c>; −2: every
     /// present member). Original bug: the loop starts one past the last stack, so the first
     /// failed roll drops the last stack (unequipping by the stale entry after it), and on an
     /// empty pack it makes the count −1, so the next item added is lost.
     /// </summary>
-    // orig: keep_items_pct_impl R031+0x5308 (18E7:0AB8) matched; tests: PracticeAndItemsTests
+    // orig: item-keep-percent-inner R031+0x5308 (18E7:0AB8) matched; tests: PracticeAndItemsTests
     // BUG: i starts at nitems (FixKeepItemsOffByOne).
     // C: i starts at the signed char nitems; an empty pack runs once with i = 0 and a failed roll leaves nitems = -1.
     public static void KeepEach(GameState s, int who, int percent)
@@ -439,19 +439,19 @@ public static class Inventory
     };
 
     /// <summary>The item type in an equipment slot (−1: none).</summary>
-    // orig: equipped_type R031+0x5CB0 (18E7:1460) matched
-    // DORMANT: equipped_type has no default case (slot outside 0..4 returns AX).
+    // orig: worn-item-type R031+0x5CB0 (18E7:1460) matched
+    // DORMANT: worn-item-type has no default case (slot outside 0..4 returns AX).
     public static int EquippedType(GameState s, int who, EquipmentSlot slot) => SlotItem(s.Party.Slot(who), slot).Type;
 
     /// <summary>
-    /// The item code in an equipment slot, −1 if none (<c>equipped_item</c>): the stack of that
+    /// The item code in an equipment slot, −1 if none (<c>worn-item</c>): the stack of that
     /// type and quality, else the last stack of that type. Leaves the stack index in
     /// <see cref="PartyQueryResult.Skill"/> as the original does.
     /// </summary>
-    // orig: equipped_item_impl R031+0x5D06 (18E7:14B6) draft
+    // orig: worn-item-inner R031+0x5D06 (18E7:14B6) draft
     // C: checked against the asm (14b6 differs in store order only; an earlier port's check reproduced that order with the copy
     //   sequence type = i; i = t; q = type; type = i, quality I and type T unchanged): the equipped type and quality are signed chars compared with the stack's unsigned bytes (no game value reaches 0x80).
-    // DIVERGENCE: equipped_item does not resolve -1 (party[-1] is the bytes before the records); here -1 is the leader.
+    // DIVERGENCE: worn-item does not resolve -1 (party[-1] is the bytes before the records); here -1 is the leader.
     public static int Equipped(GameState s, int who, EquipmentSlot slot) => Equipped(s.Party.Slot(who), slot, s.Party.Last);
 
     /// <summary>As <see cref="Equipped(GameState, int, EquipmentSlot)"/> for a member record outside a game (the creation menu's slots).</summary>
@@ -479,8 +479,8 @@ public static class Inventory
     }
 
     /// <summary>Takes stack <paramref name="index"/> out of its equipment slot if it is the equipped one.</summary>
-    // orig: item_unequip R031+0x5B38 (18E7:12E8) matched; tests: PracticeAndItemsTests
-    // C: slot 6 (give_one/give_stack: idx is an equipment slot) is not used by these rules; flags of the masked code 0xF hand weapon, 0x8000030 missile weapon.
+    // orig: item-unwear R031+0x5B38 (18E7:12E8) matched; tests: PracticeAndItemsTests
+    // C: slot 6 (hand-over-one/hand-over-stack: idx is an equipment slot) is not used by these rules; flags of the masked code 0xF hand weapon, 0x8000030 missile weapon.
     public static void Unequip(GameState s, int who, int index)
     {
         var m = s.Party.Slot(who);
@@ -511,8 +511,8 @@ public static class Inventory
     }
 
     /// <summary>Recomputes the weight of the equipped items (0..500, kept in a byte) into the encumbrance.</summary>
-    // orig: equip_weight R031+0x5C5A (18E7:140A) matched
-    // C: clamp_range(0, 500, w) stored in the signed byte +0x35 and returned from the char (500 -> -12).
+    // orig: gear-weight R031+0x5C5A (18E7:140A) matched
+    // C: limit-to-range(0, 500, w) stored in the signed byte +0x35 and returned from the char (500 -> -12).
     public static int EquipmentWeight(GameState s, int who) => EquipmentWeight(s.Party.Slot(who), s.Item, s.Party.Last);
 
     /// <summary>As <see cref="EquipmentWeight(GameState, int)"/> for a member record outside a game (the creation menu's slots).</summary>

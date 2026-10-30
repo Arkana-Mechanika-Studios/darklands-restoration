@@ -365,7 +365,7 @@ public sealed partial class TacticalBattle
         Map.IgnorePeople = v[BattleVariables.IgnorePeople] != 0;
         ActivationsEnabled = v[BattleVariables.ActivationsOn] != 0;
         // orig: R003+0x0CE8 at 0x0EDB..0x0F06: DS:D728, DS:D73B, DS:D7FE, DS:D947, DS:D945 back (the start's member selection that follows
-        // does not leave order mode, DS:A6B2 being 0xFF: D7FE stays as read until the first tick's order_mode_enter)
+        // does not leave order mode, DS:A6B2 being 0xFF: D7FE stays as read until the first tick's command-mode-begin)
         CursorKeys.Read(v.AsSpan(BattleVariables.CursorKeys, 6));
         DelayedStart = v[BattleVariables.DelayedStart] != 0;
         BattlefieldType = Word(v, BattleVariables.BattlefieldType);
@@ -454,7 +454,7 @@ public sealed partial class TacticalBattle
         SelectMember(Battle.Leader);
         PendingOrderMember = Battle.ActiveMember;
         MoveMode = 0;
-        // C: R014+0x02FF / 0x0307 as for any battle: floor_view_draw(−1) around the centre kept (DS:C866 / DS:C886), combat_draw, whose
+        // C: R014+0x02FF / 0x0307 as for any battle: floor-view-paint(−1) around the centre kept (DS:C866 / DS:C886), fight-draw, whose
         //   R014+0x99F6 (called at R014+0x6926) turns whoever EnemyTurn just gave an action toward its target
         _view.MapChanged();
         TurnTowardTargets();

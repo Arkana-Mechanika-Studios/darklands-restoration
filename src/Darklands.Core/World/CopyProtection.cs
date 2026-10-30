@@ -8,9 +8,9 @@ namespace Darklands.Core.World;
 /// kept here: the restoration does not ask the question (see DarklandsGame.Travel), but the choice's five random draws are made, so the
 /// generator goes on as the original's does.
 /// </summary>
-// orig: copy_protection R041+0x0000 (1462:0000) matched; tests: CopyProtectionTests (vectors from the original's bytes: rand_mod and _rand run, local/batch/nmB)
-// C: the five rand_mod calls (4, 20, 7, 7, 6) come first, before the window is set up; the loops that move a symbol off the second one draw nothing.
-//   Every callee after them (picture loads, the graphics driver, the party panel, the key and mouse reads) draws nothing: with rand_mod
+// orig: copy-protection-check R041+0x0000 (1462:0000) matched; tests: CopyProtectionTests (vectors from the original's bytes: roll-below and _rand run, local/batch/nmB)
+// C: the five roll-below calls (4, 20, 7, 7, 6) come first, before the window is set up; the loops that move a symbol off the second one draw nothing.
+//   Every callee after them (picture loads, the graphics driver, the party panel, the key and mouse reads) draws nothing: with roll-below
 //   counted over the whole call tree of a correct answer there are exactly these five (local/batch/nmB/rec).
 // C: the window leaves DS:2812 (the back window's text colour) at 14 and DS:E7A2 / DS:E7A0 holding the two fonts it saved; every later
 //   user of these three words sets them before reading them, so nothing of it is modelled.

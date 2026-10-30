@@ -18,7 +18,7 @@ public enum StartChoice
 /// </summary>
 // orig: R037+0x9C48 (1E26:0008) = thunk 09C0:18DD, run once by the main function before the card loop; its helpers 00dc (draw the picture, load button1..4), 014a (copy to the screen), 00a6 (free the button pictures) and the key handler 0172; matched; tests: none (needs a host)
 // DORMANT: picsutton4.pic is loaded (DS:8D04) but nothing in this file ever draws it: the header says "4 buttons: quit / default party / load / create" but only buttons 1..3 are drawn (as the pressed states).
-// DIVERGENCE: the original runs the start screen once and ends the program when the game ends (the main loop returns, free_buffer, exit); DarklandsGame.Run comes back to this screen after a game instead.
+// DIVERGENCE: the original runs the start screen once and ends the program when the game ends (the main loop returns, release-work-buffer, exit); DarklandsGame.Run comes back to this screen after a game instead.
 // DIVERGENCE: the original starts the chosen action as the pressed button is drawn, with no pause (loading takes the time); the 150 ms here only lets the press be seen.
 public sealed class StartScreen(GameUi ui)
 {
@@ -40,7 +40,7 @@ public sealed class StartScreen(GameUi ui)
             {
                 if (chosen == StartChoice.Quit)
                 {
-                    // C: key 0x1000: R037+0x9CE6 (frees the buttons) then quit_to_dos = "Quit to DOS? y/n"; on "n" the handler returns something other than 0x11b and the loop goes on (with the button pictures already freed, so a later button press draws stale memory).
+                    // C: key 0x1000: R037+0x9CE6 (frees the buttons) then exit-to-system = "Quit to DOS? y/n"; on "n" the handler returns something other than 0x11b and the loop goes on (with the button pictures already freed, so a later button press draws stale memory).
                     // DIVERGENCE: after "no" the screen simply goes on.
                     if (new MessageBox(ui).Ask("Quit to DOS?"))
                     {
@@ -54,10 +54,10 @@ public sealed class StartScreen(GameUi ui)
         }
     }
 
-    // orig: R037+0x9D1C (pic_draw_pal pics\startscr.pic, back_win_colour = 8, fonts 1) + R037+0x9D8A (copy the 320x200 page to the screen)
+    // orig: R037+0x9D1C (image-paint-palette pics\startscr.pic, backdrop-window-colour = 8, fonts 1) + R037+0x9D8A (copy the 320x200 page to the screen)
     public void Draw() => ui.Canvas.DrawPicture(ui.Assets.Picture("startscr"));
 
-    // orig: gfx_draw_pic(screen_win, 0x51, 0x37 / 0x57 / 0x78, button1 / button2 / button3) at the top of each case of R037+0x9DB2
+    // orig: gfx-picture-draw(screen-window, 0x51, 0x37 / 0x57 / 0x78, button1 / button2 / button3) at the top of each case of R037+0x9DB2
     private void Press(StartChoice choice)
     {
         var button = ui.Assets.Picture("button" + ((int)choice + 1));
@@ -65,7 +65,7 @@ public sealed class StartScreen(GameUi ui)
         ui.Wait(150, skippable: false);
     }
 
-    // orig: `mouse_buttons & 1 && mouse_y > 0x32 && mouse_y < 0x96`, `switch (v_si = (mouse_y - 0x32) / 0x20) { default: v_si = 0; case 0: 0x1051; case 1: 0x2e43; case 2: 0x1454 }`
+    // orig: `mouse-button-state & 1 && pointer-row > 0x32 && pointer-row < 0x96`, `switch (local-in-si = (pointer-row - 0x32) / 0x20) { default: local-in-si = 0; case 0: 0x1051; case 1: 0x2e43; case 2: 0x1454 }`
     private static StartChoice? ChoiceAt(int y)
     {
         if (y <= FirstButtonY || y >= 0x96)

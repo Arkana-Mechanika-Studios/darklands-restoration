@@ -10,7 +10,7 @@ public sealed class Location
 {
     public const int CityCount = 92;
 
-    /// <summary>Flag bit set after an uprising (a city's two type words swap, <c>loc_query</c> 40/41).</summary>
+    /// <summary>Flag bit set after an uprising (a city's two type words swap, <c>place-query</c> 40/41).</summary>
     public const int UprisingFlag = 0x80;
 
     /// <summary>Flag bit of a destroyed place (never the nearest of its type).</summary>
@@ -47,16 +47,16 @@ public sealed class Location
     /// <summary>How big the place is (record byte 0x11): up to 4 small, 5–6 moderate, larger is large.</summary>
     public int Size { get; init; }
 
-    /// <summary>Three local values (<c>loc_query</c>/<c>loc_set</c> 12..14; 25 each at the start), meaning unknown.</summary>
+    /// <summary>Three local values (<c>place-query</c>/<c>place-assign</c> 12..14; 25 each at the start), meaning unknown.</summary>
     public int[] LocalValues { get; } = [25, 25, 25];
 
     /// <summary>Handle of the items stored here (−1 when nothing is stored).</summary>
     public int CacheHandle { get; set; } = -1;
 
-    /// <summary>A mark kept for the place (<c>loc_query</c> 38), meaning unknown.</summary>
+    /// <summary>A mark kept for the place (<c>place-query</c> 38), meaning unknown.</summary>
     public int Mark { get; set; }
 
-    /// <summary>A three-slot list of recorded values (<c>loc_set</c>/<c>loc_query</c> 37), meaning unknown.</summary>
+    /// <summary>A three-slot list of recorded values (<c>place-assign</c>/<c>place-query</c> 37), meaning unknown.</summary>
     public int[] Recorded { get; } = new int[3];
 
     /// <summary>

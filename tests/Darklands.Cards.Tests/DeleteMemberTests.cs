@@ -5,7 +5,7 @@ namespace Darklands.Cards.Tests;
 
 /// <summary>
 /// The leader and the party size after a member is deleted (R037+0x3F30): the expected values come from the original's bytes run on
-/// these parties (status bytes DS:9C69 + 0x80 i, leader byte DS:907B, party_size DS:A67E afterwards; its calls stubbed).
+/// these parties (status bytes DS:9C69 + 0x80 i, leader byte DS:907B, party-headcount DS:A67E afterwards; its calls stubbed).
 /// </summary>
 public sealed class DeleteMemberTests
 {

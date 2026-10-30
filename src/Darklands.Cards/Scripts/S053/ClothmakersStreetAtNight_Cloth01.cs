@@ -33,8 +33,8 @@ public sealed class ClothmakersStreetAtNight_Cloth01 : Card
     // orig: R053+0x2B92 (1A4F:0A22) matched (empty init helper: the entry does not clear option lines or the item and saint slots)
     // DORMANT: R053+0x2B94 (1A4F:0A24) (the "screwed up." default hint), R053+0x2BCC (1A4F:0A5C), R053+0x2C08 (1A4F:0A98), R053+0x2C44 (1A4F:0AD4), R053+0x2C80 (1A4F:0B10) (item pop-up handlers),
     // R053+0x2CBC (1A4F:0B4C), R053+0x2D46 (1A4F:0BD6), R053+0x2DD0 (1A4F:0C60), R053+0x2E5A (1A4F:0CEA) (saint pop-up handlers): the init helper is empty, so nothing installs them,
-    // and no option opens a pop-up (the card still fills card_items and card_saints, but items_usable/saints_usable are never asked).
-    // C: the entry does not install item_fn/saint_fn, so the pop-up handlers would be stale ones of the previous card.
+    // and no option opens a pop-up (the card still fills card-item-lines and card-saint-lines, but usable-item-list/saints-available are never asked).
+    // C: the entry does not install item-handler-table/saint-handler-table, so the pop-up handlers would be stale ones of the previous card.
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -301,14 +301,14 @@ public sealed class ClothmakersStreetAtNight_Cloth01 : Card
         var average = c.PartyAverageSkill(0x0F);
         if (c.PartyMaxSkill(0x0E) < average)
         {
-            // C: (unsigned char)best_member, from the party_max_skill call above.
+            // C: (unsigned char)top-scoring-member, from the party-ability-top call above.
             c.Variables.Chosen[0] = (byte)c.BestMember;
             c.PracticeSkill(c.Variables.Chosen[0], 0x0E, 0, 10, 0);
             c.Screen.Text(5);
         }
         else
         {
-            _ = c.PartyMinSkill(0x0F); // C: only for best_member
+            _ = c.PartyMinSkill(0x0F); // C: only for top-scoring-member
             c.Variables.Chosen[0] = (byte)c.BestMember;
             c.PracticeSkill(c.Variables.Chosen[0], 0x0F, 0, 10, 0);
             c.Screen.Text(4, TextFrame.BlankPage);

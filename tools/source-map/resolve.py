@@ -3,7 +3,7 @@ the function, its readable names, its source file and revision (local/reference-
 
 usage: python -I resolve.py R044+0x0123 'root 0410:0008' 'thunk 09C0:190F' [...]
 
-A coordinate may also be given as a readable name (card_load) or a link-time address with its record
+A coordinate may also be given as a readable name (card-run) or a link-time address with its record
 (R044 1838:0123). Exits with an error when local/reference-map.csv is absent: the published repository
 carries only the coordinates (docs/source-map/original-functions.csv); see docs/source-map/README.md for
 how the local mapping is made.

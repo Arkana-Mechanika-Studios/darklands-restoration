@@ -53,7 +53,7 @@ public static class Trading
     /// The chance in % (row: city size − 1, column: rarity) that a shop stocks an item. Row 9
     /// lies past the end of the game's table and holds the bytes that follow it.
     /// </summary>
-    // orig: R136+0xC02B DS-resident table 290E:399B [10][12] bytes (data); read by shop_has_item
+    // orig: R136+0xC02B DS-resident table 290E:399B [10][12] bytes (data); read by shop-stocks-item
     private static readonly byte[,] StockChances =
     {
         { 50, 20, 15, 10, 5, 1, 1, 0, 0, 0, 0, 0 },
@@ -89,8 +89,8 @@ public static class Trading
     /// merchant, swordsmith, armorer, gunsmith, bowyer, artificer, jeweler, clothmaker), 10 for
     /// the pawnshop, 25 for any other trader.
     /// </summary>
-    // orig: barter_screen R032+0x0000 (1462:0000) draft (unmatched: registers), the lines setting DS:8834; tests: TradingAndLootTests
-    // C: city_rec->quality[] is a signed char; shops 0..8 read it even outside a city (the last city record).
+    // orig: trade-screen-entry R032+0x0000 (1462:0000) draft (unmatched: registers), the lines setting DS:8834; tests: TradingAndLootTests
+    // C: city-record->quality[] is a signed char; shops 0..8 read it even outside a city (the last city record).
     public static int ShopQuality(GameState s, int shop) => shop switch
     {
         Pawnshop => 10,
@@ -99,7 +99,7 @@ public static class Trading
     };
 
     /// <summary>Opens a shop; without a name a city shop takes its default name.</summary>
-    // orig: barter_screen R032+0x0000 (1462:0000) draft: DS:869C = name ? name : R136+0xA70F[shop]
+    // orig: trade-screen-entry R032+0x0000 (1462:0000) draft: DS:869C = name ? name : R136+0xA70F[shop]
     // DORMANT: cards reach barter through R029+0x21AA, which already substitutes the table name for a null name; the fallback here only runs for direct callers.
     public static Shop Open(GameState s, int shop, string? name, long categories) =>
         new(shop, name ?? DefaultName(shop), categories, ShopQuality(s, shop));
@@ -109,7 +109,7 @@ public static class Trading
     /// indexes the far-pointer table with any shop number, and the neighbouring entries are
     /// other names (−3..−1: Tope, Ull, Volund; 9..11: Physician, Hospital, Nobility).
     /// </summary>
-    // orig: R136+0xA70F DS-resident table 290E:207F (data, read by barter_screen and R029+0x21AA)
+    // orig: R136+0xA70F DS-resident table 290E:207F (data, read by trade-screen-entry and R029+0x21AA)
     // DORMANT: entries outside −3..11 are not reproduced (empty name); the cards that leave the name null ask for the shops 0..3, 5, 8 and 9 (-1 and -2 are always
     //   given a name).
     private static string DefaultName(int shop) => shop switch
@@ -128,7 +128,7 @@ public static class Trading
     /// The quality of the goods a shop sells: 25 for item types 0x17..0x19 and 0x40..0x42 and
     /// for items of category 0x400 alone; otherwise the mean of the item's quality and the shop's.
     /// </summary>
-    // orig: item_quality R032+0x0EFA (1462:0EFA) draft (byte-matched function); tests: TradingAndLootTests, Oracle:trading.json
+    // orig: item-grade R032+0x0EFA (1462:0EFA) draft (byte-matched function); tests: TradingAndLootTests, Oracle:trading.json
     // C: the 0x400 test is a 32-bit compare of the category long; (quality + shop quality) / 2 is a signed division (cwd; sub; sar) truncating toward 0.
     public static int OfferedQuality(GameState s, Shop shop, int code)
     {
@@ -143,7 +143,7 @@ public static class Trading
     // ---- prices ---------------------------------------------------------------------
 
     /// <summary>What the shop asks for one item of <paramref name="code"/>, in pfennigs (at least 1).</summary>
-    // orig: buy_price R032+0x192E (1462:192E) draft (byte-matched function); tests: TradingAndLootTests, Oracle:trading.json
+    // orig: price-to-buy R032+0x192E (1462:192E) draft (byte-matched function); tests: TradingAndLootTests, Oracle:trading.json
     public static int BuyPrice(GameState s, Shop shop, int code)
     {
         var d = s.Item(code);
@@ -170,7 +170,7 @@ public static class Trading
     }
 
     /// <summary>What the shop pays for one item of <paramref name="code"/> and <paramref name="quality"/>, in pfennigs (0 when it will not buy it).</summary>
-    // orig: sell_price R032+0x1B26 (1462:1B26) draft (unmatched: register choice only); tests: TradingAndLootTests, Oracle:trading.json
+    // orig: price-to-sell R032+0x1B26 (1462:1B26) draft (unmatched: register choice only); tests: TradingAndLootTests, Oracle:trading.json
     public static int SellPrice(GameState s, int code, int quality)
     {
         var d = s.Item(code);
@@ -193,7 +193,7 @@ public static class Trading
             price += price * (Math.Clamp(StandingTimes50(s), -999, 75) / 100) / 100;
         }
         price += price * (Math.Clamp(FameTimes100(s), 0, 500) / 1000) / 100;
-        // C: as buy_price, the low word; below 1 pays nothing.
+        // C: as price-to-buy, the low word; below 1 pays nothing.
         return (short)price < 1 ? 0 : (short)price;
     }
 
@@ -201,7 +201,7 @@ public static class Trading
     /// The location's effect on a price: flags 2 or 0x41 make the item 3 rarer; otherwise
     /// flag 8 adds rnd(10) to the quality (one random draw).
     /// </summary>
-    // orig: the location block buy_price R032+0x192E and sell_price R032+0x1B26 each contain: flags & 2, else flags & 0x41, else flags & 8 → q += rand_mod(10)
+    // orig: the location block price-to-buy R032+0x192E and price-to-sell R032+0x1B26 each contain: flags & 2, else flags & 0x41, else flags & 8 → q += roll-below(10)
     // C: the two first tests are separate else-if arms with the same effect (rarity += 3); kept as one condition.
     private static (long Rarity, int ExtraQuality) LocalAdjustments(GameState s, long rarity)
     {
@@ -220,10 +220,10 @@ public static class Trading
     /// <summary>The city size in a city, 2 elsewhere.</summary>
     private static long CitySize(GameState s) => s.InCity ? s.City.CitySize : 2;
 
-    // C: member_attr(leader, 5): the current Charisma of whoever is leader now (Ctrl-F1..F5 on the barter screen change it).
+    // C: member-stat(leader, 5): the current Charisma of whoever is leader now (Ctrl-F1..F5 on the barter screen change it).
     private static int LeaderCharisma(GameState s) => s.Party.Slot(s.Party.LeaderIndex)[Attribute.Charisma];
 
-    // C: cur_loc_query(0) * 50 in 16 bits (|rep| ≤ 99: no wrap).
+    // C: location-now-query(0) * 50 in 16 bits (|rep| ≤ 99: no wrap).
     private static int StandingTimes50(GameState s) => (short)(LocationRules.Query(s, s.CurrentLocation, 0) * 50);
 
     private static int FameTimes100(GameState s) => (short)(PartyQueries.Get(s, 4) * 100);
@@ -231,12 +231,12 @@ public static class Trading
     // ---- stock ----------------------------------------------------------------------
 
     /// <summary>
-    /// Whether the shop offers <paramref name="code"/> today (one draw of <c>random_n(100)</c>
+    /// Whether the shop offers <paramref name="code"/> today (one draw of <c>roll-n(100)</c>
     /// for items that pass the category test). <paramref name="staleSize"/> is the original's
     /// uninitialised stack slot: the city size − 1 is used only while it holds a value below
     /// 0x5C other than −1, otherwise the stock table's row 1; the row used is left in it.
     /// </summary>
-    // orig: shop_has_item R032+0x1D18 (1462:1D18) draft (unmatched: slot/register; checked against asm); tests: TradingAndLootTests, Oracle:trading.json
+    // orig: shop-stocks-item R032+0x1D18 (1462:1D18) draft (unmatched: slot/register; checked against asm); tests: TradingAndLootTests, Oracle:trading.json
     // C: the category test is a 32-bit AND of the item's long (+0x20) with the shop's mask; type 0x40..0x42 (+0x1E word) is offered without a draw and without touching the slot.
     public static bool ShopHasItem(GameState s, Shop shop, int code, ref int staleSize)
     {
@@ -249,8 +249,8 @@ public static class Trading
         {
             return true;
         }
-        // BUG: the original compares its uninitialised size slot where cur_loc was meant (checked against asm 1D72: mov dx,[bp-2]; cmp dx,5Ch; inc dx); OriginalBehaviour.FixShopStockSize uses the city size always.
-        // C: signed 16-bit compare; city_rec is the last city loaded, even outside cities.
+        // BUG: the original compares its uninitialised size slot where location-now was meant (checked against asm 1D72: mov dx,[bp-2]; cmp dx,5Ch; inc dx); OriginalBehaviour.FixShopStockSize uses the city size always.
+        // C: signed 16-bit compare; city-record is the last city loaded, even outside cities.
         staleSize = s.Behaviour.FixShopStockSize || (staleSize < 0x5C && staleSize != -1) ? (short)(s.City.CitySize - 1) : 1;
         if (staleSize > 9)
         {
@@ -271,7 +271,7 @@ public static class Trading
             rarity--;
         }
         rarity = Math.Clamp(rarity, 0, 11);
-        // C: random_n(100) = rand() * 100 / 32768 (scaled, not a remainder); "<=" so chance 0 still passes on a 0 draw; the table bytes are unsigned.
+        // C: roll-n(100) = rand() * 100 / 32768 (scaled, not a remainder); "<=" so chance 0 still passes on a 0 draw; the table bytes are unsigned.
         return s.Random.Scaled(100) <= StockChance(staleSize, rarity);
     }
 
@@ -282,10 +282,10 @@ public static class Trading
     /// (their draws count), and drawing their line leaves a code segment in the stale slot
     /// <see cref="ShopHasItem"/> reads, so the item after each of them is tested with row 1.
     /// </summary>
-    // orig: draw_barter_screen R032+0x078E (1462:078E) draft (byte-matched function), the stock loop only (the drawing is BarterScreen.DrawScreen); tests: TradingAndLootTests, Oracle:trading.json
+    // orig: trade-screen-paint R032+0x078E (1462:078E) draft (byte-matched function), the stock loop only (the drawing is BarterScreen.DrawScreen); tests: TradingAndLootTests, Oracle:trading.json
     public static ShopStock Stock(GameState s, Shop shop)
     {
-        // C: srand(unsigned): the 16-bit sum of the city's seed word (CTY +0x56) and party_seed, or party_seed + cur_loc outside cities (−1 in the wilderness).
+        // C: srand(unsigned): the 16-bit sum of the city's seed word (CTY +0x56) and party-random-seed, or party-random-seed + location-now outside cities (−1 in the wilderness).
         var seed = s.InCity ? s.City.Ordinal + s.Party.Seed : s.Party.Seed + s.CurrentLocation;
         s.Random.Seed((ushort)seed);
         var codes = new List<int>();
@@ -299,9 +299,9 @@ public static class Trading
             }
             if (codes.Count < ListedRows)
             {
-                // C: the listing's sprintf arguments are evaluated right to left: weight, item_quality (no draw), name, then buy_price (a flag-8 draw), all under the fixed seed.
+                // C: the listing's sprintf arguments are evaluated right to left: weight, item-grade (no draw), name, then price-to-buy (a flag-8 draw), all under the fixed seed.
                 prices.Add(BuyPrice(s, shop, code));
-                // C: the far call to gfx_text that prints the line pushes its return CS onto the stack word shop_has_item later reads as its uninitialised [bp-2] (checked against asm 078e: 0A4F..0AC4); a code segment is far above 0x5C.
+                // C: the far call to gfx-text-draw that prints the line pushes its return CS onto the stack word shop-stocks-item later reads as its uninitialised [bp-2] (checked against asm 078e: 0A4F..0AC4); a code segment is far above 0x5C.
                 slot = StaleCodeSegment;
             }
             codes.Add(code);
@@ -322,11 +322,11 @@ public static class Trading
     /// paid and an item of the shop's quality is added. Returns the member's stack count, or
     /// −1 when nothing was bought.
     /// </summary>
-    // orig: barter_key R032+0x0F60 (1462:0F60) draft (byte-matched function), case P (0x1950/0x1970); tests: TradingAndLootTests
+    // orig: trade-screen-keys R032+0x0F60 (1462:0F60) draft (byte-matched function), case P (0x1950/0x1970); tests: TradingAndLootTests
     public static int Buy(GameState s, Shop shop, int member, int code)
     {
-        // C: money_set(&price, 0, 0, buy_price(..)) then money_cmp == −1; buy_price is called again for the payment (two draws in a flag-8 place).
-        // C: for a price word ≥ 0x8000 (never reached with the game's values) money_set's sign handling is assumed to match Money.From.
+        // C: purse-assign(&price, 0, 0, price-to-buy(..)) then purse-compare == −1; price-to-buy is called again for the payment (two draws in a flag-8 place).
+        // C: for a price word ≥ 0x8000 (never reached with the game's values) purse-assign's sign handling is assumed to match Money.From.
         if (s.Party.Purse < Money.From(0, 0, BuyPrice(s, shop, code)))
         {
             return -1;
@@ -346,12 +346,12 @@ public static class Trading
     /// As in the original the entry may be past the last stack (a lit row past the end): its stale
     /// item is sold (item 0 at quality 0 for an entry never written) and loses an item.
     /// </summary>
-    // orig: barter_key R032+0x0F60 (1462:0F60) draft (byte-matched function), case S (0x1F53/0x1F73); tests: TradingAndLootTests
+    // orig: trade-screen-keys R032+0x0F60 (1462:0F60) draft (byte-matched function), case S (0x1F53/0x1F73); tests: TradingAndLootTests
     public static int Sell(GameState s, int member, int index)
     {
         var pack = s.Party.Slot(member).Pack;
         // C: the screen checks only DS:8838[who] (its stack count) != 0; the entry is read whatever the count (Pack).
-        // DIVERGENCE: the original tests the 0x80 flag and prices item_defs[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.
+        // DIVERGENCE: the original tests the 0x80 flag and prices item-definition-table[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.
         var code = pack[index].Code & 0xFFF;
         if (s.Item(code).CannotBeTraded)
         {

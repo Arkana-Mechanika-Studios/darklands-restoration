@@ -6,7 +6,7 @@ namespace Darklands.Cards.Tests;
 
 /// <summary>
 /// The stranger's mob (R128): with the flying ointment (quest 1, fact 0x0D) each wave is preceded by the ointment's offer, whose option
-/// lines are never switched on (R128+0x0806 clears opt_on). The original's card_menu then waits for ever (direct call j_menu.py,
+/// lines are never switched on (R128+0x0806 clears card-option-enabled). The original's card-choice-menu then waits for ever (direct call j_menu.py,
 /// local/batch/evid1o); the offer reaches the screen with no line enabled.
 /// </summary>
 public sealed class EmptyOfferTests

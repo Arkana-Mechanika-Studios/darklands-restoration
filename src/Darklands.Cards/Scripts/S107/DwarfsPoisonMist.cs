@@ -95,7 +95,7 @@ public sealed class DwarfsPoisonMist : Card
         c.PassHours(1);
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            // C: rand_mod(100) > eff_attr2(i) + Strength(i) / 2; the right side draws nothing.
+            // C: roll-below(100) > eff_attr2(i) + Strength(i) / 2; the right side draws nothing.
             if (c.Status(i) != CharacterStatus.Empty
                 && c.Random(100) > c.EffectiveAgility(i) + c.Attribute(i, (int)Attribute.Strength) / 2)
             {
@@ -128,7 +128,7 @@ public sealed class DwarfsPoisonMist : Card
         }
         else if (menu.Block == 12)
         {
-            // C: rand_mod(100) < party_max_attr(3): the query draws nothing.
+            // C: roll-below(100) < party-stat-top(3): the query draws nothing.
             if (c.Random(100) < c.PartyMaxAttribute((int)Attribute.Perception))
             {
                 c.NameToSlot(0, c.EventDetail(c.Events.Find(8, -1, c.Here, -1, 10, -1)), 0);
@@ -162,7 +162,7 @@ public sealed class DwarfsPoisonMist : Card
     // orig: R107+0x1550 (191F:06E0) matched; tests: CardSmokeTests
     private static void PrayForSalvation(CardContext c, CardMenu menu)
     {
-        // C: invoke_saint(var_chosen1 = menu_member, card_saints[menu_slot]): the member is named before the prayer.
+        // C: call-on-saint(text-slot-chosen-one = menu-owner-member, card-saint-lines[menu-choice-index]): the member is named before the prayer.
         c.Variables.Chosen[0] = c.MenuMember;
         var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (answer == -1)

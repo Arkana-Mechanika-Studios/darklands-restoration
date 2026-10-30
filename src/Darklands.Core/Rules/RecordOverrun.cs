@@ -6,11 +6,11 @@ namespace Darklands.Core.Rules;
 /// <summary>
 /// A member number past the five party records. The original computes the record's address (DS:9C69 + n × 0x80) without a
 /// limit, so its status byte and skill bytes are bytes of other variables. The one such record the model holds is number 20:
-/// its status byte is the second letter of party slot 0's figure image (member_shield, DS:A669) and its skill bytes 4..16 are
+/// its status byte is the second letter of party slot 0's figure image (member-shield-picture, DS:A669) and its skill bytes 4..16 are
 /// the place actions of the combatants of the last battle (DS:A6C4, kept in <see cref="BattleFile.Variables"/> and written
 /// into every saved game's battle file). The jewelers' guild at night reaches it with a party whose lowest Stealth is 20.
 /// </summary>
-// orig: member_skill R029+0x01A0 reads DS:9CC0 + n*0x80 + skill (R029+0x01B8); add_skill R029+0x02EA tests DS:9C69 + n*0x80 != 0 (R029+0x0491)
+// orig: member-ability R029+0x01A0 reads DS:9CC0 + n*0x80 + skill (R029+0x01B8); raise-skill-by R029+0x02EA tests DS:9C69 + n*0x80 != 0 (R029+0x0491)
 // and writes the skill byte (R029+0x0540); tests: RecordOverrunTests; direct calls j_prac.py (local/batch/evid1o): R039+0x0132(20, 0xF, 0, 10, 0)
 // from city state banks-markt writes DS:A6CF and the .BSV variables' +0x1680 (Place + 11), nothing in the .SAV
 // DIVERGENCE: the other records past the party (combatant records 5..12, battle tables and buffers: program memory the model does not hold)
@@ -29,7 +29,7 @@ public static class RecordOverrun
     /// <summary>Whether <paramref name="who"/> (already resolved) is past the five party records.</summary>
     public static bool Outside(int who) => who >= Party.MaxMembers;
 
-    /// <summary>The record's status byte (add_skill goes on when it is not 0).</summary>
+    /// <summary>The record's status byte (raise-skill-by goes on when it is not 0).</summary>
     public static int Status(GameState s, int who)
     {
         if (who != PlaceRecord)
@@ -40,11 +40,11 @@ public static class RecordOverrun
         return image.Length > 1 ? (byte)image[1] : 0;
     }
 
-    /// <summary>The record's skill byte, signed as member_skill reads it (cwde).</summary>
+    /// <summary>The record's skill byte, signed as member-ability reads it (cwde).</summary>
     public static int Skill(GameState s, int who, int skill) =>
         PlaceIndex(who, skill) is var place and >= 0 && s.BattleFile is { } held ? (sbyte)held.Variables[BattleVariables.Place + place] : 0;
 
-    /// <summary>Writes the record's skill byte (the low byte, as add_skill stores it).</summary>
+    /// <summary>Writes the record's skill byte (the low byte, as raise-skill-by stores it).</summary>
     public static void SetSkill(GameState s, int who, int skill, int value)
     {
         if (PlaceIndex(who, skill) is var place and >= 0)

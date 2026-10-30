@@ -9,7 +9,7 @@ namespace Darklands.Battles.Tests;
 /// <summary>
 /// Three original bugs reachable in play and reproduced behind <see cref="OriginalBehaviour"/> flags (faithful = the bug, the fix =
 /// the behaviour the rewrite had before): the stairs key with nobody selected (R016+0x014E), Esc with nobody selected (R016+0x13D4)
-/// and the stairs record's wall mark lost by level_switch (R023+0x1618 / R024+0x05B4).
+/// and the stairs record's wall mark lost by level-change (R023+0x1618 / R024+0x05B4).
 /// </summary>
 public sealed class OriginalBugsOfTheKeysTests
 {

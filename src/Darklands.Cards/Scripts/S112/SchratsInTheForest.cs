@@ -65,7 +65,7 @@ public sealed class SchratsInTheForest : Card
             new MenuLine(_ => Surrender(c, menu), () => OptionHint.Say(SuccessAssured)),
             // orig: R112+0x3386 (line 5); hint R112+0x3488 (1AAE:0D28) matched
             new MenuLine(p => SneakAround(c, menu, p), () => WoodcraftHint(c)),
-            // orig: R112+0x34D6 (1AAE:0D76) matched (hint); action R112+0x34C0: fight (0316) with 1 when options_block is set, else 2
+            // orig: R112+0x34D6 (1AAE:0D76) matched (hint); action R112+0x34C0: fight (0316) with 1 when settings-block is set, else 2
             new MenuLine(_ => FightTheSchrats(c, menu.Block != 0 ? 1 : 2), () => OptionHint.Say("Enter Combat")),
             // orig: R112+0x350E (line 7); hint R112+0x362A (1AAE:0ECA) matched
             new MenuLine(p => ScoutThem(c, menu, p), () => WoodcraftHint(c)),
@@ -88,7 +88,7 @@ public sealed class SchratsInTheForest : Card
     {
         var m = c.MenuMember;
         c.Variables.Chosen[0] = m;
-        // C: the handlers read the entry's item (menu_slot), whichever slot's handler runs (Enter in the box: slot 2's).
+        // C: the handlers read the entry's item (menu-choice-index), whichever slot's handler runs (Enter in the box: slot 2's).
         var quality = c.ItemQuality(m, c.CardItems[c.MenuEntrySlot]);
         var perception = c.Attribute(m, (int)Attribute.Perception);
         var chance = c.MenuSlot switch
@@ -172,7 +172,7 @@ public sealed class SchratsInTheForest : Card
     }
 
     // orig: R112+0x2F66 (1AAE:0806) matched; tests: CardSmokeTests
-    // C: `menu_slot == 0x67` compares the slot (0..3) with an item code, so the fire-potion text (15) never shows.
+    // C: `menu-choice-index == 0x67` compares the slot (0..3) with an item code, so the fire-potion text (15) never shows.
     private void ThrowAPotion(CardContext c, CardMenu menu, int chance)
     {
         c.Variables.Chosen[0] = c.MenuMember;
@@ -323,9 +323,9 @@ public sealed class SchratsInTheForest : Card
     /// fairest woman (or, without one, everybody is left robbed and half dead).
     /// </summary>
     // orig: R112+0x2A76 (1AAE:0316) matched; tests: CardSmokeTests
-    // C: arguments right to left: rand_mod(5) + 3 is drawn before rand_mod(3); run_battle then draws its seed. The kind
+    // C: arguments right to left: roll-below(5) + 3 is drawn before roll-below(3); battle-driver then draws its seed. The kind
     // argument is always 1 or 2, so the battle is always 0x2E.
-    // C: party_x is declared `extern long` in the original, so the call pushes party_y and party_x: nearest_city(party_x) receives the party's (x, y); nothing is undefined (checked against the asm).
+    // C: party-map-column is declared `extern long` in the original, so the call pushes party-map-row and party-map-column: closest-city(party-map-column) receives the party's (x, y); nothing is undefined (checked against the asm).
     private void FightTheSchrats(CardContext c, int kind)
     {
         var lore = c.PartyLoreLevel();

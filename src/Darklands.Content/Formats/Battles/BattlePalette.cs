@@ -3,16 +3,16 @@ using Darklands.Content.Formats.Graphics;
 namespace Darklands.Content.Formats.Battles;
 
 /// <summary>
-/// The colours a battle sets on top of the current palette (<c>battle_run</c>): the common
+/// The colours a battle sets on top of the current palette (<c>battle-entry</c>): the common
 /// battle colours (COMNCLRS.DAT) at 16..31, 120..163 and 243..254, the party's clothing
 /// colours at 80..119 (eight per member), the battlefield's background colours (one of the
 /// palettes of BKGNDPAL.DAT) at 164..234, a grey at 13, and white at every other colour from 16 up
 /// (32..79, 235..242, 255).
 /// </summary>
-// orig: battle_run R002+0x0000 (0E76:0000) draft (the palette block before combat_main)
+// orig: battle-entry R002+0x0000 (0E76:0000) draft (the palette block before fight-main-loop)
 // orig: R002+0x03AC root 0410:031E reads the DAC into the 0x300-byte buffer, R002+0x03B4..0x03C6 fills bytes 0x30..0x2FF (colours
 //   16..255) with 0xFF, R002+0x03CE..0x03DE writes 0x31 into bytes 0x27..0x29 (colour 13), R002+0x03F9..0x04AA copies the parts below;
-//   R002+0x04BA set_palette root 0410:0364 writes all 0x300 bytes to port 3C9 as they are (root 0410:0397..0x0399 `lodsb; out dx, al`):
+//   R002+0x04BA palette-load root 0410:0364 writes all 0x300 bytes to port 3C9 as they are (root 0410:0397..0x0399 `lodsb; out dx, al`):
 //   the DAC keeps the low six bits, so a byte 0xFF left by the fill is 0x3F (white). checked against asm and the original's DAC (vis10
 //   sessions D-09fbc1, D-b797f7: colours 32..47, 235..242 and 255 white through the battle; local/batch/batpal)
 // DIVERGENCE: the original builds the palette only when DS:9069 == 0 (not in a re-entered battle); callers decide.

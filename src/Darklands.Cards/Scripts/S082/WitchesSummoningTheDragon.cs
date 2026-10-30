@@ -45,7 +45,7 @@ public sealed class WitchesSummoningTheDragon : Card
     // orig: R082+0x0890 (18A9:0180) matched; tests: CardSmokeTests
     private static void Fight(CardContext c)
     {
-        // C: arguments are evaluated right to left: rand_mod(4) (third group) before rand_mod(5).
+        // C: arguments are evaluated right to left: roll-below(4) (third group) before roll-below(5).
         var third = c.Random(4) + 3;
         var first = c.Random(5) + 3;
         switch (c.RunBattle(0x65, -1, 0x29, 3, first, 0x27, 4, third, -1, 0, 0))

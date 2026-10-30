@@ -133,7 +133,7 @@ public sealed class InnAtNight : Card
             // orig: R051+0x1ABC (1967:07CC) + R051+0x1ADA (1967:07EA) R051 seg 1967 matched
             new MenuLine(() => { c.PassHours(1); c.Next = c.IsDaylight ? SideStreet : SideStreetAtNight; }, OptionHint.Saying(SuccessAssured)),
             // orig: R051+0x1B12 (1967:0822) + R051+0x1B30 (1967:0840) R051 seg 1967 matched
-            // DORMANT: opt_flag_9 is 0 and nothing sets it: this way out to the outskirts (text 0) is never offered.
+            // DORMANT: card-option-flag-9 is 0 and nothing sets it: this way out to the outskirts (text 0) is never offered.
             // C: the hint sets r.a = leader and then overwrites it with -1.
             new MenuLine(() => { c.Screen.Text(0); c.PassHours(0); c.Next = CityOutskirts; }, OptionHint.Saying(SuccessAssured)));
     }
@@ -150,7 +150,7 @@ public sealed class InnAtNight : Card
     // orig: R051+0x15C4 (1967:02D4) matched
     private static void SitInTheCommonRoom(CardContext c, int chance)
     {
-        // C: all five slots are walked (the party record's end), not only party_size.
+        // C: all five slots are walked (the party record's end), not only party-headcount.
         for (var i = 0; i < 5; i++)
         {
             if (c.Status(i) != CharacterStatus.Empty)
@@ -179,7 +179,7 @@ public sealed class InnAtNight : Card
         ShowPicture(c, RoomPicture);
         c.Screen.Text(2);
         Show(c, picture);
-        // C: party_size slots, with no check for an empty one.
+        // C: party-headcount slots, with no check for an empty one.
         for (var i = 0; i < c.PartySize; i++)
         {
             c.SetAttribute(i, 0, c.AttributeMaximum(i, 0));

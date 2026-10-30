@@ -33,7 +33,7 @@ public sealed class CityLordsReward : Card
         c.SetCardItems(FormulaOfTheCity(c));
         // orig: R089+0x0C5C (18CE:02FC) matched
         // BUG: the original looks for a saint nobody in the party knows, starting from the city's own,
-        // but has no return statement: AX holds the last member_bit answer, 0 (checked against asm). So
+        // but has no return statement: AX holds the last member-flag-bit answer, 0 (checked against asm). So
         // saint 0.
         // DIVERGENCE: if the party knows all 0x88 saints the original's search never ends (the game hangs); saint 0 here too.
         c.SetCardSaints(0);
@@ -71,8 +71,8 @@ public sealed class CityLordsReward : Card
     }
 
     /// <summary>The potion whose formula the city's alchemist offers, chosen by the city.</summary>
-    // orig: R089+0x0C08 (18CE:02A8) matched: card_items[0] = it
-    // C: cur_loc_query(0x21) % 6 is a signed remainder: a negative value falls to the default (0x74), as here.
+    // orig: R089+0x0C08 (18CE:02A8) matched: card-item-lines[0] = it
+    // C: location-now-query(0x21) % 6 is a signed remainder: a negative value falls to the default (0x74), as here.
     private static int FormulaOfTheCity(CardContext c)
     {
         var potion = (c.HereQuery(0x21) % 6) switch
@@ -108,7 +108,7 @@ public sealed class CityLordsReward : Card
     /// All three formulas of a potion group (a byte of the members' formula tables, which follow
     /// each other: group −1 is the previous member's last group).
     /// </summary>
-    // C: formulas_known[member][slot] = 7 writes byte member × 22 + slot of the five members' tables;
+    // C: known-recipes[member][slot] = 7 writes byte member × 22 + slot of the five members' tables;
     // slot −1 reaches the previous member's last byte. DIVERGENCE: for member 0 and slot −1 the original
     // writes the byte before the table; here nothing is written.
     private static void LearnFormulaGroup(CardContext c, int member, int group)

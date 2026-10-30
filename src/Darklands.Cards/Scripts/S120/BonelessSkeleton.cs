@@ -25,8 +25,8 @@ namespace Darklands.Cards.Scripts;
 //   other: R120+0x0586, R120+0x0628
 // DORMANT (generated): option slots 10..19 keep the default handler R120+0x0628 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 4, 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class BonelessSkeleton : Card
 {

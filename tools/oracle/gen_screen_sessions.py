@@ -633,7 +633,7 @@ def rmenu_alphabet(screen: str):
 
 GATE_START = "\noption:4\nwait:5\nkey:enter\nwait:300"       # the gate guards are attacked: the battle begins paused
 
-# ---- round R2: the travel map (overland_loop R030+0x02C0, the key handler R030+0x0C44) ----
+# ---- round R2: the travel map (world-map-loop R030+0x02C0, the key handler R030+0x0C44) ----
 def trav_alphabet(rng: random.Random) -> list[str]:
     """The map from DKSAVE17 (a party by night on the road): clicks that steer the marker, held directions (the keyboard interrupt), buffered arrows,
     Shift / Ctrl F-keys (the leader), the sheets, the right button with Shift (the coordinates), the portraits, the camp and the cards an encounter shows."""

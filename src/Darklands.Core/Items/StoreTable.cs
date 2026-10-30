@@ -4,12 +4,12 @@ namespace Darklands.Core.Items;
 
 /// <summary>
 /// The working table of the item store screen (<c>R136+0x11124</c>, 100 four-byte entries, and its
-/// count <c>DS:89F6</c>): <c>cache_load</c> copies a store into it without clearing the entries
-/// after the store's, <c>cache_take</c> closes a gap by copying the entry after the last one
+/// count <c>DS:89F6</c>): <c>stash-load</c> copies a store into it without clearing the entries
+/// after the store's, <c>stash-take</c> closes a gap by copying the entry after the last one
 /// down, and the screen reads entries past the count when a row past the end is lit. So the
 /// entries after the count are what earlier stores left in this run (zero before any).
 /// </summary>
-// orig: R136+0x11124 (2E38:37F4) and DS:89F6 / DS:89F0 (R035 matched): cache_load R035+0x1350, cache_add R035+0x10D2, cache_take R035+0x114A
+// orig: R136+0x11124 (2E38:37F4) and DS:89F6 / DS:89F0 (R035 matched): stash-load R035+0x1350, stash-put R035+0x10D2, stash-take R035+0x114A
 // C: entries past the 100th (a store of more than 100 different stacks) go on past the table in the original, over the new character's
 // starting equipment (2E38:3984, 0x180 bytes, refilled before every use by the character generator) and are read back from there:
 // up to 196 entries this is the same as keeping them in the table.
@@ -59,7 +59,7 @@ public sealed class StoreTable : IReadOnlyList<StoredItem>
         return t;
     }
 
-    /// <summary>Copies a store into the first entries (<c>cache_load</c>); the entries after it stay.</summary>
+    /// <summary>Copies a store into the first entries (<c>stash-load</c>); the entries after it stay.</summary>
     public void Load(IEnumerable<StoredItem> items)
     {
         var i = 0;
@@ -70,17 +70,17 @@ public sealed class StoreTable : IReadOnlyList<StoredItem>
         Count = i;
     }
 
-    /// <summary>No store (<c>cache_load(-1)</c>: count 0, the entries stay).</summary>
+    /// <summary>No store (<c>stash-load(-1)</c>: count 0, the entries stay).</summary>
     public void Empty() => Count = 0;
 
-    /// <summary>A new entry after the last one (<c>cache_add</c>).</summary>
+    /// <summary>A new entry after the last one (<c>stash-put</c>).</summary>
     public void Add(StoredItem e)
     {
         this[Count] = e;
         Count++;
     }
 
-    /// <summary>Removes entry <paramref name="index"/> as <c>cache_take</c> does: the entries after it move down, the stale one after the last too.</summary>
+    /// <summary>Removes entry <paramref name="index"/> as <c>stash-take</c> does: the entries after it move down, the stale one after the last too.</summary>
     // C: `for (i = idx; i < DS:89F6; i++) e[i] = e[i + 1]; DS:89F0 = --DS:89F6;` (unsigned indexes: R035+0x116A
     // `cmp bx, dx; jb`, so a negative index moves nothing and the count still drops).
     public void RemoveAt(int index)

@@ -6,7 +6,7 @@ using Darklands.Presentation;
 namespace Darklands.Battles.Tests;
 
 /// <summary>
-/// "Spend a day" passes the day through advance_hours (R036+0x147A), which shows the hourglass for more than two hours
+/// "Spend a day" passes the day through pass-hours (R036+0x147A), which shows the hourglass for more than two hours
 /// (R043+0x3494): the timer01 dial at the card window's (0x3C, 0x32), the sand glass and the bell, day and month over it.
 /// </summary>
 public sealed class CampHourglassTests

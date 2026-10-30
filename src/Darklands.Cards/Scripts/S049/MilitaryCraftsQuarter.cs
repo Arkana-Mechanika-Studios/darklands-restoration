@@ -55,7 +55,7 @@ public sealed class MilitaryCraftsQuarter : Card
         {
             states[4] = OptionState.Hidden;
         }
-        // C: ev8_at(...) != 1 is "no quest here" (it returns 0 or 1).
+        // C: open-quest-at(...) != 1 is "no quest here" (it returns 0 or 1).
         if (!c.Events.QuestAt(Politics, c.Here))
         {
             states[6] = OptionState.Hidden;

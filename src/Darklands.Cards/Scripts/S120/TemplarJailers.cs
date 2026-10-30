@@ -84,7 +84,7 @@ public sealed class TemplarJailers : Card
 
     // orig: R120+0x17F6 matched
     // C: an int function that falls off its end without a value (except `return 0` after a cancelled prayer); the
-    //   menu ignores it. card_load_near(card_name, pic_buf) in case 1 reloads the card's own picture.
+    //   menu ignores it. card-run-near(card-title, image-buffer) in case 1 reloads the card's own picture.
     private static void Pray(CardContext c, CardMenu menu)
     {
         var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);

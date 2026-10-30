@@ -3,7 +3,7 @@ using Darklands.Core.Characters;
 namespace Darklands.Core.Battles.Tactics;
 
 /// <summary>
-/// An effect cloud (effect_clouds, DS:A2EB, 10-byte records): a thrown potion's or a spell's
+/// An effect cloud (effect-cloud-table, DS:A2EB, 10-byte records): a thrown potion's or a spell's
 /// cloud of kind 0..5 (Noxious Aroma, Eyeburn, Black Cloud, Fleadust, Eater Water, Breath of
 /// Death; traps may give kinds above 9).
 /// </summary>
@@ -28,7 +28,7 @@ public struct EffectCloud
     public ushort Until;
 }
 
-/// <summary>A slowing area (effect_areas, DS:A342): Stone-tar, type 9.</summary>
+/// <summary>A slowing area (effect-area-table, DS:A342): Stone-tar, type 9.</summary>
 // orig: struct efb matched
 public struct EffectArea
 {
@@ -49,7 +49,7 @@ public struct EffectArea
     public ushort Until;
 }
 
-/// <summary>A flash or blast marker (effect_markers, DS:A396): types 6..8 (Sunburst, Thunderbolt, Arabian Fire).</summary>
+/// <summary>A flash or blast marker (effect-marker-table, DS:A396): types 6..8 (Sunburst, Thunderbolt, Arabian Fire).</summary>
 // orig: struct efc matched
 public struct EffectMarker
 {
@@ -95,7 +95,7 @@ public interface IBattleViewport
 /// line of fire, and their ageing.
 /// </summary>
 // orig: R019 (all 17 functions matched); the cloud tests of R014 0E76:469E and 1EC9:0142;
-// the effect parts of the renderer combat_draw R014+0x6818 (draft)
+// the effect parts of the renderer fight-draw R014+0x6818 (draft)
 public sealed class EffectField : IEffectClouds
 {
     private readonly Action<int> _sound;
@@ -106,9 +106,9 @@ public sealed class EffectField : IEffectClouds
     /// <param name="battle">The combatants.</param>
     /// <param name="map">The walls (the shown level) for the lines of sight.</param>
     /// <param name="sound">R014+0x465E: a sound effect.</param>
-    /// <param name="readyWeapon">weapon_ready(i, weapon, missile flag) with its animation code.</param>
-    /// <param name="attackCode">anim_file[slot]: the weapon code of an animation slot ("PT" while casting).</param>
-    /// <param name="paused">ai_paused (DS:A695) is not 0: every use here is a test == 0 of the original (R014+0x2C4C, R014+0x6A83, R014+0x7866).</param>
+    /// <param name="readyWeapon">weapon-armed(i, weapon, missile flag) with its animation code.</param>
+    /// <param name="attackCode">animation-file-name[slot]: the weapon code of an animation slot ("PT" while casting).</param>
+    /// <param name="paused">enemy-ai-paused-flag (DS:A695) is not 0: every use here is a test == 0 of the original (R014+0x2C4C, R014+0x6A83, R014+0x7866).</param>
     public EffectField(Battle battle, BattleMap map, Action<int> sound, Action<int, int, int> readyWeapon, Func<int, string> attackCode, Func<bool> paused)
     {
         Battle = battle;
@@ -126,7 +126,7 @@ public sealed class EffectField : IEffectClouds
     /// <summary>DS:D842 = 0: an effect landing ends the enemies' delayed start.</summary>
     public event Action? Landed;
 
-    /// <summary>damage_apply drew the party panel rows anew (party_panel_rows(0x100), R014+0xAEC4).</summary>
+    /// <summary>damage-resolve drew the party panel rows anew (party-panel-row-set(0x100), R014+0xAEC4).</summary>
     public event Action? PanelRedrawn;
 
     private void ApplyDamage(int i)
@@ -197,7 +197,7 @@ public sealed class EffectField : IEffectClouds
     private readonly int[,] _areaSprite = new int[8, 16];
     private (int X, int Y) _lastCamera = (int.MinValue, 0);
 
-    /// <summary>effect_cloud_count (DS:A33D), DS:A395, DS:A531.</summary>
+    /// <summary>effect-cloud-total (DS:A33D), DS:A395, DS:A531.</summary>
     public int CloudCount { get; private set; }
 
     public int AreaCount { get; private set; }
@@ -346,14 +346,14 @@ public sealed class EffectField : IEffectClouds
     }
 
     /// <summary>
-    /// effect_spell: an effect of <paramref name="type"/> lands at (x, y) — a slowing area (9), a
+    /// effect-cast: an effect of <paramref name="type"/> lands at (x, y) — a slowing area (9), a
     /// flash or blast marker (6..8), or a cloud (any other type) — and acts at once on whoever
     /// is in it on <paramref name="floor"/>.
     /// </summary>
     /// <param name="thrower">The thrower (p3; for the flash: whose opponents are blinded).</param>
     /// <param name="quality">The potion's quality (clamped to 20..49: three grades).</param>
     /// <param name="target">The combatant aimed at (−1 a spot): it gets the stronger effect.</param>
-    // orig: effect_spell R019+0x0000 (1EF8:0000) matched; tests: Oracle:effects.json
+    // orig: effect-cast R019+0x0000 (1EF8:0000) matched; tests: Oracle:effects.json
     public void Lands(int x, int y, int thrower, int type, int quality, int target, int floor)
     {
         // C: root 0410:001A clamps signed.
@@ -546,7 +546,7 @@ public sealed class EffectField : IEffectClouds
                     var r = adx != 0 ? ady * 4 / adx : 0x14;
                     var s = r == 0 ? 0 : r is >= 1 and < 4 ? 1 : 2;
                     var q = dx >= 0 && dy < 0 ? 0 : dx >= 0 ? 1 : dy >= 0 ? 2 : 3;
-                    // C: dir_add (root 0410:005A) subtracts and dir_sub adds (the names are swapped; checked against the asm):
+                    // C: heading-add (root 0410:005A) subtracts and heading-subtract adds (the names are swapped; checked against the asm):
                     // d = (toward − 1) − (facing − 1), all mod 8, as a signed byte above 4.
                     var toward = (Unsigned(0x222E + q * 3 + s) - 1) & 7;
                     var facing = (c.SpriteFacing - 1) & 7;
@@ -613,7 +613,7 @@ public sealed class EffectField : IEffectClouds
         }
     }
 
-    /// <summary>distance3 with its third word (always 0 here).</summary>
+    /// <summary>three-way-distance with its third word (always 0 here).</summary>
     private static int Distance(int a, int b, int c)
     {
         _ = c;
@@ -886,11 +886,11 @@ public sealed class EffectField : IEffectClouds
     public bool InArea(MapPoint centre, int type, int k) => Inside(centre.X, centre.Y, Unsigned(0x21DC + type), k);
 
     /// <summary>
-    /// The four words the stack holds where cloud_blocks_line keeps its saved line (bp−6, −8, −0x0A, −0x0C) before it writes
-    /// them: in the game the frame of rand() left them, from to_hit_roll's rand_1_n(100) just before (the long multiply's
+    /// The four words the stack holds where cloud-on-line-test keeps its saved line (bp−6, −8, −0x0A, −0x0C) before it writes
+    /// them: in the game the frame of rand() left them, from hit-roll's roll-one-to-n(100) just before (the long multiply's
     /// operands: 3, 0x43FD — the multiplier 214013 — and the generator's state before that draw, high and low word).
     /// </summary>
-    // orig: rand (root 06A1:29B6, MSC run-time) as found by running to_hit_roll R014+0xA738 from the original bytes
+    // orig: rand (root 06A1:29B6, MSC run-time) as found by running hit-roll R014+0xA738 from the original bytes
     // (tools/oracle run_unit with a frame trace at 1EC9:0242)
     // UNCERTAIN: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
     public (int X0, int Y0, int X1, int Y1) StackResidue()
@@ -899,11 +899,11 @@ public sealed class EffectField : IEffectClouds
         return (3, 0x43FD, (short)(before >> 16), (short)before);
     }
 
-    /// <summary>cloud_blocks_line: the line from a to t passes through one of the clouds (its box, then a puff seen from its centre).</summary>
+    /// <summary>cloud-on-line-test: the line from a to t passes through one of the clouds (its box, then a puff seen from its centre).</summary>
     public bool LineCrossesCloud(int attacker, int target) => LineCrossesCloud(attacker, target, StackResidue());
 
-    /// <summary>cloud_blocks_line with the stack words its saved line starts as.</summary>
-    // orig: cloud_blocks_line R014+0x10672 (1EC9:0142) draft, checked against asm
+    /// <summary>cloud-on-line-test with the stack words its saved line starts as.</summary>
+    // orig: cloud-on-line-test R014+0x10672 (1EC9:0142) draft, checked against asm
     // (the draft's restore after a missed box is only a remark; the asm reloads the line from the saved words there);
     // tests: Oracle:effects.json
     // BUG: the loop runs to the count inclusive, so the slot after the last cloud (an old cloud's copy, or zeros) is tested too
@@ -920,7 +920,7 @@ public sealed class EffectField : IEffectClouds
         }
         var a = Battle[attacker].Position;
         var t = Battle[target].Position;
-        // los_x0, los_y0, los_x1, los_y1 (DS:E0A5, DS:E0A3, DS:E0A9, DS:E0A7) and the saved line (bp-6, -8, -0x0A, -0x0C).
+        // sight-line-x0, sight-line-y0, sight-line-x1, sight-line-y1 (DS:E0A5, DS:E0A3, DS:E0A9, DS:E0A7) and the saved line (bp-6, -8, -0x0A, -0x0C).
         int x0 = a.X, y0 = a.Y, x1 = t.X, y1 = t.Y;
         var (sx0, sy0, sx1, sy1) = residue;
         // orig: its own clip tests (R014+0xF284 from this frame) and those of the line tests it calls (one frame deeper) keep two runs (BattleMap.ClipResidue)
@@ -975,7 +975,7 @@ public sealed class EffectField : IEffectClouds
     }
 
     /// <summary>The strongest slowing area the walker stands in (0 none or it resists type 9).</summary>
-    // orig: cbt_step R014+0x1624 (0E76:1624) draft (the DS:A395 test, spec D §2.2)
+    // orig: fighter-step R014+0x1624 (0E76:1624) draft (the DS:A395 test, spec D §2.2)
     public int SlowingStrength(int i)
     {
         var best = 0;
@@ -991,7 +991,7 @@ public sealed class EffectField : IEffectClouds
     }
 
     /// <summary>The modifiers whose time is up end (every tick the battle is not paused, for every combatant).</summary>
-    // orig: melee_exchanges R014+0x2A4A (0E76:2A4A) draft (the mods: tail)
+    // orig: close-combat-rounds R014+0x2A4A (0E76:2A4A) draft (the mods: tail)
     public void EndModifiersDue(int i)
     {
         if (Paused)
@@ -1040,19 +1040,19 @@ public sealed class EffectField : IEffectClouds
     }
 
     /// <summary>
-    /// What the renderer does with the effects each time it draws a frame (combat_draw, once per
+    /// What the renderer does with the effects each time it draws a frame (fight-draw, once per
     /// combat tick): it lays out every cloud's puffs anew with a random jitter, picks random
     /// sprites for the clouds, the areas and the hit flashes, runs the flash countdown (which
     /// makes the hit show), and — when not paused — ages the markers, areas and clouds. The
     /// random numbers come from the game's generator, so they are drawn here in the original's
     /// order whatever the screen shows.
     /// </summary>
-    // orig: combat_draw R014+0x6818 (14F7:0008) draft, its effect parts: 3682, 3A46,
+    // orig: fight-draw R014+0x6818 (14F7:0008) draft, its effect parts: 3682, 3A46,
     // R014+0x6FFC (with 24A4, 296E, R014+0x9542), R014+0x719E (the flash), R014+0x76AE (ageing)
     // C: while paused the ticks still come every 8 timer callbacks (TacticalBattle.Tick), so these draws go on.
     // orig: the draw list DS:E162 (R014+0x6919 starts it at 1), its limit 157 at each add (R014+0x7BD0 for 13AE, 0x82AA for 1A6A, 0x72F7 for
-    // the flash, checked against the asm): the last frame's logged sprites, the animated pieces (1A6A: random_n(2) after the limit test,
-    // R014+0x8383/0x843A/0x84B6), the cloud edges, then per combatant its body (able ones), its flash (random_n(3) only below the limit,
+    // the flash, checked against the asm): the last frame's logged sprites, the animated pieces (1A6A: roll-n(2) after the limit test,
+    // R014+0x8383/0x843A/0x84B6), the cloud edges, then per combatant its body (able ones), its flash (roll-n(3) only below the limit,
     // R014+0x7327) and its damage number; the floor pieces go to list B (limit 0x8A); tests: DrawListTests
     // C: an entry whose box the view clips to nothing gives its place back in the original (R014+0x7BBE: after the clip R014+0x8680 a zero
     //   width or height decrements DS:E162 or DS:E166, R014+0x7CF5 / 0x7CFC); here every piece, edge and number of a combatant in view
@@ -1066,7 +1066,7 @@ public sealed class EffectField : IEffectClouds
         var camera = (viewport.CameraX, viewport.CameraY);
         if (camera != _lastCamera)
         {
-            // floor_view_draw sets DS:E0AB: a full redraw lays the areas out again.
+            // floor-view-paint sets DS:E0AB: a full redraw lays the areas out again.
             for (var k = 0; k < AreaCount; k++)
             {
                 _areas[k].Size |= 8;
@@ -1085,7 +1085,7 @@ public sealed class EffectField : IEffectClouds
             }
         }
         // the draw list: the sprites the last frame logged, then the animated pieces (1A6A): the floor's in list B (DS:E166 starts at 0,
-        // limit 0x89), the north and west walls' in the draw list; each draws its frame (random_n(2)) once it has its place
+        // limit 0x89), the north and west walls' in the draw list; each draws its frame (roll-n(2)) once it has its place
         var count = 1 + viewport.LoggedSprites;
         var listB = 0;
         _pieceFrames.Clear();
@@ -1424,7 +1424,7 @@ public sealed class EffectField : IEffectClouds
     }
 
     /// <summary>The clock was rebased: the clouds' and areas' end times move with it.</summary>
-    // orig: combat_main R014+0x0000 (0E76:0000) draft (the rebase loops over effect_clouds and effect_areas)
+    // orig: fight-main-loop R014+0x0000 (0E76:0000) draft (the rebase loops over effect-cloud-table and effect-area-table)
     public void Rebase(Func<ushort, ushort> rebase)
     {
         for (var k = 0; k < CloudCount; k++)
@@ -1441,7 +1441,7 @@ public sealed class EffectField : IEffectClouds
 public sealed partial class TacticalBattle
 {
     /// <summary>Whoever attacks (or casts at a spot) turns toward its target; a fighter the AI engaged keeps that facing for its pushes.</summary>
-    // orig: cbt_screen_pos R014+0x99F6 (14F7:31E6) draft (the turning part; the
+    // orig: fighter-screen-position R014+0x99F6 (14F7:31E6) draft (the turning part; the
     // screen positions are the screen's)
     private void TurnTowardTargets()
     {

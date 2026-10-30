@@ -65,7 +65,7 @@ public sealed class DwarfDoorOfThreeFaces : Card
 
     /// <summary>Turning away from the door: a fight (battle kind 1; the other battle words stay as they were).</summary>
     // orig: R067+0x0268
-    // C: only battle_mode (DS:A766) is set; battle_enemy, battle_seed and DS:A76C/E/770 keep whatever an earlier card left.
+    // C: only battle-kind (DS:A766) is set; battle-enemy-group, encounter-seed and DS:A76C/E/770 keep whatever an earlier card left.
     private static void TurnAndLeave(CardContext c)
     {
         c.Memory.Battle.Mode = 1;

@@ -27,8 +27,8 @@ namespace Darklands.Cards.Scripts;
 //   other: R123+0x2250, R123+0x26A6, R123+0x2748
 // DORMANT (generated): option slots 10..19 keep the default handler R123+0x2748 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 4, 5, 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class AmbushOnThePilgrimPath : Card
 {
@@ -59,7 +59,7 @@ public sealed class AmbushOnThePilgrimPath : Card
 
     /// <summary>The better of the best Woodwise and the worst Stealth.</summary>
     // orig: R123+0x2338 matched
-    // C: best_member is read (as unsigned char) after each query; a tie (stealth == woodwise) takes the Stealth member.
+    // C: top-scoring-member is read (as unsigned char) after each query; a tie (stealth == woodwise) takes the Stealth member.
     private static OptionHint ConcealmentChance(CardContext c)
     {
         var woodwise = c.PartyMaxSkill((int)Skill.Woodwise);
@@ -71,7 +71,7 @@ public sealed class AmbushOnThePilgrimPath : Card
     }
 
     // orig: R123+0x22EA matched
-    // C: an int function: it returns options_block (1) when unseen and falls off its end after the fight; ignored.
+    // C: an int function: it returns settings-block (1) when unseen and falls off its end after the fight; ignored.
     private static void Listen(CardContext c, CardMenu menu, int chance)
     {
         if (c.Random(100) <= chance)
@@ -104,7 +104,7 @@ public sealed class AmbushOnThePilgrimPath : Card
     /// taken (fact 6 for 72 hours); lost: they alarm the sabbat. Any other result stays here.
     /// </summary>
     // orig: R123+0x2250 matched
-    // C: a result outside 0..4 (the default and the −64..−1 cases) returns with next_card unchanged; no random argument.
+    // C: a result outside 0..4 (the default and the −64..−1 cases) returns with following-card unchanged; no random argument.
     private static void Fight(CardContext c, bool noticed)
     {
         switch (c.RunBattle(noticed ? 0x47 : 0x46, -1, 3, 1, 4, -1, 0, 0, -1, 0, 0))

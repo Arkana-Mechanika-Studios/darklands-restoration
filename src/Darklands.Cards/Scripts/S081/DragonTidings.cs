@@ -32,7 +32,7 @@ public sealed class DragonTidings : Card
             {
                 return c.Next = previous;
             }
-            // the original passes (9 / 10 / 11, cur_loc) to thunk 09C0:1F09; the rule ignores them (R039+0x11FC reads no argument: no [bp+n] operand in the asm; 24 of 28 blocks hit in the card oracle).
+            // the original passes (9 / 10 / 11, location-now) to thunk 09C0:1F09; the rule ignores them (R039+0x11FC reads no argument: no [bp+n] operand in the asm; 24 of 28 blocks hit in the card oracle).
             switch (previous)
             {
                 case 0x86:
@@ -136,7 +136,7 @@ public sealed class DragonTidings : Card
             Heir(2),
             // orig: R081+0x175A (1962:04BA) matched; R081+0x1766 (1962:04C6) matched; tests: CardSmokeTests
             // UNCERTAIN: the hints of lines 1..3 (R081+0x16EA/0x1728/0x1766) return their member word [bp-2] unset (enter 4,0; only
-            //   line 0's sets it, to $ChosenOneName): a stack leftover of the caller's frame (card_mouse R043+0x26C4 under Shift; the card
+            //   line 0's sets it, to $ChosenOneName): a stack leftover of the caller's frame (card-mouse-handler R043+0x26C4 under Shift; the card
             //   oracle's call gives 0). The whole party is shown here.
             Heir(3),
             // orig: R081+0x1798 (1962:04F8) matched; R081+0x17A0 (1962:0500) matched; tests: CardSmokeTests

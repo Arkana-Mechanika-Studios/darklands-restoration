@@ -3,8 +3,8 @@ using Darklands.Core.Events;
 namespace Darklands.Cards.Tests;
 
 /// <summary>
-/// A card's battle (run_battle): cards_shutdown writes the events to EVENTS.TMP and empties the table before it,
-/// cards_startup's world_load reads them back into the first slots after it, over what the battle added there.
+/// A card's battle (battle-driver): cards-teardown writes the events to EVENTS.TMP and empties the table before it,
+/// cards-setup's world-read reads them back into the first slots after it, over what the battle added there.
 /// </summary>
 public sealed class BattleEventTableTests
 {

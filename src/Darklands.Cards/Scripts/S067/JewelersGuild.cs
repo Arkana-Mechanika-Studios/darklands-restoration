@@ -16,7 +16,7 @@ namespace Darklands.Cards.Scripts;
 // saint pop-ups R067+0x0F9C/0d16/0da0/0e2a (standard; the card lists saints 0, 0x59, 0x61 and 0x80 but no line offers them)
 public sealed class JewelersGuild : Card
 {
-    /// <summary>The guild's number in the city politics facts and for the next cards (party_x); also the bit its facts use.</summary>
+    /// <summary>The guild's number in the city politics facts and for the next cards (party-map-column); also the bit its facts use.</summary>
     private const int Guild = 0x80;
 
     private const int PoliticsQuest = 2;
@@ -30,7 +30,7 @@ public sealed class JewelersGuild : Card
     {
         Show(c, MainPicture);
         c.Next = Number;
-        // C: opt_flag_9 is not set by this card: it keeps whatever the previous card left. The text has
+        // C: card-option-flag-9 is not set by this card: it keeps whatever the previous card left. The text has
         // no tenth line and the switch no case 9, so it is offered hidden here (see the dormant line 9).
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2, 4, 5, 6);
@@ -64,7 +64,7 @@ public sealed class JewelersGuild : Card
                 menu[4] = menu[5] = OptionState.Hidden;
             }
         }
-        // C: no var_support0 = loc_side_get(..) on this card.
+        // C: no text-slot-support-zero = place-side-read(..) on this card.
         var standing = c.LocationQuery(c.Here, 0);
         // The card lists saints as well, but offers only the potion pop-up.
         c.SetCardItems(0x5F, 0x65, 0x61, 0x66);
@@ -84,12 +84,12 @@ public sealed class JewelersGuild : Card
             new MenuLine(chance => SneakInUnderCover(c, chance), OptionHint.Saying(CardTexts.SelectPotion), () => PotionCoverHint(c)),
             // orig: R067+0x0D0A, hint R067+0x0D28: shown at the start, so it is offered.
             new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 4; }, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: line 7 (opt_flag_7 = 0): the same as line 6.
+            // DORMANT: line 7 (card-option-flag-7 = 0): the same as line 6.
             // orig: R067+0x0D60, hint R067+0x0D7E (100%, leader)
             new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 4; }, () => new OptionHint(100, SuccessAssured, c.Leader)),
-            // DORMANT: line 8 (opt_flag_8 = 0): back to the streets. orig: R067+0x0DB8, hint 0aba R067+0x0DCA
+            // DORMANT: line 8 (card-option-flag-8 = 0): back to the streets. orig: R067+0x0DB8, hint 0aba R067+0x0DCA
             new MenuLine(_ => { c.PassHours(0); c.Next = CityStreets; }, OptionHint.Saying(SuccessAssured)),
-            // DORMANT: line 9 has the "screwed up." handler and no action (stale opt_flag_9 only).
+            // DORMANT: line 9 has the "screwed up." handler and no action (stale card-option-flag-9 only).
             new MenuLine(_ => { }, OptionHint.Saying(CardTexts.ScrewedUp)));
     }
 
@@ -155,7 +155,7 @@ public sealed class JewelersGuild : Card
     {
         c.Variables.Chosen[0] = c.Leader;
         menu[2] = OptionState.Shown;
-        // C: hours_until(5) (R029+0x577A) is called and its result dropped (no effect).
+        // C: hours-remaining-until(5) (R029+0x577A) is called and its result dropped (no effect).
         NoteFact(c, 4);
         // C: a roll strictly below the chance (the other guild cards accept an equal roll).
         if (c.Random(100) < chance)
@@ -169,7 +169,7 @@ public sealed class JewelersGuild : Card
         }
         c.PracticeSkill(c.Leader, (int)Skill.SpeakCommon, 0, 6, 0);
         c.Screen.Text(3, TextFrame.BlankPage);
-        // C: next_card is not changed: the card stays.
+        // C: following-card is not changed: the card stays.
         c.PassHours(Math.Min(Core.Time.TimeOfDay.HoursUntil(c.State.Date.Hour, 19) / 2, 3));
     }
 
@@ -191,10 +191,10 @@ public sealed class JewelersGuild : Card
         if (c.Succeeds(chance))
         {
             c.PracticeSkill(c.Leader, (int)Skill.SpeakCommon, 7, 10, 0);
-            // C: rand_mod(9) is drawn and its result dropped.
+            // C: roll-below(9) is drawn and its result dropped.
             c.Random(9);
             c.Screen.Text(0x0B);
-            // C: cur_rep is the card's copy of the reputation, read at the start: it is lowered and written back.
+            // C: reputation-now is the card's copy of the reputation, read at the start: it is lowered and written back.
             standing--;
             c.LocationSet(c.Here, 0, standing);
             c.PassHours(3);
@@ -231,7 +231,7 @@ public sealed class JewelersGuild : Card
     private static void SneakIn(CardContext c, int chance)
     {
         var roll = c.Random(100);
-        // C: hours_until(19) (R029+0x577A) is called and its result dropped.
+        // C: hours-remaining-until(19) (R029+0x577A) is called and its result dropped.
         NoteFact(c, 5);
         if (roll > chance)
         {
@@ -274,7 +274,7 @@ public sealed class JewelersGuild : Card
     private static void SneakInUnderCover(CardContext c, int chance)
     {
         var roll = c.Random(100);
-        // C: hours_until(19) (R029+0x577A) is called and its result dropped.
+        // C: hours-remaining-until(19) (R029+0x577A) is called and its result dropped.
         NoteFact(c, 5);
         if (roll > chance)
         {

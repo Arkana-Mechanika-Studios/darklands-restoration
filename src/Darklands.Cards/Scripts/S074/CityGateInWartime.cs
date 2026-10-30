@@ -10,7 +10,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R074+0x0000 (1838:0000) matched; tests: CardSmokeTests
 // orig: R074+0x09B4 (1838:09B4) matched; R074+0x0A32 (1838:0A32) matched; tests: CardSmokeTests
 // DORMANT: the "screwed up." default handler of the unlisted lines 7..19 (never offered).
-// C: the toll is a module static money (DS:5EEC), set afresh on each visit; the start-up also calls do_nothing().
+// C: the toll is a module static money (DS:5EEC), set afresh on each visit; the start-up also calls idle-action().
 public sealed class CityGateInWartime : Card
 {
     public const int CardNumber = 0x78;
@@ -138,7 +138,7 @@ public sealed class CityGateInWartime : Card
         var chance = BefriendChance(c, standing).Chance;
         var roll = c.Random(100);
         // C: in a hostile city the original leaves the outcome flag (register DI) unset.
-        // UNCERTAIN: it is taken as 0 (failure), which then overrides next_card = 1 and keeps the
+        // UNCERTAIN: it is taken as 0 (failure), which then overrides following-card = 1 and keeps the
         // party at the gate; a non-zero leftover would instead let the party in (text 5).
         var success = false;
         if (c.Hostile())
@@ -185,7 +185,7 @@ public sealed class CityGateInWartime : Card
     {
         // The option line itself only asks for a member and a potion (chance −1).
         // C: the chance is the handler's the loop calls (CardMenu.Run): the option line's -1, the box's for a click there, and for Enter
-        // C: there opt_fn[k], the box's handler for slot k % 4.
+        // C: there card-option-handler[k], the box's handler for slot k % 4.
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         c.Events.Renew(-2, c.Here, 0, 0x13, 1, 0x63, 0, 24, 0, 0);
         if (c.Random(100) > chance)
@@ -250,7 +250,7 @@ public sealed class CityGateInWartime : Card
     // orig: R074+0x0734 (1838:0734) matched; R074+0x0932 (1838:0932) matched; tests: CardSmokeTests
     private static void AttackTheGuards(CardContext c, int standing)
     {
-        // C: arguments are evaluated right to left (party_lore_level draws nothing).
+        // C: arguments are evaluated right to left (party-lore-rating draws nothing).
         var third = c.Random(3) + 1;
         var second = c.Random(5) + 4;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 1;
@@ -259,7 +259,7 @@ public sealed class CityGateInWartime : Card
         if (reputation <= -40)
         {
             // The original rolls for a further loss and then ignores the result.
-            // C: improve_roll may draw a random number; its result is discarded.
+            // C: improvement-roll may draw a random number; its result is discarded.
             c.ImproveRoll(reputation, -2, -7);
         }
         else

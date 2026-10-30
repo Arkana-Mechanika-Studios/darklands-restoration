@@ -14,8 +14,8 @@ namespace Darklands.Cards.Scripts;
 //   saint pop-up: R130+0x0BAA, R130+0x0C34, R130+0x0CBE
 //   other: R130+0x0B10, R130+0x0B72
 // DORMANT (generated): option slots 10..19 keep the default handler R130+0x0B72 ("screwed up.") and are never shown.
-// C (generated): opt_flag_3/4/5/6/7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// C (generated): card-option-flag-3/4/5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class ApocalypseCastleGate : Card
 {
@@ -44,7 +44,7 @@ public sealed class ApocalypseCastleGate : Card
         {
             c.Events.Create(-2, c.Here, 0, 0x1C, 0x1A, 0, 0, 0x870, 0, 1);
         }
-        // C: DS:160C = loc_fact_value_any(1, 0x1A); (char)DS:160C = 0; clears the low byte of the 16-bit word.
+        // C: DS:160C = place-flag-value-any(1, 0x1A); (char)DS:160C = 0; clears the low byte of the 16-bit word.
         // C: the fact's value is a 16-bit word; if the C# value ever exceeded 16 bits, the high bits would stay.
         c.LastCastleFlags = c.Events.FactValueAnywhere(1, 0x1A) & ~0xFF;
         c.SetCardItems();

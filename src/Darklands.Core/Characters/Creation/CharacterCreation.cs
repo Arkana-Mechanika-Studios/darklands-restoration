@@ -48,13 +48,13 @@ public enum CreationOutcome
 }
 
 /// <summary>
-/// The character generator (overlay R037, <c>create_character</c>): a person's name and sex,
+/// The character generator (overlay R037, <c>character-creation-entry</c>): a person's name and sex,
 /// a family background (15 years of childhood with experience points for attributes), then
 /// 5-year occupations (experience points for skills, aging, items, saints and formulas) until
 /// the player begins adventuring. Commands are numbered like the original's key handler:
 /// 1..15 are the rows of the left-hand list (the letter keys give rows 1..6).
 /// </summary>
-// orig: create_character = R037+0x4664 (18C8:0004) matched (main loop, Esc); R037+0x4BEE (18C8:058E) draft, same length (key handler); tests: CharacterCreationTests
+// orig: character-creation-entry = R037+0x4664 (18C8:0004) matched (main loop, Esc); R037+0x4BEE (18C8:058E) draft, same length (key handler); tests: CharacterCreationTests
 // C: the character lives in DS globals (DS:E80A.. record, DS:8BFA/DS:8C48 points, DS:8BD2 list, DS:8BFC cursor); the class holds them.
 public sealed class CharacterCreation
 {
@@ -201,8 +201,8 @@ public sealed class CharacterCreation
     /// <summary>Draws a new random name for the character's sex.</summary>
     public void NewRandomName() => NewRandomName(IsFemale ? NameKind.Woman : NameKind.Man);
 
-    // orig: random_name(time(0), sex, 0) in R037+0x675A and R037+0x4BEE cases 2 and 3
-    // C: time(0) is passed as an int (its low 16 bits); random_name reads the clock again to reseed.
+    // orig: made-up-name(time(0), sex, 0) in R037+0x675A and R037+0x4BEE cases 2 and 3
+    // C: time(0) is passed as an int (its low 16 bits); made-up-name reads the clock again to reseed.
     // DIVERGENCE: the two reads are one here (the same second: the seed is party seed + time and the reseed is that time again, see lockstep roster-create), so a scripted clock gives one value a name.
     private void NewRandomName(NameKind kind)
     {
@@ -214,7 +214,7 @@ public sealed class CharacterCreation
         Keep(s_nickBuffer, Nickname, MaxNicknameLength);
     }
 
-    // orig: R037+0x4BEE case 4 (E, "Enter a new name"): text_input of at most 23 letters; an Esc leaves the name empty
+    // orig: R037+0x4BEE case 4 (E, "Enter a new name"): text-prompt of at most 23 letters; an Esc leaves the name empty
     public void SetName(string name)
     {
         NameIsRandom = false;
@@ -222,7 +222,7 @@ public sealed class CharacterCreation
         Keep(s_nameBuffer, Name, MaxNameLength);
     }
 
-    // orig: R037+0x4BEE case 5 (C, "Create a nickname"): text_input of at most 9 letters
+    // orig: R037+0x4BEE case 5 (C, "Create a nickname"): text-prompt of at most 9 letters
     public void SetNickname(string nickname)
     {
         NameIsRandom = false;
@@ -284,7 +284,7 @@ public sealed class CharacterCreation
     }
 
     /// <summary>Escape: from spending points back to the list (points stay spent), otherwise leave.</summary>
-    // orig: create_character (R037+0x4664) on 0x011B: state 2 -> 1, 4 -> 3 and redraw, otherwise leave
+    // orig: character-creation-entry (R037+0x4664) on 0x011B: state 2 -> 1, 4 -> 3 and redraw, otherwise leave
     // C: the Esc code then also goes to R037+0x4BEE, which has no case for it.
     // BUG: Esc from the childhood attributes goes back to the background list at age 15; a background row then
     // serves the adult occupation of that number (Recruit..Knight), as in the original.
@@ -466,8 +466,8 @@ public sealed class CharacterCreation
     /// A saint from the first 136 (<c>rnd(0x88)</c>). The generator sets bit <c>1 &lt;&lt; (n % 8)</c>
     /// while the game reads bit <c>0x80 &gt;&gt; (n % 8)</c>, so the saint learned is n mirrored within its byte.
     /// </summary>
-    // orig: a = rand_mod(0x88); R136+0x1144A[a / 8] |= 1 << a % 8 (R037+0x7D8A); the game's member_bit reads 0x80 >> (bit & 7)
-    // C: rand_mod = root 0000:0C70, rand() % n.
+    // orig: a = roll-below(0x88); R136+0x1144A[a / 8] |= 1 << a % 8 (R037+0x7D8A); the game's member-flag-bit reads 0x80 >> (bit & 7)
+    // C: roll-below = root 0000:0C70, rand() % n.
     private void LearnRandomSaint()
     {
         var n = _random.Below(0x88);
@@ -478,13 +478,13 @@ public sealed class CharacterCreation
     /// One more formula: the potion's byte of known grades is incremented (0 → grade 1 known,
     /// 1 → grade 2 only, 2 → grades 1 and 2, ...), as in the original.
     /// </summary>
-    // orig: R136+0x11434[rand_mod(0x16)]++ (R037+0x7D8A)
+    // orig: R136+0x11434[roll-below(0x16)]++ (R037+0x7D8A)
     // C: a byte increment, not a bit set: a second formula of the same potion replaces grade 1 by grade 2.
     private void LearnRandomFormula() => FormulaBytes[_random.Below(Potions.Count)]++;
 
     /// <summary>Adds one item to the kit (<c>R037+0x80FE</c>): a stack of the same item, type and quality grows, at most 64 stacks.</summary>
     // orig: R037+0x80FE (18C8:3A9E) matched; tests: CharacterCreationTests
-    // C: the entry is (id, item_defs[id]->f1e type, f26 quality, count 1, f25 weight); stacks compare id, type and quality.
+    // C: the entry is (id, item-definition-table[id]->f1e type, f26 quality, count 1, f25 weight); stacks compare id, type and quality.
     private void AddItem(int code)
     {
         var definition = code < _items.Count ? _items[code] : null;
@@ -640,8 +640,8 @@ public sealed class CharacterCreation
     /// DGROUP: 8C12 the third-last occupation, 8C14..8C1C and 8C20 the handles of the bubble pictures, 8C1E the
     /// screen state, 8C22.. the points spent on each skill.
     /// </summary>
-    // orig: DS:8C06 (int[6]), DS:8C12, DS:8C14[5], DS:8C1E, DS:8C20, DS:8C22[0x13] (R037 seg 18C8 externs; pic_load at 18C8:0277..0282)
-    // C: a picture handle is the DOS segment pic_load returned, taken as at least 0x28 (so '+' stops there) and kept as a counter here.
+    // orig: DS:8C06 (int[6]), DS:8C12, DS:8C14[5], DS:8C1E, DS:8C20, DS:8C22[0x13] (R037 seg 18C8 externs; image-read at 18C8:0277..0282)
+    // C: a picture handle is the DOS segment image-read returned, taken as at least 0x28 (so '+' stops there) and kept as a counter here.
     private int SpentWord(int c) => c switch
     {
         < 6 => AttributePointsSpent[c],
@@ -693,7 +693,7 @@ public sealed class CharacterCreation
     }
 
     /// <summary>How much of the term's points is spent, 0..50 (the bubble empties from the top).</summary>
-    // orig: create_character (R037+0x4664): DS:43F8 = (DS:8BFA * -100 / DS:8C48 + 100) / 2 in states 2 and 4, else 0
+    // orig: character-creation-entry (R037+0x4664): DS:43F8 = (DS:8BFA * -100 / DS:8C48 + 100) / 2 in states 2 and 4, else 0
     // C: 16-bit signed division truncating toward zero, as C#'s.
     public int SpentGauge =>
         Stage is CreationStage.ChildhoodAttributes or CreationStage.OccupationSkills && TermExperience != 0

@@ -64,9 +64,9 @@ internal static class TacticsOverlay
         new("activations enabled", 0xD6F0, 1, "ActivationsEnabled"),
         new("delayed start", 0xD842, 1, "DelayedStart"),
         new("group move allowed", 0xD610, 1, "GroupMoveAllowed"),
-        // the pause byte itself (0x11 after Esc with nobody selected, 0x03 after order_mode_leave's missile to record -1)
+        // the pause byte itself (0x11 after Esc with nobody selected, 0x03 after command-mode-end's missile to record -1)
         new("paused", 0xA695, 1, "PauseByte", Byte: true),
-        // DS:D4E4: the level in the buffer changed since it was loaded or saved (level_switch saves the level it leaves only then)
+        // DS:D4E4: the level in the buffer changed since it was loaded or saved (level-change saves the level it leaves only then)
         new("level changed", 0xD4E4, 1, "LevelChanged"),
         new("stopped", 0xCA29, 1, "_stopped"),
         new("lock is door", 0xCA99, 1, "LockIsDoor"),
@@ -132,7 +132,7 @@ internal static class TacticsOverlay
         t.EnemySlotIdentity[1] = (short)Word(ds, SlotIdentity2);
         // DS:E0C0: the doors' open flags the last enemy path search kept (R014+0x48DE), put back by every enemy search's exit (R014+0x4B5A)
         ds.AsSpan(DoorsBeforeSearch, 40).CopyTo(Get<byte[]>(t, "_doorsBeforeSearch"));
-        // the eleven animation slots' tables (sprite_file_load's, AnimationSlot): what the loaded files left in DS
+        // the eleven animation slots' tables (sprite-file-read's, AnimationSlot): what the loaded files left in DS
         for (var s = 0; s < t.Slots.Length; s++)
         {
             var slot = t.Slots[s];

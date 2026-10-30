@@ -46,7 +46,7 @@ public sealed class CreationRosterTests
     [Fact]
     public void AddingToThePartyRecomputesTheEncumbrance()
     {
-        // orig: R037+0x0D67 equip_weight for the slot; lockstep session chargen-created: a made character (nothing equipped, the
+        // orig: R037+0x0D67 gear-weight for the slot; lockstep session chargen-created: a made character (nothing equipped, the
         // generator's 0x0A) is saved with +0x49 = 00
         var r = New();
         r.Add(new Character { Name = "Made", Encumbrance = 0x0A });

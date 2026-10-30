@@ -8,7 +8,7 @@ namespace Darklands.Cards.Scripts;
 /// throw a potion, pray, or draw steel (which may scare them off or end in a fight).
 /// </summary>
 // orig: R059+0x0000 (1838:0000) matched; tests: CardSmokeTests
-// orig: handler setup R059+0x0B22 (opt_on[*]=1, screwed-up handler 0bc4, item handlers 0bfc/0c38/0c74/0cb0,
+// orig: handler setup R059+0x0B22 (card-option-enabled[*]=1, screwed-up handler 0bc4, item handlers 0bfc/0c38/0c74/0cb0,
 // saint handlers 0cec/0d76/0e00/0e8a: standard pop-ups)
 public sealed class NightWatch : Card
 {
@@ -25,16 +25,16 @@ public sealed class NightWatch : Card
         Show(c, StreetPicture);
         // C: DS:EE70 = 0xf and DS:EE72 = 7 (text window state) are set here; not modelled.
         c.Next = Number;
-        // C: opt_flag_0..4 = 1 and opt_flag_5..9 = 0 (the five dormant lines below are never offered).
+        // C: card-option-flag-0..4 = 1 and card-option-flag-5..9 = 0 (the five dormant lines below are never offered).
         var menu = Menu(c, OpeningText(c));
         menu.Enable(0, 1, 2, 3, 4);
         c.EventHere(Curfew, 7);
 
-        // C: money_set(var_money1, 0, 0, (rep / -50 + size + party_money[0] + 1) * present_count): signed division truncates
+        // C: purse-assign(text-slot-amount-one, 0, 0, (rep / -50 + size + party-purse[0] + 1) * present_count): signed division truncates
         // toward zero; the product is a 16-bit int in the original.
         var fine = Money.From(0, 0, (c.HereQuery(0) / -50 + c.HereQuery(2) + c.State.Party.Purse.Florins + 1) * c.PresentCount());
         c.Variables.Money[0] = fine;
-        // C: money_cmp(party_money, var_money1) >= 0 enables line 0, else it is shown greyed.
+        // C: purse-compare(party-purse, text-slot-amount-one) >= 0 enables line 0, else it is shown greyed.
         menu[0] = c.State.Party.Purse >= fine ? OptionState.Enabled : OptionState.Shown;
 
         c.SetCardItems(0x5F, 0x65, 0x61, 0x66);
@@ -54,7 +54,7 @@ public sealed class NightWatch : Card
             new MenuLine(_ => Pray(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R059+0x0864 (line 4); handler R059+0x093A (enter combat)
             new MenuLine(_ => DrawWeapons(c), OptionHint.Saying(CardTexts.EnterCombat)),
-            // DORMANT: lines 5..9 (opt_flag_5..9 = 0): the card text lists no such lines; each shows the first text and leaves
+            // DORMANT: lines 5..9 (card-option-flag-5..9 = 0): the card text lists no such lines; each shows the first text and leaves
             // for the city entry card. Line 5 passes an hour, lines 6..9 none. Handlers: assured (5), assured (6),
             // assured at 100% for the leader (7), assured (8, 9).
             // orig: handler R059+0x0990, action 0972 R059+0x0972
@@ -77,7 +77,7 @@ public sealed class NightWatch : Card
     }
 
     /// <summary>A first meeting, a second one tonight, or the watch catching up after a chase from cards 0x16/0x22.</summary>
-    // orig: main function R059+0x0000, text selection before event_here(0x40, 7)
+    // orig: main function R059+0x0000, text selection before event-here-test(0x40, 7)
     private static int OpeningText(CardContext c)
     {
         if (c.PreviousCard is 0x16 or 0x22)
@@ -98,8 +98,8 @@ public sealed class NightWatch : Card
     }
 
     // orig: R059+0x056A (1838:056A)
-    // C: rand_mod(100) <= chance succeeds (Succeeds); the failure path calls party_min_eff_attr2() only for its side
-    // effect on best_member, and Chosen[0] is (unsigned char)best_member.
+    // C: roll-below(100) <= chance succeeds (Succeeds); the failure path calls party-effective-stat-two-low() only for its side
+    // effect on top-scoring-member, and Chosen[0] is (unsigned char)top-scoring-member.
     private void RunAway(CardContext c, CardMenu menu, int chance)
     {
         var streetwise = (int)Core.Characters.Skill.Streetwise;
@@ -171,7 +171,7 @@ public sealed class NightWatch : Card
     // orig: R059+0x0864 (1838:0864)
     private static void DrawWeapons(CardContext c)
     {
-        // C: cur_loc_query(0) / 10 then abs; member_best_skill(-1) is the leader's best weapon skill; below 75 the sum is 0.
+        // C: location-now-query(0) / 10 then abs; member-top-skill(-1) is the leader's best weapon skill; below 75 the sum is 0.
         var awe = Math.Abs(c.HereQuery(0) / 10)
             + c.PartyAverageAttribute((int)Core.Characters.Attribute.Charisma) / 10
             + (c.BestWeaponSkill(Who.Leader) / 2 + c.PartyGet(4) / 20);
@@ -203,11 +203,11 @@ public sealed class NightWatch : Card
             0x21 or 0x22 => 0x15,
             _ => 0x56,
         };
-        // C: the only draw among run_battle's arguments is rand_mod(5); prev_screen + cur_loc is the battle seed.
+        // C: the only draw among battle-driver's arguments is roll-below(5); earlier-screen + location-now is the battle seed.
         var watchmen = c.Random(5) + 3;
         var result = c.RunBattle(battlefield, c.PreviousCard + c.Here, 3, 1, watchmen, 0, 2, 1, -1, 0, 0);
         c.AdjustReputation(c.Here, -15, -25);
-        // C: 0x7d0 / loc_query(cur_loc, 2) is computed after the battle for every outcome. The city size is 0 outside
+        // C: 0x7d0 / place-query(location-now, 2) is computed after the battle for every outcome. The city size is 0 outside
         // cities and the original then raises a divide error.
         // DIVERGENCE: a size of 0 is treated as 1 (2000 hours) instead of crashing.
         var expensiveHours = 2000 / Math.Max(c.LocationQuery(c.Here, 2), 1);
@@ -244,11 +244,11 @@ public sealed class NightWatch : Card
                 c.Next = 0x0D;
                 break;
         }
-        // C: after the switch, whatever the outcome: event_here(0x11, rep <= -75 ? 0xF0 : 0x78).
+        // C: after the switch, whatever the outcome: event-here-test(0x11, rep <= -75 ? 0xF0 : 0x78).
         c.EventHere(Core.Events.EventKinds.Hostile, c.HereQuery(0) <= -75 ? 240 : 120);
     }
 
-    // orig: event_new(-2, cur_loc, 0x1e, 0x12, 1, 0x63, 0, hours, 0, 0) in R059+0x02F2 cases 0 and 1
+    // orig: event-create(-2, location-now, 0x1e, 0x12, 1, 0x63, 0, hours, 0, 0) in R059+0x02F2 cases 0 and 1
     private static void PricesRiseAfterTheFight(CardContext c, int hours) =>
         c.Events.Create(-2, c.Here, 0x1E, Core.Events.EventKinds.Expensive, 1, 0x63, 0, hours, 0, 0);
 }

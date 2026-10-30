@@ -16,7 +16,7 @@ public sealed class CommonSpritesTests
         // a row is 0x28 high: the edges cover it, the lines above and below span the 0x37 between them
         Assert.All(new[] { s.PanelSide, s.PanelSideLit }, p => Assert.Equal((4, 40), (p.Width, p.Height)));
         Assert.All(new[] { s.PanelTop, s.PanelBottom, s.PanelTopLit, s.PanelBottomLit }, p => Assert.Equal((0x37, 1), (p.Width, p.Height)));
-        // draw_frame_box puts the corners at x1 - 3 / y1 - 3: four rows each
+        // framed-box-paint puts the corners at x1 - 3 / y1 - 3: four rows each
         Assert.All(new[] { s.CornerTopLeft, s.CornerTopRight, s.CornerBottomLeft, s.CornerBottomRight }, p => Assert.Equal(4, p.Height));
         Assert.Equal((0x37, 0x26), (s.RowBackground.Width, s.RowBackground.Height));
         Assert.Equal((0x37, 0x0B), (s.ColumnBackground.Width, s.ColumnBackground.Height));

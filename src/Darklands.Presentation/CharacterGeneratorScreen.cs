@@ -15,7 +15,7 @@ namespace Darklands.Presentation;
 /// attributes, the 19 skills with their "change:limit" columns, the experience points and the
 /// bubble that empties as they are spent. Returns the finished character or null.
 /// </summary>
-// orig: create_character = R037+0x4664 (18C8:0004) matched; drawing R037+0x573A
+// orig: character-creation-entry = R037+0x4664 (18C8:0004) matched; drawing R037+0x573A
 // R037+0x573A matched, R037+0x5D98 matched, R037+0x4B9E matched, pictures R037+0x4B12
 // R037+0x4B12 matched, lists R037+0x7F06 / R037+0x802A matched, exit R037+0x4ADC
 // R037+0x4ADC matched; tests: headless chargen session (PNG)
@@ -64,7 +64,7 @@ public sealed class CharacterGeneratorScreen
     private TextPainter Text => _ui.Text;
 
     /// <summary>The exit R037+0x4ADC: the button waited out, the mouse driver's left-release count cleared.</summary>
-    // C: the end of R037+0x4ADC: R037+0x4AF7 `while (mouse_buttons & 1);`, then INT 33h function 6 through the root's mouse call
+    // C: the end of R037+0x4ADC: R037+0x4AF7 `while (mouse-button-state & 1);`, then INT 33h function 6 through the root's mouse call
     private Character? Leave(Character? made)
     {
         ScreenDrawing.WaitForRelease(_ui);
@@ -215,7 +215,7 @@ public sealed class CharacterGeneratorScreen
         };
         if (key == Keys.AltQ)
         {
-            // orig: case 0x1000: R037+0x4ADC(), quit_to_dos()
+            // orig: case 0x1000: R037+0x4ADC(), exit-to-system()
             throw new QuitGameException();
         }
         if (key is Keys.Up or Keys.Left or Keys.Right or Keys.Down)
@@ -458,7 +458,7 @@ public sealed class CharacterGeneratorScreen
     private static string Two(int v) => v < 0 ? v.ToString(System.Globalization.CultureInfo.InvariantCulture) : v.ToString("00", System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>The bubble: five frames over the background, its top covered as the points are spent.</summary>
-    // orig: R037+0x4664: gfx_draw_pic(back_win, 0xD0, 0x69, bubble[f]); gfx_draw_sprite({0xD0, 0x68, 0x0C, DS:43F8}, bublback); copy 0x0C x 0x32
+    // orig: R037+0x4664: gfx-picture-draw(backdrop-window, 0xD0, 0x69, bubble[f]); gfx-sprite-draw({0xD0, 0x68, 0x0C, DS:43F8}, bublback); copy 0x0C x 0x32
     private void AnimateBubble()
     {
         if (_frames++ % BubbleFrames != 0)
@@ -512,7 +512,7 @@ public sealed class CharacterGeneratorScreen
 
     private string SaintName(int s) => s < _world.Items.Saints.Count ? _world.Items.Saints[s].FullName : "";
 
-    // orig: R037+0x7F06 / R037+0x802A: `while (!key_pressed() && !(mouse_buttons & 1));` (no root 0000:0000: no menu bar, no hot keys) then a key is taken (get_key), a press is not:
+    // orig: R037+0x7F06 / R037+0x802A: `while (!key-waiting-test() && !(mouse-button-state & 1));` (no root 0000:0000: no menu bar, no hot keys) then a key is taken (read-key), a press is not:
     // orig: after R037+0x4B9E the loop of R037+0x4664 finds the button still down and takes the press as a click where the pointer is
     // DIVERGENCE: whether the button is still down after the redraw depends on how long the press lasts against the redraw's time, which is
     //   the machine's speed (R037+0x4B9E draws the pictures and texts through the graphics driver; the EXE sets no time for it): the C#

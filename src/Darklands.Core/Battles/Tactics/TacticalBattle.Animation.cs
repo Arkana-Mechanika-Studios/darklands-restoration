@@ -2,16 +2,16 @@ namespace Darklands.Core.Battles.Tactics;
 
 public sealed partial class TacticalBattle
 {
-    /// <summary>DS:C3CC: a reload keeps the frame (set only by enemy_anim_load's reloading, which is not needed here).</summary>
+    /// <summary>DS:C3CC: a reload keeps the frame (set only by enemy-sprite-load's reloading, which is not needed here).</summary>
     // DORMANT: the sprite buffers never need reloading here (no EMS), so the frame is always reset.
     private readonly bool _keepFrame = false;
 
     /// <summary>
-    /// Sets the animation mode (cbt_set_anim): loads the file "code + WK/CB/DY + weapon" into the
+    /// Sets the animation mode (fighter-start-animation): loads the file "code + WK/CB/DY + weapon" into the
     /// slot when another one is there, and sets up the frame sequence (walk 0..9; attack the
     /// HITSEQ row; hit 0, 1, 2; dying 0..n).
     /// </summary>
-    // orig: cbt_set_anim R014+0x38B6 (0E76:38B6) draft (byte-matched per the draft notes)
+    // orig: fighter-start-animation R014+0x38B6 (0E76:38B6) draft (byte-matched per the draft notes)
     public void SetPose(int i, Pose mode)
     {
         var c = Battle[i];
@@ -110,8 +110,8 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>sprite_file_load: the file's header values into the slot, its frame count also combatant i's sequence length.</summary>
-    // orig: sprite_file_load R014+0x3D2C (0E76:3D2C) draft
+    /// <summary>sprite-file-read: the file's header values into the slot, its frame count also combatant i's sequence length.</summary>
+    // orig: sprite-file-read R014+0x3D2C (0E76:3D2C) draft
     // DIVERGENCE: a file missing from the catalogues leaves the slot as it was (the original would read garbage).
     private void LoadAnimation(int i, int slot, string code, string posture, string weapon)
     {
@@ -132,17 +132,17 @@ public sealed partial class TacticalBattle
         if (_library.Find(code, posture, weapon) is { } info)
         {
             Slots[slot].Load(info);
-            // C: cbt_anim_len[i] = DS:C908[slot] = the header's frame count (the dying pose of a party member keeps it: R014+0x3C21
+            // C: fighter-animation-length[i] = DS:C908[slot] = the header's frame count (the dying pose of a party member keeps it: R014+0x3C21
             // sets the length for enemies only)
             Battle[i].SequenceLength = Slots[slot].FrameCount;
         }
     }
 
-    /// <summary>Readies a weapon and records its animation code for the combatant's slot (weapon_ready).</summary>
+    /// <summary>Readies a weapon and records its animation code for the combatant's slot (weapon-armed).</summary>
     private void ReadyWeapon(int i, int weapon, int missileFlag) =>
         Attacks.ReadyWeapon(Battle, i, weapon, missileFlag, code => SlotWeapons[Battle[i].AnimationSlot] = code);
 
-    /// <summary>The frame of the animation file to draw for combatant i (cbt_anim_seq[f1b]).</summary>
+    /// <summary>The frame of the animation file to draw for combatant i (fighter-animation-sequence[f1b]).</summary>
     public int ShownFrame(int i)
     {
         var c = Battle[i];
@@ -165,7 +165,7 @@ public sealed partial class TacticalBattle
 
     /// <summary>Releases enemy slot <paramref name="kind"/> when no other enemy uses it (1DB7:0418).</summary>
     // orig: R014+0xF828 (1DB7:0418) draft (near-match per the draft notes); the slot's buffers
-    // freed by enemy_anim_free6 R025+0x0C02 matched (and its file names cleared)
+    // freed by enemy-sprite-release-b R025+0x0C02 matched (and its file names cleared)
     private void ReleaseEnemySlot(int i, int kind)
     {
         for (var k = Combatant.PartySlots; k < Combatant.Count; k++)
@@ -185,8 +185,8 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>enemy_anim_free5: both enemy slots free.</summary>
-    // orig: enemy_anim_free5 R025+0x0BE4 (1EF8:0BE4) draft
+    /// <summary>enemy-sprite-release-a: both enemy slots free.</summary>
+    // orig: enemy-sprite-release-a R025+0x0BE4 (1EF8:0BE4) draft
     private void FreeEnemySlots()
     {
         EnemySlotIdentity[0] = EnemySlotIdentity[1] = -1;
@@ -290,19 +290,19 @@ public sealed partial class TacticalBattle
         return n;
     }
 
-    /// <summary>anim_buffers[slot] != 0: the slot holds an animation.</summary>
+    /// <summary>animation-frame-buffers[slot] != 0: the slot holds an animation.</summary>
     private bool SlotLoaded(int slot) => Slots[slot].HasBuffer;
 
     /// <summary>
     /// After the loot screen: the enemy animations taken up again. The six enemy slots forget their files, each enemy record in use
     /// sets its pose again (its frame sequence from the file; walking: no follow steps), and every combatant keeps its frame and sequence length.
     /// </summary>
-    // orig: loot_screen R014+0xE3C0 (19CD:2E50) unmatched (its enemy animations; checked against the asm)
-    // C: DS:C96B[0..12] (cbt_anim_len) and record +0x1B (the frame) of the 13 combatants are saved at the start (0xE3D7) and put back at
-    // C: the end (0xE741), DS:D65F / DS:D67E (the enemy slots' identities) the same; enemy_anim_free5 at the start (0xE43C) frees the enemy
-    // C: slots' buffers; after loot_distribute the names of slots 5..10 are cleared (0xE6C0, DS:11BC..DS:11C6), then for i = 5..12 with
-    // C: record +0x14 != 0: if anim_buffers[+0x16] == 0 enemy_anim_alloc(+0x16), and cbt_set_anim(i, +0x18) (0xE703)
-    // C: the tiles reloaded after it (battle_tiles_load, and the varying furniture when its buffer was freed) are the same tiles: the
+    // orig: loot-view R014+0xE3C0 (19CD:2E50) unmatched (its enemy animations; checked against the asm)
+    // C: DS:C96B[0..12] (fighter-animation-length) and record +0x1B (the frame) of the 13 combatants are saved at the start (0xE3D7) and put back at
+    // C: the end (0xE741), DS:D65F / DS:D67E (the enemy slots' identities) the same; enemy-sprite-release-a at the start (0xE43C) frees the enemy
+    // C: slots' buffers; after loot-split-entry the names of slots 5..10 are cleared (0xE6C0, DS:11BC..DS:11C6), then for i = 5..12 with
+    // C: record +0x14 != 0: if animation-frame-buffers[+0x16] == 0 enemy-sprite-reserve(+0x16), and fighter-start-animation(i, +0x18) (0xE703)
+    // C: the tiles reloaded after it (battle-tileset-load, and the varying furniture when its buffer was freed) are the same tiles: the
     // C: original's memory, nothing to model
     public void TakeUpEnemyAnimations()
     {
@@ -328,8 +328,8 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>enemy_anim_load(kind, who): the slot's files and the enemy in its walking pose.</summary>
-    // orig: enemy_anim_load R025+0x09A6 (1EF8:09A6) matched; its buffers by enemy_anim_alloc
+    /// <summary>enemy-sprite-load(kind, who): the slot's files and the enemy in its walking pose.</summary>
+    // orig: enemy-sprite-load R025+0x09A6 (1EF8:09A6) matched; its buffers by enemy-sprite-reserve
     // R025+0x0A84 matched (the sizes from TACANIM.DB: memory, nothing to model)
     // DIVERGENCE: when a higher slot's buffer lies above this one in memory the original frees both enemy slots and sets every
     // enemy's current pose again keeping its frame (a heap-layout case); here the plain branch is always taken.

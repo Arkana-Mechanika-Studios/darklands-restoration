@@ -12,7 +12,7 @@ namespace Darklands.Cards.Scripts;
 /// cave is deserted.
 /// </summary>
 // orig: R107+0x0000 (1838:0000) matched; tests: CardSmokeTests
-// orig: R107+0x0BC4 (1838:0BC4) matched (registration: item pop-ups R107+0x0C86.. say "unknown"; saint pop-ups 0d66/0dee do not name the member; saint_fn[2..3] are left from an earlier card)
+// orig: R107+0x0BC4 (1838:0BC4) matched (registration: item pop-ups R107+0x0C86.. say "unknown"; saint pop-ups 0d66/0dee do not name the member; saint-handler-table[2..3] are left from an earlier card)
 public sealed class DwarfInTheCliff : Card
 {
     private const int CliffPicture = 331;
@@ -34,7 +34,7 @@ public sealed class DwarfInTheCliff : Card
         c.Next = Number;
         if (!c.Events.QuestAt(10, c.Here))
         {
-            // The cave is deserted; the original returns 0x0C without changing next_card.
+            // The cave is deserted; the original returns 0x0C without changing following-card.
             c.Screen.Text(21);
             return CardContext.MapCard;
         }
@@ -86,7 +86,7 @@ public sealed class DwarfInTheCliff : Card
             new MenuLine(_ => c.PassHours(0), () => OptionHint.Say(SuccessAssured)),
             // orig: R107+0x0B24 (1838:0B24) matched; hint R107+0x0B30
             new MenuLine(_ => c.PassHours(0), () => OptionHint.Say(SuccessAssured)),
-            // orig: R107+0x0B68 (1838:0B68) matched; hint R107+0x0B8C (leaves without clearing cur_loc)
+            // orig: R107+0x0B68 (1838:0B68) matched; hint R107+0x0B8C (leaves without clearing location-now)
             new MenuLine(_ => RefuseAndLeave(c, menu), Unknown));
     }
 
@@ -99,7 +99,7 @@ public sealed class DwarfInTheCliff : Card
     /// every case falls through to the gold, and from it, when the party has three florins or
     /// fewer, to the most valuable item.
     /// </summary>
-    // C: switch (cur_loc % 3) without break: cases 0 and 1 set the rope (7) and potions (9) prices
+    // C: switch (location-now % 3) without break: cases 0 and 1 set the rope (7) and potions (9) prices
     // and name item 0, but fall through and are overwritten.
     // DORMANT: so the prices 7 (rope) and 9 (an alchemist's potions) are never asked.
     private static void SetThePrice(CardContext c)
@@ -246,7 +246,7 @@ public sealed class DwarfInTheCliff : Card
         var price = c.State.SavedCard;
         var saint = c.CardSaints[c.MenuEntrySlot];
         var answer = c.InvokeSaint(c.Variables.Chosen[0], saint);
-        // C: the price is saved around the prayer and put back (the prayer may change saved_card).
+        // C: the price is saved around the prayer and put back (the prayer may change remembered-card).
         c.State.SavedCard = price;
         if (answer == -1)
         {

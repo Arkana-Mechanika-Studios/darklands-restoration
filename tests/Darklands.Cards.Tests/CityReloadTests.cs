@@ -4,9 +4,9 @@ using Darklands.Core.Rules;
 namespace Darklands.Cards.Tests;
 
 /// <summary>
-/// A card's battle reloads the world (cards_startup R043+0x078E, world_load R043+0x0100): the city record is DARKLAND.CTY's again, so a
-/// loc_set into it is lost. The original's shutdown and startup run directly on a Pressburg state after loc_set(85, 3, 0x55) gave
-/// city_rec[0x63] = 0x1F, the file's value, and the whole record equal to the file's (local/batch/nmB).
+/// A card's battle reloads the world (cards-setup R043+0x078E, world-read R043+0x0100): the city record is DARKLAND.CTY's again, so a
+/// place-assign into it is lost. The original's shutdown and startup run directly on a Pressburg state after place-assign(85, 3, 0x55) gave
+/// city-record[0x63] = 0x1F, the file's value, and the whole record equal to the file's (local/batch/nmB).
 /// </summary>
 public sealed class CityReloadTests
 {

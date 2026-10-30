@@ -9,8 +9,8 @@ The trace of each operation to the original is in `docs/source-map/map.csv` (see
 | Layer | Where | What |
 |---|---|---|
 | Rules | `Darklands.Core/Battles` | combatants (`Combatant`, the 0x80-byte record plus the battle's parallel tables), attack and damage (`Attacks`, R014 18BF), the end of a battle (`BattleEnd`), enemy kinds and groups (`BattlefieldForces`, R004) |
-| Battlefields | `Darklands.Core/Battles/Generation` | `BattlefieldBuilder` (battlefield_build, R004) and every generator: castles and keeps (R005..R007), mines (R009), cities (R010), wilderness (R008), Templar fortress and tombs (R011), dragon cave (R012), Baphomet's citadel (R013), empty (R008 2D62), map turning (R004 1091) |
-| Tactics | `Darklands.Core/Battles/Tactics` | `TacticalBattle` (combat_main and its children: the loop, the action state machine, engagement, AI, enemy turn, missiles, placement, the player's orders), `BattleMap` (collisions, line of sight), `PathFinder` |
+| Battlefields | `Darklands.Core/Battles/Generation` | `BattlefieldBuilder` (battlefield-builder-entry, R004) and every generator: castles and keeps (R005..R007), mines (R009), cities (R010), wilderness (R008), Templar fortress and tombs (R011), dragon cave (R012), Baphomet's citadel (R013), empty (R008 2D62), map turning (R004 1091) |
+| Tactics | `Darklands.Core/Battles/Tactics` | `TacticalBattle` (fight-main-loop and its children: the loop, the action state machine, engagement, AI, enemy turn, missiles, placement, the player's orders), `BattleMap` (collisions, line of sight), `PathFinder` |
 | Files | `Darklands.Content/Formats/Battles`, `Formats/Exe` | IMAPS.CAT levels, BC tile sets, IMC animations, BATTLEGR/COMMONSP images, HITSEQ, ENEMYPAL, DARKLAND.ENM, the EXE's combat tables |
 | Screen | `Darklands.Presentation/Battles`, `BattleScreens.cs` | `BattleScreen` (real-time loop, isometric view, sprites, cursors, panel, keys and mouse), `BattlefieldView`, `AnimationLibrary`, `BattleAssets` |
 
@@ -20,8 +20,8 @@ The rules never look at the screen: `TacticalBattle` talks to the screen through
 
 ## Time
 
-`Battle.Clock` is the original's `combat_clock`: 60 ticks a second, stopped while the game is
-paused (order mode). `TacticalBattle.Iterate()` is one pass of combat_main's loop; a combat tick
+`Battle.Clock` is the original's `fight-clock`: 60 ticks a second, stopped while the game is
+paused (order mode). `TacticalBattle.Iterate()` is one pass of fight-main-loop's loop; a combat tick
 (`Tick()`) runs every 8 clock ticks (7.5 a second). `BattleScreen` advances the clock from the
 host's `IClock` and calls `Iterate()` once per frame, so the battle runs at the original speed
 whatever the frame rate.
@@ -33,16 +33,16 @@ whatever the frame rate.
 ```csharp
 var battles = new BattleScreens(ui, () => state, loot: (items, money) => screens.Loot(items, money));
 int result = battles.Battle(new BattleRequest(battlefield, seed, groups, mode, persistent));
-int nextCard = battles.LastResultCard;   // battle_args: the level's card for that result
+int nextCard = battles.LastResultCard;   // battle-start-arguments: the level's card for that result
 ```
 
-`result` is battle_result: 0 won, 2 fled (8 "left before the fight" is reported as 2), 3 lost,
+`result` is battle-outcome: 0 won, 2 fled (8 "left before the fight" is reported as 2), 3 lost,
 4 surrendered, 5 all down, 6 fell into a pit, 7 timed exit.
 
 The two ways the original starts a battle map onto `BattleRequest` like this (DarklandsGame is
 not changed here; this is the wiring it needs):
 
-* **A card script's `run_battle(side, seed, t1, q1, n1, t2, q2, n2, t3, q3, n3)`** — already
+* **A card script's `battle-driver(side, seed, t1, q1, n1, t2, q2, n2, t3, q3, n3)`** — already
   `CardContext.RunBattle`, which picks a random side for −1, computes the seed with
   `PartyRules.BattleSeed` (party seed added, the original's double addition for −2) and calls the
   `CardContext.Battle` hook. Set the hook to
@@ -52,13 +52,13 @@ not changed here; this is the wiring it needs):
       [(p[0], p[1], p[2]), (p[3], p[4], p[5]), (p[6], p[7], p[8])]));
   ```
 
-  (`side` is the battlefield type; `battle_run` is called with mode 0; RunBattle then applies
+  (`side` is the battlefield type; `battle-entry` is called with mode 0; RunBattle then applies
   `PartyRules.AfterBattle` and the time passage.)
-* **The main loop's battle cards** — the card leaves `battle_mode` (DS:A766), `battle_enemy`
-  (DS:A768, the battlefield type, or the level for mode 3), `battle_seed` (DS:A76A) and the three
+* **The main loop's battle cards** — the card leaves `battle-kind` (DS:A766), `battle-enemy-group`
+  (DS:A768, the battlefield type, or the level for mode 3), `encounter-seed` (DS:A76A) and the three
   enemy types DS:A76C, DS:A76E, DS:A770 (quality −1, count 0 in the original call), and the main loop
-  runs `battle_run(mode, enemy, seed, (−1, DS:A76C, 0), (−1, DS:A76E, 0), (−1, DS:A770, 0))` with
-  combat_flags bit 0 set. The equivalent is
+  runs `battle-entry(mode, enemy, seed, (−1, DS:A76C, 0), (−1, DS:A76E, 0), (−1, DS:A770, 0))` with
+  fight-flags bit 0 set. The equivalent is
   `battles.Battle(new BattleRequest(enemy, seed, [(-1, a76c, 0), (-1, a76e, 0), (-1, a770, 0)], mode, Persistent: true))`
   and the next card is `battles.LastResultCard`.
 
@@ -72,7 +72,7 @@ The headless host runs a battle directly for tests and screenshots:
 ## Effects, the dungeon and the menus
 
 * **Effects (R019)** — `EffectField` (`TacticalBattle.Effects.cs`, `Combatant.Effects.cs`): a spell
-  or thrown potion that lands (`Lands`, effect_spell) lays out a cloud (fire wall, poison, smoke …),
+  or thrown potion that lands (`Lands`, effect-cast) lays out a cloud (fire wall, poison, smoke …),
   a slowing area, or a flash/blast marker; each combat tick the clouds and markers act on who
   stands in them (`CloudActs`, `MarkerActs`) with the pending-damage caps and byte wraps of the
   original, the worn potions and modifiers (DS:A532) wear off, and clouds block lines of fire with
@@ -150,12 +150,12 @@ inputs and stores only inputs and results:
 | battle.json | attack rate, to-hit, damage, damage queue/apply, weapon readying, skill gains (R014 18BF, R021) | 860 |
 | enemies.json | enemy kinds and groups (R004) | 120 |
 | city.json, wild.json, castle.json, mine.json, special.json | the battlefield generators, byte for byte | 40, 96, 100, 400, 145 |
-| tactics.json | cbt_collisions, line_blocked, distance3 | 1200 |
-| path.json | path_find (trackers, pruning, shortcuts; path_trackers alone with `--trackers`) | 60 |
+| tactics.json | fighter-collision-pass, sight-line-blocked, three-way-distance | 1200 |
+| path.json | route-search (trackers, pruning, shortcuts; route-tracker-table alone with `--trackers`) | 60 |
 | effects.json | effect clouds, slowing areas, markers, modifiers, to-hit through clouds (R019) | 1020 |
 | implode.json | the PKWARE DCL 1.02 implode and explode of record 3 (frame 1016) on generated data, byte for byte with return codes | 98 |
 
-The tactical loop itself (combat_main, the action state machine, AI, enemy turn, placement) is
+The tactical loop itself (fight-main-loop, the action state machine, AI, enemy turn, placement) is
 written from the asm-checked spec and exercised end to end by `Darklands.Battles.Tests` and the
 headless host, not by an oracle.
 

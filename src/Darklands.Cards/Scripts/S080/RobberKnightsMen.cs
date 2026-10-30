@@ -50,7 +50,7 @@ public sealed class RobberKnightsMen : Card
             Show(c, CaughtPicture);
             block = 4;
         }
-        // C: party_x is passed as a long: the party's map x and y.
+        // C: party-map-column is passed as a long: the party's map x and y.
         c.Variables.Location = c.NearestLocationOfType(c.State.MapPosition.X, c.State.MapPosition.Y, 2);
         c.RandomName(c.Variables.Location + 0x44C, 0, 0);
         var menu = Menu(c, block);

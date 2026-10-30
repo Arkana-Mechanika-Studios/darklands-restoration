@@ -4,7 +4,7 @@ namespace Darklands.Core.Battles.Generation;
 /// The empty field used for battlefield types no generator handles: a 20 × 20 open square,
 /// the party three cells from its centre on a random side, the enemies three cells beyond.
 /// </summary>
-// orig: empty_battlefield R008+0x2D62 (1432:2D62), R008+0x2E76 (1432:2E76),
+// orig: blank-battlefield R008+0x2D62 (1432:2D62), R008+0x2E76 (1432:2E76),
 // R008+0x3002 (1432:3002) draft (all three byte-matched per the draft notes; spec A §12)
 // C: the original works in the battle's static floor image, so fields it does not write keep the previous battle's values (exit
 // cards, door and exit records ...): GenerationProcessMemory.FloorImage, zeros in a fresh program.

@@ -9,8 +9,8 @@ namespace Darklands.Presentation;
 /// button opens it (the entry under the pointer drops down, letting go chooses); F10 drives it from
 /// the keyboard. Out of battle "Orders" and "Attack" are greyed and have no items.
 /// </summary>
-// orig: menu_bar_run root 0000:0000 (Run), menu_bar_track root 0000:01D4 (Track), menu_bar_draw root 0000:06C2 (DrawBar), menu_dropdown_open root 0000:07D4, menu_submenu_open root 0000:0984, menu_dropdown_close root 0000:0BC2, menu_submenu_close root 0000:0C2C, the keyboard menu mode root 0000:0DD2, all draft (0bc2 and 0c2c match the bytes; the others are drafts written from the asm; 0000 was checked against the original's disassembly); the menus are set up by R000+0x083E (0E76:083E) draft (bytes match); tests: MenuBarTests, Host.Headless
-// C: coordinates are the card window's (card_window, x 0x3c on the screen); the bar's font is font 1 (card_window->f10 = 1 while it runs) and its texts use the window colour f0c: 0 for an entry that can be chosen, 7 for one that cannot.
+// orig: menu-bar-loop root 0000:0000 (Run), menu-bar-pointer-follow root 0000:01D4 (Track), menu-bar-paint root 0000:06C2 (DrawBar), dropdown-open root 0000:07D4, submenu-open root 0000:0984, dropdown-close root 0000:0BC2, submenu-close root 0000:0C2C, the keyboard menu mode root 0000:0DD2, all draft (0bc2 and 0c2c match the bytes; the others are drafts written from the asm; 0000 was checked against the original's disassembly); the menus are set up by R000+0x083E (0E76:083E) draft (bytes match); tests: MenuBarTests, Host.Headless
+// C: coordinates are the card window's (card-text-window, x 0x3c on the screen); the bar's font is font 1 (card-text-window->f10 = 1 while it runs) and its texts use the window colour f0c: 0 for an entry that can be chosen, 7 for one that cannot.
 // C: the battle runs this bar over its own menus (BattleScreen.BuildMenuBar: the enable bytes of the Orders and Attack items, the Throw list
 // built anew, the steps DS:A394 of the menu its T unfolds); the pointer of the screens is shown while the bar is up, as root 0000:0000's
 // order-mode cursor change does.
@@ -55,12 +55,12 @@ public sealed class MenuBar
     }
 
     /// <summary>
-    /// A bar entry (10 bytes): its title; <c>has_items</c> 1 drops its items down, 2 is greyed and skipped. <paramref name="BeforeItems"/>
+    /// A bar entry (10 bytes): its title; <c>carries-items-test</c> 1 drops its items down, 2 is greyed and skipped. <paramref name="BeforeItems"/>
     /// is the word just before the entry's item table, which the keyboard's Right reads as <c>items[-1].sub</c> (null: 0).
     /// </summary>
     public sealed record Menu(string Title, bool HasItems, IReadOnlyList<Item> Items, Func<int>? HasItemsState = null, Func<int>? BeforeItems = null)
     {
-        /// <summary>has_items: 1 drops the items down, 2 is greyed (and skipped by the keyboard).</summary>
+        /// <summary>carries-items-test: 1 drops the items down, 2 is greyed (and skipped by the keyboard).</summary>
         public int Opens => HasItemsState?.Invoke() ?? (HasItems ? 1 : 2);
     }
 
@@ -146,8 +146,8 @@ public sealed class MenuBar
     /// The bar of the game outside battles: Game (save, load, difficulty, the options, pause, quit),
     /// Orders and Attack (greyed), Party (information, marching order).
     /// </summary>
-    // orig: R000+0x083E: DS:9419 = Game (x6 1), Orders (2), Attack (2), Party (1); Game items DS:991E "\x02Save Game" "\x0fS" save_game_vec, "\x02Load Saved Game" "\x0fL" load_game_vec, "\x02Difficulty" "\x0fD" thunk 09C0:17E3 (root 0000:25F0, empty) with the sub-menu DS:99EC "\x02Basic" / "\x02Standard" / "\x02Expert" (set_difficulty_*), "\x01Show Changes" "\x0fC" toggle_saint_msgs, "\x01Music" "\x0fM" toggle_music, "\x01Sound FX" "\x0fF" toggle_sound, "\x02Pause" "\x0fP" root 0000:1080, "\x02Quit to DOS" "\x0fQ" quit_to_dos, all enabled; Party items DS:987D "Party Info" key "\x0a" party_info_screen_vec, "Change Marching Order" "\x0fO" choose_party_order_vec
-    // C: the first character of an item's text is its tick: 1 (a tick in font 1) or 2 (none); toggle_saint_msgs, toggle_music, toggle_sound and show_difficulty write it (*DS:995A, *DS:996E, *DS:9982, *DS:99EC / *DS:9A02 / *DS:9A18), so here it is read from the options when drawn.
+    // orig: R000+0x083E: DS:9419 = Game (x6 1), Orders (2), Attack (2), Party (1); Game items DS:991E "\x02Save Game" "\x0fS" game-store-overlay-entry, "\x02Load Saved Game" "\x0fL" game-load-overlay-entry, "\x02Difficulty" "\x0fD" thunk 09C0:17E3 (root 0000:25F0, empty) with the sub-menu DS:99EC "\x02Basic" / "\x02Standard" / "\x02Expert" (set_difficulty_*), "\x01Show Changes" "\x0fC" saint-notices-switch, "\x01Music" "\x0fM" music-switch, "\x01Sound FX" "\x0fF" sound-switch, "\x02Pause" "\x0fP" root 0000:1080, "\x02Quit to DOS" "\x0fQ" exit-to-system, all enabled; Party items DS:987D "Party Info" key "\x0a" party-info-overlay-entry, "Change Marching Order" "\x0fO" party-order-chooser-overlay-entry
+    // C: the first character of an item's text is its tick: 1 (a tick in font 1) or 2 (none); saint-notices-switch, music-switch, sound-switch and difficulty-display write it (*DS:995A, *DS:996E, *DS:9982, *DS:99EC / *DS:9A02 / *DS:9A18), so here it is read from the options when drawn.
     // C: key characters 0x0F and 0x0A are glyphs of font 1 (the "Alt" and "F6" signs).
     public static MenuBar ForGame(GameUi ui, GameState state, GameOptions options, HotKeys keys)
     {
@@ -185,18 +185,18 @@ public sealed class MenuBar
         return bar;
     }
 
-    /// <summary>The word DS:991C before the Game items (DS:991E): its high byte DS:991D is best_member, the low byte has no writer (0).</summary>
+    /// <summary>The word DS:991C before the Game items (DS:991E): its high byte DS:991D is top-scoring-member, the low byte has no writer (0).</summary>
     // C: the four item tables are DS:991E (Game), DS:9607 (Orders), DS:97DB (Attack), DS:987D (Party), the same in a battle; the words before
-    // them are DS:991C (best_member << 8), DS:9605 and DS:97D9 (no writer: 0) and DS:987B (the last dropdown's right edge, DropdownRight).
+    // them are DS:991C (top-scoring-member << 8), DS:9605 and DS:97D9 (no writer: 0) and DS:987B (the last dropdown's right edge, DropdownRight).
     public static int BeforeGameItems(GameState state) => (state.Party.Last.Member & 0xFF) << 8;
 
     /// <summary>DS:987B: the right edge of the last dropdown opened (0 before the first).</summary>
     public int DropdownRight => _ddRight;
 
     /// <summary>Runs the bar while the right button is held (or, with <paramref name="keyboard"/>, until the keyboard menu ends), then the chosen item.</summary>
-    // orig: menu_bar_run(m, 0): (hot_keys for a waiting key is GameUi's) the loop: in menu mode a key or the right button goes to 0dd2; active while the right button is held or menu mode is on: menu_bar_draw and menu_bar_track; once inactive with the bar drawn: DS:9409 = 0, the dropdown closed (0bc2), then the item under the pointer (DS:944B: items[DS:0204], if enabled and DS:9413 > DS:0204) and the sub-item (DS:9783: items[DS:A340].sub[DS:0206], if enabled and DS:9415 > DS:0206) are called, the window's colour and font put back first
+    // orig: menu-bar-loop(m, 0): (hotkey-table for a waiting key is GameUi's) the loop: in menu mode a key or the right button goes to 0dd2; active while the right button is held or menu mode is on: menu-bar-paint and menu-bar-pointer-follow; once inactive with the bar drawn: DS:9409 = 0, the dropdown closed (0bc2), then the item under the pointer (DS:944B: items[DS:0204], if enabled and DS:9413 > DS:0204) and the sub-item (DS:9783: items[DS:A340].sub[DS:0206], if enabled and DS:9415 > DS:0206) are called, the window's colour and font put back first
     // C: from an item to its sub-menu DS:944B stays set, so letting go on a sub-item calls the item's function (for Difficulty the empty thunk 09C0:17E3) and then the sub-item's.
-    // C: hot_keys F10 (DS:9C26 = 1, DS:9C2F = 0, DS:9C3C = DS:9C41 = -1) starts the keyboard mode; GameUi passes F10 here.
+    // C: hotkey-table F10 (DS:9C26 = 1, DS:9C2F = 0, DS:9C3C = DS:9C41 = -1) starts the keyboard mode; GameUi passes F10 here.
     public void Run(bool keyboard)
     {
         if (_running)
@@ -243,7 +243,7 @@ public sealed class MenuBar
         }
     }
 
-    /// <summary>The card window's font menu_bar_run kept at its start: the items run with it.</summary>
+    /// <summary>The card window's font menu-bar-loop kept at its start: the items run with it.</summary>
     private int _itemFont = 3;
 
     private void Choose()
@@ -274,7 +274,7 @@ public sealed class MenuBar
     }
 
     /// <summary>The pointer, or in keyboard mode the place the bar, item and sub-item cursor stand for.</summary>
-    // orig: menu_bar_track: in menu mode sx = DS:9C41 == -1 ? 0 : DS:9C22[DS:9C2F] (the dropdown's width); mx = sx + DS:9C15[DS:9C2F] + 0x3c (DS:9C15: the title's x + 12); iy = DS:9C3C == -1 ? 0 : DS:9C3C * 8 + 0xc; sy = DS:9C41 == -1 ? 0 : DS:9C41 * 8; my = iy + sy + 4
+    // orig: menu-bar-pointer-follow: in menu mode sx = DS:9C41 == -1 ? 0 : DS:9C22[DS:9C2F] (the dropdown's width); mx = sx + DS:9C15[DS:9C2F] + 0x3c (DS:9C15: the title's x + 12); iy = DS:9C3C == -1 ? 0 : DS:9C3C * 8 + 0xc; sy = DS:9C41 == -1 ? 0 : DS:9C41 * 8; my = iy + sy + 4
     // C: the countdown DS:A394 (3 .. 1) that the battle's T sets: the first pass lights the entry, the second its first item
     // (DS:9C3C = 0), the third that item's first sub-item (DS:9C41 = 0).
     private (int X, int Y) Pointer()
@@ -309,11 +309,11 @@ public sealed class MenuBar
     }
 
     /// <summary>DS:9C22[k]: the widest item text plus the widest key plus 9.</summary>
-    // orig: the loop at the end of R000+0x083E (with card_window's font set to 1)
+    // orig: the loop at the end of R000+0x083E (with card-text-window's font set to 1)
     private int DropdownWidth(IReadOnlyList<Item> items) =>
         items.Count == 0 ? 9 : items.Max(i => _ui.Text.Measure(i.Text())) + items.Max(i => _ui.Text.Measure(i.Key)) + 9;
 
-    // orig: menu_bar_draw: once per opening (DS:9409 == 0): the bar area (0, 0, 0x104, 0xc) saved, draw_frame_box(card_window, 0, 0, 0x104, 0xc, 0x80), the titles from x 3: x0 = x, the title at (x + 4, 3) in colour 0 (has_items 1) or 7, x += width + 8, x1 = x - 1; DS:940D = DS:940F = 0, DS:9409 = 1, DS:A2E7 = -1
+    // orig: menu-bar-paint: once per opening (DS:9409 == 0): the bar area (0, 0, 0x104, 0xc) saved, framed-box-paint(card-text-window, 0, 0, 0x104, 0xc, 0x80), the titles from x 3: x0 = x, the title at (x + 4, 3) in colour 0 (carries-items-test 1) or 7, x += width + 8, x1 = x - 1; DS:940D = DS:940F = 0, DS:9409 = 1, DS:A2E7 = -1
     private void DrawBar()
     {
         if (_drawn)
@@ -334,7 +334,7 @@ public sealed class MenuBar
         (_dropdownOpen, _submenuOpen, _drawn, _lit) = (false, false, true, -1);
     }
 
-    // orig: menu_bar_track (see the class comment); x = mx - 0x3c
+    // orig: menu-bar-pointer-follow (see the class comment); x = mx - 0x3c
     // C: a dropdown's top frame line is drawn at y 0xB over the bar's bottom line, and switching to another entry puts back only rows 0xC and below: the corner pieces stay on the bar until it closes.
     private void Track(int mx, int my)
     {
@@ -449,7 +449,7 @@ public sealed class MenuBar
         }
     }
 
-    // orig: menu_dropdown_open(items, x, y): widths of the widest text and key; DS:9789 = x, DS:987B = x + wkey + wname + 9, DS:9A45 = x + wname + 6, DS:99E7 = DS:987B - x + 1, DS:99E9 = n * 8 + 0xe; the area (x, 0xc, DS:99E7, n * 8 + 3) saved; draw_frame_box(card_window, x, 0xb, DS:99E7, n * 8 + 4, 0x80); each item at (x + 3, 0xe + 8j) and its key at (DS:9A45, 0xe + 8j), colour 0 when enabled == 1 else 7; DS:0204 = (y - 0xe) / 8 lit when inside; DS:940D = 1
+    // orig: dropdown-open(items, x, y): widths of the widest text and key; DS:9789 = x, DS:987B = x + wkey + wname + 9, DS:9A45 = x + wname + 6, DS:99E7 = DS:987B - x + 1, DS:99E9 = n * 8 + 0xe; the area (x, 0xc, DS:99E7, n * 8 + 3) saved; framed-box-paint(card-text-window, x, 0xb, DS:99E7, n * 8 + 4, 0x80); each item at (x + 3, 0xe + 8j) and its key at (DS:9A45, 0xe + 8j), colour 0 when enabled == 1 else 7; DS:0204 = (y - 0xe) / 8 lit when inside; DS:940D = 1
     // C: (y - 0xe) / 8 truncates toward zero: opening with the pointer at y 7..11 of the bar lights the first item.
     private void OpenDropdown(IReadOnlyList<Item> items, int x, int y)
     {
@@ -477,7 +477,7 @@ public sealed class MenuBar
         _dropdownOpen = true;
     }
 
-    // orig: menu_submenu_open(subs, x, y): the count column (itoa_commas of counts of 2 and more) DS:9C51 = its width + 3 or 0; DS:9C29 = x - 1, DS:9C3A = DS:9C29 + wkey + DS:9C51 + wname + 9, DS:9C53 = DS:9C29 + DS:9C51 + 3, DS:9C48 = DS:9C29 + DS:9C51 + wname + 6, DS:9C3F = DS:9C3A - DS:9C29 + 1, DS:9C27 = y - 1, DS:9C44 = DS:9C27 + n * 8 - 1; the area saved, draw_frame_box(card_window, DS:9C29, DS:9C27, DS:9C3F, n * 8 + 4, 0x80); each line at y DS:9C27 + 3 + 8j: the count centred in its column, the text at DS:9C53, the key at DS:9C48; DS:0206 = -0x63, DS:940F = 1
+    // orig: submenu-open(subs, x, y): the count column (number-with-separators of counts of 2 and more) DS:9C51 = its width + 3 or 0; DS:9C29 = x - 1, DS:9C3A = DS:9C29 + wkey + DS:9C51 + wname + 9, DS:9C53 = DS:9C29 + DS:9C51 + 3, DS:9C48 = DS:9C29 + DS:9C51 + wname + 6, DS:9C3F = DS:9C3A - DS:9C29 + 1, DS:9C27 = y - 1, DS:9C44 = DS:9C27 + n * 8 - 1; the area saved, framed-box-paint(card-text-window, DS:9C29, DS:9C27, DS:9C3F, n * 8 + 4, 0x80); each line at y DS:9C27 + 3 + 8j: the count centred in its column, the text at DS:9C53, the key at DS:9C48; DS:0206 = -0x63, DS:940F = 1
     // C: the area is saved to the back page one pixel right and down of where it is and put back from there: the same rectangle.
     private void OpenSubmenu(IReadOnlyList<SubItem> subs, int x, int y)
     {
@@ -512,7 +512,7 @@ public sealed class MenuBar
         _submenuOpen = true;
     }
 
-    // orig: menu_dropdown_close: menu_submenu_close; the dropdown's area put back (DS:0204 = -1) when one is open; the bar's area put back; DS:A2E7 = -1
+    // orig: dropdown-close: submenu-close; the dropdown's area put back (DS:0204 = -1) when one is open; the bar's area put back; DS:A2E7 = -1
     private void CloseDropdown()
     {
         CloseSubmenu();
@@ -528,7 +528,7 @@ public sealed class MenuBar
         _lit = -1;
     }
 
-    // orig: menu_submenu_close: when DS:940F, the sub-menu's area put back, DS:0206 = -0x63, DS:940F = 0
+    // orig: submenu-close: when DS:940F, the sub-menu's area put back, DS:0206 = -0x63, DS:940F = 0
     private void CloseSubmenu()
     {
         if (_submenuOpen)
@@ -539,12 +539,12 @@ public sealed class MenuBar
         }
     }
 
-    // orig: root 0000:0DD2: the right button (a waiting key eaten) or Esc / F10 leave menu mode with DS:944B = DS:9783 = 0 (nothing is chosen); Enter leaves it (the item under the cursor is chosen); Alt-Q quit_to_dos; Up: the sub-item above (not past the first), else the enabled item above; Left: out of the sub-menu, else the previous entry with items; Right: into the item's sub-menu, else the next entry with items (entries of has_items 2 skipped); Down: the next sub-item, else the next item that is not greyed (enabled 2 skipped)
+    // orig: root 0000:0DD2: the right button (a waiting key eaten) or Esc / F10 leave menu mode with DS:944B = DS:9783 = 0 (nothing is chosen); Enter leaves it (the item under the cursor is chosen); Alt-Q exit-to-system; Up: the sub-item above (not past the first), else the enabled item above; Left: out of the sub-menu, else the previous entry with items; Right: into the item's sub-menu, else the next entry with items (entries of carries-items-test 2 skipped); Down: the next sub-item, else the next item that is not greyed (enabled 2 skipped)
     // C: Up from the first item goes to "no item" (it reads items[-1].enabled on the way, which only decides whether the loop stops one step early).
     // C: Right tests items[DS:9C3C].sub also with no item chosen (DS:9C3C = -1): it then reads the word before the item table (Menu.BeforeItems):
-    // for Game best_member's byte, for Party the last dropdown's right edge, so with best_member != 0 (F10, Right) or on Party the cursor goes into
+    // for Game top-scoring-member's byte, for Party the last dropdown's right edge, so with top-scoring-member != 0 (F10, Right) or on Party the cursor goes into
     // a "sub-menu" of item -1 (DS:9C41 = 0) instead of to the next entry: the pointer it stands for is on the bar, shifted right by the dropdown's width.
-    // DIVERGENCE: Down in that sub-menu of item -1 tests the text of its next entry at that word + 0x16 * (DS:9C41 + 1): whatever DGROUP holds there (data at DS:0100..0400, the stack for best_member 0xFF); here it does not move.
+    // DIVERGENCE: Down in that sub-menu of item -1 tests the text of its next entry at that word + 0x16 * (DS:9C41 + 1): whatever DGROUP holds there (data at DS:0100..0400, the stack for top-scoring-member 0xFF); here it does not move.
     private void KeyboardStep(int key)
     {
         if (_ui.Mouse.Right)
@@ -611,7 +611,7 @@ public sealed class MenuBar
                     return;
                 }
                 var next = _kbMenu + 1;
-                // C: has_items 2 is skipped; the move is made only onto an entry of has_items 1
+                // C: carries-items-test 2 is skipped; the move is made only onto an entry of carries-items-test 1
                 while (next < Menus.Count && Menus[next].Opens == 2)
                 {
                     next++;
@@ -644,7 +644,7 @@ public sealed class MenuBar
         }
     }
 
-    /// <summary>Alt-Q in keyboard menu mode (quit_to_dos); HotKeys.QuitToDos.</summary>
+    /// <summary>Alt-Q in keyboard menu mode (exit-to-system); HotKeys.QuitToDos.</summary>
     public Action? QuitToDos { get; set; }
 
     private void Recolor(int x, int y, int width, int height, byte from, byte to) =>

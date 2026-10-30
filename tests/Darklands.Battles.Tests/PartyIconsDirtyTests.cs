@@ -9,7 +9,7 @@ using Darklands.Simulation;
 namespace Darklands.Battles.Tests;
 
 /// <summary>
-/// The party information (F6) sets party_icons_dirty (DS:9C46, R034+0x119C); the loops of the alchemy, camp and prayer screens test it after
+/// The party information (F6) sets party-icons-stale (DS:9C46, R034+0x119C); the loops of the alchemy, camp and prayer screens test it after
 /// the menu bar and draw the screen again. Here the party information is stood in for by a call that paints the whole screen: what the
 /// pass after it presents must be what was shown before it.
 /// </summary>

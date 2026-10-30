@@ -19,8 +19,8 @@ public static class LootSharing
     /// instead of the candidate's, so an empty slot can become the leader, and a leader whose
     /// slot is empty is never replaced.
     /// </summary>
-    // orig: loot_distribute R040+0x0000 (1462:0000) draft (byte-matched function), the leader block; tests: TradingAndLootTests
-    // DORMANT: loot_distribute's "Could not open list file" exit (DARKLAND.LST missing); the item list is loaded with the game here.
+    // orig: loot-split-entry R040+0x0000 (1462:0000) draft (byte-matched function), the leader block; tests: TradingAndLootTests
+    // DORMANT: loot-split-entry's "Could not open list file" exit (DARKLAND.LST missing); the item list is loaded with the game here.
     public static void ReplaceFallenLeader(GameState s)
     {
         var party = s.Party;
@@ -31,7 +31,7 @@ public static class LootSharing
         }
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            // BUG: the second test reads party[leader] instead of party[i] (as in the source; loot_distribute is byte-matched): reproduced, no fix flag.
+            // BUG: the second test reads party[leader] instead of party[i] (as in the source; loot-split-entry is byte-matched): reproduced, no fix flag.
             if (party.Slot(i).Status != CharacterStatus.Dead && party.Slot(party.LeaderIndex).Status != CharacterStatus.Empty)
             {
                 party.LeaderIndex = i;
@@ -45,7 +45,7 @@ public static class LootSharing
     /// 0x61, types 0x17, 0x18 and 0x40..0x42 get quality 25, types 0x19 and 0x1A keep theirs
     /// (1..99), and all others lose 10 quality points (1..99).
     /// </summary>
-    // orig: loot_distribute R040+0x0000 (1462:0000) draft (byte-matched function), the quality loop; tests: TradingAndLootTests
+    // orig: loot-split-entry R040+0x0000 (1462:0000) draft (byte-matched function), the quality loop; tests: TradingAndLootTests
     public static void PrepareFoundItems(IList<ItemStack> items)
     {
         for (var i = 0; i < items.Count; i++)
@@ -79,7 +79,7 @@ public static class LootSharing
     // orig: R040+0x01C8 (1462:01C8) draft (byte-matched function), the cash lines; tests: TradingAndLootTests
     public static Money TakeCash(GameState s, ref Money found)
     {
-        // C: cash[0] = 0; cash[1] = clamp_range(0, 10, cash[1]); cash[2] = clamp_range(0, 10, cash[2]) (right-to-left arguments, no draws), then money_add_fgp(party_money, cash[0] re-read = 0, cash[1], cash[2]).
+        // C: cash[0] = 0; cash[1] = limit-to-range(0, 10, cash[1]); cash[2] = limit-to-range(0, 10, cash[2]) (right-to-left arguments, no draws), then purse-add-parts(party-purse, cash[0] re-read = 0, cash[1], cash[2]).
         // C: the three words are written back through the caller's far pointer (the battle's R136+0xE4E0 or a floor tile's cash).
         var cash = new Money(0, (short)Math.Clamp((int)found.Groschen, 0, 10), (short)Math.Clamp((int)found.Pfennigs, 0, 10));
         found = cash;
@@ -95,8 +95,8 @@ public static class LootSharing
     /// row past the end): its stale code and quality go on the pile (item 0, quality 0 for an
     /// entry never written) and it loses an item (0 wraps to 255, a 1 deletes it).
     /// </summary>
-    // orig: R040+0x0C22 (1462:0C22) draft (unmatched; checked against asm 0C96..0D87), case P: R040+0x1242 then item_take_one_vec; tests: TradingAndLootTests
-    // C: the screen checks only n_items[who] != 0; inventories[who][top + sel] is read whatever the count (Pack).
+    // orig: R040+0x0C22 (1462:0C22) draft (unmatched; checked against asm 0C96..0D87), case P: R040+0x1242 then item-take-single-overlay-entry; tests: TradingAndLootTests
+    // C: the screen checks only item-count-local[who] != 0; inventories[who][top + sel] is read whatever the count (Pack).
     public static int Put(GameState s, IList<ItemStack> pile, int member, int index)
     {
         var pack = s.Party.Slot(member).Pack;
@@ -129,12 +129,12 @@ public static class LootSharing
     /// the item list); an entry reaching 0 leaves the pile. The item leaves the pile even when
     /// the member's pack is full. Returns the member's stack count, or −1 when there is no such entry.
     /// </summary>
-    // orig: R040+0x0C22 draft (unmatched; checked against asm 0DF6..0F07), case G: add_item_rec {type, kind +0x1E, quality, 1, weight +0x25} then R040+0x12EC (byte-matched); tests: TradingAndLootTests
+    // orig: R040+0x0C22 draft (unmatched; checked against asm 0DF6..0F07), case G: give-item-record-form {type, kind +0x1E, quality, 1, weight +0x25} then R040+0x12EC (byte-matched); tests: TradingAndLootTests
     public static int Get(GameState s, IList<ItemStack> pile, int member, int index)
     {
         // DIVERGENCE: a row past the pile's end hands out a stale entry in the original (it only checks the pile is not empty); nothing happens here.
         //   That entry (G at R040+0x0DF6) is undefined memory: the battle hands the screen a new 6000-byte DOS block
-        //   (loot_screen R014+0xE530: alloc_buffer root 05BA:0004, DOS 48h, which clears nothing) right after freeing its battlefield
+        //   (loot-view R014+0xE530: request-work-buffer root 05BA:0004, DOS 48h, which clears nothing) right after freeing its battlefield
         //   buffers, and copies only count * 6 bytes into it (R014+0xE56C); a removal (R040+0x12EC) moves entry [count] down, which is
         //   that block's leftover too. So the code, quality and count past the end are whatever DOS memory held (a code past the item
         //   table would be stored in the pack and saved): not reproducible, and the C# keeps the pack safe. The battle is the only caller.

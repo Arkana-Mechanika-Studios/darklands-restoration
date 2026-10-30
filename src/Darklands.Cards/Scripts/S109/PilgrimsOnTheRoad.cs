@@ -80,7 +80,7 @@ public sealed class PilgrimsOnTheRoad : Card
 
     /// <summary>All mounts and pack animals (items with the mount flag) are given away.</summary>
     // orig: R109+0x1FBC (19FD:036C) matched; tests: CardSmokeTests
-    // C: remove_items_flags(i, 0x2000, 0) passes the long mask as two words, low first: 0x2000.
+    // C: items-take-out-by-flags(i, 0x2000, 0) passes the long mask as two words, low first: 0x2000.
     private static void GiveTheMounts(CardContext c)
     {
         c.PassHours(3);
@@ -99,7 +99,7 @@ public sealed class PilgrimsOnTheRoad : Card
 
     /// <summary>One to three days' escort to the nearest city, where the party arrives (its map position does not move).</summary>
     // orig: R109+0x2076 (19FD:0426) matched; tests: CardSmokeTests
-    // C: load_city(cur_loc = nearest_city(party_x, party_y)).
+    // C: city-read(location-now = closest-city(party-map-column, party-map-row)).
     private static void EscortThem(CardContext c)
     {
         c.Screen.Text(4);

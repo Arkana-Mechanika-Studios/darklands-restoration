@@ -26,9 +26,9 @@ internal static class ScreenDrawing
         }
     }
 
-    // orig: draw_text_wrapped = root 0265:0134 draft, through CardTextLayout (no hot spots, no icon)
+    // orig: text-paint-wrapped = root 0265:0134 draft, through CardTextLayout (no hot spots, no icon)
     /// <summary>
-    /// Word-wrapped text as the game's <c>draw_text_wrapped</c>: a column of
+    /// Word-wrapped text as the game's <c>text-paint-wrapped</c>: a column of
     /// <paramref name="width"/> pixels, lines <paramref name="spacing"/> + <paramref name="leading"/> apart.
     /// </summary>
     public static void Wrapped(GameUi ui, string text, int width, int x, int y, byte color, int spacing = 8, int leading = 1) =>
@@ -46,7 +46,7 @@ internal static class ScreenDrawing
     /// The game's framed box: filled with <paramref name="background"/>, a dark outline, a light one a
     /// pixel inside it, and the four corner pieces of COMMONSP.IMG over the corners.
     /// </summary>
-    // orig: draw_frame_box root 0000:2286 draft (bytes match): gfx_fill_rect(w, x, y, cw, ch, bg); x1 = x + cw - 1, y1 = y + ch - 1; four gfx_line of colour 0x86 around (x, y) .. (x1, y1), four of 0x82 around (x + 1, y + 1) .. (x1 - 1, y1 - 1); then gfx_draw_pic of DS:A660 at (x, y), DS:A662 at (x, y1 - 3), DS:A664 at (x1 - 3, y), DS:A666 at (x1 - 3, y1 - 3)
+    // orig: framed-box-paint root 0000:2286 draft (bytes match): gfx-rect-fill(w, x, y, cw, ch, bg); x1 = x + cw - 1, y1 = y + ch - 1; four gfx-line-draw of colour 0x86 around (x, y) .. (x1, y1), four of 0x82 around (x + 1, y + 1) .. (x1 - 1, y1 - 1); then gfx-picture-draw of DS:A660 at (x, y), DS:A662 at (x, y1 - 3), DS:A664 at (x1 - 3, y), DS:A666 at (x1 - 3, y1 - 3)
     public static void FrameBox(Canvas canvas, Content.Formats.Graphics.CommonSprites sprites, int x, int y, int width, int height, byte background)
     {
         const byte Dark = 0x86;
@@ -61,6 +61,6 @@ internal static class ScreenDrawing
         SpriteDrawing.Draw(canvas, sprites.CornerBottomRight, x1 - 3, y1 - 3);
     }
 
-    /// <summary>Waits until the left mouse button is up again (`while (mouse_buttons &amp; 1);`: the keys stay waiting).</summary>
+    /// <summary>Waits until the left mouse button is up again (`while (mouse-button-state &amp; 1);`: the keys stay waiting).</summary>
     public static void WaitForRelease(GameUi ui) => ui.WaitForButtonRelease();
 }

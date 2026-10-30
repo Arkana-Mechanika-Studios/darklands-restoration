@@ -117,7 +117,7 @@ public sealed class JudgeBattleLeadsTests
         Assert.Equal(t.Slots[other].AimLength & 0x7F, c.SequenceLength);
     }
 
-    /// <summary>R016+0x00FC..: combat_keys matches whole key words: a keypad digit scrolls the view whatever Shift, a letter typed with another
+    /// <summary>R016+0x00FC..: fight-keys matches whole key words: a keypad digit scrolls the view whatever Shift, a letter typed with another
     /// scan code (Alt and the keypad) is no case.</summary>
     [Fact]
     public void TheBattleKeysAreWholeWords()
@@ -144,7 +144,7 @@ public sealed class JudgeBattleLeadsTests
 
     /// <summary>
     /// R014+0xF284 reads its intersection point from two stack words it never set when neither the box's bottom nor its top is crossed
-    /// first: what the last clip test at that stack place left. A run of line tests made one after another from one frame (enemy_turn's
+    /// first: what the last clip test at that stack place left. A run of line tests made one after another from one frame (enemy-move-phase's
     /// missile tests, R018+0x0BE7) keeps it; a line test of its own starts from other leftovers (probed in the gate battle: outside the box),
     /// taken as a clean stack. The wall east of cell (21, 3) and the line (659, 61)-(897, 97) of that battle (round B1 tier 2).
     /// </summary>
@@ -163,7 +163,7 @@ public sealed class JudgeBattleLeadsTests
     }
 
     /// <summary>
-    /// R023+0x19BD..0x19C2: leave_level drops the enemy with the lowest 100 × endurance / maximum, the product kept in 16 bits
+    /// R023+0x19BD..0x19C2: level-exit drops the enemy with the lowest 100 × endurance / maximum, the product kept in 16 bits
     /// (round B2 lead L01). Endurances 2/4, 1/10 and 20/20: the 10 % enemy goes; a product cut to a byte would drop the 2/4 one.
     /// </summary>
     [Fact]

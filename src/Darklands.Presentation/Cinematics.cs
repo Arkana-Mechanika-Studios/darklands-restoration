@@ -69,12 +69,12 @@ public sealed class Cinematics(GameUi ui)
     public void Opening() => PlayScenes(OpeningScenes, afterSkip: [0, 7], measured: true);
 
     /// <summary>The party has perished (after a battle).</summary>
-    // orig: see DeathCue; the same in run_battle R029+0x2278 (music_play(0x12), mouse_hide, then the film unless DS:0BF2)
+    // orig: see DeathCue; the same in battle-driver R029+0x2278 (music_play(0x12), pointer-hide, then the film unless DS:0BF2)
     public void Death() => PlayScenes([(DeathCue, Animations ? "death" : null)]);
 
     /// <summary>The party has perished while time passed: the death tune, the card engine's stop, then the film.</summary>
-    // orig: hours_pass R029+0x255A (0E76:255A) draft (bytes match): mouse_hide, music_play(0x12), cards_shutdown_vec (R043+0x054E ends with
-    //   sound_play(1), root 047C:078A), then root 030B:0004("death") unless DS:0BF2; tests: MusicTests
+    // orig: hours-elapse R029+0x255A (0E76:255A) draft (bytes match): pointer-hide, music_play(0x12), cards-teardown-overlay-entry (R043+0x054E ends with
+    //   sound-start(1), root 047C:078A), then root 030B:0004("death") unless DS:0BF2; tests: MusicTests
     public void DeathAfterShutdown()
     {
         var pointer = ui.PointerVisible;
@@ -96,8 +96,8 @@ public sealed class Cinematics(GameUi ui)
     /// one. The speech samples (ENDDARK1/2.DGT) are started by the sound driver with their tunes.
     /// </summary>
     // orig: R133+0x186C (1971:04DC) matched - tune / root 030B:0004 pairs
-    // orig: R133+0x186C: inside `if (!DS:0BF2)`, cards_shutdown R043+0x054E first, which ends with sound_play(1) (root 047C:078A)
-    // DIVERGENCE: cards_shutdown's files (charactr.tmp, locs.tmp, events.tmp) and frees are not needed; only its sound_play(1) is played.
+    // orig: R133+0x186C: inside `if (!DS:0BF2)`, cards-teardown R043+0x054E first, which ends with sound-start(1) (root 047C:078A)
+    // DIVERGENCE: cards-teardown's files (charactr.tmp, locs.tmp, events.tmp) and frees are not needed; only its sound-start(1) is played.
     public bool Film(IReadOnlyList<Cards.FilmStep> steps)
     {
         if (!Animations)
@@ -204,8 +204,8 @@ public sealed class Cinematics(GameUi ui)
     // C: an int division (rate 10: 6 ticks, 100 ms on the 60 Hz tick); the decoder reads the 'Z' and the rate as the header's first word.
     private static int CelTicks(Pan pan) => 60 / Math.Max(1, pan.Header.Magic >> 8);
 
-    // orig: root 030B:0004(name): the name gets ".PAN" (the "." and the strcat in 0150), fab_open; a missing file makes the open fail and
-    //   nothing is shown (`if (fab_open(buf))`)
+    // orig: root 030B:0004(name): the name gets ".PAN" (the "." and the strcat in 0150), picture-file-open; a missing file makes the open fail and
+    //   nothing is shown (`if (picture-file-open(buf))`)
     private Pan? Load(string animation)
     {
         var file = animation.ToUpperInvariant() + ".PAN";

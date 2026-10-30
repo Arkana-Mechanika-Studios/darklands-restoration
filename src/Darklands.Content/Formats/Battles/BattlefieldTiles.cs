@@ -19,10 +19,10 @@ public sealed record FurnitureTile(RowRunSprite Sprite, int[] BoxX, int[] BoxY, 
 
 /// <summary>
 /// The tiles of one battlefield, loaded from the BC catalog as its terrain description says
-/// (<c>battle_tiles_load</c>): battlefield tile numbers 1..15 of each kind. Index 0 and unused
+/// (<c>battle-tileset-load</c>): battlefield tile numbers 1..15 of each kind. Index 0 and unused
 /// numbers are null.
 /// </summary>
-// orig: battle_tiles_load R002+0x0C8C (0E76:0C8C) draft; tests: BattlefieldTilesTests
+// orig: battle-tileset-load R002+0x0C8C (0E76:0C8C) draft; tests: BattlefieldTilesTests
 // Record layouts (.flc 4, .ffc 6, .nwc 10, .nfc 10, .wwc 10, .wfc 10, .frc 0x28 bytes) checked against the real BC members.
 // DIVERGENCE: the original copies the used tiles into one buffer and keeps paragraph segments; it also sets
 // DS:C8B7 ("keep" floor set) and DS:C907 (some furniture varies) and reserves a buffer for the varying
@@ -66,7 +66,7 @@ public sealed class BattlefieldTiles
     /// </summary>
     // orig: R024+0x07A2 (1EF8:07A2) draft (checked against the asm): "%Fs.frc" of the set named at level + 0x33C8 loaded from the catalog
     // "bc" (root 05D9:019A); its record at level + 0x33D2 copied to the tile at level + 0x33D1
-    // C: as battle_tiles_load copies each tile of the terrain's furniture set
+    // C: as battle-tileset-load copies each tile of the terrain's furniture set
     // DIVERGENCE: a tile outside 0..15 or a record past the file's end writes or reads past the original's tables; here nothing changes.
     public FurnitureTile? Vary(CatArchive tileSets, string set, int tile, int record)
     {

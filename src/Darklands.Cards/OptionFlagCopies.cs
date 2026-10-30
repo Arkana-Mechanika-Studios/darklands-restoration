@@ -3,10 +3,10 @@ namespace Darklands.Cards;
 
 /// <summary>
 /// The option lines whose state each card copies from the global <c>opt_flag_k</c> every round
-/// (<c>opt_on[k] = opt_flag_k</c>), and those of them the card never assigns (they show what the
+/// (<c>card-option-enabled[k] = opt_flag_k</c>), and those of them the card never assigns (they show what the
 /// card before left), as bit masks of k, by card class.
 /// </summary>
-// orig: opt_flag_0..9 DS:EE76..EE88 and the copy loop of every card function (e.g. R091+0x0BA8 matched)
+// orig: card-option-flag-0..9 DS:EE76..EE88 and the copy loop of every card function (e.g. R091+0x0BA8 matched)
 internal static class OptionFlagCopies
 {
     private static readonly Dictionary<string, (int Copied, int Stale)> Masks = new(StringComparer.Ordinal)
@@ -328,7 +328,7 @@ internal static class OptionFlagCopies
         ["BanditsNearTheCamp"] = (0x3FF, 0x000), // R134+0x152C
         ["HuntsmanAtTheCamp"] = (0x3FF, 0x000), // R134+0x0C1C
         ["SpiderWarehousePoster"] = (0x3FF, 0x000), // R134+0x0000
-        // The cards without C (asm): the stores opt_on[k] = (char)opt_flag_k of their loops, read from the disassembly; each assigns every flag it copies.
+        // The cards without C (asm): the stores card-option-enabled[k] = (char)opt_flag_k of their loops, read from the disassembly; each assigns every flag it copies.
         ["AlchemistsShop"] = (0x3FF, 0x000), // R066+0x0D48
         ["CathedralByDay"] = (0x3FF, 0x000), // R056+0x18C8
         ["ChallengedByTheWatch"] = (0x07F, 0x000), // R044+0x099E

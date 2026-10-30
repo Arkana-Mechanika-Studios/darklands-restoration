@@ -29,7 +29,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R125+0x1ADA, R125+0x2214, R125+0x22B6
 // DORMANT (generated): option slots 10..19 keep the default handler R125+0x22B6 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatAltarPreparation : Card
 {
@@ -57,7 +57,7 @@ public sealed class SabbatAltarPreparation : Card
         // DORMANT: in text block 3 the option lines 0..3 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         // DORMANT: in text block 10 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
-            // orig: R125+0x1BB8 / R125+0x1BE0 matched — refuse (an int function returning options_block; ignored).
+            // orig: R125+0x1BB8 / R125+0x1BE0 matched — refuse (an int function returning settings-block; ignored).
             new MenuLine(_ => menu.Offer(1, 2, 3), unknown),
             // orig: R125+0x1C18 / R125+0x1C42 matched — help.
             new MenuLine(_ => menu.Offer(10, 6, 7), assured),
@@ -84,7 +84,7 @@ public sealed class SabbatAltarPreparation : Card
     }
 
     // orig: R125+0x1ADA matched
-    // C: no random argument; a result outside 0..4 leaves next_card unchanged (the card stays).
+    // C: no random argument; a result outside 0..4 leaves following-card unchanged (the card stays).
     private static void FightTheWitches(CardContext c)
     {
         switch (c.RunBattle(0x4C, -1, 0x29, 3, 2, 0x0D, 2, 6, -1, 0, 0))
@@ -128,7 +128,7 @@ public sealed class SabbatAltarPreparation : Card
     }
 
     // orig: R125+0x1F46 matched
-    // C: party_max_skill_sum sets best_member, which the hint reads (as unsigned char).
+    // C: party-ability-top-sum sets top-scoring-member, which the hint reads (as unsigned char).
     private static OptionHint TalkingChance(CardContext c) =>
         OptionHint.ChanceOf(c.PartyMaxSkillSum((int)Skill.SpeakCommon, (int)Skill.Streetwise), c.BestMember);
 
@@ -162,7 +162,7 @@ public sealed class SabbatAltarPreparation : Card
 
     /// <summary>The Virtue lost is that of whoever the last party query found.</summary>
     // orig: R125+0x1F66 matched
-    // C: add_skill reads best_member (as unsigned char) as some earlier query left it (stale global).
+    // C: raise-skill-by reads top-scoring-member (as unsigned char) as some earlier query left it (stale global).
     private static void DrawThePentagrams(CardContext c)
     {
         ShowPicture(c, Picture);

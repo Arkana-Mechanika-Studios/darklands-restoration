@@ -6,7 +6,7 @@ using Darklands.Presentation.Graphics;
 namespace Darklands.Presentation;
 
 /// <summary>The player asked to leave the game (window closed or Alt-Q confirmed).</summary>
-// orig: quit_to_dos root 0000:13A0 draft (matches the bytes in the file's matching group): after "Quit to DOS? y/n" -> yes: shutdown, delete the temporary save "dk.tmp", exit(0); also exit_if_requested root 0000:1338 when the exit flag is set
+// orig: exit-to-system root 0000:13A0 draft (matches the bytes in the file's matching group): after "Quit to DOS? y/n" -> yes: shutdown, delete the temporary save "dk.tmp", exit(0); also quit-check root 0000:1338 when the exit flag is set
 // DIVERGENCE: the game leaves through an exception that unwinds to DarklandsGame.Run (nothing to shut down on a PC host, no dk.tmp)
 public sealed class QuitGameException : Exception
 {
@@ -14,7 +14,7 @@ public sealed class QuitGameException : Exception
 }
 
 /// <summary>Nobody is left in the party: the death film has been shown and the game is over.</summary>
-// orig: hours_pass R029+0x255A and run_battle R029+0x2278 end the program with exit_ after the death film
+// orig: hours-elapse R029+0x255A and battle-driver R029+0x2278 end the program with exit_ after the death film
 // DIVERGENCE: the original exits to DOS (exit_) after the death film; here the player comes back to the start screen.
 public sealed class GameOverException : Exception
 {
@@ -22,8 +22,8 @@ public sealed class GameOverException : Exception
 }
 
 /// <summary>One thing the player did: a key press, or a mouse click at a screen position.</summary>
-// orig: key_pressed()/get_key() of the graphics driver (root 047C:073D / root 047C:0744, root 047C:073D and 047C:0744, asm, BIOS scan code in the high byte and the character in the low) and the mouse driver's click record (struct mouse { f0, click, x, y } returned by root 047C:1320(6, 0, 0, 0)); status asm
-// DIVERGENCE: the original polls: a loop tests key_pressed(), mouse_buttons (bit 1 left, 2 right, held) and the click counter itself; this record is one event of an edge-triggered queue, so a button held across screens produces one PlayerAction, not many.
+// orig: key-waiting-test()/read-key() of the graphics driver (root 047C:073D / root 047C:0744, root 047C:073D and 047C:0744, asm, BIOS scan code in the high byte and the character in the low) and the mouse driver's click record (struct mouse { f0, click, x, y } returned by root 047C:1320(6, 0, 0, 0)); status asm
+// DIVERGENCE: the original polls: a loop tests key-waiting-test(), mouse-button-state (bit 1 left, 2 right, held) and the click counter itself; this record is one event of an edge-triggered queue, so a button held across screens produces one PlayerAction, not many.
 public readonly record struct PlayerAction(int Key, int X, int Y, MouseButtons Click)
 {
     public bool IsKey => Key != Keys.None;
@@ -37,7 +37,7 @@ public readonly record struct PlayerAction(int Key, int X, int Y, MouseButtons C
 /// The screen and the player, for code that runs step by step like the original: draw,
 /// then wait for the player. Every wait keeps the window responsive and shows the pointer.
 /// </summary>
-// orig: the screen/key/mouse/timing calls the C screens use directly: gfx_* (root 047c, asm), key_pressed/get_key, menu_bar_run root 0000:0000 (which calls hot_keys on every poll, see HotKeys), delay_ticks R030+0x3096 (1767:0046) matched; tests: none (needs a host)
+// orig: the screen/key/mouse/timing calls the C screens use directly: gfx_* (root 047c, asm), key-waiting-test/read-key, menu-bar-loop root 0000:0000 (which calls hotkey-table on every poll, see HotKeys), wait-ticks R030+0x3096 (1767:0046) matched; tests: none (needs a host)
 // DIVERGENCE: waits sleep 16 ms per frame instead of spinning; the pointer (the COMMONSP.IMG gauntlet) is drawn into a copy of the screen (the original draws the mouse cursor through the driver); F12 saves a screenshot (host feature).
 public sealed class GameUi
 {
@@ -97,10 +97,10 @@ public sealed class GameUi
     private TextPainter? _cardText;
 
     /// <summary>The card window's font slot as the boxes drawn in it take it: 3, but 1 while the menu bar's loop runs (its hot keys included).</summary>
-    // orig: root 0000:0006..0x001E: menu_bar_run keeps the card window's colour and font (DS:017C -> +0x0C, +0x10) and sets the font to 1;
-    //   root 0000:0029..0x0033 runs hot_keys (root 0000:0CAA) for a waiting key with that font; root 0000:014C..0x0158 and 0x019D..0x01A9
+    // orig: root 0000:0006..0x001E: menu-bar-loop keeps the card window's colour and font (DS:017C -> +0x0C, +0x10) and sets the font to 1;
+    //   root 0000:0029..0x0033 runs hotkey-table (root 0000:0CAA) for a waiting key with that font; root 0000:014C..0x0158 and 0x019D..0x01A9
     //   put both back before calling a chosen item or sub-item, root 0000:01BF..0x01C5 at the end. So a box of a hot key (Alt-S's "Saving
-    //   Game", Alt-Q's question, Alt-P, the Alt-D / F / M / C messages) is in font 1, the same box from the menu in font 3. load_game
+    //   Game", Alt-Q's question, Alt-P, the Alt-D / F / M / C messages) is in font 1, the same box from the menu in font 3. game-load-entry
     //   R037+0x8B76 sets the font to 3 first. checked against asm and the original's screen (vis10 session D-b797f7, local/batch/batpal)
     public int CardWindowFont { get; set; } = 3;
 
@@ -112,7 +112,7 @@ public sealed class GameUi
         _ => new TextPainter(Assets.Font(CardWindowFont)),
     };
 
-    /// <summary>Runs <paramref name="run"/> as menu_bar_run runs its part: with the card window's font set to 1, put back after.</summary>
+    /// <summary>Runs <paramref name="run"/> as menu-bar-loop runs its part: with the card window's font set to 1, put back after.</summary>
     public T InMenuBarLoop<T>(Func<T> run)
     {
         var font = CardWindowFont;
@@ -166,7 +166,7 @@ public sealed class GameUi
     }
 
     /// <summary>The palette was set: the DAC shows it until each cycle's next step.</summary>
-    // C: set_palette (root 0410:0364) writes all 768 bytes of the DAC (holding DS:07D8 meanwhile); a cycle writes its range at its next step
+    // C: palette-load (root 0410:0364) writes all 768 bytes of the DAC (holding DS:07D8 meanwhile); a cycle writes its range at its next step
     public void PaletteSet() => Cycles.PaletteSet();
 
     // orig: root 047C:000A: `cmp byte [7D8h], 0 / je / lcall 047C:042A` on every frame of the timer (70.086 Hz), the frame left out of the
@@ -211,16 +211,16 @@ public sealed class GameUi
     /// <summary>
     /// A tester's aid, off in play (DARKLANDS_SOUND_LOG in the headless host): receives "music x" for each music_play(x) request, before the
     /// option makes of it what it does; the driver's own commands ("sound n") are logged by the host around <see cref="Audio"/>.
-    /// tools/oracle/lockstep.py compares both with the original's music_play (R043+0x09AE) and sound_play (root 047C:078A) calls.
+    /// tools/oracle/lockstep.py compares both with the original's music_play (R043+0x09AE) and sound-start (root 047C:078A) calls.
     /// </summary>
     public Action<string>? SoundLog { get; set; }
 
     /// <summary>Options toggled by the hot keys (sound effects, music).</summary>
-    // orig: opt_sound / opt_music (DGROUP bytes 01BF / 01BE, saved with the game)
+    // orig: sound-setting / music-setting (DGROUP bytes 01BF / 01BE, saved with the game)
     public GameOptions Options { get; set; } = new();
 
     /// <summary>Plays a music cue unless music is off; then it silences instead.</summary>
-    // orig: music_play = thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) `if (opt_music) sound_play(x); else sound_play(1);` (sound_play(1) stops the music)
+    // orig: music_play = thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) `if (music-setting) sound-start(x); else sound-start(1);` (sound-start(1) stops the music)
     public void PlayMusic(int tune)
     {
         SoundLog?.Invoke($"music {tune}");
@@ -255,11 +255,11 @@ public sealed class GameUi
     }
 
     /// <summary>Redraws the current screen after a full screen (a character sheet, the party information) has been shown over it; the screen that is waiting sets this.</summary>
-    // orig: the redraw that follows member_sheet_vec / party_info_screen_vec in card_global_keys, R043+0x1E30 and 0c44: R043+0x1E82 (card) or the label `redraw` of R030+0x0C44 (map)
+    // orig: the redraw that follows member-sheet-overlay-entry / party-info-overlay-entry in card-hotkeys, R043+0x1E30 and 0c44: R043+0x1E82 (card) or the label `redraw` of R030+0x0C44 (map)
     public Action? Redraw { get; set; }
 
     /// <summary>Throws away the keys waiting.</summary>
-    // orig: flush_keys root 0000:1384: `while (key_pressed()) get_key();`
+    // orig: key-buffer-clear root 0000:1384: `while (key-waiting-test()) read-key();`
     public void FlushKeys()
     {
         while (ReadHostKey(out _))
@@ -290,8 +290,8 @@ public sealed class GameUi
     public Func<int, bool>? GameKey { get; set; }
 
     /// <summary>
-    /// True while the card engine (its menus and wait_continue) or the map waits for input: only these loops take F1..F5, F6 and
-    /// Ctrl-F1..F5 (the original's card_global_keys R043+0x33C6 and the cases of R030+0x0C44); HotKeys looks at it.
+    /// True while the card engine (its menus and press-to-continue) or the map waits for input: only these loops take F1..F5, F6 and
+    /// Ctrl-F1..F5 (the original's card-hotkeys R043+0x33C6 and the cases of R030+0x0C44); HotKeys looks at it.
     /// </summary>
     public bool SheetKeys { get; set; }
 
@@ -383,7 +383,7 @@ public sealed class GameUi
     public string? ScreenshotFolder { get; set; }
 
     /// <summary>Shows the screen (with the pointer on top) and processes window events.</summary>
-    // orig: nothing: the original draws straight into video memory; exit_if_requested root 0000:1338 is the check for a quit request that the loops call
+    // orig: nothing: the original draws straight into video memory; quit-check root 0000:1338 is the check for a quit request that the loops call
     public void Present()
     {
         _host.Input.Pump();
@@ -399,7 +399,7 @@ public sealed class GameUi
         source.CopyOwnershipTo(_shown);
         if (PointerVisible)
         {
-            // orig: mouse_set_cursor(0, 0, cursor_default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left corner
+            // orig: pointer-shape-set(0, 0, mouse-cursor-default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left corner
             SpriteDrawing.Draw(new Canvas(_shown), Assets.CommonSprites.Pointer, Mouse.X, Mouse.Y);
         }
         _host.Video.Present(_shown);
@@ -412,7 +412,7 @@ public sealed class GameUi
     /// The graphics driver's picture page (page 1) as the last screen that keeps it here left it: the load screen's picture, which a card
     /// that only names itself right after a load restores its text window from.
     /// </summary>
-    // orig: pic_draw_pal(1, "pics\loadscrn.pic") R037+0x83FE; the card window's text area is copied from page 1 (R043+0x3376)
+    // orig: image-paint-palette(1, "pics\loadscrn.pic") R037+0x83FE; the card window's text area is copied from page 1 (R043+0x3376)
     public SavedScreen? PicturePage { get; set; }
 
     /// <summary>
@@ -420,7 +420,7 @@ public sealed class GameUi
     /// <see cref="ReleaseScreen"/> (the card's first text, a battle) or the next <see cref="Poll"/> (a screen's own wait), a present
     /// shows the screen as it was here.
     /// </summary>
-    // orig: card_load R043+0x0A9A draws the picture on page 1 and sets DS:EE55 ("picture not yet shown"); the first card text or option list
+    // orig: card-run R043+0x0A9A draws the picture on page 1 and sets DS:EE55 ("picture not yet shown"); the first card text or option list
     //   (R043+0x0E40 / R043+0x0F2A) copies the page to the screen; a battle shows its own screen (R014+0x02F8)
     // C: only R043+0x0C70, R043+0x0E93 and R043+0x0FA4 read DS:EE55: the waits that read the keyboard alone (PollKeyOnly, PollWithoutBar,
     //   ReadKey, WaitForButtonRelease) do not show the picture, and none of them is reached while a picture is held (instrumented replay of
@@ -454,8 +454,8 @@ public sealed class GameUi
     }
 
     /// <summary>The next key press or click, or null if the player did nothing this frame.</summary>
-    // orig: one pass of the usual wait loop: menu_bar_run(DS:9419, 0) (hot_keys when a key is waiting) then key_pressed() / mouse_buttons; GameKey stands for hot_keys
-    // C: hot_keys only takes the keys it knows (Alt-Q ... F10) and leaves every other key in the buffer for the screen; GameKey returning false does the same. Keys the hot keys take never reach the screen, as here.
+    // orig: one pass of the usual wait loop: menu-bar-loop(DS:9419, 0) (hotkey-table when a key is waiting) then key-waiting-test() / mouse-button-state; GameKey stands for hotkey-table
+    // C: hotkey-table only takes the keys it knows (Alt-Q ... F10) and leaves every other key in the buffer for the screen; GameKey returning false does the same. Keys the hot keys take never reach the screen, as here.
     public PlayerAction? Poll()
     {
         ReleaseScreen();
@@ -476,11 +476,11 @@ public sealed class GameUi
             }
             if (key == Keys.F10 && MenuBar is not null)
             {
-                // orig: hot_keys case 0x4400: menu mode DS:9C26 = 1, then menu_bar_run's loop drives the bar
+                // orig: hotkey-table case 0x4400: menu mode DS:9C26 = 1, then menu-bar-loop's loop drives the bar
                 MenuBar.Run(keyboard: true);
                 return null;
             }
-            // orig: root 0000:0029..0x0033 runs hot_keys with the font 1; F1..F5 / Ctrl-F1..F5 (GameKey's too) are the screen's own keys,
+            // orig: root 0000:0029..0x0033 runs hotkey-table with the font 1; F1..F5 / Ctrl-F1..F5 (GameKey's too) are the screen's own keys,
             //   read with the font put back (HotKeys.InHotKeyTable)
             if (GameKey is { } gameKey && (HotKeys.InHotKeyTable(key) ? InMenuBarLoop(() => gameKey(key)) : gameKey(key)))
             {
@@ -497,7 +497,7 @@ public sealed class GameUi
         _previousButtons = buttons;
         if ((buttons & MouseButtons.Right) != 0 && MenuBar is not null)
         {
-            // orig: root 0000:0000 root 0000:0063: `if (mouse_buttons & 2)` (the button held, not pressed) the bar runs while it is held;
+            // orig: root 0000:0000 root 0000:0063: `if (mouse-button-state & 2)` (the button held, not pressed) the bar runs while it is held;
             // a left button still held afterwards is seen by the screen's own test (here: as a press at the next poll)
             MenuBar.Run(keyboard: false);
             _previousButtons = Mouse.Buttons & ~MouseButtons.Left;
@@ -612,7 +612,7 @@ public sealed class GameUi
     public void Idle() => _host.Clock.Sleep(FrameMilliseconds);
 
     /// <summary>Waits for the next key press or click.</summary>
-    // orig: loops like `for (;;) { menu_bar_run(...); if (mouse_buttons & 1) ...; if (key_pressed()) ... }` in wait_continue R043+0x32B6 (150B:2826) and R043+0x29D0
+    // orig: loops like `for (;;) { menu-bar-loop(...); if (mouse-button-state & 1) ...; if (key-waiting-test()) ... }` in press-to-continue R043+0x32B6 (150B:2826) and R043+0x29D0
     public PlayerAction WaitForAction()
     {
         while (true)
@@ -626,10 +626,10 @@ public sealed class GameUi
     }
 
     /// <summary>Waits a while, showing the screen; a key or click ends the wait early when allowed.</summary>
-    // orig: delay_ticks(n) (R030+0x3096): spins until clock() has advanced by n, no input checks at all; show_message waits root 0410:0302(ticks) (a timer-driver wait, see MessageBox)
+    // orig: wait-ticks(n) (R030+0x3096): spins until clock() has advanced by n, no input checks at all; notice-display waits root 0410:0302(ticks) (a timer-driver wait, see MessageBox)
     // C: a clock() tick is one millisecond (root 06A1:2682 multiplies the elapsed seconds by 1000, MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit,
     //   see MessageBox and Cinematics.
-    // C: a delay that cannot be skipped reads nothing (delay_ticks spins on clock() alone): a key pressed meanwhile stays waiting for the screen's next look, as in the BIOS buffer.
+    // C: a delay that cannot be skipped reads nothing (wait-ticks spins on clock() alone): a key pressed meanwhile stays waiting for the screen's next look, as in the BIOS buffer.
     public void Wait(int milliseconds, bool skippable = true)
     {
         var end = _host.Clock.Milliseconds + milliseconds;
@@ -715,7 +715,7 @@ public sealed class GameUi
     /// The party information screen was shown since the last screen that tested for it: the screens of the loops with that test draw
     /// themselves again (<see cref="KeyAfterTheMouse"/>).
     /// </summary>
-    // orig: DS:9C46, set by party_info_close (R034+0x119C, the only writer of 1) and cleared by the redraw after root 0000:0000 in the loops of
+    // orig: DS:9C46, set by party-info-screen-close (R034+0x119C, the only writer of 1) and cleared by the redraw after root 0000:0000 in the loops of
     //   R033+0x0000, R033+0x16FA, R034+0x022C, R036+0x0082, R032+0x0000 (barter), R031+0x0124 (the sheet) and the other screens that test it
     // C: the screens with that test and no GameUi.Redraw: alchemy (both pages), camp, prayer, barter, the sheet; R035 (the item store) and
     //   R040 (loot) have none (the flag stays set).
@@ -777,8 +777,8 @@ public sealed class GameUi
         while (DosClock.Milliseconds(_host.Clock.Milliseconds) < end);
     }
 
-    /// <summary>Waits until the left mouse button is let go (the original's `do {} while (mouse_buttons & 1)` after a click it acts on).</summary>
-    // orig: R043+0x2A3C wait_continue's tail and the card engine's click handling (R043 150B) wait the button out before going on;
+    /// <summary>Waits until the left mouse button is let go (the original's `do {} while (mouse-button-state & 1)` after a click it acts on).</summary>
+    // orig: R043+0x2A3C press-to-continue's tail and the card engine's click handling (R043 150B) wait the button out before going on;
     //   without it the next screen sees the button still held (the world map then steers the party toward the pointer).
     public void WaitForButtonRelease()
     {
@@ -791,8 +791,8 @@ public sealed class GameUi
     }
 
     /// <summary>Waits a while, showing the screen; true as soon as a key is pressed.</summary>
-    // orig: loops that test key_pressed() while the PAN player or a delay runs (e.g. `if (kbhit()) return;` in root 030B:0150, `!key_pressed() && !(mouse_buttons & 1)` in R043+0x3494)
-    // C: the key stays in the buffer in the original (kbhit/key_pressed only look); here it is read, so the caller that skips must act as if the key were still waiting.
+    // orig: loops that test key-waiting-test() while the PAN player or a delay runs (e.g. `if (kbhit()) return;` in root 030B:0150, `!key-waiting-test() && !(mouse-button-state & 1)` in R043+0x3494)
+    // C: the key stays in the buffer in the original (kbhit/key-waiting-test only look); here it is read, so the caller that skips must act as if the key were still waiting.
     public bool WaitForKey(int milliseconds)
     {
         var end = _host.Clock.Milliseconds + milliseconds;

@@ -10,7 +10,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R130+0x1674 (199F:0004) matched; tests: CardSmokeTests
 //   other: R130+0x183C, R130+0x1874
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class BurntShipOfLydwina : Card
 {
@@ -28,12 +28,12 @@ public sealed class BurntShipOfLydwina : Card
         //   R130+0x1874) is never called; it would only clear the option table and the item/saint lists.
         if (!c.Events.FactAnywhere(1, 0x17))
         {
-            // card_text(k, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
+            // card-text-block(k, 2): frame mode 2 drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike).
             c.Screen.Text(0);
             c.Screen.Text(1);
             c.Screen.Text(2);
             c.AddItem(-1, GlobeWithTheTrout);
-            // C: the picture changes go through card_load (a full reload of the card), not card_load_near.
+            // C: the picture changes go through card-run (a full reload of the card), not card-run-near.
             ShowPicture(c, 322);
             c.Screen.Text(3);
             c.Events.Create(-2, c.Here, 0, 0x1C, 0x17, 0, 0, Core.Events.EventLog.Forever, 0, 1);

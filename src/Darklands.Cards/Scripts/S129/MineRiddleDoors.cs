@@ -13,11 +13,11 @@ namespace Darklands.Cards.Scripts;
 //   option 6: action R129+0x04A4; hint R129+0x04B2
 //   other: R129+0x01B2, R129+0x04EA, R129+0x0522
 // DORMANT (generated): option slots 10..19 keep the default handler R129+0x0522 ("screwed up.") and are never shown.
-// C (generated): opt_flag_7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// C (generated): card-option-flag-7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class MissingPatriarchDoor : DwarfMineRiddleDoor
 {
     public override int Number => 340;
@@ -44,11 +44,11 @@ public sealed class MissingPatriarchDoor : DwarfMineRiddleDoor
 //   option 6: action R129+0x09FE; hint R129+0x0A0C
 //   other: R129+0x070C, R129+0x0A44, R129+0x0A7C
 // DORMANT (generated): option slots 10..19 keep the default handler R129+0x0A7C ("screwed up.") and are never shown.
-// C (generated): opt_flag_7/8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// C (generated): card-option-flag-7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class RealmThatBelongsNotDoor : DwarfMineRiddleDoor
 {
     public override int Number => 341;
@@ -76,11 +76,11 @@ public sealed class RealmThatBelongsNotDoor : DwarfMineRiddleDoor
 //   option 7: action R129+0x0FEE; hint R129+0x0FFC
 //   other: R129+0x0C86, R129+0x1034, R129+0x106C
 // DORMANT (generated): option slots 10..19 keep the default handler R129+0x106C ("screwed up.") and are never shown.
-// C (generated): opt_flag_8/9 are never assigned or read here: the card's init zeroes opt_on[0..19], so those lines stay hidden, as in the C#.
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
-// DORMANT (generated): card_saints stays all -1, so no line opens a saint pop-up.
+// C (generated): card-option-flag-8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class HocusPocusDoor : DwarfMineRiddleDoor
 {
     public override int Number => 342;

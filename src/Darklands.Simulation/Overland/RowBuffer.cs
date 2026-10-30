@@ -53,7 +53,7 @@ public sealed class RowBuffer
     //   the other (fgetc, root 06A1:12DC) until each row's runs reach the map's width.
     // BUG: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new
     //   place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from
-    //   overland_open, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced:
+    //   world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced:
     //   the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
     public void Load(int top, int old)
     {

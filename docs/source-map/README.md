@@ -108,3 +108,10 @@ record NNN (9653 overlay functions).
   behavioural claim.
 * The status is tied to the toolchain (MSC 6.00A) and to the reference revision recorded in the local
   mapping; rebuild the mapping after reference changes.
+
+## Credit
+
+The function boundaries, the per-function source status and the reading of what each original routine
+does come from the analysis and the C reconstruction of the Darklands-plus project (MIT licence), which
+this index builds on. Only coordinates, statuses and our own descriptions are published here; none of
+that project's identifiers or sources are part of this repository.

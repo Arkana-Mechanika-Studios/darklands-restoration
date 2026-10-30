@@ -12,7 +12,7 @@ namespace Darklands.Cards.Scripts;
 // orig: R047+0x01A6 (1852:0006) matched; tests: CardSmokeTests
 // DORMANT: R047+0x0FAC (1852:0E0C), the init, gives option lines 9..19 the
 //   "screwed up." handler R047+0x102A and enables them; line 9 is never copied from
-//   opt_flag_9 (which the card sets to 0), so it stays enabled, with no action. The texts have nine
+//   card-option-flag-9 (which the card sets to 0), so it stays enabled, with no action. The texts have nine
 //   option lines, so none of them can be picked.
 public sealed class CityDungeon : Card
 {
@@ -227,7 +227,7 @@ public sealed class CityDungeon : Card
         c.PartyMaxAttributeSum(2, 1);
         var member = c.BestMember;
         c.Variables.Chosen[0] = member;
-        // C: (unsigned char)(best_value / 3).
+        // C: (unsigned char)(top-value-so-far / 3).
         return OptionHint.ChanceOf(Math.Clamp((int)(byte)(c.BestValue / 3), 0, 100), member);
     }
 
@@ -303,8 +303,8 @@ public sealed class CityDungeon : Card
     }
 
     /// <summary>The best Charisma among the able women; the member is the one the attribute query found.</summary>
-    // C: the member is the attribute queries' own word (DS:9A44), which R029 174a sets together with best_member.
-    // C: with no able woman neither word is set and both keep older values; the C# then uses best_member.
+    // C: the member is the attribute queries' own word (DS:9A44), which R029 174a sets together with top-scoring-member.
+    // C: with no able woman neither word is set and both keep older values; the C# then uses top-scoring-member.
     private static OptionHint CharmChance(CardContext c)
     {
         var chance = c.PartyMaxAttributeOfWomen(5);
@@ -338,7 +338,7 @@ public sealed class CityDungeon : Card
     private void FaceTheMagistrate(CardContext c)
     {
         c.PassHours(3);
-        // C: party_x/party_y are overwritten with the dungeon's two words (the map position is restored when the party leaves the city).
+        // C: party-map-column/party-map-row are overwritten with the dungeon's two words (the map position is restored when the party leaves the city).
         c.State.MapPosition = new Core.World.MapPosition(_state, _tunnel);
         c.Next = Magistrate;
     }
@@ -400,7 +400,7 @@ public sealed class CityDungeon : Card
             case 0:
                 ShowPicture(c, StreetPicture);
                 c.Screen.Text(7);
-                // C: (unsigned)money_pfennigs(purse) >> 1: the 32-bit total is cut to 16 bits before halving.
+                // C: (unsigned)purse-in-pfennigs(purse) >> 1: the 32-bit total is cut to 16 bits before halving.
                 c.State.Party.Purse = Money.FromPfennigs((ushort)c.State.Party.Purse.TotalPfennigs >> 1);
                 c.Next = c.IsDaylight ? CitySquare : CitySquareAtNight;
                 break;

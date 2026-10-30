@@ -4,8 +4,8 @@ using Darklands.Core.Rules;
 namespace Darklands.Core.Tests;
 
 /// <summary>
-/// A leader index past the party (party_remove R037+0x3B58 of the leader in the last slot while no other member is able keeps the index,
-/// party_size shrinks): hours_pass R029+0x255A reads party[leader] of the five-slot table, finds status 0 and takes the first able slot.
+/// A leader index past the party (party-leave R037+0x3B58 of the leader in the last slot while no other member is able keeps the index,
+/// party-headcount shrinks): hours-elapse R029+0x255A reads party[leader] of the five-slot table, finds status 0 and takes the first able slot.
 /// </summary>
 public sealed class LeaderPastThePartyTests
 {

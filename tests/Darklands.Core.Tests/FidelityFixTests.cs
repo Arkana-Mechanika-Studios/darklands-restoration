@@ -11,7 +11,7 @@ public sealed class FidelityFixTests
     [Fact]
     public void TheOvernightHealingTestLeavesTheBestHealerInTheLastQuery()
     {
-        // hours_pass asks party_max_skill(13), which sets best_value/best_member as a side effect.
+        // hours-elapse asks party-ability-top(13), which sets top-value-so-far/top-scoring-member as a side effect.
         var s = TestGame.Create();
         var able = s.Party.Members.Select((m, i) => (m, i)).Where(x => x.m.IsAble).ToList();
         var best = able.Max(x => x.m[Skill.Healing]);
@@ -43,7 +43,7 @@ public sealed class FidelityFixTests
     public void TheSeventhDayTestOfCityPoliticsWrapsIn16Bits()
     {
         var s = TestGame.Create(location: 5);
-        ((TestData)s.Data).CityBytes[0x56] = 40;     // city ordinal: loc_query 0x21 = 40 + party seed
+        ((TestData)s.Data).CityBytes[0x56] = 40;     // city ordinal: place-query 0x21 = 40 + party seed
         s.Party.Seed = 32720;                        // 32760 + day 9 = 32769 = -32767 (short) = -7 * 4681
         s.Date = s.Date with { Day = 9 };
         var e = new TimedEvent { Kind = EventKinds.LocationFact, Owner = -2, Location = 5, Type = 0xC, Tag = 2 };
@@ -70,7 +70,7 @@ public sealed class FidelityFixTests
         Assert.True(s.Party.Members[woman].IsFemale);
         Assert.Equal(woman, s.Party.Last.AttributeMember);
         PartyQueries.MinSkill(s, (int)Skill.Healing);
-        PartyQueries.MaxAttributeSum(s, 0, 1);       // party_max_attr_sum does not write DS:9A44
+        PartyQueries.MaxAttributeSum(s, 0, 1);       // party-stat-top-sum does not write DS:9A44
         Assert.Equal(woman, s.Party.Last.AttributeMember);
     }
 
@@ -111,7 +111,7 @@ public sealed class FidelityFixTests
         hans.Status = CharacterStatus.Away;
         Assert.Equal(1, PartyRules.ReportAway(s));
         var note = s.Events.All().Single(x => x.Event.Kind == EventKinds.MemberAway).Event;
-        Assert.Equal(3, note.Type);                     // char_in_slot(2), not the slot
+        Assert.Equal(3, note.Type);                     // character-in-slot(2), not the slot
         Assert.Equal(-1, s.Roster.PartySlots[2]);
         Assert.Equal(CharacterStatus.Away, hans.Status);              // the roster record is written with status 5
         Assert.Equal(CharacterStatus.Empty, s.Party.Slot(2).Status);
@@ -125,7 +125,7 @@ public sealed class FidelityFixTests
         var ebhard = s.Party.Members[3];
         PartyRules.RemoveFromParty(s, 3);
         Assert.Equal(3, s.Party.Members.Count);
-        Assert.Equal(ebhard.Name, s.Party.Slot(3).Name);  // party_remove clears the slot's status byte only
+        Assert.Equal(ebhard.Name, s.Party.Slot(3).Name);  // party-leave clears the slot's status byte only
         Assert.Equal(ebhard.Pack.Entries, s.Party.Slot(3).Pack.Entries);
         Assert.Equal(CharacterStatus.Empty, s.Party.Slot(3).Status);
     }

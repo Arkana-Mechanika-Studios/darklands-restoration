@@ -27,9 +27,9 @@ namespace Darklands.Cards.Scripts;
 //   other: R119+0x1122, R119+0x11C4
 // DORMANT (generated): option slots 10..19 keep the default handler R119+0x11C4 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 6, 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// DIVERGENCE (generated): party_panel_rows(0x100) (root 0000:1716, a party-panel redraw) is left out; the screen redraws itself.
+// DIVERGENCE (generated): party-panel-row-set(0x100) (root 0000:1716, a party-panel redraw) is left out; the screen redraws itself.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class EerieFountain : Card
 {
@@ -49,7 +49,7 @@ public sealed class EerieFountain : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         menu.Enable(0, 1);
-        // C: the C tests the status bytes of slots 0..3 directly (party[k][0] != 0), not party_size.
+        // C: the C tests the status bytes of slots 0..3 directly (party[k][0] != 0), not party-headcount.
         for (var who = 0; who < 4; who++)
         {
             // Only the first four slots get a line (the fifth stays hidden).
@@ -63,7 +63,7 @@ public sealed class EerieFountain : Card
             c.Variables.Chosen[k] = k;
         }
 
-        // DORMANT: the item pop-up handlers (R119+0x11FC..0x12B0) are never used: card_items stays all −1 and no line opens an item box.
+        // DORMANT: the item pop-up handlers (R119+0x11FC..0x12B0) are never used: card-item-lines stays all −1 and no line opens an item box.
         // DORMANT: R119+0x11C4 ("screwed up.") is the handler of unset slots 10..19, which are never shown.
         var unknown = OptionHint.Saying(CardTexts.Unknown);
         return menu.Run(
@@ -95,7 +95,7 @@ public sealed class EerieFountain : Card
             c.Screen.Text(3);
             return;
         }
-        // DORMANT: a menu_slot outside 0..3 shows no text (impossible: the box has four saints).
+        // DORMANT: a menu-choice-index outside 0..3 shows no text (impossible: the box has four saints).
         if (c.MenuSlot is 0 or 1)
         {
             c.Screen.Text(1);
@@ -106,7 +106,7 @@ public sealed class EerieFountain : Card
         }
         c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, DrainedFact, 0, 0, EventLog.Forever, 0, 1);
         c.PracticeSkill(Who.Everybody, (int)Skill.Virtue, 1, 10, 0);
-        // DIVERGENCE: the C then redraws the party panel (party_panel_rows(0x100)), also after a failed prayer; our
+        // DIVERGENCE: the C then redraws the party panel (party-panel-row-set(0x100)), also after a failed prayer; our
         //   screen redraws itself. The handler falls off its end without a value (ignored).
     }
 
@@ -120,7 +120,7 @@ public sealed class EerieFountain : Card
             c.AddAttribute(who, (int)Core.Characters.Attribute.Strength, 50);
             c.AddAttribute(who, (int)Core.Characters.Attribute.Endurance, 50);
             c.AddSkill(who, (int)Skill.Virtue, -(c.Random(4) + 1));
-            // DIVERGENCE: party_panel_rows(0x100) (panel redraw) is left out.
+            // DIVERGENCE: party-panel-row-set(0x100) (panel redraw) is left out.
             c.Screen.Text(4);
         }
         else

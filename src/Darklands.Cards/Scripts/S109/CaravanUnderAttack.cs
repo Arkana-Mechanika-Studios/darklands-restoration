@@ -32,7 +32,7 @@ public sealed class CaravanUnderAttack : Card
         return menu.Run(
             // orig: R109+0x12D8 (192E:0378) matched; hint R109+0x14B4
             new MenuLine(_ => ChargeIntoTheFray(c), () => OptionHint.Say("Enter Combat")),
-            // orig: R109+0x14EC (192E:058C) matched; hint R109+0x15CE (the placeholder str_saint_xxx)
+            // orig: R109+0x14EC (192E:058C) matched; hint R109+0x15CE (the placeholder text-saint-template)
             new MenuLine(_ => PrayForTheMerchants(c), () => OptionHint.Say("XXX Saint % success msg XXX.")),
             // orig: R109+0x1606 (192E:06A6) matched; hint R109+0x1658
             new MenuLine(_ => { c.Variables.Chosen[0] = c.Leader; ShowPicture(c, 145); c.Screen.Text(11); c.PassHours(2); c.LeaveForTheMap(); },
@@ -99,7 +99,7 @@ public sealed class CaravanUnderAttack : Card
     /// dead); left for dead, everybody loses half their Strength.
     /// </summary>
     // orig: R109+0x12D8 (192E:0378) matched; tests: CardSmokeTests
-    // C: right-to-left arguments: the robbers' number is drawn before run_battle draws its seed (-1).
+    // C: right-to-left arguments: the robbers' number is drawn before battle-driver draws its seed (-1).
     private static void ChargeIntoTheFray(CardContext c)
     {
         var robbers = c.Random(3) + 5;
@@ -132,7 +132,7 @@ public sealed class CaravanUnderAttack : Card
                         continue;
                     }
                     c.AddAttribute(i, (int)Attribute.Strength, -(c.Attribute(i, (int)Attribute.Strength) / 2 + 5));
-                    // DORMANT: add_attr keeps an attribute at 1 or more, so nobody dies here and texts 12/13 are never shown.
+                    // DORMANT: raise-attribute-by keeps an attribute at 1 or more, so nobody dies here and texts 12/13 are never shown.
                     if (c.Attribute(i, (int)Attribute.Strength) <= 0)
                     {
                         c.SetStatus(i, CharacterStatus.Empty);

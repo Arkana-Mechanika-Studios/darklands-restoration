@@ -21,7 +21,7 @@ recursive descent (tools/oracle/cfg.py) and these facts are kept, in original co
   branches  the number of conditional branches, switches (with their case count)
   after     for each call, the calls a path of the function's control flow can reach after it (the
             original's order: a shared tail at a lower address still runs after the code that jumps to it)
-  pics      the card pictures it names: n for each far pointer pic_names[n] it pushes (`push es:[0A47h + 4n]`,
+  pics      the card pictures it names: n for each far pointer image-file-names[n] it pushes (`push es:[0A47h + 4n]`,
             card records only), which the port keeps as picture numbers
   seed      whether the function reads or writes the C run-time's random seed DS:7B20 (rand, srand)
   dr, dw    the DGROUP bytes it reads and writes by their address (`mov [99E6h], al`: a global by name)
@@ -55,7 +55,7 @@ INDEX = REPO / "docs" / "source-map" / "original-functions.csv"
 DATA_IMAGE, DGROUP = 136, 0x321A
 SEED = (0x7B20, 0x7B22)   # the long rand (root 06A1:29B6) steps
 # the card pictures' far name pointers, 4 bytes each, in the segment the card scripts load into ES
-PIC_NAMES = 0x0A47
+IMAGE_FILE_NAMES = 0x0A47
 
 
 def string_starts(exe, rt):
@@ -255,9 +255,9 @@ def analyse(exe: bytes, rt, fn, funcs, thunks, strings):
         after_segment = prev_segment
         prev_segment = m == "push" and ops[0].type == cx.X86_OP_REG and ops[0].reg in segments
         if (card and m == "push" and ops[0].type == cx.X86_OP_MEM and ops[0].mem.segment == cx.X86_REG_ES
-                and ops[0].mem.base == 0 and ops[0].mem.index == 0 and ops[0].mem.disp >= PIC_NAMES
-                and (ops[0].mem.disp - PIC_NAMES) % 4 == 0):
-            pics.add((ops[0].mem.disp - PIC_NAMES) // 4)
+                and ops[0].mem.base == 0 and ops[0].mem.index == 0 and ops[0].mem.disp >= IMAGE_FILE_NAMES
+                and (ops[0].mem.disp - IMAGE_FILE_NAMES) % 4 == 0):
+            pics.add((ops[0].mem.disp - IMAGE_FILE_NAMES) // 4)
         if m == "push":
             if ops[0].type == cx.X86_OP_IMM:
                 # the offset of a far pointer (`push ds; push offset`) is an address, not a constant

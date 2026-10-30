@@ -184,12 +184,12 @@ def first_difference(original: dict, rewrite: dict, original_cut: bool = False):
                 ready.setdefault((i, off), (o[off], c[off]))
             for off, name in FIELDS.items():
                 if off in STALE_READY:
-                    # compared once either side has changed it (weapon_ready sets it outright)
+                    # compared once either side has changed it (weapon-armed sets it outright)
                     if (o[off] != ready[(i, off)][0] or c[off] != ready[(i, off)][1]) and o[off] != c[off]:
                         diffs.append({"combatant": i, "field": name, "offset": "+%02X" % off, "original": o[off], "rewrite": c[off]})
                 elif off == 0x1D:
-                    # +0x1D starts as whatever the stack held when level_enemies_load (R020+0x0000) wrote the enemy file, which
-                    # enemies_place (R025+0x0885) reads into DS:B899 and copies whole (R025+0x0267); it is compared once either side
+                    # +0x1D starts as whatever the stack held when level-enemies-read (R020+0x0000) wrote the enemy file, which
+                    # enemy-placement-entry (R025+0x0885) reads into DS:B899 and copies whole (R025+0x0267); it is compared once either side
                     # has changed it (the aim sets it outright, from the readied skill +0x59 (R014+0xA492): -(agility >> 1) - ((skill >> 1) - 150),
                     # so an enemy whose weapon was never readied (its +0x59 a stale byte in the original, 0 in the C#) aims 1 apart per 2 of skill)
                     mine = c[off]

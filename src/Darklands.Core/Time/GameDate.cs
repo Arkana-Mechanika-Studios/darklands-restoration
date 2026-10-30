@@ -5,7 +5,7 @@ namespace Darklands.Core.Time;
 /// fixed 365-day years. As in the original, a day only rolls over when it exceeds the month
 /// length, so day == days-in-month is a valid date. Fields are 16-bit like the original.
 /// </summary>
-// orig: date_copy R029+0x579A (1367:088A) matched: hour, day, month, year copied;
+// orig: date-duplicate R029+0x579A (1367:088A) matched: hour, day, month, year copied;
 //   copying a date is the assignment of this value type.
 public readonly record struct GameDate(short Hour, short Day, short Month, short Year)
 {
@@ -20,8 +20,8 @@ public readonly record struct GameDate(short Hour, short Day, short Month, short
 
     public static int DaysInMonth(int month) => DaysPerMonth[Mod12(month)];
 
-    /// <summary>A date normalised the way <c>date_set</c> does: hours, then days, then months.</summary>
-    // orig: date_set R029+0x57BE (1367:08AE) matched; tests: CoreValuesOracleTests (Oracle:core.json date_set)
+    /// <summary>A date normalised the way <c>date-assign</c> does: hours, then days, then months.</summary>
+    // orig: date-assign R029+0x57BE (1367:08AE) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x57BE)
     // C: hours and months roll with (unsigned)h / 24 and (unsigned)m / 12, once; days with the month loop.
     public static GameDate Create(int year, int month, int day, int hour)
     {
@@ -40,8 +40,8 @@ public readonly record struct GameDate(short Hour, short Day, short Month, short
         return new GameDate(h, d, m, y);
     }
 
-    /// <summary>The date moved forward by <paramref name="hours"/>, normalised (<c>date_add_hours</c>).</summary>
-    // orig: date_add_hours R029+0x58FA (1367:09EA) matched; tests: CoreValuesOracleTests (Oracle:core.json date_add_hours)
+    /// <summary>The date moved forward by <paramref name="hours"/>, normalised (<c>date-plus-hours</c>).</summary>
+    // orig: date-plus-hours R029+0x58FA (1367:09EA) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x58FA)
     // C: a negative hour count leaves a negative hour (no borrow), as in the original.
     public GameDate AddHours(int hours)
     {
@@ -58,7 +58,7 @@ public readonly record struct GameDate(short Hour, short Day, short Month, short
     }
 
     /// <summary>Day of the year (sum of the previous months plus the day).</summary>
-    // orig: yday_now R029+0x58DC (1367:09CC) matched
+    // orig: year-day-now R029+0x58DC (1367:09CC) matched
     public int DayOfYear
     {
         get
@@ -73,7 +73,7 @@ public readonly record struct GameDate(short Hour, short Day, short Month, short
     }
 
     /// <summary>Absolute day number (16-bit, as in the original).</summary>
-    // orig: day_number_now R029+0x597C (1367:0A6C) matched
+    // orig: absolute-day-now R029+0x597C (1367:0A6C) matched
     // C: year * 365 + 0x33E8 wraps in 16 bits; the month loop index is unsigned.
     public short DayNumber
     {
@@ -89,16 +89,16 @@ public readonly record struct GameDate(short Hour, short Day, short Month, short
     }
 
     /// <summary>Days from this date to <paramref name="later"/>, 0 if earlier.</summary>
-    // orig: days_until R029+0x5A2C (1367:0B1C) matched; days_since R029+0x59A6 (1367:0A96) matched; tests: EventLogTests
-    // C: then - now in a 16-bit int, 0 when negative (days_since is the same test the other way round).
+    // orig: days-remaining-until R029+0x5A2C (1367:0B1C) matched; days-elapsed-since R029+0x59A6 (1367:0A96) matched; tests: EventLogTests
+    // C: then - now in a 16-bit int, 0 when negative (days-elapsed-since is the same test the other way round).
     public int DaysUntil(GameDate later)
     {
         var difference = (short)(later.DayNumber - DayNumber);
         return difference < 0 ? 0 : difference;
     }
 
-    /// <summary>Days from <paramref name="earlier"/> to this date, limited to 0..32000 (<c>days_between</c>).</summary>
-    // orig: days_between R029+0x5AB4 (1367:0BA4) matched; tests: CoreValuesOracleTests (Oracle:core.json days_between)
+    /// <summary>Days from <paramref name="earlier"/> to this date, limited to 0..32000 (<c>days-from-to</c>).</summary>
+    // orig: days-from-to R029+0x5AB4 (1367:0BA4) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x5AB4)
     // C: unsigned day numbers; the sign test is (int)(tb - ta) and the 32000 limit a long difference.
     public int DaysSince(GameDate earlier)
     {
@@ -113,7 +113,7 @@ public readonly record struct GameDate(short Hour, short Day, short Month, short
 
     public bool IsDaylight => TimeOfDay.IsDaylight(Hour);
 
-    // orig: date_set R029+0x57BE (1367:08AE) matched; date_add_hours R029+0x58FA (1367:09EA) matched
+    // orig: date-assign R029+0x57BE (1367:08AE) matched; date-plus-hours R029+0x58FA (1367:09EA) matched
     // C: a day equal to the month length stays in the month (`dm < day`).
     internal static (short Day, short Month) RollDays(short day, short month)
     {

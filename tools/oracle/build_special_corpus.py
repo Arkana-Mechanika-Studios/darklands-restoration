@@ -4,10 +4,10 @@
 usage: python -I build_special_corpus.py <DARKLAND.EXE> <game folder> <out special.json> [workers] [--full]
 
 Each generator runs from the unchanged EXE (sections 136 data, 4 loader, 11/12/13 generator) on the
-enemy buffer prepared as battlefield_build prepares it (darkland.enm/.lst, monsters_clear,
-groups_clear, the tile-description defaults). Its I/O is stubbed by hooks: the level buffer
+enemy buffer prepared as battlefield-builder-entry prepares it (darkland.enm/.lst, monsters-reset,
+groups-reset, the tile-description defaults). Its I/O is stubbed by hooks: the level buffer
 allocation, the reads of ifortmon.*/imisctom.* (decoded here from the player's IMAPS.CAT) and of
-the lc_* members of LCASTLE, the level saves (captured) and party_lore_level (a scripted lore
+the lc_* members of LCASTLE, the level saves (captured) and party-lore-rating (a scripted lore
 level). The static floor image the cave and tombs work in is zeroed before the call (the C#
 starts from zero too; the original keeps the previous battle's bytes there).
 Stored per scenario: the request, the saved levels (zlib + base64), the tile description, the kind
@@ -30,17 +30,17 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from run_unit import run  # noqa: E402
-from build_enemy_corpus import Machine, MON_COUNT, GROUP_COUNT, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
+from build_enemy_corpus import Machine, MONSTER_TOTAL, GROUP_TOTAL, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
 from build_city_corpus import cat_members, cat_decode  # noqa: E402
 
 LEVEL_SEG = 0x5000
 FLOOR_SEG = 0x20A5   # the static floor image (the data image segment 20A5, R136)
-CUR_LOC, COMBAT_FLAGS, CLEARED, LAST_LOC = 0x907E, 0x9080, 0xDA34, 0xDB27
+LOCATION_NOW, FIGHT_FLAGS, CLEARED, LAST_LOC = 0x907E, 0x9080, 0xDA34, 0xDB27
 FORCE_MAP = 0xC100   # DS:C100: always -1 in the shipped game (the fortress start level override)
-LOAD_BUF = 0xC103    # far pointer to the load buffer (the citadel loads its levels there)
+READ_BUFFER = 0xC103    # far pointer to the load buffer (the citadel loads its levels there)
 COURT_PROGRESS = 0x160C   # DS:160C, R013's own data (the court's progress; 0 in the shipped game)
 RES = 0xF000   # outside the emulated stack (writes inside it are not reported)
-TILE_DESC = 0xF504
+TILE_DESCRIPTION = 0xF504
 
 # The call instructions to replace by hooks, per generator (linear addresses 0x1432:offset, from the disassembly).
 FORTRESS_SITES = {"1432d": "alloc", "14589": "free", "147e3": "read", "162c7": "save"}
@@ -54,7 +54,7 @@ for _a in "145bb 14709 1484b 1498d 14acf 14c19 14d5b 14ead 14fee".split():
     CITADEL_SITES[_a] = "save"
 
 KINDS_OF = {
-    "fortress": dict(unit="templar_build", sections=[136, 4, 11], entry="0000", sites=FORTRESS_SITES, res=True),
+    "fortress": dict(unit="templar-keep-builder-entry", sections=[136, 4, 11], entry="0000", sites=FORTRESS_SITES, res=True),
     "tombs": dict(unit="tombs_build", sections=[136, 4, 11], entry="1FB2", sites=TOMB_SITES, res=False),
     "dragon": dict(unit="cave_build", sections=[136, 4, 12], entry="0000", sites=CAVE_SITES, res=False),
     "citadel": dict(unit="citadel_build", sections=[136, 4, 13], entry="0000", sites=CITADEL_SITES, res=True),
@@ -71,14 +71,14 @@ def init_worker(exe_path: str, game_path: str, full: bool = False) -> None:
     game = Path(game_path)
     exe = Path(exe_path).read_bytes()
     base = Machine(exe, (game / "DARKLAND.ENM").read_bytes(), (game / "DARKLAND.LST").read_bytes())
-    base.call("monsters_clear", [])
-    base.call("groups_clear", [])
-    base.enemy[TILE_DESC:TILE_DESC + 0xC4] = bytes(0xC4)
+    base.call("monsters-reset", [])
+    base.call("groups-reset", [])
+    base.enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4] = bytes(0xC4)
     for at in (0x0A, 0x24, 0x3D, 0x57, 0x70, 0x8A, 0xA4):
-        base.enemy[TILE_DESC + at:TILE_DESC + at + 16] = b"\xff" * 16
-    base.enemy[TILE_DESC + 0x23] = 2
+        base.enemy[TILE_DESCRIPTION + at:TILE_DESCRIPTION + at + 16] = b"\xff" * 16
+    base.enemy[TILE_DESCRIPTION + 0x23] = 2
     for at in (0x56, 0x89, 0xA3):
-        base.enemy[TILE_DESC + at] = 8
+        base.enemy[TILE_DESCRIPTION + at] = 8
     _G.update(exe=exe, lst=(game / "DARKLAND.LST").read_bytes(), imaps=cat_members(game / "IMAPS.CAT"),
               lcastle=cat_members(game / "LCASTLE"), snapshot=(bytes(base.enemy), dict(base.ds)))
 
@@ -153,10 +153,10 @@ def run_scenario(sc: dict) -> dict:
     spec = KINDS_OF[sc["kind"]]
     memory_enemy = bytearray(_G["snapshot"][0])
     ds = dict(_G["snapshot"][1])
-    words = [(HOLDRAND, struct.pack("<I", sc["seed"])), (CUR_LOC, struct.pack("<h", sc["location"])),
-             (COMBAT_FLAGS, b"\x00\x00"), (CLEARED, struct.pack("<H", sc["cleared"])),
+    words = [(HOLDRAND, struct.pack("<I", sc["seed"])), (LOCATION_NOW, struct.pack("<h", sc["location"])),
+             (FIGHT_FLAGS, b"\x00\x00"), (CLEARED, struct.pack("<H", sc["cleared"])),
              (LAST_LOC, struct.pack("<h", sc["lastLocation"])), (FORCE_MAP, struct.pack("<h", sc["forceMap"])),
-             (LOAD_BUF, struct.pack("<HH", 0, LEVEL_SEG)), (COURT_PROGRESS, struct.pack("<H", sc["courtProgress"])),
+             (READ_BUFFER, struct.pack("<HH", 0, LEVEL_SEG)), (COURT_PROGRESS, struct.pack("<H", sc["courtProgress"])),
              (RES, b"\x00\x00")]
     for off, data in words:
         for k, b in enumerate(data):
@@ -207,9 +207,9 @@ def run_scenario(sc: dict) -> dict:
 
     levels = int(res["final"]["ax"], 16)
     kinds = [[bytes(enemy[KINDS + (lv * 12 + k) * 0xD6:KINDS + (lv * 12 + k + 1) * 0xD6]).hex()
-              for k in range(ds_word(MON_COUNT + 2 * lv))] for lv in range(levels)]
+              for k in range(ds_word(MONSTER_TOTAL + 2 * lv))] for lv in range(levels)]
     groups = [[bytes(enemy[GROUPS + (lv * 10 + g) * 0x1E:GROUPS + (lv * 10 + g + 1) * 0x1E]).hex()
-               for g in range(ds_word(GROUP_COUNT + 2 * lv))] for lv in range(levels)]
+               for g in range(ds_word(GROUP_TOTAL + 2 * lv))] for lv in range(levels)]
     holdrand = struct.unpack("<I", bytes(after_ds.get(HOLDRAND + k, ds[HOLDRAND + k]) for k in range(4)))[0]
     out_levels = {}
     for name, data in saved.items():
@@ -219,8 +219,8 @@ def run_scenario(sc: dict) -> dict:
         out_levels[name] = entry
     return {"function": sc["kind"], "ax": "%04X" % levels, "changed": {}, "inputs": {
         **sc, "levels": levels, "start": ds_word(RES) if spec["res"] else 0, "reads": reads, "saved": out_levels,
-        "terrain": bytes(enemy[TILE_DESC:TILE_DESC + 0xC4]).hex(), "kinds": kinds, "groups": groups,
-        "holdrand": holdrand, "combatFlags": ds_word(COMBAT_FLAGS), "clearedAfter": ds_word(CLEARED),
+        "terrain": bytes(enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4]).hex(), "kinds": kinds, "groups": groups,
+        "holdrand": holdrand, "combatFlags": ds_word(FIGHT_FLAGS), "clearedAfter": ds_word(CLEARED),
         "lastLocationAfter": ds_word(LAST_LOC)}}
 
 

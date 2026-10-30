@@ -26,7 +26,7 @@ public sealed class ArrestingTheRebels : Card
         c.Variables.Chosen[0] = (byte)c.BestMember;
         // C: the block is the script's own global DS:8E1E, set to 0 on arrival.
         menu.Block = 0;
-        // orig: R089+0x1B52 (197F:06E2) matched (resets the handlers and card_saints, not card_items)
+        // orig: R089+0x1B52 (197F:06E2) matched (resets the handlers and card-saint-lines, not card-item-lines)
         c.SetCardSaints(0x50, 0x3F, 0x7E, 0x29);
         menu[2] = c.SaintsUsable();
 
@@ -147,7 +147,7 @@ public sealed class ArrestingTheRebels : Card
         // Arguments are evaluated right to left: the second group's number is drawn first.
         var second = c.Random(4) + 3;
         var first = c.Random(5) + 3;
-        // C: run_battle's battle_result; results 5+ and negative ones leave the party at the menu.
+        // C: battle-driver's battle-outcome; results 5+ and negative ones leave the party at the menu.
         var result = c.RunBattle(0x25, c.Here + 0x70, 0x0C, 2, first, 0, 2, second, -1, 0, 0);
         c.BattleResult = result;
         switch (result)

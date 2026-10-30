@@ -8,7 +8,7 @@ namespace Darklands.Cards.Scripts;
 /// them (on horseback if everybody rides), or call on a saint.
 /// </summary>
 // orig: R059+0x0F14 (1929:0004) matched; tests: CardSmokeTests
-// orig: handler setup R059+0x14A4 (opt_on[*]=0, screwed-up handler 0636 for all 20 lines, item handlers
+// orig: handler setup R059+0x14A4 (card-option-enabled[*]=0, screwed-up handler 0636 for all 20 lines, item handlers
 // 066e/06aa/06e6/0722, saint handlers 075e/07e8/0872/08fc: standard pop-ups)
 public sealed class GargoylesAttack : Card
 {
@@ -21,7 +21,7 @@ public sealed class GargoylesAttack : Card
         Show(c, 241);
         // C: DS:EE70 = 0 and DS:EE72 = 7 (text window state) are set here; not modelled.
         c.Next = Number;
-        // C: opt_flag_0..2 = 1; opt_flag_3..9 are never set by this card and are copied to opt_on[3..9] as they stood
+        // C: card-option-flag-0..2 = 1; card-option-flag-3..9 are never set by this card and are copied to card-option-enabled[3..9] as they stood
         // (stale globals of the previous card); the lines past the text's third are not offered here.
         var menu = Menu(c, 0);
         menu.Enable(0, 1, 2);
@@ -36,7 +36,7 @@ public sealed class GargoylesAttack : Card
             // orig: R059+0x13CA (line 2); handler R059+0x146C (select saint); pop-up handlers 075e..08fc
             new MenuLine(_ => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // DORMANT: lines 3..9 have the "screwed up." handler from the setup function (0636) and no case in the action
-            // switch; opt_on[3..9] come from opt_flag_3..9, which this card never sets (stale globals).
+            // switch; card-option-enabled[3..9] come from card-option-flag-3..9, which this card never sets (stale globals).
             // orig: R059+0x1546
             new MenuLine(_ => { }, OptionHint.Saying(CardTexts.ScrewedUp)),
             new MenuLine(_ => { }, OptionHint.Saying(CardTexts.ScrewedUp)),
@@ -51,7 +51,7 @@ public sealed class GargoylesAttack : Card
     // orig: R059+0x1384 (1929:0474)
     private static OptionHint EscapeChance(CardContext c)
     {
-        // C: party_min_skill / party_min_attr run first (they set best_member), then var_chosen1 = (unsigned char)best_member.
+        // C: party-ability-low / party-stat-low run first (they set top-scoring-member), then text-slot-chosen-one = (unsigned char)top-scoring-member.
         var value = c.PartyGet(5) != 0 ? c.PartyMinSkill((int)Skill.Riding) : c.PartyMinAttribute((int)Attribute.Agility);
         c.Variables.Chosen[0] = c.BestMember;
         return new OptionHint(Math.Clamp(value, 1, 99), "", c.BestMember);
@@ -133,7 +133,7 @@ public sealed class GargoylesAttack : Card
     // orig: R059+0x1082 case 3
     private static void CarriedOffToHell(CardContext c)
     {
-        // C: var_chosen1 = rand_mod(5), then it steps on (mod 5) to the next used slot; with no member left it would loop for ever.
+        // C: text-slot-chosen-one = roll-below(5), then it steps on (mod 5) to the next used slot; with no member left it would loop for ever.
         var victim = c.Random(5);
         while (c.Status(victim) == CharacterStatus.Empty)
         {
@@ -158,7 +158,7 @@ public sealed class GargoylesAttack : Card
         {
             if (c.Status(i) != CharacterStatus.Empty)
             {
-                // C: party[i]+0x60 (Virtue) -= rand_mod(6), then raised to 0 if it is <= 0.
+                // C: party[i]+0x60 (Virtue) -= roll-below(6), then raised to 0 if it is <= 0.
                 var skills = c.State.Party.Members[i].Skills;
                 skills[(int)Skill.Virtue] = Math.Max(0, skills[(int)Skill.Virtue] - c.Random(6));
             }
@@ -166,7 +166,7 @@ public sealed class GargoylesAttack : Card
         c.LoseItems(Who.Everybody);
     }
 
-    // C: every path of the fight, and the escapes, end with cur_loc = -1 and next_card = 0xC (the overland map).
+    // C: every path of the fight, and the escapes, end with location-now = -1 and following-card = 0xC (the overland map).
     private static void BackToTheMap(CardContext c)
     {
         c.State.CurrentLocation = -1;

@@ -256,7 +256,7 @@ public sealed class MusicTests
         Assert.Equal([8, 5, 13, 8], audio.Requests);
     }
 
-    /// <summary>A member's prayer in a battle leaves the music alone (saint_pray tests DS:907A).</summary>
+    /// <summary>A member's prayer in a battle leaves the music alone (saint-prayer tests DS:907A).</summary>
     [Fact]
     public void AMembersPrayerInABattleLeavesTheMusicAlone()
     {

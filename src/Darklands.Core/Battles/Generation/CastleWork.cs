@@ -8,8 +8,8 @@ namespace Darklands.Core.Battles.Generation;
 /// the original indexes the arrays without bounds and its pointer arithmetic runs across arrays
 /// and levels.
 /// </summary>
-// orig: work segment gen_work = DS:C105 (struct gwork in; offsets checked against gen_clear R005+0x005C asm)
-// UNCERTAIN: the original allocates the segment once and gen_clear leaves a few fields alone (the stairs' link and side words, the
+// orig: work segment layout-scratch = DS:C105 (struct gwork in; offsets checked against layout-reset R005+0x005C asm)
+// UNCERTAIN: the original allocates the segment once and layout-reset leaves a few fields alone (the stairs' link and side words, the
 // area beyond 0xBA1D); they start at 0 here and keep their values between calls.
 internal sealed class CastleWork
 {
@@ -106,10 +106,10 @@ internal sealed class CastleWork
 
     public void SetStairWord(int level, int stair, int field, int value) => SetWord(StairsAt + ((level * MaxStairs + stair) * 6 + field) * 2, value);
 
-    // ---- gen_clear ----
+    // ---- layout-reset ----
 
     /// <summary>Clears the work area for a new battlefield.</summary>
-    // orig: gen_clear R005+0x005C (1432:005C) draft; checked against asm
+    // orig: layout-reset R005+0x005C (1432:005C) draft; checked against asm
     public void Clear()
     {
         for (var level = 0; level < Levels; level++)

@@ -26,10 +26,10 @@ public sealed class ChallengedByTheWatch : Card
 
     // orig: R044+0x099E (18D1:000E) asm (entry: bribe amount, option states, the option table and the menu loop)
     // orig: R044+0x1362 (18D1:09D2) asm (init helper: enables all 20 option lines, installs the 4 bomb and 4 saint pop-up handlers for the 5 member rows and clears the 4 item and 4 saint slots)
-    // DORMANT: R044+0x1404 (18D1:0A74): the init helper points opt_fn[0..19] at this "screwed up." default; lines 7..19 stay enabled but the card's MSG has no line for them and the menu cannot select them, so it never runs.
-    // DORMANT: the C# BombChance branch for slot outside 0..3 ("screwed up.") has no function behind it: item_fn and saint_fn hold 4 handlers per member row, all four slots used by the card's 4 items and 4 saints.
-    // C: item_fn/saint_fn are set identically for all 5 member rows; the handlers read the member from menu_member, so the C# keeps one handler per slot. The saint handlers 0c58/0ce2/0d6c/0df6 have byte-identical bodies.
-    // checked against asm: option-to-handler pairing (opt_fn table at 18d1:017f and the switch at 18d1:0254), the bribe amount and the bribe option state; the bodies of the other functions were not re-read in this annotation pass.
+    // DORMANT: R044+0x1404 (18D1:0A74): the init helper points card-option-handler[0..19] at this "screwed up." default; lines 7..19 stay enabled but the card's MSG has no line for them and the menu cannot select them, so it never runs.
+    // DORMANT: the C# BombChance branch for slot outside 0..3 ("screwed up.") has no function behind it: item-handler-table and saint-handler-table hold 4 handlers per member row, all four slots used by the card's 4 items and 4 saints.
+    // C: item-handler-table/saint-handler-table are set identically for all 5 member rows; the handlers read the member from menu-owner-member, so the C# keeps one handler per slot. The saint handlers 0c58/0ce2/0d6c/0df6 have byte-identical bodies.
+    // checked against asm: option-to-handler pairing (card-option-handler table at 18d1:017f and the switch at 18d1:0254), the bribe amount and the bribe option state; the bodies of the other functions were not re-read in this annotation pass.
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -143,7 +143,7 @@ public sealed class ChallengedByTheWatch : Card
     {
         var share = (int)(bribe.TotalPfennigs / 12);
         var chance = c.Reputation(c.Here) + c.Attribute(c.Leader, 5) + share;
-        // C: clamp100(chance) (R029+0x4F38 matched: above 100 gives 100, below 0 gives 0) = Math.Clamp(chance, 0, 100).
+        // C: limit-to-0-100(chance) (R029+0x4F38 matched: above 100 gives 100, below 0 gives 0) = Math.Clamp(chance, 0, 100).
         return OptionHint.ChanceOf(Math.Clamp(chance, 0, 100), OptionHint.WholeParty);
     }
 

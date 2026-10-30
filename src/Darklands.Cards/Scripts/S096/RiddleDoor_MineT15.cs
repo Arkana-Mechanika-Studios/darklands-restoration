@@ -29,7 +29,7 @@ public sealed class RiddleDoor_MineT15 : DwarfRiddleDoor
         Wrong(c, 2, Attribute.Strength),
         // orig: R096+0x0A1C (18A9:030C); hint R096+0x0A64 matched
         Right(c, 1),
-        // orig: `case 4: case 5: R096+0x0A9E(l_4.a)`: line 4 shares line 5's action (the curse shown); hint R096+0x0AB8 matched
+        // orig: `case 4: case 5: R096+0x0A9E(local-minus-4.a)`: line 4 shares line 5's action (the curse shown); hint R096+0x0AB8 matched
         new MenuLine(() => ShowTheCurse(c), () => Unknown(c)),
         // orig: R096+0x0A9E (18A9:038E); hint R096+0x0B00 matched
         new MenuLine(() => ShowTheCurse(c), () => OptionHint.Say(SuccessAssured)),

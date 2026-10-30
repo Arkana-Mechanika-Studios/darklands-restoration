@@ -22,7 +22,7 @@ public static class Terrain
 
     /// <summary>Game minutes one step (one pixel of map movement) takes on a terrain.</summary>
     // orig: R030+0x2AC8 (1462:2AC8) matched
-    // DORMANT: `if (v >= 0x5A0)` (a day of minutes: advance_hours(1) per 1440 and the rest) cannot hold: the largest cost is 197.
+    // DORMANT: `if (v >= 0x5A0)` (a day of minutes: pass-hours(1) per 1440 and the rest) cannot hold: the largest cost is 197.
     public static int MinutesPerStep(int terrain) => terrain switch
     {
         1 or 2 or 16 => 40,

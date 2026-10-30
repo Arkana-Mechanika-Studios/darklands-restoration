@@ -50,7 +50,7 @@ public sealed class MaidenAtTheStake : Card
         menu[0] = c.Events.FactAnywhere(DragonQuest, 0x0B) ? OptionState.Shown : OptionState.Enabled;
         c.SetCardSaints();
         c.SetCardItems(0x5F, 0x60, 0x65, 0x61);
-        // C: items_usable() is stored in opt_flag_6 (the global flag a later card may show), but the menu copies only flags 0..5: the
+        // C: usable-item-list() is stored in card-option-flag-6 (the global flag a later card may show), but the menu copies only flags 0..5: the
         // potion line (flag 4) is always enabled.
         c.State.OptionFlags[6] = (int)c.ItemsUsable();
         return menu.Run(
@@ -126,7 +126,7 @@ public sealed class MaidenAtTheStake : Card
     // orig: R084+0x1826 (199A:0206) asm; tests: CardSmokeTests
     private static void Fight(CardContext c, int ambush)
     {
-        // C: arguments are evaluated right to left: rand_mod(3) + 2 (second group) first.
+        // C: arguments are evaluated right to left: roll-below(3) + 2 (second group) first.
         var second = c.Random(3) + 2;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 1;
         switch (c.RunBattle(0x43, -1, 0x35, first, second, -1, 0, 0, -1, ambush, 0))
@@ -215,7 +215,7 @@ public sealed class MaidenAtTheStake : Card
     {
         // C: the option line itself gives chance -1: the potion then always fails.
         // C: the chance is the handler's the loop calls (CardMenu.Run): the option line's -1, the box's for a click there, and for Enter
-        // C: there opt_fn[k], the box's handler for slot k % 4.
+        // C: there card-option-handler[k], the box's handler for slot k % 4.
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         // C: here a roll below the chance (<) succeeds.
         if (c.Random(100) < chance)

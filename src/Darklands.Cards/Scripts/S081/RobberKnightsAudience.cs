@@ -24,7 +24,7 @@ public sealed class RobberKnightsAudience : Card
     {
         Show(c, Picture);
         c.Next = CardNumber;
-        // C: the start-up also calls do_nothing().
+        // C: the start-up also calls idle-action().
         c.RandomName(c.Here + 0x44C, 0, 0);
         c.SetCardItems();
         c.SetCardSaints(0x29, 0x2E, 0x40);
@@ -74,7 +74,7 @@ public sealed class RobberKnightsAudience : Card
     private static void Fight(CardContext c, int kind)
     {
         var here = c.Here;
-        // C: arguments are evaluated right to left: rand_mod(2) (last) before rand_mod(3).
+        // C: arguments are evaluated right to left: roll-below(2) (last) before roll-below(3).
         var last = c.Random(2) + 2;
         var eighth = c.Random(3) + 1;
         switch (c.RunBattle(kind, -2, here % 4 != 0 ? 0x23 : 0x26, 3, 1, 0x12, here % 3 + 2, eighth, 3, here % 3 + 1, last))

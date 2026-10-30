@@ -32,7 +32,7 @@ namespace Darklands.Cards.Scripts;
 //     R127+0x165A
 // DORMANT (generated): option slots 10..19 keep the default handler R127+0x165A ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class InnocentsAtTheWitchesFeast : Card
 {
@@ -42,7 +42,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
     private const int InnocentsPicture = 148;
     private const int AdoptionPicture = 157;
 
-    /// <summary>The picture the card returns to after the ointment is refused (the original's pic_buf).</summary>
+    /// <summary>The picture the card returns to after the ointment is refused (the original's image-buffer).</summary>
     private int _scene;
 
     public override int Run(CardContext c)
@@ -52,7 +52,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
         c.Screen.Text(0);
         c.Next = Number;
         var menu = Menu(c, 1);
-        // C: the loop rates a pop-up choice with item_fn[0][menu_slot] (R127+0x1692..: $ChosenOneName = the member, "Success is
+        // C: the loop rates a pop-up choice with item-handler-table[0][menu-choice-index] (R127+0x1692..: $ChosenOneName = the member, "Success is
         // C: assured."), the saint box's own handlers (R127+0x1782..: the prayer's chance beside the member) answer a Shift hint
         // C: in the box and an Enter there.
         menu.ItemBox = () => c.MemberPopupHint(SuccessAssured);
@@ -104,8 +104,8 @@ public sealed class InnocentsAtTheWitchesFeast : Card
 
     /// <summary>The mean of the best Speak Common and the best Charisma; the Charisma query is the last, so its member speaks.</summary>
     // orig: R127+0x0D94 (18B4:05D4) matched (also R127+0x1080 (18B4:08C0), R127+0x1474 (18B4:0CB4))
-    // C: checked against the asm: party_max_skill(Speak Common) is called first, party_max_attr(Charisma) second, so
-    //   best_member (read as unsigned char) is the Charisma query's member. The halving truncates toward zero.
+    // C: checked against the asm: party-ability-top(Speak Common) is called first, party-stat-top(Charisma) second, so
+    //   top-scoring-member (read as unsigned char) is the Charisma query's member. The halving truncates toward zero.
     private static OptionHint PersuasionChance(CardContext c)
     {
         var speech = c.PartyMaxSkill((int)Skill.SpeakCommon);
@@ -157,7 +157,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
     // C: returns 0 after a cancelled box, otherwise falls off its end without a value (ignored).
     private void PrayForTheInnocents(CardContext c, CardMenu menu)
     {
-        // C: menu_member / menu_slot are the globals the pop-up box set last.
+        // C: menu-owner-member / menu-choice-index are the globals the pop-up box set last.
         var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
@@ -185,7 +185,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
                 menu.Offer(4, 5, 6);
                 SetTheScene(c, AdoptionPicture);
                 break;
-            // DORMANT: slot 3 (card_saints[3] is −1) or a stale menu_slot outside 0..2: an answered prayer does nothing.
+            // DORMANT: slot 3 (card-saint-lines[3] is −1) or a stale menu-choice-index outside 0..2: an answered prayer does nothing.
         }
     }
 

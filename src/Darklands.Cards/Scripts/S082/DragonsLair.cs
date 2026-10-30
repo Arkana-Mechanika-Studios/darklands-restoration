@@ -26,7 +26,7 @@ public sealed class DragonsLair : Card
     {
         c.Screen.Show(MsgName, PictureNames.Of(109));
         c.Next = CardNumber;
-        // C: name_to_slot(6, thunk 09C0:212F(), slot): the slot argument is pushed before the call.
+        // C: label-to-slot(6, thunk 09C0:212F(), slot): the slot argument is pushed before the call.
         // C: name kind 6 (the dragons' names) is read from the EXE's table (PersonalNames, NameToSlot).
         c.NameToSlot(6, c.DragonDetail(), 0);
         c.NameToSlot(6, c.DragonDetail(), 1);
@@ -87,7 +87,7 @@ public sealed class DragonsLair : Card
                     c.State.Locations[lair].ArrivalCard = 0x62;
                 }
                 c.ResolveQuest(4, c.Here);
-                // C: party_x, party_y are passed to nearest_city.
+                // C: party-map-column, party-map-row are passed to closest-city.
                 c.AdjustReputation(c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y), 0x28, 0x32);
                 c.PassHours(4);
                 c.Next = 0x0C;

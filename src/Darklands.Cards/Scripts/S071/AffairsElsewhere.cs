@@ -4,7 +4,7 @@ namespace Darklands.Cards.Scripts;
 /// "$Affai00": travellers' news of affairs elsewhere. It has no menu: it tells the news that
 /// applies (a robber knight's or a mine's trouble, a city's recent uprising or put-down rebellion,
 /// unrest in a city with the politics quest, or "nothing of interest") and then goes back to
-/// the card that sent the party (saved_card2).
+/// the card that sent the party (remembered-card-second).
 /// </summary>
 // orig: R071+0x15A4 (1992:0004) matched; tests: CardSmokeTests
 // orig: handler setup R071+0x1BC4 (never called from the card: it has no menu loop)
@@ -86,7 +86,7 @@ public sealed class AffairsElsewhere : Card
         // R071+0x17BC: without the mine news, always ending with text 3 when nothing else applies, then going to card 0x6E)
         // and a menu that nothing runs: R071+0x192E shows text 3 and goes to card 0x6E;
         // R071+0x197A, 0424, 046e, 04b8, 0502, 054c, 0596 let no time pass and go to card 0x62;
-        // R071+0x1B80 returns to saved_card2; their hints (0356 .. 05e8) all say "Success is assured.".
+        // R071+0x1B80 returns to remembered-card-second; their hints (0356 .. 05e8) all say "Success is assured.".
     }
 
     /// <summary>Whether the (nearest) city has the uprising flag.</summary>
@@ -97,7 +97,7 @@ public sealed class AffairsElsewhere : Card
     private static void TellOfTheUnrest(CardContext c)
     {
         c.Variables.Location = c.Events.FindLocation(FactKind, -1, -1, PoliticsQuest, -1);
-        // C: in the wilderness cur_loc is -1, so the quest's city is never "here".
+        // C: in the wilderness location-now is -1, so the quest's city is never "here".
         c.Screen.Text(c.Variables.Location != c.Here ? 4 : 3);
     }
 

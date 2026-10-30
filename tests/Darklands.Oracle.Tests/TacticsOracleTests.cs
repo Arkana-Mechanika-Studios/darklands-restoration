@@ -7,8 +7,8 @@ using Darklands.Core.Randomness;
 namespace Darklands.Oracle.Tests;
 
 /// <summary>
-/// The tactical geometry against the original program: cbt_collisions, line_blocked and
-/// distance3 run from DARKLAND.EXE on generated floors and combatants
+/// The tactical geometry against the original program: fighter-collision-pass, sight-line-blocked and
+/// three-way-distance run from DARKLAND.EXE on generated floors and combatants
 /// (tools/oracle/build_tactics_corpus.py → Corpus/tactics.json).
 /// </summary>
 public sealed class TacticsOracleTests
@@ -24,7 +24,7 @@ public sealed class TacticsOracleTests
     public void CollisionsAreTheOriginals()
     {
         var n = 0;
-        foreach (var c in Cases.Value.Where(c => c.GetProperty("function").GetString() == "cbt_collisions"))
+        foreach (var c in Cases.Value.Where(c => c.GetProperty("function").GetString() == "R014+0x5ECA"))
         {
             var i = c.GetProperty("inputs");
             var (battle, map) = Scene(i);
@@ -54,7 +54,7 @@ public sealed class TacticsOracleTests
     public void LinesOfSightAreTheOriginals()
     {
         var n = 0;
-        foreach (var c in Cases.Value.Where(c => c.GetProperty("function").GetString() == "line_blocked"))
+        foreach (var c in Cases.Value.Where(c => c.GetProperty("function").GetString() == "R014+0xEF3C"))
         {
             var i = c.GetProperty("inputs");
             if (i.GetProperty("a").GetInt32() == -2 && i.GetProperty("mode").GetInt32() == 0x100)
@@ -75,11 +75,11 @@ public sealed class TacticsOracleTests
     [Fact]
     public void DistancesAreTheOriginals()
     {
-        foreach (var c in Cases.Value.Where(c => c.GetProperty("function").GetString() == "distance3"))
+        foreach (var c in Cases.Value.Where(c => c.GetProperty("function").GetString() == "root 047C:1120"))
         {
             var i = c.GetProperty("inputs");
             int a = i.GetProperty("a").GetInt32(), b = i.GetProperty("b").GetInt32();
-            Assert.True(Convert.ToInt32(c.GetProperty("ax").GetString(), 16) == TacticalBattle.Distance(a, b), $"distance3({a}, {b})");
+            Assert.True(Convert.ToInt32(c.GetProperty("ax").GetString(), 16) == TacticalBattle.Distance(a, b), $"three-way-distance({a}, {b})");
         }
     }
 

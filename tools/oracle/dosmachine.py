@@ -60,7 +60,7 @@ DS = P(0x321A)
 STACK_TOP = 0xFE00              # the game's stack: SS = DGROUP, SP = (415A - 321A) * 16 + 0A00
 SENTINEL_SEG = 0xF000          # F000:00nn = return of a top-level/nested call at depth nn
 TRAMPOLINE_SEG = 0xF100        # F100:nnnn = return of an overlay call
-HEAP_START, HEAP_END = P(0x4220), 0x9FF0    # DOS memory for mem_alloc (above the 64 KB of DGROUP, up to the top of conventional memory)
+HEAP_START, HEAP_END = P(0x4220), 0x9FF0    # DOS memory for heap-take (above the 64 KB of DGROUP, up to the top of conventional memory)
 REG = {n: getattr(x86, "UC_X86_REG_" + n) for n in ("AX", "BX", "CX", "DX", "SI", "DI", "BP", "SP", "CS", "DS", "ES", "SS", "IP", "EFLAGS")}
 REPO = Path(__file__).resolve().parent.parent.parent
 

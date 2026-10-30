@@ -39,14 +39,14 @@ public sealed class GuestOfTheCastleLord : Card
             new MenuLine(_ => PrayForInsight(c), () => OptionHint.Say("Select a person and a saint.")),
             new MenuLine(_ => RebukeTheLord(c), () => OptionHint.Say("You can always encounter the unknown")),
             // orig: R104+0x2626 (1A35:0656) matched (empty action); hint R104+0x2628 is an empty function too
-            // DORMANT: line 4 is never offered (opt_flag_4 = 0). UNCERTAIN: its hint returns whatever is in AX/DX; a neutral hint is used.
+            // DORMANT: line 4 is never offered (card-option-flag-4 = 0). UNCERTAIN: its hint returns whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => { }, Assured),
             // DORMANT: lines 5, 6, 8, 9 are never offered; each only lets no time pass.
             // orig: R104+0x262A (line 5)
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R104+0x266E (line 6)
             new MenuLine(_ => c.PassHours(0), Assured),
-            // orig: R104+0x26B2 (1A35:06E2) matched (leaves at dawn without clearing cur_loc)
+            // orig: R104+0x26B2 (1A35:06E2) matched (leaves at dawn without clearing location-now)
             new MenuLine(_ => { c.PassHours(c.HoursUntil(5) + 1); c.Next = CardContext.MapCard; }, Assured),
             // orig: R104+0x2706 (line 8)
             new MenuLine(_ => c.PassHours(0), Assured),
@@ -57,7 +57,7 @@ public sealed class GuestOfTheCastleLord : Card
     private static OptionHint Assured() => OptionHint.Say(SuccessAssured);
 
     /// <summary>The same parity as at the castle gate (card 242) decides the lord's nature.</summary>
-    // C: party_seed + cur_loc & 1 (no char cast here; the parity is the same as at the gate).
+    // C: party-random-seed + location-now & 1 (no char cast here; the parity is the same as at the gate).
     private static bool LordIsCruel(CardContext c) => ((c.State.Party.Seed + c.Here) & 1) != 0;
 
     /// <summary>The leader's speech or twice the charm, whichever is better.</summary>

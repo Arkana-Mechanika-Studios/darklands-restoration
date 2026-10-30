@@ -76,7 +76,7 @@ public enum AttackItem
 /// keys of the battle test the same bytes.
 /// </summary>
 // orig: DS:9419 (the bar) with DS:9607 (Orders), DS:97DB (Attack), DS:987D (Party), DS:991E (Game) set up by R000+0x083E
-// R000+0x083E (0E76:083E) and battle_menus_enable R000+0x0F04 draft
+// R000+0x083E (0E76:083E) and battle-menus-switch-on R000+0x0F04 draft
 public sealed class BattleMenus
 {
     /// <summary>The "(Ldr)" and "(All)" suffixes (DS:073E, DS:0744).</summary>

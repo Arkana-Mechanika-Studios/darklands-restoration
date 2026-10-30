@@ -6,17 +6,17 @@ local functions and card handlers with an `// orig:` comment citing it; tools/fa
 The facts of the function come from the unchanged EXE bytes (structure_exe.py), those of the C# from
 Roslyn, with the port's untraced helpers followed and its traced members standing for what they cite:
 
-  draws     one side draws random numbers (rand or one of its wrappers: random_n, rand_mod, rand_1_n), the other
+  draws     one side draws random numbers (rand or one of its wrappers: roll-n, roll-below, roll-one-to-n), the other
             draws neither itself nor in what it calls (two calls deep in the C#'s callees, three in the original)
-  args      a call both sides make passes a constant the other side never uses (rand_mod(100) / Below(10))
+  args      a call both sides make passes a constant the other side never uses (roll-below(100) / Below(10))
   stores    the C# assigns a constant that appears nowhere in the original's code (a next card, a flag), nor
             among the stores of a function both sides call (the port may store its result in the caller), nor
             among the card pictures it names (the port keeps the picture shown as a number)
   missing   the original calls a game-logic function the C# neither calls (even two calls deep), installs (a
             handler nested in it: a card's option action), names, nor does in place (a function of the same record
             whose every call the C# makes and every stored constant it stores: an action written in its menu line);
-            a card's reset function (opt_on, opt_fn and the pop-up tables) is CardMenu's set-up; a leaf that writes
-            nothing (member_attr, is_daylight: an accessor) only returns data, which the port may read directly
+            a card's reset function (card-option-enabled, card-option-handler and the pop-up tables) is CardMenu's set-up; a leaf that writes
+            nothing (member-stat, daylight-test: an accessor) only returns data, which the port may read directly
   extra     the C# calls a traced function the original does not call, even three calls deep (a property
             read is data access, not a call: the original reads memory there; a card's handler that only the
             handler tables reach is installed by the C#'s menu line, not called, nor a line action its card's
@@ -75,7 +75,7 @@ INDEX = REPO / "docs" / "source-map" / "original-functions.csv"
 COVERAGE = OUT / "coverage.csv"
 REVIEWED = OUT / "structure-reviewed.csv"
 RAND = "root 06A1:29B6"   # the C run-time's rand()
-RANDOM = {RAND}           # and its wrappers (random_n, rand_mod, rand_1_n), found in the EXE by random_helpers()
+RANDOM = {RAND}           # and its wrappers (roll-n, roll-below, roll-one-to-n), found in the EXE by random_helpers()
 CHECKS = ["draws", "args", "stores", "missing", "extra", "order", "consts", "decisions"]
 MEANING = {
     "draws": "one side draws random numbers, the other never does",
@@ -88,15 +88,15 @@ MEANING = {
     "decisions": "fewer than half the original's conditional branches",
 }
 # The original's own min/max/clamp helpers, which the port writes with System.Math: (methods, what the helper
-# does). A call is accepted as the helper when the C# uses one of the methods; for clamp_range that holds only
+# does). A call is accepted as the helper when the C# uses one of the methods; for limit-to-range that holds only
 # while lo <= hi (Math.Clamp throws otherwise, and the original returns hi above hi, else the larger of lo and
 # v), which this check does not see.
 BCL_EQUIVALENTS = {
-    "R029+0x4F1A": ({"Math.Clamp", "Math.Min", "Math.Max"}, "clamp99: v above 99 gives 99, below 0 gives 0"),
-    "R029+0x4F38": ({"Math.Clamp", "Math.Min", "Math.Max"}, "clamp100: v above 100 gives 100, below 0 gives 0"),
-    "R029+0x4F76": ({"Math.Clamp", "Math.Min", "Math.Max"}, "clamp_range(lo, hi, v): hi above hi, lo below lo (signed)"),
-    "R029+0x4F94": ({"Math.Max"}, "imax(a, b), signed"),
-    "R029+0x4FA4": ({"Math.Min"}, "imin(a, b), signed"),
+    "R029+0x4F1A": ({"Math.Clamp", "Math.Min", "Math.Max"}, "limit-to-0-99: v above 99 gives 99, below 0 gives 0"),
+    "R029+0x4F38": ({"Math.Clamp", "Math.Min", "Math.Max"}, "limit-to-0-100: v above 100 gives 100, below 0 gives 0"),
+    "R029+0x4F76": ({"Math.Clamp", "Math.Min", "Math.Max"}, "limit-to-range(lo, hi, v): hi above hi, lo below lo (signed)"),
+    "R029+0x4F94": ({"Math.Max"}, "larger-of(a, b), signed"),
+    "R029+0x4FA4": ({"Math.Min"}, "smaller-of(a, b), signed"),
     "root 0410:001A": ({"Math.Clamp", "Math.Min", "Math.Max"}, "clamp(v, lo, hi): lo below lo, hi above hi (signed)"),
 }
 # The original's services the port does not call function by function: the graphics driver's thunks, the file, catalog
@@ -105,23 +105,23 @@ BCL_EQUIVALENTS = {
 SERVICES = ("root 047C:", "root 0617:", "root 05D9:", "root 0265:", "root 06A1:")
 # Functions the port does with the language or the host: (function, how); not leads for `missing` and `extra`.
 IMPLICIT = {
-    "R029+0x50DE": "money_copy (d = s, word by word): the port's Money is a value, copied by assignment",
-    "root 0000:1338": "exit_if_requested: the loops' check for a quit request, which the host makes at every frame"
+    "R029+0x50DE": "purse-duplicate (d = s, word by word): the port's Money is a value, copied by assignment",
+    "root 0000:1338": "quit-check: the loops' check for a quit request, which the host makes at every frame"
                       " (GameUi.Present)",
     "R000+0x083E": "the menu bar's set-up (DS:9419 with its menus): the screens' menu bar, reached through their"
                    " interfaces",
 }
-# Original functions the port reaches through one member: (the functions, why). card_load R043+0x0A9A (with the
-# card's own name, as every card script calls it) is card_load_near R043+0x0BA0 plus a redraw of the party column
-# (root 0000:1588, 0000:1716) and the MEM.LOG line (a registered DIVERGENCE); the C#'s ShowPicture (card_load_near)
-# draws the party column every time, so a card's card_load and its ShowPicture are one call here.
-SAME_CALL = [({"R043+0x0A9A", "R043+0x0BA0"}, "card_load / card_load_near: ShowPicture draws the party column too"),
-             ({"R029+0x1A7E", "R029+0x1A8E"}, "cur_loc_query(q) is loc_query(cur_loc, q)"),
-             ({"R029+0x5654", "R029+0x56A6"}, "cur_band() is hour_band(DS:E0), the same ladder on the current hour")]
+# Original functions the port reaches through one member: (the functions, why). card-run R043+0x0A9A (with the
+# card's own name, as every card script calls it) is card-run-near R043+0x0BA0 plus a redraw of the party column
+# (root 0000:1588, 0000:1716) and the MEM.LOG line (a registered DIVERGENCE); the C#'s ShowPicture (card-run-near)
+# draws the party column every time, so a card's card-run and its ShowPicture are one call here.
+SAME_CALL = [({"R043+0x0A9A", "R043+0x0BA0"}, "card-run / card-run-near: ShowPicture draws the party column too"),
+             ({"R029+0x1A7E", "R029+0x1A8E"}, "location-now-query(q) is place-query(location-now, q)"),
+             ({"R029+0x5654", "R029+0x56A6"}, "time-band-now() is time-of-day-band(DS:E0), the same ladder on the current hour")]
 ONE_CALL = {t: min(g) for g, _ in SAME_CALL for t in g}
 # Code that never draws, whatever it calls: the C run-time library (only rand and srand use the seed; none of its
 # functions calls them, and its calls through pointers are int86's `int n / retf`, the heap's and the exit's) and the
-# graphics driver's thunks (they dispatch into the asm driver, which calls no game code); and quit_to_dos, which
+# graphics driver's thunks (they dispatch into the asm driver, which calls no game code); and exit-to-system, which
 # returns on a no and ends the program on a yes (its shutdown calls the sound driver through a pointer).
 SEEDLESS = ("root 06A1:", "root 047C:", "root 0000:13A0")
 CARDS = ("R044", "R135")   # the card overlays: one card cannot call another's code (only through R029 / R043)
@@ -287,7 +287,7 @@ def compare(units, exe, thunks, coverage, kinds):
 
     callees = {k: [canon(t) for _, t, _ in v.get("calls", [])] for k, v in exe.items()}
     called_directly = {t for ts in callees.values() for t in ts}
-    # a card's line actions: what a card function that runs the menu (card_menu R043+0x1BD2) calls in its own record
+    # a card's line actions: what a card function that runs the menu (card-choice-menu R043+0x1BD2) calls in its own record
     line_actions = {t for k, ts in callees.items() if "R043+0x1BD2" in ts for t in ts if t[:4] == k[:4]}
 
     # the pure queries: functions that write no memory outside their frame and call only pure functions (rand
@@ -306,7 +306,7 @@ def compare(units, exe, thunks, coverage, kinds):
     # what each function reads and writes by address, with its callees; `blind`: it may write anything (through a
     # pointer or an index, into another segment, through a call by pointer or out of the index). Two calls commute when
     # neither is blind and neither writes what the other reads or writes (a read through a pointer is taken not to reach
-    # a global the code names by its address: best_value, the event cursor)
+    # a global the code names by its address: top-value-so-far, the event cursor)
     reads = {k: set(v.get("dr", ())) for k, v in exe.items()}
     writes = {k: set(v.get("dw", ())) for k, v in exe.items()}
     blind = {k for k, v in exe.items()
@@ -329,9 +329,9 @@ def compare(units, exe, thunks, coverage, kinds):
                     writes[k] |= writes[t]
                     grown = True
 
-    # a card's reset function: it sets opt_on[0..19] (DS:E99C) to 0 or 1 and points opt_fn[0..19] (DS:EA14) and the
+    # a card's reset function: it sets card-option-enabled[0..19] (DS:E99C) to 0 or 1 and points card-option-handler[0..19] (DS:EA14) and the
     # pop-up tables at the card's handlers; CardMenu does that when the card makes its menu (with the card's Enable
-    # calls), and the card oracle compares the menus' opt_on states (CardOracleTests)
+    # calls), and the card oracle compares the menus' card-option-enabled states (CardOracleTests)
     resets = {k for k, v in exe.items()
               if CARDS[0] <= k[:4] <= CARDS[1] and 0xEA14 in v.get("imms", []) and not v.get("calls")}
 
@@ -480,7 +480,7 @@ def compare(units, exe, thunks, coverage, kinds):
         # (nor a function of the same record whose work the original does in place, the port sharing one copy of code
         # the original repeats: every call it makes is in the original's reach, every constant it stores the original's;
         # nor, from any record, a function that writes nothing itself, a pure accessor the original reads the data of in
-        # place or a wrapper of calls the original makes itself: wait_until_hour = hours_until, advance_hours)
+        # place or a wrapper of calls the original makes itself: wait-for-hour = hours-remaining-until, pass-hours)
         o_imms = {v for c in own for v in exe[c].get("imms", [])}
 
         def repeated(t):
@@ -555,7 +555,7 @@ def compare(units, exe, thunks, coverage, kinds):
 
         # (a function both sides call may store it in the original where the port stores its result in the caller)
         moved = {v for t in set(o_seq) & set(c_seq) for v in exe.get(t, {}).get("stores", [])}
-        # (a card keeps the picture it shows as its number; the original copies the picture's name, pic_names[n])
+        # (a card keeps the picture it shows as its number; the original copies the picture's name, image-file-names[n])
         moved |= {v for c in own for v in exe[c].get("pics", [])}
         new_stores = sorted({v for u in members for v in u["stores"] if value(v) and not near(v, o_all | moved)})
         if new_stores:
@@ -670,7 +670,7 @@ def write(rows, reviewed, units, exe, coverage):
            "  original's control flow; calls that commute (no shared state read and written, no random draw",
            "  between them) are not ordered. A pure query's end state (a best-member global) is seen only",
            "  through the order of the queries.",
-           "* Card scripts: the menu loop (card_menu R043+0x1BD2 and the switch after it) is CardMenu.Run's;",
+           "* Card scripts: the menu loop (card-choice-menu R043+0x1BD2 and the switch after it) is CardMenu.Run's;",
            "  a card's reset function and the hint and pop-up handlers it installs are the menu lines'; a",
            "  line action reached only through the option table is the line, not a call.",
            "* Decision points are a coarse count: `&&`/`||` chains, loops and switch tables compile to several",
@@ -688,7 +688,7 @@ def write(rows, reviewed, units, exe, coverage):
            "  (no calls, no writes), or of the same record or a card's copy of another card's function (card",
            "  overlays cannot call one another), with every call in the port's reach and every constant it",
            "  stores in the port; for `extra`, a function that writes nothing and whose calls the original",
-           "  makes itself (a wrapper such as wait_until_hour) is accepted the same way.",
+           "  makes itself (a wrapper such as wait-for-hour) is accepted the same way.",
            "* Delegates and closures: a call through a delegate field or a lambda stored in a local is seen only",
            "  where the delegate's target is traced; menu-bar handlers given to MenuBar.Item count as calls.",
            "* Functions cited only at statement level, in types or in map.csv are not compared (see Scope).",

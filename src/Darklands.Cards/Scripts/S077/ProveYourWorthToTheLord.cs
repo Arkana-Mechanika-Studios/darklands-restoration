@@ -78,12 +78,12 @@ public sealed class ProveYourWorthToTheLord : Card
     private static int AfterTheAudience(CardContext c) => c.IsDaylight ? 0x12 : 0x19;
 
     // C: the task's code is repeated inline in five handlers of the original; one helper here.
-    // C: nearest_loc_type takes the city record's position word pair (+4, +6) as one long: x, y.
+    // C: closest-place-of-kind takes the city record's position word pair (+4, +6) as one long: x, y.
     /// <summary>
     /// The lord, impressed, sets the party on a robber knight near the city for a reward
     /// ($Money1) and sends it there, to return to <paramref name="returnCard"/> afterwards.
     /// </summary>
-    // C: the card to return to is asked after the hour has passed (is_daylight after advance_hours(1)).
+    // C: the card to return to is asked after the hour has passed (daylight-test after pass-hours(1)).
     private static void GiveTheTask(CardContext c, int questType, Func<int> returnCard)
     {
         c.Variables.Money[0] = Money.From(c.LocationQuery(c.Here, 2) * 7, 0, 0);
@@ -134,7 +134,7 @@ public sealed class ProveYourWorthToTheLord : Card
     }
 
     // orig: R077+0x0626 (1838:0626) matched; tests: CardSmokeTests
-    // C: the member shown is var_chosen1 as it stands (an earlier value if nobody scores above 0).
+    // C: the member shown is text-slot-chosen-one as it stands (an earlier value if nobody scores above 0).
     /// <summary>The most learned able member: (each part above its threshold, 1..99): Latin, intelligence, reading and writing, religion with alchemy.</summary>
     private static OptionHint ScholarshipChance(CardContext c)
     {
@@ -178,7 +178,7 @@ public sealed class ProveYourWorthToTheLord : Card
     }
 
     // orig: R077+0x08C8 (1838:08C8) matched; tests: CardSmokeTests
-    // C: best_member is read as an unsigned char.
+    // C: top-scoring-member is read as an unsigned char.
     /// <summary>The better of the best melee and the best missile fighter shows off.</summary>
     private static OptionHint WeaponChance(CardContext c)
     {

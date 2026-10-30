@@ -1,5 +1,5 @@
-# gen-bhurtk-02's walk up to its battle bar choice Game > Difficulty > Expert (the right button let go over the sub-item): the box show_difficulty(1)
-# shows (root 0000:1438 -> show_message root 0000:24BC); the original's frames from the release (series), the C#'s presented frames (rec)
+# gen-bhurtk-02's walk up to its battle bar choice Game > Difficulty > Expert (the right button let go over the sub-item): the box difficulty-display(1)
+# shows (root 0000:1438 -> notice-display root 0000:24BC); the original's frames from the release (series), the C#'s presented frames (rec)
 key:t
 wait:5
 key:l

@@ -7,7 +7,7 @@ namespace Darklands.Cards.Scripts;
 /// offered.
 /// </summary>
 // orig: R115+0x187A (19BF:000A) asm; tests: CardSmokeTests
-// orig: R115+0x1E9C (19BF:062C) asm (registration: default R115+0x1F3E; standard item and saint pop-ups; card_items and card_saints all -1)
+// orig: R115+0x1E9C (19BF:062C) asm (registration: default R115+0x1F3E; standard item and saint pop-ups; card-item-lines and card-saint-lines all -1)
 public sealed class OutsideThePrison : Card
 {
     private const int PrisonPicture = 260;
@@ -17,7 +17,7 @@ public sealed class OutsideThePrison : Card
 
     public override int Run(CardContext c)
     {
-        // The CardTable has no name for card 287; the code copies "$Dunge03" (DS:669C) into card_name.
+        // The CardTable has no name for card 287; the code copies "$Dunge03" (DS:669C) into card-title.
         c.Screen.Show("$Dunge03", PictureNames.Of(PrisonPicture));
         c.Next = Number;
         var menu = Menu(c, 0);
@@ -39,7 +39,7 @@ public sealed class OutsideThePrison : Card
             // DORMANT: line 3 (the sewers) is never offered; it would let no time pass.
             new MenuLine(_ => c.PassHours(0)),
             // orig: R115+0x1CFC (19BF:048C) asm; hint R115+0x1D10
-            // DORMANT: line 4 (other business in the city) is never offered (opt_flag_4 = 0).
+            // DORMANT: line 4 (other business in the city) is never offered (card-option-flag-4 = 0).
             new MenuLine(_ => c.Next = c.IsDaylight ? 0x12 : 0x19),
             // DORMANT: lines 5..9 are never offered; each lets no time pass (R115+0x1D48, 051c, 0560, 05a4, 05e8).
             new MenuLine(_ => c.PassHours(0)),
@@ -49,7 +49,7 @@ public sealed class OutsideThePrison : Card
             new MenuLine(_ => c.PassHours(0)));
     }
 
-    // C: (party_avg_skill(0x10) + party_avg_skill(0xF)) / 2 by cwd/sar: a signed halving; Streetwise is queried first.
+    // C: (party-ability-mean(0x10) + party-ability-mean(0xF)) / 2 by cwd/sar: a signed halving; Streetwise is queried first.
     private static OptionHint SneakHint(CardContext c)
     {
         var streetwise = c.PartyAverageSkill((int)Core.Characters.Skill.Streetwise);
@@ -59,7 +59,7 @@ public sealed class OutsideThePrison : Card
 
     /// <summary>Looking official, the party walks in (card 286), or the guards block the door.</summary>
     // orig: R115+0x1BC4 (19BF:0354) asm; tests: CardSmokeTests
-    // C: the test is `rand_mod(100) > p` → blocked, so success is a roll of p or less.
+    // C: the test is `roll-below(100) > p` → blocked, so success is a roll of p or less.
     private static void SneakIn(CardContext c, int chance)
     {
         if (c.Random(100) <= chance)
@@ -81,7 +81,7 @@ public sealed class OutsideThePrison : Card
     /// turns against the party as in card 286.
     /// </summary>
     // orig: R115+0x1A92 (19BF:0222) asm; tests: CardSmokeTests
-    // C: checked against the asm: result 1 falls through into result 2's code (two reports); saved_card = is_daylight() ? 9 : 10.
+    // C: checked against the asm: result 1 falls through into result 2's code (two reports); remembered-card = daylight-test() ? 9 : 10.
     // C: the function's case layout is unusual; the behaviour above is the disassembly's.
     private static void FightTheGuards(CardContext c)
     {

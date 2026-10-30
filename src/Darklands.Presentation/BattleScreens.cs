@@ -11,7 +11,7 @@ namespace Darklands.Presentation;
 /// battlefield for the request, runs the tactical screen until the battle ends, hands the loot
 /// over and returns the result code (0 won, 2 fled, 3 lost, 4 surrendered, 5 all down …).
 /// </summary>
-// orig: battle_run R002+0x0000 (0E76:0000) draft
+// orig: battle-entry R002+0x0000 (0E76:0000) draft
 public sealed class BattleScreens
 {
     private readonly GameUi _ui;
@@ -46,7 +46,7 @@ public sealed class BattleScreens
 
     /// <summary>
     /// Runs one battle. <see cref="BattleRequest.Battlefield"/> is the battlefield type (the
-    /// card's <c>battle_enemy</c>, or <c>run_battle</c>'s first argument), <see cref="BattleRequest.Seed"/>
+    /// card's <c>battle-enemy-group</c>, or <c>battle-driver</c>'s first argument), <see cref="BattleRequest.Seed"/>
     /// the battle seed, the groups the three (enemy type, quality, number) specs.
     /// </summary>
     public int Battle(BattleRequest request)
@@ -72,7 +72,7 @@ public sealed class BattleScreens
             Fighting = false;
         }
         LastResultCard = screen.ResultCard;
-        // orig: R002+0x0000 at its end: `combat_flags &= 0xFE10` (bits 1, 2, 4, 8, 0x20, 0x40 and 0x80 cleared after every battle); tests: RevisitTests
+        // orig: R002+0x0000 at its end: `fight-flags &= 0xFE10` (bits 1, 2, 4, 8, 0x20, 0x40 and 0x80 cleared after every battle); tests: RevisitTests
         _state().BattleOrders.Flags &= 0xFE10;
         return result;
     }
@@ -93,11 +93,11 @@ public sealed class BattleScreens
     public const int FinishedText = 0x0FD8;
 
     /// <summary>
-    /// In a battle, for a party member who left the battlefield through an exit (cbt_floor DS:A6B4 = 0x9D, −99): R022+0x04E4's
+    /// In a battle, for a party member who left the battlefield through an exit (fighter-floor-level DS:A6B4 = 0x9D, −99): R022+0x04E4's
     /// "You can't view &lt;name&gt; at this time." for 150 ticks, and true; false otherwise (no battle, or the member is still there).
     /// The character sheet (R031+0x0124) and the loot screen (R040+0x0C22) ask it before showing a member.
     /// </summary>
-    // orig: R031+0x0124's `if (DS:907A == 1 && cbt_floor[m] == 0x9D) thunk 09C0:1D51(m)` (R031+0x0644..0x064B, 0x07A4..0x07AB,
+    // orig: R031+0x0124's `if (DS:907A == 1 && fighter-floor-level[m] == 0x9D) thunk 09C0:1D51(m)` (R031+0x0644..0x064B, 0x07A4..0x07AB,
     //   0x0837..0x083E: `cmp byte [di - 0x594C], 0x9D`, the byte table; portrait click, F1..F5, Enter on a member box);
     //   R022+0x04E4 matched: sprintf("%Fs%s%Fs", 286B:0212, name, 286B:0222), root 0000:24BC(buf, 0x96)
     public bool CannotViewMember(int member)
@@ -143,8 +143,8 @@ public sealed class BattleScreens
         return "Select " + FarText(p[0] | p[1] << 8);
     }
 
-    /// <summary>"BattleResults - victory" … (battle_run, the box after the battle; result 8 "leave").</summary>
-    // orig: battle_run R002+0x0000 (0E76:0000) draft (the switch on DS:A893)
+    /// <summary>"BattleResults - victory" … (battle-entry, the box after the battle; result 8 "leave").</summary>
+    // orig: battle-entry R002+0x0000 (0E76:0000) draft (the switch on DS:A893)
     internal static string ResultText(int result) => "BattleResults - " + result switch
     {
         0 => "victory",
@@ -190,7 +190,7 @@ public sealed class BattleScreens
     /// <summary>The view centre now: the running battle's while one runs, else <see cref="ViewCentre"/>.</summary>
     public (int Column, int Row) CurrentViewCentre => Current?.ViewCentre ?? ViewCentre;
 
-    /// <summary>The card the last battle left for (battle_args: the level's card for its result).</summary>
+    /// <summary>The card the last battle left for (battle-start-arguments: the level's card for its result).</summary>
     public int LastResultCard { get; private set; }
 
     /// <summary>The loot of a pile or of the victory: to the loot screen, or kept in <see cref="LastLoot"/>.</summary>

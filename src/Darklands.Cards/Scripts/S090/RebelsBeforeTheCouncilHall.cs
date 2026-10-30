@@ -45,7 +45,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
             menu[0] = OptionState.Shown;
             menu[1] = OptionState.Shown;
         }
-        // C: the card writes prev_screen = 0xBC (nothing reads it before the dispatcher sets it again),
+        // C: the card writes earlier-screen = 0xBC (nothing reads it before the dispatcher sets it again),
         // and greys out both breaking in and waiting.
         c.State.PreviousCard = 0xBC;
         menu[4] = OptionState.Shown;
@@ -142,7 +142,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
     }
 
     /// <summary>The party's average Stealth or its best Artifice, whichever is lower.</summary>
-    // C: imin(avg, max): the arguments are evaluated right to left, so the Artifice query runs first.
+    // C: smaller-of(avg, max): the arguments are evaluated right to left, so the Artifice query runs first.
     private static int BreakInChance(CardContext c)
     {
         var artifice = c.PartyMaxSkill((int)Skill.Artifice);

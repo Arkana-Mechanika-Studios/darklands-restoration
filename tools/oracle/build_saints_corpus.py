@@ -3,13 +3,13 @@ and the help of many saints.
 
 usage: python -I build_saints_corpus.py <DARKLAND.EXE> <out saints.json>
 
-* "table": saint_fns (R136+0xAFC7, 136 far pointers to RTLink thunks): the R039 function each
+* "table": saint-handler-tables (R136+0xAFC7, 136 far pointers to RTLink thunks): the R039 function each
   saint number reaches, read from the thunk's far jump.
 * "values": what = 0..6 of every saint function (the two unlisted ones too).
 * "chance": what = 7 with generated Virtue, favor and party (St.Agnes asks for able women).
-* "help": what = 8 executed with its whole call tree from the original bytes, except event_new and
-  event_here (stubbed and recorded: they allocate event records through DOS). Party records,
-  purse, bankers' standings, saints_known, locations and the random state are seeded; every
+* "help": what = 8 executed with its whole call tree from the original bytes, except event-create and
+  event-here-test (stubbed and recorded: they allocate event records through DOS). Party records,
+  purse, bankers' standings, saints-learned, locations and the random state are seeded; every
   changed byte is recorded.
 
 Only results are stored; no game bytes.
@@ -26,7 +26,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from run_unit import Rtlink, run  # noqa: E402
-from build_rules_corpus import (DS, HOLDRAND, CUR_LOC, PARTY_X, PARTY_Y, LEADER, PARTY_SIZE, REPORT, PARTY,  # noqa: E402
+from build_rules_corpus import (DS, HOLDRAND, LOCATION_NOW, PARTY_MAP_COLUMN, PARTY_MAP_ROW, LEADER, PARTY_HEADCOUNT, REPORT, PARTY,  # noqa: E402
                                 LOC_SEG, LOC_SIZE, ds, h16, locations, w)
 
 SAINT_SEG = 0x165C
@@ -36,10 +36,10 @@ PURSE = 0x906B
 FUGGER, MEDICI = 0x4BB6, 0x4BB8
 SAINTS_KNOWN_SEG, SAINTS_KNOWN_OFF = 0x2E38, 0x082C
 UNLISTED = [0x75D8, 0x7812]
-# Saints whose help is executed: no equipment or item checks (equip_bonuses, count_items_flags read the
-# item list, which is not seeded), no nearest_city (the party is always at a location), and not
+# Saints whose help is executed: no equipment or item checks (gear-bonus-sums, item-tally-by-flags read the
+# item list, which is not seeded), no closest-city (the party is always at a location), and not
 # St.John Nepomuk in Prague (an uninitialised location). Saints that read the member record directly
-# (+0x03, +0x41, saints_known) are not asked for −1: the original reads before the party there.
+# (+0x03, +0x41, saints-learned) are not asked for −1: the original reads before the party there.
 DIRECT = {1, 20, 27, 30, 45, 75, 90, 103, 104}
 HELP = [0, 1, 2, 3, 4, 6, 7, 9, 12, 13, 14, 20, 23, 27, 28, 30, 38, 41, 44, 45, 50, 57, 59, 62, 64, 73, 74, 75, 76,
         77, 78, 90, 94, 99, 100, 103, 104, 105, 108, 109, 110, 112, 113, 114, 122, 125, 135]
@@ -94,7 +94,7 @@ def cases(r, table):
             size = r.randint(1, 5)
             members, memory = party(r, size)
             who, x = r.randint(0, size - 1), r.choice([0, r.randint(0, 99), r.randint(0, 99)])
-            memory += [ds(PARTY_SIZE, w(size))]
+            memory += [ds(PARTY_HEADCOUNT, w(size))]
             out.append(("chance", off, [h16(who), h16(x), h16(7)], memory,
                         {"saint": saint, "members": members, "size": size, "who": who, "x": x}))
     for saint in HELP:
@@ -103,21 +103,21 @@ def cases(r, table):
             members, memory = party(r, size)
             who = r.choice(list(range(size)) + ([] if saint in DIRECT else [-1]))
             leader = r.randint(0, size - 1)
-            cur_loc = r.choice([0x05, 0x45, 0x36, 0x25, 0x55, 0x4C, 2, 150] + ([] if saint == 78 else [0x46]))
-            recs, locs = locations(r, 2, cur_loc)
+            location_now = r.choice([0x05, 0x45, 0x36, 0x25, 0x55, 0x4C, 2, 150] + ([] if saint == 78 else [0x46]))
+            recs, locs = locations(r, 2, location_now)
             state = r.getrandbits(32)
             purse = [r.choice([0, 0, 3, 300, 1000]), r.choice([0, 0, 7, 19]), r.randint(0, 11)]
             bankers = [r.randint(-50, 50), r.randint(-50, 50)]
             known = bytes(r.randint(0, 255) for _ in range(5 * 0x14))
-            memory += locs + [ds(LEADER, "%02X" % leader), ds(PARTY_SIZE, w(size)), ds(REPORT, w(0)),
-                              ds(SAINT_MSGS, "00"), ds(CUR_LOC, w(cur_loc)),
+            memory += locs + [ds(LEADER, "%02X" % leader), ds(PARTY_HEADCOUNT, w(size)), ds(REPORT, w(0)),
+                              ds(SAINT_MSGS, "00"), ds(LOCATION_NOW, w(location_now)),
                               ds(HOLDRAND, struct.pack("<I", state).hex()),
                               ds(PURSE, struct.pack("<hhh", *purse).hex()),
                               ds(FUGGER, struct.pack("<hh", *bankers).hex()),
                               {"segment": "%04X" % SAINTS_KNOWN_SEG, "offset": "%04X" % SAINTS_KNOWN_OFF, "hex": known.hex()}]
             out.append(("help", table[saint], [h16(who), h16(0), h16(8)], memory,
                         {"saint": saint, "members": members, "size": size, "who": who, "leader": leader,
-                         "curLoc": cur_loc, "locations": recs, "state": state, "purse": purse,
+                         "curLoc": location_now, "locations": recs, "state": state, "purse": purse,
                          "bankers": bankers, "known": known.hex()}))
     return out
 
@@ -127,17 +127,17 @@ def arguments(call) -> list[int]:
     words = [int(a, 16) for a in call["args"]]
     if words[0] == 0x0E76:
         words = words[1:]
-    return words[:10 if call["callee"] == "event_new" else 2]
+    return words[:10 if call["callee"] == "event-create" else 2]
 
 
 def run_case(exe: bytes, function: str, off: int, args: list, memory: list, inputs: dict, extra: dict | None = None):
     """One case run on the original: (the corpus case, the loaded images)."""
     spec = {"unit": "saint_%04x" % off, "entry": {"segment": "%04X" % SAINT_SEG, "offset": "%04X" % off},
             "sections": SECTIONS, "ds": DS, "memory": memory, "args": args, "follow": True,
-            "stub_targets": {"0E76:2C4E": "event_new", "0E76:2930": "event_here"},
-            "arg_words": {"event_new": 11, "event_here": 3},
+            "stub_targets": {"0E76:2C4E": "event-create", "0E76:2930": "event-here-test"},
+            "arg_words": {"event-create": 11, "event-here-test": 3},
             "track_all": function == "help"}
-    if extra:   # stubs a flipped case adds (the party in the open country: nearest_city)
+    if extra:   # stubs a flipped case adds (the party in the open country: closest-city)
         spec["stub_targets"] = {**spec["stub_targets"], **extra.get("stub_targets", {})}
         spec["results"] = extra["results"]
     try:
@@ -147,7 +147,7 @@ def run_case(exe: bytes, function: str, off: int, args: list, memory: list, inpu
     case = {"function": function, "inputs": inputs, "ax": res["final"]["ax"], "dx": res["final"]["dx"],
             "changed": {c["linear"]: c["after"] for c in (res["memChanged"] or [])}}
     if function == "help":
-        case["events"] = [[c["callee"]] + arguments(c) for c in res["calls"] if c["callee"] in ("event_new", "event_here")]
+        case["events"] = [[c["callee"]] + arguments(c) for c in res["calls"] if c["callee"] in ("event-create", "event-here-test")]
     return case, res["loadedImages"]
 
 

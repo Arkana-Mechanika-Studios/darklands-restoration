@@ -18,19 +18,19 @@ public sealed class CityLeavingDirection : Card
     public override int Run(CardContext c)
     {
         Show(c, Picture);
-        // C: this card keeps next_card = 0x0C (the map) instead of its own number.
+        // C: this card keeps following-card = 0x0C (the map) instead of its own number.
         c.Next = 0x0C;
         // orig: R086+0x1AF6 (19CB:01C6) matched; tests: CardSmokeTests
         // DORMANT: the card's set-up routine is empty.
-        // C: the four option states are copies of opt_flag_0..3, which this card never sets: what the card before left
-        // C: (GameState.OptionFlags); the other lines keep opt_on as the card before left it (its reset is empty), hidden here.
+        // C: the four option states are copies of card-option-flag-0..3, which this card never sets: what the card before left
+        // C: (GameState.OptionFlags); the other lines keep card-option-enabled as the card before left it (its reset is empty), hidden here.
         var states = new OptionState[CardMenu.MaxLines];
         for (var i = 0; i < 4; i++)
         {
             states[i] = (OptionState)(byte)c.State.OptionFlags[i];
         }
-        // DIVERGENCE: no action changes next_card, so the original offers the menu for ever (its
-        // loop runs while next_card is 0x0C); here one choice ends the card, with the same next card.
+        // DIVERGENCE: no action changes following-card, so the original offers the menu for ever (its
+        // loop runs while following-card is 0x0C); here one choice ends the card, with the same next card.
         var choice = c.Screen.Choose(0, states, i => i switch
         {
             // orig: R086+0x1A74 (19CB:0144) matched; R086+0x1A98 (19CB:0168) matched; R086+0x1ABC (19CB:018C) matched; R086+0x1AE0 (19CB:01B0) matched; tests: CardSmokeTests

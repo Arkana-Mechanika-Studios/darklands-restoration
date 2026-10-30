@@ -7,7 +7,7 @@ namespace Darklands.Presentation;
 /// Enter accepts, Esc empties the text and ends, Backspace or Left removes the last letter,
 /// printable characters are added up to the limit. The screen under it comes back after.
 /// </summary>
-// orig: text_input = R037+0x43E6 (1462:43E6) matched; tests: headless chargen session
+// orig: text-prompt = R037+0x43E6 (1462:43E6) matched; tests: headless chargen session
 // C: the box is redrawn only while the text is shorter than the limit (after a key), so at the limit a printable key
 // changes nothing on screen; a deletion at the limit redraws.
 // C: before saving the region the original turns colour 0 into 5 inside it and back after (a no-op for the picture, it

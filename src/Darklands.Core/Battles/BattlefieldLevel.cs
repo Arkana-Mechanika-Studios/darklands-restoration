@@ -9,7 +9,7 @@ namespace Darklands.Core.Battles;
 /// spots (objects), exits, and raised-edge rectangles. The image is kept whole, as the
 /// generators and the battle read and write it; the accessors give its parts names.
 /// </summary>
-// orig: floor_img R136+0x0000 (0x33FC bytes, level%d.flr); layout as read by floor_view_draw, map_turn and the R010 generator
+// orig: floor-picture R136+0x0000 (0x33FC bytes, level%d.flr); layout as read by floor-view-paint, map-step and the R010 generator
 // C: records not used yet (part lists +0x2488, chests +0x300C, door tables +0x3350/+0x3382) are kept as bytes only.
 public sealed class BattlefieldLevel
 {
@@ -63,8 +63,8 @@ public sealed class BattlefieldLevel
     public BattlefieldLevel Clone() => new((byte[])Image.Clone());
 
     /// <summary>The cell at column <paramref name="x"/>, row <paramref name="y"/>; outside the level the flat cell array is read on, as the original does.</summary>
-    // orig: cbt_collisions R014+0x5ECA (1462:000A) reads the 3 x 3 cells around a spot without a bounds check: cell (x, y) is the four bytes
-    // at floor_img + (x * 40 + y) * 4 (R136+0x0000, segment 20A5), so a row off the column's end is the next column's, a column off the
+    // orig: fighter-collision-pass R014+0x5ECA (1462:000A) reads the 3 x 3 cells around a spot without a bounds check: cell (x, y) is the four bytes
+    // at floor-picture + (x * 40 + y) * 4 (R136+0x0000, segment 20A5), so a row off the column's end is the next column's, a column off the
     // level reads on into the level's other records and, before the image's start, the zero bytes at the segment's end (20A5:FE00..FFFF
     // are zeros when the first battle starts); a negative column therefore gives an ordinary empty cell, not a void one
     public BattlefieldCell this[int x, int y]

@@ -39,7 +39,7 @@ public static class PotionEffects
         return (flags & PotionFlag) != 0 && (flags & ThrownFlag) == 0;
     }
 
-    // orig: the P case of R031+0x10AE: R031+0x43B2 then item_take_one (R031+0x4CC4)
+    // orig: the P case of R031+0x10AE: R031+0x43B2 then item-take-single (R031+0x4CC4)
     /// <summary>Drinks one potion of stack <paramref name="index"/> (if drinkable) and takes it from the pack.</summary>
     public static void DrinkFromPack(GameState s, int member, int index)
     {
@@ -63,7 +63,7 @@ public static class PotionEffects
         int Raise(int lowBase, int lowRange, int midBase, int midRange, int highBase, int highRange) =>
             q <= 25 ? r.Below(lowRange) + lowBase : q <= 35 ? r.Below(midRange) + midBase : q <= 45 ? r.Below(highRange) + highBase : 5;
         // C: record +0x34 is an unsigned char: the nibble sums are stored back as a byte (wrapping), the low nibble may carry into the high one.
-        // C: each rand_mod is drawn only in the band taken, before raise_attr_temp draws its own rnd(3) for the event's hours.
+        // C: each roll-below is drawn only in the band taken, before stat-temporary-boost draws its own rnd(3) for the event's hours.
         int hi = m.WeaponPotions >> 4, lo = m.WeaponPotions & 0xF;
         int t;
         switch (stack.Code & 0xFFF)
@@ -104,7 +104,7 @@ public static class PotionEffects
                 // better the armour's quality by 20 to 30 points and its thickness by one or two levels.
                 m.ArmourPotions = (byte)((m.ArmourPotions >> 4 << 4) + t + (m.ArmourPotions & 0xF));
                 break;
-            // C: party_money++ increments the florin word alone (16-bit, no normalisation).
+            // C: party-purse++ increments the florin word alone (16-bit, no normalisation).
             // C: what Transformation is meant to do; the code adds one florin.
             case Transformation:
                 s.Party.Purse = s.Party.Purse with { Florins = (short)(s.Party.Purse.Florins + 1) };

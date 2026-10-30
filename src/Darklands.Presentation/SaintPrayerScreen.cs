@@ -18,18 +18,18 @@ namespace Darklands.Presentation;
 /// <see cref="CardContext.SaintPrayer"/>) and from the character sheet's saints list
 /// (<see cref="PrayerMode.ForMember"/>).
 /// </remarks>
-// orig: saint_pray_party R034+0x0000, saint_pray R034+0x0102, saint_screen R034+0x022C,
-//   saint_finish R034+0x06E2, saint_load_bg R034+0x0720, saint_draw R034+0x0878,
-//   saint_key R034+0x08D2, saint_draw_df R034+0x09B2, saint_draw_menu R034+0x0AA4,
-//   saint_draw_info R034+0x0BC4, saint_text_box R034+0x0D08, saint_party_box R034+0x0E04
-//   R034+0x0000..0x0E04 (1462:xxxx) matched; invoke_saint
-//   R029+0x2180 asm (= saint_pray_party(who, s, 1), then the card is redrawn);
+// orig: saint-prayer-party R034+0x0000, saint-prayer R034+0x0102, saint-screen-entry R034+0x022C,
+//   saint-wrap-up R034+0x06E2, saint-backdrop-load R034+0x0720, saint-screen-paint R034+0x0878,
+//   saint-screen-keys R034+0x08D2, saint-odds-line-paint R034+0x09B2, saint-menu-paint R034+0x0AA4,
+//   saint-info-paint R034+0x0BC4, saint-text-panel R034+0x0D08, saint-party-panel R034+0x0E04
+//   R034+0x0000..0x0E04 (1462:xxxx) matched; call-on-saint
+//   R029+0x2180 asm (= saint-prayer-party(who, s, 1), then the card is redrawn);
 //   tests: SaintPrayerTests (rules), the headless "saint" step (looks)
 // orig: the music: DS:9C3D = thunk 09C0:18F1(5), thunk 09C0:18F1(13) before the screen, thunk 09C0:18F1(DS:9C3D) on every way out;
-//   saint_pray does neither in a battle (DS:907A == 1) and plays back only a kept piece other than -1; tests: MusicTests
+//   saint-prayer does neither in a battle (DS:907A == 1) and plays back only a kept piece other than -1; tests: MusicTests
 // C: the original redraws the whole screen when a hot key's box asks for it (DS:9C46): GameUi.KeyAfterTheMouse does, and the
 //   hot keys put back what they cover themselves. Alt-Q is the game-wide hot key (the screen's own
-//   0x1000 case, saint_finish then quit, is not reached).
+//   0x1000 case, saint-wrap-up then quit, is not reached).
 public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
 {
     // Colours of the saint pictures' palettes (the screen's gfx colour is 8).
@@ -71,10 +71,10 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     /// Member <paramref name="member"/> prays to <paramref name="saint"/>: the screen until the
     /// player prays or leaves, then the prayer. Returns what the original's caller receives.
     /// </summary>
-    // orig: saint_pray_party R034+0x0000 / saint_pray R034+0x0102
+    // orig: saint-prayer-party R034+0x0000 / saint-prayer R034+0x0102
     public PrayerOutcome Pray(GameState state, int member, int saint, PrayerMode mode, ISaintEffects effects)
     {
-        // orig: saint_pray_party always, saint_pray `if (DS:907A != 1)`: DS:9C3D = music_play(5); music_play(13)
+        // orig: saint-prayer-party always, saint-prayer `if (DS:907A != 1)`: DS:9C3D = music_play(5); music_play(13)
         var music = mode == PrayerMode.ForParty || InBattle?.Invoke() != true;
         if (music)
         {
@@ -90,8 +90,8 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             PlayBack(mode, music);
             return PrayerOutcome.Cancelled;
         }
-        // orig: saint_pray: "Saint Call Successful" before the help, "Saint Call Fails" after the extra loss;
-        //   saint_pray_party says nothing. The rolls and the favor spent are the same (SaintPrayer.Pray).
+        // orig: saint-prayer: "Saint Call Successful" before the help, "Saint Call Fails" after the extra loss;
+        //   saint-prayer-party says nothing. The rolls and the favor spent are the same (SaintPrayer.Pray).
         //   The message is shown from inside SaintPrayer.Pray, at the original's place between the roll and the help.
         var success = prayer.Pray(who, effects,
             mode == PrayerMode.ForMember ? ok => _message.Show(ok ? "Saint Call Successful" : "Saint Call Fails", MessageMilliseconds) : null);
@@ -106,7 +106,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     /// <summary>True inside a battle (DS:907A == 1): a member's prayer then leaves the music alone.</summary>
     public Func<bool>? InBattle { get; init; }
 
-    // orig: saint_pray_party: music_play(DS:9C3D) on each of its three returns; saint_pray: `if (DS:907A != 1 && DS:9C3D != -1)`
+    // orig: saint-prayer-party: music_play(DS:9C3D) on each of its three returns; saint-prayer: `if (DS:907A != 1 && DS:9C3D != -1)`
     //   music_play(DS:9C3D) on both of its returns
     private void PlayBack(PrayerMode mode, bool music)
     {
@@ -128,7 +128,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The screen's loop: returns the member prayed for (−1: the leader), or null when the player leaves.</summary>
-    // orig: saint_screen R034+0x022C
+    // orig: saint-screen-entry R034+0x022C
     private int? Run(GameState state, SaintPrayer prayer)
     {
         var party = state.Party;
@@ -161,7 +161,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             }
             else if (inBox)
             {
-                // orig: DS:89EA = R029+0x4F76(0, 4, (y − 142) / 9) with the pointer after the release; prays only if row < party_size
+                // orig: DS:89EA = R029+0x4F76(0, 4, (y − 142) / 9) with the pointer after the release; prays only if row < party-headcount
                 // and the slot is used
                 // C: the row is a slot number, not a list position: with an empty slot before a member, the list
                 //   and the slots disagree, as in the original.
@@ -238,8 +238,8 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>More or less favor (the status line is redrawn).</summary>
-    // orig: saint_key R034+0x08D2
-    // DORMANT: saint_key's D case (0x2044/0x2064: redraw the menu) — saint_screen returns on D before calling it.
+    // orig: saint-screen-keys R034+0x08D2
+    // DORMANT: saint-screen-keys's D case (0x2044/0x2064: redraw the menu) — saint-screen-entry returns on D before calling it.
     private void OnKey(int key, SaintPrayer prayer)
     {
         var redraw = key switch
@@ -267,7 +267,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The saint's picture: sntback&lt;class&gt;.pic (classes 10..13 use 0, others 1).</summary>
-    // orig: saint_load_bg R034+0x0720
+    // orig: saint-backdrop-load R034+0x0720
     private void LoadBackground(int saint)
     {
         var picture = SaintTable.Of(saint).Background switch
@@ -302,7 +302,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>"Success: n" and "DF Remaining: nn".</summary>
-    // orig: saint_draw_df R034+0x09B2 (it also closes the member list)
+    // orig: saint-odds-line-paint R034+0x09B2 (it also closes the member list)
     private void DrawStatus(SaintPrayer prayer)
     {
         CloseMemberList();
@@ -313,7 +313,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The four lines, their key letter in colour 12; the prayer line grey while the chance is 0.</summary>
-    // orig: saint_draw_menu R034+0x0AA4: "\214 M\377ore divine favor is spent" ...
+    // orig: saint-menu-paint R034+0x0AA4: "\214 M\377ore divine favor is spent" ...
     // C: \214 (0x8C) and \377 are the driver's colour codes (drv+0x0FDC: colour = byte & 0x7F, 0x7F back to the call's colour): the key
     //   letter in colour 12, the rest in the window colour, as "\x8e+\x8f" in the battle panel. checked against asm
     private void DrawMenu(SaintPrayer prayer)
@@ -332,10 +332,10 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The saint's name with an illuminated capital, the feast day, the description.</summary>
-    // orig: saint_draw_info R034+0x0BC4: the name (sprintf of saint_names R136+0xF16E) by draw_text_wrapped root 0265:0134 in a column of 0x9A
+    // orig: saint-info-paint R034+0x0BC4: the name (sprintf of saint-label-table R136+0xF16E) by text-paint-wrapped root 0265:0134 in a column of 0x9A
     //   from (0x94, 4), spacing 8, leading 1, the illuminated capital (icon 1) unless in a battle (DS:907A == 1: icon 0), left-aligned (its
     //   measure, root 0265:084E at R034+0x0BFA, is not used); "Saint Day" (0x4C, 0xAD), "is" (0x62, 0xB5); the date centred in 50 pixels from
-    //   0x4B (a width of 0x31 or more counts as 0x32, R034+0x0CB5); the description by draw_text_wrapped in 0x9C from (0x94, 0x25), spacing 8,
+    //   0x4B (a width of 0x31 or more counts as 0x32, R034+0x0CB5); the description by text-paint-wrapped in 0x9C from (0x94, 0x25), spacing 8,
     //   leading 1, no capital. Checked against the original's screen (pixel comparison, local/batch/c5uncertain).
     private void DrawInfo(int saint)
     {
@@ -358,7 +358,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             new CardTextLayout.Settings { Color = TextColor, Spacing = 8 });
     }
 
-    /// <summary>The saint's full name (saint_names R136+0xF16E, from DARKLAND.LST).</summary>
+    /// <summary>The saint's full name (saint-label-table R136+0xF16E, from DARKLAND.LST).</summary>
     private string SaintName(int saint)
     {
         _names ??= Content.Formats.World.DarklandListDecoder.DecodeBytes(ui.Assets.Files.Read("DARKLAND.LST"), "DARKLAND.LST").Saints;
@@ -370,7 +370,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     // ---- the member list --------------------------------------------------------------
 
     /// <summary>The present members' names, one per row, in a framed box.</summary>
-    // orig: saint_party_box R034+0x0E04 and saint_text_box R034+0x0D08
+    // orig: saint-party-panel R034+0x0E04 and saint-text-panel R034+0x0D08
     private void OpenMemberList(Party party)
     {
         CloseMemberList();
@@ -382,7 +382,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
         _canvas.Fill(BoxX, BoxY, 1, 0xBF - BoxY + 1, BoxBorder);
         _canvas.Fill(right, BoxY, 1, 0xBF - BoxY + 1, BoxBorder);
         // orig: R034+0x0E04 joins the short names (+0x3E of each record whose status is not 0, in slot order) with newlines (the last
-        //   one cut off) and R034+0x0D08 draws them by draw_text_wrapped root 0265:0134 in a column of 0x3C - 8 from (0xFF, 0x91), spacing the
+        //   one cut off) and R034+0x0D08 draws them by text-paint-wrapped root 0265:0134 in a column of 0x3C - 8 from (0xFF, 0x91), spacing the
         //   font's height (root 047C:051B), leading 0, the window colour 8: a name wider than the column wraps onto the next row and moves
         //   the names after it down. Checked against the original's screen (pixel comparison, local/batch/c5uncertain).
         new CardTextLayout(_text).Draw(_canvas, TextPainter.Encode(MemberListText(party)), 0xFF, 0x91, BoxWidth - 8,

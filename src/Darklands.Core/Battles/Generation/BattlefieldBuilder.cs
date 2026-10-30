@@ -43,14 +43,14 @@ public sealed class GenerationProcessMemory
     public bool FortressReducedGroups { get; set; }
 
     /// <summary>
-    /// floor_img as the last battle left it (the level shown at its end), or null in a fresh program (zeros): the empty
+    /// floor-picture as the last battle left it (the level shown at its end), or null in a fresh program (zeros): the empty
     /// battlefield writes only its cells and counts over it, so its exit cards and other records are the previous battle's.
     /// </summary>
     public byte[]? FloorImage { get; set; }
 
     /// <summary>
     /// DS:C80F / DS:C831 for the party's slots 0..4 (half the collision box, width and height) as the last battle left them, or null in a
-    /// fresh program (zeros): the party is placed (R014+0x0017) before combat_main sets them (R014+0x0258, 5 and 2 from the animation sets).
+    /// fresh program (zeros): the party is placed (R014+0x0017) before fight-main-loop sets them (R014+0x0258, 5 and 2 from the animation sets).
     /// </summary>
     public (int Width, int Height)[]? PartySizes { get; set; }
 
@@ -82,7 +82,7 @@ public sealed class BattlefieldContext
 
     public required IRandomSource Random { get; init; }
 
-    /// <summary>cur_loc: the location (−1 wilderness).</summary>
+    /// <summary>location-now: the location (−1 wilderness).</summary>
     public int Location { get; init; } = -1;
 
     /// <summary>DS:D843: terrain code of the world map cell under the party.</summary>
@@ -94,8 +94,8 @@ public sealed class BattlefieldContext
     /// <summary>How many party members are able (R008 counts status 1).</summary>
     public int AbleMembers { get; init; } = 4;
 
-    /// <summary>party_lore_level(): 1..10.</summary>
-    // orig: party_lore_level_impl R039+0x0470 (1462:0470) matched: supplied by the game (PartyQueries.LoreLevel)
+    /// <summary>party-lore-rating(): 1..10.</summary>
+    // orig: party-lore-rating-inner R039+0x0470 (1462:0470) matched: supplied by the game (PartyQueries.LoreLevel)
     public Func<int> LoreLevel { get; init; } = () => 1;
 
     /// <summary>
@@ -143,10 +143,10 @@ public sealed class GeneratedBattlefield
     /// <summary>The .enm data of each level as a battle file held it (a battlefield taken from one); null: made from the kinds.</summary>
     public IReadOnlyList<byte[]?>? EnemyFiles { get; init; }
 
-    /// <summary>combat_flags bit 0: the battlefield persists ("battlefield save rules are in effect").</summary>
+    /// <summary>fight-flags bit 0: the battlefield persists ("battlefield save rules are in effect").</summary>
     public bool Persistent { get; init; }
 
-    /// <summary>combat_flags bit 0x40: a timed battle (the combat code starts a 600-tick timer).</summary>
+    /// <summary>fight-flags bit 0x40: a timed battle (the combat code starts a 600-tick timer).</summary>
     public bool Timed { get; init; }
 
     /// <summary>What the battles leave on this battlefield besides its level images (the original's files and far tables).</summary>
@@ -158,7 +158,7 @@ public sealed class GeneratedBattlefield
 /// battle (handlers and wall lists relocated, chest contents moved to the loot file), the wall
 /// groups each level has opened, and the chests' contents.
 /// </summary>
-// orig: R024+0x0000 (1EF8:0000) prepares the level files once per new battlefield; R136+0xE4E6 (doors_opened, a long
+// orig: R024+0x0000 (1EF8:0000) prepares the level files once per new battlefield; R136+0xE4E6 (opened-door-list, a long
 // per level, cleared by R002+0x1A7A for a new battlefield); DS:C7A4[20] (the chests' loot file offsets)
 public sealed class BattlefieldStore
 {
@@ -171,7 +171,7 @@ public sealed class BattlefieldStore
     /// <summary>The loot file with the piles and the chests' offsets (DS:C7A4).</summary>
     public Tactics.LootStore Loot { get; } = new();
 
-    /// <summary>floor_shown (DS:11CA) when the last battle here ended (−1: none yet): modes 1 and 2 show it again.</summary>
+    /// <summary>floor-displayed (DS:11CA) when the last battle here ended (−1: none yet): modes 1 and 2 show it again.</summary>
     public int FloorShown { get; set; } = -1;
 
     /// <summary>
@@ -223,7 +223,7 @@ public sealed class GenerationState
     }
 
     /// <summary>The direction (0, 2, 4, 6) from one point to another.</summary>
-    // orig: dir_between R004+0x2160 (0E76:2160) draft (byte-matched per the draft notes)
+    // orig: heading-from-to R004+0x2160 (0E76:2160) draft (byte-matched per the draft notes)
     public static int DirectionBetween(int x0, int y0, int x1, int y1)
     {
         var dx = x1 - x0;
@@ -249,18 +249,18 @@ public sealed class GenerationState
 }
 
 /// <summary>
-/// Builds a battlefield as <c>battlefield_build</c> does: the colour seed from the location, the
+/// Builds a battlefield as <c>battlefield-builder-entry</c> does: the colour seed from the location, the
 /// battle seed, the generator chosen by the battlefield type, then the loader's fix-ups of the
 /// enemy kinds and groups.
 /// </summary>
-// orig: battlefield_build R004+0x0000 (0E76:0000) draft (dispatch table checked
+// orig: battlefield-builder-entry R004+0x0000 (0E76:0000) draft (dispatch table checked
 // against the old engine's BattlefieldGenerationDispatcher, which pinned the original 138-word table)
 public static class BattlefieldBuilder
 {
     public static GeneratedBattlefield Build(BattlefieldContext context, int battlefield, int seed, IReadOnlyList<(int Type, int Quality, int Count)> groups)
     {
         var random = context.Random;
-        // C: srand(cur_loc); r = rand(); srand(seed): r fixes the enemies' colours for this place.
+        // C: srand(location-now); r = rand(); srand(seed): r fixes the enemies' colours for this place.
         random.Seed((uint)(ushort)context.Location);
         var variantSeed = random.NextRaw();
         random.Seed((uint)(ushort)seed);
@@ -302,7 +302,7 @@ public static class BattlefieldBuilder
                 break;
             default:
                 // DIVERGENCE: the citadel needs LCASTLE; without it (and for battlefield types no generator handles, as in the
-                // original) the field is empty (empty_battlefield, R008 2D62).
+                // original) the field is empty (blank-battlefield, R008 2D62).
                 levels = EmptyBattlefield.Build(state, battlefield, specs);
                 start = 0;
                 break;
@@ -325,7 +325,7 @@ public static class BattlefieldBuilder
         [.. Enumerable.Range(0, 3).Select(i => i < groups.Count ? groups[i] : (-1, 0, 0))];
 
     /// <summary>Which generator overlay builds a battlefield type.</summary>
-    // orig: battlefield_build's switch (R004+0x00E0..0x024F)
+    // orig: battlefield-builder-entry's switch (R004+0x00E0..0x024F)
     public static BattlefieldGenerator Generator(int battlefield) => battlefield switch
     {
         <= 8 and >= 0 or 0x27 or 0x28 or >= 0x7A and <= 0x7E => BattlefieldGenerator.Castle,
@@ -343,7 +343,7 @@ public static class BattlefieldBuilder
 /// <summary>The battlefield generator overlays.</summary>
 public enum BattlefieldGenerator
 {
-    /// <summary>R008 2D62 empty_battlefield.</summary>
+    /// <summary>R008 2D62 blank-battlefield.</summary>
     Empty,
 
     /// <summary>R005..R007 castles and keeps.</summary>

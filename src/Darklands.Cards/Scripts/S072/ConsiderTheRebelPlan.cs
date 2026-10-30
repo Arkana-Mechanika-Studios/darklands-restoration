@@ -29,7 +29,7 @@ public sealed class ConsiderTheRebelPlan : Card
         c.SetCardSaints(0, 0x59, 0x61, 0x80);
 
         return menu.Run(
-            // DORMANT: lines 0..5 (opt_flag_0..5 = 0): review the plans and put them into effect.
+            // DORMANT: lines 0..5 (card-option-flag-0..5 = 0): review the plans and put them into effect.
             // orig: R072+0x0244 (stay), 0284 (text 4, stay), 02d0 (the leader chosen, back), 0318 (the leader chosen, text 4, back);
             // hints 024c, 0298 ("No risk."), 02de, 0332 ("You can always encounter the unknown", the leader)
             new MenuLine(_ => c.Next = Number, OptionHint.Saying(NoRisk)),

@@ -101,7 +101,7 @@ public sealed class PortraitColours
     }
 
     /// <summary>Selecting a party member loads its palette into the shared one (the arrow keys).</summary>
-    // orig: the copy DS:E753..DS:E76A = member_palette[il][0..23], repeated inline in R037+0x0444 (cases 0x4800/0x4B00/0x4D00
+    // orig: the copy DS:E753..DS:E76A = member-colours[il][0..23], repeated inline in R037+0x0444 (cases 0x4800/0x4B00/0x4D00
     // and 0x5000) and repeated inline in R038+0x02F8
     public void Load(byte[] memberPalette) => memberPalette.CopyTo(Palette, 0);
 }

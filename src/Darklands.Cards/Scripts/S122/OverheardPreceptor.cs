@@ -23,7 +23,7 @@ namespace Darklands.Cards.Scripts;
 //     R122+0x23AC, R122+0x23CA, R122+0x2406,
 //     R122+0x24A8
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: card_text(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card_text R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
+// C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class OverheardPreceptor : Card
 {
     public override int Number => 315;
@@ -34,11 +34,11 @@ public sealed class OverheardPreceptor : Card
     {
         // This card has no menu and, unlike the others, leaves the item and saint lists alone.
         Show(c, HallPicture);
-        // C: the two operands of >= are independent (party_max_attr only sets best_member), so their order does not matter.
+        // C: the two operands of >= are independent (party-stat-top only sets top-scoring-member), so their order does not matter.
         var perception = c.PartyMaxAttribute((int)Attribute.Perception);
         if (perception * 3 / 2 >= c.Random(100))
         {
-            // card_text(k, 2): frame mode 2 drawn like mode 0 (card_text R043+0x0E40 treats 0 and 2 alike).
+            // card-text-block(k, 2): frame mode 2 drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike).
             c.Screen.Text(0);
             c.Screen.Text(1);
             c.Screen.Text(2);

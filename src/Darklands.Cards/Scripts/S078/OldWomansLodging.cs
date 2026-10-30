@@ -11,8 +11,8 @@ namespace Darklands.Cards.Scripts;
 // orig: R078+0x0244 (185C:0004) matched; tests: CardSmokeTests
 // orig: R078+0x0A30 (185C:07F0) matched; R078+0x0A32 (185C:07F2) matched; tests: CardSmokeTests
 // C: the registration routine is empty, so the "screwed up." default is never installed: lines 8..19 keep the handlers (and
-// C: opt_on 8..19 the states) an earlier card left; block 0 has eight option lines, so nothing shows them.
-// C: checked against the asm: the loop installs the handlers of all eight lines (opt_fn_1..opt_fn_7 are DS:EA18..EA30, opt_fn[1..7]).
+// C: card-option-enabled 8..19 the states) an earlier card left; block 0 has eight option lines, so nothing shows them.
+// C: checked against the asm: the loop installs the handlers of all eight lines (card-option-handler-1..card-option-handler-7 are DS:EA18..EA30, card-option-handler[1..7]).
 public sealed class OldWomansLodging : Card
 {
     public const int CardNumber = 0x89;
@@ -58,7 +58,7 @@ public sealed class OldWomansLodging : Card
             // orig: R078+0x0684 (185C:0444) matched; R078+0x072C (185C:04EC) matched; tests: CardSmokeTests
             new MenuLine(() =>
             {
-                // C: && short-circuits: hours_until(0) is only asked in a village under evil.
+                // C: && short-circuits: hours-remaining-until(0) is only asked in a village under evil.
                 if (c.EventAtHere(VillageEvil) && Core.Time.TimeOfDay.HoursUntil(c.State.Date.Hour, 0) <= 9)
                 {
                     picture = TheCultistsAttack(c);
@@ -142,7 +142,7 @@ public sealed class OldWomansLodging : Card
         var picture = 177;
         ShowPicture(c, picture);
         c.Screen.Text(6);
-        // C: arguments are evaluated right to left: rand_mod(4) (second group) before rand_mod(3).
+        // C: arguments are evaluated right to left: roll-below(4) (second group) before roll-below(3).
         var third = c.PartyLoreLevel() / 4 + 1;
         var second = c.Random(4) + c.PartyLoreLevel() / 3 + 1;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 3;

@@ -38,7 +38,7 @@ public sealed class MarketAtNight : Card
         c.Screen.Show(MsgName, PictureNames.Of(Picture));
         var states = new[] { OptionState.Enabled, OptionState.Enabled, OptionState.Enabled, OptionState.Enabled, OptionState.Enabled,
             OptionState.Enabled, OptionState.Enabled, OptionState.Hidden, OptionState.Hidden, OptionState.Hidden };
-        // C: the bribe is reckoned with cur_rep as the card before left it (it is set again only below).
+        // C: the bribe is reckoned with reputation-now as the card before left it (it is set again only below).
         var perMember = c.HereQuery(2) - c.StandingSeen / 10;
         if (perMember < 4)
         {

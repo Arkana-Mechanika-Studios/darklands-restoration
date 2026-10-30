@@ -1,23 +1,23 @@
-"""Original-byte corpus for the castle and keep battlefield generators (R005 gen_battlefield with R006 and R007).
+"""Original-byte corpus for the castle and keep battlefield generators (R005 layout-battlefield-entry with R006 and R007).
 
 usage: python -B -I build_castle_corpus.py <DARKLAND.EXE> <game folder> <out castle.json> [scenarios] [workers]
 
-gen_battlefield (section 5, 1432:0000) runs from the unchanged EXE (sections 136 data, 4 loader, 5 driver,
-6 level planner) on the enemy buffer prepared as battlefield_build prepares it (darkland.enm/.lst,
-monsters_clear, groups_clear, the tile-description defaults). When the driver calls castle_build
+layout-battlefield-entry (section 5, 1432:0000) runs from the unchanged EXE (sections 136 data, 4 loader, 5 driver,
+6 level planner) on the enemy buffer prepared as battlefield-builder-entry prepares it (darkland.enm/.lst,
+monsters-reset, groups-reset, the tile-description defaults). When the driver calls castle-builder-entry
 (R007, which shares its load address with R006) the harness swaps section 7 in over section 6, as the
 overlay manager would. The overlay vector thunks in the root (thunk 09C0:1BAD ... thunk 09C0:1C11) are patched to jump
-straight to their targets. I/O is stubbed by hooks: the level saves (captured) and party_lore_level
+straight to their targets. I/O is stubbed by hooks: the level saves (captured) and party-lore-rating
 (a scripted lore level).
 
-The generator's work area (segment DS:C105, 64 KB, cleared by gen_clear) is placed at WORK_SEG; the level
-buffer floor_img (20A5:0000) is zeroed before the run. Stored per scenario: the request, the saved
+The generator's work area (segment DS:C105, 64 KB, cleared by layout-reset) is placed at WORK_SEG; the level
+buffer floor-picture (20A5:0000) is zeroed before the run. Stored per scenario: the request, the saved
 level images, the tile description, the kind and group records, counts, the random state, the combat
 flags and the memory of cleared levels. The level images are stored zlib-compressed (base64). Scenarios in
 which the original never returns (an endless draw in the party-room choice of type 0x7C) are left out.
 
 Environment: CASTLE_SEED (scenario generator seed), CASTLE_MAX (instruction limit per scenario), and
-CASTLE_WORK_DUMP=<dir>, which writes the work area before castle_build (*_plan.bin) and after the run
+CASTLE_WORK_DUMP=<dir>, which writes the work area before castle-builder-entry (*_plan.bin) and after the run
 (*_final.bin) there for debugging (not part of the corpus).
 """
 from __future__ import annotations
@@ -36,14 +36,14 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from run_unit import run, Rtlink  # noqa: E402
-from build_enemy_corpus import Machine, MON_COUNT, GROUP_COUNT, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
+from build_enemy_corpus import Machine, MONSTER_TOTAL, GROUP_TOTAL, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
 
 WORK_SEG = 0x8000
 FLOOR_SEG = 0x20A5
 FLOOR_SIZE = 0x33FC
-CUR_LOC, COMBAT_FLAGS, CLEARED, LAST_LOC, WORK_PTR = 0x907E, 0x9080, 0xDA34, 0xDB27, 0xC105
+LOCATION_NOW, FIGHT_FLAGS, CLEARED, LAST_LOC, WORK_PTR = 0x907E, 0x9080, 0xDA34, 0xDB27, 0xC105
 RES = 0xF000   # outside the emulated stack (writes inside it are not reported)
-TILE_DESC = 0xF504
+TILE_DESCRIPTION = 0xF504
 CASTLE_TYPES = list(range(0, 9)) + [0x27, 0x28] + list(range(0x7A, 0x7F))
 CALLSITES = {"15c62": "save", "17707": "lore"}
 # the overlay vector thunks of R006 (thunk 09C0:1BAD..thunk 09C0:1C07) and R007 (thunk 09C0:1C11): linear addresses in the root (E8 rel16, EA far target)
@@ -57,14 +57,14 @@ def init_worker(exe_path: str, game_path: str) -> None:
     game = Path(game_path)
     exe = Path(exe_path).read_bytes()
     base = Machine(exe, (game / "DARKLAND.ENM").read_bytes(), (game / "DARKLAND.LST").read_bytes())
-    base.call("monsters_clear", [])
-    base.call("groups_clear", [])
-    base.enemy[TILE_DESC:TILE_DESC + 0xC4] = bytes(0xC4)
+    base.call("monsters-reset", [])
+    base.call("groups-reset", [])
+    base.enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4] = bytes(0xC4)
     for at in (0x0A, 0x24, 0x3D, 0x57, 0x70, 0x8A, 0xA4):
-        base.enemy[TILE_DESC + at:TILE_DESC + at + 16] = b"\xff" * 16
-    base.enemy[TILE_DESC + 0x23] = 2
+        base.enemy[TILE_DESCRIPTION + at:TILE_DESCRIPTION + at + 16] = b"\xff" * 16
+    base.enemy[TILE_DESCRIPTION + 0x23] = 2
     for at in (0x56, 0x89, 0xA3):
-        base.enemy[TILE_DESC + at] = 8
+        base.enemy[TILE_DESCRIPTION + at] = 8
     rt = Rtlink(exe)
     images = {i: exe[rt.sections[i]["file_offset"]:rt.sections[i]["file_offset"] + rt.sections[i]["length"]] for i in (6, 7)}
     _G.update(exe=exe, lst=(game / "DARKLAND.LST").read_bytes(), snapshot=(bytes(base.enemy), dict(base.ds)),
@@ -89,8 +89,8 @@ def run_scenario(sc: dict) -> dict:
     exe, lst = _G["exe"], _G["lst"]
     memory_enemy = bytearray(_G["snapshot"][0])
     ds = dict(_G["snapshot"][1])
-    for off, data in ((HOLDRAND, struct.pack("<I", sc["seed"])), (CUR_LOC, struct.pack("<h", sc["location"])),
-                      (COMBAT_FLAGS, b"\x00\x00"), (CLEARED, struct.pack("<H", sc["cleared"])),
+    for off, data in ((HOLDRAND, struct.pack("<I", sc["seed"])), (LOCATION_NOW, struct.pack("<h", sc["location"])),
+                      (FIGHT_FLAGS, b"\x00\x00"), (CLEARED, struct.pack("<H", sc["cleared"])),
                       (LAST_LOC, struct.pack("<h", sc["lastLocation"])), (RES, b"\x00\x00"),
                       (WORK_PTR, struct.pack("<H", WORK_SEG))):
         for k, b in enumerate(data):
@@ -120,7 +120,7 @@ def run_scenario(sc: dict) -> dict:
     memory += [{"offset": "%04X" % off, "hex": "%02X" % b} for off, b in sorted(ds.items())]
     args = [sc["bf"], RES] + [v for s in sc["specs"] for v in s]
     try:
-        res = run(exe, {"unit": "gen_battlefield", "entry": {"segment": "1432", "offset": "0000"}, "sections": [136, 4, 5, 6],
+        res = run(exe, {"unit": "layout-battlefield-entry", "entry": {"segment": "1432", "offset": "0000"}, "sections": [136, 4, 5, 6],
                         "ds": DS, "memory": memory, "args": ["%04X" % (a & 0xFFFF) for a in args], "follow": True,
                         "callsites": CALLSITES, "stub": list(set(CALLSITES.values())), "track_all": True,
                         "max_instructions": int(os.environ.get("CASTLE_MAX", 20000000)), "default_result": {"ax": 0, "dx": 0}},
@@ -150,8 +150,8 @@ def run_scenario(sc: dict) -> dict:
         return struct.unpack("<h", bytes([lo, hi]))[0]
 
     levels = int(res["final"]["ax"], 16)
-    counts = [ds_word(MON_COUNT + 2 * lv) for lv in range(levels)]
-    gcounts = [ds_word(GROUP_COUNT + 2 * lv) for lv in range(levels)]
+    counts = [ds_word(MONSTER_TOTAL + 2 * lv) for lv in range(levels)]
+    gcounts = [ds_word(GROUP_TOTAL + 2 * lv) for lv in range(levels)]
     kinds = [[bytes(enemy[KINDS + (lv * 12 + k) * 0xD6:KINDS + (lv * 12 + k + 1) * 0xD6]).hex() for k in range(counts[lv])]
              for lv in range(levels)]
     groups = [[bytes(enemy[GROUPS + (lv * 10 + g) * 0x1E:GROUPS + (lv * 10 + g + 1) * 0x1E]).hex() for g in range(gcounts[lv])]
@@ -166,10 +166,10 @@ def run_scenario(sc: dict) -> dict:
         Path(dump_dir).mkdir(parents=True, exist_ok=True)
         (Path(dump_dir) / (tag + "_plan.bin")).write_bytes(dumps.get("plan", b""))
         (Path(dump_dir) / (tag + "_final.bin")).write_bytes(bytes(work))
-    return {"function": "gen_battlefield", "ax": "%04X" % levels, "changed": {}, "inputs": {
+    return {"function": "layout-battlefield-entry", "ax": "%04X" % levels, "changed": {}, "inputs": {
         **sc, "levels": levels, "start": ds_word(RES), "saved": out_levels,
-        "terrain": bytes(enemy[TILE_DESC:TILE_DESC + 0xC4]).hex(), "kinds": kinds, "groups": groups,
-        "holdrand": holdrand, "combatFlags": ds_word(COMBAT_FLAGS), "clearedAfter": ds_word(CLEARED),
+        "terrain": bytes(enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4]).hex(), "kinds": kinds, "groups": groups,
+        "holdrand": holdrand, "combatFlags": ds_word(FIGHT_FLAGS), "clearedAfter": ds_word(CLEARED),
         "lastLocationAfter": ds_word(LAST_LOC)}}
 
 
@@ -183,7 +183,7 @@ def main() -> None:
     with Pool(workers, initializer=init_worker, initargs=(exe_path, game_path)) as pool:
         cases = pool.map(run_scenario, scenarios, chunksize=1)
     froze = [c for c in cases if c["function"] == "gen_battlefield_freeze"]
-    cases = [c for c in cases if c["function"] == "gen_battlefield"]
+    cases = [c for c in cases if c["function"] == "layout-battlefield-entry"]
     print("scenarios the original never finishes (left out):", [(c["inputs"]["bf"], c["inputs"]["seed"]) for c in froze])
     exe = Path(exe_path).read_bytes()
     corpus = {"authority": "test_only_original_byte_execution",

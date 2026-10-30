@@ -3,11 +3,11 @@ namespace Darklands.Core.Battles.Generation;
 /// <summary>One enemy group of the request: an enemy type, its quality and how many.</summary>
 internal record struct GroupSpec(int Type, int Quality, int Count);
 
-// Turning the plan into floor images (overlay R007, castle_build): one image per level, saved as level%d.flr.
+// Turning the plan into floor images (overlay R007, castle-builder-entry): one image per level, saved as level%d.flr.
 internal sealed partial class CastleGenerator
 {
     /// <summary>The level buffer, reused for every level like the original's static floor image.</summary>
-    // C: the original's buffer (floor_img) keeps the previous battle's bytes wherever the generator does not write; every reader of those
+    // C: the original's buffer (floor-picture) keeps the previous battle's bytes wherever the generator does not write; every reader of those
     // parts is bounded by a count the generator zeroes, so they are never read: zeros are equivalent.
     private readonly BattlefieldLevel _floor = new(new byte[BattlefieldLevel.ImageSize]);
 
@@ -21,8 +21,8 @@ internal sealed partial class CastleGenerator
     /// <summary>Builds and saves every level; returns the level the party starts on (relative to the lowest level).</summary>
     /// <param name="battlefield">The battlefield type.</param>
     /// <param name="specs">The three enemy groups of the request (type, quality, count); overwritten for the types that choose their own.</param>
-    // orig: castle_build R007+0x0000 (15AF:0000) draft; checked against asm (order of calls)
-    // C: the start level is relative to the lowest level (gen_battlefield subtracts it afterwards).
+    // orig: castle-builder-entry R007+0x0000 (15AF:0000) draft; checked against asm (order of calls)
+    // C: the start level is relative to the lowest level (layout-battlefield-entry subtracts it afterwards).
     public int BuildLevels(int battlefield, GroupSpec[] specs)
     {
         var chests = 0;
@@ -53,7 +53,7 @@ internal sealed partial class CastleGenerator
     }
 
     /// <summary>Prepares the buffer for level l: its number, empty record counts, void cells.</summary>
-    // orig: the first statements of the level loop of castle_build R007+0x0000 (15AF:0000) draft; checked against asm
+    // orig: the first statements of the level loop of castle-builder-entry R007+0x0000 (15AF:0000) draft; checked against asm
     private void ClearFloor(int l)
     {
         _floor.LevelNumber = l - _lowestLevel;
@@ -71,7 +71,7 @@ internal sealed partial class CastleGenerator
 
     // ---- the floor image's cells ----
 
-    // orig: floor_img R136+0x0000 (struct level in): cell[x][y], the CB macro for single bytes, and hgt[x][y]
+    // orig: floor-picture R136+0x0000 (struct level in): cell[x][y], the CB macro for single bytes, and hgt[x][y]
     private uint CellBits(int x, int y) => BitConverter.ToUInt32(Img, (x * 40 + y) * 4);
 
     private void SetCell(int x, int y, uint bits) => BitConverter.TryWriteBytes(Img.AsSpan((x * 40 + y) * 4, 4), bits);
@@ -137,7 +137,7 @@ internal sealed partial class CastleGenerator
         d.SetTile(TileKind.NorthWall, 2, 10);
         d.SetTile(TileKind.NorthWall, 4, area > 0x32 ? 2 : 6);
         d.SetTile(TileKind.NorthWall, 5, 7);
-        // DORMANT: roll_dice(1, 2) is never 0, so the second arm (tiles 3 and 4) is not reached.
+        // DORMANT: dice-roll(1, 2) is never 0, so the second arm (tiles 3 and 4) is not reached.
         if (Roll(2) != 0)
         {
             d.SetTile(TileKind.NorthWall, 8, 8);

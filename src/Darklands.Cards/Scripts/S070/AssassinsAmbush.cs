@@ -42,7 +42,7 @@ public sealed class AssassinsAmbush : Card
             TheyCharge(c, menu);
         }
 
-        // DORMANT: option line 6 is never offered: no path of this card enables it (opt_flag / opt_on stay 0 in every block), so its action and hint never run in play.
+        // DORMANT: option line 6 is never offered: no path of this card enables it (opt_flag / card-option-enabled stay 0 in every block), so its action and hint never run in play.
         // DORMANT: in text block 5 the option lines 0, 9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         // DORMANT: in text block 6 the option lines 0, 9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         // DORMANT: in text block 10 the option line 0 is never offered (the switch to this block hides them); it can be offered in other blocks only.
@@ -73,7 +73,7 @@ public sealed class AssassinsAmbush : Card
         menu[0] = menu[1] = menu[2] = menu[3] = OptionState.Hidden;
         menu.Block = 1;
         menu[4] = OptionState.Enabled;
-        // C: both operands are calls; party_max_attr draws nothing, so their order does not matter.
+        // C: both operands are calls; party-stat-top draws nothing, so their order does not matter.
         menu[5] = c.PartyMaxAttribute((int)Attribute.Perception) < c.Random(100) ? OptionState.Shown : c.SaintsUsable();
         menu[6] = menu[7] = menu[8] = menu[9] = OptionState.Hidden;
         c.Next = Number;
@@ -213,7 +213,7 @@ public sealed class AssassinsAmbush : Card
             case 4:
                 c.Screen.Text(0x0E);
                 c.LoseItems(Who.Everybody);
-                // C: the attributes are raised, not lowered (add_attr with rand_mod + 1).
+                // C: the attributes are raised, not lowered (raise-attribute-by with roll-below + 1).
                 c.AddAttribute(Who.Everybody, (int)Attribute.Endurance, c.Random(10) + 1);
                 c.AddAttribute(Who.Everybody, (int)Attribute.Strength, c.Random(5) + 1);
                 c.PassHours(Core.Time.TimeOfDay.HoursUntil(c.State.Date.Hour, 18));

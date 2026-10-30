@@ -173,7 +173,7 @@ internal sealed partial class CastleGenerator
 
     /// <summary>Stretches the gate path room out to (or past) the bounding box of the castle and redraws its cells.</summary>
     // orig: R006+0x0470 (15AF:0470) draft
-    // C: also called once after the last level, with whatever gen_level the loop left (0 when there is a cellar).
+    // C: also called once after the last level, with whatever layout-depth the loop left (0 when there is a cellar).
     private void WidenGate()
     {
         var one = _level == 1;
@@ -338,7 +338,7 @@ internal sealed partial class CastleGenerator
         }
     }
 
-    /// <summary>The mark of a cell of level 1 (w[x][y] with w = gen_cell_door + 1600).</summary>
+    /// <summary>The mark of a cell of level 1 (w[x][y] with w = layout-cell-door + 1600).</summary>
     // orig: the pointer w of R006+0x0470 (15AF:0470) draft
     private int GroundMark(int x, int y) => _w.Mark(CellIndex(1, x, y));
 

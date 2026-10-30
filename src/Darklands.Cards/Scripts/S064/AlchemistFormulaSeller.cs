@@ -46,7 +46,7 @@ public sealed class AlchemistFormulaSeller : Card
         var next = menu.Run(
             // The purchase is made through the item pop-up (the plain line only says "assured").
             new MenuLine(chance => BuyFormula(c), OptionHint.Saying(SuccessAssured), () => c.MemberPopupHint()),
-            // DORMANT: lines 1 and 2 (opt_flag_1 = opt_flag_2 = 0): empty actions, empty hint handlers.
+            // DORMANT: lines 1 and 2 (card-option-flag-1 = card-option-flag-2 = 0): empty actions, empty hint handlers.
             // orig: R064+0x331E/05f2 R064+0x331E/0x3322, hint handlers 05f0/05f4 (empty: their result is stale in the original)
             // C: the hint handlers are empty void functions: their struct res would be whatever was left in DX:AX.
             new MenuLine(_ => { }, OptionHint.Saying(CardTexts.ScrewedUp)),
@@ -69,19 +69,19 @@ public sealed class AlchemistFormulaSeller : Card
     /// The formula number (0..21) offered in a slot: the city's own number (a different one per city) plus
     /// 100, 103, 106 or 109, modulo 22. The potion is the formula divided by three.
     /// </summary>
-    // C: cur_loc_query returns unsigned: the sum and the modulo are unsigned 16-bit.
+    // C: location-now-query returns unsigned: the sum and the modulo are unsigned 16-bit.
     // orig: R064+0x2D38
     // BUG: only formulas 0..21 are ever for sale: the offer is taken modulo 22 (the number of potions) but used as a
     // formula number (potion = n / 3, grade = n % 3), so only the first seven potions and the first grade of the eighth are
     // offered (unsigned div by 0x16, 1B0B:008E and the three after it).
     private static int FormulaOnOffer(CardContext c, int slot) => (ushort)((ushort)c.HereQuery(0x21) + slot * 3 + 100) % FormulaGroups;
 
-    // C: R136+0xF066 (virtue_names) is filled with the full formula names of DARKLAND.LST by world_load (see CardContext.NameToSlot), so the LST names are the table.
+    // C: R136+0xF066 (virtue-label-table) is filled with the full formula names of DARKLAND.LST by world-read (see CardContext.NameToSlot), so the LST names are the table.
     private static string FormulaName(CardContext c, int formula) =>
         formula < c.World.Items.Formulae.Count ? c.World.Items.Formulae[formula].FullName : "";
 
     /// <summary>10 florins for the first grade of a potion, 20 and 30 for the others, divided by the city's size.</summary>
-    // C: unsigned 16-bit division, as cur_loc_query returns unsigned (a size of 0 would trap in the original).
+    // C: unsigned 16-bit division, as location-now-query returns unsigned (a size of 0 would trap in the original).
     private static Money FormulaPrice(CardContext c, int formula) =>
         Money.From((ushort)((formula % 3 + 1) * 10) / (ushort)c.HereQuery(2), 0, 0);
 

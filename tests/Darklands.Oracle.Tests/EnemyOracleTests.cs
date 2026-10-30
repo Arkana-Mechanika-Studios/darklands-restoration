@@ -9,8 +9,8 @@ namespace Darklands.Oracle.Tests;
 
 /// <summary>
 /// The battlefield builder's enemy records against the original program: each scenario in
-/// Corpus/enemies.json is a chain of original calls (monster_type_map …, monsters_fixup,
-/// groups_fixup) run from DARKLAND.EXE on the player's DARKLAND.ENM and DARKLAND.LST
+/// Corpus/enemies.json is a chain of original calls (monster-type-lookup …, monsters-repair,
+/// groups-repair) run from DARKLAND.EXE on the player's DARKLAND.ENM and DARKLAND.LST
 /// (tools/oracle/build_enemy_corpus.py). Needs the game folder (DARKLANDS_DIR, or
 /// the "game" key of local/paths.json); without it the test passes vacuously.
 /// </summary>
@@ -44,10 +44,10 @@ public sealed class EnemyOracleTests
                 var args = call.GetProperty("args").EnumerateArray().Select(a => a.GetInt32()).ToArray();
                 switch (call.GetProperty("call").GetString())
                 {
-                    case "monster_type_map":
+                    case "R004+0x06AA":
                         Assert.True(call.GetProperty("ax").GetInt32() == forces.AddKind(args[0], args[1], args[2]), $"{label}: AddKind({string.Join(",", args)})");
                         break;
-                    case "monsters_fixup":
+                    case "R004+0x122C":
                         if (!groupsAdded)
                         {
                             AddGroups(forces, s);
@@ -55,7 +55,7 @@ public sealed class EnemyOracleTests
                         }
                         forces.FixKinds(args[0], args[1]);
                         break;
-                    case "groups_fixup":
+                    case "R004+0x1D90":
                         forces.FixGroups(args[0]);
                         break;
                 }

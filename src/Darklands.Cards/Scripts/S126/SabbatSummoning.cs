@@ -31,7 +31,7 @@ namespace Darklands.Cards.Scripts;
 //     R126+0x28C6
 // DORMANT (generated): option slots 10..19 keep the default handler R126+0x28C6 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 8, 9 are never enabled (every assignment sets their flag to 0).
-// DORMANT (generated): card_items stays all -1, so no line opens an item pop-up.
+// DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
 public sealed class SabbatSummoning : Card
 {
@@ -49,7 +49,7 @@ public sealed class SabbatSummoning : Card
     /// <summary>The text after the demon's fall, and the code that asks for the demon's battle.</summary>
     private const int DemonFight = 18;
 
-    /// <summary>The picture the card returns to (<c>pic_buf</c>, changed as the ceremony goes on).</summary>
+    /// <summary>The picture the card returns to (<c>image-buffer</c>, changed as the ceremony goes on).</summary>
     private int _picture;
 
     public override int Run(CardContext c)
@@ -174,7 +174,7 @@ public sealed class SabbatSummoning : Card
     // C: returns 0 after a cancelled box, otherwise returns without a value (ignored).
     private void PrayForStrength(CardContext c, CardMenu menu)
     {
-        // C: menu_member / menu_slot are the globals the pop-up box set last.
+        // C: menu-owner-member / menu-choice-index are the globals the pop-up box set last.
         var result = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
         if (result == -1)
         {
@@ -316,8 +316,8 @@ public sealed class SabbatSummoning : Card
 
     /// <summary>A small menu of its own (block 19, lines 8 and 9): fly away on the stolen ointment or stay.</summary>
     // orig: R126+0x1A02 matched
-    // C: the box writes opt_on[] directly (lines 8, 9 on, all others off) and re-points opt_fn[8], opt_fn[9] at the
-    //   same "Success is assured." hints; opt_flag_0..9 are untouched, so the card's menu is unchanged afterwards.
+    // C: the box writes card-option-enabled[] directly (lines 8, 9 on, all others off) and re-points card-option-handler[8], card-option-handler[9] at the
+    //   same "Success is assured." hints; card-option-flag-0..9 are untouched, so the card's menu is unchanged afterwards.
     //   No option handler runs: only the chosen line counts (8 = fly away, anything else = stay).
     private void OfferTheOintment(CardContext c)
     {

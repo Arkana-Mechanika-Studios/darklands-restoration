@@ -22,7 +22,7 @@ public sealed class RiddleDoor_MineT25 : DwarfRiddleDoor
         Wrong(c, 2, Attribute.Strength),
         // orig: R099+0x0308 (1838:0308); hint R099+0x0344 matched
         Wrong(c, 2, Attribute.Strength),
-        // orig: `case 4: case 5: R099+0x037E(l_4.a)`: line 4 shares line 5's action (the curse); hint R099+0x03BA matched
+        // orig: `case 4: case 5: R099+0x037E(local-minus-4.a)`: line 4 shares line 5's action (the curse); hint R099+0x03BA matched
         Wrong(c, 2, Attribute.Strength),
         // orig: R099+0x037E (1838:037E); hint R099+0x0402 matched
         Wrong(c, 2, Attribute.Strength, () => OptionHint.Say(SuccessAssured)),

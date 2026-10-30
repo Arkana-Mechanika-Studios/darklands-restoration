@@ -248,7 +248,7 @@ public sealed class DungeonTests
         Shot(screen, "stairs");
         Assert.True(tactics.Menus.On(OrdersItem.UseStairs));
         tactics.ToggleGroup();
-        // G ends with the order menu reset (R016+0x0BD6): the next tick's party_locations turns Use Stairs on again
+        // G ends with the order menu reset (R016+0x0BD6): the next tick's party-place-table turns Use Stairs on again
         Assert.False(tactics.Menus.On(OrdersItem.UseStairs));
         Run(tactics, 8);
         Assert.True(tactics.Menus.On(OrdersItem.UseStairs));
@@ -298,7 +298,7 @@ public sealed class DungeonTests
 
     /// <summary>
     /// The fortress varies its furniture: each level shown puts its own record of the set named at level byte 0x33C8 (byte 0x33D2) in
-    /// furniture tile byte 0x33D1 (level_switch R024+0x059A → R024+0x07A2), its footprint and height with it.
+    /// furniture tile byte 0x33D1 (level-change R024+0x059A → R024+0x07A2), its footprint and height with it.
     /// </summary>
     [Fact]
     public void EachFortressLevelShowsItsOwnFurniture()
@@ -328,9 +328,9 @@ public sealed class DungeonTests
         Assert.Contains(0x1D, records);
     }
 
-    /// <summary>root 0000:1A9C (member_bars) with R014+0xDC4E..0xDD17 and R017+0x001E..0x004C: a member stepping into a doorway gets
+    /// <summary>root 0000:1A9C (member-gauge-bars) with R014+0xDC4E..0xDD17 and R017+0x001E..0x004C: a member stepping into a doorway gets
     /// "near a door" (DS:01A8 → DS:0049) in its row in place of the bars, which stays until the row is drawn again; stepping out draws the
-    /// bars; a full view redraw (floor_view_draw) shows the note of everyone standing in a place; in real combat the bars stay.</summary>
+    /// bars; a full view redraw (floor-view-paint) shows the note of everyone standing in a place; in real combat the bars stay.</summary>
     [Fact]
     public void AMemberSteppingIntoADoorwayShowsNearADoorUntilTheRowIsDrawnAgain()
     {
@@ -358,7 +358,7 @@ public sealed class DungeonTests
         screen.RowChanged(i);
         Assert.Null(screen.PlaceNote(i));                       // the row drawn again: the bars
         screen.MapChanged();
-        Assert.Equal("near a door", screen.PlaceNote(i));       // floor_view_draw: every member in a place
+        Assert.Equal("near a door", screen.PlaceNote(i));       // floor-view-paint: every member in a place
         c.Position = outside;
         Locations();
         Assert.Null(screen.PlaceNote(i));                       // out of the doorway: the row drawn with the bars

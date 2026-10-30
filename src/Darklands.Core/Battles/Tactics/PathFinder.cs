@@ -1,7 +1,7 @@
 namespace Darklands.Core.Battles.Tactics;
 
 /// <summary>
-/// The path search (<c>path_find</c>): up to ten "trackers" walk from the combatant toward its
+/// The path search (<c>route-search</c>): up to ten "trackers" walk from the combatant toward its
 /// destination, going straight while they can and following walls (one on each side) when
 /// blocked; the first to arrive wins, then straight shortcuts between its waypoints shorten the
 /// path. A path is a list of step bytes (direction 0..9; after packing the high nibble is the
@@ -86,7 +86,7 @@ public sealed class PathFinder
     /// </summary>
     /// <param name="steps">The walking step tables of the combatant's animation set.</param>
     /// <param name="openDoors">For enemies: opens the unlocked closed doors for the search and restores them afterwards (spec D §4.5).</param>
-    // orig: path_find R014+0x481A (12F7:000A) draft; tests: Oracle:path.json (60 searches)
+    // orig: route-search R014+0x481A (12F7:000A) draft; tests: Oracle:path.json (60 searches)
     // DIVERGENCE: the busy cursor and the stopped clock (DS:07D3) during the search are the screen's.
     /// <param name="tracked">Runs once the trackers found a path of at least one step (its straight waypoints dropped), before the shortcuts.</param>
     public bool Find(Battle battle, int who, sbyte[] stepX, sbyte[] stepY, Action<bool>? openDoors = null, Action? tracked = null)
@@ -149,7 +149,7 @@ public sealed class PathFinder
                 DropStraightWaypoints();
                 // R014+0x4AE4: the AI's path hook (1DB7:0158) runs here, on the trackers' waypoints, whatever the shortcuts give after it.
                 tracked?.Invoke();
-                // C: path_find returns the shortcut pass's result: a failed re-plan makes the whole search fail.
+                // C: route-search returns the shortcut pass's result: a failed re-plan makes the whole search fail.
                 if (!Shortcuts((c.Position.X, c.Position.Y)))
                 {
                     return false;
@@ -181,11 +181,11 @@ public sealed class PathFinder
     public MapPoint Waypoint(int k) => new(_pathWaypoint[k].X, _pathWaypoint[k].Y);
 
     /// <summary>
-    /// The trackers alone (path_trackers called directly by the AI's path costs): the number of
+    /// The trackers alone (route-tracker-table called directly by the AI's path costs): the number of
     /// steps from <paramref name="from"/> to <paramref name="goal"/>, or −1 when no tracker arrives.
     /// The wall and search rules are whatever the map has at the time.
     /// </summary>
-    // orig: path_trackers R014+0x4BFA (12F7:03EA) draft (as called by 1DB7:0028)
+    // orig: route-tracker-table R014+0x4BFA (12F7:03EA) draft (as called by 1DB7:0028)
     public int TrackLength(int who, int target, MapPoint from, MapPoint goal, int facing, sbyte[] stepX, sbyte[] stepY)
     {
         _who = who;
@@ -223,7 +223,7 @@ public sealed class PathFinder
     private (int, int) StepFrom((int X, int Y) p, int direction) => (p.X + _stepX[direction], p.Y + _stepY[direction]);
 
     /// <summary>The trackers from a start to a goal; true when one arrives.</summary>
-    // orig: path_trackers R014+0x4BFA (12F7:03EA) draft
+    // orig: route-tracker-table R014+0x4BFA (12F7:03EA) draft
     private bool Track((int X, int Y) start, MapPoint goal, int facing)
     {
         _ = facing;
@@ -636,7 +636,7 @@ public sealed class PathFinder
 
     /// <summary>Gives the path to a combatant: each step byte gets its facing in the high nibble, with one-step facing jitter removed.</summary>
     // orig: packing R014+0x5E2A (12F7:161A) draft (asm-verified per spec D §4.8) after the copy (memcpy) repeated inline in
-    // path_give R014+0x5D64 (12F7:1554) draft and path_give_saved R014+0x5DE0 (12F7:15D0) draft
+    // route-hand-over R014+0x5D64 (12F7:1554) draft and route-hand-over-restore R014+0x5DE0 (12F7:15D0) draft
     // C: length + 1 bytes are copied over the combatant's path (the bytes after them keep an earlier path's), byte 249 is set to the end byte.
     public static void GiveTo(byte[] p, byte[] path, int length)
     {

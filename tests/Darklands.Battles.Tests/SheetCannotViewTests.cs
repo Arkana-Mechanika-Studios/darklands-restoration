@@ -8,7 +8,7 @@ using Darklands.Simulation;
 namespace Darklands.Battles.Tests;
 
 /// <summary>
-/// In a battle a member who left the battlefield through an exit (cbt_floor 0x9D) is refused by the character sheet's own member
+/// In a battle a member who left the battlefield through an exit (fighter-floor-level 0x9D) is refused by the character sheet's own member
 /// switch (R031+0x0124: F1..F5, a portrait click, Enter on a member box) and skipped by the loot screen's D (R040+0x0DB4..0x0DC8),
 /// both after thunk 09C0:1D51 (R022+0x04E4, "You can't view ... at this time.").
 /// </summary>

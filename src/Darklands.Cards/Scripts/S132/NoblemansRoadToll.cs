@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R132+0x0C06 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 8, 9 are never enabled (every assignment sets their flag to 0).
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
-// C: clamp_range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
+// C: limit-to-range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
 public sealed class NoblemansRoadToll : Card
 {
     public override int Number => 355;
@@ -47,7 +47,7 @@ public sealed class NoblemansRoadToll : Card
         c.State.SavedCard2 = 0;
         c.Variables.Chosen[0] = c.Leader;
         // The original first works out a toll from the purse and the bank notes, then overwrites it at once.
-        // C: (unsigned)money_pfennigs(...) truncates each long total to 16 bits before the divisions.
+        // C: (unsigned)purse-in-pfennigs(...) truncates each long total to 16 bits before the divisions.
         // C: DS:9072 is the bank notes' money triple (Party.BankNotes).
         var purse = c.State.Party.Purse;
         c.Variables.Money[0] = Money.FromPfennigs((ushort)purse.TotalPfennigs / 50 + (ushort)c.State.Party.BankNotes.TotalPfennigs / 100);
@@ -72,15 +72,15 @@ public sealed class NoblemansRoadToll : Card
         var assured = AsLeader(OptionHint.Saying(CardTexts.SuccessAssured));
         var combat = AsLeader(OptionHint.Saying(CardTexts.EnterCombat));
         // The card's pop-up choices (the saints' too) are rated by the potion hints, by the slot chosen: the loop calls
-        // item_fn[0][menu_slot] for every pop-up. The saint box's own handlers (R132+0x0D04 / R132+0x0D8C, the usual chance
-        // text) answer a Shift hint in the saint box and an Enter there (opt_fn is then the box's table).
-        // C: item_fn[0][2] / [0][3] are not set by this card (stale from an earlier card); only slots 0 and 1 have
+        // item-handler-table[0][menu-choice-index] for every pop-up. The saint box's own handlers (R132+0x0D04 / R132+0x0D8C, the usual chance
+        // text) answer a Shift hint in the saint box and an Enter there (card-option-handler is then the box's table).
+        // C: item-handler-table[0][2] / [0][3] are not set by this card (stale from an earlier card); only slots 0 and 1 have
         //   potions or saints here, so the pop-up never reaches them.
         var potionHint = AsLeader(() => PotionChance(c));
         menu.ItemBox = potionHint;
         menu.SaintBox = c.SaintPopupChanceHint;
         menu.PopupRatedByItems = true;
-        // orig: R132+0x057B: var_chosen1 = leader after card_menu, before the choice is rated
+        // orig: R132+0x057B: text-slot-chosen-one = leader after card-choice-menu, before the choice is rated
         menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
 
         // DORMANT: in text block 4 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
@@ -176,9 +176,9 @@ public sealed class NoblemansRoadToll : Card
     /// sum was over 99, else 0 (the first member).
     /// </summary>
     // orig: R132+0x09D0 matched
-    // C: checked against the asm: the hint is a void function; its "result" is clamp_range's DX:AX, AX = the clamped
-    //   sum and DX = 99 when the sum was over 99, otherwise 0 (the low bound). party_min_eff_attr2_bonus runs before
-    //   best_member (unsigned char) is read for the Riding skill; the halving truncates toward zero.
+    // C: checked against the asm: the hint is a void function; its "result" is limit-to-range's DX:AX, AX = the clamped
+    //   sum and DX = 99 when the sum was over 99, otherwise 0 (the low bound). party-effective-stat-two-low-bonus runs before
+    //   top-scoring-member (unsigned char) is read for the Riding skill; the halving truncates toward zero.
     private static OptionHint RideChance(CardContext c)
     {
         var sum = c.PartyMinMountedAgility() + c.Skill(c.BestMember, Riding) / 2;
@@ -268,8 +268,8 @@ public sealed class NoblemansRoadToll : Card
     // orig: R132+0x063C matched
     private static void FightTheGuards(CardContext c)
     {
-        // C: checked against the asm: the arguments are worked out from the last one back: party_lore_level (7th),
-        //   then rand_mod(3) of the 5th, then rand_mod(3) and party_lore_level of the 4th (signed division by 4).
+        // C: checked against the asm: the arguments are worked out from the last one back: party-lore-rating (7th),
+        //   then roll-below(3) of the 5th, then roll-below(3) and party-lore-rating of the 4th (signed division by 4).
         var third = c.PartyLoreLevel() > 6 ? 2 : 1;
         var second = c.Random(3) + 3;
         var first = c.Random(3) + c.PartyLoreLevel() / 4 + 1;

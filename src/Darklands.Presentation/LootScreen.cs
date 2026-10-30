@@ -51,7 +51,7 @@ public sealed class LootScreen
     private Pack PackOf(int member) => Party.Slot(member).Pack;
 
     /// <summary>Runs the screen until the player leaves; returns the caller's cash as the screen left it (florins 0, groschen and pfennigs capped at 10).</summary>
-    // orig: loot_distribute R040+0x0000 (1462:0000) and R040+0x01C8 (1462:01C8) draft (both byte-matched); the pile is the caller's list, changed in place (the original's count byte through DS:8DC8)
+    // orig: loot-split-entry R040+0x0000 (1462:0000) and R040+0x01C8 (1462:01C8) draft (both byte-matched); the pile is the caller's list, changed in place (the original's count byte through DS:8DC8)
     // C: the battle code's own cash (the pointer it passed) is what this returns; IGameScreens.Loot is called by the battle code (not modelled here), which does not take it back.
     public Money Run(Money found)
     {
@@ -61,7 +61,7 @@ public sealed class LootScreen
         _member = Party.LeaderIndex;
         _cash = LootSharing.TakeCash(_state, ref found);
         DrawScreen();
-        // orig: R040+0x01C8 `while (mouse_buttons & 1);` before the loop
+        // orig: R040+0x01C8 `while (mouse-button-state & 1);` before the loop
         _page.WaitForRelease();
         var lit = -1;
         try
@@ -144,7 +144,7 @@ public sealed class LootScreen
     // orig: R040+0x0C22 (1462:0C22) draft (unmatched: cross-jumped tails; behaviour checked against asm); every case kept (Alt-Q, P/p, D/d, G/g, Up, Left/Right, Down); other keys do nothing
     private void HandleKey(int key)
     {
-        // C: case 0x1000 (Alt-Q): R040+0x06C8 then quit_to_dos.
+        // C: case 0x1000 (Alt-Q): R040+0x06C8 then exit-to-system.
         // DORMANT: with a GameUi.GameKey hook installed, HotKeys takes Alt-Q first; reached only without the hook.
         if (key == Keys.AltQ)
         {
@@ -180,7 +180,7 @@ public sealed class LootScreen
     private void Put()
     {
         var index = _packTop[Member] + _packRow[Member];
-        // C: only the list in use and n_items[who] != 0 are tested: a row past the pack's end puts its stale entry (LootSharing.Put).
+        // C: only the list in use and item-count-local[who] != 0 are tested: a row past the pack's end puts its stale entry (LootSharing.Put).
         if (_usingPile[Member] || _packCount[Member] == 0)
         {
             return;
@@ -236,12 +236,12 @@ public sealed class LootScreen
     private void DistributeToTheNextMember()
     {
         _page.DrawParty(Party);
-        // C: (DS:8DC4 + 1) % 5, skipping slots ≥ party_size and status 0 or 3 (checked against asm 0D9E..0DD9).
-        // orig: R040+0x0DB4..0x0DC8: a slot whose combat floor test (cbt_floor, DS:A6B4, read as words: BattleScreens.LootSkipsMember) says
+        // C: (DS:8DC4 + 1) % 5, skipping slots ≥ party-headcount and status 0 or 3 (checked against asm 0D9E..0DD9).
+        // orig: R040+0x0DB4..0x0DC8: a slot whose combat floor test (fighter-floor-level, DS:A6B4, read as words: BattleScreens.LootSkipsMember) says
         //   −99 (gone through an exit) is skipped after thunk 09C0:1D51 = R022+0x04E4 ("You can't view ... at this time.") is called for it,
         //   before the status test; tests: SheetCannotViewTests
         // C: 0C22 against the asm (R040 seg 1462 0C22..123D): every case of the draft matches it (cross-jumped tails only); P, G and D return
-        //   without mouse_show, Left/Right on an empty pile returns with the pointer still hidden (the host owns the pointer here).
+        //   without pointer-show, Left/Right on an empty pile returns with the pointer still hidden (the host owns the pointer here).
         // DIVERGENCE: the original loops forever when no member qualifies; here the search stops after five slots.
         for (var tries = 0; tries < Party.MaxMembers; tries++)
         {
@@ -392,7 +392,7 @@ public sealed class LootScreen
         }
         for (var i = 0; i < _pile.Count && i < 4; i++)
         {
-            // C: the first drawing places the pile's lines with the pack list's top (inv_top) instead of the pile's (both 0 on entry).
+            // C: the first drawing places the pile's lines with the pack list's top (pack-top-row) instead of the pile's (both 0 on entry).
             _page.Text(0x55, (i - _packTop[Member]) * 8 + 0x55, ItemLine(_pile[i]), BuySellPage.Ink);
         }
         _page.Light(0x53, 0x55, 0xFA);
@@ -400,7 +400,7 @@ public sealed class LootScreen
     }
 
     // orig: R040+0x0952 (1462:0952) draft (byte-matched function)
-    // DIVERGENCE: the original redraws the picture without set_palette; the picture's colours are applied here.
+    // DIVERGENCE: the original redraws the picture without palette-load; the picture's colours are applied here.
     private void Redraw()
     {
         _page.DrawBackground(Party);

@@ -33,12 +33,12 @@ public sealed partial class CardContext
         public void Report(int member, string text, bool good) => screen.Tell(text, member);
     }
 
-    // ---- item and saint pop-ups (card_items, card_saints) ----------------------------
+    // ---- item and saint pop-ups (card-item-lines, card-saint-lines) ----------------------------
 
-    /// <summary>Item codes usable on this card (<c>card_items</c>), −1 = none.</summary>
+    /// <summary>Item codes usable on this card (<c>card-item-lines</c>), −1 = none.</summary>
     public int[] CardItems { get; } = [-1, -1, -1, -1];
 
-    /// <summary>Saints that can be invoked on this card (<c>card_saints</c>), −1 = none.</summary>
+    /// <summary>Saints that can be invoked on this card (<c>card-saint-lines</c>), −1 = none.</summary>
     public int[] CardSaints { get; } = [-1, -1, -1, -1];
 
     /// <summary>Sets the card's usable items (up to four; the rest become −1).</summary>
@@ -56,15 +56,15 @@ public sealed partial class CardContext
     }
 
     /// <summary>
-    /// The "use an item" option's state (<c>items_usable</c>): enabled at Basic, or when an able
+    /// The "use an item" option's state (<c>usable-item-list</c>): enabled at Basic, or when an able
     /// member carries (or knows the formula of) one of <see cref="CardItems"/>; else shown only.
     /// </summary>
-    // orig: items_usable R043+0x2178 (150B:16E8) matched
-    // C: loops i < party_size over status-1 members; has_item(i, code) != 0 (carried or formula known).
+    // orig: usable-item-list R043+0x2178 (150B:16E8) matched
+    // C: loops i < party-headcount over status-1 members; carries-item(i, code) != 0 (carried or formula known).
     public OptionState ItemsUsable() => Usable(CardItems, (i, item) => Inventory.Has(State, i, item) != 0);
 
-    /// <summary>The "call a saint" option's state (<c>saints_usable</c>): an able member knows one of <see cref="CardSaints"/>.</summary>
-    // orig: saints_usable R043+0x211C (150B:168C) matched
+    /// <summary>The "call a saint" option's state (<c>saints-available</c>): an able member knows one of <see cref="CardSaints"/>.</summary>
+    // orig: saints-available R043+0x211C (150B:168C) matched
     public OptionState SaintsUsable() => Usable(CardSaints, (i, saint) => Saints.Knows(State, i, saint));
 
     private OptionState Usable(int[] list, Func<int, int, bool> has)
@@ -83,26 +83,26 @@ public sealed partial class CardContext
         return OptionState.Shown;
     }
 
-    /// <summary>The member chosen in the item/saint pop-up (<c>menu_member</c>); the screen sets it.</summary>
+    /// <summary>The member chosen in the item/saint pop-up (<c>menu-owner-member</c>); the screen sets it.</summary>
     public int MenuMember { get; set; }
 
     /// <summary>
-    /// The engine's one table of option handlers (<c>opt_fn[0..19]</c>): each card's reset points them
+    /// The engine's one table of option handlers (<c>card-option-handler[0..19]</c>): each card's reset points them
     /// at its "screwed up." handler and its loop installs its own every round; a line a card does not
     /// install keeps the handler an earlier card left (null: none since start-up).
     /// </summary>
-    // orig: opt_fn DS:EA14 (20 far pointers, BSS)
+    // orig: card-option-handler DS:EA14 (20 far pointers, BSS)
     public Func<OptionHint>?[] OptionHandlers { get; } = new Func<OptionHint>?[CardMenu.MaxLines];
 
-    /// <summary>The item/saint slot chosen in the pop-up (<c>menu_slot</c>).</summary>
+    /// <summary>The item/saint slot chosen in the pop-up (<c>menu-choice-index</c>).</summary>
     public int MenuSlot { get; set; }
 
     /// <summary>
-    /// <c>menu_slot</c> as the box left it: the same as <see cref="MenuSlot"/>, except while the menu asks the box's handler for another
+    /// <c>menu-choice-index</c> as the box left it: the same as <see cref="MenuSlot"/>, except while the menu asks the box's handler for another
     /// slot (Enter in a box rates line k with the handler for slot k % 4, <see cref="CardMenu"/>): <see cref="MenuSlot"/> then names that
-    /// handler, and a handler that reads <c>menu_slot</c> (most saint handlers and some item handlers) reads this.
+    /// handler, and a handler that reads <c>menu-choice-index</c> (most saint handlers and some item handlers) reads this.
     /// </summary>
-    // orig: menu_slot DS:EE6A, set from the box's entry by card_menu R043+0x1CAE on Enter; the handler opt_fn[k] reads it as it stands
+    // orig: menu-choice-index DS:EE6A, set from the box's entry by card-choice-menu R043+0x1CAE on Enter; the handler card-option-handler[k] reads it as it stands
     public int MenuEntrySlot
     {
         get => _menuEntrySlot ?? MenuSlot;
@@ -116,15 +116,15 @@ public sealed partial class CardContext
 
     /// <summary>
     /// A box handler that is a bare <c>retf</c> (installed for a slot the card lists no item or saint in): its chance is what AX holds at
-    /// the call, which mouse_hide (root 047C:12C3) leaves, and it names no member. Only Enter in a box reaches such a slot (line k rated
-    /// with the handler for slot k % 4); the box is reached with the pointer, so mouse_hide then runs the display driver's hide.
+    /// the call, which pointer-hide (root 047C:12C3) leaves, and it names no member. Only Enter in a box reaches such a slot (line k rated
+    /// with the handler for slot k % 4); the box is reached with the pointer, so pointer-hide then runs the display driver's hide.
     /// </summary>
-    // orig: e.g. R112+0x1438 / R112+0x143A / R108+0x0D30 retf; the loop: si = card_menu(..); mouse_hide(); l_a = (*opt_fn[si])() (R112+0x06ED..0x0700)
-    // DIVERGENCE (undefined-register): AX after mouse_hide with the pointer drawn is whatever the display driver's hide routine (reached through
-    // root 047C:052E) returns (with no pointer drawn it would be the line k). 0 is used, as the card oracle's mouse_hide returns.
+    // orig: e.g. R112+0x1438 / R112+0x143A / R108+0x0D30 retf; the loop: si = card-choice-menu(..); pointer-hide(); local-minus-0a = (*card-option-handler[si])() (R112+0x06ED..0x0700)
+    // DIVERGENCE (undefined-register): AX after pointer-hide with the pointer drawn is whatever the display driver's hide routine (reached through
+    // root 047C:052E) returns (with no pointer drawn it would be the line k). 0 is used, as the card oracle's pointer-hide returns.
     public OptionHint EmptyBoxHandler() => OptionHint.ChanceOf(0, OptionHint.WholeParty);
 
-    /// <summary>The choice came from the pop-up, not from an option line (<c>menu_popup</c>).</summary>
+    /// <summary>The choice came from the pop-up, not from an option line (<c>popup-menu-box</c>).</summary>
     public bool MenuPopup { get; set; }
 
     /// <summary>
@@ -132,11 +132,11 @@ public sealed partial class CardContext
     /// lines). The screen sets it while the pointer is in a box (a Shift hint there asks the box's
     /// handlers) and leaves it set when the choice is made there, by a click or by Enter.
     /// </summary>
-    // orig: DS:EE42 (1 while the box's layout DS:EA64 is the menu's layout DS:E96E), with the kind of the box copied into DS:EA64 (DS:EB5A items, DS:EC50 saints) by card_mouse R043+0x239C
+    // orig: DS:EE42 (1 while the box's layout DS:EA64 is the menu's layout DS:E96E), with the kind of the box copied into DS:EA64 (DS:EB5A items, DS:EC50 saints) by card-mouse-handler R043+0x239C
     public PopupBox MenuBox { get; set; }
 
     /// <summary>The states of the box's 20 entries (member × 4 + slot) as the box was opened (<see cref="PopupStates"/>).</summary>
-    // orig: DS:EA92 (the box layout's opt_on[20], written by R043+0x2CE2)
+    // orig: DS:EA92 (the box layout's card-option-enabled[20], written by R043+0x2CE2)
     public OptionState[] MenuBoxStates { get; } = new OptionState[CardMenu.MaxLines];
 
     /// <summary>
@@ -145,7 +145,7 @@ public sealed partial class CardContext
     /// <see cref="PopupListsAll"/>), shown greyed for the leader at Basic who lacks it and for a
     /// known formula (not at Expert), hidden otherwise.
     /// </summary>
-    // orig: the stores into DS:EA92 + i * 4 + j of R043+0x2CE2 (150B:2252) draft (bytes match): all 20 cleared, then for i < party_size of a status other than 0 and 5 and j with card_items/card_saints[j] != -1
+    // orig: the stores into DS:EA92 + i * 4 + j of R043+0x2CE2 (150B:2252) draft (bytes match): all 20 cleared, then for i < party-headcount of a status other than 0 and 5 and j with card-item-lines/card-saint-lines[j] != -1
     public OptionState[] PopupStates(bool saints)
     {
         var states = new OptionState[CardMenu.MaxLines];
@@ -188,10 +188,10 @@ public sealed partial class CardContext
     public bool PopupListsAll { get; set; }
 
     /// <summary>
-    /// Prays to a saint for a member and redraws the card (<c>invoke_saint</c>): the prayer
+    /// Prays to a saint for a member and redraws the card (<c>call-on-saint</c>): the prayer
     /// screen is the presentation's; until it is set, the prayer fails (returns 0).
     /// </summary>
-    // orig: invoke_saint R029+0x2180 (0E76:2180) matched
+    // orig: call-on-saint R029+0x2180 (0E76:2180) matched
     // DIVERGENCE: the prayer screen (thunk 09C0:1EAF, then the card redraw thunk 09C0:1EA5) is the presentation's SaintPrayer; without it the prayer fails (0). In play DarklandsGame attaches SaintPrayerScreen to every card context it makes (DarklandsGame.cs, right after the CardContext is created), so no card runs without it.
     public int InvokeSaint(int who, int saint) => SaintPrayer?.Invoke(who, saint) ?? 0;
 
@@ -207,11 +207,11 @@ public sealed partial class CardContext
     public static readonly string[] QualityWords = ["very poor", "poor", "fair", "good", "very good", "excellent", "superb"];
 
     /// <summary>
-    /// "Chance of success is X% to Y%" (<c>chance_text</c>): numbers at Basic, quality words
+    /// "Chance of success is X% to Y%" (<c>chance-line</c>): numbers at Basic, quality words
     /// (per 20 points) at Standard, nothing at Expert; the upper chance is at most 100.
     /// </summary>
-    // orig: chance_text R029+0x5B62 (1367:0C52) matched
-    // C: quality_words[lo / 20] (DS:4FCE, 7 near pointers) is not range-checked: the words next to it are pointers to empty strings in
+    // orig: chance-line R029+0x5B62 (1367:0C52) matched
+    // C: grade-words[lo / 20] (DS:4FCE, 7 near pointers) is not range-checked: the words next to it are pointers to empty strings in
     // the data image (index 7: DS:6F43, −1: DS:0000, −2: DS:7461, all zero bytes), so a chance of 140..159 or −40..−20 says nothing.
     // DIVERGENCE: an index beyond 7 or below −2 (a chance of 160 and up, or below −40; callers pass clamped chances) is clamped to 0..6.
     // C: only hi is limited to 100; the text is appended to the caller's buffer there.
@@ -233,16 +233,16 @@ public sealed partial class CardContext
     }
 
     /// <summary>
-    /// Puts a name into $Named1..5 (<c>name_to_slot</c>): 0 an item, 1 a saint, 2 a formula (the
+    /// Puts a name into $Named1..5 (<c>label-to-slot</c>): 0 an item, 1 a saint, 2 a formula (the
     /// card passes an item code 0x5F and up), 3/4 the bell of an hour, 5 the next bell, 6 a dragon,
     /// 7 a dwarf, 8 a merchant trade or house.
     /// </summary>
-    // orig: name_to_slot R029+0x1FB8 (0E76:1FB8) matched (checked against asm: kind 2 reads es:[bx+15BA] with bx = 4 x index)
+    // orig: label-to-slot R029+0x1FB8 (0E76:1FB8) matched (checked against asm: kind 2 reads es:[bx+15BA] with bx = 4 x index)
     // C: kind 2 reads the far pointer at 2E38:15BA + 4 x index. Nothing writes that address: it is the formula-name table
-    // virtue_names (2E38:1736, 66 far pointers filled from DARKLAND.LST by world_load) seen 0x5F entries early (1736 - 15BA = 0x17C = 95 x 4),
-    // so index 0x5F + n is the full name of formula n; R089 passes 0x64..0x74 (formulas 5..21) and the table goes on into saint_names (183E) after formula 65.
+    // virtue-label-table (2E38:1736, 66 far pointers filled from DARKLAND.LST by world-read) seen 0x5F entries early (1736 - 15BA = 0x17C = 95 x 4),
+    // so index 0x5F + n is the full name of formula n; R089 passes 0x64..0x74 (formulas 5..21) and the table goes on into saint-label-table (183E) after formula 65.
     // C: kind 6, 7 and 8 read the far pointers at 290E:1FA7, 1FE7 and 2107 (16, 38 and 31 strings, see PersonalNamesDecoder).
-    // DIVERGENCE: for kinds 0..2 an index past its table (or a kind-2 index below 0x5F, which reads the unwritten bytes before virtue_names) keeps the slot's text; kinds 6..8 read the static pointers next to their tables as the original does (TablePersonalNames.Name); without the EXE's tables kinds 6..8 keep the slot's text.
+    // DIVERGENCE: for kinds 0..2 an index past its table (or a kind-2 index below 0x5F, which reads the unwritten bytes before virtue-label-table) keeps the slot's text; kinds 6..8 read the static pointers next to their tables as the original does (TablePersonalNames.Name); without the EXE's tables kinds 6..8 keep the slot's text.
     // DORMANT: kinds above 8 copy nothing in the original either.
     public void NameToSlot(int kind, int index, int slot)
     {
@@ -254,7 +254,7 @@ public sealed partial class CardContext
             0 => World.ItemName(index),
             1 => index >= 0 && index < World.Items.Saints.Count ? World.Items.Saints[index].FullName : "",
             2 => FormulaOrSaintName(index - FormulaTableBase) ?? Variables.Named[slot],
-            // C: bell_name(hour_band(index), slot) (R029+0x5756 matched: _fstrcpy(dst, bell_names[i])).
+            // C: bell-time-label(time-of-day-band(index), slot) (R029+0x5756 matched: _fstrcpy(dst, bell-time-labels[i])).
             3 or 4 => bells[TimeOfDay.Band(index)],
             5 => bells[TimeOfDay.Band(index) + 1 > 7 ? 0 : TimeOfDay.Band(index) + 1],
             6 => Table(NameTable.Dragons),
@@ -264,7 +264,7 @@ public sealed partial class CardContext
         };
     }
 
-    /// <summary>2E38:1736 (virtue_names) is 0x5F far pointers after 2E38:15BA, the base <c>name_to_slot</c> kind 2 addresses.</summary>
+    /// <summary>2E38:1736 (virtue-label-table) is 0x5F far pointers after 2E38:15BA, the base <c>label-to-slot</c> kind 2 addresses.</summary>
     private const int FormulaTableBase = 0x5F;
 
     private string? FormulaOrSaintName(int n)
@@ -281,19 +281,19 @@ public sealed partial class CardContext
 
     // ---- time -----------------------------------------------------------------------
 
-    /// <summary>Lets days pass (<c>advance_days</c>).</summary>
-    // orig: advance_days R029+0x5590 (1367:0680) matched
+    /// <summary>Lets days pass (<c>pass-days</c>).</summary>
+    // orig: pass-days R029+0x5590 (1367:0680) matched
     public void PassDays(int days) => TimePassage.AdvanceDays(State, days);
 
-    /// <summary>Waits until the given hour (<c>wait_until_hour</c>).</summary>
-    // orig: wait_until_hour R029+0x5626 (1367:0716) matched; hours_until R029+0x577A (1367:086A) matched
+    /// <summary>Waits until the given hour (<c>wait-for-hour</c>).</summary>
+    // orig: wait-for-hour R029+0x5626 (1367:0716) matched; hours-remaining-until R029+0x577A (1367:086A) matched
     public void WaitUntilHour(int hour) => PassHours(TimeOfDay.HoursUntil(State.Date.Hour, hour));
 
-    /// <summary>05:00 to 18:59 (<c>is_daylight</c>).</summary>
-    // orig: is_daylight R029+0x563A (1367:072A) matched
+    /// <summary>05:00 to 18:59 (<c>daylight-test</c>).</summary>
+    // orig: daylight-test R029+0x563A (1367:072A) matched
     public bool IsDaylight => State.Date.IsDaylight;
 
-    /// <summary>0..n−1 by scaling (<c>random_n</c>).</summary>
-    // orig: random_n root 0410:0008 (0410:0008) matched
+    /// <summary>0..n−1 by scaling (<c>roll-n</c>).</summary>
+    // orig: roll-n root 0410:0008 (0410:0008) matched
     public int RandomScaled(int below) => State.Random.Scaled(below);
 }
