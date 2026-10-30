@@ -95,6 +95,10 @@ public sealed class ModFolder
                     {
                         problems.Add($"{id}: card {card.Number} is described twice");
                     }
+                    else if (cards.FirstOrDefault(c => string.Equals(c.Name, card.Name, StringComparison.OrdinalIgnoreCase)) is { } same)
+                    {
+                        problems.Add($"{id}: card {card.Number} has the name \"{card.Name}\" of card {same.Number}; every card of a mod needs its own name");
+                    }
                     else
                     {
                         cards.Add(card);

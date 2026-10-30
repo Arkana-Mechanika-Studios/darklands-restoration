@@ -70,7 +70,32 @@ def only_build_output(path: str) -> bool:
     return any(p in BUILD_DIRS for p in parts)
 
 
-def foreign_status(lines: list[str]) -> list[str]:
+def pycache_is_build_output(top: Path) -> bool:
+    """A __pycache__ folder counts as build output only when it holds nothing but *.pyc files and no reparse point."""
+    if not top.is_dir() or is_reparse(top):
+        return False
+    stack = [top]
+    while stack:
+        d = stack.pop()
+        try:
+            entries = list(os.scandir(d))
+        except OSError:
+            return False
+        for e in entries:
+            if is_reparse(e.path) or e.is_dir(follow_symlinks=False) or not e.name.lower().endswith(".pyc"):
+                return False
+    return True
+
+
+def pycache_ok(path: str, wt: Path | None) -> bool:
+    parts = [p for p in path.replace("\\", "/").strip('"').split("/") if p]
+    if wt is None or "__pycache__" not in parts:
+        return False
+    i = parts.index("__pycache__")
+    return pycache_is_build_output(wt.joinpath(*parts[: i + 1]))
+
+
+def foreign_status(lines: list[str], wt: Path | None = None) -> list[str]:
     bad = []
     for ln in lines:
         if not ln.strip():
@@ -79,7 +104,7 @@ def foreign_status(lines: list[str]) -> list[str]:
         if " -> " in path:
             path = path.split(" -> ")[-1]
         if ln.startswith("!!") or ln.startswith("??"):
-            if only_build_output(path):
+            if only_build_output(path) or pycache_ok(path, wt):
                 continue
         bad.append(ln)
     return bad
@@ -130,13 +155,13 @@ def main(argv=None) -> int:
     print("b) HEAD %s is merged into %s" % (head[:10], a.master))
 
     # c) nothing that master lacks
-    r = git(wt, "status", "--porcelain", "--ignored")
+    r = git(wt, "status", "--porcelain", "--ignored", "--untracked-files=all")
     if r.returncode != 0:
         fail("git status failed: " + r.stderr.strip())
-    bad = foreign_status(r.stdout.splitlines())
+    bad = foreign_status(r.stdout.splitlines(), wt)
     if bad:
         print("\n".join("   " + b for b in bad), file=sys.stderr)
-        fail("%d change(s)/file(s) in %s that master lacks (listed above); only bin/ and obj/ output may remain" % (len(bad), a.name))
+        fail("%d change(s)/file(s) in %s that master lacks (listed above); only bin/, obj/ and pure-.pyc __pycache__ output may remain" % (len(bad), a.name))
     print("c) nothing but build output beyond master")
 
     # d) no reparse points

@@ -152,6 +152,33 @@ class WtRemove(unittest.TestCase):
         self.assertIn("notes.txt", r.stderr)
         self.assertTrue((w / "notes.txt").exists())
 
+    def test_pycache_with_only_pyc_ok(self):
+        w = self.wdir / "w1"
+        (w / "tools" / "__pycache__").mkdir(parents=True)
+        (w / "tools" / "__pycache__" / "x.cpython-312.pyc").write_bytes(b"\x00")
+        self.assertEqual(self.run_tool("w1", "--dry-run").returncode, 0)
+
+    def test_pycache_with_other_file_refused(self):
+        w = self.wdir / "w1"
+        (w / "__pycache__").mkdir()
+        (w / "__pycache__" / "x.pyc").write_bytes(b"\x00")
+        (w / "__pycache__" / "notes.txt").write_text("precious")
+        r = self.run_tool("w1", "--dry-run")
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("__pycache__", r.stderr)
+
+    def test_pycache_with_junction_refused(self):
+        target = self.root / "shared_local"
+        target.mkdir()
+        (target / "keep.txt").write_text("k")
+        (self.wdir / "w1" / "__pycache__").mkdir()
+        link = self.wdir / "w1" / "__pycache__" / "lnk"
+        if not make_junction(link, target):
+            self.skipTest("cannot create a junction/symlink here")
+        self.links.append(link)
+        self.assertNotEqual(self.run_tool("w1", "--dry-run").returncode, 0)
+        self.assertTrue((target / "keep.txt").exists())
+
     def test_modified_tracked_file_refused(self):
         w = self.wdir / "w1"
         (w / "a.txt").write_text("changed")
