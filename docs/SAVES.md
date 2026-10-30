@@ -193,8 +193,8 @@ in step. Saved games are inspected with `SaveFile` / `OriginalSaves` in tests.
 ## Modded games: the companion file
 
 A game played with mods ([MODS.md](MODS.md)) is saved in the same format: a mod's new card (a number above 365) is never
-written into the header; its `savesAs`, one of the game's cards, takes its place (`OriginalSaves.Write`, `savedCardOf`), so
-the original game loads the file. `ModdedSaves` writes `DKSAVEn.MODS.JSON` beside it: the mods, the real card numbers of
+written into the header; its `savesAs`, one of the game's cards, takes its place (`OriginalSaves.Write`, `savedCardOf`; any
+other number above 365 becomes the map, 12), so the original game loads the file. Without mods every word is written as it is. `ModdedSaves` writes `DKSAVEn.MODS.JSON` beside it: the mods, the real card numbers of
 +82, +86, +88, +8A and the SHA-256 of the .SAV (a companion file whose .SAV was replaced is ignored). Loaded without its
 mods, the game goes on from the header's cards after a message naming them. A game never played with a mod writes no
 companion file.

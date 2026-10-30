@@ -378,7 +378,7 @@ if (modSteps.Count > 0)
     var modFolders = new List<string>();
     foreach (var step in modSteps)
     {
-        if (Darklands.Simulation.Mods.ModSet.Find(step[4..], game.Ui.Assets.Files.Root, Environment.CurrentDirectory) is { } modFolder)
+        if (Darklands.Content.ModFolders.Find(step[4..], game.Ui.Assets.Files.Root, Environment.CurrentDirectory) is { } modFolder)
         {
             modFolders.Add(modFolder);
         }
@@ -387,7 +387,7 @@ if (modSteps.Count > 0)
             Console.Error.WriteLine($"mod {step[4..]}: no folder with a mod.json found (as given, or in a mods folder next to the program or the game)");
         }
     }
-    game.Mods = Darklands.Simulation.Mods.ModSet.Load(modFolders, Console.Error.WriteLine);
+    game.Mods = Darklands.Simulation.Mods.ModSet.Load(modFolders.Select(Darklands.Content.ModFolders.Read), Console.Error.WriteLine, game.Ui.Assets.IsGameMessageFile);
 }
 if (savesStep is not null)
 {

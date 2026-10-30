@@ -125,8 +125,20 @@ or place), `$Money1`, `$ChosenOneName`, `$he` / `$his` and the others of `src/Da
 always starts a name, so a plain `$` cannot be shown. The first letter of a text gets the game's drop capital. Keep
 texts short enough to fit the card window: a few lines as in the game's own cards.
 
-A card with a problem (a page that leads nowhere, a missing `next`, a character the game's font lacks ...) is left out
-whole, with a line that says why; the mod's other cards still load.
+## When a mod is not played
+
+A mod is played whole or not at all. Any problem leaves the whole mod out, with a line naming the mod and the field, and
+the game starts without it:
+
+* a value of the wrong type (`"number": "400"` instead of `400`, `"hours": "1"`), JSON that cannot be read;
+* a page that leads nowhere, a missing `next`, a character the game's font lacks;
+* a card the rules above refuse (a new card without `savesAs`, a game number without `"overrides": true` ...);
+* a card `name` that is one of the game's message files (also the game's spare texts that no card uses) or another mod's
+  card name;
+* a link to a card number that no card of the game and no played mod defines (a mod that leads to another mod's card is
+  played only with that mod, and only when that mod is played).
+
+So a game with mods never reaches a card number that nothing defines.
 
 ## Example: the wayside shrine
 
@@ -190,7 +202,7 @@ Darklands.Host.Headless <game folder> <output folder> mod:docs/mods/wayside-shri
 A saved game stays in the original format, so the original game (and this program without the mod) loads every one:
 
 * No card number above 365 goes into a `.SAV`. Where the game stands on a new card (or remembers one), the `.SAV` holds
-  the card's `savesAs` instead.
+  the card's `savesAs` instead (any other number above 365, which a played mod cannot reach, as the map, 12).
 * Beside it, `DKSAVE<n>.MODS.JSON` (the companion file) records the mods loaded when it was saved, every mod the game was
   ever played with, and the real card numbers. It carries the SHA-256 of its `.SAV`: if the `.SAV` was replaced since
   (deleted and saved again by the original game), the file is ignored. Deleting a save in the load screen deletes it too.

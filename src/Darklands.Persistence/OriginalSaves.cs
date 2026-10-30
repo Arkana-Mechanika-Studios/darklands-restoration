@@ -55,6 +55,9 @@ public static class OriginalSaves
     /// <summary>The highest card number of the game's table: the original save format holds no other (mods' cards go to a companion file).</summary>
     public const int LastOriginalCard = 365;
 
+    /// <summary>The map's card (0x0C): what a modded game's save names for a card number above 365 that no mod knows.</summary>
+    public const int MapCard = 0x0C;
+
     /// <summary>The header offsets of the card, the two remembered cards and the previous card (ModdedSaves.CardsOf's order).</summary>
     public static readonly int[] CardFieldOffsets = [CardAt, SavedCardAt, SavedCard2At, PreviousCardAt];
     private const int BankNotesAt = 0x8C;
@@ -290,14 +293,17 @@ public static class OriginalSaves
     // DIVERGENCE: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.
     // C: the .BSV: the battle-state save R003+0x00DC writes the program's battle file (GameState.BattleFile: the battle's variables and the last
     // battlefield's levels and files); before any battle or battle file (a new game) the variables are the program's zeros.
-    // DIVERGENCE: no original: a mod's new card (a number above LastOriginalCard that savedCardOf knows) is written as the game's card
-    //   savedCardOf gives for it, so the original game loads every file written here (ModdedSaves keeps the real number). Any other number
-    //   is written as it is, as the original writes it (a garbled file read back keeps its words); without mods savedCardOf is null.
+    // DIVERGENCE: no original: in a game with mods (savedCardOf not null) a number above LastOriginalCard is never written: a mod's new
+    //   card is written as the game's card savedCardOf gives for it, any other as the map (MapCard), so the original game loads every
+    //   file written here (ModdedSaves keeps the real number). Without mods (savedCardOf null) every number is written as it is, as the
+    //   original writes it (a garbled file read back keeps its words).
     public static (byte[] Sav, byte[] Bsv) Write(GameState state, string? comment = null, bool music = true, bool soundEffects = true,
         Core.Battles.Battle? inBattle = null, Func<int, int?>? savedCardOf = null)
     {
         int Card(int number) =>
-            number > LastOriginalCard && savedCardOf?.Invoke(number) is { } saved && saved is >= 0 and <= LastOriginalCard ? saved : number;
+            number <= LastOriginalCard || savedCardOf is null ? number
+            : savedCardOf(number) is { } saved && saved is >= 0 and <= LastOriginalCard ? saved
+            : MapCard;
         var cards = (Card(state.CurrentCard), Card(state.SavedCard), Card(state.SavedCard2), Card(state.PreviousCard));
         if (inBattle is not null)
         {

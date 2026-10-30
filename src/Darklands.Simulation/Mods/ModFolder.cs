@@ -15,7 +15,7 @@ public sealed record DataCardDefinition(int Number, string Name, bool Overrides,
 public sealed class ModFolder
 {
     /// <summary>The file that makes a folder a mod.</summary>
-    public const string ManifestName = "mod.json";
+    public const string ManifestName = ModFolders.ManifestName;
 
     /// <summary>The block layout a page gets unless it sets its own (the usual place of a card's first text).</summary>
     public const int DefaultX = 10, DefaultY = 10, DefaultWidth = 232;
@@ -47,34 +47,30 @@ public sealed class ModFolder
     /// <summary>The cards that were read without a problem.</summary>
     public IReadOnlyList<DataCardDefinition> Cards { get; }
 
-    /// <summary>What could not be used, one line each (a card with a problem is left out whole).</summary>
+    /// <summary>What is wrong with the mod, one line each (any problem: the mod is not played, ModSet).</summary>
     public IReadOnlyList<string> Problems { get; }
 
-    /// <summary>True when a mod.json is in the folder.</summary>
-    public static bool IsMod(string folder) => File.Exists(Path.Combine(folder, ManifestName));
+    /// <summary>A mod from its manifest as read from disk (Content's ModFolders.Read): parsed, or the read problem.</summary>
+    public static ModFolder From(ModManifest manifest) =>
+        manifest.Json is { } json
+            ? Parse(manifest.Folder, manifest.Id, json)
+            : new ModFolder(manifest.Folder, new CardSource(manifest.Id, manifest.Id, ""), "", [], [manifest.Problem ?? $"{manifest.Id}: no {ManifestName}"]);
 
-    /// <summary>Reads a mod folder. A missing folder or mod.json, or JSON that cannot be read, gives a mod with no cards and the problem.</summary>
-    public static ModFolder Load(string folder)
+    /// <summary>Reads a mod.json's text (the folder gives the mod's id).</summary>
+    /// <remarks>Never throws for a bad text: JSON that cannot be read, or a value of the wrong type, is a problem line naming the mod.</remarks>
+    public static ModFolder Parse(string folder, string id, string json)
     {
-        var full = Path.GetFullPath(folder);
-        var id = Path.GetFileName(full.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-        var manifest = Path.Combine(full, ManifestName);
-        if (!File.Exists(manifest))
-        {
-            return new ModFolder(full, new CardSource(id, id, ""), "", [], [$"{full}: no {ManifestName} (not a mod folder)"]);
-        }
         try
         {
-            return Parse(full, id, File.ReadAllText(manifest));
+            return ParseOrThrow(folder, id, json);
         }
-        catch (Exception e) when (e is JsonException or IOException or UnauthorizedAccessException)
+        catch (Exception e) when (e is JsonException or InvalidOperationException or FormatException or ArgumentException)
         {
-            return new ModFolder(full, new CardSource(id, id, ""), "", [], [$"{manifest}: cannot be read: {e.Message}"]);
+            return new ModFolder(folder, new CardSource(id, id, ""), "", [], [$"{id}: {ManifestName} cannot be read: {e.Message}"]);
         }
     }
 
-    /// <summary>Reads a mod.json's text (the folder gives the mod's id).</summary>
-    public static ModFolder Parse(string folder, string id, string json)
+    private static ModFolder ParseOrThrow(string folder, string id, string json)
     {
         var problems = new List<string>();
         using var document = JsonDocument.Parse(json, Options);
@@ -97,7 +93,7 @@ public sealed class ModFolder
                 {
                     if (cards.Any(c => c.Number == card.Number))
                     {
-                        problems.Add($"{id}: card {card.Number} is described twice; the second is left out");
+                        problems.Add($"{id}: card {card.Number} is described twice");
                     }
                     else
                     {
@@ -112,6 +108,13 @@ public sealed class ModFolder
             problems.Add($"{id}: {ManifestName} has no \"cards\" list");
         }
         return new ModFolder(folder, new CardSource(id, name, version), description, cards, problems);
+    }
+
+    /// <summary>A whole number of the JSON (false for a text "400", a fraction or a value too large).</summary>
+    private static bool Int(JsonElement e, out int value)
+    {
+        value = 0;
+        return e.ValueKind == JsonValueKind.Number && e.TryGetInt32(out value);
     }
 
     private static string? Text(JsonElement e, string key) =>
@@ -130,13 +133,29 @@ public sealed class ModFolder
             {
                 return Fail("must be an object");
             }
-            if (!card.TryGetProperty("number", out var n) || !n.TryGetInt32(out var number))
+            if (!card.TryGetProperty("number", out var n) || !Int(n, out var number))
             {
-                return Fail("needs a whole \"number\"");
+                return Fail("needs a whole \"number\" (not text)");
             }
             _where = $"{mod}: card {number}";
-            var overrides = card.TryGetProperty("overrides", out var o) && o.ValueKind == JsonValueKind.True;
-            int? savesAs = card.TryGetProperty("savesAs", out var s) && s.TryGetInt32(out var saved) ? saved : null;
+            var overrides = false;
+            if (card.TryGetProperty("overrides", out var o))
+            {
+                if (o.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+                {
+                    return Fail("\"overrides\" must be true or false");
+                }
+                overrides = o.ValueKind == JsonValueKind.True;
+            }
+            int? savesAs = null;
+            if (card.TryGetProperty("savesAs", out var s))
+            {
+                if (!Int(s, out var saved))
+                {
+                    return Fail("\"savesAs\" must be a whole card number (not text)");
+                }
+                savesAs = saved;
+            }
             var name = Text(card, "name") ?? $"$Mod{number}";
             if (name.Length == 0 || name.Length > 12 || name.Any(ch => ch is < '!' or > '~'))
             {
@@ -148,7 +167,7 @@ public sealed class ModFolder
             }
             var picture = card.TryGetProperty("picture", out var p) ? p.ValueKind switch
             {
-                JsonValueKind.Number when p.TryGetInt32(out var pn) => PictureNames.Of(pn),
+                JsonValueKind.Number when Int(p, out var pn) => PictureNames.Of(pn),
                 JsonValueKind.String => p.GetString() ?? "",
                 _ => null,
             } : overrides && number is >= 0 and <= CardRegistry.LastOriginalCard ? PictureNames.Of(CardTable.Find(number)?.Picture ?? -1) : "";
@@ -207,7 +226,7 @@ public sealed class ModFolder
                 var before = new List<int>();
                 foreach (var item in beforeValue.ValueKind == JsonValueKind.Array ? beforeValue.EnumerateArray().ToList() : [beforeValue])
                 {
-                    if (!item.TryGetInt32(out var number) || number < 0)
+                    if (!Int(item, out var number) || number < 0)
                     {
                         return Fail<DataPage>($"{where}: \"ifPreviousCard\" must be a card number or a list of them");
                     }
@@ -223,7 +242,7 @@ public sealed class ModFolder
             }
             if (page.TryGetProperty("chance", out var chanceValue))
             {
-                if (!chanceValue.TryGetInt32(out var chance) || chance is < 0 or > 100)
+                if (!Int(chanceValue, out var chance) || chance is < 0 or > 100)
                 {
                     return Fail<DataPage>($"{where}: \"chance\" must be a whole number from 0 to 100");
                 }
@@ -355,7 +374,7 @@ public sealed class ModFolder
             {
                 if (holder.TryGetProperty(key, out var v))
                 {
-                    if (!v.TryGetInt32(out var count))
+                    if (!Int(v, out var count))
                     {
                         return FailNumber($"{where}: \"{key}\" must be a whole number");
                     }
@@ -377,7 +396,7 @@ public sealed class ModFolder
             }
             if (v.ValueKind == JsonValueKind.Number)
             {
-                return v.TryGetInt32(out var card) && card is >= 0 and <= CardRegistry.LastModCard
+                return Int(v, out var card) && card is >= 0 and <= CardRegistry.LastModCard
                     ? new CardTarget.Card(card)
                     : Fail<CardTarget>($"{where}: \"{key}\" card numbers are 0 to {CardRegistry.LastModCard}");
             }
@@ -400,7 +419,7 @@ public sealed class ModFolder
             {
                 return fallback;
             }
-            return v.TryGetInt32(out var value) && value >= low && value <= high ? value : FailNumber($"{where}: \"{key}\" must be a whole number from {low} to {high}");
+            return Int(v, out var value) && value >= low && value <= high ? value : FailNumber($"{where}: \"{key}\" must be a whole number from {low} to {high}");
         }
 
         /// <summary>A text as the card font's bytes: printable ASCII and line breaks; $Name inserts a value as in the game's texts.</summary>
@@ -421,7 +440,7 @@ public sealed class ModFolder
 
         private T? Fail<T>(string why) where T : class
         {
-            Problems.Add($"{_where}: {why}; the card is left out");
+            Problems.Add($"{_where}: {why}");
             return null;
         }
 
@@ -429,7 +448,7 @@ public sealed class ModFolder
 
         private int? FailNumber(string why)
         {
-            Problems.Add($"{_where}: {why}; the card is left out");
+            Problems.Add($"{_where}: {why}");
             return null;
         }
     }

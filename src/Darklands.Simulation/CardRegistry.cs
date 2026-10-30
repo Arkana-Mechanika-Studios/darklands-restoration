@@ -57,6 +57,12 @@ public sealed class CardRegistry
             .ToDictionary(c => c.Number);
     }
 
+    /// <summary>A registry over the same game cards as another (the instances shared; no mod card).</summary>
+    public CardRegistry(IReadOnlyDictionary<int, Card> original)
+    {
+        _original = original.ToDictionary();
+    }
+
     /// <summary>Where the registry's lines go as they are written (a host passes its console); they are kept in <see cref="Log"/> too.</summary>
     public Action<string>? Logger { get; set; }
 

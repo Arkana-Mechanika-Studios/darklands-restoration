@@ -270,7 +270,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
         var modFolders = new List<string>();
         foreach (var mod in settings.Mods)
         {
-            if (Darklands.Simulation.Mods.ModSet.Find(mod, files.Root, modBase) is { } modFolder)
+            if (ModFolders.Find(mod, files.Root, modBase) is { } modFolder)
             {
                 modFolders.Add(modFolder);
             }
@@ -279,7 +279,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
                 Console.Error.WriteLine($"mod {mod}: no folder with a mod.json found (as given, or in a mods folder next to the program, in the game folder or next to it)");
             }
         }
-        game.Mods = Darklands.Simulation.Mods.ModSet.Load(modFolders, Console.Error.WriteLine);
+        game.Mods = Darklands.Simulation.Mods.ModSet.Load(modFolders.Select(ModFolders.Read), Console.Error.WriteLine, game.Ui.Assets.IsGameMessageFile);
     }
     using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version) : null;
     host.Console = console;

@@ -277,7 +277,8 @@ public sealed class DarklandsGame
         {
             Log?.Invoke($"{name} was saved with mods not loaded now ({string.Join(", ", missing)}): the game goes on without them");
             var lines = new List<string> { missing.Count == 1 ? "This game was saved with the mod" : "This game was saved with the mods" };
-            lines.AddRange(missing.Select(m => m.ToString()));
+            // at most three names (the notice has six boxes)
+            lines.AddRange(missing.Count <= 3 ? missing.Select(m => m.ToString()) : [.. missing.Take(2).Select(m => m.ToString()), $"and {missing.Count - 2} more"]);
             lines.Add("which is not loaded now. It goes on");
             lines.Add("without it. Press a key.");
             if (missing.Count > 1)

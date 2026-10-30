@@ -1,4 +1,5 @@
 using Darklands.Cards.Scripts;
+using Darklands.Content;
 using Darklands.Persistence;
 using Darklands.Simulation;
 using Darklands.Simulation.Mods;
@@ -172,7 +173,7 @@ public sealed class ModCardTests
     [Fact]
     public void TheExampleModReadsWithoutAProblem()
     {
-        var mod = ModFolder.Load(ExampleMod());
+        var mod = ModFolder.From(ModFolders.Read(ExampleMod()));
         Assert.Empty(mod.Problems);
         Assert.Equal("wayside-shrine", mod.Source.Id);
         Assert.Equal("The wayside shrine", mod.Source.Name);
@@ -193,7 +194,7 @@ public sealed class ModCardTests
         Assert.All(Enumerable.Range(0, first.Text.Length).Where(i => first.Text[i] == 0x15), i => Assert.Equal((byte)'\n', first.Text[i - 1]));
         Assert.DoesNotContain(first.Text, b => b is < 0x20 and not (byte)'\n' and not 0x15 || b > 0x7E);
 
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         Assert.True(set.Cards.HasModCards);
         Assert.Equal(2, set.Cards.SavedNumberOf(366));
         Assert.IsType<DataCard>(set.Cards.Find(2));
@@ -204,6 +205,18 @@ public sealed class ModCardTests
     }
 
     private static ModFolder Parse(string json) => ModFolder.Parse("x", "test-mod", json);
+
+    /// <summary>The mods of these folders, read as the hosts read them.</summary>
+    private static ModSet LoadMods(params string[] folders) => ModSet.Load(folders.Select(ModFolders.Read));
+
+    /// <summary>A mod folder holding this mod.json.</summary>
+    private static string ModWith(string json, string name = "test-mod")
+    {
+        var folder = Path.Combine(TempCopies.Create("darklands-mods-"), name);
+        Directory.CreateDirectory(folder);
+        File.WriteAllText(Path.Combine(folder, ModFolder.ManifestName), json);
+        return folder;
+    }
 
     [Theory]
     [InlineData("""{ "cards": [ { "number": 366, "savesAs": 2, "pages": [ { "text": "hello", "next": "nowhere" } ] } ] }""", "not a page of this card")]
@@ -221,43 +234,126 @@ public sealed class ModCardTests
     {
         var mod = Parse(json);
         Assert.Empty(mod.Cards);
-        Assert.Contains(mod.Problems, p => p.Contains(problem) && p.Contains("left out"));
+        Assert.Contains(mod.Problems, p => p.Contains(problem));
+        var set = ModSet.Load([new ModManifest("x", "test-mod", json, null)]);
+        Assert.False(set.Cards.HasModCards);
+        Assert.Contains(set.Log, l => l.Contains("is not played"));
+    }
+
+    [Theory]
+    [InlineData("""{ "cards": [ { "number": "400", "savesAs": 2, "pages": [ { "text": "x", "next": 2 } ] } ] }""", "\"number\"")]
+    [InlineData("""{ "cards": [ { "number": 400, "savesAs": "12", "pages": [ { "text": "x", "next": 2 } ] } ] }""", "\"savesAs\"")]
+    [InlineData("""{ "cards": [ { "number": 400, "savesAs": 2, "pages": [ { "text": "x", "do": { "florins": "1" }, "next": 2 } ] } ] }""", "\"florins\"")]
+    [InlineData("""{ "cards": [ { "number": 400, "savesAs": 2, "pages": [ { "text": "x", "do": { "hours": "1" }, "next": 2 } ] } ] }""", "\"hours\"")]
+    [InlineData("""{ "cards": [ { "number": 400, "savesAs": 2, "overrides": "yes", "pages": [ { "text": "x", "next": 2 } ] } ] }""", "\"overrides\"")]
+    [InlineData("""{ "cards": [ { "number": 400, "savesAs": 2, "pages": [ { "chance": "50", "next": 2, "otherwise": 2 } ] } ] }""", "\"chance\"")]
+    [InlineData("""{ "cards": [ { "number": 400, "savesAs": 2, "pages": [ { "ifPreviousCard": ["2"], "next": 2, "otherwise": 2 } ] } ] }""", "ifPreviousCard")]
+    [InlineData("""{ "cards": [ { "number": 400, "savesAs": 2, "pages": [ { "text": "x", "next": 2, "x": "5" } ] } ] }""", "\"x\"")]
+    [InlineData("""{ "cards": [ { "number": 400, "savesAs": 2, "pages": [ { "text": "x", "options": [ { "text": "a", "if": { "groschen": "1" }, "next": 2 }, { "text": "b", "next": 2 } ] } ] } ] }""", "\"groschen\"")]
+    [InlineData("""{ "cards": [ { "number": 1e3, "savesAs": 2, "pages": [ { "text": "x", "next": 2 } ] } ] }""", "\"number\"")]
+    public void AValueOfTheWrongTypeNamesTheModAndTheFieldAndTheModIsNotPlayed(string json, string field)
+    {
+        var lines = new List<string>();
+        var set = ModSet.Load([new ModManifest("x", "typed-mod", json, null)], lines.Add);
+        Assert.False(set.Cards.HasModCards);
+        Assert.Empty(set.Texts);
+        Assert.Contains(lines, l => l.Contains("typed-mod") && l.Contains(field));
+        Assert.Contains(lines, l => l.Contains("typed-mod") && l.Contains("is not played"));
     }
 
     [Fact]
     public void AModFolderWithoutAManifestOrWithBadJsonGivesNoCardsAndAProblem()
     {
         var empty = TempCopies.Create("darklands-mod-");
-        var none = ModFolder.Load(empty);
+        var none = ModFolder.From(ModFolders.Read(empty));
         Assert.Empty(none.Cards);
         Assert.Contains(none.Problems, p => p.Contains("no mod.json"));
         File.WriteAllText(Path.Combine(empty, ModFolder.ManifestName), "{ \"cards\": [ ");
-        var broken = ModFolder.Load(empty);
+        var broken = ModFolder.From(ModFolders.Read(empty));
         Assert.Empty(broken.Cards);
         Assert.Contains(broken.Problems, p => p.Contains("cannot be read"));
-        var set = ModSet.Load([empty]);
+        var set = LoadMods(empty);
         Assert.False(set.Cards.HasModCards);
     }
 
     [Fact]
-    public void ANewCardWithoutSavesAsIsRefusedWhenRegistered()
+    public void ANewCardWithoutSavesAsIsRefusedAndItsModNotPlayed()
     {
-        var folder = TempCopies.Create("darklands-mod-");
-        File.WriteAllText(Path.Combine(folder, ModFolder.ManifestName), """{ "cards": [ { "number": 366, "pages": [ { "text": "x", "next": 2 } ] } ] }""");
-        var set = ModSet.Load([folder]);
+        // the mod's other card is sound, but a mod is played whole or not at all
+        var folder = ModWith("""{ "cards": [ { "number": 366, "pages": [ { "text": "x", "next": 2 } ] }, { "number": 367, "savesAs": 2, "pages": [ { "text": "y", "next": 2 } ] } ] }""");
+        var set = LoadMods(folder);
         Assert.False(set.Cards.HasModCards);
         Assert.Empty(set.Texts);
+        Assert.Empty(set.Played);
         Assert.Contains(set.Log, l => l.Contains("refused") && l.Contains("savesAs"));
+        Assert.Contains(set.Log, l => l.Contains("is not played"));
     }
 
     [Fact]
-    public void ALinkToACardNobodyDefinesIsLogged()
+    public void AModThatLeadsToACardNobodyDefinesIsNotPlayed()
     {
-        var folder = TempCopies.Create("darklands-mod-");
-        File.WriteAllText(Path.Combine(folder, ModFolder.ManifestName), """{ "cards": [ { "number": 366, "savesAs": 2, "pages": [ { "text": "x", "next": 999 } ] } ] }""");
-        var set = ModSet.Load([folder]);
-        Assert.True(set.Cards.HasModCards);
-        Assert.Contains(set.Log, l => l.Contains("leads to card 999"));
+        var folder = ModWith("""{ "cards": [ { "number": 366, "savesAs": 2, "pages": [ { "text": "x", "next": 999 } ] } ] }""");
+        var set = LoadMods(folder);
+        Assert.False(set.Cards.HasModCards);
+        Assert.Contains(set.Log, l => l.Contains("leads to card 999") && l.Contains("no played mod defines"));
+        Assert.Contains(set.Log, l => l.Contains("is not played"));
+        // the game's cards, the map and the end of the game are always there
+        var sound = ModWith("""{ "cards": [ { "number": 366, "savesAs": 2, "pages": [ { "text": "x", "options": [ { "text": "a", "next": 12 }, { "text": "b", "next": 98 }, { "text": "c", "next": 5 } ] } ] } ] }""");
+        Assert.True(LoadMods(sound).Cards.HasModCards);
+    }
+
+    [Fact]
+    public void AModWhoseLinkWasLeftOutWithAnotherModIsNotPlayedEither()
+    {
+        // mod a leads to 367, which only mod b defines; mod b has a problem (a card without savesAs), so neither is played
+        var a = ModWith("""{ "cards": [ { "number": 366, "savesAs": 2, "pages": [ { "text": "x", "next": 367 } ] } ] }""", "mod-a");
+        var b = ModWith("""{ "cards": [ { "number": 367, "savesAs": 2, "pages": [ { "text": "y", "next": 2 } ] }, { "number": 368, "pages": [ { "text": "z", "next": 2 } ] } ] }""", "mod-b");
+        var set = LoadMods(a, b);
+        Assert.False(set.Cards.HasModCards);
+        Assert.Empty(set.Played);
+        Assert.Contains(set.Log, l => l.Contains("(mod-a)") && l.Contains("leads to card 367"));
+        // with a sound mod b, both are played
+        var b2 = ModWith("""{ "cards": [ { "number": 367, "savesAs": 2, "pages": [ { "text": "y", "next": 2 } ] } ] }""", "mod-b");
+        var both = LoadMods(a, b2);
+        Assert.Equal(2, both.Played.Count);
+        Assert.True(both.Cards.Contains(366) && both.Cards.Contains(367));
+    }
+
+    [Fact]
+    public void ACardNameOfTheGamesMessageFilesOrOfAnotherModIsRefused()
+    {
+        var mod = ModWith("""{ "cards": [ { "number": 366, "name": "$Qzx00", "savesAs": 2, "pages": [ { "text": "x", "next": 2 } ] } ] }""");
+        var lines = new List<string>();
+        var set = ModSet.Load([ModFolders.Read(mod)], lines.Add, name => name == "$Qzx00");
+        Assert.False(set.Cards.HasModCards);
+        Assert.Contains(lines, l => l.Contains("\"$Qzx00\" is a message file of the game"));
+        var first = ModWith("""{ "cards": [ { "number": 366, "name": "$Same00", "savesAs": 2, "pages": [ { "text": "x", "next": 2 } ] } ] }""", "first");
+        var second = ModWith("""{ "cards": [ { "number": 367, "name": "$Same00", "savesAs": 2, "pages": [ { "text": "y", "next": 2 } ] } ] }""", "second");
+        var two = LoadMods(first, second);
+        Assert.Equal(["first"], two.Played.Select(m => m.Source.Id));
+        Assert.Contains(two.Log, l => l.Contains("(second)") && l.Contains("already a card name"));
+    }
+
+    [Fact]
+    public void TheGamesMessageFilesThatAreNoCardNamesAreRefusedToo()
+    {
+        if (CardHarness.Assets is not { } assets)
+        {
+            return;
+        }
+        // the MSGFILES entries that no card of the table names: a mod card may take none of them either
+        var archive = new Content.Formats.Text.MsgFilesArchiveDecoder().Decode(assets.Files.Read("MSGFILES"));
+        var cardNames = CardTable.All.Select(c => (c.Name + ".MSG").ToUpperInvariant()).ToHashSet();
+        var others = archive.Entries.Select(e => e.Name).Where(n => !cardNames.Contains(n.ToUpperInvariant())).ToList();
+        foreach (var name in others.Take(20))
+        {
+            var stem = name[..name.LastIndexOf('.')];
+            Assert.True(assets.IsGameMessageFile(stem), name);
+            var json = $$"""{ "cards": [ { "number": 366, "name": "{{stem}}", "savesAs": 2, "pages": [ { "text": "x", "next": 2 } ] } ] }""";
+            var set = ModSet.Load([new ModManifest("x", "named-mod", json, null)], null, assets.IsGameMessageFile);
+            Assert.False(set.Cards.HasModCards, name);
+        }
+        Assert.False(assets.IsGameMessageFile("$Shrin00"));
     }
 
     [Fact]
@@ -267,9 +363,9 @@ public sealed class ModCardTests
         var mod = Path.Combine(game, "mods", "my-mod");
         Directory.CreateDirectory(mod);
         File.WriteAllText(Path.Combine(mod, ModFolder.ManifestName), "{ \"cards\": [] }");
-        Assert.Equal(Path.GetFullPath(mod), ModSet.Find("my-mod", game));
-        Assert.Equal(Path.GetFullPath(mod), ModSet.Find(mod, null));
-        Assert.Null(ModSet.Find("other-mod", game));
+        Assert.Equal(Path.GetFullPath(mod), ModFolders.Find("my-mod", game));
+        Assert.Equal(Path.GetFullPath(mod), ModFolders.Find(mod, null));
+        Assert.Null(ModFolders.Find("other-mod", game));
     }
 
     // ---- running the example ----
@@ -289,7 +385,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var state = CardHarness.NewGame();
         state.PreviousCard = 2;
         state.Party.Purse = Core.Economy.Money.From(1, 2, 3);
@@ -307,7 +403,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var state = CardHarness.NewGame();
         var hour = state.Date.Hour;
         var purse = state.Party.Purse;
@@ -325,7 +421,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var state = CardHarness.NewGame();
         state.Party.Purse = Core.Economy.Money.Zero;
         var (next, screen) = RunCard(set.Cards.Find(366)!, state, option: 0);
@@ -342,7 +438,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var state = CardHarness.NewGame();
         state.PreviousCard = 366;
         state.Random.Seed(1);
@@ -364,7 +460,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var met = 0;
         for (uint seed = 1; seed <= 40; seed++)
         {
@@ -392,7 +488,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         foreach (var texts in set.Texts)
         {
             assets.AddMessages(texts);
@@ -421,7 +517,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var folder = new SaveFolder(TempCopies.Create("darklands-modsave-")) { Mods = ModsOf(set) };
         var state = CardHarness.NewGame();
         state.CurrentCard = 366;
@@ -471,7 +567,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var path = TempCopies.Create("darklands-modsave-");
         var state = CardHarness.NewGame();
         state.CurrentCard = 366;
@@ -515,7 +611,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var path = TempCopies.Create("darklands-modsave-");
         var state = CardHarness.NewGame();
         state.CurrentCard = 366;
@@ -559,7 +655,7 @@ public sealed class ModCardTests
         {
             return;
         }
-        var set = ModSet.Load([ExampleMod()]);
+        var set = LoadMods(ExampleMod());
         var path = TempCopies.Create("darklands-modsave-");
         var folder = new SaveFolder(path) { Mods = ModsOf(set) };
         var name = folder.Save(CardHarness.NewGame(), "modded", true, true);
@@ -581,5 +677,35 @@ public sealed class ModCardTests
         var (sav, _) = OriginalSaves.Write(state, "x", true, true, savedCardOf: n => n == 366 ? 2 : n == 367 ? CardDispatcher.OverlandMap : null);
         Assert.Equal(2, HeaderCards(sav)[0]);
         Assert.Equal(CardDispatcher.OverlandMap, HeaderCards(sav)[3]);
+    }
+
+    [Fact]
+    public void AModdedGameNeverWritesACardAbove365EvenOneNoModKnows()
+    {
+        if (!CardHarness.Available)
+        {
+            return;
+        }
+        // a number nothing defines (the "not in the card table" card, saved while its message is up)
+        var state = CardHarness.NewGame();
+        state.CurrentCard = 999;
+        state.SavedCard = 366;
+        var (modded, _) = OriginalSaves.Write(state, "x", true, true, savedCardOf: n => n == 366 ? 2 : null);
+        Assert.Equal(OriginalSaves.MapCard, HeaderCards(modded)[0]);
+        Assert.Equal(2, HeaderCards(modded)[1]);
+        Assert.All(HeaderCards(modded), n => Assert.InRange(n, 0, OriginalSaves.LastOriginalCard));
+        // Classic writes every word as it is, as the original does
+        var (classic, _) = OriginalSaves.Write(state, "x", true, true);
+        Assert.Equal(999, HeaderCards(classic)[0]);
+        Assert.Equal(366, HeaderCards(classic)[1]);
+
+        // through the save folder of a modded game: the .SAV names the map, the companion file keeps 999
+        var set = LoadMods(ExampleMod());
+        var folder = new SaveFolder(TempCopies.Create("darklands-modsave-")) { Mods = ModsOf(set) };
+        var name = folder.Save(state, "unknown card", true, true);
+        Assert.All(HeaderCards(File.ReadAllBytes(Path.Combine(folder.Path, name.ToUpperInvariant()))), n => Assert.InRange(n, 0, OriginalSaves.LastOriginalCard));
+        Assert.Contains("\"current\": 999", File.ReadAllText(Path.Combine(folder.Path, ModdedSaves.CompanionOf(name))));
+        // read back with the mod: 999 is no card it has, so the .SAV's map stays
+        Assert.Equal(OriginalSaves.MapCard, folder.Load(name, CardHarness.World!).State.CurrentCard);
     }
 }
