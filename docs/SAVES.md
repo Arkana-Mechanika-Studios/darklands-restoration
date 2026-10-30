@@ -190,8 +190,19 @@ extra content (random generator state, bankers' standings, the working city reco
 what the original does not save, and keeping a second format would mean keeping two mappings
 in step. Saved games are inspected with `SaveFile` / `OriginalSaves` in tests.
 
+## Modded games: the companion file
+
+A game played with mods ([MODS.md](MODS.md)) is saved in the same format: a mod's new card (a number above 365) is never
+written into the header; its `savesAs`, one of the game's cards, takes its place (`OriginalSaves.Write`, `savedCardOf`; any
+other number above 365 becomes the map, 12), so the original game loads the file. Without mods every word is written as it is. `ModdedSaves` writes `DKSAVEn.MODS.JSON` beside it: the mods, the real card numbers of
++82, +86, +88, +8A and the SHA-256 of the .SAV (a companion file whose .SAV was replaced is ignored). Loaded without its
+mods, the game goes on from the header's cards after a message naming them. A game never played with a mod writes no
+companion file.
+
 ## Tests
 
+* `ModCardTests` (Cards.Tests): the companion file written, read back with and without the mod, ignored when stale or
+  broken, deleted with its save; no card above 365 in a modded .SAV; a Classic save unchanged.
 * `OriginalSaveTests` (Persistence.Tests): every .SAV of the player's folder (copied to a
   temporary folder) through `SaveFile` and through `OriginalSaves.Read`/`Write` byte for byte,
   with its .BSV; every .BSV explodes and agrees with its header; header fields of DKSAVE12; a

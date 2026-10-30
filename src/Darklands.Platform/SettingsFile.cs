@@ -155,6 +155,7 @@ public static class SettingsFile
                     case "savesFolder": settings.SavesFolder = FilePath(name, value); break;
                     case "textFont": settings.TextFont = FilePath(name, value); break;
                     case "screenshotsFolder": settings.ScreenshotsFolder = FilePath(name, value); break;
+                    case "mods": settings.Mods = Words(name, value)?.Select(Environment.ExpandEnvironmentVariables).ToList() ?? settings.Mods; break;
                     case "display": Section(name, value, settings, Display); break;
                     case "sound": Section(name, value, settings, Sound); break;
                     case "startup": Section(name, value, settings, Startup); break;
@@ -515,6 +516,12 @@ public static class SettingsFile
 
           // Where screenshots go. "": the current folder. Command line: --screenshots <folder>.
           "screenshotsFolder": "",
+
+          // Mods to play with (new cards and encounters, docs/MODS.md), a list: a mod's folder, or the name of a folder in a
+          // "mods" folder next to the program, in the game folder or next to it, e.g. ["wayside-shrine"]. Not part of the
+          // original: a game with a mod plays differently and its saves get a companion file (DKSAVEn.MODS.JSON); the .SAV stays
+          // one the original game loads. []: none, the game's own cards. Command line: --mod <folder or name> (once per mod).
+          "mods": [],
 
           // Settings of the SDL2 host only.
           "sdl": {

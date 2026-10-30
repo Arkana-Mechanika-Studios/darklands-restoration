@@ -35,6 +35,9 @@ public sealed class GameSettings
     /// <summary>A folder of replacement music and battle effects (an audio pack; not part of the game). Null: the game's own sound.</summary>
     public string? AudioPack { get; set; }
 
+    /// <summary>The mods to play with (docs/MODS.md): mod folders, or names of folders in a mods folder. Null or empty: none (the game's own cards).</summary>
+    public List<string>? Mods { get; set; }
+
     /// <summary>Values that replace the ones of the game's CONFIG.DRK (null: CONFIG.DRK as it is).</summary>
     public ConfigDrkSettings? ConfigDrk { get; set; }
 

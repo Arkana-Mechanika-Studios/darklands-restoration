@@ -99,6 +99,23 @@ public class SettingsParsingTests
     }
 
     [Fact]
+    public void TheModsAreAListAndTheCommandLineReplacesIt()
+    {
+        var load = SettingsFile.Parse("""{ "mods": ["wayside-shrine", "D:/mods/other", ""] }""");
+        Assert.Empty(load.Problems);
+        var fromFile = ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, load.Settings);
+        Assert.Equal(["wayside-shrine", "D:/mods/other"], fromFile.Mods);
+        Assert.False(fromFile.ModsFromCommandLine);
+        var cli = new CommandLineOptions { Mods = ["mine"] };
+        var fromCli = ResolvedSettings.Resolve(cli, _ => null, load.Settings);
+        Assert.Equal(["mine"], fromCli.Mods);
+        Assert.True(fromCli.ModsFromCommandLine);
+        Assert.Equal("--mod", cli.Overrides(_ => null)["mods"]);
+        Assert.Empty(ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, new GameSettings()).Mods);
+        Assert.Contains(SettingsFile.Parse("""{ "mods": 5 }""").Problems, p => p.Contains("mods"));
+    }
+
+    [Fact]
     public void ResolutionAndCommandLineAsText()
     {
         var load = SettingsFile.Parse("""{ "display": { "resolution": "1440x800" }, "startup": { "commandLine": "-Q -O" } }""");
@@ -428,11 +445,11 @@ public class SettingsTemplateTests
     public void TheTemplateDocumentsEveryKey()
     {
         foreach (var key in new[] { "gameFolder", "savesFolder", "scale", "resolution", "fullscreen", "hdPack", "cleanDrawing", "card", "mt32Roms", "configDrk", "banner", "intro",
-                     "commandLine", "textFont", "screenshotsFolder", "library", "display", "sound", "startup", "sdl" })
+                     "commandLine", "textFont", "screenshotsFolder", "mods", "library", "display", "sound", "startup", "sdl" })
         {
             Assert.Contains($"\"{key}\":", SettingsFile.Template);
         }
-        foreach (var option in new[] { "--saves", "--scale", "--resolution", "--fullscreen", "--hd-pack", "--clean-drawing", "--sound", "--mt32-roms", "--no-banner", "--no-intro", "--text-font", "--screenshots", "--sdl" })
+        foreach (var option in new[] { "--saves", "--scale", "--resolution", "--fullscreen", "--hd-pack", "--clean-drawing", "--sound", "--mt32-roms", "--no-banner", "--no-intro", "--text-font", "--screenshots", "--mod", "--sdl" })
         {
             Assert.Contains(option, SettingsFile.Template);
         }

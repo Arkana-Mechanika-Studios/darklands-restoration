@@ -11,7 +11,7 @@ using Darklands.Rendering;
 //   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console]
-//                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
+//                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--mod folder-or-name ...] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
 //                      [--version] [--sound-test] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
 // --sound-test checks the sound without the game window: SDL's audio driver and devices, beeps through each way of feeding SDL,
 // then a little of the game's
@@ -83,6 +83,12 @@ if (writeSettings is not null)
 var setup = arguments.Remove("--setup");
 var noLauncher = arguments.Remove("--no-launcher");
 var soundCheck = arguments.Remove("--sound-test");
+// --mod <folder or name>, once per mod (docs/MODS.md): replaces the settings file's mods
+var mods = new List<string>();
+while (Option("--mod") is { } mod)
+{
+    mods.Add(mod);
+}
 var cli = new CommandLineOptions
 {
     SdlLibrary = Option("--sdl"),
@@ -101,6 +107,7 @@ var cli = new CommandLineOptions
     HdPack = Option("--hd-pack"),
     CleanDrawing = arguments.Remove("--clean-drawing"),
     NoConsole = arguments.Remove("--no-console"),
+    Mods = mods,
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
 };
@@ -191,7 +198,7 @@ while (true)
     var start = new StartProgress();
     try
     {
-        return Play(host, settings, folder!, version, start);
+        return Play(host, settings, folder!, version, start, settingsPath);
     }
     catch (Exception e) when (!start.Running && !noLauncher)
     {
@@ -216,7 +223,7 @@ ResolvedSettings? Resolve(GameSettings file)
 }
 
 // The game in the window, with its sound, console and saves; returns the program's exit code.
-static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start)
+static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath)
 {
     host.Renderer = null;
     if (settings.HdPack is { } hdPack)
@@ -254,6 +261,25 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     if (audioTrace is not null)
     {
         game.Ui.Trace = audioTrace.WriteLine;
+    }
+    // the mods (docs/MODS.md): --mod or the settings file's "mods"; none: the game's own cards (Classic)
+    game.Log = Console.Error.WriteLine;
+    if (settings.Mods.Count > 0)
+    {
+        var modBase = settings.ModsFromCommandLine || settingsPath is null ? Environment.CurrentDirectory : Path.GetDirectoryName(Path.GetFullPath(settingsPath));
+        var modFolders = new List<string>();
+        foreach (var mod in settings.Mods)
+        {
+            if (ModFolders.Find(mod, files.Root, modBase) is { } modFolder)
+            {
+                modFolders.Add(modFolder);
+            }
+            else
+            {
+                Console.Error.WriteLine($"mod {mod}: no folder with a mod.json found (as given, or in a mods folder next to the program, in the game folder or next to it)");
+            }
+        }
+        game.Mods = Darklands.Simulation.Mods.ModSet.Load(modFolders.Select(ModFolders.Read), Console.Error.WriteLine, game.Ui.Assets.IsGameMessageFile);
     }
     using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version) : null;
     host.Console = console;

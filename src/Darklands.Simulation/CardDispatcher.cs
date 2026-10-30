@@ -17,21 +17,27 @@ public sealed class CardDispatcher
     public const int EndOfGame = 0x62;
     public const int QuitGame = -0x63;
 
-    private readonly Dictionary<int, Card> _cards;
+    private readonly CardRegistry _cards;
 
+    /// <summary>The game's own cards only (the scripts of the assemblies, default Darklands.Cards): Classic.</summary>
     public CardDispatcher(params Assembly[] scriptAssemblies)
+        : this(new CardRegistry(scriptAssemblies))
     {
-        _cards = (scriptAssemblies.Length > 0 ? scriptAssemblies : [typeof(Card).Assembly])
-            .SelectMany(a => a.GetTypes())
-            .Where(t => t.IsSubclassOf(typeof(Card)) && !t.IsAbstract && t.GetConstructor(Type.EmptyTypes) is not null)
-            .Select(t => (Card)Activator.CreateInstance(t)!)
-            .ToDictionary(c => c.Number);
     }
+
+    /// <summary>The cards of a registry: the game's, and those mods registered on top of them (CardRegistry has the precedence).</summary>
+    public CardDispatcher(CardRegistry cards)
+    {
+        _cards = cards;
+    }
+
+    /// <summary>The cards this dispatcher runs.</summary>
+    public CardRegistry Cards => _cards;
 
     /// <summary>How many cards have scripts.</summary>
     public int ScriptedCount => _cards.Count;
 
-    public bool HasScript(int number) => _cards.ContainsKey(number);
+    public bool HasScript(int number) => _cards.Contains(number);
 
     /// <summary>Runs one card and moves the game on to the next one.</summary>
     // orig: one pass of the do/while in root 03A1:000A, the part that is not a battle
@@ -46,7 +52,7 @@ public sealed class CardDispatcher
     {
         var state = c.State;
         var number = state.CurrentCard;
-        var card = _cards.TryGetValue(number, out var scripted) ? scripted : new UnknownCard(number);
+        var card = _cards.Find(number) ?? new UnknownCard(number);
         var next = card.Run(c);
         if (!IsBattle(next))
         {

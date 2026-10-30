@@ -114,7 +114,37 @@ public sealed class MessageBox(GameUi ui)
         ui.Present();
     }
 
+    /// <summary>A few lines, one box each from row 0x32 down, until a key is pressed; then what they covered comes back.</summary>
+    // DIVERGENCE: no original: the restoration's own notice (a saved game whose mods are not loaded, DarklandsGame.LoadSavedGame),
+    //   drawn with the pause box's boxes and read the same way (any key, no hot keys).
+    public void Notice(IReadOnlyList<string> lines)
+    {
+        // the boxes stop above the screen's bottom: at most six lines
+        if (lines.Count > MaxNoticeLines)
+        {
+            lines = [.. lines.Take(MaxNoticeLines - 1), $"... and {lines.Count - MaxNoticeLines + 1} more"];
+        }
+        var saved = new List<SavedRegion>();
+        var row = 0x32;
+        foreach (var line in lines)
+        {
+            saved.Add(Draw(line, row));
+            row += ui.CardWindowText.LineHeight + 9;
+        }
+        while (ui.PollKeyOnly() == 0)
+        {
+        }
+        for (var i = saved.Count - 1; i >= 0; i--)
+        {
+            ui.Canvas.Restore(saved[i]);
+        }
+        ui.Present();
+    }
+
     private const int Centred = -1;
+
+    /// <summary>The most boxes a notice draws (from row 0x32 down they fit above row 200).</summary>
+    public const int MaxNoticeLines = 6;
 
     /// <summary>Frames <paramref name="text"/> at text row <paramref name="y"/> (−1: mid-screen) and returns what it covered.</summary>
     // orig: text_box(w, y, save, text, dst, &r): ty = y (or -(font_height / 2 - 100)); tw = text_pixel_width; bw = tw + 10; bh = font_height + 7; tx = (320 - tw - w->w) / 2; bx = tx - 5; by = ty - 4; draw_frame_box(w, bx, by, bw, bh, w->f0e) then draw_text(w, tx, ty, text)

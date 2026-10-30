@@ -10,7 +10,11 @@ using static Darklands.Persistence.RecordBytes;
 namespace Darklands.Persistence;
 
 /// <summary>A saved game read back: the game, and the options and comment it was saved with.</summary>
-public sealed record LoadedGame(GameState State, bool Music, bool SoundEffects, string Comment);
+public sealed record LoadedGame(GameState State, bool Music, bool SoundEffects, string Comment)
+{
+    /// <summary>What the saved game's companion file (a game saved with mods) did; <see cref="ModdedLoad.None"/> without one.</summary>
+    public ModdedLoad Mods { get; init; } = ModdedLoad.None;
+}
 
 /// <summary>
 /// The original's saved games (SAVES\DKSAVEn.SAV and its battle file .BSV) ↔ the game state. Every
@@ -47,6 +51,15 @@ public static class OriginalSaves
     private const int SavedCardAt = 0x86;
     private const int SavedCard2At = 0x88;
     private const int PreviousCardAt = 0x8A;
+
+    /// <summary>The highest card number of the game's table: the original save format holds no other (mods' cards go to a companion file).</summary>
+    public const int LastOriginalCard = 365;
+
+    /// <summary>The map's card (0x0C): what a modded game's save names for a card number above 365 that no mod knows.</summary>
+    public const int MapCard = 0x0C;
+
+    /// <summary>The header offsets of the card, the two remembered cards and the previous card (ModdedSaves.CardsOf's order).</summary>
+    public static readonly int[] CardFieldOffsets = [CardAt, SavedCardAt, SavedCard2At, PreviousCardAt];
     private const int BankNotesAt = 0x8C;
     private const int PhilosophersStoneAt = 0x92;
     private const int HirelingsAt = 0x94;
@@ -280,9 +293,18 @@ public static class OriginalSaves
     // DIVERGENCE: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.
     // C: the .BSV: the battle-state save R003+0x00DC writes the program's battle file (GameState.BattleFile: the battle's variables and the last
     // battlefield's levels and files); before any battle or battle file (a new game) the variables are the program's zeros.
+    // DIVERGENCE: no original: in a game with mods (savedCardOf not null) a number above LastOriginalCard is never written: a mod's new
+    //   card is written as the game's card savedCardOf gives for it, any other as the map (MapCard), so the original game loads every
+    //   file written here (ModdedSaves keeps the real number). Without mods (savedCardOf null) every number is written as it is, as the
+    //   original writes it (a garbled file read back keeps its words).
     public static (byte[] Sav, byte[] Bsv) Write(GameState state, string? comment = null, bool music = true, bool soundEffects = true,
-        Core.Battles.Battle? inBattle = null)
+        Core.Battles.Battle? inBattle = null, Func<int, int?>? savedCardOf = null)
     {
+        int Card(int number) =>
+            number <= LastOriginalCard || savedCardOf is null ? number
+            : savedCardOf(number) is { } saved && saved is >= 0 and <= LastOriginalCard ? saved
+            : MapCard;
+        var cards = (Card(state.CurrentCard), Card(state.SavedCard), Card(state.SavedCard2), Card(state.PreviousCard));
         if (inBattle is not null)
         {
             state.Events.Reload();
@@ -306,10 +328,10 @@ public static class OriginalSaves
         PutWord(h, LocationAt, state.CurrentLocation);
         PutWord(h, MapXAt, state.MapPosition.X);
         PutWord(h, MapYAt, state.MapPosition.Y);
-        PutWord(h, CardAt, state.CurrentCard);
-        PutWord(h, SavedCardAt, state.SavedCard);
-        PutWord(h, SavedCard2At, state.SavedCard2);
-        PutWord(h, PreviousCardAt, state.PreviousCard);
+        PutWord(h, CardAt, cards.Item1);
+        PutWord(h, SavedCardAt, cards.Item2);
+        PutWord(h, SavedCard2At, cards.Item3);
+        PutWord(h, PreviousCardAt, cards.Item4);
         PutMoney(h, BankNotesAt, state.Party.BankNotes);
         PutWord(h, PhilosophersStoneAt, state.Party.PhilosophersStone);
         // C: DS:A67C, the cached hireling count (GameState.HirelingCount).

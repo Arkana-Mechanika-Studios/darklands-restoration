@@ -69,6 +69,13 @@ row (or drop the folder on the launcher). The release comes with a small example
 test tones). How to make your own, with the names of all the game's music and sounds: [`docs/PACKS.md`](docs/PACKS.md),
 also beside the program and linked from the launcher ("how to make a pack").
 
+## Mods
+
+A mod adds new cards (scenes with a text and choices) or replaces one of the game's: unlike a pack it changes the game,
+so its saved games are marked modded (a companion file beside the `.SAV`, which itself stays loadable by the original
+game). Mods are played only when named: `--mod <name>` or `"mods"` in the settings. The release comes with a small
+example, `mods/wayside-shrine`; how to write one, card by card: [`docs/MODS.md`](docs/MODS.md), also beside the program.
+
 ## Settings
 
 `darklands.settings.json`, next to the program, is commented and shows every default. The ones you may
@@ -81,6 +88,7 @@ want:
 | `sound.card`, `sound.mt32Roms` | the sound card; where the MT-32 ROMs are |
 | `display.hdPack`, `sound.audioPack` | a picture pack, a sound pack (`docs/PACKS.md`) |
 | `display.cleanDrawing` | false: drawn as the 1992 game, oddities included; true: the cleaner drawing of 0.9.5 |
+| `mods` | mods to play with (`docs/MODS.md`); none by default |
 | `startup.banner`, `startup.intro` | skip the banner or the opening |
 
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
