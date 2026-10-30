@@ -473,7 +473,7 @@ public sealed class DarklandsGame
     private void Play(GameState state)
     {
         CardContext? context = null;
-        var panel = new PartyPanel(_ui.Assets);
+        var panel = new PartyPanel(_ui);
         var screen = new CardScreen(_ui, () => context!, panel);
         context = new CardContext(state, World, screen);
         context.PersonalNames = _personalNames ??= new TablePersonalNames(Content.Formats.Characters.PersonalNamesDecoder.Decode(_ui.Assets.Files.Read("DARKLAND.EXE")));

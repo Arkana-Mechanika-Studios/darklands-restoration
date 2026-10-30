@@ -396,4 +396,109 @@ public sealed class ScreenDrawingLeadsTests
         options.Apply(ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, file));
         Assert.Equal(clean, options.CleanDrawing);
     }
+
+    // orig: the order letter root 0000:18FA: while DS:907A == 1 (the loot screen over a won battle too) each member's row shows its order
+    // letter at (6, 0x28 * i + 0x1F) in the name's colour; the panel rows (root 0000:1716) copies 0x26 lines of a row to the screen, so a dead member's
+    // hatching stops above the frame's bottom (vis10 session D-56a675: the loot page)
+    [Fact]
+    public void ThePanelShowsTheOrderLettersWhileABattleRunsAndClipsTheHatching()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost();
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(WorldData.Load(files), 7);
+        state.Party.Members[0].Status = CharacterStatus.Dead;
+        var panel = new PartyPanel(ui);
+        var text = new Darklands.Presentation.Graphics.TextPainter(ui.Assets.Font(1));
+        byte[] Drawn()
+        {
+            ui.Canvas.Fill(0, 0, Screen.Width, Screen.Height, 0);
+            panel.Draw(ui.Canvas, state.Party);
+            return [.. ui.Canvas.Screen.Pixels];
+        }
+        var outside = Drawn();
+        ui.BattleStatusLetter = _ => '-';
+        var inBattle = Drawn();
+        for (var i = 1; i < state.Party.Members.Count; i++)
+        {
+            var color = state.Party.LeaderIndex == i ? (byte)0x0E : (byte)0x0F;
+            var shown = new Screen();
+            outside.CopyTo(shown.Pixels, 0);
+            text.Draw(new Darklands.Presentation.Graphics.Canvas(shown), 6, i * PartyPanel.RowHeight + 0x1F, "-", color);
+            Assert.Equal(shown.Pixels.Skip(i * PartyPanel.RowHeight * Screen.Width).Take(PartyPanel.RowHeight * Screen.Width),
+                inBattle.Skip(i * PartyPanel.RowHeight * Screen.Width).Take(PartyPanel.RowHeight * Screen.Width));
+        }
+        // the dead member's hatching: nothing grey on the row's line 0x26 (y 0x27), the frame's bottom
+        Assert.DoesNotContain(Enumerable.Range(3, 0x36), x => outside[0x27 * Screen.Width + x] == 7);
+    }
+
+    // orig: the text box (R037+0x43E6) draws TEXTBACK.PIC with the picture draw (R037+0x4452, root 047C:05A5): its colour-0 pixels leave the screen behind
+    [Fact]
+    public void TheTextBoxsPictureLeavesTheScreenBehindItsColourZero()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost { KeepFrames = true };
+        var ui = new GameUi(host, new GameAssets(files));
+        ui.Options.CleanDrawing = true;
+        ui.Canvas.Fill(0, 0, Screen.Width, Screen.Height, 3);
+        host.Keys.Enqueue(Keys.Enter);
+        new TextInputBox(ui).Ask("Save Game Comment:", 10, "Darklands");
+        var box = ui.Assets.Picture("textback").Image;
+        var during = host.Frames.First(f => f[0x50 * Screen.Width + 0x6E + box.Width / 2] != 3);
+        var zeros = 0;
+        for (var y = 0; y < box.Height; y++)
+        {
+            for (var x = 0; x < box.Width; x++)
+            {
+                if (box.Pixels[y * box.Width + x] == 0 && 0x6E + x < Screen.Width)
+                {
+                    zeros++;
+                    Assert.Equal(3, during[(0x50 + y) * Screen.Width + 0x6E + x]);
+                }
+            }
+        }
+        Assert.True(zeros > 0);
+    }
+
+    // orig: the text box R037+0x43E6: colour 0 -> 5 in 0x9B columns (R037+0x440F), the save 0xA0 wide (R037+0x442C), the saved rectangle drawn
+    // back with colour 0 transparent (R037+0x451A, root 047C:05A5), 5 -> 0 in the 0x9B columns (R037+0x452C): the box's last five columns stay
+    // over black (vis10 session D-b797f7: x 265..267, y 83..129 after the save's comment); with CleanDrawing the screen comes back as it was
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheTextBoxLeavesItsLastColumnsOverBlackUnlessDrawingIsClean(bool clean)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost();
+        var ui = new GameUi(host, new GameAssets(files));
+        ui.Options.CleanDrawing = clean;
+        ui.Canvas.Fill(0, 0, Screen.Width, Screen.Height, 0);
+        ui.Canvas.Fill(0x80, 0x60, 4, 4, 5);
+        host.Keys.Enqueue(Keys.Enter);
+        new TextInputBox(ui).Ask("Save Game Comment:", 10, "Darklands");
+        var pixels = ui.Canvas.Screen.Pixels;
+        byte At(int x, int y) => pixels[y * Screen.Width + x];
+        var strip = Enumerable.Range(0x50, 0x32).Sum(y => Enumerable.Range(0x6E + 0x9B, 5).Count(x => At(x, y) != 0));
+        var rest = Enumerable.Range(0, Screen.Height).Sum(y => Enumerable.Range(0, Screen.Width).Count(x => At(x, y) != 0)) - strip;
+        if (clean)
+        {
+            Assert.Equal(0, strip);
+            Assert.Equal(16, rest);
+            Assert.Equal(5, At(0x80, 0x60));
+        }
+        else
+        {
+            Assert.True(strip > 40, $"{strip} pixels of the box left");
+            Assert.Equal(0, rest);
+        }
+    }
 }

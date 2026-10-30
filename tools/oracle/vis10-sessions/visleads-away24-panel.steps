@@ -1,0 +1,14 @@
+# vis10 visleads: the Footpads card 0x24 from the synthetic save away24 (slot 0 away): the battle panel's row of the away member, "????" (root 0000:1A9C)
+key:t
+wait:5
+key:l
+wait:300
+shot:loaded
+key:enter
+wait:300
+shot:afterenter
+key:space
+bwait:20
+shot:b20
+bwait:200
+shot:b220

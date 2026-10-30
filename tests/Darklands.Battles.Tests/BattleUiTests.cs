@@ -93,6 +93,53 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
+    /// The loot screen over a won fight: the panel rows are drawn again before it (R014+0xE5AF, 0x26 lines a row, the order letters included)
+    /// and R040 draws its picture right of the party column only (it draws the panel for D alone, R040+0x0D8B): the first frame shows that
+    /// column, and a dead member's row keeps the battle's hatching on its last line (vis10 session D-56a675).
+    /// </summary>
+    [Fact]
+    public void TheLootScreenKeepsTheBattlesPartyColumn()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var steps = new List<string> { "wait:5", "key:space" };
+        for (var k = 0; k < 30; k++)
+        {
+            steps.Add("wait:600");
+            steps.Add("key:esc");
+        }
+        byte[]? column = null;
+        var first = -1;
+        Session? session = null;
+        session = new Session(files, new BattleRequest(0x11, 60256, [(18, 0, 1), (-1, 0, 0), (-1, 0, 0)]), loot: (screens, items, money) =>
+        {
+            column ??= [.. session!.Ui.Canvas.Screen.Pixels];
+            first = first < 0 ? session!.Frames.Count : first;
+            screens.Loot(items, money);
+        });
+        session.State.Party.Members[3].Status = Darklands.Core.Characters.CharacterStatus.Dead;
+        Assert.Equal(0, session.Fight(steps));
+        Assert.NotNull(column);
+        var shown = session.Frames[first].Pixels;
+        // the dead member's row: its line 0x26 is the battle's (the hatching down to it), the lines above it were drawn again with the hatching
+        var battle = session.Frames[first - 1].Pixels;
+        var line = (3 * PartyPanel.RowHeight + 1 + 0x26) * Screen.Width;
+        Assert.True(battle.AsSpan(line + 3, 0x36).SequenceEqual(shown.AsSpan(line + 3, 0x36)), "the dead member's last line is not the battle's");
+        Assert.Contains(Enumerable.Range(3, 0x36), x => shown[line + x] == 7);
+        for (var y = 0; y < Screen.Height; y++)
+        {
+            for (var x = 0; x < PartyPanel.Width; x++)
+            {
+                Assert.True(column[y * Screen.Width + x] == shown[y * Screen.Width + x], $"the party column differs at ({x},{y})");
+            }
+        }
+        // the loot picture is there right of the column
+        Assert.False(column.AsSpan(PartyPanel.Width).SequenceEqual(shown.AsSpan(PartyPanel.Width)));
+    }
+
+    /// <summary>
     /// A won fight: the loot screen, then the battle view again in the battle's colours (palette-reload, floor-view-paint, fight-draw), the
     /// "BattleResults - victory" box over it, the box taken away. The picture of before the battle never comes back in the battle's colours.
     /// </summary>
@@ -491,6 +538,100 @@ public sealed class BattleUiTests
         Assert.False(shown.Pixels.AsSpan().SequenceEqual(run.Frames[boxed].Pixels), "the pointer is drawn while the box waits");
     }
 
+    /// <summary>
+    /// The battle's pointer is the mouse driver's: when the bar comes up (and while its Difficulty box waits) the battle's last pointer does
+    /// not stay in the picture where the mouse was before the right button (root 0000:0000 swaps the driver's shape, R014's frames stop).
+    /// </summary>
+    [Fact]
+    public void TheBattlesPointerDoesNotStayUnderTheBar()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5", "move:150,120", "wait:5");
+        run.Recording = true;
+        run.Play("rdown:79,4", "wait:5", "move:99,32", "wait:25", "move:189,48", "wait:25", "rup", "wait:20");
+        // the frames from the bar's and the box's time (the first is the battle's last pass, presented as the button goes down)
+        var under = run.Frames.Skip(1).Take(20).ToList();
+        Assert.NotEmpty(under);
+        var bad = new List<string>();
+        foreach (var image in new[] { BattleImages.NormalPointer, BattleImages.OrderPointer })
+        {
+            var sprite = run.Assets.Images[image];
+            foreach (var f in under)
+            {
+                var shown = new Screen();
+                f.Pixels.CopyTo(shown.Pixels, 0);
+                Darklands.Presentation.Graphics.SpriteDrawing.Draw(new Darklands.Presentation.Graphics.Canvas(shown), sprite, 150, 120);
+                if (shown.Pixels.AsSpan().SequenceEqual(f.Pixels))
+                {
+                    bad.Add($"{image}:{under.IndexOf(f)}");
+                }
+            }
+        }
+        Assert.True(bad.Count == 0, "the battle's pointer stays at (150,120) under the bar " + string.Join(" ", bad));
+    }
+
+    /// <summary>A hot key's screen (Alt-S: the save's comment dialog) is drawn over a picture without the battle's pointer (vis10 session D-b797f7).</summary>
+    [Fact]
+    public void AHotKeysScreenIsDrawnWithoutTheBattlesPointer()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        byte[]? picture = null;
+        run.Screens.Save = _ => picture = (byte[])run.Ui.Canvas.Screen.Pixels.Clone();
+        run.Play("wait:10", "key:space", "wait:5", "move:150,120", "wait:5");
+        // C: DS:9934 offers the save in a battle kept in the game (this test fight is not): offered here
+        run.Screen.Tactics!.Menus.SaveGame = 1;
+        run.Play("key:alts", "wait:5");
+        Assert.NotNull(picture);
+        foreach (var image in new[] { BattleImages.NormalPointer, BattleImages.OrderPointer })
+        {
+            var shown = new Screen();
+            picture.CopyTo(shown.Pixels, 0);
+            Darklands.Presentation.Graphics.SpriteDrawing.Draw(new Darklands.Presentation.Graphics.Canvas(shown), run.Assets.Images[image], 150, 120);
+            Assert.False(shown.Pixels.AsSpan().SequenceEqual(picture), $"the battle's pointer ({image}) is in the picture at (150,120)");
+        }
+    }
+
+    /// <summary>
+    /// The battle's party panel as the panel rows (root 0000:1716) draws it: each name at (4, 0x28 * i + 2); an away member's row holds the bars' (root 0000:1A9C)
+    /// "???? ???? ????" instead of the bars and no order letter; a dead member's row is hatched; the order letter is in the name's colour (vis10 sessions
+    /// tleads-battle-difficulty, the synthetic save DKSAVE0-away24).
+    /// </summary>
+    [Fact]
+    public void TheBattlesPanelDrawsTheNamesAtTheirRowAndAnAwayMembersQuestionMarks()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.State.Party.Members[1].Status = Darklands.Core.Characters.CharacterStatus.Away;
+        run.State.Party.Members[2].Status = Darklands.Core.Characters.CharacterStatus.Dead;
+        run.Play("wait:10");
+        var frame = run.LastFrame!;
+        var text = new Darklands.Presentation.Graphics.TextPainter(run.Ui.Assets.Font(1));
+        bool Unchanged(Action<Darklands.Presentation.Graphics.Canvas> draw)
+        {
+            var shown = new Screen();
+            frame.CopyTo(shown.Pixels, 0);
+            draw(new Darklands.Presentation.Graphics.Canvas(shown));
+            return shown.Pixels.AsSpan().SequenceEqual(frame);
+        }
+        var name = run.State.Party.Members[0].ShortName;
+        Assert.Contains(new byte[] { 0x0E, 0x0F, 7 }, c => Unchanged(canvas => text.Draw(canvas, 4, 2, name, c)));
+        Assert.True(Unchanged(canvas => PartyPanel.DrawUnknownBars(canvas, text, 1)), "the away member's row has no question marks");
+        // no letter for the away member: its row background at (6, 0x28 + 0x1F) is not overdrawn by a '-'
+        Assert.False(Unchanged(canvas => text.Draw(canvas, 6, 0x28 + 0x1F, "-", 7)), "the away member's row has an order letter");
+        Assert.True(Unchanged(canvas => PartyPanel.DrawHatching(canvas, 2 * PartyPanel.RowHeight + 1, 0x27)), "the dead member's row is not hatched");
+    }
+
     /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
     internal sealed class Session : IDisposable
     {
@@ -507,7 +648,7 @@ public sealed class BattleUiTests
             _state = Simulation.NewGame.Quickstart(WorldData.Load(files), 1, () => 1);
             var world = WorldData.Load(files);
             _state.Data = world;
-            var lootScreens = new GameScreens(Ui, new PartyPanel(Ui.Assets), _state, new NoScreens());
+            var lootScreens = new GameScreens(Ui, new PartyPanel(Ui), _state, new NoScreens());
             _screens = new BattleScreens(Ui, () => _state, loot is null ? null : (items, money) => loot(lootScreens, items, money));
             if (sheet is not null)
             {
@@ -529,6 +670,8 @@ public sealed class BattleUiTests
         public GameUi Ui { get; }
 
         public BattleAssets Assets { get; }
+
+        public BattleScreens Screens => _screens;
 
         public BattleScreen Screen => _screens.Current!;
 
@@ -735,6 +878,7 @@ public sealed class BattleUiTests
                         "esc" => Keys.Escape,
                         "f10" => Keys.F10,
                         "f1" => Keys.F1,
+                        "alts" => Keys.AltS,
                         "down" => Keys.Down,
                         "up" => Keys.Up,
                         "right" => Keys.Right,

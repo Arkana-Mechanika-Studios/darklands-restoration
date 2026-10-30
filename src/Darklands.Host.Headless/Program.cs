@@ -220,7 +220,7 @@ if (battleStep is not null)
             m.Pack.Add(new Darklands.Core.Characters.ItemStack(g[0], (byte)item.Type, g[1], g[2], (byte)item.Weight));
         }
     }
-    var panel = new PartyPanel(ui.Assets);
+    var panel = new PartyPanel(ui);
     var sheets = new GameScreens2(ui, panel, state, world, new NoGameScreens());
     // the loot screen of a won battle is the game's (Esc or L leaves it)
     var lootScreens = new GameScreens(ui, panel, state, new NoGameScreens());

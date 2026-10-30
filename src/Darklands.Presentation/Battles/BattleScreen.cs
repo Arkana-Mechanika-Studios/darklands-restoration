@@ -204,6 +204,7 @@ public sealed class BattleScreen : ITacticalView
         _ui.PointerVisible = false;
         _hotKey = _ui.GameKey;
         _ui.GameKey = BattleHotKey;
+        _ui.BattleStatusLetter = StatusLetter;
         // the battle's menu bar (DS:9419 with the Orders and Attack menus) is the one the game's waits run while the battle lasts
         var menuBar = _ui.MenuBar;
         _ui.MenuBar = _menuBar;
@@ -388,6 +389,7 @@ public sealed class BattleScreen : ITacticalView
             _ui.PointerVisible = true;
             _ui.GameKey = _hotKey;
             _ui.MenuBar = menuBar;
+            _ui.BattleStatusLetter = null;
             // C: the next screen sets its own palette (the DAC then shows it); a game loaded from the battle's menu stops the cycles first
             //   (R037+0x8400..0x8426: root 047C:040B(1..4), DS:07D8 = 0)
             for (var slot = 1; slot <= 4; slot++)
@@ -1094,6 +1096,8 @@ public sealed class BattleScreen : ITacticalView
     // combat buffers freed and reloaded around it are the original's memory management)
     public void OpenLoot(int member, List<ItemStack> list, Money money)
     {
+        // C: the pointer is the driver's: the loot screen keeps the battle's party column (R040), never the battle's pointer drawn over it
+        ErasePointer();
         if (LootTicks is not null && LootTicks.Remove(_battle!.Battle.Clock, out var ticks))
         {
             _clockFraction = ticks;
@@ -1110,6 +1114,10 @@ public sealed class BattleScreen : ITacticalView
         // character sheet does, see CharacterSheet)
         _battle!.MembersFromCombat();
         PacksToMembers();
+        // orig: R014+0xE5AF..0xE5B2: the panel rows (root 0000:1716) with 0x100 before the loot screen, the frames not: each row's 0x26 lines are
+        //   copied to the screen, its last line and the frames stay as the battle drew them (vis10 session D-56a675: the shields, the order letters
+        //   and the battle's hatching on the frame line)
+        new PartyPanel(_ui).DrawRowsAsCopied(_ui.Canvas, _state.Party);
         // orig: loot-view R014+0xE410..0xE42D: the menu titles and DS:9893 are 2 while the loot screen is up, put back at
         //   R014+0xE716..0xE72B (as around the combat sheet)
         var menus = GreyMenusForAScreen();
@@ -1427,9 +1435,12 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The bar's loop with the pointer of the screens shown (the battle's own cursor is not drawn meanwhile).</summary>
     // orig: root 0000:0000: `if (mouse-cursor-default != mouse-cursor-now && DS:907A == 1 && DS:9C4C == 1) root 047C:124F(0, 0, ...)` while the bar is up
     // C: root 0000:0000 holds the combat clock (DS:07D3 = 1 at 0x003D, 0 at 0x01CB) while the bar is up; the timer callbacks go on
+    // C: the battle's pointer is the driver's (DS:907A == 1: root 047C:124F swaps it for the default pointer shape at the mouse, restoring what it covered):
+    //   it never stays in the picture under the bar or a box the bar's items show (vis10 session tleads-battle-difficulty; tests: BattleUiTests)
     private void RunMenu(Action run)
     {
         MenuPass = Passes;
+        ErasePointer();
         _ui.PointerVisible = true;
         var opened = _ui.Clock.Milliseconds;
         try
@@ -1470,6 +1481,9 @@ public sealed class BattleScreen : ITacticalView
             _keyboardMenu = true;
             return;
         }
+        // C: the driver's pointer is never in the picture a hot key's box or screen is drawn over (vis10 session D-b797f7: the Alt-S comment
+        //   dialog shows none); the pass's own draw puts it back when the key turns out to be the battle's
+        ErasePointer();
         if (!BattleHotKey(key))
         {
             _ui.PushBackKey(key);
@@ -2890,19 +2904,38 @@ public sealed class BattleScreen : ITacticalView
             var gone = c.Floor == BattleEnd.LeftThroughExit || c.Status is CharacterStatus.Dead or CharacterStatus.Away || (tb.Selected >= 0 && tb.Selected != i);
             var color = gone ? Palette.Grey : tb.Battle.Leader == i ? (byte)0x0E : Palette.White;
             // orig: the panel's window DS:0156 (pointer DS:0168) has font slot 1 in a battle too (hooked at party-panel-row-set root 0000:1716 / member-gauge-bars root 0000:1A9C over the gate battle: font 1 at every call), so the name, the values, the place note and the order letter are in the map panel's font (PartyPanel); the window colour set for the name stays for the values
-            _panel.Draw(canvas, 4, y1, c.Member.ShortName, color);
-            var note = _placeNotes[i];
-            if (note is not null)
+            // orig: the panel rows (root 0000:1716) draws the name at (4, y + 1) of the row's y = 1 + 0x28 * i (vis10 session tleads-battle-difficulty: the
+            //   original's names stand a row lower than they were drawn here, in every battle frame)
+            _panel.Draw(canvas, 4, y1 + 1, c.Member.ShortName, color);
+            if (c.Status == CharacterStatus.Away)
             {
-                DrawPlaceNote(canvas, i, note, color);
+                // orig: the bars root 0000:1A9C: a member of status 5 shows "???? ???? ????" and nothing else (vis10, the synthetic save
+                //   DKSAVE0-away24: the original's row of the away member)
+                PartyPanel.DrawUnknownBars(canvas, _panel, i);
             }
-            Bar(canvas, i, c.Endurance, c.MaximumEndurance, 0x15, 0x12, 9, color, note is null);
-            Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2, color, note is null);
-            var favour = (int)Core.Characters.Attribute.DivineFavor;
-            Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E, color, note is null);
+            else
+            {
+                var note = _placeNotes[i];
+                if (note is not null)
+                {
+                    DrawPlaceNote(canvas, i, note, color);
+                }
+                Bar(canvas, i, c.Endurance, c.MaximumEndurance, 0x15, 0x12, 9, color, note is null);
+                Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2, color, note is null);
+                var favour = (int)Core.Characters.Attribute.DivineFavor;
+                Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E, color, note is null);
+            }
             if (StatusLetter(i) is { } letter)
             {
-                _panel.Draw(canvas, 6, y + 0x1F, letter.ToString(), Palette.White);
+                // orig: the order letter root 0000:18FA draws the letter as text in the window's colour, the name's (the leader's
+                //   letter yellow: vis10 session tleads-battle-difficulty)
+                _panel.Draw(canvas, 6, y + 0x1F, letter.ToString(), color);
+            }
+            if (c.Status == CharacterStatus.Dead)
+            {
+                // orig: the panel rows root 0000:1716: a dead member's row gets the grey hatching in a battle too (vis10 session D-09fbc1:
+                //   the original's row of the fallen member)
+                PartyPanel.DrawHatching(canvas, y1, 0x27);
             }
         }
     }

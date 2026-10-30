@@ -15,6 +15,11 @@ namespace Darklands.Presentation;
 // DIVERGENCE: the original copies each finished row from the off-screen page to the screen (blit-clipped) and hides the mouse while it does; here it is drawn straight into the screen.
 public sealed class PartyPanel(GameAssets assets)
 {
+    /// <summary>A panel that also shows the order letters while a battle runs (<see cref="GameUi.BattleStatusLetter"/>).</summary>
+    public PartyPanel(GameUi ui) : this(ui.Assets) => _ui = ui;
+
+    private readonly GameUi? _ui;
+
     public const int Width = 60;
     public const int RowHeight = 40;
 
@@ -62,6 +67,22 @@ public sealed class PartyPanel(GameAssets assets)
         SpriteDrawing.Draw(canvas, lit ? sprites.PanelBottomLit : sprites.PanelBottom, 3, y + 0x27);
     }
 
+    /// <summary>Every row drawn as the panel rows (root 0000:1716) put them on the screen: drawn on the page, then 0x36 x 0x26 pixels of each copied.</summary>
+    public void DrawRowsAsCopied(Canvas canvas, Party party)
+    {
+        var page = new Canvas(new Darklands.Platform.Screen());
+        canvas.Screen.Pixels.CopyTo(page.Screen.Pixels, 0);
+        for (var i = 0; i < Party.MaxMembers; i++)
+        {
+            DrawRow(page, party, i);
+        }
+        var drawn = page.SaveScreen();
+        for (var i = 0; i < Party.MaxMembers; i++)
+        {
+            canvas.CopyFrom(drawn, 3, i * RowHeight + 1, 0x36, 0x26);
+        }
+    }
+
     // orig: party-panel-row-set: for each of the five rows y = 1 + 0x28 * i: the background picture at (3, y); if the slot holds anyone (status != 0) the shield picture at (6, y + 8), the name in colour 7 (status 3 dead or 5 away, or someone else is acting in the order menu, or fighter-floor-level[i] == 0x9d), 0x0e (the leader) or 0x0f at (4, y + 1), the bars (member-gauge-bars) and the status letter; a dead member (3) gets the picture DS:A2E5 instead of the shield and diagonal grey hatching over the row
     // C: the name is the short name at +0x2A of the member record.
     /// <summary>One member's row on its background (an empty slot shows the background only).</summary>
@@ -90,6 +111,13 @@ public sealed class PartyPanel(GameAssets assets)
             DrawBar(canvas, member, Attribute.Strength, 0x23, 0x20, i, 2, color);
             DrawBar(canvas, member, Attribute.DivineFavor, 0x30, 0x2D, i, 0x0E, color);
         }
+        // orig: the order letter root 0000:18FA after the bars (root 0000:1A9C): while DS:907A == 1 (a battle runs, the loot screen and the sheets over it
+        //   included) and the member is not of status 5, the order letter at (6, 0x28 * i + 0x1F) in the window's colour, the name's (vis10
+        //   session D-56a675: the loot page's '-' of each member, the leader's yellow, a dead member's grey under the hatching)
+        if (member.Status != CharacterStatus.Away && _ui?.BattleStatusLetter?.Invoke(i) is { } letter)
+        {
+            _text.Draw(canvas, 6, i * RowHeight + 0x1F, letter.ToString(), color);
+        }
         if (member.Status == CharacterStatus.Dead)
         {
             DrawHatching(canvas, y);
@@ -97,10 +125,13 @@ public sealed class PartyPanel(GameAssets assets)
     }
 
     // orig: text-paint-wrapped(DS:0168, "???? ???? ????", 0x1c, 0x16, i * 0x28 + dy + 9, ...) with DS:01BC = 1 (centred), colour 7, dy = (i * 0x28 + 0x25 - height) / 2 but at least -1
-    private void DrawUnknownBars(Canvas canvas, int row)
+    private void DrawUnknownBars(Canvas canvas, int row) => DrawUnknownBars(canvas, _text, row);
+
+    /// <summary>The "???? ???? ????" of an away member (the bars, root 0000:1A9C; the battle's panel too), in the panel's font.</summary>
+    public static void DrawUnknownBars(Canvas canvas, TextPainter text, int row)
     {
         const string Text = "???? ???? ????";
-        var layout = new CardTextLayout(_text);
+        var layout = new CardTextLayout(text);
         var settings = new CardTextLayout.Settings { Color = Palette.Grey, Leading = 0, Alignment = TextAlignment.Center };
         // C: ext = wrapped-text-size(..., y = row * 0x28 + 9, ...) returns (row-end - 1) in its high word, which includes the start y; so dy = (0x25 - 9 - height + 1) / 2, in int arithmetic, and never less than -1.
         var height = layout.MeasureHeight(TextPainter.Encode(Text), 0x1C, 0);
@@ -155,14 +186,17 @@ public sealed class PartyPanel(GameAssets assets)
     }
 
     // orig: `for (k = 5; k < 0x69; k += 10) gfx-line-draw(DS:0168, k, 0, 0, k, 7)` inside a clip window at (3, y) of 0x36 x 0x27 pixels: eleven parallel diagonal lines (k, 0) -> (0, k) in grey, for a dead member (an X was drawn here before)
-    private static void DrawHatching(Canvas canvas, int y)
+    // C: the row then goes to the screen through a clipped copy of 0x36 x 0x26 pixels at (3, y): the clip window's last line (y + 0x26) stays
+    //   on the page (vis10 session D-56a675: after D the frame's bottom line shows there, not the hatching); in a battle the page itself is
+    //   shown (R017+0x0000's page flip), all 0x27 lines (vis10 session D-09fbc1)
+    public static void DrawHatching(Canvas canvas, int y, int lines = 0x26)
     {
         for (var k = 5; k < 0x69; k += 10)
         {
             for (var t = 0; t <= k; t++)
             {
                 var (px, py) = (k - t, t);
-                if (px < 0x36 && py < 0x27)
+                if (px < 0x36 && py < lines)
                 {
                     canvas[3 + px, y + py] = Palette.Grey;
                 }

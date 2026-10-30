@@ -219,6 +219,10 @@ public sealed class GameUi
     // orig: sound-setting / music-setting (DGROUP bytes 01BF / 01BE, saved with the game)
     public GameOptions Options { get; set; } = new();
 
+    /// <summary>While a battle runs (DS:907A == 1): the order letter of a slot (root 0000:18FA), which the party panel of a
+    /// screen over the battle (the loot screen, a sheet) shows too; null outside a battle.</summary>
+    public Func<int, char?>? BattleStatusLetter { get; set; }
+
     /// <summary>Plays a music cue unless music is off; then it silences instead.</summary>
     // orig: music_play = thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) `if (music-setting) sound-start(x); else sound-start(1);` (sound-start(1) stops the music)
     public void PlayMusic(int tune)
