@@ -27,11 +27,22 @@ public sealed class MessageBox(GameUi ui)
     // orig: root 0000:24BC(text, ticks) root 0000:24BC: f0c = 1, f0e = 0xff, root 047C:12C3, root 0000:23E6(card_window, -1, 1, text, card_window2, &r),
     // root 0410:0302(ticks) (asm: `if (n > 0) { t = (byte)(DS:07D2 + n); while (DS:07D2 != t); }`, a spin on the timer's tick byte, no
     // input test), root 03EC:000E back, root 047C:1293; tests: ScreenInputTests
+    // C: mouse_hide before the box and mouse_show after the rectangle is put back: no pointer while the box waits (the battle bar's
+    //   Difficulty sub-item, whose bar shows the pointer: vis10 session tleads-battle-difficulty, local/batch/tleads)
     public void Show(string text, int milliseconds = MessageMilliseconds)
     {
-        var saved = Draw(text, Centred);
-        ui.Delay(milliseconds);
-        ui.Canvas.Restore(saved);
+        var pointer = ui.PointerVisible;
+        ui.PointerVisible = false;
+        try
+        {
+            var saved = Draw(text, Centred);
+            ui.Delay(milliseconds);
+            ui.Canvas.Restore(saved);
+        }
+        finally
+        {
+            ui.PointerVisible = pointer;
+        }
         ui.Present();
     }
 

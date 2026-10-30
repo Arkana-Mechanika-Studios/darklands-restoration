@@ -450,6 +450,47 @@ public sealed class BattleUiTests
         }
     }
 
+    /// <summary>
+    /// The battle bar's Game > Difficulty > Expert (R000+0x083E: DS:99EC[2] = set_difficulty_expert, root 0000:1428) sets the difficulty and
+    /// shows show_difficulty(1)'s box (root 0000:1438: show_message(text, 0x3C), root 0000:24BC) in the card window's font that menu_bar_run
+    /// put back before the sub-item (root 0000:019D..0x01A9: font 3), with the pointer hidden meanwhile (root 047C:12C3); the original's
+    /// screen: vis10 session tleads-battle-difficulty (the box's pixels identical).
+    /// </summary>
+    [Fact]
+    public void TheBattleBarsDifficultyChoiceShowsItsBox()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5");
+        run.State.Difficulty = Difficulty.Standard;
+        run.Recording = true;
+        // the right button held on Game, down to Difficulty, right onto its sub-menu's Expert, let go (lockstep session gen-bhurtk-02)
+        run.Play("rdown:79,4", "wait:5", "move:99,32", "wait:25", "move:189,48", "wait:25", "rup", "wait:20");
+        Assert.Equal(Difficulty.Expert, run.State.Difficulty);
+        const string text = "Difficulty is now set to Expert";
+        var font = run.Ui.CardText;
+        var width = font.Measure(text);
+        var x = 60 + (260 - width) / 2;
+        var y = 100 - font.LineHeight / 2;
+        // the text on the box's fill as the box draws it (font 3; font 1 would stand a row lower)
+        var expected = new Screen();
+        var canvas = new Darklands.Presentation.Graphics.Canvas(expected);
+        canvas.Fill(0, 0, Screen.Width, Screen.Height, 0xFF);
+        font.Draw(canvas, x, y, text, MessageBox.TextColor);
+        bool Boxed(byte[] f) => Enumerable.Range(y - 1, font.LineHeight + 1)
+            .All(row => Enumerable.Range(x - 2, width + 4).All(px => f[row * Screen.Width + px] == expected.Pixels[row * Screen.Width + px]));
+        var boxed = run.Frames.FindIndex(f => Boxed(f.Pixels));
+        Assert.True(boxed >= 0, "no frame shows the box");
+        // no pointer in the box's frame: the pointer drawn over it at the mouse changes it
+        var shown = new Screen();
+        run.Frames[boxed].Pixels.CopyTo(shown.Pixels, 0);
+        Darklands.Presentation.Graphics.SpriteDrawing.Draw(new Darklands.Presentation.Graphics.Canvas(shown), run.Ui.Assets.CommonSprites.Pointer, 189, 48);
+        Assert.False(shown.Pixels.AsSpan().SequenceEqual(run.Frames[boxed].Pixels), "the pointer is drawn while the box waits");
+    }
+
     /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
     internal sealed class Session : IDisposable
     {
@@ -490,6 +531,8 @@ public sealed class BattleUiTests
         public BattleAssets Assets { get; }
 
         public BattleScreen Screen => _screens.Current!;
+
+        public GameState State => _state;
 
         /// <summary>The program's cursor keys' state the battles share (DS:D7FE, DS:D945, DS:07D6 ...).</summary>
         public CursorKeyState CursorKeys => _screens.CursorKeys;

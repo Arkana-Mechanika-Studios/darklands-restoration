@@ -1350,11 +1350,19 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
-    /// <summary>set_difficulty_basic / _standard / _expert (root 0000:13F6..): the game's difficulty, which the battle reads too.</summary>
+    /// <summary>set_difficulty_basic / _standard / _expert (root 0000:1408..0x1428): the game's difficulty, which the battle reads too, and its box.</summary>
+    // C: the battle bar's Difficulty sub-items (DS:99EC[0..2], filled by the battle menus' set-up) hold set_difficulty_basic / _standard /
+    //   _expert, the same functions as the bar outside a battle (HotKeys.SetDifficulty): game_difficulty = 0 / 1 / 2, then show_difficulty(1):
+    //   "Difficulty is now set to " + the name in show_message(text, 0x3C) (text colour 1, box colour 0xFF, centred in the card window, the
+    //   pointer hidden, 60 ticks of DS:07D2 with nothing else running). menu_bar_run puts the card window's colour and font back before the
+    //   sub-item's call (root 0000:019D..0x01A9), so the box is in the font it found (GameUi.CardWindowFont), not the hot keys' font 1;
+    //   vis10 session tleads-battle-difficulty: the original's box and this one identical; tests: BattleUiTests
     private void SetDifficulty(Difficulty d)
     {
         // C: the battle's difficulty is the game's (Battle.DifficultyOf)
         _state.Difficulty = d;
+        // C: the box's wait counts in the bar's run (RunMenu: the menu's measured callbacks hold it)
+        new MessageBox(_ui).Show(HotKeys.DifficultyText(d));
     }
 
     private void Resume()
