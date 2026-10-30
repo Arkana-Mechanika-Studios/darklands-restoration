@@ -50,8 +50,8 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.dirname(HERE))
 import local_paths  # noqa: E402
 OUT_DIR = os.path.join(REPO, 'docs', 'faithfulness')
-ADAPTER = os.path.join(REPO, 'local', 'tools', 'reference_program.py')
-MAPPING = os.path.join(REPO, 'local', 'reference-map.csv')
+ADAPTER = os.path.join(local_paths.local_dir(REPO), 'tools', 'reference_program.py')
+MAPPING = os.path.join(local_paths.local_dir(REPO), 'reference-map.csv')
 DATA_IMAGE = 'R136'
 # Phrases that make a comment line a mention, not a trace: the line says the function is not ported.
 # FaithfulnessCoverageTests uses the same list.

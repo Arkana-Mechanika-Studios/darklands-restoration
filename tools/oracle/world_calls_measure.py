@@ -21,6 +21,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+from paths import local_dir  # noqa: E402
 import battle_calls_measure as bcm  # noqa: E402
 
 AREAS = {"travel R030": {"R030"}, "rules R029/R039": {"R029", "R039"}, "cards R043": {"R043"}, "resident root": {"root"}}
@@ -50,7 +51,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("what", choices=["baseline", "measure"])
     ap.add_argument("rest", nargs="*")
-    ap.add_argument("--local", default=os.environ.get("DARKLANDS_LOCAL"))
+    ap.add_argument("--local", default=local_dir())
     ap.add_argument("--records")
     a = ap.parse_args()
     local = Path(a.local)

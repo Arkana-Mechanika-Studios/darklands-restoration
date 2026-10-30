@@ -26,6 +26,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+from paths import local_dir  # noqa: E402
 import world_calls as wc  # noqa: E402
 
 HEAD_END, CHAR, EVENT, PLACE = 0x189, 0x22A, 0x30, 0x3A
@@ -433,7 +434,7 @@ def main():
     ap.add_argument("--records", default="R029,R030,R039,R043,root")
     ap.add_argument("--baseline", default=None)
     a = ap.parse_args()
-    baseline = pickle.load(open(a.baseline or Path(os.environ["DARKLANDS_LOCAL"]) / "batch" / "worldcalls" / "baseline.pkl", "rb"))
+    baseline = pickle.load(open(a.baseline or Path(local_dir()) / "batch" / "worldcalls" / "baseline.pkl", "rb"))
     records = set(a.records.split(","))
     funcs = a.functions.split(",")
     out = Path(a.out)

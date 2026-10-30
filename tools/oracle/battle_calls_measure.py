@@ -28,6 +28,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+from paths import local_dir  # noqa: E402
 import cfg as cfgmod  # noqa: E402
 from run_unit import Rtlink  # noqa: E402
 
@@ -135,7 +136,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("what", choices=["baseline", "measure"])
     ap.add_argument("rest", nargs="*")
-    ap.add_argument("--local", default=os.environ.get("DARKLANDS_LOCAL"))
+    ap.add_argument("--local", default=local_dir())
     a = ap.parse_args()
     local = Path(a.local)
     if a.what == "baseline":

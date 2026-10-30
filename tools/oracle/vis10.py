@@ -43,6 +43,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+from paths import local_dir  # noqa: E402
 
 # the project root (holding code\, game\, scratch\): DARKLANDS_ROOT, else the folder that holds the repository (a worktree in
 # worktrees\<round> needs the variable: its parent folder is worktrees\)
@@ -352,7 +353,7 @@ _FONT = None
 def font() -> bytes | None:
     global _FONT
     if _FONT is None:
-        for p in (ROOT / "code" / "local" / "dosboxx_int10_font_16.b64", HERE.parent.parent / "local" / "dosboxx_int10_font_16.b64"):
+        for p in (Path(local_dir()) / "dosboxx_int10_font_16.b64", HERE.parent.parent / "local" / "dosboxx_int10_font_16.b64"):
             if p.is_file():
                 _FONT = base64.b64decode(p.read_text().strip())
                 break
@@ -573,7 +574,7 @@ def compose(out: str, name: str, lab_o: str, lab_r: str, stem: str, scale: int =
 def find_save(name: str) -> str | None:
     if name == "-":
         return None
-    for d in (ROOT / "game" / "DARKLAND" / "SAVES", ROOT / "scratch" / "vis10" / "saves", ROOT / "code" / "local" / "oracle-saves"):
+    for d in (ROOT / "game" / "DARKLAND" / "SAVES", ROOT / "scratch" / "vis10" / "saves", Path(local_dir()) / "oracle-saves"):
         if (d / name).is_file():
             return str(d / name)
     raise SystemExit("saved game %s not found" % name)

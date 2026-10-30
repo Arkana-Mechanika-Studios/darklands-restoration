@@ -14,8 +14,10 @@ import os
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(REPO, 'tools'))
+import local_paths  # noqa: E402
 INDEX = os.path.join(REPO, 'docs', 'source-map', 'original-functions.csv')
-MAPPING = os.path.join(REPO, 'local', 'reference-map.csv')
+MAPPING = os.path.join(local_paths.local_dir(REPO), 'reference-map.csv')
 
 
 def load():

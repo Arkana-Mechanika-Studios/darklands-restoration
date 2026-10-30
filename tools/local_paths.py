@@ -1,7 +1,7 @@
 """Machine-local paths of the tools (the reference decompilation checkout, a Python interpreter, the audit folder).
 
-Each path is looked up in this order: the environment variable, then the file local/paths.json at the
-repository root (git-ignored), else a clear error.
+Each path is looked up in this order: the environment variable, then the file paths.json in the
+local folder (local_dir(); git-ignored), else a clear error.
 
   key        environment variable
   reference  DARKLANDS_REFERENCE   root of the reference decompilation checkout (what `ref:` paths are relative to)
@@ -19,8 +19,21 @@ import os
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-JSON_FILE = os.path.join(REPO, 'local', 'paths.json')
 ENV = {'reference': 'DARKLANDS_REFERENCE', 'python': 'DARKLANDS_PYTHON', 'audit': 'DARKLANDS_AUDIT'}
+
+
+def local_dir(repo=None):
+    """The shared, git-ignored local/ folder: $DARKLANDS_LOCAL, else $DARKLANDS_ROOT/code/local, else <repo>/local.
+
+    Worktrees hold no junction or symlink to it (one deleted the folder on 2026-10-30): they find it through the variables.
+    `repo` is the repository root (default: the one holding this file)."""
+    explicit = os.environ.get('DARKLANDS_LOCAL')
+    if explicit:
+        return explicit
+    project = os.environ.get('DARKLANDS_ROOT')
+    if project:
+        return os.path.join(project, 'code', 'local')
+    return os.path.join(repo or REPO, 'local')
 
 
 def get(key):
@@ -29,6 +42,7 @@ def get(key):
     value = os.environ.get(var)
     if value:
         return value
+    JSON_FILE = os.path.join(local_dir(), 'paths.json')
     try:
         with open(JSON_FILE, encoding='utf-8') as fh:
             value = json.load(fh).get(key)

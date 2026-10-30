@@ -33,6 +33,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+from paths import local_dir  # noqa: E402
 import capstone  # noqa: E402
 import capstone.x86_const as cx  # noqa: E402
 import unicorn  # noqa: E402
@@ -41,7 +42,7 @@ from run_unit import Rtlink  # noqa: E402
 import cfg as cfgmod  # noqa: E402
 
 ROOT = HERE.parents[1]
-LOCAL = Path(os.environ.get("DARKLANDS_LOCAL", ROOT / "local"))
+LOCAL = Path(local_dir(ROOT))
 WORK = LOCAL / "faithfulness" / "branches-work"
 EXE_PATH = Path(os.environ.get("DARKLANDS_DIR", "")) / "DARKLAND.EXE"
 CORPORA = ["rules", "core", "trading", "chargen", "names", "path", "saints", "tactics", "battle"]

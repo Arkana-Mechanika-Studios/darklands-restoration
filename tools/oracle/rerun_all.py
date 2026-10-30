@@ -29,13 +29,14 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 REPO = HERE.parent.parent
+from paths import local_dir  # noqa: E402
 GAME = Path(os.environ.get("DARKLANDS_ROOT") or REPO.parent) / "game" / "DARKLAND"   # the project root: DARKLANDS_ROOT (needed from worktrees\<round>), else beside the code folder
 
 # DKSAVE40 (written by another tool: party size 6, party slots whose status is 0) as a normalised copy under local/ (divergence D-72509c: the
 # original'"'"'s writer R037+0x2ACE recounts the party and skips a status-0 slot): the copy is made by local/overnight/dk40/normalise.py when missing
 NORMALISED = "local/oracle-saves/DKSAVE40N.SAV"
 NORMALISING = {NORMALISED: ("DKSAVE40.SAV", "local/overnight/dk40/normalise.py")}
-LOCAL = Path(os.environ.get("DARKLANDS_LOCAL", REPO / "local"))     # the git-ignored local/ folder (shared by worktrees through the variable)
+LOCAL = Path(local_dir(REPO))     # the git-ignored local/ folder (DARKLANDS_LOCAL, else DARKLANDS_ROOT/code/local, else REPO/local; no junctions)
 
 # the saved game each session starts from (None: the start screen, no saved game)
 SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence": "DKSAVE0.SAV", "save-load": "DKSAVE0.SAV",

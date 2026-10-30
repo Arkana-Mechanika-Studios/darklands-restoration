@@ -69,7 +69,7 @@ sys.path.insert(0, str(HERE))
 import local_paths  # noqa: E402
 from coverage import AREAS  # noqa: E402
 
-LOCAL = REPO / "local" / "faithfulness"
+LOCAL = Path(local_paths.local_dir(str(REPO))) / "faithfulness"
 OUT = REPO / "docs" / "faithfulness"
 INDEX = REPO / "docs" / "source-map" / "original-functions.csv"
 COVERAGE = OUT / "coverage.csv"
@@ -135,7 +135,7 @@ def exe_path(arg):
     if os.environ.get("DARKLANDS_EXE"):
         return os.environ["DARKLANDS_EXE"]
     try:
-        game = json.load(open(REPO / "local" / "paths.json", encoding="utf-8")).get("game")
+        game = json.load(open(Path(local_paths.local_dir(str(REPO))) / "paths.json", encoding="utf-8")).get("game")
     except FileNotFoundError:
         game = None
     if not game:

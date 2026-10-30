@@ -24,6 +24,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+from paths import local_dir  # noqa: E402
 import battle_calls as bc  # noqa: E402
 from dosmachine import DS, P  # noqa: E402
 from orig_side import COMBATANTS, RECORD  # noqa: E402
@@ -1037,7 +1038,7 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--baseline", default=None, help="pickle of (insns, edges) per record, the coverage a run must beat to be kept (battle_calls_measure.py baseline makes it); default <DARKLANDS_LOCAL>/batch/battlecalls/baseline.pkl")
     a = ap.parse_args()
-    baseline = pickle.load(open(a.baseline or os.environ.get("BATTLE_CALLS_BASELINE") or Path(os.environ["DARKLANDS_LOCAL"]) / "batch" / "battlecalls" / "baseline.pkl", "rb"))
+    baseline = pickle.load(open(a.baseline or os.environ.get("BATTLE_CALLS_BASELINE") or Path(local_dir()) / "batch" / "battlecalls" / "baseline.pkl", "rb"))
     funcs = a.functions.split(",")
     out = Path(a.out)
     for name in a.state_names.split(","):

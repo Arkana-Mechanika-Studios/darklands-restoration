@@ -39,6 +39,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
 sys.path.insert(0, str(HERE))
+from paths import local_dir  # noqa: E402
 from run_unit import Rtlink  # noqa: E402
 import cfg as cfgmod  # noqa: E402
 
@@ -280,7 +281,7 @@ def main():
         w.writeheader()
         w.writerows(missed_rows)
     if lines:   # the reference's source lines stay machine-local
-        local = REPO / "local" / "faithfulness"
+        local = Path(local_dir(REPO)) / "faithfulness"
         local.mkdir(parents=True, exist_ok=True)
         with (local / "branches-ref-lines.csv").open("w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=["function", "record", "payload", "kind", "line"], extrasaction="ignore")

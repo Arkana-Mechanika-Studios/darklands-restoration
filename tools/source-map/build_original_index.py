@@ -24,6 +24,8 @@ import argparse, csv, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.dirname(HERE))
+import local_paths  # noqa: E402
 COLUMNS = ['coordinate', 'linked', 'size', 'kind', 'status', 'evidence', 'target', 'note']
 COORD_RE = re.compile(r'(R\d{3}\+0x[0-9A-F]{4,5}|root [0-9A-F]{4}:[0-9A-F]{4}|thunk 09C0:[0-9A-F]{4})')
 KINDS = {'function', 'thunk', 'data', 'address'}
@@ -32,7 +34,7 @@ STATUSES = {'matched', 'unmatched', 'draft', 'asm', ''}
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--map', default=os.path.join(REPO, 'local', 'reference-map.csv'))
+    ap.add_argument('--map', default=os.path.join(local_paths.local_dir(REPO), 'reference-map.csv'))
     ap.add_argument('--out', default=os.path.join(REPO, 'docs', 'source-map', 'original-functions.csv'))
     a = ap.parse_args()
     if not os.path.isfile(a.map):

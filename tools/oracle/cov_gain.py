@@ -31,6 +31,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+from paths import local_dir  # noqa: E402
 import battle_calls_measure as bcm  # noqa: E402
 
 REPO = bcm.REPO
@@ -209,7 +210,7 @@ def main():
     ap.add_argument("--open", default=str(REPO / "docs" / "faithfulness" / "branches-missed.csv"))
     ap.add_argument("--out", help="write the gained items (function|payload|kind) as JSON")
     ap.add_argument("--exe", help="DARKLAND.EXE (default: the project's game folder)")
-    ap.add_argument("--local", default=os.environ.get("DARKLANDS_LOCAL") or str(REPO.parent / "code" / "local"))
+    ap.add_argument("--local", default=local_dir(REPO))
     ap.add_argument("--max-rss-gb", type=float, default=3.0)
     ap.add_argument("--min-free-gb", type=float, default=2.0)
     a = ap.parse_args()

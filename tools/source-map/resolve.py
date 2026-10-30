@@ -13,7 +13,9 @@ import os
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-MAPPING = os.path.join(REPO, 'local', 'reference-map.csv')
+sys.path.insert(0, os.path.join(REPO, 'tools'))
+import local_paths  # noqa: E402
+MAPPING = os.path.join(local_paths.local_dir(REPO), 'reference-map.csv')
 
 
 def main(args):

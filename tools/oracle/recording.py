@@ -34,6 +34,9 @@ import platform
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from paths import local_dir  # noqa: E402
+
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
 FORMAT = 2
@@ -46,7 +49,7 @@ COMPARE_SIDE = {"lockstep", "battle_oracle", "savdiff", "diff_runs"}
 
 
 def default_folder() -> Path:
-    return Path(os.environ.get("DARKLANDS_ORACLE_RECORDINGS") or REPO / "local" / "oracle-recordings")
+    return Path(os.environ.get("DARKLANDS_ORACLE_RECORDINGS") or Path(local_dir()) / "oracle-recordings")
 
 
 def sha(data: bytes) -> str:
