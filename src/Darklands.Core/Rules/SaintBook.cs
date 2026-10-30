@@ -374,7 +374,7 @@ public static class SaintBook
         }
     };
 
-    /// <summary>St.Giles of Portugal: a point of Strength and of Virtue, lost for good.</summary>
+    /// <summary>St.Giles of Portugal: a point of current Strength (rest restores it) and a point of Virtue.</summary>
     // orig: add_attr(who, 1, -1); add_skill(who, 9, -1) (the Virtue loss is reported like any skill change)
     private static readonly Boon Penance = (s, who, _) =>
     {

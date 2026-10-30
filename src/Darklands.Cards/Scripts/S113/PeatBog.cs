@@ -23,6 +23,8 @@ public sealed class PeatBog : Card
         c.PartyMinEffectiveAgility();
         c.Variables.Chosen[0] = c.BestMember;
         // C: count_items_flags(-2, 0x64, 0): the long mask 0x64 passed as two words.
+        // BUG: 0x64 (100) is the Rope's item type, passed where an item-flag mask belongs: the rope line is enabled by a
+        //   polearm (0x04), a bow (0x20) or metal armour (0x40), and a Rope (flag 0x100) alone leaves it shown but disabled.
         if (c.CountItemsWithFlags(Who.Everybody, 0x64) == 0)
         {
             menu[0] = OptionState.Shown;

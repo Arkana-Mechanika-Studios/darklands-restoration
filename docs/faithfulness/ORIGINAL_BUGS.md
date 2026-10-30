@@ -12,15 +12,15 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 95 | 22 | 73 |
-| cards | 66 | 2 | 64 |
+| cards | 67 | 2 | 65 |
 | events | 8 | 4 | 4 |
 | travel | 3 | 0 | 3 |
 | battles | 28 | 12 | 16 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 4 | 1 | 3 |
-| total | 206 | 43 | 163 |
+| total | 207 | 43 | 164 |
 
-## Core logic (202)
+## Core logic (203)
 
 ### rules (95)
 
@@ -310,7 +310,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (66)
+### cards (67)
 
 - **B-ae3eba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:93` `MainStreetAtNight.Walk`  
   original: `R046+0x0422` (1838:0422, matched), `R046+0x0466` (1838:0466, matched), `R046+0x04AA` (1838:04AA, matched) +7 more  
@@ -489,6 +489,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-c6aabd** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:179` `CryptUnderTheRuinedChurch.TakeTheItem`  
   original: `R108+0x07CA` (1838:07CA, matched)  
   why: a victory has already left for the map (cur_loc -1), so the errand's thing is given only after a defeat.
+- **B-03246c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S113/PeatBog.cs:26` `PeatBog.Run`  
+  original: `R113+0x1428` (18F0:08A8, matched), `R113+0x1502` (18F0:0982, matched)  
+  why: 0x64 (100) is the Rope's item type, passed where an item-flag mask belongs: the rope line is enabled by a polearm (0x04), a bow (0x20) or metal armour (0x40), and a Rope (flag 0x100) alone leaves it shown but disabled.
 - **B-7bfead** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S114/HussiteBand.cs:79` `HussiteBand.ClaimFriendship`  
   original: `R114+0x0DCC` (18D3:041C, matched)  
   why: `rand_mod(100) == p` where every other card has `<=`; kept as the original has it.
