@@ -12,3 +12,6 @@ D-09fbc1|D-09fbc1-battle-cloud.steps|DKSAVE0.SAV|cloud=D-09fbc1-battle-cloud
 batpal-screens|batpal-screens.steps|DKSAVE0.SAV|map=batpal-map,quit=batpal-map-alt-q
 batpal-mapsave|batpal-mapsave.steps|DKSAVE17.SAV|saving=batpal-saving-game-box-on-the-map
 B-tleads|tleads-battle-difficulty.steps|synth/DKSAVE0-hurt.sav|box_02=tleads-battle-difficulty-box
+V-mines|visleads-mines-save.steps|DKSAVE99.SAV|comment=visleads-mines-comment,aftersave=visleads-mines-aftersave
+V-prison|visleads-prison-battle.steps|DKSAVE0-card16b.sav|b45=visleads-prison-battle
+V-away24|visleads-away24-panel.steps|synth/DKSAVE0-away24.sav|b20=visleads-away24-panel

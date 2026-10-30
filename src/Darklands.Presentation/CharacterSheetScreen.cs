@@ -564,7 +564,15 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         }
         if (key == Keys.AltQ)
         {
-            throw new QuitGameException();
+            // orig: the key handler's case 0x1000 R031+0x1C3C: R031+0x08F6(-1) (the clean-up: DS:9920 = DS:9934 = 1, the pointer's shape),
+            //   then the quit question root 0000:13A0, which asks "Quit to DOS?" in the font the sheet runs with (3); after "no" the sheet goes on
+            //   with Save Game and Load Saved Game offered again (vis10 session b25font-sheet-menu: the original's box in font 3)
+            SaveAndLoad?.Invoke(1);
+            if (new MessageBox(ui).Ask("Quit to DOS?"))
+            {
+                throw new QuitGameException();
+            }
+            return;
         }
         // orig: the default case: any other key closes the open box
         if (_open)

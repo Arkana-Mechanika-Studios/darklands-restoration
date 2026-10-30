@@ -1,0 +1,12 @@
+# vis10 visleads: the prison cell card 0x16B from its synthetic save, Enter, then the battle: battle mode 1 goes back onto the battlefield files hold (R002+0x0098..0x00EE); without the save's .BSV the two sides fight on different fields (D-24e8b0)
+key:t
+wait:5
+key:l
+wait:300
+shot:idle
+key:enter
+wait:300
+bwait:5
+shot:b5
+bwait:40
+shot:b45

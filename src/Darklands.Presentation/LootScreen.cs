@@ -376,9 +376,12 @@ public sealed class LootScreen
     }
 
     // orig: R040+0x06E2 (1462:06E2) draft (byte-matched function)
+    // C: R040 calls the panel's frames and rows (root 0000:1588 / 0x1716) only for D (R040+0x0D8B, R040+0x0D96): the screen and its
+    //   redraw copy the picture's part right of the column, and the party column stays as the screen before drew it (over a battle: the battle's
+    //   panel, its order letters and a dead member's hatching down to the frame; vis10 session D-56a675)
     private void DrawScreen()
     {
-        _page.DrawBackground(Party);
+        _page.DrawBackground(Party, drawParty: false);
         _page.Text(0x49, 9, CashLine(), BuySellPage.Ink);
         _page.Text(0x50, 0x1B, GetLine, BuySellPage.Ink);
         _page.Text(0x50, 0x23, PutLine, BuySellPage.Faded);
@@ -403,7 +406,7 @@ public sealed class LootScreen
     // DIVERGENCE: the original redraws the picture without set_palette; the picture's colours are applied here.
     private void Redraw()
     {
-        _page.DrawBackground(Party);
+        _page.DrawBackground(Party, drawParty: false);
         _page.Text(0x49, 9, CashLine(), BuySellPage.Ink);
         _page.Text(0x50, 0x1B, GetLine, _usingPile[Member] ? BuySellPage.Ink : BuySellPage.Faded);
         _page.Text(0x50, 0x23, PutLine, _usingPile[Member] ? BuySellPage.Faded : BuySellPage.Ink);

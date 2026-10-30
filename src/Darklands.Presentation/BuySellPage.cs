@@ -44,14 +44,18 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     /// <summary>A short message box over the page (put back afterwards).</summary>
     public void ShowMessage(string text) => new MessageBox(ui).Show(text);
 
-    /// <summary>Draws the picture (taking its colours), copies its right part to the screen and draws the party column.</summary>
-    public void DrawBackground(Party party)
+    /// <summary>Draws the picture (taking its colours), copies its right part to the screen and draws the party column (unless
+    /// <paramref name="drawParty"/> is false: the loot screen leaves the column as the screen before it drew it).</summary>
+    public void DrawBackground(Party party, bool drawParty = true)
     {
         // C: pic_draw_pal(1, "pics\\buysell.pic", cur_palette) draws into the back page; set_palette; gfx_copy_rect(back_win, 0x3C, 0, 0x104, 0xC8, screen_win, 0x3C, 0).
         _picture = ui.Assets.Picture("buysell");
         ui.Canvas.UsePalette(_picture);
         Restore(0x3C, 0, 0x104, 0xC8);
-        DrawParty(party);
+        if (drawParty)
+        {
+            DrawParty(party);
+        }
     }
 
     /// <summary>The party column (the original's party panel frames and rows).</summary>

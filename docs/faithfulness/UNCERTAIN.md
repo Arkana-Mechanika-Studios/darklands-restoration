@@ -87,7 +87,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-- **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:80` `BuySellPage.Text`  
+- **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:84` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
 - **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
