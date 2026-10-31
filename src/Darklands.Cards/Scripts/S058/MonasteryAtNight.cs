@@ -27,12 +27,12 @@ public sealed class MonasteryAtNight : Card
 
     /// <summary>
     /// The hint of lines 4, 5 and 6: the original copies the EXE string at seg 290E:062e, which is
-    /// the heraldry menu label (bytes 8C ' ' 'H' FF "eraldry", control codes left out here).
+    /// the heraldry menu label, byte-exact: 8C ' ' 'H' FF "eraldry" (colour code 0x8C, then the reset 0xFF, which CardTextLayout interprets).
     /// </summary>
     // C: R058+0x06D4 etc. read R136+0x8690+0x1EDF (the word pair at ES:1EDF); the table
     //   entry just after it is "It is closed at night", which looks like what was meant, but the
     //   EXE bytes and the asm say 1EDF.
-    private const string HeraldryLabel = "Heraldry";
+    private const string HeraldryLabel = " Hÿeraldry";
 
     public override int Number => CardNumber;
 
