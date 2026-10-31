@@ -39,6 +39,10 @@ internal static class ScreenPreview
                         new(0x26, state.Item(0x26).Type, 20, 4, (byte)state.Item(0x26).Weight),
                         new(0x2D, state.Item(0x2D).Type, 20, 4, (byte)state.Item(0x2D).Weight),
                     };
+                    // the loot screen draws no party column of its own (R040 calls the panel only for D): it keeps the column of the screen before it,
+                    // over a won fight the battle's panel with its order letters (DS:907A == 1), drawn again by the battle before the screen (R014+0xE5AF)
+                    ui.BattleStatusLetter = _ => '-';
+                    new PartyPanel(ui).Draw(ui.Canvas, state.Party);
                     screens.Loot(items, Money.From(0, 1, 6));
                     break;
             }

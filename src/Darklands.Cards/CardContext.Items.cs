@@ -74,8 +74,8 @@ public sealed partial class CardContext
     // orig: R031+0x57FC (18E7:0FAC) matched
     public int FirstItemWithFlags(int who, uint mask) => Inventory.FirstWithFlags(State, who, mask);
 
-    /// <summary><c>worn-item</c>(who, slot 0 weapon, 1 vital armour, 2 limb armour, 3 shield, 4 missile weapon): −1 none.</summary>
-    // orig: worn-item-inner R031+0x5D06 (18E7:14B6) draft
+    /// <summary><c>slot-item</c>(who, slot 0 weapon, 1 vital armour, 2 limb armour, 3 shield, 4 missile weapon): −1 none.</summary>
+    // orig: slot-item-inner R031+0x5D06 (18E7:14B6) draft
     public int EquippedItem(int who, int slot) => Inventory.Equipped(State, who, (EquipmentSlot)slot);
 
     /// <summary><c>item-grade</c>: the best quality of a code carried.</summary>

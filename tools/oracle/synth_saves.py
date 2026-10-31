@@ -124,7 +124,63 @@ def away_card(card: int, weak: bool = True, gone: bool = True):
     return edit
 
 
-VARIANTS = {"dead": dead, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
+def marching_minus_one(b: bytearray) -> None:
+    """the marching order's length byte (header +0xA0, DS:C629) is 0xFF = -1: a value the game never writes, which R016+0x0DA6 meets as a signed byte
+    (the order is then rebuilt at the battle's start)."""
+    b[0xA0] = 0xFF
+
+
+def hour_minus_three(b: bytearray) -> None:
+    """the hour of the day (header +0x6E, DS:00E0) is -3: a value the clock never holds; the camp's day (R036+0x1739) then gives the hourglass the
+    band -3 / 3 = -1 (R043+0x34B8..0x3590 -> R043+0x37CA)."""
+    struct.pack_into("<h", b, 0x6E, -3)
+
+
+def relics(b: bytearray, lst_path: Path = LST) -> None:
+    """a relic donation past an empty pack (R031+0x5664 / R031+0x57FC): member 0 carries nothing, member 1 holds a stack of two of item 150
+    (Thorn of the Crown, item flag 0x1000) before its own items."""
+    lst = lst_path.read_bytes()
+    at = 3 + 150 * 0x2E
+    b[HEAD_END + PACK_COUNT] = 0
+    base = HEAD_END + CHAR
+    count = struct.unpack_from("b", b, base + PACK_COUNT)[0]
+    old = [bytes(b[base + PACK + ENTRY * i:base + PACK + ENTRY * (i + 1)]) for i in range(count)]
+    new = ([struct.pack("<HBBBB", 150, lst[at + 0x1E], lst[at + 0x26], 2, lst[at + 0x25])] + old)[:64]
+    for i, e in enumerate(new):
+        b[base + PACK + ENTRY * i:base + PACK + ENTRY * (i + 1)] = e
+    b[base + PACK_COUNT] = len(new)
+
+
+def dragon_events(b: bytearray) -> None:
+    """an event of kind 0x2A (value 10: the place's danger replaced, as the dragon's quest makes it, R039+0x11FC) at every place whose notice area
+    reaches a cell within 40 of the party's map position (header +0x7E / +0x80): the aim was that the travel step's weight R030+0x2D44 then finds the event and reaches R030+0x2DAD. An unproven attempt: the run (local/batch/b28 unreach28) saw
+    2D44 take near = -1, so 0x2DAD was not reached and the session using it (uj-dragon1) was dropped; the variant is kept for a later try. The event record is the 0x2B one of the same saved game, copied with the kind, location and value changed."""
+    at = HEAD_END - 0x189 + 0xEF + 4 + 10 + 20 + 5 * 0x18
+    characters = struct.unpack_from("<H", b, 0xF1)[0]
+    at += characters * CHAR
+    events = struct.unpack_from("<H", b, at)[0]
+    first = at + 2
+    records = [bytes(b[first + i * 0x30:first + (i + 1) * 0x30]) for i in range(events)]
+    template = next(r for r in records if struct.unpack_from("<H", r, 0x22)[0] == 0x2B)
+    locs_at = first + events * 0x30
+    column, row = struct.unpack_from("<HH", b, 0x7E)
+    chosen = []
+    for i in range(0x19E):
+        r = locs_at + 2 + i * 0x3A
+        x, y, u = struct.unpack_from("<HHH", b, r + 4)[0], struct.unpack_from("<H", b, r + 6)[0], struct.unpack_from("<H", b, r + 8)[0]
+        if any(not (x < c + 1 - (u + 1) // 2 or x > c + (u + 1) // 2 or y < w - u or y > w + u + 1) for c in range(column - 40, column + 41, 2) for w in range(row - 40, row + 41, 2)):
+            chosen.append(i)
+    new = []
+    for i in chosen:
+        e = bytearray(template)
+        struct.pack_into("<HHHH", e, 0x1A, 0xFFFE, i, 10, 0)
+        struct.pack_into("<H", e, 0x22, 0x2A)
+        new.append(bytes(e))
+    out = bytearray(b[:at]) + struct.pack("<H", events + len(new)) + b"".join(records) + b"".join(new) + b[locs_at:]
+    b[:] = out
+
+
+VARIANTS = {"dragonev": dragon_events, "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
             "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}
 
@@ -144,7 +200,10 @@ def main() -> None:
             if day is not None:
                 struct.pack_into("<H", b, 0x6C, day)
         VARIANTS[variant] = moved
-    VARIANTS[variant](b)
+    if variant == "relics":
+        relics(b, Path(source).resolve().parent.parent / "DARKLAND.LST")           # the game folder's list, next to SAVES/
+    else:
+        VARIANTS[variant](b)
     Path(target).parent.mkdir(parents=True, exist_ok=True)
     Path(target).write_bytes(bytes(b))
 

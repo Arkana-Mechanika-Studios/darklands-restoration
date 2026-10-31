@@ -90,8 +90,8 @@ listed in `OriginalBehaviour` (each with a fix flag where cheap); do not "fix" t
 | `member-flag-bit`, `member-flag-set`, `saint-odds-low/hi`, `call-on-saint` | `c.KnowsSaint`, `c.LearnSaint`, `c.SaintChanceLow/High`, `c.InvokeSaint` (prayer screen hook) |
 | `item-tally`, `item-tally-by-flags`, `top-quality-of-item`, `carries-item` | `c.CountItems`, `c.CountItemsWithFlags`, `c.BestQualityWithFlags`, `c.HasItem` |
 | `give-one-item-form`, `give-several-items`, `give-item-record-form`, `pick-up-item`, `item-stack-take-out` | `c.AddItem`, `c.AddItems`, `c.AddItemStack`, `c.TakeItem`, `c.RemoveItemStack` |
-| `drop-items`, `item-keep-percent`, `items-take-out-by-flags`, `worn-item`, `item-grade(_flags)` | `c.LoseItems`, `c.KeepItems`, `c.RemoveItemsWithFlags`, `c.EquippedItem`, `c.ItemQuality(ByFlags)` |
-| `join-party-member`, `party-report-absent`, `party-send-away`, `party-recall-away`, `battle-driver` | `c.AddMember`, `c.ReportAway`, `c.DropAway`, `c.RejoinAway`, `c.RunBattle` (battle hook) |
+| `drop-items`, `item-keep-percent`, `items-take-out-by-flags`, `slot-item`, `item-grade(_flags)` | `c.LoseItems`, `c.KeepItems`, `c.RemoveItemsWithFlags`, `c.EquippedItem`, `c.ItemQuality(ByFlags)` |
+| `join-party-member`, `party-report-absent`, `party-dismiss-absent`, `party-recall-away`, `battle-driver` | `c.AddMember`, `c.ReportAway`, `c.DropAway`, `c.RejoinAway`, `c.RunBattle` (battle hook) |
 | `location-now`, `city-record`, `city-read` | `c.Here`, `c.City`, `c.LoadCity` |
 | `place-query`, `location-now-query`, `place-assign`, `reputation-now` | `c.LocationQuery`, `c.HereQuery`, `c.LocationSet`, `c.ReputationHere` |
 | `place-standing`, `place-standing-adjust`, `place-hostile` | `c.Reputation`, `c.AdjustReputation`, `c.Hostile()` |

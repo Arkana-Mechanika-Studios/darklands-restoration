@@ -7,7 +7,7 @@ namespace Darklands.Core.Characters;
 /// member are the same object.
 /// </summary>
 // orig: charactr.tmp (int count, int ids[5], char member-shield-picture[5][4], count 0x22A-byte records), kept by
-// R037+0x38AA (append), party-leave R037+0x3B58, party-join R037+0x3CD6, party-wipe R037+0x3F30 and
+// R037+0x38AA (append), party-leave R037+0x3B58, party-join R037+0x3CD6, party-member-erase R037+0x3F30 and
 // R037+0x4048 (delete, later records move down) draft; tests: OriginalSaveTests
 public sealed class CharacterRoster
 {
@@ -100,7 +100,7 @@ public sealed class CharacterRoster
     /// character of status 0), a present member not on the roster gets a new entry at the end
     /// (a hireling), any other slot holds none.
     /// </summary>
-    // C: the original keeps charactr.tmp in step at every change (party-join, party-leave, party-wipe, join-party-member: `idx[slot] = cnt++`);
+    // C: the original keeps charactr.tmp in step at every change (party-join, party-leave, party-member-erase, join-party-member: `idx[slot] = cnt++`);
     // here the changes the model makes without the roster are caught up with when the game is saved.
     public void Reconcile(Party party)
     {

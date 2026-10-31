@@ -544,6 +544,7 @@ public sealed class BattleScreen : ITacticalView
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
         // C: R002+0x0000 sets DS:C1F0 to the battlefield and DS:D6CE to the seed (the battle file keeps them).
         Array.Clear(_placeNotes);
+        Array.Clear(_orderLetters);
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
@@ -603,6 +604,7 @@ public sealed class BattleScreen : ITacticalView
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
         Array.Clear(_placeNotes);
+        Array.Clear(_orderLetters);
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
@@ -963,6 +965,58 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>A tester's trace (DARKLANDS_PANEL_TRACE): each row drawn, with the combat clock and its note.</summary>
     public static Action<string>? PanelTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_PANEL_TRACE") is null ? null : Console.WriteLine;
 
+    /// <summary>
+    /// The order letter R016+0x15BE drew alone in each party row when an order was chosen ('\0': the patch without a letter), or null: the
+    /// row keeps it until the row is drawn again.
+    /// </summary>
+    private readonly char?[] _orderLetters = new char?[Combatant.PartySlots];
+
+    /// <summary>The order letter R016+0x15BE drew in a party row, still on the screen (null: none; '\0': the patch without a letter).</summary>
+    public char? OrderLetterShown(int row) => _orderLetters[row];
+
+    // orig: R016+0x15BE (1EF8:15BE) draft (checked against the asm)
+    // C: the end of every order choice (TacticalBattle.ChooseOrder, ChoosePlace, ChooseThrow): the letter of DS:A6B0 into DS:9085 (1: 'F' when the flee bit 0x1000 of the member's flags is set, else 'W'; 6 'B', 0x0A 'V', 0x12 'A',
+    //   0x22 'P', 0x40 'R', 0x80 'M', 0x100 'T'; 0x400: the place action DS:A6D1 through the table at R016+0x1664: 1, 2 'U', 3, 6 'P', 4, 7 'D',
+    //   5 'O', 8 'X', 10 'H'), DS:9086 = 0; the patch DS:A6C2 at (6, 0x28 x DS:A6B2 + 0x1F) of the page DS:0168, the letter there in colour
+    //   0xFF (the window colour put back after), the cell's 10 x font-height pixels copied to the screen DS:0190 (root 047C:0553), then the
+    //   flee bit cleared. Nothing else draws the row until the panel rows (root 0000:1716) draw it again (vis10 session visleads-order-letter:
+    //   each order key's letter white in the row, the same letter after a key that chose nothing; after Enter the rows' own letter)
+    // DIVERGENCE: any other order or place action (in the game: place action 9, Loot Bodies, R016+0x13CA) leaves DS:9085 as its last writer
+    //   left it, a text buffer shared by many screens, and draws its first byte; here the patch only.
+    // UNCERTAIN: with nobody selected (DS:A6B2 = 0xFF: H with Halt on outside order mode, reachable in normal play, see ChoosePlace) the original draws the patch and the 'H' on the page DS:0168 and copies the cell to the screen at y = -9;
+    //   whether the driver clips it or wraps it to the bottom rows of the 320-wide frame buffer was not checked; nothing is drawn here.
+    public void OrderLetterDrawn()
+    {
+        if (_battle is not { } tb || tb.Selected is < 0 or >= Combatant.PartySlots)
+        {
+            return;
+        }
+        var c = tb.Battle[tb.Selected];
+        _orderLetters[tb.Selected] = tb.OrderAction == 0x400
+            ? tb.PlaceOrder switch
+            {
+                1 or 2 => 'U',
+                3 or 6 => 'P',
+                4 or 7 => 'D',
+                5 => 'O',
+                8 => 'X',
+                10 => 'H',
+                _ => '\0',
+            }
+            : tb.OrderAction switch
+            {
+                1 => (c.Flags & TacticalFlags.Following) != 0 ? 'F' : 'W',
+                6 => 'B',
+                0x0A => 'V',
+                0x12 => 'A',
+                0x22 => 'P',
+                0x40 => 'R',
+                0x80 => 'M',
+                0x100 => 'T',
+                _ => '\0',
+            };
+    }
+
     // orig: party-panel-row-set root 0000:1716 (which): the rows of the bits DS:01E4[which] (1 << which), all five for 0x100; each through
     // member-gauge-bars, which chooses the note from the flags as they are at that moment.
     public void RowChanged(int member)
@@ -1010,6 +1064,7 @@ public sealed class BattleScreen : ITacticalView
         _placeNotes[i] = at is { } pointer
             ? _assets.Executable.String(System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(_assets.Executable.DataSegment(pointer, 2)))
             : null;
+        _orderLetters[i] = null;
         PanelTrace?.Invoke($"row {i} clock {tb.Battle.Clock} {_placeNotes[i] ?? "bars"}");
     }
 
@@ -1064,6 +1119,7 @@ public sealed class BattleScreen : ITacticalView
     {
         ApplyViewOrigin();
         _viewRedrawn = true;
+        _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
 
@@ -1075,6 +1131,7 @@ public sealed class BattleScreen : ITacticalView
         _view.CentreColumn = c.Position.Column;
         _view.CentreRow = c.Position.Row;
         _viewRedrawn = true;
+        _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
 
@@ -2099,6 +2156,7 @@ public sealed class BattleScreen : ITacticalView
         _battle!.ViewOrigin = null;
         _battle.FollowsActive = false;
         _viewRedrawn = true;
+        _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
 
@@ -2448,12 +2506,16 @@ public sealed class BattleScreen : ITacticalView
     // R014+0x88E6 unmatched and R014+0x827A unmatched (walls, furniture, floor objects); list C
     // sorted by R014+0x97A6 unmatched (insertion sort by depth); the lists blitted by R014+0x74A2
     // unmatched through R014+0x9DAA, R014+0x9DDE, R014+0x9CE6 and the view
-    // clip R014+0x8680 (all matched). Here the view, the piles, the areas, the combatants (sorted by depth: the
-    // fallen first, then y and x), the missiles and the clouds are drawn in that order every frame.
+    // clip R014+0x8680 (all matched). Here the view, the piles, the areas, the fallen (list B, by y and x), then list C: the clouds'
+    // edges (R014+0x6FFC) and the able combatants in view (R014+0x719E) sorted together by depth (DepthOrder), then the missiles, the
+    // clouds' puffs and markers (R014+0x76AE) are drawn in that order every frame.
     // DIVERGENCE: the whole view is redrawn each frame (no dirty tiles), the wall pieces are drawn by the view before the sprites rather
-    // than sorted in among them, and the 157-sprite limit is not kept (see EffectField.Drawn for its effect on the random numbers).
+    // than sorted in among them, and the 157-sprite limit is not kept (see EffectField.Drawn for its effect on the random numbers);
+    // the missiles and the ground cursor are drawn after the sorted list instead of in it, the last frame's logged entries (which
+    // draw nothing) are not in it, and a combatant's member and target cursors go with its body.
     // C: R014+0x827A's roll-n(2) for each animated piece of the last full redraw (R017+0x0000's lists DS:E13D / DS:E178 / DS:E196) are
     // drawn by EffectField.Drawn at each fight-draw, the first one at the battle's start (R014+0x0307).
+    // UNCERTAIN: while paused the C# draws one more frame (with new puff jitter of the clouds) after the pause begins and then stops; the original's draw pass (fight-draw R014+0x6818, which Draw stands for) leaves a last frame that equals the C#'s first paused one (vis10 D-09fbc1, shots c and d: 3,497 px; shots a and b: 0). Seen only in the picture, not chased; possibly an extra redraw pass in the C#.
     public void Draw()
     {
         var tb = _battle!;
@@ -2480,15 +2542,32 @@ public sealed class BattleScreen : ITacticalView
         }
         DrawAreas(canvas);
         _hotSpots.Clear();
-        var order = Enumerable.Range(0, Combatant.Count)
+        var shown = Enumerable.Range(0, Combatant.Count)
             .Where(i => tb.Battle[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious or CharacterStatus.Dead && tb.Battle[i].Floor == tb.Battle.FloorShown)
-            .OrderBy(i => tb.Battle[i].IsAble ? 1 : 0)
-            .ThenBy(i => tb.Battle[i].Position.Y)
-            .ThenBy(i => tb.Battle[i].Position.X)
             .ToList();
-        foreach (var i in order)
+        // list B: the fallen (and an able combatant out of view, which has no entry and draws nothing in the view)
+        foreach (var i in shown.Where(i => !tb.Battle[i].IsAble || !CombatantInView(i)).OrderBy(i => tb.Battle[i].Position.Y).ThenBy(i => tb.Battle[i].Position.X))
         {
             DrawCombatant(canvas, i);
+        }
+        // list C: the clouds' edges, then the able combatants in view (each body with its flash, cursors and number), sorted by depth
+        var listC = CloudEdgeEntries();
+        foreach (var i in shown.Where(i => tb.Battle[i].IsAble && CombatantInView(i)))
+        {
+            var p = tb.Battle[i].Position;
+            listC.Add(new DepthEntry(new DepthKey(p.X, p.Y, p.Y), i, 0, 0, 0, 0, default));
+        }
+        DepthOrder.Sort(listC, e => e.Key);
+        foreach (var e in listC)
+        {
+            if (e.Who >= 0)
+            {
+                DrawCombatant(canvas, e.Who);
+            }
+            else
+            {
+                DrawCloudEdge(canvas, e);
+            }
         }
         // the draw list goes on after the combatants' entries (EffectField.Drawn) with the ground cursor and the missiles, which are
         // logged for the next frame together with the damage numbers queued
@@ -2765,48 +2844,100 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
-    /// <summary>The clouds (edges, then the puffs on top, in the colours of their type) and the flash and blast markers.</summary>
-    // orig: R014+0x6FFC (14F7:07EC), R014+0x8CB4 (14F7:24A4), R014+0x9542 (14F7:2D32; the markers) and R014+0x76AE (14F7:0E9E) draft
-    // DIVERGENCE: the edges are drawn over the combatants (the original sorts them in with the sprites by depth) and the puffs
-    // are clipped to the view, not to the cloud's box.
+    /// <summary>An entry of list C: combatant <see cref="Who"/>'s body (with its flash, cursors and number), or (Who −1) an edge of cloud
+    /// <see cref="Cloud"/>: its sprite (0 none), its point and its box (relative to the view, clipped to it).</summary>
+    private readonly record struct DepthEntry(DepthKey Key, int Who, int Cloud, int Sprite, int X, int Y, (int X, int Y, int W, int H) Box);
+
+    /// <summary>The clouds' edges as list C entries: for each cloud and column c the south edge of the column, then the east edge of row c.</summary>
+    // orig: R014+0x6FFC (14F7:07EC) checked against the asm, queued by R014+0x7BBE (14F7:13AE): the south edge at its map point
+    // (R136+0x706A / 70EA) with height 0, box 0x12 x 0x22; the east edge (R136+0x6F6A / 6FEA) with height 2, box 8 x 0x27; each box moved
+    // and grown by the cloud's growth (DS:8574, DS:859E, DS:855A, DS:8540) and clipped to the view (R014+0x8680); an empty box has no entry.
+    // C: the loop takes every cloud, whatever level it is on (07EC tests no level); c runs to the size, here at most 4 (as the layout).
+    private List<DepthEntry> CloudEdgeEntries()
+    {
+        var fx = _battle!.Effects;
+        var list = new List<DepthEntry>();
+        for (var k = 0; k < fx.CloudCount; k++)
+        {
+            var n = fx.Clouds[k].Size & 7;
+            var (south, east) = fx.CloudEdgeSprites(k);
+            var g = fx.CloudBoxGrowth(k);
+            for (var c = 0; c < n && c < 4; c++)
+            {
+                var (sx, sy) = fx.CloudSouthEdge(k, c);
+                if (sx != -999)
+                {
+                    var box = EffectField.ClipToView(sx + g.X, sy + g.Y, 0x12 + g.W, 0x22 + g.H);
+                    if (box.W != 0 && box.H != 0)
+                    {
+                        var (mx, my) = fx.CloudSouthEdgeAt(k, c);
+                        list.Add(new DepthEntry(new DepthKey(mx, my, my), -1, k, south, sx, sy, box));
+                    }
+                }
+                var (ex, ey) = fx.CloudEastEdge(k, c);
+                if (ex != -999)
+                {
+                    var box = EffectField.ClipToView(ex + g.X, ey + g.Y, 8 + g.W, 0x27 + g.H);
+                    if (box.W != 0 && box.H != 0)
+                    {
+                        var (mx, my) = fx.CloudEastEdgeAt(k, c);
+                        list.Add(new DepthEntry(new DepthKey(mx, my - 2, my + 2), -1, k, east, ex, ey, box));
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    /// <summary>A cloud's edge in its place of list C: the sprite buffer takes the cloud's colours, the edge is drawn within its box.</summary>
+    // orig: R014+0x74A2 (14F7:0C92) draft: an entry of type 28000 + t (t below 16) recolours sprite buffer 1 (R014+0x10530) before the
+    // sprite test, then a sprite other than 0 is drawn at its point within its box (R014+0x9DAA)
+    private void DrawCloudEdge(Canvas canvas, DepthEntry e)
+    {
+        var kind = _battle!.Effects.CloudSlots[e.Cloud].Kind;
+        if (kind < 16)
+        {
+            Remap(_cloudColours, CloudSchemes, ref _cloudScheme, kind);
+        }
+        if (e.Sprite != 0)
+        {
+            var b = e.Box;
+            var clip = new Clip(BattlefieldView.Left + b.X, b.Y, BattlefieldView.Left + b.X + b.W, b.Y + b.H);
+            SpriteDrawing.Draw(canvas, _assets.Images[e.Sprite], BattlefieldView.Left + e.X, e.Y, clip, _cloudColours);
+        }
+    }
+
+    /// <summary>The clouds' puffs on top of the sprites, each cloud's within its box, in the colours of its type; the flash and blast markers.</summary>
+    // orig: R014+0x76AE (14F7:0E9E) checked against the asm, R014+0x9542 (14F7:2D32; the markers) draft
+    // C: entry e (one per cloud on the level shown with a puff, R014+0x8CB4) draws cloud e's puffs within entry e's box (its puffs' points
+    // C: 25 wider and 8 higher, with the last frame's box): a puff's lower rows past the box are not drawn; a cloud that has ended draws
+    // C: nothing and does not recolour. A puff is drawn when its x is not 0 (the y is not tested).
     private void DrawClouds(Canvas canvas)
     {
         var tb = _battle!;
         var clip = BattlefieldView.Area;
-        for (var k = 0; k < tb.Effects.CloudCount; k++)
+        for (var e = 0; e < tb.Effects.PuffBoxCount; e++)
         {
-            var cloud = tb.Effects.Clouds[k];
-            if (cloud.Level != tb.Battle.FloorShown)
-            {
-                continue;
-            }
-            var n = cloud.Size & 7;
-            var (south, east) = tb.Effects.CloudEdgeSprites(k);
-            Remap(_cloudColours, CloudSchemes, ref _cloudScheme, cloud.Kind);
-            for (var c = 0; c < n && c < 4; c++)
-            {
-                var (sx, sy) = tb.Effects.CloudSouthEdge(k, c);
-                if (sx != -999 && south != 0)
-                {
-                    SpriteDrawing.Draw(canvas, _assets.Images[south], BattlefieldView.Left + sx, sy, clip, _cloudColours);
-                }
-                var (ex, ey) = tb.Effects.CloudEastEdge(k, c);
-                if (ex != -999 && east != 0)
-                {
-                    SpriteDrawing.Draw(canvas, _assets.Images[east], BattlefieldView.Left + ex, ey, clip, _cloudColours);
-                }
-            }
-            var body = tb.Effects.CloudSprite(k);
+            var body = tb.Effects.CloudSprite(e);
             if (body < 0)
             {
                 continue;
             }
+            var cloud = tb.Effects.CloudSlots[e];
+            Remap(_cloudColours, CloudSchemes, ref _cloudScheme, cloud.Kind);
+            var b = tb.Effects.PuffBox(e);
+            if (b.W == 0 || b.H == 0)
+            {
+                continue;
+            }
+            var box = new Clip(BattlefieldView.Left + b.X, b.Y, BattlefieldView.Left + b.X + b.W, b.Y + b.H);
+            var n = cloud.Size & 7;
             for (var j = 0; j < n * n && j < 16; j++)
             {
-                var (x, y) = tb.Effects.CloudPuff(k, j);
-                if (x != 0 && y != 0)
+                var (x, y) = tb.Effects.CloudPuff(e, j);
+                if (x != 0)
                 {
-                    SpriteDrawing.Draw(canvas, _assets.Images[body], BattlefieldView.Left + x, y, clip, _cloudColours);
+                    SpriteDrawing.Draw(canvas, _assets.Images[body], BattlefieldView.Left + x, y, box, _cloudColours);
                 }
             }
         }
@@ -2929,6 +3060,8 @@ public sealed class BattleScreen : ITacticalView
             {
                 // orig: the order letter root 0000:18FA draws the letter as text in the window's colour, the name's (the leader's
                 //   letter yellow: vis10 session tleads-battle-difficulty)
+                // C: its cell wiped first with the patch DS:A6C2 (PartyPanel.DrawLetterPatch)
+                PartyPanel.DrawLetterPatch(canvas, common, i);
                 _panel.Draw(canvas, 6, y + 0x1F, letter.ToString(), color);
             }
             if (c.Status == CharacterStatus.Dead)
@@ -2936,6 +3069,15 @@ public sealed class BattleScreen : ITacticalView
                 // orig: the panel rows root 0000:1716: a dead member's row gets the grey hatching in a battle too (vis10 session D-09fbc1:
                 //   the original's row of the fallen member)
                 PartyPanel.DrawHatching(canvas, y1, 0x27);
+            }
+            if (_orderLetters[i] is { } chosen)
+            {
+                // C: the chosen order's letter over the patch in colour 0xFF, on the screen until the row is drawn again (OrderLetterDrawn)
+                PartyPanel.DrawLetterPatch(canvas, common, i);
+                if (chosen != '\0')
+                {
+                    _panel.Draw(canvas, 6, y + 0x1F, chosen.ToString(), 0xFF);
+                }
             }
         }
     }

@@ -405,7 +405,7 @@ public sealed class DarklandsGame
     /// </summary>
     // orig: main loop root 03A1:000A (matched per the byte match) - cards-teardown-overlay-entry,
     //   fight-flags |= 4 (−3) / 8 (−5) / 0x80 (−6) / 0xC (−4), |= 1, battle-entry(battle-kind, battle-enemy-group, encounter-seed,
-    //   −1, A76C, 0, −1, A76E, 0, −1, A770, 0), status 3 → 0 with party-wipe-overlay-entry, others but 0 and 5 → 1,
+    //   −1, A76C, 0, −1, A76E, 0, −1, A770, 0), status 3 → 0 with party-member-erase-overlay-entry, others but 0 and 5 → 1,
     //   none left or battle-outcome == 5 → music 0x12, "death", exit; else cards-setup-overlay-entry and the result is the next screen.
     // DIVERGENCE: the game returns to the start screen instead of exiting to DOS; the work files of cards-teardown and cards-setup are
     //   kept in memory, their effects made (the events, the reseed, the city record: see CardContext.RunBattle).
@@ -435,9 +435,9 @@ public sealed class DarklandsGame
             orders.Flags &= 0xFE10;
         }
         var members = state.Party.Members;
-        // orig: root 03A1:000A (matched per the byte match): party-wipe-overlay-entry for each slot of status 3, before cards-setup
+        // orig: root 03A1:000A (matched per the byte match): party-member-erase-overlay-entry for each slot of status 3, before cards-setup
         // C: the dead are deleted first (slot by slot, highest first here because DeleteMember trims empty slots at the end).
-        // BUG: party-wipe-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and
+        // BUG: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and
         //   "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
         for (var i = members.Count - 1; i >= 0; i--)
         {

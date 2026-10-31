@@ -331,14 +331,14 @@
     "run": "*",
     "contains": "",
     "leaderAbsent": true,
-    "why": "PeasantsDemandAMaiden: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party-wipe on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours-elapse, Party.EnsureAbleLeader)."
+    "why": "PeasantsDemandAMaiden: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party-member-erase on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours-elapse, Party.EnsureAbleLeader)."
   },
   {
     "card": "123",
     "run": "*",
     "contains": "",
     "leaderAbsent": true,
-    "why": "WitchAtYourMercy: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party-wipe on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours-elapse, Party.EnsureAbleLeader)."
+    "why": "WitchAtYourMercy: a start state whose leader slot holds nobody (postwar40: the normalised save empties slots 0 and 1, the leader byte names slot 0): the card names and deletes the leader (party-member-erase on an empty slot; the original removes the slot's record from the roster, the C# has none). In play the leader is always present (hours-elapse, Party.EnsureAbleLeader)."
   },
   {
     "card": "011",

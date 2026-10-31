@@ -485,8 +485,8 @@ Inventory.RemoveStackAt(),R031+0x5024;R031+0x4C56,R031+0x5024;R031+0x4C56,matche
 Inventory.RemoveWithFlags(),R031+0x549A,R031+0x549A,matched,,
 Inventory.Lose(),R031+0x50A4,R031+0x50A4,matched,,
 Inventory.KeepEach(),R031+0x5308,R031+0x5308,matched,PracticeAndItemsTests;OriginalMemoryTests,bug: i starts at nitems (FixKeepItemsOffByOne); an empty pack leaves the count -1 (the next item goes to entry -1)
-Inventory.EquippedType(),R031+0x5CB0,R031+0x5CB0,matched,,dormant: worn-item-type has no default case (slot outside 0..4 returns AX).
-Inventory.Equipped(),R031+0x5D06,R031+0x5D06,draft,,divergence: worn-item does not resolve -1 (party[-1] is the bytes before the records); here -1 is
+Inventory.EquippedType(),R031+0x5CB0,R031+0x5CB0,matched,,dormant: slot-item-type has no default case (slot outside 0..4 returns AX).
+Inventory.Equipped(),R031+0x5D06,R031+0x5D06,draft,,divergence: slot-item does not resolve -1 (party[-1] is the bytes before the records); here -1 is
 Inventory.Unequip(),R031+0x5B38,R031+0x5B38,matched,PracticeAndItemsTests,
 Inventory.EquipmentWeight(),R031+0x5C5A,R031+0x5C5A,matched,,
 EquipmentSlot,R031+0x5CB0,R031+0x5CB0,matched,,slots 0 weapon +3D/+44 1 vital +37/+3B 2 limb +38/+3C 3 shield +48/+47 4 missile +0E/+46

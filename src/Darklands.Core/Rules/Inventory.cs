@@ -6,7 +6,7 @@ using Attribute = Darklands.Core.Characters.Attribute;
 namespace Darklands.Core.Rules;
 
 /// <summary>The five equipment slots, in the game's order.</summary>
-// orig: worn-item-type R031+0x5CB0 (18E7:1460) matched
+// orig: slot-item-type R031+0x5CB0 (18E7:1460) matched
 public enum EquipmentSlot
 {
     Weapon = 0,
@@ -439,19 +439,19 @@ public static class Inventory
     };
 
     /// <summary>The item type in an equipment slot (−1: none).</summary>
-    // orig: worn-item-type R031+0x5CB0 (18E7:1460) matched
-    // DORMANT: worn-item-type has no default case (slot outside 0..4 returns AX).
+    // orig: slot-item-type R031+0x5CB0 (18E7:1460) matched
+    // DORMANT: slot-item-type has no default case (slot outside 0..4 returns AX).
     public static int EquippedType(GameState s, int who, EquipmentSlot slot) => SlotItem(s.Party.Slot(who), slot).Type;
 
     /// <summary>
-    /// The item code in an equipment slot, −1 if none (<c>worn-item</c>): the stack of that
+    /// The item code in an equipment slot, −1 if none (<c>slot-item</c>): the stack of that
     /// type and quality, else the last stack of that type. Leaves the stack index in
     /// <see cref="PartyQueryResult.Skill"/> as the original does.
     /// </summary>
-    // orig: worn-item-inner R031+0x5D06 (18E7:14B6) draft
+    // orig: slot-item-inner R031+0x5D06 (18E7:14B6) draft
     // C: checked against the asm (14b6 differs in store order only; an earlier port's check reproduced that order with the copy
     //   sequence type = i; i = t; q = type; type = i, quality I and type T unchanged): the equipped type and quality are signed chars compared with the stack's unsigned bytes (no game value reaches 0x80).
-    // DIVERGENCE: worn-item does not resolve -1 (party[-1] is the bytes before the records); here -1 is the leader.
+    // DIVERGENCE: slot-item does not resolve -1 (party[-1] is the bytes before the records); here -1 is the leader.
     public static int Equipped(GameState s, int who, EquipmentSlot slot) => Equipped(s.Party.Slot(who), slot, s.Party.Last);
 
     /// <summary>As <see cref="Equipped(GameState, int, EquipmentSlot)"/> for a member record outside a game (the creation menu's slots).</summary>

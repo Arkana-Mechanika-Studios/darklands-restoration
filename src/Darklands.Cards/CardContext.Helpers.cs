@@ -44,7 +44,7 @@ public sealed partial class CardContext
     /// </summary>
     public void RemoveMember(int slot) => PartyRules.RemoveFromParty(State, slot);
 
-    // DeleteMember (party-wipe) is shared: see CardContext.Memory.cs.
+    // DeleteMember (party-member-erase) is shared: see CardContext.Memory.cs.
 
     // orig: DS:A67C; tests: CardSmokeTests
     // C: the cached count (GameState.HirelingCount): set when a hireling joins, by the default party and by a load.

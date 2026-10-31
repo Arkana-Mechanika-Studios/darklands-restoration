@@ -46,7 +46,7 @@ public static class PackRules
     }
 
     // orig: R031+0x4850 (hand-over-one) R031+0x4850 (18E7:0000) draft (bytes match); tests: CampAndSheetRulesTests
-    // DORMANT: the original first maps idx through worn-item-type(from, idx) when slot == 6 (the equipment box), which is no list and never gives.
+    // DORMANT: the original first maps idx through slot-item-type(from, idx) when slot == 6 (the equipment box), which is no list and never gives.
     /// <summary>Gives one item of stack <paramref name="index"/> to another member whose pack has room.</summary>
     public static void GiveOne(GameState s, int from, int to, int index)
     {

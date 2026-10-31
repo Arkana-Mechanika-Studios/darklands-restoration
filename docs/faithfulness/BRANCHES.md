@@ -1000,7 +1000,7 @@ The `before` columns are the coverage before the gaps were worked on (branches-s
 | world-calls-travel | 1643 | 128 | 1407/2774 (50.7%) | 906/1870 (48.4%) |  |  |  |
 | ALL |  | 8646 | 52647/58347 (90.2%) | 36043/43740 (82.4%) | 11236/12681 (88.6%) | 9503/11698 (81.2%) |  |
 
-Never-exercised items: 13397, of which open 9662, justified in `unreachable.csv` 3735.
+Never-exercised items: 13397, of which open 9665, justified in `unreachable.csv` 3732.
 
 ## Per function
 
@@ -16310,7 +16310,7 @@ matched, reached by cards-saves-f0: blocks 1/1, outcomes 0/0
 
 matched, reached by cards-saves-A cards-saves-B cards-saves-f0 cards-variants cards1-A cards1-F1: blocks 0/1, outcomes 0/0
 
-- `R058+0x0DEC` `enter 4, 0` (dormant)
+- `R058+0x0DEC` `enter 4, 0`
 
 ### R058+0x0E24 `R058+0x0E24 (191A:0004)`
 

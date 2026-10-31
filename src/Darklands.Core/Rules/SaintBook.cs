@@ -48,7 +48,7 @@ public sealed class SaintEffects : ISaintEffects
 //   records themselves do not: party[-1].f03 is DS:9BEC (in the menu-item records, 0) so the "man" branch is
 //   taken, party[-1].f41 is DS:9C2A (the high byte of the UI word DS:9C29: no member's charms change) and
 //   saints-learned[-1] is member 4's formula bytes 2..21 (IfWoman, SetCharm, AddCharm, Teach).
-// C: gear-bonus-sums R029+0x0792 does not resolve -1 either (its worn-item reads party[-1]): EquippedWeaponSkills.
+// C: gear-bonus-sums R029+0x0792 does not resolve -1 either (its slot-item reads party[-1]): EquippedWeaponSkills.
 // DORMANT: R039+0x9578 and R039+0x97B2 are saint functions that saint-handler-tables does not list
 //   (Unlisted below); `what` outside 0..8 returns t[what] past the 7-entry table (stack garbage) — no
 //   caller passes it.
@@ -138,7 +138,7 @@ public static class SaintBook
         EquippedWeaponSkills(s, who, given, -(s.Random.Below(most - least + 1) + least));
 
     /// <summary>gear-bonus-sums for the member as given: the points are drawn by the saint body before the call either way.</summary>
-    // orig: R029+0x0792 passes who as it is to worn-item (thunk 09C0:1E9B -> R031+0x5D06), which does not resolve -1: it reads
+    // orig: R029+0x0792 passes who as it is to slot-item (thunk 09C0:1E9B -> R031+0x5D06), which does not resolve -1: it reads
     //   the record before the members' (weapon type DS:9C26, missile type DS:9BF7, pack count DS:9C53) and the pack bytes before
     //   the pack table (2E38:FEC0).
     // BUG: so for a prayer for the party (-1) the weapon-skill boost reaches nobody (FixSaintWeaponSkillsForParty: the leader's weapons).

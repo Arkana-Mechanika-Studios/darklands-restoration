@@ -131,12 +131,12 @@ public sealed partial class CardContext
     public bool Succeeds(int chance) => Random(100) <= chance;
 
     /// <summary>
-    /// A member is gone for good (R037 <c>party-wipe</c>): the member's term and "has left"
+    /// A member is gone for good (R037 <c>party-member-erase</c>): the member's term and "has left"
     /// events are cancelled, the slot is emptied, an able member takes over as leader if needed,
     /// and the party ends after its last occupied slot; the character leaves the roster
     /// (CHARACTR.TMP) for good.
     /// </summary>
-    // orig: R037+0x3F30 party-wipe R037+0x3F30 (1462:3F30) draft; tests: DeleteMemberTests (the original's bytes run on twelve parties, local/batch/nmB)
+    // orig: R037+0x3F30 party-member-erase R037+0x3F30 (1462:3F30) draft; tests: DeleteMemberTests (the original's bytes run on twelve parties, local/batch/nmB)
     // C: event-search/event-release of kinds 0x43 and 0x47 for the slot; party[p][0] = 0; `if (leader == p)` the first of the five slots with
     //   status 1 (other than p) becomes the leader byte DS:907B, and with none the byte keeps p (Party.Leader then reads the emptied slot,
     //   as the original's party[leader]); R037+0x4048(ids[p]) drops the character from charactr.tmp; party-headcount DS:A67E becomes one past the

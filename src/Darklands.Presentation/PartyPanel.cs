@@ -116,6 +116,7 @@ public sealed class PartyPanel(GameAssets assets)
         //   session D-56a675: the loot page's '-' of each member, the leader's yellow, a dead member's grey under the hatching)
         if (member.Status != CharacterStatus.Away && _ui?.BattleStatusLetter?.Invoke(i) is { } letter)
         {
+            DrawLetterPatch(canvas, assets.CommonSprites, i);
             _text.Draw(canvas, 6, i * RowHeight + 0x1F, letter.ToString(), color);
         }
         if (member.Status == CharacterStatus.Dead)
@@ -123,6 +124,24 @@ public sealed class PartyPanel(GameAssets assets)
             DrawHatching(canvas, y);
         }
     }
+
+    /// <summary>The order letter's cell of a row (10 x 7 at (6, 0x28 x row + 0x1F)) wiped with the row background's own pixels.</summary>
+    // C: the patch DS:A6C2 is drawn (colour 0 transparent) at (6, 0x28 x row + 0x1F) before every order letter: the panel rows' letter and
+    //   the letter of a chosen order. It is made once at start-up (root 0000:F01E..F026): the row background DS:A626 drawn at (3, 1) of the
+    //   window DS:0118, then the rectangle (6, 0x1F), 10 wide and one line of the window's font high, saved and its handle stored in DS:A6C2.
+    // C: measured in the emulated original: the block is 10 x 7 and holds the row background's pixels at (3..12, 0x1E..0x24), none of them 0
+    //   (vis10 session visleads-order-letter), so it is drawn here as the row background clipped to the cell (the same pixels at the same place)
+    public static void DrawLetterPatch(Canvas canvas, CommonSprites sprites, int row)
+    {
+        var y = row * RowHeight + 0x1F;
+        SpriteDrawing.Draw(canvas, sprites.RowBackground, 3, row * RowHeight + 1, new Clip(6, y, 6 + LetterPatchWidth, y + LetterPatchHeight));
+    }
+
+    /// <summary>The size of the order letter's patch (DS:A6C2): 10 wide, one line of the start-up window's font high.</summary>
+    public const int LetterPatchWidth = 10;
+
+    /// <inheritdoc cref="LetterPatchWidth"/>
+    public const int LetterPatchHeight = 7;
 
     // orig: text-paint-wrapped(DS:0168, "???? ???? ????", 0x1c, 0x16, i * 0x28 + dy + 9, ...) with DS:01BC = 1 (centred), colour 7, dy = (i * 0x28 + 0x25 - height) / 2 but at least -1
     private void DrawUnknownBars(Canvas canvas, int row) => DrawUnknownBars(canvas, _text, row);

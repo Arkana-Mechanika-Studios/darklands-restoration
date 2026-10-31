@@ -22,7 +22,7 @@ public sealed class Party
 
     /// <summary>
     /// The leader's slot. The leader byte may name a slot past <see cref="Members"/>: a leader removed from the last slot while no
-    /// other member is able keeps the index (party-leave / party-wipe); that slot's record is then the emptied one (<see cref="Slot"/>).
+    /// other member is able keeps the index (party-leave / party-member-erase); that slot's record is then the emptied one (<see cref="Slot"/>).
     /// </summary>
     // C: party[leader] reads the fixed five-slot table (DS:9C69), whatever party-headcount is.
     public Character Leader => LeaderIndex >= 0 && LeaderIndex < Members.Count ? Members[LeaderIndex] : Slot(LeaderIndex);
@@ -102,9 +102,9 @@ public sealed class Party
 
     /// <summary>
     /// The record a slot past <see cref="Members"/> still holds (a departed member's, or a loaded slot's), null if none was left there:
-    /// party-leave and party-wipe clear only the status byte, so the name, sex, figure and record bytes stay until a member takes the slot.
+    /// party-leave and party-member-erase clear only the status byte, so the name, sex, figure and record bytes stay until a member takes the slot.
     /// </summary>
-    // C: party DS:9C69 (the 0x80-byte records from DS:9C55, the status byte at +0x14); party-wipe R037+0x3F30 writes the status byte and nothing else of the record
+    // C: party DS:9C69 (the 0x80-byte records from DS:9C55, the status byte at +0x14); party-member-erase R037+0x3F30 writes the status byte and nothing else of the record
     public Character? SpareRecord(int index) => index >= Members.Count && index < MaxMembers && _departed[index] ? _spare[index] : null;
 
     // the slots a member left (TrimToSize), as opposed to a slot only read past the party (Slot)
@@ -115,7 +115,7 @@ public sealed class Party
     /// dropped keep their member's bytes (name, pack, formulas, saints), as the original's slot
     /// memory does when only the status byte is cleared.
     /// </summary>
-    // C: party-leave / party-wipe clear party[p][0] and recount party-headcount; the 0x80-byte record and the slot's tables stay.
+    // C: party-leave / party-member-erase clear party[p][0] and recount party-headcount; the 0x80-byte record and the slot's tables stay.
     public void TrimToSize()
     {
         while (Members.Count > 0 && !Members[^1].IsPresent)

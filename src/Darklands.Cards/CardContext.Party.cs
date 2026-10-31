@@ -313,11 +313,11 @@ public sealed partial class CardContext
     public int ReportAway() => PartyRules.ReportAway(State);
 
     /// <summary>
-    /// <c>party-send-away</c>: the members who went away leave the party for good, each deleted
+    /// <c>party-dismiss-absent</c>: the members who went away leave the party for good, each deleted
     /// (<see cref="DeleteMember"/>) in slot order. Returns how many.
     /// </summary>
-    // orig: party-send-away R029+0x2434 (0E76:2434) draft, checked against the asm
-    // C: each away member gets status 0 and party-wipe (R037+0x3F30); then party-panel-row-set(0x100) (the screen's).
+    // orig: party-dismiss-absent R029+0x2434 (0E76:2434) draft, checked against the asm
+    // C: each away member gets status 0 and party-member-erase (R037+0x3F30); then party-panel-row-set(0x100) (the screen's).
     public int DropAway()
     {
         var n = 0;
@@ -340,7 +340,7 @@ public sealed partial class CardContext
     /// the next ones are looked at and becomes <c>top-scoring-member</c>. Returns how many were away (not who left).
     /// </summary>
     // orig: R029+0x2474 (0E76:2474) draft, checked against the asm
-    // C: roll-below(2) != 0 scans slots 0..4, else 4..0; the first away member gets status 0 and party-wipe (R037+0x3F30), the
+    // C: roll-below(2) != 0 scans slots 0..4, else 4..0; the first away member gets status 0 and party-member-erase (R037+0x3F30), the
     // C: others status 1; top-scoring-member = the one who left when any was away; party-panel-row-set(0x100) (the screen's); the count is returned.
     public int OneOfTheAwayLeaves()
     {
@@ -399,7 +399,7 @@ public sealed partial class CardContext
     //   then the shields, card frames and timer pictures are loaded again, command-menu-reset-overlay-entry and world-read("locs.tmp") (the locations the
     //   battle saw, and the events: EventLog.Reload), party-panel-frame-set/rows; the reseed is TimePassage.Reseed (before pass-hours(0)).
     // orig: battle-driver begins with cards-teardown-overlay-entry (R043+0x054E), which writes the events to events.tmp and empties the table
-    //   (EventLog.Shutdown: the battle and party-wipe-overlay-entry after it run on an empty table) and ends with sound-start(1) (root 047C:078A):
+    //   (EventLog.Shutdown: the battle and party-member-erase-overlay-entry after it run on an empty table) and ends with sound-start(1) (root 047C:078A):
     //   the music stops before the battle driver is loaded; with nobody left after the battle: music-start(0x12), the death film and
     //   exit_(0) (AllDead).
     public int RunBattle(int side, int seed, params int[] parameters)

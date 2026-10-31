@@ -25,7 +25,7 @@ public static class PartyRules
             return -1;
         }
         // C: the new member is written over the slot's record (a departed member's, a loaded slot's zeros): what join-party-member does not store
-        // C: stays. A slot past the party keeps the record of the member who left it (party-leave / party-wipe clear the status byte).
+        // C: stays. A slot past the party keeps the record of the member who left it (party-leave / party-member-erase clear the status byte).
         var before = slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot);
         var m = new Character { Name = name, ShortName = shortName, Status = CharacterStatus.Able, Age = 25, Image = image };
         // C: R029+0x48B1 copies the argument at [bp+0xC] into member-shield-picture[slot] (DS:A668 + slot * 4, written back to charactr.tmp);
@@ -286,9 +286,9 @@ public static class PartyRules
     }
 
     /// <summary>After a battle: the dead leave the party for good, everybody else (but those away) is able again.</summary>
-    /// <param name="delete">party-wipe (the slot emptied, the character out of the roster, the party trimmed).</param>
+    /// <param name="delete">party-member-erase (the slot emptied, the character out of the roster, the party trimmed).</param>
     // orig: battle-driver R029+0x2278 (0E76:2278) matched
-    // C: for each of the 5 slots, status 3 -> 0 and party-wipe-overlay-entry(i) (R037+0x3F30) first, then every status but 0 and 5 -> 1.
+    // C: for each of the 5 slots, status 3 -> 0 and party-member-erase-overlay-entry(i) (R037+0x3F30) first, then every status but 0 and 5 -> 1.
     public static void AfterBattle(GameState s, Action<int> delete)
     {
         for (var i = 0; i < Party.MaxMembers; i++)

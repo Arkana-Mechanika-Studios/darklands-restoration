@@ -55,7 +55,7 @@ One comment per reconstructed operation (class, method or block), on the line ab
 ```
 
 The coordinate comes first (a readable name of the function may precede it: names such as
-`card-run` or `party-wipe` are ordinary descriptions), then the link-time address for
+`card-run` or `party-member-erase` are ordinary descriptions), then the link-time address for
 overlays, the source status and the tests or oracles that cover it. Prose cites other functions
 the same way ("calls R043+0x09AE"). `tools/source-map/orig_comment.py <coordinate>` prints the
 comment for a coordinate.

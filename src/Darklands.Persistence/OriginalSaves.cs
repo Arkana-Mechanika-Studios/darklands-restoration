@@ -376,7 +376,7 @@ public static class OriginalSaves
         file.Palettes = image is null ? new byte[file.Palettes.Length] : (byte[])image.Palettes.Clone();
         for (var slot = 0; slot < SaveFile.PartySlots; slot++)
         {
-            // C: member-shield-picture / member-colours keep a departed member's figure (party-wipe clears only the status byte)
+            // C: member-shield-picture / member-colours keep a departed member's figure (party-member-erase clears only the status byte)
             var member = slot < state.Party.Members.Count ? state.Party.Members[slot] : state.Party.SpareRecord(slot);
             if (member is null)
             {

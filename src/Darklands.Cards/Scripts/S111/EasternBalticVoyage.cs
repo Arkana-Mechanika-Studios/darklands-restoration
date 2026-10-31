@@ -34,7 +34,7 @@ public sealed class EasternBalticVoyage : Card
             // orig: R111+0x0DE2 (18EA:02C2) matched; hint R111+0x0E00
             new MenuLine(_ => Land(c, c.Random(3) + 3)),
             // orig: R111+0x0E38 (18EA:0318) matched (empty); hint R111+0x0E3A
-            // DORMANT: lines 3..5 are never offered; their actions (R111+0x0E72, R111+0x0EAC) are empty.
+            // Lines 3..5 are reachable: card 270 keeps card 269's hotspots, so they can be clicked; their actions (R111+0x0E72, R111+0x0EAC) are empty.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

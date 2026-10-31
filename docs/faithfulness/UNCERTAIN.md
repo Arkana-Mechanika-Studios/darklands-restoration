@@ -17,9 +17,9 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | travel | core | 2 |
 | battles | core | 6 |
 | persistence | core | 0 |
-| screens/presentation | other | 9 |
+| screens/presentation | other | 11 |
 | host/audio | other | 0 |
-| total |  | 25 |
+| total |  | 27 |
 
 ## Core logic (16)
 
@@ -73,20 +73,26 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-8df8a9** `uncertain` - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:224` `MineBuilder.MakeChests`  
   original: `R009+0x1AF0` (1432:1AF0, draft)  
   why: the original holds stack leftovers).
-- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:895` `EffectField.public`  
+- **U-91948c** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:932` `EffectField.public`  
   original: `root 06A1:29B6` (06A1:29B6, asm), `R014+0xA738` (18BF:02A8, draft)  
   why: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
-- **U-cb31b9** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:590` `TacticalBattle._actionBeforeRecords`  
+- **U-cb31b9** `uncertain` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:602` `TacticalBattle._actionBeforeRecords`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text); the rewrite starts it at 0 and keeps only what command-mode-end writes. The branches below agree for any value other than 0x80, 0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
 
-## Presentation and host (9)
+## Presentation and host (11)
 
-### screens/presentation (9)
+### screens/presentation (11)
 
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
+- **U-08d88a** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:986` `BattleScreen.OrderLetterDrawn`  
+  original: `R016+0x15BE` (1EF8:15BE, draft)  
+  why: with nobody selected (DS:A6B2 = 0xFF: H with Halt on outside order mode, reachable in normal play, see ChoosePlace) the original draws the patch and the 'H' on the page DS:0168 and copies the cell to the screen at y = -9; whether the driver clips it or wraps it to the bottom rows of the 320-wide frame buffer was not checked; nothing is drawn here.
+- **U-00dcd4** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2518` `BattleScreen.Draw`  
+  original: `R014+0x7BBE` (14F7:13AE, draft), `R014+0x8724` (14F7:1F14, draft), `R014+0x87E4` (14F7:1FD4, draft) +12 more  
+  why: while paused the C# draws one more frame (with new puff jitter of the clouds) after the pause begins and then stops; the original's draw pass (fight-draw R014+0x6818, which Draw stands for) leaves a last frame that equals the C#'s first paused one (vis10 D-09fbc1, shots c and d: 3,497 px; shots a and b: 0). Seen only in the picture, not chased; possibly an extra redraw pass in the C#.
 - **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:84` `BuySellPage.Text`  
   original: `root 047C:055A` (047C:055A, draft)  
   why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).

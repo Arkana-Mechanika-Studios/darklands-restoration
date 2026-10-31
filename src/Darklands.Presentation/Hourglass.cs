@@ -93,6 +93,8 @@ internal static class Hourglass
     //   24 x 20), a negative width draws the columns right to left and a negative height the rows bottom to top, colour 0 transparent. checked against asm
     private static void DrawHourglass(GameUi ui, int frame, int day, int month)
     {
+        // C: R043+0x37D0..0x37D3 (150B:2D40..2D43): cmp ax, 7 / ja leaves at once for a frame above 7 as an unsigned word, so no picture is drawn for a
+        // C: negative one (the clock of an edited saved game: hour -3 gives band -1, and -1 % 8 stays -1); the texts under it are still drawn.
         var (picture, flipX, flipY) = frame switch
         {
             0 => ("timer03", false, true),
@@ -102,9 +104,10 @@ internal static class Hourglass
             4 => ("timer03", false, false),
             5 => ("timer04", false, false),
             6 => ("timer05", false, false),
-            _ => ("timer04", false, true),
+            7 => ("timer04", false, true),
+            _ => ("", false, false),
         };
-        if (ui.Assets.PictureExists(picture))
+        if (picture.Length > 0 && ui.Assets.PictureExists(picture))
         {
             ui.Canvas.DrawMirrored(ui.Assets.Picture(picture).Image, CardScreen.WindowX + 0x6C, 0x53, flipX, flipY);
         }

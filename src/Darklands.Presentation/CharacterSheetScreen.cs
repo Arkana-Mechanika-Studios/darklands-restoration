@@ -1090,7 +1090,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 string[] none = ["No Weapon", "No Vitals Armor", "No Limb Armor", "No Shield", "No Missile Weapon"];
                 for (var slot = 0; slot < 5; slot++)
                 {
-                    // C: the original indexes the item list with worn-item's result, −1 included, when the type is set but no stack matches.
+                    // C: the original indexes the item list with slot-item's result, −1 included, when the type is set but no stack matches.
                     var code = Inventory.EquippedType(_s, _who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_s, _who, (EquipmentSlot)slot) : -1;
                     if (code != -1)
                     {

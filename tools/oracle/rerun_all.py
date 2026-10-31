@@ -54,7 +54,7 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             # the player's orders in a battle (local/overnight/orders): Prague's gate DKSAVE40, Luebeck's Dksave21, the others the gate of DKSAVE0
             "orders-select": "DKSAVE0.SAV", "orders-walk": "DKSAVE0.SAV", "orders-missile": "DKSAVE0.SAV", "orders-attack-a": "DKSAVE0.SAV",
             "orders-attack-b": "DKSAVE0.SAV", "orders-attack-b2": "DKSAVE0.SAV", "orders-attack-v": "DKSAVE0.SAV", "orders-attacks": "DKSAVE0.SAV",
-            "orders-sheet": "DKSAVE0.SAV", "orders-sheetclick": "DKSAVE0.SAV", "orders-save": "DKSAVE0.SAV", "orders-potion": "Dksave21.sav", "luebeck-potion": "Dksave21.sav", "orders-potion2": NORMALISED,
+            "orders-sheet": "DKSAVE0.SAV", "orders-sheetclick": "DKSAVE0.SAV", "orders-save": "DKSAVE0.SAV", "orders-potion": "Dksave21.sav", "luebeck-potion": "Dksave21.sav", "orders-cloud": "Dksave21.sav", "orders-potion2": NORMALISED,
             "orders-potion3": NORMALISED, "orders-prague-missile": NORMALISED,
             "sheet-dksave0": "DKSAVE0.SAV",
             # the loot screen after the gate fight of DKSAVE0 (local/overnight/loot): keys, mouse, capital keys and Esc
@@ -63,7 +63,7 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "kbd-map-held": "DKSAVE17.SAV", "kbd-map-enter": "DKSAVE17.SAV", "kbd-map-wait": "DKSAVE17.SAV",
             "kbd-battle-cursor": "DKSAVE0.SAV", "kbd-battle-held": "DKSAVE0.SAV", "kbd-battle-ctrl": "DKSAVE0.SAV",
             # the camp and the pack outside a battle (local/overnight/camp): DKSAVE99 and Dksave22 are parties on the map, DKSAVE0 is at the Pressburg inn
-            "camp-wild-brew": "DKSAVE99.SAV", "camp-wild-risk": "Dksave22.sav", "camp-inn-broke": "DKSAVE0.SAV", "camp-rough": "DKSAVE0.SAV", "camp-mouse": "DKSAVE99.SAV",
+            "camp-wild-brew": "DKSAVE99.SAV", "camp-wild-risk": "Dksave22.sav", "camp-inn-broke": "DKSAVE0.SAV", "camp-rough": "DKSAVE0.SAV", "uj-hourm3": "synth/Dksave22-hourm3.sav", "uj-marchm1": "synth/DKSAVE0-marchm1.sav", "uj-relic1": "synth/DKSAVE0-relics.sav", "uj-formula1": "Dksave10.sav", "camp-mouse": "DKSAVE99.SAV",
             "pack-potions": "DKSAVE99.SAV", "pack-stacks": "DKSAVE99.SAV",
             # the mine of Rammelsburg (local/overnight/dungeon): DKSAVE99 on the map, the walk to the town, the mine's battle
             "dungeon-mine-doors": "DKSAVE99.SAV", "savemid-mine": "DKSAVE99.SAV", "dungeon-mine-orders": "DKSAVE99.SAV", "dungeon-mine-group": "DKSAVE99.SAV",
@@ -733,7 +733,7 @@ SESSIONS.update({
 })
 # the sessions run with --battle-records (the combatant records of every battle pass compared: report.json's battle)
 BATTLE_RECORDS = {"gen-bheld-01", "gen-bheld-04", "gen-bheld-12", "gen-bheld-13", "gen-bkeys-16", "gen-bsafe-02", "gen-bsafe-08", "gen-bheld-32", "gen-bsafe-03", "gen-bsafe-05", "gen-bsafe-32", "gen-bsafe-38", "gen-bheld-34", "gen-bedge-01", "gen-bedge-04", "gen-bheld-11", "gen-bkeys-02", "gen-bkeys-11", "gen-bkeys-15", "gen-bkeys-27", "gen-bkeys-39", "gen-bkeys-47", "gen-bkeys-50", "gen-blue-03", "orders-select", "orders-walk", "orders-missile", "orders-attack-a", "orders-attack-b", "orders-attack-b2", "orders-attack-v",
-                  "orders-attacks", "orders-sheet", "orders-sheetclick", "orders-save", "orders-potion", "luebeck-potion", "orders-potion2", "orders-potion3", "orders-prague-missile",
+                  "orders-attacks", "orders-sheet", "orders-sheetclick", "orders-save", "orders-potion", "luebeck-potion", "orders-cloud", "orders-potion2", "orders-potion3", "orders-prague-missile",
                   "dungeon-mine-doors", "dungeon-mine-orders", "dungeon-mine-group",
                   "res5-footpads", "res5-ChasedByTheCityGuard", "res5-MarketAtNight", "res5-rebelmob", "res5-WolfPackOnTheTrail", "res5-WildBoarsCharge"}      # the minimal case of the sheet's allocation error (R031+0x0B22): ends, does not agree
 SESSIONS["gen-bhurt-01"] = "synth/DKSAVE0-hurt.sav"

@@ -632,6 +632,186 @@ public sealed class BattleUiTests
         Assert.True(Unchanged(canvas => PartyPanel.DrawHatching(canvas, 2 * PartyPanel.RowHeight + 1, 0x27)), "the dead member's row is not hatched");
     }
 
+    /// <summary>
+    /// The battle panel's order letter is drawn in the colour of the member's name (root 0000:18FA runs after the bars, which leave the name's
+    /// colour set in the window): the leader's yellow, white for the others, grey for a member who is gone; an away member has none (vis10 session
+    /// tleads-battle-difficulty).
+    /// </summary>
+    [Fact]
+    public void TheBattlesOrderLetterIsInTheColourOfTheMembersName()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.State.Party.Members[2].Status = CharacterStatus.Dead;
+        run.State.Party.Members[3].Status = CharacterStatus.Away;
+        run.Play("wait:10");
+        var frame = run.LastFrame!;
+        var text = new Darklands.Presentation.Graphics.TextPainter(run.Ui.Assets.Font(1));
+        bool Unchanged(Action<Darklands.Presentation.Graphics.Canvas> draw)
+        {
+            var shown = new Screen();
+            frame.CopyTo(shown.Pixels, 0);
+            draw(new Darklands.Presentation.Graphics.Canvas(shown));
+            return shown.Pixels.AsSpan().SequenceEqual(frame);
+        }
+        var colours = new byte[] { 0x0E, Darklands.Presentation.Graphics.Palette.White, 7 };
+        var seen = new Dictionary<int, byte>();
+        for (var i = 0; i < 2; i++)
+        {
+            var letter = run.Ui.BattleStatusLetter?.Invoke(i);
+            Assert.NotNull(letter);
+            var name = run.State.Party.Members[i].ShortName;
+            // the name's colour: yellow for the leader, grey for a member who is not the selected one, else white
+            var own = colours.Where(c => Unchanged(canvas => text.Draw(canvas, 4, i * PartyPanel.RowHeight + 2, name, c))).ToList();
+            Assert.Single(own);
+            var expected = own[0];
+            Assert.True(Unchanged(canvas => text.Draw(canvas, 6, i * PartyPanel.RowHeight + 0x1F, letter.ToString()!, expected)), $"the letter of member {i} is not in the name's colour {expected}");
+            foreach (var other in colours.Where(c => c != expected))
+            {
+                Assert.False(Unchanged(canvas => text.Draw(canvas, 6, i * PartyPanel.RowHeight + 0x1F, letter.ToString()!, other)), $"the letter of member {i} is also drawn in {other}");
+            }
+            seen[i] = expected;
+        }
+        Assert.Equal((byte)0x0E, seen[run.Screen.Tactics!.Battle.Leader]);
+        Assert.Null(run.Ui.BattleStatusLetter?.Invoke(3));
+        // the dead member (row 2) has a grey name
+        Assert.True(Unchanged(canvas => text.Draw(canvas, 4, 2 * PartyPanel.RowHeight + 2, run.State.Party.Members[2].ShortName, 7)), "the dead member's name is not grey");
+    }
+
+    /// <summary>
+    /// The order letter's patch DS:A6C2 is the 10 x 7 block of the row background under the letter's place: the bytes of the block the
+    /// emulated original made at start-up (root 0000:F01E..F026, vis10 session visleads-order-letter), row by row.
+    /// </summary>
+    [Fact]
+    public void TheLetterPatchIsTheRowBackgroundUnderTheLetter()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        string[] measured =
+        [
+            "9c9d9c9c9d9d9c9d9d9c", "9d9c9c9c9d9c9d9c9c9e", "9d9e9c9c9e9d9d9d9e9d", "9e9d9e9d9d9d9e9d9d9e",
+            "9e9d9d9d9d9d9e9f9d9e", "9f9e9f9f9e9d9e9e9e9f", "9e9e9e9e9f9f9f9f9e9f",
+        ];
+        var assets = new GameAssets(files);
+        for (var row = 0; row < 5; row++)
+        {
+            var screen = new Screen();
+            PartyPanel.DrawLetterPatch(new Darklands.Presentation.Graphics.Canvas(screen), assets.CommonSprites, row);
+            var y0 = row * PartyPanel.RowHeight + 0x1F;
+            for (var y = 0; y < Screen.Height; y++)
+            {
+                for (var x = 0; x < Screen.Width; x++)
+                {
+                    var inside = x is >= 6 and < 6 + PartyPanel.LetterPatchWidth && y >= y0 && y < y0 + PartyPanel.LetterPatchHeight;
+                    var expected = inside ? Convert.FromHexString(measured[y - y0])[x - 6] : (byte)0;
+                    Assert.True(expected == screen.Pixels[y * Screen.Width + x], $"row {row}: pixel ({x}, {y}) is {screen.Pixels[y * Screen.Width + x]:X2}, not {expected:X2}");
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// An order key in order mode draws the chosen order's letter alone in the member's row: the patch DS:A6C2, then the letter in colour
+    /// 0xFF (R016+0x15BE); it stays until the panel rows are drawn again (Enter ends order mode). W after F draws F (the flee bit is still
+    /// set when the letter is drawn) and leaves the flee bit cleared (vis10 session visleads-order-letter, the original hooked).
+    /// </summary>
+    [Fact]
+    public void AnOrderKeyDrawsItsLetterWhiteUntilTheRowIsDrawnAgain()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5", "key:1", "wait:3");
+        var tb = run.Screen.Tactics!;
+        Assert.True(tb.InOrderMode);
+        var row = tb.Selected;
+        var text = new Darklands.Presentation.Graphics.TextPainter(run.Ui.Assets.Font(1));
+        void LetterShown(char letter)
+        {
+            Assert.Equal(letter, run.Screen.OrderLetterShown(row));
+            var frame = run.LastFrame!;
+            var shown = new Screen();
+            frame.CopyTo(shown.Pixels, 0);
+            var canvas = new Darklands.Presentation.Graphics.Canvas(shown);
+            PartyPanel.DrawLetterPatch(canvas, run.Ui.Assets.CommonSprites, row);
+            text.Draw(canvas, 6, row * PartyPanel.RowHeight + 0x1F, letter.ToString(), 0xFF);
+            Assert.True(shown.Pixels.AsSpan().SequenceEqual(frame), $"the row's cell does not show {letter} in colour 0xFF over the patch");
+            Assert.Contains((byte)0xFF, frame);
+        }
+        run.Play("key:f", "wait:3");
+        LetterShown('F');
+        Assert.NotEqual(0, (int)(tb.Battle[row].Flags & TacticalFlags.Following));
+        run.Play("key:w", "wait:3");
+        LetterShown('F');
+        Assert.Equal(0, (int)(tb.Battle[row].Flags & TacticalFlags.Following));
+        run.Play("key:b", "wait:3");
+        LetterShown('B');
+        run.Play("key:enter", "wait:5");
+        Assert.False(tb.InOrderMode);
+        Assert.Null(run.Screen.OrderLetterShown(row));
+    }
+
+    /// <summary>
+    /// Alt-Q in a battle (the hot keys table, root 0000:0CAA, which runs in font 1): the question "Quit to DOS?" is the card window's box
+    /// (rows 93..106), run with font 1 and the font put back after; "no" leaves the fight as it was; "yes" ends the program (root 0000:13A0).
+    /// </summary>
+    [Theory]
+    [InlineData("n", false)]
+    [InlineData("y", true)]
+    public void AltQInABattleAsksInFontOneAndYesQuits(string answer, bool quits)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        var keys = new HotKeys(run.Ui, run.State, run.Ui.Options);
+        var quit = false;
+        var fonts = new List<int>();
+        run.Ui.GameKey = key =>
+        {
+            fonts.Add(run.Ui.CardWindowFont);
+            try
+            {
+                return keys.Handle(key);
+            }
+            catch (QuitGameException)
+            {
+                quit = true;
+                throw;
+            }
+        };
+        run.Play("wait:10", "key:space", "wait:5");
+        run.Recording = true;
+        run.Play("key:altq", "wait:15", "key:" + answer, "wait:15");
+        Assert.Equal([1], fonts);
+        Assert.Equal(quits, quit);
+        // the box: the first frame that differs from the one before it by a block of rows 93..106 (the card window's centre)
+        var frames = run.Frames;
+        Assert.True(frames.Count > 2);
+        int top = -1, bottom = -1;
+        for (var k = 1; k < frames.Count && top < 0; k++)
+        {
+            var changed = Enumerable.Range(0, Screen.Height)
+                .Where(y => Enumerable.Range(0, Screen.Width).Count(x => frames[k].Pixels[y * Screen.Width + x] != frames[k - 1].Pixels[y * Screen.Width + x]) > 20)
+                .ToList();
+            if (changed.Count >= 10)
+            {
+                (top, bottom) = (changed[0], changed[^1]);
+            }
+        }
+        Assert.Equal(93, top);
+        Assert.Equal(106, bottom);
+        Assert.Equal(3, run.Ui.CardWindowFont);
+    }
+
     /// <summary>A battle on the player's files with a host that replays the headless host's steps.</summary>
     internal sealed class Session : IDisposable
     {
@@ -879,6 +1059,7 @@ public sealed class BattleUiTests
                         "f10" => Keys.F10,
                         "f1" => Keys.F1,
                         "alts" => Keys.AltS,
+                        "altq" => Keys.AltQ,
                         "down" => Keys.Down,
                         "up" => Keys.Up,
                         "right" => Keys.Right,

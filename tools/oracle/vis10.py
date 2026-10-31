@@ -615,7 +615,7 @@ ROWS = [
     ("D-56a675", "Loot screen palette",
      "On the loot screen the original redraws the picture without setting its colours again; the restoration sets the picture's own colours."),
     ("D-09fbc1", "Battle clouds",
-     "In a battle the original sorts a cloud's edges in with the fighters by depth and clips the puffs to the cloud's box; the restoration draws the edges over everyone and clips to the view."),
+     "A thrown cloud held paused in a battle: the puffs are drawn within the box of their points and the edges sorted in with the fighters by depth, as in the original (equal pixel for pixel since 2026-10-31)."),
     ("D-5de66d", "Card picture shown at the first text",
      "When a card opens, the original keeps the old screen until the card's first text and then shows picture and text together; the restoration shows the new picture at once."),
     ("D-b0c9a6", "Character creation: new member's row",

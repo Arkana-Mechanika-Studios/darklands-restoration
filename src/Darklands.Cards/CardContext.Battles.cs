@@ -48,7 +48,7 @@ public sealed partial class CardContext
     /// <summary>The battle a card sets up before it returns −2..−6.</summary>
     public CardBattle CardBattle => new(State.BattleOrders);
 
-    // party-wipe is the shared DeleteMember (CardContext.Memory.cs); party-leave is RemoveMember (CardContext.Helpers.cs).
+    // party-member-erase is the shared DeleteMember (CardContext.Memory.cs); party-leave is RemoveMember (CardContext.Helpers.cs).
 
     /// <summary>A character of the game's roster joins the party (<c>party-join</c>). Returns the slot, or −1.</summary>
     // orig: party-join R037+0x3CD6 (1462:3CD6) draft (fn matched): PartyRules.AddFromRoster

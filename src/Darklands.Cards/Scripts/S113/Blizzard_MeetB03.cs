@@ -52,7 +52,7 @@ public sealed class Blizzard_MeetB03 : Card
     // orig: R113+0x1A12 (19B5:0242) matched; tests: CardSmokeTests
     // C: the kind tests compare the whole flag word (== 0x400L), not a bit; the roll is drawn only for those items (&&).
     // C: the stack count (record +0x6A) is read anew each step, so after a spoiled stack is removed the next one is skipped.
-    // DORMANT: raise-attribute-by keeps Strength at 1 or more, so the "Strength <= 0" repair never applies.
+    // Strength <= 0 repair: reachable only with an edited save (maximum Strength byte 0), but the port loads any save, so it is kept.
     private static void KeepGoing(CardContext c)
     {
         var days = c.Random(4) + 2;
@@ -112,7 +112,7 @@ public sealed class Blizzard_MeetB03 : Card
 
     /// <summary>Camping it out: 5 Endurance and up to 2 Strength each, and half a day more.</summary>
     // orig: R113+0x1CA4 (19B5:04D4) matched; tests: CardSmokeTests
-    // DORMANT: as above, the Strength repair never applies.
+    // As above, the Strength repair is reachable only with an edited save.
     private static void WaitItOut(CardContext c)
     {
         var days = c.Random(4) + 2;

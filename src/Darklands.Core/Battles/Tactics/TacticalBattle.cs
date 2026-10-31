@@ -32,6 +32,14 @@ public interface ITacticalView : IBattleViewport
     /// <summary>The panel row of a member (or everything when −1) needs redrawing.</summary>
     void RowChanged(int member);
 
+    /// <summary>
+    /// An order was chosen in order mode: the selected member's order letter is drawn alone in its panel row (R016+0x15BE), from the
+    /// order, the place action and the flee bit as they are now; it stays until the row is drawn again.
+    /// </summary>
+    void OrderLetterDrawn()
+    {
+    }
+
     /// <summary>The level on screen changed (doors, furniture, floor switch: floor-view-paint(−1)).</summary>
     void MapChanged();
 

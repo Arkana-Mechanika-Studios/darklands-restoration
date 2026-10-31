@@ -189,8 +189,24 @@ public sealed class EffectField : IEffectClouds
     /// <summary>R136+0x4DB8 / 4E38 and 4C62 / 4CE2: the screen points of each cloud column's south edge and each row's east edge (X −999 none).</summary>
     private readonly (int X, int Y)[,] _cloudSouthEdge = new (int, int)[8, 4], _cloudEastEdge = new (int, int)[8, 4];
 
+    /// <summary>R136+0x706A / 70EA and 6F6A / 6FEA: the map points of each cloud column's south edge and each row's east edge (their depth in the draw list).</summary>
+    private readonly (int X, int Y)[,] _cloudSouthEdgeAt = new (int, int)[8, 4], _cloudEastEdgeAt = new (int, int)[8, 4];
+
     /// <summary>The edge sprites 07EC picked for each cloud (DS:CA41[r], DS:CA71[r]; 0 when it ended).</summary>
     private readonly (int South, int East)[] _cloudEdgeSprites = new (int, int)[8];
+
+    /// <summary>DS:C897 / DS:C8BA / DS:C8F7 / DS:C915: each cloud's puff box of the last frame (screen, X −9999 none); they move with the records.</summary>
+    private readonly int[] _lastBoxX = [.. Enumerable.Repeat(-9999, 8)], _lastBoxY = [.. Enumerable.Repeat(-9999, 8)], _lastBoxW = new int[8], _lastBoxH = new int[8];
+
+    // DIVERGENCE: the original never resets DS:8574 / DS:859E / DS:855A / DS:8540 at a battle's start (they are written only by R014+0x8CB4, 0x8D47..0x8E69, and read by it and by R014+0x6FFC; the
+    //   start R014+0x0285..0x02A2 fills DS:CA30 and DS:C897 only; no range fill or file load of them was found, not searched exhaustively): a cloud slot that 0x8CB4 skips (the shown level differs, or it has no puff) keeps
+    //   the growth its slot had last, possibly from an earlier battle, and its edge boxes (queued whatever the level) use it. Here every field starts at 0. Visual only, rare.
+    /// <summary>DS:8574 / DS:859E / DS:855A / DS:8540: how far each cloud's box this frame reaches past its puffs to take in the last frame's
+    /// box (x, y, width, height); a cloud the frame skips keeps the old values.</summary>
+    private readonly (int X, int Y, int W, int H)[] _cloudBoxGrowth = new (int, int, int, int)[8];
+
+    /// <summary>The draw entries of the clouds' puffs (DS:E167, DS:E169 of them): each box clipped to the view.</summary>
+    private readonly (int X, int Y, int W, int H)[] _puffBoxes = new (int, int, int, int)[8];
 
     /// <summary>The sprite the renderer drew for each cloud's puffs, each area's puffs and each combatant's flash this tick (−1 none).</summary>
     private readonly int[] _cloudSprite = new int[8], _flashSprite = [.. Enumerable.Repeat(-1, Combatant.Count)];
@@ -235,8 +251,25 @@ public sealed class EffectField : IEffectClouds
 
     public (int X, int Y) CloudEastEdge(int k, int c) => _cloudEastEdge[k, c];
 
+    /// <summary>The map points of the south edge of column c and the east edge of row c of cloud k (meaningful while the screen point is not −999).</summary>
+    public (int X, int Y) CloudSouthEdgeAt(int k, int c) => _cloudSouthEdgeAt[k, c];
+
+    public (int X, int Y) CloudEastEdgeAt(int k, int c) => _cloudEastEdgeAt[k, c];
+
     /// <summary>The edge sprites of cloud k this tick (105/106 and 107/108; 0 none).</summary>
     public (int South, int East) CloudEdgeSprites(int k) => _cloudEdgeSprites[k];
+
+    /// <summary>How far cloud k's edge boxes grow this frame (DS:8574, DS:859E, DS:855A, DS:8540): x, y, width, height.</summary>
+    public (int X, int Y, int W, int H) CloudBoxGrowth(int k) => _cloudBoxGrowth[k];
+
+    /// <summary>The puff draw entries of this frame: one per cloud on the level shown with a puff (DS:E169).</summary>
+    public int PuffBoxCount { get; private set; }
+
+    /// <summary>The screen box (relative to the view, clipped to it) that entry e's puffs are drawn in; entry e draws cloud e's puffs.</summary>
+    public (int X, int Y, int W, int H) PuffBox(int e) => _puffBoxes[e];
+
+    /// <summary>floor-view-paint's end (R017+0x0B82..0x0B8A): DS:C897[0..7] = −9999, the clouds' last boxes forgotten.</summary>
+    public void ForgetCloudBoxes() => Array.Fill(_lastBoxX, -9999);
 
     /// <summary>The sprite chosen for cloud k's body this tick (DS:CA2C[r], 103 or 104), −1 when it ended.</summary>
     public int CloudSprite(int k) => _cloudSprite[k];
@@ -622,7 +655,7 @@ public sealed class EffectField : IEffectClouds
 
     /// <summary>Removes cloud n (the later ones move down; the last slot keeps its old contents).</summary>
     // orig: R019+0x01E2 (1EF8:01E2) matched
-    // C: the renderer's erase boxes DS:C8F7/DS:C915/DS:C897/DS:C8BA move with the records; the screen keeps its own.
+    // C: the renderer's last boxes DS:C8F7/DS:C915/DS:C897/DS:C8BA move with the records (the growths DS:8574.. stay by slot).
     private void RemoveCloud(int n)
     {
         if (CloudCount == 0)
@@ -632,6 +665,10 @@ public sealed class EffectField : IEffectClouds
         for (var i = n; i < CloudCount - 1; i++)
         {
             _clouds[i] = _clouds[i + 1];
+            _lastBoxW[i] = _lastBoxW[i + 1];
+            _lastBoxH[i] = _lastBoxH[i + 1];
+            _lastBoxX[i] = _lastBoxX[i + 1];
+            _lastBoxY[i] = _lastBoxY[i + 1];
         }
         CloudCount--;
     }
@@ -1075,6 +1112,11 @@ public sealed class EffectField : IEffectClouds
         }
         for (var k = 0; k < CloudCount; k++)
         {
+            // R014+0x6890..0x68BA: a cloud still growing forgets its last box (DS:C897[k] = −9999)
+            if (_clouds[k].Size >> 4 != (_clouds[k].Size & 0x0F))
+            {
+                _lastBoxX[k] = -9999;
+            }
             LayOutCloud(k);
         }
         for (var k = 0; k < AreaCount; k++)
@@ -1111,9 +1153,11 @@ public sealed class EffectField : IEffectClouds
                 _pieceFrames[(layer, x, y)] = Scaled(2);
             }
         }
-        // 07EC: the cloud edges (two random sprites each), then the areas' puffs (R014+0x917E, 14F7:296E).
+        // 07EC: the clouds' puff boxes (24A4), the cloud edges (two random sprites each), then the areas' puffs (R014+0x917E, 14F7:296E).
+        PuffBoxCount = 0;
         if (CloudCount > 0)
         {
+            LayOutPuffBoxes();
             for (var k = 0; k < CloudCount; k++)
             {
                 // C: s1 is drawn before s2.
@@ -1204,14 +1248,7 @@ public sealed class EffectField : IEffectClouds
         DrawListCount = count;
         // 0E9E: one entry per cloud on this level with a puff in view (24A4); C: entry k draws cloud k's sprite even when an
         // earlier cloud had no entry (the entries are not the clouds' slots): faithful.
-        var entries = 0;
-        for (var k = 0; k < CloudCount && entries <= 0x7F; k++)
-        {
-            if (_clouds[k].Level == Battle.FloorShown && AnyPuff(_cloudPuffX, _cloudPuffY, k, _clouds[k].Size & 7))
-            {
-                entries++;
-            }
-        }
+        var entries = PuffBoxCount;
         Array.Fill(_cloudSprite, -1);
         for (var k = 0; k < entries; k++)
         {
@@ -1274,6 +1311,125 @@ public sealed class EffectField : IEffectClouds
         return false;
     }
 
+    /// <summary>
+    /// The clouds' puff boxes: for each cloud on the level shown with a puff, the box of its puffs (25 wider and 8 higher than their
+    /// points) taken together with the last frame's box, as a draw entry clipped to the view; the growth past the puffs is kept for the
+    /// cloud's edges.
+    /// </summary>
+    // orig: R014+0x8CB4 (14F7:24A4) draft, the box and its growth checked against the asm (R014+0x8D40..0x8F09)
+    // C: a cloud the loop skips (another level, no puff) gets DS:C897 / DS:C8BA = −9999 and keeps its growth DS:8574.. of an earlier frame;
+    // the dirty screen tiles the entry marks (R014+0x8F69..) are not kept here (the whole view is drawn each frame).
+    private void LayOutPuffBoxes()
+    {
+        for (var k = 0; k < CloudCount; k++)
+        {
+            var n = _clouds[k].Size & 7;
+            int minX = 9999, minY = 9999, maxX = -9999, maxY = -9999;
+            if (_clouds[k].Level == Battle.FloorShown)
+            {
+                for (var j = 0; j < n * n && j < 16; j++)
+                {
+                    int x = _cloudPuffX[k, j], y = _cloudPuffY[k, j];
+                    if (x != 0 && y != 0)
+                    {
+                        minX = Math.Min(minX, x);
+                        maxX = Math.Max(maxX, x);
+                        minY = Math.Min(minY, y);
+                        maxY = Math.Max(maxY, y);
+                    }
+                }
+            }
+            if (minX == 9999)
+            {
+                _lastBoxX[k] = _lastBoxY[k] = -9999;
+                continue;
+            }
+            int gx = 0, gy = 0, gw = 0, gh = 0;
+            short w = (short)(maxX - minX + 25), h = (short)(maxY - minY + 8);
+            if (_lastBoxX[k] != -9999)
+            {
+                // the box reaches out to take in the last one: x from the further left, the right end at the further right (y likewise)
+                int ox = _lastBoxX[k], oxe = ox + _lastBoxW[k], oy = _lastBoxY[k], oye = oy + _lastBoxH[k];
+                int nxe = minX + w, nye = minY + h;
+                if (ox > minX)
+                {
+                    if (oxe > nxe)
+                    {
+                        gw = ox + (_lastBoxW[k] - w) - minX;
+                    }
+                }
+                else
+                {
+                    gx = ox - minX;
+                    gw = minX - ox;
+                    if (oxe > nxe)
+                    {
+                        gw = oxe + (minX - ox) - nxe;
+                    }
+                }
+                if (oy > minY)
+                {
+                    if (oye > nye)
+                    {
+                        gh = oy + (_lastBoxH[k] - h) - minY;
+                    }
+                }
+                else
+                {
+                    gy = oy - minY;
+                    gh = minY - oy;
+                    if (oye > nye)
+                    {
+                        gh = oye + (minY - oy) - nye;
+                    }
+                }
+            }
+            _cloudBoxGrowth[k] = (gx, gy, gw, gh);
+            _lastBoxX[k] = minX;
+            _lastBoxY[k] = minY;
+            _lastBoxW[k] = w;
+            _lastBoxH[k] = h;
+            if (PuffBoxCount > 0x7F)
+            {
+                return;
+            }
+            _puffBoxes[PuffBoxCount++] = ClipToView(minX + gx, minY + gy, gw + w, gh + h);
+        }
+    }
+
+    /// <summary>A screen box (relative to the view) clipped to the view's 0x104 × 200 pixels; an empty one has width or height 0.</summary>
+    // orig: R014+0x8680 (14F7:1E70) matched
+    public static (int X, int Y, int W, int H) ClipToView(int x, int y, int w, int h)
+    {
+        if (x < 0)
+        {
+            w = Math.Max(0, w + x);
+            x = 0;
+        }
+        if (x > 0x103)
+        {
+            w = 0;
+        }
+        if (x + w - 1 > 0x103 && (w = 0x104 - x) < 0)
+        {
+            w = 0;
+        }
+        if (y < 0)
+        {
+            h = Math.Max(0, h + y);
+            y = 0;
+        }
+        if (y > 199)
+        {
+            h = 0;
+        }
+        if (y + h - 1 > 199 && (h = 200 - y) < 0)
+        {
+            h = 0;
+        }
+        return (x, y, w, h);
+    }
+
     /// <summary>Lays out the puffs of cloud k: each at its offset with 0..2 pixels of jitter, kept off walls, hidden behind walls from the centre.</summary>
     // orig: R014+0x9E92 (14F7:3682) draft
     private void LayOutCloud(int k)
@@ -1314,6 +1470,7 @@ public sealed class EffectField : IEffectClouds
             _cloudSouthEdge[k, c] = (-999, 0);
             if (ex != 0)
             {
+                _cloudSouthEdgeAt[k, c] = (ex, ey + 4);
                 var sy = ey + 4 - _lastCamera.Y;
                 var sx = ex - _lastCamera.X - sy + 0x7D;
                 if (!(sx > 0x103 || sy + 0x49 > 199))
@@ -1332,6 +1489,7 @@ public sealed class EffectField : IEffectClouds
             _cloudEastEdge[k, c] = (-999, 0);
             if (ex != 0)
             {
+                _cloudEastEdgeAt[k, c] = (ex + 7, ey);
                 var sy = ey - _lastCamera.Y;
                 var sx = ex + 7 - _lastCamera.X - sy + 0x84;
                 if (!(sx > 0x103 || sy + 0x45 > 199))

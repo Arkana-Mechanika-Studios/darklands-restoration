@@ -18,7 +18,7 @@ public sealed class CreationRoster
     private readonly Character?[] _members = new Character?[Party.MaxMembers];
     private readonly Func<int, Items.ItemDefinition> _item;
 
-    /// <summary>The stack index worn-item leaves (the program's party-query global; the new game does not carry it).</summary>
+    /// <summary>The stack index slot-item leaves (the program's party-query global; the new game does not carry it).</summary>
     private readonly PartyQueryResult _last = new();
 
     /// <param name="slotPalettes">The five slots' figure colours (member-colours), kept per slot.</param>

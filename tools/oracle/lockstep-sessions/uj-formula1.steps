@@ -1,0 +1,25 @@
+# unreach28 lead (a Codex "reachable" reading): R031+0x42AC with a formula byte whose bit 0 is clear (R031+0x42D1 taken). Dksave10's member 2 (F3) already knows
+# the byte 0 / bit 1 formula (its first formula byte is 0x02, no edit): the sheet's formulae box is opened with the mouse and its first line clicked
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:enter
+wait:100
+state:menu
+key:f3
+wait:100
+state:sheet3
+click:226,171
+wait:100
+state:box
+click:100,59
+wait:100
+state:chosen
+key:esc
+wait:200
+state:esc1
+key:esc
+wait:200
+state:left
