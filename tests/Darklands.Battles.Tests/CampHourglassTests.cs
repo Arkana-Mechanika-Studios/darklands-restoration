@@ -1,3 +1,6 @@
+using Darklands.Content;
+using Darklands.Core;
+using Darklands.Simulation;
 using Darklands.Content.Formats.Graphics;
 using Darklands.Core.Economy;
 using Darklands.Platform;
@@ -30,6 +33,70 @@ public sealed class CampHourglassTests
         Assert.True(scores[0] < 0.5, $"before the day {scores[0]:P0} of the dial");
         Assert.True(scores.Max() > 0.8, $"at most {scores.Max():P0} of the dial");
         Assert.True(scores[^1] < 0.5, $"after the day {scores[^1]:P0} of the dial");
+    }
+
+    /// <summary>
+    /// The waits of R043+0x3494 look at nothing: a key typed during them is only looked at by the next step's key-waiting-test (R043+0x3576), which
+    /// then skips every later draw and wait, and exactly one key is eaten at the end (R043+0x3773); the second key stays for the screen's loop.
+    /// </summary>
+    [Fact]
+    public void TwoKeysTypedInTheHourglassEatOnlyOneAtTheEnd()
+    {
+        var host = new MusicTests.StepHost(new MusicTests.MusicRecorder(), "move:0,190", "wait:2", "key:s", "wait:3", "key:x", "key:y", "wait:600", "key:l", "wait:5");
+        if (MusicTests.Start(host) is not var (ui, state, panel, world))
+        {
+            return;
+        }
+        state.Party.Purse = Money.From(10, 0, 0);
+        var dial = ui.Assets.Picture("timer01").Image;
+        long lastDial = -1;
+        var reads = new List<(int Key, long At)>();
+        host.Presented = screen =>
+        {
+            if (Matching(screen, dial, CardScreen.WindowX + 0x3C, 0x32) > 0.8)
+            {
+                lastDial = host.Milliseconds;
+            }
+        };
+        host.Read = key => reads.Add((key, host.Milliseconds));
+        MusicTests.Camp(ui, panel, world).Stay(state, 0);
+        var x = reads.Single(r => r.Key == Keys.ForCharacter('x'));
+        var y = reads.Single(r => r.Key == Keys.ForCharacter('y'));
+        Assert.True(lastDial > 0, $"last {lastDial} x {x.At} y {y.At}");
+        Assert.True(x.At <= lastDial + 32, "the first key is looked at and eaten with the hourglass");
+        Assert.True(y.At > lastDial, $"x {x.At}, y {y.At}, hourglass to {lastDial}: the second key is not eaten by the hourglass: it stays waiting for the screen's loop");
+    }
+
+    /// <summary>
+    /// A card that passes hours before its first text (R043+0x0A9A has drawn its picture on the off-screen page, DS:EE55 set): the hourglass draws
+    /// into video memory (R043+0x3494), so the dial shows over the previous card's screen and the waits do not bring the picture up.
+    /// </summary>
+    [Fact]
+    public void TheHourglassOfACardWhosePictureIsStillHeldShowsOverTheScreenOnShow()
+    {
+        var host = new MusicTests.StepHost(new MusicTests.MusicRecorder(), "wait:400");
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        Darklands.Cards.CardContext? context = null;
+        var screen = new CardScreen(ui, () => context!, new PartyPanel(ui.Assets));
+        context = new Darklands.Cards.CardContext(state, world, screen);
+        ui.Canvas.Fill(0, 0, 320, 200, 7);
+        ui.Present();
+        screen.Show("$Other00", Darklands.Cards.PictureNames.Of(34));
+        var dial = ui.Assets.Picture("timer01").Image;
+        var shown = new List<(double Dial, int Behind)>();
+        host.Presented = frame => shown.Add((Matching(frame, dial, CardScreen.WindowX + 0x3C, 0x32), frame.Pixels[10 * Screen.Width + 10]));
+        screen.PassTime(6);
+        Assert.Contains(shown, f => f.Dial > 0.8);
+        Assert.All(shown, f => Assert.Equal(7, f.Behind));
+        Assert.Equal(7, shown[^1].Behind);
+        Assert.True(shown[^1].Dial < 0.5, "the dial is gone again at the end");
     }
 
     /// <summary>

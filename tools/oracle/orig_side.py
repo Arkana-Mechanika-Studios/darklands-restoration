@@ -591,6 +591,12 @@ class Session(Machine):
         if (due and due[0] == "key" and (due[1].lower().startswith("alt") or due[1].lower() in ("f6", "f10"))
                 and self.word(self.reg("SS"), self.reg("SP") + 2) == P(0x150B) and self.word(self.reg("SS"), self.reg("SP")) in (0x11DC, 0x288E)):
             return (0, 0)
+        # the character sheet's own look (R031+0x072F, return 1462:0734) follows the menu bar's in the same pass and drops keys
+        # other than F1..F5 and Enter: a hot key the script has due waits for hotkey-table's look of the next pass (scr2-sheet-3 t6/tG)
+        if (due and due[0] == "key" and (due[1].lower().startswith("alt") or due[1].lower() in ("f6", "f10"))
+                and self.call_stack and self.call_stack[-1].startswith("R031+")
+                and self.word(self.reg("SS"), self.reg("SP") + 2) == P(0x1462) and self.word(self.reg("SS"), self.reg("SP")) == 0x0734):
+            return (0, 0)
         k = self._next_key()
         return (0 if k is None else k, 0)
 

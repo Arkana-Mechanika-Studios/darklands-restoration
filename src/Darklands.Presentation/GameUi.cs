@@ -78,6 +78,13 @@ public sealed class GameUi
 
     public Canvas Canvas { get; }
 
+    /// <summary>
+    /// The canvas of what the display shows: the screen held by <see cref="HoldScreen"/> while a card's picture waits on the off-screen page,
+    /// else <see cref="Canvas"/>. A screen that draws straight into video memory while the picture is held (the hourglass) draws here.
+    /// </summary>
+    // orig: card-run R043+0x0A9A draws the picture on page 1 (DS:EE55 set); the hourglass R043+0x3494 draws into video memory, over the previous card's screen
+    public Canvas ShownCanvas => _held is null ? Canvas : new Canvas(_held);
+
     public GameAssets Assets { get; }
 
     /// <summary>The font of slot 1 (font 0 of FONTS.FNT, 6 pixels high): the side window, the screen pages, the party panel's pages, the menu bar.</summary>
