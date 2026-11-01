@@ -273,7 +273,7 @@ public sealed partial class TacticalBattle
         SlotCodes[n] = SlotCodes[k];
         SlotWeapons[n] = SlotWeapons[k];
         c.AnimationSlot = n;
-        _slotKind[n] = _slotKind[k];
+        // orig: R014+0xF88E..0xF994 copies the slot's code and weapon strings and the +0x6395 byte, never DS:C28D (the enemy kind per slot) nor DS:C23E: n keeps its old kind
         for (var j = Combatant.PartySlots; j < Combatant.Count; j++)
         {
             if (Battle[j].IsAble && Battle[j].AnimationSlot == k)

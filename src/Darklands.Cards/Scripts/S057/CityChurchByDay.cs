@@ -205,7 +205,11 @@ public sealed class CityChurchByDay : Card
     /// value (original bug), then of the able members after him in turn, while the gift
     /// lasts; a large gift (over 600 pfennigs) also teaches Virtue (a thirtieth of Religion).
     /// </summary>
+    // orig: R057+0x067C (1838:067C) asm (the index at R057+0x06C2..0x0704, party-ability-top R029+0x14A4 returning the value)
     // BUG: party-ability-top(8) returns the skill value, which the original then uses as a member number.
+    // DIVERGENCE: a number of 5 or more (nearly every best Religion) indexes past the party table (DS:9EE9), into the last formatted screen text, which the original
+    //   reads as a member (its Divine Favor, the maximum and then, through R029+0x0A72, writes the clamped lack back there); it depends on the text shown before, not on
+    //   the game state, so it cannot be reproduced (card 0x34, Snew-mines36: lack 76, nobody is raised). Here such a slot reads as an empty member: the gift goes on to the able members.
     // C: all values are 16-bit words: the gift is the low word of the tenth, compared signed.
     private static void GiveATenth(CardContext c)
     {

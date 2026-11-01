@@ -406,5 +406,53 @@
     "contains": "original '<end>', C# 'text 18 1 ",
     "originalEnd": "vectors ['R037+0x3CD6']",
     "why": "PartyRules.AddFromRoster DIVERGENCE: a fellow prisoner (event 0x4D) naming an entry past the roster's end (a start state's aimed event; in play the event names the roster entry of a member who went away) makes party-join R037+0x3CD6 read past the file's records, and the original runs into stale bytes (execution outside the loaded code); the C# lets nobody join and shows the text."
+  },
+  {
+    "card": "08D",
+    "run": "probe L52-Vat3_90+ev28_33_2_1+ev8_0_2_9999+fa900+hr8+mo8+pc107+pu0_0_6+rn82758+rp0+sz3-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score (fact (2, 0) holds, R079+0x0D17 never zeroes it), a value that varies with the hints the probe called before the menu; the C# takes 0. An original bug on undefined stack memory, not game state (D-9903b8)."
+  },
+  {
+    "card": "08D",
+    "run": "probe L56-Vev28_8_2_8+ev8_0_2_9999+hr23+iq72_40_1+iq73_40_0+iq77_40_9+it64+pc96+px4+py14+rn20629+sk12_3+sk14_90+sz1-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score (fact (2, 0) holds, R079+0x0D17 never zeroes it), a value that varies with the hints the probe called before the menu; the C# takes 0. An original bug on undefined stack memory, not game state (D-9903b8)."
+  },
+  {
+    "card": "08D",
+    "run": "probe L58-Vev28_9_2_32+ev8_0_2_9999+ev8_0_8_9999_4+fa50+hr5+iq72_10_0+iq75_10_30+iq76_10_3+iq79_40_1+pc95+px0+py72+rn6392+sk14_3+sz1-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score (fact (2, 0) holds, R079+0x0D17 never zeroes it), a value that varies with the hints the probe called before the menu; the C# takes 0. An original bug on undefined stack memory, not game state (D-9903b8)."
+  },
+  {
+    "card": "08D",
+    "run": "probe L6-Vat3_90+ev8_0_2_9999+fa900+hr8+pu30+rn47884+rp-45+sa54+sz1-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score (fact (2, 0) holds, R079+0x0D17 never zeroes it), a value that varies with the hints the probe called before the menu; the C# takes 0. An original bug on undefined stack memory, not game state (D-9903b8)."
+  },
+  {
+    "card": "08D",
+    "run": "probe L60-Vev23+ev28_0_2_0+ev28_16_2_2+ev28_21_2_1+ev28_22_10_13+ev43+hr17+mo11+rn76344+rp-5+sa22+sa3+sa48+sk17_2+sz1-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score (fact (2, 0) holds, R079+0x0D17 never zeroes it), a value that varies with the hints the probe called before the menu; the C# takes 0. An original bug on undefined stack memory, not game state (D-9903b8)."
+  },
+  {
+    "card": "08D",
+    "run": "probe L88-Vev26+ev28_0_2_0+ev28_16_2_2+ev28_17_2_2+ev81_0+hr6+mo7+rn6212+rp0+sk17_90+sz3-O0",
+    "contains": "",
+    "why": "PublicExecution.Verdict DIVERGENCE: the abbot's stack-leftover score (fact (2, 0) holds, R079+0x0D17 never zeroes it), a value that varies with the hints the probe called before the menu; the C# takes 0. An original bug on undefined stack memory, not game state (D-9903b8)."
+  },
+  {
+    "card": "034",
+    "run": "probe Snew-mines36-O3",
+    "contains": "saved game: chars record 0",
+    "why": "CityChurchByDay.GiveATenth DIVERGENCE: the original uses the best Religion value (37) as a member number (R057+0x06C2..0x0704) and reads past the party table (DS:9EE9) into the last formatted screen text, so nobody gets Divine Favor; the C# reads an empty member and its loop raises member 0. Depends on the text buffer, not on game state."
+  },
+  {
+    "card": "06C",
+    "run": "*",
+    "contains": "end: original 'stops execution outside the loaded code at 4A114",
+    "why": "NightInTheGuildLeadersHouse DIVERGENCE (case 2, (city + map y) % 5 == 2, fact 8): made-up-name for slot 0x27 writes about 7.9 KB below DS (R029+0x5CC4, outside the five-slot name table) and the original later runs off into linear 4A114; the C# draws the name, does not store it (CardContext.RandomName) and goes on to line 6."
   }
 ]

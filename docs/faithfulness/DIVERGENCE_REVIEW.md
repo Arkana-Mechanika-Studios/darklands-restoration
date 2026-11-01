@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 1, justify: 40, keep: 11.
-- Part B (undefined-memory in core logic): 152 entries; determinism: deterministic: 1, n/a: 83, no: 55, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 153 entries; determinism: deterministic: 1, n/a: 83, no: 56, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -629,7 +629,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original tests the 0x80 flag and prices item-definition-table[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item-definition-table[data-file-handle[..].id] with the raw 16-bit id; item-definition-table is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
 
-### cards (68)
+### cards (69)
 
 - **D-21ff84** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:123` `CardContext.EmptyBoxHandler`  
   original: `R112+0x1438` (1881:0FA8, matched), `R112+0x143A` (1881:0FAA, matched), `R108+0x0D30` (1838:0D30, matched) +1 more  
@@ -663,23 +663,23 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R029+0x5CC4` (1367:0DB4, matched)  
   divergence: a slot past $NamedFiveName ($Snuck00 asks for slot 0x27) makes the original write beyond text-slot-named; here the name is drawn but not stored.  
   deterministic: **partly** (checked against the original); action: **keep** - $Snuck00 (R071: made-up-name(seed,1,0x27)) stores the name at text-slot-named[0x27] = 2E38:1A96+39*30 = 2E38:1F28, which is events[255..~261] (the events table starts at 1B2C); the name text is deterministic (seeded) but it overwrites those event pointers with ASCII, and every later event scan (slots 0..299) dereferences them, i.e. reads fixed-but-unmodelled DOS memory at seg:off built from letters. 0x27 is the $-variable number of NamedOne (39), mistaken for a slot, so $NamedOneName keeps its old text. Keep the C# skip: faithful reproduction would need those 5-7 'garbage events' whose fields come from physical memory.
-- **D-6b92c8** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:96` `CardContext.EffectiveAgility`  
+- **D-6b92c8** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:117` `CardContext.EffectiveAgility`  
   original: `R029+0x06DE` (0E76:06DE, draft)  
   divergence: -1 is resolved before the call; the original reads the Agility byte of record -1 (see MemberRules.EffectiveAgility).  
   deterministic: **n/a** (checked against the original); action: **document** - Unreachable: every caller of member-effective-stat-two (R047 x7, R058 x2, R068, R073 and the party-effective-stat-two-mean/lowest/highest loops) passes a loop slot 0..4, never -1 (grep of src/c). For the record the original would read DS:9CB4[-1][0] = DS:9C34, which is DS:9C30[4], the card-text condition-flag array set by R068/s074/s090/s091, and only the fatigue band (013a) resolves -1 to the leader.
-- **D-0d8068** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:287` `CardContext.SaintChanceLow`  
+- **D-0d8068** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:308` `CardContext.SaintChanceLow`  
   original: `R029+0x20C6` (0E76:20C6, draft)  
   divergence: -1 is resolved first; the original reads the Divine Favor byte and the Virtue byte of record -1 (cards pass a slot).  
   deterministic: **n/a** (checked against the original); action: **document** - Unreachable: every call site is saint-odds-low(menu-owner-member, card-saint-lines[menu-choice-index]) where menu-owner-member = DS:E9B0[line]/4 is 0..4 (set by the pop-up box before any hint/action runs); -1 never arrives. In the original -1 would read Divine Favor at DS:9C38 (= DS:9C30[8], a card condition-flag byte) and the Virtue of 'record -1', i.e. BSS flag bytes in front of the party table.
-- **D-90c7b3** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:288` `CardContext.SaintChanceLow`  
+- **D-90c7b3** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:309` `CardContext.SaintChanceLow`  
   original: `R029+0x20C6` (0E76:20C6, draft)  
   divergence: a saint outside the table (an empty pop-up slot, card-saint-lines[k] = -1) gives 0: the original indexes its far table of saint functions with it (R029+0x20C6) and calls whatever lies there. Only a slot the pop-up box never lists holds -1.  
   deterministic: **n/a** (checked against the original); action: **document** - Unreachable: a card passes card-saint-lines[menu-choice-index], and the saint pop-up box lists only filled slots, so -1 (an empty slot) never arrives in play. The original would index its far table of saint functions at -1 and call whatever pointer lies in front of it (seen in the handler oracle: slot runs forced onto empty slots, e.g. card 0x37 slot 3). 0 keeps the C# from throwing; the chance is not shown on that path.
-- **D-f7c051** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:295` `CardContext.SaintChanceHigh`  
+- **D-f7c051** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:316` `CardContext.SaintChanceHigh`  
   original: `R029+0x2116` (0E76:2116, draft)  
   divergence: -1 is resolved first, as for SaintChanceLow.  
   deterministic: **n/a** (checked against the original); action: **document** - Same as SaintChanceLow: saint-odds-high is only called as saint-odds-high(menu-owner-member, card-saint-lines[menu-choice-index]) with menu-owner-member 0..4, so who=-1 does not occur; the bytes read would be the BSS flag area in front of party[0] (DS:9C38).
-- **D-10c0b9** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:296` `CardContext.SaintChanceHigh`  
+- **D-10c0b9** `undefined-memory` - `src/Darklands.Cards/CardContext.Party.cs:317` `CardContext.SaintChanceHigh`  
   original: `R029+0x2116` (0E76:2116, draft)  
   divergence: a saint outside the table (an empty pop-up slot) gives 0, as for SaintChanceLow (R029+0x2116 calls through the same far table).  
   deterministic: **n/a** (checked against the original); action: **document** - Same as D-90c7b3 for saint-odds-high: only an empty pop-up slot (never listed by the box) passes -1.
@@ -715,6 +715,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R055+0x0F30` (1908:0230, matched)  
   divergence: guard for a party that is not at a location.  
   deterministic: **n/a** (checked against the original); action: **document** - MineCleared is the arrival card of a mine location, so location-now is the mine (>= 0x5C); the unguarded locations[location-now]+0x0C write is in the card main, not in the cited init helper 0230. A -1 would only write into the null/IVT page.
+- **D-adef9f** `undefined-memory` - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:210` `CityChurchByDay.GiveATenth`  
+  original: `R057+0x067C` (1838:067C, asm), `R029+0x14A4` (0E76:14A4, draft)  
+  divergence: a number of 5 or more (nearly every best Religion) indexes past the party table (DS:9EE9), into the last formatted screen text, which the original reads as a member (its Divine Favor, the maximum and then, through R029+0x0A72, writes the clamped lack back there); it depends on the text shown before, not on the game state, so it cannot be reproduced (card 0x34, Snew-mines36: lack 76, nobody is raised). Here such a slot reads as an empty member: the gift goes on to the able members.  
+  deterministic: **no** (checked against the original); action: **keep** - party-ability-top (R029+0x14A4) returns the best Religion VALUE, which R057+0x06C2..0x0704 passes as the member number to attribute (R029+0x05EE), cap (R029+0x0B64) and raise (R029+0x0A72); for a value of 5 or more the record lies past the party table (DS:9EE9) in the last formatted screen text, whose bytes depend on the text shown before (Opus reading of the disassembly, card 0x34 Snew-mines36: lack 76, nobody is raised; the raise also writes the clamped lack back into that buffer). Not game state: reproduction would need the screen-text buffer's byte layout. Keep the empty member.
 - **D-ce32da** `undefined-memory` - `src/Darklands.Cards/Scripts/S060/WildHunt.cs:46` `WildHunt.Run`  
   original: `R043+0x09AE` (1462:09AE, matched)  
   divergence: when no quest event exists the original indexes events[-1]; here saint and item are 0.  

@@ -12,15 +12,15 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 95 | 22 | 73 |
-| cards | 67 | 2 | 65 |
+| cards | 68 | 3 | 65 |
 | events | 8 | 4 | 4 |
 | travel | 3 | 0 | 3 |
 | battles | 28 | 12 | 16 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 4 | 1 | 3 |
-| total | 207 | 43 | 164 |
+| total | 208 | 44 | 164 |
 
-## Core logic (203)
+## Core logic (204)
 
 ### rules (95)
 
@@ -310,8 +310,11 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (67)
+### cards (68)
 
+- **B-ad9d9e** `bug`, flag `FixGhostPartySlot` - `src/Darklands.Cards/CardContext.Party.cs:29` `CardContext.SetStatusAbleStale`  
+  original: `R088+0x0440` (1859:0230, matched)  
+  why: OriginalBehaviour.FixGhostPartySlot - the slot DropAway just emptied comes back with status 1 and ids[slot] = -1 (no charactr.tmp record): a ghost member, the saved game's record count one short of the occupied slots; here the slot is a roster-less residue (MarkOffRoster) so the save writes it as the original does (a slot past the party's end is not modelled: Party.Slot gives a throwaway there).
 - **B-ae3eba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S046/MainStreetAtNight.cs:93` `MainStreetAtNight.Walk`  
   original: `R046+0x0422` (1838:0422, matched), `R046+0x0466` (1838:0466, matched), `R046+0x04AA` (1838:04AA, matched) +7 more  
   why: the night places are fixed card numbers (only the gate and the inn ask the time), no hour passes on the way (pass-hours(0) at most), and the night encounter keeps the night place to return to after its hours: going between the main street and the side streets at night stays in the night cards at any hour, with the encounters of the night (card oracle at 12:00: 0x08 -> 0x0A -> 0x24 -> 0x08 -> 0x19).
@@ -393,8 +396,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-4d8935** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:148` `CityChurchByDay.Confess`  
   original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
   why: confession can take no time or negative time: standing / -10 + 11 hours is 0 at standing 110..119 and negative from 120 (reachable: a quest's resolution adds standing without a limit, R029+0x3E06); PassHours then turns the clock back, and the hour can become negative (R057+0x03CC).
-- **B-f30456** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:208` `CityChurchByDay.GiveATenth`  
-  original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
+- **B-f30456** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:209` `CityChurchByDay.GiveATenth`  
+  original: `R057+0x067C` (1838:067C, asm), `R029+0x14A4` (0E76:14A4, draft)  
   why: party-ability-top(8) returns the skill value, which the original then uses as a member number.
 - **B-ca9994** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:99` `HandbillThugs_Polit01.EatTheHandbills`  
   original: `R057+0x21DC` (1A02:053C, matched)  

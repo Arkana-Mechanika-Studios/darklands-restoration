@@ -127,6 +127,12 @@ internal static class TacticsOverlay
         {
             follows[s] = Word(ds, 0xC23E + 2 * s);
         }
+        // the enemy kind of each slot (DS:C28D, a word per slot): LeaveLevel (R023+0x1A04..0x1A1A) reads it for the new encounter record
+        var kinds = Get<int[]>(t, "_slotKind");
+        for (var s = 0; s < kinds.Length; s++)
+        {
+            kinds[s] = Word(ds, 0xC28D + 2 * s);
+        }
         // the enemy slots' identities (DS:D65F slot 5, DS:D67E slot 6; −1 free)
         t.EnemySlotIdentity[0] = (short)Word(ds, SlotIdentities);
         t.EnemySlotIdentity[1] = (short)Word(ds, SlotIdentity2);
@@ -206,6 +212,8 @@ internal static class TacticsOverlay
                 }
                 pack.Stacks = (sbyte)ds[ImageOverlay.Combatants + ImageOverlay.Record * k + CountAt];
             }
+            // the party purse (2E38:0BB0: florins, groschen, pfennigs), which LeaveLevel copies into the new encounter record (R023+0x1A5B..0x1A6B)
+            t.Purse = Darklands.Core.Economy.Money.From(Word(packs, 0xBB0), Word(packs, 0xBB2), Word(packs, 0xBB4));
         }
         else
         {

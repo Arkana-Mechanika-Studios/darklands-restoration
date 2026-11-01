@@ -24,6 +24,27 @@ public sealed partial class CardContext
 
     public void SetStatus(int who, CharacterStatus status) => State.Party.Slot(who).Status = status;
 
+    /// <summary>Sets the status of a slot to able through a variable the card never assigned (a stale slot number); see <see cref="Core.OriginalBehaviour.FixGhostPartySlot"/>.</summary>
+    // orig: R088+0x05C6..0x05CF (`mov bx,[EE8E]; shl bx,7; mov byte [bx-6397h],1`): a raw write of the status byte, no roster change
+    // BUG: OriginalBehaviour.FixGhostPartySlot - the slot DropAway just emptied comes back with status 1 and ids[slot] = -1 (no charactr.tmp record): a ghost
+    //   member, the saved game's record count one short of the occupied slots; here the slot is a roster-less residue (MarkOffRoster) so the save writes it as the original does
+    //   (a slot past the party's end is not modelled: Party.Slot gives a throwaway there).
+    public void SetStatusAbleStale(int who)
+    {
+        var slot = State.Party.Slot(who);
+        if (slot.Status != CharacterStatus.Empty)
+        {
+            slot.Status = CharacterStatus.Able;
+            return;
+        }
+        if (State.Behaviour.FixGhostPartySlot)
+        {
+            return;
+        }
+        slot.Status = CharacterStatus.Able;
+        State.Roster.MarkOffRoster(slot);
+    }
+
     /// <summary><c>member-label</c>.</summary>
     // orig: member-label R029+0x0000 (0E76:0000) matched
     public string MemberName(int who) => State.Party.Slot(who).Name;

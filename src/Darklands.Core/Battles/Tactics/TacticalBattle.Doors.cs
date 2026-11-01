@@ -703,9 +703,12 @@ public sealed partial class TacticalBattle
         if (kill > 0)
         {
             cnt -= kill;
+            // orig: R023+0x1995 `mov word [bp-0xe],5` sets the victim index once before the loop; R023+0x19A6 resets only the minimum (bp-4).
+            // A pass with no eligible enemy (all ends-battle) therefore kills the previous victim again.
+            var weakest = 5;
             do
             {
-                int r = 999, weakest = 5;
+                var r = 999;
                 for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
                 {
                     var p = Battle[i];

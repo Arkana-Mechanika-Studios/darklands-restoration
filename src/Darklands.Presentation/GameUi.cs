@@ -51,6 +51,8 @@ public sealed class GameUi
     private int _leftReleases;
     private int _lastReleaseX;
     private int _lastReleaseY;
+    // the left releases counted since the start, never reset (TakeLeftReleases resets _leftReleases)
+    private int _leftReleasesSeen;
 
     public GameUi(IHost host, GameAssets assets)
     {
@@ -481,7 +483,15 @@ public sealed class GameUi
             if (key == Keys.F10 && MenuBar is not null)
             {
                 // orig: hotkey-table case 0x4400: menu mode DS:9C26 = 1, then menu-bar-loop's loop drives the bar
+                var seen = _leftReleasesSeen;
                 MenuBar.Run(keyboard: true);
+                // orig: root 0000:0048..0x0078 / 0000:0DD2 test only keys and DS:6EF0 & 2: a left click made in menu mode stays in the INT 33h
+                //   function 6 latch, and the screen's next pass takes it at the release place (R043+0x2713, after menu-bar-loop R043+0x1C14)
+                if (_leftReleasesSeen != seen && !Mouse.Left)
+                {
+                    _previousButtons = Mouse.Buttons;
+                    return new PlayerAction(Keys.None, _lastReleaseX, _lastReleaseY, MouseButtons.Left);
+                }
                 return null;
             }
             // orig: root 0000:0029..0x0033 runs hotkey-table with the font 1; F1..F5 / Ctrl-F1..F5 (GameKey's too) are the screen's own keys,
@@ -679,6 +689,7 @@ public sealed class GameUi
         if (_leftWasDown && !mouse.Left)
         {
             _leftReleases++;
+            _leftReleasesSeen++;
             _lastReleaseX = mouse.X;
             _lastReleaseY = mouse.Y;
         }

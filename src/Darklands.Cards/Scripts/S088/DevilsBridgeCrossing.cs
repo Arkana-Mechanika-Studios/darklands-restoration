@@ -133,7 +133,7 @@ public sealed class DevilsBridgeCrossing : Card
                 // C: Chosen[1] is the member seized in the failed argument; after a won argument it is stale.
                 if (argumentWins)
                 {
-                    c.SetStatus(c.Variables.Chosen[1], CharacterStatus.Able);
+                    c.SetStatusAbleStale(c.Variables.Chosen[1]);
                 }
                 c.Screen.Text(7);
                 c.State.CurrentLocation = -1;
@@ -143,7 +143,7 @@ public sealed class DevilsBridgeCrossing : Card
                 c.DropAway();
                 if (argumentWins)
                 {
-                    c.SetStatus(c.Variables.Chosen[1], CharacterStatus.Able);
+                    c.SetStatusAbleStale(c.Variables.Chosen[1]);
                 }
                 c.Screen.Text(8);
                 c.State.CurrentLocation = -1;

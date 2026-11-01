@@ -55,7 +55,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true,
     };
 
     /// <summary>
@@ -229,6 +229,15 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: fighter-goto-action R014+0x2256..0x2263 (use-up-slot 18BF:0FA4 with DS:C7CD[m]), data safety, data-damaging
     public bool FixStaleDissolveSlot { get; set; }
+
+    /// <summary>
+    /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
+    /// variable the won argument never assigned (the slot of the member the demon took in an earlier crossing, or a start value): the
+    /// slot just emptied by dismissing the away members comes back with status 1 but no character record (id −1, the roster one short):
+    /// a ghost member in a saved game. Fixed: a slot that was emptied stays empty.
+    /// </summary>
+    // orig: R088+0x05C6..0x05CF and R088+0x060E..0x0617 (`mov bx,[EE8E]; shl bx,7; mov byte [bx-6397h],1`), data safety, data-damaging
+    public bool FixGhostPartySlot { get; set; }
 
     /// <summary>
     /// The Dissolve key (D) outside order mode, where the leader dissolves the lock, uses up the pack entry at member 0's slot byte
