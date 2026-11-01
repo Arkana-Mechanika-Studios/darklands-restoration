@@ -199,3 +199,7 @@ Tests that need the original game read its folder from `DARKLANDS_DIR` (or the e
 
 SDL 2, mt32emu, StbTrueTypeSharp, DejaVu Sans Mono and a VGA text font: see `THIRD_PARTY_NOTICES.md`.
 *Darklands* is a 1992 MicroProse game; this project contains none of its files.
+
+## Dedication
+
+This project is dedicated to the memory of Arnold Hendrick.
