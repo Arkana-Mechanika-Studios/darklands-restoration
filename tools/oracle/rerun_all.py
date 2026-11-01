@@ -878,6 +878,24 @@ SESSIONS.update({
 })
 
 
+# scr2: pointer and key sweeps of the prayer page and the character generator (gen_scr2.py); kept: agree live and add open outcomes
+SESSIONS.update({
+    "scr2-create-1": "DKSAVE8.SAV",
+    "scr2-create-2": "DKSAVE8.SAV",
+    "scr2-create-3": "DKSAVE8.SAV",
+    "scr2-create-4": "DKSAVE8.SAV",
+    "scr2-create-5": "DKSAVE8.SAV",
+    "scr2-create-6": "DKSAVE8.SAV",
+    "scr2-pray-1": "Dksave10.sav",
+    "scr2-pray-2": "Dksave10.sav",
+    "scr2-pray-3": "Dksave10.sav",
+    "scr2-pray-5": "Dksave10.sav",
+    "scr2-pray-6": "Dksave10.sav",
+    "scr2-pray-7": "Dksave10.sav",
+    "scr2-pray-8": "Dksave10.sav",
+})
+
+
 # c3battle: the early B1 battle sessions left open, rerun on the current original side with the round's compare rules, and Space in a running
 # battle (local/batch/c3battle)
 SESSIONS.update({
