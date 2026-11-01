@@ -202,4 +202,4 @@ SDL 2, mt32emu, StbTrueTypeSharp, DejaVu Sans Mono and a VGA text font: see `THI
 
 ## Dedication
 
-This project is dedicated to the memory of Arnold Hendrick.
+This project is dedicated to the memory of Arnold Hendrick, and to everyone at MicroProse who made Darklands.
