@@ -831,3 +831,5 @@ see-through restores) was reconstructed from the original driver; the Quickstart
 matches the original DOSBox-X captures pixel for pixel (`tools/visuals/compare.py`). The map's
 drawing, the battle's palette cycles and the timing of the battle clock are compared automatically with direct calls
 and whole sessions (above); the rest of the drawing is checked by playing.
+
+Batch 30 (2026-11-02): the hourglass (R043+0x3494) reads no keys during its waits and eats exactly one waiting key at its end (R043+0x376A/0x3773), as the original does; the C# polled and ate every key. While a card's picture is still held the dial is drawn over the shown (held) screen (cards 0x147, 0x167). The tester (orig_side.py) defers Alt/F6/F10 during a character sheet's own key look (R031, return 1462:0734), which settles the Alt-Q-in-F1-sheet lead. The other listed leads were settled earlier or are registered as not C# differences (D-dff56b, D-24e8b0). Recordings regenerated (tester sources changed): live pass 821 of 821 agree, 0 differ; replay of the new recordings 821 of 821; 23 card corpora 0 differ; registers --check clean; structure 0 open.
