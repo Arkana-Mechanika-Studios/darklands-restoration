@@ -49,6 +49,11 @@ if (args.Contains("--version"))
     Console.WriteLine("Darklands Restoration Project " + version);
     return 0;
 }
+if (args.TakeWhile(a => a != "--").Any(a => a is "--help" or "-h" or "-?" or "/?"))
+{
+    Console.WriteLine(CommandLineUsage.Text);
+    return 0;
+}
 
 var arguments = args.ToList();
 var dash = arguments.IndexOf("--");
@@ -111,6 +116,13 @@ var cli = new CommandLineOptions
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
 };
+// what is left is the game folder; an unknown option (or one missing its value) is said so, not taken as the folder
+if (CommandLineUsage.Unknown(arguments) is { } unknown)
+{
+    Console.Error.WriteLine($"Unknown option or missing value: {unknown}");
+    Console.Error.WriteLine(CommandLineUsage.Text);
+    return 2;
+}
 var settingsPath = SettingsFile.Locate(settingsFile);
 var firstRun = settingsPath is null;
 GameSettings fileSettings = new();
