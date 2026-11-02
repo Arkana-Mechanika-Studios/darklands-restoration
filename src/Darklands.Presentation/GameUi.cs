@@ -683,12 +683,6 @@ public sealed class GameUi
         return result;
     }
 
-    /// <summary>The left releases counted since the start (never reset, unlike <see cref="TakeLeftReleases"/>) and the place of the last one.</summary>
-    public (int Count, int X, int Y) LeftReleasesSeen => (_leftReleasesSeen, _lastReleaseX, _lastReleaseY);
-
-    /// <summary>How many times a member's sheet was shown (a card menu tells from it that its pass showed one).</summary>
-    public int SheetsShown { get; set; }
-
     /// <summary>The direction keys held, as the game's keyboard interrupt keeps them (DS:0880 / DS:0881).</summary>
     public KeyboardDirections Directions { get; } = new();
 

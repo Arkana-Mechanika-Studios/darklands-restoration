@@ -76,7 +76,6 @@ public sealed partial class CardScreen
         var hintShownFor = NoHint;
         var lastMouse = (ui.Mouse.X, ui.Mouse.Y);
         (int X, int Y)? warped = null;
-        PlayerAction? fromTheSheet = null;
 
         bool InBox() => box is not null && current == box.Layout;
 
@@ -214,9 +213,7 @@ public sealed partial class CardScreen
                 var over = current.At(mx, my) >= 0;
                 Hint(over);
                 // orig: card-choice-menu R043 (150B) passes every key it does not use to card-hotkeys (F1..F6, Ctrl-F1..F5)
-                var (sheets, releases) = (ui.SheetsShown, ui.LeftReleasesSeen.Count);
-                var action = fromTheSheet ?? ui.PollWithSheetKeys() ?? ReleaseOnTheSheet(sheets, releases);
-                fromTheSheet = null;
+                var action = ui.PollWithSheetKeys();
                 if (action is not { } a)
                 {
                     ui.Idle();
@@ -226,11 +223,9 @@ public sealed partial class CardScreen
                 {
                     case PressOnPortraits press:
                         // orig: R043+0x1E30 (a press with pointer-column < 0x3c): the sheet of the member in that row if there is one
-                        var (shown, before) = (ui.SheetsShown, ui.LeftReleasesSeen.Count);
                         if (OpenSheetAt(press.Y, refresh: false))
                         {
                             Refresh();
-                            fromTheSheet = ReleaseOnTheSheet(shown, before);
                         }
                         continue;
                     case PressAt press:
@@ -347,19 +342,6 @@ public sealed partial class CardScreen
         }
         return areas;
     }
-
-    /// <summary>
-    /// The last left release made on a member's sheet shown in this pass, as a click for the menu (the button up, on the card's side of the
-    /// screen), or null.
-    /// </summary>
-    // C: card-mouse-handler reads the release latch, INT 33h function 6, on every pass (R043+0x2713) and card-choice-menu clears it only on
-    //   entry (R043+0x1BED); the sheet card-hotkeys (R043+0x33C6) or the portrait press (R043+0x1E30) shows tests only the button's state
-    //   (R031+0x019D) and the redraw after it (R043+0x1E82) reads nothing: a click released on the sheet (also one made in F10 mode there)
-    //   is the card's next click at its release place once the sheet is closed by a key (a click on the own row leaves with the button down)
-    private PlayerAction? ReleaseOnTheSheet(int sheets, int releases) =>
-        ui.SheetsShown != sheets && ui.LeftReleasesSeen is var (count, x, y) && count != releases && !ui.Mouse.Left && x >= WindowX
-            ? new PlayerAction(Keys.None, x, y, MouseButtons.Left)
-            : null;
 
     /// <summary>
     /// A choice in the box leaves the box's layout as the menu's (DS:E96E): a card that calls card-choice-menu next without drawing its
