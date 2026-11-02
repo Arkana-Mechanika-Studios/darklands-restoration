@@ -352,7 +352,7 @@ public sealed partial class CardScreen
     /// The last left release made on a member's sheet shown in this pass, as a click for the menu (the button up, on the card's side of the
     /// screen), or null.
     /// </summary>
-    // orig: card-mouse-handler reads the release latch, INT 33h function 6, on every pass (R043+0x2713) and card-choice-menu clears it only on
+    // C: card-mouse-handler reads the release latch, INT 33h function 6, on every pass (R043+0x2713) and card-choice-menu clears it only on
     //   entry (R043+0x1BED); the sheet card-hotkeys (R043+0x33C6) or the portrait press (R043+0x1E30) shows tests only the button's state
     //   (R031+0x019D) and the redraw after it (R043+0x1E82) reads nothing: a click released on the sheet (also one made in F10 mode there)
     //   is the card's next click at its release place once the sheet is closed by a key (a click on the own row leaves with the button down)

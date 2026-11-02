@@ -85,6 +85,9 @@ public sealed class WorldData : IGameData
     // orig: the other fields follow the reference's format notes (DARKLAND.LOC, confidence "doc"): cache handle +0x18 (inn_cache_idx), mark +0x1A, three recorded words from +0x1C
     // C: names. NoticeRange (unk08: how far the place is noticed while travelling, R030+0x1300 compares it with the distance) and Danger (unk0a: added to the encounter weight, R030+0x2D44) are read from how the travel code uses them; ArrivalCard (menu) and EncounterCard (unk0e) from the card numbers the map returns; LocalValues, Mark, Recorded and CacheHandle are the rules' names (place-query/place-assign), their meaning is a guess.
     // C: the +0x15..+0x17 bytes are signed here (the rules read them with a signed char) and the name is cut at 20 bytes: a name that fills all 20 would run on into the next record in the original (_fstrcpy up to the first zero).
+    // C: the shipped DARKLAND.LOC puts record 373 (icon 5, arrival card 250) at map row 931, one row below the last of the map's
+    //   931 rows (0..930; every other record is at row 930 or above): it is read as the file has it, not moved, so the party cannot step onto it
+    //   (the marker stays in view rows 0xD..0xB1, OverlandScreen), as in the original; whether a task can name it is not checked here.
     // C: the fields at +0x02, +0x10 and +0x22..+0x25 are not named (nothing reads them); the record's bytes stay with the place (Location.OriginalRecord) so a saved game writes them as the file had them.
     private static Location ToLocation(DarklandLocation r)
     {

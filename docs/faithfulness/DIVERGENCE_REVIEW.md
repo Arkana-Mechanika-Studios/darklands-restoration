@@ -362,7 +362,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R030+0x1300` (1462:1300, draft), `R030+0x0C44` (1462:0C44, draft), `R030+0x02C0` (1462:02C0, draft)  
   divergence: the original keeps the party as three view-relative registers (DS:2866/DS:2868 the marker inside the 260x184 view, DS:286A/DS:286C/DS:286E the view's column and row offsets into the scrolling G[][] terrain buffer); this class works on absolute map pixels and cells (WorldMap.CellAt). The cell under the marker is the same one (the formulas of 1300: row = (y + 11) / 4, column from x + 16 or x + 24 by the row's parity, are those of CellAt); the terrain read through G is one cell off at the view's column 0 / row 0, as in the original (WorldMap.BufferOffset, View).  
   recommendation: **justify** - Different representation (absolute pixels and cells against view-relative registers) with the same cell under the marker, per the note, which gives the formulas. Covered by the path/travel oracle where present; verify scrolling clamps at the map edge against 1300/0C44 (OverlandScreen has the original's jumps).
-- **D-2a7fc2** `other` - `src/Darklands.Simulation/Overland/OverlandTravel.cs:200` `OverlandTravel.ArriveAt`  
+- **D-2a7fc2** `other` - `src/Darklands.Simulation/Overland/OverlandTravel.cs:203` `OverlandTravel.ArriveAt`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
@@ -375,7 +375,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R011+0x0000` (1432:0000, draft)  
   divergence: the four level buffers (request-work-buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept. Its only store is R011+0x04ED; no instruction of the root or the 136 overlays reads it.  
   recommendation: **justify** (checked against the original) - R011+0x0000 stores DS:E049[k] = n once (R011+0x04ED, mov [bx - 0x1FB7], cx); scanning the root and all 136 overlays for DS:E049..E04F finds no other reference, so the array is write-only.
-- **D-74b517** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Actions.cs:251` `TacticalBattle.MeleeFrame`  
+- **D-74b517** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Actions.cs:253` `TacticalBattle.MeleeFrame`  
   original: `R014+0x199C` (0E76:199C, draft), `R014+0x465E` (0E76:465E, draft)  
   divergence: not reproduced, the original then works on undefined memory: the knock-back test reads record -1's target byte (DS:9C1F, only for a heavy hit), queued damage[-1] (DS:D70A) and, when it is above 0, writes was-hit[-1] (DS:D4F1); damage-resolve(-1) (R014+0xAE1E) and the test after it read record -1's status byte (DS:9BE9, the menu bar's sub-menu item records), which act only for a value of 1, 2 or 3  
   recommendation: **keep** (checked against the original) - R014+0x199C with target -1 and a hit exchange (the cave dragon after the victim draw found nobody): asm R014+0x1A80..0x1B9B reads [bx-0x6361] (DS:9C1F) only for exchange 2, [bx-0x28F4] with bx=-2 (DS:D70A), writes [si-0x2B0E] with si=-1 (DS:D4F1) when above 0, calls R014+0xAE1E(-1), which acts only when DS:9BE9 is 1 (else it returns at 0xAE36), and tests DS:9BE9 for 2/3. These bytes are not modelled (menu bar sub-menu records and the bytes before two tables); fight cave60 agrees in all 1,204 ticks and in sound with them left out. The sound and the action state are reproduced.
@@ -588,15 +588,15 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R039+0x1B0C` (1462:1B0C, matched), `R029+0x4534` (0E76:4534, draft)  
   divergence: when the log is full the original writes the site through events[-1] (R039+0x1BFD, R029+0x4592: into 0000:002A, the INT 0Ah vector's segment); here nothing is written. No sabbat is planned from then on (the quest still exists, so nothing starts it again): SabbatSite gives -1.  
   deterministic: **no** (checked against the original); action: **keep** - The planned-sabbat fact's site is stored through events[slot] unguarded (R039+0x1BF8/0x1BFD in the start, R029+0x458A/0x4592 at a sabbat's begin): a full log gives slot -1 and a write to 0000:002A (INT 0Ah vector segment, host memory). The C# writes nothing; in both programs no fact exists afterwards, so R039+0x1CFE returns -1 and $SabbatLocation reads locations[-1] (D-09b57b). local/batch/b24text
-- **D-5b0725** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:420` `Quests.StartQuest10`  
+- **D-5b0725** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:426` `Quests.StartQuest10`  
   original: `R039+0x1712` (1462:1712, matched)  
   divergence: region kinds 1, 2, 9 and others leave k and v uninitialised in the original; here sort 0 and item 0.  
   deterministic: **n/a** (checked against the original); action: **document** - thunk 09C0:21B1 (StartQuest10) callers push literal region kinds 0, 4, 5, 6, 7, 8 and 10 only (R049 seg 1893, R054 seg 19DF, R056 seg 19C4, R060 seg 1A36, R061 seg 18CF, R061 seg 1A5F), all of which have their own switch arm; kinds 1, 2, 9 and >10 are never passed, so k/v are never uninitialised in play.
-- **D-634961** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:421` `Quests.StartQuest10`  
+- **D-634961** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:427` `Quests.StartQuest10`  
   original: `R039+0x1712` (1462:1712, matched)  
   divergence: in the wilderness the original reads locations[-1]; here position 0, 0.  
   deterministic: **no** (checked against the original); action: **keep** - locations[-1] (location-now==-1) is the far pointer at 2e38:10BA (enemy item area tail, null in practice) so x,y would be the INT 1 vector words at 0000:0004/0006; machine dependent. The StartQuest10 callers (R049, R054, R056, R060, R061 cards) are location/city menu cards, so the wilderness case is not expected to occur. Keep (0,0).
-- **D-fd5dc6** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:465` `Quests.FinishQuest10`  
+- **D-fd5dc6** `undefined-memory` - `src/Darklands.Core/Rules/Quests.cs:471` `Quests.FinishQuest10`  
   original: `R039+0x1AB0` (1462:1AB0, matched)  
   divergence: without a quest about the target the original gives events[-1]->f2e (undefined); here no item.  
   deterministic: **n/a** (checked against the original); action: **document** - FinishQuest10 first requires open-quest-at(10,location-now) (a started kind-8 event with f28==10 and f1c==location-now) and then event-search(8,-1,b,-1,10,-1) with b the caller's argument; every caller of thunk 09C0:214D (R106*, R107*, R108*) pushes DS:907E = location-now, so the find matches the same event and never returns -1. events[-1] is not reachable in play.
@@ -985,7 +985,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R004+0x32D6` (1091:1126, draft)  
   divergence: an id outside the table would write elsewhere in the original; skipped.  
   deterministic: **n/a** (checked against the original); action: **document** - TurnObjectExtras (1091:1126) indexes the type-1 (0x3236+12*id) and type-4 (0x316E+10*id) tables by the object's id. I scanned all 143 level images of IMAPS.CAT: type-1 ids are <=8 (table of 23) and type-4 ids <=16 (table of 20), none negative or out of range, so no write outside the image can happen with shipped maps.
-- **D-f11c40** `undefined-memory` - `src/Darklands.Core/Battles/Generation/MineBuilder.Contents.cs:838` `MineBuilder.AddPileEntry`  
+- **D-f11c40** `undefined-memory` - `src/Darklands.Core/Battles/Generation/MineBuilder.Contents.cs:840` `MineBuilder.AddPileEntry`  
   original: `R009+0x50E6` (182C:1146, draft)  
   divergence: an item type outside the item list weighs 0 here (the original reads the bytes beyond the list).  
   deterministic: **n/a** (checked against the original); action: **document** - 182C:1146 reads battlefield-item-table[type].x25 for the item types put in a pile: constants 0x48..0x5A, 0x66, 0x6D, 0x70, 0x73, 0x74 and RandomSpecialKind 0x96..0xAB, all below the 200 item records (the stale stack word in FillPile cannot reach this call because the first pick is always one of the 10 valid kinds). So no type outside the item list is ever weighed.

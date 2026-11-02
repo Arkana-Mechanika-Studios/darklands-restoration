@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 95 | 22 | 73 |
-| cards | 68 | 3 | 65 |
+| rules | 98 | 22 | 76 |
+| cards | 70 | 3 | 67 |
 | events | 8 | 4 | 4 |
-| travel | 3 | 0 | 3 |
-| battles | 28 | 12 | 16 |
+| travel | 4 | 0 | 4 |
+| battles | 29 | 12 | 17 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 4 | 1 | 3 |
-| total | 208 | 44 | 164 |
+| total | 215 | 44 | 171 |
 
-## Core logic (204)
+## Core logic (211)
 
-### rules (95)
+### rules (98)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:289` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -51,10 +51,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-459e15** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:114` `CampStay.TeacherList`  
   original: `R036+0x1D24` (1462:1D24, draft), `R036+0x0082` (1462:0082, draft), `R036+0x147A` (1462:147A, draft)  
   why: j counts every teacher event met, so rows are numbered by log position and the scan stops after "count here" events of any town.
-- **B-c0e7af** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:440` `CampStay.DoTheActivity`  
+- **B-630527** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:144` `CampStay.Teacher`  
+  original: `R036+0x08EC` (1462:08EC, draft), `R036+0x1858` (1462:1858, draft), `R036+0x147A` (1462:147A, draft)  
+  why: event-search (R029+0x3B62, called at R036+0x156E and by key T and the day's cost) returns the lowest matching slot: with two teachers of one skill here (the alchemist and the university both teach Alchemy) the one in the lower slot always gives the lesson, its fee and its level, whichever row is chosen.
+- **B-c0e7af** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:443` `CampStay.DoTheActivity`  
   original: `R036+0x147A` (1462:147A, draft)  
   why: no limit at the teacher's ability, which a guild text says a pupil "cannot progress beyond" (MSGFILES): any teacher can take a skill to 99.
-- **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:480` `CampStay.GrowRisk`  
+- **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:483` `CampStay.GrowRisk`  
   original: `R036+0x1B80` (1462:1B80, draft)  
   why: the weapon-skill test reads +0x57, +0x5C, +0x59, +0x5A, +0x5B, +0x5D: Impact Weapons (+0x58) is not among them.
 - **B-af3f91** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:88` `CityPolitics.ConflictOutcome`  
@@ -144,6 +147,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-82a169** `bug`, flag `FixFameCost` - `src/Darklands.Core/Rules/Practice.cs:78` `Practice.ChargeFame`  
   original: `R039+0x1E90` (1462:1E90, matched)  
   why: v - fame is stored (FixFameCost).
+- **B-0aa03a** `bug`, no fix flag - `src/Darklands.Core/Rules/Quests.cs:360` `Quests.StartQuest3`  
+  original: `R039+0x10B6` (1462:10B6, matched)  
+  why: the givers pass the nearest castle not burnt (closest-place-of-kind R030+0x2842, icon 2, e.g. R050+0x2383..0x23C0); with every castle burnt it answers the party's own place (R030+0x28D4..0x28E9), so the task names a knight at the giver's own town, who cannot be found. The monthly rebuild (R029+0x281C, every third month one burnt castle) is the only way castles come back.
+- **B-2d0c3e** `bug`, no fix flag - `src/Darklands.Core/Rules/Quests.cs:370` `Quests.StartQuest3`  
+  original: `R039+0x10B6` (1462:10B6, matched)  
+  why: a task already given about this castle (any giver: the find R039+0x10C7 passes -1 for owner and type) only raises that task's value and level; a second task is still created (R039+0x10E3..0x10FD), without value, level or detail, with its own 9998 hours: the same knight is asked for twice, with two deadlines.
 - **B-09130e** `bug`, flag `FixSaintWeaponSkillsForParty` - `src/Darklands.Core/Rules/SaintBook.cs:144` `SaintBook.EquippedWeaponSkills`  
   original: `R029+0x0792` (0E76:0792, draft), `R031+0x5D06` (18E7:14B6, draft)  
   why: so for a prayer for the party (-1) the weapon-skill boost reaches nobody (FixSaintWeaponSkillsForParty: the leader's weapons).
@@ -310,7 +319,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (68)
+### cards (70)
 
 - **B-ad9d9e** `bug`, flag `FixGhostPartySlot` - `src/Darklands.Cards/CardContext.Party.cs:29` `CardContext.SetStatusAbleStale`  
   original: `R088+0x0440` (1859:0230, matched)  
@@ -453,6 +462,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-166488** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightTaskRewarded.cs:59` `RobberKnightTaskRewarded.Run`  
   original: `R080+0x066C` (1870:02EC, matched), `R080+0x06A4` (1870:0324, matched)  
   why: text 1 says the Schulz departs from the party whether or not he joined it (RobberKnightTaskOffered); no member is removed here: one who joined stays until his 90 days are up.
+- **B-5e7a72** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:148` `DragonBlightedLand.Run`  
+  original: `R081+0x2278` (19BC:0A38, asm), `R081+0x2280` (19BC:0A40, asm)  
+  why: the hint (R081+0x2280) shows a chance of (the leader's Charisma + Speak Latin) / 2, a pair no other check uses, and the action (R081+0x2278) never rolls it: hiding and following the dragon always succeeds, whatever the chance shown.
 - **B-0ea525** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S081/InsideTheRobberKnightsTower.cs:108` `InsideTheRobberKnightsTower.Fight`  
   original: `R081+0x01B8` (1838:01B8, matched)  
   why: here the quest is not resolved (open-quest-resolve is only called after a won battle): the knight is dead and the tower a ruin, but no patron ever pays for the quest (card oracle: result 1 with the target slain).
@@ -507,6 +519,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-586670** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S128/StrangerBringsAMob.cs:86` `StrangerBringsAMob.FightAWave`  
   original: `R128+0x03B8` (1838:03B8, matched)  
   why: the offer's option lines are never switched on (R128+0x0806 cleared card-option-enabled[] and the menu loop that copies the flags has not run yet), so the box offers nothing to choose.
+- **B-34e50b** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S129/BurntOutKeep.cs:58` `BurntOutKeep.Run`  
+  original: `R129+0x12BC` (1942:021C, matched), `R129+0x12D4` (1942:0234, matched)  
+  why: text 1 ends with the party resuming its journey, but R129+0x12BC (text 1, pass-hours(1)) sets no following-card: the card comes back to its first page and the ruin can be searched again, as often as the party likes.
 - **B-759d5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S130/CavernOfFireAndHail.cs:102` `CavernOfFireAndHail.CreepAcrossUnderArmour`  
   original: `R130+0x107E` (190C:033E, matched)  
   why: the original adds rand(10)+8 Endurance and rand(6)+6 Strength although text 6 says everyone is hurt (the prayer's path subtracts the same kind of amounts); kept as the original does it (no OriginalBehaviour flag yet).
@@ -544,7 +559,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R029+0x324C` (0E76:324C, draft)  
   why: asking for kind 0x1C (location facts) also returns the kind 8 events (R029+0x3279..0x3281: `cmp cx,0x1c`, `cmp ax,8`): every fact scan (place-flag, place-flag-value and the like) sees the quests. A city's politics quest (type 0, value = the city's number) answers "fact 0" of that city, which should be the leaning.
 
-### travel (3)
+### travel (4)
 
 - **B-c42c01** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:49` `CellBuffer.Fill`  
   original: `R136+0x10168` (2E38:2838, data)  
@@ -552,11 +567,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a993d7** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:111` `CellBuffer.CampWatch`  
   original: `R030+0x25BE` (1462:25BE, draft)  
   why: the block is read through the buffer's flat layout with no bounds check (R030+0x261D..0x2639): a column past 18 is the next row's cell (col + i - 19 of row + j + 1: the west side of the window, one row down) and a row past 49 is the bytes after the buffer (zeros and the stale icons of Fill, then the party icon table). The marker's column is up to 16 and its row up to 47, so up to 9 columns wrap and up to 7 rows fall past the buffer. Reproduced: a settlement there changes the bonus; one in the true cells beyond is not seen.
+- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:146` `OverlandTravel.Step`  
+  original: `R030+0x2AC8` (1462:2AC8, draft)  
+  why: the place entered is the first record by index inside the reach (R030+0x1471..0x14CA, no distance test), not the nearest: with the shipped DARKLAND.LOC three places can never be entered by stepping, 149 Simmern (147 Geldern is taken), 197 Lauf (178 Rammelsburg, four tiles off) and 297 Putten (127 Putten, two rows off).
 - **B-b69cb8** `bug`, no fix flag - `src/Darklands.Simulation/Overland/RowBuffer.cs:54` `RowBuffer.Load`  
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (28)
+### battles (29)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -591,6 +609,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-ab0e37** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:764` `FortressBattlefield.Fortress.SetUpRoom14`  
   original: `R011+0x096A` (1432:096A, draft)  
   why: the fortress relics are forced to quality 35: the three relics get quality 0x23 and type 0x9F whatever DARKLAND.LST gives them (the relic weapons have qualities 50..85 and weapon types).
+- **B-f20e47** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/MineBuilder.Contents.cs:785` `MineBuilder.SetPiece`  
+  original: `R009+0x4D56` (182C:0DB6, draft)  
+  why: the relic of the deepest section of the dwarf, kobold and vulcan mines (R009+0x4E28..0x4E3B) is forced to quality 35: any relic 0x96..0xAB gets quality 0x23 and type 0x9F whatever DARKLAND.LST gives it, as the fortress relics (R011+0x096A).
 - **B-e080d4** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/LootStore.cs:154` `LootStore.Merge`  
   original: `R014+0xE930` (19CD:33C0, draft)  
   why: loot counts wrap at 255: the counts are added in a byte with no limit test, so equal items totalling more than 255 wrap and the excess is lost.

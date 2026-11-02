@@ -357,6 +357,9 @@ public static class Quests
     /// (what the original leaves in AX).
     /// </summary>
     // orig: R039+0x10B6 (1462:10B6) matched; tests: FidelityFixTests
+    // BUG: the givers pass the nearest castle not burnt (closest-place-of-kind R030+0x2842, icon 2, e.g. R050+0x2383..0x23C0); with every castle
+    // burnt it answers the party's own place (R030+0x28D4..0x28E9), so the task names a knight at the giver's own town, who cannot be found.
+    // The monthly rebuild (R029+0x281C, every third month one burnt castle) is the only way castles come back.
     public static int StartQuest3(GameState s, int owner, int target, int type, int value, int level, int detail, int factLocation)
     {
         level = Math.Min(level, 4);
@@ -364,6 +367,9 @@ public static class Quests
         var i = log.Find(EventKinds.Quest, -1, target, -1, 3, -1);
         if (i != -1)
         {
+            // BUG: a task already given about this castle (any giver: the find R039+0x10C7 passes -1 for owner and type) only raises that task's
+            // value and level; a second task is still created (R039+0x10E3..0x10FD), without value, level or detail, with its own 9998 hours:
+            // the same knight is asked for twice, with two deadlines.
             log.Create(owner, target, 0x5F, EventKinds.Quest, type, s.CurrentLocation, 0, 9998, 0, 3);
             var first = log[i]!;
             first.Data1 = Math.Max(first.Data1, value);

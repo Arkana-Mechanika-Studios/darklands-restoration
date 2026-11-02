@@ -55,6 +55,8 @@ public sealed class BurntOutKeep : Card
             // orig: R129+0x12BC / R129+0x12D4 matched — search: the card stays (following-card unchanged).
             new MenuLine(_ =>
             {
+                // BUG: text 1 ends with the party resuming its journey, but R129+0x12BC (text 1, pass-hours(1)) sets no following-card:
+                // the card comes back to its first page and the ruin can be searched again, as often as the party likes.
                 c.Screen.Text(1);
                 c.PassHours(1);
             }, assured),

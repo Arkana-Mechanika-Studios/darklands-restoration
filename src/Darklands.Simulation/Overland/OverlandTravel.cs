@@ -143,6 +143,9 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         // C: t >= 25 && t != 27 && t != 25 (castle 28, city 29 and the other place icons); the reach is 4 around a city (29), 1 around anything else.
         // C: an arrival returns with location-now set only (1462:158E): party-map-column / party-map-row keep the cell 0c44 took at the start of the pass, the one
         //   stepped from (0c44 then puts the marker back); a walk is read from the marker by the next pass, an encounter sets them (1462:1672).
+        // BUG: the place entered is the first record by index inside the reach (R030+0x1471..0x14CA, no distance test), not the nearest: with
+        // the shipped DARKLAND.LOC three places can never be entered by stepping, 149 Simmern (147 Geldern is taken), 197 Lauf (178 Rammelsburg,
+        // four tiles off) and 297 Putten (127 Putten, two rows off).
         if (Terrain.CanEnterPlace(terrain) && PlaceAt(column, row, terrain == Terrain.City ? 4 : 1) is { } place)
         {
             return new StepResult(StepOutcome.Arrived, ArriveAt(place));

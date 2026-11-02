@@ -238,6 +238,8 @@ public sealed partial class TacticalBattle
         }
         var t = c.Target;
         // orig: R014+0x1A59..0x1A7E: the swish (sound 0x11, R014+0x465E) only for an exchange other than a hit (1, 2); a hit goes on whatever the target
+        // C: a hit that does not knock the target back starts no sound (the no-push branch to R014+0x1B0E calls R014+0x465E with nothing); only the
+        //   swish, the knock-back (0x10), a death (0x0A) and a refused order (0x12) are heard, as here.
         if (c.Exchange is not (Exchange.LightHit or Exchange.HeavyHit))
         {
             _view.Sound(0x11);

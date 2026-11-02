@@ -145,6 +145,8 @@ public sealed class DragonBlightedLand : Card
         return menu.Run(
             // orig: R081+0x2278 (19BC:0A38) asm; R081+0x2280 (19BC:0A40) asm; tests: CardSmokeTests
             // C: no roll: the hint's chance is shown, and the party always follows the dragon.
+            // BUG: the hint (R081+0x2280) shows a chance of (the leader's Charisma + Speak Latin) / 2, a pair no other check uses, and the
+            // action (R081+0x2278) never rolls it: hiding and following the dragon always succeeds, whatever the chance shown.
             new MenuLine(() => c.Next = 0x99, hint: () => OptionHint.ChanceOf(
                 CardContext.ClampRange(0, 99, (c.Attribute(Who.Leader, 5) + c.Skill(Who.Leader, 0x0B)) / 2), (sbyte)c.Leader)),
             new MenuLine(chance => RideAway(c, chance), () => RidingChance(c)),

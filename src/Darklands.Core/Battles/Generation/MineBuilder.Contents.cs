@@ -782,6 +782,8 @@ internal sealed partial class MineBuilder
                         AddLockedDoor(level, pile, 0xE8);
                         return 2;
                     case 12:
+                        // BUG: the relic of the deepest section of the dwarf, kobold and vulcan mines (R009+0x4E28..0x4E3B) is forced to quality 35:
+                        // any relic 0x96..0xAB gets quality 0x23 and type 0x9F whatever DARKLAND.LST gives it, as the fortress relics (R011+0x096A).
                         AddPileEntry(pile, RandomSpecialKind(), 0x9F, 0x23, 1);
                         return 1;
                 }

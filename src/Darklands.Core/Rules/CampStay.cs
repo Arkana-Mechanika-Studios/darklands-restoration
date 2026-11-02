@@ -141,6 +141,9 @@ public sealed class CampStay
     //   cost) read the fee of events[-1] unguarded (1462:0BAF, 1462:18ED: les bx, es:[bx+1B2C] with bx = -4): the far pointer at 2E38:1B28,
     //   the tail of text-slot-named[4], 0 in play, so the fee is the word at 0000:001E (the INT 7 vector's segment, F000 under DOSBox: the
     //   "-4096pfs" players see); here no fee is shown or added. The day itself (R036+0x147A) finds no teacher and the member relaxes.
+    // BUG: event-search (R029+0x3B62, called at R036+0x156E and by key T and the day's cost) returns the lowest matching slot: with two teachers
+    // of one skill here (the alchemist and the university both teach Alchemy) the one in the lower slot always gives the lesson, its fee and
+    // its level, whichever row is chosen.
     /// <summary>The teacher of a skill here (−1: none).</summary>
     private TimedEvent? Teacher(int skill)
     {
