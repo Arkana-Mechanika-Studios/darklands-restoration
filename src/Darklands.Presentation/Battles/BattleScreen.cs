@@ -2516,6 +2516,8 @@ public sealed class BattleScreen : ITacticalView
     // C: R014+0x827A's roll-n(2) for each animated piece of the last full redraw (R017+0x0000's lists DS:E13D / DS:E178 / DS:E196) are
     // drawn by EffectField.Drawn at each fight-draw, the first one at the battle's start (R014+0x0307).
     // UNCERTAIN: while paused the C# draws one more frame (with new puff jitter of the clouds) after the pause begins and then stops; the original's draw pass (fight-draw R014+0x6818, which Draw stands for) leaves a last frame that equals the C#'s first paused one (vis10 D-09fbc1, shots c and d: 3,497 px; shots a and b: 0). Seen only in the picture, not chased; possibly an extra redraw pass in the C#.
+    //   Kept as uncertain (b31): the replayed pause session (c3-space-pause, one of the 821) agrees on the random state
+    //   and the saved game, so the frame changes no state; settling it needs a frame-exact picture of the original's first paused pass.
     public void Draw()
     {
         var tb = _battle!;

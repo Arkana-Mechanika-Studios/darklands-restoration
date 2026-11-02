@@ -18,7 +18,9 @@ public sealed class NightAssaultOnTheKeep : Card
 
     // The best climber is remembered from one visit to the next, as in the original.
     // C: DS:64B0 is a DGROUP global: when nobody beats a score of 0 it keeps the climber of an earlier visit.
-    private int _climber;
+    // C: it starts as 1 (initialised data of the EXE, below the BSS the start-up clears); its one writer is R105+0x0156, the save
+    //   (R037+0x2ACE) does not hold it and a load or a new game does not reset it, so it lives as long as the program, as this card does.
+    private int _climber = 1;
 
     public override int Number => 244;
 

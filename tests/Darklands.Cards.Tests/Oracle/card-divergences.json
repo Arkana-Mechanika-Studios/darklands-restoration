@@ -454,5 +454,26 @@
     "run": "*",
     "contains": "end: original 'stops execution outside the loaded code at 4A114",
     "why": "NightInTheGuildLeadersHouse DIVERGENCE (case 2, (city + map y) % 5 == 2, fact 8): made-up-name for slot 0x27 writes about 7.9 KB below DS (R029+0x5CC4, outside the five-slot name table) and the original later runs off into linear 4A114; the C# draws the name, does not store it (CardContext.RandomName) and goes on to line 6."
+  },
+  {
+    "card": "107",
+    "run": "*",
+    "contains": "",
+    "shortStart": true,
+    "why": "RefugeesFromThePlague, TESTER: a start state with a party slot of status 0 (key part st<m>_0) is saved short (R037+0x2ACE writes the count and leaves the record out) and the original runs on that file as its loader reads it, out of step; the C# runs on the state itself, so the leader byte and the records after the empty slot differ before the card starts (C# hours-elapse moves the leader to slot 1 as R029+0x255A does). Keys without st<m>_0 agree."
+  },
+  {
+    "card": "020",
+    "run": "*",
+    "contains": "",
+    "shortStart": true,
+    "why": "DocksAtNight, TESTER: a start state with a party slot of status 0 is saved short (R037+0x2ACE) and the original reads it out of step: it sees a slot of status 255 (present, not Able) and offers the swim on foot, the C# state has three able mounted members and offers the mounted swim (R029+0x1326 is the same test in both). Keys without st<m>_0, and st<m>_2, agree."
+  },
+  {
+    "card": "097",
+    "run": "*",
+    "contains": "",
+    "shortStart": true,
+    "why": "DragonBlightedLand, TESTER: a start state with a party slot of status 0 is saved short (R037+0x2ACE) and the original reads it out of step; the C# runs on the state itself, so the saved games differ before the card starts. Keys without st<m>_0 agree."
   }
 ]

@@ -153,6 +153,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         {
             return;
         }
+        ui.SheetsShown++;
         SaveAndLoad?.Invoke(2);
         _cursor = NameBox;
         _underPanel = null;

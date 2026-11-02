@@ -109,16 +109,22 @@ public sealed class CardOracleStates
     /// The results of the run's battles (the variant part <c>B5</c>, or <c>B0_5</c>: the first battle ends with 0, the later ones with 5;
     /// tools/oracle/card_oracle.py results_of), or null: result 0, as the oracle's stub without the part.
     /// </summary>
-    public static int[]? BattleResultsOf(string key) => PartOf(key, IsBattle)?[1..].Split('_').Select(int.Parse).ToArray();
+    public static int[]? BattleResultsOf(string key) => PartOf(key, IsBattle, last: true)?[1..].Split('_').Select(int.Parse).ToArray();
 
     /// <summary>The answers of the prayer screen (the variant part <c>Yc</c> cancelled -1, <c>Yf</c> failed 0, <c>Ya</c> answered 1; <c>Yf_a</c>: a sequence), or null: 0.</summary>
     public static int[]? PrayerAnswersOf(string key) =>
-        PartOf(key, IsPrayer)?[1..].Split('_').Select(x => x switch { "c" => -1, "f" => 0, _ => 1 }).ToArray();
+        PartOf(key, IsPrayer, last: true)?[1..].Split('_').Select(x => x switch { "c" => -1, "f" => 0, _ => 1 }).ToArray();
 
-    private static string? PartOf(string key, Func<string, bool> test)
+    // A key with two parts of one kind: split_key and results_of keep the last P, F, B and Y part, texts_of the first T part.
+    private static string? PartOf(string key, Func<string, bool> test, bool last = false)
     {
         var v = key.IndexOf("-V", StringComparison.Ordinal);
-        return v < 0 ? null : key[(v + 2)..key.LastIndexOf("-O", StringComparison.Ordinal)].Split('+').FirstOrDefault(test);
+        if (v < 0)
+        {
+            return null;
+        }
+        var parts = key[(v + 2)..key.LastIndexOf("-O", StringComparison.Ordinal)].Split('+');
+        return last ? parts.LastOrDefault(test) : parts.FirstOrDefault(test);
     }
 
     private static bool IsPath(string part) => part.Length > 1 && part[0] == 'P' && part[1..].Split('_').All(x => int.TryParse(x, out _));
@@ -127,16 +133,7 @@ public sealed class CardOracleStates
     /// The choices a run makes in its first menus (the variant part <c>P2_0_1</c>: the first menu chooses the 2nd enabled line, the second
     /// the 0th, the third the 1st; see tools/oracle/card_oracle.py split_key), or null.
     /// </summary>
-    public static int[]? PathOf(string key)
-    {
-        var v = key.IndexOf("-V", StringComparison.Ordinal);
-        if (v < 0)
-        {
-            return null;
-        }
-        var part = key[(v + 2)..key.LastIndexOf("-O")].Split('+').FirstOrDefault(IsPath);
-        return part?[1..].Split('_').Select(int.Parse).ToArray();
-    }
+    public static int[]? PathOf(string key) => PartOf(key, IsPath, last: true)?[1..].Split('_').Select(int.Parse).ToArray();
 
     private static bool IsForce(string part) =>
         part.Length > 3 && part[0] == 'F' && part[1..].Split('.') is [var b, var l] && int.TryParse(b, out _) && int.TryParse(l, out _);
@@ -145,23 +142,8 @@ public sealed class CardOracleStates
     /// The line a run is told to choose whatever its state (the variant part <c>F12.3</c>: in the first menu of text block 12 choose
     /// line 3, hidden or not; the aim: to run the line's hint and action, see tools/oracle/card_oracle.py split_key), or null.
     /// </summary>
-    public static (int Block, int Line)? ForceOf(string key)
-    {
-        var v = key.IndexOf("-V", StringComparison.Ordinal);
-        if (v < 0)
-        {
-            return null;
-        }
-        foreach (var part in key[(v + 2)..key.LastIndexOf("-O")].Split('+'))
-        {
-            if (IsForce(part))
-            {
-                var p = part[1..].Split('.');
-                return (int.Parse(p[0]), int.Parse(p[1]));
-            }
-        }
-        return null;
-    }
+    public static (int Block, int Line)? ForceOf(string key) =>
+        PartOf(key, IsForce, last: true)?[1..].Split('.') is [var block, var line] ? (int.Parse(block), int.Parse(line)) : null;
 
     /// <summary>DARKLANDS_CARD_ORACLE_SAVES: a folder of one folder per saved game (opt-in; the id is the folder's name).</summary>
     public static string? SavesFolder => Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_SAVES") is { Length: > 0 } f ? f : null;

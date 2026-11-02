@@ -671,9 +671,10 @@ public sealed class CardOracleTests
             {
                 sav = SaveDiff(start, state);
             }
-            catch (ArgumentOutOfRangeException)
+            catch (Exception e) when (e is ArgumentOutOfRangeException or IndexOutOfRangeException)
             {
-                // the C# state cannot be written as a saved game (nobody left in the party): a difference to report, not a crash of the replay
+                // the C# state cannot be written as a saved game (nobody left in the party), or a short saved game's counts run past its end
+                // (SaveSections.Cut): a difference to report, not a crash of the replay
                 end = "saved game unwritable";
             }
         }
@@ -761,7 +762,7 @@ public sealed class CardOracleTests
     /// <c>LeaderAbsent</c>, a start state whose leader's slot holds nobody.
     /// </summary>
     private sealed record Divergence(string Card, string Run, string Contains, string Why, string? DropCSharp = null, bool IgnoreTexts = false,
-        string? End = null, bool GuardNotAMember = false, bool LeaderAbsent = false, string? OriginalEnd = null);
+        string? End = null, bool GuardNotAMember = false, bool LeaderAbsent = false, string? OriginalEnd = null, bool ShortStart = false);
 
     private static List<Divergence> Divergences()
     {
@@ -775,5 +776,8 @@ public sealed class CardOracleTests
             && (d.End is null || (originalEnd ?? "").StartsWith(d.End, StringComparison.Ordinal))
             && (d.OriginalEnd is null || (originalEnd ?? "").Contains(d.OriginalEnd, StringComparison.Ordinal))
             && (!d.GuardNotAMember || CardOracleStates.FromKey(run.Split(' ')[1]).SavedCard is < -1 or > 4)
-            && (!d.LeaderAbsent || CardOracleStates.FromKey(run.Split(' ')[1]).Party is var party && !party.Leader.IsPresent));
+            && (!d.LeaderAbsent || CardOracleStates.FromKey(run.Split(' ')[1]).Party is var party && !party.Leader.IsPresent)
+            // a start with a party slot of status 0 is written short (R037+0x2ACE keeps the count, leaves the record out) and the original runs
+            // on it as its loader reads it, out of step; the C# runs on the state itself: the two start states differ, not the cards
+            && (!d.ShortStart || CardOracleStates.FromKey(run.Split(' ')[1]).Party.Members.Any(m => m.Status == Core.Characters.CharacterStatus.Empty)));
 }

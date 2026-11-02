@@ -57,4 +57,24 @@ public sealed class CardLeadsTests
         c.State.Party.Fame = 20;
         Assert.Equal(60, KnightOnTheRoad.Renown(c));
     }
+
+    [Fact]
+    public void NobodyAbleToClimbLeavesTheClimberOfTheStartUp()
+    {
+        // R105+0x0111..0x0169 replaces DS:64B0 only on a strictly greater score; with every score 0 the static keeps the 1 the EXE
+        // starts with (R105+0x0156 is its one writer, and the save does not hold it), so the line names member 1 (the party leaves: line 7)
+        if (Context() is not { } c)
+        {
+            return;
+        }
+        foreach (var m in c.State.Party.Members)
+        {
+            m.Skills[(int)Core.Characters.Skill.Stealth] = 0;
+            m.Attributes[(int)Core.Characters.Attribute.Agility] = m.AttributeMaximums[(int)Core.Characters.Attribute.Agility] = 1;
+        }
+        c = new CardContext(c.State, CardHarness.World!, new ScriptedScreen(7));
+        c.State.CurrentCard = 244;
+        new NightAssaultOnTheKeep().Run(c);
+        Assert.Equal(1, c.Variables.Chosen[0]);
+    }
 }

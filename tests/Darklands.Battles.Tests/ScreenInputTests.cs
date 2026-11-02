@@ -519,6 +519,61 @@ public sealed class ScreenInputTests
         Assert.False(host.QuitRequested);
     }
 
+    /// <summary>
+    /// A click released on a member's sheet shown from the card menu is the menu's next click once the sheet is closed by a key: the sheet of
+    /// member 0 from its portrait, a click there at the place of the card's second line, F1 closes the sheet and the card chooses line 1.
+    /// </summary>
+    // orig: card-mouse-handler reads INT 33h function 6 on every pass (R043+0x2713), card-choice-menu clears it only on entry (R043+0x1BED); the
+    // sheet (R031+0x019D) tests only the button's state and the portrait press R043+0x1E30 and the redraw R043+0x1E82 read nothing
+    [Fact]
+    public void AClickReleasedOnTheSheetIsTheCardMenusNextClick()
+    {
+        var off = new MouseState(5, 5, MouseButtons.None);
+        var portrait = new MouseState(5, 5, MouseButtons.Left);
+        MouseState Line1(MouseButtons b) => CardScreen.OptionPoint(1) is var (x, y) ? new MouseState(x, y, b) : off;
+        GameUi? ui = null;
+        var sheetsBefore = -1;
+        (int, MouseState)? InMenu((int, MouseState) frame) => ui?.Redraw?.Method.Name.Contains("Refresh") == true ? frame : null;
+        (int, MouseState)? OnTheSheet((int, MouseState) frame) => ui is not null && ui.SheetsShown > sheetsBefore ? frame : null;
+        var host = new StepHost(
+            () => (0, off), () => (Keys.Enter, off),
+            () => InMenu((0, portrait)), () => (0, portrait), () => OnTheSheet((0, off)), () => (0, off),
+            () => (0, Line1(MouseButtons.Left)), () => (0, Line1(MouseButtons.Left)),
+            () => (0, Line1(MouseButtons.None)), () => (0, off), () => (Keys.F1, off), () => (0, off), () => (0, off));
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        ui = new GameUi(host, new GameAssets(files));
+        sheetsBefore = ui.SheetsShown;
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        var panel = new PartyPanel(ui.Assets);
+        var formulas = FormulaBook.Load(ui.Assets.Files, world);
+        var sheet = new CharacterSheetScreen(ui, panel, formulas, world.Items.Saints.Select(s => s.FullName).ToList(), new AlchemyScreen(ui, panel, formulas));
+        Darklands.Cards.CardContext? context = null;
+        var screen = new CardScreen(ui, () => context!, panel);
+        context = new Darklands.Cards.CardContext(state, world, screen) { Screens = new SheetOnly(member => sheet.Show(state, member)) };
+        screen.Show("$Other00", Darklands.Cards.PictureNames.Of(34));
+        var options = Enumerable.Repeat(Darklands.Cards.OptionState.Enabled, 10).ToList();
+        Assert.Equal(1, screen.Choose(0, options));
+        Assert.Equal(1, ui.SheetsShown);
+        Assert.False(host.QuitRequested);
+    }
+
+    private sealed class SheetOnly(Action<int> sheet) : Darklands.Cards.IGameScreens
+    {
+        public void Barter(int shop, string name, long categories) { }
+        public void Camp(int mode) { }
+        public void Alchemy(int member, int place) { }
+        public void ItemStore() { }
+        public void CharacterSheet(int member) => sheet(member);
+        public void PartyInfo() { }
+        public void Loot(IList<Darklands.Core.Characters.ItemStack> items, Darklands.Core.Economy.Money money) { }
+        public int Battle(Darklands.Cards.BattleRequest request) => 0;
+    }
+
     // orig: R037+0x4664's loop reads DS:6EF0 & 1 and the keys (root 047C:073D / 0744) itself and never calls root 0000:0000: the right
     // button held over the bar's first title and let go on its first item chooses nothing, F10 and the hot keys do nothing
     [Fact]

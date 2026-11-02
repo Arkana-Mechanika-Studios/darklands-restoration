@@ -42,8 +42,10 @@ public static class SaveSections
         };
     }
 
+    // As savdiff.py slices: a record past the end of the file is cut short or empty (a short save, its count above its records,
+    // the original writer's slip that a start slot of status 0 makes), never an error.
     private static List<byte[]> Records(byte[] b, int at, int count, int size) =>
-        Enumerable.Range(0, count).Select(k => b.AsSpan(at + k * size, size).ToArray()).ToList();
+        Enumerable.Range(0, count).Select(k => b[Math.Min(at + k * size, b.Length)..Math.Min(at + (k + 1) * size, b.Length)]).ToList();
 
     /// <summary>The differences of <paramref name="final"/> from <paramref name="start"/>, canonical JSON.</summary>
     public static JsonObject Diff(byte[] start, byte[] final)
