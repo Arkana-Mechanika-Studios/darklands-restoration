@@ -756,6 +756,8 @@ public sealed class BattleScreen : ITacticalView
     {
         var b = _battle!.Battle;
         _owner.ViewCentre = (_view.CentreColumn, _view.CentreRow);
+        // C: DS:A532 (the effects' modifiers) stays in the program for a battle taken up from a save later (not reset by a load)
+        _battle.KeepModifiers();
         // C: what the battle leaves in the program's battle file (variables, levels, terrain.fil, the loot file), as R002+0x0000 leaves
         // its globals: DS:907A = 0, the floor (DS:A6B4) of the members who were able or unconscious 0, the result 8 read as 2.
         var file = _state.BattleFile ??= new BattleFile();
@@ -1415,6 +1417,8 @@ public sealed class BattleScreen : ITacticalView
     {
         if (_battle!.Menus.LoadGame == 1)
         {
+            // C: the load leaves DS:A532 as this battle has it (a battle taken up from the game loaded starts from it)
+            _battle.KeepModifiers();
             _owner.Load?.Invoke();
         }
     }

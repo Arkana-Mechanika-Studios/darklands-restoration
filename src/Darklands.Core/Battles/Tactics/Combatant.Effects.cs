@@ -27,6 +27,32 @@ public sealed class EffectModifiers
 
     public ushort HeldUntil { get; set; } = Off;
 
+    /// <summary>A copy (the program's DS:A532 kept from one battle to the next).</summary>
+    public EffectModifiers Copy()
+    {
+        var m = new EffectModifiers();
+        m.CopyFrom(this);
+        return m;
+    }
+
+    /// <summary>The values of <paramref name="other"/>, or of a fresh program's zeroed memory (every timer 0) when null.</summary>
+    public void CopyFrom(EffectModifiers? other)
+    {
+        for (var k = 0; k < Attributes.Length; k++)
+        {
+            Attributes[k] = other?.Attributes[k] ?? 0;
+        }
+        for (var k = 0; k < Skills.Length; k++)
+        {
+            Skills[k] = other?.Skills[k] ?? 0;
+        }
+        Held = other?.Held ?? false;
+        SavedAction = other?.SavedAction ?? CombatAction.None;
+        AttributesUntil = other?.AttributesUntil ?? 0;
+        SkillsUntil = other?.SkillsUntil ?? 0;
+        HeldUntil = other?.HeldUntil ?? 0;
+    }
+
     /// <summary>fight-state-reset (R020 06B6): everything off.</summary>
     public void Clear()
     {

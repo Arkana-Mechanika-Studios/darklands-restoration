@@ -1,0 +1,21 @@
+# Lockstep session (the ladder behind the dwarf king's door, already opened, local/batch/b32/a7-king): local/oracle-saves/synth/DKSAVE1-kingopen (the original's own battle save written in dungeon-king-opened: level 3 of the mine of Rammelsburg, the king's door's wall removed, the ladder's wall group shown). The battle is taken up (Space), the leader walks north onto the ladder, U: the leader climbs down to level 5 alone; 10 passes and Alt-S (DKSAVE1: the level switch). Both games' .SAV and .BSV are compared (bwait:<n> = n battle passes in both games)
+key:t
+wait:5
+key:l
+wait:600
+bwait:20
+key:space
+bwait:20
+kdown:49
+bwait:200
+kup:49
+bwait:20
+key:u
+bwait:10
+key:alts
+wait:100
+key:enter
+wait:300
+bwait:20
+key:space
+wait:100

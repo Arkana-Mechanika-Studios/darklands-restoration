@@ -414,6 +414,27 @@ public sealed partial class TacticalBattle
     // level is prepared again; the battle's other start-up runs as for any battle.
     public void Resume()
     {
+        // orig: R014+0x0000 runs fight-state-reset only for a fresh battle (DS:9081 bit 0 clear): the modifiers of DS:A532, which the battle
+        // file does not hold, are the program's (zeros in a fresh program: every timer due at the first tick)
+        for (var i = 0; i < Combatant.Count; i++)
+        {
+            var c = Battle[i];
+            c.Modifiers.CopyFrom(ProgramMemory.Modifiers?[i]);
+            // C: the empty records keep what the program's records hold: the reset R002+0x1830 clears only their status (+0x06) for 5..12
+            //   and sets the kind of 0..4. In a fresh program that is zeros (weapon 0, slot 0), and the first tick's modifier ends ready
+            //   weapon 0 for them, writing its code into slot 0's file name (the original's slot 0: F01wkA2 -> F01wkS2 at the first step).
+            // DIVERGENCE: after an earlier battle of the same program the original's records 5..12 are that battle's enemies; here they
+            //   are empty records (their kinds 5/6 and weapons are not kept).
+            if (ProgramMemory.Modifiers is null && c.Status == CharacterStatus.Empty)
+            {
+                c.DefaultWeapon = c.ReadiedWeapon = 0;
+                c.FullStrength = 0;
+                if (i >= Combatant.PartySlots)
+                {
+                    c.AnimationSlot = 0;
+                }
+            }
+        }
         ResetDragonFight();
         Ticks = 0;
         InitMenus();
@@ -470,6 +491,9 @@ public sealed partial class TacticalBattle
         ActivationsAt = (ushort)(Clock + 120);
         SaveRulesMessage(true);
     }
+
+    /// <summary>The modifiers (DS:A532) stay in the program when the battle is left (its end, or a game loaded from it).</summary>
+    public void KeepModifiers() => ProgramMemory.Modifiers = [.. Battle.Combatants.Select(c => c.Modifiers.Copy())];
 
     /// <summary>
     /// What saving in a battle does to it: the party's running effect modifiers end first (the saved records are without

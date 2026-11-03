@@ -210,6 +210,46 @@ public sealed class BattleSaveTests
         Assert.False(place.X is >= 0x14 and <= 0xDC && place.Y is >= 0x14 and <= 0xA0, $"set-up place {place} outside the margins");
     }
 
+    /// <summary>
+    /// A battle taken up from a saved game in a program just started: the effects' modifiers (DS:A532) are not in the battle file and the
+    /// reset that turns their timers off is only a fresh battle's, so every record's timers are 0 and due at the first tick. Each record then
+    /// readies its weapon again (R019+0x0B00 through the mods: tail of R014+0x2A4A), and the empty records 5..12 (animation slot 0, weapon 0)
+    /// leave their code in slot 0's walking file name: the leader's next walk loads that file (lockstep dungeon-king-ladder,
+    /// local/batch/b32/a7-l5: the original's slot 0 goes from F01wkA2 to F01wkS2 at the first step).
+    /// </summary>
+    [Fact]
+    public void ABattleTakenUpInAFreshProgramEndsTheZeroedModifiersAtTheFirstTick()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var state = Simulation.NewGame.Quickstart(world, 7);
+        var (_, tactics) = StartBattle(ui, files, state, new BattleRequest(8, 777, NoGroups, Persistent: true));
+        Run(tactics, 30);
+        var (sav, bsv) = SaveInBattle(state, tactics);
+
+        var loaded = OriginalSaves.Read(sav, bsv, "dksave1.sav", world).State;
+        var screens = new BattleScreens(ui, () => loaded);
+        var screen = new BattleScreen(ui, new BattleAssets(files), loaded, screens);
+        screen.Start(new BattleRequest(0, 0, NoGroups, Persistent: true, Resume: true));
+        var taken = screen.Tactics!;
+        Assert.All(taken.Battle.Combatants, c => Assert.Equal(0, c.Modifiers.SkillsUntil));
+        // weapon 0's code (S2); the leader's own walking file is another's
+        var zero = taken.Battle.AnimationCode(0);
+        Assert.NotEqual(zero, taken.SlotWeapons[0]);
+        // up to the first tick (NextTickAt: the set-up's clock + the tick length)
+        for (var pass = 0; pass < 20 && taken.Ticks == 0; pass++)
+        {
+            Run(taken, 1);
+        }
+        Assert.Equal(1, taken.Ticks);
+        Assert.All(taken.Battle.Combatants, c => Assert.Equal(EffectModifiers.Off, c.Modifiers.SkillsUntil));
+        Assert.Equal(zero, taken.SlotWeapons[0]);
+    }
+
     /// <summary>The level files of every battle file of the player's saves go through this program's conversions unchanged.</summary>
     [Fact]
     public void EveryLevelOfTheSavesGoesThroughTheConversionsUnchanged()

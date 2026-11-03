@@ -864,6 +864,8 @@ SESSIONS["b32-saint-stale-slot-more"] = "synth/DKSAVE0-card144.sav"
 # (furniture alarm, card E4) for contrast (local/batch/b32/a7-king); the saves: synth_saves.py king / stonebox on the original's DKSAVE2 of
 # savemid-mine (kept as local/oracle-saves/synth/savemid-DKSAVE2.SAV/.BSV)
 SESSIONS["dungeon-king-door"] = "local/oracle-saves/synth/DKSAVE2-king.SAV"
+# b32 (A7-L5): the opened state loaded in a program just started, the leader down the ladder (the first tick ends the zeroed modifiers)
+SESSIONS["dungeon-king-ladder"] = "local/oracle-saves/synth/DKSAVE1-kingopen.SAV"
 SESSIONS["dungeon-king-opened"] = "local/oracle-saves/synth/DKSAVE2-king.SAV"
 SESSIONS["dungeon-stonebox-door"] = "local/oracle-saves/synth/DKSAVE2-stonebox.SAV"
 

@@ -391,6 +391,9 @@ public sealed class DarklandsGame
     /// <summary>The battle view's centre (DS:C866 / DS:C886), a program global: a game loaded keeps it.</summary>
     private (int Column, int Row) _battleViewCentre;
 
+    // DS:A532 (the effects' modifiers) as the last battle left it: a load does not reset it (null: a fresh program's zeros)
+    private Core.Battles.EffectModifiers[]? _battleModifiers;
+
     /// <summary>The combatants' seen positions (20A5:79A9), a program global: a game loaded keeps them.</summary>
     private Core.Battles.MapPoint[][]? _seenPositions;
 
@@ -489,11 +492,13 @@ public sealed class DarklandsGame
         // drawn around the centre the battle left had (R014+0x02FF), and so its members' screen positions (+0x00 / +0x02) as its next save
         // writes them (lockstep session savemid-mine)
         battles.ViewCentre = _battleViewCentre;
+        battles.GenerationMemory.Modifiers = _battleModifiers;
         battles.SeenPositions = _seenPositions;
         battles.CursorKeys = _cursorKeys;
         battles.Load = () =>
         {
             _battleViewCentre = battles.CurrentViewCentre;
+            _battleModifiers = battles.GenerationMemory.Modifiers;
             _seenPositions = battles.SeenPositions;
             LoadInGame(state, inBattle: true);
         };
@@ -528,6 +533,7 @@ public sealed class DarklandsGame
             Load = () =>
             {
                 _battleViewCentre = battles.CurrentViewCentre;
+                _battleModifiers = battles.GenerationMemory.Modifiers;
                 _seenPositions = battles.SeenPositions;
                 LoadInGame(state);
             },

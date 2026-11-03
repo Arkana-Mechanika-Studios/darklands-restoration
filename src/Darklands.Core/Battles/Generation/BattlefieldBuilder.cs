@@ -64,6 +64,16 @@ public sealed class GenerationProcessMemory
     /// </summary>
     // orig: set by R014+0xC6F3 / 0xC6FA only; R014+0xBC6A and R016+0x13DA clear DS:C652; R014+0xBFC0..0xBFCC copy both into the destination
     public MapPoint OrderSpot { get; set; }
+
+    /// <summary>
+    /// DS:A532[13]: the effects' temporary modifiers as the last battle left them, or null in a fresh program (zeros: every timer 0, not
+    /// −536). Only a fresh battle's fight-state-reset turns the timers off; a battle taken up from a saved game starts from these, so in a
+    /// fresh program every record's three timers are due at the first tick and each record readies its weapon again (R019+0x0B00), the
+    /// empty records 5..12 (animation slot 0, weapon 0) writing their code into slot 0's walking file name.
+    /// </summary>
+    // orig: DS:A532 is not in the battle file (R003+0x00DC / 0x0CE8); R014+0x0000 skips the reset for a resume (DS:9081 bit 0);
+    // the mods: tail of R014+0x2A4A tests the timers for all 13; lockstep dungeon-king-ladder (local/batch/b32/a7-l5)
+    public EffectModifiers[]? Modifiers { get; set; }
 }
 
 /// <summary>Everything a battlefield generator reads besides the request.</summary>

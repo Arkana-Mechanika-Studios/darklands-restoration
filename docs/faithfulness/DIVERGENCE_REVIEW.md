@@ -19,9 +19,9 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 1, justify: 40, keep: 11.
+- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: (none): 1, document: 1, justify: 40, keep: 11.
 - Part B (undefined-memory in core logic): 152 entries; determinism: deterministic: 1, n/a: 83, no: 55, partly: 9, yes: 4.
-- Entries without a recommendation yet: 0.
+- Entries without a recommendation yet: 1.
 
 ## Work list
 
@@ -367,9 +367,9 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (16)
+### battles (17)
 
-#### not-modelled (4)
+#### not-modelled (5)
 
 - **D-ca7108** `not-modelled` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:57` `FortressBattlefield.BuildFortress`  
   original: `R011+0x0000` (1432:0000, draft)  
@@ -387,6 +387,10 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0xB434` (18BF:0FA4, draft)  
   divergence: member −1's count byte DS:9C53 (before the party's records) is not held by the battle: not modelled.  
   recommendation: **justify** (checked against the original) - use-up-slot's removal with m = -1 decrements the count byte DS:9CD3 - 0x80 = DS:9C53, two bytes before the party records (DS:9C55); no shift happens for k = 255 (count - 1 > 255 never holds). That byte is not part of the battle state: not modelled. Reached only by the Dissolve key with nobody selected, member 0's slot 0xFF and member 2's entry 63 holding a count of 0 or 1; faithful mode only.
+- **D-63478f** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:426` `TacticalBattle.Resume`  
+  original: `R014+0x0000` (0E76:0000, draft)  
+  divergence: after an earlier battle of the same program the original's records 5..12 are that battle's enemies; here they are empty records (their kinds 5/6 and weapons are not kept).  
+  recommendation: **NEEDS REVIEW**
 
 #### deliberate-fix (3)
 
