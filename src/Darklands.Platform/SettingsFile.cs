@@ -247,6 +247,7 @@ public static class SettingsFile
                     break;
                 case "mt32Roms": settings.Mt32Roms = FilePath(key, property.Value); break;
                 case "audioPack": settings.AudioPack = FilePath(key, property.Value); break;
+                case "soundFont": settings.SoundFont = FilePath(key, property.Value); break;
                 case "configDrk": ConfigDrk(key, property.Value, settings); break;
                 default: Unknown(key); break;
             }
@@ -489,6 +490,10 @@ public static class SettingsFile
             // pieces, docs/PACKS.md). Not part of the original; the game plays the same. "": the game's own sound.
             // Command line: --audio-pack <folder>; environment: DARKLANDS_AUDIO_PACK.
             "audioPack": "",
+            // The SoundFont (.sf2 file) that plays the audio pack's .mid files (General MIDI; docs/PACKS.md). A SoundFont named in the
+            // pack's own pack.json wins. "": the first .sf2 in the SOUNDFONT folder next to the program. None found: the .mid cues are
+            // skipped and the game's own music plays. Command line: --soundfont <file>.
+            "soundFont": "",
             // To replace values of CONFIG.DRK as if the file held them, remove the // before "configDrk" (any field may be left out).
             // card is the install program's number (0 AdLib, 1 Covox, 2 Sound Blaster, 3 SB Pro, 4 SB Pro 2, 5 PAS, 6 PAS 16,
             // 7 Roland, 127 speaker) or a name (adlib, sb, sbpro2, roland, speaker, none); it also picks the driver files

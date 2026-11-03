@@ -12,11 +12,16 @@ internal static class WindowsDialogs
     /// <paramref name="whileOpen"/> runs over and over on this thread meanwhile: it must handle the owner's window messages,
     /// which the dialog sends it (else both wait for each other).
     /// </summary>
-    public static string? PickFolder(string title, IntPtr owner, Action whileOpen)
+    public static string? PickFolder(string title, IntPtr owner, Action whileOpen) => Pick(title, owner, whileOpen, folders: true);
+
+    /// <summary>The file picker (any file; the caller checks the kind), as <see cref="PickFolder"/>.</summary>
+    public static string? PickFile(string title, IntPtr owner, Action whileOpen) => Pick(title, owner, whileOpen, folders: false);
+
+    private static string? Pick(string title, IntPtr owner, Action whileOpen, bool folders)
     {
         string? chosen = null;
         // the shell's dialogs want a single-threaded apartment
-        var thread = new Thread(() => chosen = PickFolderHere(title, owner));
+        var thread = new Thread(() => chosen = PickFolderHere(title, owner, folders));
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         while (!thread.Join(15))
@@ -26,13 +31,13 @@ internal static class WindowsDialogs
         return chosen;
     }
 
-    private static string? PickFolderHere(string title, IntPtr owner)
+    private static string? PickFolderHere(string title, IntPtr owner, bool folders)
     {
         var dialog = (IFileDialog)new FileOpenDialog();
         try
         {
             dialog.GetOptions(out var options);
-            dialog.SetOptions(options | PickFolders | ForceFileSystem | PathMustExist);
+            dialog.SetOptions(options | (folders ? PickFolders : 0) | ForceFileSystem | PathMustExist);
             dialog.SetTitle(title);
             if (dialog.Show(owner) != 0)
             {

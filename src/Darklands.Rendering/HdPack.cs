@@ -100,6 +100,10 @@ public sealed class HdPack
             }
             foreach (var property in document.RootElement.EnumerateObject())
             {
+                if (property.Name == "soundfont" || property.Name.StartsWith("card:", StringComparison.Ordinal))
+                {
+                    continue;   // the sound pack's keys (docs/PACKS.md), which share this file
+                }
                 if (property.Name != "assets")
                 {
                     problems.Add($"HD pack: {manifest}: unknown key \"{property.Name}\" ignored");

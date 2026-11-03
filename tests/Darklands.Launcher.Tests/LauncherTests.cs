@@ -27,6 +27,8 @@ internal sealed class ScriptedSurface(int width, int height, params LauncherInpu
     public string? Clipboard() => ClipboardText;
 
     public Func<string, string?>? PickFolder { get; set; }
+
+    public Func<string, string?>? PickFile { get; set; }
 }
 
 /// <summary>A sound test that notes what it was asked to play, and plays until stopped.</summary>
@@ -107,7 +109,7 @@ public sealed class LauncherTests
             Down, Enter,        // fullscreen on
             Down, Down,
             Right, Right,       // sound: AdLib, then Sound Blaster
-            Down, Down, Down, Enter,  // past the ROMs and the audio pack: the start-up screen off
+            Down, Down, Down, Down, Enter,  // past the ROMs, the audio pack and the SoundFont: the start-up screen off
             Escape]);
         Assert.Equal(LauncherChoice.Quit, result.Choice);
         Assert.Equal("1080x600", (string)result.Changes["display.resolution"]!);
@@ -170,8 +172,8 @@ public sealed class LauncherTests
     {
         var links = new List<string>();
         var tests = new List<string?>();
-        // Play, Discord (open it), then back up past Play, Save, every start, Opening animation, start-up screen, audio pack to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        // Play, Discord (open it), then back up past Play, Save, every start, Opening animation, start-up screen, SoundFont, audio pack to the sound test
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
     }
@@ -292,6 +294,43 @@ public sealed class LauncherTests
         // a pack fixed by the command line is not changed
         var fixedKeys = new Dictionary<string, string> { ["sound.audioPack"] = "--audio-pack" };
         Assert.Empty(Run(Context(fixedKeys: fixedKeys), new PathDropped(packs.Sounds)).Changes);
+    }
+
+    [Fact]
+    public void TheSoundFontRowPicksOrDropsAnSf2FileAndLeftGoesBackToTheDefault()
+    {
+        var folder = Directory.CreateTempSubdirectory("dksf").FullName;
+        try
+        {
+            var font = Path.Combine(folder, "mine.sf2");
+            File.WriteAllText(font, "x");
+            var text = Path.Combine(folder, "notes.txt");
+            File.WriteAllText(text, "x");
+            LauncherInput[] toSoundFont = [.. ToAudioPack, Tab];
+            var picked = new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = _ => font };
+            var result = new Launcher().Run(Context(), picked);
+            Assert.Equal(font, result.Settings.SoundFont);
+            Assert.Equal(font.Replace('\\', '/'), (string)result.Changes["sound.soundFont"]!);
+
+            // a file that is not a SoundFont is refused; a dropped .sf2 is taken
+            Assert.Empty(new Launcher().Run(Context(), new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = _ => text }).Changes);
+            Assert.Equal(font, Run(Context(), new PathDropped(font)).Settings.SoundFont);
+
+            // left: the default again; the settings' file comes back unchanged
+            var kept = Context(new GameSettings { GameFolder = Game, SoundFont = font });
+            Assert.Empty(Run(kept).Changes);
+            var off = Run(kept, [.. toSoundFont, new KeyPressed(LauncherKey.Left)]);
+            Assert.Equal("", (string)off.Changes["sound.soundFont"]!);
+            Assert.Null(off.Settings.SoundFont);
+
+            // fixed by --soundfont: not changed
+            var fixedKeys = new Dictionary<string, string> { ["sound.soundFont"] = "--soundfont" };
+            Assert.Empty(Run(Context(fixedKeys: fixedKeys), new PathDropped(font)).Changes);
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
     }
 
     [Fact]
@@ -445,6 +484,7 @@ public sealed class LauncherTests
         Shot("asked-1440x800", Context(tests: []), 1440, 800, [.. ToWindow, Escape]);
         Shot("packs-1080x600", Context(tests: [], settings: new GameSettings { GameFolder = Game, AudioPack = Path.GetTempPath(), HdPack = @"C:\Packs\hd" })
             with { PackGuide = "https://example.org/PACKS.md", DescribePack = _ => new PackStatus(0, 3, null) }, 1080, 600, [.. ToAudioPack, Tab, Tab, Escape]);
+        Shot("soundfont-1080x600", Context(tests: []), 1080, 600, [.. ToAudioPack, Tab, Tab, Escape]);
         Shot("roms-help-1080x600", Context(tests: []) with { PackGuide = "https://example.org/PACKS.md" }, 1080, 600, [.. ToAudioPack, Escape]);
         Shot("notfound-1080x600", Nothing(), 1080, 600, Escape);
         Shot("typing-720x400", Context(), 720, 400, Tab, Tab, Enter, new TextTyped(@"Q:\Games"));

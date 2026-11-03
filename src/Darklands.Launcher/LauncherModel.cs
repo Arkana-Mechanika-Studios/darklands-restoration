@@ -26,7 +26,7 @@ internal sealed class LauncherModel
     private static readonly double[] Factors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string? HdPack, string SoundCard, string? Roms, string? AudioPack, bool Banner, bool Intro, bool Always) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool Always) _initial;
     private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
@@ -43,6 +43,7 @@ internal sealed class LauncherModel
         SoundCard = SoundCards.Any(c => c.Value == s.SoundCard) ? s.SoundCard! : "config";
         Mt32Roms = string.IsNullOrWhiteSpace(s.Mt32Roms) ? null : s.Mt32Roms;
         AudioPack = string.IsNullOrWhiteSpace(s.AudioPack) ? null : s.AudioPack;
+        SoundFont = string.IsNullOrWhiteSpace(s.SoundFont) ? null : s.SoundFont;
         Banner = s.Banner ?? true;
         Intro = s.Intro ?? true;
         Always = s.Launcher ?? false;
@@ -55,7 +56,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, HdPack, SoundCard, Mt32Roms, AudioPack, Banner, Intro, Always);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, Always);
         _automatic = GameFolder;
     }
 
@@ -82,6 +83,12 @@ internal sealed class LauncherModel
 
     /// <summary>The sound pack's folder (replacement music and battle effects); null: none.</summary>
     public string? AudioPack { get; set; }
+
+    /// <summary>The SoundFont (.sf2 file) chosen for the audio pack's .mid files; null: the default (the first .sf2 in SOUNDFONT next to the program).</summary>
+    public string? SoundFont { get; set; }
+
+    /// <summary>The SoundFont that would play now (the one chosen if it exists, else the default folder's), null when none is found.</summary>
+    public string? SoundFontFound => _context.FindSoundFont is { } find ? find(SoundFont) : SoundFont is { } chosen && File.Exists(chosen) ? chosen : null;
 
     /// <summary>The picture pack's (or the sound pack's) folder.</summary>
     public string? PackOf(PackKind kind) => kind == PackKind.Pictures ? HdPack : AudioPack;
@@ -241,6 +248,10 @@ internal sealed class LauncherModel
         {
             changes["sound.audioPack"] = AudioPack?.Replace('\\', '/') ?? "";
         }
+        if (SoundFont != _initial.SoundFont)
+        {
+            changes["sound.soundFont"] = SoundFont?.Replace('\\', '/') ?? "";
+        }
         if (Banner != _initial.Banner)
         {
             changes["startup.banner"] = Banner;
@@ -273,6 +284,7 @@ internal sealed class LauncherModel
             SoundCard = SoundCard,
             Mt32Roms = Mt32Roms,
             AudioPack = AudioPack,
+            SoundFont = SoundFont,
             ConfigDrk = s.ConfigDrk,
             Banner = Banner,
             Intro = Intro,

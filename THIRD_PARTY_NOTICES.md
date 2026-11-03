@@ -63,6 +63,38 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER I
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
+## MeltySynth
+
+Sound packs (docs/PACKS.md) play General MIDI (.mid) files through a SoundFont with MeltySynth
+(https://github.com/sinshu/meltysynth), a synthesizer written entirely in C#, through its NuGet package (2.4.1), under the
+MIT License; no MeltySynth source code is included in this repository. No SoundFont is included either: the player
+supplies one. The package's licence file also names the work MeltySynth is based on.
+
+```text
+C# Synth (http://csharpsynthproject.codeplex.com):
+Copyright (C) 2014 Alex Veltsistas
+
+TinySoundFont (https://github.com/schellingb/TinySoundFont):
+Copyright (C) 2017, 2018 Bernhard Schelling
+Based on SFZero, Copyright (C) 2012 Steve Folta (https://github.com/stevefolta/SFZero)
+
+MeltySynth:
+Copyright (C) 2021 Nobuaki Tanaka
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
 ## DejaVu Sans Mono (developer console)
 
 `src/Darklands.Host.Sdl/Resources/DejaVuSansMono.ttf` is DejaVu Sans Mono 2.37, unmodified

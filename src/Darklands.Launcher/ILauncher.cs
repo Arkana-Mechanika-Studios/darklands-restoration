@@ -46,6 +46,8 @@ public enum LauncherReason
 /// program or the game); null: none offered (a pack is still dropped or browsed for).</param>
 /// <param name="DescribePack">A folder → what it holds as a picture or sound pack (null: the launcher only counts its files).</param>
 /// <param name="PackGuide">The guide for pack makers (a link or a file), opened by "How to make a pack"; null: no link.</param>
+/// <param name="FindSoundFont">The SoundFont file of the settings (null: none chosen) → the file that would play the audio pack's .mid
+/// files (the file if it exists, else the first .sf2 of the default folder), or null when none is found; null: the launcher shows the file as it is.</param>
 /// <param name="GivenGameFolder">The game folder the command line or the environment names (it overrides the settings file's), or
 /// null: the launcher shows it instead of the file's.</param>
 public sealed record LauncherContext(
@@ -64,12 +66,13 @@ public sealed record LauncherContext(
     Func<string?, IReadOnlyList<string>>? FindPacks = null,
     Func<string, PackStatus>? DescribePack = null,
     string? PackGuide = null,
-    string? GivenGameFolder = null);
+    string? GivenGameFolder = null,
+    Func<string?, string?>? FindSoundFont = null);
 
 /// <summary>A folder as a pack: how many pictures and sounds it replaces, and what could not be read (a broken manifest ...).</summary>
 public sealed record PackStatus(int Pictures, int Sounds, string? Problem)
 {
-    /// <summary>What a folder holds by its files alone: PNG files (pictures), OGG and WAV files (sounds).</summary>
+    /// <summary>What a folder holds by its files alone: PNG files (pictures), OGG, WAV and MIDI files (sounds).</summary>
     public static PackStatus Count(string folder)
     {
         try
@@ -77,7 +80,8 @@ public sealed record PackStatus(int Pictures, int Sounds, string? Problem)
             var files = Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories).Select(Path.GetExtension).ToList();
             return new PackStatus(
                 files.Count(e => string.Equals(e, ".png", StringComparison.OrdinalIgnoreCase)),
-                files.Count(e => string.Equals(e, ".ogg", StringComparison.OrdinalIgnoreCase) || string.Equals(e, ".wav", StringComparison.OrdinalIgnoreCase)),
+                files.Count(e => string.Equals(e, ".ogg", StringComparison.OrdinalIgnoreCase) || string.Equals(e, ".wav", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(e, ".mid", StringComparison.OrdinalIgnoreCase) || string.Equals(e, ".midi", StringComparison.OrdinalIgnoreCase)),
                 null);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException)
@@ -155,6 +159,9 @@ public interface ILauncherSurface
     /// cancelled, and throws <see cref="NotSupportedException"/> (its message says why) when no dialog could be shown.
     /// </summary>
     Func<string, string?>? PickFolder { get; }
+
+    /// <summary>Asks the system for a SoundFont file (its own dialog); null when not available. Cancelled: null; no dialog: <see cref="NotSupportedException"/>.</summary>
+    Func<string, string?>? PickFile => null;
 }
 
 /// <summary>An input event, in surface pixels.</summary>

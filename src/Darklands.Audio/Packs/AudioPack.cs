@@ -24,19 +24,30 @@ public sealed class AudioPack
     /// <summary>The manifest's file name inside the pack folder (a picture pack's pack.json can sit beside it).</summary>
     public const string ManifestName = "audio.json";
 
+    /// <summary>The picture pack's manifest, which also carries the sound pack's "soundfont" (and "card:" keys).</summary>
+    public const string PackManifestName = "pack.json";
+
     private static readonly JsonDocumentOptions ManifestOptions = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
 
     private readonly Dictionary<(AudioKind, int), AudioReplacement> _replacements;
     private readonly ConcurrentDictionary<(string Path, int Rate), Lazy<Task<AudioClip?>>> _clips = new();
     private readonly List<string> _problems;
     private readonly Lock _gate = new();
+    private Lazy<SoundFontBank?>? _soundFont;
 
-    private AudioPack(string? folder, Dictionary<(AudioKind, int), AudioReplacement> replacements, List<string> problems)
+    private AudioPack(string? folder, Dictionary<(AudioKind, int), AudioReplacement> replacements, List<string> problems, string? soundFontPath = null)
     {
         Folder = folder;
         _replacements = replacements;
         _problems = problems;
+        SoundFontPath = soundFontPath;
     }
+
+    /// <summary>The SoundFont that plays the .mid cues (pack.json "soundfont", else the one chosen, else the default folder); null: none found.</summary>
+    public string? SoundFontPath { get; }
+
+    /// <summary>A MIDI file (played through a SoundFont) rather than a recording.</summary>
+    public static bool IsMidi(string path) => Path.GetExtension(path).ToLowerInvariant() is ".mid" or ".midi";
 
     /// <summary>No replacements.</summary>
     public static AudioPack Empty { get; } = new(null, [], []);
@@ -67,7 +78,10 @@ public sealed class AudioPack
         kind == AudioKind.Music && AudioCatalogue.IsControl(number) ? null : _replacements.GetValueOrDefault((kind, number));
 
     /// <summary>Indexes the folder's sound files and its manifest (the files are decoded later).</summary>
-    public static AudioPack Load(string folder)
+    /// <param name="folder">The pack's folder.</param>
+    /// <param name="soundFont">The SoundFont chosen by the player (--soundfont, the settings file); null: none chosen.</param>
+    /// <param name="programFolder">Where the default SOUNDFONT folder is looked for; null: next to the program.</param>
+    public static AudioPack Load(string folder, string? soundFont = null, string? programFolder = null)
     {
         var problems = new List<string>();
         var replacements = new Dictionary<(AudioKind, int), AudioReplacement>();
@@ -77,11 +91,13 @@ public sealed class AudioPack
             problems.Add($"Audio pack: folder {full} not found; the game's own sound plays");
             return new AudioPack(full, replacements, problems);
         }
-        // sorted, so that two files of one cue resolve the same way on every disk (the first wins; .ogg before .wav)
-        foreach (var path in Directory.EnumerateFiles(full, "*", SearchOption.AllDirectories).Order(StringComparer.Ordinal))
+        // sorted, so that two files of one cue resolve the same way on every disk (the first wins; .ogg before .wav, and a
+        // recording before a .mid, which needs a SoundFont)
+        var files = Directory.EnumerateFiles(full, "*", SearchOption.AllDirectories).Order(StringComparer.Ordinal).ToList();
+        foreach (var path in files.Where(f => !IsMidi(f)).Concat(files.Where(IsMidi)))
         {
             var extension = Path.GetExtension(path).ToLowerInvariant();
-            if (extension is not (".ogg" or ".wav"))
+            if (extension is not (".ogg" or ".wav" or ".mid" or ".midi"))
             {
                 continue;
             }
@@ -100,7 +116,48 @@ public sealed class AudioPack
         {
             ReadManifest(full, manifest, replacements, problems);
         }
-        return new AudioPack(full, replacements, problems);
+        var soundFontPath = FindSoundFont(full, soundFont, programFolder, replacements, problems);
+        return new AudioPack(full, replacements, problems, soundFontPath);
+    }
+
+    /// <summary>The SoundFont lookup (pack.json, then the player's choice, then the default folder); said once when .mid files have none.</summary>
+    private static string? FindSoundFont(string folder, string? chosen, string? programFolder, Dictionary<(AudioKind, int), AudioReplacement> replacements,
+        List<string> problems)
+    {
+        var midi = replacements.Values.Count(r => IsMidi(r.Path));
+        var manifest = Path.Combine(folder, PackManifestName);
+        string? named = null;
+        if (File.Exists(manifest))
+        {
+            try
+            {
+                using var document = JsonDocument.Parse(File.ReadAllText(manifest), ManifestOptions);
+                if (document.RootElement.ValueKind == JsonValueKind.Object && document.RootElement.TryGetProperty("soundfont", out var value))
+                {
+                    if (value.ValueKind == JsonValueKind.String)
+                    {
+                        named = value.GetString();
+                    }
+                    else
+                    {
+                        problems.Add($"Audio pack: {manifest}: \"soundfont\" must name a file; ignored");
+                    }
+                }
+            }
+            catch (Exception e) when (e is JsonException or IOException or UnauthorizedAccessException)
+            {
+                problems.Add($"Audio pack: {manifest}: {e.Message}; ignored");
+            }
+        }
+        var found = SoundFontLocator.Find(named, folder, chosen, programFolder ?? AppContext.BaseDirectory, text => problems.Add("Audio pack: " + text));
+        if (found is null && midi > 0)
+        {
+            problems.Add($"Audio pack: {midi} MIDI cue(s) need a SoundFont and none was found, so the game's own music plays for them. "
+                + $"Put a General MIDI .sf2 file in the {SoundFontLocator.FolderName} folder next to the program "
+                + $"({Path.Combine(programFolder ?? AppContext.BaseDirectory, SoundFontLocator.FolderName)}), choose one in the launcher (SoundFont row) "
+                + "or start with --soundfont <file> (docs/PACKS.md)");
+        }
+        return found;
     }
 
     private static void ReadManifest(string folder, string manifest, Dictionary<(AudioKind, int), AudioReplacement> replacements,
@@ -222,13 +279,22 @@ public sealed class AudioPack
     public Task<AudioClip?> ClipAsync(AudioReplacement replacement, int sampleRate) =>
         _clips.GetOrAdd((replacement.Path, sampleRate), key => new Lazy<Task<AudioClip?>>(() => Task.Run(() => Decode(key.Path, key.Rate)))).Value;
 
-    /// <summary>Decodes every file of the pack on worker threads, so that a cue's first play does not wait for its file.</summary>
-    public Task PreloadAsync(int sampleRate) => Task.WhenAll(_replacements.Values.Select(r => ClipAsync(r, sampleRate)));
+    /// <summary>
+    /// Decodes every recording of the pack on worker threads, so that a cue's first play does not wait for its file. A .mid is
+    /// rendered the first time its cue is needed, unless <paramref name="includeMidi"/> (scripted runs, which must mix the same samples).
+    /// </summary>
+    public Task PreloadAsync(int sampleRate, bool includeMidi = false) =>
+        Task.WhenAll(_replacements.Values.Where(r => includeMidi || !IsMidi(r.Path)).Select(r => ClipAsync(r, sampleRate)));
 
     private AudioClip? Decode(string path, int sampleRate)
     {
         try
         {
+            if (IsMidi(path))
+            {
+                // the reason (no SoundFont) was said at the start: this cue is skipped and the game's own music plays
+                return SoundFont() is { } bank ? bank.RenderMidi(path, sampleRate) : null;
+            }
             return AudioClip.Load(path, sampleRate);
         }
         catch (Exception e)
@@ -239,5 +305,34 @@ public sealed class AudioPack
             }
             return null;
         }
+    }
+
+    /// <summary>The SoundFont, loaded the first time a .mid needs it; null when none was found or it cannot be read (said once).</summary>
+    private SoundFontBank? SoundFont()
+    {
+        if (SoundFontPath is null)
+        {
+            return null;
+        }
+        Lazy<SoundFontBank?> lazy;
+        lock (_gate)
+        {
+            lazy = _soundFont ??= new Lazy<SoundFontBank?>(() =>
+            {
+                try
+                {
+                    return SoundFontBank.Load(SoundFontPath);
+                }
+                catch (InvalidDataException e)
+                {
+                    lock (_gate)
+                    {
+                        _problems.Add($"Audio pack: SoundFont {SoundFontPath}: {e.Message}; the .mid cues are skipped and the game's own music plays");
+                    }
+                    return null;
+                }
+            });
+        }
+        return lazy.Value;
     }
 }

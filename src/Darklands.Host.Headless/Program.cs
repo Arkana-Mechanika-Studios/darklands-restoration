@@ -37,7 +37,8 @@ using Darklands.Rendering;
 //                                then the sound's, as in the SDL host); mt32roms:<folder> (default MT32_ROMS next to the program)
 //   audiopack:<folder>           replacement music and battle effects (an audio pack, docs/PACKS.md; also from --settings
 //                                sound.audioPack or DARKLANDS_AUDIO_PACK): the game's calls reach the drivers unchanged; with sound:
-//                                the wav has the replacements mixed in
+//                                the wav has the replacements mixed in; soundfont:<file> plays its .mid files (else sound.soundFont, else
+//                                the first .sf2 of SOUNDFONT next to the program); the .mid files are rendered before the run
 //   mod:<folder or name>         plays with that mod (docs/MODS.md; one step per mod, in load order; the settings file's mods
 //                                are not read here): its cards are registered and its saves get a companion file
 //   wav:<file>                   saves what the drivers play; trace:<file> writes the ticks, tunes, MIDI bytes, sample
@@ -176,9 +177,9 @@ if (hdPackStep is not null)
 var audioPackStep = TakeStep("audiopack:") ?? resolved.AudioPack;
 if (audioPackStep is not null)
 {
-    var pack = AudioPack.Load(audioPackStep);
-    // decoded before the run, so that a scripted run always mixes the same samples
-    pack.PreloadAsync(HeadlessSound.Rate).GetAwaiter().GetResult();
+    var pack = AudioPack.Load(audioPackStep, TakeStep("soundfont:") ?? resolved.SoundFont);
+    // decoded (and the .mid files rendered) before the run, so that a scripted run always mixes the same samples
+    pack.PreloadAsync(HeadlessSound.Rate, includeMidi: true).GetAwaiter().GetResult();
     pack.Problems.ToList().ForEach(Console.Error.WriteLine);
     Console.Error.WriteLine($"audio pack: {pack.Folder}, {pack.Count} replacement(s)");
     ScriptedHost.ReplacementSound = pack;

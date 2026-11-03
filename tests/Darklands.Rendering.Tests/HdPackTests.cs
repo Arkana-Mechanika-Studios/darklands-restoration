@@ -33,6 +33,15 @@ public sealed class HdPackTests
     }
 
     [Fact]
+    public void TheSoundPacksKeysOfTheSharedManifestAreNotProblems()
+    {
+        using var scratch = new Scratch();
+        Directory.CreateDirectory(scratch.Path);
+        File.WriteAllText(Path.Combine(scratch.Path, HdPack.ManifestName), """{ "soundfont": "a.sf2", "card:1D": "x.ogg", "assets": {} }""");
+        Assert.Empty(HdPack.Load(scratch.Path).Problems);
+    }
+
+    [Fact]
     public void TheManifestNamesOtherFilesAndWins()
     {
         using var scratch = new Scratch();

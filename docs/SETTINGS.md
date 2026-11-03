@@ -49,6 +49,7 @@ not meant for players.
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
 | `sound.audioPack` | none | `--audio-pack <folder>`; `DARKLANDS_AUDIO_PACK` | a folder of replacement music and battle effects (an audio pack, [PACKS.md](PACKS.md)); not part of the original, the game plays the same |
+| `sound.soundFont` | `SOUNDFONT` folder next to the program | `--soundfont <file>` | the SoundFont (`.sf2`) that plays the audio pack's `.mid` files ([PACKS.md](PACKS.md)); a SoundFont named in the pack wins; none found: those cues are skipped |
 | `sound.configDrk` | absent (commented out in the template) | | replaces CONFIG.DRK's words (below) |
 | `startup.launcher` | false | `--setup` (once), `--no-launcher` | the launcher at every start; false: only when needed (below) |
 | `startup.banner` | true | `--no-banner` | the BANNER.DAT banner and the start-up checks |

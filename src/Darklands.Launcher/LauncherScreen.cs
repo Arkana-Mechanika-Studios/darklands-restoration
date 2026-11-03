@@ -87,6 +87,7 @@ internal sealed class LauncherScreen
         Notes,
         AudioPack,
         PackGuide,
+        SoundFont,
     }
 
     public Item Focus => _focus;
@@ -97,7 +98,7 @@ internal sealed class LauncherScreen
     public bool Editing => _editing;
 
     private IEnumerable<Item> Order =>
-        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.HdPack, Item.Sound, Item.Roms, Item.Test, Item.AudioPack, Item.Banner, Item.Intro, Item.Always, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Notes }
+        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.HdPack, Item.Sound, Item.Roms, Item.Test, Item.AudioPack, Item.SoundFont, Item.Banner, Item.Intro, Item.Always, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Notes }
             .Where(i => (i != Item.Test || _context.SoundTest is not null) && (i != Item.Notes || _context.ReleaseNotesLink is not null)
                 && (i != Item.PackGuide || _context.PackGuide is not null));
 
@@ -159,7 +160,7 @@ internal sealed class LauncherScreen
             case LauncherKey.Left:
             case LauncherKey.Right:
                 var step = key.Key == LauncherKey.Left ? -1 : 1;
-                if (_focus is Item.Window or Item.Fullscreen or Item.HdPack or Item.AudioPack or Item.Sound or Item.Banner or Item.Intro or Item.Always or Item.GameFolder)
+                if (_focus is Item.Window or Item.Fullscreen or Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.Always or Item.GameFolder)
                 {
                     return Activate(_focus, step, cycle: true);
                 }
@@ -232,6 +233,21 @@ internal sealed class LauncherScreen
                 break;
             case Item.HdPack or Item.AudioPack:
                 ChoosePack(item == Item.HdPack ? PackKind.Pictures : PackKind.Sounds, step, cycle);
+                break;
+            case Item.SoundFont when cycle:
+                // left/right: back to the default (the SOUNDFONT folder)
+                if (IsFixed(Item.SoundFont, out var soundFontBy))
+                {
+                    _message = $"The SoundFont is set by {soundFontBy}.";
+                }
+                else
+                {
+                    _model.SoundFont = null;
+                    SoundFontMessage();
+                }
+                break;
+            case Item.SoundFont:
+                PickSoundFont();
                 break;
             case Item.PackGuide when _context.PackGuide is { } guide:
                 _context.OpenLink(guide);
@@ -353,6 +369,10 @@ internal sealed class LauncherScreen
         {
             SetRoms(path);
         }
+        else if (File.Exists(path) && path.EndsWith(".sf2", StringComparison.OrdinalIgnoreCase))
+        {
+            SetSoundFont(path);
+        }
         else if (Directory.Exists(path) && (_model.Holds(path, PackKind.Pictures) || _model.Holds(path, PackKind.Sounds)))
         {
             // a folder of pictures, of sounds or of both: it becomes the pack of each kind it holds
@@ -363,7 +383,7 @@ internal sealed class LauncherScreen
         }
         else
         {
-            _message = $"{path} holds neither Darklands (DARKLAND.EXE), Roland ROMs nor a pack (PNG pictures, OGG or WAV sounds).";
+            _message = $"{path} holds neither Darklands (DARKLAND.EXE), Roland ROMs nor a pack (PNG pictures, OGG, WAV or MIDI sounds), and is not a SoundFont (.sf2).";
         }
     }
 
@@ -429,6 +449,58 @@ internal sealed class LauncherScreen
         }
         _model.SetGameFolder(folder);
         _focus = _model.CanPlay ? Item.Play : Item.GameFolder;
+    }
+
+    private void PickSoundFont()
+    {
+        if (_surface.PickFile is not { } pick)
+        {
+            _message = "Drop a SoundFont (.sf2 file) on this window, or put it in the SOUNDFONT folder next to the program.";
+            return;
+        }
+        try
+        {
+            if (pick("Choose a General MIDI SoundFont (.sf2 file)") is { } chosen)
+            {
+                SetSoundFont(CleanPath(chosen));
+            }
+        }
+        catch (NotSupportedException e)
+        {
+            (_message, _messageColour) = (e.Message, PaleRed);
+        }
+    }
+
+    private void SetSoundFont(string file)
+    {
+        if (IsFixed(Item.SoundFont, out var by))
+        {
+            _message = $"The SoundFont is set by {by}.";
+            return;
+        }
+        if (!file.EndsWith(".sf2", StringComparison.OrdinalIgnoreCase) || !File.Exists(file))
+        {
+            _message = $"{file} is not a SoundFont (.sf2 file).";
+            return;
+        }
+        _model.SoundFont = file;
+        _focus = Item.SoundFont;
+        SoundFontMessage();
+    }
+
+    private void SoundFontMessage() =>
+        (_message, _messageColour) = _model.SoundFontFound is { } found
+            ? ($"SoundFont: {Path.GetFileName(found)}.", Green)
+            : ("No SoundFont found: a pack's .mid music is skipped and the game's own music plays.", PaleRed);
+
+    /// <summary>The SoundFont row's value: the file's name; "(default)" when it comes from the SOUNDFONT folder; "none found".</summary>
+    private string SoundFontShown()
+    {
+        if (_model.SoundFont is { } chosen)
+        {
+            return Path.GetFileName(chosen) + (File.Exists(chosen) ? "" : " (!)");
+        }
+        return _model.SoundFontFound is { } found ? Path.GetFileName(found) + " (default)" : "none found";
     }
 
     private void SetRoms(string folder)
@@ -512,6 +584,7 @@ internal sealed class LauncherScreen
             Item.Fullscreen => "display.fullscreen",
             Item.HdPack => "display.hdPack",
             Item.AudioPack => "sound.audioPack",
+            Item.SoundFont => "sound.soundFont",
             Item.Sound => "sound.card",
             Item.Roms => "sound.mt32Roms",
             Item.Banner => "startup.banner",
@@ -767,6 +840,7 @@ internal sealed class LauncherScreen
         caption.Draw(canvas, Fit(caption, romsStatus, statusRight - x, fromEnd: false), x, y, romsColour, shadow, Black);
         y += caption.LineHeight;
         y = Row(canvas, v, text, x, right, y, "Audio pack", Fit(text, PackShown(PackKind.Sounds), width / 2, fromEnd: false), Item.AudioPack);
+        y = Row(canvas, v, text, x, right, y, "SoundFont", Fit(text, SoundFontShown(), width / 2, fromEnd: false), Item.SoundFont);
 
         // start-up
         y += v.Len(2);
@@ -873,6 +947,7 @@ internal sealed class LauncherScreen
             Item.Fullscreen => "Fill the whole screen; the game keeps its shape.",
             Item.HdPack => "Replacement pictures. " + PackHelp(PackKind.Pictures),
             Item.AudioPack => "Replacement music and sounds (OGG, WAV). " + PackHelp(PackKind.Sounds),
+            Item.SoundFont => "For .mid music. Enter: choose an .sf2 file; ←/→: default.",
             Item.PackGuide => "Opens the guide: how to make a picture or sound pack, and the names of the game's pictures, music and sounds.",
             Item.Sound => "The sound card the game plays its music and sounds on.",
             Item.Roms => "Your MT-32 / CM-32L ROM files (side by side or in MT32, CM32L subfolders). "

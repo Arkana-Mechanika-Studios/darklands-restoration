@@ -11,7 +11,7 @@ using Darklands.Rendering;
 //   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console]
-//                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--mod folder-or-name ...] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
+//                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--soundfont file] [--mod folder-or-name ...] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
 //                      [--version] [--sound-test] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
 // --sound-test checks the sound without the game window: SDL's audio driver and devices, beeps through each way of feeding SDL,
 // then a little of the game's
@@ -104,6 +104,7 @@ var cli = new CommandLineOptions
     TextFont = Option("--text-font"),
     Mt32Roms = Option("--mt32-roms"),
     AudioPack = Option("--audio-pack"),
+    SoundFont = Option("--soundfont"),
     NoBanner = arguments.Remove("--no-banner"),
     NoIntro = arguments.Remove("--no-intro"),
     Scale = Option("--scale"),
@@ -261,7 +262,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     var audioTrace = Environment.GetEnvironmentVariable("DARKLANDS_AUDIO_TRACE") is { Length: > 0 } tracePath
         ? TextWriter.Synchronized(new StreamWriter(tracePath) { AutoFlush = true })
         : null;
-    using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.AudioPack, settings.CommandLine, audioTrace);
+    using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.AudioPack, settings.SoundFont, settings.CommandLine, audioTrace);
     var game = new DarklandsGame(host, files)
     {
         ShowStartUp = settings.ShowBanner,
@@ -314,7 +315,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
 }
 
 // The game's sound (chosen by Darklands.Audio.Mt32.SoundSelection, as any host does) through an SDL audio device.
-static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, string? romFolder, string? audioPack,
+static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, string? romFolder, string? audioPack, string? soundFont,
     IReadOnlyList<string> commandLine, TextWriter? trace)
 {
     var output = SdlAudioOutput.TryOpen(out var error);
@@ -350,7 +351,7 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
     PackMixer? mixer = null;
     if (audioPack is not null)
     {
-        var pack = AudioPack.Load(audioPack);
+        var pack = AudioPack.Load(audioPack, soundFont);
         pack.Problems.ToList().ForEach(p => Console.Error.WriteLine(p));
         Console.WriteLine($"Sound: audio pack {pack.Folder}, {pack.Count} replacement(s)");
         var reported = pack.Problems.Count;

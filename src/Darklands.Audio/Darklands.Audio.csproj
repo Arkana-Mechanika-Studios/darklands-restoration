@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="MeltySynth" Version="2.4.1" />
   </ItemGroup>
 
 </Project>

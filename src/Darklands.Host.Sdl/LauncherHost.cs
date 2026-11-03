@@ -61,7 +61,8 @@ internal static class LauncherHost
             PackFolders,
             DescribePack,
             PackGuide,
-            given);
+            given,
+            chosen => Darklands.Audio.Packs.SoundFontLocator.Find(null, null, chosen, AppContext.BaseDirectory, _ => { }));
         LauncherResult result;
         using (var surface = new SdlLauncherSurface(host))
         {
@@ -163,7 +164,7 @@ internal static class LauncherHost
         var pictures = Darklands.Rendering.HdPack.Load(folder);
         var sounds = Darklands.Audio.Packs.AudioPack.Load(folder);
         var problem = sounds.Problems.Concat(pictures.Problems).FirstOrDefault(p => p.Contains(".json", StringComparison.Ordinal))
-            ?? sounds.Problems.FirstOrDefault();
+            ?? sounds.Problems.FirstOrDefault(p => !p.Contains("SoundFont", StringComparison.Ordinal));
         return new PackStatus(pictures.Count, sounds.Count, problem);
     }
 

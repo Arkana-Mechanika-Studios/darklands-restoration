@@ -67,6 +67,35 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
         }
     }
 
+    /// <summary>Windows' file dialog, or a dialog program on Linux; null elsewhere. For the launcher's SoundFont row.</summary>
+    public Func<string, string?>? PickFile
+    {
+        get
+        {
+            if (OperatingSystem.IsLinux())
+            {
+                return title =>
+                {
+                    var file = LinuxDialogs.PickFile(title, PumpWhileOpen);
+                    SdlNative.SDL_FlushEvents(SdlNative.EventKeyDown, SdlNative.EventMouseWheel);
+                    return file;
+                };
+            }
+            if (!OperatingSystem.IsWindows())
+            {
+                return null;
+            }
+#pragma warning disable CA1416
+            return title =>
+            {
+                var file = WindowsDialogs.PickFile(title, SdlNative.WindowsHandle(_host.Window), SdlNative.SDL_PumpEvents);
+                SdlNative.SDL_FlushEvents(SdlNative.EventKeyDown, SdlNative.EventMouseWheel);
+                return file;
+            };
+#pragma warning restore CA1416
+        }
+    }
+
     public unsafe void Present(ReadOnlySpan<uint> pixels)
     {
         var size = Size;

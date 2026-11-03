@@ -5,19 +5,19 @@ the same random numbers and keeps the same timing with or without one. There are
 both:
 
 * a **picture pack** (HD pack): PNG files that replace the game's pictures and sprites;
-* a **sound pack** (audio pack): OGG or WAV files that replace pieces of music and battle effects.
+* a **sound pack** (audio pack): OGG, WAV or MIDI (`.mid`) files that replace pieces of music and battle effects.
 
 Packs are not part of the original game. With no pack set, the game looks and sounds exactly as before.
 
 | | Picture pack | Sound pack |
 |---|---|---|
 | settings key ([SETTINGS.md](SETTINGS.md)) | `display.hdPack` | `sound.audioPack` |
-| command line | `--hd-pack <folder>` | `--audio-pack <folder>` |
+| command line | `--hd-pack <folder>` | `--audio-pack <folder>`, `--soundfont <file>` |
 | environment | | `DARKLANDS_AUDIO_PACK` |
-| launcher | "HD pack" row | "Audio pack" row |
-| files | `*.png`, named after the asset | `*.ogg`, `*.wav`, named after the cue (catalogue below) |
+| launcher | "HD pack" row | "Audio pack" and "SoundFont" rows |
+| files | `*.png`, named after the asset | `*.ogg`, `*.wav`, `*.mid`, named after the cue (catalogue below) |
 | manifest (optional) | `pack.json` | `audio.json` |
-| headless step | `hdpack:<folder>` | `audiopack:<folder>` |
+| headless step | `hdpack:<folder>` | `audiopack:<folder>`, `soundfont:<file>` |
 
 Problems (a missing folder, an unknown name, a broken file) are written to the console at the start; whatever cannot
 be used keeps the game's own picture or sound.
@@ -103,7 +103,9 @@ Name each file after its cue (the catalogue below) and put it anywhere in the pa
 `music/travel-2.ogg`, `effects/battle-death.wav`. Formats:
 
 * `.ogg`: Ogg Vorbis (decoded with NVorbis);
-* `.wav`: PCM 8, 16, 24 or 32-bit, or 32-bit float.
+* `.wav`: PCM 8, 16, 24 or 32-bit, or 32-bit float;
+* `.mid` (also `.midi`): a General MIDI file, played through a SoundFont (next section). Where one cue has a recording
+  and a `.mid`, the recording is used.
 
 Any sample rate (converted to the output's), mono or stereo (of more channels the first two are used). Pieces repeat
 by default when the original's place does (a town, the map, camp: "loops" in the catalogue); cues of a scene (the
@@ -112,6 +114,35 @@ opening, the ending, an encounter) and effects play once. Files are decoded at t
 Every number of a driver can also be named generically, `music-XX` or `effect-XX` with two hex digits: `music-19.ogg`
 replaces piece 19h, which the game is not known to play. The driver commands (0 to 7: reset, stop, pause, resume,
 current piece, silence, ready) cannot be replaced.
+
+### MIDI files and the SoundFont
+
+General MIDI is a fixed list of 128 instruments (piano, flute, strings ...) that every General MIDI file asks for by
+number, so any General MIDI SoundFont plays any General MIDI file. A SoundFont (`.sf2`) holds the recorded sounds of
+those instruments; the program renders each `.mid` through one into a clip, which then plays like a `.ogg` (loop,
+volume, fade and pause as for any cue).
+
+No SoundFont is part of the download: it is a separate file you put in place. The program uses the first it finds of:
+
+1. the pack's own, named in the pack's `pack.json`: `{ "soundfont": "fonts/gm.sf2" }` (relative to the pack folder);
+2. the one you chose: `--soundfont <file>` on the command line (headless: `soundfont:<file>`), or `sound.soundFont`
+   in the settings file ([SETTINGS.md](SETTINGS.md)); the launcher's "SoundFont" row sets it (Enter chooses a file,
+   or drop an `.sf2` on the window; ← and → go back to the default);
+3. the default: the first `.sf2` (by name) in a `SOUNDFONT` folder next to the program, as `MT32_ROMS` is found.
+
+A named file that does not exist is reported and the next one is tried. With no SoundFont found, the `.mid` cues are
+skipped: the game's own music plays, and one message in the log and the developer console (F11) says where to put a
+SoundFont. A `.mid` is rendered the first time its cue is needed, not when the pack loads: a long piece can take a
+moment (the game's own piece is muted until it is ready, unless no SoundFont was found). A file longer than ten
+minutes is refused.
+
+Free General MIDI SoundFonts you can fetch yourself (the project does not include or redistribute them):
+
+* FluidR3_GM, by Frank Wen: MIT licence;
+* GeneralUser GS, by S. Christian Collins: check its terms on its own page before using or sharing it.
+
+`.mid` files written for the Roland MT-32 sound wrong on General MIDI: the MT-32 has its own instrument list and its
+own drum map, so a General MIDI SoundFont plays the wrong instruments. Use files made (or converted) for General MIDI.
 
 ### `audio.json`
 
@@ -148,7 +179,8 @@ The headless host renders the drivers in step with a script and can write what w
 Darklands.Host.Headless <game folder> <output folder> sound:sb audiopack:<pack folder> wav:heard.wav trace:heard.trace key:c wait:600
 ```
 
-`heard.wav` has the replacements mixed in; `heard.trace` lists the drivers' ticks and the numbers they carried out,
+Add `soundfont:<file>` to play `.mid` cues without a default SoundFont; the `.mid` files are then rendered before the
+run, so that a scripted run always mixes the same samples. `heard.wav` has the replacements mixed in; `heard.trace` lists the drivers' ticks and the numbers they carried out,
 the same with or without the pack.
 
 ### Catalogue

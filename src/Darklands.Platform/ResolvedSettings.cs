@@ -27,6 +27,8 @@ public sealed class CommandLineOptions
 
     public string? AudioPack { get; set; }
 
+    public string? SoundFont { get; set; }
+
     public bool NoBanner { get; set; }
 
     public bool NoIntro { get; set; }
@@ -75,6 +77,7 @@ public sealed class CommandLineOptions
         By("sound.mt32Roms", Given(Mt32Roms), "--mt32-roms");
         By("sound.mt32Roms", Given(environment("DARKLANDS_MT32_ROMS")), "DARKLANDS_MT32_ROMS");
         By("sound.audioPack", Given(AudioPack), "--audio-pack");
+        By("sound.soundFont", Given(SoundFont), "--soundfont");
         By("sound.audioPack", Given(environment("DARKLANDS_AUDIO_PACK")), "DARKLANDS_AUDIO_PACK");
         By("startup.banner", NoBanner, "--no-banner");
         By("startup.intro", NoIntro, "--no-intro");
@@ -115,6 +118,9 @@ public sealed class ResolvedSettings
 
     /// <summary>The audio pack's folder; null: none (the game's own sound).</summary>
     public string? AudioPack { get; private init; }
+
+    /// <summary>The SoundFont file for the audio pack's .mid files; null: look in the SOUNDFONT folder next to the program.</summary>
+    public string? SoundFont { get; private init; }
 
     public ConfigDrkSettings? ConfigDrk { get; private init; }
 
@@ -191,6 +197,7 @@ public sealed class ResolvedSettings
             NoAudio = cli.NoAudio || (cli.Sound is null && sound == "none") || cli.Sound == "none",
             Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),
             AudioPack = Pick(cli.AudioPack, "DARKLANDS_AUDIO_PACK", file.AudioPack),
+            SoundFont = Pick(cli.SoundFont, null, file.SoundFont),
             ConfigDrk = file.ConfigDrk,
             Mods = cli.Mods.Count > 0 ? cli.Mods.ToList() : file.Mods?.Where(m => !string.IsNullOrWhiteSpace(m)).ToList() ?? [],
             ModsFromCommandLine = cli.Mods.Count > 0,

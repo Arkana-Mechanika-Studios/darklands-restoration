@@ -15,6 +15,7 @@ internal static class CommandLineUsage
           --mt32-roms <folder>       the MT-32 / CM-32L ROM files (default: MT32_ROMS next to the program)
           --no-audio                 no sound at all
           --audio-pack <folder>      replace the music and sounds (docs/PACKS.md)
+          --soundfont <file>         the SoundFont for the pack's .mid music (default: the first .sf2 in SOUNDFONT next to the program)
           --hd-pack <folder>         replace the pictures
           --mod <folder or name>     play a mod; once per mod (docs/MODS.md)
           --scale <N> | --resolution <WxH>    the window's size

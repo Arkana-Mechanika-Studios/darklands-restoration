@@ -80,6 +80,23 @@ public class SettingsParsingTests
         Assert.Null(ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, new GameSettings()).HdPack);
     }
 
+    /// <summary>The SoundFont file: relative to the settings file's folder; --soundfont replaces it.</summary>
+    [Fact]
+    public void TheSoundFontIsAPathAndTheCommandLineWins()
+    {
+        using var scratch = new Scratch();
+        var path = System.IO.Path.Combine(scratch.Folder("settings"), "darklands.settings.json");
+        File.WriteAllText(path, """{ "sound": { "soundFont": "fonts/gm.sf2" } }""");
+        var load = SettingsFile.Load(path);
+        Assert.Empty(load.Problems);
+        Assert.Equal(System.IO.Path.GetFullPath(System.IO.Path.Combine(scratch.Path, "settings", "fonts", "gm.sf2")), load.Settings.SoundFont);
+        Assert.Equal(load.Settings.SoundFont, ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, load.Settings).SoundFont);
+        var cli = new CommandLineOptions { SoundFont = "D:/other.sf2" };
+        Assert.Equal("D:/other.sf2", ResolvedSettings.Resolve(cli, _ => null, load.Settings).SoundFont);
+        Assert.Equal("--soundfont", cli.Overrides(_ => null)["sound.soundFont"]);
+        Assert.Null(ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, new GameSettings()).SoundFont);
+    }
+
     /// <summary>The audio pack folder: relative to the settings file's folder; DARKLANDS_AUDIO_PACK and --audio-pack replace it.</summary>
     [Fact]
     public void TheAudioPackFolderIsAPathAndTheCommandLineWins()
@@ -418,6 +435,7 @@ public class SettingsTemplateTests
              fromTemplate.TextFont, fromTemplate.ScreenshotsFolder, fromTemplate.SdlLibrary, fromTemplate.ConsoleEnabled, fromTemplate.ConsoleFont,
              fromTemplate.ConsoleFontSize, fromTemplate.HdPack));
         Assert.Equal(fromNothing.AudioPack, fromTemplate.AudioPack);
+        Assert.Equal(fromNothing.SoundFont, fromTemplate.SoundFont);
     }
 
     /// <summary>A resolution filled in beside the template's "scale": 1 replaces the scale, without a complaint.</summary>

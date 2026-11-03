@@ -16,15 +16,21 @@ internal static class LinuxDialogs
     /// and over meanwhile and returns false when the program is to close. Throws <see cref="NotSupportedException"/> when no dialog
     /// could be shown.
     /// </summary>
-    public static string? PickFolder(string title, Func<bool> whileOpen)
+    public static string? PickFolder(string title, Func<bool> whileOpen) => Pick(title, whileOpen, folders: true);
+
+    /// <summary>A file (the first of zenity, kdialog, yad or qarma installed), as <see cref="PickFolder"/>.</summary>
+    public static string? PickFile(string title, Func<bool> whileOpen) => Pick(title, whileOpen, folders: false);
+
+    private static string? Pick(string title, Func<bool> whileOpen, bool folders)
     {
         var problems = new List<string>();
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        if (Sdl3Dialog.TryPick(home, whileOpen, problems, out var folder))
+        string? folder = null;
+        if (folders && Sdl3Dialog.TryPick(home, whileOpen, problems, out folder))
         {
             return folder;
         }
-        foreach (var (tool, arguments) in Tools(title, home))
+        foreach (var (tool, arguments) in Tools(title, home, folders))
         {
             if (FindOnPath(tool) is not { } path)
             {
@@ -42,11 +48,12 @@ internal static class LinuxDialogs
     }
 
     /// <summary>The dialog programs tried, in order (kdialog first on KDE), with their arguments.</summary>
-    private static IEnumerable<(string Tool, string[] Arguments)> Tools(string title, string home)
+    private static IEnumerable<(string Tool, string[] Arguments)> Tools(string title, string home, bool folders)
     {
         var start = home.Length > 0 ? home.TrimEnd('/') + "/" : "/";
-        var zenity = new[] { "--file-selection", "--directory", "--title=" + title, "--filename=" + start };
-        var kdialog = ("kdialog", new[] { "--getexistingdirectory", start, "--title", title });
+        var zenity = folders ? new[] { "--file-selection", "--directory", "--title=" + title, "--filename=" + start }
+            : ["--file-selection", "--title=" + title, "--filename=" + start];
+        var kdialog = ("kdialog", folders ? new[] { "--getexistingdirectory", start, "--title", title } : ["--getopenfilename", start, "--title", title]);
         var desktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") ?? "";
         if (desktop.Contains("KDE", StringComparison.OrdinalIgnoreCase))
         {
@@ -54,7 +61,7 @@ internal static class LinuxDialogs
         }
         yield return ("zenity", zenity);
         yield return ("qarma", zenity);
-        yield return ("yad", ["--file", "--directory", "--title=" + title, "--filename=" + start]);
+        yield return ("yad", folders ? ["--file", "--directory", "--title=" + title, "--filename=" + start] : ["--file", "--title=" + title, "--filename=" + start]);
         yield return kdialog;
     }
 
