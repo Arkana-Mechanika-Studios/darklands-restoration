@@ -120,12 +120,23 @@ public sealed partial class CardContext
     /// with the handler for slot k % 4); the box is reached with the pointer, so pointer-hide then runs the display driver's hide.
     /// </summary>
     // orig: e.g. R112+0x1438 / R112+0x143A / R108+0x0D30 retf; the loop: si = card-choice-menu(..); pointer-hide(); local-minus-0a = (*card-option-handler[si])() (R112+0x06ED..0x0700)
-    // DIVERGENCE (undefined-register): AX after pointer-hide with the pointer drawn is whatever the display driver's hide routine (reached through
-    // root 047C:052E) returns (with no pointer drawn it would be the line k). 0 is used, as the card oracle's pointer-hide returns.
+    // C: AX after pointer-hide with the pointer drawn is what the display driver's hide returns (root 047C:052E -> 047C:048A -> MGRAPHIC slot 15,
+    //   drv+0x023D): `xor ax,ax; xchg ax,cs:[0x1614]` (drv+0x0240), the old word cs:[0x1614], which the driver only ever sets to 0 (drv+0x0235
+    //   and that xchg; 0 in the image; no other operand of the driver names it): AX = 0, as here and as the card oracle's pointer-hide returns
+    //   (with no pointer drawn it would be the line k) (b32 C-fix, D-21ff84).
     public OptionHint EmptyBoxHandler() => OptionHint.ChanceOf(0, OptionHint.WholeParty);
 
     /// <summary>The choice came from the pop-up, not from an option line (<c>popup-menu-box</c>).</summary>
     public bool MenuPopup { get; set; }
+
+    /// <summary>
+    /// True while the card's loop asks the chosen line's handler (or the box entry's) for the chance its action gets; false while a Shift
+    /// hint asks one. A handler that leaves its result unset reads different stack words on the two paths.
+    /// </summary>
+    // orig: the loop's call right after pointer-hide at the same stack depth: si = card-choice-menu(..); pointer-hide(); local-minus-0a =
+    //   popup-menu-box ? DS:EB0A[menu-choice-index]() : card-option-handler[si]() (e.g. R057+0x1E54..0x1E81); a Shift hint is asked from
+    //   card-mouse-handler (R043+0x26C4) instead
+    public bool RatingTheChoice { get; internal set; }
 
     /// <summary>
     /// The item or saint box whose list the menu was left in (<see cref="PopupBox.None"/>: the main

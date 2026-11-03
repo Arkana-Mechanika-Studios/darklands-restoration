@@ -8,8 +8,11 @@ internal sealed partial class CastleGenerator
     // orig: R006+0x34B8 (18FA:0008) draft
     // C: the draft is a tangle of gotos (the room search, the increment, the call); this is its flow. oko is not reset between stairs: a
     // failed placement leaves it 0 for the next stair, which then skips straight to copying the other level's room.
-    // UNCERTAIN: slotn is uninitialised in the original when the placement failed before the strip search; 0 is used here and CutFromStrip
-    // then cuts strip 0 (the original cuts whatever the stack held).
+    // C: slotn ([bp-4]) is set only by the strip search (R006+0x3ACC, 0x3B4D, 0x3BFE); a stair that fails before it (the first of the
+    // level, or one after stairs that never searched) passes the word the call left: the planner calls through thunk 09C0:1BE9 (R005+0x032A)
+    // with AX = layout-room-list[level] - 1 (R005+0x0300..0x0304), and the stub root 09C0:052B pushes BP and AX just below the far return,
+    // where `enter 0x3a,0` puts [bp-4]. So slotn starts as the last room's index; CutFromStrip's own guard (R006+0x4EC6..0x4EED) makes an
+    // index past the strips a no-op (b32 C-fix; tests: StairsStripSlotTests, CastleStairsOracleTests).
     private void ContinueStairs()
     {
         var oko = true;
@@ -34,7 +37,7 @@ internal sealed partial class CastleGenerator
             upo = 1;
         }
         var l = _level;
-        var slotn = 0;
+        var slotn = _roomCount[l] - 1;
         var ig = 0;
         for (var jk = 0; jk < _stairCount[olh]; jk++)
         {

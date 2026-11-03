@@ -81,7 +81,8 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     /// their low seven bits (0xFF: back to <paramref name="color"/>), as the game's text driver does.
     /// </summary>
     // orig: gfx-text-draw(screen-window, x, y, s) — graphics driver thunk root 047C:055A (asm driver; colour-byte rule as decoded from the driver code)
-    // UNCERTAIN: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
+    // C: the driver clips a line at its window's last x (drv+0x12A8, the last glyph cut, drv+0x12E8); the three overlays draw their text in
+    //   the window DS:27F4 (page 0, x 0, y 0, last x 319, last y 199), whose x and last x nothing writes: that edge is the screen's (b32).
     public void Text(int x, int y, string text, byte color)
     {
         var ink = color;

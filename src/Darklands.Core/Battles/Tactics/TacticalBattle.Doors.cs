@@ -595,8 +595,9 @@ public sealed partial class TacticalBattle
         PlaceAround(who, spot, record[12]);
         if (Battle.PartyFloor == lvl)
         {
-            ViewOrigin = null;
-            _view.MapChanged();
+            // orig: R023+0x1618 floor-view-paint(who) when the party has gone over: the view's centre becomes the cell of the member who
+            // took the stairs (R017+0x0000 with who, not -1); lockstep dungeon-king-door (local/batch/b32/a7-king)
+            _view.Recentre(who);
         }
         else
         {

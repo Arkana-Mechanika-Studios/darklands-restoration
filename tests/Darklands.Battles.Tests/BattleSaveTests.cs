@@ -141,6 +141,75 @@ public sealed class BattleSaveTests
         Assert.Equal(first.Loot, again.Loot);
     }
 
+    /// <summary>
+    /// R002+0x0000 (battle-entry) sets DS:C1F0 to the battle call's battlefield after the restore R003+0x0CE8 read the file's: a game saved in a
+    /// battle and loaded from the start screen (the main loop's DS:A768 still 0) runs, and saves again, with battlefield type 0. Lockstep
+    /// dungeon-king-ladder (local/batch/b32/a7-king): the original's battle file saved after such a load holds 0 at +0x1571.
+    /// </summary>
+    [Fact]
+    public void ABattleTakenUpHasTheBattlefieldTypeOfTheCall()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var state = Simulation.NewGame.Quickstart(world, 7);
+        var (_, tactics) = StartBattle(ui, files, state, new BattleRequest(0x0A, 777, NoGroups, Persistent: true));
+        Run(tactics, 30);
+        Assert.Equal(1, tactics.Menus.SaveGame);
+        Assert.Equal(0x0A, tactics.BattlefieldType);
+        var (sav, bsv) = SaveInBattle(state, tactics);
+        Assert.Equal(0x0A, BattleSaveFile.Parse(bsv!).Variables[BattleVariables.BattlefieldType]);
+
+        var loaded = OriginalSaves.Read(sav, bsv, "dksave1.sav", world).State;
+        var (_, resumed) = StartBattle(ui, files, loaded, new BattleRequest(0, 0, NoGroups, Persistent: true, Resume: true));
+        Assert.Equal(0, resumed.BattlefieldType);
+        var again = loaded.BattleFile!.Clone();
+        resumed.WriteBattleFile(again, inBattle: true, loaded.Battlefield.ClearedLevels, loaded.LastCastleFlags);
+        Assert.Equal(0, again.Variables[BattleVariables.BattlefieldType]);
+    }
+
+    /// <summary>
+    /// The set-up's fight-draw (R014+0x0307) puts every combatant's screen place (R014+0x99F6) before the first tick. A battle taken up from a
+    /// saved game in a program just started is drawn around the view centre 0,0, far from the party: the leader's place lies outside the
+    /// follow margins, so the first tick centres the view on it (R014+0x1065) and the start pause's order mode opens at that tick (lockstep
+    /// dungeon-king-ladder, local/batch/b32/a7-king: the original pauses at its first tick, the C# had waited for the second).
+    /// </summary>
+    [Fact]
+    public void ABattleTakenUpPlacesTheSpritesBeforeTheFirstTick()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var state = Simulation.NewGame.Quickstart(world, 7);
+        // the keep (city battlefield 8): no "save rules" notice, whose box the C# draws over a frame of the battle outside the tester's mode
+        var (_, tactics) = StartBattle(ui, files, state, new BattleRequest(8, 777, NoGroups, Persistent: true));
+        Assert.True(tactics.IsKeep);
+        Run(tactics, 30);
+        var (sav, bsv) = SaveInBattle(state, tactics);
+        var leader = tactics.Battle.Leader;
+
+        var loaded = OriginalSaves.Read(sav, bsv, "dksave1.sav", world).State;
+        // the leader's record holds the screen place the last frame left, inside the margins (the original's DKSAVE1-kingopen: 64, 150)
+        var member = loaded.Party.Slot(leader);
+        member.RosterLocation = 64;
+        member.OriginalRecord![0] = 64;
+        member.OriginalRecord[1] = 0;
+        member.OriginalRecord[2] = 150;
+        member.OriginalRecord[3] = 0;
+        var screens = new BattleScreens(ui, () => loaded);
+        var screen = new BattleScreen(ui, new BattleAssets(files), loaded, screens);
+        screen.Start(new BattleRequest(0, 0, NoGroups, Persistent: true, Resume: true));
+        var place = screen.Tactics!.Battle[leader].ScreenPlace;
+        Assert.NotEqual((64, 150), place);
+        Assert.False(place.X is >= 0x14 and <= 0xDC && place.Y is >= 0x14 and <= 0xA0, $"set-up place {place} outside the margins");
+    }
+
     /// <summary>The level files of every battle file of the player's saves go through this program's conversions unchanged.</summary>
     [Fact]
     public void EveryLevelOfTheSavesGoesThroughTheConversionsUnchanged()

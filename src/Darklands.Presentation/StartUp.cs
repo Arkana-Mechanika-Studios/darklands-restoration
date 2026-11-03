@@ -251,7 +251,8 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
             return false;
         }
         // the graphics screen: black, the default palette until the first picture sets its own
-        // UNCERTAIN: the driver's mouse pointer (shown after commonsp.img) is left out until the start screen, as during the opening.
+        // C: the pointer is drawn only once pointer-show root 047C:1293 sets DS:6A81 (the only writer of 1, root 047C:12BD; 047C:131C
+        //   puts a saved value back); start-up sets its shape only (root 047C:124F) and nothing on the way to the start screen calls 1293 (b32).
         _graphicsMode = true;
         _graphicsRow = _graphicsColumn = 0;
         ui.Canvas.UsePalette(Content.Formats.Graphics.Palette256.DefaultVga);

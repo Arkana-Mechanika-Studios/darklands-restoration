@@ -850,6 +850,22 @@ BATTLE_RECORDS.add("b2-einfo-7b")
 for _name in ("b3-save-fight", "b3-save-fight2", "b3-save-fight3", "b3-probe1", "b3-probe2", "b3-probe3"):
     SESSIONS[_name] = "DKSAVE99.SAV"
     BATTLE_RECORDS.add(_name)
+# b32 (A4a, lead b3o): a refused Alt-S in a running real-combat fight and bwaits two in a row (local/batch/b32/a234)
+SESSIONS["b32-refused-hotkey"] = "DKSAVE99.SAV"
+BATTLE_RECORDS.add("b32-refused-hotkey")
+# b32 (C-fix, U-96d507): F6 and Alt-O inside an F1 sheet, taken by hotkey-table root 0000:0CAA (local/batch/b32/c-fix)
+SESSIONS["b32-sheet-hotkeys"] = "Dksave10.sav"
+# b32 (A6): Enter on a card's saint line after a Shift hint on option 3 prays to the empty saint slot -1 (local/batch/b32/a6-saint);
+# the saves: synth_saves.py card148 / card144 on SAVES/DKSAVE0.SAV
+SESSIONS["b32-saint-stale-slot"] = "synth/DKSAVE0-card148.sav"
+SESSIONS["b32-saint-stale-slot-fail"] = "synth/DKSAVE0-card144.sav"
+SESSIONS["b32-saint-stale-slot-more"] = "synth/DKSAVE0-card144.sav"
+# b32 (A7): the dwarf king's riddle door (wall alarm, card D4 -> E5) and the ladder it shows, the opened state saved, the stone box's door
+# (furniture alarm, card E4) for contrast (local/batch/b32/a7-king); the saves: synth_saves.py king / stonebox on the original's DKSAVE2 of
+# savemid-mine (kept as local/oracle-saves/synth/savemid-DKSAVE2.SAV/.BSV)
+SESSIONS["dungeon-king-door"] = "local/oracle-saves/synth/DKSAVE2-king.SAV"
+SESSIONS["dungeon-king-opened"] = "local/oracle-saves/synth/DKSAVE2-king.SAV"
+SESSIONS["dungeon-stonebox-door"] = "local/oracle-saves/synth/DKSAVE2-stonebox.SAV"
 
 
 # scr1: scripted sweeps of the screens' open input paths (gen_scr1.py; local/batch/scr1)

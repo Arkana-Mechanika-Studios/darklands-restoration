@@ -9,7 +9,7 @@ namespace Darklands.Presentation;
 /// </summary>
 // orig: text-box-paint root 0000:23E6 (frame + text, saves the covered rectangle) + framed-box-paint root 0000:2286 + notice-display root 0000:24BC + yes-no-prompt root 0000:2522 + the pause box root 0000:1080, all draft (per the file's header 2286, 1080, 24bc and its neighbours match the bytes; 23e6 does not: a stack-slot order); tests: none (needs a host)
 // C: the boxes are drawn into card-text-window (DS:017C) with text colour f0c = 1 and box colour f0e = 0xff, centred horizontally on a 320-wide screen less the window's own x offset (w->w), vertically at row y or, for y = -1, mid-screen (100 - font height / 2). They save what they cover in card-second-window (DS:0154) with blit-from-saved and put it back afterwards.
-// UNCERTAIN: the horizontal centring uses (320 - text width - w->w) / 2 relative to the window; the window offset w->w of card-text-window is taken as 60 (the card window starts right of the party panel), so the box is centred on the 260 pixels right of the panel. The offset was not checked at run time (it could be 0 when a box comes up over a full screen such as the start screen).
+// C: the horizontal centring uses (320 - text width - w->w) / 2 relative to the window (root 0000:2440..0x244E, w->w = [window + 2]); card-text-window DS:017C points at the record DS:016A (page 0, x 60, y 0, last x 259, last y 199), and no code writes DS:017C or the record's x (b32 scan of the EXE), so the box is centred on the 260 pixels right of the panel over every screen.
 public sealed class MessageBox(GameUi ui)
 {
     /// <summary>The card window starts at x 60; boxes are centred in it.</summary>
@@ -20,7 +20,9 @@ public sealed class MessageBox(GameUi ui)
 
     /// <summary>How long a message stays (the original waits 60 timer ticks).</summary>
     // orig: root 0410:0302(0x3c) in notice-display (root 0410, the timer driver; asm)
-    // UNCERTAIN: the length of a 0410 timer tick. 1000 ms assumes 60 ticks per second; the PAN player's measured tick (86 ms per 6 ticks, see Cinematics) would give 860 ms.
+    // C: the tick is DS:07D2, counted by root 047C:000A in the timer interrupt (root 047C:01EA); the timer runs at the measured vertical
+//   retrace (root 047C:02A2: 70.086 Hz on VGA, ratio 4) and then skips one interrupt in seven (root 047C:0016..0x0029), or at 60 Hz
+//   (ratio 5, or the fallback 0x4DAE): 60 ticks are 998.8 ms or 1000 ms (b32).
     public const int MessageMilliseconds = 1000;
 
     /// <summary>A message for a moment; nothing ends the wait early (the keys and clicks made meanwhile stay for later).</summary>

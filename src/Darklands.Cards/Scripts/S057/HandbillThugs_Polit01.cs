@@ -26,11 +26,20 @@ public sealed class HandbillThugs_Polit01 : Card
     private const int PoliticsTag = 2, ThugsBeaten = 0x12, ThugsTruce = 0x13;
 
     /// <summary>
-    /// The chance a potion gets from its pop-up handler: the original handlers never set it, so the
-    /// action receives whatever the stack held (the caller's frame pointer, an address in the upper half
-    /// of the data segment: negative as a signed word). The roll therefore never succeeds.
+    /// The chance a potion gets from its pop-up handler when it is picked: the handlers never set it, so the action rolls against
+    /// the stack word the handler's result lies in, which the display driver's pointer hide has just written: 0x0240 (576). The
+    /// roll (0..99) always succeeds.
     /// </summary>
-    // UNCERTAIN: derived from the stack layout (card-choice-menu's saved BP lies in the handler's unset result word).
+    // C: the loop calls pointer-hide (root 047C:12C3) at R057+0x1E5E and the handler at R057+0x1E6F / 0x1E7D with the same SP; the pointer is
+    //   drawn (pointer-show R057+0x1E47 before the menu, whose hides and shows pair), so 12C3 far-calls slot 15 (047C:052E -> 047C:048A, which
+    //   pops its near return and jumps on) = MGRAPHIC drv+0x023D, whose `call drv+0x0253` pushes its return 0x0240 at SP - 10: the word the
+    //   handler's `enter 4,0` makes [bp-4] (r.a). Only an interrupt in the few instructions between could change it (b32 C-fix).
+    // C: the testers' originals leave another word there: the lockstep tester stubs the driver's slots and the card oracle pointer-hide
+    //   itself (under the card oracle the word is positive too: the potion works there as well).
+    private const int PickedPopupChance = 0x0240;
+
+    /// <summary>The chance the same handler gives a Shift hint over the box (the result word is another call's leftover there).</summary>
+    // UNCERTAIN: a Shift hint asks the handler from card-mouse-handler (R043+0x26C4), whose earlier calls left that word (as U-aff1d9); -2 is kept.
     private const int StalePopupChance = -2;
 
     private const int TalkOption = 1, RunOption = 3;
@@ -208,11 +217,11 @@ public sealed class HandbillThugs_Polit01 : Card
     // orig: R057+0x289C (1A02:0BFC) matched (item slot 1; same body)
     // orig: R057+0x28B2 (1A02:0C12) matched (item slot 2; same body)
     // orig: R057+0x28C8 (1A02:0C28) matched (item slot 3; same body)
-    // C: r.a is never assigned in these handlers (see StalePopupChance).
+    // C: r.a is never assigned in these handlers (see PickedPopupChance, StalePopupChance).
     private static OptionHint PotionHint(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        return OptionHint.ChanceOf(StalePopupChance, c.MenuMember);
+        return OptionHint.ChanceOf(c.RatingTheChoice ? PickedPopupChance : StalePopupChance, c.MenuMember);
     }
 
     // orig: R057+0x2522 (1A02:0882) matched

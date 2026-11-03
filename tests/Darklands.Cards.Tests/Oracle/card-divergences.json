@@ -105,8 +105,8 @@
   {
     "card": "037",
     "run": "*",
-    "contains": "C# 'text 15 0 ",
-    "why": "HandbillThugs_Polit01 UNCERTAIN: the potion pop-up handlers never set the chance (struct res left unset): the action rolls against a stack leftover. Under the oracle the leftover lets the potion work (texts 11..14); the C# takes it as negative (StalePopupChance), so the potion always fails (text 15)."
+    "contains": "original 'text 15 0 ",
+    "why": "HandbillThugs_Polit01: the potion pop-up handlers never set the chance (struct res left unset): the action rolls against the stack word, which in the game the display driver's pointer hide has just written (0x0240, R057+0x1E5E -> MGRAPHIC drv+0x023D: PickedPopupChance), so the potion always works (texts 11..14). The card oracle stubs pointer-hide, so its original rolls against another leftover, which on some paths makes the potion fail (text 15)."
   },
   {
     "card": "0B8",
@@ -305,19 +305,13 @@
     "card": "041",
     "run": "*",
     "contains": "original 'hint 1: ",
-    "why": "WildHunt.OutrunChance DIVERGENCE: when not everybody rides the original's hint (R060+0x0FF4) returns the chance word [bp-4] unwritten, a stack leftover of the menu engine; the C# gives the least agile member's effective Agility."
-  },
-  {
-    "card": "041",
-    "run": "*",
-    "contains": "original 'time 7', C# 'picture xhound'",
-    "why": "WildHunt.OutrunChance DIVERGENCE, line 1's action: when not everybody rides the hint (R060+0x0FF4..0x1050) never writes the chance word [bp-4], and the action (R060+0x0ECC) rolls against that leftover (here the oracle's menu stand-in left a high one: the party escapes, time 7, picture xms057, text 7); the C# rolls against the least agile member's effective Agility and fails (text 8, the fight). The leftover is the menu engine's stack, not a value of the game state."
+    "why": "WildHunt.OutrunChance DIVERGENCE (the hint shown, not the roll): when not everybody rides the original's hint (R060+0x0FF4) returns the chance word [bp-4] unwritten, a stack leftover of the menu engine; the C# shows the least agile member's effective Agility."
   },
   {
     "card": "041",
     "run": "*",
     "contains": "original 'picture xhound', C# 'time 7'",
-    "why": "WildHunt.OutrunChance DIVERGENCE, line 1's action, the other way round (see the entry above): the original rolls against the unwritten chance word of R060+0x0FF4 and fails, the C# against the least agile member's effective Agility and succeeds."
+    "why": "WildHunt.OutrunChance, line 1's action: when not everybody rides the handler R060+0x0FF4 never writes the chance word [bp-4]; in the game the display driver's pointer hide (R060+0x0B37, MGRAPHIC drv+0x023D) has just left 0x0240 there, so the party always escapes, as the C# does. The card oracle stubs pointer-hide, so its original rolls against another leftover and can fail."
   },
   {
     "card": "0AA",
@@ -345,12 +339,6 @@
     "run": "*",
     "contains": "C# 'hint 1: 0 '' -2'",
     "why": "RevolutionHouseAtNight.KnockChance BUG: on its first path (the politics fact at the place against the party's side) the hint (R048+0x124E) copies \"Success is assured.\" but returns 0 with DX as the calls before left it (21626 / 21622 under the oracle's menu stand-in: a stale register, not game state); the C# shows chance 0 for the whole party."
-  },
-  {
-    "card": "041",
-    "run": "*",
-    "contains": "original 'time 16', C# 'picture xhound'",
-    "why": "WildHunt.OutrunChance DIVERGENCE, line 1's action (see the 'time 7' entry): with a member away not everybody rides, the hint R060+0x0FF4 leaves the chance word [bp-4] unwritten (23419 under the oracle, local/batch/cards1o probe at 18CF:06D9) and the party escapes (time 16 from this state's hour); the C# rolls against the least agile member's effective Agility and fails."
   },
   {
     "card": "073",

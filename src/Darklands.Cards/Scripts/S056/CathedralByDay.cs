@@ -12,7 +12,8 @@ namespace Darklands.Cards.Scripts;
 /// (Ported from the assembly: the original has no C.)
 /// </summary>
 // orig: R056+0x18C8 (19C4:0008) asm; tests: CardSmokeTests
-// UNCERTAIN: 0354 and 0514 are read from the disassembly only.
+// C: 0354 (R056+0x1C14) and 0514 (R056+0x1DD4) checked against the asm (b32): the band table R056+0x1C46, the size thresholds, the
+//   Divine Favor sum, the pictures (table index (es:offset - 0xA47) / 4) and the texts are as ported; their hints return r = (-1, -2).
 // DORMANT: R056+0x27C8 (19C4:0F08), the init, closes all lines with the "screwed up." handler
 //   R056+0x2800 and clears card-item-lines/card-saint-lines; line 9 (flag 0, no handler of its own) stays closed.
 public sealed class CathedralByDay : Card

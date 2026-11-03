@@ -12,43 +12,31 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | area | kind | uncertain |
 |---|---|---|
 | rules | core | 0 |
-| cards | core | 8 |
+| cards | core | 4 |
 | events | core | 0 |
 | travel | core | 2 |
-| battles | core | 6 |
+| battles | core | 4 |
 | persistence | core | 0 |
-| screens/presentation | other | 11 |
+| screens/presentation | other | 6 |
 | host/audio | other | 0 |
-| total |  | 27 |
+| total |  | 16 |
 
-## Core logic (16)
+## Core logic (10)
 
-### cards (8)
+### cards (4)
 
 - **U-aff1d9** `uncertain` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:28` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
   why: the hint handlers of the ten options return a struct they never fill in (only the text "Success is assured." is set), so the hint shows that text for the whole party here.
-- **U-db5ac2** `uncertain` - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:15` `CathedralByDay`  
-  original: `R056+0x18C8` (19C4:0008, asm)  
-  why: 0354 and 0514 are read from the disassembly only.
-- **U-ecbac4** `uncertain` - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:173` `CityChurchByDay.AskForTheNextMass`  
-  original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
-  why: in the small and late hours (band 0 and 1) the original names the hour of an uninitialised local (whatever its stack slot held); the C# names hour 0.
-- **U-4c93ee** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:33` `HandbillThugs_Polit01.StalePopupChance`  
+- **U-938e63** `uncertain` - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:42` `HandbillThugs_Polit01.StalePopupChance`  
   original: `R057+0x27AC` (1A02:0B0C, matched)  
-  why: derived from the stack layout (card-choice-menu's saved BP lies in the handler's unset result word).
-- **U-c18edd** `uncertain` - `src/Darklands.Cards/Scripts/S074/CityGateInWartime.cs:141` `CityGateInWartime.Befriend`  
-  original: `R074+0x0376` (1838:0376, matched)  
-  why: it is taken as 0 (failure), which then overrides following-card = 1 and keeps the party at the gate; a non-zero leftover would instead let the party in (text 5).
+  why: a Shift hint asks the handler from card-mouse-handler (R043+0x26C4), whose earlier calls left that word (as U-aff1d9); -2 is kept.
 - **U-4ffac2** `uncertain` - `src/Darklands.Cards/Scripts/S075/KidnappersCampAtNight.cs:36` `KidnappersCampAtNight.Run`  
   original: `R075+0x16CA` (193D:067A, matched), `R075+0x1752` (193D:0702, matched), `R075+0x17DA` (193D:078A, matched)  
   why: the first option list (block 0) is assumed.
 - **U-224116** `uncertain` - `src/Darklands.Cards/Scripts/S081/DragonTidings.cs:138` `DragonTidings.Run`  
   original: `R081+0x175A` (1962:04BA, matched), `R081+0x1766` (1962:04C6, matched)  
   why: the hints of lines 1..3 (R081+0x16EA/0x1728/0x1766) return their member word [bp-2] unset (enter 4,0; only line 0's sets it, to $ChosenOneName): a stack leftover of the caller's frame (card-mouse-handler R043+0x26C4 under Shift; the card oracle's call gives 0). The whole party is shown here.
-- **U-2e03d2** `uncertain` - `src/Darklands.Cards/Scripts/S086/HolzfrauSaintAdvice.cs:31` `HolzfrauSaintAdvice.Run`  
-  original: `R086+0x0C40` (18FC:0000, matched)  
-  why: the saint name table of the texts (R034) is taken to be the saint list's full names.
 
 ### travel (2)
 
@@ -59,14 +47,8 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: unresolved (none)  
   why: the offset is taken as FF53, the BIOS's default IRET handler that DOSBox points the unused vectors at; the segment is the BIOS's.
 
-### battles (6)
+### battles (4)
 
-- **U-2a08c3** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleGenerator.Stairs.cs:11` `CastleGenerator.ContinueStairs`  
-  original: `R006+0x34B8` (18FA:0008, draft)  
-  why: slotn is uninitialised in the original when the placement failed before the strip search; 0 is used here and CutFromStrip then cuts strip 0 (the original cuts whatever the stack held).
-- **U-8f4107** `uncertain` - `src/Darklands.Core/Battles/Generation/CastleWork.cs:12` `CastleWork`  
-  original: `R005+0x005C` (1432:005C, draft)  
-  why: the original allocates the segment once and layout-reset leaves a few fields alone (the stairs' link and side words, the area beyond 0xBA1D); they start at 0 here and keep their values between calls.
 - **U-5bdb14** `uncertain` - `src/Darklands.Core/Battles/Generation/MineBattlefield.cs:65` `MineBuilder.StaleStackWord`  
   original: `R009+0x0000` (1432:0000, draft)  
   why: what the real game's stack holds there depends on everything that ran before; the oracle's stack (file reads are stubbed) shows 0 for the first pile and 0x29CB afterwards, and a value above 9 means "no new kind picked, the last one repeats".
@@ -80,41 +62,26 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text); the rewrite starts it at 0 and keeps only what command-mode-end writes. The branches below agree for any value other than 0x80, 0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
 
-## Presentation and host (11)
+## Presentation and host (6)
 
-### screens/presentation (11)
+### screens/presentation (6)
 
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-- **U-08d88a** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:986` `BattleScreen.OrderLetterDrawn`  
+- **U-08d88a** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:989` `BattleScreen.OrderLetterDrawn`  
   original: `R016+0x15BE` (1EF8:15BE, draft)  
   why: with nobody selected (DS:A6B2 = 0xFF: H with Halt on outside order mode, reachable in normal play, see ChoosePlace) the original draws the patch and the 'H' on the page DS:0168 and copies the cell to the screen at y = -9; whether the driver clips it or wraps it to the bottom rows of the 320-wide frame buffer was not checked; nothing is drawn here.
-- **U-00dcd4** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2518` `BattleScreen.Draw`  
+- **U-00dcd4** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2524` `BattleScreen.Draw`  
   original: `R014+0x7BBE` (14F7:13AE, draft), `R014+0x8724` (14F7:1F14, draft), `R014+0x87E4` (14F7:1FD4, draft) +12 more  
   why: while paused the C# draws one more frame (with new puff jitter of the clouds) after the pause begins and then stops; the original's draw pass (fight-draw R014+0x6818, which Draw stands for) leaves a last frame that equals the C#'s first paused one (vis10 D-09fbc1, shots c and d: 3,497 px; shots a and b: 0). Seen only in the picture, not chased; possibly an extra redraw pass in the C#. Kept as uncertain (b31): the replayed pause session (c3-space-pause, one of the 821) agrees on the random state and the saved game, so the frame changes no state; settling it needs a frame-exact picture of the original's first paused pass.
-- **U-dc1ff1** `uncertain` - `src/Darklands.Presentation/BuySellPage.cs:84` `BuySellPage.Text`  
-  original: `root 047C:055A` (047C:055A, draft)  
-  why: glyph clipping at the window's right edge is not reproduced (long lines are cut by the screen edge only).
-- **U-96d507** `uncertain` - `src/Darklands.Presentation/GameScreens2.cs:48` `GameScreens2.int`  
-  original: `R029+0x2204` (0E76:2204, draft), `R029+0x222A` (0E76:222A, draft)  
-  why: which keys the original's menu-bar-loop takes inside the sheet is not traced; only the Alt keys are passed.
 - **U-797153** `uncertain` - `src/Darklands.Presentation/MarchingOrderScreen.cs:20` `MarchingOrderScreen`  
   original: `root 0000:0CAA` (0000:0CAA, draft), `R022+0x051C` (1EF8:051C, draft), `R022+0x07AA` (1EF8:07AA, draft)  
   why: the selection bytes are taken to be 0 outside a battle (the panel is drawn unlit everywhere else, PartyPanel.Draw).
-- **U-f84af1** `uncertain` - `src/Darklands.Presentation/MessageBox.cs:12` `MessageBox`  
-  original: `root 0000:23E6` (0000:23E6, draft), `root 0000:2286` (0000:2286, draft), `root 0000:24BC` (0000:24BC, draft) +2 more  
-  why: the horizontal centring uses (320 - text width - w->w) / 2 relative to the window; the window offset w->w of card-text-window is taken as 60 (the card window starts right of the party panel), so the box is centred on the 260 pixels right of the panel. The offset was not checked at run time (it could be 0 when a box comes up over a full screen such as the start screen).
-- **U-6f03e2** `uncertain` - `src/Darklands.Presentation/MessageBox.cs:23` `MessageBox.MessageMilliseconds`  
-  original: `root 0410:0302` (0410:0302, asm)  
-  why: the length of a 0410 timer tick. 1000 ms assumes 60 ticks per second; the PAN player's measured tick (86 ms per 6 ticks, see Cinematics) would give 860 ms.
 - **U-77166b** `uncertain` - `src/Darklands.Presentation/OpeningTiming.cs:21` `OpeningTiming.IReadOnlyList`  
   original: `root 03A1:000A` (03A1:000A, matched), `root 030B:0004` (030B:0004, matched), `root 030B:0508` (030B:0508, matched) +2 more  
   why: one tick after the last cel of OPENING2 (the capture's tick after it came in the same frame, before the tune).
 - **U-e8f4e0** `uncertain` - `src/Darklands.Presentation/PartyRosterScreen.cs:216` `PartyRosterScreen.ResultOfDriver`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: the driver's AX is taken never to be 0x11B (it would end the screen).
-- **U-ef55b2** `uncertain` - `src/Darklands.Presentation/StartUp.cs:254` `StartUp.GameStart`  
-  original: `root 047C:0783` (047C:0783, draft), `root 047C:0066` (047C:0066, draft), `root 044A:019C` (044A:019C, asm) +4 more  
-  why: the driver's mouse pointer (shown after commonsp.img) is left out until the start screen, as during the opening.
 

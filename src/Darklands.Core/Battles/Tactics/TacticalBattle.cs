@@ -53,6 +53,12 @@ public interface ITacticalView : IBattleViewport
     {
     }
 
+    /// <summary>fighter-screen-position R014+0x99F6 in the fight-draw of the set-up (R014+0x0307, before the first tick): each combatant's
+    /// +0x00 / +0x02 (where its sprite lies in the view drawn around the centre kept), which the first tick's follow test reads.</summary>
+    void SetUpScreenPlaces()
+    {
+    }
+
     /// <summary>
     /// fight-tick's follow (DS:11B1 set): when combatant <paramref name="who"/>'s sprite, where the last frame put it (+scrx, +scry), lies
     /// outside 0x14..0xDC × 0x14..0xA0 of the view, floor-view-paint(who).
@@ -502,6 +508,10 @@ public sealed partial class TacticalBattle : IBattleEndActions
         // fight-draw, before the first tick: the draw list's random draws (the animated pieces of that view)
         // orig: that draw's R014+0x99F6 (14F7:31E6) also turns whoever EnemyTurn just gave an action toward its target
         _view.MapChanged();
+        // orig: that fight-draw's R014+0x99F6 also sets every combatant's screen place before the first tick (local/batch/b32/a7-king: a battle
+        // taken up from the start screen, the view around 0,0: the first tick's follow test R014+0x1065 then centres the view on the leader and
+        // order mode opens at once, the start pause at the first tick's clock)
+        _view.SetUpScreenPlaces();
         TurnTowardTargets();
         Effects.Drawn(_view);
         RemoveArrivedMissiles();

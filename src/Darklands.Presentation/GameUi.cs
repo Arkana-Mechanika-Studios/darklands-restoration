@@ -715,6 +715,7 @@ public sealed class GameUi
     /// <param name="redrawKeepsTheKey">The screen's redraw leaves the mouse's key as it is (barter, R032+0x06BF; the others set it to 0).</param>
     public int KeyAfterTheMouse(int mouseKey, Action? redrawIfDirty = null, bool redrawKeepsTheKey = false)
     {
+        KeyTaken = false;
         var action = Poll();
         if (redrawIfDirty is not null && PartyIconsDirty)
         {
@@ -727,11 +728,15 @@ public sealed class GameUi
         }
         if (action is { IsKey: true } pressed)
         {
+            KeyTaken = true;
             return pressed.Key;
         }
         _host.Clock.Sleep(FrameMilliseconds);
         return mouseKey;
     }
+
+    /// <summary>The last <see cref="KeyAfterTheMouse"/> returned a key that was pressed, not the mouse's choice.</summary>
+    public bool KeyTaken { get; private set; }
 
     /// <summary>
     /// The party information screen was shown since the last screen that tested for it: the screens of the loops with that test draw

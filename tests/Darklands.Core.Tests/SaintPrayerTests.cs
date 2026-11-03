@@ -1,4 +1,6 @@
 using Darklands.Core.Characters;
+using Darklands.Core.Events;
+using Darklands.Core.Randomness;
 using Darklands.Core.Rules;
 using Attribute = Darklands.Core.Characters.Attribute;
 
@@ -123,6 +125,63 @@ public sealed class SaintPrayerTests
             Assert.Equal("help", events[1]);
         }
         Assert.Equal(Math.Max(1, shown - favor), s.Party.Members[3][Attribute.DivineFavor]);
+    }
+
+    /// <summary>
+    /// The empty saint slot -1 (a card's Enter on its saint line after a Shift hint on option 3, local/batch/b32/a6-saint): the original's
+    /// screen reads the saint tables at -1, whose function (R029+0x4626) returns what it is given: no member list, no offer, P prays with
+    /// chance 2 (the font word), nothing helps on land, the travel blessing is renewed on terrain 1 or 2.
+    /// </summary>
+    [Theory]
+    [InlineData(1u, 0)]
+    [InlineData(2u, 0)]
+    [InlineData(7u, 0)]
+    [InlineData(1234u, 1)]
+    [InlineData(99u, 2)]
+    public void AnEmptySaintSlotPraysWithTheFontWordAsTheChance(uint seed, int terrain)
+    {
+        var s = TestGame.Create(seed);
+        s.PartyTerrain = terrain;
+        var p = new SaintPrayer(s, 0, -1, PrayerMode.ForParty);
+        Assert.False(p.Listed);
+        Assert.False(p.ChoosesMember);
+        Assert.Equal(0, p.Favor);
+        Assert.True(p.CanPray);
+        Assert.False(p.PraysByMouse);
+        Assert.Equal(99, p.ShownChance);
+        var df = s.Party.Members[0][Attribute.DivineFavor];
+        p.OfferMore();
+        p.OfferMore();
+        Assert.Equal(Math.Min(2, df), p.Favor);
+        var favor = p.Favor;
+        var twin = TestGame.Twin(s);
+        var effects = new Recorder();
+        var success = p.Pray(Who.Leader, effects);
+        var expected = twin.Below(100) <= SaintPrayer.UnlistedChance;
+        Assert.Equal(expected, success);
+        if (!expected)
+        {
+            twin.Below(99);
+        }
+        Assert.Equal(twin.State, ((MscRandom)s.Random).State);
+        Assert.Empty(effects.Calls);
+        Assert.Equal(Math.Max(1, df - favor), s.Party.Members[0][Attribute.DivineFavor]);
+        Assert.Equal(expected && terrain is 1 or 2 ? 1 : 0, s.Events.Count(EventKinds.TravelBlessing));
+    }
+
+    [Fact]
+    public void AnEmptySaintSlotSucceedsOnARollOfTwoOrLess()
+    {
+        var hits = 0;
+        for (uint seed = 1; seed < 400; seed++)
+        {
+            var s = TestGame.Create(seed);
+            var roll = TestGame.Twin(s).Below(100);
+            var success = new SaintPrayer(s, 0, -1, PrayerMode.ForParty).Pray(Who.Leader, new Recorder());
+            Assert.Equal(roll <= 2, success);
+            hits += success ? 1 : 0;
+        }
+        Assert.InRange(hits, 1, 30);
     }
 
     private sealed class OrderRecorder(List<string> events) : ISaintEffects

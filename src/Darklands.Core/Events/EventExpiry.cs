@@ -78,12 +78,19 @@ public static class EventExpiry
                 break;
             // orig: R029+0x4626: DS:D843 (the party's terrain) 1 or 2.
             case ExpiryHandler.RenewTravelBlessing:
-                if (s.PartyTerrain is 1 or 2)
-                {
-                    s.Events.Create(-2, 0, 0x63, EventKinds.TravelBlessing, 0, 0, (int)ExpiryHandler.RenewTravelBlessing, 6,
-                        (int)EventFlags.CallExpiryHandler, 0);
-                }
+                RenewTravelBlessing(s);
                 break;
+        }
+    }
+
+    /// <summary>The travel blessing renewed for 6 hours while the party is on terrain 1 or 2 (also what an unlisted saint slot's prayer runs).</summary>
+    // orig: R029+0x4626 (0E76:4626) matched: DS:D843 (the party's terrain) 1 or 2 -> event-create(-2, 0, 0x63, 0x4b, 0, 0, 9, 6, 1, 0)
+    public static void RenewTravelBlessing(GameState s)
+    {
+        if (s.PartyTerrain is 1 or 2)
+        {
+            s.Events.Create(-2, 0, 0x63, EventKinds.TravelBlessing, 0, 0, (int)ExpiryHandler.RenewTravelBlessing, 6,
+                (int)EventFlags.CallExpiryHandler, 0);
         }
     }
 

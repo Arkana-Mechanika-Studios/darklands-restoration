@@ -1,0 +1,19 @@
+# vis10 U-4c93ee (b32 C-fix): $Polit01 (card 0x37, synth DKSAVE0-card37) with the game's own MGRAPHIC: Hans's Stone-tar picked in the potion line's item box. The pop-up handler (R057+0x2886) leaves r.a unset; the word there is what the driver's pointer hide (slot 15, drv+0x023D: call 0x0253 pushes 0x0240) wrote, so the potion works (text 0x0B, no fight); the lockstep tester (driver stubbed) cannot show this
+key:t
+wait:5
+key:l
+wait:300
+key:space
+wait:100
+shot:menu
+option:4
+wait:30
+move:250,165
+wait:30
+shot:inbox
+click:250,165
+wait:100
+shot:picked
+key:space
+wait:100
+shot:after

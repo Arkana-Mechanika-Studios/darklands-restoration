@@ -15,3 +15,5 @@ B-tleads|tleads-battle-difficulty.steps|synth/DKSAVE0-hurt.sav|box_02=tleads-bat
 V-mines|visleads-mines-save.steps|DKSAVE99.SAV|comment=visleads-mines-comment,aftersave=visleads-mines-aftersave
 V-prison|visleads-prison-battle.steps|DKSAVE0-card16b.sav|b45=visleads-prison-battle
 V-away24|visleads-away24-panel.steps|synth/DKSAVE0-away24.sav|b20=visleads-away24-panel
+U-4c93ee|U-4c93ee-potion-pick.steps|synth/DKSAVE0-card37.sav|inbox=U-4c93ee-potion-box,picked=U-4c93ee-potion-picked
+U-4c93ee-41|U-4c93ee-wildhunt-outrun.steps|synth/crashtool0-card41.sav|picked=U-4c93ee-wildhunt-outrun-picked

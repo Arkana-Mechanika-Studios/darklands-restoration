@@ -261,6 +261,41 @@ public sealed class DungeonTests
     }
 
     /// <summary>
+    /// R023+0x1618 (use-exit): when the party has gone over, the new level is drawn with floor-view-paint(who): the view's centre becomes the
+    /// cell of the member whose move completed the party's, where it was placed (not the centre the old level was shown around). Lockstep
+    /// dungeon-king-door (local/batch/b32/a7-king): the members' screen places saved one pass after the ladder agree only so.
+    /// </summary>
+    [Fact]
+    public void TheNewLevelIsShownAroundTheMemberWhoTookTheStairs()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (screen, tactics) = Start(0x0B, 4242);
+        var b = tactics.Battle;
+        var level = tactics.Level;
+        var spot = Centre(level, StairsAt);
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            if (b[i].IsAble)
+            {
+                b[i].Position = spot;
+            }
+        }
+        Run(tactics, 16);
+        tactics.ToggleGroup();
+        Run(tactics, 8);
+        var before = screen.ViewCentre;
+        tactics.UseKey(-1);
+        // travelling together every able member takes the leader's stairs in slot order (R016+0x1182): the last one completes the party's
+        // move, and the view is drawn around it
+        var last = b[Enumerable.Range(0, Combatant.PartySlots).Last(i => b[i].IsAble)];
+        Assert.Equal((last.Position.X >> 5, last.Position.Y >> 4), screen.ViewCentre);
+        Assert.NotEqual(before, screen.ViewCentre);
+    }
+
+    /// <summary>
     /// G and Q end with the order menu reset (R016+0x0BD6 / R016+0x0CDC): the stairs and exit entries say "(All)" while the party moves
     /// together and "(Ldr)" again after, and in order mode Resume stays on.
     /// </summary>

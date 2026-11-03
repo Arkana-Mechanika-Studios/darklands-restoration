@@ -144,6 +144,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
         while (true)
         {
             var key = 0;
+            var fromMouse = false;
             var mouse = ui.Mouse;
             var (mx, my) = (mouse.X, mouse.Y);
             var inBox = _box is not null && mx > 250 && mx < 310 && my > 142 && my < 192;
@@ -201,6 +202,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             {
                 // C: the row after the release, (y − 158) / 8 truncated toward zero: a row outside 0..3 gives no key
                 ui.WaitForButtonRelease();
+                fromMouse = true;
                 key = ((ui.Mouse.Y - 158) / MenuStep) switch
                 {
                     0 => 0x324D,   // M
@@ -223,12 +225,14 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             // C: the menu bar and the hot keys are GameUi.Poll's
             // orig: R034+0x0616: after it `if (DS:9C46) { DS:9C46 = 0; R034+0x0720 and R034+0x0878 again (the picture, the status, the menu, the text); key = 0 }`
             key = ui.KeyAfterTheMouse(key, () => DrawAll(prayer));
+            // orig: R034+0x064F: a waiting key replaces the mouse's choice (and AX is then the key, not 0)
+            fromMouse = fromMouse && !ui.KeyTaken;
             if (key is Keys.Escape or 0x2044 or 0x2064)
             {
                 CloseMemberList();
                 return null;
             }
-            if (key is 0x1950 or 0x1970 && prayer.CanPray)
+            if (key is 0x1950 or 0x1970 && (fromMouse ? prayer.PraysByMouse : prayer.CanPray))
             {
                 CloseMemberList();
                 return Who.Leader;
@@ -268,9 +272,11 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
 
     /// <summary>The saint's picture: sntback&lt;class&gt;.pic (classes 10..13 use 0, others 1).</summary>
     // orig: saint-backdrop-load R034+0x0720
+    // C: an unlisted slot's class is the AX a driver call (root 047C:0568) left before the what-1 call; the default sntback1 is drawn, which is
+    //   the picture the original showed (local/batch/b32/a6-saint/after-saint.png).
     private void LoadBackground(int saint)
     {
-        var picture = SaintTable.Of(saint).Background switch
+        var picture = (saint is >= 0 and < SaintTable.Count ? SaintTable.Of(saint).Background : -1) switch
         {
             >= 0 and <= 9 and var n => $"sntback{n}",
             >= 10 and <= 13 => "sntback0",
@@ -349,6 +355,13 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
         });
         _text.Draw(_canvas, 0x4C, 0xAD, "Saint Day", TextColor);
         _text.Draw(_canvas, 0x62, 0xB5, "is", TextColor);
+        // DIVERGENCE (undefined-register): an unlisted slot's feast day is the AX the "is" drawing (root 047C:055A) leaves before the what-0
+        //   call (the original showed April 17); no date is drawn. Its description is DARKLAND.SNT read at -359 (past the file's end): the buffer
+        //   keeps the last saint screen's text, empty before any; empty here.
+        if (saint is < 0 or >= SaintTable.Count)
+        {
+            return;
+        }
         var day = SaintTable.Of(saint).FeastDay;
         var date = $"{TextVariables.MonthNames[Quests.MonthOf(day)]} {Quests.DayOfMonth(day)}";
         var measured = _text.Measure(date);
@@ -359,13 +372,18 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The saint's full name (saint-label-table R136+0xF16E, from DARKLAND.LST).</summary>
+    // C: saint-label-table follows virtue-label-table (the formulas' full names, CardContext.NameToSlot) in DGROUP, so slot -1 is the last
+    //   formula's full name ("Raimundus L's Firewall" in the stock list, as the original's screen shows it).
     private string SaintName(int saint)
     {
-        _names ??= Content.Formats.World.DarklandListDecoder.DecodeBytes(ui.Assets.Files.Read("DARKLAND.LST"), "DARKLAND.LST").Saints;
-        return saint >= 0 && saint < _names.Count ? _names[saint].FullName : "";
+        _list ??= Content.Formats.World.DarklandListDecoder.DecodeBytes(ui.Assets.Files.Read("DARKLAND.LST"), "DARKLAND.LST");
+        var names = _list.Saints;
+        return saint >= 0 && saint < names.Count ? names[saint].FullName
+            : saint == -1 && _list.Formulae.Count > 0 ? _list.Formulae[^1].FullName
+            : "";
     }
 
-    private IReadOnlyList<Content.Formats.World.DarklandSaintName>? _names;
+    private Content.Formats.World.DarklandList? _list;
 
     // ---- the member list --------------------------------------------------------------
 

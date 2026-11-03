@@ -45,8 +45,14 @@ public sealed class GameScreens2 : IGameScreens
 
     /// <summary>
     /// The game's menu-bar keys (Alt-Q, Alt-P, Alt-S …) while the sheet is up; true when one was handled.
-    /// UNCERTAIN: which keys the original's menu-bar-loop takes inside the sheet is not traced; only the Alt keys are passed.
     /// </summary>
+    // orig: the sheet's loop runs menu-bar-loop(DS:9419, 0) (R031+0x06CA = root 0000:0000), which calls hotkey-table root 0000:0CAA when a key
+    //   waits (root 0000:0029..0x0033): every key of its table is taken in the sheet too, Alt-O (0x1800, then R022+0x051C only if DS:9893 == 1)
+    //   and F6 (0x4000, only if DS:987F == 1) among them; R031 writes neither flag
+    // C: in the game those keys never come here: the sheet's GameUi.KeyAfterTheMouse -> GameUi.Poll hands every key to GameUi.GameKey first
+    //   (HotKeys.Handle; in a battle BattleScreen.BattleHotKey), which takes F6 and Alt-O (tests: PartyIconsDirtyTests, SheetHotKeyTests). This
+    //   is the fallback for a key GameKey left: in a battle's sheet Alt-O with the battle's Change Marching Order greyed (DS:9893 = 2 there,
+    //   R022+0x009D), which the original refuses as well, so Alt-O and F6 stay out of this list (b32 C-fix, U-96d507).
     public Func<int, bool>? MenuBarKey
     {
         get => _sheet.MenuBarKey;

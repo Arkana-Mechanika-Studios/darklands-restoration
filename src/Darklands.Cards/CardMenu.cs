@@ -337,9 +337,18 @@ public sealed class CardMenu
             }
             OnChoice?.Invoke();
             // C: local-minus-0a = popup-menu-box ? (*DS:EB0A[menu-choice-index])() : (*card-option-handler[k])(): always called; the action gets local-minus-0a.a.
-            var hint = !_c.MenuPopup ? Handler(choice)
-                : PopupRatedByItems ? SlotHint(PopupBox.Items, line, _c.MenuSlot)
-                : BoxHint(_c.MenuBox, line);
+            OptionHint hint;
+            _c.RatingTheChoice = true;
+            try
+            {
+                hint = !_c.MenuPopup ? Handler(choice)
+                    : PopupRatedByItems ? SlotHint(PopupBox.Items, line, _c.MenuSlot)
+                    : BoxHint(_c.MenuBox, line);
+            }
+            finally
+            {
+                _c.RatingTheChoice = false;
+            }
             line.Choose(line.TakesTheChance ? hint.Chance : -1);
         }
         _c.MenuBox = PopupBox.None;

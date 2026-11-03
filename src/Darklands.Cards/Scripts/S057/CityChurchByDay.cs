@@ -170,8 +170,9 @@ public sealed class CityChurchByDay : Card
     /// The next Mass's hour by the time of day and the city's size; where the city's politics
     /// have taken a side, a priest takes the party aside instead (card 0x6F).
     /// </summary>
-    // UNCERTAIN: in the small and late hours (band 0 and 1) the original names the hour of an
-    //   uninitialised local (whatever its stack slot held); the C# names hour 0.
+    // C: in the small and late hours (band 0 and 1) the original (R057+0x0500, line 2's action) names the hour of its unset local [bp-2]:
+    //   the card loop calls the line's hint R057+0x0644 just before (R057+0x018A, then R057+0x01D0 with no call between), whose r.a = -1
+    //   lies in that stack word; label-to-slot kind 3 takes time-of-day-band(-1) = 7 (R029+0x5654, signed), as for hour 0 (b32).
     private static void AskForTheNextMass(CardContext c)
     {
         var size = c.HereQuery(2);

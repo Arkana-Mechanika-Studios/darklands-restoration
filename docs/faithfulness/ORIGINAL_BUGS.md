@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 98 | 22 | 76 |
+| rules | 99 | 22 | 77 |
 | cards | 70 | 3 | 67 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
 | battles | 29 | 12 | 17 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 4 | 1 | 3 |
-| total | 215 | 44 | 171 |
+| total | 216 | 44 | 172 |
 
-## Core logic (211)
+## Core logic (212)
 
-### rules (98)
+### rules (99)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:289` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -303,6 +303,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-61d9a9** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintBook.cs:866` `SaintBook.new`  
   original: `R039+0x92E2` (165C:7342, matched)  
   why: the text (DARKLAND.SNT) "enhances local reputation in villages and with nobility"; the code changes no standing.
+- **B-a186ab** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintPrayer.cs:69` `SaintPrayer.Listed`  
+  original: `R029+0x4626` (0E76:4626, draft)  
+  why: an unlisted slot gets a prayer screen: the last formula's name, a garbage feast day and picture (SaintPrayerScreen), "Success: 99", no Divine Favor offered, and P prays with the screen's font word as the chance (UnlistedChance).
 - **B-94efea** `bug`, flag `FixSaintLearnedByLeader` - `src/Darklands.Core/Rules/Saints.cs:55` `Saints.Learn`  
   original: `R029+0x1302` (0E76:1302, draft)  
   why: "learn the saint of this place" (R056 19c4) and the teaching saints pass -1 and teach nobody (FixSaintLearnedByLeader).
@@ -387,10 +390,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-83f56d** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:106` `CityWallSallyPort.BlastWithPotion`  
   original: `R055+0x1136` (1932:0196, matched)  
   why: "menu-choice-index = 2" and "param-plus-6 = 0x64" overwrite the chosen potion and the chance (the parameter is volatile), a left-over test cheat; the failure branch can never run (the draw is 0..99 against 100) but still draws.
-- **B-77afe4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:315` `CathedralByDay.AskForARelic`  
+- **B-77afe4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:316` `CathedralByDay.AskForARelic`  
   original: `R056+0x2782` (19C4:0EC2, asm), `R056+0x26CA` (19C4:0E0A, asm)  
   why: the errand is made for giver 0, the town's merchants, where the card's own tests (an errand open, one done: option 8) look for 3, the bishop: the merchants pay for it and the canon gives a new errand at every visit.
-- **B-7fade3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:360` `CathedralByDay.AcceptTheRelic`  
+- **B-7fade3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:361` `CathedralByDay.AcceptTheRelic`  
   original: `R056+0x2782` (19C4:0EC2, asm), `R056+0x26CA` (19C4:0E0A, asm)  
   why: neither the thing fetched is taken nor the reward event ended: the relic can be taken again and again.
 - **B-2fec94** `bug`, flag `FixUniversityFormulasTried` - `src/Darklands.Cards/Scripts/S056/University_Unive00.cs:185` `University_Unive00.AskAboutFormulas`  
@@ -405,13 +408,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-4d8935** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:148` `CityChurchByDay.Confess`  
   original: `R057+0x0956` (1838:0956, asm), `R057+0x0948` (1838:0948, asm)  
   why: confession can take no time or negative time: standing / -10 + 11 hours is 0 at standing 110..119 and negative from 120 (reachable: a quest's resolution adds standing without a limit, R029+0x3E06); PassHours then turns the clock back, and the hour can become negative (R057+0x03CC).
-- **B-f30456** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:209` `CityChurchByDay.GiveATenth`  
+- **B-f30456** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:210` `CityChurchByDay.GiveATenth`  
   original: `R057+0x067C` (1838:067C, asm), `R029+0x14A4` (0E76:14A4, draft)  
   why: party-ability-top(8) returns the skill value, which the original then uses as a member number.
-- **B-ca9994** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:99` `HandbillThugs_Polit01.EatTheHandbills`  
+- **B-ca9994** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:108` `HandbillThugs_Polit01.EatTheHandbills`  
   original: `R057+0x21DC` (1A02:053C, matched)  
   why: R057+0x21DC..0x2230 never writes following-card (DS:E48A): after the truce the card is shown again and the line can be chosen again, each time injuring the party, lowering the standing and passing an hour.
-- **B-d962b2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:302` `HandbillThugs_Polit01.Fight`  
+- **B-d962b2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:311` `HandbillThugs_Polit01.Fight`  
   original: `R057+0x1F22` (1A02:0282, matched)  
   why: the case has no break; it fights the group of the main street and then, falling through, the group of the side street too, and only the second result counts.
 - **B-0818ac** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S058/LeavingByTheGate.cs:293` `LeavingByTheGate.SettleStanding`  
@@ -534,16 +537,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### events (8)
 
-- **B-ace31b** `bug`, no fix flag - `src/Darklands.Core/Events/EventExpiry.cs:105` `EventExpiry.AlchemyResult`  
+- **B-ace31b** `bug`, no fix flag - `src/Darklands.Core/Events/EventExpiry.cs:112` `EventExpiry.AlchemyResult`  
   original: `R029+0x3FB2` (0E76:3FB2, draft)  
   why: the formula's risk works backwards: the explosion (longer = 1, the inn barred 120 days) comes when roll-below(4 - risk) is not 0, so a low-risk formula (0) explodes three times in four and a high-risk one (2) half the time.
-- **B-024865** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:135` `EventExpiry.UndoBoost`  
+- **B-024865** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:142` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: boosts given to the whole party are never taken back (FixEverybodyBoostsUndone).
-- **B-2c6441** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:136` `EventExpiry.UndoBoost`  
+- **B-2c6441** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:143` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: the weapon potions' kind 0x4A events (Deadly Blade, Strongedge, Great Power: PotionEffects.Drink) run out here and nothing is undone: only kinds 0x48 and 0x49 are, so the bonus byte (+0x34) keeps them for good.
-- **B-dcf1be** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:138` `EventExpiry.UndoBoost`  
+- **B-dcf1be** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:145` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: the recorded amount is taken off whatever the attribute is by then (raise-attribute-by(owner, type, -value)): a boost that a night's rest (Endurance back to its maximum) or wounds (Strength) have already used up is taken off again and leaves the attribute below where it was; a saint's lowering (a negative value) is given back the same way.
 - **B-e1b48f** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:97` `EventLog.Reload`  

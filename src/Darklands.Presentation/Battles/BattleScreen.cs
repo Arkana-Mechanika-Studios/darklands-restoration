@@ -634,6 +634,9 @@ public sealed class BattleScreen : ITacticalView
             }
         }
         _battle.ReadBattleFile(file);
+        // orig: R002+0x0000 sets DS:C1F0 to the call's battlefield after the restore R003+0x0CE8 read the file's (a game loaded from the start
+        // screen: DS:A768 still 0); lockstep dungeon-king-ladder (local/batch/b32/a7-king)
+        _battle.BattlefieldType = request.Battlefield;
         _small = new TextPainter(_ui.Assets.Font(3));
         SetPalette(field.Terrain.BackgroundPalette);
         StartCycles();
@@ -1076,8 +1079,9 @@ public sealed class BattleScreen : ITacticalView
         if (stage == 0)
         {
             _setUpMark = now;
-            // the first battle has no entry; every later one takes its own, a battle taken up from a saved game uses it
-            if (_setUpsSeen++ > 0 && ResumeClocks is { Count: > 0 } clocks && clocks.Dequeue() is var first && _resuming)
+            // the first battle has no entry, unless it is taken up from a saved game loaded from the start screen (lockstep gives it then:
+            // local/batch/b32/a7-king); every later one takes its own, a battle taken up from a saved game uses it
+            if ((_setUpsSeen++ > 0 || _resuming) && ResumeClocks is { Count: > 0 } clocks && clocks.Dequeue() is var first && _resuming)
             {
                 // the restore's and the set-up's time comes after the set-up's clock reads (the original's first pass checks the
                 // activations at once: R014+0x05B4), up to the first pass
@@ -2487,6 +2491,8 @@ public sealed class BattleScreen : ITacticalView
 
     /// <summary>fighter-screen-position's places: each combatant on the level shown (any status but empty) gets its sprite's top left.</summary>
     // orig: fighter-screen-position R014+0x99F6 (14F7:31E6) draft: scrx = foot x − DS:D505[set][facing], scry = DS:C8CA[set] − DS:D5D3[set] + y + 0x69
+    public void SetUpScreenPlaces() => RecordScreenPlaces();
+
     private void RecordScreenPlaces()
     {
         var tb = _battle!;

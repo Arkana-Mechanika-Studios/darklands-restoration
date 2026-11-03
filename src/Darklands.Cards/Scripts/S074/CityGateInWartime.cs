@@ -138,8 +138,9 @@ public sealed class CityGateInWartime : Card
         var chance = BefriendChance(c, standing).Chance;
         var roll = c.Random(100);
         // C: in a hostile city the original leaves the outcome flag (register DI) unset.
-        // UNCERTAIN: it is taken as 0 (failure), which then overrides following-card = 1 and keeps the
-        // party at the gate; a non-zero leftover would instead let the party in (text 5).
+        // C: DI is the action's unset local [bp-2] (R074+0x03A0), the stack word where the line's hint R074+0x043C, called just before by
+        //   the card loop (R074+0x01D8, then R074+0x0214), left r.a; in a hostile city the hint sets r.a = 0 (R074+0x04C6): failure, which
+        //   then overrides following-card = 1 and keeps the party at the gate (b32).
         var success = false;
         if (c.Hostile())
         {

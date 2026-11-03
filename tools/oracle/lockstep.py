@@ -176,15 +176,17 @@ def waits_since_key(steps, i) -> int:
 
 
 def dialog_gaps(log, steps, logged: int) -> list[int]:
-    """The battle passes from the last key read in a save or load dialog (R037+0x2A68, R037+0x8B76) to the next key the battle took, in
-    order, when the bwaits after the dialogs are exactly those missing from BWAIT_ACTUAL (else none)."""
+    """The battle passes from the last key read in a save or load dialog (R037+0x2A68, R037+0x8B76) to the next key (or kdown / kup) the
+    battle took, in order, when the bwaits after the dialogs are exactly those missing from BWAIT_ACTUAL (else none)."""
     expected = [i for i, s in enumerate(steps) if s[0] == "bwait" and after_dialog(steps, i)]
     if not expected or sum(1 for s in steps if s[0] == "bwait") - logged != len(expected):
         return []
     keys = []
     for l in log:
-        if l.startswith("key ") and "(battle pass " in l:
-            keys.append((int(l.split("(battle pass ")[1].split(",")[0]), l.rpartition(" in ")[2].split(" < ")[-1]))
+        # the next input may be a held key's make or break code (kdown / kup lines: "(battle pass N)" without a clock), as in
+        # dungeon-king-door (local/batch/b32/a7-king: a kdown after the save's dialog went to the C# 351 passes early)
+        if l.startswith(("key ", "kdown ", "kup ")) and "(battle pass " in l:
+            keys.append((int(l.split("(battle pass ")[1].split(",")[0].split(")")[0]), l.rpartition(" in ")[2].split(" < ")[-1]))
     out = []
     for (p, where), (q, nxt) in zip(keys, keys[1:]):
         if where.startswith(("R037+0x2A68", "R037+0x8B76")) and not nxt.startswith(("R037+0x2A68", "R037+0x8B76")):
@@ -485,12 +487,21 @@ def rup_boxes(log) -> list[bool]:
     return out
 
 
-def resume_clocks(trace) -> list[int]:
+def resume_clocks(trace, first: bool = False) -> list[int]:
     """The clock of the original's first battle pass after each fall of the combat clock in its trace: each battle after the first (a new
     one starts its clock again; one taken up from a saved game has the clock the restore R003+0x0CE8 read from the battle file, counted on by
-    the timer while the restore and the set-up ran at the emulator's speed). Given to the C# for sessions that load in a battle (Alt-L)."""
+    the timer while the restore and the set-up ran at the emulator's speed). Given to the C# for sessions that load in a battle (Alt-L).
+    first: the session's saved game was written in a battle and the script loads it from the start screen, so the first battle is one
+    taken up too: its first pass's clock comes first (local/batch/b32/a7-king: the original's clock there is the file's + ~2955)."""
     clocks = [int(l.split()[2]) for l in trace if l.startswith("pass clock ")]
-    return [b for a, b in zip(clocks, clocks[1:]) if b < a]
+    return ([clocks[0]] if first and clocks else []) + [b for a, b in zip(clocks, clocks[1:]) if b < a]
+
+
+def loads_battle_save(steps, save) -> bool:
+    """The script loads (key t, key l) a saved game written in a battle (bit 7 of the header's difficulty byte +0x96)."""
+    script = list(steps)
+    return (save is not None and len(script) >= 3 and script[0] == ("key", "t") and script[2] == ("key", "l") and Path(save).exists()
+            and len(Path(save).read_bytes()) > 0x96 and Path(save).read_bytes()[0x96] & 0x80 != 0)
 
 
 def loot_ticks(jumps, log):
@@ -895,7 +906,7 @@ def main():
     ticks = party_ticks(steps, original, save)
     rewrite, output = run_rewrite(Path(a.headless), a.game, cs_steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
                                   got["stale"] if a.battle_records else None, sheet_callbacks(log),
-                                  resume_clocks(got["trace"]) if ("key", "altl") in steps else (), loot, log, pause_keys(log, cs_steps, got["trace"]),
+                                  resume_clocks(got["trace"], loads_battle_save(steps, save)) if ("key", "altl") in steps or loads_battle_save(steps, save) else (), loot, log, pause_keys(log, cs_steps, got["trace"]),
                                   menu_callbacks(log), box_callbacks(log), carry, ticks)
     battle = None
     if a.battle_trace:
@@ -931,6 +942,16 @@ def main():
                 row["bsv"] = d
         else:
             d = savdiff.diff(theirs.read_bytes(), data)
+            # +0x84 (DS:E898, the card screen's text state) apart, as for the states above: the C# writes the loaded file's (a known
+            # divergence); an Alt-S save in a battle after a card met there shows it (dungeon-king-door, local/batch/b32/a7-king)
+            head = d.get("head", {}).get("0", {})
+            if "20" in head or "21" in head:
+                row["text state"] = {k: v for k, v in head.items() if k in ("20", "21")}
+                head = {k: v for k, v in head.items() if k not in ("20", "21")}
+                if head:
+                    d["head"]["0"] = head
+                else:
+                    del d["head"]
             if d:
                 row["sav"] = d
             if data[:0x64] != theirs.read_bytes()[:0x64]:

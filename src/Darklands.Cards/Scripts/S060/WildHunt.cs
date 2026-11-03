@@ -101,15 +101,19 @@ public sealed class WildHunt : Card
     }
 
     /// <summary>
-    /// The original handler leaves the chance unset when not everybody rides (a stack leftover);
-    /// here it is the least agile member's effective Agility the handler looks up.
+    /// The original handler leaves the chance unset when not everybody rides. Rated for the choice, that word is what the display
+    /// driver's pointer hide has just written (0x0240): outrunning then always works. For a hint shown over the line it is another
+    /// call's leftover; here the least agile member's effective Agility the handler looks up.
     /// </summary>
     // orig: R060+0x0FF4 (18CF:0684)
     // C: with everybody mounted: r.a = party-ability-low(Riding), r.b = (unsigned char)top-scoring-member, r.a += mount quality
-    // (item-grade-flags(top-scoring-member, 0x2000, 0)), r.a = limit-to-0-99(r.a). Otherwise party-effective-stat-two-low() is called and r.a is never written.
-    // DIVERGENCE: the original returns the uninitialised r.a (a stack leftover) as the chance when not everybody rides;
-    // here the effective Agility that party-effective-stat-two-low() returns is used.
-    // C: the disassembly (R060+0x0FF4) leaves the chance word [bp-4] unwritten on that path: it is a stack leftover.
+    // (item-grade-flags(top-scoring-member, 0x2000, 0)), r.a = limit-to-0-99(r.a). Otherwise party-effective-stat-two-low() is called and r.a
+    // ([bp-4], `enter 4,0`) is never written (R060+0x103C..0x1049).
+    // C: the loop rates the line right after pointer-hide at the same SP (R060+0x0B37, then R060+0x0B48 / 0x0B55), with the pointer drawn
+    //   (pointer-show R060+0x0B16): the driver's hide (MGRAPHIC slot 15, drv+0x023D `call 0x0253`) leaves 0x0240 in that word, as in
+    //   $Polit01 (HandbillThugs_Polit01.PickedPopupChance); the action R060+0x0ED8 `cmp ax,[bp+6]; jle` then always succeeds (b32 C-fix).
+    // DIVERGENCE: for a hint shown over the line (card-mouse-handler R043+0x26C4) the original shows another stack leftover as the chance;
+    // here the effective Agility that party-effective-stat-two-low() returns.
     private static OptionHint OutrunChance(CardContext c)
     {
         if (c.PartyGet(5) != 0)
@@ -120,8 +124,11 @@ public sealed class WildHunt : Card
             return new OptionHint(Math.Clamp(chance, 0, 99), "", rider);
         }
         var agility = c.PartyMinEffectiveAgility();
-        return new OptionHint(agility, "", c.BestMember);
+        return new OptionHint(c.RatingTheChoice ? PointerHideWord : agility, "", c.BestMember);
     }
+
+    /// <summary>The word the display driver's pointer hide leaves where an unset handler result lies when the loop rates the choice.</summary>
+    private const int PointerHideWord = 0x0240;
 
     // orig: R060+0x0CE8 (18CF:0378)
     private void OfferADeer(CardContext c, int chance)

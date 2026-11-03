@@ -1,0 +1,89 @@
+{
+"authority": "test_only_original_byte_execution",
+"originalExeSha256": "90138AE88ACF66AD765E96C0465C1A4AA11EB09B74F365ED18C0F01BEB9A86C2",
+"note": "tools: local/batch/b32/c-fix/stairs_direct.py",
+"cases": [
+{
+"function": "R006+0x34B8",
+"inputs": {
+"level": 2,
+"rooms": [
+0,
+2,
+2,
+0,
+0
+],
+"lastKeep": [
+0,
+0,
+1,
+0,
+0
+],
+"strips": [
+0,
+0,
+3,
+0,
+0
+],
+"stairs": [
+0,
+1,
+0,
+0,
+0
+],
+"bounds": [
+5,
+13,
+5,
+13
+],
+"holdrand": 323556301,
+"work": "eNrt1DEKw0AMBMA1JmA7cdKElP7/Lx1xXV4QjGbEwjZXSMUlvdyyjNyzj3TZ953PCNDXmiNbntW2amte1ZZqHf5CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJqZa/7xFgAAAAAAAAAAAAAAAAAAAK7kUTPlPCenAAAAAAAAAAAAAAAAAAAAAADg1xe6ywOa"
+},
+"after": {
+"level": 2,
+"rooms": [
+0,
+2,
+3,
+0,
+0
+],
+"lastKeep": [
+0,
+0,
+1,
+0,
+0
+],
+"strips": [
+0,
+0,
+4,
+0,
+0
+],
+"stairs": [
+0,
+1,
+1,
+0,
+0
+],
+"bounds": [
+5,
+13,
+5,
+13
+],
+"holdrand": 323556301,
+"slotn": 1,
+"work": "eNrt2t0KgjAUAOCj9qOz7Ca67Fl6lN7/KRraXWBJXlh+3zhsbGO4AyqMRazLNuo+2jj2sZb9nuPSx1r2Dbxq4hoputxKuTRxyq069w3fhC63hj6Y/q8BAHjvPj58Gx2870dGN5ILX/MeAQAAAAD8qqY+fDSvSJ+dBVflTlIBAAAAAAAAAAAAgH9V9WXO9dLM6837fAAAAAAAAAAAxPNWRrjRAQAAAAAAALAg+2glAQAAAAAAAABgcQ65FLkuJswvc11KHQAAAAAAAAAAAAAAAAAAAADAv3sAiH4D2g=="
+}
+}
+]
+}

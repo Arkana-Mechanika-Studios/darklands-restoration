@@ -1,0 +1,16 @@
+# vis10 (b32 C-fix, the U-4c93ee rule on $WildH00): WildHunt (card 0x41, synth crashtool0-card41: the Hunt's progress 4, not everybody mounted) with the game's own MGRAPHIC: line 1 (flee) clicked. Its handler R060+0x0FF4 leaves r.a unset on foot; rated right after pointer-hide (R060+0x0B37) the word is the driver's 0x0240, so the party always escapes (text 7)
+key:t
+wait:5
+key:l
+wait:300
+key:space
+wait:100
+shot:menu
+option:1
+wait:30
+click:160,114
+wait:100
+shot:picked
+key:space
+wait:100
+shot:after

@@ -457,6 +457,8 @@ public sealed partial class TacticalBattle
         // C: R014+0x02FF / 0x0307 as for any battle: floor-view-paint(−1) around the centre kept (DS:C866 / DS:C886), fight-draw, whose
         //   R014+0x99F6 (called at R014+0x6926) turns whoever EnemyTurn just gave an action toward its target
         _view.MapChanged();
+        // orig: the set-up's fight-draw R014+0x99F6: the screen places before the first tick (as TacticalBattle.Start)
+        _view.SetUpScreenPlaces();
         TurnTowardTargets();
         Effects.Drawn(_view);
         RemoveArrivedMissiles();

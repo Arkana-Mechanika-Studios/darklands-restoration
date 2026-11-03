@@ -12,12 +12,16 @@ variants:
   month<N>[d<D>]  the date moved to month N (and day D): the seasons of the travel map
   hurt    the first four members hurt and ill for the battle's party panel: endurance / strength at 1, 0 and above the maximum, a dead,
           an unconscious and a poisoned member (status byte +0x14)
+  king, stonebox  a game saved in the mine of Rammelsburg's battle (the original's DKSAVE2 of savemid-mine, with its .BSV) moved to level 3
+          before the dwarf king's riddle door / to level 6 before the stone box's door (battle_level; the .BSV is written beside the target)
 """
 from __future__ import annotations
 
 import struct
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))      # savdiff (explode) beside this file
 
 HEAD_END, CHAR = 0x189, 0x22A
 PACK, PACK_COUNT, ENTRY = 0xAA, 0x7E, 6
@@ -180,6 +184,79 @@ def dragon_events(b: bytearray) -> None:
     b[:] = out
 
 
+def implode_literals(data: bytes, dictbits: int = 6) -> bytes:
+    """data as a PKWARE DCL block that holds only literals (binary mode: a 0 bit and the byte's 8 bits each) and the end code (length 519):
+    a valid block for any explode (savdiff.explode, the original's R003, Darklands.Persistence.Explode), only larger than the original's."""
+    import savdiff
+    count, sym = savdiff.LEN
+    codes, code, first, index = {}, 0, 0, 0
+    for length in range(1, 14):          # the canonical codes as savdiff.explode's decode reads them (each code bit inverted)
+        for k in range(count[length]):
+            codes[sym[index + k]] = (length, first + k)
+        index += count[length]
+        first = (first + count[length]) << 1
+    bits: list[int] = []
+    for byte in data:
+        bits.append(0)
+        bits.extend((byte >> k) & 1 for k in range(8))
+    length, value = codes[15]                # BASE[15] + 255 = 519: the end
+    bits.append(1)
+    bits.extend(((value >> (length - 1 - k)) & 1) ^ 1 for k in range(length))
+    bits.extend((255 >> k) & 1 for k in range(8))
+    out = bytearray([0, dictbits])
+    for at in range(0, len(bits), 8):
+        out.append(sum(bit << k for k, bit in enumerate(bits[at:at + 8])))
+    assert savdiff.explode(bytes(out)) == bytes(data)
+    return bytes(out)
+
+
+VARS_FLOOR, VARS_MOVING, VARS_SHOWN, VARS_PARTY, VARS_ENEMY, VARS_PLACE, VARS_OPENED = 0x1600, 0x15A5, 0x16D1, 0x16D2, 0x16D3, 0x1675, 0x168F
+
+
+def battle_level(level: int, spots: list[tuple[int, int]], groups: tuple[int, ...]):
+    """A game saved in a battle moved to another level of the same battlefield: the party's slots 0..3 stand at <spots> on level <level>
+    (their records' position and destination, action 0, screen place 0, 0), and the battle file's floor shown, party floor, enemies' floor and the members'
+    floors (BattleVariables FloorShown / PartyFloor / EnemyFloor / Floor) name that level, their moving flags and place actions cleared, and
+    the wall groups <groups> of that level count as opened (BattleVariables DoorsOpened, 2E38:0BB6: the level's hidden areas, which the battle
+    shows as void until a member walks in, R023 0000; the party's room must be one). The
+    levels themselves are the file's (a persistent battlefield saves every level). The .BSV's variables block is written back with
+    implode_literals, its header's first size word set to it."""
+    def edit(b: bytearray, bsv: bytearray) -> None:
+        import savdiff
+        n = struct.unpack_from("<H", b, 0xF1)[0]
+        for k in range(n):
+            base = HEAD_END + k * CHAR
+            slot = b[base + 0x1C]
+            if slot < len(spots) and b[base + STATUS]:
+                x, y = spots[slot]
+                struct.pack_into("<hhhh", b, base + 4, x, y, x, y)
+                # the screen place (+0x00, +0x02) outside the view's margins: the battle's first tick then centres the view on the
+                # active member (R014+0x1065..0x10A7), as no centre is kept for the new level (DS:C866 / DS:C886 are 0 after a load)
+                struct.pack_into("<hh", b, base, 0, 0)
+                struct.pack_into("<H", b, base + 0x10, 0)
+        size = struct.unpack_from("<H", bsv, 0)[0]
+        block = bytes(bsv[0x2A:0x2A + size])
+        v = bytearray(savdiff.explode(block))
+        v[VARS_SHOWN] = v[VARS_PARTY] = v[VARS_ENEMY] = level
+        opened = struct.unpack_from("<I", v, VARS_OPENED + 4 * level)[0]
+        struct.pack_into("<I", v, VARS_OPENED + 4 * level, opened | sum(1 << g for g in groups))
+        for i in range(5):
+            v[VARS_FLOOR + i] = level
+            v[VARS_MOVING + i] = 0
+            v[VARS_PLACE + i] = 0
+        new = implode_literals(bytes(v), block[1])
+        bsv[:] = bsv[:0x2A] + new + bsv[0x2A + size:]
+        struct.pack_into("<H", bsv, 0, len(new))
+    return edit
+
+
+# the mine of Rammelsburg (battlefield 0x0B, DKSAVE99's mine quest of sort 0) as the original saved it in savemid-mine (DKSAVE2): level 3
+# (section 10) holds the dwarf king's riddle door (a wall alarm, card 0xD4 $MineT17, beyond it 0xE5 $MineB02) over the ladder to level 5;
+# the party in the closed room south of it (wall group 7; the ladder's cell is group 16). Level 6 (section 14) holds the stone box's door (a furniture alarm, card 0xE4 $MineB01), the party in its room (wall group 6).
+BATTLE_LEVELS = {"king": battle_level(3, [(1040, 140), (1008, 140), (1072, 140), (1040, 154)], (7,)),
+                 "stonebox": battle_level(6, [(976, 312), (944, 296), (944, 328), (944, 312)], (6,))}
+
+
 VARIANTS = {"dragonev": dragon_events, "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
             "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}
@@ -200,7 +277,13 @@ def main() -> None:
             if day is not None:
                 struct.pack_into("<H", b, 0x6C, day)
         VARIANTS[variant] = moved
-    if variant == "relics":
+    if variant in BATTLE_LEVELS:
+        # a game saved in a battle: the .BSV beside the source is edited too and written beside the target
+        bsv = bytearray(Path(source).with_suffix(".BSV").read_bytes())
+        BATTLE_LEVELS[variant](b, bsv)
+        Path(target).parent.mkdir(parents=True, exist_ok=True)
+        Path(target).with_suffix(".BSV").write_bytes(bytes(bsv))
+    elif variant == "relics":
         relics(b, Path(source).resolve().parent.parent / "DARKLAND.LST")           # the game folder's list, next to SAVES/
     else:
         VARIANTS[variant](b)
