@@ -19,9 +19,9 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: (none): 1, document: 1, justify: 40, keep: 11.
+- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 2, justify: 40, keep: 11.
 - Part B (undefined-memory in core logic): 152 entries; determinism: deterministic: 1, n/a: 83, no: 55, partly: 9, yes: 4.
-- Entries without a recommendation yet: 1.
+- Entries without a recommendation yet: 0.
 
 ## Work list
 
@@ -390,7 +390,7 @@ Each is a core-logic divergence where the C# does something the original does no
 - **D-63478f** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:426` `TacticalBattle.Resume`  
   original: `R014+0x0000` (0E76:0000, draft)  
   divergence: after an earlier battle of the same program the original's records 5..12 are that battle's enemies; here they are empty records (their kinds 5/6 and weapons are not kept).  
-  recommendation: **NEEDS REVIEW**
+  recommendation: **document** (checked against the original) - b32 (local/batch/b32/a7-l5): a battle taken up from a save starts from the program's DS:A532 modifiers; records 5..12 of an earlier battle of the same program are not kept (the original's are that battle's enemies, R002+0x1830 clears only their status). Effect only when such an enemy's modifier was still running at that battle's end and a battle save is then loaded in the same program: its weapon-ready at the first tick writes another walking file name into a slot. Fresh programs (the common case, session dungeon-king-ladder) agree.
 
 #### deliberate-fix (3)
 
