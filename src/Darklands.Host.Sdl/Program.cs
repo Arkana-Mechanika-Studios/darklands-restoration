@@ -253,6 +253,12 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
         host.TextFont = Darklands.Platform.TextFont.Load(textFont);
     }
     var files = new GameFiles(folder);
+    // a DARKLAND.EXE whose tables this program cannot read (the German release ...): back to the launcher, which says so,
+    // instead of a game that ends at the first screen that reads them
+    if (Darklands.Content.Formats.Exe.ExeVersion.Problem(files.Read("DARKLAND.EXE")) is { } exeProblem)
+    {
+        throw new InvalidDataException(exeProblem);
+    }
     if (settings.ConfigDrk is { } config)
     {
         // the game and the sound selection then read these words as CONFIG.DRK's
