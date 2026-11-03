@@ -15,6 +15,10 @@ namespace Darklands.Audio.Packs;
 /// <item>A replaced effect mutes the game's sound while the replacement plays (an unreplaced effect that sounds at the same
 /// time is muted with it).</item>
 /// <item>Pause (2) holds the replacements, resume (3) goes on; 5 and 7 change nothing.</item>
+/// <item>Music per card (<see cref="AudioKind.Card"/> requests, noted when the game shows a card): a card with music in the pack
+/// starts it, in place of the game's piece (which plays on, muted, in the drivers); the next card with the same file keeps it
+/// playing; a card without one hands back the game's current piece (its replacement if the pack has one, else the drivers' own);
+/// a battle, or the game's own stop, silence or reset, ends it. The game's pieces asked for meanwhile are only remembered.</item>
 /// </list>
 /// New code (replacement sound, not part of the game).
 /// </remarks>
@@ -32,6 +36,9 @@ public sealed class PackMixer : IPcmSource
     private readonly List<Voice> _fading = new();
     private float[] _mix = [];
     private Voice? _music;
+    private Voice? _card;
+    private string? _cardPath;
+    private int _lastPiece;
     private bool _musicOwned;
     private bool _battle;
     private bool _paused;
@@ -125,6 +132,11 @@ public sealed class PackMixer : IPcmSource
 
     private void Carry(AudioKind kind, int number)
     {
+        if (kind == AudioKind.Card)
+        {
+            CarryCard(number);
+            return;
+        }
         if (kind == AudioKind.Effect)
         {
             if (!_battle)
@@ -132,6 +144,8 @@ public sealed class PackMixer : IPcmSource
                 // the battle driver replaces the towns-and-map driver: its music ends
                 _battle = true;
                 StopMusic(SwitchSeconds);
+                StopCard(SwitchSeconds);
+                _lastPiece = 0;
                 _musicOwned = false;
             }
             if (_pack.Find(AudioKind.Effect, number) is { } effect)
@@ -154,9 +168,13 @@ public sealed class PackMixer : IPcmSource
         {
             case GameSounds.Stop:
                 StopMusic(StopSeconds);
+                StopCard(StopSeconds);
+                _lastPiece = 0;
                 break;
             case GameSounds.Reset or GameSounds.Silence:
                 StopMusic(SwitchSeconds);
+                StopCard(SwitchSeconds);
+                _lastPiece = 0;
                 break;
             case GameSounds.Pause:
                 _paused = true;
@@ -167,8 +185,14 @@ public sealed class PackMixer : IPcmSource
             case GameSounds.CurrentPiece or GameSounds.Ready or 4:
                 break;
             default:
-                StopMusic(SwitchSeconds);
+                _lastPiece = number;
                 _paused = false;
+                if (_card is not null)
+                {
+                    // a card's music owns the music: the game's piece plays on, muted, and comes back with the next card that has no music
+                    break;
+                }
+                StopMusic(SwitchSeconds);
                 if (_pack.Find(AudioKind.Music, number) is { } piece)
                 {
                     _music = Start(piece);
@@ -184,6 +208,46 @@ public sealed class PackMixer : IPcmSource
     }
 
     private Voice Start(AudioReplacement replacement) => new(_pack.ClipAsync(replacement, SampleRate), replacement.Loop, replacement.Volume);
+
+    /// <summary>A card is shown (<paramref name="card"/> -1: music is off, no card music).</summary>
+    private void CarryCard(int card)
+    {
+        if (card < 0 || _pack.FindCard(card) is not { } music)
+        {
+            if (_card is not null)
+            {
+                // a card without music: the game's own current piece again (its replacement from the start, if the pack has one)
+                StopCard(SwitchSeconds);
+                _musicOwned = false;
+                if (!_battle && _lastPiece != 0 && _pack.Find(AudioKind.Music, _lastPiece) is { } piece)
+                {
+                    _music = Start(piece);
+                    _musicOwned = true;
+                }
+            }
+            return;
+        }
+        if (_card is not null && _cardPath == music.Path)
+        {
+            return;     // the same file: it keeps playing, no restart
+        }
+        StopMusic(SwitchSeconds);
+        StopCard(SwitchSeconds);
+        _card = new Voice(_pack.ClipAsync(music.Path, SampleRate), music.Loop, music.Volume);
+        _cardPath = music.Path;
+        _musicOwned = true;
+        Replaced++;
+    }
+
+    private void StopCard(double seconds)
+    {
+        if (_card is { } card)
+        {
+            FadeOut(card, seconds);
+            _card = null;
+            _cardPath = null;
+        }
+    }
 
     private void StopMusic(double seconds)
     {
@@ -206,7 +270,7 @@ public sealed class PackMixer : IPcmSource
         _effects.RemoveAll(v => v.Finished);
         _fading.RemoveAll(v => v.Finished || v.Gain <= 0);
         // the game's sound is muted while a replacement owns it (a file that could not be read owns nothing)
-        var muted = (_musicOwned && !(_music?.Failed ?? false)) || _effects.Exists(v => !v.Failed);
+        var muted = (_musicOwned && !((_card ?? _music)?.Failed ?? false)) || _effects.Exists(v => !v.Failed);
         SourceMuted = muted;
         var target = muted ? 0f : 1f;
         var gainStep = (float)(1.0 / (MuteSeconds * SampleRate));
@@ -219,6 +283,7 @@ public sealed class PackMixer : IPcmSource
         if (!_paused)
         {
             _music?.AddTo(mix);
+            _card?.AddTo(mix);
             foreach (var voice in _effects)
             {
                 voice.AddTo(mix);

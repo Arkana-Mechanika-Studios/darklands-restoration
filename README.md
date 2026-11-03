@@ -65,7 +65,7 @@ AdLib, Sound Blaster, Sound Blaster Pro 2, MT-32 or CM-32L.
 
 A pack replaces pictures (PNG files) or music and battle sounds (OGG, WAV or General MIDI files) without changing how the game plays.
 Put a pack's folder in the `packs` folder next to the program and choose it in the launcher's "HD pack" or "Audio pack"
-row (or drop the folder on the launcher). MIDI music needs a General MIDI SoundFont (`.sf2`) of your own, in a `SOUNDFONT` folder next to the program or chosen in the launcher's "SoundFont" row; none is included. The release comes with a small example, `packs/audio-pack-example` (generated
+row (or drop the folder on the launcher). A pack (or a mod) can also give music to a card of the game. MIDI music needs a General MIDI SoundFont (`.sf2`) of your own, in a `SOUNDFONT` folder next to the program or chosen in the launcher's "SoundFont" row; none is included. The release comes with a small example, `packs/audio-pack-example` (generated
 test tones). How to make your own, with the names of all the game's music and sounds: [`docs/PACKS.md`](docs/PACKS.md),
 also beside the program and linked from the launcher ("how to make a pack").
 

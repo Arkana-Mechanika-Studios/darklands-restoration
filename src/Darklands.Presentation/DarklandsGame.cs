@@ -577,6 +577,7 @@ public sealed class DarklandsGame
                     //   wilderness stay with the day's poaching risk (CampScreen.CampInTheWild)
                     // orig: the map is card 0x0C of the table: root 03A1:000A ends its pass as any card's (03A1:0442..0463): the previous-screen
                     //   word becomes 0x0C only after the map returns (a game saved on the map keeps the card before), then pass-hours(0)
+                    _ui.CardShown(card);
                     var afterMap = Travel(state, panel, context.Screens.CharacterSheet, screens.CampInTheWild);
                     if (CardDispatcher.IsBattle(afterMap))
                     {
@@ -600,6 +601,7 @@ public sealed class DarklandsGame
                     state.CurrentCard = FightTheBattle(state, context, battles, card);
                     continue;
                 }
+                _ui.CardShown(card);
                 var next = _cards.RunCard(context);
                 if (CardDispatcher.IsBattle(next))
                 {

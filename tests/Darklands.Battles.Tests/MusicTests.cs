@@ -21,6 +21,11 @@ public sealed class MusicTests
 
         public List<int> Requests { get; } = [];
 
+        /// <summary>The read-only notices of the cards shown (IAudio.CardShown); never part of <see cref="Requests"/>.</summary>
+        public List<int> Cards { get; } = [];
+
+        public void CardShown(int card) => Cards.Add(card);
+
         public void PlayMusic(int tune) => PlayMusicNow(tune);
 
         public int PlayMusicNow(int tune)
@@ -162,6 +167,27 @@ public sealed class MusicTests
         Assert.Equal(0, host.Left);
         // the inn's draw gave 10; the map's draw 0x13; command 5 on the map answers the street's 6, in the camp the map's 0x13
         Assert.Equal([0x0A, 6, 8, 6, 0x0B, 6, 5, 0x13, 5, 0x15, 0x13], audio.Requests);
+        // each card shown was noticed (the map is card 12), and the notices changed nothing of the requests above
+        Assert.Contains(0x0C, audio.Cards);
+        Assert.True(audio.Cards.Count > 6);
+        Assert.All(audio.Cards, c => Assert.InRange(c, 0, 365));
+    }
+
+    /// <summary>The card notice carries the card, or -1 with music off (no card music then); it is not a driver request.</summary>
+    [Fact]
+    public void TheCardNoticeCarriesTheCardOrMinusOneWithMusicOff()
+    {
+        var audio = new MusicRecorder();
+        var host = new StepHost(audio, "wait:2", "key:esc", "wait:5");
+        if (Start(host) is not var (ui, _, _, _))
+        {
+            return;
+        }
+        ui.CardShown(29);
+        ui.Options.Music = false;
+        ui.CardShown(29);
+        Assert.Equal([29, -1], audio.Cards);
+        Assert.Empty(audio.Requests);
     }
 
     internal static (GameUi Ui, GameState State, PartyPanel Panel, WorldData World)? Start(IHost host)

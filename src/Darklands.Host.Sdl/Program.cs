@@ -262,7 +262,10 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     var audioTrace = Environment.GetEnvironmentVariable("DARKLANDS_AUDIO_TRACE") is { Length: > 0 } tracePath
         ? TextWriter.Synchronized(new StreamWriter(tracePath) { AutoFlush = true })
         : null;
-    using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.AudioPack, settings.SoundFont, settings.CommandLine, audioTrace);
+    // the pack that carries the sound pack's and the mods' music per card (docs/PACKS.md, docs/MODS.md); null without audio
+    AudioPack? soundPack = null;
+    using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.AudioPack, settings.SoundFont, settings.CommandLine, audioTrace,
+        settings.Mods.Count > 0, pack => soundPack = pack);
     var game = new DarklandsGame(host, files)
     {
         ShowStartUp = settings.ShowBanner,
@@ -293,9 +296,22 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
             }
         }
         game.Mods = Darklands.Simulation.Mods.ModSet.Load(modFolders.Select(ModFolders.Read), Console.Error.WriteLine, game.Ui.Assets.IsGameMessageFile);
+        // the played mods' cards that name music (a pack's own music for the same card wins)
+        if (soundPack is not null && game.Mods.Music.Any())
+        {
+            soundPack.AddModMusic(game.Mods.Music).ToList().ForEach(Console.Error.WriteLine);
+        }
     }
     using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version) : null;
     host.Console = console;
+    // what the sound pack could not use at the start (no SoundFont for its .mid music, a mod's missing music ...) is told in the console too
+    if (console is not null && soundPack is not null)
+    {
+        foreach (var problem in soundPack.Problems)
+        {
+            console.Console.Write(problem, Darklands.DevConsole.ConsoleLineKind.Error);
+        }
+    }
     using var corner = new CornerText(() => game.OnStartScreen ? "v" + version : null);
     host.Corner = corner;
     game.Options.Apply(settings);
@@ -316,7 +332,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
 
 // The game's sound (chosen by Darklands.Audio.Mt32.SoundSelection, as any host does) through an SDL audio device.
 static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, string? romFolder, string? audioPack, string? soundFont,
-    IReadOnlyList<string> commandLine, TextWriter? trace)
+    IReadOnlyList<string> commandLine, TextWriter? trace, bool modsMayHaveMusic, Action<AudioPack> onPack)
 {
     var output = SdlAudioOutput.TryOpen(out var error);
     if (output is null)
@@ -353,11 +369,20 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
     {
         var pack = AudioPack.Load(audioPack, soundFont);
         pack.Problems.ToList().ForEach(p => Console.Error.WriteLine(p));
-        Console.WriteLine($"Sound: audio pack {pack.Folder}, {pack.Count} replacement(s)");
+        Console.WriteLine($"Sound: audio pack {pack.Folder}, {pack.Count} replacement(s), {pack.CardMusics.Count()} card(s) with music");
         var reported = pack.Problems.Count;
         // the files that cannot be decoded are reported when the preload has tried them
         _ = pack.PreloadAsync(output.SampleRate).ContinueWith(_ => pack.Problems.Skip(reported).ToList().ForEach(p => Console.Error.WriteLine(p)), TaskScheduler.Default);
         mixer = new PackMixer(pack, output.SampleRate);
+        onPack(pack);
+    }
+    else if (modsMayHaveMusic)
+    {
+        // no audio pack, but a mod may name music for its cards: an empty pack carries it
+        var pack = AudioPack.ForMods(soundFont);
+        pack.Problems.ToList().ForEach(p => Console.Error.WriteLine(p));
+        mixer = new PackMixer(pack, output.SampleRate);
+        onPack(pack);
     }
     var audio = sound.Start(files, mixer is null ? output : new PackOutput(output, mixer), traced);
     IAudio played = audio;
@@ -495,6 +520,9 @@ sealed file class TracedCalls(IAudio audio, IGameTimer timer, TextWriter trace) 
         trace.WriteLine($"call current gives {ax}");
         return ax;
     }
+
+    // a read-only notice for a sound pack: not a driver call, so it is not traced
+    public void CardShown(int card) => audio.CardShown(card);
 }
 
 /// <summary>Whether the game got as far as running (a failure before is a failed start, shown on the launcher).</summary>

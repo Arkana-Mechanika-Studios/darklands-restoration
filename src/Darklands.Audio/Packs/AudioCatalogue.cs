@@ -5,6 +5,9 @@ public enum AudioKind
 {
     Music,
     Effect,
+
+    /// <summary>A card shown (the number is the card's; -1 for a card without music): a pack's music per card, not a driver's number.</summary>
+    Card,
 }
 
 /// <summary>One piece of music or battle effect, by a stable name a pack can use.</summary>

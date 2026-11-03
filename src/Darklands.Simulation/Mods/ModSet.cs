@@ -169,6 +169,10 @@ public sealed class ModSet
             .Select(c => c.Number)
             .Distinct();
 
+    /// <summary>The music files of the played mods' cards, in load order (a later mod's card of the same number comes later): docs/MODS.md "music".</summary>
+    public IEnumerable<(int Card, string Path)> Music =>
+        _played.SelectMany(m => m.Cards.Where(c => c.MusicPath is not null).Select(c => (c.Number, c.MusicPath!)));
+
     /// <summary>The played mods' marks for a saved game (id, name, version), one per mod with a registered card.</summary>
     public IReadOnlyList<Core.ModMark> Marks => Cards.Mods.Select(m => new Core.ModMark(m.Id, m.Name, m.Version)).ToList();
 }

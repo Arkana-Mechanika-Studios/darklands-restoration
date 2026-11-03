@@ -240,6 +240,10 @@ public sealed class GameUi
         Audio.PlayMusic(Darklands.Audio.GameSounds.MusicNumber(tune, Options.Music));
     }
 
+    /// <summary>Notes that a card is about to be shown, for a sound pack's music per card; -1 when music is off. Read-only: the game never reads it back.</summary>
+    // New code (replacement sound, not part of the game): no original code; IAudio.CardShown does nothing without a pack
+    public void CardShown(int card) => Audio.CardShown(Options.Music ? card : -1);
+
     /// <summary>music-start(5): the number of the piece playing (with music off the stop is played instead and its AX given).</summary>
     // orig: thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) matched; its callers keep the AX the driver left (GameSounds.CurrentPiece)
     public int MusicPlaying()

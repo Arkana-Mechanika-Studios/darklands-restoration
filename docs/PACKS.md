@@ -162,6 +162,41 @@ win over the file names. `volume` at the top scales every cue (0 to 4, 1 is the 
 
 Comments and trailing commas are allowed; paths are relative to the pack folder.
 
+### Music per card
+
+A sound pack can also give music to a **card**, a scene of the game (an inn, a city gate, the map: the numbers are
+those of `src/Darklands.Cards/CardTable.cs`, 0 to 365, with 12 the map). Put the card's number in hexadecimal in the
+pack's `pack.json`, after `card:`, and name a file: any `.ogg`, `.wav` or `.mid`, anywhere in the pack, called anything.
+The same value forms as `audio.json`: a file, or `{ "file", "loop", "volume" }` (a card's music repeats unless
+`"loop": false`).
+
+```json
+{
+  "card:29": "music/party-at-the-inn.ogg",
+  "card:0C": { "file": "map.mid", "volume": 0.8 },
+  "soundfont": "fonts/gm.sf2"
+}
+```
+
+(`card:29` is card 41, the party at the inn, shown when a new game starts.) A mod can name music for its own cards
+([MODS.md](MODS.md#music-music)); where a pack and a mod name the same card, the pack wins.
+
+The rules:
+
+* The file starts when the card is shown, and plays in place of the game's piece. The game's piece goes on underneath,
+  muted, as with every replacement, and what the game asks for meanwhile is only remembered.
+* The next card with the same file keeps it playing, without a restart. A card with another file changes to it.
+* A card without a file brings the game's own current piece back (its replacement from `audio.json`, if the pack has
+  one, else the original), the way the saint-prayer piece hands back.
+* A battle ends it, as it ends the game's music. So does the game's own stop, silence or reset of its music.
+* With music off in the game's options, no card music plays.
+* Alt-P (pause) holds it; resume goes on.
+* Loading a saved game shows its card again, so its music starts again; nothing is kept in the saved game.
+
+The game gives the audio a read-only notice "this card is shown (number)" and nothing in the game reads anything back,
+so the game does the same with or without card music. A `.mid` is rendered through the SoundFont when its card first
+shows (the previous section); files named by `pack.json` are not reported as unknown cues.
+
 ### The example pack
 
 [`docs/audio-pack-example`](audio-pack-example) (in a release: `packs/audio-pack-example` next to the program)

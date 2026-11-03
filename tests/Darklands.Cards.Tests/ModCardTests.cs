@@ -366,6 +366,55 @@ public sealed class ModCardTests
         Assert.False(assets.IsGameMessageFile("$Shrin00"));
     }
 
+    private const string MusicCard = """{ "number": 366, "savesAs": 2, "music": "MUSIC", "pages": [ { "text": "x", "next": 2 } ] }""";
+
+    [Fact]
+    public void ACardMayNameMusicOfTheModAndTheSetListsItInLoadOrder()
+    {
+        var first = ModWith("""{ "cards": [] }""", "mod-first");
+        File.WriteAllBytes(Path.Combine(first, "tune.ogg"), [1]);
+        Directory.CreateDirectory(Path.Combine(first, "sub"));
+        File.WriteAllBytes(Path.Combine(first, "sub", "other.MID"), [1]);
+        File.WriteAllText(Path.Combine(first, ModFolder.ManifestName), """
+            { "cards": [
+              { "number": 366, "savesAs": 2, "music": "tune.ogg", "pages": [ { "text": "x", "next": 2 } ] },
+              { "number": 367, "savesAs": 2, "name": "$ModMus1", "music": "sub/other.MID", "pages": [ { "text": "y", "next": 2 } ] },
+              { "number": 368, "savesAs": 2, "name": "$ModMus2", "pages": [ { "text": "z", "next": 2 } ] } ] }
+            """);
+        var mod = ModFolder.Parse(first, "mod-first", File.ReadAllText(Path.Combine(first, ModFolder.ManifestName)));
+        Assert.Empty(mod.Problems);
+        Assert.Equal([Path.Combine(first, "tune.ogg"), Path.Combine(first, "sub", "other.MID"), null], mod.Cards.Select(c => c.MusicPath));
+        var set = LoadMods(first);
+        Assert.Equal([(366, Path.Combine(first, "tune.ogg")), (367, Path.Combine(first, "sub", "other.MID"))], set.Music);
+        Assert.Empty(ModSet.None().Music);
+    }
+
+    [Theory]
+    [InlineData("../outside.ogg", "outside the mod's folder")]
+    [InlineData("notes.txt", "must be a .ogg, .wav or .mid file")]
+    public void MusicOutsideOrNotASoundIsAProblemAndTheModIsNotPlayed(string music, string problem)
+    {
+        var folder = ModWith("""{ "cards": [] }""", "mod-music");
+        File.WriteAllText(Path.Combine(folder, "notes.txt"), "x");
+        File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(folder)!, "outside.ogg"), [1]);
+        var json = $$"""{ "cards": [ {{MusicCard.Replace("MUSIC", music)}} ] }""";
+        var mod = ModFolder.Parse(folder, "mod-music", json);
+        Assert.Empty(mod.Cards);
+        Assert.Contains(mod.Problems, p => p.Contains(problem));
+        Assert.Contains(ModFolder.Parse(folder, "mod-music", """{ "cards": [ { "number": 366, "savesAs": 2, "music": 5, "pages": [ { "text": "x", "next": 2 } ] } ] }""").Problems,
+            p => p.Contains("\"music\" must name a sound file"));
+    }
+
+    [Fact]
+    public void AModWithoutMusicIsAsBefore()
+    {
+        var folder = ModWith("""{ "cards": [] }""", "mod-quiet");
+        var mod = ModFolder.Parse(folder, "mod-quiet", """{ "cards": [ { "number": 366, "savesAs": 2, "pages": [ { "text": "x", "next": 2 } ] } ] }""");
+        Assert.Empty(mod.Problems);
+        Assert.Null(Assert.Single(mod.Cards).MusicPath);
+        Assert.Empty(LoadMods(folder).Music);
+    }
+
     [Fact]
     public void AModIsFoundByNameInAModsFolderNextToTheGame()
     {

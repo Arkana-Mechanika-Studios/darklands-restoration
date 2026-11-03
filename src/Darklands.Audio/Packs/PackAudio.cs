@@ -58,6 +58,13 @@ public sealed class PackAudio(IAudio inner, IGameTimer? timer, PackMixer mixer) 
         return ax;
     }
 
+    /// <summary>A card is about to be shown (-1: music is off): noted for the mixer at the tick the drivers would carry a request out; the drivers never see it.</summary>
+    public void CardShown(int card)
+    {
+        inner.CardShown(card);
+        mixer.Request(When(), AudioKind.Card, card);
+    }
+
     /// <summary>The tick the drivers carry a request out at (their RequestTick: the ticks heard plus the output's latency).</summary>
     private long When() => timer?.RequestTick ?? long.MinValue;
 }

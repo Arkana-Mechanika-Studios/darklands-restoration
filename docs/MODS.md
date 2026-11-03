@@ -69,7 +69,19 @@ Comments (`//`, `/* */`) and trailing commas are allowed.
 | `savesAs` | **new cards only, required**: the game's card a saved game names in this card's place (below) |
 | `name` | the card's text name, 1 to 12 characters without spaces (`"$Shrin00"`), not one of the game's; default `$Mod<number>` |
 | `picture` | a card picture: its number (the list in `src/Darklands.Cards/PictureNames.cs`, e.g. 4 is `aproch1`, a city gate) or its name; default: none (an override takes the picture of the card it replaces) |
+| `music` | a sound file of the mod (`.ogg`, `.wav` or `.mid`, relative to the mod's folder) that plays while the card is shown, in place of the game's piece (below) |
 | `pages` | the card's pages, the first one first |
+
+### Music (`music`)
+
+A card may name a piece of music of the mod's own: `"music": "sound/shrine.ogg"`. It plays while the card is shown, in
+place of the game's piece, under the rules of [PACKS.md](PACKS.md#music-per-card): it starts when the card shows, the
+next card with the same file keeps it playing, a card without music brings the game's piece back, a battle ends it,
+music off in the game's options means none, and Alt-P holds it. A `.mid` file is played through the SoundFont
+([PACKS.md](PACKS.md#midi-files-and-the-soundfont)); without one it is skipped. The file must be inside the mod's
+folder; it is only played, never run. A [sound pack](PACKS.md) that maps the same card (`"card:<hex number>"` in its
+`pack.json`) wins over the mod's music; of two mods the later one wins. Nothing of this goes into saved games: loading
+a game shows its card again and its music starts again. The music works with or without a sound pack.
 
 ### Pages
 
@@ -133,6 +145,8 @@ the game starts without it:
 * a value of the wrong type (`"number": "400"` instead of `400`, `"hours": "1"`), JSON that cannot be read;
 * a page that leads nowhere, a missing `next`, a character the game's font lacks;
 * a card the rules above refuse (a new card without `savesAs`, a game number without `"overrides": true` ...);
+* a `music` that is not a text, names a file outside the mod's folder, or is not `.ogg`, `.wav` or `.mid` (a file that is simply
+  not there only gives a line and the game's own music: the sound is not part of the mod's rules);
 * two cards of the mod with the same `name` (compared without regard to case);
 * a card `name` that is one of the game's message files (also the game's spare texts that no card uses) or another mod's
   card name;

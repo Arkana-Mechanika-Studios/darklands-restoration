@@ -113,6 +113,15 @@ public interface IAudio
     /// <summary>Driver command 5: the number last played (the driver's word [CA60h] in ASOUND.DC); −1 without a driver.</summary>
     // orig: root 047C:078A asm - number 5 is not stored: it returns the last number stored (ASOUND.DC image 20D0h..20D8h)
     int RequestCurrentPiece() => PlayMusicNow(5);
+
+    /// <summary>
+    /// A notice that the game is about to show a card (its number; -1 when music is off), for a sound pack's music per card
+    /// (docs/PACKS.md). Read-only: nothing in the game reads it back, the drivers never see it and no game state changes.
+    /// </summary>
+    // New code (replacement sound, not part of the game): the original has no such call; the default does nothing
+    void CardShown(int card)
+    {
+    }
 }
 
 /// <summary>Real time.</summary>

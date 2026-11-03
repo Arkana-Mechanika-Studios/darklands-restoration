@@ -6,7 +6,7 @@ using Darklands.Content;
 namespace Darklands.Simulation.Mods;
 
 /// <summary>One card of a mod.json, read and checked, not yet registered.</summary>
-public sealed record DataCardDefinition(int Number, string Name, bool Overrides, int? SavesAs, string Picture, IReadOnlyList<DataPage> Pages, MessageFile Texts);
+public sealed record DataCardDefinition(int Number, string Name, bool Overrides, int? SavesAs, string Picture, IReadOnlyList<DataPage> Pages, MessageFile Texts, string? MusicPath = null);
 
 /// <summary>
 /// A mod: a folder with a mod.json that names it and describes its cards (docs/MODS.md). Reading it never runs anything
@@ -88,7 +88,7 @@ public sealed class ModFolder
             var index = 0;
             foreach (var element in list.EnumerateArray())
             {
-                var reader = new CardReader(id, index++);
+                var reader = new CardReader(id, index++, folder);
                 if (reader.Read(element) is { } card)
                 {
                     if (cards.Any(c => c.Number == card.Number))
@@ -125,7 +125,7 @@ public sealed class ModFolder
         e.TryGetProperty(key, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
 
     /// <summary>Reads one card, collecting its problems; a card with any problem is not returned.</summary>
-    private sealed class CardReader(string mod, int index)
+    private sealed class CardReader(string mod, int index, string folder)
     {
         public List<string> Problems { get; } = [];
 
@@ -179,6 +179,25 @@ public sealed class ModFolder
             {
                 return Fail("\"picture\" must be a picture number or a picture name");
             }
+            string? music = null;
+            if (card.TryGetProperty("music", out var m))
+            {
+                if (m.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(m.GetString()))
+                {
+                    return Fail("\"music\" must name a sound file of the mod (.ogg, .wav or .mid)");
+                }
+                var root = Path.GetFullPath(folder).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+                var file = Path.GetFullPath(Path.Combine(folder, m.GetString()!));
+                if (!file.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+                {
+                    return Fail($"\"music\" {m.GetString()} is outside the mod's folder");
+                }
+                if (Path.GetExtension(file).ToLowerInvariant() is not (".ogg" or ".wav" or ".mid" or ".midi"))
+                {
+                    return Fail("\"music\" must be a .ogg, .wav or .mid file");
+                }
+                music = file;
+            }
             if (!card.TryGetProperty("pages", out var pageList) || pageList.ValueKind != JsonValueKind.Array || pageList.GetArrayLength() == 0)
             {
                 return Fail("needs a \"pages\" list with at least one page");
@@ -205,7 +224,7 @@ public sealed class ModFolder
                     return Fail($"a page leads to \"{to.Id}\", which is not a page of this card (nor original or previous)");
                 }
             }
-            return new DataCardDefinition(number, name, overrides, savesAs, picture, pages, new MessageFile(name, blocks));
+            return new DataCardDefinition(number, name, overrides, savesAs, picture, pages, new MessageFile(name, blocks), music);
         }
 
         private static IEnumerable<CardTarget> Targets(DataPage page) =>

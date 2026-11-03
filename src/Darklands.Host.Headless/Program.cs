@@ -175,13 +175,19 @@ if (hdPackStep is not null)
     ScriptedHost.HdScale = hdScaleStep is null ? 4 : int.Parse(hdScaleStep, System.Globalization.CultureInfo.InvariantCulture);
 }
 var audioPackStep = TakeStep("audiopack:") ?? resolved.AudioPack;
+var soundFontStep = TakeStep("soundfont:") ?? resolved.SoundFont;
+if (audioPackStep is null && steps.Any(s => s.StartsWith("mod:", StringComparison.Ordinal)))
+{
+    // a mod may name music for its cards: an empty pack carries it
+    ScriptedHost.ReplacementSound = AudioPack.ForMods(soundFontStep);
+}
 if (audioPackStep is not null)
 {
-    var pack = AudioPack.Load(audioPackStep, TakeStep("soundfont:") ?? resolved.SoundFont);
+    var pack = AudioPack.Load(audioPackStep, soundFontStep);
     // decoded (and the .mid files rendered) before the run, so that a scripted run always mixes the same samples
     pack.PreloadAsync(HeadlessSound.Rate, includeMidi: true).GetAwaiter().GetResult();
     pack.Problems.ToList().ForEach(Console.Error.WriteLine);
-    Console.Error.WriteLine($"audio pack: {pack.Folder}, {pack.Count} replacement(s)");
+    Console.Error.WriteLine($"audio pack: {pack.Folder}, {pack.Count} replacement(s), {pack.CardMusics.Count()} card(s) with music");
     ScriptedHost.ReplacementSound = pack;
 }
 var host = new ScriptedHost(steps, output);
@@ -389,6 +395,12 @@ if (modSteps.Count > 0)
         }
     }
     game.Mods = Darklands.Simulation.Mods.ModSet.Load(modFolders.Select(Darklands.Content.ModFolders.Read), Console.Error.WriteLine, game.Ui.Assets.IsGameMessageFile);
+    // the played mods' cards that name music (a pack's own music for the same card wins); rendered before the run, as the pack's files
+    if (ScriptedHost.ReplacementSound is { } soundPack && game.Mods.Music.Any())
+    {
+        soundPack.AddModMusic(game.Mods.Music).ToList().ForEach(Console.Error.WriteLine);
+        soundPack.PreloadAsync(HeadlessSound.Rate, includeMidi: true).GetAwaiter().GetResult();
+    }
 }
 if (savesStep is not null)
 {
@@ -903,6 +915,9 @@ internal sealed class LoggingAudio(IAudio inner, Action<string> write) : IAudio
     }
 
     public int RequestCurrentPiece() => PlayMusicNow(5);
+
+    // a read-only notice for a sound pack: not a driver call, so it is not logged
+    public void CardShown(int card) => inner.CardShown(card);
 }
 
 /// <summary>The game's sound drivers rendered in step with the scripted clock, to a .wav file and a trace.</summary>

@@ -6,6 +6,9 @@ namespace Darklands.Audio.Packs;
 /// <summary>One replacement of a pack: the file that plays instead of a cue, and how.</summary>
 public sealed record AudioReplacement(AudioCue Cue, string Path, bool Loop, float Volume);
 
+/// <summary>Music for a card: the file that plays while the card is shown, in place of the game's piece (pack.json "card:&lt;hex&gt;", or a mod card's "music").</summary>
+public sealed record CardMusic(int Card, string Path, bool Loop, float Volume);
+
 /// <summary>
 /// A folder of replacement music and battle effects (docs/PACKS.md): <c>.ogg</c> or <c>.wav</c> files named after the
 /// cues of <see cref="AudioCatalogue"/>, anywhere in the folder (<c>music/inn-1.ogg</c>, <c>battle-death.wav</c>,
@@ -33,14 +36,85 @@ public sealed class AudioPack
     private readonly ConcurrentDictionary<(string Path, int Rate), Lazy<Task<AudioClip?>>> _clips = new();
     private readonly List<string> _problems;
     private readonly Lock _gate = new();
+    private readonly Dictionary<int, CardMusic> _cards;
+    private readonly Dictionary<int, CardMusic> _modCards = [];
+    private readonly string? _programFolder;
     private Lazy<SoundFontBank?>? _soundFont;
 
-    private AudioPack(string? folder, Dictionary<(AudioKind, int), AudioReplacement> replacements, List<string> problems, string? soundFontPath = null)
+    private AudioPack(string? folder, Dictionary<(AudioKind, int), AudioReplacement> replacements, List<string> problems, string? soundFontPath = null,
+        Dictionary<int, CardMusic>? cards = null, string? programFolder = null)
     {
         Folder = folder;
         _replacements = replacements;
         _problems = problems;
         SoundFontPath = soundFontPath;
+        _cards = cards ?? [];
+        _programFolder = programFolder;
+    }
+
+    /// <summary>A pack with no files of its own, to carry the music of mod cards (<see cref="AddModMusic"/>) when no audio pack is set.</summary>
+    public static AudioPack ForMods(string? soundFont = null, string? programFolder = null)
+    {
+        var problems = new List<string>();
+        var found = SoundFontLocator.Find(null, null, soundFont, programFolder ?? AppContext.BaseDirectory, text => problems.Add("Audio pack: " + text));
+        return new AudioPack(null, [], problems, found, null, programFolder);
+    }
+
+    /// <summary>The cards that have music of their own: the pack's, and the mods' where the pack has none.</summary>
+    public IEnumerable<CardMusic> CardMusics
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return [.. _cards.Values.Concat(_modCards.Values.Where(m => !_cards.ContainsKey(m.Card))).OrderBy(m => m.Card)];
+            }
+        }
+    }
+
+    /// <summary>The music of a card, or null when the game's own piece plays; the pack's mapping wins over a mod's music for the same card.</summary>
+    public CardMusic? FindCard(int card)
+    {
+        if (_cards.TryGetValue(card, out var own))
+        {
+            return own;
+        }
+        lock (_gate)
+        {
+            return _modCards.GetValueOrDefault(card);
+        }
+    }
+
+    /// <summary>
+    /// Adds the music of mod cards (docs/MODS.md: "music" of a card); a pack's own mapping of the same card wins.
+    /// Returns what could not be used (a file that is not there, a .mid without a SoundFont), also kept in <see cref="Problems"/>.
+    /// </summary>
+    public IReadOnlyList<string> AddModMusic(IEnumerable<(int Card, string Path)> music)
+    {
+        var added = new List<string>();
+        var midi = 0;
+        lock (_gate)
+        {
+            foreach (var (card, path) in music)
+            {
+                if (!File.Exists(path))
+                {
+                    added.Add($"Audio pack: a mod's music for card {card} ({path}) not found; the game's own music plays");
+                    continue;
+                }
+                _modCards[card] = new CardMusic(card, path, true, 1f);
+                if (IsMidi(path))
+                {
+                    midi++;
+                }
+            }
+            if (midi > 0 && SoundFontPath is null)
+            {
+                added.Add(NoSoundFont(midi, _programFolder));
+            }
+            _problems.AddRange(added);
+        }
+        return added;
     }
 
     /// <summary>The SoundFont that plays the .mid cues (pack.json "soundfont", else the one chosen, else the default folder); null: none found.</summary>
@@ -91,6 +165,9 @@ public sealed class AudioPack
             problems.Add($"Audio pack: folder {full} not found; the game's own sound plays");
             return new AudioPack(full, replacements, problems);
         }
+        // pack.json: the SoundFont the pack names and the music of cards (those files may be called anything)
+        var (named, cards) = ReadPackManifest(full, problems);
+        var cardFiles = cards.Values.Select(c => c.Path).ToHashSet(StringComparer.OrdinalIgnoreCase);
         // sorted, so that two files of one cue resolve the same way on every disk (the first wins; .ogg before .wav, and a
         // recording before a .mid, which needs a SoundFont)
         var files = Directory.EnumerateFiles(full, "*", SearchOption.AllDirectories).Order(StringComparer.Ordinal).ToList();
@@ -103,6 +180,10 @@ public sealed class AudioPack
             }
             if (AudioCatalogue.Find(Path.GetFileNameWithoutExtension(path)) is not { } cue)
             {
+                if (cardFiles.Contains(path))
+                {
+                    continue;       // the music of a card, named in pack.json
+                }
                 problems.Add($"Audio pack: {Path.GetRelativePath(full, path)}: no cue of that name (docs/PACKS.md); ignored");
                 continue;
             }
@@ -116,49 +197,133 @@ public sealed class AudioPack
         {
             ReadManifest(full, manifest, replacements, problems);
         }
-        var soundFontPath = FindSoundFont(full, soundFont, programFolder, replacements, problems);
-        return new AudioPack(full, replacements, problems, soundFontPath);
+        var midi = replacements.Values.Count(r => IsMidi(r.Path)) + cards.Values.Count(c => IsMidi(c.Path));
+        var soundFontPath = FindSoundFont(full, named, soundFont, programFolder, midi, problems);
+        return new AudioPack(full, replacements, problems, soundFontPath, cards, programFolder);
     }
 
-    /// <summary>The SoundFont lookup (pack.json, then the player's choice, then the default folder); said once when .mid files have none.</summary>
-    private static string? FindSoundFont(string folder, string? chosen, string? programFolder, Dictionary<(AudioKind, int), AudioReplacement> replacements,
-        List<string> problems)
+    /// <summary>The sound files a card's music may be: recordings, or a MIDI file (which needs the SoundFont).</summary>
+    public static bool IsSoundFile(string path) => Path.GetExtension(path).ToLowerInvariant() is ".ogg" or ".wav" or ".mid" or ".midi";
+
+    /// <summary>pack.json's sound keys: "soundfont" and the "card:&lt;hex number&gt;" music of cards (docs/PACKS.md); the picture pack's "assets" is not read here.</summary>
+    private static (string? SoundFont, Dictionary<int, CardMusic> Cards) ReadPackManifest(string folder, List<string> problems)
     {
-        var midi = replacements.Values.Count(r => IsMidi(r.Path));
         var manifest = Path.Combine(folder, PackManifestName);
         string? named = null;
-        if (File.Exists(manifest))
+        var cards = new Dictionary<int, CardMusic>();
+        if (!File.Exists(manifest))
         {
-            try
+            return (named, cards);
+        }
+        void Problem(string text) => problems.Add($"Audio pack: {manifest}: {text}");
+        try
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(manifest), ManifestOptions);
+            if (document.RootElement.ValueKind != JsonValueKind.Object)
             {
-                using var document = JsonDocument.Parse(File.ReadAllText(manifest), ManifestOptions);
-                if (document.RootElement.ValueKind == JsonValueKind.Object && document.RootElement.TryGetProperty("soundfont", out var value))
+                return (named, cards);
+            }
+            foreach (var property in document.RootElement.EnumerateObject())
+            {
+                if (property.Name == "soundfont")
                 {
-                    if (value.ValueKind == JsonValueKind.String)
+                    if (property.Value.ValueKind == JsonValueKind.String)
                     {
-                        named = value.GetString();
+                        named = property.Value.GetString();
                     }
                     else
                     {
-                        problems.Add($"Audio pack: {manifest}: \"soundfont\" must name a file; ignored");
+                        Problem("\"soundfont\" must name a file; ignored");
+                    }
+                }
+                else if (property.Name.StartsWith("card:", StringComparison.Ordinal))
+                {
+                    if (ReadCard(folder, property, Problem) is { } card)
+                    {
+                        cards[card.Card] = card;
                     }
                 }
             }
-            catch (Exception e) when (e is JsonException or IOException or UnauthorizedAccessException)
+        }
+        catch (Exception e) when (e is JsonException or IOException or UnauthorizedAccessException)
+        {
+            Problem(e.Message + "; ignored");
+        }
+        return (named, cards);
+    }
+
+    /// <summary>One "card:1D": a file, or { file, loop, volume } (a card's music repeats unless "loop": false).</summary>
+    private static CardMusic? ReadCard(string folder, JsonProperty entry, Action<string> problem)
+    {
+        if (!int.TryParse(entry.Name.AsSpan(5), System.Globalization.NumberStyles.AllowHexSpecifier, System.Globalization.CultureInfo.InvariantCulture, out var number)
+            || number is < 0 or > 0x7FFF)
+        {
+            problem($"\"{entry.Name}\": the card number must be hexadecimal, as in \"card:1D\"; ignored");
+            return null;
+        }
+        string? file = null;
+        var loop = true;
+        var volume = 1f;
+        if (entry.Value.ValueKind == JsonValueKind.String)
+        {
+            file = entry.Value.GetString();
+        }
+        else if (entry.Value.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var p in entry.Value.EnumerateObject())
             {
-                problems.Add($"Audio pack: {manifest}: {e.Message}; ignored");
+                switch (p.Name)
+                {
+                    case "file" when p.Value.ValueKind == JsonValueKind.String:
+                        file = p.Value.GetString();
+                        break;
+                    case "loop" when p.Value.ValueKind is JsonValueKind.True or JsonValueKind.False:
+                        loop = p.Value.GetBoolean();
+                        break;
+                    case "volume" when p.Value.TryGetSingle(out var v) && v is >= 0 and <= 4:
+                        volume = v;
+                        break;
+                    default:
+                        problem($"\"{entry.Name}\": \"{p.Name}\" ignored (file: a path, loop: true/false, volume: 0 to 4)");
+                        break;
+                }
             }
         }
+        if (string.IsNullOrWhiteSpace(file))
+        {
+            problem($"\"{entry.Name}\" must name a file or be {{ file, loop, volume }}; ignored");
+            return null;
+        }
+        var path = Path.GetFullPath(Path.Combine(folder, file));
+        if (!File.Exists(path))
+        {
+            problem($"\"{entry.Name}\": {path} not found; ignored");
+            return null;
+        }
+        if (!IsSoundFile(path))
+        {
+            problem($"\"{entry.Name}\": {file} is not a .ogg, .wav or .mid file; ignored");
+            return null;
+        }
+        return new CardMusic(number, path, loop, volume);
+    }
+
+    /// <summary>The SoundFont lookup (pack.json, then the player's choice, then the default folder); said once when .mid files have none.</summary>
+    private static string? FindSoundFont(string folder, string? named, string? chosen, string? programFolder, int midi, List<string> problems)
+    {
         var found = SoundFontLocator.Find(named, folder, chosen, programFolder ?? AppContext.BaseDirectory, text => problems.Add("Audio pack: " + text));
         if (found is null && midi > 0)
         {
-            problems.Add($"Audio pack: {midi} MIDI cue(s) need a SoundFont and none was found, so the game's own music plays for them. "
-                + $"Put a General MIDI .sf2 file in the {SoundFontLocator.FolderName} folder next to the program "
-                + $"({Path.Combine(programFolder ?? AppContext.BaseDirectory, SoundFontLocator.FolderName)}), choose one in the launcher (SoundFont row) "
-                + "or start with --soundfont <file> (docs/PACKS.md)");
+            problems.Add(NoSoundFont(midi, programFolder));
         }
         return found;
     }
+
+    private static string NoSoundFont(int midi, string? programFolder) =>
+        $"Audio pack: {midi} MIDI cue(s) need a SoundFont and none was found, so the game's own music plays for them. "
+        + $"Put a General MIDI .sf2 file in the {SoundFontLocator.FolderName} folder next to the program "
+        + $"({Path.Combine(programFolder ?? AppContext.BaseDirectory, SoundFontLocator.FolderName)}), choose one in the launcher (SoundFont row) "
+        + "or start with --soundfont <file> (docs/PACKS.md)";
 
     private static void ReadManifest(string folder, string manifest, Dictionary<(AudioKind, int), AudioReplacement> replacements,
         List<string> problems)
@@ -276,15 +441,19 @@ public sealed class AudioPack
     }
 
     /// <summary>The decoded file of a replacement at <paramref name="sampleRate"/>; null when it cannot be read (reported once).</summary>
-    public Task<AudioClip?> ClipAsync(AudioReplacement replacement, int sampleRate) =>
-        _clips.GetOrAdd((replacement.Path, sampleRate), key => new Lazy<Task<AudioClip?>>(() => Task.Run(() => Decode(key.Path, key.Rate)))).Value;
+    public Task<AudioClip?> ClipAsync(AudioReplacement replacement, int sampleRate) => ClipAsync(replacement.Path, sampleRate);
+
+    /// <summary>The decoded (or rendered) file at <paramref name="sampleRate"/>; null when it cannot be read (reported once).</summary>
+    public Task<AudioClip?> ClipAsync(string path, int sampleRate) =>
+        _clips.GetOrAdd((path, sampleRate), key => new Lazy<Task<AudioClip?>>(() => Task.Run(() => Decode(key.Path, key.Rate)))).Value;
 
     /// <summary>
     /// Decodes every recording of the pack on worker threads, so that a cue's first play does not wait for its file. A .mid is
     /// rendered the first time its cue is needed, unless <paramref name="includeMidi"/> (scripted runs, which must mix the same samples).
     /// </summary>
     public Task PreloadAsync(int sampleRate, bool includeMidi = false) =>
-        Task.WhenAll(_replacements.Values.Where(r => includeMidi || !IsMidi(r.Path)).Select(r => ClipAsync(r, sampleRate)));
+        Task.WhenAll(_replacements.Values.Select(r => r.Path).Concat(CardMusics.Select(m => m.Path)).Distinct()
+            .Where(p => includeMidi || !IsMidi(p)).Select(p => ClipAsync(p, sampleRate)));
 
     private AudioClip? Decode(string path, int sampleRate)
     {
