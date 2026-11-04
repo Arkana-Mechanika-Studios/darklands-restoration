@@ -189,6 +189,9 @@ The rules:
 * A card without a file brings the game's own current piece back (its replacement from `audio.json`, if the pack has
   one, else the original), the way the saint-prayer piece hands back.
 * A battle ends it, as it ends the game's music. So does the game's own stop, silence or reset of its music.
+* Ten cards silence the music as they open, so music given to them stops at once: 03 (city gate at night), 06 and 08
+  (main street, by day and at night), 09 and 0A (side street, by day and at night), 16 (market at night), 19 (city
+  square at night), 73 (before the city walls), 92 (the robber knight's men) and 115 (approaching a walled city).
 * With music off in the game's options, no card music plays.
 * Alt-P (pause) holds it; resume goes on.
 * Loading a saved game shows its card again, so its music starts again; nothing is kept in the saved game.
