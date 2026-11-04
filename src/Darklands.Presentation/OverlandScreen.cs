@@ -310,19 +310,28 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // C: `if (DS:290E++)` counts every pass with a vertical key, moved or not, and `if (DS:290E > 1) DS:290E = 0` resets it after the second: a vertical pixel needs two passes, and each pass pays for a step (1300) even when the marker did not move or was held by the border (`if (DS:8676 != 0) 1300(...)`).
     private StepResult MoveOnce(GameState state, OverlandTravel travel, int dx, int dy)
     {
+        // orig: each case clamps only the axis it moves and only on the side it moves to (left `if (DS:2866 < 0xB)`, right `> 0xF7`,
+        //   up `< 0xD`, down `> 0xB1`, R030+0x0CFE..0x0E5A), and the vertical clamp sits inside the moving branch: a pass that does not move
+        //   y does not clamp it, so a marker that world-map-start put below 0xB1 stays there until a vertical pixel is taken
         var x = _x + dx;
         var y = _y;
+        if (dx < 0)
+        {
+            x = _originX + Math.Max(x - _originX, 0xB);
+        }
+        else if (dx > 0)
+        {
+            x = _originX + Math.Min(x - _originX, 0xF7);
+        }
         if (dy != 0)
         {
             _verticalStep = !_verticalStep;
             if (!_verticalStep)
             {
                 y += dy;
+                y = dy < 0 ? _originY + Math.Max(y - _originY, 0xD) : _originY + Math.Min(y - _originY, 0xB1);
             }
         }
-        // orig: DS:2866 kept in [0xB, 0xF7] and DS:2868 in [0xD, 0xB1]: in the view
-        x = _originX + Math.Clamp(x - _originX, 0xB, 0xF7);
-        y = _originY + Math.Clamp(y - _originY, 0xD, 0xB1);
         _direction = DirectionNumber(dx, dy);
         _frame = (_frame + 1) % 8;
         var result = travel.Step(x, y);

@@ -88,6 +88,44 @@ public sealed class OverlandKeyTests
         Assert.Equal(["step d=1,0"], steps.Select(s => s[..10]));
     }
 
+    [Fact]
+    public void AMarkerBelowTheViewsBottomBoundKeepsItsRowUntilItMovesUp()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        // three presses of the up arrow, each on its own pass
+        int[][] frames = [[], [Keys.Up], .. Enumerable.Repeat(Array.Empty<int>(), 10), [Keys.Up], .. Enumerable.Repeat(Array.Empty<int>(), 10), [Keys.Up], .. Enumerable.Repeat(Array.Empty<int>(), 20)];
+        var host = new KeyHost(frames);
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        // near the map's bottom world-map-start puts the marker at y 180, below the 0xB1 the down case keeps it to
+        state.CurrentLocation = Core.GameState.Wilderness;
+        state.MapPosition = new Core.World.MapPosition(162, 928);
+        var map = new WorldMap(Content.Formats.Maps.WorldMapData.Decode(files.Read("DARKLAND.MAP")), state.Locations);
+        var steps = new List<string>();
+        var trace = OverlandScreen.Trace;
+        OverlandScreen.Trace = steps.Add;
+        try
+        {
+            new OverlandScreen(ui, new PartyPanel(ui.Assets), map).Travel(state);
+        }
+        catch (QuitGameException)
+        {
+        }
+        finally
+        {
+            OverlandScreen.Trace = trace;
+        }
+        // R030+0x0D34: the first up pass does not move and does not clamp (y stays 180); the second takes a pixel (179); the clamp to 0xD is
+        //   one-sided, so nothing pulls the marker to 0xB1
+        var views = steps.Where(s => s.StartsWith("step")).Select(s => s.Split(' ')[3]).Take(3).ToArray();
+        Assert.True(views.SequenceEqual(["130,180", "130,179", "130,179"]), string.Join(" | ", steps));
+    }
+
     /// <summary>A host whose frames give keys (a number) and the keyboard interrupt's make / break codes ("d:48" / "u:48").</summary>
     private sealed class HeldKeyHost(params object[][] frames) : IHost, IVideo, IInput, IClock
     {
