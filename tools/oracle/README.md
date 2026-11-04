@@ -111,6 +111,18 @@ expires (they are not in any recording's key either).
   reported as GAP / SKIP and are not credited.
 * `battle_calls_run.py` runs the three steps; `battle_calls_measure.py` counts the open outcomes of `branches-missed.csv` the agreeing runs reach.
 
+## Direct calls of the drawing: card text layout and panel bars
+
+The emulator loads no graphics driver, so a screen cannot be read back from it; instead the driver's entries are recorded with their
+arguments and the window's words (colour +0x0C, font +0x10) and drawn by the rewrite's own painter (map_draw.py does the same for the map).
+`text_calls.py <state> <out>` calls text-paint-wrapped root 0265:0134 and wrapped-text-size root 0265:0654 from a card-screen state
+(`world_calls.py capture`, e.g. `tyrnau`'s `inn`) with every .MSG text block and synthetic edge cases (`--part k/n` splits the inputs between
+runs); `panel_calls.py <state> <out>` calls member-gauge-bars root 0000:1A9C with generated member values. Their jobs go to
+`tests/Darklands.Rendering.Tests` (`DARKLANDS_TEXT_CALLS` / `DARKLANDS_PANEL_CALLS`, with `..._OUT` for results.tsv and side-by-side
+pictures: original | rewrite | differences in magenta): the recorded calls and the rewrite's CardTextLayout / PartyPanel are drawn on two
+screens and compared pixel by pixel, with the hot-spot table and the measured height; a difference a registered divergence explains is
+reported as EXPLAINED with its id. A sample of agreeing jobs is kept in the test project (`TextCalls/`).
+
 ## What new coverage gains: `cov_gain.py`
 
 `cov_gain.py --baseline <dir | branches-work> [--baseline ...] --new <cov dir> [--new ...] [--exclude <file of 'unit|state' lines>] [--open branches-missed.csv] [--out gained.json]`

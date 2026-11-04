@@ -19,6 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- jobs of tools/oracle/text_calls.py and panel_calls.py that agreed (batch 34): the original's recorded drawing calls -->
+    <None Include="TextCalls\*.json.gz" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Darklands.Content\Darklands.Content.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Presentation\Darklands.Presentation.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Rendering\Darklands.Rendering.csproj" />
