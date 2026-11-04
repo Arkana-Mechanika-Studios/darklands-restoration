@@ -60,6 +60,9 @@ public sealed class GenerationProcessMemory
     /// </summary>
     public (int Width, int Height)[]? PartySlotSizes { get; set; }
 
+    /// <summary>The party's door tables a new battle starts from (the program's battle file's; null: a fresh program's zeros).</summary>
+    public (int Door, int Side, bool Opens)[]? PartyDoors { get; set; }
+
     /// <summary>DS:C925 / DS:C978 / DS:C989 / DS:CA1B: the trigger whose alarm ended the last battle (x −1: none).</summary>
     public (int X, int Y, int Width, int Height) AlarmTrigger { get; set; } = (-1, 0, 0, 0);
 

@@ -422,6 +422,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             (Battle[i].HalfWidth, Battle[i].HalfHeight) = ProgramMemory.PartySizes?[i] ?? (0, 0);
+            // C: the door tables DS:C64C / DS:C6EF / DS:C678 are not set up for a new battle either: the last battle's values, or the
+            //   .BSV's after a load (the program's battle file); DoorAt changes them where a member stands in a doorway
+            (Battle[i].Door, Battle[i].DoorSide, Battle[i].DoorOpens) = ProgramMemory.PartyDoors?[i] ?? (0, 0, false);
         }
         if (keptPlaces is null)
         {

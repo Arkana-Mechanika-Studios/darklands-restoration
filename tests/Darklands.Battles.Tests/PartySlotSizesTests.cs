@@ -54,4 +54,27 @@ public sealed class PartySlotSizesTests
             Assert.Equal(2, t.Battle[i].HalfHeight);
         }
     }
+
+    // C: the party's door tables (DS:C64C / DS:C6EF / DS:C678) carry into a new battle (b35: the original's second battle of a run starts
+    //   with member 1's door 1 / side 1 from the first); a fresh program's are zeros
+    [Fact]
+    public void ANewBattleStartsFromThePartysDoorTablesAsTheyWere()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, kept) = BattleScreenTests.Start(GameFolder.Files, new BattleRequest(0x5E, 4545, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]),
+            s =>
+            {
+                var file = new BattleFile();
+                file.Variables[BattleVariables.MemberDoor + 1] = 1;
+                file.Variables[BattleVariables.MemberDoorSide + 1] = 1;
+                file.Variables[BattleVariables.MemberDoorOpens + 1] = 1;
+                s.BattleFile = file;
+            });
+        Assert.Equal((1, 1, true), (kept.Battle[1].Door, kept.Battle[1].DoorSide, kept.Battle[1].DoorOpens));
+        var (_, fresh) = BattleScreenTests.Start(GameFolder.Files, new BattleRequest(0x5E, 4545, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]));
+        Assert.Equal((0, 0, false), (fresh.Battle[1].Door, fresh.Battle[1].DoorSide, fresh.Battle[1].DoorOpens));
+    }
 }

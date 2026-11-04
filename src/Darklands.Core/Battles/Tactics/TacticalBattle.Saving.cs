@@ -33,7 +33,9 @@ public sealed partial class TacticalBattle
     // R024+0x059A and R014+0x0694 write the shown level's .flr/.atv when it changed (the levels are kept in memory here, so they are
     // always current); tests: BattleSaveTests
     // DIVERGENCE: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant
-    // tables' bytes left by earlier battles (slots not used since; the paths are kept, Combatant.Path), are this program's (zeros) for a battlefield made here.
+    // tables' bytes left by earlier battles or by a load's battle-reload (the paths are kept, Combatant.Path; so are the party's door tables,
+    // ProgramMemory.PartyDoors), are this program's (zeros, -1) for a battlefield made here. Such a table is read again by the next battle where
+    // nothing sets it first: the original's member 1 starts a second battle with door 1 / side 1 from the first (b35, dungeon-door-back).
     // DIVERGENCE: +0x15A3 (DS:A68F, the pointer shape in use) is a segment of a DOS memory block (the commonsp.img buffer R000 allocates)
     // plus an offset, the machine's memory layout: the file's value is kept (the restore reads it back; only a shape test compares it).
     // BUG: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never
