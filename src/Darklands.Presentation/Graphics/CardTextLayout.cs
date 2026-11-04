@@ -120,6 +120,10 @@ public sealed class CardTextLayout(TextPainter painter)
             }
         }
 
+        // DIVERGENCE: a text that ends right after a conditional marker (0x13, or a 0x01 whose passage is shown) has its terminating zero skipped by the
+        //   double advance, and the original reads on past the end into the leftovers of the shared buffer DS:9085 (whatever an earlier, longer string
+        //   left there: lines and option lines of another text, drawn and given hot spots); here the text ends at its end. Found by the direct calls of
+        //   text-paint-wrapped (tools/oracle/text_calls.py, batch 34: card $situa00 block 4 ends with 0x13).
         byte At(int i) => i >= 0 && i < text.Length ? text[i] : (byte)0;
 
         var more = true;
@@ -196,7 +200,9 @@ public sealed class CardTextLayout(TextPainter painter)
                 }
                 else if (c == Indent)
                 {
-                    indentWidth = painter.Measure(Printable(text, lineStart, count));
+                    // orig: text-paint-wrapped root 0265:0134 at 0265:0431..045F: the count bytes from the line's start copied raw, then text-width-px
+                    //   (root 0265:084E) of the copy, kept as a byte
+                    indentWidth = painter.Measure(Raw(text, lineStart, count));
                     resetAtLineEnd = false;
                     indentPending = true;
                 }
@@ -292,6 +298,9 @@ public sealed class CardTextLayout(TextPainter painter)
     public int MeasureHeight(byte[] text, int width, int leading) => MeasureHeight(text, width, new Settings { Leading = leading });
 
     /// <summary>The height of the text laid out with these settings (hidden option lines left out).</summary>
+    // DIVERGENCE: the C's second copy also breaks a word wider than the column in its own way, so for such a text its height is not the drawing
+    //   layout's (direct calls of root 0265:0654, batch 34: every height that differed outside conditional and option lines had a word wider than
+    //   the column); its callers measure texts whose words fit (the "???? ???? ????" of an away member in 0x1C pixels, the side window's hints).
     public int MeasureHeight(byte[] text, int width, Settings settings)
     {
         var scratch = new Canvas(new Platform.Screen());
@@ -299,7 +308,7 @@ public sealed class CardTextLayout(TextPainter painter)
         return EndY;
     }
 
-    // C: the width of the part of the line before the 0x1D marker is text-width-px of a copy of the raw bytes, control codes included (their glyph-width is whatever the driver gives them); here the control codes are left out, which is the same only if they have no width in the font.
+    // C: the width of the part of the line before the 0x1D marker is text-width-px of a copy of the raw bytes, control codes included (their glyph-width is whatever the driver gives them, TextPainter.Advance: the font's own widths for the codes it holds). Checked against the original by direct calls (tools/oracle/text_calls.py, batch 34): with font 0 (slot 1), whose table starts at code 0, leaving the codes out moved the indented lines of 26 texts.
     // C: glyph-width (drv+0x11A9) gives a code outside the font's first..last range no width: fonts 1 and 2 start at 0x1F, so in the card
     //   window's font the control codes take no room; font 0 starts at code 0 and gives them the widths of its table. checked against asm
     private static bool IsOptionMarker(byte c) => c is PlainOption or ItemOption or SaintOption or BattleOption;
@@ -315,6 +324,10 @@ public sealed class CardTextLayout(TextPainter painter)
         BattleOption => OptionKind.Battle,
         _ => OptionKind.Plain,
     };
+
+    /// <summary>The bytes text[from .. from+count) as they are, control codes included.</summary>
+    private static byte[] Raw(byte[] text, int from, int count) =>
+        from >= 0 && from < text.Length && count > 0 ? text.AsSpan(from, Math.Min(count, text.Length - from)).ToArray() : [];
 
     /// <summary>The visible characters of text[from .. from+count), control codes removed.</summary>
     private static byte[] Printable(byte[] text, int from, int count)
