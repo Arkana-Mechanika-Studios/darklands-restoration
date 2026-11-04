@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 58411,
-  "blocks_hit": 52903,
-  "functions": 8655,
+  "blocks": 58414,
+  "blocks_hit": 52996,
+  "functions": 8658,
   "outcomes": 43748,
-  "outcomes_hit": 36237,
+  "outcomes_hit": 36335,
   "runs": null
  },
  "acc-n0-01-c00": {
@@ -9302,6 +9302,366 @@
   "outcomes": 428,
   "outcomes_hit": 365,
   "runs": 60
+ },
+ "rc-a1": {
+  "blocks": 7121,
+  "blocks_hit": 4334,
+  "functions": 373,
+  "outcomes": 5668,
+  "outcomes_hit": 2578,
+  "runs": 5
+ },
+ "rc-bp1-0-0": {
+  "blocks": 1182,
+  "blocks_hit": 778,
+  "functions": 54,
+  "outcomes": 974,
+  "outcomes_hit": 554,
+  "runs": 218
+ },
+ "rc-bp1-0-1": {
+  "blocks": 1182,
+  "blocks_hit": 776,
+  "functions": 54,
+  "outcomes": 974,
+  "outcomes_hit": 545,
+  "runs": 208
+ },
+ "rc-bp1-1-0": {
+  "blocks": 2726,
+  "blocks_hit": 1682,
+  "functions": 140,
+  "outcomes": 2498,
+  "outcomes_hit": 1255,
+  "runs": 260
+ },
+ "rc-bp1-1-1": {
+  "blocks": 1915,
+  "blocks_hit": 1163,
+  "functions": 92,
+  "outcomes": 1834,
+  "outcomes_hit": 945,
+  "runs": 229
+ },
+ "rc-bp1-2-0": {
+  "blocks": 970,
+  "blocks_hit": 756,
+  "functions": 46,
+  "outcomes": 1058,
+  "outcomes_hit": 714,
+  "runs": 128
+ },
+ "rc-bp1-2-1": {
+  "blocks": 987,
+  "blocks_hit": 734,
+  "functions": 47,
+  "outcomes": 1076,
+  "outcomes_hit": 688,
+  "runs": 132
+ },
+ "rc-bp2-0-0": {
+  "blocks": 1182,
+  "blocks_hit": 790,
+  "functions": 54,
+  "outcomes": 974,
+  "outcomes_hit": 564,
+  "runs": 251
+ },
+ "rc-bp2-0-1": {
+  "blocks": 1182,
+  "blocks_hit": 786,
+  "functions": 54,
+  "outcomes": 974,
+  "outcomes_hit": 562,
+  "runs": 248
+ },
+ "rc-bp2-1-0": {
+  "blocks": 3778,
+  "blocks_hit": 2395,
+  "functions": 208,
+  "outcomes": 3526,
+  "outcomes_hit": 1818,
+  "runs": 410
+ },
+ "rc-bp2-1-1": {
+  "blocks": 4034,
+  "blocks_hit": 2531,
+  "functions": 228,
+  "outcomes": 3766,
+  "outcomes_hit": 1934,
+  "runs": 394
+ },
+ "rc-bp2-2-0": {
+  "blocks": 2120,
+  "blocks_hit": 1381,
+  "functions": 96,
+  "outcomes": 2004,
+  "outcomes_hit": 1095,
+  "runs": 140
+ },
+ "rc-bp2-2-1": {
+  "blocks": 1515,
+  "blocks_hit": 1000,
+  "functions": 80,
+  "outcomes": 1590,
+  "outcomes_hit": 878,
+  "runs": 138
+ },
+ "rc-bp3-0-0": {
+  "blocks": 1243,
+  "blocks_hit": 834,
+  "functions": 63,
+  "outcomes": 1032,
+  "outcomes_hit": 595,
+  "runs": 260
+ },
+ "rc-bp3-0-1": {
+  "blocks": 1182,
+  "blocks_hit": 794,
+  "functions": 54,
+  "outcomes": 974,
+  "outcomes_hit": 572,
+  "runs": 267
+ },
+ "rc-bp3-1-0": {
+  "blocks": 4019,
+  "blocks_hit": 2608,
+  "functions": 238,
+  "outcomes": 3736,
+  "outcomes_hit": 1968,
+  "runs": 437
+ },
+ "rc-bp3-1-1": {
+  "blocks": 3962,
+  "blocks_hit": 2647,
+  "functions": 237,
+  "outcomes": 3676,
+  "outcomes_hit": 2028,
+  "runs": 444
+ },
+ "rc-bp3-2-0": {
+  "blocks": 1457,
+  "blocks_hit": 979,
+  "functions": 88,
+  "outcomes": 1524,
+  "outcomes_hit": 849,
+  "runs": 152
+ },
+ "rc-bp3-2-1": {
+  "blocks": 1776,
+  "blocks_hit": 1166,
+  "functions": 94,
+  "outcomes": 1860,
+  "outcomes_hit": 1015,
+  "runs": 153
+ },
+ "rc-bp4-0-0": {
+  "blocks": 1243,
+  "blocks_hit": 827,
+  "functions": 63,
+  "outcomes": 1032,
+  "outcomes_hit": 587,
+  "runs": 246
+ },
+ "rc-bp4-0-1": {
+  "blocks": 1166,
+  "blocks_hit": 769,
+  "functions": 53,
+  "outcomes": 956,
+  "outcomes_hit": 550,
+  "runs": 240
+ },
+ "rc-bp4-1-0": {
+  "blocks": 3895,
+  "blocks_hit": 2570,
+  "functions": 232,
+  "outcomes": 3620,
+  "outcomes_hit": 1942,
+  "runs": 460
+ },
+ "rc-bp4-1-1": {
+  "blocks": 3845,
+  "blocks_hit": 2537,
+  "functions": 229,
+  "outcomes": 3578,
+  "outcomes_hit": 1974,
+  "runs": 436
+ },
+ "rc-bp4-2-0": {
+  "blocks": 1499,
+  "blocks_hit": 972,
+  "functions": 90,
+  "outcomes": 1570,
+  "outcomes_hit": 844,
+  "runs": 159
+ },
+ "rc-bp4-2-1": {
+  "blocks": 1416,
+  "blocks_hit": 961,
+  "functions": 77,
+  "outcomes": 1490,
+  "outcomes_hit": 856,
+  "runs": 151
+ },
+ "rc-bp5-0-0": {
+  "blocks": 1182,
+  "blocks_hit": 801,
+  "functions": 54,
+  "outcomes": 974,
+  "outcomes_hit": 581,
+  "runs": 246
+ },
+ "rc-bp5-0-1": {
+  "blocks": 1182,
+  "blocks_hit": 799,
+  "functions": 54,
+  "outcomes": 974,
+  "outcomes_hit": 577,
+  "runs": 223
+ },
+ "rc-bp5-1-0": {
+  "blocks": 3798,
+  "blocks_hit": 2530,
+  "functions": 220,
+  "outcomes": 3534,
+  "outcomes_hit": 1960,
+  "runs": 471
+ },
+ "rc-bp5-1-1": {
+  "blocks": 2666,
+  "blocks_hit": 1751,
+  "functions": 140,
+  "outcomes": 2420,
+  "outcomes_hit": 1325,
+  "runs": 396
+ },
+ "rc-bp5-2-0": {
+  "blocks": 1466,
+  "blocks_hit": 1017,
+  "functions": 87,
+  "outcomes": 1528,
+  "outcomes_hit": 893,
+  "runs": 155
+ },
+ "rc-bp5-2-1": {
+  "blocks": 1699,
+  "blocks_hit": 1132,
+  "functions": 92,
+  "outcomes": 1784,
+  "outcomes_hit": 983,
+  "runs": 155
+ },
+ "rc-bp6-0-0": {
+  "blocks": 1243,
+  "blocks_hit": 829,
+  "functions": 63,
+  "outcomes": 1032,
+  "outcomes_hit": 586,
+  "runs": 256
+ },
+ "rc-bp6-0-1": {
+  "blocks": 1182,
+  "blocks_hit": 788,
+  "functions": 54,
+  "outcomes": 974,
+  "outcomes_hit": 562,
+  "runs": 233
+ },
+ "rc-bp6-1-0": {
+  "blocks": 3940,
+  "blocks_hit": 2603,
+  "functions": 228,
+  "outcomes": 3666,
+  "outcomes_hit": 2013,
+  "runs": 437
+ },
+ "rc-bp6-1-1": {
+  "blocks": 3983,
+  "blocks_hit": 2565,
+  "functions": 233,
+  "outcomes": 3700,
+  "outcomes_hit": 1935,
+  "runs": 449
+ },
+ "rc-bp6-2-0": {
+  "blocks": 1107,
+  "blocks_hit": 774,
+  "functions": 74,
+  "outcomes": 1176,
+  "outcomes_hit": 686,
+  "runs": 147
+ },
+ "rc-bp6-2-1": {
+  "blocks": 1792,
+  "blocks_hit": 1174,
+  "functions": 95,
+  "outcomes": 1874,
+  "outcomes_hit": 1014,
+  "runs": 160
+ },
+ "rc-c1": {
+  "blocks": 6518,
+  "blocks_hit": 3764,
+  "functions": 374,
+  "outcomes": 4934,
+  "outcomes_hit": 2192,
+  "runs": 17
+ },
+ "rc-k1": {
+  "blocks": 6701,
+  "blocks_hit": 4001,
+  "functions": 401,
+  "outcomes": 5118,
+  "outcomes_hit": 2285,
+  "runs": 12
+ },
+ "rc-m1": {
+  "blocks": 6710,
+  "blocks_hit": 4116,
+  "functions": 391,
+  "outcomes": 5304,
+  "outcomes_hit": 2436,
+  "runs": 8
+ },
+ "rc-m2": {
+  "blocks": 6008,
+  "blocks_hit": 3706,
+  "functions": 354,
+  "outcomes": 4640,
+  "outcomes_hit": 2112,
+  "runs": 4
+ },
+ "rc-m3": {
+  "blocks": 6262,
+  "blocks_hit": 3833,
+  "functions": 361,
+  "outcomes": 4900,
+  "outcomes_hit": 2205,
+  "runs": 4
+ },
+ "rc-p2": {
+  "blocks": 5260,
+  "blocks_hit": 3128,
+  "functions": 309,
+  "outcomes": 4022,
+  "outcomes_hit": 1647,
+  "runs": 2
+ },
+ "rc-s1": {
+  "blocks": 20536,
+  "blocks_hit": 13740,
+  "functions": 918,
+  "outcomes": 18320,
+  "outcomes_hit": 10243,
+  "runs": 65
+ },
+ "rc-w1": {
+  "blocks": 12721,
+  "blocks_hit": 8207,
+  "functions": 624,
+  "outcomes": 10570,
+  "outcomes_hit": 5584,
+  "runs": 40
  },
  "rules": {
   "blocks": 1426,

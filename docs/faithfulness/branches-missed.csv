@@ -106,41 +106,16 @@ root 0000:14F6,root,1541,taken,root 0000:1541,jg 0x1550,dormant
 root 0000:14F6,root,1541,fallthrough,root 0000:1541,jg 0x1550,dormant
 root 0000:1588,root,165B,block,root 0000:165B,jmp 0x16fc,open
 root 0000:1588,root,1659,fallthrough,root 0000:1659,je 0x165e,open
-root 0000:18FA,root,196A,block,root 0000:196A,jmp 0x1a68,open
-root 0000:18FA,root,1979,block,root 0000:1979,jmp 0x1a68,open
-root 0000:18FA,root,19D0,block,root 0000:19D0,"mov byte ptr [bp - 2], 0x52",open
-root 0000:18FA,root,1A1A,block,root 0000:1A1A,"shl ax, 1",open
-root 0000:18FA,root,1A32,block,root 0000:1A32,"mov byte ptr [bp - 2], 0x55",open
-root 0000:18FA,root,1A3E,block,root 0000:1A3E,"mov byte ptr [bp - 2], 0x44",open
-root 0000:18FA,root,1A44,block,root 0000:1A44,"mov byte ptr [bp - 2], 0x4f",open
-root 0000:18FA,root,1A4A,block,root 0000:1A4A,"mov byte ptr [bp - 2], 0x58",open
-root 0000:18FA,root,1A5B,block,root 0000:1A5B,jmp 0x1a68,open
-root 0000:18FA,root,1A5E,block,root 0000:1A5E,"mov byte ptr [bp - 2], 0x62",open
-root 0000:18FA,root,1A56,taken,root 0000:1A56,je 0x1a5e,open
-root 0000:18FA,root,1A59,fallthrough,root 0000:1A59,je 0x1a64,open
-root 0000:18FA,root,19F4,taken,root 0000:19F4,jne 0x1a0c,open
-root 0000:18FA,root,19FC,taken,root 0000:19FC,jne 0x1a0c,open
-root 0000:18FA,root,1A05,taken,root 0000:1A05,je 0x1a0c,open
-root 0000:18FA,root,1A18,fallthrough,root 0000:1A18,ja 0x1a68,open
-root 0000:18FA,root,1968,fallthrough,root 0000:1968,jbe 0x196d,open
-root 0000:18FA,root,1977,fallthrough,root 0000:1977,je 0x19b8,open
-root 0000:18FA,root,1987,taken,root 0000:1987,je 0x19d0,open
 root 0000:1A9C,root,1B21,block,root 0000:1B21,"mov word ptr [bp - 0xa], 0xffff",open
 root 0000:1A9C,root,1C8B,block,root 0000:1C8B,"mov word ptr [bp - 0xa], 0xffff",open
-root 0000:1A9C,root,2075,block,root 0000:2075,jmp 0x2278,open
 root 0000:1A9C,root,20BE,block,root 0000:20BE,"sub di, di",open
-root 0000:1A9C,root,20D6,block,root 0000:20D6,push 0x272,open
 root 0000:1A9C,root,2163,block,root 0000:2163,"sub di, di",open
-root 0000:1A9C,root,217B,block,root 0000:217B,push 0x274,open
 root 0000:1A9C,root,21FD,block,root 0000:21FD,"or bl, bl",open
 root 0000:1A9C,root,2201,block,root 0000:2201,"mov di, 0xf",open
 root 0000:1A9C,root,2208,block,root 0000:2208,"sub di, di",open
 root 0000:1A9C,root,2220,block,root 0000:2220,push 0x276,open
-root 0000:1A9C,root,2073,fallthrough,root 0000:2073,je 0x2078,open
 root 0000:1A9C,root,20BC,fallthrough,root 0000:20BC,jge 0x20c0,open
-root 0000:1A9C,root,20D4,fallthrough,root 0000:20D4,jle 0x20ee,open
 root 0000:1A9C,root,2161,fallthrough,root 0000:2161,jge 0x2165,open
-root 0000:1A9C,root,2179,fallthrough,root 0000:2179,jle 0x2193,open
 root 0000:1A9C,root,21FB,fallthrough,root 0000:21FB,jne 0x2204,open
 root 0000:1A9C,root,21FF,taken,root 0000:21FF,je 0x2204,open
 root 0000:1A9C,root,21FF,fallthrough,root 0000:21FF,je 0x2204,open
@@ -4891,37 +4866,25 @@ R014+0xBCA8,R014,BEE9,block,R014+0xBEE9 (19CD:0979),"mov word ptr [bx - 0x63a3],
 R014+0xBCA8,R014,BD51,fallthrough,R014+0xBD51 (19CD:07E1),jne 0x7f0,open
 R014+0xBCA8,R014,BE9E,fallthrough,R014+0xBE9E (19CD:092E),je 0x933,compiled-form
 R014+0xBCA8,R014,BEE7,fallthrough,R014+0xBEE7 (19CD:0977),jne 0x988,dormant
-R014+0xC044,R014,C1A1,block,R014+0xC1A1 (19CD:0C31),"mov si, word ptr [0xc2bd]",open
 R014+0xC044,R014,C1EE,fallthrough,R014+0xC1EE (19CD:0C7E),jne 0xc9c,open
 R014+0xC044,R014,C299,taken,R014+0xC299 (19CD:0D29),jne 0xd78,dormant
 R014+0xC044,R014,C14E,taken,R014+0xC14E (19CD:0BDE),je 0xbec,open
 R014+0xC044,R014,C153,taken,R014+0xC153 (19CD:0BE3),je 0xbec,open
-R014+0xC044,R014,C19F,fallthrough,R014+0xC19F (19CD:0C2F),je 0xbe5,open
 R014+0xC33C,R014,C59C,block,R014+0xC59C (19CD:102C),jmp 0x11e8,open
 R014+0xC33C,R014,C3B2,taken,R014+0xC3B2 (19CD:0E42),je 0xe48,open
 R014+0xC33C,R014,C59A,fallthrough,R014+0xC59A (19CD:102A),jne 0x102f,open
 R014+0xC33C,R014,C5BC,fallthrough,R014+0xC5BC (19CD:104C),jne 0x106a,open
 R014+0xC33C,R014,C64E,taken,R014+0xC64E (19CD:10DE),jne 0x1132,dormant
-R014+0xC33C,R014,C4EA,taken,R014+0xC4EA (19CD:0F7A),jne 0xf84,open
 R014+0xC75C,R014,C774,block,R014+0xC774 (19CD:1204),"mov word ptr [bp - 0x5c], 5",open
-R014+0xC75C,R014,C902,block,R014+0xC902 (19CD:1392),"mov word ptr [bp - 0x58], 0x14",open
-R014+0xC75C,R014,CABC,block,R014+0xCABC (19CD:154C),"mov ax, word ptr [bp + 0xa]",open
-R014+0xC75C,R014,CAC6,block,R014+0xCAC6 (19CD:1556),"mov cl, byte ptr es:[bx + 0x2fbd]",open
 R014+0xC75C,R014,CAD6,block,R014+0xCAD6 (19CD:1566),jmp 0x146f,open
 R014+0xC75C,R014,C766,taken,R014+0xC766 (19CD:11F6),jge 0x1204,open
-R014+0xC75C,R014,C8F5,taken,R014+0xC8F5 (19CD:1385),je 0x1392,open
-R014+0xC75C,R014,CABA,fallthrough,R014+0xCABA (19CD:154A),jl 0x151c,open
 R014+0xC75C,R014,CAC4,taken,R014+0xCAC4 (19CD:1554),jg 0x151c,open
-R014+0xC75C,R014,CAC4,fallthrough,R014+0xCAC4 (19CD:1554),jg 0x151c,open
-R014+0xC75C,R014,CAD4,taken,R014+0xCAD4 (19CD:1564),jl 0x151c,open
 R014+0xC75C,R014,CAD4,fallthrough,R014+0xCAD4 (19CD:1564),jl 0x151c,open
-R014+0xC75C,R014,CB0D,taken,R014+0xCB0D (19CD:159D),jg 0x156e,open
 R014+0xC75C,R014,C9DD,fallthrough,R014+0xC9DD (19CD:146D),jl 0x141e,open
 R014+0xC75C,R014,C94A,taken,R014+0xC94A (19CD:13DA),jl 0x13e4,compiled-form
 R014+0xC75C,R014,C958,taken,R014+0xC958 (19CD:13E8),jge 0x13f8,compiled-form
 R014+0xCBBA,R014,CBCC,block,R014+0xCBCC (19CD:165C),jmp 0x170e,open
 R014+0xCBBA,R014,CBCA,fallthrough,R014+0xCBCA (19CD:165A),jg 0x165f,open
-R014+0xCC84,R014,CCC5,taken,R014+0xCCC5 (19CD:1755),jne 0x175e,open
 R014+0xCD66,R014,CE98,block,R014+0xCE98 (19CD:1928),"mov di, word ptr [0xc2bd]",open
 R014+0xCD66,R014,CE3E,taken,R014+0xCE3E (19CD:18CE),je 0x18dc,open
 R014+0xCD66,R014,CE43,taken,R014+0xCE43 (19CD:18D3),je 0x18dc,open
@@ -4965,8 +4928,6 @@ R014+0xDF28,R014,E119,block,R014+0xE119 (19CD:2BA9),"mov word ptr [bp - 4], ax",
 R014+0xDF28,R014,E125,block,R014+0xE125 (19CD:2BB5),"add si, 6",open
 R014+0xDF28,R014,E131,block,R014+0xE131 (19CD:2BC1),"mov bx, word ptr [bp - 6]",open
 R014+0xDF28,R014,E13B,block,R014+0xE13B (19CD:2BCB),"mov byte ptr [0x96f9], 1",open
-R014+0xDF28,R014,E24C,block,R014+0xE24C (19CD:2CDC),pop si,open
-R014+0xDF28,R014,E24A,fallthrough,R014+0xE24A (19CD:2CDA),je 0x2cea,open
 R014+0xDF28,R014,E0D5,fallthrough,R014+0xE0D5 (19CD:2B65),jb 0x2bd9,open
 R014+0xDF28,R014,E0F2,taken,R014+0xE0F2 (19CD:2B82),jle 0x2bc1,open
 R014+0xDF28,R014,E0F2,fallthrough,R014+0xE0F2 (19CD:2B82),jle 0x2bc1,open
@@ -5050,9 +5011,7 @@ R014+0x10232,R014,103DD,taken,R014+0x103DD (1DB7:0FCD),jge 0xffd,compiled-form
 R014+0x10232,R014,104C4,taken,R014+0x104C4 (1DB7:10B4),jle 0x10eb,compiled-form
 R016+0x0000,R016,001E,block,R016+0x001E (1EF8:001E),jmp 0xac,open
 R016+0x0000,R016,0110,block,R016+0x0110 (1EF8:0110),jmp 0x6f6,open
-R016+0x0000,R016,0174,block,R016+0x0174 (1EF8:0174),"mov al, byte ptr [0x907b]",open
 R016+0x0000,R016,0181,block,R016+0x0181 (1EF8:0181),jmp 0x9b8,open
-R016+0x0000,R016,0184,block,R016+0x0184 (1EF8:0184),push bx,open
 R016+0x0000,R016,0194,block,R016+0x0194 (1EF8:0194),"lcall 0, 0x13a0",open
 R016+0x0000,R016,01BF,block,R016+0x01BF (1EF8:01BF),jmp 0xfc,open
 R016+0x0000,R016,01DF,block,R016+0x01DF (1EF8:01DF),jmp 0xfc,open
@@ -5065,11 +5024,6 @@ R016+0x0000,R016,0227,block,R016+0x0227 (1EF8:0227),jmp 0xea,open
 R016+0x0000,R016,0237,block,R016+0x0237 (1EF8:0237),jmp 0xea,open
 R016+0x0000,R016,0257,block,R016+0x0257 (1EF8:0257),jmp 0xea,open
 R016+0x0000,R016,0262,block,R016+0x0262 (1EF8:0262),"sub ax, 0x33",open
-R016+0x0000,R016,0273,block,R016+0x0273 (1EF8:0273),jmp 0xfc,open
-R016+0x0000,R016,0487,block,R016+0x0487 (1EF8:0487),jmp 0x9b8,open
-R016+0x0000,R016,0538,block,R016+0x0538 (1EF8:0538),jmp 0x9b8,open
-R016+0x0000,R016,061F,block,R016+0x061F (1EF8:061F),jmp 0x9b8,open
-R016+0x0000,R016,06D9,block,R016+0x06D9 (1EF8:06D9),jmp 0x9b8,open
 R016+0x0000,R016,06F6,block,R016+0x06F6 (1EF8:06F6),"mov word ptr [bp - 2], 0",open
 R016+0x0000,R016,06FB,block,R016+0x06FB (1EF8:06FB),"mov bx, word ptr [bp - 2]",open
 R016+0x0000,R016,0718,block,R016+0x0718 (1EF8:0718),"mov byte ptr [0xa6c1], 0",open
@@ -5085,7 +5039,7 @@ R016+0x0000,R016,0862,block,R016+0x0862 (1EF8:0862),jmp 0x9b8,open
 R016+0x0000,R016,088F,block,R016+0x088F (1EF8:088F),jmp 0x2a0,open
 R016+0x0000,R016,08E9,block,R016+0x08E9 (1EF8:08E9),jmp 0x418,open
 R016+0x0000,R016,08F3,block,R016+0x08F3 (1EF8:08F3),jmp 0x9b8,open
-R016+0x0000,R016,08FE,block,R016+0x08FE (1EF8:08FE),jmp 0x9b8,open
+R016+0x0000,R016,08FE,block,R016+0x08FE (1EF8:08FE),jmp 0x9b8,compiled-form
 R016+0x0000,R016,0933,block,R016+0x0933 (1EF8:0933),jmp 0x360,open
 R016+0x0000,R016,0945,block,R016+0x0945 (1EF8:0945),jmp 0x2a4,open
 R016+0x0000,R016,0950,block,R016+0x0950 (1EF8:0950),jmp 0x9b8,open
@@ -5103,9 +5057,6 @@ R016+0x0000,R016,0225,fallthrough,R016+0x0225 (1EF8:0225),jne 0x22a,open
 R016+0x0000,R016,0235,fallthrough,R016+0x0235 (1EF8:0235),jne 0x23a,open
 R016+0x0000,R016,0255,fallthrough,R016+0x0255 (1EF8:0255),jne 0x25a,open
 R016+0x0000,R016,025D,taken,R016+0x025D (1EF8:025D),jne 0x262,open
-R016+0x0000,R016,0271,fallthrough,R016+0x0271 (1EF8:0271),jne 0x276,open
-R016+0x0000,R016,0153,taken,R016+0x0153 (1EF8:0153),jne 0x174,open
-R016+0x0000,R016,017F,taken,R016+0x017F (1EF8:017F),jne 0x184,open
 R016+0x0000,R016,017F,fallthrough,R016+0x017F (1EF8:017F),jne 0x184,open
 R016+0x0000,R016,01BD,fallthrough,R016+0x01BD (1EF8:01BD),jne 0x1c2,open
 R016+0x0000,R016,01DD,fallthrough,R016+0x01DD (1EF8:01DD),jne 0x1e2,open
@@ -5114,11 +5065,9 @@ R016+0x0000,R016,01ED,taken,R016+0x01ED (1EF8:01ED),jne 0x1f2,open
 R016+0x0000,R016,01AF,taken,R016+0x01AF (1EF8:01AF),je 0x194,open
 R016+0x0000,R016,088D,fallthrough,R016+0x088D (1EF8:088D),jne 0x892,open
 R016+0x0000,R016,0931,fallthrough,R016+0x0931 (1EF8:0931),jne 0x936,open
-R016+0x0000,R016,0536,fallthrough,R016+0x0536 (1EF8:0536),jl 0x53b,open
 R016+0x0000,R016,0943,fallthrough,R016+0x0943 (1EF8:0943),jne 0x948,open
 R016+0x0000,R016,094B,taken,R016+0x094B (1EF8:094B),jne 0x950,open
 R016+0x0000,R016,095D,fallthrough,R016+0x095D (1EF8:095D),jne 0x962,open
-R016+0x0000,R016,0485,fallthrough,R016+0x0485 (1EF8:0485),jl 0x48a,open
 R016+0x0000,R016,096D,fallthrough,R016+0x096D (1EF8:096D),jne 0x972,open
 R016+0x0000,R016,0981,fallthrough,R016+0x0981 (1EF8:0981),jne 0x986,open
 R016+0x0000,R016,0989,taken,R016+0x0989 (1EF8:0989),jne 0x98e,open
@@ -5127,7 +5076,7 @@ R016+0x0000,R016,0991,fallthrough,R016+0x0991 (1EF8:0991),jne 0x996,open
 R016+0x0000,R016,09B3,taken,R016+0x09B3 (1EF8:09B3),jne 0x9b8,open
 R016+0x0000,R016,08E7,fallthrough,R016+0x08E7 (1EF8:08E7),jne 0x8ec,open
 R016+0x0000,R016,08F1,fallthrough,R016+0x08F1 (1EF8:08F1),je 0x8f6,open
-R016+0x0000,R016,08FC,fallthrough,R016+0x08FC (1EF8:08FC),jbe 0x901,open
+R016+0x0000,R016,08FC,fallthrough,R016+0x08FC (1EF8:08FC),jbe 0x901,compiled-form
 R016+0x0000,R016,010E,fallthrough,R016+0x010E (1EF8:010E),jne 0x113,open
 R016+0x0000,R016,0716,taken,R016+0x0716 (1EF8:0716),jl 0x6fb,open
 R016+0x0000,R016,0716,fallthrough,R016+0x0716 (1EF8:0716),jl 0x6fb,open
@@ -5135,84 +5084,44 @@ R016+0x0000,R016,0813,taken,R016+0x0813 (1EF8:0813),jne 0x818,open
 R016+0x0000,R016,082F,taken,R016+0x082F (1EF8:082F),jne 0x834,open
 R016+0x0000,R016,0837,taken,R016+0x0837 (1EF8:0837),jne 0x83c,open
 R016+0x0000,R016,0837,fallthrough,R016+0x0837 (1EF8:0837),jne 0x83c,open
-R016+0x0000,R016,061D,fallthrough,R016+0x061D (1EF8:061D),jne 0x622,open
 R016+0x0000,R016,085D,taken,R016+0x085D (1EF8:085D),jne 0x862,open
-R016+0x0000,R016,06D7,fallthrough,R016+0x06D7 (1EF8:06D7),je 0x6dc,open
 R016+0x0000,R016,07B7,taken,R016+0x07B7 (1EF8:07B7),jne 0x7bc,open
 R016+0x0000,R016,07BF,taken,R016+0x07BF (1EF8:07BF),jne 0x7c4,open
 R016+0x0000,R016,07BF,fallthrough,R016+0x07BF (1EF8:07BF),jne 0x7c4,open
 R016+0x0000,R016,07CB,fallthrough,R016+0x07CB (1EF8:07CB),jne 0x7d0,open
 R016+0x09BC,R016,09C7,taken,R016+0x09C7 (1EF8:09C7),jge 0xa28,open
 R016+0x0A2C,R016,0A37,taken,R016+0x0A37 (1EF8:0A37),jge 0xab6,open
-R016+0x0CDC,R016,0D5E,block,R016+0x0D5E (1EF8:0D5E),"mov byte ptr [0x9695], al",open
-R016+0x0CDC,R016,0D5C,fallthrough,R016+0x0D5C (1EF8:0D5C),jne 0xd61,open
 R016+0x0F76,R016,0FF9,block,R016+0x0FF9 (1EF8:0FF9),"mov al, byte ptr [0x907b]",open
 R016+0x0F76,R016,0FC7,taken,R016+0x0FC7 (1EF8:0FC7),je 0xff9,open
 R016+0x0F76,R016,0FF7,fallthrough,R016+0x0FF7 (1EF8:0FF7),jne 0x1010,open
-R016+0x1072,R016,1079,block,R016+0x1079 (1EF8:1079),"cmp byte ptr [0xa695], 1",open
-R016+0x1072,R016,1080,block,R016+0x1080 (1EF8:1080),"cmp byte ptr [0xa6b2], 0xff",open
-R016+0x1072,R016,1087,block,R016+0x1087 (1EF8:1087),push cs,open
 R016+0x1072,R016,108C,block,R016+0x108C (1EF8:108C),"mov al, byte ptr [0x907b]",open
-R016+0x1072,R016,1077,fallthrough,R016+0x1077 (1EF8:1077),jne 0x10b0,open
 R016+0x1072,R016,107E,taken,R016+0x107E (1EF8:107E),jne 0x108c,open
-R016+0x1072,R016,107E,fallthrough,R016+0x107E (1EF8:107E),jne 0x108c,open
-R016+0x1072,R016,1085,taken,R016+0x1085 (1EF8:1085),je 0x10b0,open
-R016+0x1072,R016,1085,fallthrough,R016+0x1085 (1EF8:1085),je 0x10b0,open
-R016+0x10B2,R016,10D6,block,R016+0x10D6 (1EF8:10D6),"cmp byte ptr [0xca99], 0",open
-R016+0x10B2,R016,10DD,block,R016+0x10DD (1EF8:10DD),push cs,open
 R016+0x10B2,R016,10E2,block,R016+0x10E2 (1EF8:10E2),push cs,open
 R016+0x10B2,R016,111A,block,R016+0x111A (1EF8:111A),"mov al, byte ptr [0x907b]",open
 R016+0x10B2,R016,1154,block,R016+0x1154 (1EF8:1154),"mov al, byte ptr [0x907b]",open
 R016+0x10B2,R016,116A,block,R016+0x116A (1EF8:116A),push -1,open
-R016+0x10B2,R016,10C5,taken,R016+0x10C5 (1EF8:10C5),je 0x10cc,open
-R016+0x10B2,R016,10D1,taken,R016+0x10D1 (1EF8:10D1),je 0x10d6,open
 R016+0x10B2,R016,10DB,taken,R016+0x10DB (1EF8:10DB),jne 0x10e2,open
-R016+0x10B2,R016,10DB,fallthrough,R016+0x10DB (1EF8:10DB),jne 0x10e2,open
 R016+0x10B2,R016,1118,fallthrough,R016+0x1118 (1EF8:1118),jne 0x1174,open
 R016+0x10B2,R016,1152,fallthrough,R016+0x1152 (1EF8:1152),jne 0x1174,open
-R016+0x1182,R016,11AE,block,R016+0x11AE (1EF8:11AE),push cs,open
-R016+0x1182,R016,11BD,block,R016+0x11BD (1EF8:11BD),"cmp byte ptr [0xc102], 0",open
-R016+0x1182,R016,11C4,block,R016+0x11C4 (1EF8:11C4),"mov al, byte ptr [0x907b]",open
-R016+0x1182,R016,11DC,block,R016+0x11DC (1EF8:11DC),"sub si, si",open
-R016+0x1182,R016,11E1,block,R016+0x11E1 (1EF8:11E1),"cmp byte ptr [di], 1",open
-R016+0x1182,R016,11E6,block,R016+0x11E6 (1EF8:11E6),push si,open
-R016+0x1182,R016,11FC,block,R016+0x11FC (1EF8:11FC),inc si,open
-R016+0x1182,R016,1207,block,R016+0x1207 (1EF8:1207),jmp 0x1231,open
-R016+0x1182,R016,11A9,taken,R016+0x11A9 (1EF8:11A9),je 0x11ae,open
-R016+0x1182,R016,11BB,fallthrough,R016+0x11BB (1EF8:11BB),jne 0x120a,open
-R016+0x1182,R016,11C2,taken,R016+0x11C2 (1EF8:11C2),jne 0x11dc,open
-R016+0x1182,R016,11C2,fallthrough,R016+0x11C2 (1EF8:11C2),jne 0x11dc,open
-R016+0x1182,R016,11E4,taken,R016+0x11E4 (1EF8:11E4),jne 0x11fc,open
-R016+0x1182,R016,11E4,fallthrough,R016+0x11E4 (1EF8:11E4),jne 0x11fc,open
-R016+0x1182,R016,1205,taken,R016+0x1205 (1EF8:1205),jb 0x11e1,open
-R016+0x1182,R016,1205,fallthrough,R016+0x1205 (1EF8:1205),jb 0x11e1,open
-R016+0x1242,R016,1260,block,R016+0x1260 (1EF8:1260),jmp 0x1306,open
-R016+0x1242,R016,125E,fallthrough,R016+0x125E (1EF8:125E),jne 0x1263,open
 R016+0x152E,R016,155E,block,R016+0x155E (1EF8:155E),"mov al, 1",open
 R016+0x152E,R016,155C,fallthrough,R016+0x155C (1EF8:155C),jne 0x1562,open
 R016+0x15BE,R016,15DC,block,R016+0x15DC (1EF8:15DC),jmp 0x16a5,open
 R016+0x15BE,R016,15E7,block,R016+0x15E7 (1EF8:15E7),jmp 0x16a5,open
 R016+0x15BE,R016,1601,block,R016+0x1601 (1EF8:1601),jmp 0x16a5,open
 R016+0x15BE,R016,163A,block,R016+0x163A (1EF8:163A),"mov byte ptr [0x9085], 0x52",open
-R016+0x15BE,R016,1690,block,R016+0x1690 (1EF8:1690),"mov byte ptr [0x9085], 0x4f",open
 R016+0x15BE,R016,1659,taken,R016+0x1659 (1EF8:1659),ja 0x16a5,open
 R016+0x15BE,R016,15DA,fallthrough,R016+0x15DA (1EF8:15DA),jbe 0x15df,open
 R016+0x15BE,R016,15E5,fallthrough,R016+0x15E5 (1EF8:15E5),je 0x1622,open
 R016+0x15BE,R016,15F5,taken,R016+0x15F5 (1EF8:15F5),je 0x163a,open
 R016+0x15BE,R016,15FF,fallthrough,R016+0x15FF (1EF8:15FF),je 0x164a,open
-R017+0x0000,R017,0205,block,R017+0x0205 (1EF8:0205),"cmp word ptr [bp - 8], 0",open
 R017+0x0000,R017,0328,block,R017+0x0328 (1EF8:0328),"cmp byte ptr [0xe230], 1",open
 R017+0x0000,R017,032F,block,R017+0x032F (1EF8:032F),"mov byte ptr [0xe22f], 0",open
-R017+0x0000,R017,03CC,block,R017+0x03CC (1EF8:03CC),"cmp byte ptr [0xe230], 1",open
-R017+0x0000,R017,03D3,block,R017+0x03D3 (1EF8:03D3),"mov byte ptr [0xe22f], 0",open
 R017+0x0000,R017,0450,block,R017+0x0450 (1EF8:0450),"cmp byte ptr [0xe230], 1",open
 R017+0x0000,R017,0457,block,R017+0x0457 (1EF8:0457),"mov byte ptr [0xe22f], 0",open
 R017+0x0000,R017,077B,block,R017+0x077B (1EF8:077B),"cmp byte ptr [0xe230], 1",open
 R017+0x0000,R017,0782,block,R017+0x0782 (1EF8:0782),"mov byte ptr [0xe22f], 0",open
 R017+0x0000,R017,0B4D,block,R017+0x0B4D (1EF8:0B4D),"xor byte ptr [0x11c8], 1",open
-R017+0x0000,R017,03CA,fallthrough,R017+0x03CA (1EF8:03CA),jne 0x3d8,open
 R017+0x0000,R017,03D1,taken,R017+0x03D1 (1EF8:03D1),jne 0x3d8,open
-R017+0x0000,R017,03D1,fallthrough,R017+0x03D1 (1EF8:03D1),jne 0x3d8,open
 R017+0x0000,R017,0879,fallthrough,R017+0x0879 (1EF8:0879),je 0x8e0,open
 R017+0x0000,R017,0779,fallthrough,R017+0x0779 (1EF8:0779),jne 0x787,open
 R017+0x0000,R017,0780,taken,R017+0x0780 (1EF8:0780),jne 0x787,open
@@ -5230,13 +5139,10 @@ R017+0x0000,R017,0326,fallthrough,R017+0x0326 (1EF8:0326),jne 0x334,open
 R017+0x0000,R017,032D,taken,R017+0x032D (1EF8:032D),jne 0x334,open
 R017+0x0000,R017,032D,fallthrough,R017+0x032D (1EF8:032D),jne 0x334,open
 R017+0x0000,R017,039C,taken,R017+0x039C (1EF8:039C),jge 0x3b8,open
-R017+0x0000,R017,0203,fallthrough,R017+0x0203 (1EF8:0203),jg 0x20b,open
-R017+0x0000,R017,0209,taken,R017+0x0209 (1EF8:0209),je 0x218,open
 R017+0x0000,R017,0209,fallthrough,R017+0x0209 (1EF8:0209),je 0x218,open
 R017+0x0000,R017,0230,taken,R017+0x0230 (1EF8:0230),jne 0x238,open
 R017+0x0000,R017,0236,fallthrough,R017+0x0236 (1EF8:0236),je 0x246,open
 R017+0x0000,R017,0250,taken,R017+0x0250 (1EF8:0250),jne 0x27a,open
-R017+0x0000,R017,025E,taken,R017+0x025E (1EF8:025E),je 0x29e,open
 R017+0x0000,R017,0264,taken,R017+0x0264 (1EF8:0264),jl 0x29e,open
 R017+0x0000,R017,0278,fallthrough,R017+0x0278 (1EF8:0278),je 0x29e,open
 R017+0x0000,R017,0B4B,fallthrough,R017+0x0B4B (1EF8:0B4B),je 0xb75,open
@@ -5504,8 +5410,6 @@ R023+0x12C0,R023,13A3,taken,R023+0x13A3 (1EF8:13A3),jge 0x13ae,open
 R023+0x12C0,R023,13A3,fallthrough,R023+0x13A3 (1EF8:13A3),jge 0x13ae,open
 R023+0x153E,R023,1584,block,R023+0x1584 (1EF8:1584),push 0x96,open
 R023+0x153E,R023,1582,fallthrough,R023+0x1582 (1EF8:1582),jge 0x15b6,open
-R023+0x1618,R023,16D4,block,R023+0x16D4 (1EF8:16D4),jmp 0x1769,open
-R023+0x1618,R023,16D2,fallthrough,R023+0x16D2 (1EF8:16D2),jne 0x16d7,open
 R023+0x1618,R023,1716,taken,R023+0x1716 (1EF8:1716),je 0x1764,open
 R024+0x0000,R024,0027,block,R024+0x0027 (1EF8:0027),jmp 0x596,open
 R024+0x0000,R024,04C7,block,R024+0x04C7 (1EF8:04C7),"add al, 0xb",dormant
@@ -5513,8 +5417,6 @@ R024+0x0000,R024,04CB,block,R024+0x04CB (1EF8:04CB),inc sp,dormant
 R024+0x0000,R024,04D0,block,R024+0x04D0 (1EF8:04D0),nop ,dormant
 R024+0x0000,R024,0025,fallthrough,R024+0x0025 (1EF8:0025),jg 0x2a,open
 R024+0x0000,R024,0485,taken,R024+0x0485 (1EF8:0485),ja 0x4ff,open
-R024+0x07A2,R024,087E,block,R024+0x087E (1EF8:087E),"mov byte ptr [0xc907], 1",open
-R024+0x07A2,R024,087C,fallthrough,R024+0x087C (1EF8:087C),jne 0x883,open
 R024+0x08F2,R024,094A,block,R024+0x094A (1EF8:094A),jmp 0xacd,open
 R024+0x08F2,R024,0945,taken,R024+0x0945 (1EF8:0945),jne 0x94a,open
 R025+0x0000,R025,0030,block,R025+0x0030 (1EF8:0030),jmp 0x123,open
@@ -6097,16 +5999,10 @@ R029+0x5A2C,R029,5A94,block,R029+0x5A94 (1367:0B84),"mov cx, ax",open
 R029+0x5A2C,R029,5A72,taken,R029+0x5A72 (1367:0B62),je 0xb84,open
 R029+0x5AB4,R029,5B2A,taken,R029+0x5B2A (1367:0C1A),jg 0xc21,compiled-form
 R030+0x00A8,R030,014B,block,R030+0x014B (1462:014B),push word ptr [0x775a],open
-R030+0x00A8,R030,01DF,block,R030+0x01DF (1462:01DF),"mov word ptr [0x286c], 0",open
-R030+0x00A8,R030,01FB,block,R030+0x01FB (1462:01FB),"mov ax, dx",open
-R030+0x00A8,R030,0218,block,R030+0x0218 (1462:0218),"mov ax, 0x82",open
 R030+0x00A8,R030,02A0,block,R030+0x02A0 (1462:02A0),push word ptr [0xe416],open
 R030+0x00A8,R030,00EF,taken,R030+0x00EF (1462:00EF),ja 0x112,open
 R030+0x00A8,R030,0149,fallthrough,R030+0x0149 (1462:0149),jne 0x15a,open
-R030+0x00A8,R030,01DD,fallthrough,R030+0x01DD (1462:01DD),jge 0x1e5,open
-R030+0x00A8,R030,01F9,fallthrough,R030+0x01F9 (1462:01F9),jle 0x214,open
 R030+0x00A8,R030,029E,fallthrough,R030+0x029E (1462:029E),je 0x2ac,open
-R030+0x00A8,R030,0216,fallthrough,R030+0x0216 (1462:0216),jg 0x222,open
 R030+0x02C0,R030,0576,block,R030+0x0576 (1462:0576),"lcall 0x47c, 0x744",open
 R030+0x02C0,R030,0587,block,R030+0x0587 (1462:0587),"cmp byte ptr [0xe3fb], 0xc4",open
 R030+0x02C0,R030,05A9,block,R030+0x05A9 (1462:05A9),"cmp byte ptr [0xe3fb], 0x3c",open
@@ -6145,18 +6041,11 @@ R030+0x02C0,R030,08EC,block,R030+0x08EC (1462:08EC),dec ax,open
 R030+0x02C0,R030,08EF,block,R030+0x08EF (1462:08EF),dec ax,open
 R030+0x02C0,R030,08F2,block,R030+0x08F2 (1462:08F2),"mov ax, 0x11b",open
 R030+0x02C0,R030,0922,block,R030+0x0922 (1462:0922),"mov ax, 0x116",open
-R030+0x02C0,R030,0930,block,R030+0x0930 (1462:0930),"shl ax, 1",open
 R030+0x02C0,R030,0954,block,R030+0x0954 (1462:0954),push 0x11,open
 R030+0x02C0,R030,0972,block,R030+0x0972 (1462:0972),"mov ax, 0x111",open
 R030+0x02C0,R030,0978,block,R030+0x0978 (1462:0978),"cmp ax, 0xd",open
 R030+0x02C0,R030,097D,block,R030+0x097D (1462:097D),jmp 0xa4e,open
 R030+0x02C0,R030,0980,block,R030+0x0980 (1462:0980),"shl ax, 1",open
-R030+0x02C0,R030,09B6,block,R030+0x09B6 (1462:09B6),"mov ax, 0x24",open
-R030+0x02C0,R030,0A5F,block,R030+0x0A5F (1462:0A5F),jmp 0x9b6,open
-R030+0x02C0,R030,0A86,block,R030+0x0A86 (1462:0A86),push 0x10,open
-R030+0x02C0,R030,0A98,block,R030+0x0A98 (1462:0A98),"cmp ax, 0xd",open
-R030+0x02C0,R030,0A9D,block,R030+0x0A9D (1462:0A9D),jmp 0x9b6,open
-R030+0x02C0,R030,0AA0,block,R030+0x0AA0 (1462:0AA0),"shl ax, 1",open
 R030+0x02C0,R030,0AD3,block,R030+0x0AD3 (1462:0AD3),jmp 0x9b6,open
 R030+0x02C0,R030,0AF8,block,R030+0x0AF8 (1462:0AF8),push 9,open
 R030+0x02C0,R030,0B06,block,R030+0x0B06 (1462:0B06),dec ax,open
@@ -6201,14 +6090,10 @@ R030+0x02C0,R030,0B0B,fallthrough,R030+0x0B0B (1462:0B0B),jne 0xb10,open
 R030+0x02C0,R030,0B15,taken,R030+0x0B15 (1462:0B15),jge 0xb1a,open
 R030+0x02C0,R030,0B15,fallthrough,R030+0x0B15 (1462:0B15),jge 0xb1a,open
 R030+0x02C0,R030,0AD1,fallthrough,R030+0x0AD1 (1462:0AD1),jbe 0xad6,open
-R030+0x02C0,R030,0A9B,taken,R030+0x0A9B (1462:0A9B),jbe 0xaa0,open
-R030+0x02C0,R030,0A9B,fallthrough,R030+0x0A9B (1462:0A9B),jbe 0xaa0,open
-R030+0x02C0,R030,0A5D,fallthrough,R030+0x0A5D (1462:0A5D),jbe 0xa62,open
 R030+0x02C0,R030,0A17,taken,R030+0x0A17 (1462:0A17),ja 0x9b6,open
 R030+0x02C0,R030,09BF,taken,R030+0x09BF (1462:09BF),ja 0x9b6,open
 R030+0x02C0,R030,097B,taken,R030+0x097B (1462:097B),jbe 0x980,open
 R030+0x02C0,R030,097B,fallthrough,R030+0x097B (1462:097B),jbe 0x980,open
-R030+0x02C0,R030,092B,taken,R030+0x092B (1462:092B),jbe 0x930,open
 R030+0x02C0,R030,08E0,taken,R030+0x08E0 (1462:08E0),jl 0x8f2,dormant
 R030+0x02C0,R030,08E0,fallthrough,R030+0x08E0 (1462:08E0),jl 0x8f2,open
 R030+0x02C0,R030,08E3,taken,R030+0x08E3 (1462:08E3),jle 0x904,open
@@ -6255,18 +6140,11 @@ R030+0x02C0,R030,0635,taken,R030+0x0635 (1462:0635),jl 0x63e,open
 R030+0x02C0,R030,0649,taken,R030+0x0649 (1462:0649),jg 0x652,open
 R030+0x02C0,R030,03A7,taken,R030+0x03A7 (1462:03A7),jne 0x3ac,open
 R030+0x0C44,R030,0CD7,block,R030+0x0CD7 (1462:0CD7),jmp 0xfd8,open
-R030+0x0C44,R030,0CDF,block,R030+0x0CDF (1462:0CDF),jmp 0xf52,open
-R030+0x0C44,R030,0CEF,block,R030+0x0CEF (1462:0CEF),jmp 0xf06,open
-R030+0x0C44,R030,0D09,block,R030+0x0D09 (1462:0D09),"mov word ptr [0x2866], 0xb",open
-R030+0x0C44,R030,0D24,block,R030+0x0D24 (1462:0D24),"mov word ptr [0x2866], 0xf7",open
 R030+0x0C44,R030,0D4A,block,R030+0x0D4A (1462:0D4A),"mov word ptr [0x2868], 0xd",open
-R030+0x0C44,R030,0D71,block,R030+0x0D71 (1462:0D71),"mov word ptr [0x2868], 0xb1",open
 R030+0x0C44,R030,0D8B,block,R030+0x0D8B (1462:0D8B),"mov word ptr [0x2866], 0xb",open
 R030+0x0C44,R030,0DA7,block,R030+0x0DA7 (1462:0DA7),"mov word ptr [0x2868], 0xd",open
-R030+0x0C44,R030,0DC2,block,R030+0x0DC2 (1462:0DC2),"mov word ptr [0x2866], 0xf7",open
 R030+0x0C44,R030,0DDE,block,R030+0x0DDE (1462:0DDE),"mov word ptr [0x2868], 0xd",open
 R030+0x0C44,R030,0DFA,block,R030+0x0DFA (1462:0DFA),"mov word ptr [0x2866], 0xf7",open
-R030+0x0C44,R030,0E17,block,R030+0x0E17 (1462:0E17),"mov word ptr [0x2868], 0xb1",open
 R030+0x0C44,R030,0E31,block,R030+0x0E31 (1462:0E31),"mov word ptr [0x2866], 0xb",open
 R030+0x0C44,R030,0E4E,block,R030+0x0E4E (1462:0E4E),"mov word ptr [0x2868], 0xb1",open
 R030+0x0C44,R030,0ECE,block,R030+0x0ECE (1462:0ECE),"mov ax, si",open
@@ -6278,8 +6156,6 @@ R030+0x0C44,R030,0FCE,block,R030+0x0FCE (1462:0FCE),"mov word ptr [0xa891], 3",o
 R030+0x0C44,R030,0FD8,block,R030+0x0FD8 (1462:0FD8),push 0x2909,open
 R030+0x0C44,R030,1002,block,R030+0x1002 (1462:1002),push word ptr [0xe416],open
 R030+0x0C44,R030,100E,block,R030+0x100E (1462:100E),"sub ax, ax",open
-R030+0x0C44,R030,111C,block,R030+0x111C (1462:111C),"add word ptr [0x286c], 0x17",open
-R030+0x0C44,R030,1133,block,R030+0x1133 (1462:1133),"mov ax, cx",open
 R030+0x0C44,R030,115F,block,R030+0x115F (1462:115F),"mov ax, word ptr [0x286e]",open
 R030+0x0C44,R030,1169,block,R030+0x1169 (1462:1169),"mov ax, cx",open
 R030+0x0C44,R030,1174,block,R030+0x1174 (1462:1174),"add word ptr [0x286e], 0x41",open
@@ -6302,22 +6178,11 @@ R030+0x0C44,R030,120F,block,R030+0x120F (1462:120F),"add word ptr [0x2868], ax",
 R030+0x0C44,R030,1213,block,R030+0x1213 (1462:1213),"cmp word ptr [0x286c], 1",open
 R030+0x0C44,R030,121A,block,R030+0x121A (1462:121A),"mov word ptr [0x286c], 1",open
 R030+0x0C44,R030,1231,block,R030+0x1231 (1462:1231),"mov ax, 0xffa4",open
-R030+0x0C44,R030,125C,block,R030+0x125C (1462:125C),"sub word ptr [0x286a], 8",open
-R030+0x0C44,R030,1275,block,R030+0x1275 (1462:1275),"mov word ptr [0x286a], ax",open
-R030+0x0C44,R030,127D,block,R030+0x127D (1462:127D),"shl ax, 4",open
-R030+0x0C44,R030,128D,block,R030+0x128D (1462:128D),"mov word ptr [0x286a], 0",open
 R030+0x0C44,R030,129F,block,R030+0x129F (1462:129F),"add word ptr [0x2866], 0x80",open
 R030+0x0C44,R030,0D89,fallthrough,R030+0x0D89 (1462:0D89),jge 0xd91,open
 R030+0x0C44,R030,0DA5,fallthrough,R030+0x0DA5 (1462:0DA5),jge 0xdad,open
-R030+0x0C44,R030,10FF,taken,R030+0x10FF (1462:10FF),jg 0x1104,open
-R030+0x0C44,R030,1242,taken,R030+0x1242 (1462:1242),jl 0x124c,open
 R030+0x0C44,R030,12E7,taken,R030+0x12E7 (1462:12E7),je 0x12ed,open
-R030+0x0C44,R030,125A,fallthrough,R030+0x125A (1462:125A),jge 0x1264,open
-R030+0x0C44,R030,1273,fallthrough,R030+0x1273 (1462:1273),jge 0x1286,open
-R030+0x0C44,R030,128B,fallthrough,R030+0x128B (1462:128B),jg 0x1298,open
 R030+0x0C44,R030,129D,fallthrough,R030+0x129D (1462:129D),jge 0x12a8,open
-R030+0x0C44,R030,1112,taken,R030+0x1112 (1462:1112),jge 0x111c,open
-R030+0x0C44,R030,1131,fallthrough,R030+0x1131 (1462:1131),jg 0x1158,open
 R030+0x0C44,R030,115D,fallthrough,R030+0x115D (1462:115D),jle 0x11c2,open
 R030+0x0C44,R030,1167,taken,R030+0x1167 (1462:1167),jl 0x1174,open
 R030+0x0C44,R030,1167,fallthrough,R030+0x1167 (1462:1167),jl 0x1174,open
@@ -6346,13 +6211,8 @@ R030+0x0C44,R030,0EEC,fallthrough,R030+0x0EEC (1462:0EEC),je 0xef1,open
 R030+0x0C44,R030,0E2F,fallthrough,R030+0x0E2F (1462:0E2F),jge 0xe37,open
 R030+0x0C44,R030,0E4C,fallthrough,R030+0x0E4C (1462:0E4C),jle 0xe54,open
 R030+0x0C44,R030,0DF8,fallthrough,R030+0x0DF8 (1462:0DF8),jle 0xe00,open
-R030+0x0C44,R030,0E15,fallthrough,R030+0x0E15 (1462:0E15),jle 0xe1d,open
-R030+0x0C44,R030,0DC0,fallthrough,R030+0x0DC0 (1462:0DC0),jle 0xdc8,open
 R030+0x0C44,R030,0DDC,fallthrough,R030+0x0DDC (1462:0DDC),jge 0xde4,open
-R030+0x0C44,R030,0D6F,fallthrough,R030+0x0D6F (1462:0D6F),jle 0xd77,open
 R030+0x0C44,R030,0D48,fallthrough,R030+0x0D48 (1462:0D48),jge 0xd50,open
-R030+0x0C44,R030,0D22,fallthrough,R030+0x0D22 (1462:0D22),jle 0xd2a,open
-R030+0x0C44,R030,0D07,fallthrough,R030+0x0D07 (1462:0D07),jge 0xd0f,open
 R030+0x0C44,R030,102B,taken,R030+0x102B (1462:102B),jne 0x109e,open
 R030+0x0C44,R030,1033,taken,R030+0x1033 (1462:1033),ja 0x109e,open
 R030+0x0C44,R030,0FCC,fallthrough,R030+0x0FCC (1462:0FCC),je 0xf60,open
@@ -6360,8 +6220,6 @@ R030+0x0C44,R030,0F65,taken,R030+0x0F65 (1462:0F65),jne 0xfce,open
 R030+0x0C44,R030,0CD5,fallthrough,R030+0x0CD5 (1462:0CD5),jne 0xcda,open
 R030+0x0C44,R030,1000,taken,R030+0x1000 (1462:1000),je 0x100e,open
 R030+0x0C44,R030,1000,fallthrough,R030+0x1000 (1462:1000),je 0x100e,open
-R030+0x0C44,R030,0CDD,fallthrough,R030+0x0CDD (1462:0CDD),jne 0xce2,open
-R030+0x0C44,R030,0CED,fallthrough,R030+0x0CED (1462:0CED),jne 0xcf2,open
 R030+0x1300,R030,1444,block,R030+0x1444 (1462:1444),jmp 0x14cc,open
 R030+0x1300,R030,15C2,block,R030+0x15C2 (1462:15C2),push -1,open
 R030+0x1300,R030,160F,block,R030+0x160F (1462:160F),push 0x18,open
@@ -6369,7 +6227,6 @@ R030+0x1300,R030,1621,block,R030+0x1621 (1462:1621),jmp 0x16be,open
 R030+0x1300,R030,1629,block,R030+0x1629 (1462:1629),jmp 0x16be,open
 R030+0x1300,R030,16A0,block,R030+0x16A0 (1462:16A0),push 0x64,open
 R030+0x1300,R030,16AF,block,R030+0x16AF (1462:16AF),"mov ax, 0x7d0",open
-R030+0x1300,R030,139E,taken,R030+0x139E (1462:139E),je 0x13a5,open
 R030+0x1300,R030,160D,fallthrough,R030+0x160D (1462:160D),jne 0x1619,open
 R030+0x1300,R030,161F,fallthrough,R030+0x161F (1462:161F),jne 0x1624,open
 R030+0x1300,R030,1627,fallthrough,R030+0x1627 (1462:1627),jne 0x162c,open
@@ -6461,9 +6318,7 @@ R031+0x0124,R031,02AB,block,R031+0x02AB (1462:02AB),dec byte ptr es:[bx + 0x356d
 R031+0x0124,R031,03A6,block,R031+0x03A6 (1462:03A6),jmp 0x510,open
 R031+0x0124,R031,03EF,block,R031+0x03EF (1462:03EF),jmp 0x6bb,open
 R031+0x0124,R031,041F,block,R031+0x041F (1462:041F),jmp 0x6bb,open
-R031+0x0124,R031,044C,block,R031+0x044C (1462:044C),jmp 0x6bb,open
 R031+0x0124,R031,0652,block,R031+0x0652 (1462:0652),push di,open
-R031+0x0124,R031,070D,block,R031+0x070D (1462:070D),push 0x2a76,open
 R031+0x0124,R031,0789,block,R031+0x0789 (1462:0789),jmp 0x8a6,open
 R031+0x0124,R031,07AB,block,R031+0x07AB (1462:07AB),"cmp byte ptr [di - 0x594c], 0x9d",open
 R031+0x0124,R031,07B2,block,R031+0x07B2 (1462:07B2),push di,open
@@ -6471,7 +6326,6 @@ R031+0x0124,R031,07F7,block,R031+0x07F7 (1462:07F7),push 0x2a7a,open
 R031+0x0124,R031,0845,block,R031+0x0845 (1462:0845),jmp 0x7b2,open
 R031+0x0124,R031,013F,fallthrough,R031+0x013F (1462:013F),jne 0x144,open
 R031+0x0124,R031,0191,taken,R031+0x0191 (1462:0191),jne 0x18c,open
-R031+0x0124,R031,070B,fallthrough,R031+0x070B (1462:070B),je 0x722,open
 R031+0x0124,R031,0843,fallthrough,R031+0x0843 (1462:0843),jne 0x848,open
 R031+0x0124,R031,0787,fallthrough,R031+0x0787 (1462:0787),jbe 0x78c,open
 R031+0x0124,R031,07A9,fallthrough,R031+0x07A9 (1462:07A9),jne 0x7be,open
@@ -6485,7 +6339,6 @@ R031+0x0124,R031,05B8,taken,R031+0x05B8 (1462:05B8),je 0x5c3,compiled-form
 R031+0x0124,R031,03A4,fallthrough,R031+0x03A4 (1462:03A4),jle 0x3a9,open
 R031+0x0124,R031,03ED,fallthrough,R031+0x03ED (1462:03ED),jne 0x3f2,open
 R031+0x0124,R031,041D,fallthrough,R031+0x041D (1462:041D),jl 0x422,open
-R031+0x0124,R031,044A,fallthrough,R031+0x044A (1462:044A),jl 0x44f,open
 R031+0x0124,R031,024A,fallthrough,R031+0x024A (1462:024A),jle 0x24f,open
 R031+0x0124,R031,028B,fallthrough,R031+0x028B (1462:028B),jne 0x290,open
 R031+0x0124,R031,02A9,fallthrough,R031+0x02A9 (1462:02A9),je 0x2b0,open
@@ -7081,16 +6934,12 @@ R031+0x60E4,R031,6146,taken,R031+0x6146 (18E7:18F6),jne 0x18fd,open
 R031+0x60E4,R031,6155,fallthrough,R031+0x6155 (18E7:1905),jb 0x18e4,open
 R032+0x0000,R032,004E,block,R032+0x004E (1462:004E),"mov es, word ptr [0x7e66]",open
 R032+0x0000,R032,01E3,block,R032+0x01E3 (1462:01E3),jmp 0x243,open
-R032+0x0000,R032,01F8,block,R032+0x01F8 (1462:01F8),"mov si, 0x3042",open
-R032+0x0000,R032,06C6,block,R032+0x06C6 (1462:06C6),"mov word ptr [0x9c46], 0",open
 R032+0x0000,R032,0769,block,R032+0x0769 (1462:0769),jmp 0x742,dormant
 R032+0x0000,R032,0044,taken,R032+0x0044 (1462:0044),je 0x4e,open
 R032+0x0000,R032,00FC,taken,R032+0x00FC (1462:00FC),jne 0xf7,open
 R032+0x0000,R032,01AF,taken,R032+0x01AF (1462:01AF),jle 0x204,open
-R032+0x0000,R032,01DE,taken,R032+0x01DE (1462:01DE),je 0x1f8,open
 R032+0x0000,R032,01E1,fallthrough,R032+0x01E1 (1462:01E1),je 0x1fe,open
 R032+0x0000,R032,06B0,taken,R032+0x06B0 (1462:06B0),jne 0x6ab,open
-R032+0x0000,R032,06C4,fallthrough,R032+0x06C4 (1462:06C4),je 0x720,open
 R032+0x0000,R032,073A,taken,R032+0x073A (1462:073A),je 0x742,open
 R032+0x0000,R032,0764,taken,R032+0x0764 (1462:0764),je 0x769,dormant
 R032+0x0000,R032,05C1,taken,R032+0x05C1 (1462:05C1),jle 0x633,open
@@ -7106,7 +6955,6 @@ R032+0x0B30,R032,0E0D,block,R032+0x0E0D (1462:0E0D),jmp 0xe92,open
 R032+0x0B30,R032,0BC3,taken,R032+0x0BC3 (1462:0BC3),jne 0xbda,open
 R032+0x0B30,R032,0D52,fallthrough,R032+0x0D52 (1462:0D52),jg 0xd57,open
 R032+0x0B30,R032,0E0B,fallthrough,R032+0x0E0B (1462:0E0B),jg 0xe10,open
-R032+0x0F60,R032,0F6E,block,R032+0x0F6E (1462:0F6E),jmp 0x1384,open
 R032+0x0F60,R032,0F82,block,R032+0x0F82 (1462:0F82),jmp 0x101e,open
 R032+0x0F60,R032,0FB5,block,R032+0x0FB5 (1462:0FB5),jmp 0x137c,dormant
 R032+0x0F60,R032,0FBD,block,R032+0x0FBD (1462:0FBD),jmp 0x137c,dormant
@@ -7126,7 +6974,6 @@ R032+0x0F60,R032,1554,block,R032+0x1554 (1462:1554),push word ptr [0x884e],open
 R032+0x0F60,R032,15E4,block,R032+0x15E4 (1462:15E4),"mov cl, 8",open
 R032+0x0F60,R032,15FB,block,R032+0x15FB (1462:15FB),jmp 0x1768,open
 R032+0x0F60,R032,15FE,block,R032+0x15FE (1462:15FE),"mov al, byte ptr [bp + 6]",open
-R032+0x0F60,R032,0F6C,fallthrough,R032+0x0F6C (1462:0F6C),jne 0xf71,open
 R032+0x0F60,R032,1205,fallthrough,R032+0x1205 (1462:1205),je 0x120a,open
 R032+0x0F60,R032,12E2,fallthrough,R032+0x12E2 (1462:12E2),je 0x12ea,open
 R032+0x0F60,R032,0F80,fallthrough,R032+0x0F80 (1462:0F80),jne 0xf85,open
@@ -7151,7 +6998,6 @@ R032+0x1B26,R032,1C1A,taken,R032+0x1C1A (1462:1C1A),jg 0x1c2a,open
 R033+0x0000,R033,003A,block,R033+0x003A (1462:003A),push 0x320f,dormant
 R033+0x0000,R033,0103,block,R033+0x0103 (1462:0103),jmp 0x4f,dormant
 R033+0x0000,R033,01DB,block,R033+0x01DB (1462:01DB),jmp 0x2d1,dormant
-R033+0x0000,R033,02B3,block,R033+0x02B3 (1462:02B3),jmp 0x184,open
 R033+0x0000,R033,02B9,block,R033+0x02B9 (1462:02B9),jmp 0x2d1,open
 R033+0x0000,R033,04D2,block,R033+0x04D2 (1462:04D2),push word ptr [0x886c],open
 R033+0x0000,R033,0560,block,R033+0x0560 (1462:0560),"or di, di",open
@@ -7170,7 +7016,6 @@ R033+0x0000,R033,0562,taken,R033+0x0562 (1462:0562),jge 0x58a,dormant
 R033+0x0000,R033,0562,fallthrough,R033+0x0562 (1462:0562),jge 0x58a,open
 R033+0x0000,R033,0588,taken,R033+0x0588 (1462:0588),jne 0x56b,open
 R033+0x0000,R033,0588,fallthrough,R033+0x0588 (1462:0588),jne 0x56b,open
-R033+0x0000,R033,02B1,fallthrough,R033+0x02B1 (1462:02B1),jne 0x2b6,open
 R033+0x0000,R033,02B7,fallthrough,R033+0x02B7 (1462:02B7),je 0x2cc,open
 R033+0x0000,R033,0101,fallthrough,R033+0x0101 (1462:0101),jg 0x106,dormant
 R033+0x0658,R033,072E,taken,R033+0x072E (1462:072E),jle 0x773,open
@@ -7202,7 +7047,6 @@ R033+0x12EC,R033,1328,fallthrough,R033+0x1328 (1462:1328),jl 0x130f,open
 R033+0x1390,R033,1415,block,R033+0x1415 (1462:1415),"mov si, 0x63",open
 R033+0x1390,R033,140C,fallthrough,R033+0x140C (1462:140C),jne 0x1410,dormant
 R033+0x1390,R033,1413,fallthrough,R033+0x1413 (1462:1413),jle 0x1418,open
-R033+0x1390,R033,14DF,fallthrough,R033+0x14DF (1462:14DF),jl 0x1482,open
 R033+0x14E6,R033,1530,block,R033+0x1530 (1462:1530),jmp 0x161a,open
 R033+0x14E6,R033,1628,taken,R033+0x1628 (1462:1628),jge 0x162d,open
 R033+0x14E6,R033,152E,fallthrough,R033+0x152E (1462:152E),jg 0x1533,open
@@ -7264,7 +7108,6 @@ R034+0x022C,R034,03EB,block,R034+0x03EB (1462:03EB),jmp 0x5e4,open
 R034+0x022C,R034,03EE,block,R034+0x03EE (1462:03EE),jmp 0x6b2,open
 R034+0x022C,R034,0583,block,R034+0x0583 (1462:0583),jmp 0x5e4,open
 R034+0x022C,R034,0596,block,R034+0x0596 (1462:0596),"mov word ptr [bp - 4], 0x1950",open
-R034+0x022C,R034,05F2,block,R034+0x05F2 (1462:05F2),"mov ax, word ptr [0x6eee]",open
 R034+0x022C,R034,0606,block,R034+0x0606 (1462:0606),jmp 0x6c4,open
 R034+0x022C,R034,061D,block,R034+0x061D (1462:061D),"mov word ptr [0x9c46], 0",open
 R034+0x022C,R034,06C4,block,R034+0x06C4 (1462:06C4),"cmp word ptr [0x887a], 0",open
@@ -7282,8 +7125,6 @@ R034+0x022C,R034,03B7,taken,R034+0x03B7 (1462:03B7),jne 0x3b2,open
 R034+0x022C,R034,03B7,fallthrough,R034+0x03B7 (1462:03B7),jne 0x3b2,open
 R034+0x022C,R034,03DC,taken,R034+0x03DC (1462:03DC),jl 0x3e1,open
 R034+0x022C,R034,03DC,fallthrough,R034+0x03DC (1462:03DC),jl 0x3e1,open
-R034+0x022C,R034,05F0,fallthrough,R034+0x05F0 (1462:05F0),jge 0x609,open
-R034+0x022C,R034,0604,taken,R034+0x0604 (1462:0604),jne 0x609,open
 R034+0x022C,R034,0604,fallthrough,R034+0x0604 (1462:0604),jne 0x609,open
 R034+0x022C,R034,06C9,taken,R034+0x06C9 (1462:06C9),je 0x6da,open
 R034+0x022C,R034,06C9,fallthrough,R034+0x06C9 (1462:06C9),je 0x6da,open
@@ -7307,7 +7148,6 @@ R034+0x06E2,R034,06F8,block,R034+0x06F8 (1462:06F8),push 0x342c,open
 R034+0x06E2,R034,06F6,fallthrough,R034+0x06F6 (1462:06F6),je 0x706,open
 R034+0x0720,R034,076A,block,R034+0x076A (1462:076A),push 0xe48c,open
 R034+0x0720,R034,0772,block,R034+0x0772 (1462:0772),push 0xe48c,open
-R034+0x0720,R034,0782,block,R034+0x0782 (1462:0782),push 0xe48c,open
 R034+0x0720,R034,078A,block,R034+0x078A (1462:078A),push 0xe48c,open
 R034+0x0720,R034,0792,block,R034+0x0792 (1462:0792),push 0xe48c,open
 R034+0x0720,R034,07B2,block,R034+0x07B2 (1462:07B2),push 0xe48c,open
@@ -7377,7 +7217,6 @@ R034+0x1B3C,R034,1B50,taken,R034+0x1B50 (1550:0C70),je 0xc86,open
 R035+0x0000,R035,004F,taken,R035+0x004F (1462:004F),jne 0x4a,open
 R035+0x0000,R035,00FD,taken,R035+0x00FD (1462:00FD),jle 0x152,open
 R035+0x0000,R035,034C,taken,R035+0x034C (1462:034C),jge 0x366,open
-R035+0x0000,R035,037B,taken,R035+0x037B (1462:037B),jge 0x3a4,open
 R035+0x0000,R035,038A,taken,R035+0x038A (1462:038A),jge 0x3a4,open
 R035+0x0000,R035,03BE,taken,R035+0x03BE (1462:03BE),jle 0x3e0,open
 R035+0x0000,R035,03C6,taken,R035+0x03C6 (1462:03C6),jge 0x3e0,open
@@ -7476,10 +7315,7 @@ R036+0x0082,R036,03F2,block,R036+0x03F2 (1462:03F2),"mov word ptr [0x8a32], si",
 R036+0x0082,R036,04A2,block,R036+0x04A2 (1462:04A2),"lea ax, [bp - 0x82]",open
 R036+0x0082,R036,0508,block,R036+0x0508 (1462:0508),jmp 0x4fe,open
 R036+0x0082,R036,051F,block,R036+0x051F (1462:051F),"mov word ptr [0x8a32], si",open
-R036+0x0082,R036,0631,block,R036+0x0631 (1462:0631),"mov word ptr [0x9c46], 0",open
 R036+0x0082,R036,063D,block,R036+0x063D (1462:063D),push 0xe48c,open
-R036+0x0082,R036,0646,block,R036+0x0646 (1462:0646),push 0xe48c,open
-R036+0x0082,R036,064C,block,R036+0x064C (1462:064C),push 1,open
 R036+0x0082,R036,014F,fallthrough,R036+0x014F (1462:014F),jge 0x163,open
 R036+0x0082,R036,0161,taken,R036+0x0161 (1462:0161),jne 0x112,open
 R036+0x0082,R036,0161,fallthrough,R036+0x0161 (1462:0161),jne 0x112,dormant
@@ -7492,8 +7328,6 @@ R036+0x0082,R036,01DB,taken,R036+0x01DB (1462:01DB),je 0x1e0,open
 R036+0x0082,R036,027B,taken,R036+0x027B (1462:027B),je 0x280,open
 R036+0x0082,R036,0503,taken,R036+0x0503 (1462:0503),jne 0x508,open
 R036+0x0082,R036,05B0,taken,R036+0x05B0 (1462:05B0),jne 0x5ab,open
-R036+0x0082,R036,062F,fallthrough,R036+0x062F (1462:062F),je 0x68d,open
-R036+0x0082,R036,063B,taken,R036+0x063B (1462:063B),jne 0x646,open
 R036+0x0082,R036,063B,fallthrough,R036+0x063B (1462:063B),jne 0x646,open
 R036+0x0082,R036,051D,fallthrough,R036+0x051D (1462:051D),je 0x54a,open
 R036+0x0082,R036,03F0,fallthrough,R036+0x03F0 (1462:03F0),je 0x41d,open
@@ -7684,22 +7518,13 @@ R036+0x1B80,R036,1BBD,block,R036+0x1BBD (1462:1BBD),"mov ax, 3",open
 R036+0x1B80,R036,1BC7,block,R036+0x1BC7 (1462:1BC7),"mov ax, 2",open
 R036+0x1B80,R036,1BDB,block,R036+0x1BDB (1462:1BDB),dec di,open
 R036+0x1B80,R036,1BE6,block,R036+0x1BE6 (1462:1BE6),dec di,open
-R036+0x1B80,R036,1BF3,block,R036+0x1BF3 (1462:1BF3),"cmp byte ptr [si - 0x10], 0x1e",open
-R036+0x1B80,R036,1BF9,block,R036+0x1BF9 (1462:1BF9),"cmp byte ptr [si - 0xf], 0x1e",open
-R036+0x1B80,R036,1BFF,block,R036+0x1BFF (1462:1BFF),"cmp byte ptr [si - 0xe], 0x1e",open
-R036+0x1B80,R036,1C05,block,R036+0x1C05 (1462:1C05),"cmp byte ptr [si - 0xc], 0x1e",open
 R036+0x1B80,R036,1C1D,block,R036+0x1C1D (1462:1C1D),"mov di, 0xf",open
 R036+0x1B80,R036,1BBB,fallthrough,R036+0x1BBB (1462:1BBB),jl 0x1bc2,open
 R036+0x1B80,R036,1BD9,fallthrough,R036+0x1BD9 (1462:1BD9),jl 0x1be0,open
-R036+0x1B80,R036,1BF1,fallthrough,R036+0x1BF1 (1462:1BF1),jge 0x1c0b,open
 R036+0x1B80,R036,1BF7,taken,R036+0x1BF7 (1462:1BF7),jge 0x1c0b,open
-R036+0x1B80,R036,1BF7,fallthrough,R036+0x1BF7 (1462:1BF7),jge 0x1c0b,open
 R036+0x1B80,R036,1BFD,taken,R036+0x1BFD (1462:1BFD),jge 0x1c0b,open
-R036+0x1B80,R036,1BFD,fallthrough,R036+0x1BFD (1462:1BFD),jge 0x1c0b,open
 R036+0x1B80,R036,1C03,taken,R036+0x1C03 (1462:1C03),jge 0x1c0b,open
-R036+0x1B80,R036,1C03,fallthrough,R036+0x1C03 (1462:1C03),jge 0x1c0b,open
 R036+0x1B80,R036,1C09,taken,R036+0x1C09 (1462:1C09),jl 0x1c0c,open
-R036+0x1B80,R036,1C09,fallthrough,R036+0x1C09 (1462:1C09),jl 0x1c0c,open
 R036+0x1B80,R036,1BE4,fallthrough,R036+0x1BE4 (1462:1BE4),jl 0x1be7,open
 R036+0x1B80,R036,1BC5,fallthrough,R036+0x1BC5 (1462:1BC5),jl 0x1bcc,open
 R036+0x1B80,R036,1C1B,fallthrough,R036+0x1C1B (1462:1C1B),jl 0x1c22,open
@@ -7747,17 +7572,11 @@ R037+0x0444,R037,18D7,block,R037+0x18D7 (1462:18D7),"mov word ptr [0xe890], ax",
 R037+0x0444,R037,18E0,block,R037+0x18E0 (1462:18E0),"mov byte ptr [0xe753], 0x28",open
 R037+0x0444,R037,1A5F,block,R037+0x1A5F (1462:1A5F),jmp 0x275c,open
 R037+0x0444,R037,1C3B,block,R037+0x1C3B (1462:1C3B),jmp 0x2568,open
-R037+0x0444,R037,1D7E,block,R037+0x1D7E (1462:1D7E),inc word ptr [0xe892],open
 R037+0x0444,R037,1D89,block,R037+0x1D89 (1462:1D89),"mov word ptr [0xe892], ax",open
-R037+0x0444,R037,1D8C,block,R037+0x1D8C (1462:1D8C),"mov ax, word ptr [0xe892]",open
 R037+0x0444,R037,1D92,block,R037+0x1D92 (1462:1D92),"mov byte ptr [0xe762], 0x18",open
 R037+0x0444,R037,1DC2,block,R037+0x1DC2 (1462:1DC2),"mov al, 0x12",open
-R037+0x0444,R037,1DDE,block,R037+0x1DDE (1462:1DDE),"mov byte ptr [0xe763], 0x1c",open
-R037+0x0444,R037,1E02,block,R037+0x1E02 (1462:1E02),"mov byte ptr [0xe762], 0x28",open
 R037+0x0444,R037,1E32,block,R037+0x1E32 (1462:1E32),"mov byte ptr [0xe762], 0x21",open
 R037+0x0444,R037,1E54,block,R037+0x1E54 (1462:1E54),"mov al, 0x32",open
-R037+0x0444,R037,1E7E,block,R037+0x1E7E (1462:1E7E),"cmp ax, 5",open
-R037+0x0444,R037,1E83,block,R037+0x1E83 (1462:1E83),"shl ax, 1",open
 R037+0x0444,R037,1F05,block,R037+0x1F05 (1462:1F05),"sbb ax, ax",open
 R037+0x0444,R037,1F0F,block,R037+0x1F0F (1462:1F0F),jmp 0x2098,open
 R037+0x0444,R037,2030,block,R037+0x2030 (1462:2030),"sub al, al",open
@@ -7818,8 +7637,6 @@ R037+0x0444,R037,1651,taken,R037+0x1651 (1462:1651),ja 0x1668,open
 R037+0x0444,R037,0818,taken,R037+0x0818 (1462:0818),je 0x826,open
 R037+0x0444,R037,274F,fallthrough,R037+0x274F (1462:274F),jne 0x2754,open
 R037+0x0444,R037,1A5D,fallthrough,R037+0x1A5D (1462:1A5D),jg 0x1a62,open
-R037+0x0444,R037,1D6F,taken,R037+0x1D6F (1462:1D6F),je 0x1d76,open
-R037+0x0444,R037,1D79,taken,R037+0x1D79 (1462:1D79),je 0x1d7e,open
 R037+0x0444,R037,1F03,fallthrough,R037+0x1F03 (1462:1F03),je 0x1f0a,open
 R037+0x0444,R037,1F0D,fallthrough,R037+0x1F0D (1462:1F0D),je 0x1f12,open
 R037+0x0444,R037,20AF,taken,R037+0x20AF (1462:20AF),je 0x20b6,dormant
@@ -7831,10 +7648,8 @@ R037+0x0444,R037,20C7,fallthrough,R037+0x20C7 (1462:20C7),jl 0x20cc,dormant
 R037+0x0444,R037,215B,taken,R037+0x215B (1462:215B),jbe 0x2160,dormant
 R037+0x0444,R037,215B,fallthrough,R037+0x215B (1462:215B),jbe 0x2160,dormant
 R037+0x0444,R037,205B,taken,R037+0x205B (1462:205B),ja 0x2072,open
-R037+0x0444,R037,1D87,taken,R037+0x1D87 (1462:1D87),jl 0x1d8c,open
 R037+0x0444,R037,1D87,fallthrough,R037+0x1D87 (1462:1D87),jl 0x1d8c,open
 R037+0x0444,R037,1E81,taken,R037+0x1E81 (1462:1E81),ja 0x1e98,open
-R037+0x0444,R037,1E81,fallthrough,R037+0x1E81 (1462:1E81),ja 0x1e98,open
 R037+0x0444,R037,1D03,taken,R037+0x1D03 (1462:1D03),ja 0x1d1a,open
 R037+0x0444,R037,1C39,fallthrough,R037+0x1C39 (1462:1C39),jbe 0x1c3e,open
 R037+0x0444,R037,2757,fallthrough,R037+0x2757 (1462:2757),jne 0x275c,open
@@ -7901,7 +7716,6 @@ R037+0x4664,R037,4A64,taken,R037+0x4A64 (18C8:0404),jle 0x423,open
 R037+0x4664,R037,4A7C,taken,R037+0x4A7C (18C8:041C),jge 0x423,open
 R037+0x4664,R037,4953,fallthrough,R037+0x4953 (18C8:02F3),jl 0x2f8,open
 R037+0x4664,R037,495D,taken,R037+0x495D (18C8:02FD),jle 0x37e,open
-R037+0x4664,R037,4965,taken,R037+0x4965 (18C8:0305),jge 0x37e,open
 R037+0x4664,R037,48AB,fallthrough,R037+0x48AB (18C8:024B),jg 0x250,open
 R037+0x4664,R037,48D5,fallthrough,R037+0x48D5 (18C8:0275),jl 0x27a,open
 R037+0x4664,R037,4763,fallthrough,R037+0x4763 (18C8:0103),jg 0x108,open
@@ -8555,7 +8369,7 @@ R043+0x21D4,R043,22B1,block,R043+0x22B1 (150B:1821),push 0x5280,open
 R043+0x21D4,R043,22C0,block,R043+0x22C0 (150B:1830),"mov word ptr [0xa776], 0",open
 R043+0x21D4,R043,2399,block,R043+0x2399 (150B:1909),jmp 0x1925,compiled-form
 R043+0x21D4,R043,239C,block,R043+0x239C (150B:190C),"mov ax, 0xea64",open
-R043+0x21D4,R043,24E5,block,R043+0x24E5 (150B:1A55),"mov si, dx",open
+R043+0x21D4,R043,24E5,block,R043+0x24E5 (150B:1A55),"mov si, dx",dormant
 R043+0x21D4,R043,250D,block,R043+0x250D (150B:1A7D),"mov al, byte ptr [si - 0x168c]",open
 R043+0x21D4,R043,251B,block,R043+0x251B (150B:1A8B),"mov cl, byte ptr [si - 0x1678]",open
 R043+0x21D4,R043,253C,block,R043+0x253C (150B:1AAC),"mov dx, 1",open
@@ -8575,7 +8389,6 @@ R043+0x21D4,R043,278E,taken,R043+0x278E (150B:1CFE),jne 0x1d16,open
 R043+0x21D4,R043,27AB,taken,R043+0x27AB (150B:1D1B),jne 0x1d52,open
 R043+0x21D4,R043,27AB,fallthrough,R043+0x27AB (150B:1D1B),jne 0x1d52,open
 R043+0x21D4,R043,2660,taken,R043+0x2660 (150B:1BD0),je 0x1bd8,dormant
-R043+0x21D4,R043,241D,taken,R043+0x241D (150B:198D),jg 0x19c1,open
 R043+0x21D4,R043,242F,taken,R043+0x242F (150B:199F),jl 0x19c1,open
 R043+0x21D4,R043,244C,taken,R043+0x244C (150B:19BC),jl 0x19c1,open
 R043+0x21D4,R043,2555,taken,R043+0x2555 (150B:1AC5),jne 0x1b45,open
@@ -8584,7 +8397,7 @@ R043+0x21D4,R043,2590,taken,R043+0x2590 (150B:1B00),jne 0x1b0a,open
 R043+0x21D4,R043,2496,taken,R043+0x2496 (150B:1A06),jg 0x1a37,open
 R043+0x21D4,R043,24A8,taken,R043+0x24A8 (150B:1A18),jl 0x1a37,open
 R043+0x21D4,R043,24B5,taken,R043+0x24B5 (150B:1A25),jg 0x1a37,open
-R043+0x21D4,R043,24E3,fallthrough,R043+0x24E3 (150B:1A53),jg 0x1a5a,open
+R043+0x21D4,R043,24E3,fallthrough,R043+0x24E3 (150B:1A53),jg 0x1a5a,dormant
 R043+0x21D4,R043,253A,fallthrough,R043+0x253A (150B:1AAA),jne 0x1aaf,open
 R043+0x21D4,R043,24F9,taken,R043+0x24F9 (150B:1A69),jg 0x1a9b,open
 R043+0x21D4,R043,250B,fallthrough,R043+0x250B (150B:1A7B),jl 0x1a9b,open
@@ -9105,10 +8918,10 @@ R047+0x0C0A,R047,0C5F,fallthrough,R047+0x0C5F (1852:0ABF),jge 0xac4,compiled-for
 R047+0x0C0A,R047,0C68,taken,R047+0x0C68 (1852:0AC8),jne 0xacd,compiled-form
 R047+0x0E82,R047,0ED6,block,R047+0x0ED6 (1852:0D36),"mov word ptr [0xe48a], 0xd",open
 R047+0x0E82,R047,0E99,taken,R047+0x0E99 (1852:0CF9),jg 0xd36,open
-R047+0x12A2,R047,12FF,block,R047+0x12FF (1852:115F),jmp 0x1229,open
+R047+0x12A2,R047,12FF,block,R047+0x12FF (1852:115F),jmp 0x1229,dormant
 R047+0x12A2,R047,1309,block,R047+0x1309 (1852:1169),jmp 0x1229,compiled-form
 R047+0x12A2,R047,130F,block,R047+0x130F (1852:116F),pop si,open
-R047+0x12A2,R047,12FD,fallthrough,R047+0x12FD (1852:115D),jge 0x1162,open
+R047+0x12A2,R047,12FD,fallthrough,R047+0x12FD (1852:115D),jge 0x1162,dormant
 R047+0x12A2,R047,1307,fallthrough,R047+0x1307 (1852:1167),jge 0x116c,compiled-form
 R047+0x12A2,R047,130D,fallthrough,R047+0x130D (1852:116D),jle 0x11b8,open
 R047+0x13CC,R047,15AE,block,R047+0x15AE (1974:01EE),jmp 0x38e,dormant
@@ -11077,9 +10890,9 @@ R083+0x05DC,R083,0600,fallthrough,R083+0x0600 (1838:0600),je 0x658,open
 R083+0x05DC,R083,0635,taken,R083+0x0635 (1838:0635),jne 0x63e,open
 R083+0x05DC,R083,0635,fallthrough,R083+0x0635 (1838:0635),jne 0x63e,open
 R083+0x0A0C,R083,0A0C,block,R083+0x0A0C (1838:0A0C),"enter 0x38, 0",open
-R083+0x0EAE,R083,0F63,block,R083+0x0F63 (18FB:0333),jmp 0x4cd,open
+R083+0x0EAE,R083,0F63,block,R083+0x0F63 (18FB:0333),jmp 0x4cd,dormant
 R083+0x0EAE,R083,0F6C,block,R083+0x0F6C (18FB:033C),jmp 0x4cd,compiled-form
-R083+0x0EAE,R083,0F61,fallthrough,R083+0x0F61 (18FB:0331),jge 0x336,open
+R083+0x0EAE,R083,0F61,fallthrough,R083+0x0F61 (18FB:0331),jge 0x336,dormant
 R083+0x0EAE,R083,0F6A,fallthrough,R083+0x0F6A (18FB:033A),jge 0x33f,compiled-form
 R083+0x11F2,R083,1210,block,R083+0x1210 (18FB:05E0),"sub ax, ax",open
 R083+0x11F2,R083,1238,block,R083+0x1238 (18FB:0608),"mov es, word ptr [0x809a]",open
@@ -11249,7 +11062,6 @@ R086+0x0DEE,R086,0F74,fallthrough,R086+0x0F74 (1916:0194),jne 0x19c,open
 R086+0x0DEE,R086,0F81,fallthrough,R086+0x0F81 (1916:01A1),jne 0x1a9,open
 R086+0x0DEE,R086,0FB1,fallthrough,R086+0x0FB1 (1916:01D1),je 0x1d6,dormant
 R086+0x0DEE,R086,1095,taken,R086+0x1095 (1916:02B5),jne 0x2c2,open
-R086+0x123A,R086,12B5,taken,R086+0x12B5 (1916:04D5),je 0x4ed,open
 R086+0x123A,R086,12C5,taken,R086+0x12C5 (1916:04E5),jne 0x4ed,open
 R086+0x123A,R086,12E2,taken,R086+0x12E2 (1916:0502),jne 0x50a,open
 R086+0x123A,R086,12FF,taken,R086+0x12FF (1916:051F),jne 0x527,open
@@ -11319,9 +11131,9 @@ R089+0x032E,R089,03D6,taken,R089+0x03D6 (1838:03D6),je 0x3e0,open
 R089+0x03E8,R089,0419,block,R089+0x0419 (1838:0419),"mov si, 0x5a",open
 R089+0x03E8,R089,0417,fallthrough,R089+0x0417 (1838:0417),jge 0x41c,open
 R089+0x04F8,R089,0717,block,R089+0x0717 (1887:0227),jmp 0x2c1,dormant
-R089+0x04F8,R089,0778,block,R089+0x0778 (1887:0288),"mov bx, word ptr [0xee6a]",open
+R089+0x04F8,R089,0778,block,R089+0x0778 (1887:0288),"mov bx, word ptr [0xee6a]",dormant
 R089+0x04F8,R089,0715,fallthrough,R089+0x0715 (1887:0225),je 0x22a,dormant
-R089+0x04F8,R089,076B,taken,R089+0x076B (1887:027B),jne 0x288,open
+R089+0x04F8,R089,076B,taken,R089+0x076B (1887:027B),jne 0x288,dormant
 R089+0x096A,R089,0A69,block,R089+0x0A69 (18CE:0109),jmp 0x29b,dormant
 R089+0x096A,R089,0A67,fallthrough,R089+0x0A67 (18CE:0107),je 0x10c,dormant
 R089+0x147A,R089,152E,block,R089+0x152E (197F:00BE),jmp 0x1f1,dormant
@@ -12646,9 +12458,9 @@ R125+0x0F96,R125,0FB6,taken,R125+0x0FB6 (1910:0236),jl 0x29b,dormant
 R125+0x0F96,R125,0FBC,taken,R125+0x0FBC (1910:023C),jl 0x29b,dormant
 R125+0x18A8,R125,193F,block,R125+0x193F (19C2:009F),jmp 0x233,dormant
 R125+0x18A8,R125,193D,fallthrough,R125+0x193D (19C2:009D),je 0xa2,dormant
-R125+0x1ADA,R125,1AFC,block,R125+0x1AFC (19C2:025C),jmp 0x317,open
+R125+0x1ADA,R125,1AFC,block,R125+0x1AFC (19C2:025C),jmp 0x317,dormant
 R125+0x1ADA,R125,1B05,block,R125+0x1B05 (19C2:0265),jmp 0x317,compiled-form
-R125+0x1ADA,R125,1AFA,fallthrough,R125+0x1AFA (19C2:025A),jge 0x25f,open
+R125+0x1ADA,R125,1AFA,fallthrough,R125+0x1AFA (19C2:025A),jge 0x25f,dormant
 R125+0x1ADA,R125,1B03,fallthrough,R125+0x1B03 (19C2:0263),jge 0x268,compiled-form
 R125+0x1CD0,R125,1D04,block,R125+0x1D04 (19C2:0464),"sub ax, ax",open
 R125+0x1CD0,R125,1D0F,block,R125+0x1D0F (19C2:046F),"mov es, word ptr [0x823a]",open
