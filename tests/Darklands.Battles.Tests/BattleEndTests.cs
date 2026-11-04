@@ -44,6 +44,25 @@ public sealed class BattleEndTests
         return battle;
     }
 
+    [Theory]
+    [InlineData(Battle.HydraFight, true)]
+    [InlineData((byte)'Z', false)]
+    [InlineData((byte)0, false)]
+    public void TheSevenHeadedDragonsVictoryDrawsAFrameAroundTheCentreKept(byte fight, bool drawn)
+    {
+        // orig: R014+0x0CB6..0x0CC7: only for DS:C21A == 'I' floor-view-paint(−1) and fight-draw, between the clean-up and the new leader
+        var battle = NewBattle(CharacterStatus.Dead);
+        battle.DragonFight = fight;
+        var actions = new Actions();
+        battle.Clock = 1000;
+        Assert.False(BattleEnd.IsOver(battle, actions));
+        actions.Calls.Clear();
+        battle.Clock = 1061;
+        Assert.True(BattleEnd.IsOver(battle, actions));
+        Assert.Equal(drawn ? ["draw -1"] : [], actions.Calls);
+        Assert.Equal(1, actions.Loots);
+    }
+
     [Fact]
     public void BeatingTheEnemiesWinsAfterAPause()
     {

@@ -1006,7 +1006,14 @@ public sealed partial class TacticalBattle : IBattleEndActions
     // orig: R014+0x0AB5..0x0ABE: floor-view-paint(si) (09C0:1C2F) then fight-draw R014+0x6818 (14F7:0008), whose R014+0x99F6 turns the attackers
     public void RedrawAround(int member)
     {
-        _view.Recentre(member);
+        if (member < 0)
+        {
+            _view.MapChanged();
+        }
+        else
+        {
+            _view.Recentre(member);
+        }
         TurnTowardTargets();
         Effects.Drawn(_view);
         RemoveArrivedMissiles();

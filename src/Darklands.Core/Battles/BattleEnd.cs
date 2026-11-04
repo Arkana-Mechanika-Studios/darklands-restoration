@@ -24,8 +24,8 @@ public interface IBattleEndActions
     void VictoryCleanUp();
 
     /// <summary>
-    /// <c>floor-view-paint</c>(<paramref name="member"/>) and <c>fight-draw</c>: the view drawn anew around combatant member's cell, then a frame of
-    /// the renderer (its random draws, the turns toward the targets, the arrived missiles removed, the target cursor).
+    /// <c>floor-view-paint</c>(<paramref name="member"/>) and <c>fight-draw</c>: the view drawn anew around combatant member's cell (−1: around
+    /// the centre kept), then a frame of the renderer (its random draws, the turns toward the targets, the arrived missiles removed, the target cursor).
     /// </summary>
     void RedrawAround(int member);
 }
@@ -243,7 +243,7 @@ public static class BattleEnd
             if (b.DragonFight != 0)
             {
                 // C: a dragon fight ends with the victory (R014+0x0C7C); for the seven-headed dragon the view is then drawn again
-                // (R014+0x0CB6: floor-view-paint(−1), fight-draw), which the screen does every frame here.
+                //   below (R014+0x0CB6..0x0CC7).
                 b.LeaveAfterVictory = true;
             }
             foreach (var m in party)
@@ -254,6 +254,13 @@ public static class BattleEnd
                 }
             }
             actions.VictoryCleanUp();
+            if (b.DragonFight == Battle.HydraFight)
+            {
+                // orig: R014+0x0CB6..0x0CC7: DS:C21A == 'I': floor-view-paint(−1) (9C0:1C2F) and fight-draw (14F7:0008) before the new
+                //   leader (R014+0x0CCC); nobody turns (R014+0x0C64..0x0CB4 cleared the enemies' status and the party's orders), but the
+                //   frame's random draws (animated pieces, cloud jitter and edges, flashes) come from the game's generator
+                actions.RedrawAround(-1);
+            }
             ChooseNewLeader(b);
             actions.LootAfterFight();
             Recover(b, actions);
