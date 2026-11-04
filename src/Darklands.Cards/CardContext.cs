@@ -16,7 +16,7 @@ public sealed partial class CardVariables
     public int[] Chosen { get; } = [0, 1, 2, 3, 4];
 
     /// <summary>Names for $NamedOneName … $NamedFiveName.</summary>
-    public string[] Named { get; } = ["", "", "", "", ""];
+    public string[] Named { get; init; } = ["", "", "", "", ""];
 
     public string[] Texts { get; } = ["", "", "", ""];
 
@@ -41,7 +41,7 @@ public sealed partial class CardContext(GameState state, WorldData world, ICardS
 
     public ICardScreen Screen => screen;
 
-    public CardVariables Variables { get; } = new();
+    public CardVariables Variables { get; init; } = new();
 
     /// <summary>The full screens cards open (shop, camp, sheets, battles ...).</summary>
     public IGameScreens Screens { get; set; } = new ScreensUnavailable(screen);

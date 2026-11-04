@@ -105,6 +105,11 @@ public sealed class CharacterCreation
 
     public bool IsFemale { get; internal set; }
 
+    /// <summary>Told every name the creation makes up: made-up-name also leaves it in the cards' first named slot ($NamedOneName).</summary>
+    // orig: made-up-name R029+0x5CC4 (1367:0DB4) writes its name into the text slot named[0] (2E38:1A96), a global that a load leaves as
+    //   it is: after a new game the original's card 0xE6 prints the last name the creation screen made up there (B-a194c2)
+    public Action<string>? MadeUpName { get; set; }
+
     /// <summary>The name was drawn at random (a change of sex then draws a new one).</summary>
     public bool NameIsRandom { get; private set; }
 
@@ -210,6 +215,7 @@ public sealed class CharacterCreation
         var now = _clock();
         Name = RandomNames.Make(_random, _tables.Names, _partySeed, (short)now, kind, now);
         Nickname = RandomNames.Nickname(Name);
+        MadeUpName?.Invoke(Name);
         Keep(s_nameBuffer, Name, MaxNameLength);
         Keep(s_nickBuffer, Nickname, MaxNicknameLength);
     }

@@ -194,7 +194,7 @@ public sealed class DarklandsGame
                     case StartChoice.LoadGame when new LoadGameScreen(_ui, Saves, LoadScreenTexts).Run(fromStartScreen: true, name => LoadSavedGame(name, _session ??= NewGame.StartUp(World, Seed()))) is { } loaded:
                         PlayFrom(loaded.State);
                         break;
-                    case StartChoice.CreateCharacters when new CharacterCreationScreen(_ui, World, Seed, PartyTicks).Run() is { } created:
+                    case StartChoice.CreateCharacters when new CharacterCreationScreen(_ui, World, Seed, PartyTicks) { MadeUpName = name => _namedSlots[0] = name }.Run() is { } created:
                         PlayFrom(created);
                         break;
                     default:
@@ -391,6 +391,13 @@ public sealed class DarklandsGame
     /// <summary>The battle view's centre (DS:C866 / DS:C886), a program global: a game loaded keeps it.</summary>
     private (int Column, int Row) _battleViewCentre;
 
+    /// <summary>The cards' named slots ($NamedOneName .. $NamedFiveName): one set for the whole run of the program.</summary>
+    // orig: text slot named[0..4] (2E38:1A96, 5 x 30 bytes, zeros in the EXE's image) is a global: the saved-game reader and writer (R037 1C7D)
+    //   leave it, so after a load (Alt-L or from the start screen) a card prints what the last naming card or the creation screen left there
+    //   (b35: card 0xE6 called in the original after a new game and after a load of another game: "It is <the creation's last made-up name>
+    //   again"); a card context is made anew for every game played, the slots are not
+    private readonly string[] _namedSlots = ["", "", "", "", ""];
+
     // DS:A532 (the effects' modifiers) as the last battle left it: a load does not reset it (null: a fresh program's zeros)
     private Core.Battles.EffectModifiers[]? _battleModifiers;
 
@@ -478,7 +485,7 @@ public sealed class DarklandsGame
         CardContext? context = null;
         var panel = new PartyPanel(_ui);
         var screen = new CardScreen(_ui, () => context!, panel);
-        context = new CardContext(state, World, screen);
+        context = new CardContext(state, World, screen) { Variables = new CardVariables { Named = _namedSlots } };
         context.PersonalNames = _personalNames ??= new TablePersonalNames(Content.Formats.Characters.PersonalNamesDecoder.Decode(_ui.Assets.Files.Read("DARKLAND.EXE")));
         SaintPrayerScreen.Attach(context, _ui, panel);
         var battles = new BattleScreens(_ui, () => state, (items, money) => context.Screens.Loot(items, money))

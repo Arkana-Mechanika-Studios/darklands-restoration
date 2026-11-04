@@ -30,6 +30,24 @@ public sealed class CharacterCreationTests
         return c;
     }
 
+    // orig: made-up-name R029+0x5CC4 leaves its name in the cards' named slot 0 (2E38:1A96); a typed name does not go there (b35: the original's
+    // slot after chargen-created, where "zed" was typed, holds the creation's made-up "Gregori Steutz")
+    [Fact]
+    public void EveryMadeUpNameIsToldForTheCardsFirstNamedSlotAndATypedNameIsNot()
+    {
+        var told = new List<string>();
+        var c = new CharacterCreation(Tables(), Items(), new MscRandom(7), partySeed: 33, clock: () => 1000) { MadeUpName = told.Add };
+        Assert.Empty(told);
+        c.Reset();
+        Assert.Equal([c.Name], told);
+        c.NewRandomName();
+        Assert.Equal(2, told.Count);
+        Assert.Equal(c.Name, told[1]);
+        c.SetName("zed");
+        Assert.Equal(2, told.Count);
+        Assert.NotEqual("zed", told[1]);
+    }
+
     [Fact]
     public void ResetMakesAYoungManWithBaseAttributes()
     {

@@ -94,6 +94,9 @@ public sealed class CharacterCreationScreen
 
     private Canvas Screen => _ui.Canvas;
 
+    /// <summary>Told every name the creation makes up (the cards' first named slot, see CharacterCreation.MadeUpName).</summary>
+    public Action<string>? MadeUpName { get; init; }
+
     /// <summary>The figure codes from PICS\F??STAT.PIC, A??STAT.PIC, C??STAT.PIC (<c>R037+0x4562</c>).</summary>
     // DIVERGENCE: DOS lists the files in directory order (R037+0x4562 appends find-first / find-next results unsorted), which is the order the
     //   install wrote them on that disk, a fact of the host's file system and not of the EXE; here each group is in name order (F01, F60,
@@ -163,7 +166,7 @@ public sealed class CharacterCreationScreen
         var (readyMade, slotImages) = ReadyMade(partySeed);
         _sheetState = SheetState(random, startUpCity);
         _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages, _sheetState.Item);
-        var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, partySeed, _seed);
+        var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, partySeed, _seed) { MadeUpName = MadeUpName };
         DrawAll();
         while (true)
         {
