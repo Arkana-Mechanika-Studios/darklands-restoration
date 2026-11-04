@@ -191,7 +191,23 @@ def dialog_gaps(log, steps, logged: int) -> list[int]:
     for (p, where), (q, nxt) in zip(keys, keys[1:]):
         if where.startswith(("R037+0x2A68", "R037+0x8B76")) and not nxt.startswith(("R037+0x2A68", "R037+0x8B76")):
             out.append(q - p)
-    return out if len(out) == len(expected) else []
+    if len(out) == len(expected):
+        return out
+    # more dialogs than bwaits after them (an Alt-L outside a battle, whose next key is a card's): the log's dialogs pair with the
+    # script's in order, and only those followed by a bwait keep their gap (b35: b35-door-reload's Alt-L at the riddle door's card, then
+    # the Alt-S in the battle after it)
+    ends = []
+    for i, st in enumerate(steps):
+        before = [x for x in steps[:i] if x[0] not in ("wait", "shot")][-3:]
+        if st == ("key", "enter") and ("key", "alts") in before or st == ("key", "l") and ("key", "altl") in before:
+            j = i + 1
+            while j < len(steps) and steps[j][0] in ("wait", "shot"):
+                j += 1
+            ends.append(j < len(steps) and steps[j][0] == "bwait")
+    if len(ends) != len(out):
+        return []
+    kept = [gap for gap, followed in zip(out, ends) if followed]
+    return kept if len(kept) == len(expected) else []
 
 
 def after_bwait(steps, i) -> bool:
@@ -659,6 +675,11 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
                 args.append("wait:%d" % max(0, gap - 1 - cost + BWAIT_FRAMES - waits_since_key(steps, i)))
                 continue
             actual = next(seen, int(v))
+            if actual == 0 and i + 1 < len(steps) and steps[i + 1][0] == "bwait":
+                # a bwait the original took in no pass at all, right before another bwait (the battle's first pass after a key, as
+                # dungeon-door-start's bwait:5 after the Space that starts the fight): it is no wait, and the host's step for it would cost a
+                # frame the original does not have (b35 T2: the in-battle Alt-S came one pass late, so its save came after the save's clock jump)
+                continue
             later = 0
             if i and steps[i - 1] == ("key", "t") and actual < int(v):
                 # T (the Throw list, R016+0x068A..0x06A1) only sets the bar's flags: the bar comes up at the next pass's root 0000:0000 and unfolds

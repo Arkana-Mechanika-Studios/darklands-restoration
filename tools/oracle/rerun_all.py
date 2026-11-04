@@ -747,6 +747,11 @@ BATTLE_RECORDS |= {"gen-bdead-02", "gen-bgater-01", "gen-bgater-04", "gen-bheld-
 # bug report, kept under local/oracle-saves/dlp-issue2 and not in the repository (no licence to redistribute it)
 SESSIONS["dungeon-mine-doormsg"] = "local/oracle-saves/dlp-issue2/DKSAVE16.SAV"
 BATTLE_RECORDS |= {"dungeon-mine-doormsg"}
+# b35: the riddle door's battle of the same save started, entered through the door and back, and started again after an Alt-L outside the
+# battle, each with an in-battle Alt-S (the party's sizes and place tables, the level files, the chest offsets; local/batch/b35)
+for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
+    SESSIONS[_name] = "local/oracle-saves/dlp-issue2/DKSAVE16.SAV"
+    BATTLE_RECORDS.add(_name)
 IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory", "in battle"}   # lockstep.APART
 RESERVE_MB, JOB_MB = int(os.environ.get("DARKLANDS_RESERVE_MB", 1500)), int(os.environ.get("DARKLANDS_JOB_MB", 450))   # the 2026-10-27 memory rule: reserve 6000 and 1900 per oracle worker
 
