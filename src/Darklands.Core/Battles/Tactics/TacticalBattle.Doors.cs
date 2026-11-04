@@ -562,6 +562,11 @@ public sealed partial class TacticalBattle
         {
             _unsavedLevelBytes.Add((at + 7, (byte)wall));
         }
+        else if (wall != -1)
+        {
+            // the fix: the level counts as changed, so the mark is saved with it
+            LevelChanged = true;
+        }
         Level.SetByte(at + 7, 0xFF);
         int lvl = (sbyte)Level.GetByte(at + 6);
         Battle[who].Floor = lvl;

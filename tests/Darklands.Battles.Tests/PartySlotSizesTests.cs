@@ -55,10 +55,11 @@ public sealed class PartySlotSizesTests
         }
     }
 
-    // C: the party's door tables (DS:C64C / DS:C6EF / DS:C678) carry into a new battle (b35: the original's second battle of a run starts
-    //   with member 1's door 1 / side 1 from the first); a fresh program's are zeros
+    // C: the party's place tables (doors DS:C64C / DS:C678 / DS:C6EF, stairs DS:C77E, chest DS:C784, dissolve slot DS:C7CD, exit zone
+    //   DS:C7FE, stairs back DS:C8B2) carry into a new battle (b35: the original's second battle of a run starts with member 1's door 1 /
+    //   side 1 from the first; markers written at the fight's entry survive the start for slots 0..4); a fresh program's are zeros
     [Fact]
-    public void ANewBattleStartsFromThePartysDoorTablesAsTheyWere()
+    public void ANewBattleStartsFromThePartysPlaceTablesAsTheyWere()
     {
         if (GameFolder.Files is null)
         {
@@ -71,10 +72,19 @@ public sealed class PartySlotSizesTests
                 file.Variables[BattleVariables.MemberDoor + 1] = 1;
                 file.Variables[BattleVariables.MemberDoorSide + 1] = 1;
                 file.Variables[BattleVariables.MemberDoorOpens + 1] = 1;
+                file.Variables[BattleVariables.MemberStairs + 3] = 2;
+                file.Variables[BattleVariables.MemberChest + 3] = 4;
+                file.Variables[BattleVariables.MemberDissolveSlot + 3] = 5;
+                file.Variables[BattleVariables.MemberExitZone + 3] = 0xFF;
+                file.Variables[BattleVariables.MemberStairsBack + 3] = 1;
                 s.BattleFile = file;
             });
         Assert.Equal((1, 1, true), (kept.Battle[1].Door, kept.Battle[1].DoorSide, kept.Battle[1].DoorOpens));
+        var m3 = kept.Battle[3];
+        Assert.Equal((2, 4, 5, -1, 1), (m3.StairsExit, m3.Chest, m3.DissolveSlot, m3.ExitZone, m3.StairsBack));
         var (_, fresh) = BattleScreenTests.Start(GameFolder.Files, new BattleRequest(0x5E, 4545, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]));
         Assert.Equal((0, 0, false), (fresh.Battle[1].Door, fresh.Battle[1].DoorSide, fresh.Battle[1].DoorOpens));
+        var f3 = fresh.Battle[3];
+        Assert.Equal((0, 0, 0, 0, 0), (f3.StairsExit, f3.Chest, f3.DissolveSlot, f3.ExitZone, f3.StairsBack));
     }
 }

@@ -574,12 +574,12 @@ public sealed class BattleScreen : ITacticalView
         StartCycles();
         // orig: the marching order (DS:C624 / DS:C629) is the game's: the battle starts from it, R016+0x0DA6 keeping it while it is valid
         _battle.LoadMarchingOrder(_state.MarchingOrder);
-        // C: the party's door tables (DS:C64C / DS:C6EF / DS:C678) are the program's battle variables as the last battle or a load's
-        //   battle-reload (R003+0x0CE8, from the .BSV) left them (b35: a write watch in the original after an Alt-L; a second battle in one
-        //   run starts with the first's)
-        _battle.ProgramMemory.PartyDoors = _state.BattleFile is { } doors ? [.. Enumerable.Range(0, Combatant.PartySlots).Select(i =>
-            ((int)(sbyte)doors.Variables[BattleVariables.MemberDoor + i], (int)(sbyte)doors.Variables[BattleVariables.MemberDoorSide + i],
-            doors.Variables[BattleVariables.MemberDoorOpens + i] != 0))] : null;
+        // C: the party's place tables (doors, stairs, chest, dissolve slot, exit zone, stairs back) are the program's battle variables as
+        //   the last battle or a load's battle-reload (R003+0x0CE8, from the .BSV) left them (b35: a write watch in the original after an
+        //   Alt-L; a second battle in one run starts with the first's; markers written at the fight's entry survive its start)
+        _battle.ProgramMemory.PartyTables = _state.BattleFile is { } tables
+            ? tables.Variables[BattleVariables.MemberDoor..(BattleVariables.MemberDoor + GenerationProcessMemory.PartyTablesSize)]
+            : null;
         (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
         _battle.Start(arrivedThroughDoor: request.Mode >= 2, delayedStart: field.Timed && !reuse,
             combatFlags: request.CombatFlags | _state.BattleOrders.Flags, keptPlaces: reuse && request.Mode == 1 ? field.Store.PartyPlaces : null);

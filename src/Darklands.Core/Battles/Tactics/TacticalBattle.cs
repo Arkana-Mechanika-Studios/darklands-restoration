@@ -400,6 +400,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         // C: combat flag 0x10 (a new battlefield) is set by mode 0 of R002+0x0000; its levels are not prepared yet.
         var newBattlefield = !Store.Prepared;
         PrepareLevels();
+        KeepLevelFiles();
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             Battle[i].Floor = Battle.FloorShown;
@@ -422,9 +423,20 @@ public sealed partial class TacticalBattle : IBattleEndActions
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             (Battle[i].HalfWidth, Battle[i].HalfHeight) = ProgramMemory.PartySizes?[i] ?? (0, 0);
-            // C: the door tables DS:C64C / DS:C6EF / DS:C678 are not set up for a new battle either: the last battle's values, or the
-            //   .BSV's after a load (the program's battle file); DoorAt changes them where a member stands in a doorway
-            (Battle[i].Door, Battle[i].DoorSide, Battle[i].DoorOpens) = ProgramMemory.PartyDoors?[i] ?? (0, 0, false);
+            // C: the party's place tables (doors DS:C64C / DS:C678 / DS:C6EF, stairs DS:C77E, chest DS:C784, dissolve slot DS:C7CD,
+            //   exit zone DS:C7FE, stairs back DS:C8B2) are not set up for a new battle either: the last battle's values, or the .BSV's
+            //   after a load (the program's battle file); each tick's place checks change them where a member stands (b35: markers
+            //   written at R014+0x0000 in the original are all still there for slots 0..4 at the first activation test)
+            var t = ProgramMemory.PartyTables;
+            int Table(int at) => t is null ? 0 : (sbyte)t[at - BattleVariables.MemberDoor + i];
+            Battle[i].Door = Table(BattleVariables.MemberDoor);
+            Battle[i].DoorOpens = Table(BattleVariables.MemberDoorOpens) != 0;
+            Battle[i].DoorSide = Table(BattleVariables.MemberDoorSide);
+            Battle[i].StairsExit = Table(BattleVariables.MemberStairs);
+            Battle[i].Chest = Table(BattleVariables.MemberChest);
+            Battle[i].DissolveSlot = Table(BattleVariables.MemberDissolveSlot);
+            Battle[i].ExitZone = Table(BattleVariables.MemberExitZone);
+            Battle[i].StairsBack = Table(BattleVariables.MemberStairsBack);
         }
         if (keptPlaces is null)
         {
@@ -880,7 +892,11 @@ public sealed partial class TacticalBattle : IBattleEndActions
     // orig: level-change R024+0x05B4 (the save of the level left) and AfterBattle R014+0x069A
     private void SaveLevelOrLoseUnsaved()
     {
-        if (!LevelChanged)
+        if (LevelChanged)
+        {
+            SaveLevelFiles();
+        }
+        else
         {
             foreach (var (at, before) in _unsavedLevelBytes)
             {
@@ -891,9 +907,48 @@ public sealed partial class TacticalBattle : IBattleEndActions
         LevelChanged = false;
     }
 
+    /// <summary>The prepared levels are the level files of a battlefield that has none yet.</summary>
+    private void KeepLevelFiles()
+    {
+        if (Store.FloorFiles is not null)
+        {
+            return;
+        }
+        Store.FloorFiles = [.. _levels.Select(l => (byte[])l.Image.Clone())];
+        Store.ActivationFiles = [.. Enumerable.Range(0, _levels.Count).Select(ActivationFile)];
+    }
+
+    /// <summary>The level in the buffer and its activations are written to their files.</summary>
+    private void SaveLevelFiles()
+    {
+        for (var i = 0; Store.FloorFiles is { } floors && i < _levels.Count && i < floors.Length; i++)
+        {
+            if (ReferenceEquals(_levels[i], Map.Level))
+            {
+                floors[i] = (byte[])Map.Level.Image.Clone();
+                Store.ActivationFiles![i] = ActivationFile(i);
+            }
+        }
+    }
+
+    /// <summary>A level's activations in the .atv form (the count, then 30 bytes each).</summary>
+    private byte[] ActivationFile(int level)
+    {
+        var activations = level < BattlefieldForces.MaxLevels ? Activations[level] : [];
+        var atv = new byte[1 + activations.Count * 30];
+        atv[0] = (byte)activations.Count;
+        for (var k = 0; k < activations.Count; k++)
+        {
+            activations[k].ToRecord().CopyTo(atv, 1 + 30 * k);
+        }
+        return atv;
+    }
+
     /// <summary>Shows another level (level-change).</summary>
     // orig: level-change R024+0x059A (1EF8:059A) draft (outline; the end checked against the asm: `if (DS:D6EE != 0) R024+0x07A2();`)
-    // DIVERGENCE: the levels stay in memory (no .flr/.atv files); the hidden wall lists of unopened doors are applied by LevelShown.
+    // DIVERGENCE: the levels stay in memory (the .flr/.atv files are BattlefieldStore.FloorFiles / ActivationFiles, which only the battle
+    // file reads): a level switched to is not read back from its file, so what changed in it without DS:D4E4 is kept here but for
+    // use-exit's stairs mark (SaveLevelOrLoseUnsaved); the hidden wall lists of unopened doors are applied by LevelShown.
     public void SwitchLevel(int floor)
     {
         if (floor < 0 || floor >= _levels.Count)

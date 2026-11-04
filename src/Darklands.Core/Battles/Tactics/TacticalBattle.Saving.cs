@@ -30,11 +30,11 @@ public sealed partial class TacticalBattle
     /// <param name="clearedLevels">DS:DA34 before this battle (the battlefield memory): this battle's encounters are added.</param>
     /// <param name="lastCastleFlags">DS:160C (GameState.LastCastleFlags).</param>
     // orig: the battle-state save R003+0x00DC (0E76:00DC) draft (the serialisation and the level loop); the level switch
-    // R024+0x059A and R014+0x0694 write the shown level's .flr/.atv when it changed (the levels are kept in memory here, so they are
-    // always current); tests: BattleSaveTests
+    // R024+0x059A, R014+0x0694 and this save write the shown level's .flr/.atv only when it changed (DS:D4E4): the levels written are
+    // those files (BattlefieldStore.FloorFiles / ActivationFiles), not the levels in memory; tests: BattleSaveTests, LevelFilesTests
     // DIVERGENCE: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant
-    // tables' bytes left by earlier battles or by a load's battle-reload (the paths are kept, Combatant.Path; so are the party's door tables,
-    // ProgramMemory.PartyDoors), are this program's (zeros, -1) for a battlefield made here. Such a table is read again by the next battle where
+    // tables' bytes left by earlier battles or by a load's battle-reload (the paths are kept, Combatant.Path; so are the party's place tables,
+    // ProgramMemory.PartyTables), are this program's (zeros, -1) for a battlefield made here. Such a table is read again by the next battle where
     // nothing sets it first: the original's member 1 starts a second battle with door 1 / side 1 from the first (b35, dungeon-door-back).
     // DIVERGENCE: +0x15A3 (DS:A68F, the pointer shape in use) is a segment of a DOS memory block (the commonsp.img buffer R000 allocates)
     // plus an offset, the machine's memory layout: the file's value is kept (the restore reads it back; only a shape test compares it).
@@ -44,6 +44,14 @@ public sealed partial class TacticalBattle
     // the spell trap 2, the missile trap 4, thunk 09C0:181F 5, thunk 09C0:1815 6, thunk 09C0:1833 7, thunk 09C0:1829 8 (as longs); another value is left as it is.
     public void WriteBattleFile(BattleFile file, bool inBattle, int clearedLevels, int lastCastleFlags)
     {
+        // orig: R003+0x0132..0x01AB: the level in the buffer and its activations go to their files only while DS:D4E4 is set, which is
+        // then cleared; the levels written below are the files (BattlefieldStore.FloorFiles)
+        if (LevelChanged)
+        {
+            SaveLevelFiles();
+            _unsavedLevelBytes.Clear();
+            LevelChanged = false;
+        }
         var v = file.Variables;
         v[BattleVariables.InBattle] = (byte)(inBattle ? 1 : 0);
         for (var i = 0; i < Combatant.Count; i++)
@@ -175,17 +183,11 @@ public sealed partial class TacticalBattle
         file.Levels.Clear();
         for (var level = 0; level < _levels.Count; level++)
         {
-            var activations = Activations[level];
-            var atv = new byte[1 + activations.Count * 30];
-            atv[0] = (byte)activations.Count;
-            for (var k = 0; k < activations.Count; k++)
-            {
-                activations[k].ToRecord().CopyTo(atv, 1 + 30 * k);
-            }
+            var atv = Store.ActivationFiles is { } atvs && level < atvs.Length ? (byte[])atvs[level].Clone() : ActivationFile(level);
             var enm = Field.EnemyFiles is { } files && level < files.Count && files[level] is { } kept
                 ? (byte[])kept.Clone()
                 : LevelEnemyFile.Write(Field.Forces.Kinds[level] ?? []);
-            file.Levels.Add(new LevelFiles(SavedFloor(_levels[level].Image), atv, enm));
+            file.Levels.Add(new LevelFiles(SavedFloor(Store.FloorFiles is { } floors && level < floors.Length ? floors[level] : _levels[level].Image), atv, enm));
         }
         file.Terrain = (byte[])Field.Terrain.Bytes.Clone();
         file.Loot = loot.FileExists ? loot.ToFile() : null;
@@ -275,6 +277,9 @@ public sealed partial class TacticalBattle
             EnemyFiles = enemies,
         };
         field.Store.Prepared = true;
+        // C: the restore writes each level's files back: they are the battle file's
+        field.Store.FloorFiles = [.. levels.Select(l => (byte[])l.Image.Clone())];
+        field.Store.ActivationFiles = [.. file.Levels.Select(l => (byte[])l.Activations.Clone())];
         for (var level = 0; level < 16; level++)
         {
             field.Store.DoorsOpened[level] = BitConverter.ToUInt32(v, BattleVariables.DoorsOpened + 4 * level);

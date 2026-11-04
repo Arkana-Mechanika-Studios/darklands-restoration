@@ -60,8 +60,15 @@ public sealed class GenerationProcessMemory
     /// </summary>
     public (int Width, int Height)[]? PartySlotSizes { get; set; }
 
-    /// <summary>The party's door tables a new battle starts from (the program's battle file's; null: a fresh program's zeros).</summary>
-    public (int Door, int Side, bool Opens)[]? PartyDoors { get; set; }
+    /// <summary>
+    /// The party's place tables a new battle starts from, laid out as in the battle file (BattleVariables.MemberDoor .. MemberStairsBack,
+    /// five bytes each: door, opens, side, stairs, chest, dissolve slot, exit zone, stairs back): the program's battle file's; null: a
+    /// fresh program's zeros.
+    /// </summary>
+    public byte[]? PartyTables { get; set; }
+
+    /// <summary>The size of <see cref="PartyTables"/>.</summary>
+    public const int PartyTablesSize = BattleVariables.MemberStairsBack + 5 - BattleVariables.MemberDoor;
 
     /// <summary>DS:C925 / DS:C978 / DS:C989 / DS:CA1B: the trigger whose alarm ended the last battle (x −1: none).</summary>
     public (int X, int Y, int Width, int Height) AlarmTrigger { get; set; } = (-1, 0, 0, 0);
@@ -198,6 +205,19 @@ public sealed class BattlefieldStore
     /// null for a slot that was empty: mode 1 keeps them.
     /// </summary>
     public (MapPoint Position, int Facing, int SpriteFacing)?[] PartyPlaces { get; } = new (MapPoint, int, int)?[5];
+
+    /// <summary>
+    /// Each level's files as last written (level%d.flr, the floor image; level%d.atv, the activations): the prepared levels, then the
+    /// level in the buffer whenever it is saved, which level-change, the battle's end and the in-battle save do only while DS:D4E4 is
+    /// set. A battle file takes the levels from these. Null until a battle prepared the levels or a battle file gave them.
+    /// </summary>
+    // orig: level-change R024+0x05B4..0x0636 and the battle-state save R003+0x0132..0x01AB write the buffer (20A5:0000, 0x33FC bytes,
+    // with the hidden wall groups' bit 31 that R024+0x06D3 sets after each load) and DS:A895 only when DS:D4E4 is 1; the save then reads
+    // every level back from its files (b35: a write watch in the original sets bit 31 of the same 279 cells at the battle's entry and again
+    // in the save's reload, and the .BSV holds them clear)
+    public byte[][]? FloorFiles { get; set; }
+
+    public byte[][]? ActivationFiles { get; set; }
 }
 
 /// <summary>A generator's working state: the forces, the levels it saves, the flags it sets.</summary>
