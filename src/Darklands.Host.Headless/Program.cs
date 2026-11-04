@@ -800,6 +800,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         "end" => Keys.End,
         "pgup" => Keys.PageUp,
         "pgdn" => Keys.PageDown,
+        "center" => Keys.Center,
         "tab" => Keys.Tab,
         "backspace" => Keys.Backspace,
         "f1" => Keys.F1,

@@ -374,6 +374,8 @@ class Fuzzer:
             ops.extend(self.loot_state(pick == "dying"))
         elif pick == "orders":
             ops.extend(self.order_state())
+        elif pick == "panel":
+            ops.extend(self.panel_state())
         elif pick in ("regions", "triggers", "stairs", "zones"):
             ops.extend(self.features(pick))
         elif pick == "pack":
@@ -485,6 +487,38 @@ class Fuzzer:
             ops.append({"w": "ds", "o": 0x944D + 0x1A * i, "hex": bytes(rec).hex()})
         return ops
 
+    def panel_state(self) -> list[dict]:
+        """RC: the party panel's inputs: each member's order word (DS:9C65 + 0x80 m), status byte (DS:9C69), the attribute pairs the bars compare
+        (DS:9CB2.. / 9CB9..), the carried / away bytes (DS:A3D8, A6D3), the shown order letter's sub-order (DS:A6C4) and the order mode's selection."""
+        rng = self.rng
+        ops = []
+        for m in range(5):
+            if rng.random() < 0.6:
+                ops.append({"w": "ds", "o": 0x9C65 + 0x80 * m, "hex": pack(rng.choice([0, 1, 2, 6, 7, 0x0A, 0x0B, 0x11, 0x12, 0x22, 0x40, 0x40, 0x80, 0x100, 0x400, 0x400, 0x200]), 2)})
+            if rng.random() < 0.3:
+                ops.append({"w": "ds", "o": 0x9C69 + 0x80 * m, "hex": "%02x" % rng.choice([0, 1, 2, 5])})
+            if rng.random() < 0.5:
+                for o in range(0x9CB2, 0x9CC0):
+                    if rng.random() < 0.4:
+                        ops.append({"w": "ds", "o": o + 0x80 * m, "hex": "%02x" % rng.choice([0, 1, 3, 10, 20, 40, 60, 0x7F, 0x80, 0xF0, 0xFF])})
+            if rng.random() < 0.3:
+                ops.append({"w": "ds", "o": 0xA3D8 + m, "hex": "%02x" % rng.choice([0, 1, 2, 5])})
+            if rng.random() < 0.3:
+                ops.append({"w": "ds", "o": 0xA6D3 + m, "hex": "%02x" % rng.choice([0, 1])})
+            if rng.random() < 0.4:
+                ops.append({"w": "ds", "o": 0xA6C4 + m, "hex": "%02x" % rng.randrange(12)})
+            if rng.random() < 0.6:
+                ops.append({"w": "ds", "o": 0xA696 + 2 * m, "hex": pack(rng.choice([0, 1, 2, 4, 8, 9, 0x0A, 0x0C, 0x28, 0x48, 0x08, 0x40, 0x20]), 2)})
+        paused = rng.randrange(2)
+        ops.append({"w": "ds", "o": 0xA695, "hex": "%02x" % paused})
+        ops.append({"w": "ds", "o": 0x07D3, "hex": "%02x" % paused})
+        ops.append({"w": "ds", "o": 0xA6B3, "hex": "%02x" % rng.randrange(2)})
+        ops.append({"w": "ds", "o": 0xA6B2, "hex": "%02x" % (0 if rng.random() < 0.9 else rng.choice([1, 2, 3, 4, 0xFF]))})
+        ops.append({"w": "ds", "o": 0xA6C1, "hex": "%02x" % rng.choice([0, 0, 1])})
+        ops.append({"w": "ds", "o": 0xA6B0, "hex": pack(rng.choice([0xFFFF, 0, 1, 2, 7, 0x0B, 0x12, 0x22, 0x40, 0x80, 0x100, 0x400]), 2)})
+        ops.append({"w": "ds", "o": 0xA6D1, "hex": pack(rng.choice([0xFFFF, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), 2)})
+        return ops
+
     def order_state(self) -> list[dict]:
         """The order mode's variables (the orders menu and the keys read them): a member selected or not, the game paused or running, the order chosen and the
         cursor, the move mode, the marching order, the enable bytes of the menus."""
@@ -493,6 +527,7 @@ class Fuzzer:
         paused = rng.random() < 0.6
         selected = rng.randrange(5) if (paused and rng.random() < 0.85) or rng.random() < 0.15 else 0xFF
         ops.append({"w": "ds", "o": 0xA695, "hex": "%02x" % int(paused)})
+        ops.append({"w": "ds", "o": 0x07D3, "hex": "%02x" % int(paused)})
         ops.append({"w": "ds", "o": 0xA6B2, "hex": "%02x" % selected})
         ops.append({"w": "ds", "o": 0xA6B3, "hex": "%02x" % int(selected != 0xFF and (paused or rng.random() < 0.1))})
         if selected != 0xFF:
@@ -550,6 +585,7 @@ class Fuzzer:
             x, y = rng.randint(0x3C, 0x13F), rng.randint(0, 199)
         else:
             x, y = rng.randint(0, 0x3F), rng.randint(0, 199)
+        x, y = min(max(x, 0), 319), min(max(y, 0), 199)       # the pointer stays on the screen
         ops.append({"w": "ds", "o": 0x6EEC, "hex": pack(x & 0xFFFF, 2) + pack(y & 0xFFFF, 2)})
         ops.append({"w": "ds", "o": 0x6EF0, "hex": "%02x" % rng.choice([0, 1, 1])})
         ops.append({"w": "ds", "o": 0xD728, "hex": "%02x" % rng.randrange(2)})
@@ -946,6 +982,9 @@ for _c in ("R019+0x0000", "R019+0x0300", "R019+0x058A", "R019+0x01E2", "R019+0x0
     BIAS[_c] = FX_BIAS
 for _c in ("R014+0xB0D8", "R014+0xB18E", "R014+0xB244"):
     BIAS[_c] = ["pack", "pack", "pack", "tables"]
+if os.environ.get("RC_PANEL"):
+    for _c in list(BIAS):
+        BIAS[_c] = BIAS[_c] + ["panel"] * 3
 spotx = lambda rng, f: rng.choice(f.live_positions)[0] + rng.choice([-24, -8, 0, 8, 24])
 spoty = lambda rng, f: rng.choice(f.live_positions)[1] + rng.choice([-12, -4, 0, 4, 12])
 target_ = lambda rng, f: rng.choice([0xFFFF, rng.randrange(13), rng.randrange(13)])

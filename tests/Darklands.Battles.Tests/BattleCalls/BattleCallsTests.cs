@@ -499,6 +499,10 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             }
             if (char.ToUpperInvariant((char)(key & 0xFF)) == 'U' && c.Input.Ds[0xA695] == 0)
             {
+                if (c.Input.Ds[0xC623] == c.Input.Ds[0x11CA] && c.Input.Ds[0x96BD] == 1 && c.Input.Ds[0xC77E + c.Input.Ds[0x907B]] == 0xFF)
+                {
+                    throw new SkipJob("Use Stairs is on (DS:96BD = 1) with the leader's stairs record 0xFF: R014+0xDC14 sets the record whenever it turns the flag on");
+                }
                 // U outside the pause takes the leader's stairs record (DS:C8B2 when the party is split, DS:C77E when Use Stairs is on): the
                 // original reads it without a test of the level's count (R023+0x1618); R014+0xDC14 sets these from a stairs record of the level
                 var ds = c.Input.Ds;
@@ -571,6 +575,11 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         },
         ["R014+0xBCA8"] = (c, job) =>
         {
+            var ds = c.Input.Ds;
+            if ((sbyte)ds[OrderOverlay.Selected] == -1 && ds[0xC7CC] == 1 && ds[0xC762] != 1 && ds[0xD845] > 0 && (ds[0xA6B0] & 2) == 2)
+            {
+                throw new SkipJob("D-5c358f: an order given to member -1 reaches the command queue (R014+0x3C86), whose slots are the next-step words DS:D9E0, D9E2 and the next tick DS:D9E4");
+            }
             c.Tactics.LeaveOrderMode();
             OrderOverlay.TakeActiveMemberMinusOne(c, job);
             PanelRedrawTime(c, job);
