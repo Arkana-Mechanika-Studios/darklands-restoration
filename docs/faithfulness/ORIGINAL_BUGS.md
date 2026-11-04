@@ -597,7 +597,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-dd3d33** `bug`, flag `FixLootExitTestReadsWords` - `src/Darklands.Core/Battles/BattleEnd.cs:44` `BattleEnd.LootSkips`  
   original: `R040+0x0C22` (1462:0C22, draft)  
   why: OriginalBehaviour.FixLootExitTestReadsWords - the test reads fighter-floor-level (a byte table, DS:A6B4) as words at 2 x slot: it skips slot s only when combatant 2s's floor is -99 (0x9D) and combatant 2s + 1's is -1 (0xFF), so a member who left is not skipped (direct calls of R040+0x0C22 from the battle state street-p100 with key D and DS:8DC4 = 0: member 1's floor byte 0x9D gives DS:8DC4 = 1 without the message; floor bytes 2, 3 = 0x9D, 0xFF give DS:8DC4 = 2 after R022+0x04E4); tests: BattleEndTests
-- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:373` `BattleEnd.ImproveSkills`  
+- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:380` `BattleEnd.ImproveSkills`  
   original: `R014+0x0694` (0E76:0694, draft)  
   why: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or axe has weapon -1 (spend-ammunition), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
