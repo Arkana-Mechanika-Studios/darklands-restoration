@@ -3067,6 +3067,13 @@ public sealed class BattleScreen : ITacticalView
                 Bar(canvas, i, c.Strength, c.MaximumStrength, 0x23, 0x20, 2, color, note is null);
                 var favour = (int)Core.Characters.Attribute.DivineFavor;
                 Bar(canvas, i, c.Attributes[favour], c.Maximums[favour], 0x30, 0x2D, 0x0E, color, note is null);
+                // orig: member-gauge-bars root 0000:205D..0x2278: the target's bars beside the member's (PartyPanel.DrawTargetBars)
+                if (note is null && ((ushort)c.Action & 0x1BE) != 0 && !c.Moving && c.Target != -1)
+                {
+                    var t = tb.Battle[c.Target];
+                    PartyPanel.DrawTargetBars(canvas, _panel, i, [t.Endurance, t.Strength, t.Attributes[favour]],
+                        [t.MaximumEndurance, t.MaximumStrength, t.Maximums[favour]], color);
+                }
             }
             if (StatusLetter(i) is { } letter)
             {

@@ -105,6 +105,13 @@ public sealed class PanelBarsCallsTests
                 drawBar.Invoke(panel, [rewrite, member, Attribute.Endurance, 0x15, 0x12, row, (byte)9, colour]);
                 drawBar.Invoke(panel, [rewrite, member, Attribute.Strength, 0x23, 0x20, row, (byte)2, colour]);
                 drawBar.Invoke(panel, [rewrite, member, Attribute.DivineFavor, 0x30, 0x2D, row, (byte)0x0E, colour]);
+                // the attack target's bars, as BattleScreen draws them (no place note in these jobs)
+                if (m.TryGetProperty("target", out var t) && (t.GetProperty("action").GetInt32() & 0x1BE) != 0 && t.GetProperty("moving").GetInt32() == 0)
+                {
+                    var self = t.GetProperty("index").GetInt32() == row;
+                    int[] Values(string key) => [.. Enumerable.Range(0, 3).Select(k => (self ? m : t).GetProperty(key)[k].GetInt32())];
+                    PartyPanel.DrawTargetBars(rewrite, new TextPainter(assets.Font(1)), row, Values("current"), Values("maximum"), colour);
+                }
             }
 
             var pixels = 0;

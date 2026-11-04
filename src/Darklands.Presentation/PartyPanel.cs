@@ -204,6 +204,42 @@ public sealed class PartyPanel(GameAssets assets)
         _text.Draw(canvas, textX, row * RowHeight + 0x1F, current.ToString(System.Globalization.CultureInfo.InvariantCulture) + " ", textColor, ValuesRight);
     }
 
+    /// <summary>
+    /// The member's attack target's endurance, strength and divine favour as one-pixel bars beside the member's own (a battle: the member stands and
+    /// its order attacks someone). <paramref name="current"/> and <paramref name="maximum"/> hold the target's three values in that order.
+    /// </summary>
+    // orig: member-gauge-bars root 0000:1A9C at 0000:205D..0x2278 (checked against the asm and by direct calls, tools/oracle/panel_calls.py, batch 34):
+    //   after the member's three values, when its action (record +0x10) has a bit of 0x1BE (the attack orders), fighter-moving DS:A6D3[i] is 0 and its
+    //   target (+0x4A) is not -1: for each of the target's three the lost length of the member's bars (q = (cur << 4) / max, 16 - q, 15 for 16 with a value
+    //   left, at least 0) is worked out and, unless the row shows a place note, a "+" goes at (0x18 / 0x26 / 0x33, top - 4) in the window's colour when
+    //   the value is above the maximum (the window's last column still 0x38 from the values), then one column at 0x19 / 0x27 / 0x34: colour 0x0F for the
+    //   lost part, 9 / 2 / 0x0E for the rest down to top + 0xF
+    // C: a maximum of 0 would divide by zero in the original (guarded here, as DrawBar)
+    public static void DrawTargetBars(Canvas canvas, TextPainter text, int row, ReadOnlySpan<int> current, ReadOnlySpan<int> maximum, byte textColor)
+    {
+        ReadOnlySpan<int> columns = [0x19, 0x27, 0x34];
+        ReadOnlySpan<byte> colors = [9, 2, 0x0E];
+        var top = row * RowHeight + 0x0C;
+        var bottom = row * RowHeight + 0x1B;
+        for (var k = 0; k < 3; k++)
+        {
+            var lost = 16 - (current[k] << 4) / Math.Max(1, maximum[k]);
+            if (lost == 16 && current[k] != 0)
+            {
+                lost = 15;
+            }
+            lost = Math.Max(0, lost);
+            if (current[k] > maximum[k])
+            {
+                text.Draw(canvas, columns[k] - 1, top - 4, "+", textColor, ValuesRight);
+            }
+            for (var y = top; y <= bottom; y++)
+            {
+                canvas[columns[k], y] = y < top + lost ? Palette.White : colors[k];
+            }
+        }
+    }
+
     // orig: `for (k = 5; k < 0x69; k += 10) gfx-line-draw(DS:0168, k, 0, 0, k, 7)` inside a clip window at (3, y) of 0x36 x 0x27 pixels: eleven parallel diagonal lines (k, 0) -> (0, k) in grey, for a dead member (an X was drawn here before)
     // C: the row then goes to the screen through a clipped copy of 0x36 x 0x26 pixels at (3, y): the clip window's last line (y + 0x26) stays
     //   on the page (vis10 session D-56a675: after D the frame's bottom line shows there, not the hatching); in a battle the page itself is
