@@ -940,14 +940,18 @@ for _name, _save, _from, _alpha, _start in (("blue", "Dksave21.sav", "orders-pot
     SCREENS[_name] = (_save, (lambda f=_from, s=_start: cut(f, "gate") + s), _alpha, GATE_CLOSING)
     NO_STATES.add(_name)
 
-CAMP_SCREENS = ("stay", "wild")
+CAMP_SCREENS = ("stay", "wild", "rstay", "rwild")
 BATTLE_SCREENS = ("gate", "gatem", "rgate", "rmgate", "bkeys", "bheld", "bedge", "bsafe", "brun", "bhurt", "bhurta", "bhurts", "bdead", "bhurtk", "blue", "bluer", "bpra", "bprar", "bgater", "bhurto")        # inputs of a battle are followed by bwait:<passes> (lockstep.py); no state steps inside a battle
+REST_WAIT = 1500            # frames: a rest that runs until the next key (S on the stay screen, A on the map after the camp): the original's
+#   next step waits for it to be idle after some 25 rest passes, which the C# host plays on its frames (RC rounds: s1-wild-102, w1-rstay-201)
+INN_WAIT = 300              # frames: the inn cards' rooms screen and night rest (R035, R051+0x12F0) run on from a line or a click (w1-saints-201)
 HOURGLASS_WAIT = 300        # frames: the C# host's hourglass of a camp day (4 steps x 400 ms + 1000 ms, R043+0x3494) runs on the host's frames
 
 
 def input_wait(screen: str, step: str) -> str:
     """The C#'s wait after an input: a camp day (S, or a click on the bottom menu's first row, R036+0x0734) passes time with the
-    hourglass, whose delays the headless host plays out frame by frame; the original's next step waits for it to be idle anyway."""
+    hourglass, whose delays the headless host plays out frame by frame; the original's next step waits for it to be idle anyway. A rest
+    that runs until the next key (S, A) and the inn's rest get more (REST_WAIT, INN_WAIT)."""
     if screen.startswith("mbar") or screen.startswith("rmbar"):
         return "wait:100"
     if screen.startswith("trav"):
@@ -959,10 +963,12 @@ def input_wait(screen: str, step: str) -> str:
         return "bwait:8"
     if screen in BATTLE_SCREENS:
         return "bwait:20"
+    if screen in ("saints", "rsaints"):
+        return "wait:%d" % INN_WAIT if step.partition(":")[0] in ("key", "click") else "wait:30"
     if screen in CAMP_SCREENS:
         kind, _, value = step.partition(":")
-        if kind == "key" and value in ("s", "S"):
-            return "wait:%d" % HOURGLASS_WAIT
+        if kind == "key" and value in ("s", "S", "a", "A"):
+            return "wait:%d" % REST_WAIT
         if kind == "click":
             x, y = (int(v) for v in value.split(","))
             if 0x46 < x < 0x134 and 0xAA < y < 0xBC and (y - 0xAA) // 9 == 0:
