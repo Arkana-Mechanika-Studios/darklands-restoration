@@ -24,7 +24,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### rules (99)
 
-- **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:289` `CharacterCreation.Back`  
+- **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
   why: Esc from the childhood attributes goes back to the background list at age 15; a background row then serves the adult occupation of that number (Recruit..Knight), as in the original.
 - **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:160` `GameState.HanseStanding`  
@@ -503,7 +503,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: $Raubi01 (RobberKnightTaskRewarded) takes remembered-card-second as the quest giver, but this is the castle's location: the reward (tag 3, owner 0, tested above) is not found, the card reads and frees events[-1], and the reward stays to be claimed again.
 - **B-a194c2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S101/DwarfKingsRedCap_MineB03.cs:29` `DwarfKingsRedCap_MineB03.Run`  
   original: `R101+0x0850` (18BD:0000, matched)  
-  why: text 0 ("It is $NamedOneName again, king of the dwarfs.") reads the named slot, which this card never fills (no name call, unlike 0xE5, 0xE3, 0xEA, 0xEB with the quest's dwarf name) and which the saved game does not keep: reached first (sort 0 doors 0xDD..0xE2 and 0x153..0x156 of the mine's section 8, or a failed force of the stone box) or after a load, it prints "It is again" with no name, as in the original
+  why: text 0 ("It is $NamedOneName again, king of the dwarfs.") reads the named slot, which this card never fills (no name call, unlike 0xE5, 0xE3, 0xEA, 0xEB with the quest's dwarf name) and which the saved game does not keep: reached first (sort 0 doors 0xDD..0xE2 and 0x153..0x156 of the mine's section 8, or a failed force of the stone box), it prints what the slot still holds, as in the original: "It is again" with no name in a program run that has had no naming card and no character creation (a load leaves the slot), else the name the last naming card or made-up-name left there (after a new game: the creation screen's last made-up name, "It is Gregori Steutz again")
 - **B-805211** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:199` `SmallCaveUnderTheLedge.FightTheTatzelwurm`  
   original: `R106+0x1C28` (19BC:03E8, matched)  
   why: R029 2474 returns how many members were away, not who left: text-slot-chosen-one gets that count, so the text names party member [count], and the test against -1 always holds: the loss text and the Virtue practice come even when nobody was away.
@@ -692,7 +692,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:299` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:443` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:450` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  

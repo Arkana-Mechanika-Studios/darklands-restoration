@@ -69,10 +69,10 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 - **U-82d272** `uncertain` - `src/Darklands.Content/Formats/Battles/BattlefieldTiles.cs:118` `BattlefieldTiles.Second`  
   original: `root 05D9:019A` (05D9:019A, asm), `R024+0x07A2` (1EF8:07A2, draft)  
   why: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
-- **U-08d88a** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:991` `BattleScreen.OrderLetterDrawn`  
+- **U-08d88a** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:993` `BattleScreen.OrderLetterDrawn`  
   original: `R016+0x15BE` (1EF8:15BE, draft)  
   why: with nobody selected (DS:A6B2 = 0xFF: H with Halt on outside order mode, reachable in normal play, see ChoosePlace) the original draws the patch and the 'H' on the page DS:0168 and copies the cell to the screen at y = -9; whether the driver clips it or wraps it to the bottom rows of the 320-wide frame buffer was not checked; nothing is drawn here.
-- **U-00dcd4** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2528` `BattleScreen.Draw`  
+- **U-00dcd4** `uncertain` - `src/Darklands.Presentation/Battles/BattleScreen.cs:2530` `BattleScreen.Draw`  
   original: `R014+0x7BBE` (14F7:13AE, draft), `R014+0x8724` (14F7:1F14, draft), `R014+0x87E4` (14F7:1FD4, draft) +12 more  
   why: while paused the C# draws one more frame (with new puff jitter of the clouds) after the pause begins and then stops; the original's draw pass (fight-draw R014+0x6818, which Draw stands for) leaves a last frame that equals the C#'s first paused one (vis10 D-09fbc1, shots c and d: 3,497 px; shots a and b: 0). Seen only in the picture, not chased; possibly an extra redraw pass in the C#. Kept as uncertain (b31): the replayed pause session (c3-space-pause, one of the 821) agrees on the random state and the saved game, so the frame changes no state; settling it needs a frame-exact picture of the original's first paused pass.
 - **U-797153** `uncertain` - `src/Darklands.Presentation/MarchingOrderScreen.cs:20` `MarchingOrderScreen`  
