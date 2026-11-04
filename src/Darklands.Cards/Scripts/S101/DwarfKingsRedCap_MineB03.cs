@@ -26,6 +26,9 @@ public sealed class DwarfKingsRedCap_MineB03 : Card
 
     public override int Number => 0xE6;
 
+    // BUG: text 0 ("It is $NamedOneName again, king of the dwarfs.") reads the named slot, which this card never fills (no name call, unlike 0xE5,
+    //   0xE3, 0xEA, 0xEB with the quest's dwarf name) and which the saved game does not keep: reached first (sort 0 doors 0xDD..0xE2 and 0x153..0x156
+    //   of the mine's section 8, or a failed force of the stone box) or after a load, it prints "It is  again" with no name, as in the original
     public override int Run(CardContext c)
     {
         Show(c, Picture);
