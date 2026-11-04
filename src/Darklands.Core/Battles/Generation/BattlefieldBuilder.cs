@@ -54,6 +54,12 @@ public sealed class GenerationProcessMemory
     /// </summary>
     public (int Width, int Height)[]? PartySizes { get; set; }
 
+    /// <summary>
+    /// DS:1182 / DS:118E for the party's animation slots 0..4 (the half sizes of the sets last loaded there) as the last battle left them, or
+    /// null in a fresh program: the next battle's start copies them into the party's collision boxes before it loads its own sets (R014+0x0254).
+    /// </summary>
+    public (int Width, int Height)[]? PartySlotSizes { get; set; }
+
     /// <summary>DS:C925 / DS:C978 / DS:C989 / DS:CA1B: the trigger whose alarm ended the last battle (x −1: none).</summary>
     public (int X, int Y, int Width, int Height) AlarmTrigger { get; set; } = (-1, 0, 0, 0);
 

@@ -479,11 +479,13 @@ public sealed partial class TacticalBattle : IBattleEndActions
                 ReadyWeapon(i, c.DefaultWeapon, 0);
             }
         }
+        // orig: R014+0x0254..0x027E: DS:C80F[i] = DS:1182[i], DS:C831[i] = DS:118E[i] for the party's slots, before this battle loads any
+        //   animation set: the slot sizes the last battle's loads left (a fresh program: the slots' own 5 and 2). Seen in the original with
+        //   a hook there (b35, dungeon-door-back): member 2's set is 7 wide, so in the second battle its box is 7 and the leader stops 2 px sooner
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             var c = Battle[i];
-            c.HalfWidth = Slots[i].HalfWidth;
-            c.HalfHeight = Slots[i].HalfHeight;
+            (c.HalfWidth, c.HalfHeight) = ProgramMemory.PartySlotSizes?[i] ?? (Slots[i].HalfWidth, Slots[i].HalfHeight);
             if (c.Status != CharacterStatus.Empty)
             {
                 SetPose(i, Pose.Walking);

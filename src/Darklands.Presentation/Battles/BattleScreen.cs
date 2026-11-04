@@ -778,6 +778,8 @@ public sealed class BattleScreen : ITacticalView
         _owner.GenerationMemory.FloorImage = (byte[])_battle.Level.Image.Clone();
         // the party's collision sizes (DS:C80F / DS:C831) stay in the program's tables for the next battle's placement
         _owner.GenerationMemory.PartySizes = [.. Enumerable.Range(0, Combatant.PartySlots).Select(i => (b[i].HalfWidth, b[i].HalfHeight))];
+        // and so do the party's animation slots' sizes (DS:1182 / DS:118E), which the next battle's start copies into them
+        _owner.GenerationMemory.PartySlotSizes = [.. Enumerable.Range(0, Combatant.PartySlots).Select(i => (_battle.Slots[i].HalfWidth, _battle.Slots[i].HalfHeight))];
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             if (b[i].Member is { } member)
