@@ -669,7 +669,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:778` `TacticalBattle.CancelOrder`  
   original: `R016+0x13D4` (1EF8:13D4, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the flee bit before order mode), so a pause byte of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
-- **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:39` `TacticalBattle.WriteBattleFile`  
+- **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:41` `TacticalBattle.WriteBattleFile`  
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
 
@@ -692,7 +692,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:299` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:450` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:461` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  

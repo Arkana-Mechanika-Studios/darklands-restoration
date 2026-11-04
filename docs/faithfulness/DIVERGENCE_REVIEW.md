@@ -287,7 +287,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### not-modelled (6)
 
-- **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:206` `CardContext.InvokeSaint`  
+- **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:232` `CardContext.InvokeSaint`  
   original: `R029+0x2180` (0E76:2180, draft)  
   divergence: the prayer screen (thunk 09C0:1EAF, then the card redraw thunk 09C0:1EA5) is the presentation's SaintPrayer; without it the prayer fails (0). In play DarklandsGame attaches SaintPrayerScreen to every card context it makes (DarklandsGame.cs, right after the CardContext is created), so no card runs without it.  
   recommendation: **justify** (checked against the original) - call-on-saint (R029+0x2180, matched) calls thunk 09C0:1EAF (the prayer screen) and then thunk 09C0:1EA5 (card redraw). The only production CardContext is made in DarklandsGame (line 397) and SaintPrayerScreen.Attach follows at once, so no card runs without the screen; the headless fallback is 0. Test NotModelledEvidenceTests.InvokeSaintNeedsThePrayerScreen.
@@ -387,7 +387,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0xB434` (18BF:0FA4, draft)  
   divergence: member −1's count byte DS:9C53 (before the party's records) is not held by the battle: not modelled.  
   recommendation: **justify** (checked against the original) - use-up-slot's removal with m = -1 decrements the count byte DS:9CD3 - 0x80 = DS:9C53, two bytes before the party records (DS:9C55); no shift happens for k = 255 (count - 1 > 255 never holds). That byte is not part of the battle state: not modelled. Reached only by the Dissolve key with nobody selected, member 0's slot 0xFF and member 2's entry 63 holding a count of 0 or 1; faithful mode only.
-- **D-63478f** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:426` `TacticalBattle.Resume`  
+- **D-63478f** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:428` `TacticalBattle.Resume`  
   original: `R014+0x0000` (0E76:0000, draft)  
   divergence: after an earlier battle of the same program the original's records 5..12 are that battle's enemies; here they are empty records (their kinds 5/6 and weapons are not kept).  
   recommendation: **document** (checked against the original) - b32 (local/batch/b32/a7-l5): a battle taken up from a save starts from the program's DS:A532 modifiers; records 5..12 of an earlier battle of the same program are not kept (the original's are that battle's enemies, R002+0x1830 clears only their status). Effect only when such an enemy's modifier was still running at that battle's end and a battle save is then loaded in the same program: its weapon-ready at the first tick writes another walking file name into a slot. Fresh programs (the common case, session dungeon-king-ladder) agree.
@@ -443,7 +443,7 @@ Each is a core-logic divergence where the C# does something the original does no
   recommendation: **keep** (checked against the original) - cloud-on-line-test reads one cloud past the array at DS:A33B, which is the far pointer of COMMONSP's lit panel edge (DS:A33B, a DOS segment from request-work-buffer): heap layout, not reproducible. The slot is read as an empty cloud; the residue of the missed box test (bug 0029) is reproduced separately.
 - **D-42daec** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:35` `TacticalBattle.WriteBattleFile`  
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
-  divergence: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant tables' bytes left by earlier battles (slots not used since; the paths are kept, Combatant.Path), are this program's (zeros) for a battlefield made here.  
+  divergence: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant tables' bytes left by earlier battles or by a load's battle-reload (the paths are kept, Combatant.Path; so are the party's door tables, ProgramMemory.PartyDoors), are this program's (zeros, -1) for a battlefield made here. Such a table is read again by the next battle where nothing sets it first: the original's member 1 starts a second battle with door 1 / side 1 from the first (b35, dungeon-door-back).  
   recommendation: **keep** - The bytes are what earlier activity of the whole session left in buffers the battle-state save copies whole: the level loader's record buffer at DS:A896 (also used for .atv files) and the per-combatant tables of earlier battles (path tails past the end byte, slots not used since). No game code reads them; reproducing them would need the buffer history of the session. Files written by the original are kept byte for byte (their .enm data is carried as read); only a battlefield made by this program has zeros there.
 
 ### persistence (5)
@@ -635,11 +635,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
 
 ### cards (68)
 
-- **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:227` `CardContext.ChanceText`  
+- **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:253` `CardContext.ChanceText`  
   original: `R029+0x5B62` (1367:0C52, matched)  
   divergence: an index beyond 7 or below −2 (a chance of 160 and up, or below −40; callers pass clamped chances) is clamped to 0..6.  
   deterministic: **partly** (checked against the original); action: **keep** - Slots 8 and up / −3 and below of grade-words read further words of DGROUP as near pointers (the data before DS:4FCE and after it), which a chance of 160+ or below −60 would need; the callers pass chances of the usual range (not checked caller by caller), so the case is not expected; keep the clamp.
-- **D-6a940b** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:256` `CardContext.NameToSlot`  
+- **D-6a940b** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:282` `CardContext.NameToSlot`  
   original: `R029+0x1FB8` (0E76:1FB8, draft)  
   divergence: for kinds 0..2 an index past its table (or a kind-2 index below 0x5F, which reads the unwritten bytes before virtue-label-table) keeps the slot's text; kinds 6..8 read the static pointers next to their tables as the original does (TablePersonalNames.Name); without the EXE's tables kinds 6..8 keep the slot's text.  
   deterministic: **partly** (checked against the original); action: **document** - Checked with the card oracle: label-to-slot kinds 6..8 now read the far pointers next to their tables as the original does (one contiguous block of pointers in 290E); kinds 0..2 past their tables keep the slot's text, a case no card reaches with a valid quest.
