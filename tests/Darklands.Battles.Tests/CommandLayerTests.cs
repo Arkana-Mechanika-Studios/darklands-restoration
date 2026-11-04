@@ -160,6 +160,39 @@ public sealed class CommandLayerTests
         Assert.Null(ui!.CommandTargets);
     }
 
+    /// <summary>Down moves the pointer itself onto the new line (R043+0x1DD1): the next menu, whose highlight starts at -1 (R043+0x1C0A),
+    /// lights the line the pointer stands on, so Enter there takes the line the keys chose, not the one the mouse left.</summary>
+    [Fact]
+    public void TheCursorKeysLeaveThePointerOnTheLineForTheNextMenu()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var off = new MouseState(5, 5, MouseButtons.None);
+        GameUi? ui = null;
+        ScriptHost? host = null;
+        bool InMenu() => ui?.CommandTargets is not null;
+        MouseState Here() => host!.Mouse with { Buttons = MouseButtons.None };
+        host = new ScriptHost(
+            () => (0, off), () => (Keys.Enter, off),
+            () => InMenu() && CardScreen.OptionPoint(1) is var (x, y) ? (0, new MouseState(x, y, MouseButtons.None)) : null,
+            () => (Keys.Down, Here()), () => (Keys.Enter, Here()),
+            () => InMenu() ? null : (Keys.Enter, Here()), () => InMenu() ? (0, Here()) : null, () => (Keys.Enter, Here()));
+        var world = WorldData.Load(files);
+        ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        Darklands.Cards.CardContext? context = null;
+        var screen = new CardScreen(ui, () => context!, new PartyPanel(ui.Assets));
+        context = new Darklands.Cards.CardContext(state, world, screen);
+        screen.Show("$Other00", Darklands.Cards.PictureNames.Of(34));
+        var options = Enumerable.Repeat(Darklands.Cards.OptionState.Enabled, 10).ToList();
+        Assert.Equal(2, screen.Choose(0, options));
+        Assert.Equal(2, screen.Choose(0, options));
+        Assert.False(host.QuitRequested);
+    }
+
     private static (int Option, int Member, int Slot, bool Popup)? Choose(ScriptHost host, Action<GameUi> made)
     {
         if (GameFolder.Files is not { } files)

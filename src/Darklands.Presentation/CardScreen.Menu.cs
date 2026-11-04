@@ -54,7 +54,7 @@ public sealed partial class CardScreen
     // orig: card-choice-menu: fight-clock = 0, key-buffer-clear, DS:EE41 = DS:EE42 = 0, popup-menu-box = DS:8DDE = 0, menu-line-highlight = -1; then per pass: menu-bar-loop (GameUi), the party-icons-stale redraw (not needed), a left press on a portrait -> 13a0, card-mouse-handler (hover, box, hint, click), and a waiting key: Enter / Space with a highlighted line choose it (in the box: menu-owner-member = opt / 4, menu-choice-index = opt % 4, the line is the main line the box belongs to, DS:A7BA[DS:A779]), Alt-Q quits (HotKeys), card-hotkeys (HotKeys), Up / Down while the pointer is over a line move the highlight (wrapping) and the pointer onto it
     // C: a choice by Enter in the box sets menu-owner-member and menu-choice-index but not popup-menu-box: the card rates the line with card-option-handler[k], which is then the box's table (DS:E96E holds the box's layout; CardMenu.Run).
     // C: Up from no highlight cannot happen in the original (the cursor keys need the pointer over a line, which card-mouse-handler has just highlighted).
-    // DIVERGENCE: the pointer is not moved onto the line Up / Down select (the host owns it); the menu acts as if it were until the mouse moves. With GameUi.KeyboardCardMenus (an interface convenience, off unless a host turns it on): Up / Down also work while the pointer is off the lines (from no highlight: the first or last line), and the digits 1..9 choose the main list's lines in order.
+    // DIVERGENCE: on a host that cannot move the pointer (MovePointer does nothing there), the pointer stays off the line Up / Down select; the menu acts as if it were on it until the mouse moves. With GameUi.KeyboardCardMenus (an interface convenience, off unless a host turns it on): Up / Down also work while the pointer is off the lines (from no highlight: the first or last line), and the digits 1..9 choose the main list's lines in order.
     // DORMANT: the battle option kind (-1, marker 0x06): highlighting it calls R043+0x29CE, which does nothing (its message "Enemy stats will be displayed here" is never shown); leaving it redraws the panel, as here.
     private int Select(List<OptionArea> areas, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Func<List<OptionArea>>? relaid = null)
     {
@@ -279,9 +279,13 @@ public sealed partial class CardScreen
                             ? (from + 1) % n
                             : from <= 0 ? n - 1 : from - 1;
                         Highlight(current, current.Highlight, true);
-                        // orig: pointer-move(pointer-column, y[line] + 2)
+                        // orig: pointer-move(pointer-column, y[line] + 2) (R043+0x1DD1, root 047C:1266): the pointer itself moves, so the next
+                        //   menu (menu-line-highlight = -1 at its entry, R043+0x1C0A) lights the line the keys chose (RC lead rc-s1-saints-101)
                         var line = current.Lines[current.Highlight];
-                        warped = (over ? mx : current.X + 1, line.Y + 2);
+                        var to = (over ? mx : current.X + 1, line.Y + 2);
+                        ui.MovePointer(to.Item1, to.Item2);
+                        lastMouse = (ui.Mouse.X, ui.Mouse.Y);
+                        warped = lastMouse == to ? null : to;
                         continue;
                     }
                     // orig: R043+0x1C77..0x1D46 compare the key with 0x1C0D, 0x3920, 0x1000, 0x4800 and 0x5000 only (R043+0x33C6 takes the F keys):
