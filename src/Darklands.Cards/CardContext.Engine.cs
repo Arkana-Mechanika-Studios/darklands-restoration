@@ -41,6 +41,32 @@ public sealed partial class CardContext
     /// <summary>Saints that can be invoked on this card (<c>card-saint-lines</c>), −1 = none.</summary>
     public int[] CardSaints { get; } = [-1, -1, -1, -1];
 
+    /// <summary>
+    /// Takes the card engine's words that are the program's globals from the context of the game played before (an Alt-L, or the start
+    /// screen again): the item and saint lines, the pop-up's member and slot, the list-all flag and the settings block. With no game before,
+    /// the program's start: zeros.
+    /// </summary>
+    // orig: card-item-lines DS:EE43, card-saint-lines DS:EE4B, menu-owner-member DS:EE6C, menu-choice-index DS:EE6A, DS:5204, settings-block
+    //   DS:EE53: the saved-game reader and the main loop's way back to the next card leave them (b35: marked in the original before an
+    //   Alt-L's reader, every one still marked at the next card call); the EXE's image holds zeros
+    // C: card-option-handler (DS:EA14) is kept as well in the original; here a card's handlers belong to its context, so the next game's first
+    //   card that shows a line it did not install has none (the "screwed up." default) instead of the earlier game's.
+    public void TakeEngineGlobals(CardContext? before)
+    {
+        if (before is null)
+        {
+            Array.Clear(CardItems);
+            Array.Clear(CardSaints);
+            return;
+        }
+        before.CardItems.CopyTo(CardItems, 0);
+        before.CardSaints.CopyTo(CardSaints, 0);
+        MenuMember = before.MenuMember;
+        MenuSlot = before.MenuSlot;
+        PopupListsAll = before.PopupListsAll;
+        OptionsBlock = before.OptionsBlock;
+    }
+
     /// <summary>Sets the card's usable items (up to four; the rest become −1).</summary>
     public void SetCardItems(params int[] items) => Fill(CardItems, items);
 

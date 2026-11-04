@@ -194,7 +194,7 @@ public sealed class DarklandsGame
                     case StartChoice.LoadGame when new LoadGameScreen(_ui, Saves, LoadScreenTexts).Run(fromStartScreen: true, name => LoadSavedGame(name, _session ??= NewGame.StartUp(World, Seed()))) is { } loaded:
                         PlayFrom(loaded.State);
                         break;
-                    case StartChoice.CreateCharacters when new CharacterCreationScreen(_ui, World, Seed, PartyTicks) { MadeUpName = name => _namedSlots[0] = name }.Run() is { } created:
+                    case StartChoice.CreateCharacters when new CharacterCreationScreen(_ui, World, Seed, PartyTicks) { MadeUpName = name => _cardVariables.Named[0] = name }.Run() is { } created:
                         PlayFrom(created);
                         break;
                     default:
@@ -391,15 +391,26 @@ public sealed class DarklandsGame
     /// <summary>The battle view's centre (DS:C866 / DS:C886), a program global: a game loaded keeps it.</summary>
     private (int Column, int Row) _battleViewCentre;
 
-    /// <summary>The cards' named slots ($NamedOneName .. $NamedFiveName): one set for the whole run of the program.</summary>
-    // orig: text slot named[0..4] (2E38:1A96, 5 x 30 bytes, zeros in the EXE's image) is a global: the saved-game reader and writer (R037 1C7D)
-    //   leave it, so after a load (Alt-L or from the start screen) a card prints what the last naming card or the creation screen left there
-    //   (b35: card 0xE6 called in the original after a new game and after a load of another game: "It is <the creation's last made-up name>
-    //   again"); a card context is made anew for every game played, the slots are not
-    private readonly string[] _namedSlots = ["", "", "", "", ""];
+    /// <summary>The cards' text variables ($NamedOneName, $ChosenOneName, $Money1, $Text1, the conditions ...): one set for the whole run.</summary>
+    // orig: the text slots (named[0..4] 2E38:1A96, chosen DS:EE8C, money DS:EE9C / DS:ED46, numbers DS:ED4C, texts DS:ED6D, item DS:ED5C, places
+    //   DS:E89B / DS:ED54, support DS:ED5E, city location DS:ED52, conditions DS:9C30) are globals, zeros in the EXE's image: the saved-game
+    //   reader and writer (R037 1C7D) leave them, so after a load (Alt-L or from the start screen) a card reads what the cards before left
+    //   (b35: card 0xE6 called in the original after a new game and after a load of another game prints the creation's last made-up name;
+    //   every slot marked before an Alt-L's reader was still marked at the next card call); a card context is made anew for every game
+    //   played, the variables are not
+    private readonly CardVariables _cardVariables = CardVariables.ProgramStart();
+
+    /// <summary>The card context of the game played last (its engine words carry over, see CardContext.TakeEngineGlobals).</summary>
+    private CardContext? _lastCards;
 
     // DS:A532 (the effects' modifiers) as the last battle left it: a load does not reset it (null: a fresh program's zeros)
     private Core.Battles.EffectModifiers[]? _battleModifiers;
+
+    // C: the party's collision sizes (DS:C80F / DS:C831) and its animation slots' sizes (DS:1182 / DS:118E) are globals a load leaves: the
+    //   next battle places the party with the first and copies the second into it (b35: marked in the original before an Alt-L's reader,
+    //   still marked at the next battle's entry, the copy at R014+0x0254 took the marked slot sizes)
+    private (int Width, int Height)[]? _battlePartySizes;
+    private (int Width, int Height)[]? _battlePartySlotSizes;
 
     /// <summary>The combatants' seen positions (20A5:79A9), a program global: a game loaded keeps them.</summary>
     private Core.Battles.MapPoint[][]? _seenPositions;
@@ -485,7 +496,9 @@ public sealed class DarklandsGame
         CardContext? context = null;
         var panel = new PartyPanel(_ui);
         var screen = new CardScreen(_ui, () => context!, panel);
-        context = new CardContext(state, World, screen) { Variables = new CardVariables { Named = _namedSlots } };
+        context = new CardContext(state, World, screen) { Variables = _cardVariables };
+        context.TakeEngineGlobals(_lastCards);
+        _lastCards = context;
         context.PersonalNames = _personalNames ??= new TablePersonalNames(Content.Formats.Characters.PersonalNamesDecoder.Decode(_ui.Assets.Files.Read("DARKLAND.EXE")));
         SaintPrayerScreen.Attach(context, _ui, panel);
         var battles = new BattleScreens(_ui, () => state, (items, money) => context.Screens.Loot(items, money))
@@ -500,12 +513,16 @@ public sealed class DarklandsGame
         // writes them (lockstep session savemid-mine)
         battles.ViewCentre = _battleViewCentre;
         battles.GenerationMemory.Modifiers = _battleModifiers;
+        battles.GenerationMemory.PartySizes = _battlePartySizes;
+        battles.GenerationMemory.PartySlotSizes = _battlePartySlotSizes;
         battles.SeenPositions = _seenPositions;
         battles.CursorKeys = _cursorKeys;
         battles.Load = () =>
         {
             _battleViewCentre = battles.CurrentViewCentre;
             _battleModifiers = battles.GenerationMemory.Modifiers;
+            _battlePartySizes = battles.GenerationMemory.PartySizes;
+            _battlePartySlotSizes = battles.GenerationMemory.PartySlotSizes;
             _seenPositions = battles.SeenPositions;
             LoadInGame(state, inBattle: true);
         };
@@ -541,6 +558,8 @@ public sealed class DarklandsGame
             {
                 _battleViewCentre = battles.CurrentViewCentre;
                 _battleModifiers = battles.GenerationMemory.Modifiers;
+            _battlePartySizes = battles.GenerationMemory.PartySizes;
+            _battlePartySlotSizes = battles.GenerationMemory.PartySlotSizes;
                 _seenPositions = battles.SeenPositions;
                 LoadInGame(state);
             },

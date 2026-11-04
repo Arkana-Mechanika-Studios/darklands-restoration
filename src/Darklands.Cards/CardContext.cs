@@ -28,6 +28,17 @@ public sealed partial class CardVariables
 
     /// <summary>Which conditional passages (0x01 … 0x13) of the next texts are shown.</summary>
     public bool[] Conditions { get; } = new bool[10];
+
+    /// <summary>The variables as the program's start has them (the EXE's image: all zeros, so $ChosenOneName..$ChosenFiveName are member 0
+    /// and $LocName / $LocName2 location 0, where a card context of its own starts with members 0..4 and no location).</summary>
+    // orig: the text slots DS:EE8C.., DS:ED46.., DS:E89B, DS:ED54, 2E38:1A96 .. are BSS / zero data (b35: read in the original at its first
+    //   load, every one 0); they are globals the saved-game reader leaves, so one set serves the whole run (DarklandsGame)
+    public static CardVariables ProgramStart()
+    {
+        var v = new CardVariables { Location = 0, Location2 = 0 };
+        Array.Clear(v.Chosen);
+        return v;
+    }
 }
 
 /// <summary>What a card script works with: the game, the screen, the world data and the rules.</summary>
