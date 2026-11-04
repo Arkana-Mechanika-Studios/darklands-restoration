@@ -662,6 +662,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
                 }
             }
         }
+        // the tester's rise -7: the callbacks a long pass (the order menu's reset R016+0x0CDC) had before the original read the clock for
+        //   this test (R014+0x05B4); none in play (ClockPhase is null there)
+        ClockPhase?.Invoke(-7);
         if (ActivationsAt < Clock)
         {
             if (CheckActivations())
