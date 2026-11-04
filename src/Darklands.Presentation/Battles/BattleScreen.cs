@@ -2017,7 +2017,7 @@ public sealed class BattleScreen : ITacticalView
             }
             else
             {
-                tb.GroupCursor(GroundAt(mouse.X, mouse.Y), tb.CursorKeysOn);
+                tb.GroupCursor(GroundAt(mouse.X, mouse.Y), tb.CursorKeys.OnForTheGroupCursor);
             }
         }
         TakeReleases();

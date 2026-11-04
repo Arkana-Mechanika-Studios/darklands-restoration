@@ -34,6 +34,28 @@ public sealed class CursorKeyStateTests
     }
 
     [Fact]
+    public void AByteAboveOneFromAFileIsKeptAndReadsAsTheOriginalsTestsDo()
+    {
+        // orig: R003+0x0EDE..0x0EFC copy the bytes, R003+0x02DC..0x0300 write them back; == 1 at R014+0xB62B, 0xB82E, 0x3170, 0x389B,
+        //   R016+0x0726; only fight-mouse R014+0xB6C5 tests DS:D7FE against 0
+        var state = new CursorKeyState();
+        state.Read(new byte[] { 2, 3, 2, 0xFF, 0, 0 });
+        Assert.False(state.Hover);
+        Assert.False(state.Click);
+        Assert.False(state.On);
+        Assert.True(state.OnForTheGroupCursor);
+        Assert.False(state.ClickOnRelease);
+        var bytes = new byte[6];
+        state.Write(bytes);
+        Assert.Equal(new byte[] { 2, 3, 2, 0xFF, 0, 0 }, bytes);
+        state.On = false;
+        Assert.False(state.OnForTheGroupCursor);
+        state.On = true;
+        Assert.True(state.On);
+        Assert.True(state.OnForTheGroupCursor);
+    }
+
+    [Fact]
     public void ASaveInOrderModeWritesTheCursorKeysOn()
     {
         if (GameFolder.Files is not { } files)
