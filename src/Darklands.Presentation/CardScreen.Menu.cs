@@ -175,10 +175,23 @@ public sealed partial class CardScreen
             }
         }
 
-        // After a full screen was shown over the card the picture, the text and the fade are drawn again; the highlight, a hint and the box are gone with them.
-        // C: 13f2 leaves DS:EE41 / DS:EE42 set: the next move puts back the area saved under the box, which the redraw already shows as it was.
+        // After a full screen was shown over the card the picture, the text and the fade are drawn again; the menu's state is kept.
+        // orig: R043+0x1E82 (150B:13F2) redraws only: it never writes menu-line-highlight (its text-paint-wrapped(.., &DS:E96E, ..), root
+        //   0265:0134 at 0x0179..0x0182 and the entries, writes the count and the lines, not the byte at +1), DS:EE41 / DS:EE42 (the box) nor
+        //   DS:5202 (the hint shown). So the line lit before stays the highlighted one (Enter / Space choose it) but is drawn unlit until the
+        //   pointer moves to another line (whose unhighlight recolour then changes nothing); a box stays up undrawn, with the main list's
+        //   width cut, until the next move closes it and puts back the area saved under it.
+        // DIVERGENCE: with the pointer inside an item or saint box (DS:EE42 = 1) when a sheet key was pressed, the redraw lays the main lines
+        //   into DS:E96E under the box's highlight byte while the in-box flag stays: the original's next pass and an Enter there work on that
+        //   mix (the option of the main line at the box's index); here the box is dropped and the main list is back in use with no line highlighted.
         void Refresh()
         {
+            if (current == main)
+            {
+                Redraw();
+                warped = null;
+                return;
+            }
             if (box is not null)
             {
                 main.Width = box.MainWidth;
