@@ -17,8 +17,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | travel | 4 | 0 | 4 |
 | battles | 30 | 13 | 17 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 4 | 1 | 3 |
-| total | 218 | 45 | 173 |
+| screens/presentation | 5 | 1 | 4 |
+| total | 219 | 45 | 174 |
 
 ## Core logic (214)
 
@@ -682,9 +682,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (4)
+## Presentation and host (5)
 
-### screens/presentation (4)
+### screens/presentation (5)
 
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:214` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
@@ -695,6 +695,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:443` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
+- **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  
+  original: `root 0265:0134` (0265:0134, draft)  
+  why: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38), so the rewrite registers it and stops at the text's end.
 - **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:421` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).

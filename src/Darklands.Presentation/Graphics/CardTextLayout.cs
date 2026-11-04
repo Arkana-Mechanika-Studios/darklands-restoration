@@ -120,10 +120,13 @@ public sealed class CardTextLayout(TextPainter painter)
             }
         }
 
+        // BUG: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop
+        //   runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38),
+        //   so the rewrite registers it and stops at the text's end.
         // DIVERGENCE: a text that ends right after a conditional marker (0x13, or a 0x01 whose passage is shown) has its terminating zero skipped by the
         //   double advance, and the original reads on past the end into the leftovers of the shared buffer DS:9085 (whatever an earlier, longer string
         //   left there: lines and option lines of another text, drawn and given hot spots); here the text ends at its end. Found by the direct calls of
-        //   text-paint-wrapped (tools/oracle/text_calls.py, batch 34: card $situa00 block 4 ends with 0x13).
+        //   text-paint-wrapped (tools/oracle/text_calls.py, batch 34: card $situa00 block 4 ends with 0x13). Also the original bug B-fe596a.
         byte At(int i) => i >= 0 && i < text.Length ? text[i] : (byte)0;
 
         var more = true;
@@ -300,7 +303,8 @@ public sealed class CardTextLayout(TextPainter painter)
     /// <summary>The height of the text laid out with these settings (hidden option lines left out).</summary>
     // DIVERGENCE: the C's second copy also breaks a word wider than the column in its own way, so for such a text its height is not the drawing
     //   layout's (direct calls of root 0265:0654, batch 34: every height that differed outside conditional and option lines had a word wider than
-    //   the column); its callers measure texts whose words fit (the "???? ???? ????" of an away member in 0x1C pixels, the side window's hints).
+    //   the column); its callers measure texts whose words fit (the "???? ???? ????" of an away member in 0x1C pixels, the side window's hints). To be revisited with localisation: translated
+    //   texts (German compounds) can have words wider than a column; then write wrapped-text-size's own loop and check it with tools/oracle/text_calls.py.
     public int MeasureHeight(byte[] text, int width, Settings settings)
     {
         var scratch = new Canvas(new Platform.Screen());
