@@ -193,10 +193,29 @@ public sealed partial class TacticalBattle
     //   (0x1000 of the member's flags, the byte DS:A697 + 2 x DS:A6B2 and 0xEF) cleared. R016+0x133E (Flee) sets the bit before it and again
     //   after it; R016+0x1332 (Walk) does not, so W after F draws the letter F and leaves the bit cleared (hooked in the original, vis10
     //   session visleads-order-letter: the flags 0x7000 at W's letter draw, 0x6000 at the next order's)
+    // C: R016+0x156E has no test of DS:A6B2. Its callers test the selection except M (R016+0x0644 tests only the Attack menu's Missile
+    //   entry, DS:9841): with nobody selected M gives DS:A6B0 = 0x80 and the D845 reset, and 15BE clears 0x10 of flags[-1]'s high byte,
+    //   the pause byte DS:A695, as for ChoosePlace. W and F (R016+0x1332 / 0x133E, action 1) are only reached with a selection.
     public void ChooseOrder(int action, bool flee = false)
     {
         if (Selected == -1)
         {
+            if (action == 1)
+            {
+                return;
+            }
+            OrderAction = action;
+            if (CursorTarget < -1)
+            {
+                CursorTarget = -1;
+                Cursor = OrderCursor.None;
+            }
+            _view.OrderLetterDrawn();
+            if (!Battle.Behaviour.FixEscapeWithoutSelectionPauseByte)
+            {
+                // BUG: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - M with nobody selected: 15BE clears bit 0x10 of flags[-1]'s high byte, the pause byte DS:A695 (bx = -2)
+                PauseByte = (byte)(PauseByte & ~FlagsHighByte);
+            }
             return;
         }
         OrderAction = action;
