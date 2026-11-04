@@ -1103,9 +1103,14 @@ class Session(Machine):
 
 
 KEY_NAMES = {"enter": 0x1C0D, "esc": 0x011B, "space": 0x3920, "up": 0x4800, "down": 0x5000, "left": 0x4B00, "right": 0x4D00,
-             "home": 0x4700, "end": 0x4F00, "pgup": 0x4900, "pgdn": 0x5100, "backspace": 0x0E08, "tab": 0x0F09,
+             "home": 0x4700, "end": 0x4F00, "pgup": 0x4900, "pgdn": 0x5100, "center": 0x4C35, "backspace": 0x0E08, "tab": 0x0F09,
              **{"f%d" % k: (0x3A + k) << 8 for k in range(1, 11)},
-             **{"alt" + c: v << 8 for c, v in zip("qopsdflcm", (0x10, 0x18, 0x19, 0x1F, 0x20, 0x21, 0x26, 0x2E, 0x32))}}
+             **{"alt" + c: v << 8 for c, v in zip("qopsdflcm", (0x10, 0x18, 0x19, 0x1F, 0x20, 0x21, 0x26, 0x2E, 0x32))},
+             # Ctrl-F1..F10 (scan 0x5E..0x67, no character) and the keypad with Num Lock on (scan 0x47..0x53 with a character;
+             # kp5 is "center"): the travel map's member keys and the key codes above 0x3B with a character (R030+0x0ECE, 0x1057)
+             **{"ctrlf%d" % k: (0x5D + k) << 8 for k in range(1, 11)},
+             **{"kp" + c: v for c, v in zip("7894561230", (0x4737, 0x4838, 0x4939, 0x4B34, 0x4C35, 0x4D36, 0x4F31, 0x5032, 0x5133, 0x5230))},
+             "kpminus": 0x4A2D, "kpplus": 0x4E2B, "kpdot": 0x532E}
 LETTERS = [0x1E, 0x30, 0x2E, 0x20, 0x12, 0x21, 0x22, 0x23, 0x17, 0x24, 0x25, 0x26, 0x32,
            0x31, 0x18, 0x19, 0x10, 0x13, 0x1F, 0x14, 0x16, 0x2F, 0x11, 0x2D, 0x15, 0x2C]
 
@@ -1152,7 +1157,8 @@ def clock_jumps(lines):
     pass: a pass that computes for long (R014+0x4BFA..0x66FE) lets the time-based timer callbacks come, which the C# (one tick a pass) does not
     have. The rises that came between the pass's random draws (a draw that reads the clock, a re-path time, sees them) are listed by the
     draw's number in the pass; the callbacks beyond those come after the pass. The rises before the tick's scheduler and melee exchanges (which
-    test the clock against re-path and engage times before any draw) are listed as "-1:n" and "-2:n"; those before the tick's reads of the
+    test the clock against re-path and engage times before any draw) are listed as "-1:n" and "-2:n", those before the activation
+    test (R014+0x05B4, after the input: a long Q / G pass) as "-7:n"; those before the tick's reads of the
     clock that schedule the next tick (R014+0x1052: DS:D9E4 = DS:07D4 + 8, and R014+0x10A1 after the view followed the active member), in
     their place among the draws, as "-4:n" and "-5:n"."""
     clocks = [int(l.split()[2]) for l in lines]
@@ -1284,6 +1290,8 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
     if isinstance(battle_trace, ClockTrace):
         s.hook(P(0x1DB7), 0x0D36, lambda m: battle_trace.phase_clocks.append((-1, m.word(DS, FIGHT_CLOCK))), record="R014")
         s.hook(P(0x0E76), 0x2A4A, lambda m: battle_trace.phase_clocks.append((-2, m.word(DS, FIGHT_CLOCK))), record="R014")
+        # fight-main-loop's read of the clock for the activation test (R014+0x05B4: `if (DS:DA4F < DS:07D4)` before R014+0x4442)
+        s.hook(P(0x0E76), 0x05B4, lambda m: battle_trace.phase_clocks.append((-7, m.word(DS, FIGHT_CLOCK))), record="R014")
         s.hook(P(0x06A1), 0x29B6, lambda m: battle_trace.draw_clocks.append(m.word(DS, FIGHT_CLOCK)))
         s.hook(P(0x0E76), 0x1052, lambda m: battle_trace.sched_clocks.append((-4, len(battle_trace.draw_clocks), m.word(DS, FIGHT_CLOCK))), record="R014")
         s.hook(P(0x0E76), 0x10A1, lambda m: battle_trace.sched_clocks.append((-5, len(battle_trace.draw_clocks), m.word(DS, FIGHT_CLOCK))), record="R014")
