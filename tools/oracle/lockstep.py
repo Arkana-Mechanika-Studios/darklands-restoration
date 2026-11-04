@@ -504,7 +504,21 @@ def loads_battle_save(steps, save) -> bool:
             and len(Path(save).read_bytes()) > 0x96 and Path(save).read_bytes()[0x96] & 0x80 != 0)
 
 
-def loot_ticks(jumps, log):
+def jump_battles(jumps, trace) -> list[int]:
+    """The battle (0 the session's first) of each clock jump: the pass heads of the trace in order, a new battle where the clock goes
+    back (b35 T1: a session's second battle repeats the first's clocks, so the C# host keys the jumps of the later battles as
+    battle << 16 | clock, and counts its battles the same way)."""
+    clocks = [int(l.split()[2]) for l in trace or []]
+    out, k, battle = [], 0, 0
+    for j in jumps:
+        while k + 1 < len(clocks) and not (clocks[k] == j[0] and clocks[k + 1] - clocks[k] > 1):
+            k += 1
+            battle += clocks[k] < clocks[k - 1]
+        out.append(battle)
+    return out
+
+
+def loot_ticks(jumps, log, battles=None):
     """(jumps, [(clock, ticks)]): the clock jumps of the passes followed by a loot screen (a key read in R040 at clock c, the jump of the pass
     whose head had c - 1) without their ticks after the pass, those being given to the C# at the loot screen: the end test R014+0x08FE runs
     fight-recovery R014+0x0DEE (each member's next recovery = the clock) before the loot screen, whose emulated time the timer counts."""
@@ -513,12 +527,13 @@ def loot_ticks(jumps, log):
         if l.startswith("key ") and "< R040+0x0000" in l and ", clock " in l:
             at.add(int(l.split(", clock ")[1].split(")")[0]))
     out, loot = [], []
-    for j in jumps:
+    for i, j in enumerate(jumps):
+        key = (battles[i] if battles else 0) << 16
         if j[0] + 1 in at and j[1] > 0:
-            loot.append((j[0] + 1, j[1]))
+            loot.append((key + j[0] + 1, j[1]))
             at.discard(j[0] + 1)
             j = (j[0], 0) + tuple(j[2:])
-        out.append(j)
+        out.append((key + j[0],) + tuple(j[1:]))
     return out, loot
 
 
@@ -893,7 +908,7 @@ def main():
         original, seeds, log, end, files, set_up, trace = (got[k] for k in ("states", "seeds", "log", "end", "files", "set_up", "trace"))
         cov = dict(got["cov"]) if a.coverage else None
         replayed = True
-    jumps, loot = loot_ticks(got["jumps"], got["log"])
+    jumps, loot = loot_ticks(got["jumps"], got["log"], jump_battles(got["jumps"], got["trace"]))
     BWAIT_ACTUAL[:] = got["bwait"]          # the passes each bwait of the original waited (run_original fills it on a live run)
     t_original = got["seconds"]
     if a.battle_trace:

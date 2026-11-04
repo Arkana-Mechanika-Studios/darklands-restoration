@@ -87,4 +87,26 @@ public sealed class PartySlotSizesTests
         var f3 = fresh.Battle[3];
         Assert.Equal((0, 0, 0, 0, 0), (f3.StairsExit, f3.Chest, f3.DissolveSlot, f3.ExitZone, f3.StairsBack));
     }
+
+    // C: DS:C7A4 (the chests' loot file offsets) is not cleared for a new battlefield: a chest it does not have keeps the program's value
+    //   (b35: a read watch in the original, the loot take R014+0xE7C8 reads them from the fight's entry); a fresh program's are zeros
+    [Fact]
+    public void ANewBattlefieldKeepsTheChestOffsetsItHasNoChestFor()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, kept) = BattleScreenTests.Start(GameFolder.Files, new BattleRequest(0x5E, 4545, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]),
+            s =>
+            {
+                var file = new BattleFile();
+                file.Variables[BattleVariables.ChestOffsets + 2 * 19] = 0xFF;
+                file.Variables[BattleVariables.ChestOffsets + 2 * 19 + 1] = 0xFF;
+                s.BattleFile = file;
+            });
+        Assert.Equal(-1, kept.Field.Store.Loot.ChestOffsets[19]);
+        var (_, fresh) = BattleScreenTests.Start(GameFolder.Files, new BattleRequest(0x5E, 4545, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]));
+        Assert.Equal(0, fresh.Field.Store.Loot.ChestOffsets[19]);
+    }
 }

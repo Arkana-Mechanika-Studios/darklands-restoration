@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 2, justify: 40, keep: 11.
+- Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 2, justify: 40, keep: 10.
 - Part B (undefined-memory in core logic): 152 entries; determinism: deterministic: 1, n/a: 83, no: 55, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -367,7 +367,7 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (17)
+### battles (16)
 
 #### not-modelled (5)
 
@@ -387,7 +387,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0xB434` (18BF:0FA4, draft)  
   divergence: member −1's count byte DS:9C53 (before the party's records) is not held by the battle: not modelled.  
   recommendation: **justify** (checked against the original) - use-up-slot's removal with m = -1 decrements the count byte DS:9CD3 - 0x80 = DS:9C53, two bytes before the party records (DS:9C55); no shift happens for k = 255 (count - 1 > 255 never holds). That byte is not part of the battle state: not modelled. Reached only by the Dissolve key with nobody selected, member 0's slot 0xFF and member 2's entry 63 holding a count of 0 or 1; faithful mode only.
-- **D-63478f** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:433` `TacticalBattle.Resume`  
+- **D-63478f** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:438` `TacticalBattle.Resume`  
   original: `R014+0x0000` (0E76:0000, draft)  
   divergence: after an earlier battle of the same program the original's records 5..12 are that battle's enemies; here they are empty records (their kinds 5/6 and weapons are not kept).  
   recommendation: **document** (checked against the original) - b32 (local/batch/b32/a7-l5): a battle taken up from a save starts from the program's DS:A532 modifiers; records 5..12 of an earlier battle of the same program are not kept (the original's are that battle's enemies, R002+0x1830 clears only their status). Effect only when such an enemy's modifier was still running at that battle's end and a battle save is then loaded in the same program: its weapon-ready at the first tick writes another walking file name into a slot. Fresh programs (the common case, session dungeon-king-ladder) agree.
@@ -407,7 +407,7 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: with the fix (data safety, switchable; on in the player's game) only an Eater-Water is used up: the slot's stack when it still is one, else the weakest the pack holds (none: nothing; the lock opens as in the original).  
   recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixStaleDissolveSlot, on in the player's game; the testers stay faithful): fighter-goto-action R014+0x2256..0x2263 calls use-up-slot (18BF:0FA4) with the slot byte DS:C7CD[m] with no test. The byte is written only by the Eater-Water searches (command-menu-build R014+0xDF28 when order mode opens; R014+0xD04E / 0xD402 for the leader at each running tick), and the character sheet runs inside order mode (R022+0x02F7 tests command-mode DS:A6B3 and the selected member DS:A6B2) without building the menu again, so a stack given or dropped there leaves the slot on another stack or on the stale entry past the count (the last stack is lost, an empty pack's count becomes -1), and for the leader with the Eater-Water gone the slot is 0xFF (entry 255: another member's pack or past the packs). Faithful mode reproduces it (tests: OrderModeLeadsTests.ADissolveOrderUsesUpTheSlotFoundWhenTheOrderWasGiven; battle jobs e3 mine-p300#370, wild-p300#346 agree); the fix uses up only an Eater-Water.
 
-#### other (9)
+#### other (8)
 
 - **D-a4c2b1** `other` - `src/Darklands.Core/Battles/Attacks.cs:130` `Attacks.ToHit`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -441,10 +441,6 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0x10672` (1EC9:0142, draft)  
   divergence: a ninth cloud slot (the bytes after the array, DS:A33B) reads as an empty cloud at (0, 0).  
   recommendation: **keep** (checked against the original) - cloud-on-line-test reads one cloud past the array at DS:A33B, which is the far pointer of COMMONSP's lit panel edge (DS:A33B, a DOS segment from request-work-buffer): heap layout, not reproducible. The slot is read as an empty cloud; the residue of the missed box test (bug 0029) is reproduced separately.
-- **D-42daec** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:35` `TacticalBattle.WriteBattleFile`  
-  original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
-  divergence: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant tables' bytes left by earlier battles or by a load's battle-reload (the paths are kept, Combatant.Path; so are the party's place tables, ProgramMemory.PartyTables), are this program's (zeros, -1) for a battlefield made here. Such a table is read again by the next battle where nothing sets it first: the original's member 1 starts a second battle with door 1 / side 1 from the first (b35, dungeon-door-back).  
-  recommendation: **keep** - The bytes are what earlier activity of the whole session left in buffers the battle-state save copies whole: the level loader's record buffer at DS:A896 (also used for .atv files) and the per-combatant tables of earlier battles (path tails past the end byte, slots not used since). No game code reads them; reproducing them would need the buffer history of the session. Files written by the original are kept byte for byte (their .enm data is carried as read); only a battlefield made by this program has zeros there.
 
 ### persistence (5)
 

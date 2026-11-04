@@ -128,13 +128,23 @@ def original_side(rec_parts, folder, name, exe, game, steps, save, request, pass
     return (trace, got["given"], got["seeds"], got["log"], got["end"], got["set_up"], cov), got["seconds"], replayed
 
 
+BATTLE_KEY = 0x10000      # a key is battle << 16 | clock: the battles of a session are told apart (their clocks repeat)
+
+
 def parse(lines):
-    """{clock: (rand, records, queued, rates)} of the first pass at each clock."""
+    """{key: (rand, records, queued, rates)} of the first pass at each clock of each battle: the key is battle << 16 | clock, a new
+    battle starting where the clock goes back (the battle's reset clears it; within a battle it only grows or stays), so the clocks a
+    session's second battle repeats are not taken for the first's (b35 T1: dungeon-door-reload)."""
     out = {}
+    battle, last = 0, None
     for line in lines:
         w = line.split()
         if len(w) >= 4 and w[0] == "pass" and w[1] == "clock":
             clock = int(w[2])
+            if last is not None and clock < last:
+                battle += 1
+            last = clock
+            clock += battle * BATTLE_KEY
             if clock not in out:
                 get = lambda key: bytes.fromhex(w[w.index(key) + 1]) if key in w else b""
                 out[clock] = (w[4], get("cbt"), get("q"), get("ar"))
@@ -153,9 +163,14 @@ def lone_clocks(original, rewrite, original_cut: bool = False) -> list:
                   + [c for c in rewrite if c not in original and not (original_cut and (last is None or c > last))])
 
 
+def where(key) -> dict:
+    """A key as the report gives it: the clock, and the battle when it is not the session's first."""
+    return {"clock": key} if key is None or key < BATTLE_KEY else {"battle": key // BATTLE_KEY + 1, "clock": key % BATTLE_KEY}
+
+
 def lone_difference(original, rewrite, clock, agreeing) -> dict:
     span = lambda d: [min(d), max(d)] if d else []
-    return {"clock": clock, "ticks agreeing": agreeing,
+    return {**where(clock), "ticks agreeing": agreeing,
             "differences": [{"field": "battle clock", "original": "reached" if clock in original else "not reached",
                              "rewrite": "reached" if clock in rewrite else "not reached"}],
             "clocks": {"original": span(original), "rewrite": span(rewrite)}}
@@ -212,7 +227,7 @@ def first_difference(original: dict, rewrite: dict, original_cut: bool = False):
         if orand != crand:
             diffs.append({"field": "random", "original": orand, "rewrite": crand})
         if diffs:
-            return {"clock": clock, "ticks agreeing": common.index(clock), "differences": diffs[:60]}
+            return {**where(clock), "ticks agreeing": common.index(clock), "differences": diffs[:60]}
     if lone:
         return lone_difference(original, rewrite, lone[0], sum(c < lone[0] for c in common))
     return {"clock": None, "ticks agreeing": len(common), "clocks": [common[0], common[-1]] if common else []}

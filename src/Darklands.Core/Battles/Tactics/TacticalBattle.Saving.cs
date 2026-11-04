@@ -34,8 +34,13 @@ public sealed partial class TacticalBattle
     // those files (BattlefieldStore.FloorFiles / ActivationFiles), not the levels in memory; tests: BattleSaveTests, LevelFilesTests
     // DIVERGENCE: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant
     // tables' bytes left by earlier battles or by a load's battle-reload (the paths are kept, Combatant.Path; so are the party's place tables,
-    // ProgramMemory.PartyTables), are this program's (zeros, -1) for a battlefield made here. Such a table is read again by the next battle where
-    // nothing sets it first: the original's member 1 starts a second battle with door 1 / side 1 from the first (b35, dungeon-door-back).
+    // ProgramMemory.PartyTables; so are the chests' offsets, LootStore.ChestOffsets), are this program's (zeros, -1) for a battlefield made
+    // here. Such a table is read again by the next battle where nothing sets it first: the original's member 1 starts a second battle with
+    // door 1 / side 1 from the first (b35, dungeon-door-back). The others are not: a read watch in the original from each fight's entry
+    // (b35, sessions dungeon-door-start, dungeon-door-reload, gate-battle, gen-bhurt-01, gen-bdead-01, dungeon-king-ladder) saw no read
+    // before a write of the attack facings (DS:D3FE), what blocked the steps (DS:D5F6), DS:D62B, the placed base loads (DS:C1C1), DS:C4FD,
+    // the end time (DS:DA45), nor the saved path and its length (2E38:0C64, DS:DA43) but the battle-state save's own: only the battle file
+    // shows the left values.
     // DIVERGENCE: +0x15A3 (DS:A68F, the pointer shape in use) is a segment of a DOS memory block (the commonsp.img buffer R000 allocates)
     // plus an offset, the machine's memory layout: the file's value is kept (the restore reads it back; only a shape test compares it).
     // BUG: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never

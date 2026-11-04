@@ -137,6 +137,12 @@ public sealed class BattleScreen : ITacticalView
     private int _resumeLate;
 
     private static int _setUpsSeen;
+
+    // the battles of the process told apart for the tester's clock keys (DARKLANDS_BATTLE_CLOCK_JUMPS / _LOOT_TICKS)
+    private static int _passBattle;
+    private static int? _lastPassClock;
+
+    private static int JumpKey(int clock) => _passBattle == 0 ? clock : _passBattle << 16 | clock;
     private long _setUpMark;
 
     private readonly GameUi _ui;
@@ -231,6 +237,12 @@ public sealed class BattleScreen : ITacticalView
                     break;
                 }
                 Passes++;
+                // the tester's keys of a session's later battles are battle << 16 | clock (a new battle where the clock goes back)
+                if (_lastPassClock is { } lastClock && _battle!.Battle.Clock < lastClock)
+                {
+                    _passBattle++;
+                }
+                _lastPassClock = _battle!.Battle.Clock;
                 if (PassTrace is { } trace)
                 {
                     trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}"
@@ -239,11 +251,11 @@ public sealed class BattleScreen : ITacticalView
                 if (OneTickPerPass)
                 {
                     _clockFraction = 1;
-                    if (ClockJumps is not null && ClockJumps.Remove(_battle!.Battle.Clock, out var jump))
+                    if (ClockJumps is not null && ClockJumps.Remove(JumpKey(_battle!.Battle.Clock), out var jump))
                     {
                         lateTicks = jump;
                     }
-                    if (ClockRises is not null && ClockRises.Remove(_battle!.Battle.Clock, out var rises))
+                    if (ClockRises is not null && ClockRises.Remove(JumpKey(_battle!.Battle.Clock), out var rises))
                     {
                         var draws = 0;
                         pendingRises = new Dictionary<int, int>(rises);
@@ -530,6 +542,16 @@ public sealed class BattleScreen : ITacticalView
         }
         var reuse = request.Mode != 0 && _owner.LastField is { } last && _owner.LastFieldLocation == _state.CurrentLocation;
         var field = reuse ? _owner.LastField! : BattlefieldBuilder.Build(context, request.Battlefield, request.Seed, request.Groups);
+        if (!reuse && _state.BattleFile is { } before)
+        {
+            // C: DS:C7A4 (the chests' loot file offsets) is not cleared for a new battlefield: the preparation sets the offsets of its
+            //   chests, the others keep the last battle's or the .BSV's values, which the loot take (R014+0xE7C8) still moves down or sets
+            //   to -1 and the battle file writes (b35: a read watch from the fight's entry; a fresh program's are zeros)
+            for (var k = 0; k < field.Store.Loot.ChestOffsets.Length; k++)
+            {
+                field.Store.Loot.ChestOffsets[k] = (short)(before.Variables[BattleVariables.ChestOffsets + 2 * k] | before.Variables[BattleVariables.ChestOffsets + 2 * k + 1] << 8);
+            }
+        }
         _owner.LastField = field;
         _owner.LastFieldLocation = _state.CurrentLocation;
         var floor = !reuse ? field.StartLevel
@@ -1169,7 +1191,7 @@ public sealed class BattleScreen : ITacticalView
     {
         // C: the pointer is the driver's: the loot screen keeps the battle's party column (R040), never the battle's pointer drawn over it
         ErasePointer();
-        if (LootTicks is not null && LootTicks.Remove(_battle!.Battle.Clock, out var ticks))
+        if (LootTicks is not null && LootTicks.Remove(JumpKey(_battle!.Battle.Clock), out var ticks))
         {
             _clockFraction = ticks;
             Advance(0);
