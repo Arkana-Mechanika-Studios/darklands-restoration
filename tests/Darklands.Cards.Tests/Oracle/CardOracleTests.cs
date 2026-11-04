@@ -19,7 +19,8 @@ namespace Darklands.Cards.Tests.Oracle;
 /// <remarks>
 /// Known differences that are not bugs are listed in Oracle/card-divergences.json (card, run or "*",
 /// what, why, optionally how the original's run ended); everything else fails. DARKLANDS_CARD_ORACLE_REPORT=file writes the per-card agreement
-/// (docs/faithfulness/CARDS.md is made from it).
+/// (docs/faithfulness/CARDS.md is made from it); DARKLANDS_CARD_ORACLE_DIFFS=file the differing runs and DARKLANDS_CARD_ORACLE_JUSTIFIED=file
+/// the runs that differ for a listed reason (card, run, which reason), both left out of the coverage that counts.
 /// </remarks>
 public sealed class CardOracleTests
 {
@@ -93,6 +94,8 @@ public sealed class CardOracleTests
             .Select(t => (Card)Activator.CreateInstance(t)!)
             .ToDictionary(c => c.Number);
         var allDifferences = new System.Collections.Concurrent.ConcurrentBag<string>();
+        // the runs that differ for a listed reason: they agree with nothing, so the coverage scripts leave them out as they do the differing ones
+        var justifiedRuns = new System.Collections.Concurrent.ConcurrentBag<string>();
         var report = new System.Collections.Concurrent.ConcurrentBag<string>();
         var failures = new System.Collections.Concurrent.ConcurrentBag<string>();
         var entries = corpus.RootElement.GetProperty("cards").EnumerateObject().ToList();
@@ -115,6 +118,7 @@ public sealed class CardOracleTests
                     if (Justified(divergences, entry.Name, run.Name, "no C# card"))
                     {
                         justified++;
+                        justifiedRuns.Add($"{entry.Name}\t{run.Name}\tno C# card");
                     }
                     else
                     {
@@ -130,11 +134,13 @@ public sealed class CardOracleTests
                 if (difference is null && blind)
                 {
                     justified++;
+                    justifiedRuns.Add($"{entry.Name}\t{run.Name}\ttexts not compared");
                     continue;
                 }
                 if (difference is null && drop.Count > 0)
                 {
                     justified++;
+                    justifiedRuns.Add($"{entry.Name}\t{run.Name}\tC# lines dropped");
                     continue;
                 }
                 if (difference is null)
@@ -147,11 +153,13 @@ public sealed class CardOracleTests
                     // empty event slot), as the card ran without its quest:
                     // memory that holds something else; the C# reads an empty entry (TextVariables, CardContext.Events: DIVERGENCE)
                     justified++;
+                    justifiedRuns.Add($"{entry.Name}\t{run.Name}\tstray");
                     stray++;
                 }
                 else if (Justified(divergences, entry.Name, run.Name, difference, run.Value.TryGetProperty("end", out var origEnd) ? origEnd.GetString() : null))
                 {
                     justified++;
+                    justifiedRuns.Add($"{entry.Name}\t{run.Name}\tlisted");
                 }
                 else
                 {
@@ -177,6 +185,10 @@ public sealed class CardOracleTests
         if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_DIFFS") is { Length: > 0 } diffsFile)
         {
             File.WriteAllLines(diffsFile, allDifferences.OrderBy(l => l, StringComparer.Ordinal));
+        }
+        if (Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_JUSTIFIED") is { Length: > 0 } justifiedFile)
+        {
+            File.WriteAllLines(justifiedFile, justifiedRuns.OrderBy(l => l, StringComparer.Ordinal));
         }
         Assert.True(failures.IsEmpty, $"{failures.Count} card(s) differ from the original:\n" +
             string.Join("\n", failures.OrderBy(f => f, StringComparer.Ordinal).Take(40)));
