@@ -1,10 +1,10 @@
 {
  "ALL": {
   "blocks": 58414,
-  "blocks_hit": 52996,
+  "blocks_hit": 53065,
   "functions": 8658,
   "outcomes": 43748,
-  "outcomes_hit": 36335,
+  "outcomes_hit": 36436,
   "runs": null
  },
  "acc-n0-01-c00": {
@@ -1454,6 +1454,46 @@
   "outcomes": 42,
   "outcomes_hit": 36,
   "runs": 456
+ },
+ "b34-a3b": {
+  "blocks": 7302,
+  "blocks_hit": 4356,
+  "functions": 420,
+  "outcomes": 5838,
+  "outcomes_hit": 2555,
+  "runs": 12
+ },
+ "b34-calls": {
+  "blocks": 335,
+  "blocks_hit": 309,
+  "functions": 12,
+  "outcomes": 348,
+  "outcomes_hit": 316,
+  "runs": 8894
+ },
+ "b34-m4": {
+  "blocks": 6197,
+  "blocks_hit": 3961,
+  "functions": 368,
+  "outcomes": 4770,
+  "outcomes_hit": 2367,
+  "runs": 19
+ },
+ "b34-m5": {
+  "blocks": 5881,
+  "blocks_hit": 3702,
+  "functions": 345,
+  "outcomes": 4534,
+  "outcomes_hit": 2157,
+  "runs": 7
+ },
+ "b34-m6": {
+  "blocks": 5700,
+  "blocks_hit": 3606,
+  "functions": 336,
+  "outcomes": 4452,
+  "outcomes_hit": 2065,
+  "runs": 3
  },
  "battle": {
   "blocks": 1332,
