@@ -759,6 +759,57 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
+    /// H with Halt on outside order mode and nobody selected (DS:A6B2 = 0xFF) runs R016+0x15BE for "row -1" (y = -9): the original draws the
+    /// patch's 10 x 7 pixels at (6..15, 0..6), no letter (vis10 run uncert-order-letter-none, the original hooked at R016+0x15BE: A6B2 = 0xFF,
+    /// A6B0 = 0x400, A6D1 = 10; 70 pixels, the same bytes as the patch, after each H).
+    /// </summary>
+    [Fact]
+    public void HWithNobodySelectedDrawsTheLetterCellAtTheTop()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        string[] measured =
+        [
+            "9c9d9c9c9d9d9c9d9d9c", "9d9c9c9c9d9c9d9c9c9e", "9d9e9c9c9e9d9d9d9e9d", "9e9d9e9d9d9d9e9d9d9e",
+            "9e9d9d9d9d9d9e9f9d9e", "9f9e9f9f9e9d9e9e9e9f", "9e9e9e9e9f9f9f9f9e9f",
+        ];
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5");
+        var tb = run.Screen.Tactics!;
+        if (tb.InOrderMode)
+        {
+            run.Play("key:enter", "wait:5");
+        }
+        Assert.False(tb.InOrderMode);
+        Assert.Equal(-1, tb.Selected);
+        Assert.Equal(0, run.Screen.OrderCellRowsShown);
+        run.Play("key:h", "wait:3");
+        Assert.Equal(PartyPanel.LetterPatchHeight, run.Screen.OrderCellRowsShown);
+        var frame = run.LastFrame!;
+        for (var y = 0; y < PartyPanel.LetterPatchHeight; y++)
+        {
+            for (var x = 6; x < 6 + PartyPanel.LetterPatchWidth; x++)
+            {
+                var expected = Convert.FromHexString(measured[y])[x - 6];
+                Assert.True(expected == frame[y * Screen.Width + x], $"pixel ({x}, {y}) is {frame[y * Screen.Width + x]:X2}, not {expected:X2}");
+            }
+        }
+        // Enter with nobody selected: command-mode-end draws the frames of "member -1" and the rows (R014+0xC01A); the panel page's cell then
+        // holds the first row, so the next H leaves only the patch's top line (the original's screen read before and after R016+0x15BE)
+        run.Play("key:enter", "wait:5");
+        Assert.Equal(1, run.Screen.OrderCellRowsShown);
+        run.Play("key:h", "wait:3");
+        Assert.Equal(1, run.Screen.OrderCellRowsShown);
+        frame = run.LastFrame!;
+        for (var x = 6; x < 6 + PartyPanel.LetterPatchWidth; x++)
+        {
+            Assert.Equal(Convert.FromHexString(measured[0])[x - 6], frame[x]);
+        }
+    }
+
+    /// <summary>
     /// Alt-Q in a battle (the hot keys table, root 0000:0CAA, which runs in font 1): the question "Quit to DOS?" is the card window's box
     /// (rows 93..106), run with font 1 and the font put back after; "no" leaves the fight as it was; "yes" ends the program (root 0000:13A0).
     /// </summary>

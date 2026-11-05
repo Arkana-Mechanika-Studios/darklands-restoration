@@ -82,6 +82,27 @@ public sealed class OptionPopupTests
         Assert.True(box.Width > painter.Measure(c.World.ItemName(item)));
     }
 
+    /// <summary>
+    /// The box is as wide as its widest line in the card window's font (slot 3, where the control codes are 0 wide) plus 6: the original's
+    /// R043+0x2CE2 measured "\x15 \x80Stone-tar (1)" in window DS:016A with font 3 and made the box 0x43 wide (vis10 session uncert-polit-popup-hint).
+    /// </summary>
+    [Fact]
+    public void TheBoxWidthIsTheWidestLineInTheCardWindowsFontPlusSix()
+    {
+        if (GameFolder.Files is not { } files || Setup() is not var (c, _))
+        {
+            return;
+        }
+        var cardFont = new TextPainter(new GameAssets(files).Font(3));
+        c.State.Difficulty = Difficulty.Standard;
+        var item = ItemOnlyFor(c, 2);
+        c.SetCardItems(item);
+        var box = OptionPopupText.Build(c, saints: false, cardFont, darkPicture: false);
+        var line = TextPainter.Encode(" " + c.World.ItemName(item) + $" ({c.CountItems(2, item)})");
+        Assert.Equal(Math.Max(cardFont.Measure(line), cardFont.Measure(c.State.Party.Members[2].ShortName)) + 6, box.Width);
+        Assert.Equal(0x43 - 6, cardFont.Measure(TextPainter.Encode(" Stone-tar (1)")));
+    }
+
     [Fact]
     public void AtBasicTheLeaderSeesTheItemGreyedAndCannotChooseIt()
     {

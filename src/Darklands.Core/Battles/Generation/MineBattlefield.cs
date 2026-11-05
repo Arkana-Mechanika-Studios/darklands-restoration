@@ -62,8 +62,11 @@ internal sealed partial class MineBuilder
     /// stack, and once the pile pass has drawn a random number the low word of a library return address (0x29CB, the multiply helper
     /// <c>rand</c> calls) lies on that stack slot.
     /// </summary>
-    // UNCERTAIN: what the real game's stack holds there depends on everything that ran before; the oracle's stack (file reads are stubbed)
-    // shows 0 for the first pile and 0x29CB afterwards, and a value above 9 means "no new kind picked, the last one repeats".
+    // UNCERTAIN: what the real game's stack holds there ([bp-0x0C] of R009+0x4D56, below the caller's SP) depends on what ran before; the
+    // unit oracle's stack (file reads stubbed) shows 0 for the first pile and 0x29CB afterwards. In the whole game (lockstep session
+    // dungeon-mine-group run live with R009+0x4EAE hooked) the word was 0 at each of its four pile fills, all first piles of their
+    // sections, so the 0x29CB case was not met; a value above 9 means "no new kind picked, the last one repeats", and the word is also
+    // the first entry's item (SI) when the first pick lands on it. Settling it needs a live mine whose section fills a second pile.
     private int StaleStackWord => _pileRollMade ? 0x29CB : 0;
 
     private bool _pileRollMade;

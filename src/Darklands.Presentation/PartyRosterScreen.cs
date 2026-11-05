@@ -213,7 +213,10 @@ public sealed class PartyRosterScreen
     }
 
     /// <summary>AX after a graphics driver call (a picture drawn, the palette set, the pointer shown).</summary>
-    // UNCERTAIN: the driver's AX is taken never to be 0x11B (it would end the screen).
+    // C: the handler's driver exits leave AX = 0x08F4 (the box drawn, then pointer-show root 047C:1293 at R038+0x09D0: Add, Heraldry,
+    //   Select Image) or 0xFF36 (the colour keys' palette set) with the game's own MGRAPHIC, every time: the roster sessions roster,
+    //   roster-colours and roster-moves run without their state steps by vis10 with the handler's exits hooked (R038+0x23E8: 85 colour keys,
+    //   11 A, 1 H, 4 S), never 0x11B; C (create) ends at the same pointer-show exit. Only the comparison with 0x11B reads it, so 0 stands for them.
     private const int ResultOfDriver = 0;
 
     /// <summary>The arrows: the highlight moves (wrapping on DS:E7DC), the figure place is cleared and the figure of the slot holding the ROW's number drawn.</summary>

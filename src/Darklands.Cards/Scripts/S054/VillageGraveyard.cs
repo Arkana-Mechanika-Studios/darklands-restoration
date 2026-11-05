@@ -25,7 +25,16 @@ public sealed class VillageGraveyard : Card
     // DORMANT: R054+0x1760 (1952:05C0), R054+0x179C (1952:05FC), R054+0x17D8 (1952:0638) and R054+0x1814 (1952:0674): the item pop-up handlers (slots 0..3): they name the member of the pop-up and say "Success is assured."; the card fills the item slots but no option asks usable-item-list() (card-option-flag-3 is never set here), so the pop-up never opens.
     // DORMANT: R054+0x1850 (1952:06B0), R054+0x18DA (1952:073A), R054+0x1964 (1952:07C4) and R054+0x19EE (1952:084E): the saint pop-up handlers (slots 0..3, identical): member name and chance with the saint; saints-available() is never asked either.
     // C: the C sets only card-option-flag-0 and card-option-flag-1; the flags 2..9 it copies into the option table are stale values left by the previous card (DS:EE7A..EE88). The card's first text has two option lines, so options 2..9 cannot be picked; they are kept hidden here with the actions the C has for them.
-    // UNCERTAIN: the hint handlers of the ten options return a struct they never fill in (only the text "Success is assured." is set), so the hint shows that text for the whole party here.
+    // C: the hint handlers of the ten options (R054+0x1418 ...) return r.a / r.b ([bp-4] / [bp-2] of `enter 4,0`) unset: a Shift hint
+    //   (card-mouse-handler R043+0x26C4) gets the words the handler's earlier calls left 8 and 10 bytes below its SP, which depend on the
+    //   path through it (vis10 runs of uncert-graveyard-hint, the original hooked at R043+0x27E6): the pointer entering a line with no hint up
+    //   gives r.a = pointer x - hot spot x, r.b = pointer y - hot spot y (pointer-show root 047C:1293's arguments: (76, 78)); entering it from a
+    //   line whose hint was up gives r.a = 0, r.b = the handler's saved BP (0xFD88, from party-panel-row-set root 0000:1716); Shift pressed
+    //   over a line gives r.a = 0x1D2E, r.b = 0x002E (the menu loop's earlier calls). r.b is never -2, so the original draws the member-row
+    //   background DS:A626 at (3, 40 x r.b + 1) and the chance text below it, which the driver puts far from the side window (pictures of the
+    //   runs: the row background shows over the card text, the side window keeps the party).
+    // DIVERGENCE: the hint shows "Success is assured." for the whole party here; the stack words of the mouse handler's path and the driver's
+    //   placing of a row far outside the screen are not modelled.
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -70,7 +79,7 @@ public sealed class VillageGraveyard : Card
 
     // orig: R054+0x1486 (1952:02E6), R054+0x14C6 (1952:0326), R054+0x1506 (1952:0366), R054+0x1546 (1952:03A6), R054+0x1586 (1952:03E6), R054+0x15C6 (1952:0426), R054+0x1606 (1952:0466), R054+0x1646 (1952:04A6) matched (option 2..9 actions, all alike)
     // orig: R054+0x1498 (1952:02F8), R054+0x14D8 (1952:0338), R054+0x1518 (1952:0378), R054+0x1558 (1952:03B8), R054+0x1598 (1952:03F8), R054+0x15D8 (1952:0438), R054+0x1618 (1952:0478), R054+0x1658 (1952:04B8) matched (option 2..9 hints)
-    // DORMANT: options 2..9 are not enabled by the C (their flags are stale), see the UNCERTAIN note above; their actions end the visit at card 0x62.
+    // DORMANT: options 2..9 are not enabled by the C (their flags are stale), see the notes above; their actions end the visit at card 0x62.
     private static void TurnAway(CardContext c)
     {
         c.PassHours(0);

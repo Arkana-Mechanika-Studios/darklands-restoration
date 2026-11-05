@@ -39,7 +39,10 @@ public sealed class HandbillThugs_Polit01 : Card
     private const int PickedPopupChance = 0x0240;
 
     /// <summary>The chance the same handler gives a Shift hint over the box (the result word is another call's leftover there).</summary>
-    // UNCERTAIN: a Shift hint asks the handler from card-mouse-handler (R043+0x26C4), whose earlier calls left that word (as U-aff1d9); -2 is kept.
+    // C: a Shift hint asks the handler from card-mouse-handler (R043+0x26C4), whose own path left that word 10 bytes below its SP; the
+    //   screen supplies it (OptionHint.UnsetChance, CardScreen.LeftoverChance): 0x1D2E when Shift is pressed over a line, the pointer's x
+    //   (0xFA) when the pointer enters a line with Shift held, 0 when another line's hint was up (vis10 session uncert-polit-popup-hint,
+    //   the original hooked at R043+0x26C4 / 0x27E6). -2 stays for the callers outside a Shift hint (the card oracle's direct calls).
     private const int StalePopupChance = -2;
 
     private const int TalkOption = 1, RunOption = 3;
@@ -221,7 +224,7 @@ public sealed class HandbillThugs_Polit01 : Card
     private static OptionHint PotionHint(CardContext c)
     {
         c.Variables.Chosen[0] = c.MenuMember;
-        return OptionHint.ChanceOf(c.RatingTheChoice ? PickedPopupChance : StalePopupChance, c.MenuMember);
+        return c.RatingTheChoice ? OptionHint.ChanceOf(PickedPopupChance, c.MenuMember) : OptionHint.UnsetChance(StalePopupChance, c.MenuMember);
     }
 
     // orig: R057+0x2522 (1A02:0882) matched

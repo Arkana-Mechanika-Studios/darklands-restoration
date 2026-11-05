@@ -411,10 +411,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-f30456** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/CityChurchByDay.cs:210` `CityChurchByDay.GiveATenth`  
   original: `R057+0x067C` (1838:067C, asm), `R029+0x14A4` (0E76:14A4, draft)  
   why: party-ability-top(8) returns the skill value, which the original then uses as a member number.
-- **B-ca9994** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:108` `HandbillThugs_Polit01.EatTheHandbills`  
+- **B-ca9994** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:111` `HandbillThugs_Polit01.EatTheHandbills`  
   original: `R057+0x21DC` (1A02:053C, matched)  
   why: R057+0x21DC..0x2230 never writes following-card (DS:E48A): after the truce the card is shown again and the line can be chosen again, each time injuring the party, lowering the standing and passing an hour.
-- **B-d962b2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:311` `HandbillThugs_Polit01.Fight`  
+- **B-d962b2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S057/HandbillThugs_Polit01.cs:314` `HandbillThugs_Polit01.Fight`  
   original: `R057+0x1F22` (1A02:0282, matched)  
   why: the case has no break; it fights the group of the main street and then, falling through, the group of the side street too, and only the second result counts.
 - **B-0818ac** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S058/LeavingByTheGate.cs:293` `LeavingByTheGate.SettleStanding`  
@@ -648,10 +648,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-8e79e5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:736` `EffectField.WearItem`  
   original: `R019+0x0968` (1EF8:0968, matched)  
   why: armour wear hits the whole stack: the stack loses the quality, not one piece, so identical spare pieces stacked with the worn armour wear down with it.
-- **B-3cc78a** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:946` `EffectField.LineCrossesCloud`  
+- **B-3cc78a** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:950` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: the loop runs to the count inclusive, so the slot after the last cloud (an old cloud's copy, or zeros) is tested too (OriginalBehaviour.FixCloudLineOneTooMany stops at the last cloud).
-- **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:948` `EffectField.LineCrossesCloud`  
+- **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:952` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: a missed box reloads the line from the saved words, which are the stack residue until a box was hit: the clouds after it are tested against that line (3, 17405)-(state words), not a → t. Kept.
 - **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:358` `TacticalBattle.Cast`  
@@ -663,10 +663,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-8f3e7c** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:269` `TacticalBattle.ChoosePlace`  
   original: `R016+0x1590` (1EF8:1590, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - flags[-1]'s high byte is the pause byte DS:A695 (R016+0x15BE, bx = -2)
-- **B-8d32e1** `bug`, flag `FixLeaveOrderModeWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:630` `TacticalBattle.LeaveWithNobodySelected`  
+- **B-8d32e1** `bug`, flag `FixLeaveOrderModeWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:632` `TacticalBattle.LeaveWithNobodySelected`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: OriginalBehaviour.FixLeaveOrderModeWithoutSelection - Enter travelling individually (R016+0x0734) calls it with nobody selected, and a cursor target left by the button held over a member (R014+0xB632..: the target of that member's order) gives the order to record -1: for 0x400 the pause byte loses 0x10; the 0x1BE test clears it too; a missile (0x80) sets 0x02 of the pause byte; a missile or a throw sets exchange[12] = 7 (Ready) and repath[12] = the order clock DS:C867; an attack with bit 1 (or adjacent) sets exchange[12] = 7; a walk to a spot sets exchange[12] = 0 and give-up[12] = the order clock + 30, or, the party split in real combat, shows "USE STAIRS..." (DS:064A) for 150 ticks.
-- **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:778` `TacticalBattle.CancelOrder`  
+- **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:782` `TacticalBattle.CancelOrder`  
   original: `R016+0x13D4` (1EF8:13D4, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the flee bit before order mode), so a pause byte of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:46` `TacticalBattle.WriteBattleFile`  

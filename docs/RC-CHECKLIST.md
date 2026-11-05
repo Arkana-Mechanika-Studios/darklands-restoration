@@ -15,7 +15,7 @@ How to read an item:
 
 ## Expected differences (do not report these)
 
-Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (345
+Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (350
 entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMMARY.md](faithfulness/SUMMARY.md) (open items).
 
 * The eight data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
@@ -29,6 +29,9 @@ entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMM
   than the original (open lead, an UNCERTAIN row).
 * The battle pointer, the party panel in battle, the mine battle's post and the loot picture's "-" were fixed in batch 27;
   report any of them that still differs.
+* Shift hints on two cards whose hint handlers leave the member unset (the village graveyard, the heir lines after the dragon): the
+  original draws a row background over the card from what the mouse handler left on the stack; the restoration shows "Success is
+  assured." for the party (D-39eb3b, D-8ef30d). A chance hint can differ when a timer tick lands just before it (D-252ba1).
 * The city gate at night: four colours one palette step apart; the night gate fade length is fixed (D-dff56b).
 * The prison cell card (D-99119d) shows its text and waits; the original flashes it. Returning to the last battlefield
   uses the same place or builds a new one (D-24e8b0).

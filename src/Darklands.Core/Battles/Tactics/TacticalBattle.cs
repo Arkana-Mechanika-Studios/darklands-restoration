@@ -40,6 +40,14 @@ public interface ITacticalView : IBattleViewport
     {
     }
 
+    /// <summary>
+    /// command-mode-end with nobody selected redraws the panel frames for "member -1" (party-panel-frame-set root 0000:1588 with
+    /// DS:A6B2 = 0xFF, R014+0xC01A) before the rows; a presentation concern only.
+    /// </summary>
+    void FramesOfNobodyDrawn()
+    {
+    }
+
     /// <summary>The level on screen changed (doors, furniture, floor switch: floor-view-paint(−1)).</summary>
     void MapChanged();
 

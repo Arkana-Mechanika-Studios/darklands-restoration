@@ -1,0 +1,11 @@
+# vis10 uncert (U-4ffac2): $McGuf11 (card 0x7E, synth DKSAVE0-card7e; never reached in play): the card entry's [bp-2] given to card-option-lines is 0xA714 here (hooked at R075+0x111A); the emulated original stops at a fetch from unmapped memory
+key:t
+wait:5
+key:l
+wait:300
+key:space
+wait:100
+shot:menu
+move:300,190
+wait:30
+shot:after

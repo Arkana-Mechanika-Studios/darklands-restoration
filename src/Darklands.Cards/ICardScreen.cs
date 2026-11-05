@@ -43,6 +43,15 @@ public readonly record struct OptionHint(int Chance, string Message, int Member)
 
     public static OptionHint ChanceOf(int percent, int member) => new(percent, "", member);
 
+    /// <summary>
+    /// The handler leaves its chance word (r.a) unset: the screen's Shift hint takes the word card-mouse-handler's path left there
+    /// (<see cref="Chance"/> is what other callers get).
+    /// </summary>
+    public bool ChanceUnset { get; init; }
+
+    /// <summary>A handler result whose chance word is unset (r.a never written), for <paramref name="member"/>; <paramref name="otherwise"/> outside a Shift hint.</summary>
+    public static OptionHint UnsetChance(int otherwise, int member) => new(otherwise, "", member) { ChanceUnset = true };
+
     /// <summary>A hint function that only says something, for the member given now (the handler's <c>r.a = -1</c>).</summary>
     public static Func<OptionHint> Saying(string message, int member = WholeParty)
     {

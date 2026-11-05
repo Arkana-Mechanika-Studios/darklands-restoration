@@ -116,7 +116,9 @@ public sealed class BattlefieldTiles
 
     // C: a zero second-frame offset means the decoration has no second frame (the original stores segment 0).
     // UNCERTAIN: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second
-    // frame past the end of the decoded file; the original points into whatever follows the block. No second frame here.
+    // frame past the end of the decoded file; the original points into whatever follows the block. No second frame here. Unknown: the
+    // bytes after the set in the original's tile buffer at that moment and whether that decoration's second frame is ever drawn; a live
+    // fight on battlefield 0x38 with the buffer read after battle-tileset-load R002+0x0C8C and a vis10 series of the decoration would settle it.
     private static RowRunSprite? Second(byte[] data, int at, string member) =>
         Word(data, at) == 0 || Word(data, at) + 2 > data.Length ? null : Sprite(data, Word(data, at), member);
 

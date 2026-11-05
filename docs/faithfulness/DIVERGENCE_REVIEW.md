@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 2, justify: 40, keep: 10.
-- Part B (undefined-memory in core logic): 152 entries; determinism: deterministic: 1, n/a: 83, no: 55, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 154 entries; determinism: deterministic: 1, n/a: 83, no: 57, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -437,7 +437,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R023+0x0E30` (1EF8:0E30, draft)  
   divergence: an odd direction leaves the line's globals as the last test left them in the original.  
   recommendation: **keep** - missile_trap (R014 19CD 3258): the direction comes from the trap record written by the generators, which use the even directions 0/2/4/6 only; an odd one would reuse the line globals of the last sight-line-blocked call (deterministic in principle, but it needs a corrupt record). Kept as a guard.
-- **D-d89a90** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:951` `EffectField.LineCrossesCloud`  
+- **D-d89a90** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:955` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   divergence: a ninth cloud slot (the bytes after the array, DS:A33B) reads as an empty cloud at (0, 0).  
   recommendation: **keep** (checked against the original) - cloud-on-line-test reads one cloud past the array at DS:A33B, which is the far pointer of COMMONSP's lit panel edge (DS:A33B, a DOS segment from request-work-buffer): heap layout, not reproducible. The slot is read as an empty cloud; the residue of the missed box test (bug 0029) is reproduced separately.
@@ -629,7 +629,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original tests the 0x80 flag and prices item-definition-table[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item-definition-table[data-file-handle[..].id] with the raw 16-bit id; item-definition-table is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
 
-### cards (68)
+### cards (70)
 
 - **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:253` `CardContext.ChanceText`  
   original: `R029+0x5B62` (1367:0C52, matched)  
@@ -695,7 +695,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R045+0x0726` (188B:01F6, matched), `R045+0x0714` (188B:01E4, matched)  
   divergence: the original goes to screen 0, which is card 0 ($Initi00, a normal overlay vector that sets the purse to 200 florins and earlier-screen to 0); that card is not in the C# card table, so the C# goes back to the card before, as the dispatcher does with unknown cards. No card leads here in play.  
   deterministic: **n/a** (checked against the original); action: **document** - BattleStandIn (card 5) is a developer stand-in that no card or table code leads to, so following-card=0 is never executed in play. Correction to the note: screen 0 is not crashing data; seg 2DAE:0000 is a normal overlay vector (09C0:2CC9 -> section 0x2C, 1838:0000), i.e. the original would run card 0 = '$Initi00' (R044 1838:0000, which sets the purse to 200 florins and earlier-screen=0); that card is absent from the C# CardTable (which starts at 1).
-- **D-637186** `undefined-memory` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:34` `VillageGraveyard.Run`  
+- **D-39eb3b** `undefined-memory` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:36` `VillageGraveyard.Run`  
+  original: `R054+0x1686` (1952:04E6, matched)  
+  divergence: the hint shows "Success is assured." for the whole party here; the stack words of the mouse handler's path and the driver's placing of a row far outside the screen are not modelled.  
+  deterministic: **no** (checked against the original); action: **keep** - The hint handlers R054+0x1418 .. return r.a / r.b from [bp-4] / [bp-2] of enter 4,0, never written. Under Shift the call (card-mouse-handler R043+0x26C4) gets what that handler's earlier calls left 8 and 10 bytes below its SP, measured in vis10 runs (uncert-graveyard-hint, hooked at R043+0x27E6): (pointer x, pointer y) entering a line with no hint up, (0, saved BP 0xFD88) after root 0000:1716, (0x1D2E, 0x002E) when Shift is pressed over a line. Only the presentation reads them (row background and chance text drawn far from the side window); no state changes. Modelling needs the mouse handler's and the driver's frames: keep.
+- **D-637186** `undefined-memory` - `src/Darklands.Cards/Scripts/S054/VillageGraveyard.cs:43` `VillageGraveyard.Run`  
   original: `R054+0x1686` (1952:04E6, matched)  
   divergence: with no such quest the original reads event slot -1 (garbage); the C# keeps the item as it was.  
   deterministic: **no** (checked against the original); action: **keep** - text-slot-item = *(int far*)events[event-search(8,-1,-1,location-now,0xA,-1)]: with no quest event-search is -1 and events[-1] is the last 4 bytes of $NamedFive, normally null, so text-slot-item is the word at 0000:0000 (IVT, INT 0 offset) and $ItemName then indexes item-definition-table with it: machine-dependent garbage text. Reachable only if the village graveyard card (0x2A) is entered without its quest (the arrival card comes from location data; I could not confirm it is quest-only); keep the C# 'item as it was'.
@@ -759,6 +763,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R080+0x066C` (1870:02EC, matched), `R080+0x06A4` (1870:0324, matched)  
   divergence: without the resolved quest (slot -1) the original reads through a stray pointer; 0 here.  
   deterministic: **n/a** (checked against the original); action: **document** - RobberKnightTaskRewarded runs after the quest was resolved (kind 0x24, tag 3 at location-now: event-search(0x24,-1,location-now,remembered-card-second,3,-1)), so the event exists; slot -1 would be the null/IVT page. Cited 02EC/0324 are the init helper and the 'screwed up.' handler. Correction (2026-10-19): $Merch03 (MerchantsOfTheCity, R092 188F:0222) sends here with remembered-card-second = the castle's location, not a giver, so for a merchant's bounty the find does return -1 (BUG marker there); the C# reads 0 and frees nothing.
+- **D-8ef30d** `undefined-memory` - `src/Darklands.Cards/Scripts/S081/DragonTidings.cs:142` `DragonTidings.Run`  
+  original: `R081+0x175A` (1962:04BA, matched), `R081+0x1766` (1962:04C6, matched)  
+  divergence: the whole party is shown here (the card oracle's call gives 0); the stack word and the driver's placing are not modelled.  
+  deterministic: **no** (checked against the original); action: **keep** - The heir hints of lines 1..3 (R081+0x16EA/0x1728/0x1766) leave the member word unset: the same stack words of card-mouse-handler R043+0x26C4 as D-39eb3b (measured on card 0x2A), never -2. Presentation only; keep.
 - **D-7defac** `undefined-memory` - `src/Darklands.Cards/Scripts/S082/DragonsLair.cs:84` `DragonsLair.Fight`  
   original: `R082+0x0222` (1845:0152, asm)  
   divergence: without a dragon quest (lair -1) the original writes through index -1; skipped here.  
@@ -985,7 +993,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R009+0x50E6` (182C:1146, draft)  
   divergence: an item type outside the item list weighs 0 here (the original reads the bytes beyond the list).  
   deterministic: **n/a** (checked against the original); action: **document** - 182C:1146 reads battlefield-item-table[type].x25 for the item types put in a pile: constants 0x48..0x5A, 0x66, 0x6D, 0x70, 0x73, 0x74 and RandomSpecialKind 0x96..0xAB, all below the 200 item records (the stale stack word in FillPile cannot reach this call because the first pick is always one of the 10 valid kinds). So no type outside the item list is ever weighed.
-- **D-d7edad** `undefined-memory` - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:486` `MineBuilder.PlaceGroup`  
+- **D-d7edad** `undefined-memory` - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:491` `MineBuilder.PlaceGroup`  
   original: `R009+0x23D6` (1432:23D6, draft)  
   divergence: the original writes the group into slot group-total of level lvno even past 10 (into the next level's slots); the list grows here.  
   deterministic: **n/a** (checked against the original); action: **document** - 23D6 writes slot lvno*10+group-total[lvno]; each section gets its own level number and the callers place at most the spots pos 0..5 (r3382[0..4] plus the 0x6C spot, loops bounded by off<50) per section; the C# mine generator over all mine types gave at most 6 groups on a level, so slot 10 is never reached.
@@ -1037,7 +1045,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0x6818` (14F7:0008, draft)  
   divergence: the original never resets DS:8574 / DS:859E / DS:855A / DS:8540 at a battle's start (they are written only by R014+0x8CB4, 0x8D47..0x8E69, and read by it and by R014+0x6FFC; the start R014+0x0285..0x02A2 fills DS:CA30 and DS:C897 only; no range fill or file load of them was found, not searched exhaustively): a cloud slot that 0x8CB4 skips (the shown level differs, or it has no puff) keeps the growth its slot had last, possibly from an earlier battle, and its edge boxes (queued whatever the level) use it. Here every field starts at 0. Visual only, rare.  
   deterministic: **no** (checked against the original); action: **keep** - The cloud box growth words DS:8574 / DS:859E / DS:855A / DS:8540 are written only by R014+0x8CB4 (0x8D47..0x8E69) and read by it and by R014+0x6FFC; the battle start R014+0x0285..0x02A2 fills DS:CA30 and DS:C897 only, so a cloud slot that 0x8CB4 skips keeps the growth of an earlier battle in the original. Not reset here. Visual only (the edge boxes of a skipped cloud), rare; no range fill or file load of the words was searched for exhaustively. local/batch/b28 audit
-- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1450` `EffectField.LayOutCloud`  
+- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1454` `EffectField.LayOutCloud`  
   original: `R014+0x9E92` (14F7:3682, draft)  
   divergence: a size above 4 (the trap kinds 10..15 have sizes 6 and 9: the low nibble) writes past the 16-puff arrays on the original's stack; the random numbers are drawn, the extra puffs are not kept.  
   deterministic: **no** (checked against the original); action: **keep** - effect_layout with a size above 4 writes past its 16-puff locals on the stack (return address and saved registers of its caller); the outcome depends on the stack frame (a crash or corrupted locals), not a state that can be modelled. The random numbers are drawn as in the original.
@@ -1057,7 +1065,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R018+0x0000` (1EF8:0000, matched)  
   divergence: the speed and sprite of an unknown weapon (uninitialised in the original) are 15 / 5 here.  
   deterministic: **n/a**; action: **justify** - shot-launch leaves speed/sprite uninitialised only for a weapon type outside the missile types (0x17..0x21); a missile is only launched for a readied missile weapon or a trap weapon, all inside that range, so the case does not occur.
-- **D-5c358f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:636` `TacticalBattle.LeaveWithNobodySelected`  
+- **D-5c358f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:638` `TacticalBattle.LeaveWithNobodySelected`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   divergence: not reproduced, the original then reads or writes undefined memory: DS:17B0 = 0xFF (walk, attack with a target chosen): the view's follow (R014+0x1065) and the keys read record -1's screen place and floor (the menu records, DS:A6B3); the record -1 fields (DS:9BD5.., the menu bar's sub-menu items and DS:9C1E..9C2C: its range, the UI word, the alchemy file's far pointer through weapon-armed(-1)), route-hand-over-restore(-1), command-queue(-1), the 'PT' name of the animation slot of record -1's kind byte, and the bytes before other tables (DS:A6C3, DS:CA2F, DS:D6FA, DS:D492, DS:9063, and DS:CA56, the high byte of the palette buffer's segment DS:CA55 that the loot screen saves the palette through). moving[-1] (DS:A6D2) is the place order's high byte (modelled).  
   deterministic: **no** (checked against the original); action: **keep** - The rest of D-e29f6b: with nobody selected command-mode-end writes record -1 and entry -1 of further tables; these land on undefined memory: DS:17B0 = 0xFF (the view's follow reads record -1's screen place, the menu bar's sub-menu item bytes, and the keys its floor DS:A6B3), record -1's fields (menu records, DS:9C1E..9C2C: the bar's range, the UI word, the alchemy file's far pointer via weapon-armed(-1)), route-hand-over-restore(-1), command-queue(-1), the 'PT' name of an animation slot chosen by record -1's kind byte, DS:CA2F/D6FA/D492/A6C3/9063 and DS:CA56 (the palette buffer segment's high byte: the next loot screen saves the palette through segment 00xx). Machine and menu-content dependent; keep documented.
@@ -1073,7 +1081,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R025+0x0000` (1EF8:0000, draft)  
   divergence: the palettes (ENEMYPAL.DAT ranges) are the screen's; in mode 1 the original adds money from an uninitialised encounter pointer — no money is added here.  
   deterministic: **no** (checked against the original); action: **keep** - enemy-placement-entry mode 1 is called as enemy-placement-overlay-entry(1) from the death handler 0E76:2324 (push 1 only), so enc is the caller's saved SI:DI pair (offset=SI, segment=DI of the death handler's caller) and who the next word; after placing, R136+0xE4E0.pf/gr/fl += enc->pf/gr/fl read through that pseudo-pointer (low memory), i.e. an unpredictable money change depending on register contents and DOS memory. Not reproducible, so adding no money is the sane model (the palette note is a presentation divergence, not memory).
-- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:328` `TacticalBattle.KeepPlaces`  
+- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:336` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   divergence: a member who was not in that battle has whatever bytes the record held in the original; here such members are placed in the level's start formation (the others then put back where they stood).  
   deterministic: **partly** (checked against the original); action: **keep** - Mode 1 runs no effect-begin (R014+0x0058 is skipped without fight-flags 0x20), so each party record keeps x +4, y +6 and the facings +0x19/+0x1A as the last battle left them. A member who joined since that battle has the record bytes of the slot's last occupant (party-join copies the roster record, whose x/y are those of its own last battle, or zero for a new character): a function of play history that the C# does not keep per slot. Placing such a member in the start formation keeps the battle playable; only a party changed between two battles on one battlefield with mode 1 can see it.
