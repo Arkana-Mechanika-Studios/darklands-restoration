@@ -1092,7 +1092,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but game-store-entry's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.
-- **D-23cc74** `undefined-memory` - `src/Darklands.Persistence/SaveFile.cs:132` `SaveFile.Take`  
+- **D-23cc74** `undefined-memory` - `src/Darklands.Persistence/SaveFile.cs:164` `SaveFile.Take`  
   original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched), `R037+0x4184` (1462:4184, draft)  
   divergence: the original's buffers keep what they held before (a heap block's leftovers), not zeros.  
   deterministic: **no**; action: **keep** - R037+0x8ED4 reads with _dos_read and goes on with a short read; the buffers keep a heap block's previous contents. Only a file read out of step that also ends early reaches it (none of the 72 community saves nor 483.07's own short re-save of DKSAVE40 does: the lockstep oracle loads both sides without it). Reproducing it would need the heap's residue; zeros keep the load from failing.

@@ -55,7 +55,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
     };
 
     /// <summary>
@@ -94,6 +94,16 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: party-leave R037+0x3B58 (1462:3B58), data safety, data-damaging
     public bool FixLeavingMemberRecordTail { get; set; }
+
+    /// <summary>
+    /// A saved game cut short (a file that ends inside the header and party block, a record or the location table its own counts say it
+    /// holds: copied badly, a full disk) is loaded all the same: the original reads what the file still holds and goes on from what the
+    /// missing bytes leave in its buffers, so the game that results is garbage (a party without members, the places zeroed) or the
+    /// program ends back in DOS ("pics\shield.pic: No such file or directory" from a header cut at 0 or 96 bytes). Fixed: the load is refused before anything changes and a notice says so (the load screen or
+    /// the start screen stays); a file that holds all its records, whatever its cache or its battle file, loads as before.
+    /// </summary>
+    // orig: saved-game load R037+0x8ED4 (1C7D:0D24): each _dos_read of the header, party block, records and location block ignores a short count (checked in the emulated original: header cut at 0 or 96 bytes ends in DOS, cut at 512 or 9374 plays on)
+    public bool FixDamagedSavedGame { get; set; }
 
     /// <summary><c>event-advance</c> with "add" on a new event leaves 2 × value; fixed: the value.</summary>
     public bool FixNewEventAddDoubles { get; set; }

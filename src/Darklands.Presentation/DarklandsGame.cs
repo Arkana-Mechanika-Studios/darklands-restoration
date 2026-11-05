@@ -165,8 +165,12 @@ public sealed class DarklandsGame
             }
             if (StartWithSave is { } first)
             {
-                PlayFrom(LoadSavedGame(first, _session ??= NewGame.StartUp(World, Seed())).State);
-                return;
+                if (LoadSavedGame(first, _session ??= NewGame.StartUp(World, Seed())) is { } given)
+                {
+                    PlayFrom(given.State);
+                    return;
+                }
+                // a refused load (FixDamagedSavedGame) goes on at the start screen
             }
             while (true)
             {
@@ -257,8 +261,16 @@ public sealed class DarklandsGame
     // orig: R037+0x8ED4 (1C7D:0D24) matched: after the header difficulty-display(1), then
     // text-box-paint "Loading Game" until the file is read; music-setting and sound-setting come from the file
     // C: the options' menu ticks (DS:996E, DS:9982) are set too; there is no menu bar here.
-    private LoadedGame LoadSavedGame(string name, GameState? running)
+    // BUG: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS).
+    // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) a file that ends inside its header, records or location table is refused before anything changes: null, and a notice (own text: the original has none).
+    private LoadedGame? LoadSavedGame(string name, GameState? running)
     {
+        if (Behaviour.FixDamagedSavedGame && Saves.IsDamaged(name))
+        {
+            Log?.Invoke($"{name}: the saved game is damaged (it ends before its records do); not loaded");
+            new MessageBox(_ui).Notice(DamagedSavedGame);
+            return null;
+        }
         var loaded = Saves.Load(name, World, running);
         var box = new MessageBox(_ui);
         box.Show(HotKeys.DifficultyText(loaded.State.Difficulty));
@@ -290,6 +302,9 @@ public sealed class DarklandsGame
         }
         return loaded;
     }
+
+    /// <summary>The notice for a saved game that is cut short (own text, one box a line).</summary>
+    public static readonly IReadOnlyList<string> DamagedSavedGame = ["This saved game is damaged and cannot be loaded.", "Press a key."];
 
     /// <summary>Alt-L while playing: "Loading is irreversable. Proceed?", then the load screen; the game goes on with what it gives.</summary>
     // orig: game-load-entry R037+0x8B76 (1C7D:09C6) matched: card-text-window->f10 = 3; the question;

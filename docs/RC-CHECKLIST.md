@@ -15,13 +15,14 @@ How to read an item:
 
 ## Expected differences (do not report these)
 
-Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (344
+Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (345
 entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMMARY.md](faithfulness/SUMMARY.md) (open items).
 
-* The seven data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
+* The eight data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
   "The innkeeper has no room for more." with 63 stores or 128 entries), the save writer keeping empty party slots, a leaving
   member's record, the Dissolve Lock / Dissolve key using the right Eater-Water, and no ghost party member after a won argument at the
-  Devil's Bridge. The original may garble or crash there.
+  Devil's Bridge, and a refused load of a saved game cut short ("This saved game is damaged and cannot be loaded."). The original may
+  garble, crash or play on from garbage there.
 * Window, scale, fullscreen, pointer and key timing are the host's. Animation speed and exact frame phase can differ.
 * The battle clouds (potion gas): the depth order and clipping now follow the original (D-09fbc1 is closed); only the colour
   cycling phase and the puffs' random jitter frame by frame can differ, and a paused battle may show one more jitter frame
@@ -55,11 +56,11 @@ key in the original); what is different and which side shows what. If you cannot
   Compare: SDL2 found, the game folder found in Steam/Heroic/Wine, keyboard and mouse work, music plays. Proven by:
   UNPROVEN (tried once on a desktop Linux; not yet on a Steam Deck).
 * [ ] **A3 Launcher rows.** Do: window size, fullscreen, sound card, Roland ROM folder with the sound test, Shift at start,
-  the SoundFont row, `--setup`, `--no-launcher`. Compare: each choice is kept in the settings file and takes effect at the next start. Proven by: UNPROVEN.
+  the SoundFont row, `--setup`, `--no-launcher`. Compare: each choice is kept in the settings file and takes effect at the next start. Proven by: `LauncherTests`, `LauncherPackTests`, `SettingsTests` (each choice is kept and read back); how it looks: UNPROVEN.
 * [ ] **A4 Start screen and opening.** Do: let the intro run once, then skip it with a key. Compare: pictures, music, the
   three start buttons (new, quickstart, load). Proven by: `scr1-load-1` (start screen to load screen), `pressburg-map`.
 * [ ] **A5 Saves folder.** Do: install under a read-only folder. Compare: the start-up line names the fallback
-  `%APPDATA%\DarklandsRestoration\SAVES` and saving works. Proven by: UNPROVEN.
+  `%APPDATA%\DarklandsRestoration\SAVES` and saving works. Proven by: `SaveLocationTests` (an unwritable folder falls back to the user folder); the start-up line itself: UNPROVEN.
 * [ ] **A6 Another game program.** Do: point the launcher at a German or an older `DARKLAND.EXE`. Compare: the launcher
   stays open and says why the game cannot start. Proven by: `ExeVersionTests`.
 
@@ -74,7 +75,7 @@ key in the original); what is different and which side shows what. If you cannot
   mouse. Compare: the list, wrap-around, the party size limit. Proven by: `roster`, `roster4`, `roster-*`, `gen-roster*`,
   `discordq-retire`.
 * [ ] **B4 Quickstart party.** Do: start with the quickstart button. Compare: same party, money and city. Proven by:
-  UNPROVEN as a start from the start screen (the sessions load a save).
+  `RcPlayTests` (Q on the start screen gives the Quickstart city, members and items); against the original: UNPROVEN (the sessions load a save).
 
 ## C. Cities and services (visit each in a few cities, with a rich and a poor party)
 
@@ -123,7 +124,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **D5 Dungeon and mine.** Do: a mine and a cave: doors, single file, moving as a group, orders. Compare: doors,
   messages, fights. Proven by: `dungeon-mine-doors`, `dungeon-mine-doormsg`, `dungeon-mine-group`, `dungeon-mine-orders`, `savemid-mine`.
 * [ ] **D6 Date, weather, seasons.** Do: spend many weeks, watch the calendar and the light. Compare: dates, day and night.
-  Proven by: UNPROVEN (only a few days at a time).
+  Proven by: `RcPlayTests` long generated play (the date stays valid); weeks against the original and the light: UNPROVEN (sessions run a few days).
 
 ## E. Cards and events
 
@@ -182,7 +183,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **G5 Load screen.** Do: delete a save; cancel with Esc and with Alt-Q (answer no); open an empty list. Compare: the
   buttons and the list (order differs, see above). Proven by: `scr1-load-1` to `scr1-load-3`.
 * [ ] **G6 A damaged or missing save.** Do: load a truncated `.SAV` and a missing battle file. Compare: the message.
-  Proven by: UNPROVEN.
+  Proven by: `RcPlayTests` (a save without its battle file loads and the game goes on; a missing file is named). A `.SAV` cut inside its header, records or location table is refused with "This saved game is damaged and cannot be loaded." (a data-safety fix; the original ends in DOS with a file error or plays on from garbage, with no message of its own to compare; tests `RcPlayTests`, `DamagedSaveTests`); a cut only in its cache loads as before.
 * [ ] **G7 Many saves.** Do: save in four different places in a row and reload each. Compare: names, place. Proven by:
   `save-load`, `mapsave` (one at a time); the series: UNPROVEN.
 
@@ -206,7 +207,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **H8 Held keys.** Do: hold keys on the map and in a battle. Compare: repeat rate and moves. Proven by: `kbd-map-held`,
   `kbd-battle-held`, `gen-bheld*`.
 * [ ] **H9 Developer console and screenshot (C# only).** Do: F11 then `help`; F12. Compare: no game key is lost (the
-  original has neither). Proven by: UNPROVEN, not compared.
+  original has neither). Proven by: `GameConsoleTests` (the console); that no game key is lost: UNPROVEN, not compared.
 
 ## I. Sound and music
 
@@ -223,14 +224,14 @@ key in the original); what is different and which side shows what. If you cannot
 
 * [ ] **J1 No pack.** Do: nothing set. Compare: identical to the original in pictures and sound. Proven by: all sessions.
 * [ ] **J2 Picture pack.** Do: set a pack with a few PNGs, start. Compare: the replaced pictures show only where the
-  original shows them, text and menus stay on top, fades follow the palette; the game plays the same. Proven by: UNPROVEN
-  (headless shots only).
+  original shows them, text and menus stay on top, fades follow the palette; the game plays the same. Proven by: `HdPackTests`, `HdRendererTests`
+  (headless shots); the look: UNPROVEN.
 * [ ] **J3 Sound pack.** Do: use `packs/audio-pack-example`. Compare: tones replace the pieces; Alt-P pauses them; a battle
-  ends them; timing does not change. Proven by: UNPROVEN.
+  ends them; timing does not change. Proven by: `PackAudioTests` (the game's calls reach the drivers unchanged; pause and mute), `LauncherPackTests` (the example pack reads clean); how it sounds: UNPROVEN.
 * [ ] **J4 Broken pack.** Do: a missing folder, a bad PNG, an unknown name. Compare: a console line and the game's own
-  picture or sound. Proven by: UNPROVEN.
+  picture or sound. Proven by: `PackAudioTests`, `HdPackTests`, `LauncherPackTests` (the problem is reported and the rest still loads).
 * [ ] **J5 Launcher rows.** Do: choose a pack with the arrows, by browsing, by dropping its folder. Compare: the row shows
-  the name, marked (!) when unreadable. Proven by: UNPROVEN.
+  the name, marked (!) when unreadable. Proven by: `LauncherPackTests`.
 * [ ] **J6 MIDI music and music per card.** Do: a pack with `.mid` pieces, once with a SoundFont and once without; a pack
   or mod that gives a card its own music. Compare: the MIDI pieces play through the SoundFont (without one, the game's own
   music); a card's own music starts with the card and stops at a battle; the ten cards listed in PACKS.md that silence the
@@ -240,35 +241,35 @@ key in the original); what is different and which side shows what. If you cannot
 
 * [ ] **K1 No mod.** Do: play with no `--mod`. Compare: the 366 original cards, saves with no `.MODS.JSON`. Proven by: all sessions.
 * [ ] **K2 The example mod.** Do: `--mod wayside-shrine`, reach the added card by day in a city. Compare: text, choices,
-  effects; the console lists what it adds. Proven by: UNPROVEN (unit tests and a headless shot).
+  effects; the console lists what it adds. Proven by: `ModCardTests` and `RcPlayTests` (the shrine card runs in the game loop; the console lists what the mod adds).
 * [ ] **K3 Modded save.** Do: save on the mod's card with Alt-S. Compare: `DKSAVE<n>.SAV` and `DKSAVE<n>.MODS.JSON` appear;
-  the original loads the `.SAV` and goes on from the card the save names. Proven by: UNPROVEN.
+  the original loads the `.SAV` and goes on from the card the save names. Proven by: `ModCardTests`, `RcPlayTests` (Alt-S on the mod's card writes both files; the `.SAV` names only game cards).
 * [ ] **K4 Load with and without the mod.** Do: load the modded save with the mod (it goes on at the mod's card), then
-  without (a message names the missing mod; the game goes on). Compare: no crash. Proven by: UNPROVEN.
+  without (a message names the missing mod; the game goes on). Compare: no crash. Proven by: `ModCardTests`, `RcPlayTests` (with the mod the card goes on; without it the console names the mod).
 * [ ] **K5 No modded card into an original save.** Do: load an original save (no companion file) with the mod on, play past
   the mod's card, save, load. Compare: the saved `.SAV` never holds a card number above 365 and the original loads it.
-  Proven by: UNPROVEN.
+  Proven by: `ModCardTests`, `RcPlayTests` (an original save played with the mod, saved several times: no card above 365).
 * [ ] **K6 Deleted or replaced save.** Do: delete a modded save in the load screen; replace its `.SAV` by another. Compare:
-  the companion file is removed or ignored. Proven by: UNPROVEN.
+  the companion file is removed or ignored. Proven by: `ModCardTests`.
 * [ ] **K7 A refused mod card.** Do: a mod card with a game's number and no `overrides`. Compare: a console line with the
-  reason, the card not used. Proven by: UNPROVEN.
+  reason, the card not used. Proven by: `ModCardTests` (the reason is a console line; the mod is not played).
 
 ## L. Options ([SETTINGS.md](SETTINGS.md))
 
 * [ ] **L1 Original look.** Do: default `cleanDrawing` false. Compare: screens drawn as the original, oddities included.
   Proven by: the sessions compare state, not pictures; pictures: UNPROVEN apart from the visual passes' shots.
 * [ ] **L2 CleanDrawing.** Do: `--clean-drawing`. Compare: the cleaner drawing, and the game plays the same (a save made
-  with either setting loads in both). Proven by: UNPROVEN.
+  with either setting loads in both). Proven by: `RcPlayTests` (the same keys give the same game state and files with it off and on; a save of either loads in both); the drawing: UNPROVEN.
 * [ ] **L3 Scale, resolution, fullscreen.** Do: scale 1 to 4, a custom size, fullscreen and back. Compare: aspect,
-  sharpness, pointer position over the picture. Proven by: UNPROVEN.
+  sharpness, pointer position over the picture. Proven by: `MouseMappingTests` (every window position gives the game pixel shown there), `DisplayLayoutTests`; sharpness and fullscreen: UNPROVEN.
 * [ ] **L4 Settings file.** Do: edit a key, put in a wrong value, add a command-line option. Compare: the console names the
-  bad key; the command line wins. Proven by: UNPROVEN.
+  bad key; the command line wins. Proven by: `SettingsTests` (a bad key is named and ignored; the command line wins).
 * [ ] **L5 Faithful and data-safe behaviour.** Do: a long inn session with many stores; a leaving member rejoins. Compare:
   nothing is lost in the C#; the original may lose it. Proven by: unit tests; the faithful mode by `cache`, `cache-revisit`.
 
 ## M. Long play
 
 * [ ] **M1 One whole evening.** Do: play two hours in each build from the same save, with fights and trade. Compare:
-  money, time, health at the end; any crash. Proven by: UNPROVEN (sessions are minutes long).
+  money, time, health at the end; any crash. Proven by: `RcPlayTests` (about 40,000 frames of generated play, three seeds: no crash, invariants hold, the end saves and reloads equal); two hours against the original: UNPROVEN (sessions are minutes long).
 * [ ] **M2 Final stretch.** Do: reach a late-game scene (the Wild Hunt, an end film). Compare: texts; saves still load.
   Proven by: UNPROVEN.

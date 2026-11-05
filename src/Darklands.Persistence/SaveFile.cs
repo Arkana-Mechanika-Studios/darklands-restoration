@@ -97,6 +97,38 @@ public sealed class SaveFile
         return file;
     }
 
+    /// <summary>
+    /// Whether the file is too short for what its own counts say: shorter than the header and party block, a character, event or
+    /// location record (the table is 414 records when the file holds them) that runs past the end. The cache, the rest of the file, has
+    /// no length of its own. The load of <see cref="OriginalSaves.Read"/> reads such a file out of what is missing (zeros here).
+    /// </summary>
+    // C: the walk of Parse(fixedLocationTable: true) in arithmetic: every file the game writes (with no status-0 party slot, FixSaveWriterSkipsEmptySlots) ends after its location table
+    public static bool RunsPastTheEnd(ReadOnlySpan<byte> data)
+    {
+        const int partyBlock = 2 + 2 + PartySlots * 2 + PartySlots * ImageSize + PartySlots * PaletteSize;
+        if (data.Length < HeaderSize + partyBlock)
+        {
+            return true;
+        }
+        long at = HeaderSize + partyBlock + (long)BinaryPrimitives.ReadUInt16LittleEndian(data[(HeaderSize + 2)..]) * CharacterSize;
+        if (at + 2 > data.Length)
+        {
+            return true;
+        }
+        at += 2 + (long)BinaryPrimitives.ReadUInt16LittleEndian(data[(int)at..]) * EventSize;
+        if (at + 2 > data.Length)
+        {
+            return true;
+        }
+        long locations = BinaryPrimitives.ReadUInt16LittleEndian(data[(int)at..]);
+        at += 2;
+        if (data.Length - at >= (long)LocationCount * LocationSize)
+        {
+            locations = LocationCount;
+        }
+        return at + locations * LocationSize > data.Length;
+    }
+
     public byte[] ToBytes()
     {
         using var out_ = new MemoryStream();
