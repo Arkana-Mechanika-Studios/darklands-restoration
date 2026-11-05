@@ -63,6 +63,23 @@ public sealed class BattleSaveFile
 
     public ReadOnlySpan<byte> MarchingOrder => Variables.AsSpan(MarchingOrderAt, 6);
 
+    /// <summary>
+    /// Whether the restore can read the battle file whole: its header, the variables, each level and the work files the header names are all
+    /// there and inflate. The original's restore ends the program with "EOF-..." or "Corrupt file-..." on a file for which this is false.
+    /// </summary>
+    public static bool IsReadable(ReadOnlySpan<byte> data)
+    {
+        try
+        {
+            Parse(data);
+            return true;
+        }
+        catch (Exception e) when (e is InvalidDataException or ArgumentException or IndexOutOfRangeException or InvalidOperationException or OverflowException)
+        {
+            return false;
+        }
+    }
+
     /// <summary>Reads a battle file as the restore does: the header, the variables, DS:D661 levels, then the two files.</summary>
     // orig: the battle-state restore R003+0x0CE8 (0E76:0CE8) draft; the end-of-data exit R003+0x19CA (0E76:19CA) draft ("EOF-%s"); the explode
     // exit R003+0x19E8 (0E76:19E8) draft ("Corrupt file-%s %d")

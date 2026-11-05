@@ -127,4 +127,71 @@ public sealed class DamagedSaveTests
         Assert.Equal(8, BitConverter.ToInt16(shortSave, 0xF1));
         Assert.False(SaveFile.RunsPastTheEnd(shortSave));
     }
+
+    // ---- the battle file (.BSV): the original's restore reads it in every game and ends in DOS on a short or corrupt one
+    // (code/local/rc-auto/badbsv-original.md); a missing one is fine.
+
+    private static IEnumerable<byte[]> WholeBattleFiles()
+    {
+        foreach (var name in SaveFolderCopy.Names.Where(n => n != "DEFAULT"))
+        {
+            var bsv = Path.ChangeExtension(name, ".BSV");
+            if (SaveFolderCopy.Exists(bsv))
+            {
+                yield return SaveFolderCopy.Read(bsv);
+            }
+        }
+        var repository = AppContext.BaseDirectory;
+        for (var dir = new DirectoryInfo(repository); dir is not null; dir = dir.Parent)
+        {
+            if (File.Exists(Path.Combine(dir.FullName, "Darklands.slnx")))
+            {
+                repository = dir.FullName;
+                break;
+            }
+        }
+        var folder = Path.Combine(LocalPaths.Resolve("code", repository, Environment.GetEnvironmentVariable(LocalPaths.RootVariable)), "local", "oracle-saves");
+        if (Directory.Exists(folder))
+        {
+            foreach (var file in Directory.EnumerateFiles(folder, "*.bsv", SearchOption.AllDirectories))
+            {
+                yield return File.ReadAllBytes(file);
+            }
+        }
+    }
+
+    [Fact]
+    public void EveryWholeBattleFileIsReadableAndAnyCutOfItIsNot()
+    {
+        foreach (var bsv in WholeBattleFiles().Where(b => b.Length > 100))
+        {
+            Assert.True(BattleSaveFile.IsReadable(bsv), "a whole battle file is taken for damaged");
+            foreach (var length in new[] { 0, 5, BattleSaveFile.HeaderSize - 1, bsv.Length / 2, bsv.Length - 100 })
+            {
+                Assert.False(BattleSaveFile.IsReadable(bsv[..length]), $"a battle file of {bsv.Length} bytes cut to {length} is taken for whole");
+            }
+        }
+    }
+
+    [Fact]
+    public void ASavedGameIsDamagedWhenItsBattleFileIsThereAndCutAndNotWhenItIsMissing()
+    {
+        if (!SaveFolderCopy.Exists("DKSAVE0.SAV") || !SaveFolderCopy.Exists("DKSAVE0.BSV"))
+        {
+            return;
+        }
+        var sav = SaveFolderCopy.Read("DKSAVE0.SAV");
+        var bsv = SaveFolderCopy.Read("DKSAVE0.BSV");
+        var folder = TempCopies.Create("darklands-bsv-");
+        File.WriteAllBytes(Path.Combine(folder, "DKSAVE0.SAV"), sav);
+        var saves = new SaveFolder(folder);
+        Assert.False(saves.IsDamaged("DKSAVE0.SAV"), "no battle file");
+        File.WriteAllBytes(Path.Combine(folder, "DKSAVE0.BSV"), bsv);
+        Assert.False(saves.IsDamaged("DKSAVE0.SAV"), "the whole battle file");
+        foreach (var length in new[] { 0, 5, bsv.Length / 2, bsv.Length - 100 })
+        {
+            File.WriteAllBytes(Path.Combine(folder, "DKSAVE0.BSV"), bsv[..length]);
+            Assert.True(saves.IsDamaged("DKSAVE0.SAV"), $"the battle file cut to {length} bytes");
+        }
+    }
 }

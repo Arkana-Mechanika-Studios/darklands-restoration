@@ -75,9 +75,14 @@ public sealed class SaveFolder(string path)
         }
     }
 
-    /// <summary>Whether the saved game is cut short: its file ends inside what its own counts say it holds (<see cref="SaveFile.RunsPastTheEnd"/>).</summary>
+    /// <summary>
+    /// Whether the saved game is cut short: its file ends inside what its own counts say it holds (<see cref="SaveFile.RunsPastTheEnd"/>), or its
+    /// battle file is there but cannot be read whole (<see cref="BattleSaveFile.IsReadable"/>: the original's restore reads it whatever the
+    /// game was saved in, and ends the program on a short or corrupt one; a missing battle file is fine).
+    /// </summary>
     public bool IsDamaged(string fileName) =>
-        Find(fileName) is { } file && SaveFile.RunsPastTheEnd(File.ReadAllBytes(file));
+        Find(fileName) is { } file && (SaveFile.RunsPastTheEnd(File.ReadAllBytes(file))
+            || Find(BattleFileOf(fileName)) is { } battle && !BattleSaveFile.IsReadable(File.ReadAllBytes(battle)));
 
     /// <summary>Reads a saved game and its battle file.</summary>
     public LoadedGame Load(string fileName, IGameData data, GameState? running = null)

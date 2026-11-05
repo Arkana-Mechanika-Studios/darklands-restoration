@@ -186,7 +186,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **G5 Load screen.** Do: delete a save; cancel with Esc and with Alt-Q (answer no); open an empty list. Compare: the
   buttons and the list (order differs, see above). Proven by: `scr1-load-1` to `scr1-load-3`.
 * [ ] **G6 A damaged or missing save.** Do: load a truncated `.SAV` and a missing battle file. Compare: the message.
-  Proven by: `RcPlayTests` (a save without its battle file loads and the game goes on; a missing file is named). A `.SAV` cut inside its header, records or location table is refused with "This saved game is damaged and cannot be loaded." (a data-safety fix; the original ends in DOS with a file error or plays on from garbage, with no message of its own to compare; tests `RcPlayTests`, `DamagedSaveTests`); a cut only in its cache loads as before.
+  Proven by: `RcPlayTests` (a save without its battle file loads and the game goes on; a missing file is named). A `.SAV` cut inside its header, records or location table is refused with "This saved game is damaged and cannot be loaded." (a data-safety fix; the original ends in DOS with a file error or plays on from garbage, with no message of its own to compare; tests `RcPlayTests`, `DamagedSaveTests`); so is a saved game whose `.BSV` is there but empty, short or corrupt (the original ends in DOS with "EOF-..." or "Corrupt file-...", also outside a battle); a cut only in its cache, or a missing `.BSV`, loads as before.
 * [ ] **G7 Many saves.** Do: save in four different places in a row and reload each. Compare: names, place. Proven by:
   `save-load`, `mapsave` (one at a time); the series: UNPROVEN.
 

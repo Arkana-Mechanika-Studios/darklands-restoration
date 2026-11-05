@@ -461,7 +461,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R043+0x0100` (1462:0100, matched), `R136+0xE9EE` (2E38:10BE, data)  
   divergence: the original keeps the records in its own heap and writes them to locs.tmp when the card engine shuts down (cards-teardown R043+0x054E); a new game starts from the file here, a saved game restores the fields through Persistence.  
   recommendation: **justify** - Representation difference: the original reads one city record and keeps the location records in its heap and in locs.tmp; this program decodes all cities up front and restores fields through Persistence. Equivalent as long as GameState.City and the save restore give the same bytes (covered by the persistence tests).
-- **D-bd0a92** `other` - `src/Darklands.Persistence/BattleSaveFile.cs:69` `BattleSaveFile.Parse`  
+- **D-bd0a92** `other` - `src/Darklands.Persistence/BattleSaveFile.cs:86` `BattleSaveFile.Parse`  
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.

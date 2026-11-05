@@ -48,9 +48,10 @@ public sealed class RcPlayTests
         public bool ShiftHeld => false;
         public long Milliseconds => _now;
 
-        public void Present(Screen screen)
-        {
-        }
+        /// <summary>The last frame handed to the display: its pixels and palette (copies).</summary>
+        public (byte[] Pixels, uint[] Palette)? Shown { get; private set; }
+
+        public void Present(Screen screen) => Shown = ((byte[])screen.Pixels.Clone(), (uint[])screen.Palette.Clone());
 
         public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
 
@@ -579,6 +580,110 @@ public sealed class RcPlayTests
         Assert.Contains(log, l => l.Contains("damaged"));
         Assert.False(played);
         Assert.Equal(before, FolderDigest(saves));
+    }
+
+    private static string CutBattleFile(GameFiles files, int length)
+    {
+        var saves = TempFolder("g6");
+        File.Copy(OwnSave(files, "DKSAVE0.SAV")!, Path.Combine(saves, "DKSAVE0.SAV"));
+        File.WriteAllBytes(Path.Combine(saves, "DKSAVE0.BSV"), File.ReadAllBytes(OwnSave(files, "DKSAVE0.BSV")!)[..length]);
+        return saves;
+    }
+
+    /// <summary>
+    /// G6 (the battle file; original: the restore reads the .BSV in every game and ends in DOS with "EOF-..." or "Corrupt file-..." on an empty,
+    /// short or corrupt one; code/local/rc-auto/badbsv-original.md): with the fix a saved game whose .BSV is cut is refused on both routes, as a
+    /// cut .SAV is, and nothing is written.
+    /// </summary>
+    [Theory]
+    [InlineData(0, true)]
+    [InlineData(5, true)]
+    [InlineData(141, true)]
+    [InlineData(182, true)]
+    [InlineData(0, false)]
+    [InlineData(141, false)]
+    public void ASavedGameWithACutBattleFileIsRefusedWithTheFix(int length, bool fromTheStart)
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null || OwnSave(files, "DKSAVE0.BSV") is null)
+        {
+            return;
+        }
+        var saves = CutBattleFile(files, length);
+        var before = FolderDigest(saves);
+        var host = fromTheStart ? new RcHost(["w:20", "k:enter", "w:20"]) : new RcHost(["k:t", "w:5", "k:l", "w:300", "k:enter", "w:60", "k:esc", "w:30"]);
+        var game = NewGame(files, host, saves, load: fromTheStart ? "DKSAVE0.SAV" : null, behaviour: OriginalBehaviour.DataSafe);
+        var log = new List<string>();
+        game.Log = log.Add;
+        var played = false;
+        host.EveryFrame = _ => played |= game.Playing is not null;
+        Assert.Null(Record.Exception(game.Run));
+        Assert.Contains(log, l => l.Contains("damaged"));
+        Assert.False(played);
+        Assert.Equal(before, FolderDigest(saves));
+    }
+
+    /// <summary>Faithful keeps today's path: an empty .BSV is taken for a missing one and the game plays on (the original ends in DOS); a cut one throws.</summary>
+    [Fact]
+    public void FaithfulAnEmptyBattleFileIsTakenForMissingAndACutOneThrowsAsBefore()
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null || OwnSave(files, "DKSAVE0.BSV") is null)
+        {
+            return;
+        }
+        var host = new RcHost(["w:50", "k:space", "w:50"]);
+        var game = NewGame(files, host, CutBattleFile(files, 0), load: "DKSAVE0.SAV");
+        var log = new List<string>();
+        game.Log = log.Add;
+        var played = false;
+        host.EveryFrame = _ => played |= game.Playing is not null;
+        game.Run();
+        Assert.True(played);
+        Assert.DoesNotContain(log, l => l.Contains("damaged"));
+        Assert.Throws<InvalidDataException>(() => NewGame(files, new RcHost(["w:50"]), CutBattleFile(files, 141), load: "DKSAVE0.SAV").Run());
+    }
+
+    private static int Brightness(uint colour) => (int)((colour >> 16 & 0xFF) + (colour >> 8 & 0xFF) + (colour & 0xFF)) / 3;
+
+    /// <summary>
+    /// The notice of a damaged saved game given on the command line (nothing drawn before it) is readable: its box and text are drawn in the
+    /// load screen's colours, not dark on black. Every shown frame while the notice waits is checked.
+    /// </summary>
+    [Theory]
+    [InlineData(96, false)]
+    [InlineData(512, false)]
+    [InlineData(0, true)]
+    [InlineData(141, true)]
+    public void TheNoticeOfADamagedSavedGameGivenAtTheStartIsNotDarkOnBlack(int length, bool battleFile)
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null || OwnSave(files, "DKSAVE0.BSV") is null)
+        {
+            return;
+        }
+        var host = new RcHost(["w:30", "k:enter", "w:10"]);
+        var game = NewGame(files, host, battleFile ? CutBattleFile(files, length) : CutSave(files, length), load: "DKSAVE0.SAV", behaviour: OriginalBehaviour.DataSafe);
+        var log = new List<string>();
+        game.Log = log.Add;
+        var sinceNotice = -1;
+        (byte[] Pixels, uint[] Palette)? frame = null;
+        host.EveryFrame = n =>
+        {
+            if (sinceNotice < 0 && log.Any(l => l.Contains("damaged")))
+            {
+                sinceNotice = 0;
+            }
+            if (sinceNotice >= 0 && ++sinceNotice == 10)
+            {
+                frame = host.Shown;
+            }
+        };
+        game.Run();
+        Assert.NotNull(frame);
+        var (pixels, palette) = frame!.Value;
+        // the box (colour 0xFF) and the text (colour 1) of MessageBox: both seen, the box not black, the text clearly brighter or darker than it
+        Assert.Contains(pixels, p => p == 0xFF);
+        Assert.Contains(pixels, p => p == MessageBox.TextColor);
+        Assert.True(Brightness(palette[0xFF]) >= 40, "the notice's box is drawn black");
+        Assert.True(Math.Abs(Brightness(palette[0xFF]) - Brightness(palette[MessageBox.TextColor])) >= 60, "the notice's text does not stand out of its box");
     }
 
     /// <summary>The notice is a sentence the game's own boxes show, one line a box.</summary>
