@@ -546,6 +546,12 @@ public sealed class BattleScreen : ITacticalView
         // levels and the encounters not met yet, as the original keeps the level files): 1 and 2 show the level shown when the last
         // battle ended (1 with the party where it stood, 2 at that level's start), 3 shows level `Battlefield` (at its start).
         // orig: R002+0x0098..0x00EE checked against the asm; tests: RevisitTests
+        // C: seen only from a synthetic save (vis10 visleads-prison-battle: card 0x16B's mode 1 from a city): without a .BSV the original
+        //   fights on the level files the machine holds (background row 3), with a .BSV of no levels (the game's 282-byte DKSAVE0.BSV) on
+        //   an empty field (its view stays black: 32,785 px against the C#'s new keep; re-run 2026-11-05). In play the cell follows the
+        //   fortress battle, whose field the C# keeps (LastField) as the original keeps its files (that path is not a session yet).
+        //   Following the original from such a save means drawing leftover or
+        //   empty files, which no player reaches, so the divergence below stays.
         // DIVERGENCE: the original goes back onto whatever battlefield its files hold; here a revisit needs the last battlefield to have
         // been fought at the same place (else a new one is built), and mode 3's level is kept within the battlefield's levels.
         if (request.Mode != 0 && _owner.LastField is null && _state.BattleFile is { Levels.Count: > 0 } held)

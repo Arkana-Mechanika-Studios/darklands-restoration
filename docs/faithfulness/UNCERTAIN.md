@@ -17,15 +17,7 @@ same data; the dormant branches (`// DORMANT:`, kept but unreachable) are listed
 | travel | core | 0 |
 | battles | core | 0 |
 | persistence | core | 0 |
-| screens/presentation | other | 1 |
+| screens/presentation | other | 0 |
 | host/audio | other | 0 |
-| total |  | 1 |
-
-## Presentation and host (1)
-
-### screens/presentation (1)
-
-- **U-77166b** `uncertain` - `src/Darklands.Presentation/OpeningTiming.cs:21` `OpeningTiming.IReadOnlyList`  
-  original: `root 03A1:000A` (03A1:000A, matched), `root 030B:0004` (030B:0004, matched), `root 030B:0508` (030B:0508, matched) +2 more  
-  why: one tick after the last cel of OPENING2 (the capture's tick after it came in the same frame, before the tune). Unknown: whether that tick came before or after the tune's start inside the frame (0 or 1 here). The order is the host's timing (the reader's time against the 60 Hz timer in DOSBox-X at 3000 cycles/ms), so the emulated oracle (its own timer) cannot stand for it, and the capture's JSON (the tunes' trampoline times beside the MPU bytes) is not kept, only summaries of it (outside the repository). A new shared-clock capture that logs the timer's tick count at the tune's start (R043+0x09AE) and at the last cel would settle it.
+| total |  | 0 |
 

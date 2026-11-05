@@ -305,8 +305,10 @@ public sealed class GameUi
     public bool PointerVisible { get; set; } = true;
 
     /// <summary>
-    /// An interface convenience the original does not have (off unless a host turns it on): at a card menu Up / Down also move the
-    /// highlight while the pointer is off the lines, and the digits 1..9 choose the main list's lines in order (CardScreen.Select).
+    /// An interface convenience the original does not have (off unless a host turns it on), made of player commands (docs/COMMANDS.md):
+    /// at a card menu, with the pointer off the lines, Up / Down put the pointer onto the line they name (<see cref="PointAt"/>), and the
+    /// digits 1..9 choose the line of that number as the mouse does (<see cref="ChooseLine"/>; while an item or saint box is up, the
+    /// box's lines). The key itself is dropped, as the original drops it (CardScreen.Select).
     /// </summary>
     public bool KeyboardCardMenus { get; set; }
 

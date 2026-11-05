@@ -91,6 +91,47 @@ public sealed class LoadScreenTests
         Assert.DoesNotContain("DKSAVE3.SAV", folder.Names());
     }
 
+    /// <summary>
+    /// A saved game of a modded game (its own companion file) carries the mod mark on the load screen only where the screens are drawn
+    /// clean (GameOptions.CleanDrawing): Classic draws the very picture of a plain saved game; a companion file of an earlier save is no mark.
+    /// </summary>
+    [Fact]
+    public void AModdedGamesSaveIsMarkedOnlyWhereTheScreensAreDrawnClean()
+    {
+        if (GameFolder.Files is not { } files || Copy(files, "DKSAVE1.SAV") is not { } plain || Copy(files, "DKSAVE1.SAV") is not { } modded)
+        {
+            return;
+        }
+        var state = modded.Load("DKSAVE1.SAV", NoGameData.Instance).State;
+        ModdedSaves.MarkUsed(state, [new ModMark("wayside-shrine", "Wayside shrine", "1")]);
+        var name = modded.Save(state, "marked", true, true);
+        File.Copy(Path.Combine(modded.Path, name.ToUpperInvariant()), Path.Combine(plain.Path, name.ToUpperInvariant()));
+        Assert.True(modded.IsModded(name.ToUpperInvariant()));
+        Assert.False(modded.IsModded("DKSAVE1.SAV"));
+        Assert.False(plain.IsModded(name.ToUpperInvariant()));
+
+        byte[] Shown(SaveFolder folder, bool clean)
+        {
+            var host = new KeyHost(Keys.Escape);
+            var ui = new GameUi(host, new GameAssets(files));
+            ui.Options.CleanDrawing = clean;
+            Assert.Null(new LoadGameScreen(ui, folder, ["", "", ""]).Run(fromStartScreen: false, _ => null));
+            return host.Last!;
+        }
+        Assert.Equal(Shown(plain, clean: false), Shown(modded, clean: false));
+        var withMark = Shown(modded, clean: true);
+        var without = Shown(plain, clean: true);
+        // the mark is on the new save's row, at the right end of its first line (row r at y = (r + 1) * 16 + 6): nothing else changed
+        var top = (modded.Names().ToList().IndexOf(name.ToUpperInvariant()) + 1) * 16 + 6;
+        var changed = Enumerable.Range(0, withMark.Length).Where(i => withMark[i] != without[i]).ToList();
+        Assert.NotEmpty(changed);
+        Assert.All(changed, i => Assert.True(i % Screen.Width >= 0x130 && i / Screen.Width >= top && i / Screen.Width < top + 9, $"pixel ({i % Screen.Width}, {i / Screen.Width})"));
+
+        // the companion file of an earlier save of that name: the .SAV replaced, no mark
+        File.Copy(Path.Combine(plain.Path, "DKSAVE1.SAV"), Path.Combine(modded.Path, name.ToUpperInvariant()), overwrite: true);
+        Assert.False(modded.IsModded(name.ToUpperInvariant()));
+    }
+
     private static int Key(char c) => Keys.ForCharacter(c);
 
     /// <summary>A copy of some of the player's saved games in a new temporary folder.</summary>
@@ -125,9 +166,10 @@ public sealed class LoadScreenTests
         public bool ShiftHeld => false;
         public long Milliseconds => _now;
 
-        public void Present(Screen screen)
-        {
-        }
+        /// <summary>The pixels last shown.</summary>
+        public byte[]? Last { get; private set; }
+
+        public void Present(Screen screen) => Last = (byte[])screen.Pixels.Clone();
 
         public void Pump()
         {

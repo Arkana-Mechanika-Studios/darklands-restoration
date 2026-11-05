@@ -225,6 +225,9 @@ A saved game stays in the original format, so the original game (and this progra
 * Loaded **without** them, a message names the missing mods and the game goes on from the cards the `.SAV` names (for the
   example, the gate). Nothing breaks.
 * A game once played with a mod stays marked: its later saves get a companion file even after the mod is gone.
+* The load screen marks such a saved game with a `*` at the right end of its first line, in the presets that draw the screens clean
+  (`display.cleanDrawing`: Fixed, Classic + comfort). Classic draws the load screen as the 1992 game, without the mark. Only a
+  companion file that belongs to its `.SAV` marks it.
 
 Without mods, and for a game never played with one, no companion file is written: the saves are the same as before.
 
