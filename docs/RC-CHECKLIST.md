@@ -15,13 +15,14 @@ How to read an item:
 
 ## Expected differences (do not report these)
 
-Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (344
+Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (345
 entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMMARY.md](faithfulness/SUMMARY.md) (open items).
 
-* The seven data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
+* The eight data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
   "The innkeeper has no room for more." with 63 stores or 128 entries), the save writer keeping empty party slots, a leaving
   member's record, the Dissolve Lock / Dissolve key using the right Eater-Water, and no ghost party member after a won argument at the
-  Devil's Bridge. The original may garble or crash there.
+  Devil's Bridge, and a refused load of a saved game cut short ("This saved game is damaged and cannot be loaded."). The original may
+  garble, crash or play on from garbage there.
 * Window, scale, fullscreen, pointer and key timing are the host's. Animation speed and exact frame phase can differ.
 * The battle clouds (potion gas): the depth order and clipping now follow the original (D-09fbc1 is closed); only the colour
   cycling phase and the puffs' random jitter frame by frame can differ, and a paused battle may show one more jitter frame
@@ -182,7 +183,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **G5 Load screen.** Do: delete a save; cancel with Esc and with Alt-Q (answer no); open an empty list. Compare: the
   buttons and the list (order differs, see above). Proven by: `scr1-load-1` to `scr1-load-3`.
 * [ ] **G6 A damaged or missing save.** Do: load a truncated `.SAV` and a missing battle file. Compare: the message.
-  Proven by: `RcPlayTests` (a save without its battle file loads and the game goes on; a missing file is named). A cut-off `.SAV` ends the program or loads with no message (findings RC-001, RC-002, tests skipped): the message itself is for the person.
+  Proven by: `RcPlayTests` (a save without its battle file loads and the game goes on; a missing file is named). A `.SAV` cut inside its header, records or location table is refused with "This saved game is damaged and cannot be loaded." (a data-safety fix; the original ends in DOS with a file error or plays on from garbage, with no message of its own to compare; tests `RcPlayTests`, `DamagedSaveTests`); a cut only in its cache loads as before.
 * [ ] **G7 Many saves.** Do: save in four different places in a row and reload each. Compare: names, place. Proven by:
   `save-load`, `mapsave` (one at a time); the series: UNPROVEN.
 

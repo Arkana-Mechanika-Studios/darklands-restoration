@@ -32,6 +32,7 @@ using Darklands.Rendering;
 // Game steps:
 //   saves:<folder>               the saved games' folder (default: SAVES beside the program, never the game folder)
 //   banner, intro                run the program start (the BANNER.DAT banner and its checks) and the opening
+//   datasafe                     plays with the data-safety fixes of the player's game (OriginalBehaviour.DataSafe); without it the game is Faithful, as the oracles play it
 //   arg:<text>                   adds a word to the game's DOS command line (-Q, -O, -A<letter>)
 //   sound:config|adlib|sb|sbpro2|mt32|cm32l   runs the game's sound drivers in step with the script's clock (the game timer is
 //                                then the sound's, as in the SDL host); mt32roms:<folder> (default MT32_ROMS next to the program)
@@ -371,6 +372,7 @@ var game = new DarklandsGame(host, OpenGame())
     PlayOpening = steps.Remove("intro") || fileSettings.Intro == true,
     ShowStartUp = steps.Remove("banner") || fileSettings.Banner == true,
     CommandLine = commandLine,
+    Behaviour = steps.Remove("datasafe") ? Darklands.Core.OriginalBehaviour.DataSafe : Darklands.Core.OriginalBehaviour.Faithful,
     QuickstartCard = cardStep is null ? null : Convert.ToInt32(cardStep[5..], 16),
     StartWithSave = loadStep?[5..],
 };

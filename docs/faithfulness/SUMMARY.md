@@ -8,7 +8,7 @@ its bytes, never against another reimplementation.
 Wherever an oracle runs, the rules agree with the original's in the faithful mode (`OriginalBehaviour.Faithful`,
 which the oracles and the headless host use); the exceptions are registered, each with its reason (undefined
 memory, the host, deliberate fixes, a few things not modelled: see "Divergences and original bugs"). By default the
-player's game differs from the faithful mode only in the 7 listed, switchable data-safety fixes below. The aim is no
+player's game differs from the faithful mode only in the 8 listed, switchable data-safety fixes below. The aim is no
 known divergence, strong evidence, published coverage. The differences found and not yet settled are listed as open
 items there. Where it stands:
 
@@ -39,7 +39,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those.
-* The seven fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot` and
+* The eight fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot` and
   `FixLeavingMemberRecordTail` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -88,6 +88,15 @@ after 1.0.
     D-cbae26; test `TheDissolveKeyUsesMemberZerosSlotOfTheSelectedMember`, both modes). Fixed: the leader's own Eater-Water
     is used up, as by his Dissolve Lock order.
   * `FixGhostPartySlot`: the Devil's Bridge crossing (a won argument, then the battle lost or fled) sets party slot DS:EE8E's status to able through a variable the won argument never assigned (R088+0x05C6..0x05CF, R088+0x060E..0x0617): the slot just emptied by dismissing the away members comes back with status 1 and no character record, a ghost member in a saved game (B-ad9d9e; test `GhostPartySlotTests`). Fixed: a slot that was emptied stays empty; the faithful mode keeps the original's write.
+  * `FixDamagedSavedGame`: the saved-game load (R037+0x8ED4) ignores a short count of each read, so a .SAV cut inside its header,
+    records or location table (copied badly, a full disk) loads as far as it goes. Checked in the emulated original (vis10 runs of
+    a cut DKSAVE0, no message either way): a header cut at 0 or 96 bytes ends in DOS with a file error (`pics\shield.pic: No such
+    file or directory`), a cut at 512 or 9374 bytes plays on from garbage (a party without members, the places zeroed). Fixed (B-e60d2a,
+    D-a6d491; tests `RcPlayTests`, `DamagedSaveTests`): the load is refused before anything changes and the load screen (or the start
+    screen) shows "This saved game is damaged and cannot be loaded." (the game's own boxes, own text: the original has none); a file that
+    holds all its records, whatever its cache or battle file, loads as before (all real, synthesised and community saves). Faithful keeps
+    the approximation: it loads such a file as the rewrite always did (a short header then ends the program with an exception on the
+    first card, where the original returns to DOS).
 * The switches are not exposed in the settings; the player's host sets the profile.
 
 ## Coverage of the original functions
@@ -482,8 +491,8 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 219 original bugs registered
-(45 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 344 registered divergences,
+markers in the code, each with its reason and original coordinate: 220 original bugs registered
+(46 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 345 registered divergences,
 865 dormant branches kept as the original has them, 16 uncertain readings (the others were
 naming only, or settled by an agreeing oracle or the code, now closed; each of the 16 is in
 `UNCERTAIN.md` with the assumption it rests on). Every core-logic divergence has a

@@ -176,7 +176,7 @@ public sealed class RcPlayTests
         }
     };
 
-    private static DarklandsGame NewGame(GameFiles files, RcHost host, string saves, bool clean = false, int? card = null, ModSet? mods = null, string? load = null, uint seed = 27)
+    private static DarklandsGame NewGame(GameFiles files, RcHost host, string saves, bool clean = false, int? card = null, ModSet? mods = null, string? load = null, uint seed = 27, OriginalBehaviour? behaviour = null)
     {
         var game = new DarklandsGame(host, files)
         {
@@ -187,7 +187,7 @@ public sealed class RcPlayTests
             SaveDirectory = saves,
             QuickstartCard = card,
             StartWithSave = load,
-            Behaviour = OriginalBehaviour.Faithful,
+            Behaviour = behaviour ?? OriginalBehaviour.Faithful,
         };
         game.Ui.KeyboardCardMenus = true;
         game.Options.CleanDrawing = clean;
@@ -510,36 +510,152 @@ public sealed class RcPlayTests
         Assert.Contains("NOSUCH.SAV", thrown.Message);
     }
 
-    /// <summary>G6 (finding RC-001): a .SAV shorter than its own header, chosen on the load screen, must not end the program with an exception.</summary>
-    [Fact(Skip = "RC-001: a .SAV of 96 bytes ends the program with ArgumentOutOfRangeException and no message (code/local/rc-auto/findings.md)")]
-    public void ASavedGameCutShorterThanItsHeaderDoesNotEndTheProgram()
+    private static string CutSave(GameFiles files, int length, bool withBattleFile = true)
     {
-        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is not { } sav)
-        {
-            return;
-        }
         var saves = TempFolder("g6");
-        File.WriteAllBytes(Path.Combine(saves, "DKSAVE0.SAV"), File.ReadAllBytes(sav)[..96]);
-        var host = new RcHost(["k:t", "w:5", "k:l", "w:300", "k:enter", "w:60", "k:esc", "w:30", "k:esc", "w:30"]);
-        Assert.Null(Record.Exception(NewGame(files, host, saves).Run));
+        File.WriteAllBytes(Path.Combine(saves, "DKSAVE0.SAV"), File.ReadAllBytes(OwnSave(files, "DKSAVE0.SAV")!)[..length]);
+        if (withBattleFile && OwnSave(files, "DKSAVE0.BSV") is { } bsv)
+        {
+            File.Copy(bsv, Path.Combine(saves, "DKSAVE0.BSV"));
+        }
+        return saves;
     }
 
-    /// <summary>G6 (finding RC-002): a .SAV cut inside its records should say so instead of loading a garbled game without a word.</summary>
-    [Theory(Skip = "RC-002: a .SAV cut at 512 or 9374 bytes loads without any message (code/local/rc-auto/findings.md)")]
+    private static string FolderDigest(string saves) =>
+        string.Join("|", Directory.GetFiles(saves).Order().Select(f => Path.GetFileName(f) + ":" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(f)))));
+
+    /// <summary>
+    /// G6 (RC-001, RC-002; original: the load reads a short file as far as it goes, a header cut at 0 or 96 bytes ends in DOS with a file error
+    /// ("pics\shield.pic: No such file or directory"), a cut inside the records plays on from garbage; code/local/rc-auto/badsave-original.md):
+    /// with the data-safety fix the load screen refuses a .SAV that ends inside its header, records or location table, says so, changes
+    /// nothing and stays on the load screen.
+    /// </summary>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(96)]
+    [InlineData(0xEF)]
     [InlineData(512)]
     [InlineData(9374)]
-    public void ASavedGameCutInsideItsRecordsIsReported(int length)
+    public void ASavedGameCutShortIsRefusedOnTheLoadScreenAndTheGameStaysThere(int length)
     {
-        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is not { } sav)
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null)
+        {
+            return;
+        }
+        var saves = CutSave(files, length);
+        var before = FolderDigest(saves);
+        var host = new RcHost(["k:t", "w:5", "k:l", "w:300", "k:enter", "w:60", "k:esc", "w:30", "k:esc", "w:30"]);
+        var game = NewGame(files, host, saves, behaviour: OriginalBehaviour.DataSafe);
+        var log = new List<string>();
+        game.Log = log.Add;
+        var played = false;
+        host.EveryFrame = _ => played |= game.Playing is not null;
+        Assert.Null(Record.Exception(game.Run));
+        Assert.Contains(log, l => l.Contains("damaged"));
+        Assert.False(played, "no game should have been started from the damaged file");
+        Assert.Equal(before, FolderDigest(saves));
+    }
+
+    /// <summary>The same with the file named at the start (StartWithSave): refused, the start screen follows, nothing is played or written.</summary>
+    [Theory]
+    [InlineData(96)]
+    [InlineData(512)]
+    [InlineData(9374)]
+    public void ASavedGameCutShortIsRefusedAtTheStartToo(int length)
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null)
+        {
+            return;
+        }
+        var saves = CutSave(files, length);
+        var before = FolderDigest(saves);
+        var host = new RcHost(["w:20", "k:enter", "w:20"]);
+        var game = NewGame(files, host, saves, load: "DKSAVE0.SAV", behaviour: OriginalBehaviour.DataSafe);
+        var log = new List<string>();
+        game.Log = log.Add;
+        var played = false;
+        host.EveryFrame = _ => played |= game.Playing is not null;
+        Assert.Null(Record.Exception(game.Run));
+        Assert.Contains(log, l => l.Contains("damaged"));
+        Assert.False(played);
+        Assert.Equal(before, FolderDigest(saves));
+    }
+
+    /// <summary>The notice is a sentence the game's own boxes show, one line a box.</summary>
+    [Fact]
+    public void TheNoticeOfADamagedSavedGameReadsAsASentence()
+    {
+        Assert.Equal("This saved game is damaged and cannot be loaded.", DarklandsGame.DamagedSavedGame[0]);
+        Assert.All(DarklandsGame.DamagedSavedGame, l => Assert.InRange(l.Length, 1, 60));
+    }
+
+    /// <summary>
+    /// Faithful (the testers and oracles; a documented approximation of the original, which leaves a header cut at 0 or 96 bytes for DOS with a
+    /// file error and plays on from what is left of its buffers on a cut inside the records): a short header goes on and ends the program
+    /// with the exception of the first card, never a refusal.
+    /// </summary>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(96)]
+    public void FaithfulALoadOfAHeaderCutShortGoesOnAndEndsTheProgramLaterAsBefore(int length)
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null)
+        {
+            return;
+        }
+        var host = new RcHost(["k:t", "w:5", "k:l", "w:300", "k:enter", "w:60", "k:esc", "w:30", "k:esc", "w:30"]);
+        var game = NewGame(files, host, CutSave(files, length));
+        var log = new List<string>();
+        game.Log = log.Add;
+        Assert.Throws<ArgumentOutOfRangeException>(game.Run);
+        Assert.DoesNotContain(log, l => l.Contains("damaged"));
+    }
+
+    /// <summary>Faithful: a file cut inside its records loads with no message (as in the original) and the game is played on.</summary>
+    [Theory]
+    [InlineData(512)]
+    [InlineData(9374)]
+    public void FaithfulALoadOfAFileCutInsideItsRecordsPlaysOnWithoutAMessage(int length)
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null)
+        {
+            return;
+        }
+        var host = new RcHost(["w:50", "k:space", "w:50"]);
+        var game = NewGame(files, host, CutSave(files, length), load: "DKSAVE0.SAV");
+        var log = new List<string>();
+        game.Log = log.Add;
+        var played = false;
+        host.EveryFrame = _ => played |= game.Playing is not null;
+        game.Run();
+        Assert.True(played);
+        Assert.DoesNotContain(log, l => l.Contains("damaged"));
+    }
+
+    /// <summary>With the fix a whole file still loads and plays: real saves of the folder, one without its battle file, and one cut only in its cache.</summary>
+    [Theory]
+    [InlineData("DKSAVE0.SAV", false)]
+    [InlineData("DKSAVE0.SAV", true)]
+    [InlineData("DKSAVE12.SAV", false)]
+    [InlineData("DKSAVE1.SAV", false)]
+    [InlineData("DKSAVE17.SAV", false)]
+    public void WithTheFixAWholeSavedGameStillLoadsAndPlays(string name, bool cacheCut)
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, name) is not { } sav)
         {
             return;
         }
         var saves = TempFolder("g6");
-        File.WriteAllBytes(Path.Combine(saves, "DKSAVE0.SAV"), File.ReadAllBytes(sav)[..length]);
+        var bytes = File.ReadAllBytes(sav);
+        File.WriteAllBytes(Path.Combine(saves, name), cacheCut ? bytes[..^20] : bytes);
+        var host = new RcHost(["w:50", "k:space", "w:50"]);
+        var game = NewGame(files, host, saves, load: name, behaviour: OriginalBehaviour.DataSafe);
         var log = new List<string>();
-        var game = NewGame(files, new RcHost(["w:50", "k:space", "w:50"]), saves, load: "DKSAVE0.SAV");
         game.Log = log.Add;
+        var played = false;
+        host.EveryFrame = _ => played |= game.Playing is not null;
         game.Run();
-        Assert.NotEmpty(log);
+        Assert.True(played, "the whole saved game should have loaded");
+        Assert.DoesNotContain(log, l => l.Contains("damaged"));
     }
 }

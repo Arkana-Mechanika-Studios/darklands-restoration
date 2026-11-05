@@ -609,7 +609,7 @@ public sealed class OriginalSaveTests
         }
     }
 
-    private static GameState SampleGame()
+    internal static GameState SampleGame()
     {
         var state = new GameState(new MscRandom(1234)) { Party = DefaultParty.Create(seed: 77), Date = new GameDate(9, 3, 4, 1401) };
         state.Roster.Reset(state.Party);

@@ -68,6 +68,10 @@ public sealed class SaveFolder(string path)
         }
     }
 
+    /// <summary>Whether the saved game is cut short: its file ends inside what its own counts say it holds (<see cref="SaveFile.RunsPastTheEnd"/>).</summary>
+    public bool IsDamaged(string fileName) =>
+        Find(fileName) is { } file && SaveFile.RunsPastTheEnd(File.ReadAllBytes(file));
+
     /// <summary>Reads a saved game and its battle file.</summary>
     public LoadedGame Load(string fileName, IGameData data, GameState? running = null)
     {

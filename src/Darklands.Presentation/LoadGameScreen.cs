@@ -46,7 +46,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // list (0xc3 < x < 0x140, 0x14 < y < 0xa5) moves the cursor to row (y - 0x14) / 16 if it is shown; a waiting key replaces a click;
     // Esc (and from the start screen R/r) leaves with 0, a key the handler answers with 0x11b loads (1)
     // C: the mouse tests read the button state, then wait for its release and take y after it; the hover tests the row each pass.
-    public LoadedGame? Run(bool fromStartScreen, Func<string, LoadedGame> load)
+    public LoadedGame? Run(bool fromStartScreen, Func<string, LoadedGame?> load)
     {
         _fromStart = fromStartScreen;
         SetUp();
@@ -213,7 +213,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // orig: R037+0x84BA (1C7D:030A): 0x1000 quit, 0x264c/0x266c load, 0x2044/0x2064 delete, 0x4700 home,
     // 0x4800/0x4b00 up, 0x4d00/0x5000 down, 0x4f00 end
     // C: the original takes the exact codes; here any key whose character is l or d (either case) counts, as on the start screen.
-    private LoadedGame? Handle(int key, Func<string, LoadedGame> load)
+    private LoadedGame? Handle(int key, Func<string, LoadedGame?> load)
     {
         if (key == Keys.AltQ)
         {
@@ -296,7 +296,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // orig: case 0x264c/0x266c: `if (DS:8C54 > DS:8C50)`: buttnCR2 drawn at (0x42, 0x2c), s[0] at (0x52, 0x30) in colour 8 (the pressed
     // button), R037+0x8ED4(R136+0x1145E[DS:8C50]), the party's shield pictures loaded from charactr.tmp's slots, return 0x11b
     // C: the shield pictures are the party panel's (loaded on demand); root 0000:2652(0x35) is an empty function.
-    private LoadedGame? Load(Func<string, LoadedGame> load)
+    private LoadedGame? Load(Func<string, LoadedGame?> load)
     {
         if (_shown <= _cursor)
         {
@@ -308,7 +308,13 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         }
         ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x30, Label(0), LabelColor);
         ui.Present();
-        return load(_names[_cursor]);
+        var loaded = load(_names[_cursor]);
+        if (loaded is null)
+        {
+            // a refused load (FixDamagedSavedGame): the screen as it was, without the pressed button
+            Draw();
+        }
+        return loaded;
     }
 
     // orig: R037+0x84BA (1C7D:030A) case 0x2044/0x2064: the three labels' highlight off (0x45, 0x2f, 0x80 x 0x2d, 9 -> 8), buttnCR2 at
