@@ -116,9 +116,12 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
 
     // orig: R037+0x83FE: image-paint-palette(1, "pics\\loadscrn.pic"), DS:E88A = image-read("pics\\buttnCR2.pic"), backdrop-window-colour = 8,
     // fonts 1, DS:8C4C = R037+0x9C10(), DS:8C52 = 0, DS:8C50 = 0
+    /// <summary>The load screen's picture, which also sets its colours (16..255): what a notice shown before any screen has been drawn is drawn over.</summary>
+    internal static void PaintBackdrop(GameUi ui) => ui.Canvas.DrawPicture(ui.Assets.Picture("loadscrn"));
+
     private void SetUp()
     {
-        ui.Canvas.DrawPicture(ui.Assets.Picture("loadscrn"));
+        PaintBackdrop(ui);
         _page = ui.Canvas.SaveScreen();
         ui.PicturePage = _page;
         _button = ui.Assets.PictureExists("buttncr2") ? ui.Assets.Picture("buttncr2") : null;

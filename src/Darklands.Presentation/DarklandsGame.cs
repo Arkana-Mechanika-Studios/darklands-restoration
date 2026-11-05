@@ -177,7 +177,7 @@ public sealed class DarklandsGame
             }
             if (StartWithSave is { } first)
             {
-                if (LoadSavedGame(first, _session ??= NewGame.StartUp(World, Seed())) is { } given)
+                if (LoadSavedGame(first, _session ??= NewGame.StartUp(World, Seed()), beforeNotice: () => LoadGameScreen.PaintBackdrop(_ui)) is { } given)
                 {
                     PlayFrom(given.State);
                     return;
@@ -273,13 +273,15 @@ public sealed class DarklandsGame
     // orig: R037+0x8ED4 (1C7D:0D24) matched: after the header difficulty-display(1), then
     // text-box-paint "Loading Game" until the file is read; music-setting and sound-setting come from the file
     // C: the options' menu ticks (DS:996E, DS:9982) are set too; there is no menu bar here.
-    // BUG: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS).
-    // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) a file that ends inside its header, records or location table is refused before anything changes: null, and a notice (own text: the original has none).
-    private LoadedGame? LoadSavedGame(string name, GameState? running)
+    // BUG: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.
+    // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) a file that ends inside its header, records or location table, or a battle file (.BSV) that is empty, short or corrupt (the restore R003+0x0CE8 reads it in every game and ends in DOS with "EOF-..." / "Corrupt file-..."), is refused before anything changes: null, and a notice (own text: the original has none).
+    private LoadedGame? LoadSavedGame(string name, GameState? running, Action? beforeNotice = null)
     {
         if (Behaviour.FixDamagedSavedGame && Saves.IsDamaged(name))
         {
-            Log?.Invoke($"{name}: the saved game is damaged (it ends before its records do); not loaded");
+            Log?.Invoke($"{name}: the saved game is damaged (its file ends before its contents do); not loaded");
+            // DIVERGENCE: a load given on the command line has drawn nothing yet: the notice is drawn over the load screen's picture and colours, not over black with the start-up colours
+            beforeNotice?.Invoke();
             new MessageBox(_ui).Notice(DamagedSavedGame);
             return null;
         }

@@ -691,11 +691,11 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 - **B-e60d2a** `bug`, flag `FixDamagedSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:276` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
-  why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS).
-- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:326` `DarklandsGame.LoadInGame`  
+  why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.
+- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:328` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:488` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:490` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  

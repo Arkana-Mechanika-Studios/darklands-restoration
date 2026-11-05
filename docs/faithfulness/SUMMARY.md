@@ -97,6 +97,10 @@ after 1.0.
     holds all its records, whatever its cache or battle file, loads as before (all real, synthesised and community saves). Faithful keeps
     the approximation: it loads such a file as the rewrite always did (a short header then ends the program with an exception on the
     first card, where the original returns to DOS).
+    The same holds for the battle file (.BSV): the original's restore (R003+0x0CE8) reads it in every game, not only one saved in a battle, and
+    ends in DOS with its own text ("Corrupt file-Vars 3" on an empty file, "EOF-Vars", "EOF-Lv" or "EOF-terrf" on a short one; vis10 runs of
+    a cut .BSV of three saves, in and out of a battle); with the fix an existing .BSV that is empty, short or corrupt refuses the load the same
+    way (a missing .BSV still loads, as in the original); Faithful keeps an empty .BSV taken for a missing one and a short one throwing.
 * The switches are not exposed in the settings; the player's host sets the profile.
 
 ## Coverage of the original functions
