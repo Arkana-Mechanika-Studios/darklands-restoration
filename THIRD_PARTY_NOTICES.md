@@ -162,6 +162,30 @@ The developer console and the launcher rasterise their fonts with StbTrueTypeSha
 NuGet package), a C# port of Sean Barrett's stb_truetype, which is in the public domain (or under the
 MIT licence, at the user's choice). No source of it is included in this repository.
 
+## Linguini
+
+Translations are Project Fluent (`.ftl`) files, read with Linguini (https://github.com/Ygg01/Linguini, NuGet packages
+`Linguini.Bundle`, `Linguini.Syntax` and `Linguini.Shared`), used under the MIT License (the packages are dual-licensed
+MIT OR Apache-2.0); no Linguini source code is included in this repository. Only the `Darklands.Localization` project
+refers to it.
+
+```text
+Copyright 2021 Daniel Fath
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
 ## Original game data
 
 The game's data files (DARKLAND.EXE and its data, MicroProse 1992) are not included; the player

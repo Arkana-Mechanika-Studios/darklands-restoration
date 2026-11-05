@@ -21,6 +21,7 @@ public sealed class ArchitectureRulesTests
     private const string Presentation = "Darklands.Presentation";
     private const string Headless = "Darklands.Host.Headless";
     private const string Sdl = "DarklandsRP"; // Darklands.Host.Sdl builds the program players start
+    private const string Localization = "Darklands.Localization";
 
     /// <summary>The game: its model, rules, files and saved games. It knows nothing of screens, devices or hosts.</summary>
     private static readonly string[] Game = [Core, Persistence, Content, Cards, Simulation];
@@ -38,6 +39,7 @@ public sealed class ArchitectureRulesTests
         [Audio] = [Platform, Content, Core],
         [Mt32] = [Audio, Platform, Content, Core],
         [Launcher] = [Platform],
+        [Localization] = [], // message ids to text (Fluent packs over the original text); it knows no game rules
         [DevConsole] = [Core],
         [Presentation] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio],
         [Headless] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, Presentation],
