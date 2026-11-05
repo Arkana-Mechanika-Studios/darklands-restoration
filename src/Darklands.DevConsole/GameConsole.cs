@@ -61,6 +61,9 @@ public sealed class GameConsole
 
     public IReadOnlyCollection<ConsoleCommand> Commands => _commands.Values;
 
+    /// <summary>Called with every line written to the scrollback (the host logs them); null: none.</summary>
+    public Action<string, ConsoleLineKind>? Echo { get; set; }
+
     public void Add(ConsoleCommand command) => _commands[command.Name] = command;
 
     public void Toggle() => IsOpen = !IsOpen;
@@ -70,6 +73,7 @@ public sealed class GameConsole
         foreach (var line in text.Replace("\r", "").Split('\n'))
         {
             _lines.Add(new ConsoleLine(line, kind));
+            Echo?.Invoke(line, kind);
         }
         if (_lines.Count > ScrollbackLimit)
         {

@@ -27,6 +27,13 @@ public sealed class SaveFolder(string path)
     /// </summary>
     public SaveMods? Mods { get; init; }
 
+    /// <summary>
+    /// A host's notice (null: none): called with the file name and true just before a saved game is read, and with the name and false
+    /// after one is written. It reads and writes nothing of the game; a report helper copies the files with it (docs/REPORTING.md).
+    /// </summary>
+    // Host feature, not part of the original: the game's files and behaviour are unchanged.
+    public Action<string, bool>? Used { get; init; }
+
     /// <summary>The saved games, as _dos_findfirst("saves\\*.sav") / _dos_findnext list them.</summary>
     // DIVERGENCE: DOS lists the files in directory order (the order they were made in, holes reused); here they are in name order.
     // C: *.sav in DOS matches 8.3 names with the extension SAV; longer extensions ("DKSAVE0.SAV.bak") are not listed.
@@ -71,6 +78,7 @@ public sealed class SaveFolder(string path)
     /// <summary>Reads a saved game and its battle file.</summary>
     public LoadedGame Load(string fileName, IGameData data, GameState? running = null)
     {
+        Used?.Invoke(fileName, true);
         var sav = File.ReadAllBytes(Find(fileName) ?? throw new FileNotFoundException(fileName));
         var bsv = Find(BattleFileOf(fileName)) is { } battle ? File.ReadAllBytes(battle) : [];
         var loaded = OriginalSaves.Read(sav, bsv, fileName, data, running);
@@ -117,6 +125,7 @@ public sealed class SaveFolder(string path)
         {
             File.Delete(companion);
         }
+        Used?.Invoke(name, false);
         return name;
     }
 

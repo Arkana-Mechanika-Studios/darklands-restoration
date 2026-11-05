@@ -185,11 +185,20 @@ Commands (`help` lists them, `help <command>` shows one):
 | `heal [slot\|all]` | endurance and strength back to their maximums |
 | `saint grant\|remove <slot\|all> <number>` | a saint known or forgotten |
 | `item find <text>` / `item grant <slot\|all> <code> [quality] [count]` | finds item codes; puts items in packs |
-| `music on\|off` | the game's music option (as Alt-M) |
+| `music on
+| `report [text]` | makes a problem report (a zip) and opens its folder and the issue form; nothing is sent ([REPORTING.md](REPORTING.md)) |\|off` | the game's music option (as Alt-M) |
+| `report [text]` | makes a problem report (a zip) and opens its folder and the issue form; nothing is sent ([REPORTING.md](REPORTING.md)) |
 | `clear` | empties the console |
 
 The commands change the game being played between two frames; a screen shows a change the next time it
 draws. The headless host runs the same commands with the step `console:<command>`.
+
+## Logs and reports folders
+
+Beside the settings file (or, when that folder cannot be written, in `%APPDATA%\DarklandsRestoration`) the program keeps a `logs`
+folder (one `darklands-<date>-<time>.log` per run, the newest 5) and a `reports` folder (the report zips, the newest 10);
+`logs\session` holds the helper files of the reports (the last frame, the copy of the saved game last loaded). Nothing in them
+is sent anywhere; see [REPORTING.md](REPORTING.md).
 
 ## Example
 

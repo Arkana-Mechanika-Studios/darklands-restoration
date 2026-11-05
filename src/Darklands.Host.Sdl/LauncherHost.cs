@@ -40,7 +40,7 @@ internal static class LauncherHost
     /// missing). Returns the settings to play with, or null when the player left; <paramref name="saved"/>: changes were saved.
     /// </summary>
     public static GameSettings? Run(SdlHost host, LauncherReason reason, string? problem, GameSettings settings,
-        CommandLineOptions cli, string? settingsPath, string version, out bool saved)
+        CommandLineOptions cli, string? settingsPath, string version, Darklands.Platform.Reporting.ReportService reports, out bool saved)
     {
         using var soundTest = new SoundTest(cli.GameCommandLine ?? settings.CommandLine ?? [], SdlLauncherSurface.Wake);
         var (given, fixedKeys) = GivenGameFolder(cli, Environment.GetEnvironmentVariable,
@@ -62,7 +62,8 @@ internal static class LauncherHost
             DescribePack,
             PackGuide,
             given,
-            chosen => Darklands.Audio.Packs.SoundFontLocator.Find(null, null, chosen, AppContext.BaseDirectory, _ => { }));
+            chosen => Darklands.Audio.Packs.SoundFontLocator.Find(null, null, chosen, AppContext.BaseDirectory, _ => { }),
+            () => ReportProblem(reports, settings, cli, settingsPath));
         LauncherResult result;
         using (var surface = new SdlLauncherSurface(host))
         {
@@ -71,6 +72,28 @@ internal static class LauncherHost
         Save(settingsPath, result);
         saved = result.Changes.Count > 0;
         return result.Choice == LauncherChoice.Play ? result.Settings : null;
+    }
+
+    /// <summary>
+    /// "Report a problem": a report from the logs of the last sessions (the launcher's own is nearly empty, so three go in) and the
+    /// saves; its folder and the issue form are opened. Returns the message for the launcher.
+    /// </summary>
+    private static string ReportProblem(Darklands.Platform.Reporting.ReportService reports, GameSettings settings, CommandLineOptions cli, string? settingsPath)
+    {
+        // the game folder and saves as the launcher's settings name them now
+        reports.SettingsFile = settingsPath is not null && File.Exists(settingsPath) ? settingsPath : reports.SettingsFile;
+        var named = cli.GameFolder ?? settings.GameFolder;
+        if (GameFolderSearch.GameFolderIn(named, GameFiles.IsGameFolder) is { } game)
+        {
+            reports.GameFolder = game;
+            reports.SavesFolders.Clear();
+            reports.SavesFolders.AddRange(new[] { cli.SavesFolder ?? settings.SavesFolder, Darklands.Presentation.DarklandsGame.DefaultSaveDirectory(game), SaveLocation.UserFolder() }.OfType<string>());
+        }
+        var lines = ReportHost.Manual(reports, "launcher", null, logCount: 3);
+        lines.ToList().ForEach(Console.WriteLine);
+        return lines.Count > 0 && lines[0].StartsWith("Report saved", StringComparison.Ordinal)
+            ? lines[0] + " The folder and the report form are open; attach the zip to the form. Nothing was sent."
+            : string.Join(' ', lines);
     }
 
     /// <summary>

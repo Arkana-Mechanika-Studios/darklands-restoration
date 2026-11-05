@@ -466,6 +466,38 @@ public sealed class LauncherTests
         Assert.False(screen.Editing);
     }
 
+    [Fact]
+    public void TheProblemReportLinkAsksTheHostAndShowsItsAnswer()
+    {
+        var asked = 0;
+        var context = Context() with { ReportProblem = () => ++asked == 1 ? "Report saved: X.zip" : "again" };
+        var surface = new ScriptedSurface(1080, 600);
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
+        screen.Render(new Drawing.Canvas(1080, 600));
+
+        var link = screen.Area(LauncherScreen.Item.Report);
+        screen.Handle(new PointerPressed(link.X + 2, link.Y + 2));
+
+        Assert.Equal(1, asked);
+        // reachable by the keyboard too: the item is in the tab order
+        screen.Handle(Tab);
+        var seen = new HashSet<LauncherScreen.Item>();
+        for (var i = 0; i < 25; i++)
+        {
+            seen.Add(screen.Focus);
+            screen.Handle(Tab);
+        }
+        Assert.Contains(LauncherScreen.Item.Report, seen);
+    }
+
+    [Fact]
+    public void WithoutAReportServiceTheLauncherShowsNoLink()
+    {
+        var screen = new LauncherScreen(new LauncherModel(Context(), null), Context(), new ScriptedSurface(1080, 600));
+        screen.Render(new Drawing.Canvas(1080, 600));
+        Assert.Throws<InvalidOperationException>(() => screen.Area(LauncherScreen.Item.Report));
+    }
+
     /// <summary>DARKLANDS_LAUNCHER_SHOTS=folder: writes the screen at a few sizes and states, to look at.</summary>
     [Fact]
     public void Screenshots()
@@ -486,6 +518,9 @@ public sealed class LauncherTests
             with { PackGuide = "https://example.org/PACKS.md", DescribePack = _ => new PackStatus(0, 3, null) }, 1080, 600, [.. ToAudioPack, Tab, Tab, Escape]);
         Shot("soundfont-1080x600", Context(tests: []), 1080, 600, [.. ToAudioPack, Tab, Tab, Escape]);
         Shot("roms-help-1080x600", Context(tests: []) with { PackGuide = "https://example.org/PACKS.md" }, 1080, 600, [.. ToAudioPack, Escape]);
+        var reportContext = Context(tests: []) with { PackGuide = "https://example.org/PACKS.md", ReportProblem = () => "Report saved." };
+        Shot("report-1080x600", reportContext, 1080, 600, Escape);
+        Shot("report-720x400", reportContext, 720, 400, Escape);
         Shot("notfound-1080x600", Nothing(), 1080, 600, Escape);
         Shot("typing-720x400", Context(), 720, 400, Tab, Tab, Enter, new TextTyped(@"Q:\Games"));
         Shot("wide-1920x1080", Context(), 1920, 1080, Escape);

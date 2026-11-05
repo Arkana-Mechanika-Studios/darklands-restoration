@@ -39,6 +39,8 @@ internal static class SdlNative
     internal const int KeyTab = 9;
     internal const int KeyV = 118;
     internal const int ScancodeF11 = 68;
+    internal const int ScancodeF12 = 69;
+    internal const int KeyModCtrl = 0x00C0;
     internal const byte MouseButtonLeft = 1;
     internal const byte MouseButtonRight = 3;
     internal const int KeyReturn = 13;
@@ -389,6 +391,29 @@ internal static class SdlNative
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     internal static extern int SDL_OpenURL([MarshalAs(UnmanagedType.LPUTF8Str)] string url);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_ShowMessageBox(ref MessageBoxData data, out int buttonId);
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct MessageBoxButton
+    {
+        internal uint Flags;
+        internal int Id;
+        internal IntPtr Text;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct MessageBoxData
+    {
+        internal uint Flags;
+        internal IntPtr Window;
+        internal IntPtr Title;
+        internal IntPtr Message;
+        internal int ButtonCount;
+        internal IntPtr Buttons;
+        internal IntPtr ColorScheme;
+    }
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr SDL_GetClipboardText();

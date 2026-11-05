@@ -35,12 +35,15 @@ entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMM
 * The party's random seed at character creation comes from the clock in both; do not compare dice there.
 * Sound is compared as the requests to the sound driver; how a request sounds can differ. Event music heard in DOSBox may not be recorded.
 * Alt-Q reading the key at a different moment (host timing).
-* F11 (developer console) and F12 (screenshot) exist only in the C# build; the original ignores them.
+* F11 (developer console), F12 (screenshot) and Ctrl-F12 (problem report) exist only in the C# build; the original ignores them.
 * Quirks and registered original bugs are reproduced on purpose, e.g. horses do not shorten travel.
 
 ## How to report a difference
 
-One report per difference. Give: the item number; build (release, commit or file date) and system; the save file(s) used,
+Make the report with the program ([REPORTING.md](REPORTING.md): `report` in the console, Ctrl-F12, or the launcher's link): it
+packs the logs, the settings, the saved game used (also as it was when loaded), `CACHE.TMP` and `CHARACTR.TMP` and the last
+frame, and opens the issue form (choose "Difference from the original game", fill in the checklist item). One report per
+difference. Give: the item number; build (release, commit or file date) and system; the save file(s) used,
 copied from the `SAVES` folder (`DKSAVEn.SAV`, `.BSV`, `CACHE.TMP`, `CHARACTR.TMP`, and `.MODS.JSON` if modded); the
 exact keys and clicks from that save; a screenshot of each side at the same moment (F12 in the C# build, DOSBox's capture
 key in the original); what is different and which side shows what. If you cannot repeat it, say how it started. Label it

@@ -1,3 +1,4 @@
+using Darklands.Platform.Reporting;
 using Darklands.Platform;
 using Darklands.Audio;
 using Darklands.Audio.Packs;
@@ -125,11 +126,15 @@ if (CommandLineUsage.Unknown(arguments) is { } unknown)
     return 2;
 }
 var settingsPath = SettingsFile.Locate(settingsFile);
+// the session log (logs folder beside the settings file) and the crash handler: docs/REPORTING.md
+var reports = ReportHost.Start(settingsPath, version, args, logIt: !soundCheck);
+new CrashHandler(reports, CrashHandler.ShowWithSdl, Console.Error.WriteLine).Install();
 var firstRun = settingsPath is null;
 GameSettings fileSettings = new();
 if (settingsPath is null && !soundCheck)
 {
     settingsPath = SettingsFile.WriteFirstRunTemplate(Console.Error.WriteLine);
+    reports.SettingsFile = settingsPath;
 }
 else if (settingsPath is not null)
 {
@@ -145,6 +150,7 @@ if (Resolve(fileSettings) is not { } settings)
     return 1;
 }
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
+NoteRun();
 // SDL2: the settings file or --sdl, else the SDL2.dll next to the program, else DARKLANDS_SDL2_PATH or the developer's
 // local/paths.json "sdl", else the system's
 var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
@@ -179,7 +185,7 @@ while (true)
 {
     if (launch is { } reason)
     {
-        if (LauncherHost.Run(host, reason, startProblem, fileSettings, cli, settingsPath, version, out var saved) is not { } chosen)
+        if (LauncherHost.Run(host, reason, startProblem, fileSettings, cli, settingsPath, version, reports, out var saved) is not { } chosen)
         {
             if (firstRun && !saved && settingsPath is not null)
             {
@@ -207,18 +213,36 @@ while (true)
         }
         window = settings.Window ?? DisplayLayout.WindowSize(null, null);
         host.Resize(window.Width, window.Height, settings.Fullscreen);
+        NoteRun();
     }
     var start = new StartProgress();
     try
     {
-        return Play(host, settings, folder!, version, start, settingsPath);
+        return Play(host, settings, folder!, version, start, settingsPath, reports);
     }
     catch (Exception e) when (!start.Running && !noLauncher)
     {
         // the game could not start (a damaged HD pack, a missing file ...): back to the launcher, which says why
         Console.Error.WriteLine("Start: " + e.Message);
+        reports.Screenshot = null;
+        host.ReportRequested = null;
         (launch, startProblem) = (LauncherReason.StartFailed, "The game could not start: " + e.Message);
         LauncherHost.Fit(host);
+    }
+}
+
+// What a report and the session log should know of this run: the game folder, the saves folders, the settings and packs.
+void NoteRun()
+{
+    var (s, f) = (settings, folder);
+    reports.GameFolder = f;
+    reports.SavesFolders.Clear();
+    reports.SavesFolders.AddRange(ReportHost.SavesFolders(s, f));
+    reports.Facts = () => ReportHost.Facts(s, f);
+    reports.Log?.WriteLine("Game folder: " + (f ?? "none"));
+    foreach (var (key, value) in ReportHost.Facts(s, f))
+    {
+        reports.Log?.WriteLine(key + ": " + value);
     }
 }
 
@@ -236,7 +260,7 @@ ResolvedSettings? Resolve(GameSettings file)
 }
 
 // The game in the window, with its sound, console and saves; returns the program's exit code.
-static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath)
+static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports)
 {
     host.Renderer = null;
     if (settings.HdPack is { } hdPack)
@@ -284,6 +308,22 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     {
         game.Ui.Trace = audioTrace.WriteLine;
     }
+    // problem reports (docs/REPORTING.md): the saved game last loaded or saved, the last frame, Ctrl-F12
+    game.SaveUsed = (savesFolder, name, loading) => reports.Saves.Used(savesFolder, name, loading);
+    reports.Screenshot = () =>
+    {
+        Directory.CreateDirectory(reports.Locations.Session);
+        var picture = Path.Combine(reports.Locations.Session, "last-frame.png");
+        game.Ui.SaveScreenshot(picture);
+        return picture;
+    };
+    host.ReportRequested = () =>
+    {
+        foreach (var line in ReportHost.Manual(reports, "Ctrl-F12", null))
+        {
+            Console.WriteLine(line);
+        }
+    };
     // the mods (docs/MODS.md): --mod or the settings file's "mods"; none: the game's own cards (Classic)
     game.Log = Console.Error.WriteLine;
     if (settings.Mods.Count > 0)
@@ -308,7 +348,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
             soundPack.AddModMusic(game.Mods.Music).ToList().ForEach(Console.Error.WriteLine);
         }
     }
-    using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version) : null;
+    using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version, reports) : null;
     host.Console = console;
     // what the sound pack could not use at the start (no SoundFont for its .mid music, a mod's missing music ...) is told in the console too
     if (console is not null && soundPack is not null)
@@ -332,6 +372,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     game.SaveDirectory = saves.Folder;
     start.Running = true;
     game.Run();
+    reports.Screenshot = null;
+    host.ReportRequested = null;
     audioTrace?.Dispose();
     return 0;
 }
@@ -462,9 +504,13 @@ static string? FindGameFolder(string? named, string? settingsPath)
 }
 
 /// <summary>The developer console: the game commands on the game being played, and the host's own.</summary>
-static ConsoleOverlay CreateConsole(DarklandsGame game, ResolvedSettings settings, string version)
+static ConsoleOverlay CreateConsole(DarklandsGame game, ResolvedSettings settings, string version, ReportService reports)
 {
     var console = new Darklands.DevConsole.GameConsole();
+    // the console's lines go to the session log too
+    console.Echo = (line, kind) => reports.Log?.WriteLine("console: " + line, kind == Darklands.DevConsole.ConsoleLineKind.Error);
+    console.Add(new Darklands.DevConsole.ConsoleCommand("report", "report [text]  (make a problem report: a zip with the logs, settings, saves and last frame; opens its folder and the issue form; nothing is sent)",
+        words => Darklands.DevConsole.ConsoleResult.Ok([.. ReportHost.Manual(reports, "console", words.Length == 0 ? null : string.Join(' ', words))])));
     Darklands.DevConsole.GameCommands.Register(console, () => game.Playing);
     console.Add(new Darklands.DevConsole.ConsoleCommand("music", "music on|off  (the game's music option, as Alt-M sets it)", words =>
     {
