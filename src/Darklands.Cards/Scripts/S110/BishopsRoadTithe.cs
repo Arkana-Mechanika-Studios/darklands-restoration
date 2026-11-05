@@ -19,11 +19,14 @@ public sealed class BishopsRoadTithe : Card
     private const int ClerkPicture = 243;
     private const int GuardsPicture = 33;
 
+    // C: the card's picture buffer (image-buffer, DS:E3E3): every card-run of this card but the pleading's first goes through it.
+    private int _cardPicture;
+
     public override int Number => 264;
 
     public override int Run(CardContext c)
     {
-        Show(c, BishopPicture);
+        ShowCard(c, BishopPicture);
         c.Next = Number;
         // C: settings-block is written after the empty-purse test (R110+0x013C): that way out leaves the block the card before left.
         var menu = Menu(c, null);
@@ -81,6 +84,14 @@ public sealed class BishopsRoadTithe : Card
 
     private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
 
+    /// <summary>Shows the card with a picture through the card's picture buffer, which keeps it.</summary>
+    // C: _fstrcpy(image-buffer, image-file-names[n]), then card-run(card-title, image-buffer).
+    private void ShowCard(CardContext c, int picture)
+    {
+        _cardPicture = picture;
+        Show(c, picture);
+    }
+
     /// <summary>Throwing the potion: sure for a mounted party, else by the least nimble rider and the potion's quality.</summary>
     // orig: R110+0x0BB4 (1838:0BB4) matched; slot 1 R110+0x0C14
     private static OptionHint PotionHint(CardContext c)
@@ -119,7 +130,7 @@ public sealed class BishopsRoadTithe : Card
     private void PayTheTithe(CardContext c, Money tithe)
     {
         c.State.Party.Purse = c.State.Party.Purse.Subtract(tithe);
-        Show(c, ClerkPicture);
+        ShowCard(c, ClerkPicture);
         c.Screen.Text(1);
         c.LeaveForTheMap();
     }
@@ -146,6 +157,7 @@ public sealed class BishopsRoadTithe : Card
     // orig: R110+0x0640 (1838:0640) matched; tests: CardSmokeTests
     private void PleadYourVirtue(CardContext c, CardMenu menu, int chance)
     {
+        // C: this card-run takes the second picture buffer (R110+0x0655): image-buffer keeps the card's picture.
         Show(c, 358);
         if (c.Random(100) <= chance)
         {
@@ -159,7 +171,8 @@ public sealed class BishopsRoadTithe : Card
         ShowPicture(c, ClerkPicture);
         c.Screen.Text(14);
         c.Next = 264;
-        Show(c, BishopPicture);
+        // C: card-run(card-title, image-buffer) (R110+0x0710): the picture the card last showed through its buffer.
+        Show(c, _cardPicture);
     }
 
     /// <summary>Submit to the guard or fight (the lines 6 and 7 of <paramref name="block"/>).</summary>
@@ -173,7 +186,7 @@ public sealed class BishopsRoadTithe : Card
     private void Refuse(CardContext c, CardMenu menu)
     {
         TheGuardsDrawWeapons(c, menu);
-        Show(c, GuardsPicture);
+        ShowCard(c, GuardsPicture);
         menu.Block = 4;
         c.Next = 264;
     }
@@ -185,20 +198,20 @@ public sealed class BishopsRoadTithe : Card
         TheGuardsDrawWeapons(c, menu);
         if (chance == 0)
         {
-            Show(c, GuardsPicture);
+            ShowCard(c, GuardsPicture);
             menu.Block = 7;
         }
         else
         {
             if (c.Random(100) <= chance)
             {
-                Show(c, 287);
+                ShowCard(c, 287);
                 c.Screen.Text(5);
                 c.PracticeSkill(Who.Everybody, (int)Skill.Riding, 1, 10, 0);
                 c.LeaveForTheMap();
                 return;
             }
-            Show(c, 286);
+            ShowCard(c, 286);
             menu.Block = 6;
             c.PracticeSkill(Who.Everybody, (int)Skill.Riding, 0, 10, 0);
         }
@@ -211,13 +224,13 @@ public sealed class BishopsRoadTithe : Card
         c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
         if (c.Random(100) <= chance)
         {
-            Show(c, 189);
+            ShowCard(c, 189);
             c.Screen.Text(9);
             c.LeaveForTheMap();
             return;
         }
         TheGuardsDrawWeapons(c, menu);
-        Show(c, GuardsPicture);
+        ShowCard(c, GuardsPicture);
         menu.Block = 10;
         c.Next = 264;
     }
@@ -227,7 +240,7 @@ public sealed class BishopsRoadTithe : Card
     private void Submit(CardContext c)
     {
         c.LoseItems(Who.Everybody);
-        Show(c, 177);
+        ShowCard(c, 177);
         c.Screen.Text(8);
         c.PassHours(2);
         c.Next = CardContext.MapCard;
@@ -249,7 +262,7 @@ public sealed class BishopsRoadTithe : Card
             case 0:
                 c.PassHours(1);
                 c.AdjustReputation(c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y), -10, -20);
-                Show(c, 286);
+                ShowCard(c, 286);
                 c.Screen.Text(11);
                 c.LeaveForTheMap();
                 break;
@@ -263,21 +276,21 @@ public sealed class BishopsRoadTithe : Card
                         c.LoseItems(i);
                     }
                 }
-                Show(c, 61);
+                ShowCard(c, 61);
                 c.Screen.Text(15);
                 c.LeaveForTheMap();
                 break;
             case 3:
                 c.PassHours(c.Random(3) + 3);
                 c.LoseItems(Who.Everybody);
-                Show(c, 145);
+                ShowCard(c, 145);
                 c.Screen.Text(12);
                 c.LeaveForTheMap();
                 break;
             case 4:
                 c.PassHours(1);
                 c.LoseItems(Who.Everybody);
-                Show(c, 177);
+                ShowCard(c, 177);
                 c.Screen.Text(8);
                 c.LeaveForTheMap();
                 break;

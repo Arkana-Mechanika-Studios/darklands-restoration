@@ -17,7 +17,8 @@ public sealed class CryptUnderTheRuinedChurch : Card
     private const int CryptPicture = 354;
     private const int SkeletonsPicture = 174;
 
-    // C: the card's own picture buffer (image-buffer); a lost battle replaces it with the crypt.
+    // C: the card's own picture buffer (image-buffer, DS:E3E3): the handlers that show a picture through it (R108+0x03C6, 0x044C, 0x05F0,
+    // C: 0x072E, 0x0A04, 0x0B5D) leave it there, and the prayer and the failed rubble and blast (R108+0x0534, 0x066B, 0x077F) show it again.
     private int _cardPicture;
 
     public override int Number => 256;
@@ -92,6 +93,14 @@ public sealed class CryptUnderTheRuinedChurch : Card
         OptionHint.ChanceOf(c.PartyAverageAttribute((int)Attribute.Strength) + c.PartyMaxSkill((int)Skill.Artifice) / 2, OptionHint.WholeParty);
 
     /// <summary>Inside the crypt: take the item, purify the place by a saint or a potion, or get out.</summary>
+    /// <summary>Shows a picture through the card's picture buffer, which keeps it.</summary>
+    // C: _fstrcpy(image-buffer, image-file-names[n]), then card-run-near(card-title, image-buffer).
+    private void ShowCardPicture(CardContext c, int picture)
+    {
+        _cardPicture = picture;
+        ShowPicture(c, picture);
+    }
+
     private static void InTheCrypt(CardContext c, CardMenu menu, int block)
     {
         menu.Set(OptionState.Hidden, 0, 1, 2, 6, 7, 8);
@@ -133,7 +142,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
         if (c.Random(100) <= chance)
         {
             InTheCrypt(c, menu, 0x0C);
-            ShowPicture(c, 164);
+            ShowCardPicture(c, 164);
             menu.Block = 4;
             c.PassHours(2);
         }
@@ -157,7 +166,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
         if (c.Random(100) <= chance)
         {
             InTheCrypt(c, menu, 3);
-            ShowPicture(c, 20);
+            ShowCardPicture(c, 20);
         }
         else
         {
@@ -185,7 +194,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
     /// least agile member is hurt unless very clumsy indeed (10 or less, the original's test).
     /// </summary>
     // orig: R108+0x084E (1838:084E) matched; tests: CardSmokeTests
-    private static void AskASaintToPurify(CardContext c, CardMenu menu)
+    private void AskASaintToPurify(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
         var saint = c.CardSaints[c.MenuEntrySlot];
@@ -225,13 +234,13 @@ public sealed class CryptUnderTheRuinedChurch : Card
         InTheCrypt(c, menu, 0x0C);
         ShowPicture(c, 16);
         c.Screen.Text(1);
-        ShowPicture(c, CryptPicture);
+        ShowCardPicture(c, CryptPicture);
         c.Next = 256;
     }
 
     /// <summary>The potion (not used up: the original does not take it) purifies the crypt, or turns to mist.</summary>
     // orig: R108+0x0A5E (1838:0A5E) matched; tests: CardSmokeTests
-    private static void PurifyWithAPotion(CardContext c, CardMenu menu, int chance)
+    private void PurifyWithAPotion(CardContext c, CardMenu menu, int chance)
     {
         c.Variables.Chosen[0] = c.MenuMember;
         if (c.Random(100) <= chance)
@@ -247,7 +256,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
         InTheCrypt(c, menu, 0x0C);
         ShowPicture(c, 333);
         c.Screen.Text(15);
-        ShowPicture(c, CryptPicture);
+        ShowCardPicture(c, CryptPicture);
         c.Next = 256;
     }
 
@@ -277,7 +286,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
             case 3:
                 c.PassHours(3);
                 InTheCrypt(c, menu, 0x0C);
-                ShowPicture(c, CryptPicture);
+                ShowCardPicture(c, CryptPicture);
                 c.Next = 256;
                 break;
             case 4:

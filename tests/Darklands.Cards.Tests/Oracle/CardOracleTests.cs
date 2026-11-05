@@ -86,6 +86,23 @@ public sealed class CardOracleTests
         AgreeWith(corpus);
     }
 
+    /// <summary>
+    /// The card's picture buffer (image-buffer, DS:E3E3): a handler that shows a picture through it leaves it there, and a later handler
+    /// that shows the buffer again shows that picture, not the card's first one (R108+0x05F0 then R108+0x0534 and R108+0x077F;
+    /// R109+0x02E6 then R109+0x0976; R109+0x26B4 then R109+0x2ACE; R110+0x0791 then R110+0x0710). The runs (forced lines) are the
+    /// original's, from card_oracle.py.
+    /// </summary>
+    [Fact]
+    public void PictureBufferRunsAgreeWithTheOriginal()
+    {
+        if (!CardHarness.Available || Environment.GetEnvironmentVariable("DARKLANDS_CARD_ORACLE_CORPUS") is { Length: > 0 }
+            || Corpus("cards-picture-buffer.json.gz") is not { } corpus)
+        {
+            return;
+        }
+        AgreeWith(corpus);
+    }
+
     private static void AgreeWith(JsonDocument corpus)
     {
         var divergences = Divergences();

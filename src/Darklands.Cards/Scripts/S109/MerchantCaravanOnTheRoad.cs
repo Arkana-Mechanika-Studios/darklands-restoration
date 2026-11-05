@@ -17,10 +17,14 @@ public sealed class MerchantCaravanOnTheRoad : Card
     private const int BanditLeaderPicture = 81;
     private const int FleePicture = 145;
 
+    // C: the card's picture buffer (image-buffer, DS:E3E3): the leader's face (R109+0x02E6) stays in it, and the prayer shows it again (R109+0x0976).
+    private int _cardPicture;
+
     public override int Number => 260;
 
     public override int Run(CardContext c)
     {
+        _cardPicture = CaravanPicture;
         Show(c, CaravanPicture);
         c.Next = Number;
         var menu = Menu(c, 0);
@@ -91,11 +95,13 @@ public sealed class MerchantCaravanOnTheRoad : Card
     /// sees the leader's face in time; otherwise the ambush is sprung.
     /// </summary>
     // orig: R109+0x02B6 (1838:02B6) matched; tests: CardSmokeTests
-    private static void FaceTheDisguisedBandits(CardContext c, CardMenu menu)
+    private void FaceTheDisguisedBandits(CardContext c, CardMenu menu)
     {
         var spotted = c.PartyMaxAttribute((int)Attribute.Perception) + c.Random(20);
         if (spotted >= 60)
         {
+            // C: _fstrcpy(image-buffer, ..) then card-run-near(card-title, image-buffer).
+            _cardPicture = BanditLeaderPicture;
             ShowPicture(c, BanditLeaderPicture);
             menu.Block = 12;
             menu.Set(OptionState.Hidden, 0, 1, 2, 3, 4, 5, 6, 8);
@@ -109,7 +115,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
     }
 
     // orig: R109+0x0614 (1838:0614) matched; tests: CardSmokeTests
-    private static void ExchangeNews(CardContext c, CardMenu menu)
+    private void ExchangeNews(CardContext c, CardMenu menu)
     {
         if (Disguised(c))
         {
@@ -126,7 +132,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
     /// <summary>The merchants' wares depend on the party's map row (y modulo 10).</summary>
     // orig: R109+0x069E (1838:069E) matched; tests: CardSmokeTests
     // C: party-map-row % 10 is C's signed remainder (y is never negative). location-now is cleared before the shop opens.
-    private static void Trade(CardContext c, CardMenu menu)
+    private void Trade(CardContext c, CardMenu menu)
     {
         if (Disguised(c))
         {
@@ -161,7 +167,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
     }
 
     // orig: R109+0x07A4 (1838:07A4) matched; tests: CardSmokeTests
-    private static void AskToTravelAlong(CardContext c, CardMenu menu, int chance)
+    private void AskToTravelAlong(CardContext c, CardMenu menu, int chance)
     {
         if (Disguised(c))
         {
@@ -184,7 +190,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
 
     /// <summary>A saint reveals the bandits for what they are, or vouches for honest merchants.</summary>
     // orig: R109+0x0880 (1838:0880) matched; tests: CardSmokeTests
-    private static void PrayForInsight(CardContext c, CardMenu menu)
+    private void PrayForInsight(CardContext c, CardMenu menu)
     {
         c.Variables.Chosen[0] = c.MenuMember;
         var answer = c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]);
@@ -198,7 +204,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
             menu.Block = 6;
             menu.Set(OptionState.Enabled, 7, 8);
             menu.Set(OptionState.Hidden, 0, 1, 2, 3, 4, 5, 6, 9);
-            ShowPicture(c, CaravanPicture);
+            ShowPicture(c, _cardPicture);
             return;
         }
         if (answer != 0)
@@ -212,7 +218,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
             c.Screen.Text(3);
         }
         c.Next = 260;
-        ShowPicture(c, CaravanPicture);
+        ShowPicture(c, _cardPicture);
     }
 
     // orig: R109+0x09B8 (1838:09B8) matched (twin R109+0x0B92); tests: CardSmokeTests
