@@ -175,6 +175,13 @@ public static class CityPolitics
     // DIVERGENCE: `while (!place-query(loc, d + 3))` loops forever in a city without any shop; here the search stops after seven days.
     // BUG: the facts made here are 0xC, 6, 7, 0x17, 0x14, 3, 5, 4, 9, 0xA, 0x23, 1 and 2 (R039+0x0558): none of type 8, the guild secret the
     //   guild cards (R062..R065) clear and read, so that fact never exists.
+    // BUG: fact 0x17 (the guild the agitators meet in, a bit 1 << d for the first d from a random one with place-query(loc, d + 3)) can be
+    //   d = 0, the local merchants (place-query 3), whom no guild card asks for: the guild cards compare it with 2, 4, 8, 0x10, 0x20, 0x40,
+    //   so in such a city no guild master leads the party to the agitators (kept).
+    // DORMANT: nothing in the original calls this function (tools/faithfulness/coverage.py: R039+0x0558 is not reachable from any entry
+    //   point, thunk, call, data table or code pointer; no RTLink thunk names it), and it alone creates the politics quest and the first
+    //   daily politics fact (expiry handler 2, DailyPolitics): no politics season, and so none of its facts (the agitators' guild above,
+    //   the unrest DailyPolitics makes), ever exists in a game the original plays. Kept as the original has it.
     public static void SetUpCity(GameState s, int loc)
     {
         if (s.Events.QuestAt(Group, loc) || LocationRules.Query(s, loc, 32) == 2)
@@ -264,6 +271,8 @@ public static class CityPolitics
                     unrest = 0x16;
                 }
             }
+            // BUG: the unrest (fact 0x15 or 0x16) lasts 0x1E0 = 480 hours (20 days); it is created again, as one more event, every seventh day its test holds, while an earlier one still runs; and it has no expiry handler (0): nothing settles it
+            //   but a card the party meets in the city. Kept; never reached in the original's play (no politics season starts: SetUpCity).
             if (!log.Fact(Group, 7, city) || (!log.Fact(Group, 6, city) && strength > 0x96) || strength > 0x10B)
             {
                 log.Create(-2, city, 0, fact, unrest, 0x63, 0, 0x1E0, 0, Group);

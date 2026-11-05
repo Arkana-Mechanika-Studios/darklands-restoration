@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 99 | 22 | 77 |
-| cards | 71 | 3 | 68 |
+| rules | 101 | 22 | 79 |
+| cards | 74 | 3 | 71 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
-| battles | 30 | 13 | 17 |
+| battles | 31 | 13 | 18 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 6 | 2 | 4 |
-| total | 220 | 46 | 174 |
+| screens/presentation | 7 | 2 | 5 |
+| total | 227 | 46 | 181 |
 
-## Core logic (214)
+## Core logic (220)
 
-### rules (99)
+### rules (101)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -66,12 +66,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-032561** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:176` `CityPolitics.SetUpCity`  
   original: `R039+0x0558` (1462:0558, matched)  
   why: the facts made here are 0xC, 6, 7, 0x17, 0x14, 3, 5, 4, 9, 0xA, 0x23, 1 and 2 (R039+0x0558): none of type 8, the guild secret the guild cards (R062..R065) clear and read, so that fact never exists.
-- **B-ea8f8b** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:218` `CityPolitics.DailyPolitics`  
+- **B-ae5599** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:178` `CityPolitics.SetUpCity`  
+  original: `R039+0x0558` (1462:0558, matched)  
+  why: fact 0x17 (the guild the agitators meet in, a bit 1 << d for the first d from a random one with place-query(loc, d + 3)) can be d = 0, the local merchants (place-query 3), whom no guild card asks for: the guild cards compare it with 2, 4, 8, 0x10, 0x20, 0x40, so in such a city no guild master leads the party to the agitators (kept).
+- **B-ea8f8b** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:225` `CityPolitics.DailyPolitics`  
   original: `R029+0x4180` (0E76:4180, draft)  
   why: place-side-read/place-side-write and side-*-share work on location-now, not the event's city (kept).
-- **B-8bb85e** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:240` `CityPolitics.DailyPolitics`  
+- **B-8bb85e** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:247` `CityPolitics.DailyPolitics`  
   original: `R029+0x4180` (0E76:4180, draft)  
   why: setup makes no fact 0 (the leaning); the scan (EventLog.Next) finds the politics quest, whose value is the city's number, so the leaning is that number: 1 is read as "leaning 1" for the city numbered 1, anything else but -1 and 1 as "none".
+- **B-bcf989** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:274` `CityPolitics.DailyPolitics`  
+  original: `R029+0x4180` (0E76:4180, draft)  
+  why: the unrest (fact 0x15 or 0x16) lasts 0x1E0 = 480 hours (20 days); it is created again, as one more event, every seventh day its test holds, while an earlier one still runs; and it has no expiry handler (0): nothing settles it but a card the party meets in the city. Kept; never reached in the original's play (no politics season starts: SetUpCity).
 - **B-074e99** `bug`, no fix flag - `src/Darklands.Core/Rules/DayJobs.cs:61` `DayJobs.static`  
   original: `R036+0x197E` (1462:197E, draft)  
   why: the second contents test is written `!cats2 & city.cats`, so a job with cats2 != 0 is never open.
@@ -322,7 +328,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (71)
+### cards (74)
 
 - **B-ad9d9e** `bug`, flag `FixGhostPartySlot` - `src/Darklands.Cards/CardContext.Party.cs:29` `CardContext.SetStatusAbleStale`  
   original: `R088+0x0440` (1859:0230, matched)  
@@ -498,6 +504,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-45b1b4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelsBeforeTheFortress.cs:59` `RebelsBeforeTheFortress.Run`  
   original: `R090+0x161E` (1999:000E, matched)  
   why: as the original has it, carrying a rope (item 0x3B) greys out the climb with a rope; the test looks inverted.
+- **B-f4d25e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S090/RebelsRallyTheCrowd.cs:43` `RebelsRallyTheCrowd.Run`  
+  original: `R090+0x0000` (1838:0000, matched)  
+  why: the texts of blocks 0 and 1 have no lines 2..5: they read "2" to "5", so the prayer line is offered there as the text "2" (the card oracle's run of the original, card 0xB8: menu 0 [1120001] over the block's "2|3|4|5" lines). Kept. In play the card is not reached: it belongs to the politics season, which the original never starts (CityPolitics.SetUpCity)
+- **B-2eabd4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S091/CityPoliticsGossip.cs:26` `CityPoliticsGossip.Run`  
+  original: `R091+0x0BA8` (18F2:0008, matched)  
+  why: lines 1..9 are all offered: lines 5..8 are the menu text's unwritten lines "5" to "8" and do nothing, and "government activities" (3) and "rebel activities" (4) only show the menu again (the card oracle's run of the original, card 0xBF: menu [0111111111], the texts as its own expansion gives them). Kept. In play the card is not reached: the city news line meant for it goes to card 0xAE (CityNews), and it belongs to the politics season, which the original never starts (CityPolitics.SetUpCity)
 - **B-4df3ba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S092/MerchantsOfTheCity.cs:89` `MerchantsOfTheCity.Trade`  
   original: `R092+0x0792` (188F:0222, matched)  
   why: $Raubi01 (RobberKnightTaskRewarded) takes remembered-card-second as the quest giver, but this is the castle's location: the reward (tag 3, owner 0, tested above) is not found, the card reads and frees events[-1], and the reward stays to be claimed again.
@@ -534,7 +546,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-676369** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S133/FamineHorseman.cs:86` `FamineHorseman.Run`  
   original: `R133+0x049C` (1838:049C, matched), `R133+0x050E` (1838:050E, matched)  
   why: "all money" is DS:906B = 0 and DS:9072 = 0 (R133+0x04D3), only the florins words of the purse and of the bank notes: the groschen and pfennigs (DS:906D/DS:906F, DS:9074/DS:9076) stay.
-- **B-f2c259** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S134/SpiderWarehousePoster.cs:145` `SpiderWarehousePoster.EnterTheWarehouse`  
+- **B-72e8eb** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S134/SpiderWarehousePoster.cs:64` `SpiderWarehousePoster.Run`  
+  original: `R134+0x0296` (1838:0296, matched), `R134+0x02E8` (1838:02E8, matched)  
+  why: text 5 has the man say "I am $NamedOneName." and the locals' answer (text 3) names him as $NamedOneName too, but nothing on the way to this card sets that slot: it prints the name the last card or the creation's made-up name left there, and in a program that has made none "I am ." (the original's own text expansion in the card oracle, card 0x168); kept, the slot is program-wide here as there (DarklandsGame's card variables)
+- **B-f2c259** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S134/SpiderWarehousePoster.cs:149` `SpiderWarehousePoster.EnterTheWarehouse`  
   original: `R134+0x0550` (1838:0550, matched), `R134+0x0692` (1838:0692, matched)  
   why: the original adds rand(10) Endurance although text 9 says many were bitten; kept as it is (no OriginalBehaviour flag for it).
 
@@ -580,7 +595,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (30)
+### battles (31)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -657,6 +672,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:358` `TacticalBattle.Cast`  
   original: `R018+0x0706` (1F43:0256, draft)  
   why: the loop sets only the line's end (DS:E0A9/E0A7, R018+0x09D5/0x09DC) and relies on its start (DS:E0A5/E0A3, set to the caster at R018+0x0851); the area test it calls for the enemies (R014+0x469E, 0E76:469E) writes the start itself, from its first instruction on (0E76:46E5/46EC: the centre = the member), so after a member's count the next member's line starts at the previous member, not at the caster. Kept (found by f2witch2f: a member behind a wall counted as seen, the target chosen differed).
+- **B-43d98d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:228` `TacticalBattle.Approach`  
+  original: `R014+0x2CCA` (0E76:2CCA, draft)  
+  why: the step queued above from the old route (DS:CA30) is kept through the re-path: fighter-step takes it first, from the new route's index 0, so a walker that re-plans makes one step of its old route and then goes on from the new route's second byte (when that step succeeds); and a walker blocked by somebody re-plans only when RepathAt comes (30..120 ticks after its last good step). Seen in the original (battle oracle fights city24, street, wild40, castle7c with route-hand-over R014+0x5D64 and fighter-step hooked: 8 of 27 re-paths took the old byte at index 0, 5 of them a byte other than the new route's first), the fights agree tick for tick with this code. Kept (not data-damaging).
 - **B-dce381** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:216` `TacticalBattle.ChooseOrder`  
   original: `R016+0x156E` (1EF8:156E, draft), `R016+0x1332` (1EF8:1332, draft), `R016+0x133E` (1EF8:133E, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - M with nobody selected: 15BE clears bit 0x10 of flags[-1]'s high byte, the pause byte DS:A695 (bx = -2)
@@ -682,13 +700,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (6)
+## Presentation and host (7)
 
-### screens/presentation (6)
+### screens/presentation (7)
 
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:214` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
+- **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:72` `CampScreen.Stay`  
+  original: `R036+0x0082` (1462:0082, draft), `R036+0x082C` (1462:082C, draft)  
+  why: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save, comm-camp-save); kept (not data-damaging: no save is lost or changed)
 - **B-e60d2a** `bug`, flag `FixDamagedSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:276` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.

@@ -66,9 +66,13 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     public Action<int>? SaveAndLoad { get; set; }
 
     /// <summary>A stay as cards open it (<see cref="CampPlace"/> numbering).</summary>
-    // C: the stay (R036+0x0082) begins with DS:9920 = DS:9934 = 2 (no Save Game, no Load Saved Game while the stay is up) and its clean-up
-    //   R036+0x082C ends with DS:9920 = DS:9934 = 1, whatever they were before; a stay left by a click on an empty party row skips the
-    //   clean-up and leaves them at 2
+    // orig: R036+0x0082 (1462:0082) draft; the clean-up R036+0x082C (1462:082C) draft
+    // C: the stay begins with DS:9920 = DS:9934 = 2 (no Save Game, no Load Saved Game while the stay is up) and its clean-up R036+0x082C
+    //   ends with DS:9920 = DS:9934 = 1, whatever they were before
+    // BUG: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game
+    //   and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a
+    //   character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save,
+    //   comm-camp-save); kept (not data-damaging: no save is lost or changed)
     public void Stay(GameState state, int mode)
     {
         SaveAndLoad?.Invoke(2);

@@ -17,5 +17,8 @@
 "D-751050-load-screen-after-quit-no.png": "Alt-Q and then n on the load screen: both sides look the same here (the pressed-button picture only matters when a button is pressed after that).",
 "D-751050-load-screen-after-quit-no-then-D.png": "After the 'no', D (Delete) is pressed: the original draws the label of 'Delete Saved Game' in bold without a button picture; the restoration draws a pressed-button picture behind it (the pointer is drawn over the box on the right only).",
 "D-b797f7-saving-game-box-in-battle.png": "Alt-S in a battle (the mines ambush of the DKSAVE99 saved game), Enter on the comment: the 'Saving Game' box while the file is written. The original (left, read at the moment it creates the file) draws a white box; the restoration (right, the frame it presented that is nearest to the original's) draws a grey-blue one. The restoration cannot be stopped inside its save, so the right frame is the nearest of 14 it presented, not an exact step.",
-"D-b797f7-save-comment-dialog-in-battle.png": "The comment dialog before the Enter (for reference)."
+"D-b797f7-save-comment-dialog-in-battle.png": "The comment dialog before the Enter (for reference).",
+"comm-inn-save-alt-s-after-empty-row.png": "An inn stay left by a click on the empty fifth row of the party panel skips the stay's clean-up: Alt-S does nothing in either game (no comment dialog), Save and Load stay off (an original bug, kept).",
+"comm-inn-save-alt-s-after-a-sheet.png": "After a character sheet is opened and closed, its clean-up turns Save and Load on again: Alt-S shows the comment dialog in both games.",
+"comm-camp-save-alt-s-after-empty-row.png": "The same in a camp on the map: after the empty-row click Alt-S does nothing in either game."
 }
