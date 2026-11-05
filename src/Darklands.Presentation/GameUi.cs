@@ -761,6 +761,17 @@ public sealed class GameUi
     public int[] BarterListing { get; } = new int[200];
 
     /// <summary>
+    /// The party panel's selection bytes, one per row: a row whose byte is set has its frame drawn lit, in a battle and outside it. Kept
+    /// for the whole run of the game: a battle starts from them and leaves them as its members' selection stands (a game loaded from the
+    /// battle's menu bar with a member selected in order mode leaves that frame lit on the map, the cards and the next battle).
+    /// </summary>
+    // orig: DS:9064 (five bytes, BSS: 0 at start-up), read by party-panel-frame-set root 0000:1588; set only by command-mode-begin
+    //   R014+0xBC0C (21F0:06B3), cleared by command-mode-end R014+0xBCA8 and R016+0x13D4 for the selected member, kept aside and put back by
+    //   the marching order R022+0x051C; nothing writes them at a battle's start or end or at a load (vis10 sessions uncert-march-load and
+    //   uncert-march-load-selected, every write to DS:9064..9068 logged from start-up; the map's panel after the load shows the frame lit)
+    public bool[] PanelSelection { get; } = new bool[5];
+
+    /// <summary>
     /// One pass of a loop that reads the keyboard itself (no menu bar, no hot keys): the screen is shown and a waiting key
     /// taken (0: none, and a frame passes).
     /// </summary>

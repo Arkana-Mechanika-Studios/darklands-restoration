@@ -115,10 +115,14 @@ public sealed class BattlefieldTiles
         Sprite(data, Word(data, at + 6), member), Sprite(data, Word(data, at + 8), member));
 
     // C: a zero second-frame offset means the decoration has no second frame (the original stores segment 0).
-    // UNCERTAIN: some sets (battlefield 0x38's floor decorations: record 23 of a 5680-byte .ffc, second frame 0x1B40) give a second
-    // frame past the end of the decoded file; the original points into whatever follows the block. No second frame here. Unknown: the
-    // bytes after the set in the original's tile buffer at that moment and whether that decoration's second frame is ever drawn; a live
-    // fight on battlefield 0x38 with the buffer read after battle-tileset-load R002+0x0C8C and a vis10 series of the decoration would settle it.
+    // C: some records give a second frame past the end of the decoded file (record 23 of every .ffc of BC, record 18 of KEEP.NFC and
+    // OUT.NFC; the original points into whatever follows the block). No second frame here.
+    // DORMANT: such a second frame drawn. Only a frame drawn by lot for an animated piece is a second frame (BattlefieldView.Frame), and a
+    // decoration tile is animated only below its kind's limit (DS:C12D floors, DS:C12E north walls; the terrain description's +0x23 /
+    // +0x56). The generators place a past-the-end record only as floor decoration record 23 of OUT.FFC: tile 6 of every wild battlefield
+    // (battlefield 0x38 among them) and tile 14 of city battle type 7, both with the floor limit 2 (read live at fight-draw R014+0x6818 in
+    // battle oracle fights on battlefields 0x38 and 0x15: DS:C12D = 2), so its second frame is never drawn; no generator uses record 18
+    // of a .nfc.
     private static RowRunSprite? Second(byte[] data, int at, string member) =>
         Word(data, at) == 0 || Word(data, at) + 2 > data.Length ? null : Sprite(data, Word(data, at), member);
 

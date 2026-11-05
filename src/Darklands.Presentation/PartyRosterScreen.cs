@@ -283,7 +283,7 @@ public sealed class PartyRosterScreen
                 {
                     DrawFigure(_images[0], 0x46, 0xA5);
                 }
-                PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, slot, lit: false);
+                PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, slot, lit: _ui.PanelSelection[slot]);
                 _panel.DrawRow(Screen, _state.Party, slot);
                 break;
         }
@@ -399,7 +399,7 @@ public sealed class PartyRosterScreen
         {
             if (_state.Party.Slot(i).IsPresent)
             {
-                PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, i, lit: false);
+                PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, i, lit: _ui.PanelSelection[i]);
                 _panel.DrawRow(Screen, _state.Party, i);
             }
         }

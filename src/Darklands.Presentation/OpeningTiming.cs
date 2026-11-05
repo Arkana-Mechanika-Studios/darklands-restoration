@@ -19,8 +19,11 @@ public static class OpeningTiming
 {
     /// <summary>Per file: ticks from the last cel of the previous file to its tune (the first: 0), and from the tune to its first cel.</summary>
     // UNCERTAIN: one tick after the last cel of OPENING2 (the capture's tick after it came in the same frame, before the tune). Unknown:
-    //   whether that tick came before or after the tune's start inside the frame (0 or 1 here); a shared-clock capture that logs the tick
-    //   count at the tune's start (R043+0x09AE) would settle it.
+    //   whether that tick came before or after the tune's start inside the frame (0 or 1 here). The order is the host's timing (the reader's
+    //   time against the 60 Hz timer in DOSBox-X at 3000 cycles/ms), so the emulated oracle (its own timer) cannot stand for it, and the
+    //   capture's JSON (the tunes' trampoline times beside the MPU bytes) is not kept, only summaries of it (outside the repository).
+    //   A new shared-clock capture that logs the timer's tick count at the tune's start (R043+0x09AE)
+    //   and at the last cel would settle it.
     public static readonly IReadOnlyList<(int TuneAfterLastCel, int FirstCelAfterTune)> Files =
     [
         (0, 32), (1, 43), (0, 42), (0, 43), (0, 40), (0, 40), (0, 33),

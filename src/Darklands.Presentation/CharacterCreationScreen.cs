@@ -491,13 +491,14 @@ public sealed class CharacterCreationScreen
     }
 
     /// <summary>The frame around the party column row of a filled slot (A, and the whole menu's drawing).</summary>
-    // orig: root 0000:1588 with the slot (its bit of the table DS:01E4) from A (R037+0x0D6F) and R037+0x0420; DS:9064 + slot is 0 in this menu
-    // (the unlit pieces): the frame shows in the original's picture after A (vis10 session D-b0c9a6), not on the menu's picture
+    // orig: root 0000:1588 with the slot (its bit of the table DS:01E4) from A (R037+0x0D6F) and R037+0x0420; DS:9064 + slot picks the pieces
+    // (unlit unless a battle left the slot selected, GameUi.PanelSelection): the frame shows in the original's picture after A (vis10
+    // session D-b0c9a6), not on the menu's picture
     private void DrawPartyFrame(int slot)
     {
         if (slot >= 0)
         {
-            PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, slot, lit: false);
+            PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, slot, lit: _ui.PanelSelection[slot]);
         }
     }
 

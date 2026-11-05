@@ -397,6 +397,7 @@ public sealed class BattleScreen : ITacticalView
         }
         finally
         {
+            KeepPanelSelection();
             _owner.CursorKeys.TimerTicksAtLeave = _ui.Timer.Ticks;
             _ui.PointerVisible = true;
             _ui.GameKey = _hotKey;
@@ -470,6 +471,28 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The battle's seen positions start as the program's (the last battle's, the one a load left) and are the program's from now.</summary>
     // C: seenpos (20A5:79A9) is written only by R014+0xF568 (a path found) and read by the walkers' re-path test (R014+0xF418's 1DB7:0D36):
     // no battle start, restore or load clears it
+    /// <summary>The members' selection starts as the panel's selection bytes stand (GameUi.PanelSelection, never cleared at a battle's start).</summary>
+    // orig: DS:9064 is the battle's fighter-selected table itself: no write between battles (see GameUi.PanelSelection)
+    private void TakePanelSelection(Battle battle)
+    {
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            battle[i].Selected = _ui.PanelSelection[i];
+        }
+    }
+
+    /// <summary>The panel's selection bytes as the battle leaves them, however it ends (a game loaded from its menu bar included).</summary>
+    private void KeepPanelSelection()
+    {
+        if (_battle is { } tb)
+        {
+            for (var i = 0; i < Combatant.PartySlots; i++)
+            {
+                _ui.PanelSelection[i] = tb.Battle[i].Selected;
+            }
+        }
+    }
+
     private void KeepSeenPositions(Battle battle)
     {
         if (_owner.SeenPositions is { } kept)
@@ -577,6 +600,7 @@ public sealed class BattleScreen : ITacticalView
                 heldFile.Variables[BattleVariables.PathIndex..(BattleVariables.PathIndex + Combatant.Count)]) : null,
         };
         _view.PieceFrame = (layer, x, y) => _battle?.Effects.PieceFrame(layer, x, y) ?? -1;
+        TakePanelSelection(battle);
         KeepSeenPositions(battle);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
@@ -641,6 +665,7 @@ public sealed class BattleScreen : ITacticalView
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
         };
+        TakePanelSelection(battle);
         KeepSeenPositions(battle);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
@@ -2586,9 +2611,13 @@ public sealed class BattleScreen : ITacticalView
     // draw nothing) are not in it, and a combatant's member and target cursors go with its body.
     // C: R014+0x827A's roll-n(2) for each animated piece of the last full redraw (R017+0x0000's lists DS:E13D / DS:E178 / DS:E196) are
     // drawn by EffectField.Drawn at each fight-draw, the first one at the battle's start (R014+0x0307).
-    // UNCERTAIN: while paused the C# draws one more frame (with new puff jitter of the clouds) after the pause begins and then stops; the original's draw pass (fight-draw R014+0x6818, which Draw stands for) leaves a last frame that equals the C#'s first paused one (vis10 D-09fbc1, shots c and d: 3,497 px; shots a and b: 0). Seen only in the picture, not chased; possibly an extra redraw pass in the C#.
-    //   Kept as uncertain (b31): the replayed pause session (c3-space-pause, one of the 821) agrees on the random state
-    //   and the saved game, so the frame changes no state; settling it needs a frame-exact picture of the original's first paused pass.
+    // C: while paused the picture changes only at the paused ticks: fight-tick still runs every 8 timer callbacks (DS:07D1) and its
+    // fight-draw re-rolls the clouds' puffs and edges and the animated pieces (vis10 session uncert-cloud-pause, Luebeck's gate with a
+    // thrown Noxious Aroma, R014+0x3166 / 0x0F58 / 0x6818 / 0x827A and rand hooked: the key paused the battle at pass 533; at pass 539
+    // (DS:07D1 = 8) fight-draw made 32 draws before the pieces' 8 and the screen changed; unchanged on the passes between).
+    // TacticalBattle.Tick does the same (lockstep, the same steps: the same random sequence over the pause). The vis10 pictures of a pause pair only
+    // to the timer's phase: vis10's C# host is not held to the original's callbacks while paused, so its paused ticks (and the jitter
+    // they draw) fall on other frames (shots c and d of D-09fbc1, held14 here: 3,577 px, every pixel in the clouds' boxes).
     public void Draw()
     {
         var tb = _battle!;

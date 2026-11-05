@@ -616,14 +616,17 @@ public sealed partial class TacticalBattle
 
     /// <summary>
     /// The word of record -1 that command-mode-end reads as the order with nobody selected (+0x10 of the record before combatant 0,
-    /// DS:9BE5, inside the menu bar's sub-menu item records) and writes the order it gives "member -1".
+    /// DS:9BE5, inside the menu bar's item records) and writes the order it gives "member -1"; kept for the whole program
+    /// (<see cref="Generation.GenerationProcessMemory.ActionBeforeRecords"/>).
     /// </summary>
-    // UNCERTAIN: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text);
-    //   the rewrite starts it at 0 and keeps only what command-mode-end writes. The branches below agree for any value other than 0x80,
-    //   0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
-    //   Unknown: which sub-menu last wrote DS:9BE5 when Enter travelling individually ends order mode with nobody selected; a live
-    //   battle session that opens each battle menu before that Enter, with DS:9BE5 read at R014+0xBCA8, would settle it.
-    private int _actionBeforeRecords;
+    // C: only start-up (0x1A6D) and command-mode-end write it: the menus opened in a battle do not (vis10 session uncert-cme-menus, DS:9BE5
+    //   read at R014+0xBCA8 after each of the four battle menus: 0x1A6D, and every write logged). 0x1A6D takes the branches of 0 below
+    //   (not 0x80 or 0x100, bit 1 clear, not all of 0x1BE).
+    private int ActionBeforeRecords
+    {
+        get => ProgramMemory.ActionBeforeRecords;
+        set => ProgramMemory.ActionBeforeRecords = value;
+    }
 
     /// <summary>command-mode-end with DS:A6B2 = 0xFF: the order given to "member -1" where it lands on data the rewrite keeps, then its end.</summary>
     // orig: R014+0xBCA8 (19CD:0738) draft, checked against the asm for A6B2 = 0xFF and by direct calls (battle states, DS:A6B2 = 0xFF):
@@ -676,7 +679,7 @@ public sealed partial class TacticalBattle
         if (OrderAction == 0x400)
         {
             // R014+0xBCDC..0xBCEE
-            _actionBeforeRecords = 0;
+            ActionBeforeRecords = 0;
             PauseByte &= unchecked((byte)~Hurry);
             return;
         }
@@ -685,7 +688,7 @@ public sealed partial class TacticalBattle
             return;
         }
         // R014+0xBD31..0xBD5B
-        var action = OrderAction == -1 ? _actionBeforeRecords : OrderAction;
+        var action = OrderAction == -1 ? ActionBeforeRecords : OrderAction;
         if ((action & 0x1BE) == 0x1BE)
         {
             PauseByte &= unchecked((byte)~Hurry);
@@ -696,7 +699,7 @@ public sealed partial class TacticalBattle
             if (action == 0x80)
             {
                 // R014+0xBE48..0xBE94
-                _actionBeforeRecords = 0x80;
+                ActionBeforeRecords = 0x80;
                 MovingBeforeTable(0);
                 PauseByte |= ShotSkipped;
                 last.RepathAt = _orderClock;
@@ -705,7 +708,7 @@ public sealed partial class TacticalBattle
             else if (action == 0x100)
             {
                 // R014+0xBEA3..0xBF0A
-                _actionBeforeRecords = 0x100;
+                ActionBeforeRecords = 0x100;
                 MovingBeforeTable(0);
                 last.RepathAt = _orderClock;
                 last.Exchange = (Exchange)ActionState.Ready;
@@ -715,20 +718,20 @@ public sealed partial class TacticalBattle
                 // R014+0xBDD8..0xBDF3
                 if ((action & 2) == 2)
                 {
-                    _actionBeforeRecords = action;
+                    ActionBeforeRecords = action;
                     last.Exchange = (Exchange)ActionState.Ready;
                 }
             }
             else if (!_adjacent)
             {
                 // R014+0xBE06..0xBE3A (DS:17B0 = 0xFF and command-queue(-1) not reproduced)
-                _actionBeforeRecords = 1;
+                ActionBeforeRecords = 1;
                 MovingBeforeTable(1);
             }
             else
             {
                 // R014+0xBDFD..0xBE04
-                _actionBeforeRecords = action;
+                ActionBeforeRecords = action;
                 last.Exchange = (Exchange)ActionState.Ready;
             }
             return;
@@ -740,7 +743,7 @@ public sealed partial class TacticalBattle
         if (action == 0x100)
         {
             // R014+0xBF20..0xBF72
-            _actionBeforeRecords = 0x100;
+            ActionBeforeRecords = 0x100;
             MovingBeforeTable(0);
             last.RepathAt = _orderClock;
             last.Exchange = (Exchange)ActionState.Ready;
@@ -753,7 +756,7 @@ public sealed partial class TacticalBattle
             return;
         }
         // R014+0xBF94..0xC000 (action state[-1] = 0, repath[-1] = clock + 30; DS:17B0 = 0xFF not reproduced)
-        _actionBeforeRecords = 1;
+        ActionBeforeRecords = 1;
         MovingBeforeTable(1);
         last.Exchange = Exchange.None;
         last.GiveUpUntil = (ushort)(_orderClock + 30);
