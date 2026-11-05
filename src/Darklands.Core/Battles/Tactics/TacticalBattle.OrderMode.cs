@@ -89,6 +89,18 @@ public sealed partial class TacticalBattle
     public bool InOrderMode => _orderMode;
 
     /// <summary>
+    /// command-mode (DS:A6B3) as the last battle left it, taken at this battle's start: no set-up clears it, so a battle left in order mode
+    /// (a game loaded from its menu bar, a surrender) starts the next one in order mode with nobody chosen, until the first tick's
+    /// command-mode-begin (the panel draws every row dim until then, and the pointer takes the order-mode branches).
+    /// </summary>
+    // orig: DS:A6B3 is written only by command-mode-begin R014+0xBC18 (1), command-mode-end R014+0xC00F and R016+0x13FD (0); the set-ups
+    //   write chosen-member DS:A6B2 = 0xFF (R002+0x1921, R014+0x02AA) and leave command-mode (every writer and reader listed from the EXE's
+    //   bytes; vis10 session ordercarry-load-battle with a write watch: DKSAVE99's ambush in order mode, Alt-L, the same ambush again: at its
+    //   fight-main-loop A6B3 = 1, A6B2 = FF; root 0000:1716 reads A6B3 = 1 five times (the rows dim) and R014+0xCD6C twice before the first
+    //   tick's command-mode-begin at pass 298)
+    public void TakeOrderMode(bool on) => _orderMode = on;
+
+    /// <summary>
     /// The left button held over the view outside order mode: the member under the pointer (−1 none) becomes the selected
     /// one, with the cursor of its current order, without entering order mode (the release then enters it).
     /// </summary>
@@ -296,8 +308,13 @@ public sealed partial class TacticalBattle
     // orig: R014+0xC044 (19CD:0AD4) draft
     public void Hover(int topmost, int enemy, MapPoint ground)
     {
-        if (Selected == -1 || topmost is >= 0 and < Combatant.PartySlots)
+        if (topmost is >= 0 and < Combatant.PartySlots)
         {
+            return;
+        }
+        if (Selected == -1)
+        {
+            HoverWithNobodySelected(enemy);
             return;
         }
         CursorTarget = -1;
@@ -349,6 +366,28 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>
+    /// The hover in order mode with nobody chosen (a battle started in the order mode the last one left, before its first tick): the
+    /// order of "member −1" is the word of record −1 (<see cref="ActionBeforeRecords"/>); an enemy under the pointer gets the target cursor.
+    /// </summary>
+    // orig: R014+0xC044 (19CD:0AD4) with DS:A6B2 = 0xFF, checked against the asm: f = combatant[-1].+0x10 (DS:9BE5); the enemy loop as for
+    //   a member; `if (cursor-target == -1) DS:E1BC = 0`
+    // DIVERGENCE: not reproduced, the original then reads undefined memory: for a shot or a throw (the order chosen, or f 0x80 / 0x100) the
+    //   line of fire from record -1's place (DS:9BD5.., the menu bar's item records), and on the ground the collision test of a copy of
+    //   record -1 (the free or blocked ground cursor, cursor target -2 / -3); the first tick's command-mode-begin then sets the cursor again.
+    private void HoverWithNobodySelected(int enemy)
+    {
+        CursorTarget = -1;
+        var f = ActionBeforeRecords;
+        if (!(OrderAction == 1 || (OrderAction == -1 && f is 1 or 0)) && enemy >= Combatant.PartySlots)
+        {
+            CursorTarget = enemy;
+            Cursor = OrderCursor.Target;
+            return;
+        }
+        Cursor = OrderCursor.None;
+    }
+
+    /// <summary>
     /// A click in order mode: on a member it changes the member; on an enemy it is the target (a
     /// path is found when out of reach); on the ground the spot (a path is found to it).
     /// </summary>
@@ -373,6 +412,16 @@ public sealed partial class TacticalBattle
             return false;
         }
         _adjacent = false;
+        if (Selected == -1)
+        {
+            // DIVERGENCE: not reproduced, the original then reads and writes undefined memory: a click off the members in a battle started
+            //   in the order mode the last one left, before its first tick (DS:A6B2 = 0xFF, R014+0xC33C checked against the asm), works on
+            //   record -1 (DS:9BD5.., the menu bar's item records): its order word DS:9BE5, a copy of it in DS:D73E, the reach table's row
+            //   -1, its path (route-find(-1), the route's save) or its line of fire, its destination and target written and restored, and
+            //   with a path found the spot DS:C652 / DS:C67D; the first tick's command-mode-begin then clears the order (DS:A6B0, DS:C7CC,
+            //   DS:C652, the cursor), not the spot's y.
+            return false;
+        }
         var i = Selected;
         var c = Battle[i];
         var f = (int)c.Action;

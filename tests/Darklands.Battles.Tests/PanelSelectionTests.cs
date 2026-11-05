@@ -55,6 +55,31 @@ public sealed class PanelSelectionTests
     }
 
     /// <summary>
+    /// command-mode DS:A6B3 is not cleared by a battle's set-up: a battle left in order mode starts the next in order mode with nobody chosen
+    /// (DS:A6B2 = 0xFF) until the first tick's command-mode-begin (vis10 session ordercarry-load-battle: DKSAVE99's ambush, Alt-L, the
+    /// ambush again: A6B3 = 1 at its fight-main-loop, the rows read dim).
+    /// </summary>
+    [Fact]
+    public void ABattleStartsInTheOrderModeTheLastLeft()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        foreach (var on in new[] { true, false })
+        {
+            var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+            ui.PanelOrderMode = (on, 3);
+            var state = Simulation.NewGame.Quickstart(WorldData.Load(files), 7);
+            var screens = new BattleScreens(ui, () => state);
+            var screen = new BattleScreen(ui, new BattleAssets(files), state, screens);
+            screen.Start(new BattleRequest(0x5E, 4545, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]));
+            Assert.Equal(on, screen.Tactics!.InOrderMode);
+            Assert.Equal(-1, screen.Tactics.Selected);
+        }
+    }
+
+    /// <summary>
     /// Order mode as a battle left it (DS:A6B3 = 1, chosen member DS:A6B2) draws the names of the other rows in colour 7 outside the battle too
     /// (vis10 session uncert-march-load: after Alt-L from the mine ambush, member 3 chosen, the map's rows 0..2 dim).
     /// </summary>

@@ -28,3 +28,4 @@ loadfix-winter|loadfix-winter-map.steps|DKSAVE99.SAV|map1=loadfix-winter-map
 D-e4fbd6|loadfix-order-cursor.steps|DKSAVE99.SAV|sel=D-e4fbd6-member-cursor-after-key-1
 comm-inn|comm-inn-save.steps|DKSAVE0.SAV|stay=comm-inn-save-stay,alts1=comm-inn-save-alt-s-after-empty-row,sheet=comm-inn-save-sheet,alts2=comm-inn-save-alt-s-after-a-sheet
 comm-camp|comm-camp-save.steps|DKSAVE99.SAV|camp=comm-camp-save-camp,alts1=comm-camp-save-alt-s-after-empty-row
+ordercarry|ordercarry-load-battle.steps|DKSAVE99.SAV|first=ordercarry-load-battle-first,second=ordercarry-load-battle-second

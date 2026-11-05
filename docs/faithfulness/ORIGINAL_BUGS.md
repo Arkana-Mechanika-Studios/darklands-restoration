@@ -675,16 +675,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-43d98d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:228` `TacticalBattle.Approach`  
   original: `R014+0x2CCA` (0E76:2CCA, draft)  
   why: the step queued above from the old route (DS:CA30) is kept through the re-path: fighter-step takes it first, from the new route's index 0, so a walker that re-plans makes one step of its old route and then goes on from the new route's second byte (when that step succeeds); and a walker blocked by somebody re-plans only when RepathAt comes (30..120 ticks after its last good step). Seen in the original (battle oracle fights city24, street, wild40, castle7c with route-hand-over R014+0x5D64 and fighter-step hooked: 8 of 27 re-paths took the old byte at index 0, 5 of them a byte other than the new route's first), the fights agree tick for tick with this code. Kept (not data-damaging).
-- **B-dce381** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:216` `TacticalBattle.ChooseOrder`  
+- **B-dce381** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:228` `TacticalBattle.ChooseOrder`  
   original: `R016+0x156E` (1EF8:156E, draft), `R016+0x1332` (1EF8:1332, draft), `R016+0x133E` (1EF8:133E, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - M with nobody selected: 15BE clears bit 0x10 of flags[-1]'s high byte, the pause byte DS:A695 (bx = -2)
-- **B-8f3e7c** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:269` `TacticalBattle.ChoosePlace`  
+- **B-8f3e7c** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:281` `TacticalBattle.ChoosePlace`  
   original: `R016+0x1590` (1EF8:1590, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - flags[-1]'s high byte is the pause byte DS:A695 (R016+0x15BE, bx = -2)
-- **B-8d32e1** `bug`, flag `FixLeaveOrderModeWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:635` `TacticalBattle.LeaveWithNobodySelected`  
+- **B-8d32e1** `bug`, flag `FixLeaveOrderModeWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:684` `TacticalBattle.LeaveWithNobodySelected`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: OriginalBehaviour.FixLeaveOrderModeWithoutSelection - Enter travelling individually (R016+0x0734) calls it with nobody selected, and a cursor target left by the button held over a member (R014+0xB632..: the target of that member's order) gives the order to record -1: for 0x400 the pause byte loses 0x10; the 0x1BE test clears it too; a missile (0x80) sets 0x02 of the pause byte; a missile or a throw sets exchange[12] = 7 (Ready) and repath[12] = the order clock DS:C867; an attack with bit 1 (or adjacent) sets exchange[12] = 7; a walk to a spot sets exchange[12] = 0 and give-up[12] = the order clock + 30, or, the party split in real combat, shows "USE STAIRS..." (DS:064A) for 150 ticks.
-- **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:785` `TacticalBattle.CancelOrder`  
+- **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:834` `TacticalBattle.CancelOrder`  
   original: `R016+0x13D4` (1EF8:13D4, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the flee bit before order mode), so a pause byte of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:46` `TacticalBattle.WriteBattleFile`  

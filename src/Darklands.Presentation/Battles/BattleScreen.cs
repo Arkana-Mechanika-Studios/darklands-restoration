@@ -221,6 +221,11 @@ public sealed class BattleScreen : ITacticalView
             // C: a card's picture still waiting for its first text (DS:EE55, GameUi.HoldScreen) is never shown: the battle replaces the screen
             //   (vis10, the city ambush of card 0x24: local/batch/b24fix)
             _ui.ReleaseScreen();
+            // DIVERGENCE: the set-up's picture (fight-main-loop's panel and first fight-draw, R014+0x02FF..0x0307) is not presented here: the
+            //   host's first frame comes after the first pass, whose tick has opened order mode for the leader. The original shows it until that
+            //   tick (8 timer callbacks), with the member cursor not yet drawn and, in a battle started in the order mode the last one left,
+            //   every row's name dim (vis10 session ordercarry-load-battle: the original's screen at the first command-mode-begin, rows 0..3 in
+            //   colour 7; the host's first battle frame has member 3 chosen, its name 0x0E). Host timing of the frames, not followed.
             // orig: R014+0x031E / 0x0326 (R014+0x0000, before its loop): the mouse driver's release count read and DS:C62A = 0
             _ui.TakeLeftReleases();
             _releases = 0;
@@ -605,6 +610,7 @@ public sealed class BattleScreen : ITacticalView
         };
         _view.PieceFrame = (layer, x, y) => _battle?.Effects.PieceFrame(layer, x, y) ?? -1;
         TakePanelSelection(battle);
+        _battle.TakeOrderMode(_ui.PanelOrderMode.On);
         KeepSeenPositions(battle);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
@@ -670,6 +676,7 @@ public sealed class BattleScreen : ITacticalView
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
         };
         TakePanelSelection(battle);
+        _battle.TakeOrderMode(_ui.PanelOrderMode.On);
         KeepSeenPositions(battle);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
