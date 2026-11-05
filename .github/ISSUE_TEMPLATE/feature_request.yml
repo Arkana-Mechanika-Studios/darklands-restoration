@@ -1,0 +1,21 @@
+name: Feature request
+description: An idea for the program (the game itself is kept as the original plays)
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: What it is and why it helps. The game's rules stay as the 1992 original plays them; ideas for the program around it (settings, launcher, packs, mods, accessibility) are welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you do instead today
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: "1.0.0-rc1"

@@ -1,0 +1,71 @@
+name: Bug report
+description: A crash, a difference from the original game, or another bug
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Nothing was sent from your computer: a report package (a zip) is a file you attach here yourself.
+        In the program: type `report` in the developer console (F11), press Ctrl+F12 while playing, or use "Report a problem" on the launcher.
+        After a crash the program offers the same. How it works and what the zip holds: [docs/REPORTING.md](https://github.com/Arkana-Mechanika-Studios/darklands-restoration/blob/master/docs/REPORTING.md).
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of problem
+      options:
+        - Crash
+        - Difference from the original game
+        - Other bug
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The release and commit (filled in by the program's report form; also on the start screen and in report.txt).
+      placeholder: "1.0.0-rc1 (commit abc1234)"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: System
+      description: Operating system (Windows 11, Linux, Steam Deck ...).
+      placeholder: "Windows 11"
+    validations:
+      required: true
+  - type: textarea
+    id: what_did
+    attributes:
+      label: What you did
+      description: The exact keys and clicks, from the saved game in the zip if there is one. If you cannot repeat it, say how it started.
+    validations:
+      required: true
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened
+      description: What you saw, or the error.
+    validations:
+      required: true
+  - type: textarea
+    id: original
+    attributes:
+      label: What the original game does (for a difference)
+      description: Which side shows what. Leave empty for a crash or another bug.
+  - type: input
+    id: checklist
+    attributes:
+      label: Checklist item (if any)
+      description: The item of docs/RC-CHECKLIST.md you were comparing, e.g. C4.
+      placeholder: "C4"
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Report package and screenshots
+      description: |
+        Drag the report zip (`reports/darklands-report-....zip`, opened for you by the program) into this box.
+        For a difference, add a screenshot of each side at the same moment (F12 in this program, DOSBox's capture key in the original).
+        GitHub takes attachments only from a signed-in account.
+    validations:
+      required: true

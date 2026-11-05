@@ -48,6 +48,8 @@ public enum LauncherReason
 /// <param name="PackGuide">The guide for pack makers (a link or a file), opened by "How to make a pack"; null: no link.</param>
 /// <param name="FindSoundFont">The SoundFont file of the settings (null: none chosen) → the file that would play the audio pack's .mid
 /// files (the file if it exists, else the first .sf2 of the default folder), or null when none is found; null: the launcher shows the file as it is.</param>
+/// <param name="ReportProblem">Makes a problem report from the last sessions' logs and saves (a zip, its folder and the issue form opened) and
+/// returns the message to show the player; null: the launcher offers none.</param>
 /// <param name="GivenGameFolder">The game folder the command line or the environment names (it overrides the settings file's), or
 /// null: the launcher shows it instead of the file's.</param>
 public sealed record LauncherContext(
@@ -67,7 +69,8 @@ public sealed record LauncherContext(
     Func<string, PackStatus>? DescribePack = null,
     string? PackGuide = null,
     string? GivenGameFolder = null,
-    Func<string?, string?>? FindSoundFont = null);
+    Func<string?, string?>? FindSoundFont = null,
+    Func<string>? ReportProblem = null);
 
 /// <summary>A folder as a pack: how many pictures and sounds it replaces, and what could not be read (a broken manifest ...).</summary>
 public sealed record PackStatus(int Pictures, int Sounds, string? Problem)

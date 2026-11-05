@@ -57,6 +57,7 @@ internal sealed class LauncherScreen
     private Canvas? _background;
     private Rect _discord;
     private Rect? _guideLink;
+    private Rect? _reportLink;
 
     public LauncherScreen(LauncherModel model, LauncherContext context, ILauncherSurface surface)
     {
@@ -88,6 +89,7 @@ internal sealed class LauncherScreen
         AudioPack,
         PackGuide,
         SoundFont,
+        Report,
     }
 
     public Item Focus => _focus;
@@ -98,9 +100,9 @@ internal sealed class LauncherScreen
     public bool Editing => _editing;
 
     private IEnumerable<Item> Order =>
-        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.HdPack, Item.Sound, Item.Roms, Item.Test, Item.AudioPack, Item.SoundFont, Item.Banner, Item.Intro, Item.Always, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Notes }
+        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.HdPack, Item.Sound, Item.Roms, Item.Test, Item.AudioPack, Item.SoundFont, Item.Banner, Item.Intro, Item.Always, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
             .Where(i => (i != Item.Test || _context.SoundTest is not null) && (i != Item.Notes || _context.ReleaseNotesLink is not null)
-                && (i != Item.PackGuide || _context.PackGuide is not null));
+                && (i != Item.PackGuide || _context.PackGuide is not null) && (i != Item.Report || _context.ReportProblem is not null));
 
     /// <summary>Handles one input; returns the player's choice when the launcher should end.</summary>
     public LauncherChoice? Handle(LauncherInput input)
@@ -248,6 +250,9 @@ internal sealed class LauncherScreen
                 break;
             case Item.SoundFont:
                 PickSoundFont();
+                break;
+            case Item.Report when _context.ReportProblem is { } report:
+                _message = report();
                 break;
             case Item.PackGuide when _context.PackGuide is { } guide:
                 _context.OpenLink(guide);
@@ -617,7 +622,11 @@ internal sealed class LauncherScreen
         {
             _hotspots.Add((guide, Item.PackGuide));
         }
-        if ((_focus == Item.Discord ? _discord : _focus == Item.Notes ? _notesLink : _focus == Item.PackGuide ? _guideLink : null) is { } link)
+        if (_reportLink is { } reportLink)
+        {
+            _hotspots.Add((reportLink, Item.Report));
+        }
+        if ((_focus == Item.Discord ? _discord : _focus == Item.Notes ? _notesLink : _focus == Item.PackGuide ? _guideLink : _focus == Item.Report ? _reportLink : null) is { } link)
         {
             canvas.Fill(new Rect(link.X, link.Bottom - Math.Max(1, v.Len(1)), link.Width, Math.Max(1, v.Len(1))), Ink);
         }
@@ -717,6 +726,16 @@ internal sealed class LauncherScreen
             var guideUnder = y + text.Ascent + Math.Max(1, v.Len(2));
             canvas.Fill(new Rect(guideAfter, guideUnder, text.Measure(guide), Math.Max(1, v.Len(1))), LinkRed);
             _guideLink = new Rect(guideAfter, y, text.Measure(guide), guideUnder + Math.Max(1, v.Len(1)) - y);
+        }
+        if (_context.ReportProblem is not null)
+        {
+            y += line;
+            var reportAfter = text.Draw(canvas, "Something broken? ", x, y, Ink);
+            var reportLabel = "make a problem report";
+            text.Draw(canvas, reportLabel, reportAfter, y, LinkRed);
+            var reportUnder = y + text.Ascent + Math.Max(1, v.Len(2));
+            canvas.Fill(new Rect(reportAfter, reportUnder, text.Measure(reportLabel), Math.Max(1, v.Len(1))), LinkRed);
+            _reportLink = new Rect(reportAfter, y, text.Measure(reportLabel), reportUnder + Math.Max(1, v.Len(1)) - y);
         }
 
         var disclaimer = caption.Wrap("Darklands © 1992 MicroProse Software, Inc. Darklands and MicroProse are the property of their "
@@ -949,6 +968,7 @@ internal sealed class LauncherScreen
             Item.AudioPack => "Replacement music and sounds (OGG, WAV). " + PackHelp(PackKind.Sounds),
             Item.SoundFont => "For .mid music. Enter: choose an .sf2 file; ←/→: default.",
             Item.PackGuide => "Opens the guide: how to make a picture or sound pack, and the names of the game's pictures, music and sounds.",
+            Item.Report => "Makes a zip with the logs, settings and saves for a bug report, and opens its folder and the report form. Nothing is sent: you attach the zip yourself.",
             Item.Sound => "The sound card the game plays its music and sounds on.",
             Item.Roms => "Your MT-32 / CM-32L ROM files (side by side or in MT32, CM32L subfolders). "
                 + (_surface.PickFolder is not null ? "Change… or drop the folder here." : "Drop the folder on this window."),

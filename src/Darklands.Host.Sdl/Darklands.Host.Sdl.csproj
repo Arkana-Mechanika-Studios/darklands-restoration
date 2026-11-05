@@ -40,6 +40,26 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <!-- The commit the program is built from, as AssemblyMetadata("Commit", ...) for the problem reports (docs/REPORTING.md): GITHUB_SHA
+       in CI, else the short commit from git (rev-parse); "unknown" without either (no git, or a source copy without the repository). The
+       informational version stays free of it (Directory.Build.props). -->
+  <Target Name="StampCommit" BeforeTargets="GetAssemblyAttributes;GenerateAssemblyInfo">
+    <PropertyGroup>
+      <StampedCommit Condition="'$(GITHUB_SHA)' != '' And $(GITHUB_SHA.Length) &gt;= 7">$(GITHUB_SHA.Substring(0, 7))</StampedCommit>
+    </PropertyGroup>
+    <Exec Condition="'$(StampedCommit)' == ''" Command="git rev-parse --short HEAD" WorkingDirectory="$(MSBuildProjectDirectory)" ConsoleToMSBuild="true"
+          IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true" StandardOutputImportance="low" StandardErrorImportance="low" ContinueOnError="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitOutput" />
+    </Exec>
+    <PropertyGroup>
+      <StampedCommit Condition="'$(StampedCommit)' == '' And $([System.Text.RegularExpressions.Regex]::IsMatch('$(GitCommitOutput)', '^[0-9a-f]{7,40}$'))">$(GitCommitOutput)</StampedCommit>
+      <StampedCommit Condition="'$(StampedCommit)' == ''">unknown</StampedCommit>
+    </PropertyGroup>
+    <ItemGroup>
+      <AssemblyMetadata Include="Commit" Value="$(StampedCommit)" />
+    </ItemGroup>
+  </Target>
+
   <!-- this version's release notes (releases/<version>/release-notes.md beside the repository, when there) next to the program,
        for the launcher's "What's new"; without them the launcher links to the release's page -->
   <ItemGroup>
@@ -70,6 +90,11 @@
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\modding\*.md" Link="docs\modding\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\SETTINGS.md" Link="docs\SETTINGS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\LOCALISATION.md" Link="docs\LOCALISATION.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- the guide to reporting a problem (docs/REPORTING.md), beside the program in the build and in every release -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\REPORTING.md" Link="docs\REPORTING.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the licence and the third-party notices beside the program in the build and in every release -->

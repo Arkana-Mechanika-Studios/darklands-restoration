@@ -50,7 +50,14 @@ The keys and the mouse are the original's: the menu bar with the right button or
 character sheets, F6 for the party, Ctrl-F1–F5 to choose the leader, Alt-S save, Alt-L load, Alt-P pause,
 Alt-O the marching order, Alt-D difficulty, Alt-M music, Alt-F sound effects, Alt-Q quit. Two keys are
 this program's own: **F12** saves a screenshot, and **F11** opens a developer console over the game
-(`help` lists its commands: time, money, attributes, saints, items...).
+(`help` lists its commands: time, money, attributes, saints, items...). **Ctrl-F12** makes a problem report (below).
+
+## Reporting a problem
+
+Something crashed, or differs from the original? The program writes a log of every run, and can pack it with your settings,
+the saved game and a screenshot into a zip you attach to a GitHub issue: type `report` in the console (F11), press Ctrl-F12,
+or use "make a problem report" on the launcher; after a crash the program offers it. Nothing is sent anywhere by the program.
+How, and what the zip holds: [docs/REPORTING.md](docs/REPORTING.md).
 
 ## Sound and music
 

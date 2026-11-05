@@ -92,6 +92,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     // Host feature (like F12's screenshots): the original never reads F11 (the BIOS keyboard call it uses does not report it), so the game loses no key.
     public ConsoleOverlay? Console { get; set; }
 
+    /// <summary>What Ctrl-F12 does (null: nothing, the key goes to the game as before): the host makes a problem report.</summary>
+    public Action? ReportRequested { get; set; }
+
     /// <summary>A line drawn small in the window's bottom-right corner when it gives one (the version on the start screen).</summary>
     public CornerText? Corner { get; set; }
 
@@ -340,6 +343,16 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                 {
                     SetConsoleOpen(!Console.Console.IsOpen);
                     toggledThisPump = true;
+                }
+                continue;
+            }
+            // Ctrl-F12: a problem report (docs/REPORTING.md). A host key like F11 and F12: the original never reads F11 or F12, so the game loses no key.
+            if (e.Type == SdlNative.EventKeyDown && e.Keyboard.Keysym.Scancode == SdlNative.ScancodeF12
+                && (e.Keyboard.Keysym.Mod & SdlNative.KeyModCtrl) != 0 && ReportRequested is not null)
+            {
+                if (e.Keyboard.Repeat == 0)
+                {
+                    ReportRequested();
                 }
                 continue;
             }

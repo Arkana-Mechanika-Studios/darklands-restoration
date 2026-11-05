@@ -71,7 +71,19 @@ public sealed class DarklandsGame
                 ?? Path.Combine(gameFolder, "SAVES")
             : Path.Combine(gameFolder, "SAVES");
 
-    private SaveFolder Saves => new(SaveDirectory) { Mods = SaveMods };
+    private SaveFolder Saves => new(SaveDirectory)
+    {
+        Mods = SaveMods,
+        Used = SaveUsed is { } used ? (name, loading) => used(SaveDirectory, name, loading) : null,
+    };
+
+    /// <summary>
+    /// A host's notice (null: none) of the saved game being loaded (just before its file is read) or saved: the save folder, the file's
+    /// name, true for a load. The host's problem reports use it; the game does not.
+    /// </summary>
+    // Host feature, not part of the original: the game's behaviour is unchanged.
+    public Action<string, string, bool>? SaveUsed { get; set; }
+
 
     /// <summary>
     /// The mods this game runs with (docs/MODS.md); default none: the game's own cards only (Classic). Setting it registers
