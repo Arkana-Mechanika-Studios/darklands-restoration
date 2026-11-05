@@ -7,7 +7,7 @@ namespace Darklands.Simulation.Overland;
 // orig: R030+0x2DD6 (1462:2DD6) draft (bytes match; 16 of the file's 22 functions do); tests: OverlandTests
 public static class SeasonPalette
 {
-    /// <summary>A palette seen as the original's 768 bytes (red, green and blue of colour 0, 1, ... in 6-bit units).</summary>
+    /// <summary>The original's palette block DS:E48C as bytes: colour n is bytes 6 + 3n .. 8 + 3n (red, green, blue in 6-bit units).</summary>
     public interface IPaletteBytes
     {
         int this[int offset] { get; set; }
