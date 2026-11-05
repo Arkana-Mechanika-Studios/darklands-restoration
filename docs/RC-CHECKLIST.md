@@ -15,12 +15,13 @@ How to read an item:
 
 ## Expected differences (do not report these)
 
-Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (337
+Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (344
 entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMMARY.md](faithfulness/SUMMARY.md) (open items).
 
-* The six data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
+* The seven data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
   "The innkeeper has no room for more." with 63 stores or 128 entries), the save writer keeping empty party slots, a leaving
-  member's record, and the Dissolve Lock / Dissolve key using the right Eater-Water. The original may garble or crash there.
+  member's record, the Dissolve Lock / Dissolve key using the right Eater-Water, and no ghost party member after a won argument at the
+  Devil's Bridge. The original may garble or crash there.
 * Window, scale, fullscreen, pointer and key timing are the host's. Animation speed and exact frame phase can differ.
 * The battle clouds (potion gas): the depth order and clipping now follow the original (D-09fbc1 is closed); only the colour
   cycling phase and the puffs' random jitter frame by frame can differ, and a paused battle may show one more jitter frame
@@ -32,7 +33,7 @@ entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMM
   uses the same place or builds a new one (D-24e8b0).
 * The load screen lists saves in name order (DOS: directory order); the pointer stays visible on an empty list.
 * The party's random seed at character creation comes from the clock in both; do not compare dice there.
-* Sounds inside one battle tick can come in a slightly different order. Event music heard in DOSBox may not be recorded.
+* Sound is compared as the requests to the sound driver; how a request sounds can differ. Event music heard in DOSBox may not be recorded.
 * Alt-Q reading the key at a different moment (host timing).
 * F11 (developer console) and F12 (screenshot) exist only in the C# build; the original ignores them.
 * Quirks and registered original bugs are reproduced on purpose, e.g. horses do not shorten travel.
@@ -52,13 +53,15 @@ key in the original); what is different and which side shows what. If you cannot
   `darklands.settings.json`. Proven by: UNPROVEN.
 * [ ] **A2 First run, Linux and Steam Deck.** Do: untar the Linux build, start it (desktop mode; once as a non-Steam game).
   Compare: SDL2 found, the game folder found in Steam/Heroic/Wine, keyboard and mouse work, music plays. Proven by:
-  UNPROVEN (never tried by the user).
+  UNPROVEN (tried once on a desktop Linux; not yet on a Steam Deck).
 * [ ] **A3 Launcher rows.** Do: window size, fullscreen, sound card, Roland ROM folder with the sound test, Shift at start,
-  `--setup`, `--no-launcher`. Compare: each choice is kept in the settings file and takes effect at the next start. Proven by: UNPROVEN.
+  the SoundFont row, `--setup`, `--no-launcher`. Compare: each choice is kept in the settings file and takes effect at the next start. Proven by: UNPROVEN.
 * [ ] **A4 Start screen and opening.** Do: let the intro run once, then skip it with a key. Compare: pictures, music, the
   three start buttons (new, quickstart, load). Proven by: `scr1-load-1` (start screen to load screen), `pressburg-map`.
 * [ ] **A5 Saves folder.** Do: install under a read-only folder. Compare: the start-up line names the fallback
   `%APPDATA%\DarklandsRestoration\SAVES` and saving works. Proven by: UNPROVEN.
+* [ ] **A6 Another game program.** Do: point the launcher at a German or an older `DARKLAND.EXE`. Compare: the launcher
+  stays open and says why the game cannot start. Proven by: `ExeVersionTests`.
 
 ## B. Character creation and the party
 
@@ -228,6 +231,10 @@ key in the original); what is different and which side shows what. If you cannot
   picture or sound. Proven by: UNPROVEN.
 * [ ] **J5 Launcher rows.** Do: choose a pack with the arrows, by browsing, by dropping its folder. Compare: the row shows
   the name, marked (!) when unreadable. Proven by: UNPROVEN.
+* [ ] **J6 MIDI music and music per card.** Do: a pack with `.mid` pieces, once with a SoundFont and once without; a pack
+  or mod that gives a card its own music. Compare: the MIDI pieces play through the SoundFont (without one, the game's own
+  music); a card's own music starts with the card and stops at a battle; the ten cards listed in PACKS.md that silence the
+  music stay silent. Proven by: `MidiPackTests`, `CardMusicTests`.
 
 ## K. Mods ([MODS.md](MODS.md))
 
