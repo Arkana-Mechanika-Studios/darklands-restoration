@@ -100,7 +100,9 @@ public sealed class PartyPanel(GameAssets assets)
         }
         var member = party.Members[i];
         DrawShield(canvas, member, y, i);
-        var color = member.Status is CharacterStatus.Dead or CharacterStatus.Away ? Palette.Grey
+        // C: order mode (GameUi.PanelOrderMode) dims every row but the chosen member's, outside a battle too (a game loaded from a battle in order mode)
+        var dim = _ui?.CurrentOrderMode is { On: true } order && order.Member != i;
+        var color = dim || member.Status is CharacterStatus.Dead or CharacterStatus.Away ? Palette.Grey
             : party.LeaderIndex == i ? (byte)0x0E : Palette.White;
         _text.Draw(canvas, 4, y + 1, member.ShortName, color);
         // C: the window colour set for the name stays for everything member-gauge-bars draws after it: the "+" marks and the values are in the name's colour (yellow for the leader).

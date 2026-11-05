@@ -211,6 +211,7 @@ public sealed class BattleScreen : ITacticalView
         _hotKey = _ui.GameKey;
         _ui.GameKey = BattleHotKey;
         _ui.BattleStatusLetter = StatusLetter;
+        _ui.BattleOrderMode = () => _battle is { } live ? (live.InOrderMode, live.Selected) : _ui.PanelOrderMode;
         // the battle's menu bar (DS:9419 with the Orders and Attack menus) is the one the game's waits run while the battle lasts
         var menuBar = _ui.MenuBar;
         _ui.MenuBar = _menuBar;
@@ -403,6 +404,7 @@ public sealed class BattleScreen : ITacticalView
             _ui.GameKey = _hotKey;
             _ui.MenuBar = menuBar;
             _ui.BattleStatusLetter = null;
+            _ui.BattleOrderMode = null;
             // C: the next screen sets its own palette (the DAC then shows it); a game loaded from the battle's menu stops the cycles first
             //   (R037+0x8400..0x8426: root 047C:040B(1..4), DS:07D8 = 0)
             for (var slot = 1; slot <= 4; slot++)
@@ -490,6 +492,8 @@ public sealed class BattleScreen : ITacticalView
             {
                 _ui.PanelSelection[i] = tb.Battle[i].Selected;
             }
+            // C: DS:A6B3 / DS:A6B2 as the battle leaves them (GameUi.PanelOrderMode)
+            _ui.PanelOrderMode = (tb.InOrderMode, tb.Selected);
         }
     }
 
@@ -2699,6 +2703,11 @@ public sealed class BattleScreen : ITacticalView
     // C: after the tick's fight-draw, if DS:D6F1 == 1 the hot spots (DS:D848[0..DS:E0A1 - 1]) are searched for the member DS:D6ED; with
     // C: one: chosen-member = it, the member cursor's place (DS:E09F / DS:E09D, drawn here from the member), command-mode-begin and
     // C: DS:D6F1 = 0; without one D6F1 stays for the next tick (the member's status is not tested)
+    // DIVERGENCE: the member cursor of the member put in order mode here shows in the next frame drawn; the original queues it (R014+0x6818's
+    //   member-cursor entry, DS:E09F / DS:E09D) only at its next fight-draw, a fight-tick later (every 8 timer callbacks while paused), so for
+    //   up to 8 passes its screen has no cursor (vis10 session loadfix-order-cursor, DKSAVE99's mine ambush, key 1: command-mode-begin R014+0xBC0C at
+    //   pass 593, the next fight-draw R014+0x74A2 at pass 601; the frames at passes 596 / 599 without the box, 208 px, from 602 with it).
+    //   Host timing of the redraw (the whole view is drawn every frame here, see Draw), not followed.
     private void OpenPendingOrderMode()
     {
         var tb = _battle!;
@@ -3134,7 +3143,9 @@ public sealed class BattleScreen : ITacticalView
             {
                 DrawShortPortrait(canvas, i, tb.SlotCodes[i], 6, y1 + 8);
             }
-            var gone = c.Floor == BattleEnd.LeftThroughExit || c.Status is CharacterStatus.Dead or CharacterStatus.Away || (tb.Selected >= 0 && tb.Selected != i);
+            // C: root 0000:1716 dims a row for `command-mode == 1 && chosen-member != i` (DS:A6B3 / DS:A6B2): the member chosen by the held
+            //   button outside order mode dims nothing; order mode with nobody chosen (0xFF) dims every row
+            var gone = c.Floor == BattleEnd.LeftThroughExit || c.Status is CharacterStatus.Dead or CharacterStatus.Away || (tb.InOrderMode && tb.Selected != i);
             var color = gone ? Palette.Grey : tb.Battle.Leader == i ? (byte)0x0E : Palette.White;
             // orig: the panel's window DS:0156 (pointer DS:0168) has font slot 1 in a battle too (hooked at party-panel-row-set root 0000:1716 / member-gauge-bars root 0000:1A9C over the gate battle: font 1 at every call), so the name, the values, the place note and the order letter are in the map panel's font (PartyPanel); the window colour set for the name stays for the values
             // orig: the panel rows (root 0000:1716) draws the name at (4, y + 1) of the row's y = 1 + 0x28 * i (vis10 session tleads-battle-difficulty: the

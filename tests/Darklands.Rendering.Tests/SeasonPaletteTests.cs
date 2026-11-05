@@ -19,10 +19,16 @@ public sealed class SeasonPaletteTests
                 SeasonPalette.Apply(new OverlandScreen.CanvasPaletteBytes(canvas), month, day);
             }
         }
-        // winter writes colour 74 (offset 0xDE) as 6-bit 0x2E: 8-bit (0x2E << 2) | (0x2E >> 4) in the red byte
+        // winter writes the block's byte 0xDE (the red of colour 0x48: the block's colours start 6 bytes in) as 6-bit 0x2E: 8-bit
+        // (0x2E << 2) | (0x2E >> 4) in the red byte (vis10 session loadfix-winter-map: DKSAVE99's map, the original's DAC colour 0x48 = 2E 34 37)
         var winter = new Canvas(new Screen());
         SeasonPalette.Apply(new OverlandScreen.CanvasPaletteBytes(winter), 0, 10);
-        Assert.Equal(0x2Eu << 2 | 0x2Eu >> 4, winter.Screen.Palette[0xDE / 3] >> 16 & 0xFF);
+        Assert.Equal(0x2Eu << 2 | 0x2Eu >> 4, winter.Screen.Palette[0x48] >> 16 & 0xFF);
+        Assert.Equal(0x34u << 2 | 0x34u >> 4, winter.Screen.Palette[0x48] >> 8 & 0xFF);
+        Assert.Equal(0x37u << 2 | 0x37u >> 4, winter.Screen.Palette[0x48] & 0xFF);
+        // the snow of the fields (bytes 0xE7..0xE9) is colour 0x4B, the pixels' index of the fields on the map
+        Assert.Equal(0x37u << 2 | 0x37u >> 4, winter.Screen.Palette[0x4B] >> 16 & 0xFF);
+        Assert.Equal(0x3Cu << 2 | 0x3Cu >> 4, winter.Screen.Palette[0x4B] & 0xFF);
     }
 
     [Fact]

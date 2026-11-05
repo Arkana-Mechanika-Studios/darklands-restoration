@@ -24,3 +24,5 @@ U-cb31b9|uncert-cme-menus.steps|DKSAVE99.SAV|menu1=uncert-cme-menus-orders-menu
 U-797153|uncert-march-load.steps|DKSAVE99.SAV|loaded=uncert-march-load-map,after2=uncert-march-load-after
 U-797153-sel|uncert-march-load-selected.steps|DKSAVE99.SAV|loaded=uncert-march-load-selected-map,after2=uncert-march-load-selected-after
 U-00dcd4|uncert-cloud-pause.steps|Dksave21.sav|held14=uncert-cloud-pause-held
+loadfix-winter|loadfix-winter-map.steps|DKSAVE99.SAV|map1=loadfix-winter-map
+D-e4fbd6|loadfix-order-cursor.steps|DKSAVE99.SAV|sel=D-e4fbd6-member-cursor-after-key-1

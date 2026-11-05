@@ -232,6 +232,13 @@ public sealed class GameUi
     /// screen over the battle (the loot screen, a sheet) shows too; null outside a battle.</summary>
     public Func<int, char?>? BattleStatusLetter { get; set; }
 
+    /// <summary>While a battle runs: its order mode and chosen member as they stand (DS:A6B3 / DS:A6B2), for the party panel of a screen
+    /// over the battle; null outside a battle (then <see cref="PanelOrderMode"/>, as the last battle left them).</summary>
+    public Func<(bool On, int Member)>? BattleOrderMode { get; set; }
+
+    /// <summary>Order mode as the party panel reads it: the running battle's, else as the last battle left it.</summary>
+    public (bool On, int Member) CurrentOrderMode => BattleOrderMode?.Invoke() ?? PanelOrderMode;
+
     /// <summary>Plays a music cue unless music is off; then it silences instead.</summary>
     // orig: music-start = thunk 09C0:18F1 -> R043+0x09AE (1462:09AE) `if (music-setting) sound-start(x); else sound-start(1);` (sound-start(1) stops the music)
     public void PlayMusic(int tune)
@@ -770,6 +777,16 @@ public sealed class GameUi
     //   the marching order R022+0x051C; nothing writes them at a battle's start or end or at a load (vis10 sessions uncert-march-load and
     //   uncert-march-load-selected, every write to DS:9064..9068 logged from start-up; the map's panel after the load shows the frame lit)
     public bool[] PanelSelection { get; } = new bool[5];
+
+    /// <summary>
+    /// Order mode and the member in it as a battle left them: while order mode stands, the party panel draws the rows of the other
+    /// members dim (colour 7), outside a battle too. A game loaded from the battle's menu bar with a member in order mode leaves it on.
+    /// </summary>
+    // orig: command-mode DS:A6B3 (set by command-mode-begin R014+0xBC0C, cleared by command-mode-end R014+0xBCA8 and R016+0x13D4) and
+    //   chosen-member DS:A6B2 (0xFF at a battle's set-up), read by party-panel-row-set root 0000:1716 (`command-mode == 1 && chosen-member != i`
+    //   gives colour 7); a load writes neither (vis10 session uncert-march-load, every write to DS:A6B2..DS:A6B8 logged from start-up: after the
+    //   load A6B2 = 3, A6B3 = 1, and the map's panel shows rows 0..2 in colour 7)
+    public (bool On, int Member) PanelOrderMode { get; set; } = (false, -1);
 
     /// <summary>
     /// One pass of a loop that reads the keyboard itself (no menu bar, no hot keys): the screen is shown and a waiting key

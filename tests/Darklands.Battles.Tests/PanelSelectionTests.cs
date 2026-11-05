@@ -53,4 +53,46 @@ public sealed class PanelSelectionTests
         screen.Start(new BattleRequest(0x5E, 4545, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]));
         Assert.True(screen.Tactics!.Battle[2].Selected);
     }
+
+    /// <summary>
+    /// Order mode as a battle left it (DS:A6B3 = 1, chosen member DS:A6B2) draws the names of the other rows in colour 7 outside the battle too
+    /// (vis10 session uncert-march-load: after Alt-L from the mine ambush, member 3 chosen, the map's rows 0..2 dim).
+    /// </summary>
+    [Fact]
+    public void OrderModeLeftByABattleDimsTheOtherRows()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var state = Simulation.NewGame.Quickstart(WorldData.Load(files), 7);
+        Assert.True(state.Party.Members.Count >= 3);
+        var leader = state.Party.LeaderIndex;
+        var chosen = leader == 1 ? 2 : 1;
+        var other = Enumerable.Range(0, 3).First(i => i != leader && i != chosen);
+        var panel = new PartyPanel(ui);
+        byte[] NameLine(int row)
+        {
+            var pixels = Rows(ui);
+            return Enumerable.Range(row * PartyPanel.RowHeight + 2, 7)
+                .SelectMany(y => Enumerable.Range(4, 50).Select(x => pixels[y * 320 + x])).ToArray();
+        }
+        panel.Draw(ui.Canvas, state.Party);
+        Assert.Contains((byte)0x0F, NameLine(other));
+        var before = NameLine(chosen);
+        ui.PanelOrderMode = (true, chosen);
+        panel.Draw(ui.Canvas, state.Party);
+        Assert.DoesNotContain((byte)0x0F, NameLine(other));
+        Assert.Contains((byte)0x07, NameLine(other));
+        Assert.DoesNotContain((byte)0x0E, NameLine(leader));
+        Assert.Equal(before, NameLine(chosen));
+        // order mode with nobody chosen (0xFF) dims every row; off, nothing
+        ui.PanelOrderMode = (true, -1);
+        panel.Draw(ui.Canvas, state.Party);
+        Assert.DoesNotContain((byte)0x0F, NameLine(chosen));
+        ui.PanelOrderMode = (false, chosen);
+        panel.Draw(ui.Canvas, state.Party);
+        Assert.Contains((byte)0x0F, NameLine(other));
+    }
 }

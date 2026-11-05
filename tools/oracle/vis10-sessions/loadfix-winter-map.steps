@@ -1,0 +1,9 @@
+# vis10 loadfix: DKSAVE99 loaded, its map in winter (the normal path, before the mine): the season palette's colours (R030+0x2DD6) as the original's DAC shows them
+key:t
+wait:5
+key:l
+wait:300
+shot:map0
+click:190,108
+wait:12000
+shot:map1

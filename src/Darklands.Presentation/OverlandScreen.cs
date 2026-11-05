@@ -528,27 +528,33 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         _background = result.Background;
     }
 
-    /// <summary>The palette of the canvas as 6-bit bytes: colour n is bytes 3n (red), 3n + 1, 3n + 2.</summary>
+    /// <summary>The palette of the canvas as the original's palette block (DS:E48C): colour n is bytes 6 + 3n (red), 7 + 3n, 8 + 3n, in 6-bit units.</summary>
     // C: the game keeps the VGA DAC values (6 bits); the canvas holds 8-bit colours made from them as (v << 2) | (v >> 4), which v = c >> 2 undoes exactly.
+    // C: the block's colours start 6 bytes in: R030+0x2DD6's first winter store DS:E56A (block + 0xDE) is DAC colour 0x48 after palette-load(DS:E48C)
+    //   (vis10 sessions uncert-march-load and loadfix winter, hooked at R030+0x2DD6 and root 047C:058B: the block's byte 0xDE..0xE0 = 2E 34 37 shows
+    //   as DAC colour 0x48 on every winter map), as the figure colours DS:E753.. are colours 235.. (CharacterCreationScreen.FirstFigureColor)
     public sealed class CanvasPaletteBytes(Canvas canvas) : SeasonPalette.IPaletteBytes
     {
+        /// <summary>The bytes of the block before colour 0.</summary>
+        public const int ColoursAt = 6;
+
         public int this[int offset]
         {
             get
             {
-                var color = canvas.Screen.Palette[offset / 3];
+                var color = canvas.Screen.Palette[(offset - ColoursAt) / 3];
                 return ((int)(color >> ShiftOf(offset)) & 0xFF) >> 2;
             }
             set
             {
-                var index = offset / 3;
+                var index = (offset - ColoursAt) / 3;
                 var shift = ShiftOf(offset);
                 var eight = (uint)((value << 2) | (value >> 4)) & 0xFF;
                 canvas.Screen.Palette[index] = (canvas.Screen.Palette[index] & ~(0xFFu << shift)) | eight << shift;
             }
         }
 
-        private static int ShiftOf(int offset) => (offset % 3) switch { 0 => 16, 1 => 8, _ => 0 };
+        private static int ShiftOf(int offset) => ((offset - ColoursAt) % 3) switch { 0 => 16, 1 => 8, _ => 0 };
     }
 
     // orig: R030+0x2BB0 (1462:2BB0) draft (bytes match): waits for the left button to be released, reads record `message` (400 bytes) of darkland.msg, saves the area (100, 50, 180x115), fills it with colour 7 under a dark frame (colour 8), draws the text in colour 0 at (105, 55) in a column 170 wide, and waits for a key or either mouse button
