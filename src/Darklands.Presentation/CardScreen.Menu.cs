@@ -74,6 +74,7 @@ public sealed partial class CardScreen
         var current = main;
         PopupBox? box = null;
         var hintShownFor = NoHint;
+        var entered = false;
         var lastMouse = (ui.Mouse.X, ui.Mouse.Y);
         (int X, int Y)? warped = null;
 
@@ -112,6 +113,7 @@ public sealed partial class CardScreen
                     Unhighlight(current);
                 }
                 current.Highlight = i;
+                entered = true;
                 Highlight(current, i, true);
                 if (current.Lines[i].Kind is OptionKind.Items or OptionKind.Saints && box is null)
                 {
@@ -150,12 +152,15 @@ public sealed partial class CardScreen
 
         // orig: the Shift part of card-mouse-handler: show = (Shift held, BIOS flags 0040:0017 bits 0 and 1) && DS:ED6C == 1 && menu-line-highlight != -1; `if (show && menu-line-highlight != DS:5202)`: the panel is redrawn first when a hint was up (not at Expert), menu-owner-member = opt / 4, menu-choice-index = opt % 4, r = card-option-handler[opt]() (in the box the box's handlers: item-handler-table / saint-handler-table), DS:5202 = menu-line-highlight, R043+0x27E6(r.a, r.b); `if (DS:5202 != -10 && !show)` DS:5202 = -10 and the panel is redrawn (not at Expert)
         // C: menu-owner-member and menu-choice-index are set from the option number of a main line too (option / 4, option % 4): a Shift hint over line 5 leaves member 1, slot 1 behind.
-        void Hint(bool over)
+        void Hint(bool over, int mx)
         {
             var show = ui.ShiftHeld && over && current.Highlight != -1;
+            var wasEntered = entered;
+            entered = false;
             if (show && current.Highlight != hintShownFor)
             {
-                if (hintShownFor != NoHint)
+                var hintWasUp = hintShownFor != NoHint;
+                if (hintWasUp)
                 {
                     ClearHint();
                 }
@@ -166,6 +171,10 @@ public sealed partial class CardScreen
                 var r = InBox()
                     ? popupHint?.Invoke(main.Lines[main.Highlight].Option)
                     : hint?.Invoke(option);
+                if (r is { ChanceUnset: true } unset)
+                {
+                    r = unset with { Chance = LeftoverChance(hintWasUp, wasEntered, mx) };
+                }
                 ShowHint(r ?? OptionHint.Say(CardTexts.SuccessAssured));
             }
             if (hintShownFor != NoHint && !show)
@@ -224,7 +233,7 @@ public sealed partial class CardScreen
                 var (mx, my) = warped ?? mouse;
                 Track(mx, my);
                 var over = current.At(mx, my) >= 0;
-                Hint(over);
+                Hint(over, mx);
                 // orig: card-choice-menu R043 (150B) passes every key it does not use to card-hotkeys (F1..F6, Ctrl-F1..F5)
                 var action = ui.PollWithSheetKeys();
                 if (action is not { } a)
@@ -372,6 +381,30 @@ public sealed partial class CardScreen
         _optionWidth = box.Layout.Width;
     }
 
+    /// <summary>
+    /// The chance word a Shift hint gets from a handler that leaves it unset (r.a): what card-mouse-handler's own path left 10 bytes below
+    /// its SP before the call R043+0x26C4.
+    /// </summary>
+    // C: measured in the original (vis10 session uncert-polit-popup-hint, hooked at R043+0x26C4 / 0x27E6, the words below SP read):
+    //   - a hint was up for another line: party-panel-row-set root 0000:1716 ran just before (the panel put back); its [bp-2], the row mask,
+    //     ends at 0 (root 0000:1725 sets 0x1F and the loop shifts it out): 0;
+    //   - the pointer entered the line in this pass: pointer-show root 047C:1293 drew the pointer again, and its third argument is the
+    //     pointer's x minus the hot spot's (DS:6EEC - DS:6EF6; the card pointer's hot spot is (0, 0)): 0xFA for x = 250;
+    //   - Shift pressed over the line the pointer rests on: the far return of the mouse query root 047C:1320 (R043+0x2713) of the pass
+    //     before, i.e. R043's code segment in memory: 0x1D2E on the reference machine (DOSBox-X loads the program at 0823); any segment is
+    //     above 100, so the hint shows the same.
+    // DIVERGENCE: an interrupt taken while SP stands at the handler between that writer and the call puts its frame there (seen once: a timer
+    //   tick at R043+0x265B left 0x0017 from the tick handler's pushes); on a PC the keyboard and mouse interrupts can too. Host timing, not
+    //   followed here.
+    private static int LeftoverChance(bool hintWasUp, bool entered, int pointerX) =>
+        hintWasUp ? 0 : entered ? pointerX - PointerHotSpotX : CardCodeSegment;
+
+    /// <summary>The card pointer's hot spot x (DS:6EF6), 0 (read in the original at the hints).</summary>
+    private const int PointerHotSpotX = 0;
+
+    /// <summary>R043's code segment on the reference machine (link 150B + load 0823).</summary>
+    private const int CardCodeSegment = 0x1D2E;
+
     /// <summary>Opens the box of an item or saint line next to the line.</summary>
     // orig: card-mouse-handler: DS:EA64 = DS:EB5A (kind 1) or DS:EC50 (kind 2), then R043+0x2ACA(win, win2, R043+0x2CE2(win, menu-line-highlight, kind)), DS:EE41 = 1, R043+0x3292(1)
     // orig: R043+0x2ACA: font 1; hi = (wrapped-text-size(win, text-bank-buffer, w, 0, 0, font height, &DS:EA64, 1, 0, 0, 0) >> 16) + 6; y = the line's y, or 0xC1 - hi when y + hi passes 0xC1; x = the list's x + its width, or 0xF5 - w when x + w passes 0xF5; gfx-rect-recolour(card-text-window, x, y, w, hi, DS:EE59 or 0, 5), the rectangle saved (gfx-rect-save), recoloured back (5 -> DS:EE59 or 0); `if (DS:EE72 >= 0)` filled with 0xFF and outlined in colour 1; then text-paint-wrapped(win, text-bank-buffer, w - 3, x + 3, y + 3, font height, &DS:EA64, 1, 0, 0, 0, 0) in the card's text colour; DS:EE0D / DS:EE0F / DS:EE11 / DS:EE10 = x, y, w, hi
@@ -381,7 +414,10 @@ public sealed partial class CardScreen
     private PopupBox OpenBox(OptionLayout main, OptionArea line)
     {
         var c = context();
-        var text = OptionPopupText.Build(c, line.Kind == OptionKind.Saints, ui.Text, _pictureName.StartsWith('x'));
+        // C: R043+0x2CE2 measures the lines in the font of its window, the card window DS:016A (font 3; hooked in the original: the box of
+        //   card 0x37's potion line is 0x43 wide, the widest line in font 3 plus 6, vis10 session uncert-polit-popup-hint); 2ACA then sets
+        //   font 1 for the height and the drawing.
+        var text = OptionPopupText.Build(c, line.Kind == OptionKind.Saints, ui.CardWindowText, _pictureName.StartsWith('x'));
         // orig: the entries' states R043+0x2CE2 writes into the box layout DS:EA64 (+0x2E): what card-option-enabled becomes after a choice in the box
         text.States.CopyTo(c.MenuBoxStates, 0);
         var layout = new CardTextLayout(ui.Text);

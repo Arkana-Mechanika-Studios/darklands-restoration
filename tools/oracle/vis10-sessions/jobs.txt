@@ -17,3 +17,6 @@ V-prison|visleads-prison-battle.steps|DKSAVE0-card16b.sav|b45=visleads-prison-ba
 V-away24|visleads-away24-panel.steps|synth/DKSAVE0-away24.sav|b20=visleads-away24-panel
 U-4c93ee|U-4c93ee-potion-pick.steps|synth/DKSAVE0-card37.sav|inbox=U-4c93ee-potion-box,picked=U-4c93ee-potion-picked
 U-4c93ee-41|U-4c93ee-wildhunt-outrun.steps|synth/crashtool0-card41.sav|picked=U-4c93ee-wildhunt-outrun-picked
+U-aff1d9|uncert-graveyard-hint.steps|synth/DKSAVE0-card2a.sav|rest0=uncert-graveyard-hint-shift-on-line,enter1=uncert-graveyard-hint-line-entered
+U-938e63|uncert-polit-popup-hint.steps|synth/DKSAVE0-card37.sav|rest=uncert-polit-popup-hint-shift-on-line,back=uncert-polit-popup-hint-line-again
+U-08d88a|uncert-order-letter-none.steps|synth/DKSAVE0-hurt.sav|h1=uncert-order-letter-none-h,e1=uncert-order-letter-none-after-enter

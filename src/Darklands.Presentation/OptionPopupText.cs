@@ -32,7 +32,10 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
     /// <param name="darkPicture">The card picture's name starts with 'x' (white text): carried items are listed in colour 15, not 0.</param>
     // orig: R043+0x2CE2(win, unused, kind): kind 1 lists card-item-lines through carries-item (1 carried, 2 formula known), kind 2 card-saint-lines through member-flag-bit; for each member i < party-headcount: status 1 builds "\x81" + name + "\xff\n" (and counts the name's width); every slot j: status 0 or 5 -> "\x15\n"; a listed item/saint the member has, or any at Basic for the leader, or any while DS:5204 -> "\x15 " + colour + name ("\x87" grey and state 2 for the Basic leader who lacks it, "\x84" state 2 for a known formula unless at Expert, "\x80" / "\x8f" state 1 when carried or DS:5204, else "\x83" state 0) + " (count)" when carried + "\n"; otherwise "\x15\n"; a member with any line adds name + lines + "\x14", else only the lines; finally the last two bytes are cut off; returns the widest line + 6
     // C: the name is kept from the last member of status 1: a member of another status (2 unconscious, 3 dead) whose slots qualify gets the previous member's name above his lines; before any status-1 member it is uninitialised stack (DIVERGENCE: empty here).
-    // C: the widths are text-width-px of the raw strings, control and colour codes included (glyph-width: a colour code is 0 wide; the box's font 0 starts at code 0, so 0x15 and 0x14 count with their glyph widths, see TextPainter.Advance); the name's width is counted for every status-1 member, listed or not.
+    // C: the widths are text-width-px of the raw strings, control and colour codes included, in the font of the window passed: the card
+    //   window DS:016A, font slot 3 (FONTS.FNT font 2, codes 31..127: a colour code, 0x15, 0x14 and the newline are 0 wide; glyph-width
+    //   drv+0x11A9); hooked in the original (vis10 session uncert-polit-popup-hint): window 016A with font 3 at R043+0x2CE2, the box 0x43
+    //   wide for "Stone-tar (1)". The name's width is counted for every status-1 member, listed or not.
     // C: the count is number-with-separators(item-tally(i, item)); rn is the carries-item answer until then.
     public static OptionPopupText Build(CardContext c, bool saints, TextPainter painter, bool darkPicture)
     {

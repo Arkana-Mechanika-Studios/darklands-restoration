@@ -621,6 +621,8 @@ public sealed partial class TacticalBattle
     // UNCERTAIN: the menu bar's sub-menu building (root 0000:0984 and the battle's lists) writes these bytes too (a sub-menu item's text);
     //   the rewrite starts it at 0 and keeps only what command-mode-end writes. The branches below agree for any value other than 0x80,
     //   0x100, one with bit 1 set or one with all of 0x1BE (the value seen in the battle states, 0x1A6D, takes the same branches as 0).
+    //   Unknown: which sub-menu last wrote DS:9BE5 when Enter travelling individually ends order mode with nobody selected; a live
+    //   battle session that opens each battle menu before that Enter, with DS:9BE5 read at R014+0xBCA8, would settle it.
     private int _actionBeforeRecords;
 
     /// <summary>command-mode-end with DS:A6B2 = 0xFF: the order given to "member -1" where it lands on data the rewrite keeps, then its end.</summary>
@@ -654,6 +656,8 @@ public sealed partial class TacticalBattle
             GiveToRecordBeforeCombatants(spot);
         }
         _orderMode = false;
+        // orig: R014+0xC01A: party-panel-frame-set(DS:A6B2 = 0xFF), then the rows (hooked in the original, vis10 session uncert-order-letter-none)
+        _view.FramesOfNobodyDrawn();
         _view.RowChanged(-1);
         OrderAction = -1;
         Cursor = OrderCursor.None;

@@ -1,0 +1,27 @@
+# vis10 uncert (U-aff1d9, U-224116): $Villa08 (card 0x2A, synth DKSAVE0-card2a): Shift pressed over line 0, then lines entered with Shift held; the hint handlers leave r.a / r.b unset (stack words of card-mouse-handler R043+0x26C4: read with R043+0x27E6 hooked: (1D2E, 002E), (0000, FD88), ...); the original draws the member-row background far from the side window, the C# "Success is assured." for the party
+key:t
+wait:5
+key:l
+wait:300
+key:space
+wait:100
+option:0
+wait:30
+shot:menu
+shift:on
+move:76,78
+wait:30
+shot:rest0
+move:120,78
+wait:30
+shot:rest0b
+option:1
+wait:30
+shot:enter1
+option:0
+wait:30
+shot:enter0
+shift:off
+move:200,100
+wait:30
+shot:after

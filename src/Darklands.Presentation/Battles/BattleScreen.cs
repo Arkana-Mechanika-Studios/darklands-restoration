@@ -567,6 +567,8 @@ public sealed class BattleScreen : ITacticalView
         // C: R002+0x0000 sets DS:C1F0 to the battlefield and DS:D6CE to the seed (the battle file keeps them).
         Array.Clear(_placeNotes);
         Array.Clear(_orderLetters);
+        _orderCellRows = 0;
+        _pageCellHoldsRows = false;
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
@@ -633,6 +635,8 @@ public sealed class BattleScreen : ITacticalView
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
         Array.Clear(_placeNotes);
         Array.Clear(_orderLetters);
+        _orderCellRows = 0;
+        _pageCellHoldsRows = false;
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
@@ -1009,6 +1013,20 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The order letter R016+0x15BE drew in a party row, still on the screen (null: none; '\0': the patch without a letter).</summary>
     public char? OrderLetterShown(int row) => _orderLetters[row];
 
+    /// <summary>R016+0x15BE ran with nobody selected: the rows of its cell (the patch, no letter) still on the screen from y = 0 (7, then 1).</summary>
+    private int _orderCellRows;
+
+    /// <summary>The rows of the cell R016+0x15BE drew with nobody selected still on the screen at (6..15, 0..): 7, 1 once the first row was drawn again, or 0.</summary>
+    public int OrderCellRowsShown => _orderCellRows;
+
+    /// <summary>The panel page's (6..15, 1..6), which the cell copies to the screen, holds the first row as drawn (not the patch's pixels any more).</summary>
+    private bool _pageCellHoldsRows;
+
+    // C: after party-panel-frame-set(-1) (FramesOfNobodyDrawn) the cell R016+0x15BE copies from the panel page (DS:0168, page 1) to the screen
+    //   brings the first row's own pixels at y 1..6 and the patch's top line at y 0 (vis10 session uncert-order-letter-none, the screen read
+    //   before and after R016+0x15BE: after Enter, Enter, H only y = 0 is the patch's).
+    public void FramesOfNobodyDrawn() => _pageCellHoldsRows = true;
+
     // orig: R016+0x15BE (1EF8:15BE) draft (checked against the asm)
     // C: the end of every order choice (TacticalBattle.ChooseOrder, ChoosePlace, ChooseThrow): the letter of DS:A6B0 into DS:9085 (1: 'F' when the flee bit 0x1000 of the member's flags is set, else 'W'; 6 'B', 0x0A 'V', 0x12 'A',
     //   0x22 'P', 0x40 'R', 0x80 'M', 0x100 'T'; 0x400: the place action DS:A6D1 through the table at R016+0x1664: 1, 2 'U', 3, 6 'P', 4, 7 'D',
@@ -1018,10 +1036,18 @@ public sealed class BattleScreen : ITacticalView
     //   each order key's letter white in the row, the same letter after a key that chose nothing; after Enter the rows' own letter)
     // DIVERGENCE: any other order or place action (in the game: place action 9, Loot Bodies, R016+0x13CA) leaves DS:9085 as its last writer
     //   left it, a text buffer shared by many screens, and draws its first byte; here the patch only.
-    // UNCERTAIN: with nobody selected (DS:A6B2 = 0xFF: H with Halt on outside order mode, reachable in normal play, see ChoosePlace) the original draws the patch and the 'H' on the page DS:0168 and copies the cell to the screen at y = -9;
-    //   whether the driver clips it or wraps it to the bottom rows of the 320-wide frame buffer was not checked; nothing is drawn here.
+    // C: with nobody selected (DS:A6B2 = 0xFF: H with Halt on outside order mode, reachable in normal play, see ChoosePlace) the cell's y is
+    //   0x28 x -1 + 0x1F = -9: the driver does not wrap it but puts the patch and the copied 10 x 7 cell at y = 0, and the 'H' does not show:
+    //   the row background's pixels (3..12, 0x1E..0x24) stand at (6..15, 0..6), over the top of the first row (vis10 run of
+    //   uncert-order-letter-none: 70 pixels at (6..15, 0..6) after each H, the letter absent); drawing the first row again (from y = 1)
+    //   leaves its top line (y = 0) there (seen after Enter, Enter and a later H); the battle's start clears it here.
     public void OrderLetterDrawn()
     {
+        if (_battle is { Selected: -1 })
+        {
+            _orderCellRows = _pageCellHoldsRows ? Math.Max(_orderCellRows, 1) : PartyPanel.LetterPatchHeight;
+            return;
+        }
         if (_battle is not { } tb || tb.Selected is < 0 or >= Combatant.PartySlots)
         {
             return;
@@ -1100,6 +1126,11 @@ public sealed class BattleScreen : ITacticalView
             ? _assets.Executable.String(System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(_assets.Executable.DataSegment(pointer, 2)))
             : null;
         _orderLetters[i] = null;
+        if (i == 0 && _orderCellRows > 1)
+        {
+            // C: the row is drawn from y = 1: the cell's top line stays (vis10 run uncert-order-letter-none, after Enter)
+            _orderCellRows = 1;
+        }
         PanelTrace?.Invoke($"row {i} clock {tb.Battle.Clock} {_placeNotes[i] ?? "bars"}");
     }
 
@@ -3128,6 +3159,12 @@ public sealed class BattleScreen : ITacticalView
                     _panel.Draw(canvas, 6, y + 0x1F, chosen.ToString(), 0xFF);
                 }
             }
+        }
+        if (_orderCellRows > 0)
+        {
+            // C: the cell of nobody's order letter (OrderLetterDrawn): the patch's pixels, the row background's (3..12, 0x1E..0x24), at (6..15, 0..6)
+            SpriteDrawing.Draw(canvas, common.RowBackground, 3, 1 - 0x1F,
+                new Clip(6, 0, 6 + PartyPanel.LetterPatchWidth, _orderCellRows));
         }
     }
 

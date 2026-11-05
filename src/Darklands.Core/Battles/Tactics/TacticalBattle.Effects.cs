@@ -929,7 +929,11 @@ public sealed class EffectField : IEffectClouds
     /// </summary>
     // orig: rand (root 06A1:29B6, MSC run-time) as found by running hit-roll R014+0xA738 from the original bytes
     // (tools/oracle run_unit with a frame trace at 1EC9:0242)
-    // UNCERTAIN: a timer interrupt between the draw and the call writes its own frame there (rare: a few hundred instructions).
+    // C: the four words are below the caller's SP from rand()'s return to cloud-on-line-test's own writes; the only other writer in that
+    //   stretch (a few hundred instructions) is the timer interrupt (root 047C:01EA), whose FLAGS / CS / IP and handler frame land there
+    //   when a tick falls inside it.
+    // DIVERGENCE: a tick in that stretch is the phase of the PC's timer against the code, not a state the game keeps; the rewrite always
+    //   takes the words rand() left.
     public (int X0, int Y0, int X1, int Y1) StackResidue()
     {
         var before = Battle.Random is Randomness.MscRandom m ? m.PreviousState() : 0u;
