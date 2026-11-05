@@ -14,6 +14,14 @@ public static class DepthOrder
     /// </summary>
     // orig: R014+0x97A6 (14F7:2F96) checked against the asm: entry 0 is the sentinel (given the entry's keys); the walk back stops at
     // C: prev.top <= cur.bottom && (prev.bottom < cur.top || prev.x <= cur.x) (R014+0x9801..0x9819)
+    // DIVERGENCE: the walk back has no lower bound in the original: the sentinel (entry 0 given cur's keys) stops it only when cur's top is
+    //   not below its bottom. An entry with top > bottom walks past entry 0 through the words below the list (20A5:3474.., the floor-object
+    //   table, then the member colours 20A5:33FC.. and the door states), each shifted up by one word and read as an entry pointer, until a
+    //   word happens to pass the test: the member colours keep that shift after the battle and a save stores it (the players' "neon hair":
+    //   the colours of real saves are the stock ones moved 2 bytes up, 00 00 first; MicroProse's README says a battle character's colours
+    //   change in battle). Here the walk stops at entry 0 (j > 0: the same order whenever cur's top <= bottom). No inverted entry was found:
+    //   0 in about 6,500 watched sorts of the 37 oracle fights, 0 of 2,575,015 furniture cells of 20,700 built battlefields; bodies, missiles,
+    //   cursors and walls have fixed or ordered rows. The trigger is unknown, so what the walk reads is the memory below the list.
     public static void Sort<T>(IList<T> list, Func<T, DepthKey> key)
     {
         for (var k = 1; k < list.Count; k++)

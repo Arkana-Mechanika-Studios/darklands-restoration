@@ -61,6 +61,10 @@ public sealed class SpiderWarehousePoster : Card
             // orig: R134+0x0256 / R134+0x025E matched
             new MenuLine(_ => c.Next = c.State.SavedCard, assured, popup),
             // orig: R134+0x0296 / R134+0x02E8 matched
+            // BUG: text 5 has the man say "I am $NamedOneName." and the locals' answer (text 3) names him as $NamedOneName too, but nothing on
+            //   the way to this card sets that slot: it prints the name the last card or the creation's made-up name left there, and in a program
+            //   that has made none "I am ." (the original's own text expansion in the card oracle, card 0x168);
+            //   kept, the slot is program-wide here as there (DarklandsGame's card variables)
             // C: declared int, falls off its end without a value (ignored).
             new MenuLine(_ =>
             {

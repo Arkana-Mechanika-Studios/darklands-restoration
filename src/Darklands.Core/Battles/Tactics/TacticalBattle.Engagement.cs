@@ -225,6 +225,12 @@ public sealed partial class TacticalBattle
         {
             c.Destination = Battle[c.Target].Position;
         }
+        // BUG: the step queued above from the old route (DS:CA30) is kept through the re-path: fighter-step takes it first, from the new
+        //   route's index 0, so a walker that re-plans makes one step of its old route and then goes on from the new route's second byte
+        //   (when that step succeeds); and a walker blocked by somebody re-plans only when RepathAt comes (30..120 ticks after its last good
+        //   step). Seen in the original (battle oracle fights city24, street, wild40, castle7c with route-hand-over R014+0x5D64 and
+        //   fighter-step hooked: 8 of 27 re-paths took the old byte at index 0, 5 of them a byte other than the new route's first), the
+        //   fights agree tick for tick with this code. Kept (not data-damaging).
         if (FindPath(i))
         {
             GivePath(i);

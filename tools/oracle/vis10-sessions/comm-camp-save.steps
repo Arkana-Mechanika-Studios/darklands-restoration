@@ -1,0 +1,15 @@
+# vis10 comm (community list, the inn saving): DKSAVE99 (four members) on the map, camp (C): the same stay R036+0x0082; a click on the party panel's empty fifth row ends it without the clean-up R036+0x082C: back on the map Alt-S does nothing (no comment dialog)
+key:t
+wait:5
+key:l
+wait:300
+wait:200
+key:c
+wait:200
+shot:camp
+click:20,180
+wait:200
+shot:left
+key:alts
+wait:100
+shot:alts1
