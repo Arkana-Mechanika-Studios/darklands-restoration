@@ -48,5 +48,5 @@ public sealed record Confirm : CardIntent;
 /// <summary>Up (-1) or Down (+1): the highlight to the line before or after, wrapping.</summary>
 public sealed record MoveHighlight(int Step) : CardIntent;
 
-/// <summary>A digit 1..9 (as 0..8): the main list's line of that number (an interface convenience, not the original's).</summary>
+/// <summary>A digit 1..9 (as 0..8): the line of that number, chosen by a ChooseLine command (an interface convenience, not the original's).</summary>
 public sealed record ChooseByNumber(int Index) : CardIntent;

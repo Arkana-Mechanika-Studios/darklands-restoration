@@ -347,6 +347,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     /// <summary>The fade's step count: e * DS:5734 / 10 with e = 3 and DS:5734 the palette uploads that fit in 10 BIOS ticks.</summary>
     // C: every upload waits for the vertical retrace (drv+0x01B6), so DS:5734 is about 38 at 70 Hz (10 ticks = 549 ms) and the fade has
     //   3 * 38 / 10 = 11 steps of two uploads each (about 0.3 s).
+    // C: the lockstep tester's emulator measures 14 (4 steps: the vis10 night-gate picture's colours 160/167/234/238 one step off, all 96 colours
+    //   0xA0..0xFF recomputed from the DAC agree with 4 steps there and 11 here); matching it would tie the fade to the tester's
+    //   emulated retrace speed, which no player's machine has, so the divergence below stays (re-checked 2026-11-05).
     // DIVERGENCE: the original measures DS:5734 once per run (R043+0x3A1C) on the machine; a fixed 38 is used here.
     private const int FadeSteps = 3 * 38 / 10;
 

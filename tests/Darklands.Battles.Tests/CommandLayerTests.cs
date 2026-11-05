@@ -193,6 +193,58 @@ public sealed class CommandLayerTests
         Assert.False(host.QuitRequested);
     }
 
+    /// <summary>
+    /// The keyboard convenience (GameUi.KeyboardCardMenus) is made of player commands: a digit chooses its line as the player's click on
+    /// it does (the same option and menu state), and Down with the pointer off the lines puts the pointer onto the first line, which the
+    /// menu then lights from the pointer, so Enter takes it.
+    /// </summary>
+    [Fact]
+    public void TheKeyboardConvenienceChoosesAsTheMouseDoes()
+    {
+        var off = new MouseState(5, 5, MouseButtons.None);
+        GameUi? ui = null;
+        bool InMenu() => ui?.CommandTargets is not null;
+        (int, MouseState) Line(int n, MouseButtons buttons) =>
+            CardScreen.OptionPoint(n) is var (x, y) ? (0, new MouseState(x, y, buttons)) : (0, off);
+        var player = new ScriptHost(
+            () => (0, off), () => (Keys.Enter, off),
+            () => InMenu() ? Line(1, MouseButtons.None) : null, () => Line(1, MouseButtons.Left), () => Line(1, MouseButtons.None));
+        var byPlayer = Choose(player, u => ui = u);
+
+        ui = null;
+        var digit = new ScriptHost(() => (0, off), () => (Keys.Enter, off), () => InMenu() ? (Keys.ForCharacter('2'), off) : null);
+        var byDigit = Choose(digit, u => { ui = u; u.KeyboardCardMenus = true; });
+
+        ui = null;
+        ScriptHost? down = null;
+        MouseState Here() => down!.Mouse with { Buttons = MouseButtons.None };
+        (int X, int Y)? first = null;
+        down = new ScriptHost(
+            () => (0, off), () => (Keys.Enter, off),
+            () =>
+            {
+                if (!InMenu())
+                {
+                    return null;
+                }
+                first = CardScreen.OptionPoint(0);
+                return (Keys.Down, off);
+            },
+            () => (0, Here()), () => (Keys.Enter, Here()));
+        var byDown = Choose(down, u => { ui = u; u.KeyboardCardMenus = true; });
+        if (byPlayer is null || byDigit is null || byDown is null)
+        {
+            return;
+        }
+        Assert.Equal(1, byPlayer.Value.Option);
+        Assert.Equal(byPlayer, byDigit);
+        Assert.Equal(0, byDown.Value.Option);
+        // the pointer stands where the original's cursor keys put it: the column's x + 1, the line's y + 2
+        Assert.Equal((first!.Value.X, first.Value.Y + 1), (down.Mouse.X, down.Mouse.Y));
+        Assert.False(digit.QuitRequested);
+        Assert.False(down.QuitRequested);
+    }
+
     private static (int Option, int Member, int Slot, bool Popup)? Choose(ScriptHost host, Action<GameUi> made)
     {
         if (GameFolder.Files is not { } files)

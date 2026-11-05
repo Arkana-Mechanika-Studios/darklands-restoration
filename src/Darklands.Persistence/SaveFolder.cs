@@ -60,6 +60,27 @@ public sealed class SaveFolder(string path)
         return new SaveSummary(fileName, Text(h, 0, 0x15), Text(h, 0x15, 0x4F), Word(h, 0x68), Word(h, 0x6A), Word(h, 0x6C), Word(h, 0x6E));
     }
 
+    /// <summary>
+    /// Whether the saved game belongs to a modded game: its companion file is there and is its own (<see cref="ModdedSaves.IsCompanionOf"/>).
+    /// False for a plain saved game, and for a companion file left from an earlier save of that name.
+    /// </summary>
+    // New code (no original): the load screen's mod mark (LoadGameScreen, only in the presets that draw clean).
+    public bool IsModded(string fileName)
+    {
+        if (Find(ModdedSaves.CompanionOf(fileName)) is not { } companion || Find(fileName) is not { } sav)
+        {
+            return false;
+        }
+        try
+        {
+            return ModdedSaves.IsCompanionOf(File.ReadAllText(companion), File.ReadAllBytes(sav));
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+    }
+
     /// <summary>The name the next save takes: dksaveN.sav for the first N without a file.</summary>
     // orig: `do { strcpy(pathh, "saves\\dksave"); itoa(kh++, numk, 10); strcat(pathh, numk); strcat(pathh, ".sav"); } while (!_dos_findfirst(pathh, 0, &ffc));`
     // C: the name kept in DS:A680 is lower case ("dksave3.sav"); DOS stores it upper case.

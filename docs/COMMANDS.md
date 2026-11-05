@@ -27,6 +27,13 @@ door (no direct call of a menu's choice, no state written by the caller).
 `ChooseLine` on a card's item or saint line opens the box and chooses nothing, as the player's click does; the box's entry is the
 next `ChooseLine`. While a box is up, `ChooseLine` names the box's lines.
 
+The keyboard convenience of the card menus (`GameUi.KeyboardCardMenus`, off unless a host turns it on) is built on these commands,
+so it is player-equivalent: the key itself is dropped, as the original's menu drops it, and stands for commands carried out in the
+next passes. A digit 1..9 is `ChooseLine(digit - 1)` (on an item or saint line it opens the box; the next digit names the box's
+line). Up / Down with the pointer off the lines is `PointAt` the line they name (from no highlight Down the first line, Up the last),
+which the menu then lights from the pointer; with the pointer over a line they are the original's keys. On a host that cannot move
+the pointer those Up / Down do nothing (the digits still choose: the click is at the line).
+
 ## Screens on the layer (1.0)
 
 | Screen | Intents | Notes |
@@ -41,9 +48,6 @@ its actions without named intents. Loops that read the keyboard or the button th
 
 ## Known gaps
 
-- The keyboard convenience of the card menus (`GameUi.KeyboardCardMenus`, off unless a host turns it on): Up / Down from no
-  highlight and the digits 1..9 choose without the pointer, and a digit on an item or saint line chooses the line without an entry
-  of its box. It predates the layer and is not player-equivalent; when it is rebuilt on `ChooseLine` it will be.
 - A commanded click is a press and its release in one pass: the host's buttons never show it. Loops that test the held button
   themselves (`WaitForButtonRelease` returns at once, the battle screen, the button held on the map) do not see it; such a click
   is lost, no impossible action is made. During a commanded pass the host's buttons are not sampled: a hand pressing at the same

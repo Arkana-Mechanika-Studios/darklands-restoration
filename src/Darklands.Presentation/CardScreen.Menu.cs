@@ -54,7 +54,7 @@ public sealed partial class CardScreen
     // orig: card-choice-menu: fight-clock = 0, key-buffer-clear, DS:EE41 = DS:EE42 = 0, popup-menu-box = DS:8DDE = 0, menu-line-highlight = -1; then per pass: menu-bar-loop (GameUi), the party-icons-stale redraw (not needed), a left press on a portrait -> 13a0, card-mouse-handler (hover, box, hint, click), and a waiting key: Enter / Space with a highlighted line choose it (in the box: menu-owner-member = opt / 4, menu-choice-index = opt % 4, the line is the main line the box belongs to, DS:A7BA[DS:A779]), Alt-Q quits (HotKeys), card-hotkeys (HotKeys), Up / Down while the pointer is over a line move the highlight (wrapping) and the pointer onto it
     // C: a choice by Enter in the box sets menu-owner-member and menu-choice-index but not popup-menu-box: the card rates the line with card-option-handler[k], which is then the box's table (DS:E96E holds the box's layout; CardMenu.Run).
     // C: Up from no highlight cannot happen in the original (the cursor keys need the pointer over a line, which card-mouse-handler has just highlighted).
-    // DIVERGENCE: on a host that cannot move the pointer (MovePointer does nothing there), the pointer stays off the line Up / Down select; the menu acts as if it were on it until the mouse moves. With GameUi.KeyboardCardMenus (an interface convenience, off unless a host turns it on): Up / Down also work while the pointer is off the lines (from no highlight: the first or last line), and the digits 1..9 choose the main list's lines in order.
+    // DIVERGENCE: on a host that cannot move the pointer (MovePointer does nothing there), the pointer stays off the line Up / Down select; the menu acts as if it were on it until the mouse moves. GameUi.KeyboardCardMenus (an interface convenience, off unless a host turns it on) adds nothing a hand could not do: off the lines Up / Down put the pointer onto the line they name (from no highlight: the last or first line) and the digits 1..9 choose the line of that number by a ChooseLine command, the box's while one is up (docs/COMMANDS.md); on a host that cannot move the pointer those Up / Down do nothing.
     // DORMANT: the battle option kind (-1, marker 0x06): highlighting it calls R043+0x29CE, which does nothing (its message "Enemy stats will be displayed here" is never shown); leaving it redraws the panel, as here.
     private int Select(List<OptionArea> areas, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Func<List<OptionArea>>? relaid = null)
     {
@@ -289,7 +289,19 @@ public sealed partial class CardScreen
                     }
                     // orig: R043+0x1CE5 (Up, 0x4800) and R043+0x1D46 (Down, 0x5000): only with DS:ED6C == 1, which card-mouse-handler R043+0x21D4 sets when the
                     // pointer is inside a line of the list shown (R043+0x2232); else the key is dropped (R043+0x1DEB)
-                    case MoveHighlight move when over || ui.KeyboardCardMenus:
+                    // The keyboard convenience (GameUi.KeyboardCardMenus), off the lines: the key is dropped there as in the original, and the
+                    //   pointer is put onto the line the key names (a PointAt command, carried out in the next pass): the menu then lights it
+                    //   from the pointer, as for a player's hand (docs/COMMANDS.md).
+                    case MoveHighlight move when !over && ui.KeyboardCardMenus:
+                    {
+                        var n = current.Lines.Count;
+                        var from = current.Highlight;
+                        var to = move.Step > 0 ? (from + 1) % n : from <= 0 ? n - 1 : from - 1;
+                        var line = current.Lines[to];
+                        ui.Commands.PutFirst(new PointAt(current.X + 1, line.Y + 2));
+                        continue;
+                    }
+                    case MoveHighlight move when over:
                     {
                         var n = current.Lines.Count;
                         var from = current.Highlight;
@@ -311,9 +323,12 @@ public sealed partial class CardScreen
                         continue;
                     }
                     // orig: R043+0x1C77..0x1D46 compare the key with 0x1C0D, 0x3920, 0x1000, 0x4800 and 0x5000 only (R043+0x33C6 takes the F keys):
-                    // a digit is dropped there; the convenience below is not the original's
-                    case ChooseByNumber number when !InBox() && number.Index < main.Lines.Count:
-                        return main.Lines[number.Index].Option;
+                    // a digit is dropped there; the convenience below (GameUi.KeyboardCardMenus) drops it too and chooses the line as the mouse
+                    //   does: a ChooseLine command (the pointer onto the line in the next pass, a click there in the one after). On an item or
+                    //   saint line that opens the box and chooses nothing; while a box is up the digits name the box's lines.
+                    case ChooseByNumber number:
+                        ui.Commands.PutFirst(new ChooseLine(number.Index));
+                        continue;
                 }
             }
         }

@@ -18,12 +18,14 @@ namespace Darklands.Presentation;
 public static class OpeningTiming
 {
     /// <summary>Per file: ticks from the last cel of the previous file to its tune (the first: 0), and from the tune to its first cel.</summary>
-    // UNCERTAIN: one tick after the last cel of OPENING2 (the capture's tick after it came in the same frame, before the tune). Unknown:
-    //   whether that tick came before or after the tune's start inside the frame (0 or 1 here). The order is the host's timing (the reader's
-    //   time against the 60 Hz timer in DOSBox-X at 3000 cycles/ms), so the emulated oracle (its own timer) cannot stand for it, and the
-    //   capture's JSON (the tunes' trampoline times beside the MPU bytes) is not kept, only summaries of it (outside the repository).
-    //   A new shared-clock capture that logs the timer's tick count at the tune's start (R043+0x09AE)
-    //   and at the last cel would settle it.
+    // DIVERGENCE: host timing: whether the tick after a file's last cel comes before its next tune (1 here) or after it (0) is the
+    //   original's CPU time against the timer, so it varies with the machine; the values are the measured capture's (OPENING3 1, the others 0).
+    //   After the last cel (root 030B:0565) the player's wait root 030B:00FE..0x012C runs until the reader has caught up, returns, and
+    //   root 03A1 starts the next tune (thunk 09C0:18F1); the next 60 Hz tick (root 030B:0508) lands in that same stretch. A second
+    //   shared-clock capture (DOSBox-X at fixed 3000 cycles/ms, exec traces at those coordinates and the timer interrupt, one emulated
+    //   clock; 2026-11-05; two runs alike) had the tick first at each of the five boundaries it reached (OPENING2..OPENING7), 0.30 to
+    //   0.39 ms before the tune's start (2% of a tick), where the first capture had the tune first at five of six; its cels lie up to
+    //   57 ms off the first capture's. The order follows the CPU's speed against the timer, not the program.
     public static readonly IReadOnlyList<(int TuneAfterLastCel, int FirstCelAfterTune)> Files =
     [
         (0, 32), (1, 43), (0, 42), (0, 43), (0, 40), (0, 40), (0, 33),

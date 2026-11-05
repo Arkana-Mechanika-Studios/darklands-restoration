@@ -28,6 +28,10 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     private const byte LineShadow = 0x11;
     private const byte LineHighlight = 0x12;
 
+    /// <summary>The mod mark of a modded game's row (CleanDrawing only) and its x: inside the highlight (0xC4..0x13E), at its right end.</summary>
+    private const string ModMark = "*";
+    private const int ModMarkX = 0x138;
+
     // The screen's globals: DS:8C4C saves, DS:8C52 first shown, DS:8C50 cursor row, DS:8C54 rows shown, R136+0x1145E the rows' file names.
     private int _count;
     private int _first;
@@ -186,10 +190,20 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             var s = folder.Summary(name);
             var line = $"{s.Place} {s.Year}/{s.Month + 1}/{s.Day}  {s.Hour}";
             var y = _shown << 4;
-            ui.Text.Draw(ui.Canvas, 0xC6, y + 7, line, LineShadow);
+            // DIVERGENCE: no original: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) a saved game of a modded game
+            //   (its own companion file, SaveFolder.IsModded) carries the mod mark at the right end of its first line, which stops short of it.
+            //   Classic draws the list as the original.
+            var modded = ui.Options.CleanDrawing && folder.IsModded(name);
+            var right = modded ? ModMarkX - 3 : int.MaxValue;
+            ui.Text.Draw(ui.Canvas, 0xC6, y + 7, line, LineShadow, modded ? right + 1 : right);
             ui.Text.Draw(ui.Canvas, 0xC6, y + 0xF, s.Comment, LineShadow);
-            ui.Text.Draw(ui.Canvas, 0xC5, y + 6, line, LineColor);
+            ui.Text.Draw(ui.Canvas, 0xC5, y + 6, line, LineColor, right);
             ui.Text.Draw(ui.Canvas, 0xC5, y + 0xE, s.Comment, LineColor);
+            if (modded)
+            {
+                ui.Text.Draw(ui.Canvas, ModMarkX + 1, y + 7, ModMark, LineShadow);
+                ui.Text.Draw(ui.Canvas, ModMarkX, y + 6, ModMark, LineColor);
+            }
         }
         if (_count <= _cursor)
         {

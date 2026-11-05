@@ -176,6 +176,27 @@ public static class ModdedSaves
         }
     }
 
+    /// <summary>
+    /// Whether <paramref name="json"/> is a companion file this program would use for <paramref name="sav"/>: readable, of a format it
+    /// knows, carrying that very .SAV's SHA-256, and naming a mod. What the load screen marks (in the presets that draw clean). Never throws.
+    /// </summary>
+    public static bool IsCompanionOf(string json, byte[] sav)
+    {
+        try
+        {
+            if (JsonNode.Parse(json) is not JsonObject file || file["format"]?.GetValueKind() != JsonValueKind.Number || (int)file["format"]! > Format)
+            {
+                return false;
+            }
+            return string.Equals((string?)file["sha256"], Convert.ToHexString(SHA256.HashData(sav)), StringComparison.OrdinalIgnoreCase)
+                && Marks(file["mods"]).Concat(Marks(file["playedWith"])).Any();
+        }
+        catch (Exception e) when (e is InvalidOperationException or FormatException or JsonException or OverflowException)
+        {
+            return false;
+        }
+    }
+
     private static List<ModMark> Marks(JsonNode? list) =>
         list is JsonArray array
             ? array.OfType<JsonObject>()
