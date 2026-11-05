@@ -20,3 +20,7 @@ U-4c93ee-41|U-4c93ee-wildhunt-outrun.steps|synth/crashtool0-card41.sav|picked=U-
 U-aff1d9|uncert-graveyard-hint.steps|synth/DKSAVE0-card2a.sav|rest0=uncert-graveyard-hint-shift-on-line,enter1=uncert-graveyard-hint-line-entered
 U-938e63|uncert-polit-popup-hint.steps|synth/DKSAVE0-card37.sav|rest=uncert-polit-popup-hint-shift-on-line,back=uncert-polit-popup-hint-line-again
 U-08d88a|uncert-order-letter-none.steps|synth/DKSAVE0-hurt.sav|h1=uncert-order-letter-none-h,e1=uncert-order-letter-none-after-enter
+U-cb31b9|uncert-cme-menus.steps|DKSAVE99.SAV|menu1=uncert-cme-menus-orders-menu
+U-797153|uncert-march-load.steps|DKSAVE99.SAV|loaded=uncert-march-load-map,after2=uncert-march-load-after
+U-797153-sel|uncert-march-load-selected.steps|DKSAVE99.SAV|loaded=uncert-march-load-selected-map,after2=uncert-march-load-selected-after
+U-00dcd4|uncert-cloud-pause.steps|Dksave21.sav|held14=uncert-cloud-pause-held

@@ -20,6 +20,10 @@ public sealed class PartyPanel(GameAssets assets)
 
     private readonly GameUi? _ui;
 
+    /// <summary>Whether row <paramref name="row"/>'s frame is drawn lit: its selection byte (GameUi.PanelSelection; a panel without the UI: never).</summary>
+    // orig: party-panel-frame-set root 0000:1588 reads fighter-selected DS:9064 + row
+    public bool Lit(int row) => _ui is { } ui && row is >= 0 and < Party.MaxMembers && ui.PanelSelection[row];
+
     public const int Width = 60;
     public const int RowHeight = 40;
 
@@ -46,7 +50,7 @@ public sealed class PartyPanel(GameAssets assets)
     {
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            DrawFrame(canvas, assets.CommonSprites, i, lit: false);
+            DrawFrame(canvas, assets.CommonSprites, i, lit: Lit(i));
         }
         for (var i = 0; i < Party.MaxMembers; i++)
         {

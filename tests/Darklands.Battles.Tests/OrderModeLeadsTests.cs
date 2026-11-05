@@ -295,7 +295,7 @@ public sealed class OrderModeLeadsTests
             Assert.Equal(fix ? Exchange.Placed : Exchange.None, last.Exchange);
             Assert.Equal(fix ? 5 : 1234 + 30, last.GiveUpUntil);
             Assert.Equal(active, t.Battle.ActiveMember);      // DS:17B0 = 0xFF is not reproduced
-            Assert.Equal(fix ? 0 : 1, Get<int>(t, "_actionBeforeRecords"));
+            Assert.Equal(fix ? 0x1A6D : 1, t.ProgramMemory.ActionBeforeRecords);     // DS:9BE5 holds 0x1A6D from start-up
         }
     }
 
@@ -326,6 +326,44 @@ public sealed class OrderModeLeadsTests
         Assert.Equal(new MapPoint(0, 200), t.Battle[member].Destination);
     }
 
+    /// <summary>
+    /// DS:9BE5, the order of record -1, is 0x1A6D from start-up and only command-mode-end writes it: a missile given to record -1 in one
+    /// battle is what the next battle's Enter with nobody selected gives again (R014+0xBE48..0xBE94: 0x02 of the pause byte set).
+    /// </summary>
+    [Fact]
+    public void TheOrderOfRecordMinusOneOutlastsTheBattle()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var memory = new Darklands.Core.Battles.Generation.GenerationProcessMemory();
+        Assert.Equal(0x1A6D, memory.ActionBeforeRecords);
+        var first = Start();
+        first.Battle.Behaviour = new Darklands.Core.OriginalBehaviour { FixLeaveOrderModeWithoutSelection = false };
+        first.ProgramMemory = memory;
+        Set(first, "OrderAction", 0x80);
+        Set(first, "CursorTarget", 1);
+        Set(first, "OrderSpot", new MapPoint(300, 200));
+        first.LeaveOrderMode();
+        Assert.Equal(0x80, memory.ActionBeforeRecords);
+        var next = Start();
+        next.Battle.Behaviour = new Darklands.Core.OriginalBehaviour { FixLeaveOrderModeWithoutSelection = false };
+        next.ProgramMemory = memory;
+        next.PauseByte = 1;
+        Set(next, "CursorTarget", 1);
+        Set(next, "OrderSpot", new MapPoint(300, 200));
+        next.LeaveOrderMode();
+        Assert.Equal(3, next.PauseByte);
+        var fresh = Start();
+        fresh.Battle.Behaviour = new Darklands.Core.OriginalBehaviour { FixLeaveOrderModeWithoutSelection = false };
+        fresh.PauseByte = 1;
+        Set(fresh, "CursorTarget", 1);
+        Set(fresh, "OrderSpot", new MapPoint(300, 200));
+        fresh.LeaveOrderMode();
+        Assert.Equal(1, fresh.PauseByte);
+    }
+
     /// <summary>R014+0xBCDC..0xBCEE and 0xBD48..0xBD5B: with nobody selected the Hurry bit of flags[-1] is the pause byte's 0x10.</summary>
     [Fact]
     public void LeavingWithNobodySelectedClearsThePauseBytesHurryBit()
@@ -340,7 +378,7 @@ public sealed class OrderModeLeadsTests
         t.LeaveOrderMode();
         Assert.Equal(1, t.PauseByte);
         t.PauseByte = 0x11;
-        Set(t, "_actionBeforeRecords", 0x1BE);
+        t.ProgramMemory.ActionBeforeRecords = 0x1BE;
         Set(t, "CursorTarget", -1);
         Set(t, "OrderSpot", new MapPoint(300, 200));
         t.LeaveOrderMode();

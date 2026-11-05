@@ -56,7 +56,7 @@ internal static class OrderOverlay
         TacticsOverlay.Set(t, "OrderSpot", new MapPoint((short)Word(ds, SpotX), (short)Word(ds, SpotY)));
         TacticsOverlay.Set(t, "_fleeBefore", ds[FleeBefore] != 0);
         TacticsOverlay.Set(t, "_orderClock", (ushort)Word(ds, OrderClock));
-        TacticsOverlay.Set(t, "_actionBeforeRecords", (int)(short)Word(ds, ActionBeforeRecords));
+        TacticsOverlay.Set(t, "ActionBeforeRecords", (int)(short)Word(ds, ActionBeforeRecords));
         TacticsOverlay.Set(t, "_throwPotion", (int)ds[ThrowPotion]);
         TacticsOverlay.Set(t, "_throwQuality", (int)ds[ThrowQuality]);
         TacticsOverlay.Set(t, "_throwAtTargetOnly", ds[ThrowAtTargetOnly] != 0);
@@ -102,7 +102,7 @@ internal static class OrderOverlay
         PutWord(ds, SpotY, spot.Y);
         ds[FleeBefore] = (byte)(TacticsOverlay.Get<bool>(t, "_fleeBefore") ? 1 : 0);
         PutWord(ds, OrderClock, TacticsOverlay.Get<ushort>(t, "_orderClock"));
-        PutWord(ds, ActionBeforeRecords, TacticsOverlay.Get<int>(t, "_actionBeforeRecords"));
+        PutWord(ds, ActionBeforeRecords, TacticsOverlay.Get<int>(t, "ActionBeforeRecords"));
         ds[ThrowPotion] = (byte)TacticsOverlay.Get<int>(t, "_throwPotion");
         ds[ThrowQuality] = (byte)TacticsOverlay.Get<int>(t, "_throwQuality");
         ds[ThrowAtTargetOnly] = (byte)(TacticsOverlay.Get<bool>(t, "_throwAtTargetOnly") ? 1 : 0);

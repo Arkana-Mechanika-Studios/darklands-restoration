@@ -17,11 +17,11 @@ namespace Darklands.Presentation;
 // C: the loop reads keys and the mouse itself: no menu bar, no hot keys while the box is up.
 // C: the frames: all unlit (the selection bytes cleared, root 0000:1588 with 0x100), then lit for each able member; each pick draws its
 // frame unlit again; at the end the selection bytes (DS:9064) are put back and every frame drawn as they say.
-// UNCERTAIN: the selection bytes are taken to be 0 outside a battle (the panel is drawn unlit everywhere else, PartyPanel.Draw). In the
-//   EXE only R014+0xBC0C sets one to 1 (a member selected in order mode); command-mode-end R014+0xBCA8, R016+0x13D4 and this screen set
-//   them to 0, and nothing clears them at a battle's end or a load. Unknown: whether a battle can be left with a member still selected
-//   (a load or quit through the menu bar in order mode), which would leave that frame lit outside the battle; a vis10 session doing so
-//   and then opening this screen would settle it.
+// C: the selection bytes are the battle's (GameUi.PanelSelection): a battle left by a game loaded from its menu bar keeps a member
+//   selected in order mode (vis10 sessions uncert-march-load / uncert-march-load-selected, DKSAVE99's mines ambush, whose start selects
+//   member 3, Alt-L, then Alt-O: at R022+0x051C DS:9064 held 00 00 00 01 00 / 01 00 00 00 00; every write to DS:9064..9068 logged: the
+//   screen clears the five (R022+0x053B), sets the able ones (0x055E), clears each pick (0x07BD) and puts the kept bytes back (0x077B);
+//   the map's panel after the load and this screen's end show that frame lit).
 // C: a click is the mouse driver's count of left-button releases (root 047C:1320 function 6, GameUi.TakeLeftReleases) since its last
 // query: a release made before the screen opened (the Party menu's own) is taken by the first prompt, as in the original.
 // DIVERGENCE: with the battle's move mode at 2 (single file: DS:C102 as the last battle left it) the original then sets the battlefield's
@@ -100,7 +100,7 @@ public sealed class MarchingOrderScreen(GameUi ui, PartyPanel panel, Func<int, s
         }
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            PartyPanel.DrawFrame(canvas, sprites, i, lit: false);
+            PartyPanel.DrawFrame(canvas, sprites, i, lit: ui.PanelSelection[i]);
         }
         ui.Present();
         _ = panel;

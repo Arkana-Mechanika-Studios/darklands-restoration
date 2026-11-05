@@ -82,6 +82,15 @@ public sealed class GenerationProcessMemory
     public MapPoint OrderSpot { get; set; }
 
     /// <summary>
+    /// DS:9BE5: the word command-mode-end takes as the order of "member −1" (+0x10 of the record before combatant 0, inside the menu bar's
+    /// item records): 0x1A6D from start-up, then what command-mode-end last wrote there, in this battle or an earlier one.
+    /// </summary>
+    // orig: written once at start-up (1699:0DB3, the item records set up: the offset of an item text, far pointer 11E3:1A6D) and by
+    //   command-mode-end R014+0xBCA8 with nobody selected; opening the battle's menus (Game, Orders, Attack, Party) and loading a game
+    //   leave it (vis10 session uncert-cme-menus, every write to DS:9BE5 logged from start-up: 0x1A6D at each of 12 calls)
+    public int ActionBeforeRecords { get; set; } = 0x1A6D;
+
+    /// <summary>
     /// DS:A532[13]: the effects' temporary modifiers as the last battle left them, or null in a fresh program (zeros: every timer 0, not
     /// −536). Only a fresh battle's fight-state-reset turns the timers off; a battle taken up from a saved game starts from these, so in a
     /// fresh program every record's three timers are due at the first tick and each record readies its weapon again (R019+0x0B00), the
