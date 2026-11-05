@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 2, justify: 40, keep: 10.
-- Part B (undefined-memory in core logic): 154 entries; determinism: deterministic: 1, n/a: 83, no: 57, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 156 entries; determinism: deterministic: 1, n/a: 83, no: 59, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -943,7 +943,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original keeps a window of the map (50 rows by 19 columns) in G and refills it as the view scrolls; this class answers for any cell of the whole decoded map, so the rows are never evicted. A cell outside the map reads 0 here (in the original, whatever the buffer held).  
   deterministic: **partly** (checked against the original); action: **keep** - The original G is R136+0xFCCC[50][19] (index imul 13h + col, asm 159A2), refilled by R030+0x20D2 from the run-length rows (0xD2 bytes per map row) as the view scrolls, with the place-icon list overlaid. Inside the window the content equals this whole-map answer; a column outside it wraps into the neighbouring row and a row outside it shows whatever an earlier refill left, i.e. history dependent. Keep the whole-map semantics unless a read at the map border outside the window is shown to matter (not verified).
 
-### battles (35)
+### battles (37)
 
 - **D-89585b** `undefined-memory` - `src/Darklands.Core/Battles/Attacks.cs:189` `Attacks.MissileChance`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -1065,7 +1065,15 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R018+0x0000` (1EF8:0000, matched)  
   divergence: the speed and sprite of an unknown weapon (uninitialised in the original) are 15 / 5 here.  
   deterministic: **n/a**; action: **justify** - shot-launch leaves speed/sprite uninitialised only for a weapon type outside the missile types (0x17..0x21); a missile is only launched for a readied missile weapon or a trap weapon, all inside that range, so the case does not occur.
-- **D-5c358f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:641` `TacticalBattle.LeaveWithNobodySelected`  
+- **D-9daa05** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:374` `TacticalBattle.HoverWithNobodySelected`  
+  original: `R014+0xC044` (19CD:0AD4, draft)  
+  divergence: not reproduced, the original then reads undefined memory: for a shot or a throw (the order chosen, or f 0x80 / 0x100) the line of fire from record -1's place (DS:9BD5.., the menu bar's item records), and on the ground the collision test of a copy of record -1 (the free or blocked ground cursor, cursor target -2 / -3); the first tick's command-mode-begin then sets the cursor again.  
+  deterministic: **no** (checked against the original); action: **keep** - Reached only in the first pass of a battle started in the order mode the last one left (Alt-L or a surrender in order mode), with the left button held over the view before the first tick's command-mode-begin: the line of fire from, or the collision box of, record -1 (DS:9BD5.., the menu bar's item records, menu-content dependent). The order word f (DS:9BE5) and the enemy branch are modelled; the first tick's command-mode-begin sets the cursor again. Keep documented.
+- **D-066139** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:417` `TacticalBattle.OrderClick`  
+  original: `R014+0xC33C` (19CD:0DCC, draft)  
+  divergence: not reproduced, the original then reads and writes undefined memory: a click off the members in a battle started in the order mode the last one left, before its first tick (DS:A6B2 = 0xFF, R014+0xC33C checked against the asm), works on record -1 (DS:9BD5.., the menu bar's item records): its order word DS:9BE5, a copy of it in DS:D73E, the reach table's row -1, its path (route-find(-1), the route's save) or its line of fire, its destination and target written and restored, and with a path found the spot DS:C652 / DS:C67D; the first tick's command-mode-begin then clears the order (DS:A6B0, DS:C7CC, DS:C652, the cursor), not the spot's y.  
+  deterministic: **no** (checked against the original); action: **keep** - Reached only by a click off the members in the first pass of a battle started in the order mode the last one left: route-find(-1), the reach table's row -1 or the line of fire from record -1 (menu records), the route save and the spot DS:C652 / DS:C67D. The first tick's command-mode-begin clears the order (A6B0, C7CC, C652, the cursor); only the spot's y can outlive it, and only when the route of the menu record succeeds. Keep documented.
+- **D-5c358f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:690` `TacticalBattle.LeaveWithNobodySelected`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   divergence: not reproduced, the original then reads or writes undefined memory: DS:17B0 = 0xFF (walk, attack with a target chosen): the view's follow (R014+0x1065) and the keys read record -1's screen place and floor (the menu records, DS:A6B3); the record -1 fields (DS:9BD5.., the menu bar's sub-menu items and DS:9C1E..9C2C: its range, the UI word, the alchemy file's far pointer through weapon-armed(-1)), route-hand-over-restore(-1), command-queue(-1), the 'PT' name of the animation slot of record -1's kind byte, and the bytes before other tables (DS:A6C3, DS:CA2F, DS:D6FA, DS:D492, DS:9063, and DS:CA56, the high byte of the palette buffer's segment DS:CA55 that the loot screen saves the palette through). moving[-1] (DS:A6D2) is the place order's high byte (modelled).  
   deterministic: **no** (checked against the original); action: **keep** - The rest of D-e29f6b: with nobody selected command-mode-end writes record -1 and entry -1 of further tables; these land on undefined memory: DS:17B0 = 0xFF (the view's follow reads record -1's screen place, the menu bar's sub-menu item bytes, and the keys its floor DS:A6B3), record -1's fields (menu records, DS:9C1E..9C2C: the bar's range, the UI word, the alchemy file's far pointer via weapon-armed(-1)), route-hand-over-restore(-1), command-queue(-1), the 'PT' name of an animation slot chosen by record -1's kind byte, DS:CA2F/D6FA/D492/A6C3/9063 and DS:CA56 (the palette buffer segment's high byte: the next loot screen saves the palette through segment 00xx). Machine and menu-content dependent; keep documented.

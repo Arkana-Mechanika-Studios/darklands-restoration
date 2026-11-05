@@ -59,6 +59,41 @@ public sealed class OrderModeLeadsTests
         Assert.False(t.CursorKeysOn);
     }
 
+    /// <summary>
+    /// A battle started in the order mode the last one left (DS:A6B3 = 1, DS:A6B2 = 0xFF before the first tick's command-mode-begin): the
+    /// pointer takes the order-mode branches with nobody chosen. The hover R014+0xC044 reads record -1's order word (DS:9BE5, 0x1A6D) and
+    /// puts the target cursor on an enemy; a click R014+0xC33C off the members gives nothing here (record -1 is not reproduced), on a member
+    /// it chooses that member (R016+0x0A2C) without leaving order mode first.
+    /// </summary>
+    [Fact]
+    public void APointerInOrderModeWithNobodyChosen()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var t = Start();
+        t.TakeOrderMode(true);
+        Assert.True(t.InOrderMode);
+        Assert.Equal(-1, t.Selected);
+        const int enemy = Combatant.PartySlots;     // the front-most enemy hot spot under the pointer, as the screen finds it
+        var ground = t.Battle[t.Battle.Leader].Position;
+        t.Hover(-1, enemy, ground);
+        Assert.Equal(enemy, t.CursorTarget);
+        Assert.Equal(OrderCursor.Target, t.Cursor);
+        t.Hover(-1, -1, ground);
+        Assert.Equal(-1, t.CursorTarget);
+        Assert.Equal(OrderCursor.None, t.Cursor);
+        Assert.False(t.OrderClick(-1, enemy, ground));
+        Assert.False(t.OrderClick(-1, -1, ground));
+        Assert.Equal(-1, t.CursorTarget);
+        Assert.True(t.InOrderMode);
+        var member = Enumerable.Range(0, Combatant.PartySlots).First(k => t.Battle[k].IsAble && t.Battle[k].Floor == t.Battle.FloorShown);
+        Assert.False(t.OrderClick(member, -1, ground));
+        Assert.Equal(member, t.PendingOrderMember);
+        Assert.True(t.InOrderMode);
+    }
+
     /// <summary>R016+0x0A7D: choosing a member stores its flee bit in DS:D6EA, which Esc (R016+0x13D4) gives back.</summary>
     [Fact]
     public void SelectingAMemberKeepsItsFleeBit()
