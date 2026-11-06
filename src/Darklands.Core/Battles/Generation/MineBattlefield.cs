@@ -71,8 +71,18 @@ internal sealed partial class MineBuilder
     //   write 0x5E37 there two draws before the section's first pile, which then read 0x5E37 for 0; its fill took other kinds and the
     //   mine's set-up drew 6 fewer numbers; gen-carry-33 the same with 0x5E1D, 143 fewer). Where the interrupt falls among the
     //   instructions is the original's CPU time against the timer (the earlier battle only moves its phase); here the word is the one
-    //   met when no interrupt comes there.
+    //   met when no interrupt comes there. The tester gives the C# the word the original's filler took at each fill
+    //   (tools/oracle/timer_marks.py, lockstep.py --timer-marks: PileWords): with it gen-carry-01 and -33 agree.
     private int StaleStackWord => _pileRollMade ? 0x29CB : 0;
+
+    /// <summary>A debugging aid (DARKLANDS_MINE_PILE_WORDS, "0,24011,10699"): the stale word the original's pile filler took at each fill in
+    /// turn (R009+0x4EAE, tools/oracle/timer_marks.py), the timer interrupt's word where one came between the pile roll and the call; null in
+    /// play (the word is then <see cref="StaleStackWord"/>).</summary>
+    public static Queue<int>? PileWords { get; set; } = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DARKLANDS_MINE_PILE_WORDS")) ? null
+        : new(Environment.GetEnvironmentVariable("DARKLANDS_MINE_PILE_WORDS")!.Split(',').Select(t => int.Parse(t, System.Globalization.CultureInfo.InvariantCulture)));
+
+    /// <summary>The stale word of this fill: the oracle's (PileWords) when it gives one, else the one met when no interrupt comes there.</summary>
+    private int FillStaleWord() => PileWords is { Count: > 0 } fed ? fed.Dequeue() : StaleStackWord;
 
     private bool _pileRollMade;
 

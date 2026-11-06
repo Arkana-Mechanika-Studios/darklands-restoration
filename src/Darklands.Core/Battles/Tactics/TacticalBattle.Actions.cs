@@ -132,6 +132,9 @@ public sealed partial class TacticalBattle
             c.RepathAt = (ushort)(Scaled(90) + Clock + 30);
             return;
         }
+        // orig: R014+0x17CB: the clock read anew for the next step time (the tester's rise -20 - i: the callbacks a long tick had before
+        //   it, tools/oracle/timer_marks.py; none in play: ClockPhase is null there)
+        ClockPhase?.Invoke(-20 - i);
         c.NextStepAt = (ushort)(c.StepDelay + Clock);
         SetPose(i, Pose.Walking);
         if (Effects.AreaCount > 0)

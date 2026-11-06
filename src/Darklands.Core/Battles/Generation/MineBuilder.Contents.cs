@@ -735,10 +735,12 @@ internal sealed partial class MineBuilder
             kinds[n] = n;
         }
         // The two words after the list are the frame's stale words; nothing reads the second.
-        kinds[10] = StaleStackWord;
+        // orig: R009+0x4EAE: mov si, [bp-0Ch] (the word read once, after the list is built)
+        var stale = FillStaleWord();
+        kinds[10] = stale;
         var left = 10;
         var pointer = 10;
-        int itemA = StaleStackWord, itemB = 0;
+        int itemA = stale, itemB = 0;
         while (pile.Entries < 4)
         {
             var pick = Roll(left) - 1;

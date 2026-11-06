@@ -874,12 +874,20 @@ public sealed partial class TacticalBattle : IBattleEndActions
     //   comes inside the loop gives the later members a time one higher (gen-carry-11, -13, -25, -34: right after the mine ambush's loot screen
     //   member 0 at 2097, members 1..3 at 2098, DS:07D1 EB -> EC between them, no row redrawn; a read-only hook in the original). Where the
     //   callback falls among the instructions is the original's CPU time against the timer; here the clock moves between passes only.
+    //   The tester gives the C# where they landed (tools/oracle/timer_marks.py, lockstep.py --timer-marks: RegainRead before each
+    //   member's read): with it gen-carry-11, -13, -25 and -34 agree in every tick, state and file.
     private void RecoverEndurance()
     {
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             var c = Battle[i];
-            if (c.Status is not (CharacterStatus.Able or CharacterStatus.Unconscious) || c.RecoverAt >= Clock)
+            if (c.Status is not (CharacterStatus.Able or CharacterStatus.Unconscious))
+            {
+                continue;
+            }
+            // orig: R014+0x45CF: mov dx, [07D4], the clock read for this member (the tester's callbacks inside the loop come here)
+            RegainRead?.Invoke(i);
+            if (c.RecoverAt >= Clock)
             {
                 continue;
             }
@@ -894,6 +902,10 @@ public sealed partial class TacticalBattle : IBattleEndActions
             _view.RowChanged(i);
         }
     }
+
+    /// <summary>A debugging aid for the oracle (null in play): called before the endurance regain reads the clock for a member (its slot),
+    /// where tools/oracle/timer_marks.py found the original's timer callbacks inside the loop (DARKLANDS_BATTLE_REGAIN_RISES).</summary>
+    public static Action<int>? RegainRead { get; set; }
 
     /// <summary>After the battle: skill improvement from what was used (unless the party fell into a pit).</summary>
     // orig: R014+0x0694 (0E76:0694) draft (byte-matched per the draft notes)

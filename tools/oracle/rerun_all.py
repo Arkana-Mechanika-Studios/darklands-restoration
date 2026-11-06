@@ -759,9 +759,9 @@ for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
 # start pause's keys, and 30, by the enemies' turn rotation; since round refight 7, by the map's terrain DS:D843 kept over a load, 6, 23
 # and 3, ended by the generator at the road card their walk meets (ROAD_CARDS), with the map's vertical-step toggle DS:290E kept over a
 # load, and 9, 16, 21, 31, by rounds spawn and reload together; since round bsvtimes 17, 18, 20, 26, 35, 37, by the tester's loot ticks,
-# the clock wrapped by a save, the out-of-battle recovery words and a last load dialog; 10, 19, 39 by refight and bsvtimes together);
-# the others differ only in registered host timing (open items in
-# docs/faithfulness/SUMMARY.md) and are made again by the generator. carry-reload-footpads: ordercarry's varB without its script fault
+# the clock wrapped by a save, the out-of-battle recovery words and a last load dialog; 10, 19, 39 by refight and bsvtimes together;
+# since round timing 01, 11, 12, 13, 14, 25, 29, 32, 33, 34, by the timer callbacks timer_marks.py finds inside the regain, trigger-check,
+# fighter-step and the pile filler: TIMER_MARKS below): all 40 seeds; the generator makes them again. carry-reload-footpads: ordercarry's varB without its script fault
 CARRY = {
     "gen-carry-05": "synth/DKSAVE0-card24.sav",
     "carry-reload-footpads": "DKSAVE99.SAV",
@@ -795,6 +795,23 @@ CARRY = {
     "gen-carry-19": "synth/DKSAVE99-carda5.sav",
     "gen-carry-39": "synth/DKSAVE99-card24.sav",
 }
+# the carry seeds whose original runs had a timer callback inside a stretch that reads the clock or the stack more than once (the endurance
+# regain: 11, 13, 25, 34; trigger-check after the in-battle save: 12, 14, 29, 32; the mine's pile filler: 01, 33): run with
+# lockstep.py --timer-marks (timer_marks.py), which gives the C# host where they landed
+TIMER_MARKS = {"gen-carry-11", "gen-carry-13", "gen-carry-25", "gen-carry-34", "gen-carry-12", "gen-carry-14", "gen-carry-29", "gen-carry-32",
+               "gen-carry-01", "gen-carry-33"}
+CARRY.update({
+    "gen-carry-11": "synth/DKSAVE99-carda0.sav",
+    "gen-carry-13": "synth/DKSAVE99-carda0.sav",
+    "gen-carry-25": "synth/DKSAVE99-carda5.sav",
+    "gen-carry-34": "synth/DKSAVE99-carda0.sav",
+    "gen-carry-12": "synth/DKSAVE99-carda0.sav",
+    "gen-carry-14": "synth/DKSAVE99-card24.sav",
+    "gen-carry-29": "synth/DKSAVE99-carda0.sav",
+    "gen-carry-32": "synth/DKSAVE99-carda5.sav",
+    "gen-carry-01": "synth/DKSAVE99-carda0.sav",
+    "gen-carry-33": "synth/DKSAVE99-card24.sav",
+})
 SESSIONS.update(CARRY)
 BATTLE_RECORDS |= set(CARRY)
 # carry (round cards2's lead): a prayer on the creation's member sheet, then Begin the Adventure
@@ -1067,7 +1084,7 @@ def main():
     for s in sessions:
         save = ["--save", str(resolve_save(SESSIONS[s], saves))] if SESSIONS[s] else []
         jobs.append(("session", s, py + [str(HERE / "lockstep.py"), a.exe, a.game, str(HERE / "lockstep-sessions" / (s + ".steps")),
-                                         str(out / "sessions" / s)] + save + (["--battle-records"] if s in BATTLE_RECORDS else []) + common))
+                                         str(out / "sessions" / s)] + save + (["--battle-records"] if s in BATTLE_RECORDS else []) + (["--timer-marks"] if s in TIMER_MARKS else []) + common))
     # the slowest jobs first (the last live durations kept in <recordings>/durations.json; a job never timed goes first, as it may be the slowest)
     durations_file = Path(a.recordings) / "durations.json"
     try:

@@ -260,6 +260,8 @@ public sealed partial class TacticalBattle
     //   that comes during them makes it one later (gen-carry-12: the first check after the in-battle save, at 40756, set DS:DA4F = 40877
     //   with the clock 40757 at its end, and every later check kept the step; a read-only hook in the original at R014+0x05BD / 0x05C1).
     //   Where that callback falls is the original's CPU time against the timer; here the clock moves between passes only.
+    //   The tester gives the C# where it landed (tools/oracle/timer_marks.py, lockstep.py --timer-marks: the clock rise -8 at the read):
+    //   with it gen-carry-12, -14, -29 and -32 agree in every tick, state and file.
     private bool CheckActivations()
     {
         var result = false;
@@ -301,6 +303,9 @@ public sealed partial class TacticalBattle
                 list.RemoveAt(k);
             }
         }
+        // orig: R014+0x459E: DS:DA4F = DS:07D4 + 0x78, the clock read anew at the check's end (the tester's rise -8: the callbacks a long
+        //   check had, timer_marks.py; none in play: ClockPhase is null there)
+        ClockPhase?.Invoke(-8);
         ActivationsAt = (ushort)(Clock + 120);
         return result;
     }
