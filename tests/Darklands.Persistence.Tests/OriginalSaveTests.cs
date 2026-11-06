@@ -592,12 +592,17 @@ public sealed class OriginalSaveTests
         Assert.Equal(first.State.BattleFile!.Variables, second.State.BattleFile!.Variables);
         Assert.Same(first.State.BattleFile.Compressor, second.State.BattleFile.Compressor);
         Assert.NotNull(OriginalSaves.Write(second.State).Bsv);
-        // Read in a program that holds no battle file, it is saved with the program start's (zero variables, no levels, no work files).
+        // Read in a program that holds no battle file, it is saved with the program start's (BattleFile.ProgramStartVariables: zeros but
+        // the level shown 0xFF and the timer word 1; no levels; no work files: the game host would give the folder's).
         var fresh = BattleSaveFile.Parse(OriginalSaves.Write(OriginalSaves.Read(SaveFolderCopy.Read("DKSAVE41.SAV"), [], "DKSAVE41.SAV", NoGameData.Instance).State).Bsv);
         // C: but for the marching order, one global with the header's (+0x9B): the battle file's copy (+0x1573) is the same six bytes.
         var loaded41 = OriginalSaves.Read(SaveFolderCopy.Read("DKSAVE41.SAV"), [], "DKSAVE41.SAV", NoGameData.Instance).State;
         Assert.Equal(loaded41.MarchingOrder, fresh.Variables[0x1573..0x1579]);
-        Assert.All(fresh.Variables.Take(0x1573).Concat(fresh.Variables.Skip(0x1579)), v => Assert.Equal(0, v));
+        Assert.Equal(0xFF, fresh.Variables[0x16D1]);
+        Assert.Equal(1, fresh.Variables[0x16DB]);
+        var rest = Core.Battles.BattleFile.ProgramStartVariables();
+        loaded41.MarchingOrder.CopyTo(rest, 0x1573);
+        Assert.Equal(rest, fresh.Variables);
         Assert.Empty(fresh.Levels);
         Assert.Null(fresh.File1162);
         Assert.Null(fresh.File1164);

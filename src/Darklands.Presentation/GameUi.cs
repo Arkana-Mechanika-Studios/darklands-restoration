@@ -15,7 +15,8 @@ public sealed class QuitGameException : Exception
 
 /// <summary>Nobody is left in the party: the death film has been shown and the game is over.</summary>
 // orig: hours-elapse R029+0x255A and battle-driver R029+0x2278 end the program with exit_ after the death film
-// DIVERGENCE: the original exits to DOS (exit_) after the death film; here the player comes back to the start screen.
+// DIVERGENCE: the original exits to DOS (exit_) after the death film; here the player comes back to the start screen, which stands for a
+// new run of the program (DarklandsGame.RestartProgram: the program's globals go back to their start values).
 public sealed class GameOverException : Exception
 {
     public GameOverException() : base("The party has perished.") { }

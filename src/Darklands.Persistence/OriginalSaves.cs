@@ -450,7 +450,8 @@ public static class OriginalSaves
             file.Locations.Add(LocationRecords.Write(l));
         }
         file.Cache = CacheFile.Write(state.ItemStores);
-        // C: a program that has fought no battle and loaded no battle file writes its zero globals (no levels, no work files).
+        // C: a program that has fought no battle and loaded no battle file writes its start globals (BattleFile.ProgramStartVariables: no
+        //   levels) and the work files its folder holds (the game host gives a new game that battle file, DarklandsGame.ProgramBattleFile).
         return (file.ToBytes(), BattleSaveFile.Write(state.BattleFile ?? new Core.Battles.BattleFile()));
     }
 
