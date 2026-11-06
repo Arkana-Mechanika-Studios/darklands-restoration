@@ -164,7 +164,7 @@ public sealed class CharacterCreationScreen
             Shared.Image = 0;
         }
         var (readyMade, slotImages) = ReadyMade(partySeed);
-        _sheetState = SheetState(random, startUpCity);
+        _sheetState = SheetState(_ui, _world, random, startUpCity);
         _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages, _sheetState.Item);
         var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, partySeed, _seed) { MadeUpName = MadeUpName };
         DrawAll();
@@ -346,11 +346,13 @@ public sealed class CharacterCreationScreen
     // C: the event table and the location records are the program's (world-read R043+0x0100 at start-up), the same ones the begun game plays
     //   on: a prayer's events and standing changes on the sheet stay (lockstep session carry-create-pray: three prayers to St.Finnian, the
     //   begun game holds their events, 10 against 4, and the boon's attributes)
-    private GameState SheetState(IRandomSource random, int startUpCity)
+    // C: the rules' reports there are the program's own (a skill boost's "changed from" waits in the side window for a key or the left
+    //   button, R043+0x29D0, DS:26BC set as at start-up): SideWindowMessages (carry-create-pray3)
+    public static GameState SheetState(GameUi ui, WorldData world, IRandomSource random, int startUpCity)
     {
-        var state = new GameState(random) { Data = _world, CurrentLocation = startUpCity, Date = NewGame.StartUpDate };
-        state.Locations.AddRange(_world.CreateLocations());
-        state.City = _world.LoadCity(startUpCity);
+        var state = new GameState(random) { Data = world, CurrentLocation = startUpCity, Date = NewGame.StartUpDate, Messages = new SideWindowMessages(ui) };
+        state.Locations.AddRange(world.CreateLocations());
+        state.City = world.LoadCity(startUpCity);
         return state;
     }
 

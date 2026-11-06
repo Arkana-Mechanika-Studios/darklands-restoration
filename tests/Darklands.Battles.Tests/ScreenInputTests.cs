@@ -546,4 +546,78 @@ public sealed class ScreenInputTests
         Assert.False(chosen);
         Assert.Equal(0, hotKeys);
     }
+
+    /// <summary>
+    /// A prayer on the creation's member sheet: St.Finnian's three skill boosts report in the side window (R043+0x29D0), each waiting for
+    /// a key and eating it (lockstep session carry-create-pray3: the original's stack R034+0x0102 &lt; R039+0x49C4 &lt; R043+0x29D0, and the
+    /// begun game agrees only with the reports' waits); the fourth key is left for the screen after.
+    /// </summary>
+    [Fact]
+    public void ASaintsSkillBoostsOnTheCreationSheetWaitForAKeyEach()
+    {
+        int a = Keys.ForCharacter('a'), b = Keys.ForCharacter('b'), c = Keys.ForCharacter('c'), d = Keys.ForCharacter('d');
+        (int, MouseState)[] frames = [Up(5, 5), Key(a), Up(5, 5), Key(b), Up(5, 5), Key(c), Up(5, 5), Key(d), Up(5, 5)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, game, _, world))
+        {
+            return;
+        }
+        var sheet = CharacterCreationScreen.SheetState(ui, world, new Darklands.Core.Randomness.MscRandom(3), 5);
+        sheet.Party = game.Party;
+        var before = sheet.Party.Members[0].Skills[(int)Darklands.Core.Characters.Skill.Streetwise];
+
+        Darklands.Core.Rules.SaintBook.Help(sheet, 0, 50);   // St.Finnian
+
+        Assert.IsType<SideWindowMessages>(sheet.Messages);
+        Assert.True(sheet.Party.Members[0].Skills[(int)Darklands.Core.Characters.Skill.Streetwise] > before);
+        Assert.Contains(sheet.Events.All(), e => e.Event.Kind == Darklands.Core.Events.EventKinds.TravelBlessing);
+        Assert.Equal(d, ui.WaitForAction().Key);
+    }
+
+    /// <summary>
+    /// A Standing saint's prayer on the creation's member sheet changes the start-up city's standing: the sheet's state holds the world's
+    /// location records (the round carry's note: before CarryOverSheetWorld it indexed an empty list).
+    /// </summary>
+    [Fact]
+    public void AStandingSaintOnTheCreationSheetFindsTheStartUpCity()
+    {
+        var host = new FrameHost(Up(5, 5));
+        if (Start(host) is not var (ui, game, _, world))
+        {
+            return;
+        }
+        var sheet = CharacterCreationScreen.SheetState(ui, world, new Darklands.Core.Randomness.MscRandom(3), 5);
+        sheet.Party = game.Party;
+        Assert.Equal(world.CreateLocations().Count, sheet.Locations.Count);
+        var before = sheet.Locations[5].Reputation;
+
+        Darklands.Core.Rules.SaintBook.Help(sheet, 0, 6);   // St.Alexis: Standing(10, 20) here first
+
+        Assert.NotEqual(before, sheet.Locations[5].Reputation);
+    }
+
+    /// <summary>
+    /// The text box (the save's comment, R037+0x43E6) hides the pointer before it draws (root 047C:12C3) and shows it after (root 047C:1293):
+    /// no frame shown while it waits has the pointer (vis10 session comm-inn, alts2: the original's screen has none).
+    /// </summary>
+    [Fact]
+    public void TheCommentBoxShowsNoPointerWhileItWaits()
+    {
+        (int, MouseState)[] frames = [Up(20, 20), Up(20, 20), Key(Keys.ForCharacter('x')), Up(20, 20), Key(Keys.Enter), Up(20, 20)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, _))
+        {
+            return;
+        }
+        var shown = new List<bool>();
+        host.Presented = _ => shown.Add(ui.PointerVisible);
+        Assert.True(ui.PointerVisible);
+
+        var text = new TextInputBox(ui).Ask("Save Game Comment:", SaveGameDialog.CommentLength, "Darklands");
+
+        Assert.Equal("Darklandsx", text);
+        Assert.True(shown.Count > 1);
+        Assert.All(shown[..^1], Assert.False);
+        Assert.True(shown[^1]);   // the screen put back, then the pointer
+    }
 }
