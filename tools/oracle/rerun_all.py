@@ -1,7 +1,7 @@
 """Run every fight (battle_oracle.FIGHTS) and every session (lockstep-sessions/*.steps) with N workers, each its own process.
 
 usage: python -I -B rerun_all.py <out folder> [--workers N] [--fights a,b|none] [--sessions a,b|none] [--live] [--replay-only]
-           [--no-coverage] [--recordings DIR] [--headless <Darklands.Host.Headless.exe>] [--exe E] [--game G]
+           [--no-coverage] [--recordings DIR] [--headless <Darklands.Host.Headless.exe>] [--stale-ok] [--exe E] [--game G]
 
 Outputs (as the two tools write them): <out>/fights/<fight>/report.json, <out>/fights/<fight>/<fight>/cov/cov-0.jsonl (a fight
 that agrees), <out>/sessions/<session>/report.json and cov/cov-0.jsonl (a session whose states all agree), <out>/<job>.log, and
@@ -963,6 +963,34 @@ SESSIONS.update({
 BATTLE_RECORDS |= {"c3-space-pause", "gen-bedge-02", "gen-bedge-03", "gen-bheld-22", "gen-bheld-40", "gen-bhurta-03", "gen-bhurtk-01", "gen-bhurtk-02", "gen-bhurtk-05", "gen-bhurts-01", "gen-bhurts-02", "gen-bkeys-21", "gen-bkeys-25", "gen-bkeys-37", "gen-bkeys-44", "gen-bkeys-51", "gen-blue-02", "gen-blue-04", "gen-blue-05", "gen-bluer-01", "gen-bsafe-27", "gen-bsafe-33", "gen-bsafe-35", "gen-bsafe-50"}
 
 
+def check_headless(given: Path | None, stale_ok: bool) -> None:
+    """Prints which headless build the rewrite side runs, and stops when the build is older than this repository's sources.
+
+    Without --headless the jobs run src/Darklands.Host.Headless/bin/Release (lockstep.HEADLESS), which no tool rebuilds: on 2026-11-06 a
+    full replay of master ran a build of 2026-10-30 that way and 21 of 854 jobs differed, all of which agree with a fresh build. A build
+    whose dlls are older than the newest source file under src/ is refused unless --stale-ok; a build outside this repository (a copy
+    given with --headless) is only reported with its time, as its sources are not known here."""
+    import lockstep
+    exe = given or lockstep.HEADLESS
+    if not exe.exists():
+        raise SystemExit("no headless build at %s (dotnet build -c Release src/Darklands.Host.Headless)" % exe)
+    dlls = list(exe.parent.glob("Darklands.*.dll"))
+    built = min((p.stat().st_mtime for p in dlls), default=exe.stat().st_mtime)
+    print("headless: %s (built %s)" % (exe, time.strftime("%Y-%m-%d %H:%M", time.localtime(built))), flush=True)
+    src = REPO / "src"
+    try:
+        inside = exe.resolve().is_relative_to(src.resolve())
+    except OSError:
+        inside = False
+    if not inside:
+        return
+    newest = max((p for ext in ("*.cs", "*.csproj") for p in src.rglob(ext) if "bin" not in p.parts and "obj" not in p.parts),
+                 key=lambda p: p.stat().st_mtime, default=None)
+    if newest is not None and newest.stat().st_mtime > built and not stale_ok:
+        raise SystemExit("the headless build is older than %s (changed %s): rebuild it (dotnet build -c Release src/Darklands.Host.Headless) "
+                         "or pass --stale-ok" % (newest.relative_to(REPO), time.strftime("%Y-%m-%d %H:%M", time.localtime(newest.stat().st_mtime))))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out")
@@ -974,6 +1002,7 @@ def main():
     ap.add_argument("--game", default=str(GAME))
     ap.add_argument("--headless")
     ap.add_argument("--timeout", type=int, default=7200)
+    ap.add_argument("--stale-ok", action="store_true", help="run with a headless build older than the sources beside it")
     import recording
     recording.add_arguments(ap)
     a = ap.parse_args()
@@ -983,6 +1012,7 @@ def main():
     unknown = {p.stem for p in (HERE / "lockstep-sessions").glob("*.steps")} - set(SESSIONS)
     if unknown and a.sessions == "all":
         raise SystemExit("sessions without a saved game in SESSIONS: %s" % ", ".join(sorted(unknown)))
+    check_headless(Path(a.headless) if a.headless else None, a.stale_ok)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     py = [sys.executable, "-I", "-B", "-u"]
