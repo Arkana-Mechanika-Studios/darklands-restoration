@@ -659,6 +659,13 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     private long _tickKeysAt;
     private int[]? _tickKeys;
 
+    // tclick:<n>:<x>,<y>,<ms>: the left button pressed at (x, y) n ticks of the 60 Hz timer later on the host's clock, as tkey's keys
+    // (tools/oracle/tick_mouse.py), and held <ms> of the clock (the original's hold, from its log: let go CLICK_MS after the game read it);
+    // no step is taken before it is let go. A press inside the map's rest (OverlandScreen.RestLoop's button test)
+    private long _tickClickAt;
+    private (int X, int Y, int Hold)? _tickClick;
+    private long _tickClickUntil = -1;
+
     // still:<n>: the next step comes at the battle pass that is the n-th at one combat clock value (counted from the head of each pass,
     // a new battle starting again), as tools/oracle/orig_side.py gives the key of a battle's start pause (its BATTLE_PAUSE_PASSES); the
     // frames before the battle (a load, the set-up) do not count, which a wait in frames cannot follow. At most 20000 frames.
@@ -675,6 +682,30 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     {
         _now += 16;
         Advanced?.Invoke(_now);
+        if (_tickClickUntil >= 0)
+        {
+            if (_now < _tickClickUntil)
+            {
+                return;
+            }
+            _tickClickUntil = -1;
+            Mouse = Mouse with { Buttons = MouseButtons.None };
+            Console.WriteLine($"tclick let go at {_now} ms");
+            _idleFrames = 2;
+            return;
+        }
+        if (_tickClick is { } click)
+        {
+            if (_now < _tickClickAt)
+            {
+                return;
+            }
+            Mouse = new MouseState(click.X, click.Y, MouseButtons.Left);
+            _tickClickUntil = _now + Math.Max(1, click.Hold);
+            _tickClick = null;
+            Console.WriteLine($"tclick {click.X},{click.Y} at {_now} ms");
+            return;
+        }
         if (Mouse.Buttons != MouseButtons.None && !_held && _mapHold == 0)
         {
             // a click stays down over two pumps (a screen may present twice a frame before it polls)
@@ -727,8 +758,8 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 _keys.Enqueue(KeyFor(value));
                 // the battle takes it in this pass: the count of still: starts again (orig_side.py: a key ends the battle's pause)
                 _stillPasses = 0;
-                // a tkey after it counts its ticks from this key (the original's from the read that takes it): taken at the next pump
-                _idleFrames = _steps.TryPeek(out var next) && next.StartsWith("tkey:", StringComparison.Ordinal) ? 0 : 2;
+                // a tkey or tclick after it counts its ticks from this key (the original's from the read that takes it): taken at the next pump
+                _idleFrames = _steps.TryPeek(out var next) && (next.StartsWith("tkey:", StringComparison.Ordinal) || next.StartsWith("tclick:", StringComparison.Ordinal)) ? 0 : 2;
                 break;
             case "click":
                 var (x, y) = Point(value);
@@ -776,6 +807,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 var (ticks, names) = (value.Split(':', 2)[0], value.Split(':', 2)[1]);
                 _tickKeysAt = _now + (long)Math.Round(int.Parse(ticks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
                 _tickKeys = names.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(KeyFor).ToArray();
+                break;
+            case "tclick":
+                var (clickTicks, clickAt) = (value.Split(':', 2)[0], value.Split(':', 2)[1].Split(','));
+                _tickClickAt = _now + (long)Math.Round(int.Parse(clickTicks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
+                _tickClick = (int.Parse(clickAt[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(clickAt[1], System.Globalization.CultureInfo.InvariantCulture),
+                    clickAt.Length > 2 ? int.Parse(clickAt[2], System.Globalization.CultureInfo.InvariantCulture) : 300);
                 break;
             case "kdown":
             case "kup":

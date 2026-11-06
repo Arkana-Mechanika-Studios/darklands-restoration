@@ -30,6 +30,11 @@ game's timer callback (root 047C:000A) runs n more times, then the keys are in t
 idle wait of a `key:` step): a key pressed inside a loop that does not look at the keyboard (the map's rest), or two keys before one pass
 reads them. The C# host waits n / 60 s of its clock. A script with a tkey step is run with tick_keys.TickKeySession and its recording
 hashes tick_keys.py too; the other recordings keep their keys.
+`tclick:<n>:<x>,<y>` (tick_mouse.py) presses the left button at (x, y) at a timer tick in the same way (the driver's state DS:6EF0 and
+press word DS:6EF2), let go as a `click:` is: a button pressed inside a loop that polls no input but the button between its waits
+(the map's rest, R030+0x0F60). The C# host waits n / 60 s of its clock and holds the button as long as the original's log says
+("tclick held <ms>"). A script with a tclick step is run with tick_mouse.session_class(Session) and its recording hashes
+tick_mouse.py too; the other recordings keep their keys.
 
 ## Original side and compare side
 

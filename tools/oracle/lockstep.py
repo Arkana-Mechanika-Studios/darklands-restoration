@@ -719,6 +719,9 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     sheet_clicks = sheet_holds(log or (), steps, BWAIT_ACTUAL)
     boxed = iter(rup_boxes(log or ()))
     mapheld = map_holds(log or (), steps)
+    # a tclick (tick_mouse.py): the host holds its button as long as the original's was held (its log's "tclick held" lines)
+    import tick_mouse
+    tick_held = iter(tick_mouse.holds(log or ()))
     if sheet_clicks:
         print("sheet click holds (bwait step: passes): %s" % sheet_clicks)
     # a click costs the host two frames more than a key (the button stays down over two pumps before its two idle frames), a move one frame less;
@@ -800,6 +803,8 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
             args.append("wait:%d" % (max(0, w) + later))
         elif k == "click" and i in mapheld:
             args.append("mapclick:%s,%d" % (v, mapheld[i]))
+        elif k == "tclick":
+            args.append("tclick:%s,%d" % (v, next(tick_held, 0)))
         elif k == "wait" and pause_shift and i in pause_shift:
             args.append("still:%d" % pause_shift[i])
         else:
@@ -1030,6 +1035,12 @@ def main():
     entries = ("orig_side", "tick_keys") if tick_keys.uses(steps) else ("orig_side",)
     if tick_keys.uses(steps):
         orig_side.Session = tick_keys.TickKeySession
+    # a script with tclick steps (a left button pressed at a timer tick, tick_mouse.py): its Session wraps the one above, hashed with the
+    # original side (opt-in: every other recording keeps its key)
+    import tick_mouse
+    if tick_mouse.uses(steps):
+        entries += ("tick_mouse",)
+        orig_side.Session = tick_mouse.session_class(orig_side.Session)
     if a.timer_marks:
         # opt-in: timer_marks.py is hashed with the original side and the flag is a part of the key only when given, so every other
         # recording keeps its key
