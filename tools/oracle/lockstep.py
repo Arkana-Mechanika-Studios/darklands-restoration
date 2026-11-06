@@ -908,8 +908,13 @@ def main():
     import recording
     if a.battle_records:
         a.battle_trace = True
+    # a script with tkey steps (keys at a timer tick, tick_keys.py) runs the original with that module's Session, hashed with the original side
+    import tick_keys
+    entries = ("orig_side", "tick_keys") if tick_keys.uses(steps) else ("orig_side",)
+    if tick_keys.uses(steps):
+        orig_side.Session = tick_keys.TickKeySession
     parts = {"kind": "session", "steps": steps, "budget": a.budget, "battle_trace": a.battle_trace, "battle_records": a.battle_records,
-             "no_wall_draws": a.no_wall_draws, **recording.common_parts(Path(a.exe), a.game, ("orig_side",), save)}
+             "no_wall_draws": a.no_wall_draws, **recording.common_parts(Path(a.exe), a.game, entries, save)}
     rec = recording.Recording(a.recordings, "sessions", Path(a.script).stem, parts, a.live, a.replay_only)
     got = rec.load(need_coverage=a.coverage)
     if got is None:

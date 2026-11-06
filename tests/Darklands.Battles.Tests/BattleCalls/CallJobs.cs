@@ -54,6 +54,11 @@ internal sealed class StateImage
     /// <summary>The loot file (the machine's cfile.dat) as gzip + base64, "absent" when the file does not exist; null in older jobs files (the loot is then not carried).</summary>
     [JsonPropertyName("loot")] public string? LootText { get; set; }
 
+    /// <summary>The reinforcement wave's encounter record (30 bytes at +0xBE2 of the segment DS:7D44 names) as hex. Absent in older jobs files.</summary>
+    [JsonPropertyName("wave")] public string WaveText { get; set; } = "";
+
+    public byte[]? Wave => WaveText.Length == 0 ? null : Convert.FromHexString(WaveText);
+
     private byte[]? _ds, _far, _far2, _far3;
 
     public byte[] Ds => _ds ??= Unpack(DsText);
@@ -117,6 +122,9 @@ internal sealed class OriginalOutcome
 
     [JsonPropertyName("far3_changed")] public Dictionary<string, int> Far3Changed { get; set; } = [];
 
+    /// <summary>The bytes of the wave record (offsets 0..29) the call changed.</summary>
+    [JsonPropertyName("wave_changed")] public Dictionary<string, int> WaveChanged { get; set; } = [];
+
     /// <summary>The loot file after the call as hex, "absent" when there is none; null in older jobs files.</summary>
     [JsonPropertyName("loot")] public string? Loot { get; set; }
 
@@ -141,14 +149,17 @@ internal sealed class MemoryPair(byte[] ds, byte[] far, byte[]? far2 = null, byt
 
     public byte[]? Far3 { get; } = far3;
 
+    /// <summary>The reinforcement wave's encounter record (DS:7D44's segment +0xBE2, 30 bytes); null in older jobs files.</summary>
+    public byte[]? Wave { get; init; }
+
     /// <summary>The stack pointer of the state the call starts from.</summary>
     public int Sp0 { get; set; }
 
-    public MemoryPair Clone() => new((byte[])Ds.Clone(), (byte[])Far.Clone(), (byte[]?)Far2?.Clone(), (byte[]?)Far3?.Clone(), (byte[]?)Loot?.Clone(), LootKnown) { Sp0 = Sp0 };
+    public MemoryPair Clone() => new((byte[])Ds.Clone(), (byte[])Far.Clone(), (byte[]?)Far2?.Clone(), (byte[]?)Far3?.Clone(), (byte[]?)Loot?.Clone(), LootKnown) { Sp0 = Sp0, Wave = (byte[]?)Wave?.Clone() };
 
     public static MemoryPair Input(StateImage state, CallJob job)
     {
-        var m = new MemoryPair((byte[])state.Ds.Clone(), (byte[])state.Far.Clone(), (byte[]?)state.Far2?.Clone(), (byte[]?)state.Far3?.Clone(), state.Loot, state.LootText is not null) { Sp0 = state.Sp0 };
+        var m = new MemoryPair((byte[])state.Ds.Clone(), (byte[])state.Far.Clone(), (byte[]?)state.Far2?.Clone(), (byte[]?)state.Far3?.Clone(), state.Loot, state.LootText is not null) { Sp0 = state.Sp0, Wave = state.Wave };
         foreach (var op in job.Ops)
         {
             if (op.Where == "loot")
@@ -156,7 +167,7 @@ internal sealed class MemoryPair(byte[] ds, byte[] far, byte[]? far2 = null, byt
                 m.Loot = Convert.FromHexString(op.Hex);
                 continue;
             }
-            Convert.FromHexString(op.Hex).CopyTo(op.Where == "ds" ? m.Ds : op.Where == "far2" ? m.Far2! : op.Where == "far3" ? m.Far3! : m.Far, op.Offset);
+            Convert.FromHexString(op.Hex).CopyTo(op.Where == "wave" ? m.Wave! : op.Where == "ds" ? m.Ds : op.Where == "far2" ? m.Far2! : op.Where == "far3" ? m.Far3! : m.Far, op.Offset);
         }
         return m;
     }
@@ -179,6 +190,10 @@ internal sealed class MemoryPair(byte[] ds, byte[] far, byte[]? far2 = null, byt
         foreach (var (k, v) in o.Far3Changed)
         {
             m.Far3![int.Parse(k)] = (byte)v;
+        }
+        foreach (var (k, v) in o.WaveChanged)
+        {
+            m.Wave![int.Parse(k)] = (byte)v;
         }
         if (o.Loot is not null)
         {

@@ -25,6 +25,11 @@ The keys of `key:` steps go straight to the stubbed BIOS reads (047C:073D / 047C
 `kup:<hex>` give a key's make / break bytes (set 1, `E0` prefix allowed) to the game's own INT 9 handler (root 044A:020E, through vector 9,
 port 60h giving the byte), which keeps DS:0880..0889 (the held direction key, Enter): the overland map, the battle's keys and its order-mode
 cursor read them. In a battle (after a bwait) they are delivered at the head of the next pass, where the C# host's frame starts.
+`tkey:<n>:<key>[,<key>...]` (tick_keys.py) presses keys at a timer tick, whatever the game is doing: once the step is the next one, the
+game's timer callback (root 047C:000A) runs n more times, then the keys are in the buffer at once (each read finds the next without the
+idle wait of a `key:` step): a key pressed inside a loop that does not look at the keyboard (the map's rest), or two keys before one pass
+reads them. The C# host waits n / 60 s of its clock. A script with a tkey step is run with tick_keys.TickKeySession and its recording
+hashes tick_keys.py too; the other recordings keep their keys.
 
 ## Original side and compare side
 

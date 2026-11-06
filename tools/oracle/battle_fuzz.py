@@ -171,6 +171,18 @@ class Fuzzer:
                 if op["w"] == "ds" and 0 <= k < 13 and rest == 0x14 and op["hex"] in ("02", "03"):
                     args[0] = k
                     break
+            if len(args) > 1 and 0 <= args[0] < 13:
+                # the second argument is the animation set its one caller (R014+0x1584) worked out for the combatant at the head of its pass: the
+                # record's slot (+0x16), +2 fighting or hit, +4 dying for an enemy's slot (pose +0x18), as the rewrite's AnimationSet
+                rec = bytearray(self.st.record(args[0]))
+                base = COMBATANTS + RECORD * args[0]
+                for op in ops:
+                    if op["w"] == "ds" and base <= op["o"] < base + RECORD:
+                        data = bytes.fromhex(op["hex"])
+                        lo = op["o"] - base
+                        rec[lo:lo + len(data)] = data[:RECORD - lo]
+                slot, pose = rec[0x16], rec[0x18]
+                args[1] = slot + (2 if slot >= 5 and pose in (2, 3) else 4 if slot >= 5 and pose == 4 else 0)
         if self.coord == "R016+0x0000" and args and args[0] == 0:
             # no key waits: the held direction keys (DS:0880 / DS:0881, bytes of -1, 0 or 1) give an arrow (round B3)
             return [{"w": "ds", "o": 0x880, "hex": "%02x" % rng.choice([0, 1, 0xFF])}, {"w": "ds", "o": 0x881, "hex": "%02x" % rng.choice([0, 1, 0xFF])}]
@@ -602,6 +614,30 @@ class Fuzzer:
         ops.append({"w": "ds", "o": 0x9409, "hex": "00"})
         return ops
 
+    def wave_state(self) -> list[dict]:
+        """The reinforcement waves (DS:D6EB on, DS:D6EC the enemies killed in this wave) and the wave's encounter record in the segment DS:7D44
+        names (+0xBE2: battle_calls.WAVE_AT): one of the level's encounter records with a reinforcement part, the kills one short of its batch
+        or not, the pool above the batch, equal, below or empty (R014+0x2709..0x2754)."""
+        rng = self.rng
+        recs = [bytes(self.st.m.read(P(FLOOR_SEG), 0x47EE + 30 * k, 30)) for k in range(self.act_count)]
+        rec = bytearray(rng.choice(recs) if recs and rng.random() < 0.7 else self.st.wave_base)
+        kinds = max(1, self.st.m.byte(DS, 0xD6CC))
+        if rng.random() < 0.7:
+            rec[7] = 1
+            rec[0x14] = rng.choice([0, 0, 1, 2, 0xFF, rng.randrange(max(kinds, 3))])
+            rec[0x15] = rng.choice([8, 16, 24, 32, 0])
+            x, y = rng.choice(self.live_positions)
+            rec[0x16:0x18] = ((x + rng.choice([-64, -32, 0, 32, 64])) & 0xFFFF).to_bytes(2, "little")
+            rec[0x18:0x1A] = ((y + rng.choice([-32, -16, 0, 16, 32])) & 0xFFFF).to_bytes(2, "little")
+            batch = rng.choice([1, 1, 2, 3, 4, 8])
+            rec[0x1A] = batch
+            rec[0x1B] = rng.choice([batch, batch + 1, 2 * batch, batch - 1, 0, 0x80, 1]) & 0xFF
+            rec[0x1C] = rng.randrange(8)
+        batch = rec[0x1A]
+        return [{"w": "ds", "o": 0xD6EB, "hex": "%02x" % rng.choice([1, 1, 1, 0])},
+                {"w": "ds", "o": 0xD6EC, "hex": "%02x" % ((batch - 1) & 0xFF if rng.random() < 0.7 else rng.randrange(max(batch, 1) + 1))},
+                {"w": "wave", "o": 0, "hex": bytes(rec).hex()}]
+
     def loot_state(self, dying: bool = False) -> list[dict]:
         """The loot file (6-byte records: item word, type, quality, count, weight), the piles that point into it (20A5:59C8, 12 bytes: offset, count, level, x, y,
         visible), the chests' offsets, the member's pile, the recovered missiles; with `dying` a combatant on his last frame of dying."""
@@ -658,6 +694,8 @@ class Fuzzer:
                 entries += item.to_bytes(2, "little") + bytes([kind, rng.choice([25, 25, 0xF0]), rng.choice([1, 2, 255]), rng.choice([1, 3])])
             if entries:
                 ops.append({"w": "floor", "o": 0x3954, "hex": bytes(entries).hex()})
+        if dying and rng.random() < 0.6:
+            ops.extend(self.wave_state())
         if dying and self.alive:
             k = rng.choice(self.alive)
             status = rng.choice([2, 3, 3, 3]) if k < 5 else rng.choice([2, 3, 3, 3, 3])
@@ -887,8 +925,8 @@ class Fuzzer:
     def writes(self, ops):
         out = []
         for op in ops:
-            if op["w"] == "loot":
-                out.append(("loot", 0, bytes.fromhex(op["hex"])))
+            if op["w"] in ("loot", "wave"):
+                out.append((op["w"], op["o"], bytes.fromhex(op["hex"])))
                 continue
             seg = DS if op["w"] == "ds" else self.st.far2_seg if op["w"] == "far2" else P(bc.PACK_SEG) if op["w"] == "far3" else P(FLOOR_SEG)
             out.append((seg, op["o"], bytes.fromhex(op["hex"])))
@@ -952,7 +990,7 @@ class Fuzzer:
             if novel or probe:
                 probes_left -= 0 if novel else 1
                 self.absorb(r)
-                item = {"args": args, "ops": ops, "ax": r["ax"], "dx": r["dx"], "changed": {str(k): v for k, v in r["changed"].items()}, "far_changed": {str(k): v for k, v in r["far_changed"].items()}, "far2_changed": {str(k): v for k, v in r["far2_changed"].items()}, "far3_changed": {str(k): v for k, v in r["far3_changed"].items()}, "loot": r["loot"],
+                item = {"args": args, "ops": ops, "ax": r["ax"], "dx": r["dx"], "changed": {str(k): v for k, v in r["changed"].items()}, "far_changed": {str(k): v for k, v in r["far_changed"].items()}, "far2_changed": {str(k): v for k, v in r["far2_changed"].items()}, "far3_changed": {str(k): v for k, v in r["far3_changed"].items()}, "wave_changed": {str(k): v for k, v in r["wave_changed"].items()}, "loot": r["loot"],
                         "random": r["random"], "draws": r["draws"], "seconds": r["seconds"], "instructions": r["instructions"],
                         "coverage": r["coverage"], "iteration": it, "novel": bool(novel)}
                 kept.append(item)

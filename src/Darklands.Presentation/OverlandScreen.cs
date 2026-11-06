@@ -264,7 +264,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             {
                 return null;
             }
-            ui.Delay(RestMilliseconds);
+            // C: wait-ticks(75) is the pass's own wait (R030+0x3096 on clock(), which moves only at the BIOS tick): about two ticks, not 75 ms of
+            // real time (as the pass's DelayClock(StepClock); a rest of a second: the same hour as the original, where the C# was an hour ahead)
+            ui.DelayClock(RestMilliseconds);
             var result = travel.Step(_x, _y);
             Trace?.Invoke($"rest step -> {result.Outcome}");
             state.MapLeaveMode = 3;
@@ -275,7 +277,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             _direction = WaitingDirection;
             Draw(state);
             _frame = (_frame + 1) % 8;
-            ui.Delay(RestMilliseconds);
+            ui.DelayClock(RestMilliseconds);
         }
         return null;
     }

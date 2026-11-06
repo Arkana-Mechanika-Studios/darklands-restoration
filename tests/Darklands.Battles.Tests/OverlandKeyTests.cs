@@ -293,6 +293,43 @@ public sealed class OverlandKeyTests
         Assert.Equal(3, state.MapLeaveMode);
     }
 
+    /// <summary>
+    /// R030+0x0C44's rest waits with wait-ticks(75) (R030+0x3096, the pass's own wait on clock(), which moves only at the BIOS tick): every rest
+    /// step comes just as a BIOS tick begins, not 75 ms of real time after the one before (a rest of one second then ends in the original's hour;
+    /// the step count still differs by the original's own execution time, host timing).
+    /// </summary>
+    [Fact]
+    public void TheRestsWaitsEndAtABiosTick()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        int[][] frames = [[0x1E61], .. Enumerable.Repeat(Array.Empty<int>(), 60)];
+        var host = new KeyHost(frames);
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        var map = new WorldMap(Content.Formats.Maps.WorldMapData.Decode(files.Read("DARKLAND.MAP")), state.Locations);
+        var times = new List<long>();
+        var trace = OverlandScreen.Trace;
+        OverlandScreen.Trace = line => times.Add(host.Milliseconds);
+        try
+        {
+            new OverlandScreen(ui, new PartyPanel(ui.Assets), map).Travel(state);
+        }
+        catch (QuitGameException)
+        {
+        }
+        finally
+        {
+            OverlandScreen.Trace = trace;
+        }
+        Assert.True(times.Count >= 2);
+        Assert.All(times, t => Assert.True(DosClock.BiosTicks(t) > DosClock.BiosTicks(t - 1), $"a rest step at {t} ms, inside a BIOS tick"));
+    }
+
     /// <summary>A host on a virtual clock whose keyboard is the SDL host's (PcKeyboard): Right goes down and up at given times, a frame shown takes a 60 Hz retrace.</summary>
     private sealed class HoldHost(PcKeyboard keyboard, double downAt, double upAt, double endAt) : IHost, IVideo, IInput, IClock
     {

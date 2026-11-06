@@ -1,0 +1,10 @@
+# Lockstep session (a key inside the map's rest, tick_keys.py): DKSAVE17; A starts the rest; Z is pressed 7 timer ticks after A was read (after the first delay: in the step's time or the second delay); the rest stops at the first key test
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:a
+tkey:7:z
+wait:300
+state:rested

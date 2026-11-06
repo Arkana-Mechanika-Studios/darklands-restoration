@@ -1,0 +1,36 @@
+# vis10 tester-einfo-gate: E at the Luebeck gate of Dksave21 (as D-09fbc1), the battle begun paused: the enemy information window of the guards, shot info; a key closes it, shot after
+key:t
+wait:5
+key:l
+wait:300
+key:enter
+wait:30
+option:7
+wait:5
+key:enter
+wait:100
+key:enter
+wait:100
+option:0
+wait:5
+key:enter
+wait:100
+key:enter
+wait:100
+option:8
+wait:5
+key:enter
+wait:150
+key:enter
+wait:150
+# draw weapons and attack the guards: the battle begins paused
+option:4
+wait:5
+key:enter
+bwait:296
+key:e
+wait:60
+shot:info
+key:space
+wait:60
+shot:after

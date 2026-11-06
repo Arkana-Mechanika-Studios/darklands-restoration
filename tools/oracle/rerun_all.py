@@ -61,6 +61,7 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "loot-keys": "DKSAVE0.SAV", "loot-mouse": "DKSAVE0.SAV", "loot-esc": "DKSAVE0.SAV",
             # keys held through the keyboard interrupt (kdown / kup, DS:0880..0882) and Ctrl (local/batch/kbd): the map of DKSAVE17, the gate fight of DKSAVE0
             "kbd-map-held": "DKSAVE17.SAV", "kbd-map-enter": "DKSAVE17.SAV", "kbd-map-wait": "DKSAVE17.SAV",
+            "tk-rest-first": "DKSAVE17.SAV", "tk-rest-second": "DKSAVE17.SAV", "tk-two-keys-rest": "DKSAVE17.SAV", "tk-two-keys-walk": "DKSAVE17.SAV",
             "kbd-battle-cursor": "DKSAVE0.SAV", "kbd-battle-held": "DKSAVE0.SAV", "kbd-battle-ctrl": "DKSAVE0.SAV",
             # the camp and the pack outside a battle (local/overnight/camp): DKSAVE99 and Dksave22 are parties on the map, DKSAVE0 is at the Pressburg inn
             "camp-wild-brew": "DKSAVE99.SAV", "camp-wild-risk": "Dksave22.sav", "camp-inn-broke": "DKSAVE0.SAV", "camp-rough": "DKSAVE0.SAV", "uj-hourm3": "synth/Dksave22-hourm3.sav", "uj-marchm1": "synth/DKSAVE0-marchm1.sav", "uj-relic1": "synth/DKSAVE0-relics.sav", "uj-formula1": "Dksave10.sav", "camp-mouse": "DKSAVE99.SAV",
