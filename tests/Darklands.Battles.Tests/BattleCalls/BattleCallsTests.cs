@@ -637,6 +637,11 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             {
                 throw new SkipJob($"set {job.Args[1]} is not like the combatant's animation set {set}: the caller passes that");
             }
+            if (c.Input.Wave is { } wave && wave[0x1A] >= 0x80 && c.Input.Ds[TacticsOverlay.WavesOn] == 1 && job.Args[0] >= Combatant.PartySlots)
+            {
+                // DORMANT in the rewrite (TacticalBattle.Dying): the generators write batches 1..9 (WildBattlefield, CityBattlefield, MineBuilder.Fill)
+                throw new SkipJob($"reinforcement batch 0x{wave[0x1A]:X2}: no battlefield's wave has a batch above 0x7F");
+            }
             ScreenOverlay.Camera(c.Screen, c.Input);
             Call(c.Tactics, "Dying", job.Args[0], job.Args[1]);
             return null;

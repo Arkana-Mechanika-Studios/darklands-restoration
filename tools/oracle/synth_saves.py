@@ -10,6 +10,7 @@ variants:
   weak<card>, card<card>  controls: as away<card> without the Away member / with the party unchanged (any card, hex)
   away<card>  (24, 7b, a0, 16, 7a, a5) member 4 Away, members 0..3 at endurance 1, the game saved at card <card> (0x24 Footpads, 0x7B RebelMobInTheStreets, 0xA0 WolfPackOnTheTrail, 0x16 MarketAtNight ...): see local/batch/res5
   dup<a><b>  party slot <b> names the record of slot <a> (party id word +0xF3 + 2b = that of slot a): two slots naming one record
+  ev300   the event table full: the game's events and fillers (a place fact of type 0x7F at place 413) up to the 300 slots (full_events)
   month<N>[d<D>]  the date moved to month N (and day D): the seasons of the travel map
   hurt    the first four members hurt and ill for the battle's party panel: endurance / strength at 1, 0 and above the maximum, a dead,
           an unconscious and a poisoned member (status byte +0x14)
@@ -185,6 +186,25 @@ def dragon_events(b: bytearray) -> None:
     b[:] = out
 
 
+def full_events(b: bytearray, capacity: int = 300) -> None:
+    """the event table filled to all its 300 slots (the open arms of event-create / event-refresh / event-advance R029+0x2C4E / 0x2D5C / 0x2E74:
+    -1 when no slot is free, R029+0x3144): the game's own events first, then fillers, each a copy of the game's event that ends last with the
+    kind 0x1C (a place's fact), type 0x7F, owner 0x7FF0, the last place (413), value 0, no expiry handler, no flags, tag 0."""
+    at = 0xEF + 4 + 10 + 20 + 5 * 0x18 + struct.unpack_from("<H", b, 0xF1)[0] * CHAR
+    events = struct.unpack_from("<H", b, at)[0]
+    first = at + 2
+    records = [bytes(b[first + i * 0x30:first + (i + 1) * 0x30]) for i in range(events)]
+    template = max(records, key=lambda r: struct.unpack_from("<4H", r, 0x12)[::-1])
+    fillers = []
+    for _ in range(max(0, capacity - events)):
+        e = bytearray(template)
+        struct.pack_into("<H", e, 0x00, 0x7F)
+        struct.pack_into("<HHHHHHH", e, 0x1A, 0x7FF0, 413, 0, 0, 0x1C, 0, 0)
+        struct.pack_into("<HHHH", e, 0x28, 0, 0, 0, 0)
+        fillers.append(bytes(e))
+    b[:] = bytearray(b[:at]) + struct.pack("<H", events + len(fillers)) + b"".join(records) + b"".join(fillers) + b[first + events * 0x30:]
+
+
 def implode_literals(data: bytes, dictbits: int = 6) -> bytes:
     """data as a PKWARE DCL block that holds only literals (binary mode: a 0 bit and the byte's 8 bits each) and the end code (length 519):
     a valid block for any explode (savdiff.explode, the original's R003, Darklands.Persistence.Explode), only larger than the original's."""
@@ -258,7 +278,7 @@ BATTLE_LEVELS = {"king": battle_level(3, [(1040, 140), (1008, 140), (1072, 140),
                  "stonebox": battle_level(6, [(976, 312), (944, 296), (944, 328), (944, 312)], (6,))}
 
 
-VARIANTS = {"dragonev": dragon_events, "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
+VARIANTS = {"dragonev": dragon_events, "ev300": full_events,"relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
             "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}
 

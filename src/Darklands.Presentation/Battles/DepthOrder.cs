@@ -22,6 +22,12 @@ public static class DepthOrder
     //   change in battle). Here the walk stops at entry 0 (j > 0: the same order whenever cur's top <= bottom). No inverted entry was found:
     //   0 in about 6,500 watched sorts of the 37 oracle fights, 0 of 2,575,015 furniture cells of 20,700 built battlefields; bodies, missiles,
     //   cursors and walls have fixed or ordered rows. The trigger is unknown, so what the walk reads is the memory below the list.
+    //   C: every store of the list's count DS:E162 read (round coverage): the six writers of an entry's rows are the two cursors (R014+0x6DCE,
+    //   +0x6E76: an entry's rows + 1 each), the copy of the entry before (R014+0x7306..0x73A6: its rows + 1), the sprite entry R014+0x7BBE (y - h,
+    //   y + h with h 0 or 2), the wall pieces R014+0x827A (both rows the same value) and R014+0x8724 (rows given: the fixed pairs, and the
+    //   furniture's max(dy - hh + row, row + 1) .. min(row + dy + hh, row + 14), inverted only for a .frc record with dy - hh > 14 or dy + hh < 1,
+    //   which no record the shipped battlefields place has). So with the shipped data no entry has its top below its bottom and no play reaches the
+    //   walk; the shifted colours of the real saves (started in an earlier version, 483.04) come from a state these writers do not make.
     public static void Sort<T>(IList<T> list, Func<T, DepthKey> key)
     {
         for (var k = 1; k < list.Count; k++)

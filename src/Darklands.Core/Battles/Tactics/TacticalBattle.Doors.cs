@@ -92,11 +92,17 @@ public sealed partial class TacticalBattle
 
     /// <summary>Door n opens or shuts by itself (an enemy walks into it, or a path search tries it), its group uncovered when <paramref name="reveal"/>.</summary>
     // orig: door-assign R023+0x04AC (1EF8:04AC) draft
-    // DIVERGENCE: a door record with none of the four side flags (+8 and +9, bits 0x80 / 0x40) leaves the direction local bp-6 uninitialised in the original
-    //   (R023+0x04C8 .. +0x050B), so the door bits go to the side the stale stack word names, or to no side when it is not 0..3 (the two switches
-    //   R023+0x0620 / +0x06B8 have no default); north (0) is used here. Not reached in play: the three callers (R014+0x4924, +0x4B95, +0xDDE1, the only
-    //   calls of the vector 09C0:1D6F) take only records whose word +0 is above 0; the flagless records of IMAPS.CAT (IFORTMON.009 doors 0 and 1) and
-    //   LCASTLE (door 0 of the nine levels) are all-zero, word +0 = 0; the castle generator's records always carry a flag and the map turn moves the flags.
+    // DORMANT: a door record with none of the four side flags (+8 and +9, bits 0x80 / 0x40) leaves the direction local bp-6 uninitialised in the original
+    //   (R023+0x04C8 .. +0x050B), so the door bits would go to the side the stale stack word names, or to no side when it is not 0..3 (the two switches
+    //   R023+0x0620 / +0x06B8 have no default); north (0) is used here. Proven unreachable: the three callers (R014+0x4924, +0x4B95, +0xDDE1, the only
+    //   calls of the vector 09C0:1D6F) take only records whose word +0 is above 0, and every writer of a door record gives such a record a flag. The
+    //   writers: the level files (all 143 levels of IMAPS.CAT and the 9 of LCASTLE scanned: 479 records, the only 11 flagless ones, IFORTMON.009
+    //   doors 0 and 1 and door 0 of each LCASTLE level, are all-zero, word +0 = 0); the castle generator (R007+0x1234 writes x | 0x80 or y | 0x40 with
+    //   cells below 0x40); the map turn (R004+0x29B0, MapTurn.TurnDoor: it turns only icity and mine sections, whose records all carry flags, and moves
+    //   the four flags among themselves; the fortress and citadel files are never turned, so their zero records keep word +0 = 0); the city's unlock and
+    //   the fortress's room set-up write the lock byte +7 only; no instruction of the EXE stores to +8 / +9 through a door-table displacement (0x1F5C,
+    //   0x1F5D: reads only). A sweep of every battlefield type 0..0x89 with 40 seeds each (5,520 builds, 60,832 door records) found 0 flagless records
+    //   with word +0 above 0.
     private void SetDoor(int n, bool open, bool reveal)
     {
         var at = DoorsAt + 14 * n;
