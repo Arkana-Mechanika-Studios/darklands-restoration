@@ -163,7 +163,6 @@ public sealed class BattleScreen : ITacticalView
     private readonly HashSet<int> _cyclesTaken = [];
     private TacticalBattle? _battle;
     private BattlefieldTiles? _tiles;
-    private TextPainter? _small;
     private TextPainter? _panelText;
     private TextPainter _panel => _panelText ??= new TextPainter(_ui.Assets.Font(1));
     /// <summary>The game's hot keys outside the battle (Alt-Q, Alt-P …), which the battle passes some keys to.</summary>
@@ -213,6 +212,10 @@ public sealed class BattleScreen : ITacticalView
         Start(request);
         var previous = _ui.Clock.Milliseconds;
         _ui.PointerVisible = false;
+        // orig: battle-entry R002+0x02A0: pointer-shape-set(0, 0, DS:A693) (the battle draws its own shapes, DrawPointer); R002+0x0514 at the
+        //   end and a load in the battle (R037+0x8BBC) set (0, 0) with the gauntlet again: after a battle the gauntlet's hot spot is (0, 0)
+        //   (GameUi.PointerHotSpot), whatever the map had set; tests: PointerHotSpotTests
+        _ui.PointerHotSpot = (0, 0);
         _hotKey = _ui.GameKey;
         _ui.GameKey = BattleHotKey;
         _ui.BattleStatusLetter = StatusLetter;
@@ -561,9 +564,13 @@ public sealed class BattleScreen : ITacticalView
         // C: seen only from a synthetic save (vis10 visleads-prison-battle: card 0x16B's mode 1 from a city): without a .BSV the original
         //   fights on the level files the machine holds (background row 3), with a .BSV of no levels (the game's 282-byte DKSAVE0.BSV) on
         //   an empty field (its view stays black: 32,785 px against the C#'s new keep; re-run 2026-11-05). In play the cell follows the
-        //   fortress battle, whose field the C# keeps (LastField) as the original keeps its files (that path is not a session yet).
-        //   Following the original from such a save means drawing leftover or
-        //   empty files, which no player reaches, so the divergence below stays.
+        //   fortress battle, whose field the C# keeps (LastField) as the original keeps its files.
+        // C: settled (round visuals 2026-11-06): card 0x16B is entered only from the zone of the Templar fortress's room 8 (R011+0x1043, the
+        //   only 0x16B in the EXE besides the card's own following-card write R134+0x1F1A), so in play the files then hold the fortress of
+        //   that place, also after a save and a load (the save packs them, the restore writes them back). The real-play state, the
+        //   community save DKSAVE2 of bug-sabbath-jan0 (483.07, at the fortress's place 188 with the fortress in its .BSV) set to card
+        //   0x16B, goes back onto the fortress in both (vis10 visuals-fortress-cell: 1 px of 64,000 differ, a ground pixel by the party, not
+        //   the field). Only a save with the card set by hand away from the fortress, or a missing .BSV, reaches the case below.
         // DIVERGENCE: the original goes back onto whatever battlefield its files hold; here a revisit needs the last battlefield to have
         // been fought at the same place (else a new one is built), and mode 3's level is kept within the battlefield's levels.
         if (request.Mode != 0 && _owner.LastField is null && _state.BattleFile is { Levels.Count: > 0 } held)
@@ -641,7 +648,6 @@ public sealed class BattleScreen : ITacticalView
                 c.Status = CharacterStatus.Empty;
             }
         }
-        _small = new TextPainter(_ui.Assets.Font(3));
         SetPalette(field.Terrain.BackgroundPalette);
         StartCycles();
         // orig: the marching order (DS:C624 / DS:C629) is the game's: the battle starts from it, R016+0x0DA6 keeping it while it is valid
@@ -719,7 +725,6 @@ public sealed class BattleScreen : ITacticalView
         // orig: R002+0x0000 sets DS:C1F0 to the call's battlefield after the restore R003+0x0CE8 read the file's (a game loaded from the start
         // screen: DS:A768 still 0); lockstep dungeon-king-ladder (local/batch/b32/a7-king)
         _battle.BattlefieldType = request.Battlefield;
-        _small = new TextPainter(_ui.Assets.Font(3));
         SetPalette(field.Terrain.BackgroundPalette);
         StartCycles();
         (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
@@ -2387,6 +2392,7 @@ public sealed class BattleScreen : ITacticalView
             return;
         }
         var canvas = _ui.Canvas;
+        ErasePointer();
         var panel = canvas.Save(0, 0, PartyPanel.Width, Canvas.Height);
         var common = _assets.Common;
         for (var y = 0; y < 0xC6; y += 0x0B)
@@ -2398,16 +2404,31 @@ public sealed class BattleScreen : ITacticalView
         {
             DrawEnemyInfo(canvas, kinds[k], kinds.Count == 1 ? 50 : k * 100);
         }
+        // orig: R021+0x033D pointer-hide (root 047C:12C3) before the window, R021+0x03A1 pointer-show (root 047C:1293) after it: the driver's
+        //   pointer, in the shape the battle's last pass set (pointer-shape-set in R014+0x33A2), stands over the window and the field while it
+        //   waits, and moves with the mouse (the driver's); no shape is set meanwhile. checked against the original's screen (vis10 session
+        //   tester-einfo-gate: the glove at the mouse in both shots); tests: BattleUiTests
+        var shape = PointerShape(_ui.Mouse.X, _ui.Mouse.Y);
+        var at = (_ui.Mouse.X, _ui.Mouse.Y);
+        DrawPointer(canvas, shape);
         _ui.Present();
         // orig: R021+0x03AF matched C: `while (!root 047C:073D() && !(mouse-button-state & 1));` (no menu bar), root 0000:1384, then R021+0x03BB
         // `while (mouse-button-state & 1);`; tests: BattleUiTests
         while (!_ui.KeyWaiting && !_ui.Mouse.Left)
         {
+            if ((_ui.Mouse.X, _ui.Mouse.Y) != at)
+            {
+                ErasePointer();
+                at = (_ui.Mouse.X, _ui.Mouse.Y);
+                DrawPointer(canvas, shape);
+            }
             _ui.Present();
             _ui.Idle();
         }
         _ui.FlushKeys();
         _ui.WaitForButtonRelease();
+        // C: the original leaves its pointer on (the next pass draws it again); here the drawn one comes off before the panel is put back
+        ErasePointer();
         canvas.Restore(panel);
         // orig: R021+0x03E3..0x03F6: party-panel-frame-set(0x100), party-panel-row-set(0x100) as the screen closes
         RowChanged(-1);
@@ -2417,7 +2438,10 @@ public sealed class BattleScreen : ITacticalView
     {
         var tb = _battle!;
         var c = tb.Battle[m];
-        var small = _small!;
+        // orig: R021+0x03FE draws in the side window (DS:0104 -> DS:00F2), whose font is slot 1 (font 0 of FONTS.FNT, 6 pixels high; no code
+        //   writes the record's font word +0x10): the measure root 0265:084E and text-paint root 0265:006E take it. checked against the DS
+        //   bytes and the original's screen (vis10 session tester-einfo-gate); tests: BattleUiTests
+        var small = _ui.Text;
         var code = tb.SlotCodes[c.AnimationSlot] + tb.SlotWeapons[c.AnimationSlot] + "st.pic";
         if (code[0] > 0x60)
         {
@@ -3398,25 +3422,28 @@ public sealed class BattleScreen : ITacticalView
     // C: pointer-shape-set(hx, hy, sprite) gives each shape its hot spot: the driver draws the sprite at (mouse − hot spot). The glove and the
     // order hand have (0, 0); the arrows (3, 0) up, (7, 0) up-right, (7, 4) right, (7, 7) down-right, (3, 7) down, (0, 7) down-left, (0, 4) left,
     // (0, 0) up-left.
-    private void DrawPointer(Canvas canvas)
+    private void DrawPointer(Canvas canvas) => DrawPointer(canvas, PointerShape(_ui.Mouse.X, _ui.Mouse.Y));
+
+    /// <summary>The shape the pass sets for the mouse at (x, y): the picture and its hot spot.</summary>
+    private (int Image, int HotX, int HotY) PointerShape(int x, int y)
     {
-        var mouse = _ui.Mouse;
-        int x = mouse.X, y = mouse.Y;
-        int image, hx = 0, hy = 0;
         var arrow = x >= 60 ? EdgeArrow(x, y) : -1;
         if (arrow >= 0)
         {
-            image = BattleImages.ScrollArrows + arrow;
-            (hx, hy) = ArrowHotSpots[arrow];
+            var (hx, hy) = ArrowHotSpots[arrow];
+            return (BattleImages.ScrollArrows + arrow, hx, hy);
         }
-        else
-        {
-            // C: root 0000:00A0 (and R022+0x0362 after the sheet): DS:A695 == 0 the normal pointer, any other value (0x11 too) the order pointer
-            image = _battle!.PauseByte == 0 ? BattleImages.NormalPointer : BattleImages.OrderPointer;
-        }
-        var sprite = _assets.Images[image];
-        _underPointer = sprite is null ? null : canvas.Save(x - hx, y - hy, sprite.Width, sprite.Height);
-        SpriteDrawing.Draw(canvas, sprite, x - hx, y - hy, new Clip(0, 0, Canvas.Width, Canvas.Height));
+        // C: root 0000:00A0 (and R022+0x0362 after the sheet): DS:A695 == 0 the normal pointer, any other value (0x11 too) the order pointer
+        return (_battle!.PauseByte == 0 ? BattleImages.NormalPointer : BattleImages.OrderPointer, 0, 0);
+    }
+
+    /// <summary>Draws a pointer shape at the mouse (the driver draws the sprite at the mouse less the hot spot), keeping what it covers.</summary>
+    private void DrawPointer(Canvas canvas, (int Image, int HotX, int HotY) shape)
+    {
+        int x = _ui.Mouse.X - shape.HotX, y = _ui.Mouse.Y - shape.HotY;
+        var sprite = _assets.Images[shape.Image];
+        _underPointer = sprite is null ? null : canvas.Save(x, y, sprite.Width, sprite.Height);
+        SpriteDrawing.Draw(canvas, sprite, x, y, new Clip(0, 0, Canvas.Width, Canvas.Height));
     }
 
     /// <summary>The hot spots of the scroll arrows (pointer-shape-set's first two arguments in R014+0x33A2), by <see cref="EdgeArrow"/>.</summary>

@@ -306,6 +306,19 @@ public sealed class GameUi
     public bool PointerVisible { get; set; } = true;
 
     /// <summary>
+    /// The hot spot of the pointer's shape (DS:6EF6 / DS:6EF8, pointer-shape-set's first two arguments): the gauntlet is drawn at the mouse
+    /// less it. (0, 0) from start-up; the map sets (5, 0) and the screens below put (0, 0) back.
+    /// </summary>
+    // orig: pointer-shape-set root 047C:124F(hx, hy, shape) with the default shape DS:9C42: (0, 0) at start-up R000+0x0666; (5, 0) at
+    //   world-map-start R030+0x0242 (each time the map is entered, never put back when it is left, so the cards, the camp and the screens
+    //   opened from them keep it); (0, 0) by the character sheet (R031+0x0B0B in its drawing R031+0x0A82, R031+0x09A2, the clean-up
+    //   R031+0x0924), the alchemy screen's exit R033+0x064D, the party information R034+0x0F2D, a battle's start and end (R002+0x02A0,
+    //   R002+0x0514) and a load inside a battle (R037+0x8BBC, only with DS:907A == 1). The card engine (R043), the camp (R036), the inn,
+    //   the shops and the load screen outside a battle set no shape. checked against asm (every call of root 047C:124F in the EXE) and the
+    //   original's screen (vis10 session creation-map: the pointer 5 pixels left of the mouse on the map and in the camp); tests: PointerHotSpotTests
+    public (int X, int Y) PointerHotSpot { get; set; }
+
+    /// <summary>
     /// An interface convenience the original does not have (off unless a host turns it on), made of player commands (docs/COMMANDS.md):
     /// at a card menu, with the pointer off the lines, Up / Down put the pointer onto the line they name (<see cref="PointAt"/>), and the
     /// digits 1..9 choose the line of that number as the mouse does (<see cref="ChooseLine"/>; while an item or saint box is up, the
@@ -426,8 +439,9 @@ public sealed class GameUi
         source.CopyOwnershipTo(_shown);
         if (PointerVisible)
         {
-            // orig: pointer-shape-set(0, 0, mouse-cursor-default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left corner
-            SpriteDrawing.Draw(new Canvas(_shown), Assets.CommonSprites.Pointer, Mouse.X, Mouse.Y);
+            // orig: pointer-shape-set(0, 0, mouse-cursor-default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left
+            //   corner; the driver draws the shape at the mouse less the hot spot (PointerHotSpot)
+            SpriteDrawing.Draw(new Canvas(_shown), Assets.CommonSprites.Pointer, Mouse.X - PointerHotSpot.X, Mouse.Y - PointerHotSpot.Y);
         }
         _host.Video.Present(_shown);
     }

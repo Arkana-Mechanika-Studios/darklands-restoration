@@ -1,0 +1,24 @@
+# vis10 visuals (D-3928b9): DKSAVE0's first card (as comm-inn-save), F6: the party information; the original moves the pointer onto the town (pointer-move), the C# leaves it at the mouse
+key:t
+wait:5
+key:l
+wait:300
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:200
+move:150,100
+wait:30
+shot:card
+key:f6
+wait:200
+shot:info
+key:esc
+wait:200
+shot:back

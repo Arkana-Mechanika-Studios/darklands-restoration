@@ -70,6 +70,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
                 {
                     // C: the original takes back the member's brews once more on leaving (R033+0x14E6); none are left by then.
                     _bench.TakeBackUnfinishedBrews();
+                    Leave();
                     return;
                 }
                 // C: k = count - x4, where x4 (the batch record's third word) is never set in this screen, so it is 0: the batches are all given back.
@@ -85,6 +86,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             if (_formulaPage && Keys.IsLetter(key, 's') && Selected.Count != 0)
             {
                 _bench.Brew(Selected, place, key);
+                Leave();
                 return;
             }
             if (key != Keys.None)
@@ -100,6 +102,11 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             }
         }
     }
+
+    /// <summary>The screen's exit (both ways out of the loop: Esc / D and a brew).</summary>
+    // orig: R033+0x0628 from R033+0x061D: the fonts back, DARKLAND.ALC freed, pointer-shape-set(0, 0, DS:9C42) at R033+0x064D: a camp opened
+    //   from the map has the gauntlet's hot spot (0, 0) after the alchemy (GameUi.PointerHotSpot); tests: PointerHotSpotTests
+    private void Leave() => ui.PointerHotSpot = (0, 0);
 
     /// <summary>The batch or formula page again, as the loop does after the party information (party-icons-stale).</summary>
     // orig: R033+0x047F..0x04DA

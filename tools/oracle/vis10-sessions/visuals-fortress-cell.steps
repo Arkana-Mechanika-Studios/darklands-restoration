@@ -1,0 +1,12 @@
+# vis10 visuals: the prison cell card 0x16B in the place of the Templar fortress (D-24e8b0): DKSAVE2 of bug-sabbath-jan0 (483.07, place 188, the .BSV holding the fortress) saved at card 0x16B as a game saved at the cell in play is (the card set, nothing else); Enter, then battle mode 1 onto the fortress the files hold
+key:t
+wait:5
+key:l
+wait:300
+shot:idle
+key:enter
+wait:300
+bwait:5
+shot:b5
+bwait:40
+shot:b45

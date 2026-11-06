@@ -404,18 +404,17 @@ public sealed partial class CardScreen
     //   - a hint was up for another line: party-panel-row-set root 0000:1716 ran just before (the panel put back); its [bp-2], the row mask,
     //     ends at 0 (root 0000:1725 sets 0x1F and the loop shifts it out): 0;
     //   - the pointer entered the line in this pass: pointer-show root 047C:1293 drew the pointer again, and its third argument is the
-    //     pointer's x minus the hot spot's (DS:6EEC - DS:6EF6; the card pointer's hot spot is (0, 0)): 0xFA for x = 250;
+    //     pointer's x minus the hot spot's (DS:6EEC - DS:6EF6; the hot spot was (0, 0) there, a game loaded into a town): 0xFA for x = 250;
     //   - Shift pressed over the line the pointer rests on: the far return of the mouse query root 047C:1320 (R043+0x2713) of the pass
     //     before, i.e. R043's code segment in memory: 0x1D2E on the reference machine (DOSBox-X loads the program at 0823); any segment is
     //     above 100, so the hint shows the same.
     // DIVERGENCE: an interrupt taken while SP stands at the handler between that writer and the call puts its frame there (seen once: a timer
     //   tick at R043+0x265B left 0x0017 from the tick handler's pushes); on a PC the keyboard and mouse interrupts can too. Host timing, not
     //   followed here.
-    private static int LeftoverChance(bool hintWasUp, bool entered, int pointerX) =>
-        hintWasUp ? 0 : entered ? pointerX - PointerHotSpotX : CardCodeSegment;
-
-    /// <summary>The card pointer's hot spot x (DS:6EF6), 0 (read in the original at the hints).</summary>
-    private const int PointerHotSpotX = 0;
+    // C: the hot spot x DS:6EF6 is the pointer shape's (GameUi.PointerHotSpot): 0 after a load or a sheet, 5 after the map (R030+0x0242),
+    //   which the card engine never sets back
+    private int LeftoverChance(bool hintWasUp, bool entered, int pointerX) =>
+        hintWasUp ? 0 : entered ? pointerX - ui.PointerHotSpot.X : CardCodeSegment;
 
     /// <summary>R043's code segment on the reference machine (link 150B + load 0823).</summary>
     private const int CardCodeSegment = 0x1D2E;

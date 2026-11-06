@@ -600,6 +600,48 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
+    /// The enemy information (E, R021+0x02CE / R021+0x03FE) draws in the side window's font, slot 1 (6 pixels high), and shows the driver's
+    /// pointer while it waits (pointer-show root 047C:1293 after the window), in the battle's shape at the mouse (vis10 session
+    /// tester-einfo-gate: 0 pixels differ in the window and the pointer).
+    /// </summary>
+    [Fact]
+    public void TheEnemyInfoDrawsInTheSideWindowsFontWithThePointerShown()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5", "move:150,120", "wait:5");
+        Assert.Single(run.Screen.Tactics!.EnemyInfoKinds());
+        run.Recording = true;
+        run.Play("key:e", "wait:5");
+        var frame = run.LastFrame!;
+        // one kind: the picture at y 50, the name in colour 0x0E at y 50 + 0x20
+        var rows = new List<int>();
+        for (var y = 0x52; y < 0x52 + 8; y++)
+        {
+            for (var x = 3; x < 3 + 0x36; x++)
+            {
+                if (frame[y * 320 + x] == 0x0E)
+                {
+                    rows.Add(y);
+                }
+            }
+        }
+        Assert.NotEmpty(rows);
+        Assert.True(rows.Max() - 0x52 < run.Ui.Assets.Font(1).CharacterHeight, $"the name reaches row {rows.Max() - 0x52}: not font slot 1");
+        var drawn = new[] { BattleImages.NormalPointer, BattleImages.OrderPointer }.Any(image =>
+        {
+            var shown = new Screen();
+            frame.CopyTo(shown.Pixels, 0);
+            Darklands.Presentation.Graphics.SpriteDrawing.Draw(new Darklands.Presentation.Graphics.Canvas(shown), run.Assets.Images[image], 150, 120);
+            return shown.Pixels.AsSpan().SequenceEqual(frame);
+        });
+        Assert.True(drawn, "the battle's pointer is not shown at (150,120) while the enemy information waits");
+    }
+
+    /// <summary>
     /// The battle's party panel as the panel rows (root 0000:1716) draws it: each name at (4, 0x28 * i + 2); an away member's row holds the bars' (root 0000:1A9C)
     /// "???? ???? ????" instead of the bars and no order letter; a dead member's row is hatched; the order letter is in the name's colour (vis10 sessions
     /// tleads-battle-difficulty, the synthetic save DKSAVE0-away24).
