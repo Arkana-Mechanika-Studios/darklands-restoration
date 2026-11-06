@@ -1,0 +1,13 @@
+# Lockstep session (a mouse button inside the map's rest, tick_mouse.py): DKSAVE17 (a party on the map by night); A starts the rest (R030+0x0C44 case 0x1E41: the key test, the button test R030+0x0F60, delay 75, a step's time, delay 75); the left button is pressed one timer tick after A was read, inside the first delay, on the empty fifth portrait row (x <= 0x3C, row 4: the map's pass does nothing with it): that step's time still passes, the rest stops at the next button test (0x0F65 taken)
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:a
+tclick:1:30,185
+wait:300
+state:rested
+click:150,110
+wait:600
+state:walked
