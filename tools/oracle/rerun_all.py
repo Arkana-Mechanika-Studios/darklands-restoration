@@ -832,6 +832,8 @@ CLEAN_GAME = {"tester-clean-reload"}
 # restart (item 5): R030+0x0C44's key cases the tester can now give (ctrlf<n>, kp<n>, F9) and its own Alt-Q (the second key of a pass, tkey)
 SESSIONS["tk-map-keys"] = "synth/DKSAVE17-out3.sav"
 SESSIONS["tk-map-altq"] = "DKSAVE17.SAV"
+# gaps round (northpage): the map's backward paging with the row buffer's top past 0x41 (R030+0x0C44 11D8..1231), walked north over the sea
+SESSIONS["map-page-north"] = "synth/DKSAVE17-sea.sav"
 WORK_FILES = {"terrain.fil", "cfile.dat"} | {"level%d.enm" % i for i in range(5)}
 NOT_GAME = {"docs", "convert", "logs", "qcap", "file_formats"}   # bulky folders of the project's copy that neither side reads
 

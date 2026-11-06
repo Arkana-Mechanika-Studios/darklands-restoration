@@ -1,0 +1,41 @@
+# Lockstep session (gaps round, northpage: R030+0x0C44's backward paging with the buffer top past 0x41): DKSAVE17-sea (synth_saves.py sea:
+# DKSAVE17 with the party at map cell (72, 200), out on the sea; world-map-start puts the buffer top DS:286E at 124, the shown rows DS:286C at 60
+# and the marker DS:2868 at 0x40). Column 72 is deep water from row 201 to the map's top: no step draws an encounter roll. Each walk is a click
+# that aims the marker at view row 20 (just above the scroll edge 0x14, where it stops), then two Up keys take the one pixel more (a vertical
+# pixel every other pass) that makes the view scroll: shown rows 37, 14, then -9, which pages the row buffer back by 0x41 rows (the top
+# 124 past 0x41: 11D8, the rows reloaded 11E5, the marker moved down 120C / 120F, the rows past 1 after it: 1218). Then a walk south to view
+# row 170 and two Down keys: the view scrolls down without paging (shown rows 56 + 23 = 79, not past 0x53: 1231).
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+click:195,41
+wait:1500
+state:north1
+key:up
+wait:20
+key:up
+wait:20
+state:scroll1
+click:195,41
+wait:1500
+key:up
+wait:20
+key:up
+wait:20
+state:scroll2
+click:195,41
+wait:1500
+key:up
+wait:20
+key:up
+wait:20
+state:paged
+click:195,191
+wait:1500
+key:down
+wait:20
+key:down
+wait:20
+state:south
