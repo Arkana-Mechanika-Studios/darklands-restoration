@@ -616,6 +616,50 @@ def loot_ticks(jumps, log, battles=None, trace=None):
     return out, loot
 
 
+REGAIN_AFTER = 9         # the regain rises' key for the callbacks after its loop (before fight-input), BattleScreen.RegainAfter
+
+
+def regain_rises(jumps, loot, log, trace):
+    """(jumps, loot, [(key, {slot: rise})]) with the timer callbacks that came inside the endurance regain's loop (timer_marks.py, a run
+    with --timer-marks: "regain clocks c0,c1,.. then c (battle pass n)", the clock each member's read saw, -1 for a member skipped before
+    it, c the clock after the loop) taken off the ticks of the pass before (its loot screen's ticks, else its ticks after the pass) and
+    given to the C# before the member whose read came after them, those after the last read as slot REGAIN_AFTER: the regain runs at the head of fight-main-loop's next pass (R014+0x0000, before the input), so its callbacks are
+    the last of the previous pass's jump. The key is the clock at the regain's first read (battle << 16 | clock, as the jumps' keys)."""
+    clocks = [int(l.split()[2]) for l in trace or []]
+    falls = [0] * (len(clocks) + 1)
+    for n in range(1, len(clocks)):
+        falls[n + 1] = falls[n] + (clocks[n] < clocks[n - 1])
+    jumps, loot, out = [list(j) for j in jumps], [list(p) for p in loot], []
+    for l in log or ():
+        if not l.startswith("regain clocks ") or "(battle pass " not in l:
+            continue
+        reads = [(s, int(c)) for s, c in enumerate(l.split()[2].split(",")) if int(c) >= 0]
+        after = int(l.split()[4]) if l.split()[3] == "then" else None
+        n = int(l.split("(battle pass ")[1].split(")")[0])
+        if not reads or not 1 <= n <= len(clocks):
+            continue
+        rises = {s: c - p for (_, p), (s, c) in zip(reads, reads[1:]) if c > p}
+        if after is not None and after > reads[-1][1]:
+            rises[REGAIN_AFTER] = after - reads[-1][1]
+        total = sum(rises.values())
+        if not total:
+            continue
+        before = (falls[n] << 16) + clocks[n - 1]           # the jump of pass n (its head clocks[n - 1]); its loot screen at the clock after
+        place = next((p for p in loot if p[0] == before + 1 and p[1] >= total), None) or \
+            next((j for j in jumps if j[0] == before and j[1] >= total), None)
+        if place is None:
+            print("regain clocks of pass %d: no jump of %d ticks before them, not given" % (n, total))
+            continue
+        place[1] -= total
+        out.append(((falls[min(n + 1, len(clocks))] << 16) + reads[0][1], rises))
+    return [tuple(j) for j in jumps], [tuple(p) for p in loot], out
+
+
+def pile_words(log) -> list[int]:
+    """The stale word SS:[bp-0x0C] the mine's pile filler took at each fill (timer_marks.py: "pile word 5E37"), in order."""
+    return [int(l.split()[2], 16) for l in log or () if l.startswith("pile word ")]
+
+
 def sheet_callbacks(log) -> list[tuple[int, int]]:
     """[(during, after)] for each combat sheet of the original's log ("sheet callbacks 5917,53"): the timer callbacks that came while the sheet held
     the clock (R022+0x0066 .. 0x03C6) and after it up to the next battle pass; a recording made before these lines has none."""
@@ -642,7 +686,7 @@ def menu_callbacks(log) -> list[tuple[int, int]]:
 
 
 def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
-                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=(), boxes=(), carry=(), ticks=None):
+                sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=(), boxes=(), carry=(), ticks=None, regain=(), piles=()):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
     import shutil
     import subprocess
@@ -789,7 +833,14 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     if boxes:
         # and for the hot keys' message boxes in a battle (notice-display's wait of the timer's tick byte)
         env["DARKLANDS_BATTLE_BOX_CALLBACKS"] = ";".join("%d,%d" % p for p in boxes)
-    run = subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
+    if regain:
+        # the callbacks inside the endurance regain's loop, by the clock at its first read: before which member (timer_marks.py; the
+        # jumps' format, its tick count unused)
+        env["DARKLANDS_BATTLE_REGAIN_RISES"] = ";".join(",".join(["%d" % key, "0"] + ["%d:%d" % r for r in sorted(rises.items())]) for key, rises in regain)
+    if piles:
+        # the stale word the mine's pile filler took at each fill (timer_marks.py)
+        env["DARKLANDS_MINE_PILE_WORDS"] = ",".join("%d" % w for w in piles)
+    run =subprocess.run(args, capture_output=True, text=True, timeout=1800, env=env)
     states = {}
     for line in run.stdout.splitlines():
         if line.startswith("state ") and " card 0x" in line:
@@ -960,6 +1011,9 @@ def main():
     ap.add_argument("--battle-records", action="store_true", help="as --battle-trace, each pass line with the combatant records, queued damage and attack rates (battle_oracle.py's), compared by combat clock: report.json's battle")
     ap.add_argument("--no-wall-draws", action="store_true", help="experiment: R014+0x827A's roll-n(2) leaves the generator as it was")
     ap.add_argument("--coverage", action="store_true", help="<out>/cov/cov-0.jsonl: the original's blocks and branch outcomes (kept only if all states agree)")
+    ap.add_argument("--timer-marks", action="store_true", help="the original run with timer_marks.py's hooks (where its timer callbacks land in the "
+                    "endurance regain, trigger-check and the pile filler), given to the C# host; a recording of its own (opt-in: without it the run, "
+                    "its key and its payload are as before)")
     import recording
     recording.add_arguments(ap)
     a = ap.parse_args()
@@ -976,8 +1030,15 @@ def main():
     entries = ("orig_side", "tick_keys") if tick_keys.uses(steps) else ("orig_side",)
     if tick_keys.uses(steps):
         orig_side.Session = tick_keys.TickKeySession
+    if a.timer_marks:
+        # opt-in: timer_marks.py is hashed with the original side and the flag is a part of the key only when given, so every other
+        # recording keeps its key
+        import timer_marks
+        entries += ("timer_marks",)
+        orig_side.Session = timer_marks.session_class(orig_side.Session)
     parts = {"kind": "session", "steps": steps, "budget": a.budget, "battle_trace": a.battle_trace, "battle_records": a.battle_records,
-             "no_wall_draws": a.no_wall_draws, **recording.common_parts(Path(a.exe), a.game, entries, save)}
+             "no_wall_draws": a.no_wall_draws, **({"timer_marks": True} if a.timer_marks else {}),
+             **recording.common_parts(Path(a.exe), a.game, entries, save)}
     rec = recording.Recording(a.recordings, "sessions", Path(a.script).stem, parts, a.live, a.replay_only)
     got = rec.load(need_coverage=a.coverage)
     if got is None:
@@ -999,6 +1060,7 @@ def main():
         replayed = True
     all_jumps = save_wraps(got["jumps"], got["trace"], got["log"])
     jumps, loot = loot_ticks(all_jumps, got["log"], jump_battles(all_jumps, got["trace"]), got["trace"])
+    jumps, loot, regain = regain_rises(jumps, loot, got["log"], got["trace"])
     ORIGINAL_END[:] = ["end: " + end]
     BWAIT_ACTUAL[:] = got["bwait"]          # the passes each bwait of the original waited (run_original fills it on a live run)
     t_original = got["seconds"]
@@ -1013,7 +1075,7 @@ def main():
     rewrite, output = run_rewrite(Path(a.headless), a.game, cs_steps, save, seeds, out, "records" if a.battle_records else a.battle_trace, set_up, jumps,
                                   got["stale"] if a.battle_records else None, sheet_callbacks(log),
                                   resume_clocks(got["trace"], loads_battle_save(steps, save)) if ("key", "altl") in steps or loads_battle_save(steps, save) else (), loot, log, pause_keys(log, cs_steps, got["trace"]),
-                                  menu_callbacks(log), box_callbacks(log), carry, ticks)
+                                  menu_callbacks(log), box_callbacks(log), carry, ticks, regain, pile_words(log))
     battle = None
     if a.battle_trace:
         lines = [l for l in output.splitlines() if l.startswith("pass ")]

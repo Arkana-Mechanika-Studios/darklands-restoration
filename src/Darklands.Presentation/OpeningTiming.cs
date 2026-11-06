@@ -18,14 +18,23 @@ namespace Darklands.Presentation;
 public static class OpeningTiming
 {
     /// <summary>Per file: ticks from the last cel of the previous file to its tune (the first: 0), and from the tune to its first cel.</summary>
-    // DIVERGENCE: host timing: whether the tick after a file's last cel comes before its next tune (1 here) or after it (0) is the
-    //   original's CPU time against the timer, so it varies with the machine; the values are the measured capture's (OPENING3 1, the others 0).
-    //   After the last cel (root 030B:0565) the player's wait root 030B:00FE..0x012C runs until the reader has caught up, returns, and
-    //   root 03A1 starts the next tune (thunk 09C0:18F1); the next 60 Hz tick (root 030B:0508) lands in that same stretch. A second
-    //   shared-clock capture (DOSBox-X at fixed 3000 cycles/ms, exec traces at those coordinates and the timer interrupt, one emulated
-    //   clock; 2026-11-05; two runs alike) had the tick first at each of the five boundaries it reached (OPENING2..OPENING7), 0.30 to
-    //   0.39 ms before the tune's start (2% of a tick), where the first capture had the tune first at five of six; its cels lie up to
-    //   57 ms off the first capture's. The order follows the CPU's speed against the timer, not the program.
+    // DIVERGENCE: host timing: whether the tick after a file's last cel comes before its next tune (1 here) or after it (0) is
+    //   the original's CPU time against the timer, so it varies with the machine; the values are the measured capture's (OPENING3 1, the others 0).
+    //   Decided from the code (2026-11-06): the cel is shown inside the timer interrupt (root 047C:01EA -> 047C:000A -> 030B:0508 -> cel
+    //   030B:05CA), which waits for the vertical retrace after the decode (R043+0x3B71, 3DA bit 3) and sends its EOI only at its end
+    //   (047C:0236): a timer interrupt due meanwhile waits and runs, with its 60 Hz tick, before the main code's next instruction. The timer is
+    //   locked to the retrace (047C:0257: the divisor is the frame measured over ten retraces, rounded down; the PIT is restarted at a retrace
+    //   after 70 interrupts that land in the displayed lines), so on a VGA the interrupt comes at most the vertical blanking before the
+    //   retrace (0 to about 0.4 ms) ahead of it. If the cel's work before its retrace wait ends within that lead, the cel ends at that retrace
+    //   and the main code has nearly a frame for the ~1,100 instructions to the tune (030B:00FE's end, the file closed, 03A1's tune call):
+    //   tune first. Otherwise it ends at the next retrace, after the next interrupt: tick first. At 3,000 instructions per ms that work took
+    //   more than 1.6 ms for every cel (the second capture: each cel ends 1.60 to 2.08 ms after an interrupt, at the frame's retrace, one or
+    //   two frames on): so the tick comes first on the machines of the game's time (a 386, a 486 at least up to four times that speed), the
+    //   tune first only on a faster one; the first capture (host clock, a fast emulated CPU) is such a machine, the second (fixed 3,000
+    //   cycles, all five boundaries tick first) the slow one, whose emulator also held its interrupt 1.6 to 2.1 ms ahead of the retrace with no
+    //   restart. Neither is the program's own order: the values stay the first capture's, the only complete one (13 364 MPU bytes, 1 171 cels,
+    //   32 samples; the second ends at OPENING7), whose file reads also set FirstCelAfterTune; matching a slow machine would take that
+    //   machine's file reads as well.
     public static readonly IReadOnlyList<(int TuneAfterLastCel, int FirstCelAfterTune)> Files =
     [
         (0, 32), (1, 43), (0, 42), (0, 43), (0, 40), (0, 40), (0, 33),

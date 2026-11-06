@@ -107,6 +107,15 @@ public sealed class BattleScreen : ITacticalView
         return all;
     }
 
+    /// <summary>The key of <see cref="RegainRises"/> for the callbacks after the regain's loop, before fight-input (lockstep.REGAIN_AFTER).</summary>
+    private const int RegainAfter = 9;
+
+    /// <summary>A debugging aid: the timer callbacks that came inside the endurance regain's loop (R014+0x45AE reads the clock anew for each
+    /// member), by the clock at its first read ("2097,0,1:1": one callback before member 1's read;
+    /// the second number is unused, as in the jumps' format; slot RegainAfter: after the loop), as tools/oracle/timer_marks.py finds them in
+    /// the original (DARKLANDS_BATTLE_REGAIN_RISES); lockstep.py takes them off the ticks of the pass before.</summary>
+    public static Dictionary<int, Dictionary<int, int>>? RegainRises { get; set; } = ParseClockRises(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_REGAIN_RISES"));
+
     /// <summary>A debugging aid: for each combat sheet of the run in turn, the timer callbacks that came while it was open (R022+0x0066 ..
     /// R022+0x03C6, DS:07D3 held) and those that came after it up to the next pass's head ("2310,9;40,0"), as tools/oracle/lockstep.py
     /// measures them in the original (DARKLANDS_BATTLE_SHEET_CALLBACKS); the C# host has no time of its own there in OneTickPerPass.</summary>
@@ -241,9 +250,37 @@ public sealed class BattleScreen : ITacticalView
                 var now = _ui.Clock.Milliseconds;
                 Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
                 TacticalBattle.ClockPhase = null;
+                TacticalBattle.RegainRead = null;
+                if (OneTickPerPass && RegainRises is not null)
+                {
+                    // the regain runs before this pass's head, after the end test (whose loot screen counts the clock on): its key is the clock at
+                    // its first read and the battle this pass will count in (a new one where the clock went back)
+                    Dictionary<int, int>? regain = null;
+                    TacticalBattle.RegainRead = slot =>
+                    {
+                        if (regain is null)
+                        {
+                            var head = _battle!.Battle.Clock;
+                            var battle = _lastPassClock is { } last && head < last ? _passBattle + 1 : _passBattle;
+                            regain = RegainRises.Remove(battle == 0 ? head : battle << 16 | head, out var found) ? found : [];
+                        }
+                        if (regain.Remove(slot, out var rise))
+                        {
+                            _clockFraction = rise;
+                            Advance(0);
+                        }
+                    };
+                }
                 // orig: R014+0x0000 (0E76:0000) runs the end test (R014+0x08FE) and the endurance recovery (R014+0x45AE), then R014+0x3166
                 // (the head the tester compares, the player's input); the timer callbacks of a pass come after them
-                if (_battle!.IterateHead())
+                var over = _battle!.IterateHead();
+                if (TacticalBattle.RegainRead is not null)
+                {
+                    // the callbacks after the regain's last read, before fight-input (its slot RegainAfter)
+                    TacticalBattle.RegainRead(RegainAfter);
+                }
+                TacticalBattle.RegainRead = null;
+                if (over)
                 {
                     break;
                 }

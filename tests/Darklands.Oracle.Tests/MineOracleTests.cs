@@ -75,7 +75,76 @@ public sealed class MineOracleTests
         Assert.True(n >= 30, "the corpus has at least 30 scenarios");
     }
 
-    private static string Compact(JsonElement e) => string.Join("/", e.EnumerateArray().Select(v => v.GetInt32()));
+    /// <summary>The oracle's stale pile words (DARKLANDS_MINE_PILE_WORDS, tools/oracle/timer_marks.py) are what the filler takes, one a
+    /// fill that reaches its list of kinds: a word the timer interrupt left (gen-carry-01: 0x5E37 at a section's first pile) changes the
+    /// fill against the corpus's run, where no interrupt came.</summary>
+    [Fact]
+    public void AFedPileWordIsTheOneTheFillerTakes()
+    {
+        var folder = Darklands.Platform.LocalPaths.Get("game", "DARKLANDS_DIR") ?? "";
+        if (!GameFiles.IsGameFolder(folder))
+        {
+            return;
+        }
+        var files = new GameFiles(folder);
+        var catalogue = EnemyCatalogueDecoder.Decode(files.Read("DARKLAND.ENM"));
+        var items = WorldData.Load(files).ItemDefinitions;
+        var tables = CombatTablesReader.Read(DarklandsExecutable.Load(files));
+        var maps = PreparedMaps.Load(files);
+        var changed = 0;
+        try
+        {
+            foreach (var c in Data.Value.Cases("R009+0x0000").Take(12))
+            {
+                var s = c.Inputs;
+                var bf = s.GetProperty("bf").GetInt32();
+                MineBuilder.PileWords = null;
+                var plain = BuildState(s, bf, catalogue, items, tables, maps);
+                Assert.Equal(s.GetProperty("holdrand").GetUInt32(), plain);
+                var fed = new Queue<int>(Enumerable.Repeat(0x5E37, 1000));
+                MineBuilder.PileWords = fed;
+                var other = BuildState(s, bf, catalogue, items, tables, maps);
+                if (fed.Count < 1000)
+                {
+                    // a fill took the word: its first pick that lands on it repeats no kind and draws on
+                    changed += other != plain ? 1 : 0;
+                }
+                else
+                {
+                    Assert.Equal(plain, other);
+                }
+            }
+        }
+        finally
+        {
+            MineBuilder.PileWords = null;
+        }
+        Assert.True(changed > 0, "no scenario's fill took a fed word");
+    }
+
+    private static uint BuildState(JsonElement s, int bf, EnemyCatalogue catalogue, IReadOnlyList<ItemDefinition> items, CombatTables tables, PreparedMaps maps)
+    {
+        var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());
+        var lore = s.GetProperty("lore").GetInt32();
+        var context = new BattlefieldContext
+        {
+            Enemies = catalogue, Items = items, Tables = tables, Maps = maps, Random = random,
+            Location = s.GetProperty("location").GetInt32(),
+            LoreLevel = () => lore,
+            ForceMap = s.GetProperty("forceMap").GetInt32(),
+            ForceSide = s.GetProperty("forceSide").GetInt32(),
+            MineDebugSwitch = Debug(s),
+            Memory = new BattlefieldMemory
+            {
+                LastLocation = s.GetProperty("lastLocation").GetInt32(), ClearedLevels = s.GetProperty("cleared").GetInt32(),
+            },
+        };
+        var state = new GenerationState(context, new BattlefieldForces(catalogue, items, tables, random));
+        MineBattlefield.Build(state, bf, s.GetProperty("specs").EnumerateArray().Select(e => (e[0].GetInt32(), e[1].GetInt32(), e[2].GetInt32())).ToArray());
+        return random.State;
+    }
+
+    private static string Compact(JsonElement e) =>string.Join("/", e.EnumerateArray().Select(v => v.GetInt32()));
 
     private static bool Debug(JsonElement s) => s.TryGetProperty("debugSwitch", out var debug) && debug.GetInt32() != 0;
 
