@@ -256,6 +256,10 @@ public sealed partial class TacticalBattle
     /// enough to (stealth + streetwise), is placed and removed from the list.
     /// </summary>
     // orig: trigger-check R014+0x4442 (0E76:4442) draft (spec D §1.10, asm-verified)
+    // DIVERGENCE: host timing: trigger-check reads the timer's clock DS:07D4 for the next check after its searches, so a timer callback
+    //   that comes during them makes it one later (gen-carry-12: the first check after the in-battle save, at 40756, set DS:DA4F = 40877
+    //   with the clock 40757 at its end, and every later check kept the step; a read-only hook in the original at R014+0x05BD / 0x05C1).
+    //   Where that callback falls is the original's CPU time against the timer; here the clock moves between passes only.
     private bool CheckActivations()
     {
         var result = false;

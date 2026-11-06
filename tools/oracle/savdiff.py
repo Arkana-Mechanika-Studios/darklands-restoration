@@ -154,6 +154,13 @@ ENM_WRITTEN = sorted({0x1E, 0x1F, 0x22, 0x24, 0x48, 0x49, 0x4B, 0x4C, 0x4F, 0x50
 FLOOR = 0x33FC
 BSV_CLOCK = 0x1877
 BSV_POINTER = 0x15A3
+BSV_RECOVER = 0x1849
+
+
+def _one_word(v: bytes, at: int, n: int) -> bytes | None:
+    """The word the n words at v[at] all hold (as bytes), None when they differ."""
+    words = {bytes(v[at + 2 * i:at + 2 * i + 2]) for i in range(n)}
+    return words.pop() if len(words) == 1 else None
 
 
 def _enm_view(level: bytes) -> bytes:
@@ -216,6 +223,16 @@ def bsv_diff(rewrite: bytes, original: bytes, given: bytes | None = None) -> dic
             # outside the battle (emulated time here), the C# keeps the last battle's or the last load's value: reported apart
             out.setdefault("kept", {})["clock"] = "%02X%02X/%02X%02X" % (x[BSV_CLOCK + 1], x[BSV_CLOCK], y[BSV_CLOCK + 1], y[BSV_CLOCK])
             k = [i for i in k if i not in (BSV_CLOCK, BSV_CLOCK + 1)]
+        recover = set(range(BSV_RECOVER, BSV_RECOVER + 10))
+        if name == "vars" and len(y) > BSV_CLOCK + 1 and y[0] == 0 and set(k) & recover and _one_word(x, BSV_RECOVER, 5) == x[BSV_CLOCK:BSV_CLOCK + 2] \
+                and _one_word(y, BSV_RECOVER, 5) is not None:
+            # +0x1849, the members' next endurance recovery DS:DA55, in a battle file saved outside a battle: the battle driver's fight-recovery
+            # (R002+0x05C1, after the result's notice-display and the loot screen) set every slot to the combat clock of then, which the
+            # original's timer had counted on through those screens (emulated time; gen-carry-18: 0x0A00, the result's key read at clock 2560),
+            # the C# host's battle clock not (the battle's last, its file's clock word). Nothing reads them: the next battle's fight-state-reset
+            # (R020+0x06B6) clears them and a battle is taken up only from a file written in one. Reported apart, as the clock
+            out.setdefault("kept", {})["recover"] = "%02X%02X/%02X%02X" % (x[BSV_RECOVER + 1], x[BSV_RECOVER], y[BSV_RECOVER + 1], y[BSV_RECOVER])
+            k = [i for i in k if i not in recover]
         if name == "vars" and set(k) & {BSV_POINTER, BSV_POINTER + 1}:
             # +0x15A3, the pointer shape in use (DS:A68F): a segment of a DOS memory block (R000's commonsp.img buffer) plus an offset, the
             # machine's memory layout (the emulator's here); the C# keeps the file's (TacticalBattle.WriteBattleFile): reported apart

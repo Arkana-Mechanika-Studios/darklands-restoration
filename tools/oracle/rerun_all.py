@@ -758,7 +758,9 @@ for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
 # here (27, 28, 36 of 1..40; since round spawn 2, 4, 8, 15, 22, 24, 38, 40; since round reload 05, by its still:<n> wait for the
 # start pause's keys, and 30, by the enemies' turn rotation; since round refight 7, by the map's terrain DS:D843 kept over a load, 6, 23
 # and 3, ended by the generator at the road card their walk meets (ROAD_CARDS), with the map's vertical-step toggle DS:290E kept over a
-# load, and 9, 16, 21, 31, by rounds spawn and reload together); the others differ in a later battle (open lead,
+# load, and 9, 16, 21, 31, by rounds spawn and reload together; since round bsvtimes 17, 18, 20, 26, 35, 37, by the tester's loot ticks,
+# the clock wrapped by a save, the out-of-battle recovery words and a last load dialog; 10, 19, 39 by refight and bsvtimes together);
+# the others differ only in registered host timing (docs/faithfulness/SUMMARY.md, open items
 # docs/faithfulness/SUMMARY.md) and are made again by the generator. carry-reload-footpads: ordercarry's varB without its script fault
 CARRY = {
     "gen-carry-05": "synth/DKSAVE0-card24.sav",
@@ -783,6 +785,15 @@ CARRY = {
     "gen-carry-21": "DKSAVE0.SAV",
     "gen-carry-23": "DKSAVE99.SAV",
     "gen-carry-31": "synth/DKSAVE0-card7a.sav",
+    "gen-carry-17": "DKSAVE99.SAV",
+    "gen-carry-18": "synth/DKSAVE99-card24.sav",
+    "gen-carry-20": "synth/DKSAVE99-carda5.sav",
+    "gen-carry-26": "DKSAVE99.SAV",
+    "gen-carry-35": "DKSAVE99.SAV",
+    "gen-carry-37": "synth/DKSAVE99-card24.sav",
+    "gen-carry-10": "synth/DKSAVE99-card24.sav",
+    "gen-carry-19": "synth/DKSAVE99-carda5.sav",
+    "gen-carry-39": "synth/DKSAVE99-card24.sav",
 }
 SESSIONS.update(CARRY)
 BATTLE_RECORDS |= set(CARRY)
