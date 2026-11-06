@@ -358,7 +358,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         if (key == Keys.Escape)
         {
             Outline(_cursor, Current.Color);
-            // orig: R031+0x08F6 (1462:08F6) draft: restores fonts and pointer (nothing to restore here), DS:9920 = DS:9934 = 1
+            // orig: R031+0x08F6 (1462:08F6) draft: restores fonts and pointer (pointer-shape-set(0, 0, DS:9C42) at R031+0x0924), DS:9920 = DS:9934 = 1
+            ui.PointerHotSpot = (0, 0);
             SaveAndLoad?.Invoke(1);
             return true;
         }
@@ -842,6 +843,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             Screen.Restore(_underPanel);
             _underPanel = null;
         }
+        // orig: R031+0x09A2: pointer-shape-set(0, 0, DS:9C42) whether a panel was open or not (GameUi.PointerHotSpot)
+        ui.PointerHotSpot = (0, 0);
         _open = false;
     }
 
@@ -895,6 +898,9 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         {
             DrawBoxText(i);
         }
+        // orig: R031+0x0B0B: pointer-shape-set(0, 0, DS:9C42) after the boxes: the sheet's gauntlet has hot spot (0, 0), also when it was
+        //   opened from the map (GameUi.PointerHotSpot); tests: PointerHotSpotTests
+        ui.PointerHotSpot = (0, 0);
     }
 
     /// <summary>The party panel on the sheet's left edge, the shown member framed.</summary>

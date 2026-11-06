@@ -354,50 +354,87 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: the lockstep tester's emulator measures 14 (4 steps: the vis10 night-gate picture's colours 160/167/234/238 one step off, all 96 colours
     //   0xA0..0xFF recomputed from the DAC agree with 4 steps there and 11 here); matching it would tie the fade to the tester's
     //   emulated retrace speed, which no player's machine has, so the divergence below stays (re-checked 2026-11-05).
+    // C: the step count is the only thing DS:5734 changes: PaletteRamp with the tester's 14 (4 steps) and with 38 (11 steps) gives, upload by
+    //   upload, the DAC values the original's palette-ramp computes from the same DAC with DS:5734 set to 14 and to 38 (direct calls of
+    //   R043+0x3838, tests: FadeRampTests); the last step's colours differ by one DAC step in a few entries between 4 and 11 steps (the
+    //   rounding of saa / sca), which is the night gate's four colours.
     // DIVERGENCE: the original measures DS:5734 once per run (R043+0x3A1C) on the machine; a fixed 38 is used here.
-    private const int FadeSteps = 3 * 38 / 10;
+    public const int FadeMeasure = 38;
 
-    // orig: R043+0x3838 (17E5:0008) matched + R043+0x3AE6 (1810:0006) asm, palette-ramp(a, b, c, d, e): the DAC is read; per step i (1..steps) colours 0x20..0x7F become
-    //   blend(start, colour a, i * saa) and 0xA0..0xFF blend(start, colour c, i * sca), saa = b * 0xFFFF / (steps * 100), sca = d * 0xFFFF /
-    //   (steps * 100) (long division); blend R043+0x3AE6 (1810:0006, asm) = (src * (0xFFFF - y) + target * y + 0x8000) >> 16 on the 6-bit DAC
-    //   values (checked against asm); the card calls palette-ramp(7, 100, 0x1F or 0xFF, 70, 3). tests: tools/visuals/compare.py (the end of the fade and the departure choice)
+    /// <summary>palette-ramp's step count for the measure DS:5734 and its fifth argument e: e * measure / 10, within 1..1000.</summary>
+    // orig: R043+0x385E..0x387E: imul DS:5734, idiv 10, clamped to 1..0x3E8
+    public static int RampSteps(int e, int measure) => Math.Clamp(e * measure / 10, 1, 1000);
+
+    /// <summary>
+    /// palette-ramp(a, b, c, d, e) over a 6-bit DAC (768 bytes): the uploads it makes, in order: per step the 96 colours 0x20..0x7F, then the
+    /// 96 colours 0xA0..0xFF (288 bytes each, R, G, B).
+    /// </summary>
+    // orig: R043+0x3838 (17E5:0008) matched + R043+0x3AE6 (1810:0006) asm: the DAC is read (R043+0x384A into DS:530A); per step i (1..steps)
+    //   colours 0x20..0x7F become blend(start, colour a, i * saa) and 0xA0..0xFF blend(start, colour c, i * sca), saa = b * 0xFFFF / (steps * 100),
+    //   sca = d * 0xFFFF / (steps * 100) (long division, b and d within 0..100), the weights kept as words (0xFFFF less, and plus, saa each
+    //   step); blend R043+0x3AE6 = (src * w0 + target * w1 + 0x8000) >> 16 on the 6-bit DAC values; each half uploaded by root 047C:058B.
+    //   checked against asm and direct calls; tests: FadeRampTests
+    public static List<byte[]> PaletteRamp(byte[] dac, int a, int b, int c, int d, int e, int measure)
+    {
+        var steps = RampSteps(e, measure);
+        b = Math.Clamp(b, 0, 100);
+        d = Math.Clamp(d, 0, 100);
+        var saa = (int)(b * 0xFFFFL / (steps * 100L));
+        var sca = (int)(d * 0xFFFFL / (steps * 100L));
+        ushort downA = 0xFFFF, downC = 0xFFFF, upA = 0, upC = 0;
+        var uploads = new List<byte[]>();
+        for (var step = 1; step <= steps; step++)
+        {
+            downA = (ushort)(downA - saa);
+            downC = (ushort)(downC - sca);
+            upA = (ushort)(upA + saa);
+            upC = (ushort)(upC + sca);
+            uploads.Add(Half(0x20, a, downA, upA));
+            uploads.Add(Half(0xA0, c, downC, upC));
+        }
+        return uploads;
+
+        byte[] Half(int first, int target, ushort w0, ushort w1)
+        {
+            var values = new byte[0x60 * 3];
+            for (var k = 0; k < values.Length; k++)
+            {
+                values[k] = (byte)((dac[first * 3 + k] * (long)w0 + dac[target * 3 + k % 3] * (long)w1 + 0x8000) >> 16);
+            }
+            return values;
+        }
+    }
+
+    // orig: palette-ramp(7, 100, 0x1F or 0xFF, 70, 3) = R043+0x3838 (PaletteRamp) on the screen's DAC. tests: FadeRampTests, tools/visuals/compare.py
+    //   (the end of the fade and the departure choice)
     private void FadePalette(bool animate)
     {
         var palette = _canvas.Screen.Palette;
-        var start = (uint[])palette.Clone();
-        var grey = start[Palette.Grey];
-        var light = start[_pictureName.StartsWith('x') ? 0x1F : 0xFF];
-        var saa = (int)(100 * 0xFFFFL / (FadeSteps * 100));
-        var sca = (int)(70 * 0xFFFFL / (FadeSteps * 100));
-        for (var step = animate ? 1 : FadeSteps; step <= FadeSteps; step++)
+        // C: the screen keeps 8-bit colours widened from the 6-bit DAC values (v << 2 | v >> 4), so v = c >> 2 exactly.
+        var dac = new byte[768];
+        for (var i = 0; i < 256; i++)
         {
-            for (var i = 0x20; i < 0x80; i++)
+            dac[3 * i] = (byte)(((palette[i] >> 16) & 0xFF) >> 2);
+            dac[3 * i + 1] = (byte)(((palette[i] >> 8) & 0xFF) >> 2);
+            dac[3 * i + 2] = (byte)((palette[i] & 0xFF) >> 2);
+        }
+        var uploads = PaletteRamp(dac, Palette.Grey, 100, _pictureName.StartsWith('x') ? 0x1F : 0xFF, 70, 3, FadeMeasure);
+        for (var k = animate ? 0 : uploads.Count - 2; k < uploads.Count; k++)
+        {
+            var first = k % 2 == 0 ? 0x20 : 0xA0;
+            var values = uploads[k];
+            for (var i = 0; i < 0x60; i++)
             {
-                palette[i] = Blend(start[i], grey, step * saa);
+                palette[first + i] = 0xFF000000u | Widen(values[3 * i]) << 16 | Widen(values[3 * i + 1]) << 8 | Widen(values[3 * i + 2]);
             }
-            for (var i = 0xA0; i <= 0xFF; i++)
-            {
-                palette[i] = Blend(start[i], light, step * sca);
-            }
-            if (animate)
+            if (animate && k % 2 == 1)
             {
                 ui.Present();
                 ui.Clock.Sleep(2 * 1000 / 70);
             }
         }
-    }
 
-    private static uint Blend(uint from, uint to, int y)
-    {
-        uint Channel(int shift)
-        {
-            // C: the screen keeps 8-bit colours widened from the 6-bit DAC values (v << 2 | v >> 4), so v = c >> 2 exactly.
-            var source = (long)((from >> shift) & 0xFF) >> 2;
-            var target = (long)((to >> shift) & 0xFF) >> 2;
-            var v = (int)((source * (0xFFFF - y) + target * y + 0x8000) >> 16) & 0xFF;
-            return (uint)((v << 2) | (v >> 4)) << shift;
-        }
-        return 0xFF000000u | Channel(16) | Channel(8) | Channel(0);
+        static uint Widen(byte v) => (uint)((v << 2) | (v >> 4));
     }
 
     // orig: R043+0x27E6 (150B:1D56): nothing at Expert (difficulty-setting == 2); the side window (colour 15) gets the strip background, then the text: "The chance of success is " + N% (Basic) or a quality word (grade-words[pct / 20], "hopeless" for 0) for pct >= 0, "ERROR!!!" for pct == -2, otherwise the message the option's function put in text-bank-buffer; centred in a 50-pixel column at x 5, vertically centred in the strip (h - text height) / 2 and at least 0

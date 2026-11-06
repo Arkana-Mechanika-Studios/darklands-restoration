@@ -40,6 +40,9 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
     // orig: R034+0x0EE6 and R034+0x11BC (background, fonts 1)
     public void Show(GameState state)
     {
+        // orig: R034+0x0F2D: pointer-shape-set(0, 0, DS:9C42) before the screen is drawn (GameUi.PointerHotSpot: F6 on the map leaves the
+        //   map's (5, 0) behind); tests: PointerHotSpotTests
+        ui.PointerHotSpot = (0, 0);
         var canvas = ui.Canvas;
         _town = state.InCity ? state.CurrentLocation : LocationRules.NearestCity(state, state.MapPosition.X, state.MapPosition.Y);
         _back = ScreenDrawing.DrawBackground(ui, panel, state.Party, "ptystats");

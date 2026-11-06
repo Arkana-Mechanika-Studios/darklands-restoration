@@ -1,0 +1,27 @@
+# vis10 visuals (D-34c4d5): DKSAVE0's first card (as comm-inn-save), member 0's character sheet from the party panel, the pointer over the sheet's lists: the original's pointer turns to the hand pictures there, the C#'s stays the gauntlet
+key:t
+wait:5
+key:l
+wait:300
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:200
+shot:card
+click:20,20
+wait:200
+move:150,110
+wait:30
+shot:list1
+move:250,150
+wait:30
+shot:list2
+key:esc
+wait:200
+shot:back
