@@ -39,6 +39,7 @@ class TickKeySession(orig_side.Session):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.tick_keys_left = 0
+        self.tick_keys_waiting = 0      # the keys of the last tkey not read yet: real presses in the buffer
         self.hook(*orig_side.TIMER_CALLBACK, self._tick_key, record="root")
 
     def _tick_key(self, m):
@@ -51,6 +52,7 @@ class TickKeySession(orig_side.Session):
         self.script[0:1] = [("key", k) for k in keys]
         self._buffered = True
         self.tick_keys_left = len(keys) - 1
+        self.tick_keys_waiting = len(keys)
         self.log.append("tkey %s in the buffer at %d ms (battle pass %d) in %s" % (",".join(keys), self.ms, self.battle_passes, " < ".join(self.call_stack[-3:])))
 
     def _next_key(self):
@@ -65,7 +67,17 @@ class TickKeySession(orig_side.Session):
             self.script[0] = (STEP, "0:" + ",".join(parse(self.script[0][1])[1]))
             self._tick_key(m)
         out = super()._get_key(m)
+        self.tick_keys_waiting = max(0, self.tick_keys_waiting - 1)
         if self.tick_keys_left > 0:
             self.tick_keys_left -= 1
             self._buffered = True       # the next key pressed at the same tick waits in the buffer too
         return out
+
+    def _key_pressed(self, m):
+        # a tkey's keys are in the buffer as real presses: whichever look comes next finds them. orig_side holds a script's Alt key back
+        # from the map's own looks (R030+0x0540 / 0x056D) and the card menu's, for hotkey-table's; a pressed Alt-Q there reaches the map's
+        # handler (R030+0x0C44 case 0x1000), as in the original (round restart: session tk-map-altq)
+        if self.tick_keys_waiting > 0 and not (self.script and self.script[0][0] == STEP):
+            k = self._next_key()
+            return (0 if k is None else k, 0)
+        return super()._key_pressed(m)

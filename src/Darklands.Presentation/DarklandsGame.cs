@@ -134,6 +134,9 @@ public sealed class DarklandsGame
     // orig: DS:0BF2, set by Q in R000+0x0114
     private bool _noAnimations;
 
+    /// <summary>What the program start read (CONFIG.DRK's driver, the command line's Q), read again by a new run (null without <see cref="ShowStartUp"/>).</summary>
+    public StartUpResult? Started { get; private set; }
+
     private Cinematics Cinematics => new(_ui) { Animations = !_noAnimations };
 
     /// <summary>Shows the opening animations before the start screen.</summary>
@@ -160,6 +163,7 @@ public sealed class DarklandsGame
                     return;
                 }
                 _noAnimations = started.NoAnimations;
+                Started = started;
                 if (PlayOpening && !_noAnimations && !startUp.CheckOpeningSamples(started))
                 {
                     return;
@@ -186,9 +190,9 @@ public sealed class DarklandsGame
             }
             while (true)
             {
-                if (_played)
+                if (_played && !RestartProgram())
                 {
-                    RestartProgram();
+                    return;
                 }
                 StartChoice choice;
                 OnStartScreen = true;
@@ -228,7 +232,22 @@ public sealed class DarklandsGame
         catch (QuitGameException)
         {
         }
+        catch (ProgramExitException exit)
+        {
+            // orig: root 0617:067E: the text screen, perror's line, exit(99): DOS comes back with the line on the screen
+            ProgramExit = exit;
+            try
+            {
+                new StartUp(_ui, _files, CommandLine).Exit(exit.Printed);
+            }
+            catch (QuitGameException)
+            {
+            }
+        }
     }
+
+    /// <summary>The original's end with a message that ended the last <see cref="Run"/> (null: it ended otherwise); a host reports its exit code.</summary>
+    public ProgramExitException? ProgramExit { get; private set; }
 
     /// <summary>The game last in memory (the program start's until one is played): what a load from the start screen reads over.</summary>
     private GameState? _session;
@@ -274,7 +293,10 @@ public sealed class DarklandsGame
 
     /// <summary>
     /// The start screen shown again after a game (the party perished, or the game ended): the program's globals go back to their start
-    /// values, as in a new run of the program; the work files stay as the last game's battle file held them.
+    /// values, as in a new run of the program; the work files stay as the last game's battle file held them. The interface's globals too
+    /// (GameUi.ProgramStart: the music and sound options on, the colours, the panel's selection ...), the party menus' (the creation menu's
+    /// and the inn roster's), and the program start's configuration is read again (CONFIG.DRK, the command line). False: the configuration
+    /// would stop the new run (a sound driver given with -A is gone), and the program ends.
     /// </summary>
     // orig: the start screen (thunk 09C0:18DD = R037+0x9C48) has one caller, root 03A1:0291, before setjmp(DS:A752) (03A1:0299) and the
     //   card loop; R037+0x9C48 has no other caller and is in no pointer table. The loop ends the program on 0x62 / -0x63 (03A1:046B, main
@@ -283,10 +305,23 @@ public sealed class DarklandsGame
     //   program, where every global (DS:D843 the party's terrain, DS:290E the map's vertical step, DS:E237 the enemies' turn rotation,
     //   the generation's and the battle file's globals, the cards' text variables) has its start value, and the work files are what
     //   the last run left.
-    // C: the start screen coming again after a game is the divergence of Run (and GameOverException); this makes it a new run.
-    private void RestartProgram()
+    // C: the start screen coming again after a game is the divergence of Run (and GameOverException); this makes it a new run. The new run's
+    //   banner, memory check and opening are not shown again (the start screen comes at once); the options file the original reads is
+    //   CONFIG.DRK (R000+0x0114; no file name in the EXE or its overlays ends in .cfg: the folder's DARKLAND.CFG, the installation's choices, is never opened); tests: ProgramStartTests
+    private bool RestartProgram()
     {
         _played = false;
+        if (ShowStartUp)
+        {
+            if (new StartUp(_ui, _files, CommandLine).ReadConfiguration() is not { } again)
+            {
+                return false;
+            }
+            Started = again;
+            _noAnimations = again.NoAnimations;
+        }
+        _ui.ProgramStart();
+        CharacterCreationScreen.ProgramStart();
         if (_session?.BattleFile is { } last)
         {
             _workFiles = ((byte[]?)last.Terrain?.Clone(), (byte[]?)last.Loot?.Clone());
@@ -300,6 +335,7 @@ public sealed class DarklandsGame
         _generationMemory = new Core.Battles.Generation.GenerationProcessMemory();
         _seenPositions = null;
         _cursorKeys = new Core.Battles.Tactics.CursorKeyState();
+        return true;
     }
 
     /// <summary>Plays a game; a load while playing (Alt-L) goes on with the loaded game.</summary>
@@ -369,6 +405,7 @@ public sealed class DarklandsGame
         Options.Music = loaded.Music;
         Options.SoundEffects = loaded.SoundEffects;
         box.Close(shown);
+        LoadShieldPictures(loaded);
         // DIVERGENCE: no original: a game saved with mods (its companion file, ModdedSaves) that are not loaded now goes on without
         //   them, from the game's cards its .SAV names; the player is told which mods are missing.
         if (loaded.Mods.Problem is { } problem)
@@ -456,8 +493,11 @@ public sealed class DarklandsGame
             //   Justified (evid1o): a right answer (a click on the picture or keys 1..4 against the symbol asked, R041+0x050E; key 5, top row or keypad,
             //   passes whatever was asked: R041+0x0537 / 0x0553) changes nothing else of the game: R041+0x04DA puts the screen back and restores DS:2816 /
             //   DS:2804 from the copies R041+0x0006 made; only the background window's text colour DS:2812 stays at the 14 set at R041+0x00C8 (presentation); a wrong one
-            //   ends the program (R041+0x0594: shutdown, exit(0) at R041+0x05C2). This rests on the reading of the code: a direct call of R041+0x0000 from
-            //   the Tyrnau map state (j_copy.py) ended in the tester right after the five draws, so it shows only those.
+            //   ends the program (R041+0x0594: shutdown, exit(0) at R041+0x05C2). Measured: direct calls of R041+0x0000 from a map state
+            //   (mapsave) with the tester's stub of it removed (the stub, orig_side's _copy_protection, makes the five draws and returns: why an earlier
+            //   call returned after them), answered with each key: 5, keypad 5 and the symbol asked return 0 after five draws with the saved game
+            //   byte-identical (the DS bytes changed: DS:2812, the random state, the pointer's and windows' words, the palette copies); 1, 3, 4,
+            //   Enter and Esc end the program with exit(0) (local/batch/copyprot: copyprot.json).
             Core.World.CopyProtection.Draw(state.Random);
             state.Events.CreateHere(CopyProtectionEvent, CopyProtectionHours);
         }
@@ -765,6 +805,18 @@ public sealed class DarklandsGame
         finally
         {
             Core.Rules.TimePassage.PartyPerished -= Perished;
+        }
+    }
+
+    /// <summary>The party's shield pictures after a load: one the original cannot open ends the program.</summary>
+    // BUG: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754,
+    //   every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the
+    //   program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
+    private void LoadShieldPictures(LoadedGame loaded)
+    {
+        if (!Behaviour.FixLoadTwoSlotsOneRecord && loaded.SlotsWithoutRecord.Count > 0)
+        {
+            throw ProgramExitException.FileNotFound("pics\\shield.pic");
         }
     }
 }

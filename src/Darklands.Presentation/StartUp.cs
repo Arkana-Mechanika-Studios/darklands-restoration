@@ -91,6 +91,20 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
         {
             Console.Write(row, 0, Entry(row));
         }
+        return Configuration(hold: true);
+    }
+
+    /// <summary>
+    /// The configuration as a new run of the program reads it again (CONFIG.DRK and the command line; DarklandsGame.RestartProgram): no banner,
+    /// and a stop (an unknown argument, a missing driver) shows nothing; null then.
+    /// </summary>
+    // orig: R000+0x0114 again in the next run of the program (the original reads CONFIG.DRK once per run, before the banner's wait)
+    public StartUpResult? ReadConfiguration() =>
+        Configuration(hold: false) is { } config ? new StartUpResult(config.NoAnimations, config.Driver) : null;
+
+    /// <summary>CONFIG.DRK and the command line (the part of R000+0x0114 after the banner); <paramref name="hold"/>: a stop holds its messages.</summary>
+    private (bool NoAnimations, bool Report, string Driver)? Configuration(bool hold)
+    {
         // orig: fopen("config.drk", "rb"): missing, the driver is "nsound.dlc"; else fread(DS:A86E, 8, 1, f) (card, port, IRQ, DMA)
         // and the card's letter + "sound.dlc"
         // C: a shorter file leaves the rest of the eight bytes as they were (zero at the start of the program).
@@ -169,7 +183,10 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
         (bool, bool, string)? Stop()
         {
             // orig: exit(0) after the loop: the messages stay under the banner and DOS comes back
-            HoldText();
+            if (hold)
+            {
+                HoldText();
+            }
             return null;
         }
     }
@@ -354,11 +371,18 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
             return true;
         }
         bytes = [];
+        Exit(ProgramExitException.FileNotFound(name).Printed);
+        return false;
+    }
+
+    /// <summary>The program's end with a message: the text screen cleared, the message printed and held (a game's <see cref="ProgramExitException"/>).</summary>
+    // orig: root 0617:067E draft: int 10h mode 3, perror(name), exit(99)
+    public void Exit(string printed)
+    {
         _graphicsMode = false;
         Console.SetMode();
-        Console.Printf(name + ": No such file or directory\n");
+        Console.Printf(printed);
         HoldText();
-        return false;
     }
 
     // DIVERGENCE: the original returns to DOS with its message on the screen; here the screen stays until a key, a click or the

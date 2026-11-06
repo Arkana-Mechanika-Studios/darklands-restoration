@@ -13,6 +13,22 @@ public sealed class QuitGameException : Exception
     public QuitGameException() : base("The player quit the game.") { }
 }
 
+/// <summary>The program ends where the original ends it with a message (a file it cannot open: exit 99 with perror's line).</summary>
+// orig: root 0617:000E (the file opener of the loaders root 0617:011E and 0617:045C): a failed open calls root 0617:067E: int 10h mode 3
+//   (the screen cleared), perror(name) (root 06A1:1B7C: "<name>: No such file or directory\n" for ENOENT), exit(99)
+// C: DarklandsGame.Run shows <see cref="Printed"/> on the cleared text screen (StartUp.Exit) and the program ends.
+public sealed class ProgramExitException(string printed, int code = 99) : Exception("The program ended: " + printed.TrimEnd())
+{
+    /// <summary>What the original printed on the text screen before it exited.</summary>
+    public string Printed { get; } = printed;
+
+    /// <summary>The exit code.</summary>
+    public int Code { get; } = code;
+
+    /// <summary>A file the original's file opener could not open: perror's "name: No such file or directory".</summary>
+    public static ProgramExitException FileNotFound(string name) => new(name + ": No such file or directory\n");
+}
+
 /// <summary>Nobody is left in the party: the death film has been shown and the game is over.</summary>
 // orig: hours-elapse R029+0x255A and battle-driver R029+0x2278 end the program with exit_ after the death film
 // DIVERGENCE: the original exits to DOS (exit_) after the death film; here the player comes back to the start screen, which stands for a
@@ -75,6 +91,36 @@ public sealed class GameUi
         {
             Canvas.SetColor(i, Palette.StartupColors[i]);
         }
+    }
+
+    /// <summary>
+    /// The interface's program globals back at their start values, as a new run of the program finds them (the start screen shown again
+    /// after a game, DarklandsGame.RestartProgram): the options on, the VGA colours with the start-up colours, the card window's font, no
+    /// picture page, no kept piece of music, the palette cycles held and empty, the barter listing, the panel's selection and order mode
+    /// cleared, the mouse driver's release count at 0. What a host set (its callbacks, the clean drawing, the keyboard menus, the
+    /// screenshot folder, its command queue) stays.
+    /// </summary>
+    // orig: DS:01BE / DS:01BF (music-setting, sound-setting) are 1 in the EXE's data image; DS:9C3D, DS:86A2, DS:9064, DS:A6B3 and DS:9C46
+    //   are BSS (0 at start-up; DS:A6B2 chosen-member is set before it is read); the card window's font byte is 3 in the image (DS:016A+0x10);
+    //   the mode switch of R000+0x052A sets the VGA mode's colours and root 03A1:000A the start-up colours 0..15; the mouse driver's reset
+    //   (INT 33h AX = 0) at start-up clears its release counts; the palette cycle slots: PaletteCycles.Reset
+    public void ProgramStart()
+    {
+        Options.SoundEffects = true;
+        Options.Music = true;
+        CardWindowFont = 3;
+        PicturePage = null;
+        _held = null;
+        SavedMusic.Value = 0;
+        Cycles.Reset();
+        Array.Clear(BarterListing);
+        Array.Clear(PanelSelection);
+        PanelOrderMode = (false, -1);
+        PartyIconsDirty = false;
+        _leftReleases = 0;
+        _lastReleaseX = _lastReleaseY = 0;
+        Canvas.UsePalette(Content.Formats.Graphics.Palette256.DefaultVga);
+        UseStartupColors();
     }
 
     public Canvas Canvas { get; }

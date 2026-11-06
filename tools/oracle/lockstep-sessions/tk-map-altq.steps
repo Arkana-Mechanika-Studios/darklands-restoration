@@ -1,0 +1,20 @@
+# Lockstep session (restart, item 5: R030+0x0C44's own Alt-Q case, 0x0CD5..0x100E, tick_keys.py): DKSAVE17 on the map. Right and Alt-Q
+# pressed together: the map's look reads Right and then the waiting Alt-Q (R030+0x0540..0x057B), so the map's handler gets Alt-Q: it frees
+# the row buffer and the cell buffer (DS:2870, 7E3E:1FFC) and the icon pictures (DS:E416), then exit-to-system asks "Quit to DOS?"
+# (root 0000:13A0); N goes on, with the buffers freed; a walk after it. (A second Alt-Q would end the program: local/batch/mapquit.)
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+tkey:0:right,altq
+wait:100
+key:n
+wait:300
+state:no1
+click:150,110
+wait:600
+state:walked
+click:250,60
+wait:600
+state:walked2

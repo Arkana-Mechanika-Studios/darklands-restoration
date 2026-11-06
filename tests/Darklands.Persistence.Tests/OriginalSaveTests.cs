@@ -306,7 +306,10 @@ public sealed class OriginalSaveTests
         var sav = SaveFolderCopy.Read(name);
         BitConverter.GetBytes(BitConverter.ToInt16(sav, 0xF3)).CopyTo(sav, 0xF5);
         var count = BitConverter.ToInt16(sav, 0xF1);
-        var state = OriginalSaves.Read(sav, [], name, NoGameData.Instance).State;
+        var loaded = OriginalSaves.Read(sav, [], name, NoGameData.Instance);
+        var state = loaded.State;
+        // the slot the load screen asks "picsshield.pic" for (OriginalBehaviour.FixLoadTwoSlotsOneRecord)
+        Assert.Equal([1], loaded.SlotsWithoutRecord);
         Assert.Equal(CharacterStatus.Empty, state.Party.Members[1].Status);
         Assert.Equal(CharacterStatus.Able, state.Party.Members[0].Status);
         state.Party.Members[0].Age = 70;
