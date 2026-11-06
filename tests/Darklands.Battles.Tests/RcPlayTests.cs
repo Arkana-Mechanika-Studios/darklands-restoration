@@ -99,7 +99,11 @@ public sealed class RcPlayTests
                         _idle = 2;
                         break;
                     case 'c':
-                        _keys.Enqueue(int.Parse(value, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture));
+                        // c:<hex>[,<hex>...]: key codes, several pressed in one frame (the buffer holds them all for the next look)
+                        foreach (var code in value.Split(','))
+                        {
+                            _keys.Enqueue(int.Parse(code, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture));
+                        }
                         _idle = 2;
                         break;
                     case 'w':

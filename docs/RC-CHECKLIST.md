@@ -18,11 +18,14 @@ How to read an item:
 Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (361
 entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMMARY.md](faithfulness/SUMMARY.md) (open items).
 
-* The eight data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
+* The eleven data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
   "The innkeeper has no room for more." with 63 stores or 128 entries), the save writer keeping empty party slots, a leaving
   member's record, the Dissolve Lock / Dissolve key using the right Eater-Water, and no ghost party member after a won argument at the
-  Devil's Bridge, and a refused load of a saved game cut short ("This saved game is damaged and cannot be loaded."). The original may
-  garble, crash or play on from garbage there.
+  Devil's Bridge, a refused load of a saved game cut short ("This saved game is damaged and cannot be loaded."), the inn's roster
+  going on where the original ends with "pics\small.pic: No such file or directory" (an arrow onto a party member on the fifth row or later),
+  a saved game with two slots naming one record loading where the original ends with "pics\shield.pic: No such file or
+  directory", and the travel map going on after its own Alt-Q was answered "no" (the original ends with "M - Buffer dealloc
+  error" at the next Alt-Q, camp, portrait click or departure). The original may garble, crash or play on from garbage there.
 * Window, scale, fullscreen, pointer and key timing are the host's. Animation speed and exact frame phase can differ.
 * The battle clouds (potion gas): the depth order and clipping now follow the original (D-09fbc1 is closed); only the colour
   cycling phase and the puffs' random jitter frame by frame can differ, and a paused battle may show one more jitter frame

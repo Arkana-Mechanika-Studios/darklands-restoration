@@ -120,6 +120,48 @@ public sealed class ScreenInputTests
         Assert.Equal(0, ui.TakeLeftReleases().Count);
     }
 
+    /// <summary>
+    /// The inn's roster: Down onto row 4 (past the four figure pictures) with the party member of roster entry 4 there loads
+    /// "pics\small.pic" (R038+0x045F..0x04CA) and the program ends (exit 99); fixed (DataSafe), the roster goes on.
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void AnArrowOntoAPartyMemberPastTheFigureListEndsTheProgramUnlessFixed(bool fixedGame)
+    {
+        (int, MouseState)[] frames = [Up(5, 5), Up(5, 5), Key(Keys.Down), Up(5, 5), Key(Keys.Down), Up(5, 5), Key(Keys.Down), Up(5, 5),
+            Key(Keys.Down), Up(5, 5), Key(Keys.Escape), Up(5, 5), Up(5, 5)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, state, panel, world))
+        {
+            return;
+        }
+        // DKSAVE0: six roster records, party slot 0 holds record 4, so row 4 (the fifth, past the four figure pictures) is a member
+        var saves = DarklandsGame.DefaultSaveDirectory(ui.Assets.Files.Root);
+        if (Directory.GetFiles(saves).FirstOrDefault(f => Path.GetFileName(f).Equals("DKSAVE0.SAV", StringComparison.OrdinalIgnoreCase)) is not { } sav)
+        {
+            return;
+        }
+        state = Darklands.Persistence.OriginalSaves.Read(File.ReadAllBytes(sav), [], "DKSAVE0.SAV", world).State;
+        state.Data = world;
+        Assert.Equal(4, state.Roster.PartySlots[0]);
+        state.Behaviour = fixedGame ? OriginalBehaviour.DataSafe : OriginalBehaviour.Faithful;
+        // the menus' shared row from the top (a new run of the program)
+        CharacterCreationScreen.ProgramStart();
+        var roster = new PartyRosterScreen(ui, panel, world);
+        if (fixedGame)
+        {
+            roster.Run(state, 0);
+            Assert.False(host.QuitRequested);
+        }
+        else
+        {
+            var exit = Assert.Throws<ProgramExitException>(() => roster.Run(state, 0));
+            Assert.Equal("pics\\small.pic: No such file or directory\n", exit.Printed);
+            Assert.Equal(99, exit.Code);
+        }
+    }
+
     /// <summary>The creation menu's exit R037+0x0348 clears the mouse driver's left-release count (root 047C:1320(6, 0, 0, 0)).</summary>
     [Fact]
     public void TheCreationMenuLeavesNoReleaseCountBehind()

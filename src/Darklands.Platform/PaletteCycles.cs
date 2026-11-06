@@ -118,6 +118,20 @@ public sealed class PaletteCycles
         return s.Written ? (s.First, s.Colours.AsMemory(s.Position, s.Bytes)) : null;
     }
 
+    /// <summary>The slots as a new run of the program finds them: nothing taken, nothing running, the cycles held.</summary>
+    // orig: the slot records are in the graphics overlay's segment (28C0), loaded afresh by every run of the program (R000+0x052A, the
+    //   overlay mgraphic.exe through root 047C:07CE); DS:07D8 is 0 in the EXE's data image
+    public void Reset()
+    {
+        Running = false;
+        foreach (var s in _slots)
+        {
+            s.Direction = s.Position = s.Bytes = s.First = s.Reload = s.Counter = 0;
+            s.Written = false;
+            Array.Clear(s.Colours);
+        }
+    }
+
     /// <summary>Forgets what the slots wrote (the palette was set again: the DAC shows the palette until each slot's next step).</summary>
     public void PaletteSet()
     {

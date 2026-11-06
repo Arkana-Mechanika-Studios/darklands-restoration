@@ -81,7 +81,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         ui.Redraw = () => UseMapPalette(state);   // orig: the `redraw` label of 0c44 after a character sheet or the party information: pictures reloaded, season palette, panel
         try
         {
-            return TravelLoop(state, eventStarted);
+            var card = TravelLoop(state, eventStarted);
+            // orig: world-map-start R030+0x0264..0x0270 after world-map-loop: root 05BA:00C2(DS:2870, "Map") frees the row buffer
+            FreeBuffer(state, "Map");
+            return card;
         }
         finally
         {
@@ -199,6 +202,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                         return campCard;
                     }
                 }
+                else if (key == Keys.AltQ)
+                {
+                    MapQuit(state);
+                }
             }
             if (dx == 0 && dy == 0)
             {
@@ -222,6 +229,46 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         }
     }
 
+    /// <summary>The map visit's buffers were freed by its own Alt-Q case (R030+0x0FD8..0x101B) and not allocated again.</summary>
+    // orig: DS:2870 (the row buffer), 7E3E:1FFC (the cell buffer), DS:E416 (the icon pictures): 0 after the case; world-map-start
+    //   R030+0x00A8 allocates them again at the next visit (a new OverlandScreen here)
+    private bool _buffersFreed;
+
+    /// <summary>Alt-Q read by the map's own look: the map's buffers freed, then "Quit to DOS?".</summary>
+    // orig: case 0x1000 of 0c44 (R030+0x0CD5..0x0CD7, 0x0FD8..0x1023): free the row buffer (root 05BA:00C2(DS:2870, "M")) and the cell
+    //   buffer (05BA:00C2(7E3E:1FFC, "S")), the icon pictures when DS:E416 is not 0 (0x0FFB..0x100B), the three handles set to 0, then
+    //   exit-to-system root 0000:13A0 ("Quit to DOS?": yes ends the program); no: on to the scroll block (0x109E). The map's loop looks at
+    //   the keyboard (R030+0x0540) before its menu bar's hot keys (root 0000:0CAF), so a pressed Alt-Q comes here whenever the map's look
+    //   sees it first; here (GameUi.Poll takes the hot keys first) only as the second of two keys read in one pass (R030+0x056D..0x057B).
+    // C: lockstep session tk-map-altq (Right and Alt-Q pressed together, "no", then a walk: every state agrees)
+    // DORMANT: the icon pictures' free (R030+0x0FFB..0x100B: when DS:E416 is not 0): DS:E416 is 0 in the data image and every direct write
+    //   stores 0 (R030+0x02B7, 0x101B, R037+0x8E83), so the test always jumps (unreachable.csv)
+    // DIVERGENCE: which of the two looks a single press meets first is host timing: the C# gives it to hotkey-table's (the same question,
+    //   without the buffers freed).
+    // C: the frees after "no" end the program (FreeBuffer, OriginalBehaviour.FixMapQuitFreedBuffers)
+    private void MapQuit(GameState state)
+    {
+        FreeBuffer(state, "M");
+        _buffersFreed = true;
+        if (new MessageBox(ui).Ask("Quit to DOS?"))
+        {
+            throw new QuitGameException();
+        }
+    }
+
+    /// <summary>A free of one of the map's buffers (named as the original names it): after the map's own Alt-Q it frees handle 0.</summary>
+    // BUG: OriginalBehaviour.FixMapQuitFreedBuffers - after the map's Alt-Q answered "no" the handles are 0, and the next free of one (a second
+    //   Alt-Q "M", a portrait click or the camp "S", leaving the map "Map") fails root 05BA:00C2's check (root 044A:0164): root 0000:1354
+    //   (the drivers stopped, text mode), "<name> - Buffer dealloc error" by DOS function 9, exit(0) (session tk-map-altq-twice,
+    //   local/batch/mapquit: the second Alt-Q). Fixed (DataSafe): the buffers are the map's as before.
+    private void FreeBuffer(GameState state, string name)
+    {
+        if (_buffersFreed && !state.Behaviour.FixMapQuitFreedBuffers)
+        {
+            throw new ProgramExitException(name + " - Buffer dealloc error", 0);
+        }
+    }
+
     /// <summary>Opens a member's character sheet (a click on the portrait), if the slot holds someone.</summary>
     // orig: the `pointer-column <= 0x3c` arm at the top of world-map-loop: `sel = pointer-row / 40; if (party[sel].present) { free the map icons; member-sheet-overlay-entry(sel); redraw ... }`
     public Action<int>? CharacterSheet { get; init; }
@@ -235,6 +282,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     {
         if (member < state.Party.Members.Count && state.Party.Members[member].IsPresent)
         {
+            // orig: world-map-loop R030+0x0318..0x0337: the cell buffer freed (05BA:00C2(7E3E:1FFC, "S")) before the sheet
+            FreeBuffer(state, "S");
             CharacterSheet?.Invoke(member);
             UseMapPalette(state);
         }
@@ -291,6 +340,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // C: 1000 is the road-encounter branch, which for an ambush in camp (event 0x5f) is roll-below(2) ? 0x16a : 0x169.
     private int? CampOnTheMap(GameState state, OverlandTravel travel)
     {
+        // orig: 0c44 R030+0x0F06..0x0F1E: the cell buffer freed (05BA:00C2(7E3E:1FFC, "S")) before the camp's watch reads it
+        FreeBuffer(state, "S");
         // C: 25be reads the cell buffer 20d2 filled for the view (Draw), under the marker as the view's registers place it: at the west / north
         //   border the block starts one cell east / south (WorldMap.BufferOffset), and it is read flat (CellBuffer.CampWatch)
         var (row, column) = CellBuffer.MarkerCell(_x - _originX, _y - _originY, _viewTop, _viewRows);

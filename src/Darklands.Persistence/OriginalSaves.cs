@@ -14,6 +14,10 @@ public sealed record LoadedGame(GameState State, bool Music, bool SoundEffects, 
 {
     /// <summary>What the saved game's companion file (a game saved with mods) did; <see cref="ModdedLoad.None"/> without one.</summary>
     public ModdedLoad Mods { get; init; } = ModdedLoad.None;
+
+    /// <summary>The party slots naming a record an earlier slot already named: the reader left them empty, their shield letter 0.</summary>
+    // orig: R037+0x96BE..0x96D3 (the record read into the first slot naming it); the load screen then asks for "picsshield.pic" (OriginalBehaviour.FixLoadTwoSlotsOneRecord)
+    public IReadOnlyList<int> SlotsWithoutRecord { get; init; } = [];
 }
 
 /// <summary>
@@ -169,6 +173,7 @@ public static class OriginalSaves
             LeaderIndex = (sbyte)h[LeaderAt],
         };
         var used = new HashSet<int>();
+        var withoutRecord = new List<int>();
         for (var slot = 0; slot < SaveFile.PartySlots; slot++)
         {
             var id = file.PartyIds[slot];
@@ -179,9 +184,11 @@ public static class OriginalSaves
                 // C: (R037+0x96BE..0x96D3 searches the slots from 0), so this slot gets nothing and keeps the slot memory (status 0 after the
                 // C: load's clear, zeros after start-up); ids[] keep naming the record (CharacterRoster.KeepSecondSlot), and the writer
                 // C: R037+0x2ACE writes the record from the first slot again (R037+0x3520..0x3531): such a save stays as it was.
-                // DIVERGENCE: the original then exits (code 99) on the load screen: R037+0x86DA..0x8754 loads pics\shield<letter>.pic for every
-                //   slot whose id is not -1, and this slot's letter byte (DS:9C6A + 0x80 x slot) is 0, so "pics\shield.pic" is missing (lockstep
-                //   session carry-dup-resave: program exit 99 at R037+0x84BA+0x29F). Here the game goes on with the slot empty.
+                withoutRecord.Add(slot);
+                // C: the load screen then exits (code 99): R037+0x86DA..0x8754 loads pics\shield<letter>.pic for every slot whose id is not
+                //   -1, and this slot's letter byte (DS:9C6A + 0x80 x slot) is 0, so "pics\shield.pic" is missing (lockstep session
+                //   carry-dup-resave: program exit 99 at R037+0x84BA+0x29F); the slot is listed in SlotsWithoutRecord, and DarklandsGame.LoadSavedGame
+                //   reproduces the exit (the original bug's switch FixLoadTwoSlotsOneRecord, on in DataSafe: the game goes on with the slot empty).
                 member = new Character { Status = CharacterStatus.Empty, Weapon = new EquippedItem(-1, 0), MissileWeapon = new EquippedItem(-1, 0) };
                 state.Roster.PartySlots[slot] = id;
                 state.Roster.KeepSecondSlot(member, id);
@@ -262,7 +269,7 @@ public static class OriginalSaves
             Images = (byte[])file.Images.Clone(),
             Palettes = (byte[])file.Palettes.Clone(),
         };
-        return new LoadedGame(state, h[MusicAt] == 1, h[SoundAt] == 1, Text(h, CommentAt, CommentLength));
+        return new LoadedGame(state, h[MusicAt] == 1, h[SoundAt] == 1, Text(h, CommentAt, CommentLength)) { SlotsWithoutRecord = withoutRecord };
     }
 
     /// <summary>

@@ -823,6 +823,37 @@ SESSIONS["carry-create-pray3"] = None
 # coverage: the event table full (synth_saves.py ev300): event-create / event-refresh / event-advance find no free slot (R029+0x2C4E / 0x2D5C / 0x2E74 -1)
 SESSIONS.update({"ev300-inn": "synth/DKSAVE0-ev300.sav", "ev300-rough": "synth/DKSAVE0-ev300.sav", "ev300-pray": "synth/Dksave10-ev300.sav",
                  "ev300-camp": "synth/DKSAVE99-ev300.sav", "ev300-smiths": "synth/DKSAVE0-ev300.sav", "ev300-healer": "synth/DKSAVE0-ev300.sav"})
+# restart (item 4): sessions played in a copy of the game folder without the work files an earlier run of the original left there
+# (TERRAIN.FIL, CFILE.DAT, LEVEL0..4.ENM): the battle-state save then packs none (raw size -1) and the restore R003+0x0CE8 takes its
+# "no work file" arms (0x182A..0x1838 removes terrain.fil, 0x18E7..0x18F5 the loot file). The copy is made under local/oracle-games/clean when
+# missing (clean_game); every other session keeps the default game folder, so their recordings stay valid.
+SESSIONS["tester-clean-reload"] = None
+CLEAN_GAME = {"tester-clean-reload"}
+# restart (item 5): R030+0x0C44's key cases the tester can now give (ctrlf<n>, kp<n>, F9) and its own Alt-Q (the second key of a pass, tkey)
+SESSIONS["tk-map-keys"] = "synth/DKSAVE17-out3.sav"
+SESSIONS["tk-map-altq"] = "DKSAVE17.SAV"
+WORK_FILES = {"terrain.fil", "cfile.dat"} | {"level%d.enm" % i for i in range(5)}
+NOT_GAME = {"docs", "convert", "logs", "qcap", "file_formats"}   # bulky folders of the project's copy that neither side reads
+
+
+def clean_game(game: Path) -> Path:
+    """The game folder copied without its work files (and the project's non-game folders), made once under local/oracle-games/clean."""
+    import shutil
+    target = LOCAL / "oracle-games" / "clean"
+    if (target / "DARKLAND.EXE").is_file():
+        return target
+    staging = target.with_name("clean.part")
+    if staging.exists():
+        shutil.rmtree(staging)
+
+    def ignore(folder, names):
+        top = Path(folder) == game
+        return [n for n in names if (top and (n.lower() in WORK_FILES or n.lower() in NOT_GAME))]
+    shutil.copytree(game, staging, ignore=ignore)
+    staging.rename(target)
+    return target
+
+
 IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory", "in battle"}   # lockstep.APART
 RESERVE_MB, JOB_MB = int(os.environ.get("DARKLANDS_RESERVE_MB", 1500)), int(os.environ.get("DARKLANDS_JOB_MB", 450))   # the 2026-10-27 memory rule: reserve 6000 and 1900 per oracle worker
 
@@ -1083,7 +1114,8 @@ def main():
                                        "--fights", f] + common))
     for s in sessions:
         save = ["--save", str(resolve_save(SESSIONS[s], saves))] if SESSIONS[s] else []
-        jobs.append(("session", s, py + [str(HERE / "lockstep.py"), a.exe, a.game, str(HERE / "lockstep-sessions" / (s + ".steps")),
+        game = str(clean_game(Path(a.game))) if s in CLEAN_GAME else a.game
+        jobs.append(("session", s, py + [str(HERE / "lockstep.py"), a.exe, game, str(HERE / "lockstep-sessions" / (s + ".steps")),
                                          str(out / "sessions" / s)] + save + (["--battle-records"] if s in BATTLE_RECORDS else []) + (["--timer-marks"] if s in TIMER_MARKS else []) + common))
     # the slowest jobs first (the last live durations kept in <recordings>/durations.json; a job never timed goes first, as it may be the slowest)
     durations_file = Path(a.recordings) / "durations.json"

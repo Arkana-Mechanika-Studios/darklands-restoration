@@ -1,0 +1,33 @@
+# Lockstep session (restart, item 5: R030+0x0C44's key cases the tester could not give before ctrlf<n> / kp<n>): DKSAVE17-out3 (DKSAVE17,
+# member 3 unconscious) on the map. F9 (scan above 0x42, no character: 0x1033 taken), keypad 8 with Num Lock (0x4838, a character: 0x1057
+# taken), Ctrl-F6 (above the member keys: 0x105F taken) are ignored; Ctrl-F2 makes member 1 the leader (0x0EDD / 0x0EEC taken, 0x0EF1),
+# Ctrl-F4 names the unconscious member (0x0EEC not taken), Ctrl-F5 a slot past the party of four (0x0EDD not taken); Ctrl-F1 back, a walk
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:f9
+wait:100
+state:f9
+key:kp8
+wait:100
+state:kp8
+key:ctrlf6
+wait:100
+state:ctrlf6
+key:ctrlf2
+wait:100
+state:leader2
+key:ctrlf4
+wait:100
+state:unconscious
+key:ctrlf5
+wait:100
+state:past
+key:ctrlf1
+wait:100
+state:leader1
+click:150,110
+wait:600
+state:walked

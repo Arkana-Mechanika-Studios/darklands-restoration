@@ -12,6 +12,7 @@ variants:
   dup<a><b>  party slot <b> names the record of slot <a> (party id word +0xF3 + 2b = that of slot a): two slots naming one record
   ev300   the event table full: the game's events and fillers (a place fact of type 0x7F at place 413) up to the 300 slots (full_events)
   month<N>[d<D>]  the date moved to month N (and day D): the seasons of the travel map
+  out3    member 3 unconscious (status 2), a member within the party size who is not able
   hurt    the first four members hurt and ill for the battle's party panel: endurance / strength at 1, 0 and above the maximum, a dead,
           an unconscious and a poisoned member (status byte +0x14)
   king, stonebox  a game saved in the mine of Rammelsburg's battle (the original's DKSAVE2 of savemid-mine, with its .BSV) moved to level 3
@@ -100,6 +101,11 @@ def hurt_attributes(b: bytearray) -> None:
 def dead(b: bytearray) -> None:
     """member 4 dead (status 3)."""
     b[HEAD_END + 4 * CHAR + STATUS] = 3
+
+
+def out3(b: bytearray) -> None:
+    """member 3 unconscious (status 2): a party slot within the party size that is not able (the map's Ctrl-F4, R030+0x0EEC)."""
+    b[HEAD_END + 3 * CHAR + STATUS] = 2
 
 
 def away(b: bytearray) -> None:
@@ -278,7 +284,7 @@ BATTLE_LEVELS = {"king": battle_level(3, [(1040, 140), (1008, 140), (1072, 140),
                  "stonebox": battle_level(6, [(976, 312), (944, 296), (944, 328), (944, 312)], (6,))}
 
 
-VARIANTS = {"dragonev": dragon_events, "ev300": full_events,"relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
+VARIANTS = {"dragonev": dragon_events, "ev300": full_events, "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
             "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}
 

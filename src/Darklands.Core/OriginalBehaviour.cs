@@ -49,13 +49,15 @@ public sealed class OriginalBehaviour
 
     /// <summary>
     /// The faithful game with the data-safety fixes on: the original's bugs that damage the player's data (saved games, the item
-    /// stores in CACHE.TMP) are fixed, every other quirk stays. The fixed files are still read by the original. The player's game
+    /// stores in CACHE.TMP) or end the program in play (the game since the last save lost, as a load crash loses it) are fixed, every
+    /// other quirk stays. The fixed files are still read by the original. The player's game
     /// uses this; future data-safety fixes go here (and only these).
     /// </summary>
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
         FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
+        FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true,
     };
 
     /// <summary>
@@ -104,6 +106,35 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: saved-game load R037+0x8ED4 (1C7D:0D24): each _dos_read of the header, party block, records and location block ignores a short count (checked in the emulated original: header cut at 0 or 96 bytes ends in DOS, cut at 512 or 9374 plays on)
     public bool FixDamagedSavedGame { get; set; }
+
+    /// <summary>
+    /// The inn's roster ("reform your party"): an arrow key onto a row past the figure list (row 4 or later with the game's four figure
+    /// pictures) whose character is in the party loads "pics\small.pic", which does not exist, and the program ends (exit 99, the C
+    /// library's "No such file or directory"): the game since the last save is lost. Fixed: nothing is drawn and the roster goes on.
+    /// </summary>
+    // orig: R038+0x02F8 (the arrows, R038+0x045F..0x04CA): "pics\" (DS:4A3D) + the 4-byte entry DS:E7E2 + 4 x DS:E7DA + "small.pic" (DS:4A43),
+    //   root 0617:045C, whose opener root 0617:000E ends the program on a missing file (root 0617:067E: mode 3, perror, exit(99)); data safety, a crash
+    public bool FixRosterMissingFigure { get; set; }
+
+    /// <summary>
+    /// A saved game whose two party slots name one character record: the load reads the record into the first slot only, the second
+    /// keeps a shield letter of 0, and the load screen's shield pictures then ask for "pics\shield.pic", which does not exist: the program
+    /// ends (exit 99). Fixed: the game goes on with that slot empty (its id kept, so the save is written back as it was).
+    /// </summary>
+    // orig: saved-game-read R037+0x8ED4 (R037+0x96BE..0x96D3), the load screen R037+0x84BA (R037+0x86DA..0x8754 "pics\shield<letter>.pic"
+    //   for every slot whose id is not -1), measured live: lockstep session carry-dup-resave (synthetic save dup01), program exit 99 at
+    //   R037+0x84BA+0x29F; data safety, a load crash
+    public bool FixLoadTwoSlotsOneRecord { get; set; }
+
+    /// <summary>
+    /// Alt-Q read by the travel map's own key look frees the map's row and cell buffers before it asks "Quit to DOS?"; after "no" the
+    /// map goes on without them, and the next free of one (a second Alt-Q, the camp, a portrait click, leaving the map) frees a buffer
+    /// already freed: the memory manager ends the program ("M - Buffer dealloc error", "S - ...", "Map - ...", exit 0). Fixed: the map
+    /// keeps its buffers.
+    /// </summary>
+    // orig: R030+0x0FD8..0x101B, then R030+0x0F06 (camp), R030+0x031F (portrait), R030+0x026C (map exit) (root 05BA:00C2 with handle 0: root 044A:0164 fails, root 0000:1354, DOS function 9, exit(0));
+    //   measured: session tk-map-altq-twice (local/batch/mapquit); data safety, a crash
+    public bool FixMapQuitFreedBuffers { get; set; }
 
     /// <summary><c>event-advance</c> with "add" on a new event leaves 2 × value; fixed: the value.</summary>
     public bool FixNewEventAddDoubles { get; set; }

@@ -56,13 +56,21 @@ public sealed class CharacterCreationScreen
     /// the inn's roster (PartyRosterScreen) shares.
     /// </summary>
     // orig: DS:E7DA, DS:E7E0, DS:E753..DS:E76A, DS:E890 / DS:E892 / DS:E894 (PartyMenuState)
-    internal static PartyMenuState Shared { get; } = new();
+    internal static PartyMenuState Shared { get; private set; } = new();
 
     /// <summary>The last word of the record buffer DS:8B52 (DS:8BD0), which the character generator's panel reads as DS:8BD2[-1]; 0 at start-up.</summary>
     private static int s_recordBuffer;
 
     /// <summary>The last word of the record buffer as this menu's list left it (the character generator's panel reads it).</summary>
     internal static int RecordBuffer => s_recordBuffer;
+
+    /// <summary>The menus' globals as a new run of the program finds them (DarklandsGame.RestartProgram): the menu state and the record buffer's word.</summary>
+    // orig: DS:E7DA, DS:E7DC, DS:8D06, DS:E7E0, DS:E753..DS:E76A, DS:E890..DS:E894 and DS:8BD0 at their start-up values (PartyMenuState's)
+    public static void ProgramStart()
+    {
+        Shared = new PartyMenuState();
+        s_recordBuffer = 0;
+    }
 
     private readonly GameUi _ui;
     private readonly WorldData _world;
