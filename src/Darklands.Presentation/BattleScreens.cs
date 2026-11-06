@@ -169,7 +169,7 @@ public sealed class BattleScreens
     public Core.Battles.Generation.GeneratedBattlefield? LastField { get; internal set; }
 
     /// <summary>The generator globals of the whole program (DS:E051 …), kept across battles and loads.</summary>
-    public Core.Battles.Generation.GenerationProcessMemory GenerationMemory { get; } = new();
+    public Core.Battles.Generation.GenerationProcessMemory GenerationMemory { get; init; } = new();
 
     public int LastFieldLocation { get; internal set; } = -1;
 

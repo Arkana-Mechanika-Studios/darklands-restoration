@@ -173,10 +173,22 @@ public static class OriginalSaves
         {
             var id = file.PartyIds[slot];
             Character member;
-            if (id >= 0 && id < state.Roster.Characters.Count)
+            if (id >= 0 && id < state.Roster.Characters.Count && !used.Add(id))
             {
-                // C: a second slot naming the same record gets its own copy (combatants), as the original reads it twice.
-                member = used.Add(id) ? state.Roster.Characters[id] : state.Roster.Characters[id].Copy();
+                // C: a second slot naming a record already read: saved-game-read R037+0x8ED4 reads each record into the FIRST slot naming it
+                // C: (R037+0x96BE..0x96D3 searches the slots from 0), so this slot gets nothing and keeps the slot memory (status 0 after the
+                // C: load's clear, zeros after start-up); ids[] keep naming the record (CharacterRoster.KeepSecondSlot), and the writer
+                // C: R037+0x2ACE writes the record from the first slot again (R037+0x3520..0x3531): such a save stays as it was.
+                // DIVERGENCE: the original then exits (code 99) on the load screen: R037+0x86DA..0x8754 loads pics\shield<letter>.pic for every
+                //   slot whose id is not -1, and this slot's letter byte (DS:9C6A + 0x80 x slot) is 0, so "pics\shield.pic" is missing (lockstep
+                //   session carry-dup-resave: program exit 99 at R037+0x84BA+0x29F). Here the game goes on with the slot empty.
+                member = new Character { Status = CharacterStatus.Empty, Weapon = new EquippedItem(-1, 0), MissileWeapon = new EquippedItem(-1, 0) };
+                state.Roster.PartySlots[slot] = id;
+                state.Roster.KeepSecondSlot(member, id);
+            }
+            else if (id >= 0 && id < state.Roster.Characters.Count)
+            {
+                member = state.Roster.Characters[id];
                 state.Roster.PartySlots[slot] = id;
                 // C: charactr.tmp keeps the record as read until the member leaves through R037+0x3B58 (CharacterRoster.StoredRecord).
                 state.Roster.KeepStored(member, state.Roster.Characters[id].Copy());

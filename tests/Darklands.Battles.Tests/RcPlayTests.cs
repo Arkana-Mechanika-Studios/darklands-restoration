@@ -499,6 +499,37 @@ public sealed class RcPlayTests
         Assert.True(host.Frames > 100, "the loaded game should have been played on");
     }
 
+    /// <summary>
+    /// The battle globals (GenerationProcessMemory: DS:E051, floor-picture, the party's sizes, the alarm trigger, the walk spot, DS:9BE5,
+    /// the effects' modifiers) are the program's: an Alt-L plays the loaded game with new battle screens but the same globals.
+    /// </summary>
+    [Fact]
+    public void ALoadKeepsTheProgramsBattleGlobals()
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is not { } sav)
+        {
+            return;
+        }
+        var saves = TempFolder("carry");
+        File.Copy(sav, Path.Combine(saves, "DKSAVE0.SAV"));
+        // Alt-L, Y to the question, L on the load screen (DKSAVE0, the first line)
+        var host = new RcHost(["w:50", "c:2600", "w:30", "k:y", "w:30", "k:l", "w:80", "k:esc", "w:30"]);
+        var game = NewGame(files, host, saves, load: "DKSAVE0.SAV");
+        var screens = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        var memories = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        host.EveryFrame = _ =>
+        {
+            if (game.Battles is { } battles)
+            {
+                screens.Add(battles);
+                memories.Add(battles.GenerationMemory);
+            }
+        };
+        game.Run();
+        Assert.True(screens.Count >= 2, "the load should play the loaded game with new battle screens");
+        Assert.Single(memories);
+    }
+
     /// <summary>G6: a saved game that is not there raises a file-not-found for its name (the caller's to report).</summary>
     [Fact]
     public void AMissingSavedGameNamesTheFile()
