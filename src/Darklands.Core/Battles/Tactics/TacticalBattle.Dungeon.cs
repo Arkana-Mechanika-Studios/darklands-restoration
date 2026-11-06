@@ -85,6 +85,15 @@ public sealed partial class TacticalBattle
     /// battle's, or the last load's battle file); null: what the combatants hold (zeros).</summary>
     public (byte[] Paths, byte[] Indices)? StalePaths { get; set; }
 
+    /// <summary>The battle variables as the program holds them when the battle starts (the program's battle file: the last battle's, or the
+    /// last load's); null: a fresh program's zeros. A new battle takes from them the tables no battle's start resets: the attack facings
+    /// (DS:D3FE), the placed base loads (DS:C1C1) and the saved path with its length (2E38:0C64, DS:DA43).</summary>
+    public byte[]? StaleVariables { get; set; }
+
+    /// <summary>DS:07E6: the timer's rate word, which the timer's set-up (root 047C:0066) makes 1 whenever it is installed, as at every
+    /// battle's start (R002+0x0093); a battle taken up from a saved game reads the file's (R003+0x0CE8). Only the battle file shows it.</summary>
+    public int TimerRate { get; set; } = 1;
+
     private Generation.BattlefieldStore Store => Field.Store;
 
     private static bool Inside(MapPoint p, int x, int y, int w, int h) => x <= p.X && p.X < x + w && y <= p.Y && p.Y < y + h;

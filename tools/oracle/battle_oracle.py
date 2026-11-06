@@ -184,15 +184,33 @@ def first_difference(original: dict, rewrite: dict, original_cut: bool = False):
     start = {}      # slot -> (original, rewrite) +0x1D at its first tick
     ready = {}      # (slot, offset) -> (original, rewrite) at the slot's first tick
     dest = {}       # slot -> (original, rewrite) +0x08..0x0B at its first tick
+    battle = None
     for clock in common:
         if lone and clock > lone[0]:
             break
+        if clock // BATTLE_KEY != battle:
+            # a new battle of the session: its enemies are placed anew (R025+0x0267 copies each record whole), often before its first pass,
+            # so the enemy slots' stale bytes are baselined anew at their first tick here (round spawn: gen-carry-15, -16, -31)
+            battle = clock // BATTLE_KEY
+            for i in range(5, COUNT):
+                start.pop(i, None)
+                dest.pop(i, None)
+                for off in STALE_READY:
+                    ready.pop((i, off), None)
         (orand, orec, oq, oar), (crand, crec, cq, car) = original[clock], rewrite[clock]
         diffs = []
         for i in range(COUNT):
             o, c = orec[i * RECORD:(i + 1) * RECORD], crec[i * RECORD:(i + 1) * RECORD]
             if o[0x14] == 0 and c[0x14] == 0:
-                continue                # an empty slot: the original keeps old bytes there
+                # an empty slot: the original keeps old bytes there. The next enemy placed into it (an activation or reinforcement later in
+                # this battle, or one of a later battle of the same run) is copied whole from its kind's enemy file record again
+                # (R025+0x0267), so its stale bytes are taken anew at its own first tick (carry: the mine's ambushers after a wild fight
+                # bring the same +0x1D as in a fresh program, 245 / 235 / 235, gen-carry-04 against dungeon-mine-doors)
+                start.pop(i, None)
+                dest.pop(i, None)
+                for off in STALE_READY:
+                    ready.pop((i, off), None)
+                continue
             first = start.setdefault(i, (o[0x1D], c[0x1D]))
             kept = dest.setdefault(i, (o[8:12], c[8:12]))
             for off in STALE_READY:

@@ -394,7 +394,24 @@ public sealed partial class TacticalBattle : IBattleEndActions
             // C: the same loop sets every combatant's exchange (DS:CA57) to 7 (0E76:19D0), the members' too; the tests of the exchange
             // never take 7, but a battle file written in the battle keeps it (lockstep session savemid-mine).
             Battle[i].Exchange = Exchange.Placed;
+            // C: the attack facings (DS:D3FE) and the placed base loads (DS:C1C1) are not reset by a battle's start: a record keeps the last
+            //   battle's until this one sets it (an attack, a placement). Seen in the original's battle file of a battle after another
+            //   (round spawn: the mine's ambush after a wild fight, gen-carry-04, -14: member 3's facing and the wolves' records 8..10)
+            if (StaleVariables is { } left)
+            {
+                Battle[i].AttackFacing = (sbyte)left[BattleVariables.AttackFacing + i];
+                Battle[i].PlacedBaseLoad = (sbyte)left[BattleVariables.PlacedBaseLoad + i];
+            }
         }
+        // C: nor is the saved path (2E38:0C64) with its length (DS:DA43): route-keep R014+0x5DAC alone writes them
+        if (StaleVariables is { } held)
+        {
+            SavedPathLength = (short)(held[BattleVariables.SavedPathLength] | held[BattleVariables.SavedPathLength + 1] << 8);
+            Array.Copy(held, BattleVariables.SavedPath, SavedPath, 0, SavedPath.Length);
+        }
+        // orig: R002+0x0093 (0E76:0093): the timer is installed again at the battle's start (root 047C:0066+0x0B: DS:07E6 = 1)
+        // C: only when the sound letter DS:A876 is not 'n' / 'N'; the C# host always runs the battle clock, as with a sound card
+        TimerRate = 1;
         ActivationsEnabled = true;
         Battle.Alarm = 0;
         Battle.RealCombat = false;
