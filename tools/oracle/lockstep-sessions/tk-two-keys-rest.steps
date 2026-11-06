@@ -1,0 +1,12 @@
+# Lockstep session (two keys pressed before one pass reads them, tick_keys.py): DKSAVE17; A and Z in the keyboard buffer at once: the map's pass reads A, and the rest's first key test (before any step, R030+0x0C44's goto test) finds Z waiting: no rest step at all; Z is read by the next pass
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+tkey:0:a,z
+wait:300
+state:after
+click:150,110
+wait:600
+state:walked

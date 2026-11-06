@@ -51,6 +51,25 @@ public sealed class BattleEventTableSaveTests
         Assert.Equal([7], state.Events.All().Select(x => x.Slot));
     }
 
+    /// <summary>
+    /// The headless host's state step in a battle (no battle argument, as it must change nothing of the game) marks its bytes as the
+    /// original's writer does any save made while a battle runs: the same bit a save with the battle sets, and nothing else.
+    /// </summary>
+    [Fact]
+    public void TheStateStepsMarkInABattleIsTheBitASaveInTheBattleSets()
+    {
+        var state = Game();
+        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1));
+        var (outside, _) = OriginalSaves.Write(state, "x");
+        Assert.False(OriginalSaves.WrittenInBattle(outside));
+        var marked = (byte[])outside.Clone();
+        OriginalSaves.MarkWrittenInBattle(marked);
+        Assert.True(OriginalSaves.WrittenInBattle(marked));
+        Assert.Equal([0x96], Enumerable.Range(0, outside.Length).Where(i => outside[i] != marked[i]));
+        var (inside, _) = OriginalSaves.Write(Game(), "x", inBattle: battle);
+        Assert.Equal(inside[0x96], marked[0x96]);
+    }
+
     private static TimedEvent Event(int kind, int value) => new() { Kind = kind, Value = value, End = EventLog.ForeverEnd };
 
     private static GameState Game()

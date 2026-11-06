@@ -26,3 +26,4 @@ U-797153-sel|uncert-march-load-selected.steps|DKSAVE99.SAV|loaded=uncert-march-l
 U-00dcd4|uncert-cloud-pause.steps|Dksave21.sav|held14=uncert-cloud-pause-held
 loadfix-winter|loadfix-winter-map.steps|DKSAVE99.SAV|map1=loadfix-winter-map
 D-e4fbd6|loadfix-order-cursor.steps|DKSAVE99.SAV|sel=D-e4fbd6-member-cursor-after-key-1
+T-einfo-gate|tester-einfo-gate.steps|Dksave21.sav|info=tester-einfo-gate-info,after=tester-einfo-gate-after

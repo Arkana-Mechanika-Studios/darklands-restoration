@@ -1,0 +1,12 @@
+# Lockstep session (two keys pressed before one pass reads them, tick_keys.py): DKSAVE17; Right and Down in the keyboard buffer at once on the map: one pass reads Right (a step), the next Down
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+tkey:0:right,down
+wait:300
+state:after
+tkey:0:left,left,up
+wait:300
+state:after2

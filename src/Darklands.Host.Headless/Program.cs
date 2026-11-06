@@ -434,6 +434,12 @@ host.State = name =>
     if (game.Playing is { } playing)
     {
         var (sav, _) = Darklands.Persistence.OriginalSaves.Write(playing, "Darklands", game.Options.Music, game.Options.SoundEffects, savedCardOf: game.SavedCardOf);
+        if (game.Fighting)
+        {
+            // a state taken while a battle runs: the original's writer (R037+0x2AEF, DS:907A == 1) sets the in-battle bit, whether the battle
+            // was begun or taken up from a save; the state step passes no battle (it must not put the members' items away nor reload the events)
+            Darklands.Persistence.OriginalSaves.MarkWrittenInBattle(sav);
+        }
         File.WriteAllBytes(Path.Combine(output, name + ".sav"), sav);
         var random = playing.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?";
         // " in-battle": a battle runs (tools/oracle/lockstep.py compares no state taken inside a battle on both sides)
@@ -645,6 +651,12 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         }
     }
 
+    // tkey:<n>:<key>[,<key>...]: the keys are pressed n ticks of the game's 60 Hz timer later on the host's clock (tools/oracle/tick_keys.py: the
+    // original's timer callback n more times, six in seven frames of 70.086 Hz), all at once, whatever the game is doing; no step after it is
+    // taken before. The clock, not IGameTimer.Ticks: the headless host's timer follows its sound and lags its clock
+    private long _tickKeysAt;
+    private int[]? _tickKeys;
+
     public void Pump()
     {
         _now += 16;
@@ -659,6 +671,21 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             _clickPumps = 0;
             _clickRead = false;
             Mouse = Mouse with { Buttons = MouseButtons.None };
+            return;
+        }
+        if (_tickKeys is not null)
+        {
+            if (_now < _tickKeysAt)
+            {
+                return;
+            }
+            foreach (var key in _tickKeys)
+            {
+                _keys.Enqueue(key);
+            }
+            Console.WriteLine($"tkey {_tickKeys.Length} key(s) at {_now} ms");
+            _tickKeys = null;
+            _idleFrames = 2;
             return;
         }
         if (_idleFrames > 0)
@@ -676,7 +703,8 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         {
             case "key":
                 _keys.Enqueue(KeyFor(value));
-                _idleFrames = 2;
+                // a tkey after it counts its ticks from this key (the original's from the read that takes it): taken at the next pump
+                _idleFrames = _steps.TryPeek(out var next) && next.StartsWith("tkey:", StringComparison.Ordinal) ? 0 : 2;
                 break;
             case "click":
                 var (x, y) = Point(value);
@@ -719,6 +747,11 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 break;
             case "ctrl":
                 CtrlHeld = value == "on";
+                break;
+            case "tkey":
+                var (ticks, names) = (value.Split(':', 2)[0], value.Split(':', 2)[1]);
+                _tickKeysAt = _now + (long)Math.Round(int.Parse(ticks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
+                _tickKeys = names.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(KeyFor).ToArray();
                 break;
             case "kdown":
             case "kup":

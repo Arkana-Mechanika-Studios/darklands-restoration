@@ -71,7 +71,12 @@ internal static class TacticsOverlay
         new("stopped", 0xCA29, 1, "_stopped"),
         new("lock is door", 0xCA99, 1, "LockIsDoor"),
         new("next to pile", 0xC865, 1, "NextToPile"),
+        // DS:D6EB: reinforcement waves on (set by enemy-placement mode 0 for a group with a reinforcement part, cleared by fight-mode-exit)
+        new("waves on", WavesOn, 1, "WavesEnabled"),
     ];
+
+    /// <summary>DS:D6EB waves on, DS:D6EC the enemies killed in this wave (R014+0x270D..0x2754).</summary>
+    public const int WavesOn = 0xD6EB, WaveKills = 0xD6EC;
 
     private static readonly (string Name, int Ds, string Property)[] Words =
     [
@@ -121,6 +126,12 @@ internal static class TacticsOverlay
             Set(t, property, Convert.ChangeType((ushort)Word(ds, at), kind));
         }
         t.TimerCallbacks = ds[TimerCallbacksAt];
+        Set(t, "WaveKills", (int)ds[WaveKills]);
+        if (image.Wave is { } wave)
+        {
+            // the wave's encounter record, in the segment DS:7D44 names (+0xBE2): a copy of the group whose reinforcements arrive
+            Set(t, "WaveGroup", EnemyGroup.FromRecord(wave));
+        }
         // the floors each enemy kind's slot follows the party to (DS:C23E, a word per slot, set when the group is placed)
         var follows = Get<int[]>(t, "_slotFollows");
         for (var s = 0; s < follows.Length; s++)
@@ -508,6 +519,11 @@ internal static class TacticsOverlay
             }
         }
         ds[TimerCallbacksAt] = (byte)t.TimerCallbacks;
+        ds[WaveKills] = (byte)t.WaveKills;
+        if (image.Wave is { } waveRecord && t.WaveGroup is { } waveGroup)
+        {
+            waveGroup.ToRecord().CopyTo(waveRecord, 0);
+        }
         PutWord(ds, SlotIdentities, t.EnemySlotIdentity[0]);
         PutWord(ds, SlotIdentity2, t.EnemySlotIdentity[1]);
         Get<byte[]>(t, "_doorsBeforeSearch").CopyTo(ds, DoorsBeforeSearch);
@@ -683,6 +699,10 @@ internal static class TacticsOverlay
         if (ds == TimerCallbacksAt)
         {
             return "timer callbacks";
+        }
+        if (ds == WaveKills)
+        {
+            return "wave kills";
         }
         if (ds >= DoorsBeforeSearch && ds < DoorsBeforeSearch + 40)
         {

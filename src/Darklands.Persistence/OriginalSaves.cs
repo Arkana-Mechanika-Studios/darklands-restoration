@@ -272,6 +272,13 @@ public static class OriginalSaves
 
     // ---- writing ------------------------------------------------------------------------
 
+    /// <summary>Sets the in-battle bit (bit 7 of the difficulty byte) of written .SAV bytes, as the original's writer does for any save made while
+    /// a battle runs (R037+0x2B57 under `if (DS:907A == 1)`): the headless host's state step, which writes the game without a battle argument.</summary>
+    public static void MarkWrittenInBattle(byte[] sav) => sav[DifficultyAt] |= InBattleBit;
+
+    /// <summary>True when the .SAV bytes were written in a battle (the in-battle bit).</summary>
+    public static bool WrittenInBattle(ReadOnlySpan<byte> sav) => (sav[DifficultyAt] & InBattleBit) != 0;
+
     /// <summary>
     /// The saved game of a state: the .SAV bytes and the .BSV bytes (the program's battle file: the last battle's or the last
     /// load's, zeros in a program that has had neither).
