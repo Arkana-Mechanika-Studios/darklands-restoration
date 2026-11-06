@@ -803,6 +803,9 @@ SESSIONS["carry-create-pray"] = None
 SESSIONS["tester-newgame-reload"] = None
 # creation: three prayers with the most favour on the creation sheet (they succeed), then Begin the Adventure
 SESSIONS["carry-create-pray3"] = None
+# coverage: the event table full (synth_saves.py ev300): event-create / event-refresh / event-advance find no free slot (R029+0x2C4E / 0x2D5C / 0x2E74 -1)
+SESSIONS.update({"ev300-inn": "synth/DKSAVE0-ev300.sav", "ev300-rough": "synth/DKSAVE0-ev300.sav", "ev300-pray": "synth/Dksave10-ev300.sav",
+                 "ev300-camp": "synth/DKSAVE99-ev300.sav", "ev300-smiths": "synth/DKSAVE0-ev300.sav", "ev300-healer": "synth/DKSAVE0-ev300.sav"})
 IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory", "in battle"}   # lockstep.APART
 RESERVE_MB, JOB_MB = int(os.environ.get("DARKLANDS_RESERVE_MB", 1500)), int(os.environ.get("DARKLANDS_JOB_MB", 450))   # the 2026-10-27 memory rule: reserve 6000 and 1900 per oracle worker
 

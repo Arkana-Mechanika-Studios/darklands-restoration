@@ -689,6 +689,13 @@ public sealed partial class TacticalBattle
             Battle.LeaveAfterVictory = true;
         }
         LeavePile(c, slot);
+        // C: R014+0x270D..0x2754 checked against the asm and by direct calls of the wave arm (960 jobs from 16 fight states, the record's states: the pool
+        //   above, equal to, below the batch, 0 and negative, the kills short, past or wrapping, waves off): the original compares the kill byte DS:D6EC
+        //   with the batch byte as bytes, the pool is a signed byte (jle, jns), and the placement R025+0x0000 places at least one before its count test.
+        // DORMANT: a batch above 0x7F (here a negative sbyte, which the kill count never equals and the placement's loop never enters; the original
+        //   fires at kill byte = batch and places one): the generators write batches 2..4 (CityBattlefield), 1..3 (WildBattlefield ReinforcementParams)
+        //   and 0..9 (MineBuilder.Fill, value % 10 of a positive value), the citadel's .atv groups have none, and the battle file keeps what they wrote.
+        //   A kill count past 255 wraps in the original and not here: it passes the batch only once the pool is used up, so neither fires again.
         if (WavesEnabled && i >= Combatant.PartySlots && WaveGroup is { } wave)
         {
             WaveKills++;

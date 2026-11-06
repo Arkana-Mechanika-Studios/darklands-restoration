@@ -355,6 +355,13 @@ internal sealed partial class CastleGenerator
     //   those read as 0 here. It matters only if a room or strip bound lies within two cells of the map's edge (writes at -1 or 40 would stop the
     //   rewrite with an index error). Not seen: the castle corpus's 100 scenarios with 3,000 seeds each (300,000 builds, 395,486 calls) read no
     //   cell outside [0, 40) and throw nothing; not proven by a bound.
+    // C: the bound so far (round coverage): a read outside needs a strip or corner-tower range touching cells 0..1 or 38..39 (the reads are at
+    //   i + step and i - 2 .. i + 2 for an i of those ranges; the writes at the range - 1 .. + 1). The strips run from the keep to the bounding box
+    //   _bounds of the levels' rooms (BuildOuterWall). The keep is at most 10 across centred on 20 (cells 15..24, BuildKeep), the corner towers 3 or
+    //   4 across, at most 2 into the keep's band (10..29, PlaceTowers), the buildings and gatehouses at most 4 out from the keep's sides
+    //   (PlaceBuildings, PlaceGateHouses: 11..28), the corridors are clamped to _bounds and the gate path is not counted; so all those keep the box
+    //   within 10..29, 8 cells from the edge. Only the stair rooms of the two levels below the top (PlaceStairs, ContinueStairs) can widen it, each by
+    //   the few cells a room grows past its strip; that growth is not bounded here, so the row stays.
     private void PlaceWallSegment(int side, int[] adj, out int pa, out int pb)
     {
         pa = 0;
