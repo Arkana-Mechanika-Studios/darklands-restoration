@@ -801,6 +801,8 @@ BATTLE_RECORDS |= set(CARRY)
 SESSIONS["carry-create-pray"] = None
 # round newgame: a new game saved before any battle and loaded back (the program's start battle variables and the folder's work files)
 SESSIONS["tester-newgame-reload"] = None
+# creation: three prayers with the most favour on the creation sheet (they succeed), then Begin the Adventure
+SESSIONS["carry-create-pray3"] = None
 IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory", "in battle"}   # lockstep.APART
 RESERVE_MB, JOB_MB = int(os.environ.get("DARKLANDS_RESERVE_MB", 1500)), int(os.environ.get("DARKLANDS_JOB_MB", 450))   # the 2026-10-27 memory rule: reserve 6000 and 1900 per oracle worker
 

@@ -1,0 +1,25 @@
+# vis10 creation (the save comment's pointer): DKSAVE99 (four members) on the map, the pointer moved into the map, Alt-S: the comment box
+# (text-prompt R037+0x43E6) hides the pointer while it waits (root 047C:12C3) and shows it after (root 047C:1293); then a camp (C), whose
+# stay turns the save off (DS:9934 = 2): Alt-S there opens no box
+key:t
+wait:5
+key:l
+wait:300
+wait:200
+move:200,60
+wait:50
+shot:before
+key:alts
+wait:100
+shot:comment
+key:x
+wait:30
+shot:typed
+key:esc
+wait:100
+shot:after
+key:c
+wait:200
+key:alts
+wait:100
+shot:campalts

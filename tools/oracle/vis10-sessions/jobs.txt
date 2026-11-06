@@ -30,3 +30,4 @@ comm-inn|comm-inn-save.steps|DKSAVE0.SAV|stay=comm-inn-save-stay,alts1=comm-inn-
 comm-camp|comm-camp-save.steps|DKSAVE99.SAV|camp=comm-camp-save-camp,alts1=comm-camp-save-alt-s-after-empty-row
 ordercarry|ordercarry-load-battle.steps|DKSAVE99.SAV|first=ordercarry-load-battle-first,second=ordercarry-load-battle-second
 T-einfo-gate|tester-einfo-gate.steps|Dksave21.sav|info=tester-einfo-gate-info,after=tester-einfo-gate-after
+creation-map|creation-comment-map.steps|DKSAVE99.SAV|before=creation-comment-map-before,comment=creation-comment-map-comment-dialog,typed=creation-comment-map-comment-typed,after=creation-comment-map-after-esc,campalts=creation-comment-map-camp-alt-s

@@ -15,6 +15,10 @@ namespace Darklands.Presentation;
 //   turns 5 back into 0 in the 0x9B columns: in the five columns past them (x 0x109..0x10D) the screen's black pixels are not drawn back,
 //   so the box's own pixels stay there (vis10 session D-b797f7: x 265..267, y 83..129 after the save's comment), and pixels that were
 //   colour 5 in the 0x9B columns come back as 0.
+// C: R037+0x43F2 pointer-hide (root 047C:12C3) before anything is drawn, R037+0x4544 pointer-show (root 047C:1293) after the screen is put
+//   back: no pointer while the box waits, wherever it opens (the save's comment in a town, a camp, a battle's bar, the generator's names;
+//   a battle's own pointer is taken off before a hot key's screen, BattleScreen);
+//   vis10 sessions comm-inn (alts2) and D-b797f7 (comment): the original's screen has no pointer; tests: ScreenInputTests
 // DIVERGENCE: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) the region is put back as it was saved: no strip of
 //   the box is left and colour-5 pixels stay 5.
 public sealed class TextInputBox(GameUi ui)
@@ -26,6 +30,23 @@ public sealed class TextInputBox(GameUi ui)
     private const byte TextColor = 0;
 
     public string Ask(string prompt, int maxLength, string text = "")
+    {
+        var pointer = ui.PointerVisible;
+        ui.PointerVisible = false;
+        string answer;
+        try
+        {
+            answer = AskWithoutPointer(prompt, maxLength, text);
+        }
+        finally
+        {
+            ui.PointerVisible = pointer;
+        }
+        ui.Present();
+        return answer;
+    }
+
+    private string AskWithoutPointer(string prompt, int maxLength, string text)
     {
         var canvas = ui.Canvas;
         var clean = ui.Options.CleanDrawing;
@@ -85,7 +106,6 @@ public sealed class TextInputBox(GameUi ui)
             canvas.RestoreTransparent(saved);
             canvas.Recolor(X, Y, RecolorWidth, Height, 5, 0);
         }
-        ui.Present();
         return buffer.ToString();
     }
 }

@@ -199,12 +199,16 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: R043+0x29D0 (1F40): the message goes into the side window next to member `who` (-2 = the whole column): text centred in a 55-pixel column at x 3, y + 4 (y = 0x51 for the whole column, who * 0x28 + 1 for a member), then it waits for a key or the left button and eats the key
     // C: for the whole column it first clears the entire panel strip (3, 0, 0x36 x 0xC6) with the background sprite DS:A628 and centres the text in the middle at y 0x51; for one member the row (3, y, 0x36 x 0x26) with DS:A626.
     // DIVERGENCE: the text colour is the caller's (side-window->color = param-plus-8); ICardScreen.Tell has none, the text is drawn white. The original does not put the panel back afterwards (its callers redraw it); here the covered area is restored when the message is dismissed.
-    public void Tell(string message, int member = OptionHint.WholeParty)
+    public void Tell(string message, int member = OptionHint.WholeParty) => Tell(ui, message, member);
+
+    /// <summary>The side window's message (R043+0x29D0) on whatever screen is shown: the card screen, a member sheet, the creation sheet.</summary>
+    public static void Tell(GameUi ui, string message, int member = OptionHint.WholeParty)
     {
-        var saved = _canvas.Save(0, 0, WindowX, Canvas.Height);
+        var canvas = ui.Canvas;
+        var saved = canvas.Save(0, 0, WindowX, Canvas.Height);
         var y = member == OptionHint.WholeParty ? 0x51 : member * 40 + 1;
-        SideWindowBackground(member);
-        new CardTextLayout(ui.Text).Draw(_canvas, TextPainter.Encode(message), 3, y + 4, 0x37,
+        SideWindowBackground(ui, member);
+        new CardTextLayout(ui.Text).Draw(canvas, TextPainter.Encode(message), 3, y + 4, 0x37,
             new CardTextLayout.Settings { Color = Palette.White, Leading = 0, Alignment = TextAlignment.Center });
         // C: the wait is `while (!key-waiting-test() && !(mouse-button-state & 1)) menu-bar-loop(...)`, then the button is waited out and the key eaten: any key, or the left button anywhere.
         while (true)
@@ -216,7 +220,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
                 break;
             }
         }
-        _canvas.Restore(saved);
+        canvas.Restore(saved);
     }
 
     // orig: notice-display root 0000:24BC(text, ticks) (MessageBox.Show)
@@ -418,7 +422,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
             text = hint.Chance == -2 ? "ERROR!!!" : hint.Message;
         }
         var (top, height) = hint.Member == OptionHint.WholeParty ? (1, 0xC6) : (hint.Member * 40 + 1, 0x26);
-        SideWindowBackground(hint.Member);
+        SideWindowBackground(ui, hint.Member);
         var layout = new CardTextLayout(ui.Text);
         var bytes = TextPainter.Encode(text);
         var textHeight = layout.MeasureHeight(bytes, 0x32, 0);
@@ -430,20 +434,21 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     /// <summary>The background of the side window behind a message: one member's row, or the whole column.</summary>
     // orig: in R043+0x27E6 and R043+0x29D0: for the whole column `for (v = 0; v < 0xc6; v += 0xb) gfx-picture-draw(screen-memory-pointer, 3, v, DS:A628)` then gfx-rect-copy(screen-memory-pointer, 3, 1, 0x36, 0xc6, side-window, 3, 1); for member `who` gfx-picture-draw(side-window, 3, who * 0x28 + 1, DS:A626)
     // C: the column strips are drawn on the picture page (screen-memory-pointer) and only its rows 1 .. 0xC6, columns 3 .. 0x38 are copied to the screen; the strips stay on that page's panel column, which nothing here copies back (Redraw draws the panel again).
-    private void SideWindowBackground(int member)
+    private static void SideWindowBackground(GameUi ui, int member)
     {
         var sprites = ui.Assets.CommonSprites;
+        var canvas = ui.Canvas;
         if (member == OptionHint.WholeParty)
         {
             var column = new Clip(3, 1, 3 + 0x36, 1 + 0xC6);
             for (var v = 0; v < 0xC6; v += 0xB)
             {
-                SpriteDrawing.Draw(_canvas, sprites.ColumnBackground, 3, v, column);
+                SpriteDrawing.Draw(canvas, sprites.ColumnBackground, 3, v, column);
             }
         }
         else
         {
-            SpriteDrawing.Draw(_canvas, sprites.RowBackground, 3, member * 40 + 1);
+            SpriteDrawing.Draw(canvas, sprites.RowBackground, 3, member * 40 + 1);
         }
     }
 
