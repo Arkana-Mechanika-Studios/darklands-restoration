@@ -54,7 +54,11 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     private readonly Func<int, bool> _eventStarted = eventStarted ?? state.Events.Started;
     private int _minutes;
     private int _danger;
-    private int _terrain;
+
+    // orig: DS:D843, a program global: the map's party drawing R030+0x16C6 and the step write it, no load touches it (a write watch over
+    //   gen-carry-07: 16c6's writes only, none by the Alt-L's load R037+0x8B76), so the wild battlefield generator (R008+0x009C) and the
+    //   cards read the terrain the map last left, the same as GameState.PartyTerrain (kept by OriginalSaves.Read over a load)
+    private int PartyTerrain { get => state.PartyTerrain; set => state.PartyTerrain = value; }
 
     /// <summary>Called for every game hour that passes while travelling.</summary>
     // orig: pass-hours(1) in 1300 (when 60 minutes are full, and for a forced arrival), followed there by the clock picture and the season palette (R030+0x2DD6)
@@ -101,7 +105,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
 
     /// <summary>The terrain the party stands on.</summary>
     // orig: DS:D843
-    public int CurrentTerrain => _terrain;
+    public int CurrentTerrain => PartyTerrain;
 
     /// <summary>Starts a stretch of travel: minute and danger counters begin at zero.</summary>
     // orig: DS:8672 = 0 (minutes) and DS:E488 = 0 (danger) in world-map-start R030+0x00A8 (1462:00A8) matched; DS:D843 (the terrain) is set by 16c6, which every idle pass of the loop calls through 0c44 before any step: the cell under the party at the start
@@ -113,7 +117,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         _danger = 0;
         var (column, row) = (state.MapPosition.X, state.MapPosition.Y);
         // C: at the start the row buffer was just read for the view (RowBuffer.Open): the buffer holds the map's own cells
-        _terrain = FreshTerrainUnderMarker(column, row);
+        PartyTerrain = FreshTerrainUnderMarker(column, row);
     }
 
     /// <summary>The party moves onto the cell under map pixel (x, y).</summary>
@@ -132,11 +136,11 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         // C: t = c >= 50 ? 28 : c — a place icon counts as a castle (16c6 uses c > 50 for the same test, so for the single code 50 it leaves DS:D843 at 50; place icon codes start at 0x1C and 0x33, so this is not reachable).
         var terrain = TerrainUnderMarker(column, row, x, y);
         // C: (t == 1 || t == 2) && !event-begun-flag(0x4b) && DS:D843 != 1 && DS:D843 != 2 -> 9999: deep water stops the party unless it already stands on deep water; a minor river (3) never stops it.
-        if (Terrain.IsDeepWater(terrain) && !_eventStarted(MayCrossWater) && !Terrain.IsDeepWater(_terrain))
+        if (Terrain.IsDeepWater(terrain) && !_eventStarted(MayCrossWater) && !Terrain.IsDeepWater(PartyTerrain))
         {
             return new StepResult(StepOutcome.Blocked);
         }
-        _terrain = terrain;
+        PartyTerrain = terrain;
         // orig: DS:8672 += R030+0x2AC8(t) = Terrain.MinutesPerStep (checked: all 18 terrain cases and the default 9 of 2ac8 agree with the table)
         PassMinutes(Terrain.MinutesPerStep(terrain));
 
@@ -357,7 +361,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         var winter = state.Date.Month < 3 || state.Date.Month > 9;
         int Winter() => winter ? 0x117 : 0;
         var r = state.Random;
-        return _terrain switch
+        return PartyTerrain switch
         {
             4 => r.Below(9) switch { <= 1 => 0x112, <= 4 => Winter(), <= 6 => 0x116, _ => 0x11B },
             5 => r.Below(17) switch

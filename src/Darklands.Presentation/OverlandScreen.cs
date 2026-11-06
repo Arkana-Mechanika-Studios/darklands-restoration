@@ -55,6 +55,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     /// button (before it acts on it: a portrait's sheet opens after), false when the loop is left. Not set in play.</summary>
     public static Action<bool>? PassHook { get; set; }
 
+    /// <summary>The map's program globals (DarklandsGame keeps one); a fresh one for a screen made alone.</summary>
+    public OverlandMemory Memory { get; init; } = new();
+
     private int _viewColumn;
     private int _viewTop;
     private int _viewRows;
@@ -66,7 +69,6 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private int _y;
     private int _direction;
     private int _frame;
-    private bool _verticalStep;
     private int _background = 0x68;
     private string _coordinates = "";
 
@@ -327,8 +329,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         }
         if (dy != 0)
         {
-            _verticalStep = !_verticalStep;
-            if (!_verticalStep)
+            Memory.VerticalStep = !Memory.VerticalStep;
+            if (!Memory.VerticalStep)
             {
                 y += dy;
                 y = dy < 0 ? _originY + Math.Max(y - _originY, 0xD) : _originY + Math.Min(y - _originY, 0xB1);
@@ -398,7 +400,6 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         _y = _originY + markerY;
         var (cellColumn, cellRow) = WorldMap.CellAt(_x, _y);
         state.MapPosition = new Core.World.MapPosition(cellColumn, cellRow);
-        _verticalStep = false;
         _frame = 0;
         _direction = 0;
     }

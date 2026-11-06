@@ -385,7 +385,7 @@ public sealed class DarklandsGame
             Core.World.CopyProtection.Draw(state.Random);
             state.Events.CreateHere(CopyProtectionEvent, CopyProtectionHours);
         }
-        return new OverlandScreen(_ui, panel, _map) { CharacterSheet = sheet, Camp = camp }.Travel(state);
+        return new OverlandScreen(_ui, panel, _map) { CharacterSheet = sheet, Camp = camp, Memory = _mapMemory }.Travel(state);
     }
 
     /// <summary>Event 0x47 (a member has left; Type = member) shows card 0xF1 instead of the map.</summary>
@@ -399,6 +399,9 @@ public sealed class DarklandsGame
     private const int CopyProtectionHours = 0x3E80;
 
     private WorldMap? _map;
+
+    /// <summary>The world map screen's program globals (DS:290E): one for the program, kept over every map visit and load.</summary>
+    private readonly OverlandMemory _mapMemory = new();
 
     /// <summary>Alt-S: the save dialog; inside a battle the battle's own Alt-S (BattleScreens.Save) saves it with the battle.</summary>
     // orig: game-store-overlay-entry = game-store-entry R037+0x2A68 (hotkey-table key 0x1F00)
