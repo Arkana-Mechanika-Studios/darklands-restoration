@@ -365,6 +365,8 @@ List<string> commandLine = [.. resolved.CommandLine, .. TakeArguments(steps)];
 using var sound = soundStep is null ? null : HeadlessSound.Attach(host, OpenGame(), soundStep, romsStep, wavStep, traceStep, commandLine);
 // the map's passes: mapclick's holds, and a click into the map's view stays down until a pass has read it (ScriptedHost.MapPass)
 OverlandScreen.PassHook = host.MapPass;
+// the battle's passes: still:<n> waits for n passes at one combat clock (ScriptedHost.BattlePass)
+Darklands.Presentation.Battles.BattleScreen.PassHook = host.BattlePass;
 var game = new DarklandsGame(host, OpenGame())
 {
     Seed = clockStep is null ? () => seed : NextSeed,
@@ -657,6 +659,18 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     private long _tickKeysAt;
     private int[]? _tickKeys;
 
+    // still:<n>: the next step comes at the battle pass that is the n-th at one combat clock value (counted from the head of each pass,
+    // a new battle starting again), as tools/oracle/orig_side.py gives the key of a battle's start pause (its BATTLE_PAUSE_PASSES); the
+    // frames before the battle (a load, the set-up) do not count, which a wait in frames cannot follow. At most 20000 frames.
+    private int _stillTarget, _stillPasses, _stillClock = -1, _stillFrames;
+
+    /// <summary>BattleScreen.PassHook: a pass at combat clock <paramref name="clock"/> (-1: the battle's loop ended).</summary>
+    public void BattlePass(int clock)
+    {
+        _stillPasses = clock >= 0 && clock == _stillClock ? _stillPasses + 1 : clock >= 0 ? 1 : 0;
+        _stillClock = clock;
+    }
+
     public void Pump()
     {
         _now += 16;
@@ -693,6 +707,14 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             _idleFrames--;
             return;
         }
+        if (_stillTarget > 0)
+        {
+            if (_stillPasses < _stillTarget && ++_stillFrames < 20000)
+            {
+                return;
+            }
+            _stillTarget = 0;
+        }
         if (!_steps.TryDequeue(out var step))
         {
             QuitRequested = true;
@@ -703,6 +725,8 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         {
             case "key":
                 _keys.Enqueue(KeyFor(value));
+                // the battle takes it in this pass: the count of still: starts again (orig_side.py: a key ends the battle's pause)
+                _stillPasses = 0;
                 // a tkey after it counts its ticks from this key (the original's from the read that takes it): taken at the next pump
                 _idleFrames = _steps.TryPeek(out var next) && next.StartsWith("tkey:", StringComparison.Ordinal) ? 0 : 2;
                 break;
@@ -760,6 +784,10 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 break;
             case "wait":
                 _idleFrames = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                break;
+            case "still":
+                _stillTarget = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                _stillFrames = 0;
                 break;
             case "untilover":
                 // the battle runs on until it ends (the screen returns)

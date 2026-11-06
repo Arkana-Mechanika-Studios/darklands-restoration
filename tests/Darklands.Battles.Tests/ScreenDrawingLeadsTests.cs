@@ -360,6 +360,44 @@ public sealed class ScreenDrawingLeadsTests
         Assert.Equal([(Keys.AltP, 1), (Keys.AltQ, 3)], seen);
     }
 
+    // the headless host's still:<n> step (tools/oracle/lockstep.py pause_keys) counts the battle's passes at one combat clock from this hook:
+    // it is called once at the head of every pass, after the end test, with the clock the pass trace shows, and not outside the battle
+    [Fact]
+    public void ThePassHookSeesEveryPassOfTheBattleWithItsClock()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new ShotHost { StopAtPresent = 60 };
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(WorldData.Load(files), 7);
+        var thread = Environment.CurrentManagedThreadId;
+        var clocks = new List<int>();
+        var screens = new BattleScreens(ui, () => state);
+        var held = Darklands.Presentation.Battles.BattleScreen.PassHook;
+        Darklands.Presentation.Battles.BattleScreen.PassHook = clock =>
+        {
+            if (Environment.CurrentManagedThreadId == thread)
+            {
+                clocks.Add(clock);
+            }
+        };
+        try
+        {
+            Assert.Throws<ShotHost.Stop>(() => screens.Battle(new Darklands.Cards.BattleRequest(0x14, 863, [(34, 4, 8), (18, 5, 2), (34, 1, 2)])));
+        }
+        finally
+        {
+            Darklands.Presentation.Battles.BattleScreen.PassHook = held;
+        }
+        Assert.True(clocks.Count >= 30, $"{clocks.Count} passes seen in 60 presents");
+        Assert.All(clocks, c => Assert.InRange(c, 0, 0xFFFF));
+        Assert.Equal(clocks.Order(), clocks);
+        // the battle begins paused (order mode for the leader): passes at one clock value, which still:<n> counts
+        Assert.True(clocks.GroupBy(c => c).Max(g => g.Count()) > 1);
+    }
+
     // orig: R067+0x1ECE / R072+0x1494 fill card-title and image-buffer without card-run (the previous card stays on the screen); with
     // GameOptions.CleanDrawing the card is loaded and drawn at once
     [Theory]

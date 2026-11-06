@@ -175,11 +175,18 @@ def waits_since_key(steps, i) -> int:
     return total
 
 
+ORIGINAL_END: list[str] = []     # "end: <why the original's run ended>" (main sets it; original.log's last line)
+
+
 def dialog_gaps(log, steps, logged: int) -> list[int]:
     """The battle passes from the last key read in a save or load dialog (R037+0x2A68, R037+0x8B76) to the next key (or kdown / kup) the
     battle took, in order, when the bwaits after the dialogs are exactly those missing from BWAIT_ACTUAL (else none)."""
     expected = [i for i, s in enumerate(steps) if s[0] == "bwait" and after_dialog(steps, i)]
-    if not expected or sum(1 for s in steps if s[0] == "bwait") - logged != len(expected):
+    # the original stopped before the script's end (an option step whose menu was not shown, as gen-carry-06's third walk met card 0x24's
+    # fight instead of the mine's card): the bwaits after its end are not logged either
+    last = ORIGINAL_END[0] if ORIGINAL_END else log[-1] if log and log[-1].startswith("end:") else ""
+    stopped = last.startswith("end:") and last != "end: script ended"
+    if not expected or sum(1 for s in steps if s[0] == "bwait") - logged != len(expected) and not stopped:
         return []
     keys = []
     for l in log:
@@ -191,7 +198,7 @@ def dialog_gaps(log, steps, logged: int) -> list[int]:
     for (p, where), (q, nxt) in zip(keys, keys[1:]):
         if where.startswith(("R037+0x2A68", "R037+0x8B76")) and not nxt.startswith(("R037+0x2A68", "R037+0x8B76")):
             out.append(q - p)
-    if len(out) == len(expected):
+    if len(out) == len(expected) and not stopped:
         return out
     # more dialogs than bwaits after them (an Alt-L outside a battle, whose next key is a card's): the log's dialogs pair with the
     # script's in order, and only those followed by a bwait keep their gap (b35: b35-door-reload's Alt-L at the riddle door's card, then
@@ -205,7 +212,14 @@ def dialog_gaps(log, steps, logged: int) -> list[int]:
                 j += 1
             ends.append(j < len(steps) and steps[j][0] == "bwait")
     if len(ends) != len(out):
-        return []
+        # an original that stopped early: its dialogs are the script's first ones, and the bwaits after the dialogs it never reached have
+        # no gap (run_rewrite waits them as written; nothing of the original is compared there). Without this every bwait after a dialog
+        # took a BWAIT_ACTUAL entry of another bwait (round reload: gen-carry-06's key after its Alt-S came 354 passes early)
+        if not stopped or len(out) > len(ends):
+            return []
+        ends = ends[:len(out)]
+        kept = [gap for gap, followed in zip(out, ends) if followed]
+        return kept if len(kept) <= len(expected) else []
     kept = [gap for gap, followed in zip(out, ends) if followed]
     return kept if len(kept) == len(expected) else []
 
@@ -232,14 +246,14 @@ def input_passes(log, steps) -> tuple[list[int], dict[int, tuple[int, int]]]:
     return inputs, passes
 
 
-PAUSE_KEY_FRAMES = 4        # the C# host's battle passes from the key that starts a battle to a key after wait:<w> there: w + 4
-
-
 def pause_keys(log, steps, trace) -> dict[int, int]:
-    """{index of the last wait step before a battle's first key: the frames to add}: the original gives the first key of a battle's start pause
-    after BATTLE_PAUSE_PASSES passes at the pause's clock (orig_side.py), so its pass follows the passes the set-up's ticks left before the
-    pause (the clock the first pass has); the C# host gives it after its wait in frames. Only for a key the pause rule gave (the log's pass
-    is the pause's first pass + BATTLE_PAUSE_PASSES), after only waits (shot / state steps) from the key that began the battle."""
+    """{index of the last wait step before a key the start pause's rule gave: the passes at one clock to wait instead}: the original gives
+    a key in a battle's pause after BATTLE_PAUSE_PASSES passes at the pause's clock (orig_side.py: counted from the pause's first pass, or
+    from the last key read), so the C# host is given the same rule (its still:<n> step, the passes at one combat clock) rather than its
+    wait in frames: the frames before a battle's first pass (a load, the battle's set-up after a card) are no battle passes, so a wait
+    from a key outside the battle came early (round reload: gen-carry-05's start pause after an Alt-L, its keys 38 passes early, the paused
+    ticks' phase and so the draw list's random draws of a Shift-scroll off). Only for a key the pause rule gave (the log's pass is the
+    first pass at its clock since the previous key + BATTLE_PAUSE_PASSES), after only waits (shot / state steps) from the previous key."""
     inputs, passes = input_passes(log, steps)
     clocks = [int(l.split()[2]) for l in trace if l.startswith("pass clock ")]
     out = {}
@@ -255,9 +269,8 @@ def pause_keys(log, steps, trace) -> dict[int, int]:
         first = next((j for j in range(start, min(at, len(clocks))) if clocks[j] == clock), None)
         if not waits or first is None or at - first != orig_side.BATTLE_PAUSE_PASSES:
             continue
-        delta = at - (start + sum(int(steps[j][1]) for j in waits) + PAUSE_KEY_FRAMES)
-        if delta and int(steps[waits[-1]][1]) + delta >= 0:
-            out[waits[-1]] = delta
+        # a state or shot step between it and the key costs the host a frame (a battle pass) the original's poll does not spend
+        out[waits[-1]] = orig_side.BATTLE_PAUSE_PASSES - (i - 1 - waits[-1])
     return out
 
 
@@ -694,7 +707,7 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
         elif k == "click" and i in mapheld:
             args.append("mapclick:%s,%d" % (v, mapheld[i]))
         elif k == "wait" and pause_shift and i in pause_shift:
-            args.append("wait:%d" % (int(v) + pause_shift[i]))
+            args.append("still:%d" % pause_shift[i])
         else:
             args.append("%s:%s" % (k, v) if v else k)
     import os
@@ -935,6 +948,7 @@ def main():
         cov = dict(got["cov"]) if a.coverage else None
         replayed = True
     jumps, loot = loot_ticks(got["jumps"], got["log"], jump_battles(got["jumps"], got["trace"]))
+    ORIGINAL_END[:] = ["end: " + end]
     BWAIT_ACTUAL[:] = got["bwait"]          # the passes each bwait of the original waited (run_original fills it on a live run)
     t_original = got["seconds"]
     if a.battle_trace:
