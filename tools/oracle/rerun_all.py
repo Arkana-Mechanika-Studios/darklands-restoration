@@ -760,7 +760,7 @@ for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
 # and 3, ended by the generator at the road card their walk meets (ROAD_CARDS), with the map's vertical-step toggle DS:290E kept over a
 # load, and 9, 16, 21, 31, by rounds spawn and reload together; since round bsvtimes 17, 18, 20, 26, 35, 37, by the tester's loot ticks,
 # the clock wrapped by a save, the out-of-battle recovery words and a last load dialog; 10, 19, 39 by refight and bsvtimes together);
-# the others differ only in registered host timing (docs/faithfulness/SUMMARY.md, open items
+# the others differ only in registered host timing (open items in
 # docs/faithfulness/SUMMARY.md) and are made again by the generator. carry-reload-footpads: ordercarry's varB without its script fault
 CARRY = {
     "gen-carry-05": "synth/DKSAVE0-card24.sav",
