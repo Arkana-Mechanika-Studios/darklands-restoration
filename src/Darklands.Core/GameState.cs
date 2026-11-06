@@ -146,7 +146,10 @@ public sealed class GameState
     /// <summary>Option "saintly changes" (Alt-C): report the changes saints and boosts make.</summary>
     public bool ShowSaintlyChanges { get; set; } = true;
 
-    /// <summary>The terrain code under the party on the world map (1 ocean, 2 major river, ...).</summary>
+    /// <summary>
+    /// The terrain code under the party on the world map (1 ocean, 2 major river, ...): DS:D843, as the map last left it (OverlandTravel
+    /// writes it); 0 in a fresh program, and not in the saved game, so a load keeps the running game's.
+    /// </summary>
     public int PartyTerrain { get; set; }
 
     /// <summary>The party's standing with the Fugger bankers (DS:4BB6, read by the $fugge00 card; St.Matthew raises it).</summary>

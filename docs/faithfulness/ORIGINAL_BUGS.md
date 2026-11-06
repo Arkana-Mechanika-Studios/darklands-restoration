@@ -27,7 +27,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
   why: Esc from the childhood attributes goes back to the background list at age 15; a background row then serves the adult occupation of that number (Recruit..Knight), as in the original.
-- **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:160` `GameState.HanseStanding`  
+- **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:163` `GameState.HanseStanding`  
   original: `R029+0x4650` (0E76:4650, draft)  
   why: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0).
 - **B-85e0e4** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:147` `ItemStores.Close`  
@@ -588,7 +588,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a993d7** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:111` `CellBuffer.CampWatch`  
   original: `R030+0x25BE` (1462:25BE, draft)  
   why: the block is read through the buffer's flat layout with no bounds check (R030+0x261D..0x2639): a column past 18 is the next row's cell (col + i - 19 of row + j + 1: the west side of the window, one row down) and a row past 49 is the bytes after the buffer (zeros and the stale icons of Fill, then the party icon table). The marker's column is up to 16 and its row up to 47, so up to 9 columns wrap and up to 7 rows fall past the buffer. Reproduced: a settlement there changes the bonus; one in the true cells beyond is not seen.
-- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:146` `OverlandTravel.Step`  
+- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:150` `OverlandTravel.Step`  
   original: `R030+0x2AC8` (1462:2AC8, draft)  
   why: the place entered is the first record by index inside the reach (R030+0x1471..0x14CA, no distance test), not the nearest: with the shipped DARKLAND.LOC three places can never be entered by stepping, 149 Simmern (147 Geldern is taken), 197 Lauf (178 Rammelsburg, four tiles off) and 297 Putten (127 Putten, two rows off).
 - **B-b69cb8** `bug`, no fix flag - `src/Darklands.Simulation/Overland/RowBuffer.cs:54` `RowBuffer.Load`  
@@ -716,13 +716,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:328` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:492` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:495` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  
   original: `root 0265:0134` (0265:0134, draft)  
   why: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38), so the rewrite registers it and stops at the text's end.
-- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:423` `OverlandScreen.Scroll`  
+- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:424` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
 

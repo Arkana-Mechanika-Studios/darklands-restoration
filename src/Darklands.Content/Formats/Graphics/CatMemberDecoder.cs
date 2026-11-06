@@ -7,7 +7,7 @@ namespace Darklands.Content.Formats.Graphics;
 /// Resource transformation from original 05D9:0070..0199. Control bits are read
 /// least significant first, with a word refill before consuming the last bit.
 /// Short and long matches copy forwards and can overlap. Extended length zero
-/// terminates; the multi-chunk continuation token remains unsupported.
+/// terminates; extended length one ends a chunk, and the next one follows it.
 /// This decoder owns no file cursor, DOS buffer, registers or gameplay state.
 /// </remarks>
 public static class CatMemberDecoder
@@ -55,7 +55,14 @@ public static class CatMemberDecoder
                         byte extended = Byte();
                         if (extended == 0) return output.ToArray();
                         if (extended == 1)
-                            throw new InvalidDataException("CAT multi-chunk continuation is not supported.");
+                        {
+                            // orig: 05D9:0070 returns at a 0 or a 1 (+0x0101..0x0107), keeping the reader (DS:08B4 input, DS:08B8 control word,
+                            //   DS:08BA bits left) and DS:08BC = 1 only for the 0; file-read-whole 05D9:019A (+0x003A..0x004E) calls it again
+                            //   with the pointer it advanced by the count (the bits go on where they stopped, the output right after the
+                            //   last chunk's, its matches reaching back into it), as the PAN reader 030B:0150 does. M00C.CAT's M40WKWH.IMC
+                            //   (the Wild Hunt) has one such chunk end, at 40962 of its 42244 bytes.
+                            continue;
+                        }
                         length = extended + 1;
                     }
                     else length += 2;

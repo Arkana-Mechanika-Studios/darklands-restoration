@@ -178,6 +178,24 @@ public sealed class OverlandTests
     }
 
     [Fact]
+    public void TheMapLeavesItsTerrainInTheGameStateForTheBattleAndTheCardsThatFollow()
+    {
+        // DS:D843 is one program global: the map's party drawing (R030+0x16C6) and the step write it, the wild battlefield generator and the
+        // cards read it, a load does not touch it (gen-carry-07: a wild fight after an Alt-L made on the map read 8, the map's terrain).
+        var state = State();
+        var map = MapOf(60, 60, (column, _) => column < 21 ? Terrain.Geest : Terrain.LightGeest);
+        state.MapPosition = new MapPosition(20, 20);
+        var travel = new OverlandTravel(state, map, kind => false);
+        Assert.Equal(0, state.PartyTerrain);
+        travel.Begin();
+        Assert.Equal(Terrain.Geest, state.PartyTerrain);
+        var (x, y) = PixelOf(21, 20);
+        travel.Step(x, y);
+        Assert.Equal(Terrain.LightGeest, state.PartyTerrain);
+        Assert.Equal(state.PartyTerrain, travel.CurrentTerrain);
+    }
+
+    [Fact]
     public void AWalkLeavesThePartysCellToTheNextPassOfTheKeyHandler()
     {
         // R030+0x1300 returns -1 without writing party-map-column / party-map-row; 0c44 sets them from the marker at the start of its next pass.
