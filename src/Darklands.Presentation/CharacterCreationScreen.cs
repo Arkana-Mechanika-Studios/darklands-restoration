@@ -266,6 +266,7 @@ public sealed class CharacterCreationScreen
                         PressDown('b');
                         var game = NewParty.Create(_world, seed, party, random, _seed);
                         _roster.CopyTo(game.Roster, game.Party);
+                        CarryOverSheetWorld(_sheetState!, game);
                         return Leave(game);
                     }
                     Press('b', () => { });
@@ -342,11 +343,30 @@ public sealed class CharacterCreationScreen
     // orig: saved-game-read R037+0x4184 reads DEFAULT's 0xEF header bytes and each 0x22A record into text-bank-buffer DS:9085 (only to copy the records
     //   into charactr.tmp), party-headcount and member-shield-picture; the date words DS:00E0..00E7 and location-now DS:907E are not written. Captured in the
     //   original at the menu (creation-menu.steps, local/batch/evid1o): DS:00E0 = 9, 26, 8, 1400; DS:907E = the start-up city (root 03A1)
+    // C: the event table and the location records are the program's (world-read R043+0x0100 at start-up), the same ones the begun game plays
+    //   on: a prayer's events and standing changes on the sheet stay (lockstep session carry-create-pray: three prayers to St.Finnian, the
+    //   begun game holds their events, 10 against 4, and the boon's attributes)
     private GameState SheetState(IRandomSource random, int startUpCity)
     {
         var state = new GameState(random) { Data = _world, CurrentLocation = startUpCity, Date = NewGame.StartUpDate };
+        state.Locations.AddRange(_world.CreateLocations());
         state.City = _world.LoadCity(startUpCity);
         return state;
+    }
+
+    /// <summary>The begun game takes the events and location records the member sheet (a prayer from it) left.</summary>
+    // C: "Begin the Adventure" (R037+0x0000 returns 1) leaves the event table and the location records as they are; the main loop then shows card 0x29
+    public static void CarryOverSheetWorld(GameState sheet, GameState game)
+    {
+        foreach (var (slot, e) in sheet.Events.All())
+        {
+            game.Events.Put(slot, e);
+        }
+        if (sheet.Locations.Count == game.Locations.Count)
+        {
+            game.Locations.Clear();
+            game.Locations.AddRange(sheet.Locations);
+        }
     }
 
     /// <summary>The selection moves; the figure of the selected member (if in the first four slots) shows with its colours.</summary>

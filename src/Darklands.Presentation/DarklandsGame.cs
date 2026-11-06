@@ -432,14 +432,16 @@ public sealed class DarklandsGame
     /// <summary>The card context of the game played last (its engine words carry over, see CardContext.TakeEngineGlobals).</summary>
     private CardContext? _lastCards;
 
-    // DS:A532 (the effects' modifiers) as the last battle left it: a load does not reset it (null: a fresh program's zeros)
-    private Core.Battles.EffectModifiers[]? _battleModifiers;
+    // C: the battle globals of GenerationProcessMemory (DS:E051, floor-picture, DS:C80F / DS:C831, DS:1182 / DS:118E, the walk spot DS:C652 /
+    //   DS:C67D, DS:9BE5, the effects' modifiers DS:A532) are the program's: no load writes them (game-load-entry R037+0x8B76 frees the
+    //   battle's buffers and resets other bytes; the battle-reload R003+0x0CE8 under the reader restores the party's place tables, which each
+    //   battle's start takes from the battle file (BattleScreen), and the alarm trigger DS:C925.. (set in Play)). One object for the whole run,
+    //   given to the battles of every game played (b35: the sizes marked before an Alt-L's reader were still marked at the next battle;
+    //   DS:9BE5 kept by a load, vis10 session uncert-cme-menus).
+    private readonly Core.Battles.Generation.GenerationProcessMemory _generationMemory = new();
 
-    // C: the party's collision sizes (DS:C80F / DS:C831) and its animation slots' sizes (DS:1182 / DS:118E) are globals a load leaves: the
-    //   next battle places the party with the first and copies the second into it (b35: marked in the original before an Alt-L's reader,
-    //   still marked at the next battle's entry, the copy at R014+0x0254 took the marked slot sizes)
-    private (int Width, int Height)[]? _battlePartySizes;
-    private (int Width, int Height)[]? _battlePartySlotSizes;
+    /// <summary>The battle screens of the game being played (null before the first game), each with the program's battle globals.</summary>
+    public BattleScreens? Battles => _battles;
 
     /// <summary>The combatants' seen positions (20A5:79A9), a program global: a game loaded keeps them.</summary>
     private Core.Battles.MapPoint[][]? _seenPositions;
@@ -520,6 +522,27 @@ public sealed class DarklandsGame
         return battles.LastResultCard;
     }
 
+    /// <summary>
+    /// What a load's battle-reload sets among the battle globals the program keeps: the alarm trigger and the cursor keys' bytes, from the
+    /// loaded game's battle file (the other globals of <see cref="Core.Battles.Generation.GenerationProcessMemory"/> stay as they were).
+    /// </summary>
+    // orig: battle-reload R003+0x0CE8 under the saved-game reader (every load: a save made outside a battle has its .BSV too): the alarm
+    //   trigger DS:C925 / DS:C978 / DS:C989 / DS:CA1B (R003+0x1241..0x1270) and the cursor keys DS:D728 / DS:D73B / DS:D7FE / DS:D947 /
+    //   DS:D945 (R003+0x0EDE..0x0F06), as a battle taken up from the file reads them (TacticalBattle.Resume); the party's place tables and
+    //   the chests' offsets it also sets are taken from the battle file at each battle's start (BattleScreen)
+    public static void TakeBattleReload(Core.Battles.BattleFile held, Core.Battles.Generation.GenerationProcessMemory memory, Core.Battles.Tactics.CursorKeyState keys)
+    {
+        var v = held.Variables;
+        if (v.Length < Core.Battles.BattleVariables.AlarmTrigger + 6)
+        {
+            return;
+        }
+        memory.AlarmTrigger = (BitConverter.ToInt16(v, Core.Battles.BattleVariables.AlarmTrigger),
+            BitConverter.ToInt16(v, Core.Battles.BattleVariables.AlarmTrigger + 2), v[Core.Battles.BattleVariables.AlarmTrigger + 4],
+            v[Core.Battles.BattleVariables.AlarmTrigger + 5]);
+        keys.Read(v.AsSpan(Core.Battles.BattleVariables.CursorKeys, 6));
+    }
+
     private void Play(GameState state)
     {
         CardContext? context = null;
@@ -532,6 +555,7 @@ public sealed class DarklandsGame
         SaintPrayerScreen.Attach(context, _ui, panel);
         var battles = new BattleScreens(_ui, () => state, (items, money) => context.Screens.Loot(items, money))
         {
+            GenerationMemory = _generationMemory,
             CharacterSheet = member => context!.Screens.CharacterSheet(member),
             PartyInfo = () => context!.Screens.PartyInfo(),
         };
@@ -541,17 +565,15 @@ public sealed class DarklandsGame
         // drawn around the centre the battle left had (R014+0x02FF), and so its members' screen positions (+0x00 / +0x02) as its next save
         // writes them (lockstep session savemid-mine)
         battles.ViewCentre = _battleViewCentre;
-        battles.GenerationMemory.Modifiers = _battleModifiers;
-        battles.GenerationMemory.PartySizes = _battlePartySizes;
-        battles.GenerationMemory.PartySlotSizes = _battlePartySlotSizes;
+        if (state.BattleFile is { } held)
+        {
+            TakeBattleReload(held, _generationMemory, _cursorKeys);
+        }
         battles.SeenPositions = _seenPositions;
         battles.CursorKeys = _cursorKeys;
         battles.Load = () =>
         {
             _battleViewCentre = battles.CurrentViewCentre;
-            _battleModifiers = battles.GenerationMemory.Modifiers;
-            _battlePartySizes = battles.GenerationMemory.PartySizes;
-            _battlePartySlotSizes = battles.GenerationMemory.PartySlotSizes;
             _seenPositions = battles.SeenPositions;
             LoadInGame(state, inBattle: true);
         };
@@ -586,9 +608,6 @@ public sealed class DarklandsGame
             Load = () =>
             {
                 _battleViewCentre = battles.CurrentViewCentre;
-                _battleModifiers = battles.GenerationMemory.Modifiers;
-            _battlePartySizes = battles.GenerationMemory.PartySizes;
-            _battlePartySlotSizes = battles.GenerationMemory.PartySlotSizes;
                 _seenPositions = battles.SeenPositions;
                 LoadInGame(state);
             },

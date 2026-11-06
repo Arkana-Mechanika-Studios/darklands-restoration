@@ -291,6 +291,37 @@ public sealed class OriginalSaveTests
         Assert.Equal(8, loaded.Roster.Characters.Count);
     }
 
+    [Fact]
+    public void TwoSlotsNamingOneRecordReadTheRecordIntoTheFirstAndStaySo()
+    {
+        // A saved game whose slots 0 and 1 name one record (as party-join leaves it for a character already in the party). The reader
+        // R037+0x8ED4 reads each record into the first slot naming it (R037+0x96BE..0x96D3), so slot 1 gets nothing (an empty slot);
+        // the writer R037+0x2ACE writes ids[] as they are and the record from the first slot naming it (R037+0x3520..0x3531): the save
+        // keeps its two ids and its count, and gives the second slot no roster entry of its own.
+        var name = SaveFolderCopy.Names.FirstOrDefault(n => n.Equals("DKSAVE0.SAV", StringComparison.OrdinalIgnoreCase));
+        if (name is null)
+        {
+            return;
+        }
+        var sav = SaveFolderCopy.Read(name);
+        BitConverter.GetBytes(BitConverter.ToInt16(sav, 0xF3)).CopyTo(sav, 0xF5);
+        var count = BitConverter.ToInt16(sav, 0xF1);
+        var state = OriginalSaves.Read(sav, [], name, NoGameData.Instance).State;
+        Assert.Equal(CharacterStatus.Empty, state.Party.Members[1].Status);
+        Assert.Equal(CharacterStatus.Able, state.Party.Members[0].Status);
+        state.Party.Members[0].Age = 70;
+
+        var bytes = OriginalSaves.Write(state).Sav;
+        var written = SaveFile.Parse(bytes);
+
+        Assert.Equal(count, BitConverter.ToInt16(bytes, 0xF1));
+        Assert.Equal(written.PartyIds[0], written.PartyIds[1]);
+        Assert.Equal(count, written.Characters.Count);
+        var again = OriginalSaves.Read(bytes, [], name, NoGameData.Instance).State;
+        Assert.Equal(70, again.Party.Members[0].Age);
+        Assert.Equal(CharacterStatus.Empty, again.Party.Members[1].Status);
+    }
+
     private static int FirstDifference(byte[] a, byte[] b)
     {
         var n = Math.Min(a.Length, b.Length);

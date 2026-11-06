@@ -753,6 +753,18 @@ BATTLE_RECORDS |= {"dungeon-mine-doormsg"}
 for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
     SESSIONS[_name] = "local/oracle-saves/dlp-issue2/DKSAVE16.SAV"
     BATTLE_RECORDS.add(_name)
+# carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,
+# taken up from a save made in the mine's battle), the per-battle state carried from one battle to the next. Only the seeds that agree are
+# here (27, 28, 36 of 1..40); the others differ in a later battle (open lead, docs/faithfulness/SUMMARY.md) and are made again by the generator
+CARRY = {
+    "gen-carry-27": "synth/DKSAVE0-card16.sav",
+    "gen-carry-28": "DKSAVE99.SAV",
+    "gen-carry-36": "synth/DKSAVE0-card24.sav",
+}
+SESSIONS.update(CARRY)
+BATTLE_RECORDS |= set(CARRY)
+# carry (round cards2's lead): a prayer on the creation's member sheet, then Begin the Adventure
+SESSIONS["carry-create-pray"] = None
 IGNORED = {"state", "file", "text state", "texts", "party seed", "bsv kept", "undefined memory", "in battle"}   # lockstep.APART
 RESERVE_MB, JOB_MB = int(os.environ.get("DARKLANDS_RESERVE_MB", 1500)), int(os.environ.get("DARKLANDS_JOB_MB", 450))   # the 2026-10-27 memory rule: reserve 6000 and 1900 per oracle worker
 

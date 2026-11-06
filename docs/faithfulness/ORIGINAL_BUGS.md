@@ -693,10 +693,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### persistence (2)
 
-- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:406` `OriginalSaves.static`  
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:418` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
-- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:417` `OriginalSaves.static`  
+- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:429` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
@@ -716,7 +716,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:328` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:490` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:492` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  

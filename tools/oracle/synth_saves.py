@@ -9,6 +9,7 @@ variants:
   kitchen every item of DARKLAND.LST once over the first four members' packs (kitchen3: three), before the items they hold
   weak<card>, card<card>  controls: as away<card> without the Away member / with the party unchanged (any card, hex)
   away<card>  (24, 7b, a0, 16, 7a, a5) member 4 Away, members 0..3 at endurance 1, the game saved at card <card> (0x24 Footpads, 0x7B RebelMobInTheStreets, 0xA0 WolfPackOnTheTrail, 0x16 MarketAtNight ...): see local/batch/res5
+  dup<a><b>  party slot <b> names the record of slot <a> (party id word +0xF3 + 2b = that of slot a): two slots naming one record
   month<N>[d<D>]  the date moved to month N (and day D): the seasons of the travel map
   hurt    the first four members hurt and ill for the battle's party panel: endurance / strength at 1, 0 and above the maximum, a dead,
           an unconscious and a poisoned member (status byte +0x14)
@@ -269,6 +270,11 @@ def main() -> None:
         # the controls of the away<card> saves (local/batch/res5b): weak<card> the same without the Away member, card<card> the game
         # saved at the card with the party as it was
         VARIANTS[variant] = away_card(int(variant[4:], 16), variant.startswith("weak"), False)
+    if variant not in VARIANTS and variant.startswith("dup"):
+        # dup<a><b>: two party slots naming one record (round cards1's lead: what a load and a later save make of it)
+        def dup(b, a=int(variant[3]), c=int(variant[4])):
+            struct.pack_into("<h", b, 0xF3 + 2 * c, struct.unpack_from("<h", b, 0xF3 + 2 * a)[0])
+        VARIANTS[variant] = dup
     if variant not in VARIANTS and variant.startswith("month"):
         # month<N>[d<D>]: the game's date moved to month N (0..11) and day D (header +0x6A / +0x6C): the seasons of the travel map (R2)
         month, _, day = variant[5:].partition("d")
