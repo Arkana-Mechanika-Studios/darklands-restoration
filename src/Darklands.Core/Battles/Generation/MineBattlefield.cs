@@ -64,9 +64,14 @@ internal sealed partial class MineBuilder
     /// </summary>
     // C: the real game's stack agrees: four new mines (0x0b, 0x0d, 0x0e, 0x10) built in the whole game (the battle oracle's gate battle
     // run live with the battle's arguments replaced, R009+0x4D56 and R009+0x4EAE hooked) read [bp-0x0C] = 0 at every first pile of a
-    // section (17 fills) and 0x29CB at every later one after a kept pile (19 fills, sections with up to five piles). A timer tick in the
-    // few instructions between the pile roll and the call would push over the word (the timer's phase; not met). A value above 9 means
+    // section (17 fills) and 0x29CB at every later one after a kept pile (19 fills, sections with up to five piles). A value above 9 means
     // "no new kind picked, the last one repeats", and the word is also the first entry's item (SI) when the first pick lands on it.
+    // DIVERGENCE: host timing: a timer interrupt that comes between the pile roll and the filler's call pushes over that stack slot
+    //   (gen-carry-01, the mine after a wild fight: a write watch of SS:[bp-0x0C] saw the timer's callback, root 047C (DS:07D1 63 -> 64),
+    //   write 0x5E37 there two draws before the section's first pile, which then read 0x5E37 for 0; its fill took other kinds and the
+    //   mine's set-up drew 6 fewer numbers; gen-carry-33 the same with 0x5E1D, 143 fewer). Where the interrupt falls among the
+    //   instructions is the original's CPU time against the timer (the earlier battle only moves its phase); here the word is the one
+    //   met when no interrupt comes there.
     private int StaleStackWord => _pileRollMade ? 0x29CB : 0;
 
     private bool _pileRollMade;

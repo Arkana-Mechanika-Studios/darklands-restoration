@@ -200,6 +200,10 @@ def dialog_gaps(log, steps, logged: int) -> list[int]:
             out.append(q - p)
     if len(out) == len(expected) and not stopped:
         return out
+    # the log's last key read in a dialog (the script's last Alt-L, whose game is played on without another key: gen-carry-26): that
+    # dialog has no gap but is one of the script's, so the pairing below counts it (with no gap; a bwait after it cannot be given one)
+    if keys and keys[-1][1].startswith(("R037+0x2A68", "R037+0x8B76")):
+        out.append(None)
     # more dialogs than bwaits after them (an Alt-L outside a battle, whose next key is a card's): the log's dialogs pair with the
     # script's in order, and only those followed by a bwait keep their gap (b35: b35-door-reload's Alt-L at the riddle door's card, then
     # the Alt-S in the battle after it)
@@ -219,9 +223,9 @@ def dialog_gaps(log, steps, logged: int) -> list[int]:
             return []
         ends = ends[:len(out)]
         kept = [gap for gap, followed in zip(out, ends) if followed]
-        return kept if len(kept) <= len(expected) else []
+        return kept if len(kept) <= len(expected) and None not in kept else []
     kept = [gap for gap, followed in zip(out, ends) if followed]
-    return kept if len(kept) == len(expected) else []
+    return kept if len(kept) == len(expected) and None not in kept else []
 
 
 def after_bwait(steps, i) -> bool:
@@ -538,29 +542,75 @@ def jump_battles(jumps, trace) -> list[int]:
     back (b35 T1: a session's second battle repeats the first's clocks, so the C# host keys the jumps of the later battles as
     battle << 16 | clock, and counts its battles the same way)."""
     clocks = [int(l.split()[2]) for l in trace or []]
+    # each jump is searched from the pass after the last one's (two battles' jumps at one clock in a row, gen-carry-17: the mine's
+    # ambush won at 2090 in both, belong to their own battles)
+    # a jump of save_wraps (the clock past 0xFFFF) is found by its size modulo 2^16
     out, k, battle = [], 0, 0
-    for j in jumps:
-        while k + 1 < len(clocks) and not (clocks[k] == j[0] and clocks[k + 1] - clocks[k] > 1):
+    for n, j in enumerate(jumps):
+        if n and k + 2 < len(clocks):
+            k += 1
+            battle += clocks[k] < clocks[k - 1]
+        while k + 1 < len(clocks) and not (clocks[k] == j[0] and (clocks[k + 1] - clocks[k] > 1
+                                                                  or len(j) == 2 and clocks[k + 1] < clocks[k] and (clocks[k + 1] - clocks[k] - 1) % 0x10000 == j[1])):
             k += 1
             battle += clocks[k] < clocks[k - 1]
         out.append(battle)
     return out
 
 
-def loot_ticks(jumps, log, battles=None):
+def save_wraps(jumps, trace, log) -> list:
+    """The jumps with those of the passes of an in-battle save whose emulated time carried the 16-bit combat clock past 0xFFFF (gen-carry-14:
+    the save's Enter at clock 41366, the next pass head 14135, i.e. 38305 callbacks of the save and its compression), which the recording's
+    clock_jumps (a rise only) leaves out, so the C# host, one tick a pass, kept its battle at 41366.. where the original's had wrapped below
+    every battle timer. A save is the key read by the save dialog R037+0x2A68 (the innermost of the log line's callers) in a battle pass;
+    the fall of the clock after that pass is the wrap, not a new battle (the C# host counts its battles at a fall of the clock the same way,
+    so the jump keys agree)."""
+    clocks = [int(l.split()[2]) for l in trace or []]
+    saves = set()
+    for l in log or ():
+        if l.startswith("key ") and "(battle pass " in l and l.rstrip().endswith("R037+0x2A68"):
+            saves.add(int(l.split("(battle pass ")[1].split(",")[0]))
+    wraps = {k: (clocks[k], (clocks[k + 1] - clocks[k] - 1) % 0x10000) for k in range(len(clocks) - 1)
+             if k + 1 in saves and clocks[k + 1] < clocks[k]}
+    if not wraps:
+        return list(jumps)
+    out, rest, k = [], list(jumps), 0
+    for k in range(len(clocks) - 1):
+        if k in wraps:
+            out.append(wraps[k])
+        elif rest and clocks[k] == rest[0][0] and clocks[k + 1] - clocks[k] > 1:
+            out.append(rest.pop(0))
+    return out + rest
+
+
+def loot_ticks(jumps, log, battles=None, trace=None):
     """(jumps, [(clock, ticks)]): the clock jumps of the passes followed by a loot screen (a key read in R040 at clock c, the jump of the pass
     whose head had c - 1) without their ticks after the pass, those being given to the C# at the loot screen: the end test R014+0x08FE runs
-    fight-recovery R014+0x0DEE (each member's next recovery = the clock) before the loot screen, whose emulated time the timer counts."""
+    fight-recovery R014+0x0DEE (each member's next recovery = the clock) before the loot screen, whose emulated time the timer counts.
+    With the trace, a loot screen belongs to the battle of its key's battle pass (the trace's pass heads, a new battle where the clock goes
+    back, as jump_battles): two battles of a session can open their loot screens at one clock (gen-carry-17, -35: the mine's ambush won at
+    2090 twice), and the second's ticks belong to the second's jump, not left in it."""
+    clocks = [int(l.split()[2]) for l in trace or []]
+    falls = [0] * (len(clocks) + 1)
+    for n in range(1, len(clocks)):
+        falls[n + 1] = falls[n] + (clocks[n] < clocks[n - 1])
     at = set()
     for l in log:
         if l.startswith("key ") and "< R040+0x0000" in l and ", clock " in l:
-            at.add(int(l.split(", clock ")[1].split(")")[0]))
+            clock = int(l.split(", clock ")[1].split(")")[0])
+            battle = None
+            if battles and clocks and "(battle pass " in l:
+                n = int(l.split("(battle pass ")[1].split(",")[0])
+                battle = falls[min(n, len(clocks))]
+            at.add((battle, clock))
     out, loot = [], []
     for i, j in enumerate(jumps):
-        key = (battles[i] if battles else 0) << 16
-        if j[0] + 1 in at and j[1] > 0:
+        b = battles[i] if battles else 0
+        key = b << 16
+        mark = next((m for m in ((b, j[0] + 1), (None, j[0] + 1)) if m in at), None)
+        if mark is not None and j[1] > 0:
             loot.append((key + j[0] + 1, j[1]))
-            at.discard(j[0] + 1)
+            at.discard(mark)
             j = (j[0], 0) + tuple(j[2:])
         out.append((key + j[0],) + tuple(j[1:]))
     return out, loot
@@ -947,7 +997,8 @@ def main():
         original, seeds, log, end, files, set_up, trace = (got[k] for k in ("states", "seeds", "log", "end", "files", "set_up", "trace"))
         cov = dict(got["cov"]) if a.coverage else None
         replayed = True
-    jumps, loot = loot_ticks(got["jumps"], got["log"], jump_battles(got["jumps"], got["trace"]))
+    all_jumps = save_wraps(got["jumps"], got["trace"], got["log"])
+    jumps, loot = loot_ticks(all_jumps, got["log"], jump_battles(all_jumps, got["trace"]), got["trace"])
     ORIGINAL_END[:] = ["end: " + end]
     BWAIT_ACTUAL[:] = got["bwait"]          # the passes each bwait of the original waited (run_original fills it on a live run)
     t_original = got["seconds"]

@@ -870,6 +870,10 @@ public sealed partial class TacticalBattle : IBattleEndActions
 
     /// <summary>+1 endurance every 5/15/30/45 s outside real combat, up to three quarters of the maximum.</summary>
     // orig: endurance-regain R014+0x45AE (0E76:45AE) draft (byte-matched, asm-verified)
+    // DIVERGENCE: host timing: the original reads the timer's clock DS:07D4 anew for each member (R014+0x45CF), so a timer callback that
+    //   comes inside the loop gives the later members a time one higher (gen-carry-11, -13, -25, -34: right after the mine ambush's loot screen
+    //   member 0 at 2097, members 1..3 at 2098, DS:07D1 EB -> EC between them, no row redrawn; a read-only hook in the original). Where the
+    //   callback falls among the instructions is the original's CPU time against the timer; here the clock moves between passes only.
     private void RecoverEndurance()
     {
         for (var i = 0; i < Combatant.PartySlots; i++)

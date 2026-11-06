@@ -826,9 +826,9 @@ Z-87c9f8,battles,core,src/Darklands.Core/Battles/Generation/FortressBattlefield.
 Z-3a283e-3,battles,core,src/Darklands.Core/Battles/Generation/FortressBattlefield.cs,498,FortressBattlefield.Fortress,SetUpRoom,R011+0x096A,1432:096A,draft,495,start,the buffer number is always 0..3.
 Z-227ce6,battles,core,src/Darklands.Core/Battles/Generation/FortressBattlefield.cs,785,FortressBattlefield.Fortress,RandomItem,R011+0x16D2,1432:16D2,draft,784,start,"the draft's switch falls off the end for a roll outside 1..22, which cannot happen."
 Z-a79226,battles,core,src/Darklands.Core/Battles/Generation/MineBattlefield.cs,48,MineBuilder,_sectionPlaced,R009+0x0000,1432:0000,draft,16,inline,nothing in the mine generator reads it.
-Z-2c68e3,battles,core,src/Darklands.Core/Battles/Generation/MineBattlefield.cs,115,MineBuilder,Build,R009+0x0000,1432:0000,draft,16,start,only type 0x0a reaches this arm (every other battlefield type routed here has its own case).
-Z-29119b,battles,core,src/Darklands.Core/Battles/Generation/MineBattlefield.cs,231,MineBuilder,Mine0B,R009+0x0398,1432:0398,draft,206,start,the loop runs once (i = 7) with j still −1.
-Z-dce40a,battles,core,src/Darklands.Core/Battles/Generation/MineBattlefield.cs,240,MineBuilder,Mine0B,R009+0x0398,1432:0398,draft,206,start,j is 7 after the loop above.
+Z-2c68e3,battles,core,src/Darklands.Core/Battles/Generation/MineBattlefield.cs,120,MineBuilder,Build,R009+0x0000,1432:0000,draft,16,start,only type 0x0a reaches this arm (every other battlefield type routed here has its own case).
+Z-29119b,battles,core,src/Darklands.Core/Battles/Generation/MineBattlefield.cs,236,MineBuilder,Mine0B,R009+0x0398,1432:0398,draft,211,start,the loop runs once (i = 7) with j still −1.
+Z-dce40a,battles,core,src/Darklands.Core/Battles/Generation/MineBattlefield.cs,245,MineBuilder,Mine0B,R009+0x0398,1432:0398,draft,211,start,j is 7 after the loop above.
 Z-31c4fe,battles,core,src/Darklands.Core/Battles/Generation/MineBuilder.Connections.cs,102,MineBuilder,CarveGap,R009+0x2C98,1432:2C98,draft,76,start,gaps is at least 1.
 Z-fe6607,battles,core,src/Darklands.Core/Battles/Generation/MineBuilder.Connections.cs,193,MineBuilder,CarveGap,R009+0x2C98,1432:2C98,draft,76,start,the else of this test (a mode above 3) does not exist; modes are 0..3.
 Z-b6a1a0,battles,core,src/Darklands.Core/Battles/Generation/MineBuilder.Connections.cs,314,MineBuilder,GapMode,R009+0x2C98,1432:2C98,draft,76,start,"mode 0 needs DS:11DD (the debugging switch, 0 in the shipped game); no mode above 3 exists."
