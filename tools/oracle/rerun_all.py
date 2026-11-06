@@ -755,11 +755,15 @@ for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
     BATTLE_RECORDS.add(_name)
 # carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,
 # taken up from a save made in the mine's battle), the per-battle state carried from one battle to the next. Only the seeds that agree are
-# here (27, 28, 36 of 1..40, and since round spawn 2, 4, 8, 15, 22, 24, 38, 40); the others differ in a later battle (open lead,
-# docs/faithfulness/SUMMARY.md) and are made again by the generator
+# here (27, 28, 36 of 1..40; since round spawn 2, 4, 8, 15, 22, 24, 38, 40; since round reload 05, by its still:<n> wait for the
+# start pause's keys, and 30, by the enemies' turn rotation); the others differ in a later battle (open lead,
+# docs/faithfulness/SUMMARY.md) and are made again by the generator. carry-reload-footpads: ordercarry's varB without its script fault
 CARRY = {
+    "gen-carry-05": "synth/DKSAVE0-card24.sav",
+    "carry-reload-footpads": "DKSAVE99.SAV",
     "gen-carry-27": "synth/DKSAVE0-card16.sav",
     "gen-carry-28": "DKSAVE99.SAV",
+    "gen-carry-30": "DKSAVE0.SAV",
     "gen-carry-36": "synth/DKSAVE0-card24.sav",
     "gen-carry-02": "synth/DKSAVE99-card24.sav",
     "gen-carry-04": "synth/DKSAVE99-carda0.sav",

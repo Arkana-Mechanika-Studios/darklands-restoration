@@ -362,6 +362,40 @@ public sealed class OrderModeLeadsTests
     }
 
     /// <summary>
+    /// DS:E237, the enemies' turn rotation, is a program global: enemy-move-phase (R018+0x0706) increments it and keeps two bits, and no other
+    /// code of the EXE writes it, so a battle's first enemy turn goes on from the last battle's (gen-carry-30: the gate twice after an Alt-L
+    /// agrees in every tick only so; gen-carry-21's enemy 11, waiting with no target, shot at a member one turn early in the C#).
+    /// </summary>
+    [Fact]
+    public void TheEnemiesTurnRotationOutlastsTheBattle()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var memory = new Darklands.Core.Battles.Generation.GenerationProcessMemory();
+        Assert.Equal(0, memory.TurnRotation);
+        var enemyTurn = typeof(TacticalBattle).GetMethod("EnemyTurn", Any)!;
+        void Turn(TacticalBattle t)
+        {
+            t.PauseByte = 0;
+            Set(t, "DelayedStart", false);
+            enemyTurn.Invoke(t, null);
+        }
+        var first = Start();
+        first.ProgramMemory = memory;
+        Turn(first);
+        Turn(first);
+        Assert.Equal(2, memory.TurnRotation);
+        var next = Start();
+        next.ProgramMemory = memory;
+        Turn(next);
+        Assert.Equal(3, memory.TurnRotation);
+        Turn(next);
+        Assert.Equal(0, memory.TurnRotation);
+    }
+
+    /// <summary>
     /// DS:9BE5, the order of record -1, is 0x1A6D from start-up and only command-mode-end writes it: a missile given to record -1 in one
     /// battle is what the next battle's Enter with nobody selected gives again (R014+0xBE48..0xBE94: 0x02 of the pause byte set).
     /// </summary>

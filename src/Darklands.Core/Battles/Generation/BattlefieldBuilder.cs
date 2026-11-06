@@ -91,6 +91,12 @@ public sealed class GenerationProcessMemory
     public int ActionBeforeRecords { get; set; } = 0x1A6D;
 
     /// <summary>
+    /// DS:E237: the enemies' turn rotation (enemy-move-phase R018+0x0706: inc, and 3, read; the EXE's only accesses), 0 from start-up: no
+    /// battle's reset, no load and no battle file touches it, so a battle begins where the last one's enemy turns left it.
+    /// </summary>
+    public int TurnRotation { get; set; }
+
+    /// <summary>
     /// DS:A532[13]: the effects' temporary modifiers as the last battle left them, or null in a fresh program (zeros: every timer 0, not
     /// −536). Only a fresh battle's fight-state-reset turns the timers off; a battle taken up from a saved game starts from these, so in a
     /// fresh program every record's three timers are due at the first tick and each record readies its weapon again (R019+0x0B00), the

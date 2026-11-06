@@ -30,6 +30,11 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>A debugging aid: a line at the head of each pass, the combat clock and the random state (DARKLANDS_BATTLE_TRACE).</summary>
     public static Action<string>? PassTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TRACE") is null ? null : Console.WriteLine;
 
+    /// <summary>A debugging aid: called at the head of each pass with the combat clock (after the end test), and with -1 when the loop ends
+    /// (the headless host's still: step, which gives the tester's key of a battle's start pause after as many passes at one clock as the
+    /// original was given it).</summary>
+    public static Action<int>? PassHook { get; set; }
+
     /// <summary>DARKLANDS_BATTLE_TRACE=records (the battle tester): each pass's line also holds the combatants' records and tables.</summary>
     public static bool RecordTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TRACE") == "records";
 
@@ -249,6 +254,7 @@ public sealed class BattleScreen : ITacticalView
                     _passBattle++;
                 }
                 _lastPassClock = _battle!.Battle.Clock;
+                PassHook?.Invoke(_battle.Battle.Clock);
                 if (PassTrace is { } trace)
                 {
                     trace($"pass clock {_battle!.Battle.Clock} rand {(_state.Random is Darklands.Core.Randomness.MscRandom msc ? msc.State.ToString("X8", System.Globalization.CultureInfo.InvariantCulture) : "?")}"
@@ -379,6 +385,7 @@ public sealed class BattleScreen : ITacticalView
                 _ui.Clock.Sleep(FrameMilliseconds);
             }
             Darklands.Core.Randomness.MscRandom.BeforeDraw = null;
+            PassHook?.Invoke(-1);
             // orig: fight-main-loop's end R014+0x0759..0x0783: root 047C:040B(1), (2), (3), (4) and DS:07D8 = 0: the cycles stop where they are
             for (var slot = 1; slot <= 4; slot++)
             {

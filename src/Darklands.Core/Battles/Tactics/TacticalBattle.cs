@@ -276,8 +276,12 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>DS:E07B: the map needs redrawing after the action pass.</summary>
     private bool _redraw;
 
-    /// <summary>DS:E237: the rotating enemy that may rethink this turn.</summary>
-    private int _turnRotation;
+    /// <summary>DS:E237: the rotating enemy that may rethink this turn: a program global (<see cref="Generation.GenerationProcessMemory.TurnRotation"/>).</summary>
+    private int _turnRotation
+    {
+        get => ProgramMemory.TurnRotation;
+        set => ProgramMemory.TurnRotation = value;
+    }
 
     /// <summary>
     /// DS:D6F1 / DS:D6ED: the member whose order mode the screen opens in the frame it draws after a combat tick, once the member has a
