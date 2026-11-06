@@ -34,7 +34,8 @@ public sealed partial class TacticalBattle
     // those files (BattlefieldStore.FloorFiles / ActivationFiles), not the levels in memory; tests: BattleSaveTests, LevelFilesTests
     // DIVERGENCE: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant
     // tables' bytes left by earlier battles or by a load's battle-reload (the paths are kept, Combatant.Path; so are the party's place tables,
-    // ProgramMemory.PartyTables; so are the chests' offsets, LootStore.ChestOffsets), are this program's (zeros, -1) for a battlefield made
+    // ProgramMemory.PartyTables; so are the chests' offsets, LootStore.ChestOffsets; so are the attack facings, the placed base loads and the
+    // saved path, StaleVariables, and the timer word DS:07E6, TimerRate), are this program's (zeros, -1) for a battlefield made
     // here. Such a table is read again by the next battle where nothing sets it first: the original's member 1 starts a second battle with
     // door 1 / side 1 from the first (b35, dungeon-door-back). The others are not: a read watch in the original from each fight's entry
     // (b35, sessions dungeon-door-start, dungeon-door-reload, gate-battle, gen-bhurt-01, gen-bdead-01, dungeon-king-ladder) saw no read
@@ -161,6 +162,7 @@ public sealed partial class TacticalBattle
         v[BattleVariables.AlarmTrigger + 4] = (byte)alarm.Width;
         v[BattleVariables.AlarmTrigger + 5] = (byte)alarm.Height;
         v[BattleVariables.Stopped] = Flag(_stopped);
+        PutWord(v, BattleVariables.TimerRate, TimerRate);
         v[BattleVariables.LockIsDoor] = Flag(LockIsDoor);
         PutWord(v, BattleVariables.Result, (int)Battle.Result);
         PutWord(v, BattleVariables.ResultCard, Battle.ResultCard);
@@ -397,6 +399,7 @@ public sealed partial class TacticalBattle
         AlarmTrigger = (Word(v, BattleVariables.AlarmTrigger), Word(v, BattleVariables.AlarmTrigger + 2),
             v[BattleVariables.AlarmTrigger + 4], v[BattleVariables.AlarmTrigger + 5]);
         _stopped = v[BattleVariables.Stopped] != 0;
+        TimerRate = UWord(v, BattleVariables.TimerRate);
         LockIsDoor = v[BattleVariables.LockIsDoor] != 0;
         Battle.Result = (BattleResult)Word(v, BattleVariables.Result);
         Battle.ResultCard = Word(v, BattleVariables.ResultCard);

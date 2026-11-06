@@ -192,8 +192,8 @@ public static class BattleVariables
     /// <summary>DS:CA29: a pit or an alarm stopped the battle.</summary>
     public const int Stopped = 0x16DA;
 
-    /// <summary>DS:07E6, DS:CA3F: words only saved and restored.</summary>
-    public const int Unused16DB = 0x16DB;
+    /// <summary>DS:07E6 (the timer's rate word, TacticalBattle.TimerRate), then DS:CA3F (a word only saved and restored).</summary>
+    public const int TimerRate = 0x16DB;
 
     /// <summary>DS:CA99: the lock entries are about a door.</summary>
     public const int LockIsDoor = 0x16DF;

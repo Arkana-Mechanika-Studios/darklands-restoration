@@ -146,6 +146,8 @@ public static class CombatantSetup
     //   reads the file's record into DS:B899 and R025+0x0264 copies its head over the slot. Here the slot's fields keep what its last enemy
     //   left (0 for a fresh one), and the fields the readying and the placing read are set below or after; the destination +0x08..+0x0B
     //   (read by R014+0x306A until the enemy first moves) is TacticalBattle.StaleDestinations' (the oracle's injection of the original's values).
+    //   C: those bytes do not depend on an earlier battle of the program: a write watch of R025+0x0267 gives the mine's three ambushers the same
+    //   +0x1C words (F5F9, EB0D, EB0D: aim delay +0x1D 245 / 235 / 235) in a fresh program and after a wild fight (round spawn).
     public static void FromEnemy(Battle battle, int index, EnemyKind kind, int floor, int facing, int slot, bool activation)
     {
         var c = battle[index];

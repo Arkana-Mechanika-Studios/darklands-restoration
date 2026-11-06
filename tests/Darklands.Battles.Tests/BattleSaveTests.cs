@@ -42,6 +42,43 @@ public sealed class BattleSaveTests
         Assert.All(Enumerable.Range(0, Combatant.Count), i => Assert.Equal(7, file.Variables[BattleVariables.Exchange + i]));
     }
 
+    /// <summary>A battle after another in one program: the attack facings (DS:D3FE), the placed base loads (DS:C1C1) and the saved path
+    /// (2E38:0C64, DS:DA43) are not reset by its start, so its battle file holds the last battle's where this one has not set them; the
+    /// timer's rate word DS:07E6 is 1 (the timer installed again at the start, R002+0x0093). Round spawn: the original's .BSV of the mine's
+    /// ambush after a wild fight (gen-carry-04: member 3's facing 5, the wolves' records 8..10 base load 10, a 31-step saved path).</summary>
+    [Fact]
+    public void ABattleAfterAnotherKeepsTheTablesNoStartResets()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var state = Simulation.NewGame.Quickstart(world, 7);
+        var program = new BattleFile();
+        var v = program.Variables;
+        v[BattleVariables.AttackFacing + 3] = 5;
+        v[BattleVariables.AttackFacing + 10] = 2;
+        v[BattleVariables.PlacedBaseLoad + 12] = 10;
+        v[BattleVariables.SavedPathLength] = 3;
+        v[BattleVariables.SavedPath] = 9;
+        v[BattleVariables.SavedPath + 1] = 6;
+        v[BattleVariables.SavedPath + 2] = 5;
+        v[BattleVariables.SavedPath + 3] = 0xFF;
+        state.BattleFile = program;
+        var (_, tactics) = StartBattle(ui, files, state, new BattleRequest(0x14, 863, NoGroups, Persistent: true));
+        var file = new BattleFile();
+        tactics.WriteBattleFile(file, inBattle: true, 0, 0);
+        var w = file.Variables;
+        Assert.Equal(5, w[BattleVariables.AttackFacing + 3]);
+        Assert.Equal(2, w[BattleVariables.AttackFacing + 10]);
+        Assert.Equal(10, w[BattleVariables.PlacedBaseLoad + 12]);
+        Assert.Equal(3, w[BattleVariables.SavedPathLength]);
+        Assert.Equal([9, 6, 5, 0xFF], w[BattleVariables.SavedPath..(BattleVariables.SavedPath + 4)]);
+        Assert.Equal(1, w[BattleVariables.TimerRate] | w[BattleVariables.TimerRate + 1] << 8);
+    }
+
     [Theory]
     [MemberData(nameof(Battlefields))]
     public void ABattleSavedInsideItIsTakenUpAsItStood(int battlefield, int seed)
