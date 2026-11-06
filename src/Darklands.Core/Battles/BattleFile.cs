@@ -17,8 +17,25 @@ public sealed class BattleFile
     /// <summary>The header's words: [0] the variables' packed size, [1..16] each level's, [17..18] the loot file's raw and packed size, [19..20] terrain.fil's.</summary>
     public const int HeaderWords = 21;
 
-    /// <summary>The battle variables (<see cref="BattleVariables"/>).</summary>
-    public byte[] Variables { get; set; } = new byte[VariablesSize];
+    /// <summary>The battle variables (<see cref="BattleVariables"/>); a new file holds a fresh program's (<see cref="ProgramStartVariables"/>).</summary>
+    public byte[] Variables { get; set; } = ProgramStartVariables();
+
+    /// <summary>
+    /// The battle variables of a program that has fought no battle and loaded no battle file: zeros but for floor-displayed (DS:11CA, 0xFF
+    /// in the EXE's image) and the timer's rate word (DS:07E6, which the timer's set-up makes 1 at the program's start).
+    /// </summary>
+    // orig: DS:11CA is 0xFF in the EXE's data image, written only by R002+0x00DF, R016 (+0x0A10, +0x0A9B, +0x0B1B), R024 (+0x0019, +0x06B2)
+    //   and the restore R003+0x1221; DS:07E6 is 0 in the image and set to 1 by root 047C:0066+0x0B, which the start-up R000+0x06A5 calls
+    //   (when DS:A876 is not 'n' / 'N'; the C# host always runs the clock, as TacticalBattle.TimerRate)
+    // C: lockstep session tester-newgame-reload (a new game saved before any battle): the original's DKSAVE0.BSV holds +0x16D1 = 0xFF and
+    //   +0x16DB = 1, every other variable 0
+    public static byte[] ProgramStartVariables()
+    {
+        var v = new byte[VariablesSize];
+        v[BattleVariables.FloorShown] = 0xFF;
+        v[BattleVariables.TimerRate] = 1;
+        return v;
+    }
 
     /// <summary>The last battlefield's levels by number: the floor image (object functions as numbers), the .atv and the .enm data.</summary>
     public List<LevelFiles> Levels { get; } = [];
@@ -179,6 +196,7 @@ public static class BattleVariables
     /// <summary>DS:C4FD: an enemy has seen a member.</summary>
     public const int EnemySaw = 0x16D0;
 
+    /// <summary>DS:11CA: the level shown (floor-displayed; 0xFF in a program that has had no battle).</summary>
     public const int FloorShown = 0x16D1;
 
     public const int PartyFloor = 0x16D2;

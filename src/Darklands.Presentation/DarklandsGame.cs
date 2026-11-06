@@ -177,7 +177,7 @@ public sealed class DarklandsGame
             }
             if (StartWithSave is { } first)
             {
-                if (LoadSavedGame(first, _session ??= NewGame.StartUp(World, Seed()), beforeNotice: () => LoadGameScreen.PaintBackdrop(_ui)) is { } given)
+                if (LoadSavedGame(first, StartUpSession(), beforeNotice: () => LoadGameScreen.PaintBackdrop(_ui)) is { } given)
                 {
                     PlayFrom(given.State);
                     return;
@@ -186,6 +186,10 @@ public sealed class DarklandsGame
             }
             while (true)
             {
+                if (_played)
+                {
+                    RestartProgram();
+                }
                 StartChoice choice;
                 OnStartScreen = true;
                 try
@@ -203,14 +207,16 @@ public sealed class DarklandsGame
                     case StartChoice.Quickstart:
                         var quickstart = NewGame.Quickstart(World, Seed(), Seed, PartyTicks());
                         quickstart.CurrentCard = QuickstartCard ?? quickstart.CurrentCard;
+                        quickstart.BattleFile = ProgramBattleFile();
                         PlayFrom(quickstart);
                         break;
                     // orig: R037+0x9DB2 case 0x1454/0x1474: DS:E89A = 1; if (R037+0x81B2()) return 0x11b (play); else the start screen again
                     // C: the game in memory (at first the program start's, NewGame.StartUp) is what the load reads over: city-record and the session globals.
-                    case StartChoice.LoadGame when new LoadGameScreen(_ui, Saves, LoadScreenTexts).Run(fromStartScreen: true, name => LoadSavedGame(name, _session ??= NewGame.StartUp(World, Seed()))) is { } loaded:
+                    case StartChoice.LoadGame when new LoadGameScreen(_ui, Saves, LoadScreenTexts).Run(fromStartScreen: true, name => LoadSavedGame(name, StartUpSession())) is { } loaded:
                         PlayFrom(loaded.State);
                         break;
                     case StartChoice.CreateCharacters when new CharacterCreationScreen(_ui, World, Seed, PartyTicks) { MadeUpName = name => _cardVariables.Named[0] = name }.Run() is { } created:
+                        created.BattleFile = ProgramBattleFile();
                         PlayFrom(created);
                         break;
                     default:
@@ -226,6 +232,75 @@ public sealed class DarklandsGame
 
     /// <summary>The game last in memory (the program start's until one is played): what a load from the start screen reads over.</summary>
     private GameState? _session;
+
+    /// <summary>The program start's game (NewGame.StartUp) with the program's battle file, made on first use.</summary>
+    private GameState StartUpSession()
+    {
+        if (_session is null)
+        {
+            _session = NewGame.StartUp(World, Seed());
+            _session.BattleFile = ProgramBattleFile();
+        }
+        return _session;
+    }
+
+    /// <summary>A game has been played in this run (the start screen shown again stands for a new run of the program).</summary>
+    private bool _played;
+
+    /// <summary>
+    /// The work files terrain.fil and cfile.dat (the loot file) the program starts with: the game folder's (null: the file is not there),
+    /// read on first use; after a game, the ones its battle file held (<see cref="RestartProgram"/>).
+    /// </summary>
+    private (byte[]? Terrain, byte[]? Loot)? _workFiles;
+
+    /// <summary>
+    /// The battle file of a program that has fought no battle and loaded no battle file: the program's start values
+    /// (<see cref="Core.Battles.BattleFile.ProgramStartVariables"/>) and the work files the folder holds.
+    /// </summary>
+    // orig: the battle-state save R003+0x00DC (+0x0A6C..0x0C52) opens terrain.fil (DS:1164) and cfile.dat (DS:1162) in the program's folder
+    //   and packs each one that is there, whatever wrote it (raw size -1 when it is not); the files outlive the program: only a battle
+    //   (its level preparation and loot) and the restore R003+0x0CE8 write or remove them
+    // C: lockstep session tester-newgame-reload: a new game saved before any battle; the original's DKSAVE0.BSV holds the game folder's
+    //   terrain.fil (196 bytes) and cfile.dat (18 bytes) as an earlier run left them
+    // DIVERGENCE: the C# keeps the work files in the program's battle file and writes none into the game folder: a program starts from
+    //   what the folder holds (left by a run of the original), not from the last battle of an earlier run of this program.
+    private Core.Battles.BattleFile ProgramBattleFile()
+    {
+        _workFiles ??= (ReadWorkFile("TERRAIN.FIL"), ReadWorkFile("CFILE.DAT"));
+        return new Core.Battles.BattleFile { Terrain = (byte[]?)_workFiles.Value.Terrain?.Clone(), Loot = (byte[]?)_workFiles.Value.Loot?.Clone() };
+    }
+
+    private byte[]? ReadWorkFile(string name) => _files.Exists(name) ? _files.Read(name) : null;
+
+    /// <summary>
+    /// The start screen shown again after a game (the party perished, or the game ended): the program's globals go back to their start
+    /// values, as in a new run of the program; the work files stay as the last game's battle file held them.
+    /// </summary>
+    // orig: the start screen (thunk 09C0:18DD = R037+0x9C48) has one caller, root 03A1:0291, before setjmp(DS:A752) (03A1:0299) and the
+    //   card loop; R037+0x9C48 has no other caller and is in no pointer table. The loop ends the program on 0x62 / -0x63 (03A1:046B, main
+    //   returns); a party with nobody left ends it with exit(0) (03A1:0426; hours-elapse R029+0x255A and battle-driver R029+0x2278 with
+    //   exit_); an Alt-L longjmps to DS:A752, after the start screen. So the original starts a new party only in a new run of the
+    //   program, where every global (DS:D843 the party's terrain, DS:290E the map's vertical step, DS:E237 the enemies' turn rotation,
+    //   the generation's and the battle file's globals, the cards' text variables) has its start value, and the work files are what
+    //   the last run left.
+    // C: the start screen coming again after a game is the divergence of Run (and GameOverException); this makes it a new run.
+    private void RestartProgram()
+    {
+        _played = false;
+        if (_session?.BattleFile is { } last)
+        {
+            _workFiles = ((byte[]?)last.Terrain?.Clone(), (byte[]?)last.Loot?.Clone());
+        }
+        _session = null;
+        _map = null;
+        _mapMemory = new OverlandMemory();
+        _battleViewCentre = default;
+        _cardVariables = CardVariables.ProgramStart();
+        _lastCards = null;
+        _generationMemory = new Core.Battles.Generation.GenerationProcessMemory();
+        _seenPositions = null;
+        _cursorKeys = new Core.Battles.Tactics.CursorKeyState();
+    }
 
     /// <summary>Plays a game; a load while playing (Alt-L) goes on with the loaded game.</summary>
     // orig: setjmp(DS:A752) in the main function: game-load-overlay-entry longjmps back to it and the loop continues with the loaded DS:A772
@@ -248,6 +323,7 @@ public sealed class DarklandsGame
             try
             {
                 _session = state;
+                _played = true;
                 state.Behaviour = Behaviour;
                 Playing = state;
                 Play(state);
@@ -401,7 +477,7 @@ public sealed class DarklandsGame
     private WorldMap? _map;
 
     /// <summary>The world map screen's program globals (DS:290E): one for the program, kept over every map visit and load.</summary>
-    private readonly OverlandMemory _mapMemory = new();
+    private OverlandMemory _mapMemory = new();
 
     /// <summary>Alt-S: the save dialog; inside a battle the battle's own Alt-S (BattleScreens.Save) saves it with the battle.</summary>
     // orig: game-store-overlay-entry = game-store-entry R037+0x2A68 (hotkey-table key 0x1F00)
@@ -430,7 +506,7 @@ public sealed class DarklandsGame
     //   (b35: card 0xE6 called in the original after a new game and after a load of another game prints the creation's last made-up name;
     //   every slot marked before an Alt-L's reader was still marked at the next card call); a card context is made anew for every game
     //   played, the variables are not
-    private readonly CardVariables _cardVariables = CardVariables.ProgramStart();
+    private CardVariables _cardVariables = CardVariables.ProgramStart();
 
     /// <summary>The card context of the game played last (its engine words carry over, see CardContext.TakeEngineGlobals).</summary>
     private CardContext? _lastCards;
@@ -441,7 +517,7 @@ public sealed class DarklandsGame
     //   battle's start takes from the battle file (BattleScreen), and the alarm trigger DS:C925.. (set in Play)). One object for the whole run,
     //   given to the battles of every game played (b35: the sizes marked before an Alt-L's reader were still marked at the next battle;
     //   DS:9BE5 kept by a load, vis10 session uncert-cme-menus).
-    private readonly Core.Battles.Generation.GenerationProcessMemory _generationMemory = new();
+    private Core.Battles.Generation.GenerationProcessMemory _generationMemory = new();
 
     /// <summary>The battle screens of the game being played (null before the first game), each with the program's battle globals.</summary>
     public BattleScreens? Battles => _battles;
@@ -451,7 +527,7 @@ public sealed class DarklandsGame
 
     /// <summary>The cursor keys' state (DS:D728, DS:D73B, DS:D7FE, DS:D947, DS:D945), program globals: a game loaded keeps them (a battle
     /// file restored replaces them).</summary>
-    private readonly Core.Battles.Tactics.CursorKeyState _cursorKeys = new();
+    private Core.Battles.Tactics.CursorKeyState _cursorKeys = new();
 
     /// <summary>
     /// A card returned −2..−6: the battle it ordered is fought, the dead leave the party and the
