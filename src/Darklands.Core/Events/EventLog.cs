@@ -219,6 +219,9 @@ public sealed class EventLog
     // orig: event-advance R029+0x2E74 (0E76:2E74) draft; tests: EventLogTests
     // C: checked against the asm: op 0 set, 1 add, 2 and, 3 or (dec/je chain), any other op leaves the value; a new event lasts 999 hours.
     // BUG: the new event already holds the value before the op (FixNewEventAddDoubles).
+    // C: the full table's -1 (R029+0x2F05 taken: the scan ends at 300 on a last slot of the kind that does not match; 0x2F0E taken; 0x2F23
+    //   fallthrough; 0x2F25): no fact made, nothing changed; session ev300-night agrees live (quest 7's night count
+    //   with its fact taken out and 300 events; card 0xA9), and ev300-night-kept (the fact found in place on the full table, card 0x41).
     public int Update(int owner, int location, int kind, int type, int value, int tag, EventUpdate op)
     {
         var slot = Scan(kind, e => (type == -1 || e.Type == type) && (location == -1 || e.Location == location)
@@ -240,6 +243,9 @@ public sealed class EventLog
             EventUpdate.Add => target.Value + value,
             EventUpdate.And => target.Value & value,
             EventUpdate.Or => target.Value | value,
+            // DORMANT: an op other than 0..3 (R029+0x2FC8 fallthrough, 0x2FCA): each of the EXE's 274 calls (270 far calls 0E76:2E74, the four near
+            // ones of R029+0x4180) pushes 0..3 (a constant, or si / ax already 2 / 1 there: R053+0x27A0, R063+0x05FE, R064+0x0608, +0x25F4, R065+0x2520,
+            // R066+0x0604, R083+0x0C84).
             _ => target.Value,
         });
         return Last = slot;

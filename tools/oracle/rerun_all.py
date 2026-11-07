@@ -828,6 +828,10 @@ SESSIONS["carry-create-pray3"] = None
 # coverage: the event table full (synth_saves.py ev300): event-create / event-refresh / event-advance find no free slot (R029+0x2C4E / 0x2D5C / 0x2E74 -1)
 SESSIONS.update({"ev300-inn": "synth/DKSAVE0-ev300.sav", "ev300-rough": "synth/DKSAVE0-ev300.sav", "ev300-pray": "synth/Dksave10-ev300.sav",
                  "ev300-camp": "synth/DKSAVE99-ev300.sav", "ev300-smiths": "synth/DKSAVE0-ev300.sav", "ev300-healer": "synth/DKSAVE0-ev300.sav"})
+# evtable: quest 7's night travel on DKSAVE99 at 22h (synth_saves.py q7night*): event-advance R029+0x2E74 with no fact and a full table (-1),
+# and its controls: the fact found in place on the full table (kept), the fact made in a free slot (free)
+SESSIONS.update({"ev300-night": "synth/DKSAVE99-q7night.sav", "ev300-night-kept": "synth/DKSAVE99-q7nightkept.sav",
+                 "ev300-night-free": "synth/DKSAVE99-q7nightfree.sav"})
 # restart (item 4): sessions played in a copy of the game folder without the work files an earlier run of the original left there
 # (TERRAIN.FIL, CFILE.DAT, LEVEL0..4.ENM): the battle-state save then packs none (raw size -1) and the restore R003+0x0CE8 takes its
 # "no work file" arms (0x182A..0x1838 removes terrain.fil, 0x18E7..0x18F5 the loot file). The copy is made under local/oracle-games/clean when

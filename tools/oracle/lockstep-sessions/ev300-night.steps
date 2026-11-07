@@ -1,0 +1,28 @@
+# Lockstep session (round evtable): DKSAVE99 on the map at 22h with quest 7 open, its fact 5 taken out, the events ending within three days taken out
+# and the event table filled to 300 (synth_saves.py q7night). The party walks the wilderness (six walks, NW / SE); on the first one the road
+# encounter's night arm (roll-below(3) == 0 and quest 7 open, R030+0x02C0) calls event-advance(-2, -1, 0x1C, 5, 1, 7, 1): the scan ends at slot 300
+# on the last filler (R029+0x2F05 taken, 0x2F0E taken), no free slot (0x2F23 fallthrough), -1 (0x2F25); the night count stays 0 and the card is
+# 0xA9. Later walks meet card 0x126 and 0x24.
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+click:80,40
+wait:800
+state:w1
+click:300,190
+wait:800
+state:w2
+click:80,40
+wait:800
+state:w3
+click:300,190
+wait:800
+state:w4
+click:80,40
+wait:800
+state:w5
+click:300,190
+wait:800
+state:w6
