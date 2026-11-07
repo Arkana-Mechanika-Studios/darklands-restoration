@@ -41,7 +41,7 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### implement-later (0)
 
 
-## Done (83)
+## Done (84)
 
 Entries made faithful (the marker was replaced by the original behaviour, or reworded where a part stays out of reach): what changed, then the review's analysis.
 
@@ -93,6 +93,8 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
   analysis: In R029+0x3CDE, when event-follow-up returns slot 299 the loop ends by falling out with AX as left by the last test: 299 if type0!=t (t!=-1); else a if f1c!=a; else b if f1a!=b; else c if f28!=c; if all match event-release runs (AX=0) so it returns 0 (the count n is lost either way). Reproduce: when the slot-299 event has the kind (kind==k, or k==0x1C and kind==8) return those values instead of n; needs 299 other live events, so very rare.
 - **D-4cef3d** (was `document`) - RivalDragonSlayer.Attack calls item-take-single with the item code as the index for any code (−1 too): the entry there of the member's 64 (stale, or another member's / the formula bytes through the flat model) loses one and at 0 is unequipped and deleted (the stack count goes down whatever the index), as R082+0x1324; with the battle's removals stale entries of count 1 can now exist; test OriginalMemoryTests.  
   analysis: slot-item returns an item CODE which the original passes to item-take-single as a pack index (items[idx].cnt--, delete when 0); for idx >= nitems that is a stale/empty 6-byte slot of the member's 64-slot block (cnt 0 -> 0xFF, nothing else); idx may also be -1 (items[-1] = header bytes of the far record, or slot 63 of the previous member) with the same harmless decrement; a delete would need a stale cnt of exactly 1, which cannot arise (item-erase copies the zero past-the-end slot down). So the guard 'idx within the pack' is observationally equivalent; exact reproduction would need a flat 64-slot inventory memory.
+- **D-4f276c** (was `document`) - Marker removed (round saintbox 2026-11-07): CardTextLayout.MeasureHeight is now wrapped-text-size's own loop, read from the asm; all 4,060 direct calls of batch 34 (tools/oracle/text_calls.py) give the original's height (D-3cc0f8 gone with it). Tests TextLayoutCallsTests, OptionPopupTests.WhenTheLastMembersLastSlotIsEmptyTheBoxCountsOneMoreLine.  
+  analysis: 0265:0654 is a second copy of the layout loop without conditional-passage tracking that counts the bytes of a skipped option line differently; the C# measures with the drawing layout on a scratch screen. The measured texts (hints, short messages) are said to contain no conditional passages, not re-checked against every message.
 - **D-50d8eb** (was `implement`) - Not a divergence: the original only subtracts the shares from the purse and the notes and calls party-leave (thunk 09C0:1EC3), which writes the 0x80-byte record and no money; the C# was right, the marker is now a C: note.  
   analysis: The departing member's record (and so the share he takes along) lives in CHARACTR.TMP; the roster model (State.Roster) exists, so move the share into the departing member's roster record as the original does. Changes party money and saved games.
 - **D-58964c** (was `reproduce-later`) - As D-8de396: the menu runs on the last laid-out option lines (DrawsOptions = false); the river blocks are never shown.  

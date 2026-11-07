@@ -34,3 +34,4 @@ creation-map|creation-comment-map.steps|DKSAVE99.SAV|before=creation-comment-map
 V-fortcell|visuals-fortress-cell.steps|DKSAVE2-fortress16b.sav|idle=visuals-fortress-cell-card,b45=visuals-fortress-cell-battle
 V-sheetptr|visuals-sheet-pointer.steps|DKSAVE0.SAV|list1=visuals-sheet-pointer-list1,list2=visuals-sheet-pointer-list2
 V-infoptr|visuals-partyinfo-pointer.steps|DKSAVE0.SAV|card=visuals-partyinfo-pointer-card,info=visuals-partyinfo-pointer-info
+V-fortsaint|visuals-fortress-saint.steps|DKSAVE2-fortress297.sav|shown=visuals-fortress-saint-lines,box=visuals-fortress-saint-box

@@ -156,4 +156,34 @@ public sealed class OptionPopupTests
         Assert.Equal(OptionState.Hidden, box.States[1]);
         Assert.DoesNotContain(" (", System.Text.Encoding.Latin1.GetString(box.Text));
     }
+
+    [Fact]
+    public void WhenTheLastMembersLastSlotIsEmptyTheBoxCountsOneMoreLine()
+    {
+        // card 0x129 (vis10 visuals-fortress-saint): only the last member knows the card's one saint. The builder cuts the text's last two
+        //   bytes (newline, 0x14) by writing a zero over the newline; the text then ends inside the hidden line of the last slot, and
+        //   wrapped-text-size steps past the zero into the 0x14 and counts one more line: the box is a line and 2 px taller than its text.
+        if (Setup() is not var (c, painter))
+        {
+            return;
+        }
+        c.State.Difficulty = Difficulty.Standard;
+        var last = c.State.Party.Members.Count - 1;
+        var saint = Enumerable.Range(0, 136).First(s => c.State.Party.Members.All(m => !m.Saints.Contains(s)));
+        c.State.Party.Members[last].Saints.Add(saint);
+        c.SetCardSaints(saint);
+        var box = OptionPopupText.Build(c, saints: true, painter, darkPicture: false);
+        Assert.Equal(OptionState.Enabled, box.States[last * 4]);
+        Assert.Equal([0x14, 0], box.Tail);
+        Assert.Equal(OptionPopupText.Lines, box.States.Length);
+        var layout = new CardTextLayout(painter);
+        var lineHeight = painter.LineHeight;
+        Assert.Equal(2 * lineHeight, layout.MeasureHeight(box.Text, box.Width - 3, 0, box.States));
+        Assert.Equal(3 * lineHeight + 2, layout.MeasureHeight(box.Buffer, box.Width - 3, 0, box.States));
+
+        // a saint in the last slot ends the text on its name: nothing is read past the zero
+        c.SetCardSaints(-1, -1, -1, saint);
+        var full = OptionPopupText.Build(c, saints: true, painter, darkPicture: false);
+        Assert.Equal(2 * lineHeight, layout.MeasureHeight(full.Buffer, full.Width - 3, 0, full.States));
+    }
 }
