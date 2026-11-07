@@ -2722,13 +2722,22 @@ public sealed class BattleScreen : ITacticalView
     // R014+0x88E6 unmatched and R014+0x827A unmatched (walls, furniture, floor objects); list C
     // sorted by R014+0x97A6 unmatched (insertion sort by depth); the lists blitted by R014+0x74A2
     // unmatched through R014+0x9DAA, R014+0x9DDE, R014+0x9CE6 and the view
-    // clip R014+0x8680 (all matched). Here the view, the piles, the areas, the fallen (list B, by y and x), then list C: the clouds'
-    // edges (R014+0x6FFC) and the able combatants in view (R014+0x719E) sorted together by depth (DepthOrder), then the missiles, the
+    // clip R014+0x8680 (all matched). Here the view, the piles, the areas, the fallen (list B, by y and x), then list C: the animated
+    // wall decorations (R014+0x827A), the clouds' edges (R014+0x6FFC), the able combatants in view (R014+0x719E), the wall pieces of the
+    // view slots this frame's sprites touch (R014+0x88E6, each within its slot's box: BattlefieldDirtyBoxes, BattlefieldView.WallPieces)
+    // and the chosen member's and the target cursor (CursorEntries) sorted together by depth (DepthOrder), then the missiles, the
     // clouds' puffs and markers (R014+0x76AE) are drawn in that order every frame.
-    // DIVERGENCE: the whole view is redrawn each frame (no dirty tiles), the wall pieces are drawn by the view before the sprites rather
-    // than sorted in among them, and the 157-sprite limit is not kept (see EffectField.Drawn for its effect on the random numbers);
-    // the missiles and the ground cursor are drawn after the sorted list instead of in it, the last frame's logged entries (which
-    // draw nothing) are not in it, and a combatant's member and target cursors go with its body.
+    // C: round railing (2026-11-07): the wall pieces sorted in with the sprites make the railing of DKSAVE99's mine ambush cover the
+    //   figures behind it as in the original (vis10 V-mines, D-b797f7, ordercarry, D-e4fbd6: the 136..208 px of x 152..199 gone).
+    // DIVERGENCE: the whole view is redrawn each frame (no dirty tiles): under the sorted list lies the full paint's order everywhere,
+    // where the original puts a dirty tile's floor tiles and floor decorations back from lists A and B in their own order, and its
+    // screen keeps what an earlier frame's boxes took (or a text box's last columns: no box takes them back), here only this frame's
+    // boxes get the redrawn wall pieces; the boxes hold this frame's sprites only (not the last frame's logged entries, nor a body's
+    // growth by its movement), and the 157-sprite limit is not kept for the
+    // drawing of the sprites before the walls (see EffectField.Drawn for its effect on the random numbers); the missiles and the ground
+    // cursor are drawn after the sorted list instead of in it (they mark their slots and take their places), the last frame's logged
+    // entries (which draw nothing) are not in it, a combatant's flash and damage number go with its body, and the other members marked
+    // as selected keep their cursors with their bodies.
     // C: one visible effect of the dirty tiles (round fortpx 2026-11-07): vis10 visuals-fortress-cell, 1 px at (231,101) by the party
     //   (original 0xBA, C# 0xDA). Write watches on the pixel and on its back-buffer byte (D000:7F27) in the original: the view's full
     //   paint (floor-view-paint R017+0x0000, pass 8) draws a floor decoration's 0xBA there and then a later slot's floor tile's 0xDA
@@ -2778,32 +2787,35 @@ public sealed class BattleScreen : ITacticalView
         {
             DrawCombatant(canvas, i);
         }
-        // list C: the clouds' edges, then the able combatants in view (each body with its flash, cursors and number), sorted by depth
-        var listC = CloudEdgeEntries();
+        // list C: the animated wall decorations, the clouds' edges, then the able combatants in view (each body with its flash, cursors
+        // and number), then the wall pieces of the view slots these sprites touch, sorted by depth
+        _dirty.Clear();
+        var listC = AnimatedPieceEntries();
+        listC.AddRange(CloudEdgeEntries());
+        foreach (var i in shown.Where(CombatantInView))
+        {
+            MarkCombatant(i);
+        }
         foreach (var i in shown.Where(i => tb.Battle[i].IsAble && CombatantInView(i)))
         {
             var p = tb.Battle[i].Position;
             listC.Add(new DepthEntry(new DepthKey(p.X, p.Y, p.Y), i, 0, 0, 0, 0, default));
         }
-        DepthOrder.Sort(listC, e => e.Key);
-        foreach (var e in listC)
-        {
-            if (e.Who >= 0)
-            {
-                DrawCombatant(canvas, e.Who);
-            }
-            else
-            {
-                DrawCloudEdge(canvas, e);
-            }
-        }
         // the draw list goes on after the combatants' entries (EffectField.Drawn) with the ground cursor and the missiles, which are
-        // logged for the next frame together with the damage numbers queued
+        // logged for the next frame together with the damage numbers queued, then the wall pieces
         _listCount = tb.Effects.DrawListCount;
         _logged = Enumerable.Range(0, Combatant.Count).Count(tb.Effects.NumberQueued);
         DrawGroundCursorEntry();
-        DrawMissiles(canvas);
+        var missiles = PlaceMissiles();
         _loggedSprites = _logged;
+        listC.AddRange(WallPieceEntries());
+        listC.AddRange(CursorEntries());
+        DepthOrder.Sort(listC, e => e.Key);
+        foreach (var e in listC)
+        {
+            DrawEntry(canvas, e);
+        }
+        DrawMissiles(canvas, missiles);
         DrawClouds(canvas);
         DrawGroundCursor(canvas);
         OpenPendingOrderMode();
@@ -2872,6 +2884,13 @@ public sealed class BattleScreen : ITacticalView
     private void DrawGroundCursorEntry()
     {
         _groundCursorQueued = _battle!.CursorTarget is -2 or -3 && TakeListPlace();
+        // orig: R014+0x6818 (14F7:0008): the cursor through R014+0x7BBE with arg 6 = −1, its map point DS:E1B4 / E1B6, its box
+        // C: (DS:E1C2, DS:E1BE, DS:E1B8, DS:E1BA)
+        if (_groundCursorQueued && GroundCursorShape() is var (_, x, y, width, height))
+        {
+            var p = _battle.CursorPoint;
+            _dirty.MarkSprite(p.X, p.Y, _view.CameraX, _view.CameraY, EffectField.ClipToView(x - BattlefieldView.Left, y, width, height), -1, false);
+        }
     }
 
     private bool _groundCursorQueued;
@@ -2925,15 +2944,10 @@ public sealed class BattleScreen : ITacticalView
         {
             _hotSpots.Add((i, l, t, r, b, c.Position.Y));
         }
-        if (queued && (i == tb.Selected || (c.Selected && i < Combatant.PartySlots)))
+        // the chosen member's cursor and the target cursor have their own entries in list C (CursorEntries)
+        if (queued && i != tb.Selected && c.Selected && i < Combatant.PartySlots)
         {
             SpriteDrawing.Draw(canvas, _assets.Images[BattleImages.MemberCursor], fx - 4, mid - 13, clip);
-        }
-        if (queued && tb.Selected >= 0 && tb.CursorTarget == i && tb.Cursor is OrderCursor.Target or OrderCursor.TargetBlocked)
-        {
-            // orig: R014+0xCCD4 (mode 0): the target cursor DS:C242 (or DS:C2BD blocked) at the sprite's foot.
-            var image = tb.Cursor == OrderCursor.Target ? BattleImages.TargetCursor : BattleImages.TargetBlocked;
-            SpriteDrawing.Draw(canvas, _assets.Images[image], fx - 5, bottom - animation.CursorY - 5, clip);
         }
         if (c.DamageNumber is > 0 and <= 42 && tb.Effects.NumberQueued(i))
         {
@@ -2946,11 +2960,17 @@ public sealed class BattleScreen : ITacticalView
     // orig: fight-draw R014+0x6818 (14F7:0008) draft (the ground cursor: x = px - sx0 - (py - sy0) + 0x88 - w / 2, y = (py - sy0) - h + 0x69)
     private void DrawGroundCursor(Canvas canvas)
     {
-        var tb = _battle!;
-        if (tb.CursorTarget is not (-2 or -3) || !_groundCursorQueued)
+        if (_battle!.CursorTarget is not (-2 or -3) || !_groundCursorQueued || GroundCursorShape() is not var (image, x, y, _, _))
         {
             return;
         }
+        SpriteDrawing.Draw(canvas, _assets.Images[image], x, y, BattlefieldView.Area);
+    }
+
+    /// <summary>The ground or group cursor's image, top left (screen) and size; null when none is shown.</summary>
+    private (int Image, int X, int Y, int Width, int Height)? GroundCursorShape()
+    {
+        var tb = _battle!;
         var (image, width, height) = tb.Cursor switch
         {
             OrderCursor.Ground => (BattleImages.GroundFree, 0x0B, 0x1A),
@@ -2971,18 +2991,19 @@ public sealed class BattleScreen : ITacticalView
         }
         if (image < 0)
         {
-            return;
+            return null;
         }
         var (x, y) = _view.CursorTopLeft(tb.CursorPoint.X, tb.CursorPoint.Y, width, height);
-        SpriteDrawing.Draw(canvas, _assets.Images[image], x, y, BattlefieldView.Area);
+        return (image, x, y, width, height);
     }
 
     /// <summary>Missiles in flight (and arrows stuck where they fell).</summary>
     // orig: fight-draw R014+0x6818 (14F7:0008) draft (spec E §2.1: sy = y − sy0; sx = x − sx0 − sy − dx + 0x88; y = sy + 0x55);
     // the screen positions by R014+0x9C14 (14F7:3404) unmatched
-    private void DrawMissiles(Canvas canvas)
+    private List<(int Image, int X, int Y, MapPoint Point)> PlaceMissiles()
     {
         var tb = _battle!;
+        var placed = new List<(int Image, int X, int Y, MapPoint Point)>();
         foreach (var m in tb.MissilesDrawn)
         {
             if (m.Floor != tb.Battle.FloorShown || (m.Arrived && m.Sprite != 0))
@@ -3015,7 +3036,19 @@ public sealed class BattleScreen : ITacticalView
             var p = m.Arrived ? new MapPoint(m.Position.X + 2, m.Position.Y + 2) : m.Position;
             var sy = p.Y - _view.CameraY;
             var sx = p.X - _view.CameraX - sy - dx + 0x88 + BattlefieldView.Left;
-            SpriteDrawing.Draw(canvas, _assets.Images[image], sx, sy + 0x55, BattlefieldView.Area);
+            placed.Add((image, sx, sy + 0x55, p));
+            var sprite = _assets.Images[image];
+            _dirty.MarkSprite(p.X, p.Y, _view.CameraX, _view.CameraY,
+                EffectField.ClipToView(sx - BattlefieldView.Left, sy + 0x55, sprite?.Width ?? 0, sprite?.Height ?? 0), -1, false);
+        }
+        return placed;
+    }
+
+    private void DrawMissiles(Canvas canvas, List<(int Image, int X, int Y, MapPoint Point)> missiles)
+    {
+        foreach (var (image, x, y, _) in missiles)
+        {
+            SpriteDrawing.Draw(canvas, _assets.Images[image], x, y, BattlefieldView.Area);
         }
     }
 
@@ -3079,7 +3112,171 @@ public sealed class BattleScreen : ITacticalView
 
     /// <summary>An entry of list C: combatant <see cref="Who"/>'s body (with its flash, cursors and number), or (Who −1) an edge of cloud
     /// <see cref="Cloud"/>: its sprite (0 none), its point and its box (relative to the view, clipped to it).</summary>
-    private readonly record struct DepthEntry(DepthKey Key, int Who, int Cloud, int Sprite, int X, int Y, (int X, int Y, int W, int H) Box);
+    private readonly record struct DepthEntry(DepthKey Key, int Who, int Cloud, int Sprite, int X, int Y, (int X, int Y, int W, int H) Box,
+        RowRunSprite? Piece = null);
+
+    /// <summary>The view slots this frame's sprites touch and their boxes (the slots whose wall pieces are sorted in among them).</summary>
+    private readonly BattlefieldDirtyBoxes _dirty = new();
+
+    /// <summary>The animated wall decorations of the view in list C: the north walls' (DS:E178), then the west walls' (DS:E196), each
+    /// with the frame drawn by lot and drawn within its box; the floor's (DS:E13D, list B) only mark their slots.</summary>
+    // orig: R014+0x827A (14F7:1A6A) checked against the asm (called by R014+0x6818 for the lists in that order): layer 0 at
+    // C: (R136+0x45BE[s] + DS:C76E[n], R136+0x46D6[s] + DS:C789[n]) with box DS:C7DE[n] x DS:C7EE[n], keys (c + 4, r, r), type 0x7D01;
+    // C: layer 1 at (R136+0x4B4A[s] + DS:C821[n], R136+0x46D6[s] + DS:C855[n]), box DS:C876[n] x DS:C887[n], keys (c + 1, r + 8, r + 8),
+    // C: type 0x7D04; layer 2 at the floor point with box 0x30 x 0x10 (list B). The box is clipped to the view (R014+0x8680): an empty
+    // C: one has no entry; otherwise it marks the 14 slots round its own (BattlefieldDirtyBoxes.MarkPiece).
+    private List<DepthEntry> AnimatedPieceEntries()
+    {
+        var tb = _battle!;
+        var list = new List<DepthEntry>();
+        var tiles = _tiles!;
+        foreach (var layer in new[] { 2, 0, 1 })
+        {
+            for (var slot = 0; slot < BattlefieldDirtyBoxes.Slots; slot++)
+            {
+                int row = slot / BattlefieldView.Columns, column = slot % BattlefieldView.Columns;
+                if (_view.SlotCell(tb.Level, row, column) is not var (x, y) || tb.Effects.PieceFrame(layer, x, y) is var frame && frame < 0)
+                {
+                    continue;
+                }
+                var cell = tb.Level[x, y];
+                var (fx, fy) = BattlefieldView.SlotFloor(row, column);
+                var (decoration, px, py, w, h, key) = layer switch
+                {
+                    0 => (tiles.NorthWallDecorations[cell.NorthWallDecoration], fx + 16, fy - 25, 0, 0, new DepthKey(x * 32 + 4, y * 16, y * 16)),
+                    1 => (tiles.WestWallDecorations[cell.WestWallDecoration], fx, fy - 25, 0, 0, new DepthKey(x * 32 + 1, y * 16 + 8, y * 16 + 8)),
+                    _ => (tiles.FloorDecorations[tb.Level.FloorDecoration(x, y)], fx, fy, 0x30, 0x10, default),
+                };
+                if (layer != 2)
+                {
+                    (px, py, w, h) = (px + (decoration?.OffsetX ?? 0), py + (decoration?.OffsetY ?? 0), decoration?.BoxWidth ?? 0, decoration?.BoxHeight ?? 0);
+                }
+                var box = EffectField.ClipToView(px, py, w, h);
+                if (box.W == 0 || box.H == 0)
+                {
+                    continue;
+                }
+                _dirty.MarkPiece(slot, box);
+                if (layer != 2)
+                {
+                    list.Add(new DepthEntry(key, -2, 0, 0, px, py, box, frame == 1 ? decoration?.SecondFrame : decoration?.Sprite));
+                }
+            }
+        }
+        return list;
+    }
+
+    /// <summary>A combatant's sprites in view mark the slots round it: its body (list C or B) and its damage number.</summary>
+    // orig: R014+0x719E (14F7:098E) checked against the asm: the body through R014+0x7BBE with arg 6 = i, its map point, its box (the
+    // C: screen place, DS:D55D[set][facing] x DS:D5D3[set]); the number (0x762A + n, logged) at (foot x − 7, bottom − 0x27), 0x10 x 6.
+    // C: the body's box is not grown by the last frame's movement (DS:85E8.., see DrawCombatant), so a slot's box can be smaller (D-420a1f).
+    private void MarkCombatant(int i)
+    {
+        var tb = _battle!;
+        if (SpriteBox(i) is not { } box)
+        {
+            return;
+        }
+        var p = tb.Battle[i].Position;
+        var size = box.Animation.SizeClass;
+        var varies = _tiles!.SomeFurnitureVaries;
+        _dirty.MarkSprite(p.X, p.Y, _view.CameraX, _view.CameraY,
+            EffectField.ClipToView(box.Left - BattlefieldView.Left, box.Top, box.Width, box.Height), size, varies);
+        if (tb.Effects.NumberQueued(i))
+        {
+            _dirty.MarkSprite(p.X, p.Y, _view.CameraX, _view.CameraY,
+                EffectField.ClipToView(box.FootX - 7 - BattlefieldView.Left, box.Top + box.Height - 0x27, 0x10, 6), size, varies);
+        }
+    }
+
+    /// <summary>One entry of list C: a combatant (with its flash and number), a cloud's edge, a cursor or a wall piece within its box.</summary>
+    private void DrawEntry(Canvas canvas, DepthEntry e)
+    {
+        if (e.Who >= 0)
+        {
+            DrawCombatant(canvas, e.Who);
+        }
+        else if (e.Who == -1)
+        {
+            DrawCloudEdge(canvas, e);
+        }
+        else if (e.Who == -3)
+        {
+            SpriteDrawing.Draw(canvas, _assets.Images[e.Sprite], e.X, e.Y, BattlefieldView.Area);
+        }
+        else if (e.Piece is { } piece)
+        {
+            // within its box, and of that only what a box of this frame's sprites covers (the screen copy takes those boxes only)
+            var b = e.Box;
+            foreach (var r in _dirty.Rects)
+            {
+                int x0 = Math.Max(b.X, r.X), y0 = Math.Max(b.Y, r.Y), x1 = Math.Min(b.X + b.W, r.X + r.W), y1 = Math.Min(b.Y + b.H, r.Y + r.H);
+                if (x0 < x1 && y0 < y1)
+                {
+                    SpriteDrawing.Draw(canvas, piece, BattlefieldView.Left + e.X, e.Y, new Clip(BattlefieldView.Left + x0, y0, BattlefieldView.Left + x1, y1));
+                }
+            }
+        }
+    }
+
+    /// <summary>The chosen member's cursor, then the target cursor, each in list C just behind its combatant's body (its keys + 1).</summary>
+    // orig: R014+0x6818 (14F7:0008) checked against the asm, after the wall pieces (R014+0x6D6D): with DS:A6B2's body queued (DS:853E) and
+    // C: room in the list, an entry of type 0x7530 with the body entry's keys + 1, sprite DS:C21B at DS:E09F / E09D (R014+0x6D70..0x6E0C);
+    // C: then, when the ground cursor's sprite DS:E1BC is the target cursor DS:C242 or DS:C2BD, one for DS:D845's body (type 0x7918, its
+    // C: keys + 1, at the ground cursor's place, R014+0x6E10..0x6EB4). Then the sort (R014+0x97A6).
+    // C: (D-420a1f) the other members marked as selected keep their cursors with their bodies; the cursor's place is the body's of this
+    // C: frame (D-e4fbd6: the original's member cursor place DS:E09F / E09D is set at its own time).
+    private List<DepthEntry> CursorEntries()
+    {
+        var tb = _battle!;
+        var list = new List<DepthEntry>();
+        void Add(int i, int image, Func<(int Left, int Top, int Width, int Height, int FootX, int FootY, Content.Formats.Battles.CombatAnimation Animation), (int X, int Y)> at)
+        {
+            if (i < 0 || !tb.Battle[i].IsAble || !tb.Effects.BodyQueued(i) || !CombatantInView(i) || SpriteBox(i) is not { } box
+                || _listCount >= EffectField.DrawListLimit)
+            {
+                return;
+            }
+            _listCount++;
+            var p = tb.Battle[i].Position;
+            var (x, y) = at(box);
+            list.Add(new DepthEntry(new DepthKey(p.X + 1, p.Y + 1, p.Y + 1), -3, i, image, x, y, default));
+        }
+        Add(tb.Selected, BattleImages.MemberCursor, b => (b.FootX - 4, b.Top + b.Animation.Height / 2 - 13));
+        if (tb.Selected >= 0 && tb.CursorTarget >= 0 && tb.Cursor is OrderCursor.Target or OrderCursor.TargetBlocked)
+        {
+            // orig: R014+0xCCD4 (mode 0): the target cursor DS:C242 (or DS:C2BD blocked) at the sprite's foot.
+            var image = tb.Cursor == OrderCursor.Target ? BattleImages.TargetCursor : BattleImages.TargetBlocked;
+            Add(tb.CursorTarget, image, b => (b.FootX - 5, b.Top + b.Animation.Height - b.Animation.CursorY - 5));
+        }
+        return list;
+    }
+
+    /// <summary>The wall pieces of every slot a sprite touched, in slot order, each within the slot's box, while the draw list has room.</summary>
+    // orig: R014+0x88E6 (14F7:20D6) checked against the asm (see BattlefieldView.WallPieces), R014+0x8724's limit (DS:E162 < 0x9D); the
+    // C: blit R014+0x74A2 draws an entry with a sprite within its box (entry +6..+0xC: here the slot's box)
+    private List<DepthEntry> WallPieceEntries()
+    {
+        var tb = _battle!;
+        var list = new List<DepthEntry>();
+        for (var slot = 0; slot < BattlefieldDirtyBoxes.Slots; slot++)
+        {
+            if (_dirty.Box(slot) is not { } box)
+            {
+                continue;
+            }
+            foreach (var piece in _view.WallPieces(tb.Level, _tiles!, tb.Field.Terrain, slot / BattlefieldView.Columns, slot % BattlefieldView.Columns))
+            {
+                if (_listCount >= EffectField.DrawListLimit)
+                {
+                    return list;
+                }
+                _listCount++;
+                list.Add(new DepthEntry(piece.Key, -2, 0, 0, piece.X, piece.Y, box, piece.Sprite));
+            }
+        }
+        return list;
+    }
 
     /// <summary>The clouds' edges as list C entries: for each cloud and column c the south edge of the column, then the east edge of row c.</summary>
     // orig: R014+0x6FFC (14F7:07EC) checked against the asm, queued by R014+0x7BBE (14F7:13AE): the south edge at its map point
@@ -3105,6 +3302,7 @@ public sealed class BattleScreen : ITacticalView
                     {
                         var (mx, my) = fx.CloudSouthEdgeAt(k, c);
                         list.Add(new DepthEntry(new DepthKey(mx, my, my), -1, k, south, sx, sy, box));
+                        _dirty.MarkSprite(mx, my, _view.CameraX, _view.CameraY, box, -1, false);
                     }
                 }
                 var (ex, ey) = fx.CloudEastEdge(k, c);
@@ -3115,6 +3313,7 @@ public sealed class BattleScreen : ITacticalView
                     {
                         var (mx, my) = fx.CloudEastEdgeAt(k, c);
                         list.Add(new DepthEntry(new DepthKey(mx, my - 2, my + 2), -1, k, east, ex, ey, box));
+                        _dirty.MarkSprite(mx, my, _view.CameraX, _view.CameraY, box, -1, false);
                     }
                 }
             }
