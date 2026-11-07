@@ -207,7 +207,7 @@ def describe(F, insns, k, op, linked, names, depth=0):
                 if d:
                     r["d"] = d
                 return r
-            if m == "xor" and ops[1].type == cx.X86_OP_REG and ops[1].reg == ops[0].reg:
+            if m in ("xor", "sub") and ops[1].type == cx.X86_OP_REG and ops[1].reg == ops[0].reg:
                 return {"src": "imm", "v": 0, "d": d}
             if m in ("sub", "add") and ops[1].type == cx.X86_OP_MEM:
                 return {"src": "difference", "of": describe(F, insns, j, ops[1], linked, names, depth)}
@@ -487,7 +487,8 @@ def watch(classified, reachf, states, out, per_item=2):
             b = bytes(m.uc.mem_read((m.reg("CS") << 4) + m.reg("IP"), 16))
             ins = next(md.disasm(b, m.reg("IP")))
             vals = [operand_value(m, ins, op) for op in ins.operands]
-            hits[item].append({"card": current["card"], "run": current["run"], "draws": o.run.draws, "vals": vals, "insn": "%s %s" % (ins.mnemonic, ins.op_str)})
+            hits[item].append({"card": current["card"], "run": current["run"], "draws": o.run.draws, "vals": vals, "insn": "%s %s" % (ins.mnemonic, ins.op_str),
+                               "menus": o.run.menus, "mlog": [list(x) for x in o.run.menu_log]})
         return h
 
     for item, (seg, ip, rec) in hooks.items():
@@ -606,13 +607,239 @@ def mutations(v, hit):
                 continue
             if x < 0 or x > 0x7FFF:
                 continue
-            out.append((["%s%d" % (atom, x)], val, t))
+            cur = hit["vals"][0] if hit.get("vals") else None
+            a = "ad" if atom == "sz" and isinstance(cur, int) and x > cur else atom      # the party grown (copies of the last member) or cut
+            out.append((["%s%d" % (a, x)], val, t))
     elif kind == "helper:event-at-place" and isinstance(src.get("args", [None])[0], int) and src["args"][1:2] == ["ds:907E"]:
         ev = src["args"][0]
         for val, t in pairs:
             out.append(((["ev%d" % ev] if val - d else ["er%d" % ev]), val, t))
+    elif kind in FACTS:
+        for val, t in pairs:
+            p = fact_parts(kind, src.get("args", []), signed(val - d, v.get("w") or 2))
+            if p:
+                out.append((p, val, t))
+    elif kind in ("helper:place-query", "helper:location-now-query"):
+        args = src.get("args", [])
+        here = kind == "helper:location-now-query" or args[:1] == ["ds:907E"]
+        what = args[0] if kind == "helper:location-now-query" else (args[1] if len(args) > 1 else None)
+        for val, t in pairs:
+            x = signed(val - d, v.get("w") or 2)
+            if not here:
+                continue
+            if what == 0 and -99 <= x <= 99:
+                out.append((["rp%d" % x], val, t))
+            elif what == 1 and 0 <= x <= 5:
+                out.append((["rp%d" % BAND_REP[x]], val, t))
+            elif what == 32 and -128 <= x <= 127:
+                out.append((["lf%d" % (x & 0xFF)], val, t))
+    elif kind == "helper:card-choice-menu":
+        return menu_choice(v, hit, pairs, d)
+    elif kind == "global" and src.get("addr") == "EE6E":
+        return popup_box(v, hit, pairs)
+    elif kind == "global" and src.get("addr") == "EE74":
+        # reputation-now: the card copies place-query(location-now, 0) into it at its start (CardContext.ReputationHere)
+        for val, t in pairs:
+            x = signed(val - d, v.get("w") or 2)
+            if -99 <= x <= 99:
+                out.append((["rp%d" % x], val, t))
+    elif kind == "global" and CHAINED.match(src.get("addr", "")):
+        return menu_sweep(v, hit)
     else:
         return None, "kind-not-handled"
+    return (out, None) if out else (None, "no-buildable-value")
+
+
+# values a card sets earlier in its own run (the next card, card statics, the settings block ...): the menus before the compare are swept
+CHAINED = re.compile(r"^(E48A|E7D8|EE53|A67C|A893|9084|8DEE|EE8C|906B|5[78][0-9A-F]{2})$")
+
+
+def menu_sweep(v, hit, cap=12):
+    """A value set earlier in the same run: each menu before the compare chooses each other offered line in turn (the P part: the earlier
+    menus' choices kept, the later ones the policy's), in the run's own kind (plain / probe); at most cap runs."""
+    mlog = hit.get("mlog") or []
+    n = hit.get("menus") or 0
+    if not mlog or n != len(mlog):
+        return None, "no-menu-log"
+    hand = parse_state(hit["run"].split(" ", 1)[1])[1]
+    out = []
+    for m in range(n, 0, -1):                 # the last menu first: nearest the compare
+        if hand is not None and hand["menu"] <= m:
+            continue
+        block, enabled, choice, kind = mlog[m - 1]
+        for line in enabled:
+            if line == choice:
+                continue
+            out.append((["P" + "_".join(str(x) for x in _menu_prefix(mlog, m) + [enabled.index(line)])], None, v["want_taken"], {}))
+    out = out[:cap]
+    return (out, None) if out else (None, "no-other-line")
+
+
+# ---- place facts and queries, menus (the second pass) -----------------------------------------------------------------------
+QUEST, FACT, RESOLVED = 0x08, 0x1C, 0x24
+BAND_REP = {0: 60, 1: 30, 2: 0, 3: -20, 4: -50, 5: -80}      # a standing in each band of place-query 1 (LocationRules.ReputationBand)
+# helper -> (event kind or None: the first argument, argument names first-first); the args name the matching fields of the event
+FACTS = {
+    "helper:place-flag-value": (FACT, ("tag", "type", "loc"), "value"),
+    "helper:place-flag-value-any": (FACT, ("tag", "type"), "value"),
+    "helper:place-flag": (FACT, ("tag", "type", "loc"), "bool"),
+    "helper:place-flag-any": (FACT, ("tag", "type"), "bool"),
+    "helper:resolved-quest-at-owner": (RESOLVED, ("tag", "owner", "loc"), "bool"),
+    "helper:resolved-quest-at": (RESOLVED, ("tag", "loc"), "bool"),
+    "helper:resolved-quest-exists": (RESOLVED, ("tag",), "bool"),
+    "helper:open-quest-owner-value": (QUEST, ("tag", "owner", "value"), "bool"),
+    "helper:open-quest-at-owner": (QUEST, ("tag", "owner", "loc"), "bool"),
+    "helper:open-quest-at": (QUEST, ("tag", "loc"), "bool"),
+    "helper:open-quest-exists": (QUEST, ("tag",), "bool"),
+    "helper:event-kind-at": (None, ("kind", "type", "loc"), "bool"),
+    "helper:event-kind": (None, ("kind", "type"), "bool"),
+    "helper:event-begun-flag": (None, ("kind",), "bool"),
+    "helper:event-datum-at": (None, ("kind", "loc"), "value"),
+}
+
+
+def signed(x, w=2):
+    x &= (1 << (8 * w)) - 1
+    return x - (1 << (8 * w)) if x >> (8 * w - 1) else x
+
+
+def fact_parts(kind, args, x):
+    """The ev / er atoms (CardOracleAtoms) that make the helper return x: the matching events removed, and (x != 0) one started with the
+    fields the arguments name (a place argument of location-now: the event's default place, here). None: an argument not constant."""
+    ek, names, how = FACTS[kind]
+    f = {}
+    for n, a in zip(names, args):
+        if a == "ds:907E" and n in ("loc", "value"):
+            f[n] = "here"
+        elif isinstance(a, int):
+            f[n] = signed(a)
+        else:
+            return None
+    if len(f) < len(names):
+        return None
+    k = ek if ek is not None else f.get("kind")
+    if not isinstance(k, int) or k < 0:
+        return None
+    rm = "er%d_%d_%d" % (k, f.get("type", -1), f.get("tag", -1))
+    if x == 0:
+        return [rm]
+    if how == "value" and x == 9999:
+        return None
+    value = x if how == "value" else ("9999" if f.get("value") == "here" else f.get("value", 0))
+    loc = f.get("loc", "here")
+    owner = f.get("owner", -2)
+    p = "ev%d_%d_%d_%s_%d" % (k, f.get("type", 0), f.get("tag", 0), value, owner)
+    if loc != "here":
+        p += "_%d" % loc
+    return [rm, p]
+
+
+def _menu_prefix(mlog, n):
+    """The P part values that repeat the run's choices in its menus 1..n-1 (each choice's index among the enabled lines; a forced menu: 0)."""
+    out = []
+    for block, enabled, choice, kind in mlog[:n - 1]:
+        out.append(enabled.index(choice) if choice in enabled else 0)
+    return out
+
+
+def menu_choice(v, hit, pairs, d):
+    """card-choice-menu's return compared: the run's menu (the last before the compare) chooses the wanted line: by the menu path (P part:
+    the earlier menus' choices kept) when the line is offered, else by a handler call of that line (hand M<n>L<line>)."""
+    mlog = hit.get("mlog") or []
+    n = hit.get("menus") or 0
+    if not mlog or n != len(mlog):
+        return None, "no-menu-log"
+    block, enabled, choice, kind = mlog[-1]
+    hand = parse_state(hit["run"].split(" ", 1)[1])[1]
+    out = []
+    # the lines 0..19 on each side of the compare (not values_for's boundary: an unsigned test would give 0xFFFF), the nearest two wanted
+    vals = hit["vals"]
+    other = vals[1] if len(vals) > 1 else None
+    if not isinstance(other, int) or v["op"] != "cmp":
+        return None, "no-threshold"
+    sides = {}
+    for line in range(20):
+        f = flags("sub", (line + d) & 0xFFFF, other, 2)
+        t = jtaken(v["jcc"], f) if f else None
+        if t is not None:
+            sides.setdefault(t, []).append(line)
+    want = sorted(sides.get(v["want_taken"], []), key=lambda x: abs(x - other))[:2]
+    for line in want:
+        val, t = line + d, v["want_taken"]
+        if hand is not None and hand["menu"] == n:
+            out.append(([], val, t, {"hand": dict(hand, line=line, slot=None)}))
+        elif line in enabled and (hand is None or hand["menu"] > n):
+            out.append((["P" + "_".join(str(x) for x in _menu_prefix(mlog, n) + [enabled.index(line)])], val, t, {}))
+        elif hand is None:
+            out.append(([], val, t, {"hand": {"menu": n, "line": line, "hints": False, "slot": None}}))
+    return (out, None) if out else (None, "no-buildable-value")
+
+
+_MSG = {}
+
+
+def _popup_kinds(card, key, block):
+    import card_oracle as co
+    if not _MSG:
+        _MSG["m"] = co.MessageFiles(GAME / "MSGFILES")
+        _MSG["names"] = co.card_names()
+    name = co.texts_of(key) or _MSG["names"].get(card)
+    return _MSG["m"].popup_kinds(name, block) if name else []
+
+
+def one_of(pairs, v):
+    return next((val for val, t in pairs if t == v["want_taken"]), None)
+
+
+def _donors(block):
+    """(card file, line) pairs: card message files whose block `block` has an item / saint box marker on a line (sorted by name)."""
+    import card_oracle as co
+    _popup_kinds(0, "L3-O0", 0)
+    out = []
+    for name in sorted(set(_MSG["names"].values())):
+        kinds = _MSG["m"].popup_kinds(name, block)
+        lines = [i for i, k in enumerate(kinds) if k is not None]
+        if lines and name.startswith("$") and (name + ".msg")[:12].lower() in _MSG["m"].entries:
+            out.append((name, lines[0]))
+    return out
+
+
+def popup_box(v, hit, pairs):
+    """popup-menu-box (DS:EE6E) compared: 1 when the choice was made in an item / saint pop-up box. The run's last menu chooses a line whose
+    marker opens a box: an offered one in a probing run by the menu path (the box opens when a member has the item / knows the saint),
+    every such line by a handler call with the box's slot 0 (hand M<n>L<line>S0, whoever holds it); 0: the same line in a plain run."""
+    mlog = hit.get("mlog") or []
+    n = hit.get("menus") or 0
+    if not mlog or n != len(mlog):
+        return None, "no-menu-log"
+    block, enabled, choice, kind = mlog[-1]
+    kind_run, state = hit["run"].split(" ", 1)
+    key, hand = parse_state(state)
+    kinds = _popup_kinds(hit["card"], key, block)
+    lines = [i for i, k in enumerate(kinds) if k is not None]
+    out = []
+    if not lines:
+        # the card's own file has no box line in that block: a card that keeps the previous card's texts (key part T$..) shows another
+        # file's block; the handler call of a box line of such a file (the card-run of a card that loads its own resets them: no box)
+        if hand is not None and hand["menu"] != n:
+            return None, "no-box-line"
+        for donor, line in _donors(block)[:2]:
+            out.append((["T" + donor], one_of(pairs, v), v["want_taken"], {"hand": {"menu": n, "line": line, "hints": False, "slot": 0}}))
+        return (out, None) if out else (None, "no-box-line")
+    want = {t: val for val, t in pairs}
+    one = want.get(v["want_taken"])
+    for line in lines:
+        if hand is not None and hand["menu"] == n:
+            out.append(([], one, v["want_taken"], {"hand": dict(hand, line=line, slot=0)}))
+            continue
+        if hand is not None and hand["menu"] < n:
+            continue
+        if line in enabled:
+            p = ["P" + "_".join(str(x) for x in _menu_prefix(mlog, n) + [enabled.index(line)])]
+            out.append((p, one, v["want_taken"], {"probe": True}))
+            out.append((p, want.get(not v["want_taken"]), not v["want_taken"], {"probe": False}))
+        if hand is None:
+            out.append(([], one, v["want_taken"], {"hand": {"menu": n, "line": line, "hints": False, "slot": 0}}))
     return (out, None) if out else (None, "no-buildable-value")
 
 
@@ -627,19 +854,33 @@ def jobs(classified, watchf, out):
         if not hs:
             why["no-hit" if "at" in v else v.get("kind")] += 1
             continue
-        hit = hs[0]
-        muts, reason = mutations(v, hit)
+        muts, reason = None, "no-hit"
+        for hit in hs[:3]:            # the first hit that gives a buildable mutation
+            muts, reason = mutations(v, hit)
+            if muts is not None:
+                break
+        if muts is not None and not any(m[2] == v["want_taken"] for m in muts):
+            muts, reason = None, "no-wanted-value"      # only the side that already ran could be built
         if muts is None:
             why[reason] += 1
             continue
         kind, state = hit["run"].split(" ", 1)
         key, hand = parse_state(state)
         card = hit["card"]
-        for parts, val, taken in muts:
+        seen = set()
+        for m in muts:
+            parts, val, taken = m[:3]
+            extra = m[3] if len(m) > 3 else {}
             mk = with_parts(key, parts)
-            j = {"card": card, "key": mk, "option": option_of(key), "probe": kind != "plain", "item": item, "value": val, "taken": taken}
-            if hand:
-                j["hand"] = hand
+            h = extra.get("hand", hand)
+            probe = extra.get("probe", kind != "plain") or h is not None
+            j = {"card": card, "key": mk, "option": option_of(key), "probe": probe, "item": item, "value": val, "taken": taken}
+            if h:
+                j["hand"] = h
+            sig = (mk, probe, json.dumps(h, sort_keys=True))
+            if sig in seen:
+                continue
+            seen.add(sig)
             jl.append(j)
         why["jobs"] += 1
     json.dump(jl, open(out, "w"), indent=0)

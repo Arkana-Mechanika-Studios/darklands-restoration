@@ -169,6 +169,7 @@ class CardRun:
         self.draws = 0
         self.forced = {}                     # {k: generator state}: the k-th draw of the run is made from that state (variant part "R<k>_<v>")
         self.stray: set[str] = set()         # out-of-bounds reads the original made (see Oracle.stray_read)
+        self.menu_log: list = []             # [(block, enabled lines, choice, popup kind of the choice)]: the menus so far (mutate_branch.py watch)
 
 
 class Oracle:
@@ -454,6 +455,7 @@ class Oracle:
         states = list(m.read(DS, CARD_OPTION_ENABLED, 20))[:lines]
         self.log("menu %d [%s] %s" % (block, "".join(str(s) for s in states), self.options_text or ""))
         if run.hand is not None and run.menus == run.hand["menu"]:
+            run.menu_log.append((block, enabled_of(states), run.hand["line"], self.messages.popup_kind(run.texts_name, block, run.hand["line"])))
             return self.hand_menu(block, run.hand)
         enabled = [i for i, s in enumerate(states) if s == 1]
         forced = run.force is not None and run.force[0] == block and run.force[1] < len(states)
@@ -482,6 +484,7 @@ class Oracle:
                 pc = self.popup_choice(kind)
                 if pc is not None:
                     self.box_choice(kind, pc[0], pc[1])
+        run.menu_log.append((block, enabled, choice, self.messages.popup_kind(run.texts_name, block, choice)))
         self.log("choose %d" % choice)
         return (choice, 0)
 
@@ -787,6 +790,11 @@ class Oracle:
         out = bytes(m.vfs.files[SAVED])
         # the place name is compared as a text (the original writes stack bytes after it and after the comment)
         return {"place": out[:0x15].split(bytes(1))[0].decode("latin-1"), "sections": savdiff.diff(self.initial_sav, out)}
+
+
+def enabled_of(states) -> list:
+    """The lines a menu offers (state 1), in order."""
+    return [i for i, s in enumerate(states) if s == 1]
 
 
 def split_key(key: str):
