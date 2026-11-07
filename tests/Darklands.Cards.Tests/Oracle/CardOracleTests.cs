@@ -647,6 +647,8 @@ public sealed class CardOracleTests
         state.CurrentCard = card.Number;
         var end = "";
         var ok = false;
+        // the run key's forced draws (parts R<k>_<v>), counted from the card's start as card_oracle.py counts the original's rand() calls
+        ForcedDraws.Begin(state.Random, CardOracleStates.DrawsOf(key));
         try
         {
             if (direct is not null)
@@ -687,6 +689,7 @@ public sealed class CardOracleTests
         finally
         {
             Core.Rules.TimePassage.PartyPerished -= Perished;
+            ForcedDraws.End();
         }
         if (OptionsBlockStart is not null)
         {

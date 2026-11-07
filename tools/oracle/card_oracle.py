@@ -167,6 +167,7 @@ class CardRun:
         self.card_title = ""
         self.texts_name = ""                 # the .MSG whose blocks are loaded (card-run, or the oracle's preload)
         self.draws = 0
+        self.forced = {}                     # {k: generator state}: the k-th draw of the run is made from that state (variant part "R<k>_<v>")
         self.stray: set[str] = set()         # out-of-bounds reads the original made (see Oracle.stray_read)
 
 
@@ -642,6 +643,8 @@ class Oracle:
 
     def rand(self, m):
         if self.run is not None:
+            if self.run.draws in self.run.forced:
+                m.write(DS, HOLDRAND, struct.pack("<I", self.run.forced[self.run.draws]))
             self.run.draws += 1
 
     def clock(self) -> int:
@@ -664,6 +667,7 @@ class Oracle:
         self.run.force = force
         self.run.path = path
         self.run.battles, self.run.prayers = results_of(orig_key)
+        self.run.forced = draws_of(orig_key)
         # a card kept fighting by a constant result can need more than the default budget to reach the battle bound both sides stop at
         m.budget = 50_000_000 * (4 if self.run.battles else 1)
         self.settings_block = 0
@@ -801,8 +805,8 @@ def split_key(key: str):
             force = tuple(int(x) for x in p[1:].split("."))
         elif re.fullmatch(r"P\d+(_\d+)*", p):
             path = [int(x) for x in p[1:].split("_")]
-        elif re.fullmatch(r"B\d(_\d)*", p) or re.fullmatch(r"Y[cfa](_[cfa])*", p) or re.fullmatch(r"T\$\w+", p):
-            pass                                     # the controlled battle / prayer results (results_of), the preloaded texts (texts_of): no state change
+        elif re.fullmatch(r"B\d(_\d)*", p) or re.fullmatch(r"Y[cfa](_[cfa])*", p) or re.fullmatch(r"T\$\w+", p) or re.fullmatch(r"R\d+_\d+", p):
+            pass                                     # the controlled battle / prayer results (results_of), the preloaded texts (texts_of), the forced draws (draws_of): no state change
         else:
             keep.append(p)
     return (head + ("-V" + "+".join(keep) if keep else "") + "-O" + option), force, path
@@ -830,6 +834,27 @@ def results_of(key: str):
             elif re.fullmatch(r"Y[cfa](_[cfa])*", p):
                 prayers = [{"c": -1, "f": 0, "a": 1}[x] for x in p[1:].split("_")]
     return battles, prayers
+
+
+MSC_MUL, MSC_ADD = 214013, 2531011
+MSC_MUL_INVERSE = pow(MSC_MUL, -1, 1 << 32)
+
+
+def draw_state(raw: int) -> int:
+    """The generator state from which the next rand() returns raw (0..32767): the state after it is raw << 16."""
+    return ((((raw & 0x7FFF) << 16) - MSC_ADD) * MSC_MUL_INVERSE) & 0xFFFFFFFF
+
+
+def draws_of(key: str) -> dict:
+    """The forced draws of a run key's variant (tools/oracle/mutate_branch.py): part "R<k>_<v>": the k-th rand() of the run (from 0, counted from
+    the card's start) returns v (0..32767), made from the state draw_state(v), so both programs go on from the same generator state. {k: state}."""
+    out = {}
+    if "-V" in key:
+        for p in key.split("-V", 1)[1].rsplit("-O", 1)[0].split("+"):
+            if re.fullmatch(r"R\d+_\d+", p):
+                k, v = (int(x) for x in p[1:].split("_"))
+                out[k] = draw_state(v)
+    return out
 
 
 def card_names() -> dict[int, str]:

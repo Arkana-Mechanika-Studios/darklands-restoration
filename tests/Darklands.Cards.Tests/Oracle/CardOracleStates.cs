@@ -73,7 +73,7 @@ public sealed class CardOracleStates
             var loaded = FromSave(key[1..(at < 0 ? lastOption : at)], saveOption);
             if (at >= 0)
             {
-                foreach (var one in key[(at + 2)..lastOption].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p) && !IsTexts(p)))
+                foreach (var one in key[(at + 2)..lastOption].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p) && !IsTexts(p) && !IsDraw(p)))
                 {
                     Apply(loaded, one, saveOption);
                 }
@@ -88,7 +88,7 @@ public sealed class CardOracleStates
             return New(location, option);
         }
         // the parts "F<block>.<line>" (ForceOf) and "P<n>_<n>.." (PathOf) change no state
-        var variant = string.Join('+', key[(v + 2)..key.LastIndexOf("-O")].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p) && !IsTexts(p)));
+        var variant = string.Join('+', key[(v + 2)..key.LastIndexOf("-O")].Split('+').Where(p => !IsForce(p) && !IsPath(p) && !IsBattle(p) && !IsPrayer(p) && !IsTexts(p) && !IsDraw(p)));
         return variant.Length == 0 ? New(location, option) : New(location, option, variant);
     }
 
@@ -114,6 +114,26 @@ public sealed class CardOracleStates
     /// <summary>The answers of the prayer screen (the variant part <c>Yc</c> cancelled -1, <c>Yf</c> failed 0, <c>Ya</c> answered 1; <c>Yf_a</c>: a sequence), or null: 0.</summary>
     public static int[]? PrayerAnswersOf(string key) =>
         PartOf(key, IsPrayer, last: true)?[1..].Split('_').Select(x => x switch { "c" => -1, "f" => 0, _ => 1 }).ToArray();
+
+    /// <summary>The variant part <c>R&lt;k&gt;_&lt;v&gt;</c>: a forced draw (tools/oracle/mutate_branch.py). It changes no state.</summary>
+    public static bool IsDraw(string part) =>
+        part.Length > 3 && part[0] == 'R' && part[1..].Split('_') is [var k, var v] && int.TryParse(k, out _) && int.TryParse(v, out var raw) && raw is >= 0 and < 0x8000;
+
+    /// <summary>
+    /// The forced draws of the run key (the variant parts <c>R&lt;k&gt;_&lt;v&gt;</c>, tools/oracle/card_oracle.py draws_of): the k-th draw of the
+    /// card's run (from 0) returns the raw value v, made from the generator state <see cref="ForcedDraws.StateFor"/>(v). Empty: none.
+    /// </summary>
+    public static Dictionary<int, int> DrawsOf(string key)
+    {
+        var v = key.IndexOf("-V", StringComparison.Ordinal);
+        if (v < 0)
+        {
+            return [];
+        }
+        return key[(v + 2)..key.LastIndexOf("-O", StringComparison.Ordinal)].Split('+').Where(IsDraw)
+            .Select(p => p[1..].Split('_').Select(int.Parse).ToArray())
+            .GroupBy(x => x[0]).ToDictionary(g => g.Key, g => g.Last()[1]);
+    }
 
     // A key with two parts of one kind: split_key and results_of keep the last P, F, B and Y part, texts_of the first T part.
     private static string? PartOf(string key, Func<string, bool> test, bool last = false)
