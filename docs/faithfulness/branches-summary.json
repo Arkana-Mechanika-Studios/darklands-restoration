@@ -1,10 +1,10 @@
 {
  "ALL": {
   "blocks": 58185,
-  "blocks_hit": 52844,
+  "blocks_hit": 52871,
   "functions": 8506,
   "outcomes": 43726,
-  "outcomes_hit": 36520,
+  "outcomes_hit": 36573,
   "runs": null
  },
  "acc-n0-01-c00": {
@@ -9957,6 +9957,38 @@
   "functions": 455,
   "outcomes": 8038,
   "outcomes_hit": 3478,
+  "runs": 1
+ },
+ "new-mutbattle-calls-1": {
+  "blocks": 7333,
+  "blocks_hit": 4358,
+  "functions": 322,
+  "outcomes": 7104,
+  "outcomes_hit": 3482,
+  "runs": 109
+ },
+ "new-mutbattle-calls-2": {
+  "blocks": 4198,
+  "blocks_hit": 2071,
+  "functions": 178,
+  "outcomes": 3972,
+  "outcomes_hit": 1500,
+  "runs": 26
+ },
+ "new-mutbattle-gen-castle": {
+  "blocks": 4263,
+  "blocks_hit": 2993,
+  "functions": 96,
+  "outcomes": 4064,
+  "outcomes_hit": 2511,
+  "runs": 6
+ },
+ "new-mutbattle-gen-mine": {
+  "blocks": 2829,
+  "blocks_hit": 1544,
+  "functions": 65,
+  "outcomes": 2354,
+  "outcomes_hit": 1075,
   "runs": 1
  },
  "new-mutcards-i1": {

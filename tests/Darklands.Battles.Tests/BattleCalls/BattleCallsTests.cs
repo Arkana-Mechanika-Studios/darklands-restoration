@@ -1159,6 +1159,11 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                         var frames = new System.Diagnostics.StackTrace(true).GetFrames().Skip(4).Take(3).Select(f => f.GetMethod()?.Name + ":" + f.GetFileLineNumber());
                         Console.WriteLine($"DRAW {draws.Count} {random.State:X8} {string.Join(" < ", frames)}");
                     }
+                    if (job.ForcedDraws.TryGetValue(draws.Count, out var raw))
+                    {
+                        // a forced draw (tools/oracle/mutate_battle.py, battle_calls.py State._on_rand): the state whose next draw returns raw, on both sides
+                        random.Seed(ForcedDraw.StateFor(raw));
+                    }
                     draws.Add(random.State);
                 }
             };

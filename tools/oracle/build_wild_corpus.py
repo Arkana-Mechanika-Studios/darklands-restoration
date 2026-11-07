@@ -28,6 +28,7 @@ sys.path.insert(0, str(HERE))
 from run_unit import run  # noqa: E402
 from build_enemy_corpus import Machine, MONSTER_TOTAL, GROUP_TOTAL, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
 from build_city_corpus import cat_members, cat_decode  # noqa: E402
+import gen_force  # noqa: E402
 
 LEVEL_SEG = 0x5000
 LOCATION_NOW, FIGHT_FLAGS = 0x907E, 0x9080
@@ -105,6 +106,7 @@ def run_scenario(sc: dict) -> dict:
     for i, status in enumerate(sc["party"]):
         ds[PARTY + i * PARTY_STRIDE] = status
     saved, reads = {}, []
+    draws = gen_force.Draws(sc, DS, HOLDRAND)          # opt-in forced draws and watches (gen_force.py); nothing without them
 
     def read_hook(uc, stack):
         name = bytes(uc.mem_read(DS * 16 + stack[0], 16)).split(b"\0")[0].decode().upper()
@@ -127,7 +129,7 @@ def run_scenario(sc: dict) -> dict:
                     "callsites": CALLSITES, "stub": list(set(CALLSITES.values())), "track_all": True,
                     "max_instructions": 30000000, "default_result": {"ax": 0, "dx": 0}},
               hooks={"alloc": lambda uc, st: (LEVEL_SEG, 0), "free": lambda uc, st: (0, 0), "read": read_hook,
-                     "save": save_hook, "lore": lambda uc, st: (sc["lore"], 0)})
+                     "save": save_hook, "lore": lambda uc, st: (sc["lore"], 0)}, at_hooks=draws.at_hooks())
     enemy = bytearray(memory_enemy)
     after_ds = {}
     for c in res["memChanged"]:
@@ -149,17 +151,17 @@ def run_scenario(sc: dict) -> dict:
                for g in range(ds_word(GROUP_TOTAL + 2 * lv))] for lv in range(2)]
     holdrand = struct.unpack("<I", bytes(after_ds.get(HOLDRAND + k, ds[HOLDRAND + k]) for k in range(4)))[0]
     out_levels = {name: {"sha256": hashlib.sha256(d).hexdigest(), "data": d.hex()} for name, d in saved.items()}
-    return {"function": "wild_main", "ax": "%04X" % levels, "changed": {}, "inputs": {
+    return draws.annotate({"function": "wild_main", "ax": "%04X" % levels, "changed": {}, "inputs": {
         **sc, "levels": levels, "reads": reads, "saved": out_levels,
         "terrainDescription": bytes(enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4]).hex(), "kinds": kinds, "groups": groups,
-        "holdrand": holdrand, "combatFlags": ds_word(FIGHT_FLAGS)}}
+        "holdrand": holdrand, "combatFlags": ds_word(FIGHT_FLAGS)}})
 
 
 def main() -> None:
     exe_path, game_path, out = sys.argv[1], sys.argv[2], sys.argv[3]
     count = int(sys.argv[4]) if len(sys.argv) > 4 else 80
     workers = int(sys.argv[5]) if len(sys.argv) > 5 else 8
-    scenarios = make_scenarios(count)
+    scenarios = gen_force.scenarios(make_scenarios, count)
     with Pool(workers, initializer=init_worker, initargs=(exe_path, game_path)) as pool:
         cases = pool.map(run_scenario, scenarios, chunksize=1)
     exe = Path(exe_path).read_bytes()

@@ -42,6 +42,7 @@ public sealed class WildOracleTests
             var forceSide = s.GetProperty("forceSide").GetInt32();
             var label = $"scenario {n++} (bf 0x{bf:X2}, seed {s.GetProperty("seed").GetInt32()}, terrain {s.GetProperty("terrain").GetInt32()}, forceMap {forceMap}, forceSide {forceSide})";
             var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());
+            using var forcedDraws = ScenarioDraws.Begin(random, s);          // a scenario's forced draws (mutate_battle.py), none in the committed corpus
             var lore = s.GetProperty("lore").GetInt32();
             var context = new BattlefieldContext
             {

@@ -96,6 +96,14 @@ internal sealed class CallJob
     [JsonPropertyName("gaps")] public List<string> Gaps { get; set; } = [];
 
     [JsonPropertyName("orig")] public OriginalOutcome Orig { get; set; } = new();
+
+    /// <summary>Forced draws ("k": raw, tools/oracle/mutate_battle.py): the k-th draw of the call returns raw; absent in every other job.</summary>
+    [JsonPropertyName("force")] public Dictionary<string, int>? Force { get; set; }
+
+    private Dictionary<int, int>? _forced;
+
+    [JsonIgnore]
+    public Dictionary<int, int> ForcedDraws => _forced ??= Force is null ? [] : Force.ToDictionary(p => int.Parse(p.Key, System.Globalization.CultureInfo.InvariantCulture), p => p.Value & 0x7FFF);
 }
 
 internal sealed class MemoryOp

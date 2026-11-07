@@ -30,6 +30,7 @@ sys.path.insert(0, str(HERE))
 from run_unit import run  # noqa: E402
 from build_enemy_corpus import Machine, MONSTER_TOTAL, GROUP_TOTAL, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
 from build_city_corpus import cat_members, cat_decode  # noqa: E402
+import gen_force  # noqa: E402
 
 LEVEL_SEG, FLAG_SEG = 0x5000, 0x8000
 LOCATION_NOW, FIGHT_FLAGS, CLEARED, LAST_LOC = 0x907E, 0x9080, 0xDA34, 0xDB27
@@ -125,6 +126,7 @@ def run_scenario(sc: dict) -> dict:
         for k, b in enumerate(data):
             ds[off + k] = b
     saved, reads = {}, []
+    draws = gen_force.Draws(sc, DS, HOLDRAND)          # opt-in forced draws and watches (gen_force.py); nothing without them
 
     def alloc_hook(uc, stack):
         size = stack[0] | stack[1] << 16
@@ -154,7 +156,7 @@ def run_scenario(sc: dict) -> dict:
                         "callsites": CALLSITES, "stub": list(set(CALLSITES.values())), "track_all": True,
                         "max_instructions": 200000000, "default_result": {"ax": 0, "dx": 0}},
                   hooks={"alloc": alloc_hook, "free": lambda uc, st: (0, 0), "read": read_hook, "save": save_hook,
-                         "lore": lambda uc, st: (sc["lore"], 0)})
+                         "lore": lambda uc, st: (sc["lore"], 0)}, at_hooks=draws.at_hooks())
     except SystemExit as stop:
         # the original itself stopped (an instruction limit, an INT, exit_): the scenario is not usable
         return {"error": str(stop), "inputs": sc}
@@ -180,18 +182,18 @@ def run_scenario(sc: dict) -> dict:
     holdrand = struct.unpack("<I", bytes(after_ds.get(HOLDRAND + k, ds[HOLDRAND + k]) for k in range(4)))[0]
     out_levels = {name: {"sha256": hashlib.sha256(d).hexdigest(),
                          "deflated": base64.b64encode(zlib.compress(d, 9)).decode()} for name, d in saved.items()}
-    return {"function": "mine-builder-entry", "ax": "%04X" % levels, "changed": {}, "inputs": {
+    return draws.annotate({"function": "mine-builder-entry", "ax": "%04X" % levels, "changed": {}, "inputs": {
         **sc, "levels": levels, "reads": reads, "saved": out_levels, "instructions": res["instructions"],
         "terrain": bytes(enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4]).hex(), "kinds": kinds, "groups": groups,
         "holdrand": holdrand, "combatFlags": ds_word(FIGHT_FLAGS), "clearedAfter": ds_word(CLEARED),
-        "lastLocationAfter": ds_word(LAST_LOC)}}
+        "lastLocationAfter": ds_word(LAST_LOC)}})
 
 
 def main() -> None:
     exe_path, game_path, out = sys.argv[1], sys.argv[2], sys.argv[3]
     count = int(sys.argv[4]) if len(sys.argv) > 4 else 150
     workers = int(sys.argv[5]) if len(sys.argv) > 5 else 8
-    scenarios = make_scenarios(count)
+    scenarios = gen_force.scenarios(make_scenarios, count)
     cases, failed = [], []
     # results are kept as they arrive (<out>.partial.jsonl) so that a long run can be inspected before it ends
     with Pool(workers, initializer=init_worker, initargs=(exe_path, game_path)) as pool, open(out + ".partial.jsonl", "w") as partial:
