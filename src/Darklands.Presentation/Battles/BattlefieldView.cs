@@ -157,6 +157,82 @@ public sealed class BattlefieldView
         }
     }
 
+    /// <summary>The cell shown in view slot (row, column), or null where the view draws nothing (the map's edge or a void cell).</summary>
+    public (int X, int Y)? SlotCell(BattlefieldLevel level, int row, int column)
+    {
+        var (dx, dy) = SlotOffset(row, column);
+        var x = CentreColumn + dx;
+        var y = CentreRow + dy;
+        if (x <= 0 || x >= BattlefieldLevel.Size - 1 || y <= 0 || y >= BattlefieldLevel.Size - 1 || level[x, y].IsVoid)
+        {
+            return null;
+        }
+        return (x, y);
+    }
+
+    /// <summary>
+    /// The wall pieces of view slot (row, column) as the battle's redraw queues them into its depth-sorted list, in its order: the
+    /// north wall, its decoration, the west wall, its decoration, the east wall, the furniture, the south wall. An animated decoration
+    /// (number below the tile set's limit) is left out: it has its own entry each frame. A decoration or furniture whose sprite is
+    /// missing still has an entry (it draws nothing); a missing wall has none. Points are relative to the view.
+    /// </summary>
+    // orig: R014+0x88E6 (14F7:20D6) checked against the asm: the slot's record R136+0x4EB8 + 0x12 × slot (filled by R017+0x0000: the
+    // C: wall sprites drawn, the decorations' and the furniture's numbers) queued through R014+0x8724 with the slot's map row × 16 (r)
+    // C: and column × 32 (c) (R136+0x36C8 / 0x363C): 0x7D00 north wall (c, r, r), 0x7D01 its decoration if its number >= DS:C12E
+    // C: (c + 4, r, r), 0x7D03 west wall (c, r + 1, r + 8), 0x7D04 its decoration if >= DS:C17F (c + 1, r + 8, r + 8), 0x7D05 east wall
+    // C: (c + 0x1F, r + 9, r + 0xF), 0x7D0A furniture t in orientation o (c + DS:D7BE[4t + o], max(r + DS:D802[4t + o] − DS:C11D[t] / 2,
+    // C: r + 1), min(r + DS:D802[4t + o] + DS:C11D[t] / 2, r + 0xE)), 0x7D14 south wall (c + 0x10, r + 0xF, r + 0xF). The record's
+    // C: last two words (the floor tile and its decoration) go to lists A and B (R014+0x87E4 / R014+0x8862), drawn before the sorted list.
+    public List<WallPiece> WallPieces(BattlefieldLevel level, BattlefieldTiles tiles, TerrainDescription terrain, int row, int column)
+    {
+        var pieces = new List<WallPiece>();
+        if (SlotCell(level, row, column) is not var (x, y))
+        {
+            return pieces;
+        }
+        var cell = level[x, y];
+        var (fx, fy) = SlotFloor(row, column);
+        var wallY = fy - 25;
+        int c = x * BattlefieldLevel.CellWidth, r = y * BattlefieldLevel.CellHeight;
+        if (NorthWallPiece(level, tiles, x, y, cell) is { } northWall)
+        {
+            pieces.Add(new WallPiece(0x7D00, northWall, fx + 16, wallY, new DepthKey(c, r, r)));
+        }
+        var northHidden = cell.NorthWall != 0 && HasContent(level[x, y - 1]);
+        if (!northHidden && cell.NorthWallDecoration != 0 && cell.NorthWallDecoration >= terrain.AnimatedBelow(TileKind.NorthWallDecoration))
+        {
+            var d = tiles.NorthWallDecorations[cell.NorthWallDecoration];
+            pieces.Add(new WallPiece(0x7D01, d?.Sprite, fx + 16 + (d?.OffsetX ?? 0), wallY + (d?.OffsetY ?? 0), new DepthKey(c + 4, r, r)));
+        }
+        if (WestWallPiece(level, tiles, x, y, cell) is { } westWall)
+        {
+            pieces.Add(new WallPiece(0x7D03, westWall, fx, wallY, new DepthKey(c, r + 1, r + 8)));
+        }
+        var westHidden = cell.WestWall != 0 && HasContent(level[x - 1, y]);
+        if (!westHidden && cell.WestWallDecoration != 0 && cell.WestWallDecoration >= terrain.AnimatedBelow(TileKind.WestWallDecoration))
+        {
+            var d = tiles.WestWallDecorations[cell.WestWallDecoration];
+            pieces.Add(new WallPiece(0x7D04, d?.Sprite, fx + (d?.OffsetX ?? 0), wallY + (d?.OffsetY ?? 0), new DepthKey(c + 1, r + 8, r + 8)));
+        }
+        if (cell.EastWall != 0 && tiles.WestWalls[cell.EastWall]?.JoinedBothEnds is { } eastWall)
+        {
+            pieces.Add(new WallPiece(0x7D05, eastWall, fx + 32, wallY, new DepthKey(c + 0x1F, r + 9, r + 0xF)));
+        }
+        if (cell.Furniture != 0)
+        {
+            var f = tiles.Furniture[cell.Furniture];
+            var o = cell.FurnitureOrientation;
+            int dy = f?.BoxY[o] ?? 0, half = (f?.Height ?? 0) >> 1;
+            var key = new DepthKey(c + (f?.BoxX[o] ?? 0), Math.Max(r + dy - half, r + 1), Math.Min(r + dy + half, r + 0xE));
+            pieces.Add(new WallPiece(0x7D0A, f?.Sprite, fx + (f?.SpriteX[o] ?? 0), fy + (f?.SpriteY[o] ?? 0), key));
+        }
+        if (cell.SouthWall != 0 && tiles.NorthWalls[cell.SouthWall]?.JoinedBothEnds is { } southWall)
+        {
+            pieces.Add(new WallPiece(0x7D14, southWall, fx, fy - 9, new DepthKey(c + 0x10, r + 0xF, r + 0xF)));
+        }
+        return pieces;
+    }
+
     /// <summary>
     /// The north wall piece: shown only when the cell to the north is open ground or void; its
     /// ends join walls of the cells around.
@@ -210,3 +286,7 @@ public sealed class BattlefieldView
     /// <summary>A nibble of a neighbouring cell, 0 when that cell is void or bare.</summary>
     private static int Nibble(BattlefieldCell cell, int shift) => HasContent(cell) ? (int)(cell.Bits >> shift) & 0xF : 0;
 }
+
+/// <summary>A wall piece of a view slot in the battle's depth-sorted list: its type (0x7D00..0x7D14), sprite (null: draws nothing), point
+/// relative to the view and depth.</summary>
+public readonly record struct WallPiece(int Type, RowRunSprite? Sprite, int X, int Y, DepthKey Key);
