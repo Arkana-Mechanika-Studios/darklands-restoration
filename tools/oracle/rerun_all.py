@@ -753,6 +753,11 @@ BATTLE_RECORDS |= {"dungeon-mine-doormsg"}
 for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
     SESSIONS[_name] = "local/oracle-saves/dlp-issue2/DKSAVE16.SAV"
     BATTLE_RECORDS.add(_name)
+# lugum: the Templar fortress of Lugum (place 188 by Flensburg) from a 483.07 saved game at its graveyard card (kept under
+# local/oracle-saves/lugum, not in the repository): the door in the wall, stairs and doors to the fortress's next levels, an in-battle Alt-S
+for _name in ("fortress-lugum-stairs", "fortress-lugum-back"):
+    SESSIONS[_name] = "local/oracle-saves/lugum/DKSAVE2.SAV"
+    BATTLE_RECORDS.add(_name)
 # carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,
 # taken up from a save made in the mine's battle), the per-battle state carried from one battle to the next. Only the seeds that agree are
 # here (27, 28, 36 of 1..40; since round spawn 2, 4, 8, 15, 22, 24, 38, 40; since round reload 05, by its still:<n> wait for the
