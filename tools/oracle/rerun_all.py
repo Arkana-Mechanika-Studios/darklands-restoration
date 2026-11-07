@@ -1056,6 +1056,53 @@ SESSIONS.update({
 BATTLE_RECORDS |= {"c3-space-pause", "gen-bedge-02", "gen-bedge-03", "gen-bheld-22", "gen-bheld-40", "gen-bhurta-03", "gen-bhurtk-01", "gen-bhurtk-02", "gen-bhurtk-05", "gen-bhurts-01", "gen-bhurts-02", "gen-bkeys-21", "gen-bkeys-25", "gen-bkeys-37", "gen-bkeys-44", "gen-bkeys-51", "gen-blue-02", "gen-blue-04", "gen-blue-05", "gen-bluer-01", "gen-bsafe-27", "gen-bsafe-33", "gen-bsafe-35", "gen-bsafe-50"}
 
 
+# The travel-map sessions (86): the generated walks of the map (gen-trav*, round R2), the clamp walks (rc-m1, rc-m2: round batch 33), the view-edge and
+# paging walks (b34-m4, m5, m6), the Ctrl-F-key and keypad walks (b35-d) and the three small probes L1, L2, L2b (rebuilt from the logged inputs of the
+# lost originals, round pre-RC2). The party's cell of a b34 / rc / b35 start is DKSAVE17's with the header words +0x7E / +0x80 moved
+# (synth_saves.py: pos<column>x<row>). TRAVEL_BUDGET: the walks that run longer than the default instruction budget of lockstep.py.
+TRAVEL_BUDGET = 9_000_000_000
+TRAVEL = {
+    "gen-trav-01": "DKSAVE17.SAV", "gen-trav-02": "DKSAVE17.SAV", "gen-trav-03": "DKSAVE17.SAV", "gen-trav-04": "DKSAVE17.SAV",
+    "gen-trav-05": "DKSAVE17.SAV", "gen-trav-06": "DKSAVE17.SAV", "gen-trav-07": "DKSAVE17.SAV", "gen-trav-08": "DKSAVE17.SAV",
+    "gen-trav-09": "DKSAVE17.SAV", "gen-trav-10": "DKSAVE17.SAV", "gen-trav-11": "DKSAVE17.SAV", "gen-trav-12": "DKSAVE17.SAV",
+    "gen-trav-13": "DKSAVE17.SAV", "gen-trav-14": "DKSAVE17.SAV", "gen-trav-15": "DKSAVE17.SAV", "gen-trav-16": "DKSAVE17.SAV",
+    "gen-trav-17": "DKSAVE17.SAV", "gen-trav0-01": "DKSAVE0.SAV", "gen-trav0-02": "DKSAVE0.SAV", "gen-trav0-03": "DKSAVE0.SAV",
+    "gen-trav0-04": "DKSAVE0.SAV", "gen-trav0-05": "DKSAVE0.SAV", "gen-trav0-06": "DKSAVE0.SAV", "gen-trav0-m5": "DKSAVE0.SAV",
+    "gen-travn-01": "synth/DKSAVE17-month10d1.sav", "gen-travn-02": "synth/DKSAVE17-month10d1.sav", "gen-travn-03": "synth/DKSAVE17-month10d1.sav",
+    "gen-travn-04": "synth/DKSAVE17-month10d1.sav", "gen-travs-01": "synth/DKSAVE17-month6.sav", "gen-travs-02": "synth/DKSAVE17-month6.sav",
+    "gen-travs-03": "synth/DKSAVE17-month6.sav", "gen-travs-04": "synth/DKSAVE17-month6.sav", "gen-travw-01": "synth/DKSAVE17-month0d3.sav",
+    "gen-travw-02": "synth/DKSAVE17-month0d3.sav", "gen-travw-03": "synth/DKSAVE17-month0d3.sav", "gen-travw-04": "synth/DKSAVE17-month0d3.sav",
+    "gen-travw-05": "synth/DKSAVE17-month0d3.sav", "gen-travw-06": "synth/DKSAVE17-month0d3.sav", "rc-m2-down": "synth/DKSAVE17-pos216x490.sav",
+    "rc-m2-up": "synth/DKSAVE17-pos216x490.sav", "rc-m2-sup": "synth/DKSAVE17-pos162x928.sav", "rc-m2-right": "synth/DKSAVE17-pos216x490.sav",
+    "rc-m2-left": "synth/DKSAVE17-pos216x490.sav", "rc-m1-e-01": "synth/DKSAVE17-pos325x500.sav", "rc-m1-n-01": "synth/DKSAVE17-pos126x1.sav",
+    "rc-m1-s-01": "synth/DKSAVE17-pos162x928.sav", "rc-m1-sw-01": "synth/DKSAVE17-pos0x925.sav", "rc-m1-se-01": "synth/DKSAVE17-pos325x925.sav",
+    "rc-m1-ne-01": "synth/DKSAVE17-pos326x79.sav", "b34-m4-n-a-01": "synth/DKSAVE17-pos95x40.sav", "b34-m4-n-b-01": "synth/DKSAVE17-pos91x10.sav",
+    "b34-m4-n-c-01": "synth/DKSAVE17-pos99x30.sav", "b34-m4-w-a-01": "synth/DKSAVE17-pos3x500.sav", "b34-m4-w-b-01": "synth/DKSAVE17-pos5x700.sav",
+    "b34-m4-e-a-01": "synth/DKSAVE17-pos322x500.sav", "b34-m4-e-b-01": "synth/DKSAVE17-pos324x700.sav",
+    "b34-m4-s-a-01": "synth/DKSAVE17-pos100x925.sav", "b34-m4-s-b-01": "synth/DKSAVE17-pos30x927.sav",
+    "b34-m4-f1-a-01": "synth/DKSAVE17-pos100x199.sav", "b34-m4-f1-b-01": "synth/DKSAVE17-pos150x199.sav",
+    "b34-m4-f2-a-01": "synth/DKSAVE17-pos100x830.sav", "b34-m4-f2-b-01": "synth/DKSAVE17-pos60x830.sav",
+    "b34-m4-b1-a-01": "synth/DKSAVE17-pos290x150.sav", "b34-m4-b1-b-01": "synth/DKSAVE17-pos305x152.sav",
+    "b34-m4-b2-a-01": "synth/DKSAVE17-pos280x130.sav", "b34-m4-b2-b-01": "synth/DKSAVE17-pos295x131.sav",
+    "b34-m4-h-a-01": "synth/DKSAVE17-pos100x500.sav", "b34-m4-h-b-01": "synth/DKSAVE17-pos100x470.sav",
+    "b34-m4-rest-01": "synth/DKSAVE17-pos100x500.sav", "b34-m5-w-430": "synth/DKSAVE17-pos3x430.sav", "b34-m5-w-546": "synth/DKSAVE17-pos3x546.sav",
+    "b34-m5-w-610": "synth/DKSAVE17-pos3x610.sav", "b34-m5-w-777": "synth/DKSAVE17-pos3x777.sav", "b34-m5-n-90": "synth/DKSAVE17-pos90x30.sav",
+    "b34-m5-n-92": "synth/DKSAVE17-pos92x12.sav", "b34-m5-n-93": "synth/DKSAVE17-pos93x20.sav", "b34-m6-pb-100": "synth/DKSAVE17-pos100x199.sav",
+    "b34-m6-pb-150": "synth/DKSAVE17-pos150x199.sav", "b34-m6-pb-145": "synth/DKSAVE17-pos145x199.sav",
+    "b35-d-ctrlf-01": "synth/DKSAVE17-pos95x40.sav", "b35-d-keypad-01": "synth/DKSAVE17-pos95x40.sav", "b35-d-mix-01": "synth/DKSAVE17-pos3x500.sav",
+    "b35-d-ctrlf-02": "synth/DKSAVE17-pos3x500.sav", "L1-key-l-then-bottom-click": "DKSAVE17.SAV", "L2-bottom-click-pressburg": "DKSAVE0.SAV",
+    "L2b-trav0-03-3clicks": "DKSAVE0.SAV",
+}
+TRAVEL_LONG = {
+    "rc-m2-down", "rc-m2-up", "rc-m2-sup", "rc-m2-right", "rc-m2-left", "b34-m4-n-a-01", "b34-m4-n-b-01", "b34-m4-n-c-01", "b34-m4-w-a-01",
+    "b34-m4-w-b-01", "b34-m4-e-a-01", "b34-m4-e-b-01", "b34-m4-s-a-01", "b34-m4-s-b-01", "b34-m4-f1-a-01", "b34-m4-f1-b-01", "b34-m4-f2-a-01",
+    "b34-m4-f2-b-01", "b34-m4-b1-a-01", "b34-m4-b1-b-01", "b34-m4-b2-a-01", "b34-m4-b2-b-01", "b34-m4-h-a-01", "b34-m4-h-b-01", "b34-m4-rest-01",
+    "b34-m5-w-430", "b34-m5-w-546", "b34-m5-w-610", "b34-m5-w-777", "b34-m5-n-90", "b34-m5-n-92", "b34-m5-n-93", "b34-m6-pb-100", "b34-m6-pb-150",
+    "b34-m6-pb-145",
+}
+SESSIONS.update(TRAVEL)
+
+
 def check_headless(given: Path | None, stale_ok: bool) -> None:
     """Prints which headless build the rewrite side runs, and stops when the build is older than this repository's sources.
 
@@ -1120,7 +1167,8 @@ def main():
         save = ["--save", str(resolve_save(SESSIONS[s], saves))] if SESSIONS[s] else []
         game = str(clean_game(Path(a.game))) if s in CLEAN_GAME else a.game
         jobs.append(("session", s, py + [str(HERE / "lockstep.py"), a.exe, game, str(HERE / "lockstep-sessions" / (s + ".steps")),
-                                         str(out / "sessions" / s)] + save + (["--battle-records"] if s in BATTLE_RECORDS else []) + (["--timer-marks"] if s in TIMER_MARKS else []) + common))
+                                         str(out / "sessions" / s)] + save + (["--battle-records"] if s in BATTLE_RECORDS else []) + (["--timer-marks"] if s in TIMER_MARKS else [])
+                                         + (["--budget", str(TRAVEL_BUDGET)] if s in TRAVEL_LONG else []) + common))
     # the slowest jobs first (the last live durations kept in <recordings>/durations.json; a job never timed goes first, as it may be the slowest)
     durations_file = Path(a.recordings) / "durations.json"
     try:
