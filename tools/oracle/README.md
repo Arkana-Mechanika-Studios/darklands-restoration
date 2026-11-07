@@ -150,6 +150,17 @@ It is the only gain tool; there is no separate per-folder script and no helper f
 with no `--baseline`; for the items only that folder reaches give the other folders as `--baseline`. (It replaces `measure_new_outcomes.py`,
 which needed a git-ignored `cov.py`; on five folders the old and the new numbers were identical.)
 
+## Directed mutation of the card scripts' open outcomes: `mutate_branch.py`
+
+Opt-in, for the open branch outcomes at the coverage frontier (the jump ran, only the other way). `classify` reads each outcome's
+compare and traces its operand (a saved-game word, a helper's return such as a roll or an event query, a local, a member field);
+`reach` streams the card coverage for the cheapest runs that executed the jump; `watch` reruns them on the original with a read-only
+hook at the flag setter (the draws made so far, the operand values); `jobs` writes, for the operand kinds it handles, the reaching
+run key with the operand put on each side of the threshold; `run` runs them with coverage and writes a corpus for the C# replay
+(`CardOracleTests.EveryCardAgreesWithTheOriginal`); `table` counts the outcomes closed. A random roll is forced by the key part
+`R<k>_<v>` (the k-th draw of the card's run returns v: the generator is set before that draw to the state whose successor is
+`v << 16`; card_oracle.py `draws_of`, the C# test harness's `ForcedDraws`); keys without it run as before.
+
 ## Sound requests
 
 The game starts music and plays effects through one command, `sound-start(n)` (root 047C:078A: the driver's play slot; 1 stops the music, 2 / 3

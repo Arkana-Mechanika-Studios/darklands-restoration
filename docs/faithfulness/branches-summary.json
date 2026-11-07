@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 58163,
-  "blocks_hit": 52492,
-  "functions": 8494,
+  "blocks": 58165,
+  "blocks_hit": 52694,
+  "functions": 8496,
   "outcomes": 43718,
-  "outcomes_hit": 36142,
+  "outcomes_hit": 36354,
   "runs": null
  },
  "acc-n0-01-c00": {
@@ -9958,6 +9958,22 @@
   "outcomes": 8038,
   "outcomes_hit": 3478,
   "runs": 1
+ },
+ "new-mutpilot-j1": {
+  "blocks": 12756,
+  "blocks_hit": 7715,
+  "functions": 1409,
+  "outcomes": 9026,
+  "outcomes_hit": 4530,
+  "runs": 374
+ },
+ "new-mutpilot-j2": {
+  "blocks": 3237,
+  "blocks_hit": 1464,
+  "functions": 152,
+  "outcomes": 2160,
+  "outcomes_hit": 749,
+  "runs": 5
  },
  "new-newgame_live1_sessions-tester-newgame-reload": {
   "blocks": 7009,
