@@ -37,6 +37,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from run_unit import run, Rtlink  # noqa: E402
 from build_enemy_corpus import Machine, MONSTER_TOTAL, GROUP_TOTAL, KINDS, GROUPS, ENEMY_SEG, ITEM_SEG, DS, HOLDRAND  # noqa: E402
+import gen_force  # noqa: E402
 
 WORK_SEG = 0x8000
 FLOOR_SEG = 0x20A5
@@ -96,6 +97,7 @@ def run_scenario(sc: dict) -> dict:
         for k, b in enumerate(data):
             ds[off + k] = b
     saved = {}
+    draws = gen_force.Draws(sc, DS, HOLDRAND)          # opt-in forced draws and watches (gen_force.py); nothing without them
     dumps = {}
 
     def save_hook(uc, stack):
@@ -125,7 +127,7 @@ def run_scenario(sc: dict) -> dict:
                         "callsites": CALLSITES, "stub": list(set(CALLSITES.values())), "track_all": True,
                         "max_instructions": int(os.environ.get("CASTLE_MAX", 20000000)), "default_result": {"ax": 0, "dx": 0}},
                   hooks={"save": save_hook, "lore": lambda uc, st: (sc["lore"], 0)},
-                  at_hooks={THUNK_S007: swap_in_s007})
+                  at_hooks=draws.at_hooks({THUNK_S007: swap_in_s007}))
     except SystemExit as e:
         if "instruction limit" in str(e):
             # the original never returns: the party-room draw of battlefield 0x7C repeats forever when only the gate room can be drawn
@@ -166,20 +168,20 @@ def run_scenario(sc: dict) -> dict:
         Path(dump_dir).mkdir(parents=True, exist_ok=True)
         (Path(dump_dir) / (tag + "_plan.bin")).write_bytes(dumps.get("plan", b""))
         (Path(dump_dir) / (tag + "_final.bin")).write_bytes(bytes(work))
-    return {"function": "layout-battlefield-entry", "ax": "%04X" % levels, "changed": {}, "inputs": {
+    return draws.annotate({"function": "layout-battlefield-entry", "ax": "%04X" % levels, "changed": {}, "inputs": {
         **sc, "levels": levels, "start": ds_word(RES), "saved": out_levels,
         "terrain": bytes(enemy[TILE_DESCRIPTION:TILE_DESCRIPTION + 0xC4]).hex(), "kinds": kinds, "groups": groups,
         "holdrand": holdrand, "combatFlags": ds_word(FIGHT_FLAGS), "clearedAfter": ds_word(CLEARED),
-        "lastLocationAfter": ds_word(LAST_LOC)}}
+        "lastLocationAfter": ds_word(LAST_LOC)}})
 
 
 def main() -> None:
     exe_path, game_path, out = sys.argv[1], sys.argv[2], sys.argv[3]
     count = int(sys.argv[4]) if len(sys.argv) > 4 else 40
     workers = int(sys.argv[5]) if len(sys.argv) > 5 else 8
-    scenarios = make_scenarios(count)
+    scenarios = gen_force.scenarios(make_scenarios, count)
     for i, sc in enumerate(scenarios):
-        sc["index"] = i
+        sc.setdefault("index", i)
     with Pool(workers, initializer=init_worker, initargs=(exe_path, game_path)) as pool:
         cases = pool.map(run_scenario, scenarios, chunksize=1)
     froze = [c for c in cases if c["function"] == "gen_battlefield_freeze"]

@@ -52,6 +52,15 @@ def u32(b: bytes) -> int:
     return struct.unpack("<I", b)[0]
 
 
+MSC_MUL, MSC_ADD = 214013, 2531011
+MSC_MUL_INVERSE = pow(MSC_MUL, -1, 1 << 32)
+
+
+def draw_state(raw: int) -> int:
+    """The generator state from which the next rand() returns raw (0..32767): the state after it is raw << 16 (as card_oracle.draw_state)."""
+    return ((((raw & 0x7FFF) << 16) - MSC_ADD) * MSC_MUL_INVERSE) & 0xFFFFFFFF
+
+
 # ---------------------------------------------------------------------------------------------------- capture
 class CaptureSession(orig_side.Session):
     """A Session that copies itself at the head of the battle passes asked for (taken from the pass line the fight's trace writes)."""
@@ -158,7 +167,8 @@ class State:
         self.m.script = []
         self.cat = Catalog(exe)
         self.draws: list[int] = []
-        self.m.hook(*RAND_FN, lambda m: self.draws.append(u32(m.read(DS, HOLDRAND, 4))))
+        self.force: dict = {}           # forced draws of the current call ({k: raw}: the k-th draw returns raw; tools/oracle/mutate_battle.py)
+        self.m.hook(*RAND_FN, self._on_rand)
         # the tick wait of the game's delay routine (root 0410:0302: loops until the timer interrupt moves the tick byte DS:07D2). A call has no interrupts
         # (and the machine would need ~10^7 bytes of code a tick), so each pass of the wait takes the counters of one timer callback (root 047C:0038..0050:
         # the combat clock DS:07D4 unless held by DS:07D3, bytes 07D0 07D1 07D2 07D9, word 07D6): n ticks of the game's clock, as the game's wait would see
@@ -172,6 +182,14 @@ class State:
             i = self.cat.info(coord)
             self.m.hook(i["seg"], i["off"], self._near_end, record="R%03d" % i["record"])
         self.restore()
+
+    def _on_rand(self, m):
+        """At the entry of rand(): a forced draw first sets the generator's state to the one whose next draw returns the asked raw value (the
+        same state on the rewrite's side: BattleCallsTests, ForcedDraws.StateFor), then the state before the draw is noted."""
+        k = len(self.draws)
+        if k in self.force:
+            m.write(DS, HOLDRAND, struct.pack("<I", draw_state(self.force[k])))
+        self.draws.append(u32(m.read(DS, HOLDRAND, 4)))
 
     @staticmethod
     def _wait_tick(m):
@@ -252,9 +270,11 @@ class State:
             for n, r in REG.items():
                 m.uc.reg_write(r, saved[n])
 
-    def call(self, coord: str, args=(), mutations=(), budget: int | None = None, keep_state: bool = False) -> dict:
-        """Restore, mutate ((segment or None for DS, offset, bytes) items), call the function, report."""
+    def call(self, coord: str, args=(), mutations=(), budget: int | None = None, keep_state: bool = False, force=None) -> dict:
+        """Restore, mutate ((segment or None for DS, offset, bytes) items), call the function, report.
+        force: {k: raw} forced draws (the k-th draw of the call, from 0, returns raw 0..32767); none: the generator runs as stored."""
         self.restore()
+        self.force = {int(k): int(v) & 0x7FFF for k, v in (force or {}).items()}
         m = self.m
         for seg_, o, data in mutations:
             if seg_ == "loot":
@@ -368,9 +388,12 @@ def export(fuzz_folders, states_folder: Path, out: Path):
             for item in d["kept"]:
                 # functions the original ran that the rewrite's state does not carry (the enemies' belongings): the job is told, not judged
                 gaps = [why for coord, why in GAPS.items() if _runs(cat, coord, item)]
-                jobs.append({"gaps": gaps, "id": "%s|%s#%d" % (d["function"], d.get("label", name), item["iteration"]), "function": d["function"], "state": name,
-                             "args": item["args"], "ops": item["ops"],
-                             "orig": {k: item[k] for k in ("ax", "dx", "changed", "far_changed", "far2_changed", "far3_changed", "wave_changed", "random", "draws", "loot") if k in item}})
+                job = {"gaps": gaps, "id": "%s|%s#%d" % (d["function"], d.get("label", name), item["iteration"]), "function": d["function"], "state": name,
+                       "args": item["args"], "ops": item["ops"],
+                       "orig": {k: item[k] for k in ("ax", "dx", "changed", "far_changed", "far2_changed", "far3_changed", "wave_changed", "random", "draws", "loot") if k in item}}
+                if item.get("force"):
+                    job["force"] = {str(k): v for k, v in item["force"].items()}         # forced draws (mutate_battle.py); absent in every other job
+                jobs.append(job)
     with gzip.open(out, "wt", encoding="utf-8", compresslevel=6) as f:
         json.dump({"fights": fights, "states": states, "jobs": jobs}, f)
     print("exported", len(jobs), "jobs,", len(states), "states ->", out)

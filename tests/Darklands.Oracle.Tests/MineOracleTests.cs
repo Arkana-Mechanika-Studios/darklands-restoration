@@ -125,6 +125,7 @@ public sealed class MineOracleTests
     private static uint BuildState(JsonElement s, int bf, EnemyCatalogue catalogue, IReadOnlyList<ItemDefinition> items, CombatTables tables, PreparedMaps maps)
     {
         var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());
+        using var forcedDraws = ScenarioDraws.Begin(random, s);          // a scenario's forced draws (mutate_battle.py), none in the committed corpus
         var lore = s.GetProperty("lore").GetInt32();
         var context = new BattlefieldContext
         {
@@ -152,6 +153,7 @@ public sealed class MineOracleTests
         IReadOnlyList<ItemDefinition> items, CombatTables tables, PreparedMaps maps)
     {
         var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());
+        using var forcedDraws = ScenarioDraws.Begin(random, s);          // a scenario's forced draws (mutate_battle.py), none in the committed corpus
         var lore = s.GetProperty("lore").GetInt32();
         var recording = new RecordingMaps(maps);
         var context = new BattlefieldContext
