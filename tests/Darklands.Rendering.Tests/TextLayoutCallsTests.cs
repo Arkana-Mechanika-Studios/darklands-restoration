@@ -182,49 +182,24 @@ public sealed class TextLayoutCallsTests
             problems.Add($"hotspots original [{string.Join(' ', theirs)}] rewrite [{string.Join(' ', mine)}]");
         }
 
-        // wrapped-text-size, made as its callers make it (no stop, leading or drop cap, the font's line height): the high word is the end y
-        //   minus one; the rewrite measures by laying the text out on a scratch screen (CardTextLayout.MeasureHeight, no conditions or option states)
+        // wrapped-text-size, made as its callers make it (no stop, leading or drop cap, the font's line height, from y 0 here: the job's y is
+        //   added): the high word is the end y minus one. With size_init the call had the table DS:EA64 with the job's option states; without,
+        //   the table 0, so enabled[n] is DS:002E + n (hooked at root 0265:07C8: the run-time library's copyright string and what follows it;
+        //   a word wider than the column makes the loop read the same marker again and again, one entry further each time).
         var size = job.GetProperty("size");
         var measure = new CardTextLayout(painter);
-        measure.Draw(new Canvas(new Screen()), text, I("x"), I("y"), I("width"), new CardTextLayout.Settings { Leading = 0 });
-        if (size.GetProperty("dx").GetInt32() != ((measure.EndY - 1) & 0xFFFF))
+        var options = I("size_init") != 0 ? settings.Options : NullTable;
+        var end = I("y") + measure.MeasureHeight([.. text, .. new byte[64]], I("width"), 0, options);
+        if (size.GetProperty("dx").GetInt32() != ((end - 1) & 0xFFFF))
         {
-            problems.Add($"height original dx {size.GetProperty("dx").GetInt32()} rewrite end y {measure.EndY} - 1");
+            problems.Add($"height original dx {size.GetProperty("dx").GetInt32()} rewrite end y {end} - 1");
         }
-        // DIVERGENCE D-4f276c (CardTextLayout.MeasureHeight): the original's second copy of the loop does not track conditional passages and
-        //   skips the option lines its own table marks hidden; the rewrite measures a text without them. Only the height can differ by it.
-        string? explainedBy = null;
-        if (problems.Count > 0 && problems.All(p => p.StartsWith("height", StringComparison.Ordinal)) &&
-            text.Any(c => c is CardTextLayout.ConditionStart or CardTextLayout.ConditionEnd or CardTextLayout.PlainOption or CardTextLayout.ItemOption
-                or CardTextLayout.SaintOption or CardTextLayout.BattleOption))
-        {
-            explainedBy = "D-4f276c";
-        }
-        // DIVERGENCE D-3cc0f8 (CardTextLayout.MeasureHeight): the original's copy breaks a word wider than the column in its own way
-        else if (problems.Count > 0 && problems.All(p => p.StartsWith("height", StringComparison.Ordinal)) &&
-            Words(text).Any(w => painter.Measure(w) > I("width")))
-        {
-            explainedBy = "D-3cc0f8";
-        }
-        return new Outcome(original, rewrite, pixels, problems, explainedBy);
+        return new Outcome(original, rewrite, pixels, problems, null);
     }
 
-    private static IEnumerable<byte[]> Words(byte[] text)
-    {
-        var word = new List<byte>();
-        foreach (var c in text.Append((byte)0))
-        {
-            if (c is (byte)' ' or (byte)'-' or < 0x20)
-            {
-                yield return word.ToArray();
-                word.Clear();
-            }
-            else
-            {
-                word.Add(c);
-            }
-        }
-    }
+    /// <summary>DS:002E.. in the captured state (the bytes wrapped-text-size reads as enabled[] when its caller passes no table).</summary>
+    private static readonly OptionState[] NullTable =
+        [.. System.Text.Encoding.Latin1.GetBytes("90, Microsoft Corp\x18\0dk.tmp\0near a door\0near the st").Select(b => (OptionState)b)];
 
     private static Canvas NewCanvas()
     {

@@ -23,7 +23,7 @@ public sealed record OptionArea(int Option, OptionKind Kind, int Y, int Height);
 /// (0x01 … 0x13), option lines (0x15 plain, 0x10 items, 0x16 saints, 0x06 battle) and an
 /// illuminated first capital.
 /// </summary>
-// orig: text-paint-wrapped root 0265:0134 draft (the C is read directly; it does not match the bytes: loop shapes and stack slots only); wrapped-text-size root 0265:0654 (same layout without drawing) is the second copy of this logic and is not needed here; tests: none (drawing; needs a font and a screen)
+// orig: text-paint-wrapped root 0265:0134 draft (the C is read directly; it does not match the bytes: loop shapes and stack slots only); wrapped-text-size root 0265:0654 (the same layout without drawing) is its own second copy of the loop, with its own differences: MeasureHeight; tests: TextLayoutCallsTests (direct calls of both)
 // C: written from the loop line by line, including its quirks: the 0x01 and 0x13 branches advance the cursor twice (once in the branch, once at the loop end), so the byte after a conditional marker is skipped and counted; an empty segment widens the column by one pixel for the rest of the text; the indent width is a char cast to unsigned char.
 // DIVERGENCE: `stop` (StopAtFirstOption), `init` (the hotspot table reset) and `icon` (the drop cap) are the C's parameters; init is always on here. The original draws a character with the driver's glyph-width/gfx-text-draw (asm); the glyph widths come from the font file here (TextPainter.Advance), so a byte the font lacks counts as width 0.
 public sealed class CardTextLayout(TextPainter painter)
@@ -295,21 +295,125 @@ public sealed class CardTextLayout(TextPainter painter)
     // orig: the y that wrapped-text-size root 0265:0654 returns in the high word (minus 1): the side-window hint centres itself on it (R043+0x27E6)
     public int EndY { get; private set; }
 
-    /// <summary>The height the text would take in a column of <paramref name="width"/> (lines times line height plus leading), without drawing anywhere visible.</summary>
-    // orig: wrapped-text-size root 0265:0654 draft (8 of 10 functions of its file match, this one does not): same layout, no output
-    // DIVERGENCE: measured by running the drawing layout on a scratch screen instead of a second copy of the loop; the C's copy has one difference: it does not track conditional passages (0x01 .. 0x13) and counts the bytes of a skipped option line differently, which the texts measured (hints, short messages) do not contain.
-    public int MeasureHeight(byte[] text, int width, int leading) => MeasureHeight(text, width, new Settings { Leading = leading });
-
-    /// <summary>The height of the text laid out with these settings (hidden option lines left out).</summary>
-    // DIVERGENCE: the C's second copy also breaks a word wider than the column in its own way, so for such a text its height is not the drawing
-    //   layout's (direct calls of root 0265:0654, batch 34: every height that differed outside conditional and option lines had a word wider than
-    //   the column); its callers measure texts whose words fit (the "???? ???? ????" of an away member in 0x1C pixels, the side window's hints). To be revisited with localisation: translated
-    //   texts (German compounds) can have words wider than a column; then write wrapped-text-size's own loop and check it with tools/oracle/text_calls.py.
-    public int MeasureHeight(byte[] text, int width, Settings settings)
+    /// <summary>
+    /// The end y of the text laid out from y 0 in a column of <paramref name="width"/>, as wrapped-text-size counts it (its own copy of
+    /// the layout loop, without drawing): the high word it returns plus one.
+    /// </summary>
+    /// <param name="text">The text buffer. Bytes past the array read as 0; a caller whose buffer holds bytes after the text's zero
+    /// (the pop-up box, <see cref="OptionPopupText"/>) passes them too, since the loop can read on past the zero.</param>
+    /// <param name="options">The option states the loop reads from its table (enabled[] at +0x2E); null for the callers that pass no
+    /// table (their texts hold no option marker), read as every line shown.</param>
+    // C: with no table (0) the original reads enabled[n] at DS:002E + n, the run-time library's copyright string (n = 0..18 non-zero, 19 zero;
+    //   hooked at root 0265:07C8); the callers that pass 0 (the away member's "???? ???? ????", the side window's hints) measure texts without
+    //   option markers, so it is never read in play. The test of the direct calls gives those bytes (TextLayoutCallsTests.NullTable).
+    // orig: wrapped-text-size root 0265:0654 draft (8 of 10 functions of its file match, this one does not), read from the asm
+    //   (0265:0654..084C) and written line by line; its four callers pass x 0 (unused), the window font's line height, stop 0, leading 0, icon 0
+    //   (root 0000:1AFE / 0000:1C68, R043+0x2972, R043+0x2B05)
+    // C: how it differs from text-paint-wrapped's loop (Draw): no conditional passages (0x01 and 0x13 are glyphs); the word break walks back
+    //   to the text's start, not the line's; no "only spaces left" end; a hidden option line (enabled[n] == 0) is skipped to its newline OR
+    //   its zero, and the cursor then steps past that zero: when the text ends inside a hidden option line, the loop reads on into the
+    //   bytes after the text's zero (the pop-up box: the 0x14 its builder cut off, one more line); an empty segment widens the column.
+    // C: checked by direct calls of the original (tools/oracle/text_calls.py, batch 34 jobs, 4,060 jobs): every height equal.
+    public int MeasureHeight(byte[] text, int width, int leading, IReadOnlyList<OptionState>? options = null)
     {
-        var scratch = new Canvas(new Platform.Screen());
-        Draw(scratch, text, 0, 0, width, settings);
-        return EndY;
+        byte At(int i) => i >= 0 && i < text.Length ? text[i] : (byte)0;
+        var spacing = painter.LineHeight;
+        var y = 0;
+        var indentPending = false;
+        var reset = true;
+        var more = true;
+        var option = 0;
+        var indentWidth = 0;
+        var cursor = 0;
+        var lineStart = 0;
+        var lineWidth = width;
+        while (more)
+        {
+            var count = 0;
+            var used = 0;
+            while (lineWidth > used)
+            {
+                var c = At(cursor);
+                if (c is 0 or (byte)'\n')
+                {
+                    break;
+                }
+                if (c == Paragraph)
+                {
+                    y += 2;
+                }
+                else if (c is PlainOption or ItemOption or SaintOption or BattleOption)
+                {
+                    var state = options is not null && option < options.Count ? options[option] : OptionState.Enabled;
+                    if (state == OptionState.Hidden)
+                    {
+                        while (At(cursor) != '\n' && At(cursor) != 0)
+                        {
+                            cursor++;
+                        }
+                        lineStart = cursor + 1;
+                        count = -1;
+                    }
+                    option++;
+                }
+                else if (c == Indent)
+                {
+                    indentWidth = (byte)painter.Measure(Raw(text, lineStart, count));
+                    reset = false;
+                    indentPending = true;
+                }
+                else if (c != 0x0D)
+                {
+                    used += painter.Advance(c);
+                }
+                count++;
+                cursor++;
+            }
+
+            if (At(cursor) == '\n')
+            {
+                reset = true;
+            }
+            if (lineWidth <= used)
+            {
+                cursor--;
+                count--;
+            }
+            while (At(cursor) is not (byte)' ' and not 0 and not (byte)'\n' and not (byte)'-' && cursor > 0)
+            {
+                count--;
+                cursor--;
+            }
+            if (At(cursor) == '-')
+            {
+                count++;
+            }
+            if (At(cursor) == 0)
+            {
+                more = false;
+            }
+            if (count > 0)
+            {
+                y += leading + spacing;
+            }
+            else
+            {
+                width++;   // as Draw: an empty segment widens the column by a pixel
+            }
+
+            cursor++;
+            lineStart = cursor;
+            if (indentPending)
+            {
+                lineWidth = width - indentWidth;
+                indentPending = false;
+            }
+            if (reset)
+            {
+                lineWidth = width;
+            }
+        }
+        return y;
     }
 
     // C: the width of the part of the line before the 0x1D marker is text-width-px of a copy of the raw bytes, control codes included (their glyph-width is whatever the driver gives them, TextPainter.Advance: the font's own widths for the codes it holds). Checked against the original by direct calls (tools/oracle/text_calls.py, batch 34): with font 0 (slot 1), whose table starts at code 0, leaving the codes out moved the indented lines of 26 texts.

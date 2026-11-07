@@ -436,7 +436,10 @@ public sealed partial class CardScreen
         text.States.CopyTo(c.MenuBoxStates, 0);
         var layout = new CardTextLayout(ui.Text);
         var w = text.Width;
-        var hi = layout.MeasureHeight(text.Text, w, new CardTextLayout.Settings { Options = text.States, Leading = 0 }) - 1 + 6;
+        // C: measured on text-bank-buffer with the bytes after its zero: when the last listed member's last slot is empty (a hidden line at
+        //   the text's end) wrapped-text-size reads on into the 0x14 the builder cut off and counts one more line, so the box is one line
+        //   taller than its text (card 0x129, Hanse's one saint: y 103..112 empty in the original; vis10 visuals-fortress-saint)
+        var hi = layout.MeasureHeight(text.Buffer, w, 0, text.States) - 1 + 6;
         var y = line.Y + hi <= BoxBottom ? line.Y : BoxBottom - hi;
         var x = main.X - WindowX + main.Width;
         if (x + w > BoxRight)

@@ -1,0 +1,15 @@
+# vis10 visuals: the saint pop-up box of card 0x129 (Templar graveyard; DKSAVE2 of bug-sabbath-jan0, 483.07, place 188, saved at the card): only
+# the last member (Hanse) knows the card's saint; the text page is clicked away, then the pointer goes onto the line "call upon a saint": its box opens, one line and 2 px taller than its text
+key:t
+wait:5
+key:l
+wait:300
+shot:idle
+option:2
+wait:300
+click:100,97
+wait:300
+shot:shown
+move:100,88
+wait:300
+shot:box

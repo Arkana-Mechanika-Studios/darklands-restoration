@@ -14,9 +14,14 @@ namespace Darklands.Presentation;
 /// <param name="Text">The box text with its control codes (option markers 0x15, colour codes 0x80..0x8F, paragraph 0x14).</param>
 /// <param name="States">The 20 option states: hidden, enabled, or shown greyed (not choosable).</param>
 /// <param name="Width">The box width: the widest line plus 6.</param>
+/// <param name="Tail">What text-bank-buffer holds after the text's zero: the last byte the builder cut off, then its zero (empty for an
+/// empty text). wrapped-text-size can read it (<see cref="CardTextLayout.MeasureHeight"/>).</param>
 // orig: R043+0x2CE2 (150B:2252) draft (bytes match; compiled without global optimisation); tests: OptionPopupTests
-public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Width)
+public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Width, byte[] Tail)
 {
+    /// <summary>The text with its zero and <see cref="Tail"/>: text-bank-buffer as the box's size and drawing read it.</summary>
+    public byte[] Buffer => [.. Text, 0, .. Tail];
+
     /// <summary>Five members times four slots.</summary>
     public const int Lines = 20;
 
@@ -112,12 +117,15 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
                 text.AddRange(lines);
             }
         }
+        byte[] tail = [];
         if (text.Count > 0)
         {
-            // C: text-bank-buffer[strlen(text-bank-buffer) - 2] = 0
+            // C: text-bank-buffer[strlen(text-bank-buffer) - 2] = 0: the last byte (0x14 after a member's lines, else the newline of the last
+            //   empty slot) and the string's own zero stay behind the new end
+            tail = text.Count >= 2 ? [text[^1], 0] : [];
             text.RemoveRange(Math.Max(0, text.Count - 2), Math.Min(2, text.Count));
         }
-        return new OptionPopupText([.. text], states, widest + 6);
+        return new OptionPopupText([.. text], states, widest + 6, tail);
     }
 
     private static List<byte> Append(List<byte> line, byte color)
