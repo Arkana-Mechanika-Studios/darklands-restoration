@@ -576,7 +576,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-8d31a1** `bug`, flag `FixNewEventAddDoubles` - `src/Darklands.Core/Events/EventLog.cs:221` `EventLog.Update`  
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
-- **B-d8f504** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:270` `EventLog.Next`  
+- **B-d8f504** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:276` `EventLog.Next`  
   original: `R029+0x324C` (0E76:324C, draft)  
   why: asking for kind 0x1C (location facts) also returns the kind 8 events (R029+0x3279..0x3281: `cmp cx,0x1c`, `cmp ax,8`): every fact scan (place-flag, place-flag-value and the like) sees the quests. A city's politics quest (type 0, value = the city's number) answers "fact 0" of that city, which should be the leaning.
 

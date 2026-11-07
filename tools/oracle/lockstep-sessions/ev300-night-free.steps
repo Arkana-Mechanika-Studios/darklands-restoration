@@ -1,0 +1,26 @@
+# Lockstep session (round evtable): the control of ev300-night with quest 7's fact 5 taken out and free slots (synth_saves.py q7nightfree): six walks
+# (N / S); the night arm's event-advance finds no fact and makes it in a free slot (R029+0x2F23 taken): the new fact holds the value before the
+# add (B-8d31a1, FixNewEventAddDoubles; the oracle plays Faithful), so the count is 2 and the card 0xA8.
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+click:190,30
+wait:800
+state:w1
+click:190,190
+wait:800
+state:w2
+click:190,30
+wait:800
+state:w3
+click:190,190
+wait:800
+state:w4
+click:190,30
+wait:800
+state:w5
+click:190,190
+wait:800
+state:w6

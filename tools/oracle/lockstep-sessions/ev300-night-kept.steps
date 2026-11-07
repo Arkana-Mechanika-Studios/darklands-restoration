@@ -1,0 +1,26 @@
+# Lockstep session (round evtable): the control of ev300-night with quest 7's fact 5 kept (synth_saves.py q7nightkept, full table): the same walks;
+# event-advance finds the fact in place on the full table (R029+0x2F05 / 0x2F0E not taken: the scan stops at it), the count goes 4 -> 5 and the
+# card is 0x41.
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+click:80,40
+wait:800
+state:w1
+click:300,190
+wait:800
+state:w2
+click:80,40
+wait:800
+state:w3
+click:300,190
+wait:800
+state:w4
+click:80,40
+wait:800
+state:w5
+click:300,190
+wait:800
+state:w6

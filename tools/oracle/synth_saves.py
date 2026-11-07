@@ -11,6 +11,7 @@ variants:
   away<card>  (24, 7b, a0, 16, 7a, a5) member 4 Away, members 0..3 at endurance 1, the game saved at card <card> (0x24 Footpads, 0x7B RebelMobInTheStreets, 0xA0 WolfPackOnTheTrail, 0x16 MarketAtNight ...): see local/batch/res5
   dup<a><b>  party slot <b> names the record of slot <a> (party id word +0xF3 + 2b = that of slot a): two slots naming one record
   ev300   the event table full: the game's events and fillers (a place fact of type 0x7F at place 413) up to the 300 slots (full_events)
+  q7night, q7nightfree, q7nightkept  DKSAVE99 at 22h for quest 7's night travel: its fact 5 dropped and the table full / dropped only / kept and full (night_hunt)
   month<N>[d<D>]  the date moved to month N (and day D): the seasons of the travel map
   pos<column>x<row>  the party moved to map cell (column, row) (header words +0x7E / +0x80); the .BSV beside the source is copied: the starts of the travel map's edge and paging walks
   out3    member 3 unconscious (status 2), a member within the party size who is not able
@@ -297,7 +298,53 @@ BATTLE_LEVELS = {"king": battle_level(3, [(1040, 140), (1008, 140), (1072, 140),
                  "stonebox": battle_level(6, [(976, 312), (944, 296), (944, 328), (944, 312)], (6,))}
 
 
-VARIANTS = {"dragonev": dragon_events, "ev300": full_events, "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "sea": sea, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
+def drop_fact(b: bytearray, tag: int, typ: int) -> None:
+    """the place facts (kind 0x1C) of <tag> and <type> taken out of the event table (the other events keep their order)."""
+    at = 0xEF + 4 + 10 + 20 + 5 * 0x18 + struct.unpack_from("<H", b, 0xF1)[0] * CHAR
+    events = struct.unpack_from("<H", b, at)[0]
+    first = at + 2
+    records = [bytes(b[first + i * 0x30:first + (i + 1) * 0x30]) for i in range(events)]
+    kept = [r for r in records if not (struct.unpack_from("<h", r, 0x22)[0] == 0x1C and struct.unpack_from("<h", r, 0x28)[0] == tag
+                                       and struct.unpack_from("<h", r, 0x00)[0] == typ)]
+    b[:] = bytearray(b[:at]) + struct.pack("<H", len(kept)) + b"".join(kept) + b[first + events * 0x30:]
+
+
+def drop_ending_soon(b: bytearray, days: int) -> None:
+    """the events that end within <days> days of the saved date taken out (header +0x68 year, +0x6A month, +0x6C day; an event's end words +0x12
+    hour, day, month, year): the expiry pass would free their slots during the session's walk (a day of travel), so the full table would not stay full.
+    The day is compared within the month (no month's end in reach of the saves this is used on)."""
+    year, month, day = struct.unpack_from("<3H", b, 0x68)
+    at = 0xEF + 4 + 10 + 20 + 5 * 0x18 + struct.unpack_from("<H", b, 0xF1)[0] * CHAR
+    events = struct.unpack_from("<H", b, at)[0]
+    first = at + 2
+    records = [bytes(b[first + i * 0x30:first + (i + 1) * 0x30]) for i in range(events)]
+    limit = (year, month, day + days)
+
+    def end(r):
+        hour, d, m, y = struct.unpack_from("<4H", r, 0x12)
+        return (y, m, d)
+    kept = [r for r in records if end(r) >= limit]
+    b[:] = bytearray(b[:at]) + struct.pack("<H", len(kept)) + b"".join(kept) + b[first + events * 0x30:]
+
+
+def night_hunt(drop: bool, full: bool):
+    """quest 7's night travel (R030+0x02C0: at night, roll-below(3) == 0 and quest 7 open -> event-advance(-2, -1, 0x1C, 5, 1, 7, 1)) on DKSAVE99
+    (quest 7 open, its fact 5 = 4 nights): the hour moved to 22 (header +0x6E: night is before 5 and from 19, daylight-test R029+0x563A), with quest 7's fact 5
+    taken out (drop: the advance finds no fact) and the table filled to 300 (full: no free slot either, so event-advance returns -1 by
+    R029+0x2F05 / 0x2F0E / 0x2F23 / 0x2F25; with the fact kept it is found and changed in place; neither: a new fact is made). The events
+    ending within three days are taken out first (two of DKSAVE99's end on 11 March and would free their slots on the walk)."""
+    def edit(b: bytearray) -> None:
+        struct.pack_into("<h", b, 0x6E, 22)
+        drop_ending_soon(b, 3)
+        if drop:
+            drop_fact(b, 7, 5)
+        if full:
+            full_events(b)
+    return edit
+
+
+VARIANTS = {"dragonev": dragon_events, "ev300": full_events, "q7night": night_hunt(True, True), "q7nightfree": night_hunt(True, False),
+            "q7nightkept": night_hunt(False, True), "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "sea": sea, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
             "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}
 
