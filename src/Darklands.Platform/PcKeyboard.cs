@@ -46,6 +46,32 @@ public sealed class PcKeyboard(KeyTypematic? typematic = null)
         }
     }
 
+    /// <summary>
+    /// Ctrl-Break (Ctrl+Pause): the BIOS empties its buffer (the game finds the key word 0000h there, GameUi) and runs INT 1Bh;
+    /// <see cref="TakeCtrlBreak"/> reports it once. The repeats of the key held before it stop, as a new key's press stops them.
+    /// </summary>
+    // orig: the BIOS keyboard interrupt for E0 46 with Ctrl held (after the game's handler root 044A:020E, which keeps no byte for scan 0x46)
+    public void CtrlBreak()
+    {
+        _typematic.Stop();
+        _keys.ScanCode();
+        _keys.Clear();
+        _breaks++;
+    }
+
+    private int _breaks;
+
+    /// <summary>True once for each <see cref="CtrlBreak"/> not reported yet.</summary>
+    public bool TakeCtrlBreak()
+    {
+        if (_breaks == 0)
+        {
+            return false;
+        }
+        _breaks--;
+        return true;
+    }
+
     /// <summary>Stops the repeating whatever the key (the developer console took the keyboard).</summary>
     public void StopRepeating() => _typematic.Stop();
 

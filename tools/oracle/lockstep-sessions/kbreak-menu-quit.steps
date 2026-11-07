@@ -1,0 +1,23 @@
+# Lockstep session (ctrlbreak: Ctrl-Break in card-choice-menu, ctrl_break.py): DKSAVE0 to the Pressburg inn's menu, then X pressed and
+# Ctrl-Break between the menu's look that finds it (R043+0x1C67) and its read (0x1C70): the read takes 0000h, a key the menu does not use, and
+# quit-check (root 0000:1338 at R043+0x1DEB) ends the program
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:30
+key:enter
+wait:200
+state:menu
+kbreak:0:x
+wait:100
+option:0
+wait:30

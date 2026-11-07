@@ -1,0 +1,12 @@
+# Lockstep session (ctrlbreak: Ctrl-Break in press-to-continue, ctrl_break.py): DKSAVE0 (the Pressburg inn's text). Ctrl-Break: the BIOS
+# stores 0000h and the game's INT 1Bh handler (root 044A:013F) sets DS:07F4; press-to-continue's key test (R043+0x3319) sees no key and
+# quit-check (root 0000:1338, R043+0x3343) ends the program: the shutdown (root 0000:1354, text mode) and exit(0)
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+kbreak:0
+wait:100
+key:enter
+wait:30

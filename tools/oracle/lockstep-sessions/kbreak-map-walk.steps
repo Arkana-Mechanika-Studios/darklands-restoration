@@ -1,0 +1,16 @@
+# Lockstep session (ctrlbreak: R030+0x0C44 with key 0, R030+0x12E7 taken; ctrl_break.py): DKSAVE17 on the map. Right twice in one pass (a
+# step east: DS:8676 = 3), then in the next pass X is pressed and Ctrl-Break comes between the map's look that finds X (R030+0x0540) and its
+# read (0x0566): the BIOS empties the buffer and stores 0000h, the read takes it, so 0c44 gets key 0: the default case steps again in place
+# (DS:8676 is still 3: R030+0x10AB) and leaves the marker's frame (0x12E7 taken). DS:07F4 stays set (no card to check it); a walk after it
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+tkey:0:right,right
+kbreak:0:x
+wait:100
+state:after-break
+click:150,110
+wait:600
+state:walked

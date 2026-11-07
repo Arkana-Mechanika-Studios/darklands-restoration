@@ -418,11 +418,22 @@ public sealed class GameUi
     public bool TryReadKey(out int key) => ReadHostKey(out key);
 
     /// <summary>True when a key is waiting (it stays waiting: the next read takes it).</summary>
-    // orig: root 047C:073D() (root): looks at the BIOS buffer without taking the key
+    // orig: root 047C:073D() (root): looks at the BIOS buffer without taking the key (misc.exe slot 90: `mov ah, 1; int 16h; je none;
+    //   retf` with AX the key word, `sub ax, ax` when none): the word 0000h a Ctrl-Break leaves at the buffer's head reads as no key, and
+    //   so does every key typed behind it until a read takes it
     public bool KeyWaiting
     {
         get
         {
+            if (_peeked == 0)
+            {
+                // C: a Ctrl-Break that comes while a key is looked at is taken at the read (TakeKey): the read gets 0000h
+                TakeCtrlBreak();
+            }
+            if (_breakWaiting)
+            {
+                return false;
+            }
             if (_peeked == 0 && _host.Input.TryReadKey(out var key))
             {
                 _peeked = key;
@@ -432,14 +443,15 @@ public sealed class GameUi
     }
 
     /// <summary>Takes the next key, waiting for one when none is waiting (no hot keys, no menu bar): the screen stays as it is meanwhile.</summary>
-    // orig: root 047C:0744 (graphics driver slot 91, misc.exe +0x49: `sub ah, ah; int 16h; retf`, the BIOS read that waits for a key)
+    // orig: root 047C:0744 (graphics driver slot 91, misc.exe +0x49: `sub ah, ah; int 16h; retf`, the BIOS read that waits for a key);
+    //   it takes the word 0000h of a Ctrl-Break at once (0 here)
     public int ReadKey()
     {
         int key;
-        while (!ReadHostKey(out key))
+        while (!TakeKey(out key))
         {
             Present();
-            if (ReadHostKey(out key))
+            if (TakeKey(out key))
             {
                 break;
             }
@@ -454,15 +466,108 @@ public sealed class GameUi
     /// <summary>The key looked at by <see cref="KeyWaiting"/> (0: none).</summary>
     private int _peeked;
 
-    private bool ReadHostKey(out int key)
+    /// <summary>The word 0000h the BIOS put into its emptied buffer at a Ctrl-Break, not read yet: it stands before every key typed after it.</summary>
+    private bool _breakWaiting;
+
+    /// <summary>A read took that word since the last <see cref="Poll"/> began (<see cref="TakeBreakKeyRead"/>).</summary>
+    private bool _breakRead;
+
+    /// <summary>
+    /// DS:07F4: Ctrl-Break was pressed (the game's INT 1Bh handler sets it); <see cref="QuitCheck"/> ends the program while it is set.
+    /// Nothing clears it.
+    /// </summary>
+    // orig: root 044A:0100 (R000+0x0086 at start-up) puts the INT 1Bh vector to root 044A:013F: `push ds; push ax; ds = DGROUP; DS:07F4 = 0xFF;
+    //   pop ax; pop ds; iret` (the vector is put back by the shutdown, root 044A:0122)
+    public bool CtrlBreakPressed { get; private set; }
+
+    /// <summary>True (once) when a read since the last <see cref="Poll"/> began took the word 0000h of a Ctrl-Break: the screen's key 0.</summary>
+    // C: a loop's `if (key-waiting-test()) key = read-key();` gets key 0 when the Ctrl-Break comes between its look and its read (the
+    //   look found a key, the BIOS emptied the buffer, the read takes 0000h); Poll and the loops that test first then see no key, and
+    //   the screens that act on key 0 (the map: R030+0x0C44 with key 0) ask here
+    public bool TakeBreakKeyRead()
     {
+        var read = _breakRead;
+        _breakRead = false;
+        return read;
+    }
+
+    /// <summary>The host's Ctrl-Break, at a look or a read of the keyboard: the keys waiting are gone and the word 0000h waits; DS:07F4 is set.</summary>
+    // orig: the BIOS keyboard interrupt on Ctrl-Break (E0 46, Ctrl held): the buffer emptied (head = tail), 0040:0071 bit 7, INT 1Bh (the
+    //   game's handler: DS:07F4 = 0xFF) and the word 0000h stored. The game's own INT 9 handler (root 044A:020E), run first, keeps no
+    //   byte for the key (scan 0x46 has 0 in DS:088A's table)
+    private void TakeCtrlBreak()
+    {
+        if (_host.Input.TakeCtrlBreak())
+        {
+            _peeked = 0;
+            _breakWaiting = true;
+            CtrlBreakPressed = true;
+        }
+    }
+
+    /// <summary>The program ends when Ctrl-Break has been pressed (the card engine's loops ask after each pass or key).</summary>
+    // orig: quit-check root 0000:1338: `if (DS:07F4) { 1354(); 044A:0122(); exit(0); }`, called only by press-to-continue (R043+0x3343,
+    //   every pass) and card-choice-menu (R043+0x1DEB, after a key it does not leave on). root 0000:1354: 044A:0122 (the INT 1Bh vector
+    //   back), the mouse driver reset when present (047C:123F), the graphics driver's end (047C:00A9), int 10h AX = 3 (the text screen,
+    //   cleared); then exit(0) (root 06A1:01D7). Unlike exit-to-system (root 0000:13A0) it neither puts the INT 9 vector back (044A:01F4)
+    //   nor stops the sound (047C:0791), frees no EMS (05F8:0139) and puts back no dk.tmp.
+    // DIVERGENCE: what the original leaves in the machine after this exit (the INT 8 / INT 9 vectors into the freed program, the EMS pages
+    //   not freed, DGROUP's first 0x42 bytes not put back for exit's null-pointer check root 06A1:02E6) is the DOS machine's; here the
+    //   program just ends. A Ctrl-Break before root 044A:0100 installs the handler (R000+0x0086, the start-up's first moments) is DOS's
+    //   (its INT 23h ends the program at the next DOS call that checks); a host's Ctrl-Break reaches the game at its first look. The game
+    //   sets no INT 23h (the C run-time's signal root 06A1:2A2E and raise 06A1:2917 have no caller), and what DOS's console driver makes of
+    //   the 0000h word when the game reads the console through DOS (the load question's kbhit / getch, root 06A1:1C0A / 1C30) is DOS's.
+    public void QuitCheck()
+    {
+        TakeCtrlBreak();
+        if (CtrlBreakPressed)
+        {
+            throw new ProgramExitException("", 0);
+        }
+    }
+
+    /// <summary>The next word of the keyboard buffer, without waiting (INT 16h function 0 when one is there): the 0000h of a Ctrl-Break first.</summary>
+    private bool TakeKey(out int key)
+    {
+        TakeCtrlBreak();
+        if (_breakWaiting)
+        {
+            _breakWaiting = false;
+            _breakRead = true;
+            key = Keys.None;
+            return true;
+        }
         if (_peeked != 0)
         {
             key = _peeked;
             _peeked = 0;
             return true;
         }
-        return _host.Input.TryReadKey(out key);
+        if (!_host.Input.TryReadKey(out key))
+        {
+            return false;
+        }
+        // C: a Ctrl-Break just before the read (a scripted host's kbreak on this key): the key is gone, the read takes 0000h
+        TakeCtrlBreak();
+        if (_breakWaiting)
+        {
+            _breakWaiting = false;
+            _breakRead = true;
+            key = Keys.None;
+        }
+        return true;
+    }
+
+    /// <summary>`if (key-waiting-test()) key = read-key();`: the key, or false when none is waiting (or the read took a Ctrl-Break's 0000h).</summary>
+    private bool ReadHostKey(out int key)
+    {
+        if (!KeyWaiting)
+        {
+            key = Keys.None;
+            return false;
+        }
+        TakeKey(out key);
+        return key != Keys.None;
     }
 
     /// <summary>Optional folder where F12 saves screenshots.</summary>
@@ -547,6 +652,7 @@ public sealed class GameUi
     {
         ReleaseScreen();
         Present();
+        _breakRead = false;
         // C: a waiting command stands for the player's key or click of this pass (docs/COMMANDS.md); the host's input waits for the next pass
         var commanded = Commands.Count > 0;
         var key = Keys.None;

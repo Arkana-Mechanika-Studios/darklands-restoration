@@ -506,18 +506,26 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         {
             while (true)
             {
-                // orig: press-to-continue: any other key goes to card-hotkeys (F1..F6, Ctrl-F1..F5)
-                var action = ui.WaitForActionWithSheetKeys();
+                // orig: press-to-continue: any other key goes to card-hotkeys (F1..F6, Ctrl-F1..F5); quit-check root 0000:1338 ends every pass
+                //   that goes on (R043+0x3343: after the key test, a key read or not), so a Ctrl-Break ends the program here
+                PlayerAction? next;
+                while ((next = ui.PollWithSheetKeys()) is null)
+                {
+                    ui.QuitCheck();
+                    ui.Idle();
+                }
+                var action = next.Value;
                 switch (Commands.CardIntent.Of(action, WindowX, numberKeys: false))
                 {
                     case Commands.Confirm:
                         return;
                     case Commands.PressOnPortraits press when OpenSheetAt(press.Y, refresh: true):
-                        continue;
+                        break;
                     case Commands.PressOnPortraits or Commands.PressAt:
                         ui.WaitForButtonRelease();
                         return;
                 }
+                ui.QuitCheck();
             }
         }
         finally

@@ -238,6 +238,12 @@ public sealed partial class CardScreen
                 var action = ui.PollWithSheetKeys();
                 if (action is not { } a)
                 {
+                    // orig: R043+0x1C67..0x1C70: a read that took a Ctrl-Break's 0000h (between the look and the read) is a key the menu
+                    //   does not use: quit-check (R043+0x1DEB)
+                    if (ui.TakeBreakKeyRead())
+                    {
+                        ui.QuitCheck();
+                    }
                     ui.Idle();
                     continue;
                 }
@@ -299,7 +305,7 @@ public sealed partial class CardScreen
                         var to = move.Step > 0 ? (from + 1) % n : from <= 0 ? n - 1 : from - 1;
                         var line = current.Lines[to];
                         ui.Commands.PutFirst(new PointAt(current.X + 1, line.Y + 2));
-                        continue;
+                        break;
                     }
                     case MoveHighlight move when over:
                     {
@@ -320,7 +326,7 @@ public sealed partial class CardScreen
                         ui.MovePointer(to.Item1, to.Item2);
                         lastMouse = (ui.Mouse.X, ui.Mouse.Y);
                         warped = lastMouse == to ? null : to;
-                        continue;
+                        break;
                     }
                     // orig: R043+0x1C77..0x1D46 compare the key with 0x1C0D, 0x3920, 0x1000, 0x4800 and 0x5000 only (R043+0x33C6 takes the F keys):
                     // a digit is dropped there; the convenience below (GameUi.KeyboardCardMenus) drops it too and chooses the line as the mouse
@@ -328,7 +334,13 @@ public sealed partial class CardScreen
                     //   saint line that opens the box and chooses nothing; while a box is up the digits name the box's lines.
                     case ChooseByNumber number:
                         ui.Commands.PutFirst(new ChooseLine(number.Index));
-                        continue;
+                        break;
+                }
+                // orig: R043+0x1DEB: quit-check root 0000:1338 after every key the menu does not leave on (a Ctrl-Break ends the program
+                //   here); a click goes back to the loop's head without it
+                if (a.Click == MouseButtons.None)
+                {
+                    ui.QuitCheck();
                 }
             }
         }
@@ -367,6 +379,10 @@ public sealed partial class CardScreen
                 var action = ui.PollWithSheetKeys();
                 if (action is not { } a)
                 {
+                    if (ui.TakeBreakKeyRead())
+                    {
+                        ui.QuitCheck();
+                    }
                     ui.Idle();
                     continue;
                 }
@@ -374,6 +390,11 @@ public sealed partial class CardScreen
                 {
                     Redraw();
                     areas = relaid();
+                }
+                // orig: R043+0x1DEB: quit-check after a key (as in Choose)
+                if (a.Click == MouseButtons.None)
+                {
+                    ui.QuitCheck();
                 }
             }
         }

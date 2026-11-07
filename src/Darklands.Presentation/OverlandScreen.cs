@@ -137,6 +137,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             // orig: R030+0x0C44's F1..F5 / Ctrl-F1..F5 cases (HotKeys, with GameUi.SheetKeys)
             var action = ui.PollWithSheetKeys();
             var key = action?.Key ?? Keys.None;
+            // C: a read took the word 0000h of a Ctrl-Break (the look found a key, the BIOS emptied the buffer before the read): key 0 for 0c44
+            var keyRead = key != Keys.None || ui.TakeBreakKeyRead();
             // orig: R030+0x0540..0x066A: `if (key-waiting-test() || DS:0880 || DS:0881 || DS:0882) { key = read-key(); if (key-waiting-test()) key =
             //   read-key(); else key = the held key's (HeldKey, or the key read); DS:0880 = DS:0881 = DS:0882 = 0; }`: a second waiting key is
             //   taken in the same pass and replaces the first, so the two presses a held key leaves in the buffer (BiosKeyBuffer) make one step,
@@ -145,11 +147,14 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             //   AH=0); the held key then replaces it: the ` and \ keys and the keypad's - and + (DS:088A) walk as Up, Left, Down and Right
             //   do, and any key read while Enter is held is Enter
             var held = ui.Directions;
-            if (key != Keys.None || held.X != 0 || held.Y != 0 || held.Enter)
+            if (keyRead || held.X != 0 || held.Y != 0 || held.Enter)
             {
-                if (key == Keys.None)
+                if (!keyRead)
                 {
+                    // C: with only the 0000h of a Ctrl-Break waiting (key-waiting-test gives 0) and a key held, read-key takes that word: key 0,
+                    //   which the held key then replaces
                     key = ui.ReadKey();
+                    keyRead = true;
                 }
                 key = ui.TryReadKey(out var second) ? second : HeldKey(held.X, held.Y, held.Enter) ?? key;
                 held.ClearForTheMap();
@@ -181,11 +186,13 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             //   previous pass, the one the last walk stepped from.
             var (cellColumn, cellRow) = WorldMap.CellAt(_x, _y);
             state.MapPosition = new Core.World.MapPosition(cellColumn, cellRow);
-            var (dx, dy) = key != Keys.None ? DirectionOf(key) : TowardTarget(target);
-            if (key != Keys.None)
+            var (dx, dy) = keyRead ? DirectionOf(key) : TowardTarget(target);
+            var ownCase = false;
+            if (keyRead)
             {
-                // C: a key (or the joystick) overrides the mouse: mxe = 0
+                // C: a key (or the joystick) overrides the mouse: mxe = 0 (R030+0x0561, as soon as the pass reads, key 0 too)
                 target = null;
+                ownCase = true;
                 if (IsRestKey(key))
                 {
                     // orig: case 0x1e41 / 0x1e61 / 0x4100 of 0c44
@@ -209,9 +216,43 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             }
             if (dx == 0 && dy == 0)
             {
-                // C: key 0x4c35 (idle) runs 0c44 with DS:8676 = 0: no step, the standing marker; the frame counter still counts (`if (key) DS:2910++`)
-                _direction = 0;
-                _frame = (_frame + 1) % 8;
+                if (ownCase && key != Keys.Center && Memory.StepDirection != 0)
+                {
+                    // orig: R030+0x10AB..0x10DC after every case but the direction keys and 0x4C35 (the default 0x109E: key 0, letters, Enter, Esc;
+                    //   Alt-Q after "no"; the rest's and the camp's end): `if (DS:8676) { kf = 1300(DS:2866, DS:2868); if (kf >= 0) { DS:8676 = 0;
+                    //   return kf; } }`: a step in place in the last pass's direction (its time and roll); then the scroll block, the marker
+                    //   drawn with DS:8676, and `if (key) DS:2910++` (R030+0x12E5: key 0, the Ctrl-Break's, leaves the frame)
+                    // C: lockstep sessions kbreak-map-walk (key 0 after a walk: 12E7 taken) and tk-map-walk-key (a letter after a walk)
+                    _direction = Memory.StepDirection;
+                    var inPlace = travel.Step(_x, _y);
+                    Trace?.Invoke($"step in place d={Memory.StepDirection} -> {inPlace.Outcome}");
+                    if (inPlace.Outcome != StepOutcome.Walked)
+                    {
+                        Memory.StepDirection = 0;
+                        target = null;
+                        if (inPlace is { Outcome: StepOutcome.Arrived or StepOutcome.Encounter, Card: > 0 })
+                        {
+                            return inPlace.Card;
+                        }
+                    }
+                    else if (key != Keys.None)
+                    {
+                        _frame = (_frame + 1) % 8;
+                    }
+                    ui.DelayClock(StepClock);
+                    continue;
+                }
+                // C: key 0x4c35 (idle, also the mouse ladder's) runs 0c44 with DS:8676 = 0: no step, the standing marker; the frame counter
+                //   still counts (`if (key) DS:2910++`), but not for key 0 (R030+0x12E7 taken)
+                if (!ownCase || key == Keys.Center)
+                {
+                    Memory.StepDirection = 0;
+                }
+                _direction = Memory.StepDirection;
+                if (key != Keys.None || !ownCase)
+                {
+                    _frame = (_frame + 1) % 8;
+                }
                 ui.DelayClock(StepClock);
                 continue;
             }
@@ -393,6 +434,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         _direction = DirectionNumber(dx, dy);
         _frame = (_frame + 1) % 8;
         var result = travel.Step(x, y);
+        // orig: DS:8676 = the case's direction, put back to 0 by a step that did not walk on (R030+0x10D6)
+        Memory.StepDirection = result.Outcome == StepOutcome.Walked ? _direction : 0;
         Trace?.Invoke($"step d={dx},{dy} view {x - _originX},{y - _originY} col {_viewColumn} top {_viewTop} rows {_viewRows} cell {state.MapPosition.X},{state.MapPosition.Y} -> {result.Outcome}");
         // orig: for a result of 0 or more (blocked, arrived, an encounter) 0c44 puts the marker back and returns before the scroll block; only a
         //   plain walk (-1) keeps the new position (the cell the party stands on is OverlandTravel.Step's)

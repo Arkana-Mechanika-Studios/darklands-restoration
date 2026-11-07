@@ -75,7 +75,9 @@ public sealed class StartUp(GameUi ui, GameFiles files, IReadOnlyList<string> co
         {
             return null;
         }
-        // orig: root 044A:0100 asm: int 1Bh (Ctrl-Break) to the game's handler. DIVERGENCE: no Ctrl-Break here.
+        // orig: root 044A:0100 asm: int 1Bh (Ctrl-Break) to the game's handler root 044A:013F (DS:07F4 = 0xFF): GameUi.CtrlBreakPressed (a
+        //   Ctrl-Break before it, DOS's, is GameUi.QuitCheck's divergence)
+        // C: GameUi.QuitCheck (quit-check root 0000:1338); lockstep sessions kbreak-card-quit, kbreak-menu-quit
         return GameStart(config.Driver) ? new StartUpResult(config.NoAnimations, config.Driver) : null;
     }
 
