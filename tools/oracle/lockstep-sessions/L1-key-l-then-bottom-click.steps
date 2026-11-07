@@ -1,0 +1,25 @@
+# Travel map from DKSAVE17: the load dialog's key L on the map, a click on the map, a held direction key with one buffered key, a click on the bottom row (rebuilt from the recorded run of batch 22; the waits after the clicks are those of the generated travel sessions)
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+state:map
+key:l
+wait:60
+wait:200
+state:a
+click:127,133
+wait:2000
+state:b
+kdown:48
+wait:5
+key:x
+wait:60
+wait:60
+kup:48
+wait:5
+state:c
+click:105,174
+wait:2000
+state:end

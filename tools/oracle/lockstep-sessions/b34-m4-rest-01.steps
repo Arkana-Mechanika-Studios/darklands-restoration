@@ -1,0 +1,21 @@
+# batch 34 round m4: rest on the map (A), ended by a key, then by the left button held (R030+0x0F65 / 0x0FCC)
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:A
+wait:3000
+key:space
+wait:200
+state:rest-key
+key:a
+wait:3000
+click:200,100
+wait:100
+state:rest-button
+key:f7
+wait:300
+key:enter
+wait:200
+state:rest-f7

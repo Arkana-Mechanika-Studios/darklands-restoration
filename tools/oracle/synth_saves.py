@@ -12,6 +12,7 @@ variants:
   dup<a><b>  party slot <b> names the record of slot <a> (party id word +0xF3 + 2b = that of slot a): two slots naming one record
   ev300   the event table full: the game's events and fillers (a place fact of type 0x7F at place 413) up to the 300 slots (full_events)
   month<N>[d<D>]  the date moved to month N (and day D): the seasons of the travel map
+  pos<column>x<row>  the party moved to map cell (column, row) (header words +0x7E / +0x80); the .BSV beside the source is copied: the starts of the travel map's edge and paging walks
   out3    member 3 unconscious (status 2), a member within the party size who is not able
   sea     the party moved onto the open sea at map cell (72, 200): column 72 is deep water (ocean) from row 201 up to the map's top, so a walk
           north meets no encounter roll (a step onto deep water ends before it) and pages the map's row buffer backwards with its top
@@ -321,6 +322,15 @@ def main() -> None:
             if day is not None:
                 struct.pack_into("<H", b, 0x6C, day)
         VARIANTS[variant] = moved
+    if variant not in VARIANTS and variant.startswith("pos"):
+        # pos<column>x<row>: the party's map cell moved (header words +0x7E / +0x80, OriginalSaves.MapXAt / MapYAt): the starts of the travel map's
+        # edge and paging walks (batch 33 clamp, batch 34 m4..m6, batch 35 d). The battle file beside the source is copied beside the target.
+        column, _, row = variant[3:].partition("x")
+        VARIANTS[variant] = lambda b, c=int(column), r=int(row): struct.pack_into("<HH", b, 0x7E, c, r)
+        source_bsv = Path(source).with_suffix(".BSV")
+        if source_bsv.exists():
+            Path(target).parent.mkdir(parents=True, exist_ok=True)
+            Path(target).with_suffix(".BSV").write_bytes(source_bsv.read_bytes())
     if variant in BATTLE_LEVELS:
         # a game saved in a battle: the .BSV beside the source is edited too and written beside the target
         bsv = bytearray(Path(source).with_suffix(".BSV").read_bytes())
