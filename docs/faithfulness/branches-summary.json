@@ -1,10 +1,10 @@
 {
  "ALL": {
   "blocks": 58163,
-  "blocks_hit": 52433,
+  "blocks_hit": 52492,
   "functions": 8494,
   "outcomes": 43718,
-  "outcomes_hit": 36081,
+  "outcomes_hit": 36142,
   "runs": null
  },
  "acc-n0-01-c00": {
@@ -9526,6 +9526,8678 @@
   "outcomes": 12,
   "outcomes_hit": 7,
   "runs": 550
+ },
+ "new-badsave_lockstep_sessions-mapsave": {
+  "blocks": 5420,
+  "blocks_hit": 3313,
+  "functions": 319,
+  "outcomes": 4168,
+  "outcomes_hit": 1800,
+  "runs": 1
+ },
+ "new-badsave_lockstep_sessions-orders-save": {
+  "blocks": 12967,
+  "blocks_hit": 7989,
+  "functions": 645,
+  "outcomes": 11472,
+  "outcomes_hit": 5512,
+  "runs": 1
+ },
+ "new-badsave_lockstep_sessions-save-load": {
+  "blocks": 5339,
+  "blocks_hit": 3287,
+  "functions": 346,
+  "outcomes": 3932,
+  "outcomes_hit": 1742,
+  "runs": 1
+ },
+ "new-badsave_lockstep_sessions-scr1-load-1": {
+  "blocks": 4556,
+  "blocks_hit": 2694,
+  "functions": 283,
+  "outcomes": 3226,
+  "outcomes_hit": 1423,
+  "runs": 1
+ },
+ "new-badsave_lockstep_sessions-scr1-load-2": {
+  "blocks": 4504,
+  "blocks_hit": 2683,
+  "functions": 283,
+  "outcomes": 3164,
+  "outcomes_hit": 1399,
+  "runs": 1
+ },
+ "new-badsave_lockstep_sessions-sheet-dksave0": {
+  "blocks": 5106,
+  "blocks_hit": 2916,
+  "functions": 303,
+  "outcomes": 3704,
+  "outcomes_hit": 1536,
+  "runs": 1
+ },
+ "new-bsvtimes_carry6_sessions-gen-carry-17": {
+  "blocks": 14678,
+  "blocks_hit": 9015,
+  "functions": 637,
+  "outcomes": 13078,
+  "outcomes_hit": 6331,
+  "runs": 1
+ },
+ "new-bsvtimes_carry6_sessions-gen-carry-18": {
+  "blocks": 13452,
+  "blocks_hit": 7775,
+  "functions": 607,
+  "outcomes": 11958,
+  "outcomes_hit": 5257,
+  "runs": 1
+ },
+ "new-bsvtimes_carry6_sessions-gen-carry-20": {
+  "blocks": 15849,
+  "blocks_hit": 9621,
+  "functions": 664,
+  "outcomes": 14116,
+  "outcomes_hit": 6849,
+  "runs": 1
+ },
+ "new-bsvtimes_carry6_sessions-gen-carry-26": {
+  "blocks": 14780,
+  "blocks_hit": 9115,
+  "functions": 645,
+  "outcomes": 13184,
+  "outcomes_hit": 6436,
+  "runs": 1
+ },
+ "new-bsvtimes_carry6_sessions-gen-carry-35": {
+  "blocks": 14678,
+  "blocks_hit": 8982,
+  "functions": 637,
+  "outcomes": 13078,
+  "outcomes_hit": 6294,
+  "runs": 1
+ },
+ "new-bsvtimes_carry6_sessions-gen-carry-37": {
+  "blocks": 13453,
+  "blocks_hit": 7783,
+  "functions": 608,
+  "outcomes": 11958,
+  "outcomes_hit": 5271,
+  "runs": 1
+ },
+ "new-coverage_ev1_sessions-ev300-camp": {
+  "blocks": 6498,
+  "blocks_hit": 3788,
+  "functions": 346,
+  "outcomes": 5150,
+  "outcomes_hit": 2107,
+  "runs": 1
+ },
+ "new-coverage_ev1_sessions-ev300-inn": {
+  "blocks": 5753,
+  "blocks_hit": 3504,
+  "functions": 358,
+  "outcomes": 4344,
+  "outcomes_hit": 1914,
+  "runs": 1
+ },
+ "new-coverage_ev1_sessions-ev300-pray": {
+  "blocks": 5800,
+  "blocks_hit": 3160,
+  "functions": 316,
+  "outcomes": 4282,
+  "outcomes_hit": 1720,
+  "runs": 1
+ },
+ "new-coverage_ev1_sessions-ev300-rough": {
+  "blocks": 5823,
+  "blocks_hit": 3490,
+  "functions": 369,
+  "outcomes": 4370,
+  "outcomes_hit": 1875,
+  "runs": 1
+ },
+ "new-coverage_ev2_sessions-ev300-healer": {
+  "blocks": 5669,
+  "blocks_hit": 3273,
+  "functions": 357,
+  "outcomes": 4262,
+  "outcomes_hit": 1799,
+  "runs": 1
+ },
+ "new-coverage_ev2_sessions-ev300-smiths": {
+  "blocks": 5588,
+  "blocks_hit": 3296,
+  "functions": 348,
+  "outcomes": 4228,
+  "outcomes_hit": 1829,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-camp-inn-broke": {
+  "blocks": 5871,
+  "blocks_hit": 3597,
+  "functions": 367,
+  "outcomes": 4446,
+  "outcomes_hit": 1981,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-camp-rough": {
+  "blocks": 5932,
+  "blocks_hit": 3580,
+  "functions": 378,
+  "outcomes": 4454,
+  "outcomes_hit": 1938,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-camp-wild-brew": {
+  "blocks": 6818,
+  "blocks_hit": 4001,
+  "functions": 372,
+  "outcomes": 5450,
+  "outcomes_hit": 2255,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-ev300-camp": {
+  "blocks": 6498,
+  "blocks_hit": 3788,
+  "functions": 346,
+  "outcomes": 5150,
+  "outcomes_hit": 2107,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-ev300-healer": {
+  "blocks": 5669,
+  "blocks_hit": 3273,
+  "functions": 357,
+  "outcomes": 4262,
+  "outcomes_hit": 1799,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-ev300-inn": {
+  "blocks": 5753,
+  "blocks_hit": 3504,
+  "functions": 358,
+  "outcomes": 4344,
+  "outcomes_hit": 1914,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-ev300-pray": {
+  "blocks": 5800,
+  "blocks_hit": 3160,
+  "functions": 316,
+  "outcomes": 4282,
+  "outcomes_hit": 1720,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-ev300-rough": {
+  "blocks": 5823,
+  "blocks_hit": 3490,
+  "functions": 369,
+  "outcomes": 4370,
+  "outcomes_hit": 1875,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-ev300-smiths": {
+  "blocks": 5588,
+  "blocks_hit": 3296,
+  "functions": 348,
+  "outcomes": 4228,
+  "outcomes_hit": 1829,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-healer": {
+  "blocks": 5755,
+  "blocks_hit": 3337,
+  "functions": 365,
+  "outcomes": 4326,
+  "outcomes_hit": 1840,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-scr1-pray-1": {
+  "blocks": 6041,
+  "blocks_hit": 3340,
+  "functions": 338,
+  "outcomes": 4506,
+  "outcomes_hit": 1848,
+  "runs": 1
+ },
+ "new-coverage_ev3_sessions-smiths": {
+  "blocks": 5674,
+  "blocks_hit": 3358,
+  "functions": 356,
+  "outcomes": 4292,
+  "outcomes_hit": 1869,
+  "runs": 1
+ },
+ "new-creation_r1_sessions-carry-create-pray": {
+  "blocks": 5889,
+  "blocks_hit": 3042,
+  "functions": 317,
+  "outcomes": 4272,
+  "outcomes_hit": 1625,
+  "runs": 1
+ },
+ "new-creation_r2_sessions-carry-create-pray": {
+  "blocks": 5889,
+  "blocks_hit": 3042,
+  "functions": 317,
+  "outcomes": 4272,
+  "outcomes_hit": 1625,
+  "runs": 1
+ },
+ "new-creation_r2_sessions-carry-create-pray3": {
+  "blocks": 5975,
+  "blocks_hit": 3110,
+  "functions": 324,
+  "outcomes": 4346,
+  "outcomes_hit": 1678,
+  "runs": 1
+ },
+ "new-ctrlbreak_run1_sessions-kbreak-map-walk": {
+  "blocks": 5302,
+  "blocks_hit": 3134,
+  "functions": 310,
+  "outcomes": 4060,
+  "outcomes_hit": 1652,
+  "runs": 1
+ },
+ "new-ctrlbreak_run2_sessions-kbreak-card-quit": {
+  "blocks": 4533,
+  "blocks_hit": 2675,
+  "functions": 291,
+  "outcomes": 3188,
+  "outcomes_hit": 1382,
+  "runs": 1
+ },
+ "new-ctrlbreak_run2_sessions-kbreak-map-walk": {
+  "blocks": 5302,
+  "blocks_hit": 3155,
+  "functions": 310,
+  "outcomes": 4060,
+  "outcomes_hit": 1675,
+  "runs": 1
+ },
+ "new-ctrlbreak_run2_sessions-kbreak-menu-quit": {
+  "blocks": 4818,
+  "blocks_hit": 2863,
+  "functions": 305,
+  "outcomes": 3492,
+  "outcomes_hit": 1513,
+  "runs": 1
+ },
+ "new-ctrlbreak_run2_sessions-tk-map-walk-key": {
+  "blocks": 5186,
+  "blocks_hit": 3074,
+  "functions": 302,
+  "outcomes": 3928,
+  "outcomes_hit": 1594,
+  "runs": 1
+ },
+ "new-evtable_r1_sessions-ev300-night": {
+  "blocks": 5275,
+  "blocks_hit": 3049,
+  "functions": 287,
+  "outcomes": 3940,
+  "outcomes_hit": 1552,
+  "runs": 1
+ },
+ "new-evtable_r2_sessions-ev300-night": {
+  "blocks": 5719,
+  "blocks_hit": 3510,
+  "functions": 324,
+  "outcomes": 4430,
+  "outcomes_hit": 1974,
+  "runs": 1
+ },
+ "new-evtable_r3_sessions-ev300-night": {
+  "blocks": 5637,
+  "blocks_hit": 3481,
+  "functions": 327,
+  "outcomes": 4316,
+  "outcomes_hit": 1980,
+  "runs": 1
+ },
+ "new-evtable_r3_sessions-ev300-night-free": {
+  "blocks": 5590,
+  "blocks_hit": 3447,
+  "functions": 321,
+  "outcomes": 4390,
+  "outcomes_hit": 1930,
+  "runs": 1
+ },
+ "new-evtable_r3_sessions-ev300-night-kept": {
+  "blocks": 5711,
+  "blocks_hit": 3468,
+  "functions": 321,
+  "outcomes": 4426,
+  "outcomes_hit": 1945,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-camp": {
+  "blocks": 6498,
+  "blocks_hit": 3788,
+  "functions": 346,
+  "outcomes": 5150,
+  "outcomes_hit": 2107,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-healer": {
+  "blocks": 5669,
+  "blocks_hit": 3273,
+  "functions": 357,
+  "outcomes": 4262,
+  "outcomes_hit": 1799,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-inn": {
+  "blocks": 5753,
+  "blocks_hit": 3504,
+  "functions": 358,
+  "outcomes": 4344,
+  "outcomes_hit": 1914,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-night": {
+  "blocks": 5637,
+  "blocks_hit": 3481,
+  "functions": 327,
+  "outcomes": 4316,
+  "outcomes_hit": 1980,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-night-free": {
+  "blocks": 5590,
+  "blocks_hit": 3447,
+  "functions": 321,
+  "outcomes": 4390,
+  "outcomes_hit": 1930,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-night-kept": {
+  "blocks": 5711,
+  "blocks_hit": 3468,
+  "functions": 321,
+  "outcomes": 4426,
+  "outcomes_hit": 1945,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-pray": {
+  "blocks": 5800,
+  "blocks_hit": 3160,
+  "functions": 316,
+  "outcomes": 4282,
+  "outcomes_hit": 1720,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-rough": {
+  "blocks": 5823,
+  "blocks_hit": 3490,
+  "functions": 369,
+  "outcomes": 4370,
+  "outcomes_hit": 1875,
+  "runs": 1
+ },
+ "new-evtable_r4_sessions-ev300-smiths": {
+  "blocks": 5588,
+  "blocks_hit": 3296,
+  "functions": 348,
+  "outcomes": 4228,
+  "outcomes_hit": 1829,
+  "runs": 1
+ },
+ "new-lugum_run2-fortress-lugum-back": {
+  "blocks": 9336,
+  "blocks_hit": 5346,
+  "functions": 455,
+  "outcomes": 8038,
+  "outcomes_hit": 3494,
+  "runs": 1
+ },
+ "new-lugum_run2-fortress-lugum-stairs": {
+  "blocks": 9336,
+  "blocks_hit": 5333,
+  "functions": 455,
+  "outcomes": 8038,
+  "outcomes_hit": 3478,
+  "runs": 1
+ },
+ "new-newgame_live1_sessions-tester-newgame-reload": {
+  "blocks": 7009,
+  "blocks_hit": 3613,
+  "functions": 336,
+  "outcomes": 5456,
+  "outcomes_hit": 2032,
+  "runs": 1
+ },
+ "new-northpage_live1_fights-city1f": {
+  "blocks": 11412,
+  "blocks_hit": 6781,
+  "functions": 574,
+  "outcomes": 9964,
+  "outcomes_hit": 4563,
+  "runs": 1
+ },
+ "new-northpage_live2_sessions-map-page-north": {
+  "blocks": 5072,
+  "blocks_hit": 3027,
+  "functions": 289,
+  "outcomes": 3850,
+  "outcomes_hit": 1594,
+  "runs": 1
+ },
+ "new-ordercarry_sess-prefix_sessions-ordercarry-load-battle": {
+  "blocks": 15747,
+  "blocks_hit": 9167,
+  "functions": 656,
+  "outcomes": 13966,
+  "outcomes_hit": 6344,
+  "runs": 1
+ },
+ "new-ordercarry_sess1_sessions-ordercarry-load-battle": {
+  "blocks": 15747,
+  "blocks_hit": 9167,
+  "functions": 656,
+  "outcomes": 13966,
+  "outcomes_hit": 6344,
+  "runs": 1
+ },
+ "new-ordercarry_sess2_sessions-ordercarry-load-battle": {
+  "blocks": 15747,
+  "blocks_hit": 9167,
+  "functions": 656,
+  "outcomes": 13966,
+  "outcomes_hit": 6344,
+  "runs": 1
+ },
+ "new-rc_live-spawn8_sessions-gen-carry-02": {
+  "blocks": 15847,
+  "blocks_hit": 9575,
+  "functions": 662,
+  "outcomes": 14092,
+  "outcomes_hit": 6783,
+  "runs": 1
+ },
+ "new-rc_live-spawn8_sessions-gen-carry-04": {
+  "blocks": 15812,
+  "blocks_hit": 9681,
+  "functions": 665,
+  "outcomes": 14084,
+  "outcomes_hit": 6917,
+  "runs": 1
+ },
+ "new-rc_live-spawn8_sessions-gen-carry-08": {
+  "blocks": 16008,
+  "blocks_hit": 9832,
+  "functions": 678,
+  "outcomes": 14238,
+  "outcomes_hit": 7018,
+  "runs": 1
+ },
+ "new-rc_live-spawn8_sessions-gen-carry-15": {
+  "blocks": 12282,
+  "blocks_hit": 7792,
+  "functions": 603,
+  "outcomes": 10858,
+  "outcomes_hit": 5592,
+  "runs": 1
+ },
+ "new-rc_live-spawn8_sessions-gen-carry-22": {
+  "blocks": 16039,
+  "blocks_hit": 9808,
+  "functions": 674,
+  "outcomes": 14292,
+  "outcomes_hit": 7021,
+  "runs": 1
+ },
+ "new-rc_live-spawn8_sessions-gen-carry-24": {
+  "blocks": 15966,
+  "blocks_hit": 9857,
+  "functions": 678,
+  "outcomes": 14192,
+  "outcomes_hit": 7034,
+  "runs": 1
+ },
+ "new-rc_live-spawn8_sessions-gen-carry-38": {
+  "blocks": 13109,
+  "blocks_hit": 8190,
+  "functions": 657,
+  "outcomes": 11608,
+  "outcomes_hit": 5714,
+  "runs": 1
+ },
+ "new-rc_live-spawn8_sessions-gen-carry-40": {
+  "blocks": 12282,
+  "blocks_hit": 7586,
+  "functions": 596,
+  "outcomes": 10864,
+  "outcomes_hit": 5367,
+  "runs": 1
+ },
+ "new-rc_live-three_sessions-gen-carry-10": {
+  "blocks": 16165,
+  "blocks_hit": 9947,
+  "functions": 681,
+  "outcomes": 14388,
+  "outcomes_hit": 7101,
+  "runs": 1
+ },
+ "new-rc_live-three_sessions-gen-carry-19": {
+  "blocks": 15977,
+  "blocks_hit": 9831,
+  "functions": 677,
+  "outcomes": 14228,
+  "outcomes_hit": 7026,
+  "runs": 1
+ },
+ "new-rc_live-three_sessions-gen-carry-39": {
+  "blocks": 16189,
+  "blocks_hit": 10059,
+  "functions": 684,
+  "outcomes": 14408,
+  "outcomes_hit": 7208,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-03": {
+  "blocks": 12854,
+  "blocks_hit": 7429,
+  "functions": 578,
+  "outcomes": 11412,
+  "outcomes_hit": 5019,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-06": {
+  "blocks": 15775,
+  "blocks_hit": 9506,
+  "functions": 663,
+  "outcomes": 13990,
+  "outcomes_hit": 6716,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-07": {
+  "blocks": 13186,
+  "blocks_hit": 7757,
+  "functions": 596,
+  "outcomes": 11770,
+  "outcomes_hit": 5301,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-09": {
+  "blocks": 12701,
+  "blocks_hit": 7866,
+  "functions": 626,
+  "outcomes": 11298,
+  "outcomes_hit": 5504,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-16": {
+  "blocks": 12290,
+  "blocks_hit": 7761,
+  "functions": 600,
+  "outcomes": 10862,
+  "outcomes_hit": 5566,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-21": {
+  "blocks": 13767,
+  "blocks_hit": 8702,
+  "functions": 694,
+  "outcomes": 12246,
+  "outcomes_hit": 6137,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-23": {
+  "blocks": 15775,
+  "blocks_hit": 9478,
+  "functions": 663,
+  "outcomes": 13990,
+  "outcomes_hit": 6685,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-26": {
+  "blocks": 14780,
+  "blocks_hit": 9115,
+  "functions": 645,
+  "outcomes": 13184,
+  "outcomes_hit": 6436,
+  "runs": 1
+ },
+ "new-refight_live1_sessions-gen-carry-31": {
+  "blocks": 12430,
+  "blocks_hit": 7794,
+  "functions": 615,
+  "outcomes": 11022,
+  "outcomes_hit": 5457,
+  "runs": 1
+ },
+ "new-reload_live1_sessions-carry-reload-footpads": {
+  "blocks": 15317,
+  "blocks_hit": 8872,
+  "functions": 642,
+  "outcomes": 13508,
+  "outcomes_hit": 6097,
+  "runs": 1
+ },
+ "new-reload_live1_sessions-gen-carry-27": {
+  "blocks": 12558,
+  "blocks_hit": 7811,
+  "functions": 613,
+  "outcomes": 11116,
+  "outcomes_hit": 5565,
+  "runs": 1
+ },
+ "new-reload_live1_sessions-gen-carry-28": {
+  "blocks": 14678,
+  "blocks_hit": 9018,
+  "functions": 637,
+  "outcomes": 13078,
+  "outcomes_hit": 6343,
+  "runs": 1
+ },
+ "new-reload_live1_sessions-gen-carry-30": {
+  "blocks": 13296,
+  "blocks_hit": 8360,
+  "functions": 666,
+  "outcomes": 11794,
+  "outcomes_hit": 5857,
+  "runs": 1
+ },
+ "new-reload_live1_sessions-gen-carry-36": {
+  "blocks": 14122,
+  "blocks_hit": 8818,
+  "functions": 678,
+  "outcomes": 12598,
+  "outcomes_hit": 6214,
+  "runs": 1
+ },
+ "new-reload_live2_sessions-carry-create-pray": {
+  "blocks": 5889,
+  "blocks_hit": 3042,
+  "functions": 317,
+  "outcomes": 4272,
+  "outcomes_hit": 1625,
+  "runs": 1
+ },
+ "new-restart_live1_sessions-tester-clean-reload": {
+  "blocks": 7009,
+  "blocks_hit": 3594,
+  "functions": 336,
+  "outcomes": 5456,
+  "outcomes_hit": 2009,
+  "runs": 1
+ },
+ "new-restart_live1_sessions-tk-map-keys": {
+  "blocks": 5058,
+  "blocks_hit": 2973,
+  "functions": 287,
+  "outcomes": 3834,
+  "outcomes_hit": 1547,
+  "runs": 1
+ },
+ "new-restart_live2_sessions-tk-rest-first": {
+  "blocks": 5302,
+  "blocks_hit": 3160,
+  "functions": 310,
+  "outcomes": 4060,
+  "outcomes_hit": 1676,
+  "runs": 1
+ },
+ "new-restart_live2_sessions-tk-rest-second": {
+  "blocks": 5186,
+  "blocks_hit": 3067,
+  "functions": 302,
+  "outcomes": 3928,
+  "outcomes_hit": 1585,
+  "runs": 1
+ },
+ "new-restart_live2_sessions-tk-two-keys-rest": {
+  "blocks": 5259,
+  "blocks_hit": 3126,
+  "functions": 309,
+  "outcomes": 4022,
+  "outcomes_hit": 1647,
+  "runs": 1
+ },
+ "new-restart_live2_sessions-tk-two-keys-walk": {
+  "blocks": 5186,
+  "blocks_hit": 3064,
+  "functions": 302,
+  "outcomes": 3928,
+  "outcomes_hit": 1583,
+  "runs": 1
+ },
+ "new-restart_live3_sessions-tk-map-altq": {
+  "blocks": 5282,
+  "blocks_hit": 3169,
+  "functions": 313,
+  "outcomes": 4038,
+  "outcomes_hit": 1672,
+  "runs": 1
+ },
+ "new-restmouse_live1_sessions-tk-rest-click": {
+  "blocks": 5259,
+  "blocks_hit": 3147,
+  "functions": 309,
+  "outcomes": 4022,
+  "outcomes_hit": 1666,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-castle": {
+  "blocks": 13363,
+  "blocks_hit": 7677,
+  "functions": 581,
+  "outcomes": 11916,
+  "outcomes_hit": 5252,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-castle04": {
+  "blocks": 14517,
+  "blocks_hit": 8409,
+  "functions": 630,
+  "outcomes": 13118,
+  "outcomes_hit": 5884,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-castle07": {
+  "blocks": 14882,
+  "blocks_hit": 9109,
+  "functions": 650,
+  "outcomes": 13446,
+  "outcomes_hit": 6554,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-castle7c": {
+  "blocks": 13304,
+  "blocks_hit": 7727,
+  "functions": 582,
+  "outcomes": 11854,
+  "outcomes_hit": 5270,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-cave60": {
+  "blocks": 10700,
+  "blocks_hit": 5880,
+  "functions": 545,
+  "outcomes": 9218,
+  "outcomes_hit": 3670,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-city13": {
+  "blocks": 11847,
+  "blocks_hit": 6813,
+  "functions": 589,
+  "outcomes": 10342,
+  "outcomes_hit": 4519,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-city15": {
+  "blocks": 11548,
+  "blocks_hit": 6713,
+  "functions": 586,
+  "outcomes": 10110,
+  "outcomes_hit": 4488,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-city1c": {
+  "blocks": 9992,
+  "blocks_hit": 5298,
+  "functions": 508,
+  "outcomes": 8524,
+  "outcomes_hit": 3183,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-city1f": {
+  "blocks": 11412,
+  "blocks_hit": 6781,
+  "functions": 574,
+  "outcomes": 9964,
+  "outcomes_hit": 4563,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-city24": {
+  "blocks": 11817,
+  "blocks_hit": 6719,
+  "functions": 587,
+  "outcomes": 10314,
+  "outcomes_hit": 4416,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-city2b": {
+  "blocks": 10655,
+  "blocks_hit": 5642,
+  "functions": 529,
+  "outcomes": 9126,
+  "outcomes_hit": 3443,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2alch16": {
+  "blocks": 11923,
+  "blocks_hit": 6885,
+  "functions": 606,
+  "outcomes": 10444,
+  "outcomes_hit": 4511,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2archwitch2c": {
+  "blocks": 9979,
+  "blocks_hit": 5180,
+  "functions": 507,
+  "outcomes": 8508,
+  "outcomes_hit": 3060,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2demon61": {
+  "blocks": 11934,
+  "blocks_hit": 6854,
+  "functions": 578,
+  "outcomes": 10332,
+  "outcomes_hit": 4572,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2friar19": {
+  "blocks": 11330,
+  "blocks_hit": 6267,
+  "functions": 565,
+  "outcomes": 9818,
+  "outcomes_hit": 4000,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2hell62": {
+  "blocks": 11934,
+  "blocks_hit": 6729,
+  "functions": 578,
+  "outcomes": 10332,
+  "outcomes_hit": 4421,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2hwitch41": {
+  "blocks": 11361,
+  "blocks_hit": 6145,
+  "functions": 544,
+  "outcomes": 9706,
+  "outcomes_hit": 3833,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2kking0c": {
+  "blocks": 11780,
+  "blocks_hit": 6300,
+  "functions": 579,
+  "outcomes": 10194,
+  "outcomes_hit": 3917,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2leader14": {
+  "blocks": 12020,
+  "blocks_hit": 6770,
+  "functions": 594,
+  "outcomes": 10474,
+  "outcomes_hit": 4387,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2magic58": {
+  "blocks": 10999,
+  "blocks_hit": 6323,
+  "functions": 561,
+  "outcomes": 9564,
+  "outcomes_hit": 4098,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2precept05": {
+  "blocks": 14537,
+  "blocks_hit": 8988,
+  "functions": 645,
+  "outcomes": 13112,
+  "outcomes_hit": 6491,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2vulcan0e": {
+  "blocks": 11961,
+  "blocks_hit": 6428,
+  "functions": 550,
+  "outcomes": 10232,
+  "outcomes_hit": 4079,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-f2witch2f": {
+  "blocks": 12397,
+  "blocks_hit": 7087,
+  "functions": 594,
+  "outcomes": 10768,
+  "outcomes_hit": 4640,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-fort5e": {
+  "blocks": 10007,
+  "blocks_hit": 5528,
+  "functions": 515,
+  "outcomes": 8498,
+  "outcomes_hit": 3350,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-gate": {
+  "blocks": 12084,
+  "blocks_hit": 7095,
+  "functions": 597,
+  "outcomes": 10584,
+  "outcomes_hit": 4773,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-mine": {
+  "blocks": 11565,
+  "blocks_hit": 5578,
+  "functions": 541,
+  "outcomes": 9918,
+  "outcomes_hit": 3374,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-mine0b": {
+  "blocks": 11950,
+  "blocks_hit": 6493,
+  "functions": 549,
+  "outcomes": 10246,
+  "outcomes_hit": 4113,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-mine10": {
+  "blocks": 12252,
+  "blocks_hit": 6717,
+  "functions": 561,
+  "outcomes": 10514,
+  "outcomes_hit": 4305,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-mine80": {
+  "blocks": 12194,
+  "blocks_hit": 6815,
+  "functions": 600,
+  "outcomes": 10690,
+  "outcomes_hit": 4481,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-street": {
+  "blocks": 11772,
+  "blocks_hit": 6762,
+  "functions": 582,
+  "outcomes": 10284,
+  "outcomes_hit": 4499,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-tombs5f": {
+  "blocks": 11086,
+  "blocks_hit": 6220,
+  "functions": 561,
+  "outcomes": 9660,
+  "outcomes_hit": 4019,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-wild": {
+  "blocks": 11925,
+  "blocks_hit": 6743,
+  "functions": 577,
+  "outcomes": 10324,
+  "outcomes_hit": 4420,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-wild30": {
+  "blocks": 11559,
+  "blocks_hit": 6227,
+  "functions": 554,
+  "outcomes": 9906,
+  "outcomes_hit": 3918,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-wild40": {
+  "blocks": 11890,
+  "blocks_hit": 6659,
+  "functions": 575,
+  "outcomes": 10290,
+  "outcomes_hit": 4332,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-wild50": {
+  "blocks": 12237,
+  "blocks_hit": 7067,
+  "functions": 590,
+  "outcomes": 10614,
+  "outcomes_hit": 4666,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-wild6f": {
+  "blocks": 12020,
+  "blocks_hit": 6531,
+  "functions": 578,
+  "outcomes": 10396,
+  "outcomes_hit": 4163,
+  "runs": 1
+ },
+ "new-saintbox_rerun_fights-wild75": {
+  "blocks": 11974,
+  "blocks_hit": 6775,
+  "functions": 578,
+  "outcomes": 10366,
+  "outcomes_hit": 4451,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-alchemy": {
+  "blocks": 6177,
+  "blocks_hit": 3663,
+  "functions": 382,
+  "outcomes": 4750,
+  "outcomes_hit": 1993,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b2-einfo-16": {
+  "blocks": 11880,
+  "blocks_hit": 7371,
+  "functions": 567,
+  "outcomes": 10488,
+  "outcomes_hit": 5209,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b2-einfo-7a": {
+  "blocks": 11795,
+  "blocks_hit": 7016,
+  "functions": 558,
+  "outcomes": 10438,
+  "outcomes_hit": 4892,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b2-einfo-7b": {
+  "blocks": 12155,
+  "blocks_hit": 7231,
+  "functions": 573,
+  "outcomes": 10736,
+  "outcomes_hit": 5062,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b2-einfo-a0": {
+  "blocks": 11933,
+  "blocks_hit": 6746,
+  "functions": 547,
+  "outcomes": 10446,
+  "outcomes_hit": 4577,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b2-einfo-a5": {
+  "blocks": 11849,
+  "blocks_hit": 6665,
+  "functions": 544,
+  "outcomes": 10450,
+  "outcomes_hit": 4467,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b2-march-keys": {
+  "blocks": 11761,
+  "blocks_hit": 6629,
+  "functions": 541,
+  "outcomes": 10364,
+  "outcomes_hit": 4436,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b2-march-mouse": {
+  "blocks": 11761,
+  "blocks_hit": 6629,
+  "functions": 541,
+  "outcomes": 10364,
+  "outcomes_hit": 4446,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b3-probe1": {
+  "blocks": 12785,
+  "blocks_hit": 7196,
+  "functions": 542,
+  "outcomes": 11142,
+  "outcomes_hit": 4703,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b3-probe2": {
+  "blocks": 12760,
+  "blocks_hit": 7127,
+  "functions": 540,
+  "outcomes": 11116,
+  "outcomes_hit": 4640,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b3-probe3": {
+  "blocks": 12731,
+  "blocks_hit": 7171,
+  "functions": 541,
+  "outcomes": 11088,
+  "outcomes_hit": 4683,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b3-save-fight": {
+  "blocks": 12915,
+  "blocks_hit": 7345,
+  "functions": 554,
+  "outcomes": 11256,
+  "outcomes_hit": 4819,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b3-save-fight2": {
+  "blocks": 12880,
+  "blocks_hit": 7311,
+  "functions": 550,
+  "outcomes": 11224,
+  "outcomes_hit": 4793,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b3-save-fight3": {
+  "blocks": 13593,
+  "blocks_hit": 7899,
+  "functions": 579,
+  "outcomes": 11970,
+  "outcomes_hit": 5346,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b32-refused-hotkey": {
+  "blocks": 12785,
+  "blocks_hit": 7155,
+  "functions": 542,
+  "outcomes": 11142,
+  "outcomes_hit": 4663,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b32-saint-stale-slot": {
+  "blocks": 5223,
+  "blocks_hit": 3105,
+  "functions": 323,
+  "outcomes": 3902,
+  "outcomes_hit": 1724,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b32-saint-stale-slot-fail": {
+  "blocks": 5097,
+  "blocks_hit": 3019,
+  "functions": 314,
+  "outcomes": 3782,
+  "outcomes_hit": 1647,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b32-saint-stale-slot-more": {
+  "blocks": 5126,
+  "blocks_hit": 3060,
+  "functions": 315,
+  "outcomes": 3812,
+  "outcomes_hit": 1684,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b32-sheet-hotkeys": {
+  "blocks": 5769,
+  "blocks_hit": 3251,
+  "functions": 333,
+  "outcomes": 4272,
+  "outcomes_hit": 1781,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b35-door-back": {
+  "blocks": 13131,
+  "blocks_hit": 7585,
+  "functions": 569,
+  "outcomes": 11438,
+  "outcomes_hit": 5066,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b35-door-reload": {
+  "blocks": 13130,
+  "blocks_hit": 7525,
+  "functions": 565,
+  "outcomes": 11446,
+  "outcomes_hit": 5000,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-b35-door-start": {
+  "blocks": 12689,
+  "blocks_hit": 7051,
+  "functions": 541,
+  "outcomes": 11038,
+  "outcomes_hit": 4574,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-banks": {
+  "blocks": 5763,
+  "blocks_hit": 3362,
+  "functions": 375,
+  "outcomes": 4260,
+  "outcomes_hit": 1848,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-cursor-1": {
+  "blocks": 13144,
+  "blocks_hit": 8201,
+  "functions": 653,
+  "outcomes": 11654,
+  "outcomes_hit": 5710,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-cursor-2": {
+  "blocks": 13145,
+  "blocks_hit": 8219,
+  "functions": 654,
+  "outcomes": 11654,
+  "outcomes_hit": 5720,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-cursor-3": {
+  "blocks": 13145,
+  "blocks_hit": 8213,
+  "functions": 654,
+  "outcomes": 11654,
+  "outcomes_hit": 5728,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-cursor-4": {
+  "blocks": 13144,
+  "blocks_hit": 8190,
+  "functions": 653,
+  "outcomes": 11654,
+  "outcomes_hit": 5684,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-edge-1": {
+  "blocks": 12977,
+  "blocks_hit": 8035,
+  "functions": 647,
+  "outcomes": 11480,
+  "outcomes_hit": 5568,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-edge-2": {
+  "blocks": 12977,
+  "blocks_hit": 8053,
+  "functions": 647,
+  "outcomes": 11480,
+  "outcomes_hit": 5598,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-edge-3": {
+  "blocks": 12740,
+  "blocks_hit": 7849,
+  "functions": 638,
+  "outcomes": 11210,
+  "outcomes_hit": 5433,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-edge-4": {
+  "blocks": 12977,
+  "blocks_hit": 8022,
+  "functions": 647,
+  "outcomes": 11480,
+  "outcomes_hit": 5553,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-edge-5": {
+  "blocks": 12977,
+  "blocks_hit": 8028,
+  "functions": 647,
+  "outcomes": 11480,
+  "outcomes_hit": 5560,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-edge-6": {
+  "blocks": 12977,
+  "blocks_hit": 8032,
+  "functions": 647,
+  "outcomes": 11480,
+  "outcomes_hit": 5567,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-battle-edge-7": {
+  "blocks": 12675,
+  "blocks_hit": 7807,
+  "functions": 634,
+  "outcomes": 11146,
+  "outcomes_hit": 5443,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-c3-space-pause": {
+  "blocks": 11764,
+  "blocks_hit": 6760,
+  "functions": 561,
+  "outcomes": 10346,
+  "outcomes_hit": 4606,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-cache": {
+  "blocks": 5439,
+  "blocks_hit": 3161,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1737,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-cache-revisit": {
+  "blocks": 5376,
+  "blocks_hit": 3096,
+  "functions": 331,
+  "outcomes": 4030,
+  "outcomes_hit": 1688,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-camp-inn-broke": {
+  "blocks": 5871,
+  "blocks_hit": 3597,
+  "functions": 367,
+  "outcomes": 4446,
+  "outcomes_hit": 1981,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-camp-mouse": {
+  "blocks": 6888,
+  "blocks_hit": 4094,
+  "functions": 379,
+  "outcomes": 5432,
+  "outcomes_hit": 2345,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-camp-rough": {
+  "blocks": 5932,
+  "blocks_hit": 3580,
+  "functions": 378,
+  "outcomes": 4454,
+  "outcomes_hit": 1938,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-camp-wild-brew": {
+  "blocks": 6818,
+  "blocks_hit": 4001,
+  "functions": 372,
+  "outcomes": 5450,
+  "outcomes_hit": 2255,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-camp-wild-risk": {
+  "blocks": 6636,
+  "blocks_hit": 3991,
+  "functions": 379,
+  "outcomes": 5254,
+  "outcomes_hit": 2285,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-carry-create-pray": {
+  "blocks": 5889,
+  "blocks_hit": 3042,
+  "functions": 317,
+  "outcomes": 4272,
+  "outcomes_hit": 1625,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-carry-create-pray3": {
+  "blocks": 5975,
+  "blocks_hit": 3110,
+  "functions": 324,
+  "outcomes": 4346,
+  "outcomes_hit": 1678,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-carry-reload-footpads": {
+  "blocks": 15317,
+  "blocks_hit": 8872,
+  "functions": 642,
+  "outcomes": 13508,
+  "outcomes_hit": 6097,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-chargen-created": {
+  "blocks": 6594,
+  "blocks_hit": 3344,
+  "functions": 309,
+  "outcomes": 5104,
+  "outcomes_hit": 1851,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-chargen-party": {
+  "blocks": 4810,
+  "blocks_hit": 2813,
+  "functions": 284,
+  "outcomes": 3372,
+  "outcomes_hit": 1488,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-churches": {
+  "blocks": 5476,
+  "blocks_hit": 3358,
+  "functions": 362,
+  "outcomes": 4034,
+  "outcomes_hit": 1767,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-discordq-retire": {
+  "blocks": 6976,
+  "blocks_hit": 4092,
+  "functions": 431,
+  "outcomes": 5314,
+  "outcomes_hit": 2311,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-dungeon-king-door": {
+  "blocks": 8959,
+  "blocks_hit": 5039,
+  "functions": 445,
+  "outcomes": 7648,
+  "outcomes_hit": 3231,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-dungeon-king-ladder": {
+  "blocks": 8141,
+  "blocks_hit": 4425,
+  "functions": 389,
+  "outcomes": 6942,
+  "outcomes_hit": 2733,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-dungeon-king-opened": {
+  "blocks": 8810,
+  "blocks_hit": 4892,
+  "functions": 438,
+  "outcomes": 7506,
+  "outcomes_hit": 3097,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-dungeon-mine-doormsg": {
+  "blocks": 13106,
+  "blocks_hit": 7518,
+  "functions": 567,
+  "outcomes": 11412,
+  "outcomes_hit": 5002,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-dungeon-mine-doors": {
+  "blocks": 14696,
+  "blocks_hit": 8990,
+  "functions": 630,
+  "outcomes": 13102,
+  "outcomes_hit": 6326,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-dungeon-mine-group": {
+  "blocks": 14922,
+  "blocks_hit": 9324,
+  "functions": 650,
+  "outcomes": 13330,
+  "outcomes_hit": 6615,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-dungeon-mine-orders": {
+  "blocks": 14821,
+  "blocks_hit": 9234,
+  "functions": 646,
+  "outcomes": 13234,
+  "outcomes_hit": 6542,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-dungeon-stonebox-door": {
+  "blocks": 7363,
+  "blocks_hit": 3713,
+  "functions": 411,
+  "outcomes": 6950,
+  "outcomes_hit": 2642,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-ev300-camp": {
+  "blocks": 6498,
+  "blocks_hit": 3788,
+  "functions": 346,
+  "outcomes": 5150,
+  "outcomes_hit": 2107,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-ev300-healer": {
+  "blocks": 5669,
+  "blocks_hit": 3273,
+  "functions": 357,
+  "outcomes": 4262,
+  "outcomes_hit": 1799,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-ev300-inn": {
+  "blocks": 5753,
+  "blocks_hit": 3504,
+  "functions": 358,
+  "outcomes": 4344,
+  "outcomes_hit": 1914,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-ev300-pray": {
+  "blocks": 5800,
+  "blocks_hit": 3160,
+  "functions": 316,
+  "outcomes": 4282,
+  "outcomes_hit": 1720,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-ev300-rough": {
+  "blocks": 5823,
+  "blocks_hit": 3490,
+  "functions": 369,
+  "outcomes": 4370,
+  "outcomes_hit": 1875,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-ev300-smiths": {
+  "blocks": 5588,
+  "blocks_hit": 3296,
+  "functions": 348,
+  "outcomes": 4228,
+  "outcomes_hit": 1829,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-foreigntrader": {
+  "blocks": 5788,
+  "blocks_hit": 3405,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1913,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gate-battle": {
+  "blocks": 12967,
+  "blocks_hit": 7975,
+  "functions": 645,
+  "outcomes": 11472,
+  "outcomes_hit": 5498,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bdead-01": {
+  "blocks": 12779,
+  "blocks_hit": 8069,
+  "functions": 641,
+  "outcomes": 11252,
+  "outcomes_hit": 5628,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bdead-02": {
+  "blocks": 13077,
+  "blocks_hit": 8245,
+  "functions": 651,
+  "outcomes": 11602,
+  "outcomes_hit": 5759,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bdead-03": {
+  "blocks": 13003,
+  "blocks_hit": 8161,
+  "functions": 643,
+  "outcomes": 11492,
+  "outcomes_hit": 5708,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bdead-04": {
+  "blocks": 13146,
+  "blocks_hit": 8346,
+  "functions": 652,
+  "outcomes": 11670,
+  "outcomes_hit": 5852,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bdead-05": {
+  "blocks": 13172,
+  "blocks_hit": 8342,
+  "functions": 654,
+  "outcomes": 11694,
+  "outcomes_hit": 5847,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bedge-01": {
+  "blocks": 12608,
+  "blocks_hit": 6951,
+  "functions": 599,
+  "outcomes": 10944,
+  "outcomes_hit": 4535,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bedge-02": {
+  "blocks": 13791,
+  "blocks_hit": 8446,
+  "functions": 668,
+  "outcomes": 12172,
+  "outcomes_hit": 5881,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bedge-03": {
+  "blocks": 13574,
+  "blocks_hit": 8264,
+  "functions": 663,
+  "outcomes": 11910,
+  "outcomes_hit": 5768,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bedge-04": {
+  "blocks": 12810,
+  "blocks_hit": 7162,
+  "functions": 608,
+  "outcomes": 11150,
+  "outcomes_hit": 4704,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-01": {
+  "blocks": 6526,
+  "blocks_hit": 3678,
+  "functions": 365,
+  "outcomes": 4944,
+  "outcomes_hit": 2090,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-02": {
+  "blocks": 6425,
+  "blocks_hit": 3607,
+  "functions": 357,
+  "outcomes": 4852,
+  "outcomes_hit": 2032,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-04": {
+  "blocks": 6727,
+  "blocks_hit": 3884,
+  "functions": 376,
+  "outcomes": 5148,
+  "outcomes_hit": 2159,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-05": {
+  "blocks": 6260,
+  "blocks_hit": 3423,
+  "functions": 349,
+  "outcomes": 4712,
+  "outcomes_hit": 1895,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-06": {
+  "blocks": 6095,
+  "blocks_hit": 3682,
+  "functions": 371,
+  "outcomes": 4670,
+  "outcomes_hit": 2029,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-21": {
+  "blocks": 5658,
+  "blocks_hit": 3203,
+  "functions": 338,
+  "outcomes": 4244,
+  "outcomes_hit": 1752,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-22": {
+  "blocks": 6005,
+  "blocks_hit": 3524,
+  "functions": 363,
+  "outcomes": 4580,
+  "outcomes_hit": 2000,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-23": {
+  "blocks": 5781,
+  "blocks_hit": 3290,
+  "functions": 349,
+  "outcomes": 4360,
+  "outcomes_hit": 1820,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-25": {
+  "blocks": 6718,
+  "blocks_hit": 3921,
+  "functions": 375,
+  "outcomes": 5138,
+  "outcomes_hit": 2192,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-26": {
+  "blocks": 6490,
+  "blocks_hit": 3578,
+  "functions": 360,
+  "outcomes": 4916,
+  "outcomes_hit": 1999,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-27": {
+  "blocks": 6716,
+  "blocks_hit": 3919,
+  "functions": 376,
+  "outcomes": 5140,
+  "outcomes_hit": 2170,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-28": {
+  "blocks": 5873,
+  "blocks_hit": 3468,
+  "functions": 357,
+  "outcomes": 4440,
+  "outcomes_hit": 1965,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-29": {
+  "blocks": 6558,
+  "blocks_hit": 3643,
+  "functions": 366,
+  "outcomes": 4964,
+  "outcomes_hit": 2058,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-30": {
+  "blocks": 6343,
+  "blocks_hit": 3562,
+  "functions": 353,
+  "outcomes": 4778,
+  "outcomes_hit": 2007,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-31": {
+  "blocks": 5715,
+  "blocks_hit": 3265,
+  "functions": 341,
+  "outcomes": 4296,
+  "outcomes_hit": 1805,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-32": {
+  "blocks": 5711,
+  "blocks_hit": 3254,
+  "functions": 340,
+  "outcomes": 4292,
+  "outcomes_hit": 1797,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-33": {
+  "blocks": 6407,
+  "blocks_hit": 3627,
+  "functions": 362,
+  "outcomes": 4848,
+  "outcomes_hit": 2054,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-34": {
+  "blocks": 5809,
+  "blocks_hit": 3358,
+  "functions": 354,
+  "outcomes": 4390,
+  "outcomes_hit": 1868,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-35": {
+  "blocks": 5781,
+  "blocks_hit": 3314,
+  "functions": 349,
+  "outcomes": 4360,
+  "outcomes_hit": 1845,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-36": {
+  "blocks": 6662,
+  "blocks_hit": 3878,
+  "functions": 377,
+  "outcomes": 5102,
+  "outcomes_hit": 2149,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-37": {
+  "blocks": 6546,
+  "blocks_hit": 3618,
+  "functions": 365,
+  "outcomes": 4964,
+  "outcomes_hit": 2054,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-38": {
+  "blocks": 5658,
+  "blocks_hit": 3210,
+  "functions": 338,
+  "outcomes": 4244,
+  "outcomes_hit": 1759,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-39": {
+  "blocks": 5873,
+  "blocks_hit": 3464,
+  "functions": 357,
+  "outcomes": 4440,
+  "outcomes_hit": 1960,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-40": {
+  "blocks": 6786,
+  "blocks_hit": 3965,
+  "functions": 387,
+  "outcomes": 5228,
+  "outcomes_hit": 2222,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-41": {
+  "blocks": 5715,
+  "blocks_hit": 3259,
+  "functions": 341,
+  "outcomes": 4296,
+  "outcomes_hit": 1804,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-42": {
+  "blocks": 5658,
+  "blocks_hit": 3221,
+  "functions": 338,
+  "outcomes": 4244,
+  "outcomes_hit": 1771,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-43": {
+  "blocks": 6447,
+  "blocks_hit": 3594,
+  "functions": 363,
+  "outcomes": 4878,
+  "outcomes_hit": 2028,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-44": {
+  "blocks": 5781,
+  "blocks_hit": 3310,
+  "functions": 349,
+  "outcomes": 4360,
+  "outcomes_hit": 1837,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-45": {
+  "blocks": 6428,
+  "blocks_hit": 3559,
+  "functions": 353,
+  "outcomes": 4842,
+  "outcomes_hit": 2010,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-46": {
+  "blocks": 5658,
+  "blocks_hit": 3206,
+  "functions": 338,
+  "outcomes": 4244,
+  "outcomes_hit": 1752,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-47": {
+  "blocks": 6178,
+  "blocks_hit": 3749,
+  "functions": 377,
+  "outcomes": 4760,
+  "outcomes_hit": 2083,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-48": {
+  "blocks": 6390,
+  "blocks_hit": 3508,
+  "functions": 352,
+  "outcomes": 4814,
+  "outcomes_hit": 1953,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-49": {
+  "blocks": 5715,
+  "blocks_hit": 3269,
+  "functions": 341,
+  "outcomes": 4296,
+  "outcomes_hit": 1811,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench-50": {
+  "blocks": 5856,
+  "blocks_hit": 3381,
+  "functions": 353,
+  "outcomes": 4436,
+  "outcomes_hit": 1900,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench99-01": {
+  "blocks": 6640,
+  "blocks_hit": 3826,
+  "functions": 344,
+  "outcomes": 5204,
+  "outcomes_hit": 2151,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench99-02": {
+  "blocks": 5970,
+  "blocks_hit": 3522,
+  "functions": 327,
+  "outcomes": 4684,
+  "outcomes_hit": 1956,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bench99-04": {
+  "blocks": 6593,
+  "blocks_hit": 3816,
+  "functions": 341,
+  "outcomes": 5162,
+  "outcomes_hit": 2139,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bgater-01": {
+  "blocks": 13224,
+  "blocks_hit": 8449,
+  "functions": 669,
+  "outcomes": 11688,
+  "outcomes_hit": 5952,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bgater-02": {
+  "blocks": 13461,
+  "blocks_hit": 8573,
+  "functions": 679,
+  "outcomes": 11948,
+  "outcomes_hit": 6024,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bgater-03": {
+  "blocks": 14317,
+  "blocks_hit": 8940,
+  "functions": 694,
+  "outcomes": 12806,
+  "outcomes_hit": 6307,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bgater-04": {
+  "blocks": 13225,
+  "blocks_hit": 8427,
+  "functions": 665,
+  "outcomes": 11726,
+  "outcomes_hit": 5919,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bgater-05": {
+  "blocks": 13439,
+  "blocks_hit": 8552,
+  "functions": 676,
+  "outcomes": 11930,
+  "outcomes_hit": 6009,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-01": {
+  "blocks": 13654,
+  "blocks_hit": 8388,
+  "functions": 665,
+  "outcomes": 11996,
+  "outcomes_hit": 5844,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-02": {
+  "blocks": 13176,
+  "blocks_hit": 8371,
+  "functions": 658,
+  "outcomes": 11684,
+  "outcomes_hit": 5857,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-03": {
+  "blocks": 14705,
+  "blocks_hit": 8865,
+  "functions": 685,
+  "outcomes": 13080,
+  "outcomes_hit": 6223,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-04": {
+  "blocks": 13192,
+  "blocks_hit": 8409,
+  "functions": 658,
+  "outcomes": 11700,
+  "outcomes_hit": 5909,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-11": {
+  "blocks": 12827,
+  "blocks_hit": 7303,
+  "functions": 610,
+  "outcomes": 11178,
+  "outcomes_hit": 4848,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-12": {
+  "blocks": 13726,
+  "blocks_hit": 8387,
+  "functions": 666,
+  "outcomes": 12038,
+  "outcomes_hit": 5839,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-13": {
+  "blocks": 13208,
+  "blocks_hit": 8418,
+  "functions": 663,
+  "outcomes": 11712,
+  "outcomes_hit": 5909,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-21": {
+  "blocks": 13586,
+  "blocks_hit": 8600,
+  "functions": 672,
+  "outcomes": 12004,
+  "outcomes_hit": 6047,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-23": {
+  "blocks": 13624,
+  "blocks_hit": 8572,
+  "functions": 673,
+  "outcomes": 12044,
+  "outcomes_hit": 6002,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-24": {
+  "blocks": 13189,
+  "blocks_hit": 8413,
+  "functions": 662,
+  "outcomes": 11694,
+  "outcomes_hit": 5925,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-25": {
+  "blocks": 13187,
+  "blocks_hit": 8342,
+  "functions": 659,
+  "outcomes": 11694,
+  "outcomes_hit": 5832,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-26": {
+  "blocks": 14445,
+  "blocks_hit": 8981,
+  "functions": 685,
+  "outcomes": 12866,
+  "outcomes_hit": 6345,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-31": {
+  "blocks": 13629,
+  "blocks_hit": 8565,
+  "functions": 675,
+  "outcomes": 12044,
+  "outcomes_hit": 5983,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-32": {
+  "blocks": 13198,
+  "blocks_hit": 8421,
+  "functions": 663,
+  "outcomes": 11706,
+  "outcomes_hit": 5919,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-33": {
+  "blocks": 13616,
+  "blocks_hit": 8570,
+  "functions": 672,
+  "outcomes": 12036,
+  "outcomes_hit": 5990,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-34": {
+  "blocks": 12839,
+  "blocks_hit": 8051,
+  "functions": 643,
+  "outcomes": 11324,
+  "outcomes_hit": 5600,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-35": {
+  "blocks": 13631,
+  "blocks_hit": 8596,
+  "functions": 677,
+  "outcomes": 12044,
+  "outcomes_hit": 6023,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-36": {
+  "blocks": 13613,
+  "blocks_hit": 8541,
+  "functions": 671,
+  "outcomes": 12034,
+  "outcomes_hit": 5966,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-37": {
+  "blocks": 14036,
+  "blocks_hit": 8800,
+  "functions": 676,
+  "outcomes": 12544,
+  "outcomes_hit": 6211,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-38": {
+  "blocks": 13592,
+  "blocks_hit": 8545,
+  "functions": 670,
+  "outcomes": 12014,
+  "outcomes_hit": 5994,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-39": {
+  "blocks": 13615,
+  "blocks_hit": 8584,
+  "functions": 671,
+  "outcomes": 12036,
+  "outcomes_hit": 6037,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-40": {
+  "blocks": 14403,
+  "blocks_hit": 8871,
+  "functions": 683,
+  "outcomes": 12834,
+  "outcomes_hit": 6236,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-41": {
+  "blocks": 13174,
+  "blocks_hit": 8362,
+  "functions": 658,
+  "outcomes": 11682,
+  "outcomes_hit": 5844,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-42": {
+  "blocks": 14024,
+  "blocks_hit": 8788,
+  "functions": 673,
+  "outcomes": 12534,
+  "outcomes_hit": 6212,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-43": {
+  "blocks": 13644,
+  "blocks_hit": 8589,
+  "functions": 675,
+  "outcomes": 12062,
+  "outcomes_hit": 6029,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-44": {
+  "blocks": 13021,
+  "blocks_hit": 8215,
+  "functions": 651,
+  "outcomes": 11514,
+  "outcomes_hit": 5723,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-45": {
+  "blocks": 13980,
+  "blocks_hit": 8729,
+  "functions": 669,
+  "outcomes": 12502,
+  "outcomes_hit": 6158,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-46": {
+  "blocks": 13623,
+  "blocks_hit": 8585,
+  "functions": 672,
+  "outcomes": 12044,
+  "outcomes_hit": 6028,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-47": {
+  "blocks": 14055,
+  "blocks_hit": 8768,
+  "functions": 677,
+  "outcomes": 12562,
+  "outcomes_hit": 6176,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-48": {
+  "blocks": 13284,
+  "blocks_hit": 8230,
+  "functions": 659,
+  "outcomes": 11672,
+  "outcomes_hit": 5729,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-49": {
+  "blocks": 13634,
+  "blocks_hit": 8617,
+  "functions": 675,
+  "outcomes": 12056,
+  "outcomes_hit": 6039,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bheld-50": {
+  "blocks": 13270,
+  "blocks_hit": 8262,
+  "functions": 657,
+  "outcomes": 11670,
+  "outcomes_hit": 5751,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurt-01": {
+  "blocks": 12957,
+  "blocks_hit": 8206,
+  "functions": 647,
+  "outcomes": 11450,
+  "outcomes_hit": 5750,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurt-02": {
+  "blocks": 13173,
+  "blocks_hit": 8341,
+  "functions": 657,
+  "outcomes": 11696,
+  "outcomes_hit": 5845,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurt-03": {
+  "blocks": 12854,
+  "blocks_hit": 8061,
+  "functions": 639,
+  "outcomes": 11352,
+  "outcomes_hit": 5628,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurt-04": {
+  "blocks": 12866,
+  "blocks_hit": 8084,
+  "functions": 640,
+  "outcomes": 11368,
+  "outcomes_hit": 5640,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurt-05": {
+  "blocks": 13344,
+  "blocks_hit": 8385,
+  "functions": 662,
+  "outcomes": 11860,
+  "outcomes_hit": 5876,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurta-01": {
+  "blocks": 13992,
+  "blocks_hit": 8670,
+  "functions": 670,
+  "outcomes": 12520,
+  "outcomes_hit": 6123,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurta-02": {
+  "blocks": 12973,
+  "blocks_hit": 8174,
+  "functions": 647,
+  "outcomes": 11472,
+  "outcomes_hit": 5696,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurta-03": {
+  "blocks": 12924,
+  "blocks_hit": 8175,
+  "functions": 644,
+  "outcomes": 11426,
+  "outcomes_hit": 5730,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurta-04": {
+  "blocks": 13127,
+  "blocks_hit": 8321,
+  "functions": 655,
+  "outcomes": 11656,
+  "outcomes_hit": 5826,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurta-05": {
+  "blocks": 12802,
+  "blocks_hit": 8014,
+  "functions": 634,
+  "outcomes": 11310,
+  "outcomes_hit": 5598,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurtk-01": {
+  "blocks": 13563,
+  "blocks_hit": 8435,
+  "functions": 667,
+  "outcomes": 11960,
+  "outcomes_hit": 5902,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurtk-02": {
+  "blocks": 13422,
+  "blocks_hit": 8343,
+  "functions": 663,
+  "outcomes": 11812,
+  "outcomes_hit": 5817,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurtk-03": {
+  "blocks": 13391,
+  "blocks_hit": 8408,
+  "functions": 659,
+  "outcomes": 11812,
+  "outcomes_hit": 5881,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurtk-04": {
+  "blocks": 13669,
+  "blocks_hit": 8553,
+  "functions": 670,
+  "outcomes": 12100,
+  "outcomes_hit": 5986,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurto-01": {
+  "blocks": 13129,
+  "blocks_hit": 8341,
+  "functions": 661,
+  "outcomes": 11608,
+  "outcomes_hit": 5857,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurto-02": {
+  "blocks": 13128,
+  "blocks_hit": 8283,
+  "functions": 659,
+  "outcomes": 11608,
+  "outcomes_hit": 5832,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurto-03": {
+  "blocks": 14183,
+  "blocks_hit": 8812,
+  "functions": 683,
+  "outcomes": 12696,
+  "outcomes_hit": 6232,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurto-04": {
+  "blocks": 13086,
+  "blocks_hit": 8345,
+  "functions": 657,
+  "outcomes": 11566,
+  "outcomes_hit": 5854,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurto-05": {
+  "blocks": 13058,
+  "blocks_hit": 8222,
+  "functions": 655,
+  "outcomes": 11534,
+  "outcomes_hit": 5776,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurts-01": {
+  "blocks": 14539,
+  "blocks_hit": 8780,
+  "functions": 681,
+  "outcomes": 12980,
+  "outcomes_hit": 6169,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurts-02": {
+  "blocks": 13727,
+  "blocks_hit": 8509,
+  "functions": 673,
+  "outcomes": 12152,
+  "outcomes_hit": 5928,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurts-03": {
+  "blocks": 13298,
+  "blocks_hit": 8219,
+  "functions": 657,
+  "outcomes": 11674,
+  "outcomes_hit": 5716,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurts-04": {
+  "blocks": 13595,
+  "blocks_hit": 8437,
+  "functions": 661,
+  "outcomes": 12036,
+  "outcomes_hit": 5906,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bhurts-05": {
+  "blocks": 13714,
+  "blocks_hit": 8529,
+  "functions": 671,
+  "outcomes": 12144,
+  "outcomes_hit": 5964,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-01": {
+  "blocks": 14031,
+  "blocks_hit": 8620,
+  "functions": 677,
+  "outcomes": 12392,
+  "outcomes_hit": 6018,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-02": {
+  "blocks": 12907,
+  "blocks_hit": 7329,
+  "functions": 619,
+  "outcomes": 11246,
+  "outcomes_hit": 4843,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-03": {
+  "blocks": 13912,
+  "blocks_hit": 8707,
+  "functions": 684,
+  "outcomes": 12320,
+  "outcomes_hit": 6092,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-04": {
+  "blocks": 14044,
+  "blocks_hit": 8694,
+  "functions": 684,
+  "outcomes": 12402,
+  "outcomes_hit": 6068,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-05": {
+  "blocks": 13878,
+  "blocks_hit": 8575,
+  "functions": 672,
+  "outcomes": 12262,
+  "outcomes_hit": 6000,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-06": {
+  "blocks": 14245,
+  "blocks_hit": 8856,
+  "functions": 697,
+  "outcomes": 12598,
+  "outcomes_hit": 6218,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-11": {
+  "blocks": 13014,
+  "blocks_hit": 7436,
+  "functions": 623,
+  "outcomes": 11344,
+  "outcomes_hit": 4920,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-14": {
+  "blocks": 13670,
+  "blocks_hit": 8387,
+  "functions": 670,
+  "outcomes": 12002,
+  "outcomes_hit": 5818,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-15": {
+  "blocks": 12889,
+  "blocks_hit": 7312,
+  "functions": 614,
+  "outcomes": 11228,
+  "outcomes_hit": 4851,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-16": {
+  "blocks": 14031,
+  "blocks_hit": 8660,
+  "functions": 683,
+  "outcomes": 12388,
+  "outcomes_hit": 6040,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-21": {
+  "blocks": 13835,
+  "blocks_hit": 8624,
+  "functions": 682,
+  "outcomes": 12238,
+  "outcomes_hit": 6006,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-22": {
+  "blocks": 13662,
+  "blocks_hit": 8496,
+  "functions": 670,
+  "outcomes": 12072,
+  "outcomes_hit": 5927,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-23": {
+  "blocks": 14757,
+  "blocks_hit": 9102,
+  "functions": 704,
+  "outcomes": 13166,
+  "outcomes_hit": 6415,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-24": {
+  "blocks": 13796,
+  "blocks_hit": 8649,
+  "functions": 684,
+  "outcomes": 12200,
+  "outcomes_hit": 6062,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-26": {
+  "blocks": 13731,
+  "blocks_hit": 8658,
+  "functions": 675,
+  "outcomes": 12158,
+  "outcomes_hit": 6049,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-27": {
+  "blocks": 12835,
+  "blocks_hit": 7432,
+  "functions": 627,
+  "outcomes": 11208,
+  "outcomes_hit": 4910,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-28": {
+  "blocks": 14636,
+  "blocks_hit": 9033,
+  "functions": 698,
+  "outcomes": 13048,
+  "outcomes_hit": 6364,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-31": {
+  "blocks": 13849,
+  "blocks_hit": 8766,
+  "functions": 684,
+  "outcomes": 12256,
+  "outcomes_hit": 6163,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-32": {
+  "blocks": 13907,
+  "blocks_hit": 8741,
+  "functions": 681,
+  "outcomes": 12328,
+  "outcomes_hit": 6152,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-33": {
+  "blocks": 13853,
+  "blocks_hit": 8683,
+  "functions": 681,
+  "outcomes": 12272,
+  "outcomes_hit": 6066,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-34": {
+  "blocks": 13890,
+  "blocks_hit": 8693,
+  "functions": 688,
+  "outcomes": 12290,
+  "outcomes_hit": 6086,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-35": {
+  "blocks": 14818,
+  "blocks_hit": 9070,
+  "functions": 703,
+  "outcomes": 13228,
+  "outcomes_hit": 6355,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-36": {
+  "blocks": 14514,
+  "blocks_hit": 8850,
+  "functions": 694,
+  "outcomes": 12936,
+  "outcomes_hit": 6206,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-37": {
+  "blocks": 13650,
+  "blocks_hit": 8495,
+  "functions": 674,
+  "outcomes": 12042,
+  "outcomes_hit": 5925,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-38": {
+  "blocks": 13732,
+  "blocks_hit": 8674,
+  "functions": 676,
+  "outcomes": 12148,
+  "outcomes_hit": 6081,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-39": {
+  "blocks": 12636,
+  "blocks_hit": 7166,
+  "functions": 610,
+  "outcomes": 11034,
+  "outcomes_hit": 4702,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-40": {
+  "blocks": 13635,
+  "blocks_hit": 8577,
+  "functions": 678,
+  "outcomes": 12026,
+  "outcomes_hit": 6004,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-41": {
+  "blocks": 13629,
+  "blocks_hit": 8453,
+  "functions": 672,
+  "outcomes": 12008,
+  "outcomes_hit": 5888,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-42": {
+  "blocks": 13859,
+  "blocks_hit": 8637,
+  "functions": 682,
+  "outcomes": 12270,
+  "outcomes_hit": 6023,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-43": {
+  "blocks": 13695,
+  "blocks_hit": 8645,
+  "functions": 683,
+  "outcomes": 12062,
+  "outcomes_hit": 6067,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-44": {
+  "blocks": 12927,
+  "blocks_hit": 8094,
+  "functions": 645,
+  "outcomes": 11390,
+  "outcomes_hit": 5632,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-45": {
+  "blocks": 13789,
+  "blocks_hit": 8698,
+  "functions": 681,
+  "outcomes": 12198,
+  "outcomes_hit": 6107,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-46": {
+  "blocks": 13754,
+  "blocks_hit": 8574,
+  "functions": 678,
+  "outcomes": 12172,
+  "outcomes_hit": 5980,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-47": {
+  "blocks": 12037,
+  "blocks_hit": 6692,
+  "functions": 587,
+  "outcomes": 10516,
+  "outcomes_hit": 4335,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-48": {
+  "blocks": 14457,
+  "blocks_hit": 8974,
+  "functions": 687,
+  "outcomes": 12876,
+  "outcomes_hit": 6339,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-49": {
+  "blocks": 13879,
+  "blocks_hit": 8772,
+  "functions": 683,
+  "outcomes": 12284,
+  "outcomes_hit": 6160,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-50": {
+  "blocks": 12612,
+  "blocks_hit": 7198,
+  "functions": 616,
+  "outcomes": 10984,
+  "outcomes_hit": 4727,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-51": {
+  "blocks": 13135,
+  "blocks_hit": 8296,
+  "functions": 655,
+  "outcomes": 11626,
+  "outcomes_hit": 5785,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bkeys-52": {
+  "blocks": 13697,
+  "blocks_hit": 8573,
+  "functions": 676,
+  "outcomes": 12114,
+  "outcomes_hit": 5973,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-blue-01": {
+  "blocks": 14383,
+  "blocks_hit": 8719,
+  "functions": 671,
+  "outcomes": 12822,
+  "outcomes_hit": 6075,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-blue-03": {
+  "blocks": 12185,
+  "blocks_hit": 6808,
+  "functions": 577,
+  "outcomes": 10604,
+  "outcomes_hit": 4541,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-blue-04": {
+  "blocks": 14476,
+  "blocks_hit": 8792,
+  "functions": 677,
+  "outcomes": 12912,
+  "outcomes_hit": 6148,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-blue-05": {
+  "blocks": 14402,
+  "blocks_hit": 8811,
+  "functions": 679,
+  "outcomes": 12820,
+  "outcomes_hit": 6156,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bluer-01": {
+  "blocks": 14094,
+  "blocks_hit": 8755,
+  "functions": 675,
+  "outcomes": 12606,
+  "outcomes_hit": 6175,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bluer-02": {
+  "blocks": 14068,
+  "blocks_hit": 8771,
+  "functions": 673,
+  "outcomes": 12586,
+  "outcomes_hit": 6195,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bluer-03": {
+  "blocks": 14107,
+  "blocks_hit": 8856,
+  "functions": 674,
+  "outcomes": 12620,
+  "outcomes_hit": 6280,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bluer-04": {
+  "blocks": 14053,
+  "blocks_hit": 8684,
+  "functions": 670,
+  "outcomes": 12570,
+  "outcomes_hit": 6105,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bluer-05": {
+  "blocks": 14067,
+  "blocks_hit": 8795,
+  "functions": 672,
+  "outcomes": 12582,
+  "outcomes_hit": 6207,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bpra-01": {
+  "blocks": 13295,
+  "blocks_hit": 8115,
+  "functions": 646,
+  "outcomes": 11716,
+  "outcomes_hit": 5690,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bpra-02": {
+  "blocks": 14341,
+  "blocks_hit": 8858,
+  "functions": 680,
+  "outcomes": 12754,
+  "outcomes_hit": 6193,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bpra-03": {
+  "blocks": 14063,
+  "blocks_hit": 8624,
+  "functions": 665,
+  "outcomes": 12588,
+  "outcomes_hit": 6044,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bpra-04": {
+  "blocks": 13880,
+  "blocks_hit": 8531,
+  "functions": 660,
+  "outcomes": 12404,
+  "outcomes_hit": 5937,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bpra-05": {
+  "blocks": 13974,
+  "blocks_hit": 8633,
+  "functions": 664,
+  "outcomes": 12496,
+  "outcomes_hit": 6036,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bprar-01": {
+  "blocks": 12907,
+  "blocks_hit": 8035,
+  "functions": 636,
+  "outcomes": 11416,
+  "outcomes_hit": 5721,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bprar-02": {
+  "blocks": 14032,
+  "blocks_hit": 8765,
+  "functions": 671,
+  "outcomes": 12554,
+  "outcomes_hit": 6176,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bprar-03": {
+  "blocks": 12998,
+  "blocks_hit": 8050,
+  "functions": 641,
+  "outcomes": 11504,
+  "outcomes_hit": 5695,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bprar-04": {
+  "blocks": 12966,
+  "blocks_hit": 7963,
+  "functions": 637,
+  "outcomes": 11474,
+  "outcomes_hit": 5592,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bprar-05": {
+  "blocks": 12890,
+  "blocks_hit": 7883,
+  "functions": 632,
+  "outcomes": 11402,
+  "outcomes_hit": 5565,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-01": {
+  "blocks": 13133,
+  "blocks_hit": 8314,
+  "functions": 659,
+  "outcomes": 11620,
+  "outcomes_hit": 5801,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-02": {
+  "blocks": 14088,
+  "blocks_hit": 8759,
+  "functions": 679,
+  "outcomes": 12592,
+  "outcomes_hit": 6173,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-03": {
+  "blocks": 13252,
+  "blocks_hit": 8433,
+  "functions": 660,
+  "outcomes": 11760,
+  "outcomes_hit": 5926,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-04": {
+  "blocks": 14138,
+  "blocks_hit": 8797,
+  "functions": 678,
+  "outcomes": 12644,
+  "outcomes_hit": 6185,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-05": {
+  "blocks": 13299,
+  "blocks_hit": 8454,
+  "functions": 667,
+  "outcomes": 11798,
+  "outcomes_hit": 5952,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-06": {
+  "blocks": 14277,
+  "blocks_hit": 8925,
+  "functions": 685,
+  "outcomes": 12776,
+  "outcomes_hit": 6314,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-07": {
+  "blocks": 14052,
+  "blocks_hit": 8734,
+  "functions": 676,
+  "outcomes": 12564,
+  "outcomes_hit": 6159,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-08": {
+  "blocks": 13222,
+  "blocks_hit": 8377,
+  "functions": 662,
+  "outcomes": 11726,
+  "outcomes_hit": 5862,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-09": {
+  "blocks": 12899,
+  "blocks_hit": 8055,
+  "functions": 647,
+  "outcomes": 11374,
+  "outcomes_hit": 5609,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-brun-10": {
+  "blocks": 13282,
+  "blocks_hit": 8403,
+  "functions": 662,
+  "outcomes": 11786,
+  "outcomes_hit": 5885,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-01": {
+  "blocks": 14023,
+  "blocks_hit": 8730,
+  "functions": 671,
+  "outcomes": 12532,
+  "outcomes_hit": 6145,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-02": {
+  "blocks": 13179,
+  "blocks_hit": 8303,
+  "functions": 661,
+  "outcomes": 11678,
+  "outcomes_hit": 5793,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-03": {
+  "blocks": 12909,
+  "blocks_hit": 8136,
+  "functions": 650,
+  "outcomes": 11378,
+  "outcomes_hit": 5665,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-04": {
+  "blocks": 14043,
+  "blocks_hit": 8759,
+  "functions": 674,
+  "outcomes": 12550,
+  "outcomes_hit": 6170,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-05": {
+  "blocks": 13223,
+  "blocks_hit": 8360,
+  "functions": 662,
+  "outcomes": 11724,
+  "outcomes_hit": 5852,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-06": {
+  "blocks": 12238,
+  "blocks_hit": 7088,
+  "functions": 602,
+  "outcomes": 10716,
+  "outcomes_hit": 4711,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-07": {
+  "blocks": 13205,
+  "blocks_hit": 8348,
+  "functions": 661,
+  "outcomes": 11706,
+  "outcomes_hit": 5837,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-08": {
+  "blocks": 13214,
+  "blocks_hit": 8378,
+  "functions": 662,
+  "outcomes": 11716,
+  "outcomes_hit": 5850,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-22": {
+  "blocks": 13198,
+  "blocks_hit": 8383,
+  "functions": 660,
+  "outcomes": 11700,
+  "outcomes_hit": 5876,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-23": {
+  "blocks": 14066,
+  "blocks_hit": 8770,
+  "functions": 677,
+  "outcomes": 12568,
+  "outcomes_hit": 6189,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-24": {
+  "blocks": 12957,
+  "blocks_hit": 8161,
+  "functions": 649,
+  "outcomes": 11436,
+  "outcomes_hit": 5674,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-26": {
+  "blocks": 13200,
+  "blocks_hit": 8359,
+  "functions": 661,
+  "outcomes": 11702,
+  "outcomes_hit": 5830,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-27": {
+  "blocks": 13219,
+  "blocks_hit": 8443,
+  "functions": 668,
+  "outcomes": 11718,
+  "outcomes_hit": 5950,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-28": {
+  "blocks": 13191,
+  "blocks_hit": 8413,
+  "functions": 664,
+  "outcomes": 11694,
+  "outcomes_hit": 5910,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-31": {
+  "blocks": 12915,
+  "blocks_hit": 8088,
+  "functions": 651,
+  "outcomes": 11390,
+  "outcomes_hit": 5635,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-32": {
+  "blocks": 13204,
+  "blocks_hit": 8380,
+  "functions": 661,
+  "outcomes": 11706,
+  "outcomes_hit": 5856,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-33": {
+  "blocks": 13226,
+  "blocks_hit": 8339,
+  "functions": 662,
+  "outcomes": 11728,
+  "outcomes_hit": 5834,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-34": {
+  "blocks": 13203,
+  "blocks_hit": 8397,
+  "functions": 661,
+  "outcomes": 11708,
+  "outcomes_hit": 5902,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-35": {
+  "blocks": 13231,
+  "blocks_hit": 8388,
+  "functions": 663,
+  "outcomes": 11736,
+  "outcomes_hit": 5871,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-36": {
+  "blocks": 13227,
+  "blocks_hit": 8409,
+  "functions": 667,
+  "outcomes": 11726,
+  "outcomes_hit": 5885,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-37": {
+  "blocks": 12956,
+  "blocks_hit": 8203,
+  "functions": 651,
+  "outcomes": 11428,
+  "outcomes_hit": 5735,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-38": {
+  "blocks": 13211,
+  "blocks_hit": 8363,
+  "functions": 663,
+  "outcomes": 11710,
+  "outcomes_hit": 5851,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-39": {
+  "blocks": 12938,
+  "blocks_hit": 8262,
+  "functions": 651,
+  "outcomes": 11408,
+  "outcomes_hit": 5797,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-40": {
+  "blocks": 13207,
+  "blocks_hit": 8366,
+  "functions": 664,
+  "outcomes": 11706,
+  "outcomes_hit": 5853,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-41": {
+  "blocks": 13004,
+  "blocks_hit": 8218,
+  "functions": 652,
+  "outcomes": 11480,
+  "outcomes_hit": 5727,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-42": {
+  "blocks": 13170,
+  "blocks_hit": 8312,
+  "functions": 657,
+  "outcomes": 11678,
+  "outcomes_hit": 5794,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-43": {
+  "blocks": 13992,
+  "blocks_hit": 8680,
+  "functions": 669,
+  "outcomes": 12510,
+  "outcomes_hit": 6100,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-44": {
+  "blocks": 13034,
+  "blocks_hit": 8272,
+  "functions": 652,
+  "outcomes": 11530,
+  "outcomes_hit": 5765,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-45": {
+  "blocks": 12861,
+  "blocks_hit": 8112,
+  "functions": 643,
+  "outcomes": 11344,
+  "outcomes_hit": 5686,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-46": {
+  "blocks": 13239,
+  "blocks_hit": 8451,
+  "functions": 666,
+  "outcomes": 11744,
+  "outcomes_hit": 5917,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-47": {
+  "blocks": 14047,
+  "blocks_hit": 8780,
+  "functions": 677,
+  "outcomes": 12558,
+  "outcomes_hit": 6184,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-48": {
+  "blocks": 13229,
+  "blocks_hit": 8427,
+  "functions": 664,
+  "outcomes": 11732,
+  "outcomes_hit": 5909,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-49": {
+  "blocks": 13221,
+  "blocks_hit": 8380,
+  "functions": 661,
+  "outcomes": 11724,
+  "outcomes_hit": 5875,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-bsafe-50": {
+  "blocks": 14039,
+  "blocks_hit": 8731,
+  "functions": 674,
+  "outcomes": 12544,
+  "outcomes_hit": 6137,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-01": {
+  "blocks": 5491,
+  "blocks_hit": 3266,
+  "functions": 338,
+  "outcomes": 4154,
+  "outcomes_hit": 1848,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-02": {
+  "blocks": 5439,
+  "blocks_hit": 3230,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1818,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-03": {
+  "blocks": 5439,
+  "blocks_hit": 3224,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1810,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-04": {
+  "blocks": 5439,
+  "blocks_hit": 3249,
+  "functions": 336,
+  "outcomes": 4098,
+  "outcomes_hit": 1837,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-05": {
+  "blocks": 5387,
+  "blocks_hit": 3180,
+  "functions": 332,
+  "outcomes": 4042,
+  "outcomes_hit": 1768,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-06": {
+  "blocks": 5491,
+  "blocks_hit": 3285,
+  "functions": 338,
+  "outcomes": 4154,
+  "outcomes_hit": 1871,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-07": {
+  "blocks": 5387,
+  "blocks_hit": 3184,
+  "functions": 332,
+  "outcomes": 4042,
+  "outcomes_hit": 1770,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-08": {
+  "blocks": 5491,
+  "blocks_hit": 3263,
+  "functions": 338,
+  "outcomes": 4154,
+  "outcomes_hit": 1842,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-09": {
+  "blocks": 5468,
+  "blocks_hit": 3231,
+  "functions": 336,
+  "outcomes": 4138,
+  "outcomes_hit": 1810,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-21": {
+  "blocks": 5491,
+  "blocks_hit": 3276,
+  "functions": 338,
+  "outcomes": 4154,
+  "outcomes_hit": 1859,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-22": {
+  "blocks": 5938,
+  "blocks_hit": 3380,
+  "functions": 338,
+  "outcomes": 4456,
+  "outcomes_hit": 1896,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-23": {
+  "blocks": 6044,
+  "blocks_hit": 3455,
+  "functions": 343,
+  "outcomes": 4540,
+  "outcomes_hit": 1964,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-24": {
+  "blocks": 5491,
+  "blocks_hit": 3271,
+  "functions": 338,
+  "outcomes": 4154,
+  "outcomes_hit": 1849,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-25": {
+  "blocks": 5468,
+  "blocks_hit": 3244,
+  "functions": 336,
+  "outcomes": 4138,
+  "outcomes_hit": 1824,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-26": {
+  "blocks": 5387,
+  "blocks_hit": 3186,
+  "functions": 332,
+  "outcomes": 4042,
+  "outcomes_hit": 1774,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-27": {
+  "blocks": 6015,
+  "blocks_hit": 3459,
+  "functions": 340,
+  "outcomes": 4506,
+  "outcomes_hit": 1951,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-28": {
+  "blocks": 5852,
+  "blocks_hit": 3338,
+  "functions": 333,
+  "outcomes": 4370,
+  "outcomes_hit": 1871,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-29": {
+  "blocks": 5439,
+  "blocks_hit": 3232,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1821,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-30": {
+  "blocks": 5387,
+  "blocks_hit": 3203,
+  "functions": 332,
+  "outcomes": 4042,
+  "outcomes_hit": 1793,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-31": {
+  "blocks": 5387,
+  "blocks_hit": 3216,
+  "functions": 332,
+  "outcomes": 4042,
+  "outcomes_hit": 1813,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-32": {
+  "blocks": 5919,
+  "blocks_hit": 3356,
+  "functions": 337,
+  "outcomes": 4440,
+  "outcomes_hit": 1893,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-33": {
+  "blocks": 5989,
+  "blocks_hit": 3400,
+  "functions": 336,
+  "outcomes": 4482,
+  "outcomes_hit": 1906,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-34": {
+  "blocks": 5989,
+  "blocks_hit": 3413,
+  "functions": 336,
+  "outcomes": 4482,
+  "outcomes_hit": 1915,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-35": {
+  "blocks": 5982,
+  "blocks_hit": 3410,
+  "functions": 336,
+  "outcomes": 4472,
+  "outcomes_hit": 1922,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-36": {
+  "blocks": 5468,
+  "blocks_hit": 3268,
+  "functions": 336,
+  "outcomes": 4138,
+  "outcomes_hit": 1858,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-37": {
+  "blocks": 5491,
+  "blocks_hit": 3259,
+  "functions": 338,
+  "outcomes": 4154,
+  "outcomes_hit": 1843,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-38": {
+  "blocks": 6185,
+  "blocks_hit": 3524,
+  "functions": 351,
+  "outcomes": 4682,
+  "outcomes_hit": 1999,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-39": {
+  "blocks": 6067,
+  "blocks_hit": 3494,
+  "functions": 342,
+  "outcomes": 4562,
+  "outcomes_hit": 1977,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-40": {
+  "blocks": 5439,
+  "blocks_hit": 3226,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1813,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-41": {
+  "blocks": 6000,
+  "blocks_hit": 3430,
+  "functions": 338,
+  "outcomes": 4492,
+  "outcomes_hit": 1925,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-42": {
+  "blocks": 5491,
+  "blocks_hit": 3264,
+  "functions": 338,
+  "outcomes": 4154,
+  "outcomes_hit": 1847,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-43": {
+  "blocks": 5439,
+  "blocks_hit": 3223,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1814,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-44": {
+  "blocks": 5439,
+  "blocks_hit": 3244,
+  "functions": 336,
+  "outcomes": 4098,
+  "outcomes_hit": 1828,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-45": {
+  "blocks": 5439,
+  "blocks_hit": 3238,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1829,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-46": {
+  "blocks": 5915,
+  "blocks_hit": 3432,
+  "functions": 339,
+  "outcomes": 4434,
+  "outcomes_hit": 1952,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-47": {
+  "blocks": 5439,
+  "blocks_hit": 3243,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1834,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-48": {
+  "blocks": 5439,
+  "blocks_hit": 3226,
+  "functions": 334,
+  "outcomes": 4098,
+  "outcomes_hit": 1815,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-49": {
+  "blocks": 5491,
+  "blocks_hit": 3264,
+  "functions": 338,
+  "outcomes": 4154,
+  "outcomes_hit": 1842,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-cache-50": {
+  "blocks": 5896,
+  "blocks_hit": 3356,
+  "functions": 338,
+  "outcomes": 4418,
+  "outcomes_hit": 1894,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-01": {
+  "blocks": 15923,
+  "blocks_hit": 9813,
+  "functions": 675,
+  "outcomes": 14174,
+  "outcomes_hit": 7054,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-02": {
+  "blocks": 15847,
+  "blocks_hit": 9575,
+  "functions": 662,
+  "outcomes": 14092,
+  "outcomes_hit": 6783,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-03": {
+  "blocks": 12854,
+  "blocks_hit": 7429,
+  "functions": 578,
+  "outcomes": 11412,
+  "outcomes_hit": 5019,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-04": {
+  "blocks": 15812,
+  "blocks_hit": 9681,
+  "functions": 665,
+  "outcomes": 14084,
+  "outcomes_hit": 6917,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-06": {
+  "blocks": 15775,
+  "blocks_hit": 9506,
+  "functions": 663,
+  "outcomes": 13990,
+  "outcomes_hit": 6716,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-07": {
+  "blocks": 13186,
+  "blocks_hit": 7757,
+  "functions": 596,
+  "outcomes": 11770,
+  "outcomes_hit": 5301,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-08": {
+  "blocks": 16008,
+  "blocks_hit": 9832,
+  "functions": 678,
+  "outcomes": 14238,
+  "outcomes_hit": 7018,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-09": {
+  "blocks": 12701,
+  "blocks_hit": 7866,
+  "functions": 626,
+  "outcomes": 11298,
+  "outcomes_hit": 5504,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-10": {
+  "blocks": 16165,
+  "blocks_hit": 9947,
+  "functions": 681,
+  "outcomes": 14388,
+  "outcomes_hit": 7101,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-11": {
+  "blocks": 16007,
+  "blocks_hit": 9841,
+  "functions": 680,
+  "outcomes": 14240,
+  "outcomes_hit": 7033,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-12": {
+  "blocks": 15846,
+  "blocks_hit": 9641,
+  "functions": 668,
+  "outcomes": 14108,
+  "outcomes_hit": 6884,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-13": {
+  "blocks": 15975,
+  "blocks_hit": 9806,
+  "functions": 679,
+  "outcomes": 14226,
+  "outcomes_hit": 7017,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-14": {
+  "blocks": 15676,
+  "blocks_hit": 9494,
+  "functions": 657,
+  "outcomes": 13912,
+  "outcomes_hit": 6718,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-15": {
+  "blocks": 12282,
+  "blocks_hit": 7792,
+  "functions": 603,
+  "outcomes": 10858,
+  "outcomes_hit": 5592,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-16": {
+  "blocks": 12290,
+  "blocks_hit": 7761,
+  "functions": 600,
+  "outcomes": 10862,
+  "outcomes_hit": 5566,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-17": {
+  "blocks": 14678,
+  "blocks_hit": 9015,
+  "functions": 637,
+  "outcomes": 13078,
+  "outcomes_hit": 6331,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-18": {
+  "blocks": 13452,
+  "blocks_hit": 7775,
+  "functions": 607,
+  "outcomes": 11958,
+  "outcomes_hit": 5257,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-19": {
+  "blocks": 15977,
+  "blocks_hit": 9831,
+  "functions": 677,
+  "outcomes": 14228,
+  "outcomes_hit": 7026,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-20": {
+  "blocks": 15849,
+  "blocks_hit": 9621,
+  "functions": 664,
+  "outcomes": 14116,
+  "outcomes_hit": 6849,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-21": {
+  "blocks": 13767,
+  "blocks_hit": 8702,
+  "functions": 694,
+  "outcomes": 12246,
+  "outcomes_hit": 6137,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-22": {
+  "blocks": 16039,
+  "blocks_hit": 9808,
+  "functions": 674,
+  "outcomes": 14292,
+  "outcomes_hit": 7021,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-23": {
+  "blocks": 15775,
+  "blocks_hit": 9478,
+  "functions": 663,
+  "outcomes": 13990,
+  "outcomes_hit": 6685,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-24": {
+  "blocks": 15966,
+  "blocks_hit": 9857,
+  "functions": 678,
+  "outcomes": 14192,
+  "outcomes_hit": 7034,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-25": {
+  "blocks": 15850,
+  "blocks_hit": 9636,
+  "functions": 668,
+  "outcomes": 14106,
+  "outcomes_hit": 6860,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-26": {
+  "blocks": 14780,
+  "blocks_hit": 9115,
+  "functions": 645,
+  "outcomes": 13184,
+  "outcomes_hit": 6436,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-27": {
+  "blocks": 12558,
+  "blocks_hit": 7811,
+  "functions": 613,
+  "outcomes": 11116,
+  "outcomes_hit": 5565,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-28": {
+  "blocks": 14678,
+  "blocks_hit": 9018,
+  "functions": 637,
+  "outcomes": 13078,
+  "outcomes_hit": 6343,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-29": {
+  "blocks": 15862,
+  "blocks_hit": 9710,
+  "functions": 670,
+  "outcomes": 14116,
+  "outcomes_hit": 6941,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-30": {
+  "blocks": 13296,
+  "blocks_hit": 8360,
+  "functions": 666,
+  "outcomes": 11794,
+  "outcomes_hit": 5857,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-31": {
+  "blocks": 12430,
+  "blocks_hit": 7794,
+  "functions": 615,
+  "outcomes": 11022,
+  "outcomes_hit": 5457,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-32": {
+  "blocks": 15850,
+  "blocks_hit": 9601,
+  "functions": 665,
+  "outcomes": 14116,
+  "outcomes_hit": 6834,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-33": {
+  "blocks": 15943,
+  "blocks_hit": 9760,
+  "functions": 669,
+  "outcomes": 14178,
+  "outcomes_hit": 6971,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-34": {
+  "blocks": 16068,
+  "blocks_hit": 9803,
+  "functions": 675,
+  "outcomes": 14324,
+  "outcomes_hit": 7019,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-35": {
+  "blocks": 14678,
+  "blocks_hit": 8982,
+  "functions": 637,
+  "outcomes": 13078,
+  "outcomes_hit": 6294,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-36": {
+  "blocks": 14122,
+  "blocks_hit": 8818,
+  "functions": 678,
+  "outcomes": 12598,
+  "outcomes_hit": 6214,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-37": {
+  "blocks": 13453,
+  "blocks_hit": 7783,
+  "functions": 608,
+  "outcomes": 11958,
+  "outcomes_hit": 5271,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-38": {
+  "blocks": 13109,
+  "blocks_hit": 8190,
+  "functions": 657,
+  "outcomes": 11608,
+  "outcomes_hit": 5714,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-39": {
+  "blocks": 16189,
+  "blocks_hit": 10059,
+  "functions": 684,
+  "outcomes": 14408,
+  "outcomes_hit": 7208,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-carry-40": {
+  "blocks": 12282,
+  "blocks_hit": 7586,
+  "functions": 596,
+  "outcomes": 10864,
+  "outcomes_hit": 5367,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create-02": {
+  "blocks": 7246,
+  "blocks_hit": 3690,
+  "functions": 356,
+  "outcomes": 5678,
+  "outcomes_hit": 2075,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create-03": {
+  "blocks": 6349,
+  "blocks_hit": 3520,
+  "functions": 354,
+  "outcomes": 4788,
+  "outcomes_hit": 1948,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create-04": {
+  "blocks": 6264,
+  "blocks_hit": 3366,
+  "functions": 350,
+  "outcomes": 4724,
+  "outcomes_hit": 1834,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create-05": {
+  "blocks": 7262,
+  "blocks_hit": 3718,
+  "functions": 357,
+  "outcomes": 5694,
+  "outcomes_hit": 2105,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create-06": {
+  "blocks": 7226,
+  "blocks_hit": 3662,
+  "functions": 355,
+  "outcomes": 5656,
+  "outcomes_hit": 2051,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create-08": {
+  "blocks": 6264,
+  "blocks_hit": 3358,
+  "functions": 350,
+  "outcomes": 4724,
+  "outcomes_hit": 1824,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create-10": {
+  "blocks": 7193,
+  "blocks_hit": 3621,
+  "functions": 352,
+  "outcomes": 5642,
+  "outcomes_hit": 2033,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-01": {
+  "blocks": 7279,
+  "blocks_hit": 3968,
+  "functions": 358,
+  "outcomes": 5712,
+  "outcomes_hit": 2328,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-02": {
+  "blocks": 7272,
+  "blocks_hit": 3850,
+  "functions": 359,
+  "outcomes": 5704,
+  "outcomes_hit": 2221,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-03": {
+  "blocks": 6264,
+  "blocks_hit": 3375,
+  "functions": 350,
+  "outcomes": 4724,
+  "outcomes_hit": 1840,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-06": {
+  "blocks": 7275,
+  "blocks_hit": 3764,
+  "functions": 358,
+  "outcomes": 5708,
+  "outcomes_hit": 2137,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-07": {
+  "blocks": 6300,
+  "blocks_hit": 3414,
+  "functions": 352,
+  "outcomes": 4762,
+  "outcomes_hit": 1869,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-08": {
+  "blocks": 6280,
+  "blocks_hit": 3391,
+  "functions": 351,
+  "outcomes": 4740,
+  "outcomes_hit": 1853,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-12": {
+  "blocks": 6379,
+  "blocks_hit": 3747,
+  "functions": 357,
+  "outcomes": 4818,
+  "outcomes_hit": 2123,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-14": {
+  "blocks": 7267,
+  "blocks_hit": 3957,
+  "functions": 358,
+  "outcomes": 5698,
+  "outcomes_hit": 2331,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-16": {
+  "blocks": 7242,
+  "blocks_hit": 3819,
+  "functions": 355,
+  "outcomes": 5694,
+  "outcomes_hit": 2183,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-17": {
+  "blocks": 6284,
+  "blocks_hit": 3408,
+  "functions": 351,
+  "outcomes": 4746,
+  "outcomes_hit": 1860,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-20": {
+  "blocks": 6264,
+  "blocks_hit": 3347,
+  "functions": 350,
+  "outcomes": 4724,
+  "outcomes_hit": 1816,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-23": {
+  "blocks": 6280,
+  "blocks_hit": 3373,
+  "functions": 351,
+  "outcomes": 4740,
+  "outcomes_hit": 1830,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-25": {
+  "blocks": 6284,
+  "blocks_hit": 3401,
+  "functions": 351,
+  "outcomes": 4746,
+  "outcomes_hit": 1859,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create2-26": {
+  "blocks": 7255,
+  "blocks_hit": 3891,
+  "functions": 355,
+  "outcomes": 5690,
+  "outcomes_hit": 2297,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-01": {
+  "blocks": 7274,
+  "blocks_hit": 3924,
+  "functions": 357,
+  "outcomes": 5708,
+  "outcomes_hit": 2309,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-02": {
+  "blocks": 7263,
+  "blocks_hit": 3799,
+  "functions": 356,
+  "outcomes": 5696,
+  "outcomes_hit": 2181,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-03": {
+  "blocks": 7254,
+  "blocks_hit": 3955,
+  "functions": 356,
+  "outcomes": 5686,
+  "outcomes_hit": 2351,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-04": {
+  "blocks": 7240,
+  "blocks_hit": 3747,
+  "functions": 354,
+  "outcomes": 5672,
+  "outcomes_hit": 2147,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-05": {
+  "blocks": 6313,
+  "blocks_hit": 3468,
+  "functions": 353,
+  "outcomes": 4776,
+  "outcomes_hit": 1914,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-06": {
+  "blocks": 7247,
+  "blocks_hit": 3723,
+  "functions": 355,
+  "outcomes": 5680,
+  "outcomes_hit": 2116,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-07": {
+  "blocks": 7275,
+  "blocks_hit": 3960,
+  "functions": 358,
+  "outcomes": 5708,
+  "outcomes_hit": 2323,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-08": {
+  "blocks": 7280,
+  "blocks_hit": 4009,
+  "functions": 359,
+  "outcomes": 5712,
+  "outcomes_hit": 2364,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-09": {
+  "blocks": 7272,
+  "blocks_hit": 4003,
+  "functions": 359,
+  "outcomes": 5704,
+  "outcomes_hit": 2377,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-10": {
+  "blocks": 7258,
+  "blocks_hit": 3776,
+  "functions": 356,
+  "outcomes": 5692,
+  "outcomes_hit": 2158,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-22": {
+  "blocks": 7689,
+  "blocks_hit": 4143,
+  "functions": 376,
+  "outcomes": 6106,
+  "outcomes_hit": 2450,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-23": {
+  "blocks": 7254,
+  "blocks_hit": 4126,
+  "functions": 356,
+  "outcomes": 5686,
+  "outcomes_hit": 2448,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-24": {
+  "blocks": 7240,
+  "blocks_hit": 3925,
+  "functions": 354,
+  "outcomes": 5672,
+  "outcomes_hit": 2328,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-25": {
+  "blocks": 7260,
+  "blocks_hit": 3939,
+  "functions": 355,
+  "outcomes": 5694,
+  "outcomes_hit": 2340,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-26": {
+  "blocks": 7238,
+  "blocks_hit": 3924,
+  "functions": 354,
+  "outcomes": 5670,
+  "outcomes_hit": 2330,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-27": {
+  "blocks": 7262,
+  "blocks_hit": 4004,
+  "functions": 357,
+  "outcomes": 5694,
+  "outcomes_hit": 2359,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-28": {
+  "blocks": 7389,
+  "blocks_hit": 4110,
+  "functions": 374,
+  "outcomes": 5794,
+  "outcomes_hit": 2313,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-29": {
+  "blocks": 7251,
+  "blocks_hit": 3921,
+  "functions": 355,
+  "outcomes": 5684,
+  "outcomes_hit": 2322,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-create3-30": {
+  "blocks": 7722,
+  "blocks_hit": 4113,
+  "functions": 378,
+  "outcomes": 6142,
+  "outcomes_hit": 2407,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gate-05": {
+  "blocks": 13593,
+  "blocks_hit": 8325,
+  "functions": 666,
+  "outcomes": 12020,
+  "outcomes_hit": 5764,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gate-06": {
+  "blocks": 14704,
+  "blocks_hit": 8783,
+  "functions": 687,
+  "outcomes": 13082,
+  "outcomes_hit": 6141,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gate-13": {
+  "blocks": 13166,
+  "blocks_hit": 8157,
+  "functions": 657,
+  "outcomes": 11672,
+  "outcomes_hit": 5666,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gate-14": {
+  "blocks": 14457,
+  "blocks_hit": 8755,
+  "functions": 685,
+  "outcomes": 12880,
+  "outcomes_hit": 6104,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gate-16": {
+  "blocks": 13705,
+  "blocks_hit": 8320,
+  "functions": 665,
+  "outcomes": 12064,
+  "outcomes_hit": 5747,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gatem-01": {
+  "blocks": 13202,
+  "blocks_hit": 8176,
+  "functions": 656,
+  "outcomes": 11694,
+  "outcomes_hit": 5670,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gatem-02": {
+  "blocks": 13197,
+  "blocks_hit": 8166,
+  "functions": 654,
+  "outcomes": 11692,
+  "outcomes_hit": 5663,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gatem-03": {
+  "blocks": 13189,
+  "blocks_hit": 8158,
+  "functions": 652,
+  "outcomes": 11688,
+  "outcomes_hit": 5662,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gatem-04": {
+  "blocks": 13189,
+  "blocks_hit": 8139,
+  "functions": 652,
+  "outcomes": 11688,
+  "outcomes_hit": 5643,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gatem-05": {
+  "blocks": 13189,
+  "blocks_hit": 8163,
+  "functions": 652,
+  "outcomes": 11688,
+  "outcomes_hit": 5664,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-gatem-06": {
+  "blocks": 13198,
+  "blocks_hit": 8170,
+  "functions": 655,
+  "outcomes": 11692,
+  "outcomes_hit": 5669,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-01": {
+  "blocks": 12881,
+  "blocks_hit": 7927,
+  "functions": 637,
+  "outcomes": 11408,
+  "outcomes_hit": 5487,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-02": {
+  "blocks": 12667,
+  "blocks_hit": 7772,
+  "functions": 628,
+  "outcomes": 11172,
+  "outcomes_hit": 5388,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-03": {
+  "blocks": 13030,
+  "blocks_hit": 8015,
+  "functions": 643,
+  "outcomes": 11562,
+  "outcomes_hit": 5557,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-04": {
+  "blocks": 12842,
+  "blocks_hit": 7928,
+  "functions": 634,
+  "outcomes": 11354,
+  "outcomes_hit": 5529,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-05": {
+  "blocks": 13073,
+  "blocks_hit": 7908,
+  "functions": 641,
+  "outcomes": 11478,
+  "outcomes_hit": 5426,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-06": {
+  "blocks": 12617,
+  "blocks_hit": 7760,
+  "functions": 627,
+  "outcomes": 11108,
+  "outcomes_hit": 5360,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-07": {
+  "blocks": 12801,
+  "blocks_hit": 7824,
+  "functions": 633,
+  "outcomes": 11302,
+  "outcomes_hit": 5403,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-08": {
+  "blocks": 13703,
+  "blocks_hit": 8205,
+  "functions": 650,
+  "outcomes": 12232,
+  "outcomes_hit": 5690,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-09": {
+  "blocks": 13864,
+  "blocks_hit": 8359,
+  "functions": 656,
+  "outcomes": 12398,
+  "outcomes_hit": 5812,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-hurt-10": {
+  "blocks": 13093,
+  "blocks_hit": 8011,
+  "functions": 643,
+  "outcomes": 11632,
+  "outcomes_hit": 5558,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-01": {
+  "blocks": 5606,
+  "blocks_hit": 3209,
+  "functions": 308,
+  "outcomes": 4108,
+  "outcomes_hit": 1755,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-02": {
+  "blocks": 5640,
+  "blocks_hit": 3260,
+  "functions": 312,
+  "outcomes": 4142,
+  "outcomes_hit": 1797,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-03": {
+  "blocks": 5581,
+  "blocks_hit": 3188,
+  "functions": 306,
+  "outcomes": 4078,
+  "outcomes_hit": 1737,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-04": {
+  "blocks": 5615,
+  "blocks_hit": 3213,
+  "functions": 309,
+  "outcomes": 4116,
+  "outcomes_hit": 1756,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-05": {
+  "blocks": 5640,
+  "blocks_hit": 3249,
+  "functions": 312,
+  "outcomes": 4142,
+  "outcomes_hit": 1790,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-06": {
+  "blocks": 5640,
+  "blocks_hit": 3261,
+  "functions": 312,
+  "outcomes": 4142,
+  "outcomes_hit": 1790,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-07": {
+  "blocks": 5640,
+  "blocks_hit": 3246,
+  "functions": 312,
+  "outcomes": 4142,
+  "outcomes_hit": 1786,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-08": {
+  "blocks": 5564,
+  "blocks_hit": 3201,
+  "functions": 307,
+  "outcomes": 4060,
+  "outcomes_hit": 1751,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-09": {
+  "blocks": 5620,
+  "blocks_hit": 3214,
+  "functions": 310,
+  "outcomes": 4120,
+  "outcomes_hit": 1756,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-kit-10": {
+  "blocks": 5640,
+  "blocks_hit": 3248,
+  "functions": 312,
+  "outcomes": 4142,
+  "outcomes_hit": 1783,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-01": {
+  "blocks": 5020,
+  "blocks_hit": 3051,
+  "functions": 307,
+  "outcomes": 3688,
+  "outcomes_hit": 1674,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-02": {
+  "blocks": 5180,
+  "blocks_hit": 3019,
+  "functions": 314,
+  "outcomes": 3804,
+  "outcomes_hit": 1637,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-03": {
+  "blocks": 5215,
+  "blocks_hit": 3108,
+  "functions": 317,
+  "outcomes": 3834,
+  "outcomes_hit": 1705,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-04": {
+  "blocks": 4997,
+  "blocks_hit": 2940,
+  "functions": 301,
+  "outcomes": 3674,
+  "outcomes_hit": 1587,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-05": {
+  "blocks": 4802,
+  "blocks_hit": 2854,
+  "functions": 295,
+  "outcomes": 3482,
+  "outcomes_hit": 1514,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-06": {
+  "blocks": 4981,
+  "blocks_hit": 3008,
+  "functions": 307,
+  "outcomes": 3640,
+  "outcomes_hit": 1633,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-07": {
+  "blocks": 4809,
+  "blocks_hit": 2867,
+  "functions": 296,
+  "outcomes": 3488,
+  "outcomes_hit": 1518,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-08": {
+  "blocks": 5033,
+  "blocks_hit": 3038,
+  "functions": 307,
+  "outcomes": 3698,
+  "outcomes_hit": 1650,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-09": {
+  "blocks": 5181,
+  "blocks_hit": 3015,
+  "functions": 315,
+  "outcomes": 3804,
+  "outcomes_hit": 1633,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-10": {
+  "blocks": 5147,
+  "blocks_hit": 3070,
+  "functions": 315,
+  "outcomes": 3762,
+  "outcomes_hit": 1679,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbar-altm": {
+  "blocks": 4943,
+  "blocks_hit": 2896,
+  "functions": 299,
+  "outcomes": 3616,
+  "outcomes_hit": 1555,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-01": {
+  "blocks": 5253,
+  "blocks_hit": 3126,
+  "functions": 314,
+  "outcomes": 4008,
+  "outcomes_hit": 1616,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-02": {
+  "blocks": 5392,
+  "blocks_hit": 3231,
+  "functions": 319,
+  "outcomes": 4138,
+  "outcomes_hit": 1714,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-03": {
+  "blocks": 5442,
+  "blocks_hit": 3252,
+  "functions": 320,
+  "outcomes": 4194,
+  "outcomes_hit": 1728,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-04": {
+  "blocks": 5139,
+  "blocks_hit": 3059,
+  "functions": 302,
+  "outcomes": 3898,
+  "outcomes_hit": 1570,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-05": {
+  "blocks": 5500,
+  "blocks_hit": 3320,
+  "functions": 328,
+  "outcomes": 4238,
+  "outcomes_hit": 1770,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-06": {
+  "blocks": 5128,
+  "blocks_hit": 3036,
+  "functions": 300,
+  "outcomes": 3890,
+  "outcomes_hit": 1560,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-07": {
+  "blocks": 5469,
+  "blocks_hit": 3283,
+  "functions": 323,
+  "outcomes": 4214,
+  "outcomes_hit": 1742,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-08": {
+  "blocks": 5128,
+  "blocks_hit": 3036,
+  "functions": 300,
+  "outcomes": 3890,
+  "outcomes_hit": 1560,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-09": {
+  "blocks": 5293,
+  "blocks_hit": 3182,
+  "functions": 310,
+  "outcomes": 4038,
+  "outcomes_hit": 1674,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mbarm-10": {
+  "blocks": 5444,
+  "blocks_hit": 3225,
+  "functions": 319,
+  "outcomes": 4196,
+  "outcomes_hit": 1701,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mquit-01": {
+  "blocks": 4963,
+  "blocks_hit": 2944,
+  "functions": 302,
+  "outcomes": 3630,
+  "outcomes_hit": 1582,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mquit-02": {
+  "blocks": 4853,
+  "blocks_hit": 2890,
+  "functions": 314,
+  "outcomes": 3512,
+  "outcomes_hit": 1518,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mquit-03": {
+  "blocks": 5045,
+  "blocks_hit": 2965,
+  "functions": 318,
+  "outcomes": 3702,
+  "outcomes_hit": 1584,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mquit-04": {
+  "blocks": 5164,
+  "blocks_hit": 3069,
+  "functions": 319,
+  "outcomes": 3898,
+  "outcomes_hit": 1560,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mquit-05": {
+  "blocks": 2733,
+  "blocks_hit": 1548,
+  "functions": 239,
+  "outcomes": 2304,
+  "outcomes_hit": 929,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-mquit-06": {
+  "blocks": 1768,
+  "blocks_hit": 1072,
+  "functions": 175,
+  "outcomes": 1478,
+  "outcomes_hit": 594,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack10-01": {
+  "blocks": 5881,
+  "blocks_hit": 3394,
+  "functions": 334,
+  "outcomes": 4366,
+  "outcomes_hit": 1884,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack10-02": {
+  "blocks": 5811,
+  "blocks_hit": 3354,
+  "functions": 329,
+  "outcomes": 4294,
+  "outcomes_hit": 1855,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack10-03": {
+  "blocks": 5861,
+  "blocks_hit": 3357,
+  "functions": 332,
+  "outcomes": 4344,
+  "outcomes_hit": 1853,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack10-04": {
+  "blocks": 5819,
+  "blocks_hit": 3352,
+  "functions": 330,
+  "outcomes": 4300,
+  "outcomes_hit": 1848,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack10-05": {
+  "blocks": 5822,
+  "blocks_hit": 3333,
+  "functions": 328,
+  "outcomes": 4302,
+  "outcomes_hit": 1839,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack10-06": {
+  "blocks": 5766,
+  "blocks_hit": 3305,
+  "functions": 325,
+  "outcomes": 4242,
+  "outcomes_hit": 1818,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack99-01": {
+  "blocks": 5860,
+  "blocks_hit": 3510,
+  "functions": 319,
+  "outcomes": 4456,
+  "outcomes_hit": 1895,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack99-02": {
+  "blocks": 5869,
+  "blocks_hit": 3480,
+  "functions": 320,
+  "outcomes": 4468,
+  "outcomes_hit": 1876,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack99-03": {
+  "blocks": 5920,
+  "blocks_hit": 3590,
+  "functions": 322,
+  "outcomes": 4524,
+  "outcomes_hit": 1957,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack99-04": {
+  "blocks": 5821,
+  "blocks_hit": 3486,
+  "functions": 315,
+  "outcomes": 4414,
+  "outcomes_hit": 1877,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack99-05": {
+  "blocks": 5866,
+  "blocks_hit": 3525,
+  "functions": 319,
+  "outcomes": 4466,
+  "outcomes_hit": 1907,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pack99-06": {
+  "blocks": 5906,
+  "blocks_hit": 3533,
+  "functions": 321,
+  "outcomes": 4508,
+  "outcomes_hit": 1913,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-01": {
+  "blocks": 4792,
+  "blocks_hit": 2770,
+  "functions": 281,
+  "outcomes": 3358,
+  "outcomes_hit": 1474,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-02": {
+  "blocks": 4801,
+  "blocks_hit": 2721,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1428,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-04": {
+  "blocks": 4801,
+  "blocks_hit": 2730,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1435,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-06": {
+  "blocks": 4801,
+  "blocks_hit": 2767,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1456,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-07": {
+  "blocks": 5414,
+  "blocks_hit": 2947,
+  "functions": 292,
+  "outcomes": 3842,
+  "outcomes_hit": 1595,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-10": {
+  "blocks": 4801,
+  "blocks_hit": 2738,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1452,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-11": {
+  "blocks": 4801,
+  "blocks_hit": 2754,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1454,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-12": {
+  "blocks": 4873,
+  "blocks_hit": 2785,
+  "functions": 284,
+  "outcomes": 3442,
+  "outcomes_hit": 1483,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-13": {
+  "blocks": 4801,
+  "blocks_hit": 2747,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1448,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-14": {
+  "blocks": 4801,
+  "blocks_hit": 2763,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1461,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-15": {
+  "blocks": 4811,
+  "blocks_hit": 2762,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1462,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-17": {
+  "blocks": 4801,
+  "blocks_hit": 2757,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1457,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-19": {
+  "blocks": 4801,
+  "blocks_hit": 2734,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1443,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-20": {
+  "blocks": 4801,
+  "blocks_hit": 2762,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1458,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-21": {
+  "blocks": 4801,
+  "blocks_hit": 2707,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1421,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-22": {
+  "blocks": 4801,
+  "blocks_hit": 2761,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1463,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-23": {
+  "blocks": 4792,
+  "blocks_hit": 2782,
+  "functions": 281,
+  "outcomes": 3358,
+  "outcomes_hit": 1488,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-24": {
+  "blocks": 4801,
+  "blocks_hit": 2755,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1458,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-25": {
+  "blocks": 4801,
+  "blocks_hit": 2714,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1426,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-26": {
+  "blocks": 4801,
+  "blocks_hit": 2736,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1445,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-27": {
+  "blocks": 4801,
+  "blocks_hit": 2754,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1456,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-28": {
+  "blocks": 4801,
+  "blocks_hit": 2740,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1440,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-29": {
+  "blocks": 4801,
+  "blocks_hit": 2783,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1472,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-33": {
+  "blocks": 4801,
+  "blocks_hit": 2746,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1451,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-35": {
+  "blocks": 4801,
+  "blocks_hit": 2754,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1461,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-36": {
+  "blocks": 4801,
+  "blocks_hit": 2765,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1463,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-37": {
+  "blocks": 4868,
+  "blocks_hit": 2763,
+  "functions": 283,
+  "outcomes": 3436,
+  "outcomes_hit": 1470,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-39": {
+  "blocks": 4792,
+  "blocks_hit": 2746,
+  "functions": 281,
+  "outcomes": 3358,
+  "outcomes_hit": 1470,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-40": {
+  "blocks": 4801,
+  "blocks_hit": 2778,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1460,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-42": {
+  "blocks": 4792,
+  "blocks_hit": 2755,
+  "functions": 281,
+  "outcomes": 3358,
+  "outcomes_hit": 1474,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-45": {
+  "blocks": 4801,
+  "blocks_hit": 2786,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1476,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-47": {
+  "blocks": 4801,
+  "blocks_hit": 2802,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1490,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-48": {
+  "blocks": 4792,
+  "blocks_hit": 2753,
+  "functions": 281,
+  "outcomes": 3358,
+  "outcomes_hit": 1470,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-49": {
+  "blocks": 4801,
+  "blocks_hit": 2717,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1435,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party-50": {
+  "blocks": 4811,
+  "blocks_hit": 2790,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1481,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-01": {
+  "blocks": 4802,
+  "blocks_hit": 2803,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1505,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-02": {
+  "blocks": 4802,
+  "blocks_hit": 2775,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1486,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-03": {
+  "blocks": 4801,
+  "blocks_hit": 2761,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1460,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-04": {
+  "blocks": 4801,
+  "blocks_hit": 2784,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1478,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-05": {
+  "blocks": 4801,
+  "blocks_hit": 2769,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1463,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-06": {
+  "blocks": 4801,
+  "blocks_hit": 2746,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1447,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-07": {
+  "blocks": 4801,
+  "blocks_hit": 2734,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1437,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-08": {
+  "blocks": 4802,
+  "blocks_hit": 2805,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1504,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-09": {
+  "blocks": 4801,
+  "blocks_hit": 2774,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1471,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-10": {
+  "blocks": 4801,
+  "blocks_hit": 2803,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1479,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-11": {
+  "blocks": 4811,
+  "blocks_hit": 2760,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1466,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-12": {
+  "blocks": 4801,
+  "blocks_hit": 2757,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1459,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-13": {
+  "blocks": 4801,
+  "blocks_hit": 2785,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1471,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-14": {
+  "blocks": 4801,
+  "blocks_hit": 2762,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1461,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-15": {
+  "blocks": 4811,
+  "blocks_hit": 2764,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1468,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-16": {
+  "blocks": 4811,
+  "blocks_hit": 2810,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1494,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-21": {
+  "blocks": 4802,
+  "blocks_hit": 2846,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1530,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-22": {
+  "blocks": 4811,
+  "blocks_hit": 2799,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1484,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-23": {
+  "blocks": 4802,
+  "blocks_hit": 2806,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1509,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-24": {
+  "blocks": 4811,
+  "blocks_hit": 2817,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1491,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-25": {
+  "blocks": 4792,
+  "blocks_hit": 2780,
+  "functions": 281,
+  "outcomes": 3358,
+  "outcomes_hit": 1490,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-26": {
+  "blocks": 4802,
+  "blocks_hit": 2812,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1510,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-27": {
+  "blocks": 4801,
+  "blocks_hit": 2821,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1496,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-28": {
+  "blocks": 4801,
+  "blocks_hit": 2792,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1481,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-29": {
+  "blocks": 4802,
+  "blocks_hit": 2808,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1511,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-30": {
+  "blocks": 4801,
+  "blocks_hit": 2754,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1461,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-31": {
+  "blocks": 4801,
+  "blocks_hit": 2764,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1467,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-32": {
+  "blocks": 4801,
+  "blocks_hit": 2810,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1489,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-33": {
+  "blocks": 4801,
+  "blocks_hit": 2771,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1472,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-34": {
+  "blocks": 4811,
+  "blocks_hit": 2786,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1478,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-35": {
+  "blocks": 4801,
+  "blocks_hit": 2779,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1475,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-36": {
+  "blocks": 4811,
+  "blocks_hit": 2817,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1501,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-37": {
+  "blocks": 4811,
+  "blocks_hit": 2817,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1499,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-38": {
+  "blocks": 4811,
+  "blocks_hit": 2843,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1510,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-39": {
+  "blocks": 4801,
+  "blocks_hit": 2791,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1478,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-40": {
+  "blocks": 4811,
+  "blocks_hit": 2824,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1499,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-41": {
+  "blocks": 4801,
+  "blocks_hit": 2794,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1479,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-42": {
+  "blocks": 4801,
+  "blocks_hit": 2768,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1468,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-43": {
+  "blocks": 4801,
+  "blocks_hit": 2783,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1466,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-44": {
+  "blocks": 4801,
+  "blocks_hit": 2806,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1492,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-45": {
+  "blocks": 4802,
+  "blocks_hit": 2820,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1520,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-46": {
+  "blocks": 4811,
+  "blocks_hit": 2787,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1484,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-47": {
+  "blocks": 4811,
+  "blocks_hit": 2821,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1503,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-48": {
+  "blocks": 4802,
+  "blocks_hit": 2791,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1495,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-49": {
+  "blocks": 4802,
+  "blocks_hit": 2807,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1507,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-50": {
+  "blocks": 4811,
+  "blocks_hit": 2754,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1458,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-51": {
+  "blocks": 4811,
+  "blocks_hit": 2789,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1480,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-52": {
+  "blocks": 4811,
+  "blocks_hit": 2780,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1475,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-53": {
+  "blocks": 4801,
+  "blocks_hit": 2822,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1493,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-54": {
+  "blocks": 4801,
+  "blocks_hit": 2813,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1494,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-55": {
+  "blocks": 4801,
+  "blocks_hit": 2771,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1472,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-56": {
+  "blocks": 4801,
+  "blocks_hit": 2758,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1462,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-57": {
+  "blocks": 4811,
+  "blocks_hit": 2807,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1497,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-58": {
+  "blocks": 4792,
+  "blocks_hit": 2785,
+  "functions": 281,
+  "outcomes": 3358,
+  "outcomes_hit": 1495,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-59": {
+  "blocks": 4801,
+  "blocks_hit": 2782,
+  "functions": 281,
+  "outcomes": 3366,
+  "outcomes_hit": 1477,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-party2-60": {
+  "blocks": 4802,
+  "blocks_hit": 2833,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1521,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pawn-01": {
+  "blocks": 6373,
+  "blocks_hit": 3638,
+  "functions": 362,
+  "outcomes": 4846,
+  "outcomes_hit": 2082,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pawn-02": {
+  "blocks": 6336,
+  "blocks_hit": 3627,
+  "functions": 367,
+  "outcomes": 4842,
+  "outcomes_hit": 2079,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pawn-03": {
+  "blocks": 5772,
+  "blocks_hit": 3478,
+  "functions": 357,
+  "outcomes": 4418,
+  "outcomes_hit": 2004,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pawn-04": {
+  "blocks": 5748,
+  "blocks_hit": 3444,
+  "functions": 356,
+  "outcomes": 4386,
+  "outcomes_hit": 1968,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pawn-05": {
+  "blocks": 5698,
+  "blocks_hit": 3440,
+  "functions": 354,
+  "outcomes": 4332,
+  "outcomes_hit": 1975,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pawn-05-full": {
+  "blocks": 5830,
+  "blocks_hit": 3566,
+  "functions": 362,
+  "outcomes": 4470,
+  "outcomes_hit": 2081,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-01": {
+  "blocks": 5984,
+  "blocks_hit": 3444,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1847,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-02": {
+  "blocks": 5574,
+  "blocks_hit": 3232,
+  "functions": 291,
+  "outcomes": 4186,
+  "outcomes_hit": 1694,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-03": {
+  "blocks": 6198,
+  "blocks_hit": 3577,
+  "functions": 322,
+  "outcomes": 4774,
+  "outcomes_hit": 1957,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-04": {
+  "blocks": 5998,
+  "blocks_hit": 3475,
+  "functions": 314,
+  "outcomes": 4576,
+  "outcomes_hit": 1871,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-05": {
+  "blocks": 5925,
+  "blocks_hit": 3324,
+  "functions": 307,
+  "outcomes": 4502,
+  "outcomes_hit": 1758,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-06": {
+  "blocks": 5984,
+  "blocks_hit": 3460,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1855,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-07": {
+  "blocks": 5975,
+  "blocks_hit": 3433,
+  "functions": 312,
+  "outcomes": 4552,
+  "outcomes_hit": 1838,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-08": {
+  "blocks": 5754,
+  "blocks_hit": 3302,
+  "functions": 305,
+  "outcomes": 4328,
+  "outcomes_hit": 1732,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-09": {
+  "blocks": 5925,
+  "blocks_hit": 3416,
+  "functions": 307,
+  "outcomes": 4502,
+  "outcomes_hit": 1827,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-10": {
+  "blocks": 5984,
+  "blocks_hit": 3437,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1837,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-11": {
+  "blocks": 5934,
+  "blocks_hit": 3394,
+  "functions": 308,
+  "outcomes": 4510,
+  "outcomes_hit": 1805,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-12": {
+  "blocks": 5984,
+  "blocks_hit": 3454,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1849,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-13": {
+  "blocks": 5783,
+  "blocks_hit": 3336,
+  "functions": 308,
+  "outcomes": 4362,
+  "outcomes_hit": 1762,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-14": {
+  "blocks": 5984,
+  "blocks_hit": 3439,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1839,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-15": {
+  "blocks": 5574,
+  "blocks_hit": 3228,
+  "functions": 291,
+  "outcomes": 4186,
+  "outcomes_hit": 1692,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-16": {
+  "blocks": 5984,
+  "blocks_hit": 3438,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1838,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-17": {
+  "blocks": 5701,
+  "blocks_hit": 3273,
+  "functions": 299,
+  "outcomes": 4276,
+  "outcomes_hit": 1715,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-18": {
+  "blocks": 6154,
+  "blocks_hit": 3514,
+  "functions": 317,
+  "outcomes": 4732,
+  "outcomes_hit": 1914,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-19": {
+  "blocks": 5596,
+  "blocks_hit": 3277,
+  "functions": 294,
+  "outcomes": 4208,
+  "outcomes_hit": 1720,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-20": {
+  "blocks": 5984,
+  "blocks_hit": 3466,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1861,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-21": {
+  "blocks": 5984,
+  "blocks_hit": 3438,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1838,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-22": {
+  "blocks": 5934,
+  "blocks_hit": 3429,
+  "functions": 308,
+  "outcomes": 4510,
+  "outcomes_hit": 1835,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-23": {
+  "blocks": 5984,
+  "blocks_hit": 3452,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1849,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-24": {
+  "blocks": 5987,
+  "blocks_hit": 3459,
+  "functions": 314,
+  "outcomes": 4562,
+  "outcomes_hit": 1857,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-25": {
+  "blocks": 5984,
+  "blocks_hit": 3432,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1833,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-26": {
+  "blocks": 5577,
+  "blocks_hit": 3235,
+  "functions": 292,
+  "outcomes": 4188,
+  "outcomes_hit": 1692,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-27": {
+  "blocks": 5797,
+  "blocks_hit": 3367,
+  "functions": 309,
+  "outcomes": 4378,
+  "outcomes_hit": 1780,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-28": {
+  "blocks": 5984,
+  "blocks_hit": 3458,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1855,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-29": {
+  "blocks": 5984,
+  "blocks_hit": 3462,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1851,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-30": {
+  "blocks": 5998,
+  "blocks_hit": 3492,
+  "functions": 314,
+  "outcomes": 4576,
+  "outcomes_hit": 1879,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-31": {
+  "blocks": 5602,
+  "blocks_hit": 3273,
+  "functions": 294,
+  "outcomes": 4218,
+  "outcomes_hit": 1720,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-32": {
+  "blocks": 5984,
+  "blocks_hit": 3460,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1858,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-33": {
+  "blocks": 5984,
+  "blocks_hit": 3477,
+  "functions": 313,
+  "outcomes": 4560,
+  "outcomes_hit": 1867,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-pots99-34": {
+  "blocks": 5730,
+  "blocks_hit": 3294,
+  "functions": 302,
+  "outcomes": 4310,
+  "outcomes_hit": 1733,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rbench-01": {
+  "blocks": 5899,
+  "blocks_hit": 3355,
+  "functions": 347,
+  "outcomes": 4476,
+  "outcomes_hit": 1881,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rbench-02": {
+  "blocks": 5933,
+  "blocks_hit": 3392,
+  "functions": 357,
+  "outcomes": 4498,
+  "outcomes_hit": 1905,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rcache-01": {
+  "blocks": 5787,
+  "blocks_hit": 3584,
+  "functions": 367,
+  "outcomes": 4404,
+  "outcomes_hit": 1990,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rcache-02": {
+  "blocks": 5578,
+  "blocks_hit": 3309,
+  "functions": 341,
+  "outcomes": 4226,
+  "outcomes_hit": 1882,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rcreate-01": {
+  "blocks": 7486,
+  "blocks_hit": 4054,
+  "functions": 369,
+  "outcomes": 5910,
+  "outcomes_hit": 2380,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rcreate-02": {
+  "blocks": 6494,
+  "blocks_hit": 3574,
+  "functions": 365,
+  "outcomes": 4944,
+  "outcomes_hit": 1989,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rgate-01": {
+  "blocks": 12824,
+  "blocks_hit": 7184,
+  "functions": 615,
+  "outcomes": 11158,
+  "outcomes_hit": 4722,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rgate-02": {
+  "blocks": 14043,
+  "blocks_hit": 8548,
+  "functions": 681,
+  "outcomes": 12414,
+  "outcomes_hit": 5942,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rmbar-01": {
+  "blocks": 5108,
+  "blocks_hit": 2995,
+  "functions": 311,
+  "outcomes": 3732,
+  "outcomes_hit": 1621,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rmbar-02": {
+  "blocks": 4929,
+  "blocks_hit": 2919,
+  "functions": 299,
+  "outcomes": 3604,
+  "outcomes_hit": 1561,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rmbar-03": {
+  "blocks": 4933,
+  "blocks_hit": 2948,
+  "functions": 300,
+  "outcomes": 3606,
+  "outcomes_hit": 1594,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rmbarm-01": {
+  "blocks": 5251,
+  "blocks_hit": 3160,
+  "functions": 310,
+  "outcomes": 4002,
+  "outcomes_hit": 1662,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rmbarm-02": {
+  "blocks": 5356,
+  "blocks_hit": 3213,
+  "functions": 319,
+  "outcomes": 4108,
+  "outcomes_hit": 1701,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rmbarm-03": {
+  "blocks": 5250,
+  "blocks_hit": 3163,
+  "functions": 309,
+  "outcomes": 4002,
+  "outcomes_hit": 1665,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rmgate-01": {
+  "blocks": 13194,
+  "blocks_hit": 8209,
+  "functions": 659,
+  "outcomes": 11688,
+  "outcomes_hit": 5709,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rmgate-02": {
+  "blocks": 13131,
+  "blocks_hit": 8171,
+  "functions": 659,
+  "outcomes": 11624,
+  "outcomes_hit": 5678,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-02": {
+  "blocks": 5788,
+  "blocks_hit": 3440,
+  "functions": 356,
+  "outcomes": 4240,
+  "outcomes_hit": 1859,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-03": {
+  "blocks": 5783,
+  "blocks_hit": 3374,
+  "functions": 355,
+  "outcomes": 4236,
+  "outcomes_hit": 1808,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-04": {
+  "blocks": 5783,
+  "blocks_hit": 3386,
+  "functions": 355,
+  "outcomes": 4236,
+  "outcomes_hit": 1817,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-05": {
+  "blocks": 6418,
+  "blocks_hit": 3783,
+  "functions": 372,
+  "outcomes": 4828,
+  "outcomes_hit": 2061,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-06": {
+  "blocks": 7325,
+  "blocks_hit": 3971,
+  "functions": 372,
+  "outcomes": 5708,
+  "outcomes_hit": 2235,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-07": {
+  "blocks": 5783,
+  "blocks_hit": 3375,
+  "functions": 355,
+  "outcomes": 4236,
+  "outcomes_hit": 1807,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-08": {
+  "blocks": 5817,
+  "blocks_hit": 3450,
+  "functions": 358,
+  "outcomes": 4266,
+  "outcomes_hit": 1858,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-10": {
+  "blocks": 5817,
+  "blocks_hit": 3466,
+  "functions": 358,
+  "outcomes": 4266,
+  "outcomes_hit": 1872,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster-11": {
+  "blocks": 6356,
+  "blocks_hit": 3747,
+  "functions": 368,
+  "outcomes": 4766,
+  "outcomes_hit": 2038,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-01": {
+  "blocks": 5838,
+  "blocks_hit": 3526,
+  "functions": 360,
+  "outcomes": 4290,
+  "outcomes_hit": 1914,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-02": {
+  "blocks": 5788,
+  "blocks_hit": 3475,
+  "functions": 356,
+  "outcomes": 4240,
+  "outcomes_hit": 1870,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-03": {
+  "blocks": 5838,
+  "blocks_hit": 3530,
+  "functions": 360,
+  "outcomes": 4290,
+  "outcomes_hit": 1912,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-04": {
+  "blocks": 5838,
+  "blocks_hit": 3547,
+  "functions": 360,
+  "outcomes": 4290,
+  "outcomes_hit": 1922,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-05": {
+  "blocks": 5788,
+  "blocks_hit": 3472,
+  "functions": 356,
+  "outcomes": 4240,
+  "outcomes_hit": 1865,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-06": {
+  "blocks": 5788,
+  "blocks_hit": 3495,
+  "functions": 356,
+  "outcomes": 4240,
+  "outcomes_hit": 1878,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-07": {
+  "blocks": 5788,
+  "blocks_hit": 3509,
+  "functions": 356,
+  "outcomes": 4240,
+  "outcomes_hit": 1883,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-08": {
+  "blocks": 5788,
+  "blocks_hit": 3390,
+  "functions": 356,
+  "outcomes": 4240,
+  "outcomes_hit": 1818,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-09": {
+  "blocks": 5822,
+  "blocks_hit": 3573,
+  "functions": 359,
+  "outcomes": 4270,
+  "outcomes_hit": 1923,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-10": {
+  "blocks": 5822,
+  "blocks_hit": 3571,
+  "functions": 359,
+  "outcomes": 4270,
+  "outcomes_hit": 1930,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-21": {
+  "blocks": 5822,
+  "blocks_hit": 3542,
+  "functions": 359,
+  "outcomes": 4270,
+  "outcomes_hit": 1918,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-22": {
+  "blocks": 5788,
+  "blocks_hit": 3473,
+  "functions": 356,
+  "outcomes": 4240,
+  "outcomes_hit": 1865,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-23": {
+  "blocks": 5822,
+  "blocks_hit": 3534,
+  "functions": 359,
+  "outcomes": 4270,
+  "outcomes_hit": 1916,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-24": {
+  "blocks": 5838,
+  "blocks_hit": 3535,
+  "functions": 360,
+  "outcomes": 4290,
+  "outcomes_hit": 1921,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-25": {
+  "blocks": 5822,
+  "blocks_hit": 3528,
+  "functions": 359,
+  "outcomes": 4270,
+  "outcomes_hit": 1905,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-26": {
+  "blocks": 5838,
+  "blocks_hit": 3565,
+  "functions": 360,
+  "outcomes": 4290,
+  "outcomes_hit": 1932,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-27": {
+  "blocks": 5838,
+  "blocks_hit": 3554,
+  "functions": 360,
+  "outcomes": 4290,
+  "outcomes_hit": 1932,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-28": {
+  "blocks": 5838,
+  "blocks_hit": 3594,
+  "functions": 360,
+  "outcomes": 4290,
+  "outcomes_hit": 1953,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-29": {
+  "blocks": 5822,
+  "blocks_hit": 3531,
+  "functions": 359,
+  "outcomes": 4270,
+  "outcomes_hit": 1909,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-roster2-30": {
+  "blocks": 5788,
+  "blocks_hit": 3533,
+  "functions": 356,
+  "outcomes": 4240,
+  "outcomes_hit": 1904,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rpawn-01": {
+  "blocks": 5833,
+  "blocks_hit": 3490,
+  "functions": 360,
+  "outcomes": 4460,
+  "outcomes_hit": 2003,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rpawn-02": {
+  "blocks": 6640,
+  "blocks_hit": 3787,
+  "functions": 383,
+  "outcomes": 5092,
+  "outcomes_hit": 2193,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rroster-01": {
+  "blocks": 6508,
+  "blocks_hit": 3732,
+  "functions": 375,
+  "outcomes": 4908,
+  "outcomes_hit": 2033,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rroster-02": {
+  "blocks": 5783,
+  "blocks_hit": 3402,
+  "functions": 355,
+  "outcomes": 4236,
+  "outcomes_hit": 1829,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rroster2-01": {
+  "blocks": 5969,
+  "blocks_hit": 3603,
+  "functions": 365,
+  "outcomes": 4414,
+  "outcomes_hit": 1977,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rroster2-02": {
+  "blocks": 6046,
+  "blocks_hit": 3684,
+  "functions": 376,
+  "outcomes": 4478,
+  "outcomes_hit": 2032,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rsaints-01": {
+  "blocks": 6176,
+  "blocks_hit": 3509,
+  "functions": 357,
+  "outcomes": 4620,
+  "outcomes_hit": 1980,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rsaints-02": {
+  "blocks": 6718,
+  "blocks_hit": 3703,
+  "functions": 376,
+  "outcomes": 5108,
+  "outcomes_hit": 2107,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rsheet-01": {
+  "blocks": 5924,
+  "blocks_hit": 3470,
+  "functions": 334,
+  "outcomes": 4388,
+  "outcomes_hit": 1966,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rsheet-02": {
+  "blocks": 5880,
+  "blocks_hit": 3352,
+  "functions": 329,
+  "outcomes": 4348,
+  "outcomes_hit": 1865,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rshop-01": {
+  "blocks": 5964,
+  "blocks_hit": 3498,
+  "functions": 362,
+  "outcomes": 4594,
+  "outcomes_hit": 1984,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rshop-02": {
+  "blocks": 5894,
+  "blocks_hit": 3536,
+  "functions": 362,
+  "outcomes": 4510,
+  "outcomes_hit": 2038,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rstable-01": {
+  "blocks": 5700,
+  "blocks_hit": 3345,
+  "functions": 343,
+  "outcomes": 4328,
+  "outcomes_hit": 1887,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rstable-02": {
+  "blocks": 5805,
+  "blocks_hit": 3473,
+  "functions": 356,
+  "outcomes": 4424,
+  "outcomes_hit": 1990,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rstay-01": {
+  "blocks": 6583,
+  "blocks_hit": 3929,
+  "functions": 386,
+  "outcomes": 5062,
+  "outcomes_hit": 2213,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rstay-02": {
+  "blocks": 6855,
+  "blocks_hit": 3879,
+  "functions": 382,
+  "outcomes": 5270,
+  "outcomes_hit": 2142,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rwild-01": {
+  "blocks": 7252,
+  "blocks_hit": 4266,
+  "functions": 397,
+  "outcomes": 5766,
+  "outcomes_hit": 2489,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-rwild-02": {
+  "blocks": 7158,
+  "blocks_hit": 4262,
+  "functions": 394,
+  "outcomes": 5738,
+  "outcomes_hit": 2531,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-saints-01": {
+  "blocks": 5766,
+  "blocks_hit": 3213,
+  "functions": 325,
+  "outcomes": 4242,
+  "outcomes_hit": 1751,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-saints-02": {
+  "blocks": 5846,
+  "blocks_hit": 3298,
+  "functions": 327,
+  "outcomes": 4316,
+  "outcomes_hit": 1820,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-saints-03": {
+  "blocks": 5766,
+  "blocks_hit": 3224,
+  "functions": 325,
+  "outcomes": 4242,
+  "outcomes_hit": 1763,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-saints-04": {
+  "blocks": 6060,
+  "blocks_hit": 3367,
+  "functions": 340,
+  "outcomes": 4522,
+  "outcomes_hit": 1859,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-saints-05": {
+  "blocks": 5784,
+  "blocks_hit": 3249,
+  "functions": 327,
+  "outcomes": 4262,
+  "outcomes_hit": 1779,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-saints-06": {
+  "blocks": 6054,
+  "blocks_hit": 3333,
+  "functions": 338,
+  "outcomes": 4518,
+  "outcomes_hit": 1845,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-01": {
+  "blocks": 5784,
+  "blocks_hit": 3395,
+  "functions": 327,
+  "outcomes": 4262,
+  "outcomes_hit": 1893,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-02": {
+  "blocks": 6242,
+  "blocks_hit": 3584,
+  "functions": 347,
+  "outcomes": 4656,
+  "outcomes_hit": 2017,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-03": {
+  "blocks": 5784,
+  "blocks_hit": 3321,
+  "functions": 327,
+  "outcomes": 4262,
+  "outcomes_hit": 1841,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-04": {
+  "blocks": 5808,
+  "blocks_hit": 3312,
+  "functions": 329,
+  "outcomes": 4282,
+  "outcomes_hit": 1844,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-10": {
+  "blocks": 5766,
+  "blocks_hit": 3386,
+  "functions": 325,
+  "outcomes": 4242,
+  "outcomes_hit": 1897,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-11": {
+  "blocks": 5936,
+  "blocks_hit": 3517,
+  "functions": 339,
+  "outcomes": 4400,
+  "outcomes_hit": 1989,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-12": {
+  "blocks": 5785,
+  "blocks_hit": 3538,
+  "functions": 330,
+  "outcomes": 4260,
+  "outcomes_hit": 1930,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-13": {
+  "blocks": 6084,
+  "blocks_hit": 3620,
+  "functions": 346,
+  "outcomes": 4544,
+  "outcomes_hit": 1993,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-14": {
+  "blocks": 5859,
+  "blocks_hit": 3423,
+  "functions": 332,
+  "outcomes": 4342,
+  "outcomes_hit": 1917,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-15": {
+  "blocks": 5784,
+  "blocks_hit": 3395,
+  "functions": 327,
+  "outcomes": 4262,
+  "outcomes_hit": 1891,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-16": {
+  "blocks": 5940,
+  "blocks_hit": 3445,
+  "functions": 333,
+  "outcomes": 4416,
+  "outcomes_hit": 1923,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-17": {
+  "blocks": 5806,
+  "blocks_hit": 3554,
+  "functions": 333,
+  "outcomes": 4282,
+  "outcomes_hit": 1933,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-18": {
+  "blocks": 5766,
+  "blocks_hit": 3354,
+  "functions": 325,
+  "outcomes": 4242,
+  "outcomes_hit": 1866,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-19": {
+  "blocks": 5864,
+  "blocks_hit": 3416,
+  "functions": 329,
+  "outcomes": 4336,
+  "outcomes_hit": 1901,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-20": {
+  "blocks": 5784,
+  "blocks_hit": 3343,
+  "functions": 327,
+  "outcomes": 4262,
+  "outcomes_hit": 1855,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-21": {
+  "blocks": 5784,
+  "blocks_hit": 3410,
+  "functions": 327,
+  "outcomes": 4262,
+  "outcomes_hit": 1906,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-31": {
+  "blocks": 5784,
+  "blocks_hit": 3378,
+  "functions": 327,
+  "outcomes": 4262,
+  "outcomes_hit": 1881,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-32": {
+  "blocks": 6047,
+  "blocks_hit": 3506,
+  "functions": 339,
+  "outcomes": 4518,
+  "outcomes_hit": 1976,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-33": {
+  "blocks": 5895,
+  "blocks_hit": 3481,
+  "functions": 336,
+  "outcomes": 4368,
+  "outcomes_hit": 1967,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-34": {
+  "blocks": 5902,
+  "blocks_hit": 3494,
+  "functions": 335,
+  "outcomes": 4368,
+  "outcomes_hit": 1977,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-35": {
+  "blocks": 5766,
+  "blocks_hit": 3295,
+  "functions": 325,
+  "outcomes": 4242,
+  "outcomes_hit": 1819,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-36": {
+  "blocks": 5766,
+  "blocks_hit": 3344,
+  "functions": 325,
+  "outcomes": 4242,
+  "outcomes_hit": 1860,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-37": {
+  "blocks": 5766,
+  "blocks_hit": 3379,
+  "functions": 325,
+  "outcomes": 4242,
+  "outcomes_hit": 1889,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-38": {
+  "blocks": 5784,
+  "blocks_hit": 3356,
+  "functions": 327,
+  "outcomes": 4262,
+  "outcomes_hit": 1861,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-39": {
+  "blocks": 5902,
+  "blocks_hit": 3415,
+  "functions": 332,
+  "outcomes": 4376,
+  "outcomes_hit": 1898,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet-40": {
+  "blocks": 5850,
+  "blocks_hit": 3411,
+  "functions": 331,
+  "outcomes": 4334,
+  "outcomes_hit": 1898,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet99-01": {
+  "blocks": 5821,
+  "blocks_hit": 3457,
+  "functions": 315,
+  "outcomes": 4416,
+  "outcomes_hit": 1857,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet99-02": {
+  "blocks": 5907,
+  "blocks_hit": 3559,
+  "functions": 317,
+  "outcomes": 4496,
+  "outcomes_hit": 1938,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet99-03": {
+  "blocks": 5852,
+  "blocks_hit": 3587,
+  "functions": 319,
+  "outcomes": 4446,
+  "outcomes_hit": 1955,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet99-04": {
+  "blocks": 5824,
+  "blocks_hit": 3505,
+  "functions": 316,
+  "outcomes": 4416,
+  "outcomes_hit": 1909,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet99-05": {
+  "blocks": 5910,
+  "blocks_hit": 3580,
+  "functions": 318,
+  "outcomes": 4498,
+  "outcomes_hit": 1963,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-sheet99-06": {
+  "blocks": 5918,
+  "blocks_hit": 3631,
+  "functions": 323,
+  "outcomes": 4520,
+  "outcomes_hit": 1992,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-01": {
+  "blocks": 5796,
+  "blocks_hit": 3464,
+  "functions": 359,
+  "outcomes": 4430,
+  "outcomes_hit": 1976,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-02": {
+  "blocks": 5791,
+  "blocks_hit": 3453,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1963,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-03": {
+  "blocks": 5791,
+  "blocks_hit": 3459,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1971,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-04": {
+  "blocks": 6319,
+  "blocks_hit": 3625,
+  "functions": 364,
+  "outcomes": 4808,
+  "outcomes_hit": 2077,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-05": {
+  "blocks": 5791,
+  "blocks_hit": 3426,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1934,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-06": {
+  "blocks": 6269,
+  "blocks_hit": 3544,
+  "functions": 361,
+  "outcomes": 4746,
+  "outcomes_hit": 1991,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-07": {
+  "blocks": 5734,
+  "blocks_hit": 3425,
+  "functions": 353,
+  "outcomes": 4364,
+  "outcomes_hit": 1952,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-08": {
+  "blocks": 6383,
+  "blocks_hit": 3675,
+  "functions": 368,
+  "outcomes": 4880,
+  "outcomes_hit": 2127,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-09": {
+  "blocks": 5769,
+  "blocks_hit": 3416,
+  "functions": 357,
+  "outcomes": 4406,
+  "outcomes_hit": 1935,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-21": {
+  "blocks": 5791,
+  "blocks_hit": 3436,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1948,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-22": {
+  "blocks": 5796,
+  "blocks_hit": 3471,
+  "functions": 359,
+  "outcomes": 4430,
+  "outcomes_hit": 1983,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-23": {
+  "blocks": 6324,
+  "blocks_hit": 3680,
+  "functions": 365,
+  "outcomes": 4812,
+  "outcomes_hit": 2125,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-24": {
+  "blocks": 5791,
+  "blocks_hit": 3456,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1977,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-25": {
+  "blocks": 6397,
+  "blocks_hit": 3628,
+  "functions": 362,
+  "outcomes": 4860,
+  "outcomes_hit": 2056,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-26": {
+  "blocks": 6430,
+  "blocks_hit": 3634,
+  "functions": 366,
+  "outcomes": 4894,
+  "outcomes_hit": 2071,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-27": {
+  "blocks": 6364,
+  "blocks_hit": 3631,
+  "functions": 367,
+  "outcomes": 4862,
+  "outcomes_hit": 2084,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-28": {
+  "blocks": 5791,
+  "blocks_hit": 3478,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1997,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-29": {
+  "blocks": 5820,
+  "blocks_hit": 3507,
+  "functions": 360,
+  "outcomes": 4462,
+  "outcomes_hit": 2030,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-shop-30": {
+  "blocks": 5791,
+  "blocks_hit": 3468,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1981,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stable-01": {
+  "blocks": 5586,
+  "blocks_hit": 3331,
+  "functions": 345,
+  "outcomes": 4216,
+  "outcomes_hit": 1875,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stable-02": {
+  "blocks": 5613,
+  "blocks_hit": 3378,
+  "functions": 347,
+  "outcomes": 4238,
+  "outcomes_hit": 1919,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stable-03": {
+  "blocks": 5613,
+  "blocks_hit": 3373,
+  "functions": 347,
+  "outcomes": 4238,
+  "outcomes_hit": 1913,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stable-04": {
+  "blocks": 5646,
+  "blocks_hit": 3396,
+  "functions": 351,
+  "outcomes": 4278,
+  "outcomes_hit": 1933,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-01": {
+  "blocks": 6529,
+  "blocks_hit": 3813,
+  "functions": 368,
+  "outcomes": 4944,
+  "outcomes_hit": 2114,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-02": {
+  "blocks": 6262,
+  "blocks_hit": 3546,
+  "functions": 349,
+  "outcomes": 4682,
+  "outcomes_hit": 1998,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-03": {
+  "blocks": 6431,
+  "blocks_hit": 3755,
+  "functions": 369,
+  "outcomes": 4890,
+  "outcomes_hit": 2063,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-04": {
+  "blocks": 6188,
+  "blocks_hit": 3705,
+  "functions": 369,
+  "outcomes": 4678,
+  "outcomes_hit": 2014,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-05": {
+  "blocks": 6099,
+  "blocks_hit": 3658,
+  "functions": 368,
+  "outcomes": 4670,
+  "outcomes_hit": 2017,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-06": {
+  "blocks": 6691,
+  "blocks_hit": 3887,
+  "functions": 375,
+  "outcomes": 5118,
+  "outcomes_hit": 2164,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-07": {
+  "blocks": 6670,
+  "blocks_hit": 3910,
+  "functions": 379,
+  "outcomes": 5108,
+  "outcomes_hit": 2179,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-08": {
+  "blocks": 6295,
+  "blocks_hit": 3708,
+  "functions": 377,
+  "outcomes": 4786,
+  "outcomes_hit": 2015,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-08-full": {
+  "blocks": 6659,
+  "blocks_hit": 3873,
+  "functions": 387,
+  "outcomes": 5158,
+  "outcomes_hit": 2147,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-09": {
+  "blocks": 6555,
+  "blocks_hit": 3820,
+  "functions": 372,
+  "outcomes": 4972,
+  "outcomes_hit": 2114,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-21": {
+  "blocks": 6536,
+  "blocks_hit": 3794,
+  "functions": 369,
+  "outcomes": 4950,
+  "outcomes_hit": 2094,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-22": {
+  "blocks": 6331,
+  "blocks_hit": 3753,
+  "functions": 373,
+  "outcomes": 4838,
+  "outcomes_hit": 2056,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-23": {
+  "blocks": 6475,
+  "blocks_hit": 3874,
+  "functions": 383,
+  "outcomes": 4954,
+  "outcomes_hit": 2152,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-24": {
+  "blocks": 6482,
+  "blocks_hit": 3868,
+  "functions": 373,
+  "outcomes": 4930,
+  "outcomes_hit": 2153,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-25": {
+  "blocks": 6428,
+  "blocks_hit": 3841,
+  "functions": 368,
+  "outcomes": 4866,
+  "outcomes_hit": 2134,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-26": {
+  "blocks": 6393,
+  "blocks_hit": 3641,
+  "functions": 366,
+  "outcomes": 4840,
+  "outcomes_hit": 1972,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-27": {
+  "blocks": 6744,
+  "blocks_hit": 3922,
+  "functions": 379,
+  "outcomes": 5166,
+  "outcomes_hit": 2175,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-28": {
+  "blocks": 6406,
+  "blocks_hit": 3835,
+  "functions": 375,
+  "outcomes": 4894,
+  "outcomes_hit": 2125,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-29": {
+  "blocks": 6422,
+  "blocks_hit": 3736,
+  "functions": 368,
+  "outcomes": 4878,
+  "outcomes_hit": 2053,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-stay-30": {
+  "blocks": 6640,
+  "blocks_hit": 3850,
+  "functions": 378,
+  "outcomes": 5088,
+  "outcomes_hit": 2143,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-02": {
+  "blocks": 6762,
+  "blocks_hit": 3862,
+  "functions": 353,
+  "outcomes": 5326,
+  "outcomes_hit": 2169,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-02-full": {
+  "blocks": 7005,
+  "blocks_hit": 4157,
+  "functions": 375,
+  "outcomes": 5552,
+  "outcomes_hit": 2416,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-03": {
+  "blocks": 6981,
+  "blocks_hit": 4162,
+  "functions": 383,
+  "outcomes": 5522,
+  "outcomes_hit": 2410,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-04": {
+  "blocks": 6684,
+  "blocks_hit": 3906,
+  "functions": 352,
+  "outcomes": 5264,
+  "outcomes_hit": 2202,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-05": {
+  "blocks": 6998,
+  "blocks_hit": 4154,
+  "functions": 385,
+  "outcomes": 5538,
+  "outcomes_hit": 2386,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-06": {
+  "blocks": 6305,
+  "blocks_hit": 3617,
+  "functions": 331,
+  "outcomes": 4884,
+  "outcomes_hit": 1983,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-07": {
+  "blocks": 6630,
+  "blocks_hit": 3880,
+  "functions": 355,
+  "outcomes": 5260,
+  "outcomes_hit": 2177,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-08": {
+  "blocks": 6260,
+  "blocks_hit": 3708,
+  "functions": 342,
+  "outcomes": 4980,
+  "outcomes_hit": 2097,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-gen-wild-09": {
+  "blocks": 6305,
+  "blocks_hit": 3755,
+  "functions": 351,
+  "outcomes": 5022,
+  "outcomes_hit": 2118,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-healer": {
+  "blocks": 5755,
+  "blocks_hit": 3337,
+  "functions": 365,
+  "outcomes": 4326,
+  "outcomes_hit": 1840,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-inventory": {
+  "blocks": 6296,
+  "blocks_hit": 3462,
+  "functions": 351,
+  "outcomes": 4732,
+  "outcomes_hit": 1903,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-kbd-battle-ctrl": {
+  "blocks": 12985,
+  "blocks_hit": 8049,
+  "functions": 647,
+  "outcomes": 11492,
+  "outcomes_hit": 5588,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-kbd-battle-cursor": {
+  "blocks": 13112,
+  "blocks_hit": 8213,
+  "functions": 652,
+  "outcomes": 11630,
+  "outcomes_hit": 5727,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-kbd-battle-held": {
+  "blocks": 12674,
+  "blocks_hit": 7773,
+  "functions": 633,
+  "outcomes": 11146,
+  "outcomes_hit": 5361,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-kbd-map-enter": {
+  "blocks": 5032,
+  "blocks_hit": 3015,
+  "functions": 298,
+  "outcomes": 3794,
+  "outcomes_hit": 1549,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-kbd-map-held": {
+  "blocks": 5186,
+  "blocks_hit": 3086,
+  "functions": 302,
+  "outcomes": 3928,
+  "outcomes_hit": 1609,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-kbd-map-wait": {
+  "blocks": 5259,
+  "blocks_hit": 3135,
+  "functions": 309,
+  "outcomes": 4022,
+  "outcomes_hit": 1655,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-loot-esc": {
+  "blocks": 13212,
+  "blocks_hit": 8156,
+  "functions": 657,
+  "outcomes": 11722,
+  "outcomes_hit": 5657,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-loot-keys": {
+  "blocks": 13212,
+  "blocks_hit": 8158,
+  "functions": 657,
+  "outcomes": 11722,
+  "outcomes_hit": 5658,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-loot-mouse": {
+  "blocks": 13212,
+  "blocks_hit": 8160,
+  "functions": 657,
+  "outcomes": 11722,
+  "outcomes_hit": 5671,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-luebeck-potion": {
+  "blocks": 14245,
+  "blocks_hit": 8617,
+  "functions": 667,
+  "outcomes": 12766,
+  "outcomes_hit": 6023,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-map-enter-above": {
+  "blocks": 6472,
+  "blocks_hit": 3974,
+  "functions": 390,
+  "outcomes": 5038,
+  "outcomes_hit": 2293,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-map-enter-below": {
+  "blocks": 6465,
+  "blocks_hit": 3950,
+  "functions": 388,
+  "outcomes": 5032,
+  "outcomes_hit": 2266,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-map-page-north": {
+  "blocks": 5072,
+  "blocks_hit": 3027,
+  "functions": 289,
+  "outcomes": 3850,
+  "outcomes_hit": 1594,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-mapsave": {
+  "blocks": 5420,
+  "blocks_hit": 3313,
+  "functions": 319,
+  "outcomes": 4168,
+  "outcomes_hit": 1800,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-menubar": {
+  "blocks": 5021,
+  "blocks_hit": 2977,
+  "functions": 312,
+  "outcomes": 3652,
+  "outcomes_hit": 1592,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-menubar-kbright": {
+  "blocks": 5302,
+  "blocks_hit": 3107,
+  "functions": 328,
+  "outcomes": 3922,
+  "outcomes_hit": 1711,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-menubar2": {
+  "blocks": 5013,
+  "blocks_hit": 2967,
+  "functions": 310,
+  "outcomes": 3648,
+  "outcomes_hit": 1590,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-notices": {
+  "blocks": 5584,
+  "blocks_hit": 3286,
+  "functions": 371,
+  "outcomes": 4102,
+  "outcomes_hit": 1796,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-attack-a": {
+  "blocks": 13988,
+  "blocks_hit": 8464,
+  "functions": 665,
+  "outcomes": 12504,
+  "outcomes_hit": 5910,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-attack-b": {
+  "blocks": 13144,
+  "blocks_hit": 8133,
+  "functions": 653,
+  "outcomes": 11654,
+  "outcomes_hit": 5638,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-attack-b2": {
+  "blocks": 14013,
+  "blocks_hit": 8558,
+  "functions": 670,
+  "outcomes": 12524,
+  "outcomes_hit": 5990,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-attack-v": {
+  "blocks": 13988,
+  "blocks_hit": 8453,
+  "functions": 665,
+  "outcomes": 12504,
+  "outcomes_hit": 5894,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-attacks": {
+  "blocks": 13166,
+  "blocks_hit": 8180,
+  "functions": 658,
+  "outcomes": 11674,
+  "outcomes_hit": 5665,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-cloud": {
+  "blocks": 14284,
+  "blocks_hit": 8671,
+  "functions": 671,
+  "outcomes": 12802,
+  "outcomes_hit": 6059,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-missile": {
+  "blocks": 14007,
+  "blocks_hit": 8468,
+  "functions": 667,
+  "outcomes": 12524,
+  "outcomes_hit": 5910,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-potion": {
+  "blocks": 14680,
+  "blocks_hit": 8791,
+  "functions": 680,
+  "outcomes": 13114,
+  "outcomes_hit": 6127,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-potion2": {
+  "blocks": 13116,
+  "blocks_hit": 7953,
+  "functions": 633,
+  "outcomes": 11618,
+  "outcomes_hit": 5583,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-potion3": {
+  "blocks": 13161,
+  "blocks_hit": 7941,
+  "functions": 638,
+  "outcomes": 11670,
+  "outcomes_hit": 5555,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-prague-missile": {
+  "blocks": 13751,
+  "blocks_hit": 8240,
+  "functions": 648,
+  "outcomes": 12296,
+  "outcomes_hit": 5706,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-save": {
+  "blocks": 12967,
+  "blocks_hit": 7989,
+  "functions": 645,
+  "outcomes": 11472,
+  "outcomes_hit": 5512,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-select": {
+  "blocks": 13836,
+  "blocks_hit": 8368,
+  "functions": 662,
+  "outcomes": 12344,
+  "outcomes_hit": 5822,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-sheet": {
+  "blocks": 13402,
+  "blocks_hit": 8190,
+  "functions": 658,
+  "outcomes": 11820,
+  "outcomes_hit": 5641,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-sheetclick": {
+  "blocks": 13407,
+  "blocks_hit": 8197,
+  "functions": 659,
+  "outcomes": 11824,
+  "outcomes_hit": 5656,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-orders-walk": {
+  "blocks": 12903,
+  "blocks_hit": 7902,
+  "functions": 642,
+  "outcomes": 11382,
+  "outcomes_hit": 5453,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-pack-potions": {
+  "blocks": 6027,
+  "blocks_hit": 3460,
+  "functions": 331,
+  "outcomes": 4588,
+  "outcomes_hit": 1847,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-pack-stacks": {
+  "blocks": 5922,
+  "blocks_hit": 3464,
+  "functions": 323,
+  "outcomes": 4522,
+  "outcomes_hit": 1858,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-pawnshop": {
+  "blocks": 5698,
+  "blocks_hit": 3376,
+  "functions": 354,
+  "outcomes": 4332,
+  "outcomes_hit": 1893,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-pressburg-map": {
+  "blocks": 6435,
+  "blocks_hit": 3869,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2226,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-res5-ChasedByTheCityGuard": {
+  "blocks": 11304,
+  "blocks_hit": 6919,
+  "functions": 568,
+  "outcomes": 9988,
+  "outcomes_hit": 4681,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-res5-MarketAtNight": {
+  "blocks": 11216,
+  "blocks_hit": 6955,
+  "functions": 562,
+  "outcomes": 9864,
+  "outcomes_hit": 4811,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-res5-WildBoarsCharge": {
+  "blocks": 11030,
+  "blocks_hit": 6317,
+  "functions": 526,
+  "outcomes": 9706,
+  "outcomes_hit": 4183,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-res5-WolfPackOnTheTrail": {
+  "blocks": 11147,
+  "blocks_hit": 6389,
+  "functions": 528,
+  "outcomes": 9742,
+  "outcomes_hit": 4263,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-res5-footpads": {
+  "blocks": 11888,
+  "blocks_hit": 6867,
+  "functions": 553,
+  "outcomes": 10496,
+  "outcomes_hit": 4731,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-res5-rebelmob": {
+  "blocks": 11319,
+  "blocks_hit": 6728,
+  "functions": 558,
+  "outcomes": 9952,
+  "outcomes_hit": 4578,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-residence": {
+  "blocks": 5740,
+  "blocks_hit": 3424,
+  "functions": 358,
+  "outcomes": 4312,
+  "outcomes_hit": 1832,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-roster": {
+  "blocks": 5824,
+  "blocks_hit": 3475,
+  "functions": 361,
+  "outcomes": 4270,
+  "outcomes_hit": 1863,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-roster-colours": {
+  "blocks": 5817,
+  "blocks_hit": 3645,
+  "functions": 358,
+  "outcomes": 4266,
+  "outcomes_hit": 1927,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-roster-create2": {
+  "blocks": 7251,
+  "blocks_hit": 3764,
+  "functions": 357,
+  "outcomes": 5682,
+  "outcomes_hit": 2132,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-roster-mouse": {
+  "blocks": 6040,
+  "blocks_hit": 3572,
+  "functions": 357,
+  "outcomes": 4522,
+  "outcomes_hit": 1950,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-roster-moves": {
+  "blocks": 5838,
+  "blocks_hit": 3477,
+  "functions": 360,
+  "outcomes": 4290,
+  "outcomes_hit": 1876,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-roster-ulm": {
+  "blocks": 5913,
+  "blocks_hit": 3601,
+  "functions": 367,
+  "outcomes": 4390,
+  "outcomes_hit": 1973,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-roster-wrap": {
+  "blocks": 5701,
+  "blocks_hit": 3277,
+  "functions": 339,
+  "outcomes": 4202,
+  "outcomes_hit": 1802,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-roster4": {
+  "blocks": 5824,
+  "blocks_hit": 3475,
+  "functions": 361,
+  "outcomes": 4270,
+  "outcomes_hit": 1863,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-saints": {
+  "blocks": 6144,
+  "blocks_hit": 3392,
+  "functions": 351,
+  "outcomes": 4602,
+  "outcomes_hit": 1881,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-save-load": {
+  "blocks": 5339,
+  "blocks_hit": 3287,
+  "functions": 346,
+  "outcomes": 3932,
+  "outcomes_hit": 1742,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-savemid-mine": {
+  "blocks": 14679,
+  "blocks_hit": 9050,
+  "functions": 638,
+  "outcomes": 13078,
+  "outcomes_hit": 6368,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-camp-1": {
+  "blocks": 6075,
+  "blocks_hit": 3461,
+  "functions": 351,
+  "outcomes": 4568,
+  "outcomes_hit": 1914,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-camp-2": {
+  "blocks": 6500,
+  "blocks_hit": 3881,
+  "functions": 363,
+  "outcomes": 5128,
+  "outcomes_hit": 2204,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-camp-3": {
+  "blocks": 6095,
+  "blocks_hit": 3479,
+  "functions": 354,
+  "outcomes": 4582,
+  "outcomes_hit": 1925,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-card-1": {
+  "blocks": 5615,
+  "blocks_hit": 3320,
+  "functions": 346,
+  "outcomes": 4164,
+  "outcomes_hit": 1841,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-card-2": {
+  "blocks": 5616,
+  "blocks_hit": 3326,
+  "functions": 347,
+  "outcomes": 4164,
+  "outcomes_hit": 1847,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-create-1": {
+  "blocks": 7247,
+  "blocks_hit": 3934,
+  "functions": 355,
+  "outcomes": 5680,
+  "outcomes_hit": 2334,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-create-2": {
+  "blocks": 7251,
+  "blocks_hit": 3978,
+  "functions": 357,
+  "outcomes": 5682,
+  "outcomes_hit": 2365,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-create-3": {
+  "blocks": 7256,
+  "blocks_hit": 4015,
+  "functions": 358,
+  "outcomes": 5686,
+  "outcomes_hit": 2385,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-f6-1": {
+  "blocks": 4949,
+  "blocks_hit": 2937,
+  "functions": 307,
+  "outcomes": 3576,
+  "outcomes_hit": 1579,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-f6-2": {
+  "blocks": 4949,
+  "blocks_hit": 2924,
+  "functions": 307,
+  "outcomes": 3576,
+  "outcomes_hit": 1568,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-load-1": {
+  "blocks": 4556,
+  "blocks_hit": 2694,
+  "functions": 283,
+  "outcomes": 3226,
+  "outcomes_hit": 1423,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-load-2": {
+  "blocks": 4504,
+  "blocks_hit": 2683,
+  "functions": 283,
+  "outcomes": 3164,
+  "outcomes_hit": 1399,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-load-3": {
+  "blocks": 4484,
+  "blocks_hit": 2650,
+  "functions": 280,
+  "outcomes": 3150,
+  "outcomes_hit": 1379,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-party-1": {
+  "blocks": 4792,
+  "blocks_hit": 2750,
+  "functions": 281,
+  "outcomes": 3358,
+  "outcomes_hit": 1453,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-party-2": {
+  "blocks": 4811,
+  "blocks_hit": 2785,
+  "functions": 282,
+  "outcomes": 3376,
+  "outcomes_hit": 1468,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-party-3": {
+  "blocks": 4802,
+  "blocks_hit": 2823,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1503,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-party-4": {
+  "blocks": 4802,
+  "blocks_hit": 2672,
+  "functions": 282,
+  "outcomes": 3368,
+  "outcomes_hit": 1408,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-pray-1": {
+  "blocks": 6041,
+  "blocks_hit": 3340,
+  "functions": 338,
+  "outcomes": 4506,
+  "outcomes_hit": 1848,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-pray-2": {
+  "blocks": 6041,
+  "blocks_hit": 3340,
+  "functions": 338,
+  "outcomes": 4506,
+  "outcomes_hit": 1847,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-pray-3": {
+  "blocks": 6041,
+  "blocks_hit": 3341,
+  "functions": 338,
+  "outcomes": 4506,
+  "outcomes_hit": 1850,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr1-pray-4": {
+  "blocks": 6041,
+  "blocks_hit": 3341,
+  "functions": 338,
+  "outcomes": 4506,
+  "outcomes_hit": 1850,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-create-1": {
+  "blocks": 7225,
+  "blocks_hit": 3797,
+  "functions": 354,
+  "outcomes": 5656,
+  "outcomes_hit": 2196,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-create-2": {
+  "blocks": 6280,
+  "blocks_hit": 3382,
+  "functions": 351,
+  "outcomes": 4740,
+  "outcomes_hit": 1842,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-create-3": {
+  "blocks": 7242,
+  "blocks_hit": 3752,
+  "functions": 354,
+  "outcomes": 5676,
+  "outcomes_hit": 2148,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-create-4": {
+  "blocks": 6284,
+  "blocks_hit": 3394,
+  "functions": 351,
+  "outcomes": 4746,
+  "outcomes_hit": 1846,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-create-5": {
+  "blocks": 6289,
+  "blocks_hit": 3423,
+  "functions": 352,
+  "outcomes": 4750,
+  "outcomes_hit": 1867,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-create-6": {
+  "blocks": 6314,
+  "blocks_hit": 3480,
+  "functions": 351,
+  "outcomes": 4772,
+  "outcomes_hit": 1923,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-pray-1": {
+  "blocks": 6073,
+  "blocks_hit": 3543,
+  "functions": 343,
+  "outcomes": 4536,
+  "outcomes_hit": 1934,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-pray-2": {
+  "blocks": 6198,
+  "blocks_hit": 3486,
+  "functions": 354,
+  "outcomes": 4648,
+  "outcomes_hit": 1963,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-pray-3": {
+  "blocks": 6583,
+  "blocks_hit": 3671,
+  "functions": 365,
+  "outcomes": 5056,
+  "outcomes_hit": 2117,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-pray-5": {
+  "blocks": 6187,
+  "blocks_hit": 3493,
+  "functions": 356,
+  "outcomes": 4630,
+  "outcomes_hit": 1966,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-pray-6": {
+  "blocks": 6186,
+  "blocks_hit": 3504,
+  "functions": 353,
+  "outcomes": 4634,
+  "outcomes_hit": 1975,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-pray-7": {
+  "blocks": 6236,
+  "blocks_hit": 3542,
+  "functions": 360,
+  "outcomes": 4676,
+  "outcomes_hit": 2007,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-scr2-pray-8": {
+  "blocks": 6131,
+  "blocks_hit": 3469,
+  "functions": 352,
+  "outcomes": 4582,
+  "outcomes_hit": 1948,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-sheet": {
+  "blocks": 5808,
+  "blocks_hit": 3280,
+  "functions": 329,
+  "outcomes": 4290,
+  "outcomes_hit": 1796,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-sheet-dksave0": {
+  "blocks": 5106,
+  "blocks_hit": 2916,
+  "functions": 303,
+  "outcomes": 3704,
+  "outcomes_hit": 1536,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-shop": {
+  "blocks": 5791,
+  "blocks_hit": 3402,
+  "functions": 358,
+  "outcomes": 4424,
+  "outcomes_hit": 1907,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-smiths": {
+  "blocks": 5674,
+  "blocks_hit": 3358,
+  "functions": 356,
+  "outcomes": 4292,
+  "outcomes_hit": 1869,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-stables": {
+  "blocks": 5613,
+  "blocks_hit": 3333,
+  "functions": 347,
+  "outcomes": 4238,
+  "outcomes_hit": 1862,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-stay": {
+  "blocks": 5785,
+  "blocks_hit": 3488,
+  "functions": 357,
+  "outcomes": 4374,
+  "outcomes_hit": 1879,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tester-clean-reload": {
+  "blocks": 7009,
+  "blocks_hit": 3594,
+  "functions": 336,
+  "outcomes": 5456,
+  "outcomes_hit": 2009,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tester-newgame-reload": {
+  "blocks": 7009,
+  "blocks_hit": 3613,
+  "functions": 336,
+  "outcomes": 5456,
+  "outcomes_hit": 2032,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tk-map-altq": {
+  "blocks": 5282,
+  "blocks_hit": 3169,
+  "functions": 313,
+  "outcomes": 4038,
+  "outcomes_hit": 1672,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tk-map-keys": {
+  "blocks": 5058,
+  "blocks_hit": 2973,
+  "functions": 287,
+  "outcomes": 3834,
+  "outcomes_hit": 1547,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tk-rest-click": {
+  "blocks": 5259,
+  "blocks_hit": 3147,
+  "functions": 309,
+  "outcomes": 4022,
+  "outcomes_hit": 1666,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tk-rest-first": {
+  "blocks": 5302,
+  "blocks_hit": 3160,
+  "functions": 310,
+  "outcomes": 4060,
+  "outcomes_hit": 1676,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tk-rest-second": {
+  "blocks": 5186,
+  "blocks_hit": 3067,
+  "functions": 302,
+  "outcomes": 3928,
+  "outcomes_hit": 1585,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tk-two-keys-rest": {
+  "blocks": 5259,
+  "blocks_hit": 3126,
+  "functions": 309,
+  "outcomes": 4022,
+  "outcomes_hit": 1647,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tk-two-keys-walk": {
+  "blocks": 5186,
+  "blocks_hit": 3064,
+  "functions": 302,
+  "outcomes": 3928,
+  "outcomes_hit": 1583,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-tyrnau": {
+  "blocks": 6525,
+  "blocks_hit": 4003,
+  "functions": 399,
+  "outcomes": 5068,
+  "outcomes_hit": 2316,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-uj-formula1": {
+  "blocks": 5654,
+  "blocks_hit": 3257,
+  "functions": 332,
+  "outcomes": 4168,
+  "outcomes_hit": 1789,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-uj-hourm3": {
+  "blocks": 6395,
+  "blocks_hit": 3821,
+  "functions": 357,
+  "outcomes": 5030,
+  "outcomes_hit": 2163,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-uj-marchm1": {
+  "blocks": 12607,
+  "blocks_hit": 7665,
+  "functions": 625,
+  "outcomes": 11100,
+  "outcomes_hit": 5262,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-uj-relic1": {
+  "blocks": 5465,
+  "blocks_hit": 3326,
+  "functions": 353,
+  "outcomes": 4068,
+  "outcomes_hit": 1766,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-university": {
+  "blocks": 5464,
+  "blocks_hit": 3226,
+  "functions": 360,
+  "outcomes": 4048,
+  "outcomes_hit": 1768,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-university-shop": {
+  "blocks": 5468,
+  "blocks_hit": 3240,
+  "functions": 362,
+  "outcomes": 4050,
+  "outcomes_hit": 1779,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-wharves": {
+  "blocks": 5903,
+  "blocks_hit": 3593,
+  "functions": 375,
+  "outcomes": 4444,
+  "outcomes_hit": 1955,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-wien-rathaus": {
+  "blocks": 5903,
+  "blocks_hit": 3593,
+  "functions": 375,
+  "outcomes": 4444,
+  "outcomes_hit": 1955,
+  "runs": 1
+ },
+ "new-saintbox_rerun_sessions-wildcamp": {
+  "blocks": 6017,
+  "blocks_hit": 3502,
+  "functions": 337,
+  "outcomes": 4746,
+  "outcomes_hit": 1907,
+  "runs": 1
+ },
+ "new-timing_remade-out_sessions-b32-saint-stale-slot-more": {
+  "blocks": 5126,
+  "blocks_hit": 3060,
+  "functions": 315,
+  "outcomes": 3812,
+  "outcomes_hit": 1684,
+  "runs": 1
+ },
+ "new-timing_remade-out_sessions-gen-carry-04": {
+  "blocks": 15812,
+  "blocks_hit": 9681,
+  "functions": 665,
+  "outcomes": 14084,
+  "outcomes_hit": 6917,
+  "runs": 1
+ },
+ "new-timing_remade-out_sessions-gen-carry-17": {
+  "blocks": 14678,
+  "blocks_hit": 9015,
+  "functions": 637,
+  "outcomes": 13078,
+  "outcomes_hit": 6331,
+  "runs": 1
+ },
+ "new-timing_remade-out_sessions-gen-mquit-06": {
+  "blocks": 1768,
+  "blocks_hit": 1072,
+  "functions": 175,
+  "outcomes": 1478,
+  "outcomes_hit": 594,
+  "runs": 1
+ },
+ "new-timing_remade-out_sessions-sheet-dksave0": {
+  "blocks": 5106,
+  "blocks_hit": 2916,
+  "functions": 303,
+  "outcomes": 3704,
+  "outcomes_hit": 1536,
+  "runs": 1
+ },
+ "new-timing_remade-out_sessions-tk-rest-first": {
+  "blocks": 5302,
+  "blocks_hit": 3160,
+  "functions": 310,
+  "outcomes": 4060,
+  "outcomes_hit": 1676,
+  "runs": 1
+ },
+ "new-travscripts_run1_sessions-L1-key-l-then-bottom-click": {
+  "blocks": 5262,
+  "blocks_hit": 3187,
+  "functions": 310,
+  "outcomes": 4024,
+  "outcomes_hit": 1706,
+  "runs": 1
+ },
+ "new-travscripts_run1_sessions-L2-bottom-click-pressburg": {
+  "blocks": 6435,
+  "blocks_hit": 3897,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2260,
+  "runs": 1
+ },
+ "new-travscripts_run1_sessions-L2b-trav0-03-3clicks": {
+  "blocks": 6435,
+  "blocks_hit": 3897,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2260,
+  "runs": 1
+ },
+ "new-travscripts_run1_sessions-b34-m4-rest-01": {
+  "blocks": 6012,
+  "blocks_hit": 3631,
+  "functions": 348,
+  "outcomes": 4696,
+  "outcomes_hit": 2034,
+  "runs": 1
+ },
+ "new-travscripts_run1_sessions-gen-trav-03": {
+  "blocks": 6735,
+  "blocks_hit": 3964,
+  "functions": 363,
+  "outcomes": 5336,
+  "outcomes_hit": 2273,
+  "runs": 1
+ },
+ "new-travscripts_run1_sessions-gen-trav-04": {
+  "blocks": 7388,
+  "blocks_hit": 4222,
+  "functions": 392,
+  "outcomes": 5854,
+  "outcomes_hit": 2457,
+  "runs": 1
+ },
+ "new-travscripts_run1_sessions-gen-trav-06": {
+  "blocks": 6792,
+  "blocks_hit": 3780,
+  "functions": 352,
+  "outcomes": 5340,
+  "outcomes_hit": 2106,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-L1-key-l-then-bottom-click": {
+  "blocks": 5262,
+  "blocks_hit": 3187,
+  "functions": 310,
+  "outcomes": 4024,
+  "outcomes_hit": 1706,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-L2-bottom-click-pressburg": {
+  "blocks": 6435,
+  "blocks_hit": 3897,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2260,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-L2b-trav0-03-3clicks": {
+  "blocks": 6435,
+  "blocks_hit": 3897,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2260,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-01": {
+  "blocks": 6750,
+  "blocks_hit": 3947,
+  "functions": 364,
+  "outcomes": 5322,
+  "outcomes_hit": 2247,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-03": {
+  "blocks": 6735,
+  "blocks_hit": 3964,
+  "functions": 363,
+  "outcomes": 5336,
+  "outcomes_hit": 2273,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-04": {
+  "blocks": 7388,
+  "blocks_hit": 4222,
+  "functions": 392,
+  "outcomes": 5854,
+  "outcomes_hit": 2457,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-06": {
+  "blocks": 6792,
+  "blocks_hit": 3780,
+  "functions": 352,
+  "outcomes": 5340,
+  "outcomes_hit": 2106,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-07": {
+  "blocks": 6165,
+  "blocks_hit": 3571,
+  "functions": 331,
+  "outcomes": 4752,
+  "outcomes_hit": 1972,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-09": {
+  "blocks": 6883,
+  "blocks_hit": 4025,
+  "functions": 366,
+  "outcomes": 5402,
+  "outcomes_hit": 2311,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-10": {
+  "blocks": 6786,
+  "blocks_hit": 3749,
+  "functions": 352,
+  "outcomes": 5336,
+  "outcomes_hit": 2086,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-11": {
+  "blocks": 6765,
+  "blocks_hit": 3825,
+  "functions": 351,
+  "outcomes": 5312,
+  "outcomes_hit": 2155,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-12": {
+  "blocks": 6725,
+  "blocks_hit": 3883,
+  "functions": 361,
+  "outcomes": 5304,
+  "outcomes_hit": 2195,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-14": {
+  "blocks": 6906,
+  "blocks_hit": 4003,
+  "functions": 369,
+  "outcomes": 5410,
+  "outcomes_hit": 2319,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-15": {
+  "blocks": 7421,
+  "blocks_hit": 4227,
+  "functions": 391,
+  "outcomes": 5890,
+  "outcomes_hit": 2487,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav-17": {
+  "blocks": 7257,
+  "blocks_hit": 4140,
+  "functions": 386,
+  "outcomes": 5802,
+  "outcomes_hit": 2408,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav0-02": {
+  "blocks": 8028,
+  "blocks_hit": 4666,
+  "functions": 435,
+  "outcomes": 6370,
+  "outcomes_hit": 2809,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav0-03": {
+  "blocks": 7687,
+  "blocks_hit": 4413,
+  "functions": 423,
+  "outcomes": 6070,
+  "outcomes_hit": 2610,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav0-04": {
+  "blocks": 7288,
+  "blocks_hit": 4269,
+  "functions": 405,
+  "outcomes": 5694,
+  "outcomes_hit": 2501,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav0-06": {
+  "blocks": 7662,
+  "blocks_hit": 4518,
+  "functions": 423,
+  "outcomes": 6054,
+  "outcomes_hit": 2704,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-trav0-m5": {
+  "blocks": 6435,
+  "blocks_hit": 3897,
+  "functions": 387,
+  "outcomes": 5010,
+  "outcomes_hit": 2260,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travn-02": {
+  "blocks": 7488,
+  "blocks_hit": 4253,
+  "functions": 390,
+  "outcomes": 5966,
+  "outcomes_hit": 2498,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travn-03": {
+  "blocks": 6689,
+  "blocks_hit": 3954,
+  "functions": 355,
+  "outcomes": 5280,
+  "outcomes_hit": 2286,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travn-04": {
+  "blocks": 6451,
+  "blocks_hit": 3759,
+  "functions": 346,
+  "outcomes": 5092,
+  "outcomes_hit": 2133,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travs-02": {
+  "blocks": 6303,
+  "blocks_hit": 3415,
+  "functions": 316,
+  "outcomes": 4870,
+  "outcomes_hit": 1820,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travs-03": {
+  "blocks": 7116,
+  "blocks_hit": 4073,
+  "functions": 374,
+  "outcomes": 5678,
+  "outcomes_hit": 2358,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travs-04": {
+  "blocks": 7049,
+  "blocks_hit": 4025,
+  "functions": 363,
+  "outcomes": 5542,
+  "outcomes_hit": 2328,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travw-01": {
+  "blocks": 6472,
+  "blocks_hit": 3746,
+  "functions": 335,
+  "outcomes": 5094,
+  "outcomes_hit": 2120,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travw-02": {
+  "blocks": 6750,
+  "blocks_hit": 3935,
+  "functions": 357,
+  "outcomes": 5254,
+  "outcomes_hit": 2244,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travw-03": {
+  "blocks": 6645,
+  "blocks_hit": 3855,
+  "functions": 344,
+  "outcomes": 5166,
+  "outcomes_hit": 2204,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travw-04": {
+  "blocks": 6757,
+  "blocks_hit": 3806,
+  "functions": 349,
+  "outcomes": 5318,
+  "outcomes_hit": 2154,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travw-05": {
+  "blocks": 6309,
+  "blocks_hit": 3711,
+  "functions": 333,
+  "outcomes": 4908,
+  "outcomes_hit": 2109,
+  "runs": 1
+ },
+ "new-travscripts_run2_sessions-gen-travw-06": {
+  "blocks": 6004,
+  "blocks_hit": 3388,
+  "functions": 309,
+  "outcomes": 4604,
+  "outcomes_hit": 1835,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-b1-a-01": {
+  "blocks": 5818,
+  "blocks_hit": 3579,
+  "functions": 339,
+  "outcomes": 4484,
+  "outcomes_hit": 2025,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-b1-b-01": {
+  "blocks": 5803,
+  "blocks_hit": 3496,
+  "functions": 336,
+  "outcomes": 4478,
+  "outcomes_hit": 1942,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-b2-a-01": {
+  "blocks": 5827,
+  "blocks_hit": 3580,
+  "functions": 340,
+  "outcomes": 4494,
+  "outcomes_hit": 2033,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-b2-b-01": {
+  "blocks": 5816,
+  "blocks_hit": 3530,
+  "functions": 337,
+  "outcomes": 4476,
+  "outcomes_hit": 1980,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-e-a-01": {
+  "blocks": 5676,
+  "blocks_hit": 3490,
+  "functions": 335,
+  "outcomes": 4424,
+  "outcomes_hit": 1940,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-e-b-01": {
+  "blocks": 5262,
+  "blocks_hit": 3116,
+  "functions": 310,
+  "outcomes": 4024,
+  "outcomes_hit": 1622,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-f1-a-01": {
+  "blocks": 5690,
+  "blocks_hit": 3575,
+  "functions": 335,
+  "outcomes": 4442,
+  "outcomes_hit": 2025,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-f1-b-01": {
+  "blocks": 5283,
+  "blocks_hit": 3216,
+  "functions": 312,
+  "outcomes": 4046,
+  "outcomes_hit": 1711,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-f2-a-01": {
+  "blocks": 5713,
+  "blocks_hit": 3591,
+  "functions": 337,
+  "outcomes": 4476,
+  "outcomes_hit": 2026,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-f2-b-01": {
+  "blocks": 5283,
+  "blocks_hit": 3225,
+  "functions": 312,
+  "outcomes": 4046,
+  "outcomes_hit": 1711,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-h-a-01": {
+  "blocks": 5262,
+  "blocks_hit": 3127,
+  "functions": 310,
+  "outcomes": 4024,
+  "outcomes_hit": 1640,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-h-b-01": {
+  "blocks": 5713,
+  "blocks_hit": 3515,
+  "functions": 337,
+  "outcomes": 4468,
+  "outcomes_hit": 1972,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-n-a-01": {
+  "blocks": 5817,
+  "blocks_hit": 3516,
+  "functions": 337,
+  "outcomes": 4486,
+  "outcomes_hit": 1975,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-n-b-01": {
+  "blocks": 5656,
+  "blocks_hit": 3496,
+  "functions": 332,
+  "outcomes": 4416,
+  "outcomes_hit": 1963,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-n-c-01": {
+  "blocks": 5710,
+  "blocks_hit": 3576,
+  "functions": 337,
+  "outcomes": 4474,
+  "outcomes_hit": 2045,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-rest-01": {
+  "blocks": 6012,
+  "blocks_hit": 3631,
+  "functions": 348,
+  "outcomes": 4696,
+  "outcomes_hit": 2034,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-s-a-01": {
+  "blocks": 5295,
+  "blocks_hit": 3174,
+  "functions": 310,
+  "outcomes": 4054,
+  "outcomes_hit": 1684,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-s-b-01": {
+  "blocks": 5673,
+  "blocks_hit": 3418,
+  "functions": 331,
+  "outcomes": 4428,
+  "outcomes_hit": 1870,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-w-a-01": {
+  "blocks": 5672,
+  "blocks_hit": 3480,
+  "functions": 333,
+  "outcomes": 4424,
+  "outcomes_hit": 1934,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m4-w-b-01": {
+  "blocks": 5811,
+  "blocks_hit": 3526,
+  "functions": 337,
+  "outcomes": 4472,
+  "outcomes_hit": 1959,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m5-n-90": {
+  "blocks": 5266,
+  "blocks_hit": 3198,
+  "functions": 311,
+  "outcomes": 4028,
+  "outcomes_hit": 1716,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m5-n-92": {
+  "blocks": 5815,
+  "blocks_hit": 3570,
+  "functions": 339,
+  "outcomes": 4480,
+  "outcomes_hit": 2030,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m5-n-93": {
+  "blocks": 5676,
+  "blocks_hit": 3485,
+  "functions": 335,
+  "outcomes": 4424,
+  "outcomes_hit": 1953,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m5-w-430": {
+  "blocks": 5678,
+  "blocks_hit": 3481,
+  "functions": 334,
+  "outcomes": 4430,
+  "outcomes_hit": 1928,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m5-w-546": {
+  "blocks": 5280,
+  "blocks_hit": 3198,
+  "functions": 312,
+  "outcomes": 4044,
+  "outcomes_hit": 1699,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m5-w-610": {
+  "blocks": 5266,
+  "blocks_hit": 3162,
+  "functions": 311,
+  "outcomes": 4028,
+  "outcomes_hit": 1660,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m5-w-777": {
+  "blocks": 5262,
+  "blocks_hit": 3142,
+  "functions": 310,
+  "outcomes": 4024,
+  "outcomes_hit": 1647,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m6-pb-100": {
+  "blocks": 5690,
+  "blocks_hit": 3575,
+  "functions": 335,
+  "outcomes": 4442,
+  "outcomes_hit": 2025,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m6-pb-145": {
+  "blocks": 5666,
+  "blocks_hit": 3473,
+  "functions": 332,
+  "outcomes": 4418,
+  "outcomes_hit": 1933,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b34-m6-pb-150": {
+  "blocks": 5699,
+  "blocks_hit": 3562,
+  "functions": 336,
+  "outcomes": 4452,
+  "outcomes_hit": 1999,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b35-d-keypad-01": {
+  "blocks": 5186,
+  "blocks_hit": 3083,
+  "functions": 302,
+  "outcomes": 3928,
+  "outcomes_hit": 1611,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-b35-d-mix-01": {
+  "blocks": 5295,
+  "blocks_hit": 3133,
+  "functions": 308,
+  "outcomes": 4054,
+  "outcomes_hit": 1641,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m1-e-01": {
+  "blocks": 6109,
+  "blocks_hit": 3661,
+  "functions": 348,
+  "outcomes": 4794,
+  "outcomes_hit": 2052,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m1-n-01": {
+  "blocks": 6172,
+  "blocks_hit": 3693,
+  "functions": 354,
+  "outcomes": 4848,
+  "outcomes_hit": 2086,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m1-ne-01": {
+  "blocks": 6133,
+  "blocks_hit": 3731,
+  "functions": 352,
+  "outcomes": 4810,
+  "outcomes_hit": 2136,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m1-s-01": {
+  "blocks": 6084,
+  "blocks_hit": 3640,
+  "functions": 345,
+  "outcomes": 4760,
+  "outcomes_hit": 2038,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m1-se-01": {
+  "blocks": 5985,
+  "blocks_hit": 3616,
+  "functions": 347,
+  "outcomes": 4744,
+  "outcomes_hit": 2016,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m1-sw-01": {
+  "blocks": 6141,
+  "blocks_hit": 3689,
+  "functions": 352,
+  "outcomes": 4812,
+  "outcomes_hit": 2080,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m2-down": {
+  "blocks": 5692,
+  "blocks_hit": 3524,
+  "functions": 335,
+  "outcomes": 4454,
+  "outcomes_hit": 1979,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m2-left": {
+  "blocks": 5848,
+  "blocks_hit": 3570,
+  "functions": 343,
+  "outcomes": 4516,
+  "outcomes_hit": 2013,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m2-right": {
+  "blocks": 5787,
+  "blocks_hit": 3487,
+  "functions": 334,
+  "outcomes": 4454,
+  "outcomes_hit": 1935,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m2-sup": {
+  "blocks": 5692,
+  "blocks_hit": 3494,
+  "functions": 335,
+  "outcomes": 4454,
+  "outcomes_hit": 1952,
+  "runs": 1
+ },
+ "new-travscripts_run3_sessions-rc-m2-up": {
+  "blocks": 5808,
+  "blocks_hit": 3493,
+  "functions": 336,
+  "outcomes": 4470,
+  "outcomes_hit": 1936,
+  "runs": 1
+ },
+ "new-travscripts_run4_sessions-b35-d-ctrlf-01": {
+  "blocks": 5295,
+  "blocks_hit": 3132,
+  "functions": 308,
+  "outcomes": 4054,
+  "outcomes_hit": 1655,
+  "runs": 1
+ },
+ "new-travscripts_run4_sessions-b35-d-ctrlf-02": {
+  "blocks": 5295,
+  "blocks_hit": 3126,
+  "functions": 308,
+  "outcomes": 4054,
+  "outcomes_hit": 1636,
+  "runs": 1
  },
  "path": {
   "blocks": 386,
