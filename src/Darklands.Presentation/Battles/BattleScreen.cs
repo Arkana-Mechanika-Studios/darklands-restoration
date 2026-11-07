@@ -500,7 +500,19 @@ public sealed class BattleScreen : ITacticalView
                 }
                 return true;
             case Keys.AltQ or Keys.AltP or Keys.AltD or Keys.AltF or Keys.AltM or Keys.AltC:
-                var acted = _hotKey?.Invoke(key) ?? false;
+                // C: the battle's pointer is the driver's, shown in the battle's last shape: the pause box (root 0000:1080) shows it while it
+                //   waits (pointer-show 0x10E7), the message box and the question hide it (vis10 session leftovers-pause: the order hand over
+                //   "Game Paused"); the battle's own drawn one is already off (HotKeysForWaitingKey)
+                var restore = ShowDriverPointer();
+                bool acted;
+                try
+                {
+                    acted = _hotKey?.Invoke(key) ?? false;
+                }
+                finally
+                {
+                    restore();
+                }
                 if (acted && OneTickPerPass && key is Keys.AltD or Keys.AltF or Keys.AltM or Keys.AltC && BoxCallbacks is { Count: > 0 } measured)
                 {
                     // C: the host has no time of its own in OneTickPerPass: the timer callbacks of the box's wait (root 0000:24BC: DS:07D1 counts on)
@@ -1278,6 +1290,7 @@ public sealed class BattleScreen : ITacticalView
     {
         ApplyViewOrigin();
         _viewRedrawn = true;
+        _screenLeftover = null;
         _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
@@ -1290,6 +1303,7 @@ public sealed class BattleScreen : ITacticalView
         _view.CentreColumn = c.Position.Column;
         _view.CentreRow = c.Position.Row;
         _viewRedrawn = true;
+        _screenLeftover = null;
         _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
@@ -1375,14 +1389,23 @@ public sealed class BattleScreen : ITacticalView
         _view.CentreColumn = c.Position.Column;
         _view.CentreRow = c.Position.Row;
         Draw();
+        // orig: R014+0xE67A..0xE6A7: the battle's hand set again after the loot screen (the driver's shape for what follows: a member's
+        //   message, R021+0x0298)
+        _driverShape = Hand;
+        ErasePointer();
+        DrawPointer(_ui.Canvas, _driverShape);
     }
 
     /// <summary>A message in a member's panel row (or the whole column for −2), waiting for a key or a left click.</summary>
     // orig: R021+0x01E2 (1EF8:01E2) matched: the row background DS:A626 at (3, row × 40 + 1)
     // (the column: the strips DS:A628 and y 0x51), the text wrapped in 0x37 pixels from y + 4, then `while (!key-waiting-test() && !(mouse-button-state & 1))
     // menu-bar-loop(...)` and the button waited out
+    // orig: R021+0x01F9 pointer-hide (root 047C:12C3) before the row is drawn, R021+0x0298 pointer-show (root 047C:1293) after it, no
+    //   shape set: the driver's pointer waits in the battle's last shape (the hand after the loot screen, R014+0xE67A..0xE6A7; the bar
+    //   opened meanwhile sets the hand too, root 0000:0000+0x0084), not the gauntlet; tests: BattleUiTests
     public void MemberMessage(int member, string text, int color)
     {
+        ErasePointer();
         var canvas = _ui.Canvas;
         var sprites = _ui.Assets.CommonSprites;
         int y;
@@ -1403,21 +1426,29 @@ public sealed class BattleScreen : ITacticalView
         var layout = new CardTextLayout(_ui.Text);
         layout.Draw(canvas, TextPainter.Encode(text), 3, y + 4, 0x37,
             new CardTextLayout.Settings { Color = (byte)color, Leading = 0, Alignment = TextAlignment.Center });
-        _ui.PointerVisible = true;
+        var restore = ShowDriverPointer();
         // orig: R021+0x02A6 matched C: `while (!root 047C:073D() && !(mouse-button-state & 1)) root 0000:0000(&DS:9419, 0);` (the key stays
         // waiting for the battle's keys), then R021+0x02C3 `while (mouse-button-state & 1);` (the release is counted: the next pass of the
         // mouse handler takes it as a click); tests: BattleUiTests
-        while (!_ui.KeyWaiting && !_ui.Mouse.Left)
+        try
         {
-            _ui.Present();
-            if (_ui.Mouse.Right)
+            while (!_ui.KeyWaiting && !_ui.Mouse.Left)
             {
-                RunMenu(() => _menuBar!.Run(keyboard: false));
+                _ui.Present();
+                if (_ui.Mouse.Right)
+                {
+                    RunMenu(() => _menuBar!.Run(keyboard: false));
+                    // the bar leaves the driver's pointer shown in the hand it set
+                    ApplyDriverPointer();
+                }
+                _ui.Idle();
             }
-            _ui.Idle();
+            _ui.WaitForButtonRelease();
         }
-        _ui.WaitForButtonRelease();
-        _ui.PointerVisible = false;
+        finally
+        {
+            restore();
+        }
     }
 
     public int ScreenTileOf(int cell)
@@ -1571,18 +1602,76 @@ public sealed class BattleScreen : ITacticalView
         if (_battle!.Menus.SaveGame == 1 && _owner.Save is { } save)
         {
             ErasePointer();
-            var (image, hotX, hotY) = PointerShape(_ui.Mouse.X, _ui.Mouse.Y);
-            var (visible, shape, hotSpot) = (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot);
-            (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (true, _assets.Images[image], (hotX, hotY));
+            var restore = ShowDriverPointer();
             try
             {
                 save(_battle);
             }
             finally
             {
-                (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (visible, shape, hotSpot);
+                restore();
             }
             _battle.SwitchLevel(_battle.Battle.FloorShown);
+            // orig: R037+0x451A..0x453C: the comment box (text-prompt) is put back with colour 0 transparent and colour 5 turned into 0, so
+            //   the screen keeps some of its pixels (TextInputBox); the battle's back page never had the box, and the save's level switch
+            //   (R024+0x059A through thunk 09C0:1B3F at R003+0x0CD6) paints nothing: only a later frame's sprite boxes or a full paint
+            //   take those pixels back (vis10 session visleads-mines-save: the box's strip at x 265..267, y 83..129 after the save)
+            KeepScreenLeftover(TextInputBox.Area);
+        }
+    }
+
+    /// <summary>
+    /// What the screen holds in <paramref name="area"/> that the battle's own drawing did not put there: kept over every later frame
+    /// until a frame's sprite box takes a pixel back or the view is painted whole.
+    /// </summary>
+    // orig: fight-draw's screen copy (R014+0x74A2) takes only the boxes of the frame's sprites and animated pieces (DS:E172) from the
+    //   back page; floor-view-paint (R017+0x0000) paints the whole view. A box drawn straight on the screen in between (the save's
+    //   comment) stays where neither reaches.
+    private void KeepScreenLeftover((int X, int Y, int Width, int Height) area)
+    {
+        if (_ui.Options.CleanDrawing)
+        {
+            return;
+        }
+        var canvas = _ui.Canvas;
+        var pixels = new Dictionary<int, byte>();
+        for (var y = area.Y; y < area.Y + area.Height; y++)
+        {
+            for (var x = area.X; x < area.X + area.Width; x++)
+            {
+                pixels[y * Canvas.Width + x] = canvas.Screen.Pixels[y * Canvas.Width + x];
+            }
+        }
+        _screenLeftover = pixels;
+    }
+
+    /// <summary>The screen's pixels that the battle's drawing has not taken back yet (by screen offset), null when none.</summary>
+    private Dictionary<int, byte>? _screenLeftover;
+
+    /// <summary>Puts the leftover pixels over the frame just drawn, except where this frame's sprite boxes reach (those are taken back).</summary>
+    private void DrawScreenLeftover(Canvas canvas)
+    {
+        if (_screenLeftover is not { } left)
+        {
+            return;
+        }
+        foreach (var (x, y, w, h) in _dirty.Rects)
+        {
+            for (var sy = Math.Max(y, 0); sy < Math.Min(y + h, Canvas.Height); sy++)
+            {
+                for (var sx = Math.Max(x, 0); sx < Math.Min(x + w, BattlefieldView.Width); sx++)
+                {
+                    left.Remove(sy * Canvas.Width + sx + BattlefieldView.Left);
+                }
+            }
+        }
+        foreach (var (offset, value) in left)
+        {
+            canvas.Screen.Pixels[offset] = value;
+        }
+        if (left.Count == 0)
+        {
+            _screenLeftover = null;
         }
     }
 
@@ -1689,9 +1778,9 @@ public sealed class BattleScreen : ITacticalView
         //   (vis10 session uncert-cme-menus: the order hand over the opened Orders menu in the original's screen); tests: BattleUiTests
         // C: DS:9C4C is 1 while the game runs: root 03A1:000A+0x016E sets it from the driver call root 047C:11F6 (1 when it answers 1 or
         //   more) and R000+0x0551 sets it to 1 at start-up; no other writer (scan of the EXE).
-        var image = _battle!.PauseByte == 0 ? BattleImages.NormalPointer : BattleImages.OrderPointer;
+        _driverShape = Hand;
         var (shape, hotSpot) = (_ui.PointerShape, _ui.PointerHotSpot);
-        (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (true, _assets.Images[image], (0, 0));
+        ApplyDriverPointer();
         var opened = _ui.Clock.Milliseconds;
         try
         {
@@ -2349,6 +2438,7 @@ public sealed class BattleScreen : ITacticalView
         _battle!.ViewOrigin = null;
         _battle.FollowsActive = false;
         _viewRedrawn = true;
+        _screenLeftover = null;
         _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
@@ -2731,13 +2821,14 @@ public sealed class BattleScreen : ITacticalView
     //   figures behind it as in the original (vis10 V-mines, D-b797f7, ordercarry, D-e4fbd6: the 136..208 px of x 152..199 gone).
     // DIVERGENCE: the whole view is redrawn each frame (no dirty tiles): under the sorted list lies the full paint's order everywhere,
     // where the original puts a dirty tile's floor tiles and floor decorations back from lists A and B in their own order, and its
-    // screen keeps what an earlier frame's boxes took (or a text box's last columns: no box takes them back), here only this frame's
+    // screen keeps what an earlier frame's boxes took (a box drawn on the screen itself is kept: KeepScreenLeftover), here only this frame's
     // boxes get the redrawn wall pieces; the boxes hold this frame's sprites only (not the last frame's logged entries, nor a body's
     // growth by its movement), and the 157-sprite limit is not kept for the
     // drawing of the sprites before the walls (see EffectField.Drawn for its effect on the random numbers); the missiles and the ground
     // cursor are drawn after the sorted list instead of in it (they mark their slots and take their places), the last frame's logged
-    // entries (which draw nothing) are not in it, a combatant's flash and damage number go with its body, and the other members marked
-    // as selected keep their cursors with their bodies.
+    // entries (which draw nothing) are not in it, and a combatant's flash and damage number go with its body.
+    // C: a screen pixel that a box drawn straight on the screen left (the save's comment) stays until a frame's box or a full paint takes
+    //   it back (KeepScreenLeftover); the chosen member's cursor is the one the last fight-draw queued (QueuedChosen).
     // C: one visible effect of the dirty tiles (round fortpx 2026-11-07): vis10 visuals-fortress-cell, 1 px at (231,101) by the party
     //   (original 0xBA, C# 0xDA). Write watches on the pixel and on its back-buffer byte (D000:7F27) in the original: the view's full
     //   paint (floor-view-paint R017+0x0000, pass 8) draws a floor decoration's 0xBA there and then a later slot's floor tile's 0xDA
@@ -2809,6 +2900,7 @@ public sealed class BattleScreen : ITacticalView
         var missiles = PlaceMissiles();
         _loggedSprites = _logged;
         listC.AddRange(WallPieceEntries());
+        QueueChosen();
         listC.AddRange(CursorEntries());
         DepthOrder.Sort(listC, e => e.Key);
         foreach (var e in listC)
@@ -2818,6 +2910,7 @@ public sealed class BattleScreen : ITacticalView
         DrawMissiles(canvas, missiles);
         DrawClouds(canvas);
         DrawGroundCursor(canvas);
+        DrawScreenLeftover(canvas);
         OpenPendingOrderMode();
         DrawPanel(canvas);
         DrawMessage(canvas);
@@ -2837,11 +2930,10 @@ public sealed class BattleScreen : ITacticalView
     // C: after the tick's fight-draw, if DS:D6F1 == 1 the hot spots (DS:D848[0..DS:E0A1 - 1]) are searched for the member DS:D6ED; with
     // C: one: chosen-member = it, the member cursor's place (DS:E09F / DS:E09D, drawn here from the member), command-mode-begin and
     // C: DS:D6F1 = 0; without one D6F1 stays for the next tick (the member's status is not tested)
-    // DIVERGENCE: the member cursor of the member put in order mode here shows in the next frame drawn; the original queues it (R014+0x6818's
-    //   member-cursor entry, DS:E09F / DS:E09D) only at its next fight-draw, a fight-tick later (every 8 timer callbacks while paused), so for
-    //   up to 8 passes its screen has no cursor (vis10 session loadfix-order-cursor, DKSAVE99's mine ambush, key 1: command-mode-begin R014+0xBC0C at
-    //   pass 593, the next fight-draw R014+0x74A2 at pass 601; the frames at passes 596 / 599 without the box, 208 px, from 602 with it).
-    //   Host timing of the redraw (the whole view is drawn every frame here, see Draw), not followed.
+    // C: the member cursor of the member put in order mode here (or by a key or a click) shows only from the next fight-draw, which
+    //   queues it (R014+0x6818's member-cursor entry, DS:E09F / DS:E09D), a fight-tick later (every 8 timer callbacks while paused):
+    //   QueuedChosen (vis10 session loadfix-order-cursor, DKSAVE99's mine ambush, key 1: command-mode-begin R014+0xBC0C at pass 593, the
+    //   next fight-draw R014+0x74A2 at pass 601; the frames at passes 596 / 599 still with the old member's box, from 602 with the new).
     private void OpenPendingOrderMode()
     {
         var tb = _battle!;
@@ -2944,11 +3036,8 @@ public sealed class BattleScreen : ITacticalView
         {
             _hotSpots.Add((i, l, t, r, b, c.Position.Y));
         }
-        // the chosen member's cursor and the target cursor have their own entries in list C (CursorEntries)
-        if (queued && i != tb.Selected && c.Selected && i < Combatant.PartySlots)
-        {
-            SpriteDrawing.Draw(canvas, _assets.Images[BattleImages.MemberCursor], fx - 4, mid - 13, clip);
-        }
+        // the chosen member's cursor and the target cursor have their own entries in list C (CursorEntries); the other members marked
+        // as selected (DS:9064) have none: fight-draw reads only DS:A6B2 (DS:9064 is read and written only by R014+0xBC0C / 0xBCA8)
         if (c.DamageNumber is > 0 and <= 42 && tb.Effects.NumberQueued(i))
         {
             var image = (i < Combatant.PartySlots ? BattleImages.PartyDamage : BattleImages.EnemyDamage) + c.DamageNumber;
@@ -3219,13 +3308,31 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
+    /// <summary>The chosen member (DS:A6B2) whose cursor the frames show: taken at each fight-draw (a combat tick's frame) and at the first.</summary>
+    // orig: R014+0x6818 queues the member cursor at fight-draw only (R014+0x6D70: DS:A6B2 as it is then); between two fight-draws the
+    //   screen is not redrawn, so a member chosen or left in between (command-mode-begin R014+0xBC0C, R014+0xBCA8) shows at the next
+    //   fight-draw (the first one at the battle's start, R014+0x0307). Here every frame is drawn whole: the drawing keeps the member the
+    //   last tick's frame queued (drawing only: the battle's state is untouched); tests: BattleUiTests
+    private void QueueChosen()
+    {
+        var tb = _battle!;
+        if (tb.TickToDraw || !_chosenQueued)
+        {
+            _queuedChosen = tb.Selected;
+            _chosenQueued = true;
+        }
+    }
+
+    private int _queuedChosen = -1;
+    private bool _chosenQueued;
+
     /// <summary>The chosen member's cursor, then the target cursor, each in list C just behind its combatant's body (its keys + 1).</summary>
     // orig: R014+0x6818 (14F7:0008) checked against the asm, after the wall pieces (R014+0x6D6D): with DS:A6B2's body queued (DS:853E) and
     // C: room in the list, an entry of type 0x7530 with the body entry's keys + 1, sprite DS:C21B at DS:E09F / E09D (R014+0x6D70..0x6E0C);
     // C: then, when the ground cursor's sprite DS:E1BC is the target cursor DS:C242 or DS:C2BD, one for DS:D845's body (type 0x7918, its
     // C: keys + 1, at the ground cursor's place, R014+0x6E10..0x6EB4). Then the sort (R014+0x97A6).
-    // C: (D-420a1f) the other members marked as selected keep their cursors with their bodies; the cursor's place is the body's of this
-    // C: frame (D-e4fbd6: the original's member cursor place DS:E09F / E09D is set at its own time).
+    // C: the member is DS:A6B2 as the last fight-draw found it (QueuedChosen); the cursor's place is the body's of this frame (the original's
+    // C: member cursor place DS:E09F / E09D is set at its own time, R014+0x0F58 / 0xB576 / 0xCD66 / 0xCED6).
     private List<DepthEntry> CursorEntries()
     {
         var tb = _battle!;
@@ -3242,7 +3349,7 @@ public sealed class BattleScreen : ITacticalView
             var (x, y) = at(box);
             list.Add(new DepthEntry(new DepthKey(p.X + 1, p.Y + 1, p.Y + 1), -3, i, image, x, y, default));
         }
-        Add(tb.Selected, BattleImages.MemberCursor, b => (b.FootX - 4, b.Top + b.Animation.Height / 2 - 13));
+        Add(_queuedChosen, BattleImages.MemberCursor, b => (b.FootX - 4, b.Top + b.Animation.Height / 2 - 13));
         if (tb.Selected >= 0 && tb.CursorTarget >= 0 && tb.Cursor is OrderCursor.Target or OrderCursor.TargetBlocked)
         {
             // orig: R014+0xCCD4 (mode 0): the target cursor DS:C242 (or DS:C2BD blocked) at the sprite's foot.
@@ -3698,7 +3805,33 @@ public sealed class BattleScreen : ITacticalView
     // C: pointer-shape-set(hx, hy, sprite) gives each shape its hot spot: the driver draws the sprite at (mouse − hot spot). The glove and the
     // order hand have (0, 0); the arrows (3, 0) up, (7, 0) up-right, (7, 4) right, (7, 7) down-right, (3, 7) down, (0, 7) down-left, (0, 4) left,
     // (0, 0) up-left.
-    private void DrawPointer(Canvas canvas) => DrawPointer(canvas, PointerShape(_ui.Mouse.X, _ui.Mouse.Y));
+    private void DrawPointer(Canvas canvas)
+    {
+        _driverShape = PointerShape(_ui.Mouse.X, _ui.Mouse.Y);
+        DrawPointer(canvas, _driverShape);
+    }
+
+    /// <summary>The shape the battle last gave the mouse driver (DS:A68F): the pass's (R014+0x33A2), the hand after the bar or the loot.</summary>
+    // C: pointer-shape-set (root 047C:124F) keeps the shape in the driver: a pointer-show (root 047C:1293) with no shape set in between
+    //   draws the last one (R021+0x0298 after a member's message, root 0000:10E7 in the pause box, R037+0x2B97 while a save is written)
+    private (int Image, int HotX, int HotY) _driverShape = (BattleImages.NormalPointer, 0, 0);
+
+    /// <summary>The driver's pointer shown in the battle's last shape (its pointer-show); the returned action puts the driver's state back.</summary>
+    private Action ShowDriverPointer()
+    {
+        var (visible, shape, hotSpot) = (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot);
+        ApplyDriverPointer();
+        return () => (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (visible, shape, hotSpot);
+    }
+
+    private void ApplyDriverPointer()
+    {
+        var (image, hotX, hotY) = _driverShape;
+        (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (true, _assets.Images[image], (hotX, hotY));
+    }
+
+    /// <summary>The battle's hand (the glove running, the order hand paused), as the bar and the loot screen's end set it.</summary>
+    private (int Image, int HotX, int HotY) Hand => (_battle!.PauseByte == 0 ? BattleImages.NormalPointer : BattleImages.OrderPointer, 0, 0);
 
     /// <summary>The shape the pass sets for the mouse at (x, y): the picture and its hot spot.</summary>
     private (int Image, int HotX, int HotY) PointerShape(int x, int y)

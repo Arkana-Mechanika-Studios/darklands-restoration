@@ -36,3 +36,5 @@ V-sheetptr|visuals-sheet-pointer.steps|DKSAVE0.SAV|list1=visuals-sheet-pointer-l
 V-infoptr|visuals-partyinfo-pointer.steps|DKSAVE0.SAV|card=visuals-partyinfo-pointer-card,info=visuals-partyinfo-pointer-info
 V-fortsaint|visuals-fortress-saint.steps|DKSAVE2-fortress297.sav|shown=visuals-fortress-saint-lines,box=visuals-fortress-saint-box
 roster-figure|roster-figure.steps|DKSAVE0.SAV|u2=roster-figure-up-left-uncleared,d3=roster-figure-down-below-menu,c3=roster-figure-click-no-redraw
+leftovers-msg|leftovers-skill-message.steps|DKSAVE0.SAV|msg=leftovers-skill-message,msg2=leftovers-skill-message-after-enter
+leftovers-pause|leftovers-pause.steps|DKSAVE99.SAV|mappause=leftovers-pause-map,bpause=leftovers-pause-battle,bafter=leftovers-pause-battle-after

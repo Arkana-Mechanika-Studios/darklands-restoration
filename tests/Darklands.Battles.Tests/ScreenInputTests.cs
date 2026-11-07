@@ -886,4 +886,32 @@ public sealed class ScreenInputTests
         Assert.All(shown[..^1], Assert.False);
         Assert.True(shown[^1]);   // the screen put back, then the pointer
     }
+
+    /// <summary>
+    /// The pause box (root 0000:1080) hides the pointer while it draws its two boxes (0x10AE) and shows it while it waits for the key
+    /// (pointer-show 0x10E7 before getch), then hides it while the boxes are put back (0x10F1) and shows it again (0x113A): the frames
+    /// of the wait have the pointer (vis10 session leftovers-pause: the original's pointer over "Game Paused").
+    /// </summary>
+    [Fact]
+    public void ThePauseBoxShowsThePointerWhileItWaits()
+    {
+        (int, MouseState)[] frames = [Up(20, 20), Up(20, 20), Up(20, 20), Key(Keys.ForCharacter('x')), Up(20, 20)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, _))
+        {
+            return;
+        }
+        var shown = new List<bool>();
+        host.Presented = _ => shown.Add(ui.PointerVisible);
+        Assert.True(ui.PointerVisible);
+
+        new MessageBox(ui).Pause();
+
+        // the two boxes drawn (one frame each) without it, the wait with it, the last frame (the boxes put back) with it again
+        Assert.True(shown.Count > 3);
+        Assert.False(shown[0]);
+        Assert.False(shown[1]);
+        Assert.All(shown[2..], Assert.True);
+        Assert.True(ui.PointerVisible);
+    }
 }
